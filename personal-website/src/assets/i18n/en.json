@@ -1,9 +1,9 @@
 {
-    "TRANSLATE_TEST": "Test copy",
-    "NAVBAR": {
-        "BRAND": "My App",
-        "HOME": "Home",
-        "ABOUT": "About",
-        "CONTACT": "Contact"
-    }
+  "TRANSLATE_TEST": "Test copy",
+  "NAVBAR": {
+    "BRAND": "My App",
+    "HOME": "Home",
+    "ABOUT": "About",
+    "CONTACT": "Contact"
+  }
 }
