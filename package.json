@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint .",
+    "lint": "eslint --fix",
+    "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
     "format": "prettier --write ."
   },
   "repository": {
@@ -30,20 +31,23 @@
     "husky": "^4.3.8",
     "lint-staged": "^13.2.3",
     "prettier": "^3.0.0",
-    "stylelint": "^15.10.1"
+    "stylelint": "^15.10.1",
+    "stylelint-config-standard": "^34.0.0",
+    "stylelint-config-standard-scss": "^10.0.0"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint --fix",
+    "*.{js,ts}": [
+      "npm run lint",
+      "npm run format",
       "git add"
     ],
-    "*.{json,css,scss}": [
-      "prettier --write",
+    "*.{css,scss}": [
+      "npm run lint:css",
+      "npm run format",
       "git add"
     ],
-    "*.{html,htm,vue,jsx,ts,tsx}": [
-      "prettier --write",
-      "eslint --fix",
+    "*.{json,md}": [
+      "npm run format",
       "git add"
     ]
   },
