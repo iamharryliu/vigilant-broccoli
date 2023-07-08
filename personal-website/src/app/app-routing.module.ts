@@ -1,15 +1,9 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { AboutPageComponent } from '@app/components/about-page/about-page.component';
-import { HomePageComponent } from '@app/components/home-page/home-page.component';
-
-const routes: Routes = [
-  { path: '', component: HomePageComponent },
-  { path: 'about', component: AboutPageComponent },
-];
+import { RouterModule } from '@angular/router';
+import { APP_ROUTES } from '@app/app-route.const';
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(APP_ROUTES)],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
