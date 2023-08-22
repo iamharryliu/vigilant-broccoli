@@ -1,11 +1,11 @@
-import express from "express";
+import express from 'express';
 import {
   errorLogger,
   errorResponder,
   invalidPathHandler,
-} from "./errormiddleware";
-import { requestLogger } from "./middleware";
-import { router } from "./router";
+} from './errormiddleware';
+import { requestLogger } from './middleware';
+import { router } from './router';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
