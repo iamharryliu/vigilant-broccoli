@@ -21,7 +21,7 @@ export const CONTACT_ROUTE: Route = {
 };
 
 export const APP_PATH = {
-  INDEX: ``,
+  INDEX: '',
   ABOUT: `/${ABOUT_ROUTE.path}`,
   CONTACT: `/${CONTACT_ROUTE.path}`,
 };
