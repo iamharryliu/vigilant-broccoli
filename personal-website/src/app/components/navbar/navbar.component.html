@@ -4,25 +4,16 @@
       <div class="flex-shrink-0">
         <a [routerLink]="PATH.HOME" class="text-white text-xl font-bold">{{
           'NAVBAR.BRAND' | translate
-        }}</a>
+          }}</a>
       </div>
       <div class="hidden md:block">
         <div class="ml-10 flex items-baseline space-x-4">
-          <a
-            [routerLink]="PATH.HOME"
-            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >{{ 'NAVBAR.HOME' | translate }}</a
-          >
-          <a
-            [routerLink]="PATH.ABOUT"
-            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >{{ 'NAVBAR.ABOUT' | translate }}</a
-          >
-          <a
-            [routerLink]="PATH.CONTACT"
-            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >{{ 'NAVBAR.CONTACT' | translate }}</a
-          >
+          <a [routerLink]="PATH.ABOUT"
+            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ 'NAVBAR.ABOUT' |
+            translate }}</a>
+          <a [routerLink]="PATH.CONTACT"
+            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ 'NAVBAR.CONTACT' |
+            translate }}</a>
         </div>
       </div>
     </div>

@@ -1,9 +1,39 @@
 {
-  "TRANSLATE_TEST": "Test copy",
+  "HOME": {
+    "PLACEHOLDER": "This is placeholder text for harryliu.design"
+  },
   "NAVBAR": {
-    "BRAND": "My App",
+    "BRAND": "harryliu.design",
     "HOME": "Home",
     "ABOUT": "About",
     "CONTACT": "Contact"
+  },
+  "FOOTER": {
+    "CAREER": {
+      "HEADER": "Career",
+      "LINKEDIN": {
+        "DESC": "LinkedIn",
+        "URL": "https://www.linkedin.com/in/iamharryliu/"
+      },
+      "GITHUB": {
+        "DESC": "Github",
+        "URL": "https://github.com/iamharryliu"
+      }
+    },
+    "INSTAGRAM": {
+      "HEADER": "Instagram",
+      "PERSONAL": {
+        "DESC": "Personal Instagram",
+        "URL": "https://www.instagram.com/prettydamntired/"
+      },
+      "SECONDHAND_STORE": {
+        "DESC": "Secondhand Goods Page",
+        "URL": "https://www.instagram.com/harrysellshit/"
+      },
+      "ROLLERBLADE": {
+        "DESC": "Rollerblade Page",
+        "URL": "https://www.instagram.com/torontocityskate/"
+      }
+    }
   }
 }

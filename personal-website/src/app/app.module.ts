@@ -6,7 +6,9 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppRoutingModule } from '@app/app-routing.module';
 import { AppComponent } from '@app/app.component';
+
 import { NavbarComponent } from '@components/navbar/navbar.component';
+import { FooterComponent } from '@components/footer/footer.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -27,6 +29,7 @@ export function createTranslateLoader(http: HttpClient) {
       },
     }),
     NavbarComponent,
+    FooterComponent,
   ],
   providers: [],
   bootstrap: [AppComponent],
