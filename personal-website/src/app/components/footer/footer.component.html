@@ -1,30 +1,39 @@
 <nav class="bg-gray-300">
   <div class="grid grid-cols-4 gap-4">
     <div>
+      <span>harryliu.design</span><br />
+      <span>harryliu.design</span><br />
+      <span>harryliu.design</span><br />
+      <span>harryliu.design</span><br />
+      <span>harryliu.design</span><br />
+    </div>
+    <div></div>
+    <div>
       <h3>
-        {{ 'FOOTER.CAREER.HEADER' | translate }}
+        {{ FOOTER.CAREER.HEADER | translate }}
       </h3>
-      <a [href]="'FOOTER.CAREER.LINKEDIN.URL' | translate">
-        {{ 'FOOTER.CAREER.LINKEDIN.DESC' | translate }} </a
-      ><br />
-      <a [href]="'FOOTER.CAREER.GITHUB.URL' | translate">
-        {{ 'FOOTER.CAREER.GITHUB.DESC' | translate }}
-      </a>
+      <div *ngFor="let LINK of FOOTER.CAREER.LINKS">
+        <a [href]="LINK.URL | translate">
+          {{ LINK.TEXT | translate }} </a><br />
+      </div>
+
+      <h3>
+        {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
+      </h3>
+      <div *ngFor="let LINK of FOOTER.SITE_MAP.LINKS">
+        <a [routerLink]="LINK.ROUTER_LINK"> {{ LINK.TEXT | translate
+          }}</a><br />
+      </div>
     </div>
 
     <div>
       <h3>
         {{ 'FOOTER.INSTAGRAM.HEADER' | translate }}
       </h3>
-      <a [href]="'FOOTER.INSTAGRAM.PERSONAL.URL' | translate">
-        {{ 'FOOTER.INSTAGRAM.PERSONAL.DESC' | translate }} </a
-      ><br />
-      <a [href]="'FOOTER.INSTAGRAM.SECONDHAND_STORE.URL' | translate">
-        {{ 'FOOTER.INSTAGRAM.SECONDHAND_STORE.DESC' | translate }} </a
-      ><br />
-      <a [href]="'FOOTER.INSTAGRAM.ROLLERBLADE.URL' | translate">
-        {{ 'FOOTER.INSTAGRAM.ROLLERBLADE.DESC' | translate }}
-      </a>
+      <div *ngFor="let LINK of FOOTER.INSTAGRAM.LINKS">
+        <a [href]="LINK.URL"> {{ LINK.TEXT | translate
+          }}</a><br />
+      </div>
     </div>
   </div>
 </nav>

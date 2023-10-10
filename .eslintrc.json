@@ -6,7 +6,6 @@
     "project": ["**/tsconfig.json"],
     "plugins": ["@typescript-eslint"],
     "rules": {
-      "no-unused-vars": "error",
       "semi": ["error", "always"],
       "quotes": ["error", "single"],
       "@typescript-eslint/strict-boolean-expressions": "error"

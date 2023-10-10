@@ -6,32 +6,39 @@
     "BRAND": "harryliu.design",
     "HOME": "Home",
     "ABOUT": "About",
-    "CONTACT": "Contact"
+    "CONTACT": "Contact",
+    "SECONDHAND_STORE": "Store"
   },
   "FOOTER": {
+    "SITE_MAP": {
+      "HEADER": "Site Map",
+      "ABOUT": "About 📖",
+      "CONTACT": "Contact 📞",
+      "STORE": "Store 🛒"
+    },
     "CAREER": {
       "HEADER": "Career",
       "LINKEDIN": {
-        "DESC": "LinkedIn",
+        "TEXT": "LinkedIn 💼",
         "URL": "https://www.linkedin.com/in/iamharryliu/"
       },
       "GITHUB": {
-        "DESC": "Github",
+        "TEXT": "Github 🖥️",
         "URL": "https://github.com/iamharryliu"
       }
     },
     "INSTAGRAM": {
       "HEADER": "Instagram",
       "PERSONAL": {
-        "DESC": "Personal Instagram",
+        "TEXT": "Personal Instagram 📸",
         "URL": "https://www.instagram.com/prettydamntired/"
       },
       "SECONDHAND_STORE": {
-        "DESC": "Secondhand Goods Page",
-        "URL": "https://www.instagram.com/harrysellshit/"
+        "TEXT": "Secondhand Store 👖",
+        "URL": "https://www.instagram.com/harrysellsshit/"
       },
-      "ROLLERBLADE": {
-        "DESC": "Rollerblade Page",
+      "SKATE": {
+        "TEXT": "Skate Page 🛹",
         "URL": "https://www.instagram.com/torontocityskate/"
       }
     }
