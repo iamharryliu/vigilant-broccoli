@@ -1,33 +1,23 @@
 import express from 'express';
-import { ResponseError } from './error.model';
-import { requireJsonContent } from './middleware';
+import cors from 'cors';
+import { EmailSubscription, CORS_OPTIONS } from './app.const';
 
 export const router = express.Router();
-
 router.use(express.json({ limit: 100 }));
 
-router.get('/', (_, response) => {
-  response.send('Response for GET endpoint request');
-});
-
-router.get('/route', (_, response) => {
-  response.send('Response for GET endpoint requrest');
-});
-
-router.get('/post/:value', (request, response) => {
-  const value = request.params.value;
-  response.send(`Value: ${value} `);
-});
-
-router.post('/post', requireJsonContent, (request, response) => {
-  const value = request.body.value;
-  response.json({ message: `Value ${value}` });
-});
-
-router.get('/error', (request, response) => {
-  const err = new Error('Processing error') as ResponseError;
-  err.statusCode = 400;
-  throw err;
+router.post('/email-alerts', cors(CORS_OPTIONS), async (req, res) => {
+  try {
+    const email = req.body.email;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required.' });
+    }
+    const newEmailAlert = new EmailSubscription({ email });
+    await newEmailAlert.save();
+    res.status(201).json({ message: 'Email alert saved successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 module.exports = { router };

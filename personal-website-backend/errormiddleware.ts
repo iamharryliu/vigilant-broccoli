@@ -11,5 +11,4 @@ export const errorResponder = (err, request, response, next) => {
 export const invalidPathHandler = (request, response, next) => {
   response.status(400);
   response.send('invalid path');
-  console.log('3');
 };
