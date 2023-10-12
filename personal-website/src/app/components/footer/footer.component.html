@@ -13,16 +13,15 @@
         {{ FOOTER.CAREER.HEADER | translate }}
       </h3>
       <div *ngFor="let LINK of FOOTER.CAREER.LINKS">
-        <a [href]="LINK.URL | translate">
-          {{ LINK.TEXT | translate }} </a><br />
+        <a [href]="LINK.URL | translate"> {{ LINK.TEXT | translate }} </a><br />
       </div>
 
       <h3>
         {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
       </h3>
       <div *ngFor="let LINK of FOOTER.SITE_MAP.LINKS">
-        <a [routerLink]="LINK.ROUTER_LINK"> {{ LINK.TEXT | translate
-          }}</a><br />
+        <a [routerLink]="LINK.ROUTER_LINK"> {{ LINK.TEXT | translate }}</a
+        ><br />
       </div>
     </div>
 
@@ -31,8 +30,8 @@
         {{ 'FOOTER.INSTAGRAM.HEADER' | translate }}
       </h3>
       <div *ngFor="let LINK of FOOTER.INSTAGRAM.LINKS">
-        <a [href]="LINK.URL"> {{ LINK.TEXT | translate
-          }}</a><br />
+        <a [href]="LINK.URL"> {{ LINK.TEXT | translate }}</a
+        ><br />
       </div>
     </div>
   </div>

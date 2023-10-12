@@ -2,6 +2,11 @@
   "HOME": {
     "PLACEHOLDER": "This is placeholder text for harryliu.design"
   },
+  "EMAIL_SUBSCRIPTION_FORM": {
+    "LABEL": "Newsletter:",
+    "PLACEHOLDER": "Your email address",
+    "BUTTON_TEXT": "Subscribe"
+  },
   "NAVBAR": {
     "BRAND": "harryliu.design",
     "HOME": "Home",
