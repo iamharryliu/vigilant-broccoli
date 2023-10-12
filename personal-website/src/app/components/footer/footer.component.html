@@ -1,38 +1,34 @@
-<nav class="bg-gray-300">
+<footer>
+  <hr>
   <div class="grid grid-cols-4 gap-4">
-    <div>
-      <span>harryliu.design</span><br />
-      <span>harryliu.design</span><br />
-      <span>harryliu.design</span><br />
-      <span>harryliu.design</span><br />
+    <div class="text-xl">
+      <span>based in toronto</span><br />
       <span>harryliu.design</span><br />
     </div>
     <div></div>
     <div>
-      <h3>
+      <h3 class="text-xl">
         {{ FOOTER.CAREER.HEADER | translate }}
       </h3>
       <div *ngFor="let LINK of FOOTER.CAREER.LINKS">
-        <a [href]="LINK.URL | translate"> {{ LINK.TEXT | translate }} </a><br />
+        <a class="text-lg" [href]="LINK.URL | translate"> {{ LINK.TEXT | translate }} </a><br />
       </div>
 
-      <h3>
+      <h3 class="text-xl">
         {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
       </h3>
       <div *ngFor="let LINK of FOOTER.SITE_MAP.LINKS">
-        <a [routerLink]="LINK.ROUTER_LINK"> {{ LINK.TEXT | translate }}</a
-        ><br />
+        <a class="text-lg" [routerLink]="LINK.ROUTER_LINK"> {{ LINK.TEXT | translate }}</a><br />
       </div>
     </div>
 
     <div>
-      <h3>
+      <h3 class="text-xl">
         {{ 'FOOTER.INSTAGRAM.HEADER' | translate }}
       </h3>
       <div *ngFor="let LINK of FOOTER.INSTAGRAM.LINKS">
-        <a [href]="LINK.URL"> {{ LINK.TEXT | translate }}</a
-        ><br />
+        <a class="text-lg" [href]="LINK.URL"> {{ LINK.TEXT | translate }}</a><br />
       </div>
     </div>
   </div>
-</nav>
+</footer>

@@ -1,19 +1,18 @@
-<nav class="bg-gray-800">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <div class="flex-shrink-0">
-        <a [routerLink]="NAVBAR.INDEX" class="text-white text-xl font-bold">
-          {{ 'NAVBAR.BRAND' | translate }}
+<nav>
+  <div class="flex items-center justify-between h-16">
+    <div class="flex-shrink-0">
+      <a [routerLink]="NAVBAR.INDEX" class="text-gray-800 text-2xl font-bold">
+        {{ 'NAVBAR.BRAND' | translate }}
+      </a>
+    </div>
+    <div class="hidden md:block">
+      <div class="ml-10 flex items-baseline space-x-4">
+        <a *ngFor="let LINK of NAVBAR.LINKS; index as i; first as isFirst" [routerLink]="LINK.ROUTER_LINK"
+          class="text-gray-800 hover:text-gray-400 px-3 py-2 rounded-md text-md font-medium">
+          {{ LINK.TEXT | translate }}
         </a>
-      </div>
-      <div class="hidden md:block">
-        <div class="ml-10 flex items-baseline space-x-4">
-          <a *ngFor="let LINK of NAVBAR.LINKS; index as i; first as isFirst" [routerLink]="LINK.ROUTER_LINK"
-            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-            {{ LINK.TEXT | translate }}
-          </a>
-        </div>
       </div>
     </div>
   </div>
+  <hr />
 </nav>
