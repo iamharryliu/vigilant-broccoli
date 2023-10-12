@@ -4,6 +4,8 @@
 
 This express server was written following this [getting started tutorial](https://reflectoring.io/getting-started-with-express/).
 
+How to deal with [CORS](https://expressjs.com/en/resources/middleware/cors.html).
+
 ## Common Status Codes
 
 This section is written based on [this article](https://kinsta.com/blog/http-status-codes/)
