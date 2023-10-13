@@ -1,8 +1,12 @@
 {
   "HOME_PAGE": {
+    "CAREER": {
+      "HEADER": "Software",
+      "BODY": "I'm a self taught software developer who managed to find his way into the industry. I've worked on some pretty badass projects so far and there's more to come. I genuinely love coding and would even go as far as considering it more of a hobby than just a job to me. Being a software developer means more to me than just the code.. It's design, it's beutiful.."
+    },
     "SECONDHAND_CARD": {
       "HEADER": "Secondhand Lifestyle",
-      "BODY": "I'm a secondhand shopping addict but at the same time a minimalist which is why I run a secondhand Instagram store and hold occasional clothing markets to buy, sell, trade, and give away clothes."
+      "BODY": "I'm a secondhand shopping addict but at the same time a minimalist which is quite the conundrum. To solve this problem I run a secondhand Instagram store and hold occasional clothing markets to buy, sell, trade, and give away clothes that are often accompanied by a partayyy. "
     }
   },
   "CONTACT_PAGE": {
