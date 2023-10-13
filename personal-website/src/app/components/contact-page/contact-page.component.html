@@ -6,59 +6,36 @@
     <form (ngSubmit)="submitForm(); contactForm.reset()" #contactForm="ngForm">
       <div class="mb-4">
         <label for="name" class="block text-gray-700">
-          {{ 'CONTACT_PAGE.CONTACT_FORM.NAME_LABEL' | translate }}</label
-        >
-        <input
-          type="text"
-          id="name"
-          name="name"
-          [(ngModel)]="formData.name"
-          required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-        />
+          {{ 'CONTACT_PAGE.CONTACT_FORM.NAME_LABEL' | translate }}</label>
+        <input type="text" id="name" name="name" [(ngModel)]="formData.name" required
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
       </div>
       <div class="mb-4">
         <label for="email" class="block text-gray-700">
-          {{ 'CONTACT_PAGE.CONTACT_FORM.EMAIL_LABEL' | translate }}</label
-        >
-        <input
-          type="email"
-          id="email"
-          name="email"
-          [(ngModel)]="formData.email"
-          required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-        />
+          {{ 'CONTACT_PAGE.CONTACT_FORM.EMAIL_LABEL' | translate }}</label>
+        <input type="email" id="email" name="email" [(ngModel)]="formData.email" required
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
       </div>
       <div class="mb-4">
         <label for="message" class="block text-gray-700">{{
           'CONTACT_PAGE.CONTACT_FORM.BUTTON_TEXT' | translate
-        }}</label>
-        <textarea
-          id="message"
-          name="message"
-          [(ngModel)]="formData.message"
-          required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-        ></textarea>
+          }}</label>
+        <textarea id="message" name="message" [(ngModel)]="formData.message" required
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"></textarea>
       </div>
-      <button
-        type="submit"
-        [disabled]="contactForm.invalid"
-        class="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring"
-      >
+      <button type="submit" [disabled]="contactForm.invalid"
+        class="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring">
         {{ 'CONTACT_PAGE.CONTACT_FORM.BUTTON_TEXT' | translate }}
       </button>
     </form>
   </div>
   <div class="w-5/6 mx-auto">
-    <div class="">
+    <div class="mb-2">
       <h1 class="text-2xl mb-2">Social Medias</h1>
       <ul>
         <li *ngFor="let LINK of LINKS">
           <a class="text-md hover:text-gray-400" [href]="LINK.URL">
-            {{ LINK.TEXT | translate }}</a
-          >
+            {{ LINK.TEXT | translate }}</a>
         </li>
       </ul>
     </div>
