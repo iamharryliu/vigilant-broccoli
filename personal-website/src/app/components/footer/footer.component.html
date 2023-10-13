@@ -1,11 +1,20 @@
 <footer class="pt-4 pb-4">
-  <div class="grid grid-cols-4 gap-4">
-    <div class="text-xl">
+  <div class="grid lg:grid-cols-4">
+    <div class="text-xl pb-4">
       <span>based in toronto</span><br />
       <span>harryliu.design</span><br />
     </div>
     <div></div>
     <div>
+      <div class="pb-4">
+        <h3 class="text-lg pb-1">
+          {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
+        </h3>
+        <div *ngFor="let LINK of FOOTER.SITE_MAP.LINKS">
+          <a class="text-md" [routerLink]="LINK.ROUTER_LINK">
+            {{ LINK.TEXT | translate }}</a><br />
+        </div>
+      </div>
       <div class="pb-4">
         <h3 class="text-lg pb-1">
           {{ FOOTER.CAREER.HEADER | translate }}
@@ -15,18 +24,9 @@
             {{ LINK.TEXT | translate }} </a><br />
         </div>
       </div>
-      <div>
-        <h3 class="text-lg pb-1">
-          {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
-        </h3>
-        <div *ngFor="let LINK of FOOTER.SITE_MAP.LINKS">
-          <a class="text-md" [routerLink]="LINK.ROUTER_LINK">
-            {{ LINK.TEXT | translate }}</a><br />
-        </div>
-      </div>
     </div>
 
-    <div>
+    <div class="pb-4">
       <h3 class="text-lg pb-1">
         {{ 'FOOTER.INSTAGRAM.HEADER' | translate }}
       </h3>
