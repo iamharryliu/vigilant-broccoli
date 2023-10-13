@@ -36,17 +36,14 @@
   "lint-staged": {
     "*.{js,ts}": [
       "npm run lint",
-      "npm run format",
-      "git add"
+      "npm run format"
     ],
     "*.{css,scss}": [
       "npm run lint:css",
-      "npm run format",
-      "git add"
+      "npm run format"
     ],
     "*.{json,md}": [
-      "npm run format",
-      "git add"
+      "npm run format"
     ]
   },
   "husky": {
