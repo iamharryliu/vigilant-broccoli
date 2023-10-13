@@ -13,15 +13,15 @@ import { TranslateModule } from '@ngx-translate/core';
 export class FooterComponent {
   FOOTER = {
     CAREER: {
-      HEADER: 'FOOTER.CAREER.HEADER',
+      HEADER: 'LINKS.CAREER.HEADER',
       LINKS: [
         {
-          URL: 'FOOTER.CAREER.LINKEDIN.URL',
-          TEXT: 'FOOTER.CAREER.LINKEDIN.TEXT',
+          URL: 'LINKS.CAREER.LINKEDIN.URL',
+          TEXT: 'LINKS.CAREER.LINKEDIN.TEXT',
         },
         {
-          URL: 'FOOTER.CAREER.GITHUB.URL',
-          TEXT: 'FOOTER.CAREER.GITHUB.TEXT',
+          URL: 'LINKS.CAREER.GITHUB.URL',
+          TEXT: 'LINKS.CAREER.GITHUB.TEXT',
         },
       ],
     },
@@ -43,19 +43,19 @@ export class FooterComponent {
       ],
     },
     INSTAGRAM: {
-      HEADER: 'FOOTER.INSTAGRAM.HEADER',
+      HEADER: 'LINKS.INSTAGRAM.HEADER',
       LINKS: [
         {
-          URL: 'FOOTER.INSTAGRAM.PERSONAL.URL',
-          TEXT: 'FOOTER.INSTAGRAM.PERSONAL.TEXT',
+          URL: 'LINKS.INSTAGRAM.PERSONAL.URL',
+          TEXT: 'LINKS.INSTAGRAM.PERSONAL.TEXT',
         },
         {
-          URL: 'FOOTER.INSTAGRAM.SECONDHAND_STORE.URL',
-          TEXT: 'FOOTER.INSTAGRAM.SECONDHAND_STORE.TEXT',
+          URL: 'LINKS.INSTAGRAM.SECONDHAND_STORE.URL',
+          TEXT: 'LINKS.INSTAGRAM.SECONDHAND_STORE.TEXT',
         },
         {
-          URL: 'FOOTER.INSTAGRAM.SKATE.URL',
-          TEXT: 'FOOTER.INSTAGRAM.SKATE.TEXT',
+          URL: 'LINKS.INSTAGRAM.SKATE.URL',
+          TEXT: 'LINKS.INSTAGRAM.SKATE.TEXT',
         },
       ],
     },

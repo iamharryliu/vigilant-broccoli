@@ -1,5 +1,14 @@
 {
-  "HOME": {},
+  "HOME_PAGE": {},
+  "CONTACT_PAGE": {
+    "CONTACT_FORM": {
+      "HEADER": "Send me a message",
+      "NAME_LABEL": "Name:",
+      "EMAIL_LABEL": "Email:",
+      "MESSAGE_LABEL": "Message:",
+      "BUTTON_TEXT": "Submit"
+    }
+  },
   "EMAIL_SUBSCRIPTION_FORM": {
     "LABEL": "Newsletter:",
     "PLACEHOLDER": "Your email address",
@@ -12,38 +21,40 @@
     "CONTACT": "Contact",
     "SECONDHAND_STORE": "Store"
   },
-  "FOOTER": {
-    "SITE_MAP": {
-      "HEADER": "Site Map",
-      "ABOUT": "About 📖",
-      "CONTACT": "Contact 📞",
-      "STORE": "Store 🛒"
-    },
+  "LINKS": {
     "CAREER": {
       "HEADER": "Career",
       "LINKEDIN": {
-        "TEXT": "LinkedIn 💼",
+        "TEXT": "LinkedIn",
         "URL": "https://www.linkedin.com/in/iamharryliu/"
       },
       "GITHUB": {
-        "TEXT": "Github 🖥️",
+        "TEXT": "Github",
         "URL": "https://github.com/iamharryliu"
       }
     },
     "INSTAGRAM": {
       "HEADER": "Instagram",
       "PERSONAL": {
-        "TEXT": "Personal Instagram 📸",
+        "TEXT": "Personal Instagram",
         "URL": "https://www.instagram.com/prettydamntired/"
       },
       "SECONDHAND_STORE": {
-        "TEXT": "Secondhand Store 👖",
+        "TEXT": "Secondhand Store",
         "URL": "https://www.instagram.com/harrysellsshit/"
       },
       "SKATE": {
-        "TEXT": "Skate Page 🛹",
+        "TEXT": "Skate Page",
         "URL": "https://www.instagram.com/torontocityskate/"
       }
+    }
+  },
+  "FOOTER": {
+    "SITE_MAP": {
+      "HEADER": "Site Map",
+      "ABOUT": "About",
+      "CONTACT": "Contact",
+      "STORE": "Store"
     }
   }
 }

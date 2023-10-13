@@ -11,16 +11,16 @@
           {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
         </h3>
         <div *ngFor="let LINK of FOOTER.SITE_MAP.LINKS">
-          <a class="text-md" [routerLink]="LINK.ROUTER_LINK">
+          <a class="text-md hover:text-gray-400" [routerLink]="LINK.ROUTER_LINK">
             {{ LINK.TEXT | translate }}</a><br />
         </div>
       </div>
       <div class="pb-4">
         <h3 class="text-lg pb-1">
-          {{ FOOTER.CAREER.HEADER | translate }}
+          {{ 'LINKS.CAREER.HEADER' | translate }}
         </h3>
         <div *ngFor="let LINK of FOOTER.CAREER.LINKS">
-          <a class="text-md" [href]="LINK.URL | translate">
+          <a class="text-md hover:text-gray-400" [href]="LINK.URL | translate">
             {{ LINK.TEXT | translate }} </a><br />
         </div>
       </div>
@@ -28,10 +28,10 @@
 
     <div class="pb-4">
       <h3 class="text-lg pb-1">
-        {{ 'FOOTER.INSTAGRAM.HEADER' | translate }}
+        {{ 'LINKS.INSTAGRAM.HEADER' | translate }}
       </h3>
       <div *ngFor="let LINK of FOOTER.INSTAGRAM.LINKS">
-        <a class="text-md" [href]="LINK.URL"> {{ LINK.TEXT | translate }}</a><br />
+        <a class="text-md hover:text-gray-400" [href]="LINK.URL"> {{ LINK.TEXT | translate }}</a><br />
       </div>
     </div>
   </div>
