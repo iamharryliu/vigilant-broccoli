@@ -7,32 +7,32 @@
     </div>
     <div></div>
     <div>
-      <h3 class="text-xl">
-        {{ FOOTER.CAREER.HEADER | translate }}
-      </h3>
-      <div *ngFor="let LINK of FOOTER.CAREER.LINKS">
-        <a class="text-lg" [href]="LINK.URL | translate">
-          {{ LINK.TEXT | translate }} </a
-        ><br />
+      <div class="pb-4">
+        <h3 class="text-lg pb-1">
+          {{ FOOTER.CAREER.HEADER | translate }}
+        </h3>
+        <div *ngFor="let LINK of FOOTER.CAREER.LINKS">
+          <a class="text-md" [href]="LINK.URL | translate">
+            {{ LINK.TEXT | translate }} </a><br />
+        </div>
       </div>
-
-      <h3 class="text-xl">
-        {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
-      </h3>
-      <div *ngFor="let LINK of FOOTER.SITE_MAP.LINKS">
-        <a class="text-lg" [routerLink]="LINK.ROUTER_LINK">
-          {{ LINK.TEXT | translate }}</a
-        ><br />
+      <div>
+        <h3 class="text-lg pb-1">
+          {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
+        </h3>
+        <div *ngFor="let LINK of FOOTER.SITE_MAP.LINKS">
+          <a class="text-md" [routerLink]="LINK.ROUTER_LINK">
+            {{ LINK.TEXT | translate }}</a><br />
+        </div>
       </div>
     </div>
 
     <div>
-      <h3 class="text-xl">
+      <h3 class="text-lg pb-1">
         {{ 'FOOTER.INSTAGRAM.HEADER' | translate }}
       </h3>
       <div *ngFor="let LINK of FOOTER.INSTAGRAM.LINKS">
-        <a class="text-lg" [href]="LINK.URL"> {{ LINK.TEXT | translate }}</a
-        ><br />
+        <a class="text-md" [href]="LINK.URL"> {{ LINK.TEXT | translate }}</a><br />
       </div>
     </div>
   </div>
