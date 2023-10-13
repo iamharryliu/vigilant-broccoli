@@ -1,7 +1,5 @@
 {
-  "HOME": {
-    "PLACEHOLDER": "This is placeholder text for harryliu.design"
-  },
+  "HOME": {},
   "EMAIL_SUBSCRIPTION_FORM": {
     "LABEL": "Newsletter:",
     "PLACEHOLDER": "Your email address",
