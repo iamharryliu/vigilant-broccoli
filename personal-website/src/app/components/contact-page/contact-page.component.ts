@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
-const DEFAULT_FORM_DATA = { name: '', email: '', message: '' };
 @Component({
   standalone: true,
   selector: 'app-contact-page',
@@ -13,25 +12,28 @@ const DEFAULT_FORM_DATA = { name: '', email: '', message: '' };
 export class ContactPageComponent {
   LINKS = [
     {
-      URL: 'LINKS.CAREER.LINKEDIN.URL',
-      TEXT: 'LINKS.CAREER.LINKEDIN.TEXT',
+      URL: 'LINKS.OTHER.LINKEDIN.URL',
+      TEXT: 'LINKS.OTHER.LINKEDIN.TEXT',
     },
     {
-      URL: 'LINKS.INSTAGRAM.PERSONAL.URL',
-      TEXT: 'LINKS.INSTAGRAM.PERSONAL.TEXT',
+      URL: 'LINKS.OTHER.PERSONAL_IG.URL',
+      TEXT: 'LINKS.OTHER.PERSONAL_IG.TEXT',
     },
     {
-      URL: 'LINKS.INSTAGRAM.SECONDHAND_STORE.URL',
-      TEXT: 'LINKS.INSTAGRAM.SECONDHAND_STORE.TEXT',
+      URL: 'LINKS.OTHER.SECONDHAND_STORE_IG.URL',
+      TEXT: 'LINKS.OTHER.SECONDHAND_STORE_IG.TEXT',
     },
     {
-      URL: 'LINKS.INSTAGRAM.SKATE.URL',
-      TEXT: 'LINKS.INSTAGRAM.SKATE.TEXT',
+      URL: 'LINKS.OTHER.SKATE_IG.URL',
+      TEXT: 'LINKS.OTHER.SKATE_IG.TEXT',
     },
   ];
 
-  formData: { name: string; email: string; message: string } =
-    DEFAULT_FORM_DATA;
+  formData: { name: string; email: string; message: string } = {
+    name: '',
+    email: '',
+    message: '',
+  };
 
   submitForm() {}
 }

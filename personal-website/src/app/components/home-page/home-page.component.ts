@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { ConstructionWarningModule } from '@components/construction-warning/construction-warning.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   standalone: true,
   selector: 'app-home-page',
   templateUrl: './home-page.component.html',
-  imports: [ConstructionWarningModule],
+  imports: [TranslateModule],
 })
 export class HomePageComponent {}

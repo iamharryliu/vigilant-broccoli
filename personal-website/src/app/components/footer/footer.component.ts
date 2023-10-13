@@ -12,19 +12,6 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class FooterComponent {
   FOOTER = {
-    CAREER: {
-      HEADER: 'LINKS.CAREER.HEADER',
-      LINKS: [
-        {
-          URL: 'LINKS.CAREER.LINKEDIN.URL',
-          TEXT: 'LINKS.CAREER.LINKEDIN.TEXT',
-        },
-        {
-          URL: 'LINKS.CAREER.GITHUB.URL',
-          TEXT: 'LINKS.CAREER.GITHUB.TEXT',
-        },
-      ],
-    },
     SITE_MAP: {
       HEADER: 'FOOTER.SITE_MAP.HEADER',
       LINKS: [
@@ -42,20 +29,28 @@ export class FooterComponent {
         },
       ],
     },
-    INSTAGRAM: {
-      HEADER: 'LINKS.INSTAGRAM.HEADER',
+    OTHER: {
+      HEADER: 'LINKS.OTHER.HEADER',
       LINKS: [
         {
-          URL: 'LINKS.INSTAGRAM.PERSONAL.URL',
-          TEXT: 'LINKS.INSTAGRAM.PERSONAL.TEXT',
+          URL: 'LINKS.OTHER.LINKEDIN.URL',
+          TEXT: 'LINKS.OTHER.LINKEDIN.TEXT',
         },
         {
-          URL: 'LINKS.INSTAGRAM.SECONDHAND_STORE.URL',
-          TEXT: 'LINKS.INSTAGRAM.SECONDHAND_STORE.TEXT',
+          URL: 'LINKS.OTHER.GITHUB.URL',
+          TEXT: 'LINKS.OTHER.GITHUB.TEXT',
         },
         {
-          URL: 'LINKS.INSTAGRAM.SKATE.URL',
-          TEXT: 'LINKS.INSTAGRAM.SKATE.TEXT',
+          URL: 'LINKS.OTHER.PERSONAL_IG.URL',
+          TEXT: 'LINKS.OTHER.PERSONAL_IG.TEXT',
+        },
+        {
+          URL: 'LINKS.OTHER.SECONDHAND_STORE_IG.URL',
+          TEXT: 'LINKS.OTHER.SECONDHAND_STORE_IG.TEXT',
+        },
+        {
+          URL: 'LINKS.OTHER.SKATE_IG.URL',
+          TEXT: 'LINKS.OTHER.SKATE_IG.TEXT',
         },
       ],
     },

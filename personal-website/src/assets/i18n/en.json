@@ -1,5 +1,10 @@
 {
-  "HOME_PAGE": {},
+  "HOME_PAGE": {
+    "SECONDHAND_CARD": {
+      "HEADER": "Secondhand Lifestyle",
+      "BODY": "I'm a secondhand shopping addict but at the same time a minimalist which is why I run a secondhand Instagram store and hold occasional clothing markets to buy, sell, trade, and give away clothes."
+    }
+  },
   "CONTACT_PAGE": {
     "CONTACT_FORM": {
       "HEADER": "Send me a message",
@@ -22,8 +27,8 @@
     "SECONDHAND_STORE": "Store"
   },
   "LINKS": {
-    "CAREER": {
-      "HEADER": "Career",
+    "OTHER": {
+      "HEADER": "More Links",
       "LINKEDIN": {
         "TEXT": "LinkedIn",
         "URL": "https://www.linkedin.com/in/iamharryliu/"
@@ -31,20 +36,17 @@
       "GITHUB": {
         "TEXT": "Github",
         "URL": "https://github.com/iamharryliu"
-      }
-    },
-    "INSTAGRAM": {
-      "HEADER": "Instagram",
-      "PERSONAL": {
+      },
+      "PERSONAL_IG": {
         "TEXT": "Personal Instagram",
         "URL": "https://www.instagram.com/prettydamntired/"
       },
-      "SECONDHAND_STORE": {
-        "TEXT": "Secondhand Store",
+      "SECONDHAND_STORE_IG": {
+        "TEXT": "Secondhand Store Instagram",
         "URL": "https://www.instagram.com/harrysellsshit/"
       },
-      "SKATE": {
-        "TEXT": "Skate Page",
+      "SKATE_IG": {
+        "TEXT": "Skate Instagram",
         "URL": "https://www.instagram.com/torontocityskate/"
       }
     }
