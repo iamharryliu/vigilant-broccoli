@@ -18,5 +18,9 @@ export class HomePageComponent {
       URL: 'LINKS.OTHER.GITHUB.URL',
       TEXT: 'LINKS.OTHER.GITHUB.TEXT',
     },
+    {
+      URL: 'LINKS.OTHER.EMAIL.URL',
+      TEXT: 'LINKS.OTHER.EMAIL.TEXT',
+    },
   ];
 }

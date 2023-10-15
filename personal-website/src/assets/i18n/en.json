@@ -41,6 +41,10 @@
         "TEXT": "Github",
         "URL": "https://github.com/iamharryliu"
       },
+      "EMAIL": {
+        "TEXT": "Contact me",
+        "URL": "mailto: harryliu1995@gmail.com"
+      },
       "PERSONAL_IG": {
         "TEXT": "Personal Instagram",
         "URL": "https://www.instagram.com/prettydamntired/"

@@ -11,8 +11,13 @@
           {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
         </h3>
         <div *ngFor="let LINK of FOOTER.SITE_MAP.LINKS">
-          <a class="text-sm hover:text-gray-400" [routerLink]="LINK.ROUTER_LINK" target="_blank">
-            {{ LINK.TEXT | translate }}</a><br />
+          <a
+            class="text-sm hover:text-gray-400"
+            [routerLink]="LINK.ROUTER_LINK"
+            target="_blank"
+          >
+            {{ LINK.TEXT | translate }}</a
+          ><br />
         </div>
       </div>
     </div>
@@ -22,8 +27,13 @@
         {{ 'LINKS.OTHER.HEADER' | translate }}
       </h3>
       <div *ngFor="let LINK of FOOTER.OTHER.LINKS">
-        <a class="text-sm hover:text-gray-400" [href]="LINK.URL | translate" target="_blank">
-          {{ LINK.TEXT | translate }}</a><br />
+        <a
+          class="text-sm hover:text-gray-400"
+          [href]="LINK.URL | translate"
+          target="_blank"
+        >
+          {{ LINK.TEXT | translate }}</a
+        ><br />
       </div>
     </div>
   </div>

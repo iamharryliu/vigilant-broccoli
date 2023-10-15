@@ -7,8 +7,11 @@
     </div>
     <div class="hidden md:block">
       <div class="ml-10 flex items-baseline space-x-4">
-        <a *ngFor="let LINK of NAVBAR.LINKS; index as i; first as isFirst" [routerLink]="LINK.ROUTER_LINK"
-          class="text-gray-800 hover:text-gray-400 px-3 py-2 rounded-md text-sm font-medium">
+        <a
+          *ngFor="let LINK of NAVBAR.LINKS; index as i; first as isFirst"
+          [routerLink]="LINK.ROUTER_LINK"
+          class="text-gray-800 hover:text-gray-400 px-3 py-2 rounded-md text-sm font-medium"
+        >
           {{ LINK.TEXT | translate }}
         </a>
       </div>
