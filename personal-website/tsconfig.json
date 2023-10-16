@@ -23,7 +23,8 @@
     "paths": {
       "@app/*": ["src/app/*"],
       "@components/*": ["src/app/components/*"]
-    }
+    },
+    "esModuleInterop": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -2,7 +2,7 @@ import { Route, Routes } from '@angular/router';
 import { AboutPageComponent } from '@components/about-page/about-page.component';
 import { HomePageComponent } from '@components/home-page/home-page.component';
 import { StorePageComponent } from '@components/store-page/store-page.component';
-import { ContactPageComponent } from './components/contact-page/contact-page.component';
+import { ContactPageComponent } from '@components/contact-page/contact-page.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
