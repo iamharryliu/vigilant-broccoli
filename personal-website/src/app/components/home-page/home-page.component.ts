@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { ContactModule } from '../contact/contact.module';
 
 @Component({
   standalone: true,
   selector: 'app-home-page',
   templateUrl: './home-page.component.html',
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, ContactModule],
 })
 export class HomePageComponent {
   LINKS = [
@@ -17,10 +18,6 @@ export class HomePageComponent {
     {
       URL: 'LINKS.OTHER.GITHUB.URL',
       TEXT: 'LINKS.OTHER.GITHUB.TEXT',
-    },
-    {
-      URL: 'LINKS.OTHER.EMAIL.URL',
-      TEXT: 'LINKS.OTHER.EMAIL.TEXT',
     },
   ];
 }

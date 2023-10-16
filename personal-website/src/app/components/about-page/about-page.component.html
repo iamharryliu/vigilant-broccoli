@@ -1,1 +1,18 @@
-<app-construction-warning></app-construction-warning>
+<div class="w-5/6 lg:w-2/3 mx-auto">
+  <h1 class="text-lg mb-2">
+    {{ 'ABOUT_PAGE.HEADER' | translate }}
+  </h1>
+  <p
+    class="text-sm mb-2"
+    [innerHTML]="'ABOUT_PAGE.PARAGRAPH_1' | translate"
+  ></p>
+  <p
+    class="text-sm mb-2"
+    [innerHTML]="'ABOUT_PAGE.PARAGRAPH_2' | translate"
+  ></p>
+  <p
+    class="text-sm mb-2"
+    [innerHTML]="'ABOUT_PAGE.PARAGRAPH_3' | translate"
+  ></p>
+  <app-contact></app-contact>
+</div>

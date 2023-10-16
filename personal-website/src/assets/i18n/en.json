@@ -9,6 +9,12 @@
       "BODY": "I'm a secondhand shopping addict but at the same time a minimalist which is quite the conundrum. To solve this problem I run a secondhand Instagram store and hold occasional clothing markets to buy, sell, trade, and give away clothes that are often accompanied by a partayyy. "
     }
   },
+  "ABOUT_PAGE": {
+    "HEADER": "About me",
+    "PARAGRAPH_1": "Hi, my name is Harry and I am the designer of all the nonesense you see here. I am a self taught softwarer developer based in Toronto who has one too many hobbies including skating, dance and freestyle rapping among many others.",
+    "PARAGRAPH_2": "I originally went to school for civil engineering at Ryerson University (TMU, Toronto Metropolitan University) as I did not know what I wanted to do with my future. I excelled at physics and mathematics so I thought I'd make a good fit which was naive and I paid the price for it. I found that I had no strong interest in the industry after finishing my degree and working 3 months in the field. I eventually came to the realization I wanted to become a software developer as I had a nack for it in high school. Shoutout to Mr. Robinson for being such an amazing highschool computer science teacher. I wish I appreciated you more while I was attending your classes. After leaving my civil engineering job I started learning how to code using free online resources and started building my coding skills from ground zero.",
+    "PARAGRAPH_3": "It was difficult at first but I love the problem solving of coding and making a machine do your bidding. After about a year and a half of tutorial hell I eventually found myself in the tech industry. From the second I touched code I was hooked. I love writing code, during work or outside work, being able to exercise the skill to me practically anywhere is such a pleasure. The enjoyment that I have from coding is similar to how people do sudoku puzzles for fun. And no, sudoku puzzles are not a hobby of mine."
+  },
   "CONTACT_PAGE": {
     "CONTACT_FORM": {
       "HEADER": "Send me a message",
