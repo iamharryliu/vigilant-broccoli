@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Title } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from '@app/app.component';
 
@@ -17,18 +18,32 @@ class NavbarMockComponent {}
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
+  let titleService: Title;
   let app: AppComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
       declarations: [AppComponent, NavbarMockComponent, FooterMockComponent],
+      imports: [RouterTestingModule],
+      providers: [Title],
     });
     fixture = TestBed.createComponent(AppComponent);
+    titleService = TestBed.inject(Title);
     app = fixture.componentInstance;
   });
 
   it('should create the app', () => {
     expect(app).toBeTruthy();
+  });
+
+  describe('setTitle', () => {
+    it('should call titleService.setTitle', () => {
+      const TITLE = 'title';
+      jest.spyOn(titleService, 'setTitle');
+      app.setTitle(TITLE);
+      expect(titleService.setTitle).toHaveBeenCalledWith(
+        `design by harry - ${TITLE}`,
+      );
+    });
   });
 });
