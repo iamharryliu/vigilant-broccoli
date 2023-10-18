@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
+import { CommonService } from '@services/common.service';
+import { MessageRequest } from '@models/app.model';
 
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
 })
 export class ContactComponent {
+  constructor(private commonService: CommonService) {}
+
   LINKS = [
     {
       URL: 'LINKS.OTHER.LINKEDIN.URL',
@@ -24,11 +28,19 @@ export class ContactComponent {
     },
   ];
 
-  formData: { name: string; email: string; message: string } = {
+  formData: MessageRequest = {
     name: '',
     email: '',
     message: '',
   };
 
-  submitForm() {}
+  submitForm() {
+    this.commonService.sendMessage(this.formData).subscribe(() => {
+      this.formData = {
+        name: '',
+        email: '',
+        message: '',
+      };
+    });
+  }
 }

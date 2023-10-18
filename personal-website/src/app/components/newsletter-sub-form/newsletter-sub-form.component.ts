@@ -2,9 +2,10 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { CommonService } from '../services/common.service';
 import { CommonModule } from '@angular/common';
-import { CredentialsInterceptorService } from '@app/core/credentials-interceptor.service';
+import { CredentialsInterceptorService } from '@services/credentials-interceptor.service';
+import { CommonService } from '@services/common.service';
+import { NewsletterSubscriptionRequest } from '@models/app.model';
 
 @Component({
   standalone: true,
@@ -22,7 +23,7 @@ import { CredentialsInterceptorService } from '@app/core/credentials-interceptor
 export class NewsLetterSubFormComponent {
   constructor(private commonService: CommonService) {}
 
-  form = {
+  form: NewsletterSubscriptionRequest = {
     email: '',
   };
 

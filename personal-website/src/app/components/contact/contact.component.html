@@ -1,9 +1,9 @@
 <div class="grid lg:grid-cols-2 pt-14 pb-14">
-  <div class="w-5/6 mx-auto text-sm">
+  <div class="w-5/6 mx-auto text-sm mb-8">
     <h2 class="text-md font-semibold mb-4">
       {{ 'CONTACT_PAGE.CONTACT_FORM.HEADER' | translate }}
     </h2>
-    <form (ngSubmit)="submitForm(); contactForm.reset()" #contactForm="ngForm">
+    <form (ngSubmit)="submitForm()" #contactForm="ngForm">
       <div class="mb-4">
         <label for="name" class="block text-gray-700">
           {{ 'CONTACT_PAGE.CONTACT_FORM.NAME_LABEL' | translate }}</label
@@ -32,7 +32,7 @@
       </div>
       <div class="mb-4">
         <label for="message" class="block text-gray-700">{{
-          'CONTACT_PAGE.CONTACT_FORM.BUTTON_TEXT' | translate
+          'CONTACT_PAGE.CONTACT_FORM.MESSAGE_LABEL' | translate
         }}</label>
         <textarea
           id="message"

@@ -14,7 +14,7 @@ import { AppComponent } from '@app/app.component';
 import { NavbarComponent } from '@components/navbar/navbar.component';
 import { FooterComponent } from '@components/footer/footer.component';
 import { NewsLetterSubFormComponent } from '@app/components/newsletter-sub-form/newsletter-sub-form.component';
-import { CredentialsInterceptorService } from '@app/core/credentials-interceptor.service';
+import { CredentialsInterceptorService } from '@services/credentials-interceptor.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
