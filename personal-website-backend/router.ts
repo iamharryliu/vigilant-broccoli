@@ -27,7 +27,7 @@ router.post('/send-message', cors(CORS_OPTIONS), async (req, res) => {
     service: 'gmail',
     auth: {
       user: process.env.MY_EMAIL,
-      pass: process.env.MY_EMAIL_PASS,
+      pass: process.env.MY_EMAIL_PASSWORD,
     },
   });
   transporter

@@ -8,7 +8,7 @@ import {
 } from './errormiddleware';
 import { requestLogger } from './middleware';
 import { router } from './router';
-import { PORT, CORS_OPTIONS } from './app.const';
+import { PORT, CORS_OPTIONS, HOST } from './app.const';
 import { ConnectOptions } from 'mongoose';
 
 const app = express();
@@ -18,12 +18,12 @@ app.use(requestLogger);
 app.use(errorLogger);
 app.use(errorResponder);
 app.use(invalidPathHandler);
-app.listen(PORT, () => {
-  console.log(`Server listening at http://localhost:${PORT}`);
+app.listen(PORT as number, HOST, () => {
+  console.log(`Server listening at ${HOST}:${PORT}`);
 });
 
 mongoose.connect(
-  'mongodb+srv://harryliu:password1!@cluster0.txzecw2.mongodb.net/',
+  `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net/`,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
