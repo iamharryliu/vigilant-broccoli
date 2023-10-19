@@ -54,10 +54,10 @@ router.get(
     })
       .then(response => response.json())
       .then(json => {
-        if (!json.success) {
-          return res.status(200).json({ success: false });
-        }
-        return res.status(200).json({ success: true });
+        return res.status(200).json(json);
+      })
+      .catch(error => {
+        console.log(error);
       });
   },
 );
