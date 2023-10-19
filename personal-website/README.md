@@ -2,4 +2,4 @@
 
 ## References
 
-[Google Recapcha V3](https://dev.to/rodrigokamada/adding-the-google-recaptcha-v3-to-an-angular-application-kge)
+[Angular Google Recapcha V3](https://dev.to/rodrigokamada/adding-the-google-recaptcha-v3-to-an-angular-application-kge)

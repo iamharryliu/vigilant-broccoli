@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonService } from '@services/common.service';
 import { MessageRequest } from '@models/app.model';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
-import { mergeMap } from 'rxjs';
+import { mergeMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-contact',
@@ -42,7 +42,13 @@ export class ContactComponent {
   submitForm() {
     this.recaptchaV3Service
       .execute('sendMessage')
-      .pipe(mergeMap(() => this.sendMessage()))
+      .pipe(
+        mergeMap(token =>
+          this.commonService
+            .getRecaptchaV3Score(token)
+            .pipe(mergeMap(() => this.sendMessage())),
+        ),
+      )
       .subscribe();
   }
 

@@ -23,4 +23,10 @@ export class CommonService {
       messageRequest,
     );
   }
+
+  getRecaptchaV3Score(token: string) {
+    return this.http.get(
+      `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/recaptcha-v3-score/${token}`,
+    );
+  }
 }
