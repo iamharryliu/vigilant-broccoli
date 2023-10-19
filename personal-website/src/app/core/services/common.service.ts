@@ -8,7 +8,7 @@ import { MessageRequest } from '@models/app.model';
   providedIn: 'root',
 })
 export class CommonService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   subscribeToNewsletter(email: string): Observable<any> {
     return this.http.post<any>(

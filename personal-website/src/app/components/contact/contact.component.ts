@@ -12,7 +12,7 @@ export class ContactComponent {
   constructor(
     private commonService: CommonService,
     private recaptchaV3Service: ReCaptchaV3Service,
-  ) { }
+  ) {}
 
   LINKS = [
     {
@@ -47,13 +47,15 @@ export class ContactComponent {
         message: '',
       };
     });
-  };
+  }
 
   sendMessage() {
     return this.recaptchaV3Service
       .execute('sendMessage')
       .pipe(
-        mergeMap(token => this.commonService.sendMessage({ ...this.formData, token: token })))
+        mergeMap(token =>
+          this.commonService.sendMessage({ ...this.formData, token: token }),
+        ),
+      );
   }
 }
-
