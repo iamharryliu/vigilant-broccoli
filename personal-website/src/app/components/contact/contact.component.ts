@@ -1,13 +1,18 @@
 import { Component } from '@angular/core';
 import { CommonService } from '@services/common.service';
 import { MessageRequest } from '@models/app.model';
+import { ReCaptchaV3Service } from 'ng-recaptcha';
+import { mergeMap } from 'rxjs';
 
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
 })
 export class ContactComponent {
-  constructor(private commonService: CommonService) {}
+  constructor(
+    private commonService: CommonService,
+    private recaptchaV3Service: ReCaptchaV3Service,
+  ) {}
 
   LINKS = [
     {
@@ -35,12 +40,13 @@ export class ContactComponent {
   };
 
   submitForm() {
-    this.commonService.sendMessage(this.formData).subscribe(() => {
-      this.formData = {
-        name: '',
-        email: '',
-        message: '',
-      };
-    });
+    this.recaptchaV3Service
+      .execute('sendMessage')
+      .pipe(mergeMap(() => this.sendMessage()))
+      .subscribe();
+  }
+
+  sendMessage() {
+    return this.commonService.sendMessage(this.formData);
   }
 }
