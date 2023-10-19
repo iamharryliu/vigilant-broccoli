@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ContactComponent } from '@components/contact/contact.component';
 import { CommonService } from '@services/common.service';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
-import { ENVIRONMENT } from 'src/environment/environment';
+import { ENVIRONMENT } from 'src/environments/environment';
 
 @NgModule({
   declarations: [ContactComponent],
