@@ -46,7 +46,7 @@ export class ContactComponent {
         mergeMap(token =>
           this.commonService.getRecaptchaV3Score(token).pipe(
             mergeMap(res => {
-              if (res.success) {
+              if (res.score > 0.3) {
                 return this.sendMessage();
               }
               this.formData = {
