@@ -4,7 +4,7 @@ import nodemailer from 'nodemailer';
 import { EmailSubscription, CORS_OPTIONS } from './app.const';
 
 export const router = express.Router();
-router.use(express.json({ limit: 1000 }));
+router.use(express.json({ limit: 5000 }));
 
 router.post('/email-alerts', cors(CORS_OPTIONS), async (req, res) => {
   try {
