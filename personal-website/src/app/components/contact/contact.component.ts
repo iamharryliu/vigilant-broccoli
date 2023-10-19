@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonService } from '@services/common.service';
-import { MessageRequest } from '@models/app.model';
+import { MessageForm } from '@models/app.model';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
-import { EMPTY, mergeMap, tap } from 'rxjs';
+import { EMPTY, mergeMap } from 'rxjs';
 
 @Component({
   selector: 'app-contact',
@@ -12,7 +12,7 @@ export class ContactComponent {
   constructor(
     private commonService: CommonService,
     private recaptchaV3Service: ReCaptchaV3Service,
-  ) {}
+  ) { }
 
   LINKS = [
     {
@@ -33,41 +33,27 @@ export class ContactComponent {
     },
   ];
 
-  formData: MessageRequest = {
+  formData: MessageForm = {
     name: '',
     email: '',
     message: '',
   };
 
   submitForm() {
-    this.recaptchaV3Service
-      .execute('sendMessage')
-      .pipe(
-        mergeMap(token =>
-          this.commonService.getRecaptchaV3Score(token).pipe(
-            mergeMap(res => {
-              if (res.score > 0.3) {
-                return this.sendMessage();
-              }
-              this.formData = {
-                name: '',
-                email: '',
-                message: '',
-              };
-              return EMPTY;
-            }),
-          ),
-        ),
-      )
-      .subscribe();
-  }
+    this.sendMessage().subscribe(() => {
+      this.formData = {
+        name: '',
+        email: '',
+        message: '',
+      };
+    });
+  };
 
   sendMessage() {
-    this.formData = {
-      name: '',
-      email: '',
-      message: '',
-    };
-    return this.commonService.sendMessage(this.formData);
+    return this.recaptchaV3Service
+      .execute('sendMessage')
+      .pipe(
+        mergeMap(token => this.commonService.sendMessage({ ...this.formData, token: token })))
   }
 }
+

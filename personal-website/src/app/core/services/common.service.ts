@@ -8,7 +8,7 @@ import { MessageRequest } from '@models/app.model';
   providedIn: 'root',
 })
 export class CommonService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   subscribeToNewsletter(email: string): Observable<any> {
     return this.http.post<any>(
@@ -21,12 +21,6 @@ export class CommonService {
     return this.http.post<any>(
       `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/send-message`,
       messageRequest,
-    );
-  }
-
-  getRecaptchaV3Score(token: string) {
-    return this.http.get<any>(
-      `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/recaptcha-v3-score/${token}`,
     );
   }
 }

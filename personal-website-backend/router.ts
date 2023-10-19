@@ -4,7 +4,7 @@ import nodemailer from 'nodemailer';
 import { EmailSubscription, CORS_OPTIONS } from './app.const';
 
 export const router = express.Router();
-router.use(express.json({ limit: 100 }));
+router.use(express.json({ limit: 1000 }));
 
 router.post('/email-alerts', cors(CORS_OPTIONS), async (req, res) => {
   try {
@@ -22,44 +22,40 @@ router.post('/email-alerts', cors(CORS_OPTIONS), async (req, res) => {
 });
 
 router.post('/send-message', cors(CORS_OPTIONS), async (req, res) => {
-  const { name, email, message } = req.body;
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.MY_EMAIL,
-      pass: process.env.MY_EMAIL_PASSWORD,
-    },
-  });
-  transporter
-    .sendMail({
-      from: `'${name}' <youremail@gmail.com>`,
-      to: process.env.MY_EMAIL,
-      subject: 'Message from personal website.',
-      text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+  const { token, name, email, message } = req.body;
+  fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `secret=${process.env.RECAPTCHA_V3_SECRET_KEY}&response=${token}`,
+  })
+    .then(response => response.json())
+    .then(json => {
+      if (json.score > 0.3) {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.MY_EMAIL,
+            pass: process.env.MY_EMAIL_PASSWORD,
+          },
+        });
+        transporter
+          .sendMail({
+            from: `'${name}' <youremail@gmail.com>`,
+            to: process.env.MY_EMAIL,
+            subject: 'Message from personal website.',
+            text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+          })
+          .then(_ => {
+            return res.status(200).json({ success: true });
+          })
+          .catch(console.error);
+      } else {
+        return res.status(200).json({ success: false });
+      }
     })
-    .then(_ => {
-      return res.status(200).json({ message: 'Message sent successfully.' });
-    })
-    .catch(console.error);
+    .catch(error => {
+      console.log(error);
+    });
 });
-
-router.get(
-  '/recaptcha-v3-score/:token',
-  cors(CORS_OPTIONS),
-  async (req, res) => {
-    fetch(`https://www.google.com/recaptcha/api/siteverify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${process.env.RECAPTCHA_V3_SECRET_KEY}&response=${req.params.token}`,
-    })
-      .then(response => response.json())
-      .then(json => {
-        return res.status(200).json(json);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  },
-);
 
 module.exports = { router };
