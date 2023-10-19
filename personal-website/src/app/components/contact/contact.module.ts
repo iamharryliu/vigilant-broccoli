@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ContactComponent } from '@components/contact/contact.component';
 import { CommonService } from '@services/common.service';
@@ -17,6 +17,11 @@ import { ENVIRONMENT } from 'src/environments/environment';
       useValue: ENVIRONMENT.RECAPTCHA_V3_SITE_KEY,
     },
   ],
-  imports: [CommonModule, TranslateModule, FormsModule, RecaptchaV3Module],
+  imports: [
+    CommonModule,
+    TranslateModule,
+    ReactiveFormsModule,
+    RecaptchaV3Module,
+  ],
 })
 export class ContactModule {}
