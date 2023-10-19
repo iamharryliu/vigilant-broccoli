@@ -38,9 +38,28 @@ router.post('/send-message', cors(CORS_OPTIONS), async (req, res) => {
       text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
     })
     .then(_ => {
-      return res.status(200).json({ message: 'Email sent successfully.' });
+      return res.status(200).json({ message: 'Message sent successfully.' });
     })
     .catch(console.error);
 });
+
+router.get(
+  '/recaptcha-v3-score/:token',
+  cors(CORS_OPTIONS),
+  async (req, res) => {
+    fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${process.env.RECAPTCHA_V3_SECRET_KEY}&response=${req.params.token}`,
+    })
+      .then(response => response.json())
+      .then(json => {
+        if (!json.success) {
+          return res.status(200).json({ success: false });
+        }
+        return res.status(200).json({ success: true });
+      });
+  },
+);
 
 module.exports = { router };

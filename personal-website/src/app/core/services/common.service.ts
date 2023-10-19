@@ -11,21 +11,21 @@ export class CommonService {
   constructor(private http: HttpClient) {}
 
   subscribeToNewsletter(email: string): Observable<any> {
-    return this.http.post(
+    return this.http.post<any>(
       `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/email-alerts`,
       { email: email },
     );
   }
 
   sendMessage(messageRequest: MessageRequest): Observable<any> {
-    return this.http.post(
+    return this.http.post<any>(
       `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/send-message`,
       messageRequest,
     );
   }
 
   getRecaptchaV3Score(token: string) {
-    return this.http.get(
+    return this.http.get<any>(
       `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/recaptcha-v3-score/${token}`,
     );
   }
