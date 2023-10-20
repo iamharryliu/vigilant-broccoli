@@ -1,5 +1,7 @@
+import { logger } from './loggers';
+
 export const errorLogger = (err, request, response, next) => {
-  console.log(`Error: ${err.message}`);
+  logger.error(`Error: ${err.message}`);
   next(err);
 };
 

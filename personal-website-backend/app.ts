@@ -10,16 +10,17 @@ import { requestLogger } from './middleware';
 import { router } from './router';
 import { PORT, CORS_OPTIONS, HOST } from './app.const';
 import { ConnectOptions } from 'mongoose';
+import { logger } from './loggers';
 
 const app = express();
 app.options('*', cors(CORS_OPTIONS));
-app.use(router);
 app.use(requestLogger);
+app.use(router);
 app.use(errorLogger);
 app.use(errorResponder);
 app.use(invalidPathHandler);
 app.listen(PORT as number, HOST, () => {
-  console.log(`Server listening at ${HOST}:${PORT}`);
+  logger.info(`Server listening at ${HOST}:${PORT}`);
 });
 
 mongoose.connect(
@@ -35,5 +36,5 @@ db.on('error', error => {
   console.error(`MongoDB connection error: ${error}`);
 });
 db.once('open', () => {
-  console.log('Connected to MongoDB');
+  logger.info('Connected to MongoDB');
 });

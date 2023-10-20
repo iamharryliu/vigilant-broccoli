@@ -1,5 +1,7 @@
+import { logger } from './loggers';
+
 export const requestLogger = (request, response, next) => {
-  console.log('Request Logged');
+  logger.info('Request Logged');
   next();
 };
 
