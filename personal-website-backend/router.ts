@@ -60,7 +60,6 @@ router.post(
             .then(_ => {
               return res.status(200).json({ success: true });
             });
-          logger.error(`Send email request has failed.`);
         } else {
           logger.error(`reCAPTCHA score of ${score} is too low.`);
           return res.status(200).json({ success: false });
