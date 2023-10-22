@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ContactModule } from '../contact/contact.module';
+import { ContactModule } from '@components/contact/contact.module';
 
 @Component({
   standalone: true,

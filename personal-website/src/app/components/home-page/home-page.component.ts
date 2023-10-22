@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { ContactModule } from '../contact/contact.module';
+import { ContactModule } from '@components/contact/contact.module';
 
 @Component({
   standalone: true,

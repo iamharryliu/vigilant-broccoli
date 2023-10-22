@@ -8,6 +8,12 @@
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [".*"]
+          }
+        ],
         "@angular-eslint/directive-selector": [
           "error",
           {
