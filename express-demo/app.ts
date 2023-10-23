@@ -4,10 +4,10 @@ import {
   errorLogger,
   errorResponder,
   invalidPathHandler,
-} from './errormiddleware';
-import { requestLogger } from './middleware';
-import { router } from './router';
-import { CORS_OPTIONS, PORT } from './app.const';
+} from './src/middlewares/errormiddleware';
+import { requestLogger } from './src/middlewares/middleware';
+import { router } from './src/routes/router';
+import { CORS_OPTIONS, PORT } from './src/configs/app.const';
 
 const app = express();
 app.options('*', cors(CORS_OPTIONS));

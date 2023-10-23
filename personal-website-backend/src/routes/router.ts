@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
-import { EmailSubscription, CORS_OPTIONS } from './app.const';
-import { requireJsonContent } from './middleware';
-import { logger } from './loggers';
+import { EmailSubscription, CORS_OPTIONS } from '../configs/app.const';
+import { requireJsonContent } from '../middlewares/middleware';
+import { logger } from '../middlewares/loggers';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));

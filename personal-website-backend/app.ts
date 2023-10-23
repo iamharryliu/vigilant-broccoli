@@ -5,12 +5,12 @@ import {
   errorLogger,
   errorResponder,
   invalidPathHandler,
-} from './errormiddleware';
-import { requestLogger } from './middleware';
-import { router } from './router';
-import { PORT, CORS_OPTIONS, HOST } from './app.const';
+} from './src/middlewares/errormiddleware';
+import { requestLogger } from './src/middlewares/middleware';
+import { router } from './src/routes/router';
+import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
 import { ConnectOptions } from 'mongoose';
-import { logger } from './loggers';
+import { logger } from './src/middlewares/loggers';
 
 const app = express();
 app.options('*', cors(CORS_OPTIONS));

@@ -1,6 +1,6 @@
 import express from 'express';
-import { ResponseError } from './error.model';
-import { requireJsonContent } from './middleware';
+import { ResponseError } from '../models/error.model';
+import { requireJsonContent } from '../middlewares/middleware';
 
 export const router = express.Router();
 

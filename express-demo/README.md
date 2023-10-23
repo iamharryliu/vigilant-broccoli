@@ -1,10 +1,17 @@
 # Demo Express Server
 
+## Commands
+
+```
+npm i
+npm run serve
+npm run test
+```
+
 ## References
 
-This express server was written following this [getting started tutorial](https://reflectoring.io/getting-started-with-express/).
-
-How to deal with [CORS](https://expressjs.com/en/resources/middleware/cors.html).
+[Express Tutorial](https://reflectoring.io/getting-started-with-express/)(https://reflectoring.io/getting-started-with-express/).
+[CORS](https://expressjs.com/en/resources/middleware/cors.html)
 
 ## Common Status Codes
 
