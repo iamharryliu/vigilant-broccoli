@@ -8,6 +8,10 @@ import { logger } from '../middlewares/loggers';
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
 
+router.get('/', cors(CORS_OPTIONS), async (_, res) => {
+  res.send('Response for GET endpoint request');
+});
+
 router.post(
   '/email-alerts',
   cors(CORS_OPTIONS),
