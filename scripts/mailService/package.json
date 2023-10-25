@@ -1,15 +1,15 @@
 {
-  "name": "messagesubscribers",
+  "name": "mailservice",
   "version": "1.0.0",
   "description": "",
-  "main": "message_subscribers.js",
+  "main": "mailService.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "mongodb": "^6.2.0"
-  },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  }
 }

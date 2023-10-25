@@ -1,20 +1,17 @@
-const { MongoClient } = require('mongodb');
-const nodemailer = require('nodemailer');
+import { MongoClient } from 'mongodb';
+import MailService from '../../../scripts/mailService/mailService.js';
 
 const uri = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net/`;
 const client = new MongoClient(uri);
 
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.MY_EMAIL,
-    pass: process.env.MY_EMAIL_PASSWORD,
-  },
-});
+const mailService = new MailService(
+  'gmail',
+  process.env.MY_EMAIL,
+  process.env.MY_EMAIL_PASSWORD,
+);
 
 async function sendNewsletter() {
-  emails = await getEmails();
-  sendEmails(emails);
+  sendEmails(await getEmails());
 }
 sendNewsletter().catch(console.dir);
 
@@ -28,8 +25,7 @@ async function getEmails() {
       .find({})
       .toArray();
 
-    emails = emailSubscriptions.map(subscription => subscription.email);
-    return emails;
+    return emailSubscriptions.map(subscription => subscription.email);
   } finally {
     await client.close();
   }
@@ -37,24 +33,6 @@ async function getEmails() {
 
 function sendEmails(emails) {
   for (let email of emails) {
-    sendEmail(email);
+    mailService.sendEmail(email);
   }
-}
-
-function sendEmail(email) {
-  const subject = 'subject';
-  const message = 'message';
-  const mailOptions = {
-    from: process.env.MY_EMAIL,
-    to: email,
-    subject: subject,
-    text: message,
-  };
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
-  });
 }
