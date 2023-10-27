@@ -16,16 +16,16 @@ export class FooterComponent {
       HEADER: 'FOOTER.SITE_MAP.HEADER',
       LINKS: [
         {
-          ROUTER_LINK: APP_PATH.STORE,
-          TEXT: 'FOOTER.SITE_MAP.STORE',
-        },
-        {
           ROUTER_LINK: APP_PATH.ABOUT,
           TEXT: 'FOOTER.SITE_MAP.ABOUT',
         },
         {
           ROUTER_LINK: APP_PATH.CONTACT,
           TEXT: 'FOOTER.SITE_MAP.CONTACT',
+        },
+        {
+          ROUTER_LINK: APP_PATH.VIBECHECK_LITE,
+          TEXT: 'FOOTER.SITE_MAP.VIBECHECK_LITE',
         },
       ],
     },

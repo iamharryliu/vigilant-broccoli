@@ -1,8 +1,8 @@
 import { Route, Routes } from '@angular/router';
 import { AboutPageComponent } from '@components/about-page/about-page.component';
 import { HomePageComponent } from '@components/home-page/home-page.component';
-import { StorePageComponent } from '@components/store-page/store-page.component';
 import { ContactPageComponent } from '@components/contact-page/contact-page.component';
+import { VibeCheckLiteComponent } from '@components/vibecheck-lite/vibecheck-lite.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -22,22 +22,28 @@ export const CONTACT_ROUTE: Route = {
   component: ContactPageComponent,
 };
 
-export const STORE_ROUTE: Route = {
-  path: 'store',
-  data: { title: ' store' },
-  component: StorePageComponent,
+export const VIBECHECK_LITE_ROUTE: Route = {
+  path: 'vibecheck-lite',
+  data: { title: ' vibecheck-lite' },
+  component: VibeCheckLiteComponent,
+};
+
+export const PROJECT_ROUTE: Route = {
+  path: 'projects',
+  data: { title: ' projects' },
+  children: [VIBECHECK_LITE_ROUTE],
 };
 
 export const APP_PATH = {
   INDEX: '',
   ABOUT: `/${ABOUT_ROUTE.path}`,
   CONTACT: `/${CONTACT_ROUTE.path}`,
-  STORE: `/${STORE_ROUTE.path}`,
+  VIBECHECK_LITE: `/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}`,
 };
 
 export const APP_ROUTES: Routes = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
   CONTACT_ROUTE,
-  STORE_ROUTE,
+  PROJECT_ROUTE,
 ];

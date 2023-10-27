@@ -10,9 +10,9 @@ import { map } from 'rxjs';
   imports: [CommonModule],
 })
 export class VibeCheckLiteComponent {
-  test!: any;
+  recommendation$!: any;
   constructor(public commonService: CommonService) {
-    this.test = commonService
+    this.recommendation$ = commonService
       .getOutfitRecommendation()
       .pipe(map(res => res.data));
   }

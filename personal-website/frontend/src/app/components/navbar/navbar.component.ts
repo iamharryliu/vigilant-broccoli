@@ -15,8 +15,8 @@ export class NavbarComponent {
     INDEX: APP_PATH.INDEX,
     LINKS: [
       {
-        ROUTER_LINK: APP_PATH.STORE,
-        TEXT: 'NAVBAR.SECONDHAND_STORE',
+        ROUTER_LINK: APP_PATH.VIBECHECK_LITE,
+        TEXT: 'NAVBAR.VIBECHECK_LITE',
       },
       {
         ROUTER_LINK: APP_PATH.ABOUT,
