@@ -1,10 +1,11 @@
 <div class="w-2/3 mx-auto">
-  <div  *ngIf="recommendation$ | async as data else loading">
+  <h1 class="mb-4 text-2xl font-bold text-center">Vibecheck Lite</h1>
+  <div class="text-sm" *ngIf="recommendation$ | async as data else loading">
     <p [innerText]="data"></p>
   </div>
 
   <ng-template #loading>
-    <div class="pt-48 pb-48">
+    <div class="text-sm pt-48 pb-48">
       <p class="text-center">Loading Vibecheck Lite...</p>
     </div>
   </ng-template>
