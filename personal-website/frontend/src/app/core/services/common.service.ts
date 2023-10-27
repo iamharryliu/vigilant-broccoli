@@ -23,4 +23,12 @@ export class CommonService {
       messageRequest,
     );
   }
+
+  getOutfitRecommendation(): Observable<any> {
+    return this.http.get<any>(
+      `${
+        ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL
+      }/get-outfit-recommendation?lat=${43}&lon=${-79}`,
+    );
+  }
 }

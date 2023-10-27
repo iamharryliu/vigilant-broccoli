@@ -103,7 +103,7 @@ async function getOutfitRecommendation(coords) {
   let recommendation = '';
   try {
     const requestData = await getWeatherDataForOutfitRecommendation(coords);
-    const requestString = `Can you recommend what to wear today with the following json data. ${JSON.stringify(
+    const requestString = `Can you recommend what to wear today with the following json data. Heads up, the time is in GMT, convert it to EST. ${JSON.stringify(
       requestData,
     )}. Convert and display temperature in celsius instead of Kelvin for the answer.`;
     const completion = await openai.chat.completions.create({

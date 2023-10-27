@@ -41,7 +41,8 @@
     "HOME": "Home",
     "ABOUT": "About",
     "CONTACT": "Contact",
-    "SECONDHAND_STORE": "Store"
+    "SECONDHAND_STORE": "Store",
+    "VIBECHECK_LITE": "Vibecheck Lite"
   },
   "LINKS": {
     "OTHER": {
@@ -77,7 +78,7 @@
       "HEADER": "Site Map",
       "ABOUT": "About",
       "CONTACT": "Contact",
-      "STORE": "Store"
+      "VIBECHECK_LITE": "Vibecheck Lite"
     }
   }
 }
