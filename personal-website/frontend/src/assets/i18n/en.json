@@ -4,6 +4,10 @@
       "HEADER": "Software",
       "BODY": "I'm a self taught software developer who managed to find his way into the industry. I've worked on some pretty badass projects so far and there's more to come. I genuinely love coding and would even go as far as considering it more of a hobby than just a job to me. Being a software developer means more to me than just the code. It's design, it's elegant, it's pretty."
     },
+    "VIBECHECK_LITE": {
+      "HEADER": "VibeCheck Lite",
+      "BODY": "VibeCheck Lite is an lifestyle tool to assist the user in deciding what to wear for the day. Instead of the traditional check the weather app and guessing what's the most appropriate clothes to wear you can visit VibeCheck Lite. We got you."
+    },
     "SECONDHAND_CARD": {
       "HEADER": "Secondhand Lifestyle",
       "BODY": "I'm a secondhand shopping addict but at the same time a minimalist which is quite the conundrum. To solve this problem I run a secondhand Instagram store and hold occasional clothing markets to buy, sell, trade, and give away clothes that are often accompanied by a partayyy. "
@@ -69,6 +73,10 @@
       "SKATE_IG": {
         "TEXT": "Skate Instagram",
         "URL": "https://www.instagram.com/torontocityskate/"
+      },
+      "VIBECHECK_LITE": {
+        "TEXT": "VibeCheck Lite",
+        "URL": "https://harryliu.design/projects/vibecheck-lite"
       }
     }
   },
