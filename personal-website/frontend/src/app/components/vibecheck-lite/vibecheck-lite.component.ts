@@ -9,7 +9,7 @@ import { map } from 'rxjs';
   templateUrl: './vibecheck-lite.component.html',
   imports: [CommonModule],
 })
-export class VibeCheckLiteComponent {
+export class VibecheckLiteComponent {
   recommendation$!: any;
   constructor(public commonService: CommonService) {
     this.recommendation$ = commonService

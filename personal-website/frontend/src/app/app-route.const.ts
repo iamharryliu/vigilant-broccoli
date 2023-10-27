@@ -2,7 +2,7 @@ import { Route, Routes } from '@angular/router';
 import { AboutPageComponent } from '@components/about-page/about-page.component';
 import { HomePageComponent } from '@components/home-page/home-page.component';
 import { ContactPageComponent } from '@components/contact-page/contact-page.component';
-import { VibeCheckLiteComponent } from '@components/vibecheck-lite/vibecheck-lite.component';
+import { VibecheckLiteComponent } from '@components/vibecheck-lite/vibecheck-lite.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -25,7 +25,7 @@ export const CONTACT_ROUTE: Route = {
 export const VIBECHECK_LITE_ROUTE: Route = {
   path: 'vibecheck-lite',
   data: { title: ' vibecheck-lite' },
-  component: VibeCheckLiteComponent,
+  component: VibecheckLiteComponent,
 };
 
 export const PROJECT_ROUTE: Route = {
