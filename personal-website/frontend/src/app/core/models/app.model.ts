@@ -13,3 +13,8 @@ export interface MessageRequest extends RecaptchaRequest, MessageForm {}
 export interface NewsletterSubscriptionRequest {
   email: string;
 }
+
+export interface Location {
+  latitude: number;
+  longitude: number;
+}

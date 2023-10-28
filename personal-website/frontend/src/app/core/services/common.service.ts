@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment';
-import { MessageRequest } from '@models/app.model';
+import { Location, MessageRequest } from '@models/app.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,11 +24,9 @@ export class CommonService {
     );
   }
 
-  getOutfitRecommendation(): Observable<any> {
+  getOutfitRecommendation(location: Location): Observable<any> {
     return this.http.get<any>(
-      `${
-        ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL
-      }/get-outfit-recommendation?lat=${43}&lon=${-79}`,
+      `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/get-outfit-recommendation?lat=${location.latitude}&lon=${location.longitude}`,
     );
   }
 }
