@@ -87,5 +87,12 @@
       "CONTACT": "Contact",
       "VIBECHECK_LITE": "Vibecheck Lite"
     }
+  },
+  "VIBECHECK_LITE": {
+    "HEADER": "Vibecheck Lite",
+    "LOADING": {
+      "HEADER": "Loading",
+      "MESSAGE": "The app is currently loading. Please enable location access if you have not so we can use your locations weather to determine an appropriate outfit."
+    }
   }
 }

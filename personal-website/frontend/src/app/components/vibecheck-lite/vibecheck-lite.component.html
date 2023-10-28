@@ -1,14 +1,19 @@
 <div class="w-11/12 lg:w-2/3 mx-auto">
-  <h1 class="mb-4 text-2xl font-bold text-center">Vibecheck Lite</h1>
+  <h1 class="mb-4 text-2xl font-bold text-center">
+    {{ 'VIBECHECK_LITE.HEADER' | translate }}
+  </h1>
   <div class="text-sm" *ngIf="recommendation$ | async as data; else loading">
     <p [innerText]="data"></p>
   </div>
 
   <ng-template #loading>
     <div class="text-sm pt-48 pb-48">
-      <h2 class="text-center text-lg">Loading</h2>
-      <p class="text-center">Please enable location access if you have not so we can use your locations weather to determine an appropriate outfit.</p>
-
+      <h2 class="text-center text-lg">
+        {{ 'VIBECHECK_LITE.LOADING.HEADER' | translate }}
+      </h2>
+      <p class="text-center">
+        {{ 'VIBECHECK_LITE.LOADING.MESSAGE' | translate }}
+      </p>
     </div>
   </ng-template>
 </div>
