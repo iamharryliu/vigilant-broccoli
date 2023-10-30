@@ -19,7 +19,7 @@ export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
 
 router.get('/', cors(CORS_OPTIONS), async (_, res) => {
-  res.send('Response for GET endpoint request');
+  return res.send('Response for GET endpoint request');
 });
 
 router.post(
@@ -32,12 +32,22 @@ router.post(
       if (!email) {
         return res.status(400).json({ error: 'Email is required.' });
       }
+      const isSubscribed = !!(await EmailSubscription.findOne({
+        email: email,
+      }));
+      if (isSubscribed) {
+        return res
+          .status(201)
+          .json({ message: 'Email alert saved successfully.' });
+      }
       const newEmailAlert = new EmailSubscription({ email });
       await newEmailAlert.save();
-      res.status(201).json({ message: 'Email alert saved successfully.' });
+      return res
+        .status(201)
+        .json({ message: 'Email alert saved successfully.' });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   },
 );
@@ -124,7 +134,7 @@ router.get(
     const LAT = req.query.lat;
     const LON = req.query.lon;
     const recommendation = await getOutfitRecommendation({ LAT, LON });
-    res.status(200).json({ success: true, data: recommendation });
+    return res.status(200).json({ success: true, data: recommendation });
   },
 );
 
