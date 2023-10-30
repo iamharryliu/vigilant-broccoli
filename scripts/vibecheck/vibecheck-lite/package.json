@@ -1,0 +1,15 @@
+{
+  "name": "vibecheck-lite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "vibecheck-lite-mail.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "openai": "^4.14.2"
+  }
+}
