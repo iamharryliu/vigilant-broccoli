@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonService } from '@services/common.service';
 import { MessageForm } from '@models/app.model';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
-import { mergeMap } from 'rxjs';
+import { Subject, exhaustMap } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -10,14 +10,33 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   templateUrl: './contact.component.html',
 })
 export class ContactComponent {
+  submit$: Subject<boolean> = new Subject();
+
   constructor(
     private commonService: CommonService,
     private recaptchaV3Service: ReCaptchaV3Service,
-  ) {}
+  ) {
+    this.submit$
+      .pipe(
+        exhaustMap(() =>
+          this.recaptchaV3Service.execute('sendMessage').pipe(
+            exhaustMap(token =>
+              this.commonService.sendMessage({
+                ...(this.form.value as MessageForm),
+                token: token,
+              }),
+            ),
+          ),
+        ),
+      )
+      .subscribe(_ => {
+        this.form.reset();
+      });
+  }
 
   form = new FormGroup({
     name: new FormControl('', Validators.required),
-    email: new FormControl('', Validators.email),
+    email: new FormControl('', [Validators.required, Validators.email]),
     message: new FormControl('', Validators.required),
   });
 
@@ -47,19 +66,6 @@ export class ContactComponent {
   };
 
   submitForm() {
-    this.sendMessage().subscribe(() => {
-      this.form.reset();
-    });
-  }
-
-  sendMessage() {
-    return this.recaptchaV3Service.execute('sendMessage').pipe(
-      mergeMap(token =>
-        this.commonService.sendMessage({
-          ...(this.form.value as MessageForm),
-          token: token,
-        }),
-      ),
-    );
+    this.submit$.next(true);
   }
 }

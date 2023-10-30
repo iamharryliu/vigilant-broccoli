@@ -17,7 +17,13 @@
       />
       <button
         type="submit"
+        [disabled]="form.invalid"
         class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 w-1/4"
+        [ngClass]="{
+          'bg-gray-300': form.invalid,
+          'bg-black': form.valid,
+          'hover:bg-blue-600': form.valid
+        }"
       >
         {{ 'EMAIL_SUBSCRIPTION_FORM.BUTTON_TEXT' | translate }}
       </button>
