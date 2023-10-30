@@ -8,6 +8,10 @@ export interface MessageForm {
   message: string;
 }
 
+export interface EmailSubscriptionRequest {
+  email: string;
+}
+
 export interface MessageRequest extends RecaptchaRequest, MessageForm {}
 
 export interface NewsletterSubscriptionRequest {

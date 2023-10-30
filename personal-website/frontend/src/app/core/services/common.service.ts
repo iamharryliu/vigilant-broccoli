@@ -2,7 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment';
-import { Location, MessageRequest } from '@models/app.model';
+import {
+  EmailSubscriptionRequest,
+  Location,
+  MessageRequest,
+} from '@models/app.model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,17 +14,17 @@ import { Location, MessageRequest } from '@models/app.model';
 export class CommonService {
   constructor(private http: HttpClient) {}
 
-  subscribeToNewsletter(email: string): Observable<any> {
+  subscribeToNewsletter(request: EmailSubscriptionRequest): Observable<any> {
     return this.http.post<any>(
       `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/email-alerts`,
-      { email: email },
+      request,
     );
   }
 
-  sendMessage(messageRequest: MessageRequest): Observable<any> {
+  sendMessage(request: MessageRequest): Observable<any> {
     return this.http.post<any>(
       `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/send-message`,
-      messageRequest,
+      request,
     );
   }
 

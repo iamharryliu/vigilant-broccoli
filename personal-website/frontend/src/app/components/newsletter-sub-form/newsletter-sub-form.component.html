@@ -1,16 +1,16 @@
 <div
   class="newsletter-subscription max-w-xl mx-auto bg-white shadow-none rounded p-8"
 >
-  <form (ngSubmit)="subscribe()">
+  <form [formGroup]="form" (ngSubmit)="submit()">
     <div class="flex items-center mb-4">
-      <label for="" class="mr-2">
+      <label for="email" class="mr-2">
         {{ 'EMAIL_SUBSCRIPTION_FORM.LABEL' | translate }}
       </label>
       <input
         type="email"
         id="email"
         name="email"
-        [(ngModel)]="form.email"
+        formControlName="email"
         required
         class="border rounded py-2 px-3 w-3/4 focus:outline-none focus:border-blue-400 mr-2"
         [placeholder]="'EMAIL_SUBSCRIPTION_FORM.PLACEHOLDER' | translate"
