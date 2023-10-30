@@ -38,7 +38,7 @@ router.post(
       if (isSubscribed) {
         return res
           .status(201)
-          .json({ message: 'Email alert saved successfully.' });
+          .json({ message: 'This email is already subscribed.' });
       }
       const newEmailAlert = new EmailSubscription({ email });
       await newEmailAlert.save();
