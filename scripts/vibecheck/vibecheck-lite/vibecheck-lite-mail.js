@@ -33,7 +33,7 @@ async function getOutfitRecommendation() {
     const requestData = await getWeatherDataForOutfitRecommendation();
     const requestString = `Can you recommend what to wear today with the following json data. Please use the "dt_txt" parameter, it is in GMT, please convert it to EST for display. Please use the "temp" parameter, it is in degrees Kelvin (K), please convert it to degrees Celsius (C).${JSON.stringify(
       requestData,
-    )}. Convert the date and time from GMT to EST for the answer. Convert the temperature to celsius instead of Kelvin for the answer.`;
+    )}. Convert the date and time from GMT to EST for the answer. Convert the temperature to celsius instead of Kelvin for the answer. Reply using the following template: \nFor {time and date in EST}:\n- Temperature: {temperature in celsius}\n- Weather: {weather}\n- Recommendation: {recommended outfit}.`;
     const completion = await openai.chat.completions.create({
       messages: [{ role: 'system', content: requestString }],
       model: 'gpt-3.5-turbo',
