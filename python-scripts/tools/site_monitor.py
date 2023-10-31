@@ -1,5 +1,5 @@
 from linode_api import LinodeAPI
-from mail_handler import MailHandler
+from tools.mail_handler import MailHandler
 import logging
 from pathlib import Path
 import requests
