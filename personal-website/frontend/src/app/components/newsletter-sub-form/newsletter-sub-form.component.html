@@ -3,7 +3,7 @@
 >
   <form [formGroup]="form" (ngSubmit)="submit()">
     <div class="flex items-center mb-4">
-      <label for="email" class="mr-2">
+      <label for="email" class="mr-2 text-sm">
         {{ 'EMAIL_SUBSCRIPTION_FORM.LABEL' | translate }}
       </label>
       <input
@@ -18,7 +18,7 @@
       <button
         type="submit"
         [disabled]="form.invalid"
-        class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 w-1/4"
+        class="text-white font-semibold px-4 py-2 rounded-lg w-1/4"
         [ngClass]="{
           'bg-gray-300': form.invalid,
           'bg-black': form.valid,
