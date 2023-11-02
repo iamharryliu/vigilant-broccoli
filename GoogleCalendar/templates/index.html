@@ -1,0 +1,24 @@
+{% extends 'layout.html' %} {% block content %}
+<h1>Google Calendar API</h1>
+<div class="row">
+  <div class="col-lg-6">
+    <h5>{{today.strftime('%Y-%m-%d')}}</h5>
+    <!-- <h5>{{today.strftime('%A, %B %d, %Y')}}</h5> -->
+    {% with pie_chart_data=day_data, chart_name='Day' %} {% include
+    'pie_chart.html' %} {% endwith %}
+  </div>
+  <div class="col-lg-6">
+    <h5>
+      {{monday.strftime('%Y-%m-%d')}} to
+      {{next_week_monday.strftime('%Y-%m-%d')}}
+    </h5>
+    <!-- <h5>{{monday.strftime('%A, %B %d, %Y')}} to {{next_week_monday.strftime('%A, %B %d, %Y')}}</h5> -->
+    {% with pie_chart_data=week_data, chart_name='Week' %} {% include
+    'pie_chart.html' %} {% endwith %}
+  </div>
+  <div class="col-lg-6">
+    <h5>How you're spending the next 4 weeks.</h5>
+    {% include 'column_chart.html' %}
+  </div>
+</div>
+{% endblock %}

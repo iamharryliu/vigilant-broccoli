@@ -1,0 +1,25 @@
+<script type="text/javascript">
+  google.charts.load('current', { 'packages': ['corechart'] });
+  google.charts.setOnLoadCallback(drawPieChart);
+
+  function drawPieChart() {
+
+      var data = google.visualization.arrayToDataTable({{ pie_chart_data | safe }});
+
+  var options = {
+      title: '{{chart_name}}',
+      pieHole: 0.1,
+  };
+
+  var chart = new google.visualization.PieChart(document.getElementById('piechart{{chart_name}}'));
+
+  chart.draw(data, options);
+
+  }
+
+  $(window).resize(function () {
+      drawPieChart();
+  });
+</script>
+
+<div id="piechart{{chart_name}}" style="height: 500px"></div>

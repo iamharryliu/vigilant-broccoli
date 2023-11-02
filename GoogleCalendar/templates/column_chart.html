@@ -1,0 +1,26 @@
+<script type="text/javascript">
+  google.charts.load('current', { 'packages': ['bar'] });
+  google.charts.setOnLoadCallback(drawColumnChart);
+
+  function drawColumnChart() {
+    var data = google.visualization.arrayToDataTable({{ column_chart| safe}});
+
+  var options = {
+    chart: {
+      title: 'Activity Hours',
+      subtitle: 'Planned hours for next four weeks.',
+    }
+  };
+
+  var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+
+  chart.draw(data, google.charts.Bar.convertOptions(options));
+  }
+
+
+  $(window).resize(function () {
+    drawColumnChart();
+  });
+</script>
+
+<div id="columnchart_material" style="height: 500px"></div>
