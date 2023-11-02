@@ -1,9 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { map, switchMap } from 'rxjs';
+import { Observable, map, switchMap } from 'rxjs';
 import { CommonService } from '@services/common.service';
 import { LocationService } from '@services/location.service';
 import { TranslateModule } from '@ngx-translate/core';
+
+interface VibecheckLiteResponse {
+  status: boolean;
+  data: string;
+}
 
 @Component({
   standalone: true,
@@ -13,7 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
   providers: [LocationService],
 })
 export class VibecheckLiteComponent {
-  recommendation$!: any;
+  recommendation$!: Observable<VibecheckLiteResponse>;
   constructor(
     public commonService: CommonService,
     private locationService: LocationService,
