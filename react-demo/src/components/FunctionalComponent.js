@@ -4,8 +4,8 @@ export const FunctionalComponent = props => {
   return (
     <div>
       <h1>Functional Component</h1>
-      <p>Props Data: {props.data}</p>
-      {props.children}
+      <div>Props Data: {props.data.value}</div>
+      <div>Data from parent: {props.children}</div>
     </div>
   );
 };
