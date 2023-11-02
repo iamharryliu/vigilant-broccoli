@@ -3,12 +3,19 @@ import { Component } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { ContactModule } from '@components/contact/contact.module';
 import { RouterModule } from '@angular/router';
+import { CardComponent } from '@components/card/card.component';
 
 @Component({
   standalone: true,
   selector: 'app-home-page',
   templateUrl: './home-page.component.html',
-  imports: [CommonModule, TranslateModule, ContactModule, RouterModule],
+  imports: [
+    CommonModule,
+    TranslateModule,
+    ContactModule,
+    RouterModule,
+    CardComponent,
+  ],
 })
 export class HomePageComponent {
   LINKS = [
