@@ -41,7 +41,6 @@ export class ClassComponent extends Component {
     return (
       <div>
         <h1>Class Component</h1>
-        {this.props.data.incrementValue}
         <div>Props Data: {data.value}</div>
         <div>Data from parent: {this.props.children}</div>
         <div>
