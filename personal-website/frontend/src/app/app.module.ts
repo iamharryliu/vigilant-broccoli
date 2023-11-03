@@ -15,6 +15,7 @@ import { NavbarComponent } from '@components/navbar/navbar.component';
 import { FooterComponent } from '@components/footer/footer.component';
 import { NewsLetterSubFormComponent } from '@app/components/newsletter-sub-form/newsletter-sub-form.component';
 import { CredentialsInterceptorService } from '@services/credentials-interceptor.service';
+import { ReturnTopButtonComponent } from '@components/return-top-button/return-top-button.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -37,6 +38,7 @@ export function createTranslateLoader(http: HttpClient) {
     NavbarComponent,
     FooterComponent,
     NewsLetterSubFormComponent,
+    ReturnTopButtonComponent,
   ],
   providers: [
     {
