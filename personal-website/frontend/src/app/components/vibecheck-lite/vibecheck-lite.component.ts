@@ -5,6 +5,7 @@ import { CommonService } from '@services/common.service';
 import { LocationService } from '@services/location.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { CardComponent } from '@components/card/card.component';
+import { SpinnerComponent } from '@components/spinner/spinner.component';
 
 interface VibecheckLiteResponse {
   status: boolean;
@@ -15,7 +16,7 @@ interface VibecheckLiteResponse {
   standalone: true,
   selector: 'app-vibecheck-lite',
   templateUrl: './vibecheck-lite.component.html',
-  imports: [CommonModule, TranslateModule, CardComponent],
+  imports: [CommonModule, TranslateModule, CardComponent, SpinnerComponent],
   providers: [LocationService],
 })
 export class VibecheckLiteComponent {

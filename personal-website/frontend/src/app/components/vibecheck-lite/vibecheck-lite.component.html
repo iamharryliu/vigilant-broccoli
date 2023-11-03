@@ -9,8 +9,10 @@
   <ng-template #loading>
     <div class="text-sm pt-48 pb-48">
       <div class="flex flex-col items-center justify-center mb-4">
-        <div class="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-blue-500"></div>
-        <h2 class="mt-4 text-lg font-semibold text-gray-700">{{ 'VIBECHECK_LITE.LOADING.HEADER' | translate }}</h2>
+        <app-spinner></app-spinner>
+        <h2 class="mt-4 text-lg font-semibold text-gray-700">
+          {{ 'VIBECHECK_LITE.LOADING.HEADER' | translate }}
+        </h2>
       </div>
       <p class="text-center mb-4">
         {{ 'VIBECHECK_LITE.LOADING.MESSAGE' | translate }}
