@@ -91,8 +91,8 @@
   "VIBECHECK_LITE": {
     "HEADER": "Vibecheck Lite",
     "LOADING": {
-      "HEADER": "Loading",
-      "MESSAGE": "The app is currently loading. Please enable location access if you have not so we can use your locations weather to determine an appropriate outfit."
+      "HEADER": "Loading...",
+      "MESSAGE": "Please enable location access. We will use your weather location to determine an appropriate outfit."
     }
   }
 }

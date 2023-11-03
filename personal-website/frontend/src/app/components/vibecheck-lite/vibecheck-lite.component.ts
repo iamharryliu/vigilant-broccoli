@@ -4,6 +4,7 @@ import { Observable, map, switchMap } from 'rxjs';
 import { CommonService } from '@services/common.service';
 import { LocationService } from '@services/location.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { CardComponent } from '@components/card/card.component';
 
 interface VibecheckLiteResponse {
   status: boolean;
@@ -14,7 +15,7 @@ interface VibecheckLiteResponse {
   standalone: true,
   selector: 'app-vibecheck-lite',
   templateUrl: './vibecheck-lite.component.html',
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, CardComponent],
   providers: [LocationService],
 })
 export class VibecheckLiteComponent {
