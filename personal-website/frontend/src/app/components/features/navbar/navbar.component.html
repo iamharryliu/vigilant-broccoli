@@ -7,28 +7,24 @@
     </div>
     <div class="hidden sm:block">
       <div class="ml-10 flex items-baseline space-x-4">
-
-
-
-
-        <div
-          *ngFor="let LINK of NAVBAR.LINKS;"
-        >
-        <ng-container *ngIf="LINK.IS_EXTERNAL_LINK; else internalBlock">
-
-          <a [href]="LINK.URL"
-          [target]="LINK.TARGET"
-          class="text-gray-800 hover:text-gray-400 px-3 py-2 rounded-md text-sm font-medium"
-          > {{ LINK.TEXT | translate }}</a>
-        </ng-container>
-        <ng-template #internalBlock>
-          <a [routerLink]="LINK.URL"
-          class="text-gray-800 hover:text-gray-400 px-3 py-2 rounded-md text-sm font-medium">
-            {{ LINK.TEXT | translate }}
-          </a>
-
-        </ng-template>
-
+        <div *ngFor="let LINK of NAVBAR.LINKS">
+          <ng-container *ngIf="LINK.IS_EXTERNAL_LINK; else internalBlock">
+            <a
+              [href]="LINK.URL"
+              [target]="LINK.TARGET"
+              class="text-gray-800 hover:text-gray-400 px-3 py-2 rounded-md text-sm font-medium"
+            >
+              {{ LINK.TEXT | translate }}</a
+            >
+          </ng-container>
+          <ng-template #internalBlock>
+            <a
+              [routerLink]="LINK.URL"
+              class="text-gray-800 hover:text-gray-400 px-3 py-2 rounded-md text-sm font-medium"
+            >
+              {{ LINK.TEXT | translate }}
+            </a>
+          </ng-template>
         </div>
       </div>
     </div>

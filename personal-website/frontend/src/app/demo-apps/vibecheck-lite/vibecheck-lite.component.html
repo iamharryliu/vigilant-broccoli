@@ -1,10 +1,14 @@
 <app-centered-app-layout>
-  <h1 class="mb-4 text-2xl font-bold text-center">
+  <h1 class="pt-4 mb-4 text-2xl font-bold text-center">
     {{ 'VIBECHECK_LITE.HEADER' | translate }}
   </h1>
+  <hr/>
+  <app-card>
   <div class="text-sm" *ngIf="recommendation$ | async as data; else loading">
-    <p [innerText]="data"></p>
-  </div>
+
+      <p [innerText]="data"></p>
+    </div>
+  </app-card>
   <ng-template #loading>
     <div class="text-sm pt-48 pb-48">
       <div class="flex flex-col items-center justify-center mb-4">
