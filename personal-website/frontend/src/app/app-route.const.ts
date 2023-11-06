@@ -1,8 +1,8 @@
 import { Route, Routes } from '@angular/router';
-import { AboutPageComponent } from '@components/about-page/about-page.component';
-import { HomePageComponent } from '@components/home-page/home-page.component';
-import { ContactPageComponent } from '@components/contact-page/contact-page.component';
-import { VibecheckLiteComponent } from '@components/vibecheck-lite/vibecheck-lite.component';
+import { AboutPageComponent } from '@app/components/pages/about-page/about-page.component';
+import { HomePageComponent } from '@app/components/pages/home-page/home-page.component';
+import { ContactPageComponent } from '@app/components/pages/contact-page/contact-page.component';
+import { VibecheckLiteComponent } from '@app/demo-apps/vibecheck-lite/vibecheck-lite.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',

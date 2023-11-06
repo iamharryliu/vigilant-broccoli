@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { APP_PATH } from '@app/app-route.const';
-import { AppRoutingModule } from '@app/app-routing.module';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   standalone: true,
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  imports: [CommonModule, TranslateModule, AppRoutingModule],
+  imports: [CommonModule, TranslateModule, RouterModule],
 })
 export class NavbarComponent {
   NAVBAR = {

@@ -1,0 +1,106 @@
+<app-general-layout>
+  <app-card>
+    <div class="w-11/12 mx-auto">
+      <div class="grid sm:grid-cols-12">
+        <div class="col-span-12 md:col-span-2"></div>
+        <div class="col-span-12 md:col-span-8">
+          <h2 class="text-lg font-semibold mb-2">
+            {{ 'HOME_PAGE.VIBECHECK_LITE.HEADER' | translate }}
+          </h2>
+          <p class="text-gray-700 mb-2 text-sm">
+            {{ 'HOME_PAGE.VIBECHECK_LITE.BODY' | translate }}
+          </p>
+          <a
+            [href]="'LINKS.OTHER.VIBECHECK_LITE.URL' | translate"
+            class="text-md hover:text-gray-400 text-sm mb-2"
+            target="_blank"
+          >
+            {{ 'LINKS.OTHER.VIBECHECK_LITE.TEXT' | translate }}</a
+          >
+        </div>
+        <div class="col-span-12 md:col-span-2"></div>
+      </div>
+    </div>
+  </app-card>
+  <app-card>
+    <div class="grid md:grid-cols-12">
+      <div class="col-span-12 md:col-span-5 flex items-center mb-2">
+        <div class="w-11/12 mx-auto">
+          <img
+            src="/assets/mr_robot.jpg"
+            alt="Image 3"
+            class="w-auto h-full p-0.5"
+          />
+        </div>
+      </div>
+      <div class="col-span-12 md:col-span-7 flex items-center mb-2">
+        <div class="w-11/12 mx-auto">
+          <h2 class="text-lg font-semibold mb-2">
+            {{ 'HOME_PAGE.CAREER_CARD.HEADER' | translate }}
+          </h2>
+          <p class="text-gray-700 mb-2 text-sm">
+            {{ 'HOME_PAGE.CAREER_CARD.BODY' | translate }}
+          </p>
+
+          <div *ngFor="let LINK of LINKS">
+            <a
+              class="text-md hover:text-gray-400 text-sm"
+              [href]="LINK.URL | translate"
+              target="_blank"
+            >
+              {{ LINK.TEXT | translate }}</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </app-card>
+  <app-card>
+    <div class="grid lg:grid-cols-2">
+      <div class="flex items-center mb-2">
+        <div class="w-11/12 mx-auto">
+          <h2 class="text-lg font-semibold mb-2">
+            {{ 'HOME_PAGE.SECONDHAND_CARD.HEADER' | translate }}
+          </h2>
+          <p class="text-gray-700 mb-2 text-sm">
+            {{ 'HOME_PAGE.SECONDHAND_CARD.BODY' | translate }}
+          </p>
+          <a
+            class="text-md hover:text-gray-400 text-sm mb-2"
+            [href]="'LINKS.OTHER.SECONDHAND_STORE_IG.URL' | translate"
+            target="_blank"
+          >
+            {{ 'LINKS.OTHER.SECONDHAND_STORE_IG.TEXT' | translate }}</a
+          >
+        </div>
+      </div>
+      <div class="flex w-11/12 mx-auto">
+        <div class="w-1/3">
+          <img
+            src="/assets/secondhand_store1.jpg"
+            alt="Image 1"
+            class="w-full h-auto p-0.5"
+          />
+        </div>
+        <div class="w-1/3">
+          <img
+            src="/assets/secondhand_store2.jpg"
+            alt="Image 2"
+            class="w-full h-auto p-0.5"
+          />
+        </div>
+        <div class="w-1/3">
+          <img
+            src="/assets/secondhand_store3.jpg"
+            alt="Image 3"
+            class="w-full h-auto p-0.5"
+          />
+        </div>
+      </div>
+    </div>
+  </app-card>
+  <hr />
+  <div class="w-5/6 lg:w-2/3 mx-auto">
+    <app-contact></app-contact>
+  </div>
+</app-general-layout>
