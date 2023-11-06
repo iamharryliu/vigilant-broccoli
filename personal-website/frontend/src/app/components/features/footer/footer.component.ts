@@ -20,7 +20,7 @@ export class FooterComponent {
           TEXT: 'FOOTER.SITE_MAP.ABOUT',
         },
         {
-          ROUTER_LINK: APP_PATH.CONTACT,
+          ROUTER_LINK: APP_PATH.CONTACT_PAGE,
           TEXT: 'FOOTER.SITE_MAP.CONTACT',
         },
         {

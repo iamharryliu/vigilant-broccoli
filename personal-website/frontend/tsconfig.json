@@ -22,9 +22,10 @@
     "lib": ["ES2022", "dom"],
     "paths": {
       "@app/*": ["src/app/*"],
-      "@pages/*": ["src/app/components/pages/*"],
       "@components/*": ["src/app/components/*"],
       "@layouts/*": ["src/app/components/layouts/*"],
+      "@pages/*": ["src/app/components/pages/*"],
+      "@features/*": ["src/app/components/features/*"],
       "@services/*": ["src/app/core/services/*"],
       "@models/*": ["src/app/core/models/*"]
     },

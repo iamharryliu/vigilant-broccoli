@@ -15,16 +15,20 @@ export class NavbarComponent {
     INDEX: APP_PATH.INDEX,
     LINKS: [
       {
-        ROUTER_LINK: APP_PATH.VIBECHECK_LITE,
+        URL: APP_PATH.VIBECHECK_LITE,
         TEXT: 'NAVBAR.VIBECHECK_LITE',
+        IS_EXTERNAL_LINK: true,
+        TARGET: '_blank',
       },
       {
-        ROUTER_LINK: APP_PATH.ABOUT,
+        URL: APP_PATH.ABOUT,
         TEXT: 'NAVBAR.ABOUT',
+        IS_EXTERNAL_LINK: false,
       },
       {
-        ROUTER_LINK: APP_PATH.CONTACT,
+        URL: APP_PATH.CONTACT_PAGE,
         TEXT: 'NAVBAR.CONTACT',
+        IS_EXTERNAL_LINK: false,
       },
     ],
   };
