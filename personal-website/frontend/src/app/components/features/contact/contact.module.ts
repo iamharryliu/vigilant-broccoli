@@ -6,6 +6,7 @@ import { ContactComponent } from '@features/contact/contact.component';
 import { CommonService } from '@services/common.service';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { ENVIRONMENT } from 'src/environments/environment';
+import { LinkComponent } from '@app/components/global/link/link.component';
 
 @NgModule({
   declarations: [ContactComponent],
@@ -22,6 +23,7 @@ import { ENVIRONMENT } from 'src/environments/environment';
     TranslateModule,
     ReactiveFormsModule,
     RecaptchaV3Module,
+    LinkComponent,
   ],
 })
 export class ContactModule {}

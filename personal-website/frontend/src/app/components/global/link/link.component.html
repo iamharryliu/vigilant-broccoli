@@ -1,0 +1,19 @@
+<ng-container *ngIf="link.isExternalLink; else internalLink">
+  <a
+    [href]="link.url | translate"
+    [target]="link.target"
+    class="text-gray-800 hover:text-gray-400 text-sm"
+    [class.font-medium]="isBold"
+  >
+    {{ link.text | translate }}</a
+  >
+</ng-container>
+<ng-template #internalLink>
+  <a
+    [routerLink]="link.url"
+    class="text-gray-800 hover:text-gray-400 text-sm"
+    [class.font-medium]="isBold"
+  >
+    {{ link.text | translate }}
+  </a>
+</ng-template>

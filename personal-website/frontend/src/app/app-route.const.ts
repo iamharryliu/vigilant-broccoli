@@ -4,6 +4,7 @@ import { HomePageComponent } from '@pages/home-page/home-page.component';
 import { ContactPageComponent } from '@pages/contact-page/contact-page.component';
 import { VibecheckLiteComponent } from '@app/demo-apps/vibecheck-lite/vibecheck-lite.component';
 import { LinkTreePageComponent } from '@pages/link-tree-page/link-tree-page.component';
+import { Link } from '@models/app.model';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -60,3 +61,56 @@ export const APP_ROUTES: Routes = [
   CONTACT_ROUTE,
   PROJECT_ROUTE,
 ];
+
+const ABOUT_PAGE: Link = {
+  url: APP_PATH.ABOUT,
+  text: 'LINKS.INTERNAL.ABOUT_PAGE',
+  isExternalLink: false,
+};
+const CONTACT_PAGE: Link = {
+  url: APP_PATH.CONTACT_PAGE,
+  text: 'LINKS.INTERNAL.CONTACT_PAGE',
+  isExternalLink: false,
+};
+const VIBECHECK_LITE: Link = {
+  url: 'LINKS.EXTERNAL.VIBECHECK_LITE.URL',
+  text: 'LINKS.EXTERNAL.VIBECHECK_LITE.TEXT',
+  isExternalLink: true,
+  target: '_blank',
+};
+const LINKEDIN: Link = {
+  url: 'LINKS.EXTERNAL.LINKEDIN.URL',
+  text: 'LINKS.EXTERNAL.LINKEDIN.TEXT',
+  isExternalLink: true,
+};
+const GITHUB: Link = {
+  url: 'LINKS.EXTERNAL.GITHUB.URL',
+  text: 'LINKS.EXTERNAL.GITHUB.TEXT',
+  isExternalLink: true,
+};
+const PERSONAL_INSTAGRAM: Link = {
+  url: 'LINKS.EXTERNAL.PERSONAL_IG.URL',
+  text: 'LINKS.EXTERNAL.PERSONAL_IG.TEXT',
+  isExternalLink: true,
+};
+const SECONDHAND_STORE_IG: Link = {
+  url: 'LINKS.EXTERNAL.SECONDHAND_STORE_IG.URL',
+  text: 'LINKS.EXTERNAL.SECONDHAND_STORE_IG.TEXT',
+  isExternalLink: true,
+};
+const SKATE_IG: Link = {
+  url: 'LINKS.EXTERNAL.SKATE_IG.URL',
+  text: 'LINKS.EXTERNAL.SKATE_IG.TEXT',
+  isExternalLink: true,
+};
+
+export const LINKS = {
+  ABOUT_PAGE,
+  CONTACT_PAGE,
+  VIBECHECK_LITE,
+  LINKEDIN,
+  GITHUB,
+  PERSONAL_INSTAGRAM,
+  SECONDHAND_STORE_IG,
+  SKATE_IG,
+};

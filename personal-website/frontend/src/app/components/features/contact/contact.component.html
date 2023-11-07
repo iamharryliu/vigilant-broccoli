@@ -68,13 +68,11 @@
       </div>
       <div>{{ 'CONTACT.CONTACT_ME.PHONE_NUMBER' | translate }}</div>
     </div>
-    <div class="mb-4 text-sm">
+    <div class="mb-4">
       <h1 class="mb-2 text-md font-semibold">Social Medias</h1>
       <ul>
-        <li *ngFor="let LINK of LINKS">
-          <a class="hover:text-gray-400" [href]="LINK.URL">
-            {{ LINK.TEXT | translate }}</a
-          >
+        <li *ngFor="let link of LINKS">
+          <app-link [link]="link"></app-link>
         </li>
       </ul>
     </div>

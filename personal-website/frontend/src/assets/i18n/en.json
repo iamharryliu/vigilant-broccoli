@@ -48,8 +48,11 @@
     "VIBECHECK_LITE": "Vibecheck Lite"
   },
   "LINKS": {
-    "OTHER": {
-      "HEADER": "More Links",
+    "INTERNAL": {
+      "ABOUT_PAGE": "About",
+      "CONTACT_PAGE": "Contact"
+    },
+    "EXTERNAL": {
       "LINKEDIN": {
         "TEXT": "LinkedIn",
         "URL": "https://www.linkedin.com/in/iamharryliu/"
@@ -57,10 +60,6 @@
       "GITHUB": {
         "TEXT": "Github",
         "URL": "https://github.com/iamharryliu"
-      },
-      "EMAIL": {
-        "TEXT": "Contact me",
-        "URL": "mailto: harryliu1995@gmail.com"
       },
       "PERSONAL_IG": {
         "TEXT": "Personal Instagram",
@@ -77,15 +76,19 @@
       "VIBECHECK_LITE": {
         "TEXT": "Vibecheck Lite",
         "URL": "https://harryliu.design/projects/vibecheck-lite"
+      },
+      "EMAIL": {
+        "TEXT": "Contact me",
+        "URL": "mailto: harryliu1995@gmail.com"
       }
+    },
+    "OTHER": {
+      "HEADER": "More Links"
     }
   },
   "FOOTER": {
     "SITE_MAP": {
-      "HEADER": "Site Map",
-      "ABOUT": "About",
-      "CONTACT": "Contact",
-      "VIBECHECK_LITE": "Vibecheck Lite"
+      "HEADER": "Site Map"
     }
   },
   "VIBECHECK_LITE": {

@@ -5,6 +5,8 @@ import { ContactModule } from '@app/components/features/contact/contact.module';
 import { RouterModule } from '@angular/router';
 import { CardComponent } from '@components/card/card.component';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
+import { LinkComponent } from '@app/components/global/link/link.component';
+import { LINKS } from '@app/app-route.const';
 
 @Component({
   standalone: true,
@@ -17,17 +19,9 @@ import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.compone
     ContactModule,
     RouterModule,
     CardComponent,
+    LinkComponent,
   ],
 })
 export class HomePageComponent {
-  LINKS = [
-    {
-      URL: 'LINKS.OTHER.LINKEDIN.URL',
-      TEXT: 'LINKS.OTHER.LINKEDIN.TEXT',
-    },
-    {
-      URL: 'LINKS.OTHER.GITHUB.URL',
-      TEXT: 'LINKS.OTHER.GITHUB.TEXT',
-    },
-  ];
+  LINKS = LINKS;
 }

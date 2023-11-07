@@ -22,3 +22,10 @@ export interface Location {
   latitude: number;
   longitude: number;
 }
+
+export interface Link {
+  isExternalLink: boolean;
+  url: string;
+  text: string;
+  target?: string;
+}

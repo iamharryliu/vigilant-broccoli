@@ -4,6 +4,7 @@ import { MessageForm } from '@models/app.model';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 import { Subject, exhaustMap } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { LINKS } from '@app/app-route.const';
 
 @Component({
   selector: 'app-contact',
@@ -41,22 +42,10 @@ export class ContactComponent {
   });
 
   LINKS = [
-    {
-      URL: 'LINKS.OTHER.LINKEDIN.URL',
-      TEXT: 'LINKS.OTHER.LINKEDIN.TEXT',
-    },
-    {
-      URL: 'LINKS.OTHER.PERSONAL_IG.URL',
-      TEXT: 'LINKS.OTHER.PERSONAL_IG.TEXT',
-    },
-    {
-      URL: 'LINKS.OTHER.SECONDHAND_STORE_IG.URL',
-      TEXT: 'LINKS.OTHER.SECONDHAND_STORE_IG.TEXT',
-    },
-    {
-      URL: 'LINKS.OTHER.SKATE_IG.URL',
-      TEXT: 'LINKS.OTHER.SKATE_IG.TEXT',
-    },
+    LINKS.LINKEDIN,
+    LINKS.PERSONAL_INSTAGRAM,
+    LINKS.SECONDHAND_STORE_IG,
+    LINKS.SKATE_IG,
   ];
 
   formData: MessageForm = {
