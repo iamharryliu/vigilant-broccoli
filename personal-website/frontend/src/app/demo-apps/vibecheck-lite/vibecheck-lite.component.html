@@ -2,10 +2,9 @@
   <h1 class="pt-4 mb-4 text-2xl font-bold text-center">
     {{ 'VIBECHECK_LITE.HEADER' | translate }}
   </h1>
-  <hr/>
+  <hr />
   <app-card>
-  <div class="text-sm" *ngIf="recommendation$ | async as data; else loading">
-
+    <div class="text-sm" *ngIf="recommendation$ | async as data; else loading">
       <p [innerText]="data"></p>
     </div>
   </app-card>
