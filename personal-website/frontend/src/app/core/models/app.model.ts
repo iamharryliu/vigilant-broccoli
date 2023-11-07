@@ -24,8 +24,9 @@ export interface Location {
 }
 
 export interface Link {
-  isExternalLink: boolean;
   url: string;
   text: string;
   target?: string;
+  isExternalLink?: boolean;
+  isButton?: boolean;
 }

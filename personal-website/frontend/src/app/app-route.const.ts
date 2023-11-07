@@ -5,6 +5,7 @@ import { ContactPageComponent } from '@pages/contact-page/contact-page.component
 import { VibecheckLiteComponent } from '@app/demo-apps/vibecheck-lite/vibecheck-lite.component';
 import { LinkTreePageComponent } from '@pages/link-tree-page/link-tree-page.component';
 import { Link } from '@models/app.model';
+import { ENVIRONMENT } from 'src/environments/environment';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -62,49 +63,55 @@ export const APP_ROUTES: Routes = [
   PROJECT_ROUTE,
 ];
 
+const PERSONAL_WEBSITE: Link = {
+  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}`,
+  text: 'LINKS.INTERNAL.PERSONAL_WEBSITE',
+  isExternalLink: true,
+  target: '_blank',
+};
+
 const ABOUT_PAGE: Link = {
   url: APP_PATH.ABOUT,
   text: 'LINKS.INTERNAL.ABOUT_PAGE',
-  isExternalLink: false,
 };
 const CONTACT_PAGE: Link = {
   url: APP_PATH.CONTACT_PAGE,
   text: 'LINKS.INTERNAL.CONTACT_PAGE',
-  isExternalLink: false,
 };
 const VIBECHECK_LITE: Link = {
-  url: 'LINKS.EXTERNAL.VIBECHECK_LITE.URL',
+  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}`,
   text: 'LINKS.EXTERNAL.VIBECHECK_LITE.TEXT',
   isExternalLink: true,
   target: '_blank',
 };
 const LINKEDIN: Link = {
-  url: 'LINKS.EXTERNAL.LINKEDIN.URL',
+  url: ENVIRONMENT.URLS.LINKEDIN,
   text: 'LINKS.EXTERNAL.LINKEDIN.TEXT',
   isExternalLink: true,
 };
 const GITHUB: Link = {
-  url: 'LINKS.EXTERNAL.GITHUB.URL',
+  url: ENVIRONMENT.URLS.GITHUB,
   text: 'LINKS.EXTERNAL.GITHUB.TEXT',
   isExternalLink: true,
 };
 const PERSONAL_INSTAGRAM: Link = {
-  url: 'LINKS.EXTERNAL.PERSONAL_IG.URL',
+  url: ENVIRONMENT.URLS.PERSONAL_IG,
   text: 'LINKS.EXTERNAL.PERSONAL_IG.TEXT',
   isExternalLink: true,
 };
 const SECONDHAND_STORE_IG: Link = {
-  url: 'LINKS.EXTERNAL.SECONDHAND_STORE_IG.URL',
+  url: ENVIRONMENT.URLS.SECONDHAND_STORE_IG,
   text: 'LINKS.EXTERNAL.SECONDHAND_STORE_IG.TEXT',
   isExternalLink: true,
 };
 const SKATE_IG: Link = {
-  url: 'LINKS.EXTERNAL.SKATE_IG.URL',
+  url: ENVIRONMENT.URLS.SKATE_IG,
   text: 'LINKS.EXTERNAL.SKATE_IG.TEXT',
   isExternalLink: true,
 };
 
 export const LINKS = {
+  PERSONAL_WEBSITE,
   ABOUT_PAGE,
   CONTACT_PAGE,
   VIBECHECK_LITE,

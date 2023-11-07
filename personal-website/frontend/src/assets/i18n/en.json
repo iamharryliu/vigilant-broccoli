@@ -49,37 +49,31 @@
   },
   "LINKS": {
     "INTERNAL": {
+      "PERSONAL_WEBSITE": "Personal Website",
       "ABOUT_PAGE": "About",
       "CONTACT_PAGE": "Contact"
     },
     "EXTERNAL": {
       "LINKEDIN": {
-        "TEXT": "LinkedIn",
-        "URL": "https://www.linkedin.com/in/iamharryliu/"
+        "TEXT": "LinkedIn"
       },
       "GITHUB": {
-        "TEXT": "Github",
-        "URL": "https://github.com/iamharryliu"
+        "TEXT": "Github"
       },
       "PERSONAL_IG": {
-        "TEXT": "Personal Instagram",
-        "URL": "https://www.instagram.com/prettydamntired/"
+        "TEXT": "Personal Instagram"
       },
       "SECONDHAND_STORE_IG": {
-        "TEXT": "Secondhand Store Instagram",
-        "URL": "https://www.instagram.com/harrysellsshit/"
+        "TEXT": "Secondhand Store Instagram"
       },
       "SKATE_IG": {
-        "TEXT": "Skate Instagram",
-        "URL": "https://www.instagram.com/torontocityskate/"
+        "TEXT": "Skate Instagram"
       },
       "VIBECHECK_LITE": {
-        "TEXT": "Vibecheck Lite",
-        "URL": "https://harryliu.design/projects/vibecheck-lite"
+        "TEXT": "Vibecheck Lite"
       },
       "EMAIL": {
-        "TEXT": "Contact me",
-        "URL": "mailto: harryliu1995@gmail.com"
+        "TEXT": "Contact me"
       }
     },
     "OTHER": {

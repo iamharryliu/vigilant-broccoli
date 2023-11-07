@@ -12,9 +12,9 @@ import { TranslateModule } from '@ngx-translate/core';
 export class LinkComponent {
   @Input() link!: {
     text: string;
-    isExternalLink: boolean;
     url: string;
     target?: string;
+    isExternalLink?: boolean;
   };
   @Input() isBold = false;
 }

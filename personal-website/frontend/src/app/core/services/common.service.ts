@@ -15,23 +15,19 @@ import {
 export class CommonService {
   constructor(private http: HttpClient) {}
 
+  BACKEND_URL = ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL;
+
   subscribeToNewsletter(request: EmailSubscriptionRequest): Observable<any> {
-    return this.http.post<any>(
-      `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/email-alerts`,
-      request,
-    );
+    return this.http.post<any>(`${this.BACKEND_URL}/email-alerts`, request);
   }
 
   sendMessage(request: MessageRequest): Observable<any> {
-    return this.http.post<any>(
-      `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/send-message`,
-      request,
-    );
+    return this.http.post<any>(`${this.BACKEND_URL}/send-message`, request);
   }
 
   getOutfitRecommendation(location: Location): Observable<any> {
     return this.http.get<any>(
-      `${ENVIRONMENT.PERSONAL_WEBSITE_BACKEND_URL}/get-outfit-recommendation?lat=${location.latitude}&lon=${location.longitude}`,
+      `${this.BACKEND_URL}/get-outfit-recommendation?lat=${location.latitude}&lon=${location.longitude}`,
     );
   }
 }
