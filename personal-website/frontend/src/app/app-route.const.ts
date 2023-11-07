@@ -19,12 +19,6 @@ export const ABOUT_ROUTE: Route = {
   component: AboutPageComponent,
 };
 
-export const CONTACT_PAGE_ROUTE: Route = {
-  path: 'contact-page',
-  data: { title: 'contact page' },
-  component: ContactPageComponent,
-};
-
 export const LINK_TREE_ROUTE: Route = {
   path: 'links',
   data: { title: ' link tree' },
@@ -32,9 +26,9 @@ export const LINK_TREE_ROUTE: Route = {
 };
 
 export const CONTACT_ROUTE: Route = {
-  path: 'contact',
-  data: { title: ' contact' },
-  children: [CONTACT_PAGE_ROUTE],
+  path: 'contact-page',
+  data: { title: 'contact page' },
+  component: ContactPageComponent,
 };
 
 export const VIBECHECK_LITE_ROUTE: Route = {
@@ -52,7 +46,7 @@ export const PROJECT_ROUTE: Route = {
 export const APP_PATH = {
   INDEX: '',
   ABOUT: `/${ABOUT_ROUTE.path}`,
-  CONTACT_PAGE: `/${CONTACT_ROUTE.path}/${CONTACT_PAGE_ROUTE.path}`,
+  CONTACT_PAGE: `/${CONTACT_ROUTE.path}`,
   VIBECHECK_LITE: `/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}`,
 };
 
