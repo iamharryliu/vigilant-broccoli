@@ -1,2 +1,4 @@
 **/scripts/**/*.js
 node-scripts/**/*.js
+
+personal-website/frontend/mock-server/**/*.js
