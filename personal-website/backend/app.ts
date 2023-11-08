@@ -16,7 +16,7 @@ import { logger } from './src/middlewares/loggers';
 
 const app = express();
 app.options('*', cors(CORS_OPTIONS));
-// app.use(router);
+app.use(router);
 app.use(MessageRouter);
 app.use(VibeCheckLiteRouter);
 app.use(errorResponder);
