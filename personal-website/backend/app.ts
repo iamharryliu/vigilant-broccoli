@@ -7,18 +7,22 @@ import {
   invalidPathHandler,
 } from './src/middlewares/errormiddleware';
 import { requestLogger } from './src/middlewares/middleware';
-import { router } from './src/routes/router';
+import { router } from './src/routes/MessageRoute';
+import { router as MessageRouter } from './src/routes/MessageRoute';
+import { router as VibeCheckLiteRouter } from './src/routes/VibecheckLiteRoute';
 import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
 import { ConnectOptions } from 'mongoose';
 import { logger } from './src/middlewares/loggers';
 
 const app = express();
 app.options('*', cors(CORS_OPTIONS));
-app.use(requestLogger);
-app.use(router);
-app.use(errorLogger);
+// app.use(router);
+app.use(MessageRouter);
+app.use(VibeCheckLiteRouter);
 app.use(errorResponder);
 app.use(invalidPathHandler);
+app.use(requestLogger);
+app.use(errorLogger);
 app.listen(PORT as number, HOST, () => {
   logger.info(`Server listening at ${HOST}:${PORT}`);
 });
