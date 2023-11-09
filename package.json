@@ -40,10 +40,10 @@
     ],
     "*.{css,scss}": [
       "npm run lint:css",
-      "npm run format"
+      "prettier --write"
     ],
     "*.{json,md}": [
-      "npm run format"
+      "prettier --write"
     ]
   },
   "husky": {

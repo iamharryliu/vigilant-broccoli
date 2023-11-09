@@ -71,12 +71,10 @@ router.post(
           text: `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`,
         })
         .then(_ => {
-          return res
-            .status(201)
-            .json({
-              success: true,
-              message: 'Email alert saved successfully.',
-            });
+          return res.status(201).json({
+            success: true,
+            message: 'Email alert saved successfully.',
+          });
         });
     } catch (error) {
       console.error(error);
