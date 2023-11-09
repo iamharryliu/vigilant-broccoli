@@ -1,0 +1,32 @@
+<app-general-layout>
+  <div
+    class="newsletter-subscription max-w-xl mx-auto bg-white shadow-none rounded"
+  >
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="flex items-center mb-4">
+        <label for="token" class="mr-2 text-sm"> Verification Key </label>
+        <input
+          type="text"
+          id="token"
+          name="token"
+          formControlName="token"
+          required
+          class="border rounded py-2 px-3 w-3/4 focus:outline-none focus:border-blue-400 mr-2"
+          [placeholder]="'Verification Key'"
+        />
+        <button
+          type="submit"
+          [disabled]="form.invalid"
+          class="text-white font-semibold px-4 py-2 rounded-lg w-1/4"
+          [ngClass]="{
+            'bg-gray-300': form.invalid,
+            'bg-black': form.valid,
+            'hover:bg-blue-600': form.valid
+          }"
+        >
+          {{ 'EMAIL_SUBSCRIPTION_FORM.BUTTON_TEXT' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</app-general-layout>

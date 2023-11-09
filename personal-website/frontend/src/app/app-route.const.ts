@@ -6,6 +6,7 @@ import { VibecheckLiteComponent } from '@app/demo-apps/vibecheck-lite/vibecheck-
 import { LinkTreePageComponent } from '@pages/link-tree-page/link-tree-page.component';
 import { Link } from '@models/app.model';
 import { ENVIRONMENT } from 'src/environments/environment';
+import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscription/verify-email-subscription-page.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -43,6 +44,12 @@ export const PROJECT_ROUTE: Route = {
   children: [VIBECHECK_LITE_ROUTE],
 };
 
+export const VERIFY_EMAIL_ROUTE: Route = {
+  path: 'verify-email-subscription',
+  data: { title: 'verify email sub' },
+  component: VerifyEmailSubscriptionPageComponent,
+};
+
 export const APP_PATH = {
   INDEX: '',
   ABOUT: `/${ABOUT_ROUTE.path}`,
@@ -56,6 +63,7 @@ export const APP_ROUTES: Routes = [
   CONTACT_ROUTE,
   PROJECT_ROUTE,
   LINK_TREE_ROUTE,
+  VERIFY_EMAIL_ROUTE,
 ];
 
 const PERSONAL_WEBSITE: Link = {

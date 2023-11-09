@@ -12,6 +12,7 @@ import { CredentialsInterceptorService } from '@services/credentials-interceptor
 import { CommonService } from '@services/common.service';
 import { EmailSubscriptionRequest } from '@models/app.model';
 import { Subject, exhaustMap } from 'rxjs';
+import { ENVIRONMENT } from 'src/environments/environment';
 
 @Component({
   standalone: true,
@@ -43,7 +44,13 @@ export class NewsLetterSubFormComponent {
           ),
         ),
       )
-      .subscribe(_ => {
+      .subscribe(res => {
+        if (res.success) {
+          window.open(
+            `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription`,
+            '_blank',
+          );
+        }
         this.form.reset();
       });
   }

@@ -30,4 +30,11 @@ export class CommonService {
       `${this.BACKEND_URL}/get-outfit-recommendation?lat=${location.latitude}&lon=${location.longitude}`,
     );
   }
+
+  verifyEmailSubscription(token: string): Observable<any> {
+    return this.http.put<any>(
+      `${this.BACKEND_URL}/verify-email-subscription/${token}`,
+      {},
+    );
+  }
 }
