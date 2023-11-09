@@ -9,7 +9,7 @@ import { EncryptionService } from '../services/EncryptionService';
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
 
-router.get(
+router.put(
   '/verify-email-subscription/:token',
   cors(CORS_OPTIONS),
   async (req, res) => {
@@ -48,9 +48,10 @@ router.post(
         email: email,
       }));
       if (isSubscribed) {
-        return res
-          .status(201)
-          .json({ message: 'This email is already subscribed.' });
+        return res.status(201).json({
+          success: false,
+          message: 'This email is already subscribed.',
+        });
       }
       const newEmailAlert = new EmailSubscription({ email, isVerified: false });
       await newEmailAlert.save();
@@ -67,12 +68,15 @@ router.post(
           from: 'harryliu.design <harryliu1995@gmail.com>',
           to: email,
           subject: 'Please verify email',
-          text: `/verify-email-subscription/:${token}`,
+          text: `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`,
         })
         .then(_ => {
           return res
             .status(201)
-            .json({ message: 'Email alert saved successfully.' });
+            .json({
+              success: true,
+              message: 'Email alert saved successfully.',
+            });
         });
     } catch (error) {
       console.error(error);
