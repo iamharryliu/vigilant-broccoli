@@ -4,9 +4,35 @@ import nodemailer from 'nodemailer';
 import { EmailSubscription, CORS_OPTIONS } from '../configs/app.const';
 import { requireJsonContent } from '../middlewares/middleware';
 import { logger } from '../middlewares/loggers';
+import { EncryptionService } from '../services/EncryptionService';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
+
+router.get(
+  '/verify-email-subscription/:token',
+  cors(CORS_OPTIONS),
+  async (req, res) => {
+    const token = req.params.token;
+    try {
+      const email = EncryptionService.decryptData(token);
+      const emailSubscription = await EmailSubscription.findOneAndUpdate(
+        {
+          email: email,
+        },
+        { email, isVerified: true },
+        { new: true },
+      );
+      if (emailSubscription) {
+        return res.status(201).json({ message: 'Email has been verified.' });
+      }
+      return res.status(200).json({ message: 'Email does not exist.' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+);
 
 router.post(
   '/email-alerts',
@@ -26,11 +52,28 @@ router.post(
           .status(201)
           .json({ message: 'This email is already subscribed.' });
       }
-      const newEmailAlert = new EmailSubscription({ email });
+      const newEmailAlert = new EmailSubscription({ email, isVerified: false });
       await newEmailAlert.save();
-      return res
-        .status(201)
-        .json({ message: 'Email alert saved successfully.' });
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.MY_EMAIL,
+          pass: process.env.MY_EMAIL_PASSWORD,
+        },
+      });
+      const token = EncryptionService.encryptData(email);
+      await transporter
+        .sendMail({
+          from: 'harryliu.design <harryliu1995@gmail.com>',
+          to: email,
+          subject: 'Please verify email',
+          text: `/verify-email-subscription/:${token}`,
+        })
+        .then(_ => {
+          return res
+            .status(201)
+            .json({ message: 'Email alert saved successfully.' });
+        });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });
