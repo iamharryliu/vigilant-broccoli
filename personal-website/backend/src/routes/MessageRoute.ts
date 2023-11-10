@@ -48,7 +48,7 @@ router.post(
         email: email,
       }));
       if (isSubscribed) {
-        return res.status(201).json({
+        return res.status(200).json({
           success: false,
           message: 'This email is already subscribed.',
         });
