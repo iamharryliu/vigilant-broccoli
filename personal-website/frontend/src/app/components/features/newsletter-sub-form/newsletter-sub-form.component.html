@@ -2,30 +2,30 @@
   class="newsletter-subscription max-w-xl mx-auto bg-white shadow-none rounded p-8"
 >
   <form [formGroup]="form" (ngSubmit)="submit()" class="mb-4 text-center">
-      <label for="email" class="mr-2 text-mb">
-        {{ 'EMAIL_SUBSCRIPTION_FORM.LABEL' | translate }}
-      </label>
-      <br class="lg:hidden"/>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        formControlName="email"
-        required
-        class="w-2/3 lg:w-min border rounded py-2 px-3 focus:outline-none focus:border-blue-400 mr-2 mt-4"
-        [placeholder]="'EMAIL_SUBSCRIPTION_FORM.PLACEHOLDER' | translate"
-      />
-      <button
-        type="submit"
-        [disabled]="form.invalid"
-        class="w-1/4 lg:w-min text-white font-semibold px-4 py-2 rounded-lg"
-        [ngClass]="{
-          'bg-gray-300': form.invalid,
-          'bg-black': form.valid,
-          'hover:bg-blue-600': form.valid
-        }"
-      >
-        {{ 'EMAIL_SUBSCRIPTION_FORM.BUTTON_TEXT' | translate }}
-      </button>
+    <label for="email" class="mr-2 text-mb">
+      {{ 'EMAIL_SUBSCRIPTION_FORM.LABEL' | translate }}
+    </label>
+    <br class="lg:hidden" />
+    <input
+      type="email"
+      id="email"
+      name="email"
+      formControlName="email"
+      required
+      class="w-2/3 lg:w-min border rounded py-2 px-3 focus:outline-none focus:border-blue-400 mr-2 mt-4"
+      [placeholder]="'EMAIL_SUBSCRIPTION_FORM.PLACEHOLDER' | translate"
+    />
+    <button
+      type="submit"
+      [disabled]="form.invalid"
+      class="w-1/4 lg:w-min text-white font-semibold px-4 py-2 rounded-lg"
+      [ngClass]="{
+        'bg-gray-300': form.invalid,
+        'bg-black': form.valid,
+        'hover:bg-blue-600': form.valid
+      }"
+    >
+      {{ 'EMAIL_SUBSCRIPTION_FORM.BUTTON_TEXT' | translate }}
+    </button>
   </form>
 </div>
