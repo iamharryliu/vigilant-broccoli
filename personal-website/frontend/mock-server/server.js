@@ -12,7 +12,30 @@ server.get('/test', (req, res, next) => {
 });
 
 server.post('/email-alerts', (req, res, next) => {
+  const email = req.body.email;
+  switch (email) {
+    case 'subscribed@e':
+      return res.status(200).send({
+        success: false,
+        message: 'This email is already subscribed.',
+      });
+    default:
+      res.status(201).send({
+        success: true,
+        message: 'Email alert saved successfully.',
+      });
+  }
   res.status(200).send({});
+});
+
+server.put('/verify-email-subscription/:token', (req, res, next) => {
+  const token = req.params.token;
+  switch (token) {
+    case 'fail':
+      return res.status(200).send({ message: 'Email does not exist.' });
+    default:
+      return res.status(201).send({ message: 'Email has been verified.' });
+  }
 });
 
 server.post('/send-message', (req, res, next) => {
