@@ -1,6 +1,6 @@
 <div class="grid lg:grid-cols-2 pt-14 pb-14">
-  <div class="w-5/6 mx-auto text-sm mb-8">
-    <h2 class="text-md font-semibold mb-4">
+  <div class="w-5/6 mx-auto text-sm">
+    <h2 class="text-md font-semibold mb-4 text-center lg:text-left">
       {{ 'CONTACT.CONTACT_FORM.HEADER' | translate }}
     </h2>
     <form [formGroup]="form" (ngSubmit)="submitForm()">
@@ -45,7 +45,7 @@
       <button
         type="submit"
         [disabled]="form.invalid"
-        class="text-white font-semibold px-4 py-2 rounded-lg focus:outline-none focus:ring"
+        class="text-white font-semibold px-4 py-2 rounded-lg focus:outline-none focus:ring w-full lg:w-min"
         [ngClass]="{
           'bg-gray-300': form.invalid,
           'bg-black': form.valid,
@@ -56,6 +56,7 @@
       </button>
     </form>
   </div>
+  <hr class="lg:hidden mt-8 mb-8"/>
   <div class="w-5/6 mx-auto text-center lg:text-left">
     <div class="mb-4 text-sm">
       <h1 class="mb-2 text-md font-semibold">

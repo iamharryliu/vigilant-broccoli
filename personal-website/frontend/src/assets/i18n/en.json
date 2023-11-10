@@ -36,7 +36,7 @@
     }
   },
   "EMAIL_SUBSCRIPTION_FORM": {
-    "LABEL": "Newsletter:",
+    "LABEL": "Newsletter Signup: ",
     "PLACEHOLDER": "Your email address",
     "BUTTON_TEXT": "Subscribe"
   },
