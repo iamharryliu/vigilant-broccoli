@@ -21,6 +21,7 @@ export class FooterComponent {
       HEADER: 'LINKS.OTHER.HEADER',
       LINKS: [
         LINKS.LINKEDIN,
+        LINKS.RESUME,
         LINKS.GITHUB,
         LINKS.PERSONAL_INSTAGRAM,
         LINKS.SECONDHAND_STORE_IG,

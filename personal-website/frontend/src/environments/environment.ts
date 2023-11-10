@@ -10,5 +10,6 @@ export const ENVIRONMENT = {
     SECONDHAND_STORE_IG: 'https://www.instagram.com/harrysellsshit/',
     SKATE_IG: 'https://www.instagram.com/torontocityskate/',
     EMAIL: 'mailto: harryliu1995@gmail.com',
+    RESUME: 'https://harryliu.design/assets/HarryLiu-Resume.pdf',
   },
 };

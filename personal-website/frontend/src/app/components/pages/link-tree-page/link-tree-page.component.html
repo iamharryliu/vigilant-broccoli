@@ -3,8 +3,14 @@
     <div class="text-center mb-8">
       <h1 class="text-3xl">harry liu</h1>
     </div>
-    <div class="space-y-4">
+    <div class="space-y-2 mb-8">
       <div *ngFor="let link of LINKS" class="text-center">
+        <app-button-link [link]="link"></app-button-link>
+      </div>
+    </div>
+    <h2 class="text-xl text-center mb-4">Career Links</h2>
+    <div class="space-y-2 mb-8">
+      <div *ngFor="let link of CAREER_LINKS" class="text-center">
         <app-button-link [link]="link"></app-button-link>
       </div>
     </div>

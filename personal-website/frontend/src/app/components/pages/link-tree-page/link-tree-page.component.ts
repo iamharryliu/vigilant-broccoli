@@ -17,10 +17,9 @@ import { CenteredAppLayoutComponent } from '@app/components/layouts/centered-app
   ],
 })
 export class LinkTreePageComponent {
+  CAREER_LINKS = [LINKS.LINKEDIN, LINKS.RESUME, LINKS.GITHUB];
   LINKS = [
     LINKS.PERSONAL_WEBSITE,
-    LINKS.LINKEDIN,
-    LINKS.GITHUB,
     LINKS.PERSONAL_INSTAGRAM,
     LINKS.SECONDHAND_STORE_IG,
     LINKS.SKATE_IG,
