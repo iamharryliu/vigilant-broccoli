@@ -3,6 +3,7 @@ import cors from 'cors';
 import OpenAI from 'openai';
 import { CORS_OPTIONS, HTTP_STATUS_CODES } from '../configs/app.const';
 import { Location } from '../models/vibecheck-lite.model';
+import { logger } from '../middlewares/loggers';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
@@ -25,7 +26,7 @@ async function getWeatherDataForOutfitRecommendation(location: Location) {
     const requestData = data.list.slice(0, 4);
     return requestData;
   } catch (err) {
-    console.log(err);
+    logger.log(err);
   }
 }
 
@@ -43,7 +44,7 @@ async function getOutfitRecommendation(location: Location) {
     recommendation = completion.choices[0].message.content;
     return recommendation;
   } catch (err) {
-    console.log(err);
+    logger.log(err);
   }
 }
 
