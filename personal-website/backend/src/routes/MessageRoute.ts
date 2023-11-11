@@ -1,13 +1,38 @@
 import express from 'express';
 import cors from 'cors';
-import nodemailer from 'nodemailer';
-import { EmailSubscription, CORS_OPTIONS } from '../configs/app.const';
+import { CORS_OPTIONS } from '../configs/app.const';
+import { EmailSubscription } from '../models/subscription.model';
 import { requireJsonContent } from '../middlewares/middleware';
 import { logger } from '../middlewares/loggers';
 import { EncryptionService } from '../services/EncryptionService';
+import { MailTransportService } from '../services/mailTransportService';
+import { DEFAULT_EMAIL_REQUEST } from '../models/email.model';
+import { RecapchaService } from '../services/RecaptchaService';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
+
+async function sendVerificationEmail(email: string) {
+  const token = EncryptionService.encryptData(email);
+  const text = `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`;
+  const subject = 'Please verify email';
+  return MailTransportService.sendMail({
+    ...DEFAULT_EMAIL_REQUEST,
+    to: email,
+    subject,
+    text,
+  });
+}
+
+async function verifyEmail(email: string) {
+  return EmailSubscription.findOneAndUpdate(
+    {
+      email: email,
+    },
+    { email, isVerified: true },
+    { new: true },
+  );
+}
 
 router.put(
   '/verify-email-subscription/:token',
@@ -16,23 +41,33 @@ router.put(
     const token = req.params.token;
     try {
       const email = EncryptionService.decryptData(token);
-      const emailSubscription = await EmailSubscription.findOneAndUpdate(
-        {
-          email: email,
-        },
-        { email, isVerified: true },
-        { new: true },
-      );
-      if (emailSubscription) {
+      if (await verifyEmail(email)) {
         return res.status(201).json({ message: 'Email has been verified.' });
       }
-      return res.status(200).json({ message: 'Email does not exist.' });
+      return res.status(400).json({ message: 'Email does not exist.' });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       return res.status(500).json({ error: 'Internal server error' });
     }
   },
 );
+
+async function findEmailSubscription(email: string) {
+  return EmailSubscription.findOne({
+    email: email,
+  });
+}
+
+async function isEmailSubscribed(email: string) {
+  const emailSubscription = await findEmailSubscription(email);
+  const isSubscribed = !!emailSubscription;
+  return isSubscribed;
+}
+
+async function subscribeEmail(email) {
+  const newEmailAlert = new EmailSubscription({ email, isVerified: false });
+  return newEmailAlert.save();
+}
 
 router.post(
   '/email-alerts',
@@ -44,85 +79,59 @@ router.post(
       if (!email) {
         return res.status(400).json({ error: 'Email is required.' });
       }
-      const isSubscribed = !!(await EmailSubscription.findOne({
-        email: email,
-      }));
-      if (isSubscribed) {
+      if (await isEmailSubscribed(email)) {
         return res.status(200).json({
           success: false,
           message: 'This email is already subscribed.',
         });
       }
-      const newEmailAlert = new EmailSubscription({ email, isVerified: false });
-      await newEmailAlert.save();
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.MY_EMAIL,
-          pass: process.env.MY_EMAIL_PASSWORD,
-        },
-      });
-      const token = EncryptionService.encryptData(email);
-      await transporter
-        .sendMail({
-          from: 'harryliu.design <harryliu1995@gmail.com>',
-          to: email,
-          subject: 'Please verify email',
-          text: `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`,
-        })
-        .then(_ => {
-          return res.status(201).json({
-            success: true,
-            message: 'Email alert saved successfully.',
-          });
+      await subscribeEmail(email);
+      sendVerificationEmail(email).then(_ => {
+        return res.status(201).json({
+          success: true,
+          message: 'Email alert saved successfully.',
         });
+      });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       return res.status(500).json({ error: 'Internal server error' });
     }
   },
 );
+
+async function sendMessage(body) {
+  const { name, email, message } = body;
+  const from = `'${name}' <youremail@gmail.com>`;
+  const subject = 'Message from personal website.';
+  const text = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
+  return MailTransportService.sendMail({
+    ...DEFAULT_EMAIL_REQUEST,
+    from,
+    subject,
+    text,
+  });
+}
 
 router.post(
   '/send-message',
   cors(CORS_OPTIONS),
   requireJsonContent,
   async (req, res) => {
-    const { token, name, email, message } = req.body;
-    fetch(`https://www.google.com/recaptcha/api/siteverify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${process.env.RECAPTCHA_V3_SECRET_KEY}&response=${token}`,
-    })
-      .then(response => response.json())
-      .then(json => {
-        const { score } = json;
-        if (score > 0.3) {
-          const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: process.env.MY_EMAIL,
-              pass: process.env.MY_EMAIL_PASSWORD,
-            },
-          });
-          transporter
-            .sendMail({
-              from: `'${name}' <youremail@gmail.com>`,
-              to: process.env.MY_EMAIL,
-              subject: 'Message from personal website.',
-              text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
-            })
-            .then(_ => {
-              return res.status(200).json({ success: true });
-            });
-        } else {
-          logger.error(`reCAPTCHA score of ${score} is too low.`);
-          return res.status(200).json({ success: false });
-        }
-      })
-      .catch(error => {
-        logger.error(error);
-      });
+    try {
+      const { token } = req.body;
+      const isTrusted = await RecapchaService.isTrustedRequest(token);
+      if (isTrusted) {
+        sendMessage(req.body).then(_ => {
+          return res.status(200).json({ success: true });
+        });
+      } else {
+        logger.error(`Request from potential bot.`);
+        return res.status(200).json({ success: false });
+      }
+    } catch (error) {
+      logger.error(error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
   },
 );
 
