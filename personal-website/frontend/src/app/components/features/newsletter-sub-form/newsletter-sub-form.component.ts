@@ -1,4 +1,4 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import {
   FormControl,
@@ -8,7 +8,6 @@ import {
 } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { CredentialsInterceptorService } from '@services/credentials-interceptor.service';
 import { CommonService } from '@services/common.service';
 import { EmailSubscriptionRequest } from '@models/app.model';
 import { Subject, exhaustMap } from 'rxjs';
@@ -23,13 +22,6 @@ import { ENVIRONMENT } from 'src/environments/environment';
     TranslateModule,
     ReactiveFormsModule,
     HttpClientModule,
-  ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: CredentialsInterceptorService,
-      multi: true,
-    },
   ],
 })
 export class NewsLetterSubFormComponent {

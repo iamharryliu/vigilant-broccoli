@@ -13,6 +13,9 @@ import { AppComponent } from '@app/app.component';
 
 import { CredentialsInterceptorService } from '@services/credentials-interceptor.service';
 import { GeneralLayoutComponent } from '@components/layouts/general/genreral-layout.component';
+import { RecaptchaInterceptor } from '@services/recaptcha-interceptor.service';
+import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
+import { ENVIRONMENT } from 'src/environments/environment';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -33,11 +36,21 @@ export function createTranslateLoader(http: HttpClient) {
       },
     }),
     GeneralLayoutComponent,
+    RecaptchaV3Module,
   ],
   providers: [
     {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useValue: ENVIRONMENT.RECAPTCHA_V3_SITE_KEY,
+    },
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: CredentialsInterceptorService,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RecaptchaInterceptor,
       multi: true,
     },
   ],

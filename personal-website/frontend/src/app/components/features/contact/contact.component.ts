@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonService } from '@services/common.service';
-import { MessageForm } from '@models/app.model';
-import { ReCaptchaV3Service } from 'ng-recaptcha';
+import { MessageRequest } from '@models/app.model';
 import { Subject, exhaustMap } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LINKS } from '@app/app-route.const';
@@ -13,21 +12,13 @@ import { LINKS } from '@app/app-route.const';
 export class ContactComponent {
   submit$: Subject<boolean> = new Subject();
 
-  constructor(
-    private commonService: CommonService,
-    private recaptchaV3Service: ReCaptchaV3Service,
-  ) {
+  constructor(private commonService: CommonService) {
     this.submit$
       .pipe(
         exhaustMap(() =>
-          this.recaptchaV3Service.execute('sendMessage').pipe(
-            exhaustMap(token =>
-              this.commonService.sendMessage({
-                ...(this.form.value as MessageForm),
-                token: token,
-              }),
-            ),
-          ),
+          this.commonService.sendMessage({
+            ...(this.form.value as MessageRequest),
+          }),
         ),
       )
       .subscribe(_ => {
@@ -48,7 +39,7 @@ export class ContactComponent {
     LINKS.SKATE_IG,
   ];
 
-  formData: MessageForm = {
+  formData: MessageRequest = {
     name: '',
     email: '',
     message: '',
