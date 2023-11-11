@@ -1,91 +1,89 @@
 <app-general-layout>
-  <app-card>
-    <div class="w-11/12 mx-auto">
-      <div class="grid sm:grid-cols-12">
-        <div class="col-span-12 md:col-span-2"></div>
-        <div class="col-span-12 md:col-span-8">
-          <h2 class="text-lg font-semibold mb-2">
-            {{ 'HOME_PAGE.VIBECHECK_LITE.HEADER' | translate }}
-          </h2>
-          <p class="mb-2 text-sm">
-            {{ 'HOME_PAGE.VIBECHECK_LITE.BODY' | translate }}
-          </p>
-          <app-link [link]="LINKS.VIBECHECK_LITE"></app-link>
-        </div>
-        <div class="col-span-12 md:col-span-2"></div>
-      </div>
-    </div>
-  </app-card>
-  <app-card>
-    <div class="grid md:grid-cols-12">
-      <div class="col-span-12 md:col-span-5 flex items-center mb-2">
-        <div class="w-11/12 mx-auto">
-          <img
-            src="/assets/mr_robot.jpg"
-            alt="Image 3"
-            class="w-auto h-auto p-0.5" />
+  <div class="pt-8 pb-8">
+    <app-card>
+      <div class="w-11/12 mx-auto">
+        <div class="grid sm:grid-cols-12">
+          <div class="col-span-12 md:col-span-2"></div>
+          <div class="col-span-12 md:col-span-8">
+            <h2 class="text-lg font-semibold mb-2">
+              {{ 'HOME_PAGE.VIBECHECK_LITE.HEADER' | translate }}
+            </h2>
+            <p class="mb-2 text-sm">
+              {{ 'HOME_PAGE.VIBECHECK_LITE.BODY' | translate }}
+            </p>
+            <app-link [link]="LINKS.VIBECHECK_LITE"></app-link>
+          </div>
+          <div class="col-span-12 md:col-span-2"></div>
         </div>
       </div>
-      <div class="col-span-12 md:col-span-7 flex items-center mb-2">
-        <div class="w-11/12 mx-auto">
-          <h2 class="text-lg font-semibold mb-2">
-            {{ 'HOME_PAGE.CAREER_CARD.HEADER' | translate }}
-          </h2>
-          <p class="mb-2 text-sm">
-            {{ 'HOME_PAGE.CAREER_CARD.BODY' | translate }}
-          </p>
-          <div>
-            <app-link [link]="LINKS.LINKEDIN"></app-link>
-          </div>
-          <div>
-            <app-link [link]="LINKS.RESUME"></app-link>
-          </div>
-          <div>
-            <app-link [link]="LINKS.GITHUB"></app-link>
+    </app-card>
+    <app-card>
+      <div class="grid md:grid-cols-12">
+        <div class="col-span-12 md:col-span-5 flex items-center mb-2">
+          <div class="w-11/12 mx-auto">
+            <img
+              src="/assets/mr_robot.jpg"
+              alt="Image 3"
+              class="w-auto h-auto p-0.5" />
           </div>
         </div>
-      </div>
-    </div>
-  </app-card>
-  <app-card>
-    <div class="grid lg:grid-cols-2">
-      <div class="flex items-center mb-2">
-        <div class="w-11/12 mx-auto">
-          <h2 class="text-lg font-semibold mb-2">
-            {{ 'HOME_PAGE.SECONDHAND_CARD.HEADER' | translate }}
-          </h2>
-          <p class="mb-2 text-sm">
-            {{ 'HOME_PAGE.SECONDHAND_CARD.BODY' | translate }}
-          </p>
-          <div>
-            <app-link [link]="LINKS.SECONDHAND_STORE_IG"></app-link>
+        <div class="col-span-12 md:col-span-7 flex items-center mb-2">
+          <div class="w-11/12 mx-auto">
+            <h2 class="text-lg font-semibold mb-2">
+              {{ 'HOME_PAGE.CAREER_CARD.HEADER' | translate }}
+            </h2>
+            <p class="mb-2 text-sm">
+              {{ 'HOME_PAGE.CAREER_CARD.BODY' | translate }}
+            </p>
+            <div>
+              <app-link [link]="LINKS.LINKEDIN"></app-link>
+            </div>
+            <div>
+              <app-link [link]="LINKS.RESUME"></app-link>
+            </div>
+            <div>
+              <app-link [link]="LINKS.GITHUB"></app-link>
+            </div>
           </div>
         </div>
       </div>
-      <div class="flex w-11/12 mx-auto">
-        <div class="w-1/3">
-          <img
-            src="/assets/secondhand_store1.jpg"
-            alt="Image 1"
-            class="w-auto h-auto p-0.5" />
+    </app-card>
+    <app-card>
+      <div class="grid lg:grid-cols-2">
+        <div class="flex items-center mb-2">
+          <div class="w-11/12 mx-auto">
+            <h2 class="text-lg font-semibold mb-2">
+              {{ 'HOME_PAGE.SECONDHAND_CARD.HEADER' | translate }}
+            </h2>
+            <p class="mb-2 text-sm">
+              {{ 'HOME_PAGE.SECONDHAND_CARD.BODY' | translate }}
+            </p>
+            <div>
+              <app-link [link]="LINKS.SECONDHAND_STORE_IG"></app-link>
+            </div>
+          </div>
         </div>
-        <div class="w-1/3">
-          <img
-            src="/assets/secondhand_store2.jpg"
-            alt="Image 2"
-            class="w-auto h-auto p-0.5" />
-        </div>
-        <div class="w-1/3">
-          <img
-            src="/assets/secondhand_store3.jpg"
-            alt="Image 3"
-            class="w-auto h-auto p-0.5" />
+        <div class="flex w-11/12 mx-auto">
+          <div class="w-1/3">
+            <img
+              src="/assets/secondhand_store1.jpg"
+              alt="Image 1"
+              class="w-auto h-auto p-0.5" />
+          </div>
+          <div class="w-1/3">
+            <img
+              src="/assets/secondhand_store2.jpg"
+              alt="Image 2"
+              class="w-auto h-auto p-0.5" />
+          </div>
+          <div class="w-1/3">
+            <img
+              src="/assets/secondhand_store3.jpg"
+              alt="Image 3"
+              class="w-auto h-auto p-0.5" />
+          </div>
         </div>
       </div>
-    </div>
-  </app-card>
-  <hr />
-  <div class="w-11/12 md:w-5/6 lg:w-2/3 mx-auto">
-    <app-contact></app-contact>
+    </app-card>
   </div>
 </app-general-layout>
