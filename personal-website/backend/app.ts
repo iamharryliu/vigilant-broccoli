@@ -7,8 +7,8 @@ import {
   invalidPathHandler,
 } from './src/middlewares/errormiddleware';
 import { requestLogger } from './src/middlewares/middleware';
-import { router } from './src/routes/MessageRoute';
-import { router as MessageRouter } from './src/routes/MessageRoute';
+import { router } from './src/routes/messageRouter';
+import { router as MessageRouter } from './src/routes/messageRouter';
 import { router as VibeCheckLiteRouter } from './src/routes/VibecheckLiteRoute';
 import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
 import { ConnectOptions } from 'mongoose';
