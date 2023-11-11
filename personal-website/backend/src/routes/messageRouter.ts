@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { CORS_OPTIONS } from '../configs/app.const';
+import { CORS_OPTIONS, HTTP_STATUS_CODES } from '../configs/app.const';
 import { EmailSubscription } from '../models/subscription.model';
 import {
   checkRecaptchaToken,
@@ -45,12 +45,18 @@ router.put(
     try {
       const email = EncryptionService.decryptData(token);
       if (await verifyEmail(email)) {
-        return res.status(201).json({ message: 'Email has been verified.' });
+        return res
+          .status(HTTP_STATUS_CODES.OK)
+          .json({ message: 'Email has been verified.' });
       }
-      return res.status(400).json({ message: 'Email does not exist.' });
+      return res
+        .status(HTTP_STATUS_CODES.FORBIDDEN)
+        .json({ message: 'Email does not exist.' });
     } catch (error) {
       logger.error(error);
-      return res.status(500).json({ error: 'Internal server error' });
+      return res
+        .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json({ error: 'Internal server error' });
     }
   },
 );
@@ -80,24 +86,28 @@ router.post(
     try {
       const email = req.body.email;
       if (!email) {
-        return res.status(400).json({ error: 'Email is required.' });
+        return res
+          .status(HTTP_STATUS_CODES.BAD_REQUEST)
+          .json({ error: 'Email is required.' });
       }
       if (await isEmailSubscribed(email)) {
-        return res.status(200).json({
+        return res.status(HTTP_STATUS_CODES.OK).json({
           success: false,
           message: 'This email is already subscribed.',
         });
       }
       await subscribeEmail(email);
       sendVerificationEmail(email).then(_ => {
-        return res.status(201).json({
+        return res.status(HTTP_STATUS_CODES.CREATED).json({
           success: true,
           message: 'Email alert saved successfully.',
         });
       });
     } catch (error) {
       logger.error(error);
-      return res.status(500).json({ error: 'Internal server error' });
+      return res
+        .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json({ error: 'Internal server error' });
     }
   },
 );
@@ -122,11 +132,13 @@ router.post(
   async (req, res) => {
     try {
       sendMessage(req.body).then(_ => {
-        return res.status(200).json({ success: true });
+        return res.status(HTTP_STATUS_CODES.OK).json({ success: true });
       });
     } catch (error) {
       logger.error(error);
-      return res.status(500).json({ error: 'Internal server error' });
+      return res
+        .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json({ error: 'Internal server error' });
     }
   },
 );

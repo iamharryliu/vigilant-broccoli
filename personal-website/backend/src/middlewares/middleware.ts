@@ -1,4 +1,4 @@
-import { IS_DEV_ENV } from '../configs/app.const';
+import { HTTP_STATUS_CODES, IS_DEV_ENV } from '../configs/app.const';
 import { RecapchaService } from '../services/RecaptchaService';
 import { logger } from './loggers';
 
@@ -9,7 +9,9 @@ export const requestLogger = (request, response, next) => {
 
 export const requireJsonContent = (request, response, next) => {
   if (request.headers['content-type'] !== 'application/json') {
-    response.status(400).send('Server requires application/json');
+    response
+      .status(HTTP_STATUS_CODES.BAD_REQUEST)
+      .send('Server requires application/json');
   } else {
     next();
   }
@@ -23,6 +25,6 @@ export const checkRecaptchaToken = async (request, response, next) => {
     next();
   } else {
     logger.error(`Request from potential bot.`);
-    response.status(403).send('Forbidden');
+    response.status(HTTP_STATUS_CODES.FORBIDDEN).send('Forbidden');
   }
 };

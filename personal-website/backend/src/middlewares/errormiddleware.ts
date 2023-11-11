@@ -1,3 +1,4 @@
+import { HTTP_STATUS_CODES } from '../configs/app.const';
 import { logger } from './loggers';
 
 export const errorLogger = (err, request, response, next) => {
@@ -11,6 +12,6 @@ export const errorResponder = (err, request, response, next) => {
 };
 
 export const invalidPathHandler = (request, response, next) => {
-  response.status(400);
+  response.status(HTTP_STATUS_CODES.INVALID_PATH);
   response.send('invalid path');
 };
