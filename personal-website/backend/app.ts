@@ -7,7 +7,7 @@ import {
   invalidPathHandler,
 } from './src/middlewares/errormiddleware';
 import { requestLogger } from './src/middlewares/middleware';
-import { router } from './src/routes/messageRouter';
+import { router } from './src/routes/router';
 import { router as messageRouter } from './src/routes/messageRouter';
 import { router as VibeCheckLiteRouter } from './src/routes/VibecheckLiteRoute';
 import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';

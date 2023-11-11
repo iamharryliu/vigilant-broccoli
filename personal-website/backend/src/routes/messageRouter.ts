@@ -5,7 +5,7 @@ import { EmailSubscription } from '../models/subscription.model';
 import { requireJsonContent } from '../middlewares/middleware';
 import { logger } from '../middlewares/loggers';
 import { EncryptionService } from '../services/EncryptionService';
-import { MailTransportService } from '../services/mailTransportService';
+import { MailTransportService } from '../services/MailTransportService';
 import { DEFAULT_EMAIL_REQUEST } from '../models/email.model';
 import { RecapchaService } from '../services/RecaptchaService';
 
