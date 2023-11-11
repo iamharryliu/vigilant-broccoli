@@ -2,15 +2,18 @@ import express from 'express';
 import cors from 'cors';
 import { CORS_OPTIONS } from '../configs/app.const';
 import { EmailSubscription } from '../models/subscription.model';
-import { requireJsonContent } from '../middlewares/middleware';
+import {
+  checkRecaptchaToken,
+  requireJsonContent,
+} from '../middlewares/middleware';
 import { logger } from '../middlewares/loggers';
 import { EncryptionService } from '../services/EncryptionService';
 import { MailTransportService } from '../services/MailTransportService';
 import { DEFAULT_EMAIL_REQUEST } from '../models/email.model';
-import { RecapchaService } from '../services/RecaptchaService';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
+router.use(checkRecaptchaToken);
 
 async function sendVerificationEmail(email: string) {
   const token = EncryptionService.encryptData(email);
@@ -118,16 +121,9 @@ router.post(
   requireJsonContent,
   async (req, res) => {
     try {
-      const { token } = req.body;
-      const isTrusted = await RecapchaService.isTrustedRequest(token);
-      if (isTrusted) {
-        sendMessage(req.body).then(_ => {
-          return res.status(200).json({ success: true });
-        });
-      } else {
-        logger.error(`Request from potential bot.`);
-        return res.status(200).json({ success: false });
-      }
+      sendMessage(req.body).then(_ => {
+        return res.status(200).json({ success: true });
+      });
     } catch (error) {
       logger.error(error);
       return res.status(500).json({ error: 'Internal server error' });
