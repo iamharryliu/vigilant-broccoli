@@ -2,14 +2,14 @@
   <app-navbar></app-navbar>
   <div #ref><ng-content></ng-content></div>
   <hr *ngIf="ref.children.length" />
-  <div *ngIf="hasContactForm"
-    class="w-11/12 md:w-5/6 lg:w-2/3 mx-auto pt-14 pb-14">
+  <div
+    *ngIf="hasContactForm"
+    class="w-11/12 md:w-5/6 lg:w-2/3 mx-auto pt-14 pb-14"
+  >
     <app-contact></app-contact>
   </div>
   <hr *ngIf="hasContactForm" />
-  <div
-    *ngIf="hasNewsLetterSignupForm"
-    class="pb-8 pt-8">
+  <div *ngIf="hasNewsLetterSignupForm" class="pb-8 pt-8">
     <app-newsletter-sub-form></app-newsletter-sub-form>
   </div>
   <hr *ngIf="hasNewsLetterSignupForm" />
