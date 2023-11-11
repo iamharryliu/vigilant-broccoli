@@ -1,3 +1,4 @@
+import { IS_DEV_ENV } from '../configs/app.const';
 import { RecapchaService } from '../services/RecaptchaService';
 import { logger } from './loggers';
 
@@ -11,13 +12,13 @@ export const requireJsonContent = (request, response, next) => {
     response.status(400).send('Server requires application/json');
   } else {
     next();
-    return;
   }
 };
 
 export const checkRecaptchaToken = async (request, response, next) => {
   const { token } = request.body;
-  const isTrusted = await RecapchaService.isTrustedRequest(token);
+  const isTrusted =
+    (await RecapchaService.isTrustedRequest(token)) || IS_DEV_ENV;
   if (isTrusted) {
     next();
   } else {

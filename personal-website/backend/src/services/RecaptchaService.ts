@@ -1,10 +1,5 @@
-import { HOST, LOCAL_HOST_IP_ADDRESS } from '../configs/app.const';
-
 export class RecapchaService {
   static async isTrustedRequest(token: string) {
-    if (HOST === LOCAL_HOST_IP_ADDRESS) {
-      return true;
-    }
     return fetch(`https://www.google.com/recaptcha/api/siteverify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
