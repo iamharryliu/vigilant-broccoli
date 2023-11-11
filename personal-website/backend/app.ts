@@ -8,7 +8,7 @@ import {
 } from './src/middlewares/errormiddleware';
 import { requestLogger } from './src/middlewares/middleware';
 import { router } from './src/routes/messageRouter';
-import { router as MessageRouter } from './src/routes/messageRouter';
+import { router as messageRouter } from './src/routes/messageRouter';
 import { router as VibeCheckLiteRouter } from './src/routes/VibecheckLiteRoute';
 import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
 import { ConnectOptions } from 'mongoose';
@@ -17,7 +17,7 @@ import { logger } from './src/middlewares/loggers';
 const app = express();
 app.options('*', cors(CORS_OPTIONS));
 app.use(router);
-app.use(MessageRouter);
+app.use(messageRouter);
 app.use(VibeCheckLiteRouter);
 app.use(errorResponder);
 app.use(invalidPathHandler);
