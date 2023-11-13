@@ -6,7 +6,7 @@ import {
   HttpHandler,
   HttpEvent,
 } from '@angular/common/http';
-import { Observable, exhaustMap } from 'rxjs';
+import { Observable, catchError, exhaustMap } from 'rxjs';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 
 @Injectable()
@@ -27,6 +27,7 @@ export class RecaptchaInterceptor implements HttpInterceptor {
         });
         return next.handle(modifiedRequest);
       }),
+      catchError(_ => next.handle(request)),
     );
   }
 }
