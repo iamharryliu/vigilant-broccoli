@@ -25,6 +25,8 @@ export const checkRecaptchaToken = async (request, response, next) => {
     next();
   } else {
     logger.error(`Request from potential bot.`);
-    response.status(HTTP_STATUS_CODES.FORBIDDEN).send('Forbidden');
+    response
+      .status(HTTP_STATUS_CODES.FORBIDDEN)
+      .json({ message: 'Forbidden.' });
   }
 };
