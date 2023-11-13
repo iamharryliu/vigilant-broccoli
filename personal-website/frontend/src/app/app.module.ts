@@ -7,12 +7,9 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
 import { AppRoutingModule } from '@app/app-routing.module';
 import { AppComponent } from '@app/app.component';
-
 import { CredentialsInterceptorService } from '@services/credentials-interceptor.service';
-import { GeneralLayoutComponent } from '@components/layouts/general/genreral-layout.component';
 import { RecaptchaInterceptor } from '@services/recaptcha-interceptor.service';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { ENVIRONMENT } from 'src/environments/environment';
@@ -35,7 +32,6 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient],
       },
     }),
-    GeneralLayoutComponent,
     RecaptchaV3Module,
   ],
   providers: [
