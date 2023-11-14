@@ -6,20 +6,19 @@ import {
   HttpHandler,
   HttpEvent,
 } from '@angular/common/http';
-import { Observable, catchError, exhaustMap } from 'rxjs';
+import { Observable, exhaustMap } from 'rxjs';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 
 @Injectable()
 export class RecaptchaInterceptor implements HttpInterceptor {
-  initialInterceptCalled = false;
   constructor(private recaptchaV3Service: ReCaptchaV3Service) {}
 
   intercept(
     request: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
-    if (!this.initialInterceptCalled) {
-      this.initialInterceptCalled = true;
+    // TODO: update this to do protected routes
+    if (!request.body) {
       return next.handle(request);
     }
     return this.recaptchaV3Service.execute('requestType').pipe(
@@ -32,7 +31,6 @@ export class RecaptchaInterceptor implements HttpInterceptor {
         });
         return next.handle(modifiedRequest);
       }),
-      catchError(_ => next.handle(request)),
     );
   }
 }
