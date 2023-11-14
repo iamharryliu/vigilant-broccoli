@@ -10,8 +10,13 @@ import { requestLogger } from './src/middlewares/middleware';
 import { router } from './src/routes/router';
 import { router as messageRouter } from './src/routes/messageRouter';
 import { router as VibeCheckLiteRouter } from './src/routes/VibecheckLiteRoute';
-import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
-import { ConnectOptions } from 'mongoose';
+import {
+  PORT,
+  CORS_OPTIONS,
+  HOST,
+  MONGO_DB_SERVER,
+  MONGO_DB_SETTINGS,
+} from './src/configs/app.const';
 import { logger } from './src/middlewares/loggers';
 
 const app = express();
@@ -27,13 +32,7 @@ app.listen(PORT as number, HOST, () => {
   logger.info(`Server listening at ${HOST}:${PORT}`);
 });
 
-mongoose.connect(
-  `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net/`,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as ConnectOptions,
-);
+mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
 export const db = mongoose.connection;
 db.getClient;
 db.on('error', error => {
