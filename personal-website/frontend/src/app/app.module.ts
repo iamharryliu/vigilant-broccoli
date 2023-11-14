@@ -13,7 +13,10 @@ import { RecaptchaInterceptor } from '@services/recaptcha-interceptor.service';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { ENVIRONMENT } from 'src/environments/environment';
 import { AppService } from '@app/core/services/app.service';
-import { createTranslateLoader } from '@app/core/translate-util';
+import {
+  NGX_TRANSLATE_LANGUAGE,
+  createTranslateLoader,
+} from '@app/core/translate-util';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,7 +25,7 @@ import { createTranslateLoader } from '@app/core/translate-util';
     AppRoutingModule,
     HttpClientModule,
     TranslateModule.forRoot({
-      defaultLanguage: 'en',
+      defaultLanguage: NGX_TRANSLATE_LANGUAGE.DEFAULT,
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,

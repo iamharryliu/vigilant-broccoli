@@ -17,7 +17,6 @@ export class RecaptchaInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
-    // TODO: update this to do protected routes
     if (!request.body) {
       return next.handle(request);
     }
