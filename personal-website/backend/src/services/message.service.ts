@@ -1,5 +1,5 @@
 import { DEFAULT_EMAIL_REQUEST } from '../models/email.model';
-import { MailTransportService } from './MailTransportService';
+import { MailTransportService } from './email.service';
 
 export class MessageService {
   static sendMessage(body) {

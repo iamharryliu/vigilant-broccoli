@@ -2,10 +2,10 @@ import path from 'path';
 import ejs from 'ejs';
 import { DEFAULT_EMAIL_REQUEST } from '../models/email.model';
 import { EmailSubscription } from '../models/subscription.model';
-import { EncryptionService } from './EncryptionService';
-import { MailTransportService } from './MailTransportService';
+import { EncryptionService } from './encryption.service';
+import { MailTransportService } from './email.service';
 
-export class EmailSubscriptionService {
+export class NewsletterService {
   static async subscribeEmail(email: string) {
     const emailSubscription = await EmailSubscription.findOne({
       email: email,

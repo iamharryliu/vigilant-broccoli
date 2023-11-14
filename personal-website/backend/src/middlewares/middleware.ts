@@ -1,5 +1,5 @@
 import { HTTP_STATUS_CODES, IS_DEV_ENV } from '../configs/app.const';
-import { RecapchaService } from '../services/RecaptchaService';
+import { RecapchaService } from '../services/recaptcha.service';
 import { logger } from './loggers';
 
 export const requestLogger = (request, response, next) => {

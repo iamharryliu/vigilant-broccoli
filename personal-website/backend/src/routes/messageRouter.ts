@@ -6,9 +6,9 @@ import {
   requireJsonContent,
 } from '../middlewares/middleware';
 import { logger } from '../middlewares/loggers';
-import { EncryptionService } from '../services/EncryptionService';
-import { EmailSubscriptionService } from '../services/EmailSubscriptionService';
-import { MessageService } from '../services/MessageService';
+import { EncryptionService } from '../services/encryption.service';
+import { NewsletterService } from '../services/newsletter.service';
+import { MessageService } from '../services/message.service';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
@@ -21,7 +21,7 @@ router.put(
     const token = req.params.token;
     try {
       const email = EncryptionService.decryptData(token);
-      if (await EmailSubscriptionService.verifyEmail(email)) {
+      if (await NewsletterService.verifyEmail(email)) {
         return res
           .status(HTTP_STATUS_CODES.OK)
           .json({ message: 'Email has been verified.' });
@@ -50,7 +50,7 @@ router.post(
           .status(HTTP_STATUS_CODES.BAD_REQUEST)
           .json({ error: 'Email is required.' });
       }
-      EmailSubscriptionService.subscribeEmail(email).then(_ => {
+      NewsletterService.subscribeEmail(email).then(_ => {
         return res.status(HTTP_STATUS_CODES.CREATED).json({
           success: true,
           message: 'Please check verification email.',
