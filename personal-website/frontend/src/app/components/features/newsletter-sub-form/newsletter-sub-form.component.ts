@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import { CommonService } from '@services/common.service';
 import { EmailSubscriptionRequest } from '@models/app.model';
 import { Subject, exhaustMap } from 'rxjs';
-import { ENVIRONMENT } from 'src/environments/environment';
 
 @Component({
   standalone: true,
@@ -36,13 +35,7 @@ export class NewsLetterSubFormComponent {
           ),
         ),
       )
-      .subscribe(res => {
-        if (res.success) {
-          window.open(
-            `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription`,
-            '_blank',
-          );
-        }
+      .subscribe(_ => {
         this.form.reset();
       });
   }
