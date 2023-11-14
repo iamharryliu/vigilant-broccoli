@@ -1,5 +1,7 @@
 import express from 'express';
+import path from 'path';
 import cors from 'cors';
+import ejs from 'ejs';
 import { CORS_OPTIONS, HTTP_STATUS_CODES } from '../configs/app.const';
 import { EmailSubscription } from '../models/subscription.model';
 import {
@@ -15,16 +17,25 @@ export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
 router.use(checkRecaptchaToken);
 
-async function sendVerificationEmail(email: string) {
+function sendVerificationEmail(email: string) {
   const token = EncryptionService.encryptData(email);
-  const text = `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`;
-  const subject = 'Please verify email';
-  return MailTransportService.sendMail({
-    ...DEFAULT_EMAIL_REQUEST,
-    to: email,
-    subject,
-    text,
-  });
+  const confirmLink = `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`;
+  const subject = 'Email Verification';
+
+  return ejs
+    .renderFile(path.join(__dirname, 'verify-subscribe.ejs'), {
+      email: email,
+      confirmLink: confirmLink,
+      siteUrl: process.env.PERSONAL_WEBSITE_FRONTEND_URL,
+    })
+    .then(emailTemplate => {
+      return MailTransportService.sendMail({
+        ...DEFAULT_EMAIL_REQUEST,
+        to: email,
+        subject,
+        html: emailTemplate,
+      });
+    });
 }
 
 async function verifyEmail(email: string) {
@@ -61,21 +72,15 @@ router.put(
   },
 );
 
-async function findEmailSubscription(email: string) {
-  return EmailSubscription.findOne({
+async function subscribeEmail(email) {
+  const emailSubscription = await EmailSubscription.findOne({
     email: email,
   });
-}
-
-async function isEmailSubscribed(email: string) {
-  const emailSubscription = await findEmailSubscription(email);
   const isSubscribed = !!emailSubscription;
-  return isSubscribed;
-}
-
-async function subscribeEmail(email) {
-  const newEmailAlert = new EmailSubscription({ email, isVerified: false });
-  return newEmailAlert.save();
+  if (!isSubscribed) {
+    const newEmailAlert = new EmailSubscription({ email, isVerified: false });
+    return newEmailAlert.save();
+  }
 }
 
 router.post(
@@ -90,17 +95,11 @@ router.post(
           .status(HTTP_STATUS_CODES.BAD_REQUEST)
           .json({ error: 'Email is required.' });
       }
-      if (await isEmailSubscribed(email)) {
-        return res.status(HTTP_STATUS_CODES.OK).json({
-          success: false,
-          message: 'This email is already subscribed.',
-        });
-      }
       await subscribeEmail(email);
       sendVerificationEmail(email).then(_ => {
         return res.status(HTTP_STATUS_CODES.CREATED).json({
           success: true,
-          message: 'Email alert saved successfully.',
+          message: 'Please check verification email.',
         });
       });
     } catch (error) {

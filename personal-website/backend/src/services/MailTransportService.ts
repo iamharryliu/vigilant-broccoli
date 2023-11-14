@@ -16,6 +16,7 @@ export class MailTransportService {
       to: request.to,
       subject: request.subject,
       text: request.text,
+      html: request.html,
     });
   }
 }

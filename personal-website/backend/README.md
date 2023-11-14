@@ -21,3 +21,4 @@ fly deploy --ha=false
 [Google Recaptcha V3 Verify](https://developers.google.com/recaptcha/docs/verify)
 [ExhaustMap](https://stackoverflow.com/questions/63780853/prevent-user-to-click-button-until-service-response-angular-7-rxjs)
 [Encryption](https://dev.to/jobizil/encrypt-and-decrypt-data-in-nodejs-using-aes-256-cbc-2l6d)
+[EJS Email Template](https://medium.com/geekculture/email-templating-with-ejs-node-sendgrid-8f98dacef572)
