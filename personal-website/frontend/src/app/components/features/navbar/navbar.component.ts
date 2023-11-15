@@ -15,6 +15,6 @@ import { TranslateModule } from '@ngx-translate/core';
 export class NavbarComponent {
   NAVBAR: { index: string; links: Link[] } = {
     index: APP_PATH.INDEX,
-    links: [LINKS.VIBECHECK_LITE, LINKS.ABOUT_PAGE, LINKS.CONTACT_PAGE],
+    links: [LINKS.VIBECHECK_LITE_APP, LINKS.ABOUT_PAGE, LINKS.CONTACT_PAGE],
   };
 }

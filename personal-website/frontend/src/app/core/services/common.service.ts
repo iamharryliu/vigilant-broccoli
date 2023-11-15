@@ -7,6 +7,7 @@ import {
   EmailSubscriptionRequest,
   Location,
   MessageRequest,
+  VibecheckLiteSubscriptionRequest,
 } from '@models/app.model';
 
 @Injectable({
@@ -19,6 +20,15 @@ export class CommonService {
 
   subscribeToNewsletter(request: EmailSubscriptionRequest): Observable<any> {
     return this.http.post<any>(`${this.BACKEND_URL}/email-alerts`, request);
+  }
+
+  subscribeToVibecheckLite(
+    request: VibecheckLiteSubscriptionRequest,
+  ): Observable<any> {
+    return this.http.post<any>(
+      `${this.BACKEND_URL}/vibecheck/subscribe`,
+      request,
+    );
   }
 
   sendMessage(request: MessageRequest): Observable<any> {

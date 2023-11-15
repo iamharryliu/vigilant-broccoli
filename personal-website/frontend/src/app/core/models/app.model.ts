@@ -20,3 +20,9 @@ export interface Link {
   isExternalLink?: boolean;
   isButton?: boolean;
 }
+
+export interface VibecheckLiteSubscriptionRequest {
+  email: string;
+  latitude: number;
+  longitude: number;
+}

@@ -69,8 +69,11 @@
       "SKATE_IG": {
         "TEXT": "Skate Instagram"
       },
-      "VIBECHECK_LITE": {
-        "TEXT": "Vibecheck Lite"
+      "VIBECHECK_LITE_APP": {
+        "TEXT": "Vibecheck Lite App"
+      },
+      "VIBECHECK_LITE_SUBSCRIBE": {
+        "TEXT": "Subscribe to Vibecheck Lite"
       },
       "EMAIL": {
         "TEXT": "Contact me"

@@ -40,6 +40,7 @@ export class VerifyEmailSubscriptionPageComponent {
 
   form = new FormGroup({
     token: new FormControl('', [Validators.required]),
+    subscribeToVibecheckLite: new FormControl(false),
   });
 
   submit() {

@@ -7,6 +7,7 @@ import { LinkTreePageComponent } from '@pages/link-tree-page/link-tree-page.comp
 import { Link } from '@models/app.model';
 import { ENVIRONMENT } from 'src/environments/environment';
 import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscription/verify-email-subscription-page.component';
+import { VibecheckLiteSubscribePageComponent } from '@components/pages/vibecheck-lite-subscribe-page/vibecheck-lite-subscribe.page';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -32,10 +33,22 @@ export const CONTACT_ROUTE: Route = {
   component: ContactPageComponent,
 };
 
+export const VIBECHECK_LITE_APP_ROUTE: Route = {
+  path: 'app',
+  data: { title: 'vibecheck lite' },
+  component: VibecheckLiteComponent,
+};
+
+export const VIBECHECK_LITE_SUBSCRIBE_ROUTE: Route = {
+  path: 'subscribe',
+  data: { title: 'subscribe to vibecheck lite' },
+  component: VibecheckLiteSubscribePageComponent,
+};
+
 export const VIBECHECK_LITE_ROUTE: Route = {
   path: 'vibecheck-lite',
-  data: { title: ' vibecheck lite' },
-  component: VibecheckLiteComponent,
+  data: { title: ' vibecheck-lite' },
+  children: [VIBECHECK_LITE_APP_ROUTE, VIBECHECK_LITE_SUBSCRIBE_ROUTE],
 };
 
 export const PROJECT_ROUTE: Route = {
@@ -54,7 +67,7 @@ export const APP_PATH = {
   INDEX: '',
   ABOUT: `/${ABOUT_ROUTE.path}`,
   CONTACT_PAGE: `/${CONTACT_ROUTE.path}`,
-  VIBECHECK_LITE: `/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}`,
+  VIBECHECK_LITE: `/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE}/${VIBECHECK_LITE_APP_ROUTE.path}`,
 };
 
 export const APP_ROUTES: Routes = [
@@ -81,9 +94,15 @@ const CONTACT_PAGE: Link = {
   url: APP_PATH.CONTACT_PAGE,
   text: 'LINKS.INTERNAL.CONTACT_PAGE',
 };
-const VIBECHECK_LITE: Link = {
-  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}`,
-  text: 'LINKS.EXTERNAL.VIBECHECK_LITE.TEXT',
+const VIBECHECK_LITE_APP: Link = {
+  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_APP_ROUTE.path}`,
+  text: 'LINKS.EXTERNAL.VIBECHECK_LITE_APP.TEXT',
+  isExternalLink: true,
+  target: '_blank',
+};
+const VIBECHECK_LITE_SUBSCRIBE: Link = {
+  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_SUBSCRIBE_ROUTE.path}`,
+  text: 'LINKS.EXTERNAL.VIBECHECK_LITE_SUBSCRIBE.TEXT',
   isExternalLink: true,
   target: '_blank',
 };
@@ -122,7 +141,8 @@ export const LINKS = {
   PERSONAL_WEBSITE,
   ABOUT_PAGE,
   CONTACT_PAGE,
-  VIBECHECK_LITE,
+  VIBECHECK_LITE_APP,
+  VIBECHECK_LITE_SUBSCRIBE,
   LINKEDIN,
   GITHUB,
   PERSONAL_INSTAGRAM,

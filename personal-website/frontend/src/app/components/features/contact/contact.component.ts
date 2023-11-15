@@ -39,12 +39,6 @@ export class ContactComponent {
     LINKS.SKATE_IG,
   ];
 
-  formData: MessageRequest = {
-    name: '',
-    email: '',
-    message: '',
-  };
-
   submitForm() {
     this.submit$.next(true);
   }

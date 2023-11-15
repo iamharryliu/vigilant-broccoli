@@ -15,7 +15,11 @@ export class NewsletterService {
       const newEmailAlert = new EmailSubscription({ email, isVerified: false });
       await newEmailAlert.save();
     }
-    return this.sendVerificationEmail(email);
+    if (emailSubscription.isVerified) {
+      return 'Email is already verified.';
+    }
+    await this.sendVerificationEmail(email);
+    return 'Please check verification email.';
   }
 
   static sendVerificationEmail(email: string) {

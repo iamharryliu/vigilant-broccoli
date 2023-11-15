@@ -50,10 +50,10 @@ router.post(
           .status(HTTP_STATUS_CODES.BAD_REQUEST)
           .json({ error: 'Email is required.' });
       }
-      NewsletterService.subscribeEmail(email).then(_ => {
+      NewsletterService.subscribeEmail(email).then(message => {
         return res.status(HTTP_STATUS_CODES.CREATED).json({
           success: true,
-          message: 'Please check verification email.',
+          message: message,
         });
       });
     } catch (error) {
