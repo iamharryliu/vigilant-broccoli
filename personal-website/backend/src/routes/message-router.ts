@@ -4,7 +4,7 @@ import { CORS_OPTIONS, HTTP_STATUS_CODES } from '../configs/app.const';
 import {
   checkRecaptchaToken,
   requireJsonContent,
-} from '../middlewares/middleware';
+} from '../middlewares/common.middleware';
 import { logger } from '../middlewares/loggers';
 import { EncryptionService } from '../services/encryption.service';
 import { NewsletterService } from '../services/newsletter.service';

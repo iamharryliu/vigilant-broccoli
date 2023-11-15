@@ -5,11 +5,11 @@ import {
   errorLogger,
   errorResponder,
   invalidPathHandler,
-} from './src/middlewares/errormiddleware';
-import { requestLogger } from './src/middlewares/middleware';
+} from './src/middlewares/error.middleware';
+import { requestLogger } from './src/middlewares/common.middleware';
 import { router } from './src/routes/router';
-import { router as messageRouter } from './src/routes/messageRouter';
-import { router as VibeCheckLiteRouter } from './src/routes/VibecheckLiteRoute';
+import { router as messageRouter } from './src/routes/message-router';
+import { router as VibeCheckLiteRouter } from './src/routes/vibecheck-lite-route';
 import {
   PORT,
   CORS_OPTIONS,
