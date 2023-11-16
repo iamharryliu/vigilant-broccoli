@@ -1,12 +1,9 @@
 {
   "compilerOptions": {
-    "rootDirs": ["src"],
-    "outDir": "dist",
-    "lib": ["es2020"],
-    "target": "es2020",
-    "module": "esnext",
+    "rootDir": "./",
+    "target": "es6",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "esModuleInterop": true,
-    "types": ["node"]
+    "esModuleInterop": true
   }
 }
