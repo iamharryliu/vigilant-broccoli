@@ -11,7 +11,7 @@ export default class MailService {
     });
   }
 
-  sendEmail(email, subject = 'subject', message = 'message') {
+  async sendEmail(email, subject = 'subject', message = 'message') {
     const mailOptions = {
       from: process.env.MY_EMAIL,
       to: email,

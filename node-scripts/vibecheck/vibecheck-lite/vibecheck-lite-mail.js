@@ -1,15 +1,9 @@
+import db from './mongo-db.js';
+import { EmailSubscription } from './vibecheck-lite.model.js';
+import { VibecheckLite } from '../vibecheck-lite/vibecheck-lite.js';
 import MailService from '../../mailService/mailService.js';
-import OpenAI from 'openai';
 
-const emails = [process.env.MY_EMAIL];
-
-const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
+const SUBJECT = `Vibecheck Lite Weather Recommendation`;
 
 const mailService = new MailService(
   'gmail',
@@ -17,56 +11,30 @@ const mailService = new MailService(
   process.env.MY_EMAIL_PASSWORD,
 );
 
-class VibecheckLite {
-  static HOURS_OF_PREDICTION_FOR_RECOMMENDATION = 12;
+let emailSubscriptions = await EmailSubscription.find({
+  isVerified: true,
+  vibecheckLiteSubscription: { $exists: true, $ne: null },
+});
+emailSubscriptions = emailSubscriptions.map(data => {
+  return {
+    email: data.email,
+    latitude: data.vibecheckLiteSubscription.latitude,
+    longitude: data.vibecheckLiteSubscription.longitude,
+  };
+});
 
-  static getNumberOf3HourBlocks() {
-    return this.HOURS_OF_PREDICTION_FOR_RECOMMENDATION / 3;
-  }
-
-  static async getOutfitRecommendation() {
-    let result = '';
-    try {
-      const requestData =
-        await VibecheckLite.getWeatherDataForOutfitRecommendation();
-      const requestString = `Can you recommend complete outfits to wear with the following json data for the ${
-        this.getNumberOf3HourBlocks
-      } separate times. Please use the "dt_txt" parameter for the time, it is in GMT, please convert it to EST. Please use the "temp" parameter, it is in degrees Kelvin (K), please convert it to degrees Celsius (C).${JSON.stringify(
-        requestData,
-      )}. Convert the date and time from GMT to EST for the answer. Convert the temperature to celsius instead of Kelvin for the answer. Reply using the following template: \nTime {h:mm EST}:\n- Temperature: {temperature in celsius}\n- Weather: {weather}\n- Recommendation: {recommended outfit}.`;
-      const completion = await openai.chat.completions.create({
-        messages: [{ role: 'system', content: requestString }],
-        model: 'gpt-3.5-turbo',
-      });
-      result =
-        completion.choices[0].message.content +
-        `\n\n ${JSON.stringify(requestData, null, 2)}`;
-      return result;
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  static async getWeatherDataForOutfitRecommendation() {
-    try {
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=toronto&appid=${OPENWEATHER_API_KEY}`,
-      );
-      const data = await res.json();
-      const requestData = data.list.slice(0, this.getNumberOf3HourBlocks());
-      return requestData;
-    } catch (err) {
-      console.log(err);
-    }
-  }
+async function emailSubscriber(emailSubscription) {
+  const latitude = emailSubscription.latitude;
+  const longitude = emailSubscription.longitude;
+  const message = await VibecheckLite.getOutfitRecommendation({
+    latitude,
+    longitude,
+  });
+  mailService.sendEmail(emailSubscription.email, SUBJECT, message);
 }
 
-main();
-
-async function main() {
-  for (let email of emails) {
-    const subject = `Vibecheck Lite`;
-    const message = await VibecheckLite.getOutfitRecommendation();
-    mailService.sendEmail(email, subject, message);
-  }
+for (let emailSubscription of emailSubscriptions) {
+  emailSubscriber(emailSubscription);
 }
+
+db.close();
