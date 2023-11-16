@@ -1,0 +1,61 @@
+CREATE
+
+mutation AddMutation($parent: AddParentInput!){
+  addParent(parent: $parent){
+    id, name
+  }
+}
+
+{
+  "parent":{
+    "name":"John Doe"
+  }
+}
+
+READ
+
+query Get {
+  parents {
+    id,
+    name
+  }
+}
+
+query GetById($id:ID!) {
+  parent(id:$id) {
+    id,
+    name
+  }
+}
+
+{
+  "id":"1"
+}
+
+related data
+
+query Dogs($id:ID!){
+  dog(id:$id){
+    name
+    handlers{
+      id,
+      name 
+    }
+  }
+}
+
+{
+  "id":"2"
+}
+
+
+DELETE
+
+mutation DeleteMutation($id: ID!){
+  deleteParent(id:$id){
+    id,name
+  }
+}
+{
+  "id":"1"
+}
