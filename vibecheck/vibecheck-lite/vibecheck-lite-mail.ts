@@ -26,21 +26,18 @@ async function main() {
   });
   db.close();
 
-  async function emailSubscriber(emailSubscription) {
-    const latitude = emailSubscription.latitude;
-    const longitude = emailSubscription.longitude;
-    console.log(`Getting outfit recommendation for ${emailSubscription.email}`);
+  const emailPromises = emailSubscriptions.map(async emailSubscription => {
+    const { email, latitude, longitude } = emailSubscription;
+    console.log(`Getting outfit recommendation for ${email}`);
     const message = await VibecheckLite.getOutfitRecommendation({
       latitude,
       longitude,
     });
-    console.log(`Sending email to ${emailSubscription.email}.`);
-    mailService.sendEmail(emailSubscription.email, SUBJECT, message as string);
-  }
+    console.log(`Sending email to ${email}.`);
+    return mailService.sendEmail(email, SUBJECT, message as string);
+  });
 
-  for (const emailSubscription of emailSubscriptions) {
-    emailSubscriber(emailSubscription);
-  }
+  await Promise.all(emailPromises);
 }
 
 main();
