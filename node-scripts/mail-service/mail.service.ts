@@ -1,7 +1,12 @@
 import nodemailer from 'nodemailer';
 
 export default class MailService {
-  constructor(serviceName, email, password) {
+  transporter;
+  constructor(
+    serviceName = 'gmail',
+    email = process.env.MY_EMAIL,
+    password = process.env.MY_EMAIL_PASSWORD,
+  ) {
     this.transporter = nodemailer.createTransport({
       service: serviceName,
       auth: {
@@ -11,14 +16,18 @@ export default class MailService {
     });
   }
 
-  async sendEmail(email, subject = 'subject', message = 'message') {
-    const mailOptions = {
+  async sendEmail(
+    email = process.env.MY_EMAIL,
+    subject = 'Default subject',
+    message = 'Default message',
+  ) {
+    const mailOption = {
       from: process.env.MY_EMAIL,
       to: email,
       subject: subject,
       text: message,
     };
-    this.transporter.sendMail(mailOptions, function (error, info) {
+    this.transporter.sendMail(mailOption, function (error, info) {
       if (error) {
         console.log(error);
       } else {

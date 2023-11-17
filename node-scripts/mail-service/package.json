@@ -1,0 +1,11 @@
+{
+  "name": "mailservice",
+  "version": "1.0.0",
+  "main": "mailService.js",
+  "license": "ISC",
+  "dependencies": {
+    "nodemailer": "^6.9.7",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
