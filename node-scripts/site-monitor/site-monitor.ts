@@ -1,6 +1,6 @@
 import http from 'http';
 import https from 'https';
-import MailService from '../mail-service/mail.service';
+import MailService from '../general-services/mail.service';
 
 const sites = [
   'https://vigilant-broccoli.pages.dev/',
@@ -9,9 +9,7 @@ const sites = [
 
 const mailService = new MailService();
 
-checkSiteStatuses();
-
-async function checkSiteStatuses() {
+async function main() {
   for (const site of sites) {
     const status = await getSiteStatus(site);
     let message = `${site} is OK.`;
@@ -41,3 +39,5 @@ function getSiteStatus(url: string) {
       });
   });
 }
+
+main();

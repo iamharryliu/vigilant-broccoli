@@ -1,7 +1,22 @@
-import db from './mongo-db';
+import mongoose from 'mongoose';
+import {
+  MONGO_DB_SERVER,
+  MONGO_DB_SETTINGS,
+} from '../../node-scripts/general-services/mongo-db';
 import { EmailSubscription } from './vibecheck-lite.model';
 import { VibecheckLite } from './vibecheck-lite';
-import MailService from '../../node-scripts/mail-service/mail.service';
+import MailService from '../../node-scripts/general-services/mail.service';
+
+mongoose.Promise = global.Promise;
+mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
+const db = mongoose.connection;
+db.getClient;
+db.on('error', error => {
+  console.error(`MongoDB connection error: ${error}`);
+});
+db.once('open', () => {
+  console.info('Connected to MongoDB');
+});
 
 const SUBJECT = `Vibecheck Lite Weather Recommendation`;
 
