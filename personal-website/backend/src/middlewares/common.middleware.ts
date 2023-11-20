@@ -30,6 +30,7 @@ export const checkRecaptchaToken = async (request, response, next) => {
         .status(HTTP_STATUS_CODES.FORBIDDEN)
         .json({ message: 'Forbidden.' });
     }
+  } else {
+    next();
   }
-  next();
 };
