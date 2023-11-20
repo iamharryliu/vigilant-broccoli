@@ -18,15 +18,18 @@ export const requireJsonContent = (request, response, next) => {
 };
 
 export const checkRecaptchaToken = async (request, response, next) => {
-  const { token } = request.body;
-  const isTrusted =
-    (await RecapchaService.isTrustedRequest(token)) || IS_DEV_ENV;
-  if (isTrusted) {
-    next();
-  } else {
-    logger.error(`Request from potential bot.`);
-    response
-      .status(HTTP_STATUS_CODES.FORBIDDEN)
-      .json({ message: 'Forbidden.' });
+  if (request.method !== 'GET') {
+    const { token } = request.body;
+    const isTrusted =
+      (await RecapchaService.isTrustedRequest(token)) || IS_DEV_ENV;
+    if (isTrusted) {
+      next();
+    } else {
+      logger.error(`Request from potential bot.`);
+      response
+        .status(HTTP_STATUS_CODES.FORBIDDEN)
+        .json({ message: 'Forbidden.' });
+    }
   }
+  next();
 };

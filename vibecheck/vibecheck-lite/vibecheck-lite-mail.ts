@@ -4,10 +4,9 @@ import {
   MONGO_DB_SETTINGS,
 } from '../../node-scripts/general-services/mongo-db';
 import { EmailSubscription } from './vibecheck-lite.model';
-import { VibecheckLite } from './vibecheck-lite';
+import VibecheckLite from './vibecheck-lite';
 import MailService from '../../node-scripts/general-services/mail.service';
 
-mongoose.Promise = global.Promise;
 mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
 const db = mongoose.connection;
 db.getClient;
@@ -17,8 +16,6 @@ db.on('error', error => {
 db.once('open', () => {
   console.info('Connected to MongoDB');
 });
-
-const SUBJECT = `Vibecheck Lite Weather Recommendation`;
 
 const mailService = new MailService(
   'gmail',
@@ -49,7 +46,11 @@ async function main() {
       longitude,
     });
     console.log(`Sending email to ${email}.`);
-    return mailService.sendEmail(email, SUBJECT, message as string);
+    return mailService.sendEmail(
+      email,
+      `Vibecheck Lite Outfit Recommendation`,
+      message as string,
+    );
   });
 
   await Promise.all(emailPromises);

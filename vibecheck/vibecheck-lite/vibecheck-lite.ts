@@ -9,7 +9,7 @@ const openai = new OpenAI({
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 
-export class VibecheckLite {
+export default class VibecheckLite {
   static HOURS_OF_PREDICTION_FOR_RECOMMENDATION = 12;
 
   static getNumberOf3HourBlocks() {
