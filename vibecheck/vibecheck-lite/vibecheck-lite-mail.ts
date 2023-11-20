@@ -42,12 +42,12 @@ async function main() {
     const { email, latitude, longitude } = emailSubscription;
     console.log(`Getting outfit recommendation for ${email}`);
     const message = await VibecheckLite.getOutfitRecommendation({
-      latitude,
-      longitude,
+      latitude: latitude as number,
+      longitude: longitude as number,
     });
     console.log(`Sending email to ${email}.`);
     return mailService.sendEmail(
-      email,
+      email as string,
       `Vibecheck Lite Outfit Recommendation`,
       message as string,
     );

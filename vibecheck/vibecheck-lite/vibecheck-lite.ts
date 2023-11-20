@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { Location } from './vibecheck-lite.model';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
@@ -16,7 +17,7 @@ export default class VibecheckLite {
     return this.HOURS_OF_PREDICTION_FOR_RECOMMENDATION / 3;
   }
 
-  static async getOutfitRecommendation(location) {
+  static async getOutfitRecommendation(location: Location) {
     try {
       const requestData =
         await VibecheckLite.getWeatherDataForOutfitRecommendation(location);
@@ -35,7 +36,7 @@ export default class VibecheckLite {
     }
   }
 
-  static async getWeatherDataForOutfitRecommendation(location) {
+  static async getWeatherDataForOutfitRecommendation(location: Location) {
     try {
       const res = await fetch(
         `https://api.openweathermap.org/data/2.5/forecast?lat=${location.latitude}&lon=${location.longitude}&appid=${OPENWEATHER_API_KEY}`,
