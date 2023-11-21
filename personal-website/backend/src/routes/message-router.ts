@@ -8,7 +8,8 @@ import {
 import { logger } from '../middlewares/loggers';
 import { EncryptionService } from '../services/encryption.service';
 import { NewsletterService } from '../services/newsletter.service';
-import { MessageService } from '../services/message.service';
+import MailService from '@prettydamntired/nodetools/lib/mail-service/mail.service';
+import { DEFAULT_EMAIL_REQUEST } from '@prettydamntired/nodetools/lib/mail-service/mail.model';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
@@ -71,7 +72,16 @@ router.post(
   requireJsonContent,
   async (req, res) => {
     try {
-      MessageService.sendMessage(req.body);
+      const { name, email, message } = req.body;
+      const from = `'${name}' <youremail@gmail.com>`;
+      const subject = 'Message from personal website.';
+      const text = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
+      MailService.sendEmail({
+        ...DEFAULT_EMAIL_REQUEST,
+        from,
+        subject,
+        text,
+      });
       return res.status(HTTP_STATUS_CODES.OK).json({ success: true });
     } catch (error) {
       logger.error(error);
