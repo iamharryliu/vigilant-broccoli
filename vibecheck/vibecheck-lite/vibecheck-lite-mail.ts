@@ -5,7 +5,7 @@ import {
 } from '../../node-scripts/general-services/mongo-db';
 import { EmailSubscription } from './vibecheck-lite.model';
 import VibecheckLite from './vibecheck-lite';
-import MailService from '../../node-scripts/general-services/mail.service';
+import MailService from '@prettydamntired/mailservice'
 
 mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
 const db = mongoose.connection;
@@ -17,11 +17,7 @@ db.once('open', () => {
   console.info('Connected to MongoDB');
 });
 
-const mailService = new MailService(
-  'gmail',
-  process.env.MY_EMAIL,
-  process.env.MY_EMAIL_PASSWORD,
-);
+const mailService = new MailService();
 
 async function main() {
   const emailSubscriptions = (

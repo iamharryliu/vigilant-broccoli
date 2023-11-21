@@ -1,6 +1,6 @@
 import http from 'http';
 import https from 'https';
-import MailService from '../general-services/mail.service';
+import MailService from '@prettydamntired/mailservice'
 
 const sites = [
   'https://vigilant-broccoli.pages.dev/',
