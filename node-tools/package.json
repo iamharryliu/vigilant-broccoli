@@ -1,13 +1,14 @@
 {
-  "name": "@prettydamntired/mailservice",
+  "name": "@prettydamntired/nodetools",
   "version": "1.0.1",
-  "main": "lib/mail.service.js",
+  "main": "lib/index.js",
   "types": "lib",
   "scripts": {
-    "build":  "tsc -p ."
+    "build": "tsc -p ."
   },
   "license": "ISC",
   "dependencies": {
+    "mongoose": "^8.0.1",
     "nodemailer": "^6.9.7",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"

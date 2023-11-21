@@ -1,5 +1,6 @@
-import { DEFAULT_EMAIL_REQUEST } from '../models/email.model';
-import { MailTransportService } from './email.service';
+
+import MailService from  '@prettydamntired/nodetools/lib/mail-service/mail.service'
+import { DEFAULT_EMAIL_REQUEST } from  '@prettydamntired/nodetools/lib/mail-service/mail.model'
 
 export class MessageService {
   static sendMessage(body) {
@@ -7,7 +8,7 @@ export class MessageService {
     const from = `'${name}' <youremail@gmail.com>`;
     const subject = 'Message from personal website.';
     const text = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
-    return MailTransportService.sendMail({
+    MailService.sendEmail({
       ...DEFAULT_EMAIL_REQUEST,
       from,
       subject,

@@ -1,9 +1,9 @@
 import path from 'path';
 import ejs from 'ejs';
-import { DEFAULT_EMAIL_REQUEST } from '../models/email.model';
 import { EmailSubscription } from '../models/subscription.model';
 import { EncryptionService } from './encryption.service';
-import { MailTransportService } from './email.service';
+import MailService from  '@prettydamntired/nodetools/lib/mail-service/mail.service'
+import { DEFAULT_EMAIL_REQUEST } from '@prettydamntired/nodetools/lib/mail-service/mail.model'
 
 export class NewsletterService {
   static async subscribeEmail(email: string) {
@@ -15,7 +15,7 @@ export class NewsletterService {
       const newEmailAlert = new EmailSubscription({ email, isVerified: false });
       await newEmailAlert.save();
     }
-    if (emailSubscription.isVerified) {
+    if (isSubscribed && emailSubscription.isVerified) {
       return 'Email is already verified.';
     }
     await this.sendVerificationEmail(email);
@@ -34,7 +34,7 @@ export class NewsletterService {
         siteUrl: process.env.PERSONAL_WEBSITE_FRONTEND_URL,
       })
       .then(emailTemplate => {
-        return MailTransportService.sendMail({
+        MailService.sendEmail({
           ...DEFAULT_EMAIL_REQUEST,
           to: email,
           subject,

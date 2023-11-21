@@ -1,25 +1,28 @@
 import http from 'http';
 import https from 'https';
-import MailService from '@prettydamntired/mailservice'
+import MailService from  '../mail-service/mail.service'
+import { DEFAULT_EMAIL_REQUEST } from  '../mail-service/mail.model'
 
 const sites = [
   'https://vigilant-broccoli.pages.dev/',
   'https://old-wind-7127.fly.dev/',
 ];
 
-const mailService = new MailService();
-
 async function main() {
   for (const site of sites) {
     const status = await getSiteStatus(site);
-    let message = `${site} is OK.`;
+    let text = `${site} is OK.`;
     if (!status) {
-      message = `${site} is currently down.`;
-      const email = process.env.MY_EMAIL;
-      const subject = message;
-      mailService.sendEmail(email, subject, message);
+      text = `${site} is currently down.`;
+      const subject = text;
+      MailService.sendEmail(
+        {
+          ...DEFAULT_EMAIL_REQUEST,
+          subject,
+          text,
+        });
     }
-    console.log(message);
+    console.log(text);
   }
 }
 

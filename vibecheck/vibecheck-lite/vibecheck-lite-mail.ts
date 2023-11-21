@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 import {
   MONGO_DB_SERVER,
   MONGO_DB_SETTINGS,
-} from '../../node-scripts/general-services/mongo-db';
+} from '@prettydamntired/nodetools/lib/mongo-db/mongo-db';
 import { EmailSubscription } from './vibecheck-lite.model';
 import VibecheckLite from './vibecheck-lite';
-import MailService from '@prettydamntired/mailservice'
-
+import MailService from '@prettydamntired/nodetools/lib/mail-service/mail.service'
+import { DEFAULT_EMAIL_REQUEST } from '@prettydamntired/nodetools/lib/mail-service/mail.model';
 mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
 const db = mongoose.connection;
 db.getClient;
@@ -16,8 +16,6 @@ db.on('error', error => {
 db.once('open', () => {
   console.info('Connected to MongoDB');
 });
-
-const mailService = new MailService();
 
 async function main() {
   const emailSubscriptions = (
@@ -37,16 +35,19 @@ async function main() {
   const emailPromises = emailSubscriptions.map(async emailSubscription => {
     const { email, latitude, longitude } = emailSubscription;
     console.log(`Getting outfit recommendation for ${email}`);
-    const message = await VibecheckLite.getOutfitRecommendation({
+    const to = email
+    const subject = 'Vibecheck Lite Outfit Recommendation'
+    const text = await VibecheckLite.getOutfitRecommendation({
       latitude: latitude as number,
       longitude: longitude as number,
     });
-    console.log(`Sending email to ${email}.`);
-    return mailService.sendEmail(
-      email as string,
-      `Vibecheck Lite Outfit Recommendation`,
-      message as string,
-    );
+    console.log(`Sending email to ${email}`);
+    return MailService.sendEmail({
+      ...DEFAULT_EMAIL_REQUEST,
+      to,
+      subject,
+      text,
+    });
   });
 
   await Promise.all(emailPromises);
