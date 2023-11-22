@@ -21,13 +21,14 @@ import { logger } from './src/middlewares/loggers';
 
 const app = express();
 app.options('*', cors(CORS_OPTIONS));
+app.use(requestLogger);
+// Routers
 app.use(router);
 app.use(messageRouter);
 app.use(VibeCheckLiteRouter);
+app.use(errorLogger);
 app.use(errorResponder);
 app.use(invalidPathHandler);
-app.use(requestLogger);
-app.use(errorLogger);
 app.listen(PORT as number, HOST, () => {
   logger.info(`Server listening at ${HOST}:${PORT}`);
 });
