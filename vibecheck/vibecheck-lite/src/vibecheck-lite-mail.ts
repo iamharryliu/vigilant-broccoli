@@ -3,7 +3,7 @@ import {
   MONGO_DB_SERVER,
   MONGO_DB_SETTINGS,
   MailService,
-  DEFAULT_EMAIL_REQUEST
+  DEFAULT_EMAIL_REQUEST,
 } from '@prettydamntired/nodetools';
 import { EmailSubscription } from './vibecheck-lite.model';
 import VibecheckLite from './vibecheck-lite';
@@ -35,8 +35,8 @@ async function main() {
   const emailPromises = emailSubscriptions.map(async emailSubscription => {
     const { email, latitude, longitude } = emailSubscription;
     console.log(`Getting outfit recommendation for ${email}`);
-    const to = email
-    const subject = 'Vibecheck Lite Outfit Recommendation'
+    const to = email;
+    const subject = 'Vibecheck Lite Outfit Recommendation';
     const text = await VibecheckLite.getOutfitRecommendation({
       latitude: latitude as number,
       longitude: longitude as number,

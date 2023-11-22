@@ -1,7 +1,7 @@
 import http from 'http';
 import https from 'https';
-import MailService from  '../mail-service/mail.service'
-import { DEFAULT_EMAIL_REQUEST } from  '../mail-service/mail.model'
+import MailService from '../mail-service/mail.service';
+import { DEFAULT_EMAIL_REQUEST } from '../mail-service/mail.model';
 
 const sites = [
   'https://vigilant-broccoli.pages.dev/',
@@ -15,12 +15,11 @@ async function main() {
     if (!status) {
       text = `${site} is currently down.`;
       const subject = text;
-      MailService.sendEmail(
-        {
-          ...DEFAULT_EMAIL_REQUEST,
-          subject,
-          text,
-        });
+      MailService.sendEmail({
+        ...DEFAULT_EMAIL_REQUEST,
+        subject,
+        text,
+      });
     }
     console.log(text);
   }
@@ -43,14 +42,15 @@ function getSiteStatus(url: string) {
   });
 }
 
-https.get('https://www.google.com/', function (res) {
-  console.log(res.statusCode === 200);
-})
-.on('error', function (_) {
-  console.log(false);
-})
-.on('finish', ()=>{
-  console.log('finsih')
-});
+https
+  .get('https://www.google.com/', function (res) {
+    console.log(res.statusCode === 200);
+  })
+  .on('error', function (_) {
+    console.log(false);
+  })
+  .on('finish', () => {
+    console.log('finsih');
+  });
 
 // main();

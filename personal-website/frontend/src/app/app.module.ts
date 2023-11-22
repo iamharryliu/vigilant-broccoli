@@ -17,7 +17,7 @@ import {
   NGX_TRANSLATE_LANGUAGE,
   createTranslateLoader,
 } from '@app/core/translate-util';
-import { ErrorInterceptor } from './core/services/error-interceptor.service';
+import { ErrorInterceptor } from '@services/error-interceptor.service';
 
 @NgModule({
   declarations: [AppComponent],

@@ -8,4 +8,3 @@ router.use(express.json({ limit: 5000 }));
 router.get('/', cors(CORS_OPTIONS), async (_, res) => {
   return res.send('Response for GET endpoint request');
 });
-
