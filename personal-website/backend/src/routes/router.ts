@@ -9,4 +9,3 @@ router.get('/', cors(CORS_OPTIONS), async (_, res) => {
   return res.send('Response for GET endpoint request');
 });
 
-module.exports = { router };
