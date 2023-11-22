@@ -8,8 +8,7 @@ import {
 import { logger } from '../middlewares/loggers';
 import { EncryptionService } from '../services/encryption.service';
 import { NewsletterService } from '../services/newsletter.service';
-import MailService from '@prettydamntired/nodetools/lib/mail-service/mail.service';
-import { DEFAULT_EMAIL_REQUEST } from '@prettydamntired/nodetools/lib/mail-service/mail.model';
+import { MailService, DEFAULT_EMAIL_REQUEST } from '@prettydamntired/nodetools';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));

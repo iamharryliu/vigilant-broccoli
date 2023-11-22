@@ -2,8 +2,7 @@ import path from 'path';
 import ejs from 'ejs';
 import { EmailSubscription } from '../models/subscription.model';
 import { EncryptionService } from './encryption.service';
-import MailService from  '@prettydamntired/nodetools/lib/mail-service/mail.service'
-import { DEFAULT_EMAIL_REQUEST } from '@prettydamntired/nodetools/lib/mail-service/mail.model'
+import { MailService, DEFAULT_EMAIL_REQUEST } from '@prettydamntired/nodetools';
 
 export class NewsletterService {
   static async subscribeEmail(email: string) {

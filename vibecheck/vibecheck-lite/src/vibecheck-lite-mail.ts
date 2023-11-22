@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 import {
   MONGO_DB_SERVER,
   MONGO_DB_SETTINGS,
-} from '@prettydamntired/nodetools/lib/mongo-db/mongo-db';
+  MailService,
+  DEFAULT_EMAIL_REQUEST
+} from '@prettydamntired/nodetools';
 import { EmailSubscription } from './vibecheck-lite.model';
 import VibecheckLite from './vibecheck-lite';
-import MailService from '@prettydamntired/nodetools/lib/mail-service/mail.service'
-import { DEFAULT_EMAIL_REQUEST } from '@prettydamntired/nodetools/lib/mail-service/mail.model';
 mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
 const db = mongoose.connection;
 db.getClient;
