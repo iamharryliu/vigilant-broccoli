@@ -26,7 +26,7 @@ async function main() {
   }
 }
 
-// TODO: end promise to end script
+// TODO: end promise to end script (has something to do with my sites vs others, google.com seems to work)
 function getSiteStatus(url: string) {
   return new Promise((resolve, _) => {
     let requestType;
@@ -43,4 +43,14 @@ function getSiteStatus(url: string) {
   });
 }
 
-main();
+https.get('https://www.google.com/', function (res) {
+  console.log(res.statusCode === 200);
+})
+.on('error', function (_) {
+  console.log(false);
+})
+.on('finish', ()=>{
+  console.log('finsih')
+});
+
+// main();
