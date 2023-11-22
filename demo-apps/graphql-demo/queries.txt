@@ -59,3 +59,18 @@ mutation DeleteMutation($id: ID!){
 {
   "id":"1"
 }
+
+UPDATE
+
+mutation UpdateParent($edits:UpdateParentInput!, $id:ID!){
+  updateParent(edits: $edits, id:$id){
+    name
+  }
+}
+
+{
+  "edits": {
+    "name":"newname"
+  },
+  "id": "2"
+}

@@ -46,6 +46,15 @@ const resolvers = {
       db.parents.push(parent);
       return parent;
     },
+    updateParent(_, args) {
+      db.parents = db.parents.map(parent => {
+        if (parent.id !== args.id) {
+          return { ...parent, ...args.edits };
+        }
+        return parent;
+      });
+      return db.parents.find(parent => parent.id == args.id);
+    },
   },
 };
 const server = new ApolloServer({

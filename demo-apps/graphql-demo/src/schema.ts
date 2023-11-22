@@ -25,8 +25,12 @@ type Query {
 type Mutation {
     addParent(parent: AddParentInput!):Parent
     deleteParent(id:ID!): [Parent]
+    updateParent(id:ID!, edits:UpdateParentInput!): Parent
 }
 input AddParentInput{
     name:String!
+}
+input UpdateParentInput{
+    name:String
 }
 `;
