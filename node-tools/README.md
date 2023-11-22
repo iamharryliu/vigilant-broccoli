@@ -21,4 +21,4 @@ npm publish
 
 [Express Tutorial](https://reflectoring.io/getting-started-with-express/)(https://reflectoring.io/getting-started-with-express/).
 [CORS](https://expressjs.com/en/resources/middleware/cors.html)
-[Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik&pp=ygULbnBtIHBhY2thZ2U%3D)
+[Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik)
