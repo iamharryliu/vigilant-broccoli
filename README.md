@@ -6,11 +6,14 @@ vigilant-broccoli is my personal mono-repo that I use to house all the code (or 
 
 ## Commands
 
-`npm run lint`
-`npm run lint:css`
-`npm run format`
-
 ```
+npm install -g @angular/cli
 npm i -g recursive-install
 npm-recursive-install
+```
+
+```
+npm run lint
+npm run lint:css
+npm run format
 ```
