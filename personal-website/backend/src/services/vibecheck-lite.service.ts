@@ -1,6 +1,6 @@
 import { NewsletterService } from './newsletter.service';
 import { EmailSubscription } from '../models/subscription.model';
-import VibecheckLite from '@prettydamntired/vibecheck-lite/lib/vibecheck-lite';
+import { VibecheckLite } from '@prettydamntired/vibecheck-lite/lib/vibecheck-lite';
 
 export class VibecheckLiteService extends VibecheckLite {
   static async subscribeEmail(data) {

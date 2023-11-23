@@ -1,8 +1,7 @@
 import path from 'path';
-import ejs from 'ejs';
 import { EmailSubscription } from '../models/subscription.model';
 import { EncryptionService } from './encryption.service';
-import { MailService, DEFAULT_EMAIL_REQUEST } from '@prettydamntired/nodetools';
+import { DEFAULT_EMAIL_REQUEST, MailService } from '@prettydamntired/nodetools';
 
 export class NewsletterService {
   static async subscribeEmail(email: string) {
@@ -25,21 +24,19 @@ export class NewsletterService {
     const token = EncryptionService.encryptData(email);
     const confirmLink = `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`;
     const subject = 'Email Verification';
-
-    return ejs
-      .renderFile(path.join(__dirname, 'verify-subscribe.ejs'), {
+    const template = {
+      path: path.join(__dirname, 'verify-subscribe.ejs'),
+      data: {
         email: email,
         confirmLink: confirmLink,
         siteUrl: process.env.PERSONAL_WEBSITE_FRONTEND_URL,
-      })
-      .then(emailTemplate => {
-        MailService.sendEmail({
-          ...DEFAULT_EMAIL_REQUEST,
-          to: email,
-          subject,
-          html: emailTemplate,
-        });
-      });
+      },
+    };
+
+    return MailService.sendEjsEmail(
+      { ...DEFAULT_EMAIL_REQUEST, to: email, subject },
+      template,
+    );
   }
 
   static verifyEmail(email: string) {
