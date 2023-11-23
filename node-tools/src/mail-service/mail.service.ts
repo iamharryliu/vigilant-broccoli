@@ -1,7 +1,8 @@
 import nodemailer from 'nodemailer';
-import { EmailRequest } from './mail.model';
+import { DEFAULT_EJS_TEMPLATE, EmailRequest } from './mail.model';
+import ejs from 'ejs';
 
-export default class MailService {
+export class MailService {
   static transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -15,15 +16,24 @@ export default class MailService {
       from: request.from,
       to: request.to,
       subject: request.subject,
-      text: request.text,
+      text: !request.html ? request.text : null,
       html: request.html,
     };
-    return this.transporter.sendMail(mailOption, function (error, info) {
+    return this.transporter.sendMail(mailOption, (error, info) => {
       if (error) {
         console.log(error);
       } else {
         console.log('Email sent: ' + info.response);
       }
+    });
+  }
+
+  static sendEjsEmail(request: EmailRequest, template = DEFAULT_EJS_TEMPLATE) {
+    return ejs.renderFile(template.path, template.data).then(template => {
+      this.sendEmail({
+        ...request,
+        html: template,
+      });
     });
   }
 }

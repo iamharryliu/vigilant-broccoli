@@ -1,6 +1,6 @@
 {
   "name": "@prettydamntired/nodetools",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "lib/index.js",
   "types": "lib",
   "scripts": {
@@ -8,6 +8,7 @@
   },
   "license": "ISC",
   "dependencies": {
+    "ejs": "^3.1.9",
     "mongoose": "^8.0.1",
     "nodemailer": "^6.9.7",
     "ts-node": "^10.9.1",
