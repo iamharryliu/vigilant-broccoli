@@ -5,8 +5,10 @@ import {
   MailService,
   DEFAULT_EMAIL_REQUEST,
 } from '@prettydamntired/nodetools';
-import { EmailSubscription } from './vibecheck-lite.model';
-import VibecheckLite from './vibecheck-lite';
+import {
+  VibecheckLite,
+  EmailSubscription,
+} from '@prettydamntired/vibecheck-lite';
 mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
 const db = mongoose.connection;
 db.getClient;
@@ -35,12 +37,12 @@ async function main() {
   const emailPromises = emailSubscriptions.map(async emailSubscription => {
     const { email, latitude, longitude } = emailSubscription;
     console.log(`Getting outfit recommendation for ${email}`);
-    const to = email;
+    const to = email as string;
     const subject = 'Vibecheck Lite Outfit Recommendation';
-    const text = await VibecheckLite.getOutfitRecommendation({
+    const text = (await VibecheckLite.getOutfitRecommendation({
       latitude: latitude as number,
       longitude: longitude as number,
-    });
+    })) as string;
     console.log(`Sending email to ${email}`);
     return MailService.sendEmail({
       ...DEFAULT_EMAIL_REQUEST,
