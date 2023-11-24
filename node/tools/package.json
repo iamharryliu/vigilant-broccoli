@@ -1,6 +1,6 @@
 {
-  "name": "@prettydamntired/nodetools",
-  "version": "1.0.4",
+  "name": "@prettydamntired/node-tools",
+  "version": "1.0.0",
   "main": "lib/index.js",
   "types": "lib",
   "scripts": {
