@@ -1,7 +1,7 @@
 import http from 'http';
 import https from 'https';
-import { MailService } from '../mail-service/mail.service';
-import { DEFAULT_EMAIL_REQUEST } from '../mail-service/mail.model';
+import { MailService } from '../../tools/src/mail-service/mail.service';
+import { DEFAULT_EMAIL_REQUEST } from '../../tools/src/mail-service/mail.model';
 
 // TODO: has something to do with my sites vs others, google.com seems to work
 const sites = [

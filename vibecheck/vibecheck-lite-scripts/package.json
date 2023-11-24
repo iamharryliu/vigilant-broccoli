@@ -1,13 +1,9 @@
 {
   "name": "vibecheck-lite-scripts",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node mail-subscribers.ts"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@prettydamntired/nodetools": "^1.0.4",
     "@prettydamntired/vibecheck-lite": "^1.0.3"
