@@ -28,7 +28,7 @@ router.post(
   '/vibecheck/subscribe',
   cors(CORS_OPTIONS),
   requireJsonContent,
-  async (req, res) => {
+  (req, res) => {
     try {
       const email = req.body.email;
       if (!email) {

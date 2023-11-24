@@ -5,6 +5,6 @@ import { CORS_OPTIONS } from '../configs/app.const';
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
 
-router.get('/', cors(CORS_OPTIONS), async (_, res) => {
+router.get('/', cors(CORS_OPTIONS), (_, res) => {
   return res.send('Response for GET endpoint request');
 });

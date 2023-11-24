@@ -42,7 +42,7 @@ router.post(
   '/email-alerts',
   cors(CORS_OPTIONS),
   requireJsonContent,
-  async (req, res) => {
+  (req, res) => {
     try {
       const email = req.body.email;
       if (!email) {
@@ -69,7 +69,7 @@ router.post(
   '/send-message',
   cors(CORS_OPTIONS),
   requireJsonContent,
-  async (req, res) => {
+  (req, res) => {
     try {
       const { name, email, message } = req.body;
       const from = `'${name}' <youremail@gmail.com>`;
