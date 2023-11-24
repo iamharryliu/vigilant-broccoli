@@ -4,7 +4,7 @@ import {
   MONGO_DB_SETTINGS,
   MailService,
   DEFAULT_EMAIL_REQUEST,
-} from '@prettydamntired/nodetools';
+} from '@prettydamntired/node-tools';
 import {
   VibecheckLite,
   EmailSubscription,
