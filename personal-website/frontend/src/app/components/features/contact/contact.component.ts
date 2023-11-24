@@ -4,10 +4,17 @@ import { MessageRequest } from '@models/app.model';
 import { Subject, exhaustMap } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LINKS } from '@app/app-route.const';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+import { LinkComponent } from '@app/components/global/link/link.component';
 
 @Component({
+  standalone: true,
   selector: 'app-contact',
   templateUrl: './contact.component.html',
+  imports: [CommonModule, TranslateModule, ReactiveFormsModule, LinkComponent],
+  providers: [CommonService],
 })
 export class ContactComponent {
   submit$: Subject<boolean> = new Subject();

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { ContactModule } from '@app/components/features/contact/contact.module';
+import { ContactComponent } from '@app/components/features/contact/contact.component';
 import { FooterComponent } from '@app/components/features/footer/footer.component';
 import { NavbarComponent } from '@app/components/features/navbar/navbar.component';
 import { NewsLetterSubFormComponent } from '@app/components/features/newsletter-sub-form/newsletter-sub-form.component';
@@ -16,7 +16,7 @@ import { ReturnTopButtonComponent } from '@app/components/global/return-top-butt
     FooterComponent,
     NewsLetterSubFormComponent,
     ReturnTopButtonComponent,
-    ContactModule,
+    ContactComponent,
   ],
 })
 export class GeneralLayoutComponent {
