@@ -5,7 +5,7 @@ import { CommonService } from '@services/common.service';
 import { LocationService } from '@services/location.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { CardComponent } from '@components/card/card.component';
-import { SpinnerComponent } from '@app/components/global/spinner/spinner.component';
+import { LoadingSpinnerComponent } from '@app/components/global/loading-spinner/loading-spinner.component';
 import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centered-app-layout.compoenent';
 
 interface VibecheckLiteResponse {
@@ -21,7 +21,7 @@ interface VibecheckLiteResponse {
     CommonModule,
     TranslateModule,
     CardComponent,
-    SpinnerComponent,
+    LoadingSpinnerComponent,
     CenteredAppLayoutComponent,
   ],
   providers: [LocationService],

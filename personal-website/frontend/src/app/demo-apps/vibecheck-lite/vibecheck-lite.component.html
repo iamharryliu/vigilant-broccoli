@@ -10,15 +10,10 @@
   </app-card>
   <ng-template #loading>
     <div class="text-sm pt-48 pb-48">
-      <div class="flex flex-col items-center justify-center mb-4">
-        <app-spinner></app-spinner>
-        <h2 class="mt-4 text-lg font-semibold text-gray-700">
-          {{ 'VIBECHECK_LITE.LOADING.HEADER' | translate }}
-        </h2>
-      </div>
-      <p class="text-center mb-4">
-        {{ 'VIBECHECK_LITE.LOADING.MESSAGE' | translate }}
-      </p>
+      <app-loading-spinner
+        [header]="'VIBECHECK_LITE.LOADING.HEADER' | translate"
+        [message]="'VIBECHECK_LITE.LOADING.MESSAGE' | translate">
+      </app-loading-spinner>
     </div>
   </ng-template>
 </app-centered-app-layout>
