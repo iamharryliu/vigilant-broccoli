@@ -1,12 +1,11 @@
 {
   "name": "@prettydamntired/vibecheck-lite",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "lib/index.js",
   "types": "lib",
   "scripts": {
     "build": "tsc -p ."
   },
-  "license": "ISC",
   "dependencies": {
     "mongoose": "^8.0.1",
     "openai": "^4.19.1",
