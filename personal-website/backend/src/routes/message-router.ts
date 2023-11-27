@@ -16,10 +16,10 @@ export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
 router.use(checkRecaptchaToken);
 
-router.put('/verify-email-subscription/:token', async (req, res) => {
-  const token = req.params.token;
+router.put('/verify-email-subscription/:encryptedEmail', async (req, res) => {
+  const encryptedEmail = req.params.encryptedEmail;
   try {
-    const email = EncryptionService.decryptData(token);
+    const email = EncryptionService.decryptData(encryptedEmail);
     if (await NewsletterService.verifyEmail(email)) {
       return res
         .status(HTTP_STATUS_CODES.OK)
