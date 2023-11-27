@@ -5,10 +5,10 @@ import { Observable } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment';
 import {
   EmailSubscriptionRequest,
-  Location,
   MessageRequest,
   VibecheckLiteSubscriptionRequest,
 } from '@models/app.model';
+import { Location } from '@prettydamntired/node-tools';
 
 @Injectable({
   providedIn: 'root',

@@ -23,8 +23,8 @@ export class VibecheckLiteUnsubscribePageComponent {
 
   unsubscribeEmail$ = this.route.queryParams.pipe(
     exhaustMap(params => {
-      const email = params['token'];
-      return this.commonService.unsubscribeFromVibecheckLite(email);
+      const encryptedEmail = params['token'];
+      return this.commonService.unsubscribeFromVibecheckLite(encryptedEmail);
     }),
   );
 
