@@ -7,7 +7,8 @@ import { LinkTreePageComponent } from '@pages/link-tree-page/link-tree-page.comp
 import { Link } from '@models/app.model';
 import { ENVIRONMENT } from 'src/environments/environment';
 import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscription/verify-email-subscription-page.component';
-import { VibecheckLiteSubscribePageComponent } from '@components/pages/vibecheck-lite-subscribe-page/vibecheck-lite-subscribe.page';
+import { VibecheckLiteSubscribePageComponent } from '@components/pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
+import { VibecheckLiteUnsubscribePageComponent } from '@pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -63,6 +64,12 @@ export const VERIFY_EMAIL_ROUTE: Route = {
   component: VerifyEmailSubscriptionPageComponent,
 };
 
+export const UNSUBCSRIBE_VIBECHECK_LITE_ROUTE: Route = {
+  path: 'unsubscribe-vibecheck-lite',
+  data: { title: 'unsubscribe to vibecheck lite' },
+  component: VibecheckLiteUnsubscribePageComponent,
+};
+
 export const APP_PATH = {
   INDEX: '',
   ABOUT: `/${ABOUT_ROUTE.path}`,
@@ -77,6 +84,7 @@ export const APP_ROUTES: Routes = [
   PROJECT_ROUTE,
   LINK_TREE_ROUTE,
   VERIFY_EMAIL_ROUTE,
+  UNSUBCSRIBE_VIBECHECK_LITE_ROUTE,
 ];
 
 const PERSONAL_WEBSITE: Link = {

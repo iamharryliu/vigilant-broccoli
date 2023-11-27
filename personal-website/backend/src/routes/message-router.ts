@@ -5,10 +5,10 @@ import {
   requireJsonContent,
 } from '../middlewares/common.middleware';
 import { logger } from '../middlewares/loggers';
-import { EncryptionService } from '../services/encryption.service';
 import { NewsletterService } from '../services/newsletter.service';
 import {
   DEFAULT_EMAIL_REQUEST,
+  EncryptionService,
   MailService,
 } from '@prettydamntired/node-tools';
 

@@ -1,6 +1,7 @@
 import { NewsletterService } from './newsletter.service';
 import { EmailSubscription } from '../models/subscription.model';
 import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
+import { EncryptionService } from '@prettydamntired/node-tools';
 
 export class VibecheckLiteService extends VibecheckLite {
   static async subscribeEmail(data) {
@@ -14,7 +15,6 @@ export class VibecheckLiteService extends VibecheckLite {
         email,
         isVerified: false,
         vibecheckLiteSubscription: {
-          vibecheckLiteSubscription: true,
           latitude,
           longitude,
         },
@@ -29,7 +29,6 @@ export class VibecheckLiteService extends VibecheckLite {
       {
         $set: {
           vibecheckLiteSubscription: {
-            vibecheckLiteSubscription: true,
             latitude,
             longitude,
           },
@@ -38,5 +37,20 @@ export class VibecheckLiteService extends VibecheckLite {
       { new: true },
     );
     return NewsletterService.subscribeEmail(email);
+  }
+
+  static async unsubscribeEmail(email: string) {
+    email = EncryptionService.decryptData(email);
+    await EmailSubscription.findOneAndUpdate(
+      {
+        email: email,
+      },
+      {
+        $set: {
+          vibecheckLiteSubscription: null,
+        },
+      },
+    );
+    return 'Email has been unsubscribed.';
   }
 }

@@ -40,3 +40,20 @@ router.post('/vibecheck/subscribe', requireJsonContent, (req, res) => {
       .json({ error: 'Internal server error' });
   }
 });
+
+router.delete('/vibecheck-lite/unsubscribe/:email', async (req, res) => {
+  const email = req.params.email;
+  console.log(email);
+  try {
+    await VibecheckLiteService.unsubscribeEmail(email);
+    return res.status(HTTP_STATUS_CODES.OK).json({
+      success: true,
+      message: 'Successfully unsubscribed',
+    });
+  } catch (error) {
+    logger.error(error);
+    return res
+      .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .json({ error: 'Internal server error' });
+  }
+});

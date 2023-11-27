@@ -4,6 +4,7 @@ import {
   MONGO_DB_SETTINGS,
   MailService,
   DEFAULT_EMAIL_REQUEST,
+  EncryptionService,
 } from '@prettydamntired/node-tools';
 import {
   VibecheckLite,
@@ -37,19 +38,26 @@ async function main() {
   const emailPromises = emailSubscriptions.map(async emailSubscription => {
     const { email, latitude, longitude } = emailSubscription;
     console.log(`Getting outfit recommendation for ${email}`);
-    const to = email as string;
     const subject = 'Vibecheck Lite Outfit Recommendation';
-    const text = (await VibecheckLite.getOutfitRecommendation({
+    const request = {
+      ...DEFAULT_EMAIL_REQUEST,
+      to: email,
+      subject,
+    };
+    const recommendation = (await VibecheckLite.getOutfitRecommendation({
       latitude: latitude as number,
       longitude: longitude as number,
     })) as string;
+    const token = EncryptionService.encryptData(email);
+    const template = {
+      path: `${__dirname}/vibecheck-lite.ejs`,
+      data: {
+        recommendation: recommendation,
+        url: `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/unsubscribe-vibecheck-lite?token=${token}`,
+      },
+    };
     console.log(`Sending email to ${email}`);
-    return MailService.sendEmail({
-      ...DEFAULT_EMAIL_REQUEST,
-      to,
-      subject,
-      text,
-    });
+    return MailService.sendEjsEmail(request, template);
   });
 
   await Promise.all(emailPromises);

@@ -47,4 +47,10 @@ export class CommonService {
       {},
     );
   }
+
+  unsubscribeFromVibecheckLite(token: string): Observable<any> {
+    return this.http.delete<any>(
+      `${this.BACKEND_URL}/vibecheck-lite/unsubscribe/${token}`,
+    );
+  }
 }

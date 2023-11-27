@@ -1,0 +1,23 @@
+<div class="w-11/12 lg:w-1/2 mx-auto pt-8 pb-8">
+  <h1 class="text-xl text-center mb-8">Unsubscribe to Vibecheck Lite</h1>
+  <div *ngIf="!hasUnsubscribed">
+    <button
+      (click)="unsubscribe()"
+      class="w-full text-white font-semibold px-4 py-2 rounded-lg w-1/4 bg-black hover:bg-blue-600"
+    >
+      Unsubscribe
+    </button>
+  </div>
+  <div *ngIf="hasUnsubscribed">
+    <p class="text-center mb-8">
+      You have successfully unsubscribed. You can close this tab or click the
+      button below to return to harryliu.design.
+    </p>
+    <button
+      [routerLink]="INDEX_PATH"
+      class="w-full text-white font-semibold px-4 py-2 rounded-lg w-1/4 bg-black hover:bg-blue-600"
+    >
+      Return to harryliu.design
+    </button>
+  </div>
+</div>

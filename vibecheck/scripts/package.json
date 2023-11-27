@@ -5,7 +5,7 @@
     "start": "ts-node mail-subscribers.ts"
   },
   "dependencies": {
-    "@prettydamntired/node-tools": "^1.0.2",
+    "@prettydamntired/node-tools": "^1.0.6",
     "@prettydamntired/vibecheck-lite": "^1.0.5"
   }
 }
