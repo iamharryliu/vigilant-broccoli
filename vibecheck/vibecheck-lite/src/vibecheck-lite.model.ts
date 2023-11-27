@@ -4,7 +4,6 @@ const emailSubscriptionSchema = new mongoose.Schema({
   email: String,
   isVerified: Boolean,
   vibecheckLiteSubscription: {
-    isSubscribed: Boolean,
     latitude: Number,
     longitude: Number,
   },
