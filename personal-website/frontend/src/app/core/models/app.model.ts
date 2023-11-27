@@ -8,11 +8,6 @@ export interface MessageRequest {
   message: string;
 }
 
-export interface Location {
-  latitude: number;
-  longitude: number;
-}
-
 export interface Link {
   url: string;
   text: string;

@@ -1,11 +1,7 @@
-import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Location } from '@models/app.model';
+import { Location } from './location.model';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class LocationService {
+export class BrowserLocationService {
   getLocation(): Observable<Location> {
     return new Observable(observer => {
       if (window.navigator && window.navigator.geolocation) {
