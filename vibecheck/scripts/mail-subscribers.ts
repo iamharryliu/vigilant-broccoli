@@ -53,7 +53,7 @@ async function main() {
       path: `${__dirname}/vibecheck-lite.ejs`,
       data: {
         recommendation: recommendation,
-        url: `harryliu.design/unsubscribe-vibecheck-lite?token=${token}`,
+        url: `https://harryliu.design/unsubscribe-vibecheck-lite?token=${token}`,
       },
     };
     console.log(`Sending email to ${email}`);

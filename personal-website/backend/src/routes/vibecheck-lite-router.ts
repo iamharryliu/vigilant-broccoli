@@ -41,9 +41,8 @@ router.post('/vibecheck/subscribe', requireJsonContent, (req, res) => {
   }
 });
 
-router.delete('/vibecheck-lite/unsubscribe/:email', async (req, res) => {
+router.put('/vibecheck-lite/unsubscribe/:email', async (req, res) => {
   const email = req.params.email;
-  console.log(email);
   try {
     await VibecheckLiteService.unsubscribeEmail(email);
     return res.status(HTTP_STATUS_CODES.OK).json({
