@@ -6,41 +6,38 @@
     <form [formGroup]="form" (ngSubmit)="submitForm()">
       <div class="mb-4">
         <label for="name" class="block text-gray-700">
-          {{ 'CONTACT.CONTACT_FORM.NAME_LABEL' | translate }}</label
-        >
+          {{ 'CONTACT.CONTACT_FORM.NAME_LABEL' | translate }}</label>
         <input
           type="text"
           id="name"
           name="name"
           formControlName="name"
+          autocomplete="given-name"
           required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-        />
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
       </div>
       <div class="mb-4">
         <label for="email" class="block text-gray-700">
-          {{ 'CONTACT.CONTACT_FORM.EMAIL_LABEL' | translate }}</label
-        >
+          {{ 'CONTACT.CONTACT_FORM.EMAIL_LABEL' | translate }}</label>
         <input
           type="email"
           id="email"
           name="email"
           formControlName="email"
+          autocomplete="email"
           required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-        />
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
       </div>
       <div class="mb-4">
         <label for="message" class="block text-gray-700">{{
           'CONTACT.CONTACT_FORM.MESSAGE_LABEL' | translate
-        }}</label>
+          }}</label>
         <textarea
           id="message"
           name="message"
           formControlName="message"
           required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-        ></textarea>
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"></textarea>
       </div>
       <button
         type="submit"
@@ -50,8 +47,7 @@
           'bg-gray-300': form.invalid,
           'bg-black': form.valid,
           'hover:bg-blue-600': form.valid
-        }"
-      >
+        }">
         {{ 'CONTACT.CONTACT_FORM.BUTTON_TEXT' | translate }}
       </button>
     </form>
