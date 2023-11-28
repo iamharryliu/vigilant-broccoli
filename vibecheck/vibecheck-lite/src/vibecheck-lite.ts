@@ -1,5 +1,5 @@
+import { Location } from '@prettydamntired/node-tools';
 import OpenAI from 'openai';
-import { Location } from './vibecheck-lite.model';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 

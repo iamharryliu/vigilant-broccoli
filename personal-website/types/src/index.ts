@@ -8,12 +8,8 @@ const emailSubscriptionSchema = new mongoose.Schema({
     longitude: Number,
   },
 });
+
 export const EmailSubscription = mongoose.model(
   'EmailSubscription',
   emailSubscriptionSchema,
 );
-
-export interface Location {
-  latitude: number;
-  longitude: number;
-}

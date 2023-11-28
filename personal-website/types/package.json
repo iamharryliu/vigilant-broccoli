@@ -1,6 +1,6 @@
 {
-  "name": "@prettydamntired/vibecheck-lite",
-  "version": "1.0.7",
+  "name": "@prettydamntired/personal-website-types",
+  "version": "1.0.0",
   "main": "lib/index.js",
   "types": "lib",
   "scripts": {
@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "@prettydamntired/node-tools": "^1.0.9",
-    "openai": "^4.19.1",
+    "mongoose": "^8.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.2"
   }
 }
