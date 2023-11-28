@@ -33,6 +33,8 @@ const VIBECHECK_ENDPOINTS = [
   axios
     .post(`${BACKEND_URL}/vibecheck/subscribe`, {
       email: 'harryliu1995@gmail.com',
+      latitude: 43.7690921,
+      longitude: -79.197657,
     })
     .then(res => incrementCounter(res.status === 200)),
   axios
