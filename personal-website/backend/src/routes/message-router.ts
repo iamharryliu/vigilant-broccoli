@@ -1,5 +1,4 @@
 import express from 'express';
-import { HTTP_STATUS_CODES } from '../configs/app.const';
 import {
   checkRecaptchaToken,
   requireJsonContent,
@@ -9,6 +8,7 @@ import { NewsletterService } from '../services/newsletter.service';
 import {
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
+  HTTP_STATUS_CODES,
   MailService,
 } from '@prettydamntired/node-tools';
 
@@ -45,7 +45,7 @@ router.post('/email-alerts', requireJsonContent, (req, res) => {
         .json({ error: 'Email is required.' });
     }
     NewsletterService.subscribeEmail(email).then(message => {
-      return res.status(HTTP_STATUS_CODES.CREATED).json({
+      return res.status(HTTP_STATUS_CODES.OK).json({
         success: true,
         message: message,
       });

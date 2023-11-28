@@ -1,4 +1,4 @@
-import { HTTP_STATUS_CODES } from '../configs/app.const';
+import { HTTP_STATUS_CODES } from '@prettydamntired/node-tools';
 import { logger } from './loggers';
 
 export const errorLogger = (err, request, response, next) => {

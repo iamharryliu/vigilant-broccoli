@@ -1,8 +1,8 @@
 import express from 'express';
-import { HTTP_STATUS_CODES } from '../configs/app.const';
 import { logger } from '../middlewares/loggers';
 import { requireJsonContent } from '../middlewares/common.middleware';
 import { VibecheckLiteService } from '../services/vibecheck-lite.service';
+import { HTTP_STATUS_CODES } from '@prettydamntired/node-tools';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
@@ -28,7 +28,7 @@ router.post('/vibecheck/subscribe', requireJsonContent, (req, res) => {
         .json({ error: 'Email is required.' });
     }
     VibecheckLiteService.subscribeEmail(req.body).then(message => {
-      return res.status(HTTP_STATUS_CODES.CREATED).json({
+      return res.status(HTTP_STATUS_CODES.OK).json({
         success: true,
         message: message,
       });

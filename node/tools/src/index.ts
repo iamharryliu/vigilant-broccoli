@@ -14,3 +14,6 @@ export { RecapchaService } from './recaptcha/recaptcha.service';
 // Location
 export { BrowserLocationService as LocationService } from './location/browserLocation.service';
 export * from './location/location.model';
+
+// HTTP
+export { HTTP_STATUS_CODES } from './http/http.const';
