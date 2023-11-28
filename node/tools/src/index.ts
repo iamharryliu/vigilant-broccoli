@@ -17,3 +17,6 @@ export * from './location/location.model';
 
 // HTTP
 export { HTTP_STATUS_CODES } from './http/http.const';
+
+// Logger
+export { winstonLogger as logger } from './logging/winston-logger';

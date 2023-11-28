@@ -3,13 +3,13 @@ import {
   checkRecaptchaToken,
   requireJsonContent,
 } from '../middlewares/common.middleware';
-import { logger } from '../middlewares/loggers';
 import { NewsletterService } from '../services/newsletter.service';
 import {
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
   HTTP_STATUS_CODES,
   MailService,
+  logger,
 } from '@prettydamntired/node-tools';
 
 export const router = express.Router();

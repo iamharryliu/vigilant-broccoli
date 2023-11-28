@@ -1,7 +1,6 @@
-// Move logger to node tools
 import winston from 'winston';
 
-export const logger = winston.createLogger({
+export const winstonLogger = winston.createLogger({
   level: 'info',
   transports: [new winston.transports.Console()],
   format: winston.format.combine(

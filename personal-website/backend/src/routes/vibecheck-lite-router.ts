@@ -1,8 +1,7 @@
 import express from 'express';
-import { logger } from '../middlewares/loggers';
 import { requireJsonContent } from '../middlewares/common.middleware';
 import { VibecheckLiteService } from '../services/vibecheck-lite.service';
-import { HTTP_STATUS_CODES } from '@prettydamntired/node-tools';
+import { HTTP_STATUS_CODES, logger } from '@prettydamntired/node-tools';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
