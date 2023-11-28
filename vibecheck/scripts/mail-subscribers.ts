@@ -6,10 +6,9 @@ import {
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
 } from '@prettydamntired/node-tools';
-import {
-  VibecheckLite,
-  EmailSubscription,
-} from '@prettydamntired/vibecheck-lite';
+import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
+import { EmailSubscription } from '@prettydamntired/personal-website-types';
+
 mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
 const db = mongoose.connection;
 db.getClient;
@@ -19,6 +18,8 @@ db.on('error', error => {
 db.once('open', () => {
   console.info('Connected to MongoDB');
 });
+
+main();
 
 async function main() {
   const emailSubscriptions = (
@@ -62,5 +63,3 @@ async function main() {
 
   await Promise.all(emailPromises);
 }
-
-main();
