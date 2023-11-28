@@ -1,7 +1,7 @@
 import express from 'express';
 import { requireJsonContent } from '../middlewares/common.middleware';
 import { VibecheckLiteService } from '../services/vibecheck-lite.service';
-import { HTTP_STATUS_CODES, logger } from '@prettydamntired/node-tools';
+import { HTTP_STATUS_CODES } from '@prettydamntired/node-tools';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
@@ -19,39 +19,25 @@ router.get('/get-outfit-recommendation', async (req, res) => {
 });
 
 router.post('/subscribe', requireJsonContent, (req, res) => {
-  try {
-    const email = req.body.email;
-    if (!email) {
-      return res
-        .status(HTTP_STATUS_CODES.BAD_REQUEST)
-        .json({ error: 'Email is required.' });
-    }
-    VibecheckLiteService.subscribeEmail(req.body).then(message => {
-      return res.status(HTTP_STATUS_CODES.OK).json({
-        success: true,
-        message: message,
-      });
-    });
-  } catch (error) {
-    logger.error(error);
+  const email = req.body.email;
+  if (!email) {
     return res
-      .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-      .json({ error: 'Internal server error' });
+      .status(HTTP_STATUS_CODES.BAD_REQUEST)
+      .json({ error: 'Email is required.' });
   }
+  VibecheckLiteService.subscribeEmail(req.body).then(message => {
+    return res.status(HTTP_STATUS_CODES.OK).json({
+      success: true,
+      message: message,
+    });
+  });
 });
 
 router.put('/unsubscribe/:email', async (req, res) => {
   const email = req.params.email;
-  try {
-    await VibecheckLiteService.unsubscribeEmail(email);
-    return res.status(HTTP_STATUS_CODES.OK).json({
-      success: true,
-      message: 'Successfully unsubscribed',
-    });
-  } catch (error) {
-    logger.error(error);
-    return res
-      .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-      .json({ error: 'Internal server error' });
-  }
+  await VibecheckLiteService.unsubscribeEmail(email);
+  return res.status(HTTP_STATUS_CODES.OK).json({
+    success: true,
+    message: 'Successfully unsubscribed',
+  });
 });
