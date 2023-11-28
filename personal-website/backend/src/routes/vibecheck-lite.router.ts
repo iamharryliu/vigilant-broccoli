@@ -18,7 +18,7 @@ router.get('/get-outfit-recommendation', async (req, res) => {
     .json({ success: true, data: recommendation });
 });
 
-router.post('/vibecheck/subscribe', requireJsonContent, (req, res) => {
+router.post('/subscribe', requireJsonContent, (req, res) => {
   try {
     const email = req.body.email;
     if (!email) {
@@ -40,7 +40,7 @@ router.post('/vibecheck/subscribe', requireJsonContent, (req, res) => {
   }
 });
 
-router.put('/vibecheck-lite/unsubscribe/:email', async (req, res) => {
+router.put('/unsubscribe/:email', async (req, res) => {
   const email = req.params.email;
   try {
     await VibecheckLiteService.unsubscribeEmail(email);

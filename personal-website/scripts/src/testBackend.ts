@@ -13,25 +13,27 @@ function incrementCounter(status) {
 const PERSONAL_WEBSITE_ENDPOINTS = [
   axios.get(BACKEND_URL).then(res => incrementCounter(res.status === 200)),
   axios
-    .post(`${BACKEND_URL}/send-message`, {
+    .post(`${BACKEND_URL}/contact/send-message`, {
       name: 'Person',
       message: 'message',
       email: 'harryliu1995@gmail.com',
     })
     .then(res => incrementCounter(res.status === 200)),
   axios
-    .post(`${BACKEND_URL}/email-alerts`, { email: 'harryliu1995@gmail.com' })
+    .post(`${BACKEND_URL}/subscribe/email-alerts`, {
+      email: 'harryliu1995@gmail.com',
+    })
     .then(res => incrementCounter(res.status === 200)),
   axios
     .put(
-      `${BACKEND_URL}/verify-email-subscription/N2YzZDMyNDMzMzgwYmZhZDc1ZTBmZjg3NDAxODIzZWQ5ZGJlNzA4YzRjMDI2N2U4ZWUxYTE3Nzc4MDliNzNjNw==`,
+      `${BACKEND_URL}/subscribe/verify-email-subscription/N2YzZDMyNDMzMzgwYmZhZDc1ZTBmZjg3NDAxODIzZWQ5ZGJlNzA4YzRjMDI2N2U4ZWUxYTE3Nzc4MDliNzNjNw==`,
     )
     .then(res => incrementCounter(res.status === 200)),
 ];
 
 const VIBECHECK_ENDPOINTS = [
   axios
-    .post(`${BACKEND_URL}/vibecheck/subscribe`, {
+    .post(`${BACKEND_URL}/vibecheck-lite/subscribe`, {
       email: 'harryliu1995@gmail.com',
       latitude: 43.7690921,
       longitude: -79.197657,
@@ -39,7 +41,7 @@ const VIBECHECK_ENDPOINTS = [
     .then(res => incrementCounter(res.status === 200)),
   axios
     .get(
-      `${BACKEND_URL}/get-outfit-recommendation?lat=43.7690921&lon=-79.197657`,
+      `${BACKEND_URL}/vibecheck-lite/get-outfit-recommendation?lat=43.7690921&lon=-79.197657`,
     )
     .then(res => incrementCounter(res.status === 200)),
   axios

@@ -8,8 +8,9 @@ import {
 } from './src/middlewares/error.middleware';
 import { requestLogger } from './src/middlewares/common.middleware';
 import { router } from './src/routes/router';
-import { router as messageRouter } from './src/routes/message-router';
-import { router as VibeCheckLiteRouter } from './src/routes/vibecheck-lite-router';
+import { router as contactRouter } from './src/routes/contact.router';
+import { router as subscribeRouter } from './src/routes/subscribe.router';
+import { router as VibeCheckLiteRouter } from './src/routes/vibecheck-lite.router';
 import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
 import {
   MONGO_DB_SERVER,
@@ -21,8 +22,9 @@ const app = express();
 app.use(cors(CORS_OPTIONS));
 app.use(requestLogger);
 app.use(router);
-app.use(messageRouter);
-app.use(VibeCheckLiteRouter);
+app.use('/contact', contactRouter);
+app.use('/subscribe', subscribeRouter);
+app.use('/vibecheck-lite', VibeCheckLiteRouter);
 app.use(errorLogger);
 app.use(errorResponder);
 app.use(invalidPathHandler);

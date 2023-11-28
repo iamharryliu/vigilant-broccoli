@@ -18,33 +18,39 @@ export class CommonService {
 
   BACKEND_URL = ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL;
 
+  sendMessage(request: MessageRequest): Observable<any> {
+    return this.http.post<any>(
+      `${this.BACKEND_URL}/contact/send-message`,
+      request,
+    );
+  }
+
   subscribeToNewsletter(request: EmailSubscriptionRequest): Observable<any> {
-    return this.http.post<any>(`${this.BACKEND_URL}/email-alerts`, request);
+    return this.http.post<any>(
+      `${this.BACKEND_URL}/subscribe/email-alerts`,
+      request,
+    );
+  }
+
+  verifyEmailSubscription(token: string): Observable<any> {
+    return this.http.put<any>(
+      `${this.BACKEND_URL}/subscribe/verify-email-subscription/${token}`,
+      {},
+    );
+  }
+
+  getOutfitRecommendation(location: Location): Observable<any> {
+    return this.http.get<any>(
+      `${this.BACKEND_URL}/vibecheck-lite/get-outfit-recommendation?lat=${location.latitude}&lon=${location.longitude}`,
+    );
   }
 
   subscribeToVibecheckLite(
     request: VibecheckLiteSubscriptionRequest,
   ): Observable<any> {
     return this.http.post<any>(
-      `${this.BACKEND_URL}/vibecheck/subscribe`,
+      `${this.BACKEND_URL}/vibecheck-lite/subscribe`,
       request,
-    );
-  }
-
-  sendMessage(request: MessageRequest): Observable<any> {
-    return this.http.post<any>(`${this.BACKEND_URL}/send-message`, request);
-  }
-
-  getOutfitRecommendation(location: Location): Observable<any> {
-    return this.http.get<any>(
-      `${this.BACKEND_URL}/get-outfit-recommendation?lat=${location.latitude}&lon=${location.longitude}`,
-    );
-  }
-
-  verifyEmailSubscription(token: string): Observable<any> {
-    return this.http.put<any>(
-      `${this.BACKEND_URL}/verify-email-subscription/${token}`,
-      {},
     );
   }
 

@@ -5,10 +5,8 @@ import {
 } from '../middlewares/common.middleware';
 import { NewsletterService } from '../services/newsletter.service';
 import {
-  DEFAULT_EMAIL_REQUEST,
   EncryptionService,
   HTTP_STATUS_CODES,
-  MailService,
   logger,
 } from '@prettydamntired/node-tools';
 
@@ -50,27 +48,6 @@ router.post('/email-alerts', requireJsonContent, (req, res) => {
         message: message,
       });
     });
-  } catch (error) {
-    logger.error(error);
-    return res
-      .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-      .json({ error: 'Internal server error' });
-  }
-});
-
-router.post('/send-message', requireJsonContent, (req, res) => {
-  try {
-    const { name, email, message } = req.body;
-    const from = `'${name}' <youremail@gmail.com>`;
-    const subject = 'Message from personal website.';
-    const text = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
-    MailService.sendEmail({
-      ...DEFAULT_EMAIL_REQUEST,
-      from,
-      subject,
-      text,
-    });
-    return res.status(HTTP_STATUS_CODES.OK).json({ success: true });
   } catch (error) {
     logger.error(error);
     return res
