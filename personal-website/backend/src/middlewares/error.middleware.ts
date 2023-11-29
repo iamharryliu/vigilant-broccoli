@@ -1,16 +1,16 @@
 import { HTTP_STATUS_CODES, logger } from '@prettydamntired/node-tools';
 
-export const errorLogger = (err, request, response, next) => {
-  logger.error(`Error: ${err.message}`);
-  next(err);
+export const errorLogger = (error, request, response, next) => {
+  logger.error(`Error: ${error.message}`);
+  next(error);
 };
 
-export const errorResponder = (err, request, response, _) => {
+export const errorResponder = (error, request, response, _) => {
   response.header('Content-Type', 'application/json');
-  response.status(err.statusCode).send(err.message);
+  response.status(error.statusCode).json({ error: error.message });
 };
 
 export const invalidPathHandler = (request, response, _) => {
   response.status(HTTP_STATUS_CODES.INVALID_PATH);
-  response.send('invalid path');
+  response.json({ message: 'invalid path' });
 };
