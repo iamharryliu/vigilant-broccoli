@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
-import { AppService } from '@services/app.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +12,6 @@ export class AppComponent implements OnInit {
     private router: Router,
     private titleService: Title,
     private route: ActivatedRoute,
-    public appService: AppService,
   ) {}
 
   ngOnInit(): void {

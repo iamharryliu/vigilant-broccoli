@@ -1,20 +1,7 @@
-import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from '@app/app.component';
-
-@Component({
-  selector: 'app-footer',
-  template: '',
-})
-class FooterMockComponent {}
-
-@Component({
-  selector: 'app-navbar',
-  template: '',
-})
-class NavbarMockComponent {}
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -23,7 +10,7 @@ describe('AppComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AppComponent, NavbarMockComponent, FooterMockComponent],
+      declarations: [AppComponent],
       imports: [RouterTestingModule],
       providers: [Title],
     });
@@ -33,11 +20,11 @@ describe('AppComponent', () => {
   });
 
   it('should create the app', () => {
-    expect(app).toBeFalsy();
+    expect(app).toBeTruthy();
   });
 
   describe('setTitle', () => {
-    it('should call titleService.setTitle', () => {
+    it('should call titleService.setTitle if a title is passed to the fn', () => {
       const TITLE = 'title';
       jest.spyOn(titleService, 'setTitle');
       app.setTitle(TITLE);
@@ -45,5 +32,12 @@ describe('AppComponent', () => {
         `design by harry - ${TITLE}`,
       );
     });
+  });
+
+  it('should not call titleService.setTitle if a title is not passed to the fn', () => {
+    const TITLE = '';
+    jest.spyOn(titleService, 'setTitle');
+    app.setTitle(TITLE);
+    expect(titleService.setTitle).not.toHaveBeenCalled();
   });
 });
