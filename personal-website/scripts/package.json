@@ -5,7 +5,9 @@
   },
   "dependencies": {
     "@prettydamntired/node-tools": "^1.0.9",
+    "@prettydamntired/personal-website-types": "^1.0.2",
     "axios": "^1.6.2",
-    "mongodb": "^6.3.0"
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.0.2"
   }
 }

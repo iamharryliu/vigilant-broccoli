@@ -12,8 +12,13 @@ export class NewsletterService {
       email: email,
     });
     const isSubscribed = !!emailSubscription;
+    const dateCreated = new Date();
     if (!isSubscribed) {
-      const newEmailAlert = new EmailSubscription({ email, isVerified: false });
+      const newEmailAlert = new EmailSubscription({
+        email,
+        dateCreated,
+        isVerified: false,
+      });
       await newEmailAlert.save();
     }
     if (isSubscribed && emailSubscription.isVerified) {

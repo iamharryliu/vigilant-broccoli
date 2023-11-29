@@ -1,18 +1,14 @@
 {
   "name": "personal-website-backend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "serve": "nodemon app.ts",
     "start": "ts-node app.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@prettydamntired/node-tools": "^1.0.10",
-    "@prettydamntired/personal-website-types": "^1.0.0",
+    "@prettydamntired/personal-website-types": "^1.0.2",
     "@prettydamntired/vibecheck-lite": "^1.0.7",
     "cors": "^2.8.5",
     "express": "^4.18.2",
