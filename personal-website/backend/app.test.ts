@@ -1,6 +1,10 @@
 import request from 'supertest';
 import app, { db, server } from './app';
 import { EmailSubscription } from '@prettydamntired/personal-website-types';
+import { EncryptionService } from '@prettydamntired/node-tools';
+
+
+const email = 'tester@gmail.com'
 
 describe('Routes', () => {
   test('Test endpoint', async () => {
@@ -12,21 +16,49 @@ describe('Routes', () => {
     const res = await request(app).post('/contact/send-message').send({
       name: 'Person',
       message: 'message',
-      email: 'harryliu1995@gmail.com',
+      email,
     });
     expect(res.status).toEqual(200);
   });
 
-  test('Subscribe email', async () => {
-    const res = await request(app).post('/subscribe/email-alerts').send({
-      email: 'harryliu1995@gmail.com',
+  describe('subscribe endpoint', ()=>{
+    test('Subscribe email', async () => {
+      const res = await request(app).post('/subscribe/email-alerts').send({
+        email,
+      });
+      expect(res.status).toEqual(200);
     });
-    expect(res.status).toEqual(200);
-  });
+  })
 
-  test('Verify email subscription', async () => {
+  describe('verify subscription endpoint', ()=>{
+    it('should successfully verify email', async () => {
+      await request(app).post('/subscribe/email-alerts').send({
+        email: email,
+      });
+      const token = EncryptionService.encryptData(email)
+      const res = await request(app).put(
+        `/subscribe/verify-email-subscription/${token}`,
+      );
+      expect(res.status).toEqual(200);
+    });
+
+  })
+
+  describe('vibecheck-lite subscribe endpoint', ()=>{
+    it('should subscribe to vibecheck lite', async () => {
+      const res = await request(app).post('/vibecheck-lite/subscribe').send({
+        email,
+        latitude: 43.7690921,
+        longitude: -79.197657,
+      });
+      expect(res.status).toEqual(200);
+    });
+  })
+
+  it('should unsubscribe successfully', async () => {
+    const token = EncryptionService.encryptData(email)
     const res = await request(app).put(
-      '/subscribe/verify-email-subscription/N2YzZDMyNDMzMzgwYmZhZDc1ZTBmZjg3NDAxODIzZWQ5ZGJlNzA4YzRjMDI2N2U4ZWUxYTE3Nzc4MDliNzNjNw==',
+      `/vibecheck-lite/unsubscribe/${token}`,
     );
     expect(res.status).toEqual(200);
   });
@@ -37,22 +69,6 @@ describe('Routes', () => {
     );
     expect(res.status).toEqual(200);
   }, 20000);
-
-  test('Subscribe to vibecheck lite', async () => {
-    const res = await request(app).post('/vibecheck-lite/subscribe').send({
-      email: 'harryliu1995@gmail.com',
-      latitude: 43.7690921,
-      longitude: -79.197657,
-    });
-    expect(res.status).toEqual(200);
-  });
-
-  test('Verify email subscription', async () => {
-    const res = await request(app).put(
-      '/vibecheck-lite/unsubscribe/N2YzZDMyNDMzMzgwYmZhZDc1ZTBmZjg3NDAxODIzZWQ5ZGJlNzA4YzRjMDI2N2U4ZWUxYTE3Nzc4MDliNzNjNw%3D%3D',
-    );
-    expect(res.status).toEqual(200);
-  });
 
   afterAll(async () => {
     await EmailSubscription.collection.drop();
