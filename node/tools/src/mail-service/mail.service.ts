@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import { DEFAULT_EJS_TEMPLATE, EmailRequest } from './mail.model';
 import ejs from 'ejs';
+import { logger } from '..';
 
 export class MailService {
   static transporter = nodemailer.createTransport({
@@ -21,9 +22,9 @@ export class MailService {
     };
     return this.transporter.sendMail(mailOption, (error, info) => {
       if (error) {
-        console.log(error);
+        logger.error(error);
       } else {
-        console.log('Email sent: ' + info.response);
+        logger.info('Email sent: ' + info.response);
       }
     });
   }
