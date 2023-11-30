@@ -1,6 +1,6 @@
 {
-  "name": "@prettydamntired/personal-website-types",
-  "version": "1.0.2",
+  "name": "@prettydamntired/personal-website-common",
+  "version": "1.0.0",
   "main": "lib/index.js",
   "types": "lib",
   "scripts": {
