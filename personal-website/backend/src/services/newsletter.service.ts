@@ -28,7 +28,7 @@ export class NewsletterService {
     return 'Please check verification email.';
   }
 
-  static sendVerificationEmail(email: string) {
+  static async sendVerificationEmail(email: string) {
     const token = EncryptionService.encryptData(email);
     const confirmLink = `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`;
     const subject = 'Email Verification';

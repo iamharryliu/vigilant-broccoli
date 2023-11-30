@@ -1,6 +1,6 @@
 import request from 'supertest';
-
-import app from './app';
+import app, { db, server } from './app';
+import { EmailSubscription } from '@prettydamntired/personal-website-types';
 
 describe('Routes', () => {
   test('Test endpoint', async () => {
@@ -52,5 +52,11 @@ describe('Routes', () => {
       '/vibecheck-lite/unsubscribe/N2YzZDMyNDMzMzgwYmZhZDc1ZTBmZjg3NDAxODIzZWQ5ZGJlNzA4YzRjMDI2N2U4ZWUxYTE3Nzc4MDliNzNjNw%3D%3D',
     );
     expect(res.status).toEqual(200);
+  });
+
+  afterAll(async () => {
+    await EmailSubscription.collection.drop();
+    server.close();
+    db.close();
   });
 });

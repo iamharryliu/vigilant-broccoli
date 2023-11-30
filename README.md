@@ -17,3 +17,7 @@ npm run lint
 npm run lint:css
 npm run format
 ```
+
+## References
+
+[NPM Link and Unlink](https://dev.to/erinbush/npm-linking-and-unlinking-2h1g)

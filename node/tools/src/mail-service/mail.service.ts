@@ -30,7 +30,7 @@ export class MailService {
 
   static sendEjsEmail(request: EmailRequest, template = DEFAULT_EJS_TEMPLATE) {
     return ejs.renderFile(template.path, template.data).then(template => {
-      this.sendEmail({
+      return this.sendEmail({
         ...request,
         html: template,
       });

@@ -5,10 +5,11 @@
   "scripts": {
     "serve": "nodemon app.ts",
     "start": "ts-node app.ts",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "test:commit": "jest --bail --findRelatedTests"
   },
   "dependencies": {
-    "@prettydamntired/node-tools": "^1.0.10",
+    "@prettydamntired/node-tools": "^1.0.11",
     "@prettydamntired/personal-website-types": "^1.0.2",
     "@prettydamntired/vibecheck-lite": "^1.0.7",
     "cors": "^2.8.5",
@@ -27,5 +28,15 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.2"
+  },
+  "lint-staged": {
+    "*.{ts}": [
+      "npm run test:commit"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
