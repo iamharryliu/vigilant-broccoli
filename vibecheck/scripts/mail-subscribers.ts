@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import {
   MONGO_DB_SERVER,
-  MONGO_DB_SETTINGS,
   MailService,
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
@@ -9,7 +8,7 @@ import {
 import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
 import { EmailSubscription } from '@prettydamntired/personal-website-types';
 
-mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
+mongoose.connect(`${MONGO_DB_SERVER}personal-website-db`);
 const db = mongoose.connection;
 db.getClient;
 db.on('error', error => {
