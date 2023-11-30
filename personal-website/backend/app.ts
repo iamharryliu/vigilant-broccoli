@@ -42,3 +42,5 @@ db.on('error', error => {
 db.once('open', () => {
   logger.info('Connected to MongoDB');
 });
+
+export default app;

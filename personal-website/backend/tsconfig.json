@@ -1,4 +1,5 @@
 {
+  "exclude": ["./coverage", "./dist", "__tests__", "jest.config.js"],
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
