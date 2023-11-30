@@ -33,7 +33,10 @@ app.listen(PORT as number, HOST, () => {
   logger.info(`Server listening at ${HOST}:${PORT}`);
 });
 
-mongoose.connect(MONGO_DB_SERVER, MONGO_DB_SETTINGS);
+mongoose.connect(
+  `${MONGO_DB_SERVER}${process.env.PERSONAL_WEBSITE_DB}`,
+  MONGO_DB_SETTINGS,
+);
 export const db = mongoose.connection;
 db.getClient;
 db.on('error', error => {
