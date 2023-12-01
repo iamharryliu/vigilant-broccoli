@@ -6,7 +6,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
 
 class MockRouter {
-  public ne = new NavigationEnd(0, 'http://localhost:4200/login', 'http://localhost:4200/login');
+  public ne = new NavigationEnd(
+    0,
+    'http://localhost:4200/login',
+    'http://localhost:4200/login',
+  );
   public events = new Observable(observer => {
     observer.next(this.ne);
     observer.complete();
@@ -38,7 +42,7 @@ describe('AppComponent', () => {
         { provide: Router, useClass: MockRouter },
       ],
     }).compileComponents();
-  })
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
@@ -52,16 +56,15 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  describe('ngOnInit', ()=>{
-    it('should call getTitle and setTitle', ()=>{
-      jest.spyOn(app, 'getTitle')
-      jest.spyOn(app, 'setTitle')
+  describe('ngOnInit', () => {
+    it('should call getTitle and setTitle', () => {
+      jest.spyOn(app, 'getTitle');
+      jest.spyOn(app, 'setTitle');
       app.ngOnInit();
-      expect(app.getTitle).toHaveBeenCalled()
-      expect(app.setTitle).toHaveBeenCalled()
-
+      expect(app.getTitle).toHaveBeenCalled();
+      expect(app.setTitle).toHaveBeenCalled();
     });
-  })
+  });
 
   describe('getTitle', () => {
     it('should return title if available', () => {
