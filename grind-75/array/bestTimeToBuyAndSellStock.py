@@ -5,12 +5,12 @@ from typing import List
 class Solution:
     @classmethod
     def maxProfit(self, prices: List[int]) -> int:
+        res = 0
         minPrice = math.inf
-        profit = 0
         for price in prices:
-            profit = max(profit, price - minPrice)
+            res = max(res, price - minPrice)
             minPrice = min(minPrice, price)
-        return profit
+        return res
 
 
 print(Solution.maxProfit(prices=[7, 1, 5, 3, 6, 4]) == 5)

@@ -8,7 +8,7 @@ class ListNode:
 class Solution:
     @classmethod
     def mergeTwoLists(self, l1, l2):
-        root = curr = ListNode(0)
+        dummy = curr = ListNode(0)
         while l1 and l2:
             if l1.val < l2.val:
                 curr.next = l1
@@ -18,7 +18,7 @@ class Solution:
                 l2 = l2.next
             curr = curr.next
         curr.next = l1 or l2
-        return root.next
+        return dummy.next
 
 
 node1 = ListNode(1)
