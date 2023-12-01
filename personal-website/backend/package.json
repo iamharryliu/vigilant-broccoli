@@ -30,7 +30,7 @@
     "typescript": "^5.3.2"
   },
   "lint-staged": {
-    "*.{ts}": [
+    "*.test.ts": [
       "npm run test:commit"
     ]
   },

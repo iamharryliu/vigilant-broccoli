@@ -10,6 +10,7 @@ vigilant-broccoli is my personal mono-repo that I use to house all the code (or 
 npm install -g @angular/cli
 npm i -g recursive-install
 npm-recursive-install
+pip3 install pre-commit && pre-commit install
 ```
 
 ```
