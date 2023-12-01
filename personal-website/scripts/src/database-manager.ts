@@ -1,52 +1,38 @@
-import mongoose from 'mongoose';
 import {
   DEFAULT_EMAIL_REQUEST,
   MONGO_DB_CLIENT,
   MailService,
-  MONGO_DB_SERVER,
-  logger,
 } from '../../../node/tools/src';
-import { EmailSubscription } from '../../common/src';
 import {
   PERSONAL_WEBSITE_DB_DATABASES,
   PERSONAL_WEBSITE_DB_COLLECTIONS,
 } from '../../common/src';
 
 export class DatabaseManager {
-  static client = MONGO_DB_CLIENT;
-  static async dropEmailSubscriptions(databaseName: string) {
-    try {
-      const database = this.client.db(databaseName);
-      const collection = database.collection(
-        PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
-      );
-      await collection.drop();
-    } finally {
-      await this.client.close();
-    }
+  static database = MONGO_DB_CLIENT.db(PERSONAL_WEBSITE_DB_DATABASES.PROD);
+  static async runGarbageCollector() {
+    await this.removeOneWeekOldOrOlderUnverifiedUsers();
+    await this.deleteOutdatedLogs();
   }
-
   static async removeOneWeekOldOrOlderUnverifiedUsers() {
-    mongoose.connect(
-      `${MONGO_DB_SERVER}/${PERSONAL_WEBSITE_DB_DATABASES.PROD}`,
+    const emailSubscriptionsCollection = this.database.collection(
+      PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
     );
-    const db = mongoose.connection;
-    db.getClient;
-    db.on('error', error => {
-      console.error(`MongoDB connection error: ${error}`);
-    });
-    db.once('open', () => {
-      logger.info('Connected to MongoDB');
-    });
-
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    await EmailSubscription.deleteMany({
-      dateCreated: { $lt: oneWeekAgo },
-      isVerified: false,
-    }).then(res => console.log(res));
-    db.close();
+    await emailSubscriptionsCollection
+      .deleteMany({
+        dateCreated: { $gt: oneWeekAgo },
+        isVerified: false,
+      })
+      .then(res => console.log(res));
+    await MONGO_DB_CLIENT.close();
+  }
+
+  static async deleteOutdatedLogs() {
+    console.log('Deleting outdated logs started.');
+    console.log('Deleting outdated logs completed.');
   }
 
   static async sendNewsletter() {
@@ -59,12 +45,13 @@ export class DatabaseManager {
   }
 
   static async getEmails() {
-    const database = MONGO_DB_CLIENT.db(PERSONAL_WEBSITE_DB_DATABASES.PROD);
-    const emailSubscriptionsCollection = database.collection(
+    const emailSubscriptionsCollection = this.database.collection(
       PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
     );
     const emailSubscriptions = await emailSubscriptionsCollection
-      .find({})
+      .find({
+        isVerified: true,
+      })
       .toArray();
     return emailSubscriptions.map(subscription => subscription.email);
   }
