@@ -43,7 +43,7 @@ export class DatabaseManager {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     await EmailSubscription.deleteMany({
-      dateCreated: { $gt: oneWeekAgo },
+      dateCreated: { $lt: oneWeekAgo },
       isVerified: false,
     }).then(res => console.log(res));
     db.close();
