@@ -5,6 +5,7 @@ const site = 'https://old-wind-7127.fly.dev/';
 main();
 
 async function main() {
+  console.log('Backend monitor script start.');
   const status = await SiteMonitor.getSiteStatus(site);
   if (!status) {
     restartServer();

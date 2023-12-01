@@ -22,6 +22,7 @@ db.once('open', () => {
 main();
 
 async function main() {
+  console.log('Vibecheck lite recommendation script start.');
   const emailSubscriptions = (
     await EmailSubscription.find({
       isVerified: { $eq: true },
