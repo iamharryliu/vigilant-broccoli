@@ -1,12 +1,12 @@
 import { SiteMonitor } from '@prettydamntired/node-tools';
 import { exec } from 'child_process';
-const site = 'https://old-wind-7127.fly.dev/';
+import { PERSONAL_WEBSITE_URL } from '../../common/src';
 
 main();
 
 async function main() {
   console.log('Backend monitor script start.');
-  const status = await SiteMonitor.getSiteStatus(site);
+  const status = await SiteMonitor.getSiteStatus(PERSONAL_WEBSITE_URL.BACKEND);
   if (!status) {
     restartServer();
   }

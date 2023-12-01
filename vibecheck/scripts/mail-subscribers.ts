@@ -5,7 +5,10 @@ import {
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
 } from '../../node/tools/src/index';
-import { PERSONAL_WEBSITE_DB_DATABASES } from '../../personal-website/common/src/index';
+import {
+  PERSONAL_WEBSITE_DB_DATABASES,
+  PERSONAL_WEBSITE_URL,
+} from '../../personal-website/common/src/index';
 import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
 import { EmailSubscription } from '@prettydamntired/personal-website-types';
 
@@ -55,7 +58,7 @@ async function main() {
       path: `${__dirname}/vibecheck-lite.ejs`,
       data: {
         recommendation: recommendation,
-        url: `https://harryliu.design/unsubscribe-vibecheck-lite?token=${token}`,
+        url: `${PERSONAL_WEBSITE_URL.FRONTEND_REDIRECTED}/unsubscribe-vibecheck-lite?token=${token}`,
       },
     };
     console.log(`Sending email to ${email}`);

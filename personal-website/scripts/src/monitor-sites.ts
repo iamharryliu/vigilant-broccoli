@@ -1,9 +1,10 @@
 import { SiteMonitor } from '@prettydamntired/node-tools';
+import { PERSONAL_WEBSITE_URL } from '../../common/src';
 
 const sites = [
-  'https://harryliu.design/',
-  'https://vigilant-broccoli.pages.dev/',
-  'https://old-wind-7127.fly.dev/',
+  PERSONAL_WEBSITE_URL.BACKEND,
+  PERSONAL_WEBSITE_URL.FRONTEND,
+  PERSONAL_WEBSITE_URL.FRONTEND_REDIRECTED,
 ];
 
 main();
