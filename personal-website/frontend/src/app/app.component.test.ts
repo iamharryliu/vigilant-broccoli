@@ -1,15 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { AppComponent } from '@app/app.component';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Observable } from 'rxjs';
+
+class MockRouter {
+  public ne = new NavigationEnd(0, 'http://localhost:4200/login', 'http://localhost:4200/login');
+  public events = new Observable(observer => {
+    observer.next(this.ne);
+    observer.complete();
+  });
+}
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let titleService: Title;
   let app: AppComponent;
   let route: ActivatedRoute;
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       declarations: [AppComponent],
       imports: [RouterTestingModule],
@@ -25,17 +34,34 @@ describe('AppComponent', () => {
             },
           },
         },
+
+        { provide: Router, useClass: MockRouter },
       ],
-    });
+    }).compileComponents();
+  })
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     titleService = TestBed.inject(Title);
     route = TestBed.inject(ActivatedRoute);
     app = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create the app', () => {
     expect(app).toBeTruthy();
   });
+
+  describe('ngOnInit', ()=>{
+    it('should call getTitle and setTitle', ()=>{
+      jest.spyOn(app, 'getTitle')
+      jest.spyOn(app, 'setTitle')
+      app.ngOnInit();
+      expect(app.getTitle).toHaveBeenCalled()
+      expect(app.setTitle).toHaveBeenCalled()
+
+    });
+  })
 
   describe('getTitle', () => {
     it('should return title if available', () => {
