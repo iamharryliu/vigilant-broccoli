@@ -11,10 +11,11 @@ import {
 export class DatabaseManager {
   static database = MONGO_DB_CLIENT.db(PERSONAL_WEBSITE_DB_DATABASES.PROD);
   static async runGarbageCollector() {
-    await this.removeOneWeekOldOrOlderUnverifiedUsers();
+    await this.deleteOneWeekOldOrOlderUnverifiedUsers();
     await this.deleteOutdatedLogs();
   }
-  static async removeOneWeekOldOrOlderUnverifiedUsers() {
+  static async deleteOneWeekOldOrOlderUnverifiedUsers() {
+    console.log('Deleting unverified users started.');
     const emailSubscriptionsCollection = this.database.collection(
       PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
     );
@@ -28,6 +29,7 @@ export class DatabaseManager {
       })
       .then(res => console.log(res));
     await MONGO_DB_CLIENT.close();
+    console.log('Deleting unverified users completed.');
   }
 
   static async deleteOutdatedLogs() {
@@ -36,11 +38,17 @@ export class DatabaseManager {
   }
 
   static async sendNewsletter() {
+    console.log('Sending newsletter started.');
     try {
+      console.log('Retrieving emails started.');
       const emails = await this.getEmails();
+      console.log('Retrieving emails completed.');
+      console.log('Sending emails started.');
       this.sendEmails(emails);
+      console.log('Sending emails completed.');
     } finally {
       await MONGO_DB_CLIENT.close();
+      console.log('Sending newsletter completed.');
     }
   }
 
