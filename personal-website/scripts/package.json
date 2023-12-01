@@ -4,7 +4,7 @@
     "messageSubscribers": "ts-node ./src/messageSubscribers"
   },
   "dependencies": {
-    "@prettydamntired/node-tools": "^1.0.9",
+    "@prettydamntired/node-tools": "^1.0.12",
     "@prettydamntired/personal-website-types": "^1.0.2",
     "axios": "^1.6.2",
     "mongodb": "^6.3.0",
