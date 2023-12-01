@@ -4,11 +4,11 @@ import {
   MailService,
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
-} from '../../node/tools/src/index';
+} from '../../node/tools/src';
 import {
   PERSONAL_WEBSITE_DB_DATABASES,
   PERSONAL_WEBSITE_URL,
-} from '../../personal-website/common/src/index';
+} from '../../personal-website/common/src';
 import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
 import { EmailSubscription } from '@prettydamntired/personal-website-types';
 

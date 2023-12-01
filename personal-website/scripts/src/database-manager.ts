@@ -10,7 +10,7 @@ import { EmailSubscription } from '../../common/src';
 import {
   PERSONAL_WEBSITE_DB_DATABASES,
   PERSONAL_WEBSITE_DB_COLLECTIONS,
-} from '../../common/src/index';
+} from '../../common/src';
 
 export class DatabaseManager {
   static client = MONGO_DB_CLIENT;
