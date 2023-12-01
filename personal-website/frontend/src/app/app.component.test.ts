@@ -2,16 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { AppComponent } from '@app/app.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let titleService: Title;
   let app: AppComponent;
   let route: ActivatedRoute;
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [AppComponent],
+      imports: [RouterTestingModule],
       providers: [
         Title,
         {

@@ -1,17 +1,14 @@
 {
-  "name": "personal-website",
-  "version": "0.0.0",
+  "name": "personal-website-frontend",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "start:mock": "concurrently --kill-others \"ng serve\"  \"nodemon mock-server/server.js --ext js,ts,json,html\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "lint": "eslint --fix .",
-    "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
-    "format": "prettier --write ."
+    "test": "jest --coverage --watch",
+    "test:commit": "jest --bail --findRelatedTests"
   },
   "private": true,
   "dependencies": {
@@ -65,5 +62,15 @@
     "setupFilesAfterEnv": [
       "<rootDir>/setup-jest.ts"
     ]
+  },
+  "lint-staged": {
+    "*.test.ts": [
+      "npm run test:commit"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit.legacy": "lint-staged"
+    }
   }
 }
