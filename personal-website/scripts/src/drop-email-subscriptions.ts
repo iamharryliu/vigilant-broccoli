@@ -1,15 +1,22 @@
 import { MongoClient } from 'mongodb';
-import { COLLECTION_NAME } from '../common';
+import {
+  PERSONAL_WEBSITE_DB_COLLECTIONS,
+  PERSONAL_WEBSITE_DB_DATABASES,
+} from '../../../personal-website/common/src/index';
+import { MONGO_DB_SERVER } from '../../../node/tools/src';
 
-const URL = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net/`;
-const client = new MongoClient(URL);
+const client = new MongoClient(
+  `${MONGO_DB_SERVER}/${PERSONAL_WEBSITE_DB_DATABASES.PROD}`,
+);
 
-dropEmailSubscriptions();
+main();
 
-async function dropEmailSubscriptions() {
+async function main() {
   try {
     const database = client.db(process.env.MONGO_DB_NAME);
-    const collection = database.collection(COLLECTION_NAME.EMAIL_SUBSCRIBERS);
+    const collection = database.collection(
+      PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
+    );
     await collection.drop();
   } finally {
     await client.close();

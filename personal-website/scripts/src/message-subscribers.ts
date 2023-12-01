@@ -1,8 +1,12 @@
 import {
   DEFAULT_EMAIL_REQUEST,
   MailService,
-} from '@prettydamntired/node-tools';
-import { COLLECTION_NAME, client } from '../common';
+  MONGO_DB_CLIENT,
+} from '../../../node/tools/src/index';
+import {
+  PERSONAL_WEBSITE_DB_DATABASES,
+  PERSONAL_WEBSITE_DB_COLLECTIONS,
+} from '../../common/src/index';
 sendNewsletter();
 
 async function sendNewsletter() {
@@ -10,14 +14,14 @@ async function sendNewsletter() {
     const emails = await getEmails();
     sendEmails(emails);
   } finally {
-    await client.close();
+    await MONGO_DB_CLIENT.close();
   }
 }
 
 async function getEmails() {
-  const database = client.db(process.env.MONGO_DB_NAME);
+  const database = MONGO_DB_CLIENT.db(PERSONAL_WEBSITE_DB_DATABASES.PROD);
   const emailSubscriptionsCollection = database.collection(
-    COLLECTION_NAME.EMAIL_SUBSCRIBERS,
+    PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
   );
   const emailSubscriptions = await emailSubscriptionsCollection
     .find({})

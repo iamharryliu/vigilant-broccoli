@@ -4,11 +4,12 @@ import {
   MailService,
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
-} from '@prettydamntired/node-tools';
+} from '../../node/tools/src/index';
+import { PERSONAL_WEBSITE_DB_DATABASES } from '../../personal-website/common/src/index';
 import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
 import { EmailSubscription } from '@prettydamntired/personal-website-types';
 
-mongoose.connect(`${MONGO_DB_SERVER}personal-website-db`);
+mongoose.connect(`${MONGO_DB_SERVER}/${PERSONAL_WEBSITE_DB_DATABASES.PROD}`);
 const db = mongoose.connection;
 db.getClient;
 db.on('error', error => {
