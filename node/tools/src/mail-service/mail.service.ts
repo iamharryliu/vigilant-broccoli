@@ -1,5 +1,9 @@
 import nodemailer from 'nodemailer';
-import { DEFAULT_EJS_TEMPLATE, EmailRequest } from './mail.model';
+import {
+  DEFAULT_EJS_TEMPLATE,
+  DEFAULT_EMAIL_REQUEST,
+  EmailRequest,
+} from './mail.model';
 import ejs from 'ejs';
 import { logger } from '..';
 
@@ -12,12 +16,12 @@ export class MailService {
     },
   });
 
-  static sendEmail(request: EmailRequest) {
+  static sendEmail(request = DEFAULT_EMAIL_REQUEST) {
     const mailOption = {
       from: request.from,
       to: request.to,
       subject: request.subject,
-      text: !request.html ? request.text : null,
+      text: request.text,
       html: request.html,
     };
     return this.transporter.sendMail(mailOption, (error, info) => {
@@ -29,7 +33,10 @@ export class MailService {
     });
   }
 
-  static sendEjsEmail(request: EmailRequest, template = DEFAULT_EJS_TEMPLATE) {
+  static sendEjsEmail(
+    request = DEFAULT_EMAIL_REQUEST,
+    template = DEFAULT_EJS_TEMPLATE,
+  ) {
     return ejs.renderFile(template.path, template.data).then(template => {
       return this.sendEmail({
         ...request,
