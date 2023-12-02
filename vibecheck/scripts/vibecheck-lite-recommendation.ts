@@ -9,7 +9,7 @@ import {
   PERSONAL_WEBSITE_DB_DATABASES,
   PERSONAL_WEBSITE_URL,
 } from '../../personal-website/common/src';
-import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
+import { VibecheckLite } from '../vibecheck-lite/src';
 
 main();
 

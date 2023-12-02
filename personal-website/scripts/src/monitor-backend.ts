@@ -1,6 +1,6 @@
-import { SiteMonitor } from '@prettydamntired/node-tools';
 import { exec } from 'child_process';
 import { PERSONAL_WEBSITE_URL } from '../../common/src';
+import { SiteMonitor } from '../../../node/tools/src';
 
 main();
 

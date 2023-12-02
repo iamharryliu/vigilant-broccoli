@@ -4,9 +4,8 @@ import { MailService } from './mail-service/mail.service';
 import { DEFAULT_EMAIL_REQUEST } from './mail-service/mail.model';
 
 export class SiteMonitor {
-  static monitorSiteActivity(site: string) {
-    console.log('Site monitor script start.');
-    SiteMonitor.getSiteStatus(site).then(status => {
+  static async monitorSiteActivity(site: string) {
+    await SiteMonitor.getSiteStatus(site).then(status => {
       let message = `${site} is OK.`;
       if (!status) {
         message = `${site} is currently down.`;

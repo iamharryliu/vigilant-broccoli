@@ -1,4 +1,4 @@
-import { SiteMonitor } from '@prettydamntired/node-tools';
+import { SiteMonitor } from '../../../node/tools/src';
 import { PERSONAL_WEBSITE_URL } from '../../common/src';
 
 const sites = [
@@ -9,5 +9,7 @@ const sites = [
 
 main();
 async function main() {
+  console.log('Site monitor script started.');
   await Promise.all(sites.map(SiteMonitor.monitorSiteActivity));
+  console.log('Site monitor script completed.');
 }
