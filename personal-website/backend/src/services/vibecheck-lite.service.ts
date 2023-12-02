@@ -1,7 +1,7 @@
 import { NewsletterService } from './newsletter.service';
 import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
 import { EncryptionService } from '@prettydamntired/node-tools';
-import { EmailSubscription } from '@prettydamntired/personal-website-types';
+import { EmailSubscription } from '@prettydamntired/personal-website-common';
 
 export class VibecheckLiteService extends VibecheckLite {
   static async subscribeEmail(data) {
