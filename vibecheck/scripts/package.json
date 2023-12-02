@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "ts-node mail-subscribers.ts"
+    "start": "ts-node vibecheck-lite-recommendation.ts"
   },
   "dependencies": {
     "@prettydamntired/node-tools": "^1.0.11",
