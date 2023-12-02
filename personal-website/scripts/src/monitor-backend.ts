@@ -5,11 +5,12 @@ import { PERSONAL_WEBSITE_URL } from '../../common/src';
 main();
 
 async function main() {
-  console.log('Backend monitor script start.');
+  console.log('Backend monitor script started.');
   const status = await SiteMonitor.getSiteStatus(PERSONAL_WEBSITE_URL.BACKEND);
   if (!status) {
     restartServer();
   }
+  console.log('Backend monitor script completed.');
 }
 
 function restartServer() {

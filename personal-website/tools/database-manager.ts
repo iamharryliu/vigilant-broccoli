@@ -2,11 +2,11 @@ import {
   DEFAULT_EMAIL_REQUEST,
   MONGO_DB_CLIENT,
   MailService,
-} from '../../../node/tools/src';
+} from '../../node/tools/src';
 import {
   PERSONAL_WEBSITE_DB_DATABASES,
   PERSONAL_WEBSITE_DB_COLLECTIONS,
-} from '../../common/src';
+} from '../common/src';
 
 export class DatabaseManager {
   static database = MONGO_DB_CLIENT.db(PERSONAL_WEBSITE_DB_DATABASES.PROD);
@@ -44,6 +44,7 @@ export class DatabaseManager {
       const emails = await this.getEmails();
       console.log('Retrieving emails completed.');
       console.log('Sending emails started.');
+      console.log(`Emailing ${emails.length} subscriber(s).`);
       this.sendEmails(emails);
       console.log('Sending emails completed.');
     } finally {
