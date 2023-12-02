@@ -1,8 +1,4 @@
 {
-  "name": "personal-website-scripts",
-  "scripts": {
-    "messageSubscribers": "ts-node ./src/messageSubscribers"
-  },
   "dependencies": {
     "@prettydamntired/node-tools": "^1.0.12"
   }

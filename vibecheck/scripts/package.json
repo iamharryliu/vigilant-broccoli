@@ -1,6 +1,4 @@
 {
-  "name": "vibecheck-lite-scripts",
-  "version": "1.0.0",
   "scripts": {
     "start": "ts-node mail-subscribers.ts"
   },
