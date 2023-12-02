@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { Location } from './location.model';
+import { Location } from '../models/location.model';
 
 export class BrowserLocationService {
   getLocation(): Observable<Location> {

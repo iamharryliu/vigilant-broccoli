@@ -1,13 +1,10 @@
 import nodemailer from 'nodemailer';
-import {
-  DEFAULT_EJS_TEMPLATE,
-  DEFAULT_EMAIL_REQUEST,
-  EmailRequest,
-} from './mail.model';
+import { DEFAULT_EJS_TEMPLATE } from '../consts/email.const';
+import { DEFAULT_EMAIL_REQUEST } from '../consts/email.const';
 import ejs from 'ejs';
 import { logger } from '..';
 
-export class MailService {
+export class EmailService {
   static transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {

@@ -1,18 +1,18 @@
 import crypto from 'crypto';
 
-export const ENCRYPTION_SECRET_KEY = crypto
+const ENCRYPTION_SECRET_KEY = crypto
   .createHash('sha512')
   .update(process.env.SECRET_KEY)
   .digest('hex')
   .substring(0, 32);
-export const ENCRYPTION_SECRET_IV = crypto
+const ENCRYPTION_SECRET_IV = crypto
   .createHash('sha512')
   .update(process.env.SECRET_IV)
   .digest('hex')
   .substring(0, 16);
 
 export class EncryptionService {
-  static encryptData(data) {
+  static encryptData(data: string) {
     const cipher = crypto.createCipheriv(
       process.env.ENCRYPTION_METHOD,
       ENCRYPTION_SECRET_KEY,

@@ -21,4 +21,6 @@ npm run format
 
 ## References
 
+[Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik)
+
 [NPM Link and Unlink](https://dev.to/erinbush/npm-linking-and-unlinking-2h1g)

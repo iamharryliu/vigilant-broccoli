@@ -1,7 +1,7 @@
 import http from 'http';
 import https from 'https';
-import { MailService } from './mail-service/mail.service';
-import { DEFAULT_EMAIL_REQUEST } from './mail-service/mail.model';
+import { EmailService } from '../services/email.service';
+import { DEFAULT_EMAIL_REQUEST } from '../consts/email.const';
 
 export class SiteMonitor {
   static async monitorSiteActivity(site: string) {
@@ -10,7 +10,7 @@ export class SiteMonitor {
       if (!status) {
         message = `${site} is currently down.`;
         const subject = message;
-        MailService.sendEmail({
+        EmailService.sendEmail({
           ...DEFAULT_EMAIL_REQUEST,
           subject,
           text: message,
