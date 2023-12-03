@@ -6,6 +6,13 @@ class Solution:
     def floodFill(
         self, image: List[List[int]], sr: int, sc: int, color: int
     ) -> List[List[int]]:
+        """
+        :type image: List[List[int]]
+        :type sr: int
+        :type sc: int
+        :type color: int
+        :rtype: List[List[int]]
+        """
         old_color = image[sr][sc]
         visited = set()
         directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
@@ -27,9 +34,3 @@ class Solution:
         dfs(sr, sc)
 
         return image
-
-
-print(
-    Solution.floodFill(image=[[1, 1, 1], [1, 1, 0], [1, 0, 1]], sr=1, sc=1, newColor=2)
-    == [[2, 2, 2], [2, 2, 0], [2, 0, 1]]
-)

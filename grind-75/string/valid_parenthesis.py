@@ -14,8 +14,3 @@ class Solution:
             else:
                 return False
         return stack == []
-
-
-test_value = "()[]{}"
-result = Solution.isValid(test_value)
-print(result)

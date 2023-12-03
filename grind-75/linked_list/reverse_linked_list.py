@@ -1,6 +1,3 @@
-from common import ListNode
-
-
 class Solution:
     @classmethod
     def reverseList(self, head):

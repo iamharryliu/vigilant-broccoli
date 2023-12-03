@@ -12,7 +12,3 @@ class Solution:
             n2 = n1 + n2
             n1 = tmp
         return n2
-
-
-result = Solution.climbStairs(4)
-print(result)

@@ -1,6 +1,11 @@
 class Solution:
     @classmethod
     def isAnagram(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: bool
+        """
         for c in set(s + t):
             if s.count(c) != t.count(c):
                 return False
@@ -15,9 +20,3 @@ class Solution:
         #     dic2[item] = dic2.get(item, 0) + 1
         # # check that dics are the same
         # return dic1 == dic2
-
-
-s = "anagram"
-t = "nagaram"
-
-print(Solution.isAnagram(s, t))
