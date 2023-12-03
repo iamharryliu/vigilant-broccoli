@@ -12,3 +12,12 @@ repos:
     rev: stable
     hooks:
       - id: black
+  - repo: local
+    hooks:
+      - id: unittest
+        name: unittest
+        entry: python -m unittest discover -s grind-75
+        language: python
+        'types': [python]
+        additional_dependencies: []
+        pass_filenames: false
