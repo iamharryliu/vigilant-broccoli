@@ -1,8 +1,9 @@
 from typing import Optional
-from common import ListNode
+from linked_list.common import ListNode
 
 
 class Solution:
+    @classmethod
     def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:
         slow = head
         fast = head
