@@ -1,6 +1,6 @@
 import unittest
-from linked_list.reverse_linked_list import Solution
 from linked_list.common import LinkedList
+from linked_list.reverse_linked_list import Solution
 
 
 class TestStringMethods(unittest.TestCase):

@@ -1,6 +1,3 @@
-from common import ListNode
-
-
 class Solution:
     @classmethod
     def hasCycle(self, head) -> bool:
@@ -28,16 +25,3 @@ class Solution:
         #     fast = fast.next.next
 
         # return False
-
-
-node1 = ListNode(1)
-node2 = ListNode(2)
-node3 = ListNode(3)
-node4 = ListNode(4)
-node4.next = node1
-node3.next = node4
-node2.next = node3
-node1.next = node2
-print(Solution.hasCycle(node1))
-node1.next.next.next = None
-print(Solution.hasCycle(node1))

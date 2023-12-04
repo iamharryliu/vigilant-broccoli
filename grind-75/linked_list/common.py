@@ -6,10 +6,20 @@ class ListNode:
 
 
 class LinkedList:
-    def __init__(self, nums=[]):
+    def __init__(self, head=[], pos=-1):
         self.head = None
-        if nums:
-            self.append_numbers(nums)
+        if head:
+            self.append_numbers(head)
+        if pos >= 0:
+            curr = self.head
+            pos_node = None
+            i = 0
+            while curr.next:
+                if i == pos:
+                    pos_node = curr
+                i += 1
+                curr = curr.next
+            curr.next = pos_node
 
     def append(self, data):
         new_node = ListNode(data)
