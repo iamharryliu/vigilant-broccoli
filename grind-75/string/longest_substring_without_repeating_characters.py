@@ -10,8 +10,3 @@ class Solution:
             curr += c
             res = max(res, len(curr))
         return res
-
-
-test = "abcabcbb"
-expected_res = 3
-print(Solution.lengthOfLongestSubstring(test) == expected_res)

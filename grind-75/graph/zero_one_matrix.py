@@ -29,14 +29,3 @@ class Solution:
                     q.append((nr, nc))
                     mat[nr][nc] = mat[r][c] + 1
         return mat
-
-
-mat = [[0, 0, 0], [0, 1, 0], [0, 0, 0]]
-output = [[0, 0, 0], [0, 1, 0], [0, 0, 0]]
-res = Solution.updateMatrix(mat) == output
-print(res)
-
-mat = [[0, 0, 0], [0, 1, 0], [1, 1, 1]]
-output = [[0, 0, 0], [0, 1, 0], [1, 2, 1]]
-res = Solution.updateMatrix(mat) == output
-print(res)

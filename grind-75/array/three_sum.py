@@ -23,19 +23,3 @@ class Solution:
                     while l < r and nums[l] == nums[l - 1]:
                         l += 1
         return res
-
-
-nums = [-1, -1, 0, 1, 2, -1, -4]
-output = [(-1, -1, 2), (-1, 0, 1)]
-res = Solution.threeSum(nums)
-print(res == output)
-
-nums = []
-output = []
-res = Solution.threeSum(nums)
-print(res == output)
-
-nums = [0]
-output = []
-res = Solution.threeSum(nums)
-print(res == output)
