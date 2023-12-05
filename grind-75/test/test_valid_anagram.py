@@ -2,7 +2,7 @@ import unittest
 from string.valid_anagram import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.isAnagram(s="anagram", t="nagaram")
         self.assertEqual(res, True)

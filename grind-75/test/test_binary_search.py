@@ -2,7 +2,7 @@ import unittest
 from binary_search.binary_search import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.search(nums=[-1, 0, 3, 5, 9, 12], target=9)
         self.assertEqual(res, 4)

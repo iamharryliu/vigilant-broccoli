@@ -2,7 +2,7 @@ import unittest
 from string.longest_palindrome import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.longestPalindrome("abccccdd")
         self.assertEqual(res, 7)

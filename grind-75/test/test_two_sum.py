@@ -2,7 +2,7 @@ import unittest
 from array.two_sum import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.twoSum([2, 7, 11, 15], 9)
         self.assertEqual(res, [0, 1])

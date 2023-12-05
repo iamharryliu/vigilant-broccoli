@@ -2,7 +2,7 @@ import unittest
 from array.maximum_subarray import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.maxSubArray(nums=[-2, 1, -3, 4, -1, 2, 1, -5, 4])
         self.assertEqual(res, 6)

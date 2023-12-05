@@ -1,8 +1,8 @@
 import unittest
-from dynamic_programming.climb_stairs import Solution
+from dynamic_programming.climbing_stairs import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.climbStairs(2)
         self.assertEqual(res, 2)

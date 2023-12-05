@@ -2,7 +2,7 @@ import unittest
 from array.contains_duplicate import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.containsDuplicate(nums=[1, 2, 3, 1])
         self.assertEqual(res, True)

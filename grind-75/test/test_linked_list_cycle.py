@@ -3,7 +3,7 @@ from linked_list.common import LinkedList
 from linked_list.linked_list_cycle import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.hasCycle(LinkedList(head=[3, 2, 0, -4], pos=1).head)
         self.assertEqual(res, True)

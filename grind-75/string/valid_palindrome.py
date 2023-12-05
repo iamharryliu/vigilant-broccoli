@@ -12,8 +12,3 @@ class Solution:
             left += 1
             right -= 1
         return True
-
-
-test_value = "A man, a plan, a canal: Panama"
-result = Solution.isPalindrome(test_value)
-print(result)

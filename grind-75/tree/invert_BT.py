@@ -3,6 +3,7 @@ import collections
 
 class Solution:
     # recursive
+    @classmethod
     def invertTree(self, root):
         if root:
             root.left, root.right = (
@@ -12,6 +13,7 @@ class Solution:
             return root
 
     # stack
+    @classmethod
     def invertTree(self, root):
         if not root:
             return root
@@ -24,6 +26,7 @@ class Solution:
         return root
 
     # queue
+    @classmethod
     def invertTree(self, root):
         queue = collections.deque([(root)])
         while queue:

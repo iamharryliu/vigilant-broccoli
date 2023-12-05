@@ -1,15 +1,9 @@
-# Definition for a binary tree node.
 from typing import Optional
-
-
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
+from tree.common import TreeNode
 
 
 class Solution:
+    @classmethod
     def isBalanced(self, root: Optional[TreeNode]) -> bool:
         res = True
 

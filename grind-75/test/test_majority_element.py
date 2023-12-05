@@ -2,7 +2,7 @@ import unittest
 from array.majority_element import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.majorityElement([3, 2, 3])
         self.assertEqual(res, 3)

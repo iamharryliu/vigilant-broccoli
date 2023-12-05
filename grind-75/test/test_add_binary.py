@@ -2,7 +2,7 @@ import unittest
 from binary.add_binary import Solution
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSolution(unittest.TestCase):
     def test(self):
         res = Solution.addBinary("11", "1")
         self.assertEqual(res, "100")
