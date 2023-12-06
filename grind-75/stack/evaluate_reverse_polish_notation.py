@@ -2,6 +2,7 @@ from typing import List
 
 
 class Solution:
+    @classmethod
     def evalRPN(self, tokens: List[str]) -> int:
         stack = []
         for c in tokens:

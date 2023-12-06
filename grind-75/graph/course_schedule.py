@@ -26,12 +26,3 @@ class Solution:
             if dfs(course):
                 return False
         return True
-
-
-numCourses = 2
-prerequisites = [[1, 0]]
-res = Solution.canFinish(numCourses, prerequisites)
-print(res)
-prerequisites = [[1, 0], [0, 1]]
-res = Solution.canFinish(numCourses, prerequisites)
-print(res)
