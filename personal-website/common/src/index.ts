@@ -1,2 +1,2 @@
-export * from './common.model';
-export * from './common.const';
+export * from './models/common.model';
+export * from './consts/common.const';

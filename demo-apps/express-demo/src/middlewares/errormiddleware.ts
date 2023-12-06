@@ -1,11 +1,11 @@
-export const errorLogger = (err, request, response, next) => {
-  console.log(`Error: ${err.message}`);
-  next(err);
+export const errorLogger = (error, request, response, next) => {
+  console.log(`Error: ${error.message}`);
+  next(error);
 };
 
-export const errorResponder = (err, request, response, next) => {
+export const errorResponder = (error, request, response, next) => {
   response.header('Content-Type', 'application/json');
-  response.status(err.statusCode).send(err.message);
+  response.status(error.statusCode).json({ error: error.message });
 };
 
 export const invalidPathHandler = (request, response, next) => {

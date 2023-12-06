@@ -27,7 +27,6 @@ router.post('/subscribe', requireJsonContent, (req, res) => {
   }
   VibecheckLiteService.subscribeEmail(req.body).then(message => {
     return res.status(HTTP_STATUS_CODES.OK).json({
-      success: true,
       message: message,
     });
   });
@@ -37,7 +36,6 @@ router.put('/unsubscribe/:email', async (req, res) => {
   const email = req.params.email;
   await VibecheckLiteService.unsubscribeEmail(email);
   return res.status(HTTP_STATUS_CODES.OK).json({
-    success: true,
     message: 'Successfully unsubscribed',
   });
 });

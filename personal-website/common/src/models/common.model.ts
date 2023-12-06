@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const emailSubscriptionSchema = new mongoose.Schema({
-  email: String,
+  email: { type: String, required: true },
   isVerified: Boolean,
   dateCreated: Date,
   vibecheckLiteSubscription: {
