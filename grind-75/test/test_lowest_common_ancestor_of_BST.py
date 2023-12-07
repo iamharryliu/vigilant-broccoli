@@ -21,7 +21,3 @@ class TestSolution(unittest.TestCase):
             BinaryTree.array_to_tree(root=[2, 1]), p=TreeNode(2), q=TreeNode(1)
         )
         self.assertEqual(res.val, 2)
-
-
-if __name__ == "__main__":
-    unittest.main()

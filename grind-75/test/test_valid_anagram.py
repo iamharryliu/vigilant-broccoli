@@ -8,7 +8,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, True)
         res = Solution.isAnagram(s="rat", t="car")
         self.assertEqual(res, False)
-
-
-if __name__ == "__main__":
-    unittest.main()

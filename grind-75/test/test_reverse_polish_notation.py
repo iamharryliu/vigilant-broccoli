@@ -12,7 +12,3 @@ class TestSolution(unittest.TestCase):
             tokens=["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"]
         )
         self.assertEqual(res, 22)
-
-
-if __name__ == "__main__":
-    unittest.main()

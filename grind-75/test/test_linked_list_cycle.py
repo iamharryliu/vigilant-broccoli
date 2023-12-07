@@ -11,7 +11,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, True)
         res = Solution.hasCycle(LinkedList(head=[1], pos=-1).head)
         self.assertEqual(res, False)
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -8,7 +8,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, True)
         res = Solution.canFinish(numCourses=2, prerequisites=[[1, 0], [0, 1]])
         self.assertEqual(res, False)
-
-
-if __name__ == "__main__":
-    unittest.main()

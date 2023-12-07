@@ -10,7 +10,3 @@ class TestSolution(unittest.TestCase):
             intervals=[[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]], newInterval=[4, 8]
         )
         self.assertEqual(res, [[1, 2], [3, 10], [12, 16]])
-
-
-if __name__ == "__main__":
-    unittest.main()

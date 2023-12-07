@@ -11,7 +11,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, 3)
         res = Solution.maxDepth(BinaryTree.array_to_tree(root=[1, None, 2]))
         self.assertEqual(res, 2)
-
-
-if __name__ == "__main__":
-    unittest.main()

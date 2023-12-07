@@ -5,15 +5,12 @@
 #         self.left = left
 #         self.right = right
 class Solution:
+    @classmethod
     def isValidBST(self, root, ceiling=float("inf"), floor=float("-inf")):
-        # not node
         if not root:
             return True
-        # node is greater/less than floor/ceiling
         if root.val <= floor or root.val >= ceiling:
             return False
-        # recursively check isValidBST of both left and right nodes
         leftSideValid = self.isValidBST(root.left, root.val, floor)
         rightSideValid = self.isValidBST(root.right, ceiling, root.val)
         return leftSideValid and rightSideValid
-

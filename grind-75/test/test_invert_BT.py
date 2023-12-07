@@ -9,7 +9,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(BinaryTree.to_bfs_traversal_array(res), [4, 7, 2, 9, 6, 3, 1])
         res = Solution.invertTree(BinaryTree.array_to_tree(root=[2, 1, 3]))
         self.assertEqual(BinaryTree.to_bfs_traversal_array(res), [2, 3, 1])
-
-
-if __name__ == "__main__":
-    unittest.main()

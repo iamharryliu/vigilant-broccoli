@@ -10,7 +10,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, False)
         res = Solution.isPalindrome(s=" ")
         self.assertEqual(res, True)
-
-
-if __name__ == "__main__":
-    unittest.main()

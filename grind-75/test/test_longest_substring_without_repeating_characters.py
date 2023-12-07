@@ -10,7 +10,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, 1)
         res = Solution.lengthOfLongestSubstring(s="pwwkew")
         self.assertEqual(res, 3)
-
-
-if __name__ == "__main__":
-    unittest.main()

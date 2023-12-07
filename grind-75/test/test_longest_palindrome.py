@@ -8,7 +8,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, 7)
         res = Solution.longestPalindrome("a")
         self.assertEqual(res, 1)
-
-
-if __name__ == "__main__":
-    unittest.main()

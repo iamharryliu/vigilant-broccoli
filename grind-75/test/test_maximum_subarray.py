@@ -10,7 +10,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, 1)
         res = Solution.maxSubArray(nums=[5, 4, -1, 7, 8])
         self.assertEqual(res, 23)
-
-
-if __name__ == "__main__":
-    unittest.main()

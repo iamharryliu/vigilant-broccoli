@@ -24,7 +24,3 @@ class TestSolution(unittest.TestCase):
             if command == "empty":
                 res.append(q.empty())
         self.assertEqual(res, [None, None, None, 1, 1, False])
-
-
-if __name__ == "__main__":
-    unittest.main()

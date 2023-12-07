@@ -9,7 +9,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(LinkedList.to_list(res), [3, 4, 5])
         res = Solution.middleNode(LinkedList(head=[1, 2, 3, 4, 5, 6]).head)
         self.assertEqual(LinkedList.to_list(res), [4, 5, 6])
-
-
-if __name__ == "__main__":
-    unittest.main()

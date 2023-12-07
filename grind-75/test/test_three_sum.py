@@ -10,7 +10,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, [])
         res = Solution.threeSum(nums=[0])
         self.assertEqual(res, [])
-
-
-if __name__ == "__main__":
-    unittest.main()

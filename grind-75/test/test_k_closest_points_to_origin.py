@@ -8,7 +8,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, [[-2, 2]])
         res = Solution.kClosest(points=[[3, 3], [5, -1], [-2, 4]], k=2)
         self.assertEqual(res, [[3, 3], [-2, 4]])
-
-
-if __name__ == "__main__":
-    unittest.main()

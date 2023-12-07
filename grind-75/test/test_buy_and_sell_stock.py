@@ -8,7 +8,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, 5)
         res = Solution.maxProfit(prices=[7, 6, 4, 3, 1])
         self.assertEqual(res, 0)
-
-
-if __name__ == "__main__":
-    unittest.main()

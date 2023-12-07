@@ -10,7 +10,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, False)
         res = Solution.containsDuplicate(nums=[1, 1, 1, 3, 3, 4, 3, 2, 4, 2])
         self.assertEqual(res, True)
-
-
-if __name__ == "__main__":
-    unittest.main()

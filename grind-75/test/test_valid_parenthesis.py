@@ -10,7 +10,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, True)
         res = Solution.isValid(s="(]")
         self.assertEqual(res, False)
-
-
-if __name__ == "__main__":
-    unittest.main()

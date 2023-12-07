@@ -8,7 +8,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, 2)
         res = Solution.climbStairs(3)
         self.assertEqual(res, 3)
-
-
-if __name__ == "__main__":
-    unittest.main()

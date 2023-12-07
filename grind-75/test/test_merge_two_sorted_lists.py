@@ -13,7 +13,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(LinkedList.to_list(res), [])
         res = Solution.mergeTwoLists(LinkedList([]).head, LinkedList([0]).head)
         self.assertEqual(LinkedList.to_list(res), [0])
-
-
-if __name__ == "__main__":
-    unittest.main()

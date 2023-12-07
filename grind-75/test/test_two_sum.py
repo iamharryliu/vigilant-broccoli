@@ -10,7 +10,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, [1, 2])
         res = Solution.twoSum([3, 3], 6)
         self.assertEqual(res, [0, 1])
-
-
-if __name__ == "__main__":
-    unittest.main()

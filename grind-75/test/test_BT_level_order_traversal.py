@@ -13,7 +13,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, [[1]])
         res = Solution.levelOrder(BinaryTree.array_to_tree(root=[]))
         self.assertEqual(res, [])
-
-
-if __name__ == "__main__":
-    unittest.main()

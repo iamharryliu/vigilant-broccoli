@@ -8,7 +8,3 @@ class TestSolution(unittest.TestCase):
         self.assertEqual(res, "100")
         res = Solution.addBinary("1010", "1011")
         self.assertEqual(res, "10101")
-
-
-if __name__ == "__main__":
-    unittest.main()
