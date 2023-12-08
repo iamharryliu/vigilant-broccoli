@@ -16,12 +16,10 @@ server.post('/email-alerts', (req, res, next) => {
   switch (email) {
     case 'subscribed@e':
       return res.status(200).send({
-        success: false,
         message: 'This email is already subscribed.',
       });
     default:
       res.status(201).send({
-        success: true,
         message: 'Email alert saved successfully.',
       });
   }

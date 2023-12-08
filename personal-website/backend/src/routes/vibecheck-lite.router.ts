@@ -15,7 +15,7 @@ router.get('/get-outfit-recommendation', async (req, res) => {
   });
   return res
     .status(HTTP_STATUS_CODES.OK)
-    .json({ success: true, data: recommendation });
+    .json({ data: recommendation });
 });
 
 router.post('/subscribe', requireJsonContent, (req, res) => {
