@@ -25,7 +25,7 @@ export class RecaptchaInterceptor implements HttpInterceptor {
         const modifiedRequest = request.clone({
           body: {
             ...request.body,
-            token: token,
+            recaptchaToken: token,
           },
         });
         return next.handle(modifiedRequest);
