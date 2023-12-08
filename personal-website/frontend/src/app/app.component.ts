@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { filter, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -18,11 +18,12 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
-        map(() => this.getTitle()),
+        tap(()=>{
+          window.scrollTo(0, 0);
+          this.setTitle(this.getTitle());
+        }),
       )
-      .subscribe(title => {
-        this.setTitle(title);
-      });
+      .subscribe()
   }
 
   getTitle() {
