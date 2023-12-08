@@ -80,6 +80,9 @@
       },
       "RESUME": {
         "TEXT": "Resume"
+      },
+      "LINK_TREE": {
+        "TEXT": "Link Tree"
       }
     },
     "OTHER": {

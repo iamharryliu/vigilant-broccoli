@@ -144,6 +144,11 @@ const RESUME: Link = {
   text: 'LINKS.EXTERNAL.RESUME.TEXT',
   isExternalLink: true,
 };
+const LINK_TREE: Link = {
+  url: ENVIRONMENT.URLS.LINK_TREE,
+  text: 'LINKS.EXTERNAL.LINK_TREE.TEXT',
+  isExternalLink: true,
+};
 
 export const LINKS = {
   PERSONAL_WEBSITE,
@@ -157,4 +162,5 @@ export const LINKS = {
   SECONDHAND_STORE_IG,
   SKATE_IG,
   RESUME,
+  LINK_TREE,
 };

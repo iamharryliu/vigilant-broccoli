@@ -20,6 +20,7 @@ export class FooterComponent {
     OTHER: {
       HEADER: 'LINKS.OTHER.HEADER',
       LINKS: [
+        LINKS.LINK_TREE,
         LINKS.LINKEDIN,
         LINKS.RESUME,
         LINKS.GITHUB,

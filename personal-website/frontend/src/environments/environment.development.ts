@@ -11,5 +11,6 @@ export const ENVIRONMENT = {
     SKATE_IG: 'https://www.instagram.com/torontocityskate/',
     EMAIL: 'mailto: harryliu1995@gmail.com',
     RESUME: 'http://localhost:4200/assets/HarryLiu-Resume.pdf',
+    LINK_TREE: 'http://localhost:4200/links',
   },
 };
