@@ -18,6 +18,7 @@ import {
   createTranslateLoader,
 } from '@app/core/translate-util';
 import { ErrorInterceptor } from '@services/error-interceptor.service';
+import { ResponseMessageInterceptor } from '@services/response-message-interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -53,6 +54,11 @@ import { ErrorInterceptor } from '@services/error-interceptor.service';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RecaptchaInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ResponseMessageInterceptor,
       multi: true,
     },
     {
