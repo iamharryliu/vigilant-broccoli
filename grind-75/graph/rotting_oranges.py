@@ -35,19 +35,3 @@ class Solution:
             time += 1
             fresh -= len(q)
         return time if fresh == 0 else -1
-
-
-grid = [[2, 1, 1], [1, 1, 0], [0, 1, 1]]
-output = 4
-res = Solution.orangesRotting(grid)
-print(res == output)
-
-grid = [[2, 1, 1], [0, 1, 1], [1, 0, 1]]
-output = -1
-res = Solution.orangesRotting(grid)
-print(res == -1)
-
-grid = [[0, 2]]
-output = 0
-res = Solution.orangesRotting(grid)
-print(res == 0)

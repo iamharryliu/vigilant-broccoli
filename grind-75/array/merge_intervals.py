@@ -13,7 +13,3 @@ class Solution:
             else:
                 res.append([start, end])
         return res
-
-
-res = Solution.merge([[1, 3], [2, 6], [8, 10], [15, 18]])
-print(res == [[1, 6], [8, 10], [15, 18]])
