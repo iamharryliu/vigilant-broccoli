@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { APP_PATH } from '@app/app-route.const';
+import { LoadingSpinnerComponent } from '@app/components/global/loading-spinner/loading-spinner.component';
 import { CommonService } from '@app/core/services/common.service';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
 import { TranslateModule } from '@ngx-translate/core';
@@ -21,9 +22,11 @@ import { TranslateModule } from '@ngx-translate/core';
     CommonModule,
     TranslateModule,
     ReactiveFormsModule,
+    LoadingSpinnerComponent,
   ],
 })
 export class VerifyEmailSubscriptionPageComponent {
+  isLoading!: boolean
   constructor(
     private commonService: CommonService,
     private router: Router,
@@ -32,21 +35,23 @@ export class VerifyEmailSubscriptionPageComponent {
     this.route.queryParams.subscribe(params => {
       const token = params['token'];
       if (token) {
-        this.form.controls['token'].setValue(token);
-        this.submit();
+        this.isLoading = true
+        setTimeout(()=>{
+          this.form.controls['token'].setValue(token);
+          this.submit();
+        }, 3000)
       }
     });
   }
 
   form = new FormGroup({
     token: new FormControl('', [Validators.required]),
-    subscribeToVibecheckLite: new FormControl(false),
   });
 
   submit() {
     this.commonService
       .verifyEmailSubscription(this.form.value.token as string)
-      .subscribe(() => {
+      .subscribe((_) => {
         this.router.navigateByUrl(APP_PATH.INDEX);
       });
   }
