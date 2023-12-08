@@ -35,8 +35,8 @@ export class CommonService {
 
   verifyEmailSubscription(token: string): Observable<any> {
     return this.http.put<any>(
-      `${this.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.VERIFY_SUBSCRIPTION}/${token}`,
-      {},
+      `${this.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.VERIFY_SUBSCRIPTION}`,
+      {token},
     );
   }
 

@@ -28,16 +28,20 @@ router.post('/email-alerts', requireJsonContent, (req, res) => {
   });
 });
 
-// HANDLE BAD REQUEST
-router.put('/verify-email-subscription/:encryptedEmail', async (req, res) => {
-  const encryptedEmail = req.params.encryptedEmail;
-  const email = EncryptionService.decryptData(encryptedEmail);
-  if (await NewsletterService.verifyEmail(email)) {
+router.put('/verify-email-subscription', async (req, res, next) => {
+  const {token} = req.body;
+  try{
+    const email = EncryptionService.decryptData(token);
+    if (await NewsletterService.verifyEmail(email)) {
+      return res
+        .status(HTTP_STATUS_CODES.OK)
+        .json({ message: 'Email has been verified.' });
+    }
     return res
-      .status(HTTP_STATUS_CODES.OK)
-      .json({ message: 'Email has been verified.' });
+      .status(HTTP_STATUS_CODES.FORBIDDEN)
+      .json({ message: 'Email does not exist.' });
+  } catch(error){
+    error.statusCode = HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
+    next(error)
   }
-  return res
-    .status(HTTP_STATUS_CODES.FORBIDDEN)
-    .json({ message: 'Email does not exist.' });
 });
