@@ -6,7 +6,7 @@ class Solution:
     def permute(self, nums: List[int]) -> List[List[int]]:
         res = []
 
-        def backtrack(arr):
+        def backtrack(arr=[]):
             if len(arr) == len(nums):
                 res.append(arr)
                 return
@@ -14,5 +14,5 @@ class Solution:
                 if n not in arr:
                     backtrack(arr + [n])
 
-        backtrack([])
+        backtrack()
         return res

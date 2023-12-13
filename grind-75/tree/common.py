@@ -14,9 +14,15 @@ class BinaryTree:
         if not root:
             return None
 
-        nodes = [
-            TreeNode(num) if num is not None else None for num in root
-        ]  # Create TreeNode objects
+        nodes = []
+
+        for val in root:
+            if val is None:
+                nodes.append(None)
+            elif isinstance(val, int):
+                nodes.append(TreeNode(val))
+            else:
+                nodes.append(val)
 
         # Assign children nodes to parent nodes according to the array structure
         for i in range(len(root)):

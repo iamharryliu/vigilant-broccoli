@@ -6,14 +6,14 @@ class Solution:
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
         res = []
 
-        def dfs(i, arr):
+        def backtrack(i=0, arr=[]):
             if i == len(candidates) or sum(arr) > target:
                 return
             if sum(arr) == target:
                 res.append(arr)
                 return
-            dfs(i, arr + [candidates[i]])
-            dfs(i + 1, arr)
+            backtrack(i, arr + [candidates[i]])
+            backtrack(i + 1, arr)
 
-        dfs(0, [])
+        backtrack()
         return res

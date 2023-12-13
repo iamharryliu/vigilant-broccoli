@@ -15,12 +15,13 @@ class TimeMap:
         r = len(values) - 1
         while l <= r:
             m = (l + r) // 2
-            t = values[m][1]
+            m_values = values[m]
+            t = m_values[1]
             if t == timestamp:
-                return values[m][0]
+                return m_values[0]
             if t < timestamp:
                 l = m + 1
-                res = values[m][0]
+                res = m_values[0]
             if t > timestamp:
                 r = m - 1
         return res

@@ -21,8 +21,3 @@ class Solution:
                 r -= 1
                 i -= 1  # we are swapping 2 for an unknown number so we do not want to increment i
             i += 1
-
-
-arr = [2, 0, 2, 1, 1, 0]
-Solution.sortColors(arr)
-print(arr == [0, 0, 1, 1, 2, 2])

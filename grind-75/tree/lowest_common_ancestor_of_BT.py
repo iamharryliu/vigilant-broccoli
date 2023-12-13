@@ -7,6 +7,7 @@ class TreeNode:
 
 
 class Solution:
+    @classmethod
     def lowestCommonAncestor(
         self, root: "TreeNode", p: "TreeNode", q: "TreeNode"
     ) -> "TreeNode":

@@ -12,22 +12,3 @@ class Solution:
                 if wordFits and word == s[i : i + len(word)] and dp[i + len(word)]:
                     dp[i] = True
         return dp[0]
-
-
-s = "leetcode"
-wordDict = ["leet", "code"]
-output = True
-res = Solution.wordBreak(s, wordDict)
-print(res == output)
-
-s = "applepenapple"
-wordDict = ["apple", "pen"]
-output = True
-res = Solution.wordBreak(s, wordDict)
-print(res == output)
-
-s = "catsandog"
-wordDict = ["cats", "dog", "sand", "and", "cat"]
-output = False
-res = Solution.wordBreak(s, wordDict)
-print(res == output)
