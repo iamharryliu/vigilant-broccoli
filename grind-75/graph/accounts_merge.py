@@ -10,19 +10,20 @@ class Solution(object):
             for email in account[1:]:
                 graph[email].append(i)
 
-        def dfs(i, arr):
+        def get_emails(i, arr):
             if i not in visited:
                 visited.add(i)
-                for j in range(len(accounts[i][1:])):
-                    email = accounts[i][j + 1]
+                account = accounts[i]
+                for email in account[1:]:
                     arr.add(email)
                     for k in graph[email]:
-                        dfs(k, arr)
-            return arr
+                        get_emails(k, arr)
+            return sorted(list(arr))
 
         res = []
         visited = set()
         for i, account in enumerate(accounts):
-            if i not in visited:
-                res.append([account[0]] + sorted(list(dfs(i, set()))))
+            emails = get_emails(i, set())
+            if emails:
+                res.append([account[0]] + emails)
         return res
