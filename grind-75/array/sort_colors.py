@@ -4,20 +4,21 @@ from typing import List
 class Solution:
     @classmethod
     def sortColors(self, nums: List[int]) -> None:
+        curr = 0
+        l = 0
+        r = len(nums) - 1
+
         def swap(a, b):
             tmp = nums[b]
             nums[b] = nums[a]
             nums[a] = tmp
 
-        i = 0
-        l = 0
-        r = len(nums) - 1
-        while i <= r:
-            if nums[i] == 0:
-                swap(i, l)
+        while curr <= r:
+            if nums[curr] == 0:
+                swap(curr, l)
                 l += 1
-            if nums[i] == 2:
-                swap(i, r)
+            if nums[curr] == 2:
+                swap(curr, r)
+                curr -= 1
                 r -= 1
-                i -= 1  # we are swapping 2 for an unknown number so we do not want to increment i
-            i += 1
+            curr += 1

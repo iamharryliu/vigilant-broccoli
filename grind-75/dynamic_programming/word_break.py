@@ -8,7 +8,8 @@ class Solution:
         dp[-1] = True
         for i in range(len(s) - 1, -1, -1):
             for word in wordDict:
-                wordFits = (len(s) - i) >= len(word)
-                if wordFits and word == s[i : i + len(word)] and dp[i + len(word)]:
+                word_end_index = i + len(word)
+                word_fits = len(s) >= word_end_index
+                if word_fits and word == s[i:word_end_index] and dp[word_end_index]:
                     dp[i] = True
         return dp[0]

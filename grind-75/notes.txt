@@ -9,3 +9,9 @@ Top Coding Interview Concepts
 -bfs & dfs (use for trees and graphs)
 -recursion
 -hashmaps
+
+Graphs
+-conditions: check range, visited, special conditions
+
+Intervals
+-pre-sort list
