@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, exhaustMap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { CommonService } from '@services/common.service';
-import { APP_PATH } from '@app/app-route.const';
+import { APP_PATH } from '@consts/app-route.const';
 import { Router } from '@angular/router';
 
 @Component({

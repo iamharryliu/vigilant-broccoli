@@ -16,7 +16,7 @@ import { AppService } from '@services/app.service';
 import {
   NGX_TRANSLATE_LANGUAGE,
   createTranslateLoader,
-} from '@app/core/translate-util';
+} from '@utils/translate.util';
 import { ErrorInterceptor } from '@interceptors/error.interceptor';
 import { SuccessInterceptor } from '@interceptors/success.interceptor';
 

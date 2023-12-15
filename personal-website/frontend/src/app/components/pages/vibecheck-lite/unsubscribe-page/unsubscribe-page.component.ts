@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { APP_PATH } from '@app/app-route.const';
+import { APP_PATH } from '@consts/app-route.const';
 import { CommonService } from '@services/common.service';
 import { exhaustMap } from 'rxjs';
 

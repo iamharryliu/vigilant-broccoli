@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { LINKS } from '@app/app-route.const';
+import { LINKS } from '@consts/app-route.const';
 import { CardComponent } from '@components/global/card/card.component';
 import { ButtonLinkComponent } from '@components/global/button-link/button-link.component';
 import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centered-app-layout.compoenent';

@@ -3,7 +3,7 @@ import { CommonService } from '@services/common.service';
 import { MessageRequest } from '@models/app.model';
 import { Subject, exhaustMap } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { LINKS } from '@app/app-route.const';
+import { LINKS } from '@consts/app-route.const';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';

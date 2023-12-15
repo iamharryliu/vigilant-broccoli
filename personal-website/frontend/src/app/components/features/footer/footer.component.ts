@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { LINKS } from '@app/app-route.const';
+import { LINKS } from '@consts/app-route.const';
 import { LinkComponent } from '@components/global/link/link.component';
 import { TranslateModule } from '@ngx-translate/core';
 
