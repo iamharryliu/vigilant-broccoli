@@ -7,7 +7,7 @@ import { LinkTreePageComponent } from '@pages/link-tree-page/link-tree-page.comp
 import { Link } from '@models/app.model';
 import { ENVIRONMENT } from 'src/environments/environment';
 import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscription/verify-email-subscription-page.component';
-import { VibecheckLiteSubscribePageComponent } from '@components/pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
+import { VibecheckLiteSubscribePageComponent } from '@pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '@pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
 
 export const INDEX_ROUTE: Route = {

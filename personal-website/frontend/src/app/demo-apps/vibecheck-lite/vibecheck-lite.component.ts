@@ -4,7 +4,7 @@ import { Observable, map, switchMap } from 'rxjs';
 import { CommonService } from '@services/common.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { CardComponent } from '@components/global/card/card.component';
-import { LoadingSpinnerComponent } from '@app/components/global/loading-spinner/loading-spinner.component';
+import { LoadingSpinnerComponent } from '@components/global/loading-spinner/loading-spinner.component';
 import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centered-app-layout.compoenent';
 import { BrowserLocationService } from '@prettydamntired/node-tools/lib/location/browserLocation.service';
 

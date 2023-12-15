@@ -27,6 +27,7 @@
       "@pages/*": ["src/app/components/pages/*"],
       "@features/*": ["src/app/components/features/*"],
       "@services/*": ["src/app/core/services/*"],
+      "@interceptors/*": ["src/app/core/interceptors/*"],
       "@models/*": ["src/app/core/models/*"]
     },
     "esModuleInterop": true

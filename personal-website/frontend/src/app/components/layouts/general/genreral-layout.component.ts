@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { ContactComponent } from '@app/components/features/contact/contact.component';
-import { FooterComponent } from '@app/components/features/footer/footer.component';
-import { NavbarComponent } from '@app/components/features/navbar/navbar.component';
-import { NewsLetterSubFormComponent } from '@app/components/features/newsletter-sub-form/newsletter-sub-form.component';
-import { ReturnTopButtonComponent } from '@app/components/global/return-top-button/return-top-button.component';
+import { ContactComponent } from '@features/contact/contact.component';
+import { FooterComponent } from '@features/footer/footer.component';
+import { NavbarComponent } from '@features/navbar/navbar.component';
+import { NewsLetterSubFormComponent } from '@features/newsletter-sub-form/newsletter-sub-form.component';
+import { ReturnTopButtonComponent } from '@components/global/return-top-button/return-top-button.component';
 
 @Component({
   standalone: true,

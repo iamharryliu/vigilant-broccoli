@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { APP_PATH } from '@app/app-route.const';
-import { CommonService } from '@app/core/services/common.service';
+import { CommonService } from '@services/common.service';
 import { exhaustMap } from 'rxjs';
 
 @Component({

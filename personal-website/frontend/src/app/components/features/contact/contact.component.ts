@@ -7,7 +7,7 @@ import { LINKS } from '@app/app-route.const';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { LinkComponent } from '@app/components/global/link/link.component';
+import { LinkComponent } from '@components/global/link/link.component';
 
 @Component({
   standalone: true,

@@ -8,17 +8,17 @@ import { BrowserModule } from '@angular/platform-browser';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { AppRoutingModule } from '@app/app-routing.module';
 import { AppComponent } from '@app/app.component';
-import { CredentialsInterceptorService } from '@services/credentials-interceptor.service';
-import { RecaptchaInterceptor } from '@services/recaptcha-interceptor.service';
+import { CredentialsInterceptorService } from '@interceptors/credentials.interceptor';
+import { RecaptchaInterceptor } from '@interceptors/recaptcha.interceptor';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { ENVIRONMENT } from 'src/environments/environment';
-import { AppService } from '@app/core/services/app.service';
+import { AppService } from '@services/app.service';
 import {
   NGX_TRANSLATE_LANGUAGE,
   createTranslateLoader,
 } from '@app/core/translate-util';
-import { ErrorInterceptor } from '@services/error-interceptor.service';
-import { SuccessInterceptor } from '@services/success-interceptor';
+import { ErrorInterceptor } from '@interceptors/error.interceptor';
+import { SuccessInterceptor } from '@interceptors/success.interceptor';
 
 @NgModule({
   declarations: [AppComponent],

@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { LINKS } from '@app/app-route.const';
 import { CardComponent } from '@components/global/card/card.component';
-import { ButtonLinkComponent } from '@app/components/global/button-link/button-link.component';
-import { CenteredAppLayoutComponent } from '@app/components/layouts/centered-app-layout/centered-app-layout.compoenent';
+import { ButtonLinkComponent } from '@components/global/button-link/button-link.component';
+import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centered-app-layout.compoenent';
 
 @Component({
   standalone: true,

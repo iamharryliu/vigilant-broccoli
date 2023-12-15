@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { APP_PATH, LINKS } from '@app/app-route.const';
-import { LinkComponent } from '@app/components/global/link/link.component';
-import { Link } from '@app/core/models/app.model';
+import { LinkComponent } from '@components/global/link/link.component';
+import { Link } from '@models/app.model';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({

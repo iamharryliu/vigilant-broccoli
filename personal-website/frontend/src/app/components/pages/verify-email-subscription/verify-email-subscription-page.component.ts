@@ -8,8 +8,8 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { APP_PATH } from '@app/app-route.const';
-import { LoadingSpinnerComponent } from '@app/components/global/loading-spinner/loading-spinner.component';
-import { CommonService } from '@app/core/services/common.service';
+import { LoadingSpinnerComponent } from '@components/global/loading-spinner/loading-spinner.component';
+import { CommonService } from '@services/common.service';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
 import { TranslateModule } from '@ngx-translate/core';
 
