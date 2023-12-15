@@ -18,15 +18,3 @@ class Solution:
             return dfs(i + 1, s) or dfs(i + 1, s + nums[i])
 
         return dfs(0, 0)
-
-
-nums = [1, 5, 11, 5]
-output = True
-res = Solution.canPartition(nums)
-print(res == output)
-
-
-nums = [1, 2, 3, 5]
-output = True
-res = Solution.canPartition(nums)
-print(res == output)

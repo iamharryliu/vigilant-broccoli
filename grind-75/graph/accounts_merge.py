@@ -10,20 +10,21 @@ class Solution(object):
             for email in account[1:]:
                 graph[email].append(i)
 
-        def get_emails(i, arr):
+        def get_emails(i, emails):
             if i not in visited:
                 visited.add(i)
                 account = accounts[i]
                 for email in account[1:]:
-                    arr.add(email)
-                    for k in graph[email]:
-                        get_emails(k, arr)
-            return sorted(list(arr))
+                    emails.add(email)
+                    for j in graph[email]:
+                        get_emails(j, emails)
+            return emails
 
         res = []
         visited = set()
         for i, account in enumerate(accounts):
             emails = get_emails(i, set())
+
             if emails:
-                res.append([account[0]] + emails)
+                res.append([account[0]] + sorted(list(emails)))
         return res
