@@ -1,25 +1,23 @@
-# iamharryliu
+# Flask Demo
 
-Personal website.
+## Commands
 
-## Setup
-
-macOS / Linux
+macOS / Linux Setup
 
 ```
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python run.py
 ```
 
-Windows
+Windows Setup
 
 ```
-git clone https://github.com/iamharryliu/iamharryliu.git
-cd iamharryliu
 python -m venv venv
 source venv/Scripts/activate
 pip install -r requirements.txt
+```
+
+```
 python run.py
 ```
