@@ -26,7 +26,7 @@ import { TranslateModule } from '@ngx-translate/core';
   ],
 })
 export class VerifyEmailSubscriptionPageComponent {
-  isLoading!: boolean
+  isLoading!: boolean;
   constructor(
     private commonService: CommonService,
     private router: Router,
@@ -35,11 +35,11 @@ export class VerifyEmailSubscriptionPageComponent {
     this.route.queryParams.subscribe(params => {
       const token = params['token'];
       if (token) {
-        this.isLoading = true
-        setTimeout(()=>{
+        this.isLoading = true;
+        setTimeout(() => {
           this.form.controls['token'].setValue(token);
           this.submit();
-        }, 3000)
+        }, 3000);
       }
     });
   }
@@ -51,7 +51,7 @@ export class VerifyEmailSubscriptionPageComponent {
   submit() {
     this.commonService
       .verifyEmailSubscription(this.form.value.token as string)
-      .subscribe((_) => {
+      .subscribe(_ => {
         this.router.navigateByUrl(APP_PATH.INDEX);
       });
   }

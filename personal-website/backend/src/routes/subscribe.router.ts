@@ -29,8 +29,8 @@ router.post('/email-alerts', requireJsonContent, (req, res) => {
 });
 
 router.put('/verify-email-subscription', async (req, res, next) => {
-  const {token} = req.body;
-  try{
+  const { token } = req.body;
+  try {
     const email = EncryptionService.decryptData(token);
     if (await NewsletterService.verifyEmail(email)) {
       return res
@@ -40,8 +40,8 @@ router.put('/verify-email-subscription', async (req, res, next) => {
     return res
       .status(HTTP_STATUS_CODES.FORBIDDEN)
       .json({ message: 'Email does not exist.' });
-  } catch(error){
-    error.statusCode = HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
-    next(error)
+  } catch (error) {
+    error.statusCode = HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR;
+    next(error);
   }
 });

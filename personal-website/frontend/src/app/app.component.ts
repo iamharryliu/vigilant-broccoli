@@ -18,12 +18,12 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
-        tap(()=>{
+        tap(() => {
           window.scrollTo(0, 0);
           this.setTitle(this.getTitle());
         }),
       )
-      .subscribe()
+      .subscribe();
   }
 
   getTitle() {

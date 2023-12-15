@@ -13,9 +13,7 @@ router.get('/get-outfit-recommendation', async (req, res) => {
     latitude,
     longitude,
   });
-  return res
-    .status(HTTP_STATUS_CODES.OK)
-    .json({ data: recommendation });
+  return res.status(HTTP_STATUS_CODES.OK).json({ data: recommendation });
 });
 
 router.post('/subscribe', requireJsonContent, (req, res) => {
