@@ -11,7 +11,7 @@ server.get('/test', (req, res, next) => {
   res.status(200).send(generalData.getTest);
 });
 
-server.post('/email-alerts', (req, res, next) => {
+server.post('/subscribe/email-alerts', (req, res, next) => {
   const email = req.body.email;
   switch (email) {
     case 'subscribed@e':
@@ -26,8 +26,8 @@ server.post('/email-alerts', (req, res, next) => {
   res.status(200).send({});
 });
 
-server.put('/verify-email-subscription/:token', (req, res, next) => {
-  const token = req.params.token;
+server.put('/subscribe/verify-email-subscription', (req, res, next) => {
+  const token = req.body.token;
   switch (token) {
     case 'fail':
       return res.status(200).send({ message: 'Email does not exist.' });
@@ -36,11 +36,11 @@ server.put('/verify-email-subscription/:token', (req, res, next) => {
   }
 });
 
-server.post('/send-message', (req, res, next) => {
+server.post('/contact/send-message', (req, res, next) => {
   res.status(200).send({});
 });
 
-server.get('/get-outfit-recommendation', (req, res, next) => {
+server.get('/vibecheck-lite/get-outfit-recommendation', (req, res, next) => {
   res.status(200).send({ data: 'Outfit recommendation' });
 });
 

@@ -18,7 +18,7 @@ import {
   createTranslateLoader,
 } from '@app/core/translate-util';
 import { ErrorInterceptor } from '@services/error-interceptor.service';
-import { ResponseMessageInterceptor } from '@services/response-message-interceptor';
+import { SuccessInterceptor } from '@services/success-interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -58,7 +58,7 @@ import { ResponseMessageInterceptor } from '@services/response-message-intercept
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: ResponseMessageInterceptor,
+      useClass: SuccessInterceptor,
       multi: true,
     },
     {
