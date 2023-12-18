@@ -9,6 +9,7 @@ import { ENVIRONMENT } from 'src/environments/environment';
 import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscription/verify-email-subscription-page.component';
 import { VibecheckLiteSubscribePageComponent } from '@pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '@pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
+import { ServicesPageComponent } from '@app/src/app/components/pages/services.page/services.page';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -33,6 +34,12 @@ export const CONTACT_ROUTE: Route = {
   data: { title: 'contact page' },
   component: ContactPageComponent,
 };
+
+export const SERVICES_ROUTE: Route = {
+  path:'services',
+  data: {title: 'services page'},
+  component: ServicesPageComponent
+}
 
 export const VIBECHECK_LITE_APP_ROUTE: Route = {
   path: 'app',
@@ -72,8 +79,9 @@ export const UNSUBCSRIBE_VIBECHECK_LITE_ROUTE: Route = {
 
 export const APP_PATH = {
   INDEX: '',
-  ABOUT: `/${ABOUT_ROUTE.path}`,
+  ABOUT_PAGE: `/${ABOUT_ROUTE.path}`,
   CONTACT_PAGE: `/${CONTACT_ROUTE.path}`,
+  SERVICES_PAGE: `/${SERVICES_ROUTE.path}`,
   VIBECHECK_LITE: `/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE}/${VIBECHECK_LITE_APP_ROUTE.path}`,
 };
 
@@ -81,6 +89,7 @@ export const APP_ROUTES: Routes = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
   CONTACT_ROUTE,
+  SERVICES_ROUTE,
   PROJECT_ROUTE,
   LINK_TREE_ROUTE,
   VERIFY_EMAIL_ROUTE,
@@ -95,12 +104,16 @@ const PERSONAL_WEBSITE: Link = {
 };
 
 const ABOUT_PAGE: Link = {
-  url: APP_PATH.ABOUT,
+  url: APP_PATH.ABOUT_PAGE,
   text: 'LINKS.INTERNAL.ABOUT_PAGE',
 };
 const CONTACT_PAGE: Link = {
   url: APP_PATH.CONTACT_PAGE,
   text: 'LINKS.INTERNAL.CONTACT_PAGE',
+};
+const SERVICES_PAGE: Link = {
+  url: APP_PATH.SERVICES_PAGE,
+  text: 'LINKS.INTERNAL.SERVICES_PAGE',
 };
 const VIBECHECK_LITE_APP: Link = {
   url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECT_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_APP_ROUTE.path}`,
@@ -154,6 +167,7 @@ export const LINKS = {
   PERSONAL_WEBSITE,
   ABOUT_PAGE,
   CONTACT_PAGE,
+  SERVICES_PAGE,
   VIBECHECK_LITE_APP,
   VIBECHECK_LITE_SUBSCRIBE,
   LINKEDIN,
