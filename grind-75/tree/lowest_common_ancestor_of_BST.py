@@ -1,6 +1,6 @@
 class Solution:
     @classmethod
-    def lowestCommonAncestor(self, root, p, q):
+    def lowestCommonAncestorIterative(self, root, p, q):
         while root:
             if p.val < root.val and q.val < root.val:
                 root = root.left
@@ -8,3 +8,14 @@ class Solution:
                 root = root.right
             else:
                 return root
+
+    @classmethod
+    def lowestCommonAncestorRecursive(self, root, p, q):
+        if not root:
+            return None
+        if p.val < root.val and q.val < root.val:
+            return self.lowestCommonAncestorRecursive(root.left, p, q)
+        elif root.val < p.val and root.val < q.val:
+            return self.lowestCommonAncestorRecursive(root.right, p, q)
+        else:
+            return root
