@@ -18,5 +18,6 @@ class Solution:
             node = stack.pop()
             if node:
                 node.left, node.right = node.right, node.left
-                stack.extend([node.left, node.right])
+                stack.append(node.left)
+                stack.append(node.right)
         return root
