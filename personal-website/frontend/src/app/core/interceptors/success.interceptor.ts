@@ -18,7 +18,13 @@ export class SuccessInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       tap(event => {
-        if (event instanceof HttpResponse && event.url?.startsWith(ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL)  && event.body.message) {
+        if (
+          event instanceof HttpResponse &&
+          event.url?.startsWith(
+            ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL,
+          ) &&
+          event.body.message
+        ) {
           alert(event.body.message);
         }
       }),

@@ -36,10 +36,10 @@ export const CONTACT_ROUTE: Route = {
 };
 
 export const SERVICES_ROUTE: Route = {
-  path:'services',
-  data: {title: 'services page'},
-  component: ServicesPageComponent
-}
+  path: 'services',
+  data: { title: 'services page' },
+  component: ServicesPageComponent,
+};
 
 export const VIBECHECK_LITE_APP_ROUTE: Route = {
   path: 'app',

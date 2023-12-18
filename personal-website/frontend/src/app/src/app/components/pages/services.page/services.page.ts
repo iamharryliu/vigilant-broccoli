@@ -8,7 +8,4 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './services.page.html',
   imports: [GeneralLayoutComponent, TranslateModule],
 })
-export class ServicesPageComponent {
-
-
-}
+export class ServicesPageComponent {}

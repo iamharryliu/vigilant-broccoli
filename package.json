@@ -44,11 +44,13 @@
     ],
     "*.{json,md}": [
       "prettier --write"
+    ],
+    "*.test.ts": [
+      "npm run test:commit"
     ]
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
       "pre-commit.legacy": "lint-staged"
     }
   }
