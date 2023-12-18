@@ -1,13 +1,13 @@
-from black import out
+from typing import List
 
 
 class Solution:
     @classmethod
-    def spiralOrder(self, matrix):
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
         visited = set()
         res = []
 
-        def dfs(r, c):
+        def dfs(r=0, c=0):
             if (
                 0 <= r < len(matrix)
                 and 0 <= c < len(matrix[0])
@@ -21,16 +21,5 @@ class Solution:
                 dfs(r, c - 1)
                 dfs(r - 1, c)
 
-        dfs(0, 0)
+        dfs()
         return res
-
-
-matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-output = [1, 2, 3, 6, 9, 8, 7, 4, 5]
-res = Solution.spiralOrder(matrix)
-print(res == output)
-
-matrix = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]
-output = [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]
-res = Solution.spiralOrder(matrix)
-print(res == output)
