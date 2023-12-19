@@ -18,15 +18,3 @@ class Solution:
                 r -= 1
             res = max(res, area)
         return res
-
-
-height = [1, 8, 6, 2, 5, 4, 8, 3, 7]
-output = 49
-res = Solution.maxArea(height)
-print(res == output)
-
-
-height = [1, 1]
-output = 1
-res = Solution.maxArea(height)
-print(res == output)

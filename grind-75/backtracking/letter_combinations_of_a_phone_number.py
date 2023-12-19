@@ -16,29 +16,13 @@ class Solution:
         }
         res = []
 
-        def dfs(i, word):
+        def backtrack(i, word):
             if len(word) == len(digits):
                 res.append(word)
             else:
                 for c in hmap[digits[i]]:
-                    dfs(i + 1, word + c)
+                    backtrack(i + 1, word + c)
 
         if digits:
-            dfs(0, "")
+            backtrack(0, "")
         return res
-
-
-digits = "23"
-output = ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
-res = Solution.letterCombinations(digits)
-print(res == output)
-
-digits = ""
-output = []
-res = Solution.letterCombinations(digits)
-print(res == output)
-
-digits = "2"
-output = ["a", "b", "c"]
-res = Solution.letterCombinations(digits)
-print(res == output)
