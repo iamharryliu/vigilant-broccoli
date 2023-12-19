@@ -44,11 +44,12 @@ class BinaryTree:
             return res
         queue = deque()
         queue.append(root)
-        while queue:
-            current = queue.popleft()
-            res.append(current.val)
-            if current.left:
-                queue.append(current.left)
-            if current.right:
-                queue.append(current.right)
+        while queue and not all(node is None for node in queue):
+            node = queue.popleft()
+            if node:
+                res.append(node.val)
+                queue.append(node.left if node.left else None)
+                queue.append(node.right if node.right else None)
+            else:
+                res.append(None)
         return res

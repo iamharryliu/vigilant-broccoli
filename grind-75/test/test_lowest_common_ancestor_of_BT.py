@@ -3,7 +3,6 @@ from tree.common import TreeNode, BinaryTree
 from tree.lowest_common_ancestor_of_BT import Solution
 
 
-# TODO
 class TestSolution(unittest.TestCase):
     def test(self):
         p = TreeNode(5)
