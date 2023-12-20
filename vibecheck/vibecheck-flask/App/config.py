@@ -1,0 +1,8 @@
+class APP_CONFIG:
+    SECRET_KEY = "secret key"
+
+
+class USER_CONFIG:
+    MAX_USERNAME_LENGTH = 30
+    MAX_EMAIL_LENGTH = 30
+    MAX_PASSWORD_LENGTH = 30

@@ -1,7 +1,8 @@
-from flask import request, Blueprint, abort, jsonify
+from flask import request, Blueprint, abort, jsonify, session
 from App.models import User
 from App.database import db_session
 
+# TODO sepearate user handling and user CRUD?
 users_blueprint = Blueprint("users_blueprint", __name__)
 
 
@@ -25,9 +26,16 @@ def register():
 
 @users_blueprint.route("login", methods=["POST"])
 def login():
+    session["user"] = {}
     return jsonify({})
 
 
 @users_blueprint.route("logout", methods=["POST"])
 def logout():
+    session["user"] = None
     return jsonify({})
+
+
+@users_blueprint.route("get_login_status", methods=["GET"])
+def get_login_status():
+    return jsonify({"status": session["user"] is not None})

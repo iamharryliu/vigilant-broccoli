@@ -1,8 +1,10 @@
 from flask import Flask
+from App.config import APP_CONFIG
 
 
 def create_app():
     app = Flask(__name__)
+    app.config.from_object(APP_CONFIG)
 
     from App.users.routes import users_blueprint
     from App.errors.handlers import errors_blueprint

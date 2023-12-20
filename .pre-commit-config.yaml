@@ -21,3 +21,11 @@ repos:
         'types': [python]
         additional_dependencies: []
         pass_filenames: false
+  - repo: local
+    hooks:
+      - id: pytest-check
+        name: pytest-check
+        entry: pytest vibecheck/
+        language: system
+        pass_filenames: false
+        always_run: true
