@@ -1,5 +1,7 @@
 from App.models import User
-from App.config import USER_CONFIG
+
+# from App.config import USER_CONFIG
+from tests.mocks import MOCK_USER_BUILDER
 
 
 def test_register_400(client):
@@ -11,14 +13,8 @@ def test_register_400(client):
 
 
 def test_register_200(client):
-    response = client.post(
-        "/users/register",
-        json={
-            "username": "username",
-            "email": "email@test.com",
-            "password": "password",
-        },
-    )
+    mock_user = MOCK_USER_BUILDER.build_user()
+    response = client.post("/users/register", json=mock_user.get_register_json())
     assert response.status_code == 200
     assert len(User.query.all()) == 1
 

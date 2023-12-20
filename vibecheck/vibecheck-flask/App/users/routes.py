@@ -26,7 +26,14 @@ def register():
 
 @users_blueprint.route("login", methods=["POST"])
 def login():
-    session["user"] = {}
+    data = request.get_json()
+    if not all(key in data for key in ["identification", "password"]):
+        abort(400)
+    user = (
+        User.query.filter_by(username=data["identification"]).first()
+        or User.query.filter_by(username=data["identification"]).first()
+    )
+    session["user"] = {"username": user.username}
     return jsonify({})
 
 
