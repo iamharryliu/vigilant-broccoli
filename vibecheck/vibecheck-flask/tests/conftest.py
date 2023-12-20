@@ -1,6 +1,6 @@
 import pytest
 from App import create_app
-from App.database_manager import drop_db
+from App.database import drop_db
 
 
 @pytest.fixture()

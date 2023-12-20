@@ -46,3 +46,23 @@ def logout():
 @users_blueprint.route("get_login_status", methods=["GET"])
 def get_login_status():
     return jsonify({"status": session["user"] is not None})
+
+
+@users_blueprint.route("follow", methods=["POST"])
+def follow():
+    data = request.get_json()
+    user = User.query.filter_by(username=data["username"]).first()
+    current_user = User.query.filter_by(username=session["user"]["username"]).first()
+    user.followers.extend([current_user])
+    db_session.commit()
+    return jsonify({})
+
+
+@users_blueprint.route("unfollow", methods=["POST"])
+def unfollow():
+    data = request.get_json()
+    user = User.query.filter_by(username=data["username"]).first()
+    current_user = User.query.filter_by(username=session["user"]["username"]).first()
+    user.followers.remove(current_user)
+    db_session.commit()
+    return jsonify({})
