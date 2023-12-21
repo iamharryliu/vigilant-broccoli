@@ -1,13 +1,13 @@
 import pytest
 from App import create_app
-from App.database import drop_db
+from App.database import DatabaseManager
 
 
 @pytest.fixture()
 def app():
     app = create_app()
     yield app
-    drop_db()
+    DatabaseManager.drop_db()
 
 
 @pytest.fixture()

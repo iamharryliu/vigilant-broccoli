@@ -7,9 +7,10 @@ from App.users.routes import (
     users_follow_blueprint,
 )
 from App.errors.handlers import errors_blueprint
-from App.database import db_session, init_db
+from App.database import db_session, DatabaseManager
 
 
+# TODO: error handling
 def create_app():
     app = Flask(__name__)
     app.config.from_object(APP_CONFIG)
@@ -25,6 +26,6 @@ def create_app():
     def shutdown_session(exception=None):
         db_session.remove()
 
-    init_db()
+    DatabaseManager.init_db()
 
     return app
