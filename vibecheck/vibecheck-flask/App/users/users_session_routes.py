@@ -1,5 +1,6 @@
 from flask import request, Blueprint, abort, jsonify, session
 from App.models import User
+from App.exceptions import BadRequestException, EXCEPTION_CODES
 
 blueprint = Blueprint("users_blueprint", __name__)
 
@@ -8,7 +9,7 @@ blueprint = Blueprint("users_blueprint", __name__)
 def login():
     data = request.get_json()
     if not all(key in data for key in ["identification", "password"]):
-        abort(400)
+        raise BadRequestException(EXCEPTION_CODES.INSUFFICIENT_DATA)
     user = (
         User.query.filter_by(username=data["identification"]).first()
         or User.query.filter_by(email=data["identification"]).first()

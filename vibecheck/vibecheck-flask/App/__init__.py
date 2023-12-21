@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from App.config import APP_CONFIG
 from App.users.routes import (
     users_create_blueprint,
@@ -9,8 +9,9 @@ from App.users.routes import (
 from App.errors.handlers import errors_blueprint
 from App.database import db_session, DatabaseManager
 
+from App.exceptions import BadRequestException
 
-# TODO: error handling
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(APP_CONFIG)
@@ -21,6 +22,12 @@ def create_app():
     app.register_blueprint(users_follow_blueprint, url_prefix="/users")
 
     app.register_blueprint(errors_blueprint)
+
+    @app.errorhandler(BadRequestException)
+    def handle_bad_request(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):

@@ -1,6 +1,8 @@
-from flask import request, Blueprint, abort, jsonify
+from json import dumps
+from flask import request, Blueprint, jsonify, abort, Response
 from App.models import User
 from App.database import db_session
+from App.exceptions import BadRequestException, EXCEPTION_CODES
 
 blueprint = Blueprint("users_create_blueprint", __name__)
 
@@ -9,15 +11,16 @@ blueprint = Blueprint("users_create_blueprint", __name__)
 def register():
     data = request.get_json()
     if not all(key in data for key in ["username", "email", "password"]):
-        abort(400)
+        raise BadRequestException(code=EXCEPTION_CODES.INSUFFICIENT_DATA)
     username = data["username"]
     email = data["email"]
     password = data["password"]
-    try:
-        user = User(username, email, password)
-        db_session.add(user)
-        db_session.commit()
-    except:
-        abort(500)
-    else:
-        return jsonify({})
+    if (
+        User.query.filter_by(username=username).first()
+        or User.query.filter_by(email=email).first()
+    ):
+        raise BadRequestException(code=EXCEPTION_CODES.EXISTING_RESOURCE)
+    user = User(username, email, password)
+    db_session.add(user)
+    db_session.commit()
+    return jsonify({})

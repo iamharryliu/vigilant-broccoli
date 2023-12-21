@@ -1,14 +1,15 @@
 from App.models import User
 
-# from App.config import USER_CONFIG
+from App.config import HTTP_STATUS_CODES, EXCEPTION_CODES
 from tests.mocks import MOCK_USER_BUILDER
 
 
-def test_register_400(client):
+def test_register_insufficient_data(client):
     response = client.post(
         "/users/register", json={"email": "test@test.com", "password": "password"}
     )
-    assert response.status_code == 400
+    assert response.status_code == HTTP_STATUS_CODES.BAD_REQUEST
+    assert response.json["code"] == EXCEPTION_CODES.INSUFFICIENT_DATA
     assert len(User.query.all()) == 0
 
 
@@ -37,7 +38,8 @@ def test_register_non_unique_username(client):
             "password": "password",
         },
     )
-    assert response.status_code == 500
+    assert response.status_code == 400
+    assert response.json["code"] == EXCEPTION_CODES.EXISTING_RESOURCE
     assert len(User.query.all()) == 1
 
 
@@ -59,7 +61,8 @@ def test_register_non_unique_email(client):
             "password": "password",
         },
     )
-    assert response.status_code == 500
+    assert response.status_code == 400
+    assert response.json["code"] == EXCEPTION_CODES.EXISTING_RESOURCE
     assert len(User.query.all()) == 1
 
 
