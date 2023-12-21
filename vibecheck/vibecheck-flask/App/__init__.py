@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from App.config import APP_CONFIG
 from App.users.routes import (
     users_create_blueprint,
@@ -14,6 +15,7 @@ from App.exceptions import BadRequestException, UnauthorizedException
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(APP_CONFIG)
 
     app.register_blueprint(users_create_blueprint, url_prefix="/users")

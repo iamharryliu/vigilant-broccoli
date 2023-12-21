@@ -1,4 +1,5 @@
-from flask import request, Blueprint, abort, jsonify, session
+from flask import request, Blueprint, jsonify, session
+from flask_cors import cross_origin
 import bcrypt
 from App.models import User
 from App.config import EXCEPTION_CODES
@@ -9,6 +10,7 @@ blueprint = Blueprint("users_blueprint", __name__)
 
 
 @blueprint.route("login", methods=["POST"])
+@cross_origin(supports_credentials=True)
 def login():
     data = request.get_json()
     if not all(key in data for key in ["identification", "password"]):
@@ -25,11 +27,14 @@ def login():
 
 
 @blueprint.route("logout", methods=["POST"])
+@cross_origin(supports_credentials=True)
 def logout():
     session["user"] = None
     return jsonify({})
 
 
 @blueprint.route("get_login_status", methods=["GET"])
+@cross_origin(supports_credentials=True)
 def get_login_status():
+    print(session["user"])
     return jsonify({"status": session["user"] is not None})
