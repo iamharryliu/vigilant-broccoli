@@ -1,8 +1,9 @@
 from flask import session
 from tests.mocks import MOCK_USER_BUILDER
+from App.config import HTTP_STATUS_CODES, EXCEPTION_CODES
 
 
-def test_login(client):
+def test_successful_login_with_username(client):
     mock_user = MOCK_USER_BUILDER.build_user()
     with client:
         client.post(
@@ -10,11 +11,11 @@ def test_login(client):
             json=mock_user.get_register_json(),
         )
         response = client.post("/users/login", json=mock_user.get_login_json())
-        assert response.status_code == 200
+        assert response.status_code == HTTP_STATUS_CODES.OKAY
         assert session["user"]["username"] == mock_user.username
 
 
-def test_login_with_email(client):
+def test_successful_login_with_email(client):
     mock_user = MOCK_USER_BUILDER.build_user()
     with client:
         client.post(
@@ -23,12 +24,55 @@ def test_login_with_email(client):
         )
         response = client.post(
             "/users/login",
-            json={
-                "identification": mock_user.email,
-                "password": mock_user.password,
-            },
+            json={**mock_user.get_login_json(), "identification": mock_user.email},
         )
+        assert response.status_code == HTTP_STATUS_CODES.OKAY
         assert session["user"]["username"] == mock_user.username
+
+
+def test_unsuccessful_login_with_incorrect_username(client):
+    mock_user = MOCK_USER_BUILDER.build_user()
+    with client:
+        client.post(
+            "/users/register",
+            json=mock_user.get_register_json(),
+        )
+        response = client.post(
+            "/users/login",
+            json={**mock_user.get_login_json(), "identification": "another_username"},
+        )
+        assert response.status_code == HTTP_STATUS_CODES.FORBIDDEN_REQUEST
+        assert response.json["code"] == EXCEPTION_CODES.FORBIDDEN_REQUEST
+
+
+def test_unsuccessful_login_with_incorrect_email(client):
+    mock_user = MOCK_USER_BUILDER.build_user()
+    with client:
+        client.post(
+            "/users/register",
+            json=mock_user.get_register_json(),
+        )
+        response = client.post(
+            "/users/login",
+            json={**mock_user.get_login_json(), "identification": "another@email.com"},
+        )
+        assert response.status_code == HTTP_STATUS_CODES.FORBIDDEN_REQUEST
+        assert response.json["code"] == EXCEPTION_CODES.FORBIDDEN_REQUEST
+
+
+def test_unsuccessful_login_with_incorrect_password(client):
+    mock_user = MOCK_USER_BUILDER.build_user()
+    with client:
+        client.post(
+            "/users/register",
+            json=mock_user.get_register_json(),
+        )
+        response = client.post(
+            "/users/login",
+            json={**mock_user.get_login_json(), "password": "another_password"},
+        )
+        assert response.status_code == HTTP_STATUS_CODES.FORBIDDEN_REQUEST
+        assert response.json["code"] == EXCEPTION_CODES.FORBIDDEN_REQUEST
 
 
 def test_logout(client):
@@ -40,7 +84,8 @@ def test_logout(client):
         )
         client.post("/users/login", json=mock_user.get_login_json())
         assert session["user"]["username"] == mock_user.username
-        client.post("/users/logout")
+        response = client.post("/users/logout")
+        assert response.status_code == HTTP_STATUS_CODES.OKAY
         assert session["user"] is None
 
 

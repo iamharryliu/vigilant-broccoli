@@ -9,7 +9,7 @@ from App.users.routes import (
 from App.errors.handlers import errors_blueprint
 from App.database import db_session, DatabaseManager
 
-from App.exceptions import BadRequestException
+from App.exceptions import BadRequestException, UnauthorizedException
 
 
 def create_app():
@@ -25,6 +25,12 @@ def create_app():
 
     @app.errorhandler(BadRequestException)
     def handle_bad_request(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
+
+    @app.errorhandler(UnauthorizedException)
+    def handle_unauthorized_request(error):
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response

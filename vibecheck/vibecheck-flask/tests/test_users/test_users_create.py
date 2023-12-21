@@ -4,64 +4,50 @@ from App.config import HTTP_STATUS_CODES, EXCEPTION_CODES
 from tests.mocks import MOCK_USER_BUILDER
 
 
-def test_register_insufficient_data(client):
-    response = client.post(
-        "/users/register", json={"email": "test@test.com", "password": "password"}
-    )
+def test_successful_register(client):
+    mock_user = MOCK_USER_BUILDER.build_user()
+    response = client.post("/users/register", json=mock_user.get_register_json())
+    assert response.status_code == HTTP_STATUS_CODES.OKAY
+    assert len(User.query.all()) == 1
+
+
+def test_unsuccessful_register_insufficient_data(client):
+    mock_user = MOCK_USER_BUILDER.build_user()
+    json = mock_user.get_register_json()
+    del json["username"]
+    response = client.post("/users/register", json=json)
     assert response.status_code == HTTP_STATUS_CODES.BAD_REQUEST
     assert response.json["code"] == EXCEPTION_CODES.INSUFFICIENT_DATA
     assert len(User.query.all()) == 0
 
 
-def test_register_200(client):
+def test_unsuccessful_register_non_unique_username(client):
     mock_user = MOCK_USER_BUILDER.build_user()
-    response = client.post("/users/register", json=mock_user.get_register_json())
-    assert response.status_code == 200
-    assert len(User.query.all()) == 1
-
-
-def test_register_non_unique_username(client):
     response = client.post(
         "/users/register",
-        json={
-            "username": "username",
-            "email": "email@test.com",
-            "password": "password",
-        },
+        json=mock_user.get_register_json(),
     )
     assert response.status_code == 200
     response = client.post(
         "/users/register",
-        json={
-            "username": "username",
-            "email": "anotheremail@test.com",
-            "password": "password",
-        },
+        json={**mock_user.get_register_json(), "email": "another@email.com"},
     )
-    assert response.status_code == 400
+    assert response.status_code == HTTP_STATUS_CODES.BAD_REQUEST
     assert response.json["code"] == EXCEPTION_CODES.EXISTING_RESOURCE
     assert len(User.query.all()) == 1
 
 
-def test_register_non_unique_email(client):
+def test_unsuccessful_register_non_unique_email(client):
+    mock_user = MOCK_USER_BUILDER.build_user()
     response = client.post(
         "/users/register",
-        json={
-            "username": "username",
-            "email": "email@test.com",
-            "password": "password",
-        },
+        json=mock_user.get_register_json(),
     )
-    assert response.status_code == 200
     response = client.post(
         "/users/register",
-        json={
-            "username": "anotherusername",
-            "email": "email@test.com",
-            "password": "password",
-        },
+        json={**mock_user.get_register_json(), "username": "another_username"},
     )
-    assert response.status_code == 400
+    assert response.status_code == HTTP_STATUS_CODES.BAD_REQUEST
     assert response.json["code"] == EXCEPTION_CODES.EXISTING_RESOURCE
     assert len(User.query.all()) == 1
 

@@ -1,6 +1,6 @@
-from json import dumps
-from flask import request, Blueprint, jsonify, abort, Response
+from flask import request, Blueprint, jsonify
 from App.models import User
+from App.password import PasswordService
 from App.database import db_session
 from App.exceptions import BadRequestException, EXCEPTION_CODES
 
@@ -20,7 +20,7 @@ def register():
         or User.query.filter_by(email=email).first()
     ):
         raise BadRequestException(code=EXCEPTION_CODES.EXISTING_RESOURCE)
-    user = User(username, email, password)
+    user = User(username, email, PasswordService.hash_password(password))
     db_session.add(user)
     db_session.commit()
     return jsonify({})
