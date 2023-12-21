@@ -27,22 +27,3 @@ class Solution:
                 if dfs(r, c, 0):
                     return True
         return False
-
-
-board = [["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]]
-word = "ABCCED"
-output = True
-res = Solution.exist(board, word)
-print(res == output)
-
-board = [["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]]
-word = "SEE"
-output = True
-res = Solution.exist(board, word)
-print(res == output)
-
-board = [["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]]
-word = "ABCB"
-output = False
-res = Solution.exist(board, word)
-print(res == output)

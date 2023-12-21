@@ -21,7 +21,3 @@ class Solution:
             if s_count == p_count:
                 res.append(i - len(p) + 1)
         return res
-
-
-res = Solution.findAnagrams(s="cbaebabacd", p="abc")
-print(res == [0, 6])

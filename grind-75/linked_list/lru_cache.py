@@ -47,21 +47,3 @@ class LRUCache:
             node = self.head.next
             self.remove(node)
             del self.hmap[node.key]
-
-
-# Your LRUCache object will be instantiated and called as such:
-# obj = LRUCache(capacity)
-# param_1 = obj.get(key)
-# obj.put(key,value)
-
-
-lRUCache = LRUCache(2)
-lRUCache.put(1, 1)  # {1:1}
-lRUCache.put(2, 2)  # {1:1, 2:2}
-print(lRUCache.get(1) == 1)
-lRUCache.put(3, 3)  # {1:1, 3:3}
-print(lRUCache.get(2) == -1)
-lRUCache.put(4, 4)  # {3:3, 4:4}
-print(lRUCache.get(1) == -1)
-print(lRUCache.get(3) == 3)
-print(lRUCache.get(4) == 4)

@@ -19,24 +19,3 @@ class Solution:
             if q and q[0][1] == time:
                 heapq.heappush(heap, q.popleft()[0])
         return time
-
-
-tasks = ["A", "A", "A", "B", "B", "B"]
-n = 2
-res = Solution.leastInterval(tasks, n)
-output = 8
-print(res == output)
-
-
-tasks = ["A", "A", "A", "B", "B", "B"]
-n = 0
-res = Solution.leastInterval(tasks, n)
-output = 6
-print(res == output)
-
-
-tasks = ["A", "A", "A", "A", "A", "A", "B", "C", "D", "E", "F", "G"]
-n = 2
-res = Solution.leastInterval(tasks, n)
-output = 16
-print(res == output)
