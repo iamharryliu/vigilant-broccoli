@@ -19,7 +19,8 @@ class MOCK_USER:
 
 
 class MOCK_USER_BUILDER:
-    def build_user(n=0):
+    @staticmethod
+    def build_user(username="username", email=None, password="password"):
         return MOCK_USER(
-            username=f"username{n}", email=f"email{n}", password="password"
+            username=username, email=email or f"{username}@email.com", password=password
         )

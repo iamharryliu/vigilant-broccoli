@@ -9,7 +9,25 @@ def test_login(client):
             "/users/register",
             json=mock_user.get_register_json(),
         )
-        client.post("/users/login", json=mock_user.get_login_json())
+        response = client.post("/users/login", json=mock_user.get_login_json())
+        assert response.status_code == 200
+        assert session["user"]["username"] == mock_user.username
+
+
+def test_login_with_email(client):
+    mock_user = MOCK_USER_BUILDER.build_user()
+    with client:
+        client.post(
+            "/users/register",
+            json=mock_user.get_register_json(),
+        )
+        response = client.post(
+            "/users/login",
+            json={
+                "identification": mock_user.email,
+                "password": mock_user.password,
+            },
+        )
         assert session["user"]["username"] == mock_user.username
 
 
