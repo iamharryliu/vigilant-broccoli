@@ -1,8 +1,11 @@
-# # cd
+# cd
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
+
+# mkdir
+alias mkdir='mkdir -pv'
 
 # ls (mac)
 alias ls='ls -FGhl'
@@ -20,7 +23,9 @@ alias runvenv='source venv/bin/activate; python run.py'
 alias venvon='source venv/bin/activate'
 
 # Git
+alias ga.='git add .'
 alias gc='git commit'
+alias gac='ga. && gc'
 alias gcnv='git commit --no-verify'
 alias gco='git checkout'
 alias ga='git add'
