@@ -4,7 +4,6 @@ class Solution:
         dp = {len(s): 1}  # last character will provide at least 1 answer
 
         def dfs(i):
-
             # base cases
             if i in dp:
                 return dp[i]

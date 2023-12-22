@@ -1,6 +1,6 @@
 import unittest
 from tree.common import BinaryTree
-from tree.invert_BT import Solution
+from tree.invert_bt import Solution
 
 
 class TestSolution(unittest.TestCase):

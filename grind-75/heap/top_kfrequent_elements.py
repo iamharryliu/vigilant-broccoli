@@ -4,7 +4,6 @@ import heapq
 class Solution:
     @classmethod
     def topKFrequent(self, nums, k):
-
         # put numbers into hashmap
         hashmap = {}
         for num in nums:
@@ -22,5 +21,5 @@ class Solution:
         return result
 
 
-res = Solution.topKFrequent([1,1,1,2,2,3], 2)
+res = Solution.topKFrequent([1, 1, 1, 2, 2, 3], 2)
 print(res)

@@ -1,6 +1,6 @@
 import unittest
 from tree.common import BinaryTree
-from tree.diameter_of_BT import Solution
+from tree.diameter_of_bt import Solution
 
 
 class TestSolution(unittest.TestCase):

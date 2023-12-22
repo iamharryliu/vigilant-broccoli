@@ -1,6 +1,6 @@
 import unittest
 from tree.common import BinaryTree, TreeNode
-from tree.validate_BST import Solution
+from tree.validate_bst import Solution
 
 
 class TestSolution(unittest.TestCase):

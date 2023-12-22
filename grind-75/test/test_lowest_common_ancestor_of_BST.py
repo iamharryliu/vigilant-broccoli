@@ -1,6 +1,6 @@
 import unittest
 from tree.common import BinaryTree, TreeNode
-from tree.lowest_common_ancestor_of_BST import Solution
+from tree.lowest_common_ancestor_of_bst import Solution
 
 
 class TestSolution(unittest.TestCase):

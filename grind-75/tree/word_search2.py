@@ -24,7 +24,6 @@ class Solution:
         visited = set()
 
         def dfs(r, c, node, word):
-
             # base cases
             if (
                 r < 0
@@ -71,4 +70,3 @@ print(
     )
     == {"oath", "eat"}
 )
-

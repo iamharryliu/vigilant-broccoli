@@ -1,7 +1,7 @@
 import unittest
 
 from tree.common import BinaryTree
-from tree.construct_BT_from_preorder_and_in_order_traversal import Solution
+from tree.construct_bt_from_preorder_and_in_order_traversal import Solution
 
 
 class TestSolution(unittest.TestCase):

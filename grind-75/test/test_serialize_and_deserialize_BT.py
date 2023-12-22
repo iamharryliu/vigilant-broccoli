@@ -1,5 +1,5 @@
 import unittest
-from tree.serialize_and_deserialize_BT import Codec
+from tree.serialize_and_deserialize_bt import Codec
 from tree.common import BinaryTree
 
 
