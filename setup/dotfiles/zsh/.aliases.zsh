@@ -21,5 +21,6 @@ alias venvon='source venv/bin/activate'
 
 # Git
 alias gc='git commit'
+alias gcnv='git commit --no-verify'
 alias gco='git checkout'
 alias ga='git add'
