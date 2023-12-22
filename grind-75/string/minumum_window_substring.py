@@ -1,15 +1,14 @@
-import math
-
-
 class Solution:
     @classmethod
-    def minWindow(self, s, t):
+    def minWindow(self, s: str, t: str) -> str:
         smap = {}
         tmap = {}
         for c in t:
-            tmap[c] = 1 + tmap.get(c, 0)
+            tmap[c] = tmap.get(c, 0) + 1
+
         have = 0
         need = len(tmap)
+
         res = None
 
         l = 0
@@ -21,27 +20,7 @@ class Solution:
                 if not res or r - l + 1 < len(res):
                     res = s[l : r + 1]
                 smap[s[l]] -= 1
-                l += 1
                 if s[l] in tmap and smap[s[l]] < tmap[s[l]]:
                     have -= 1
+                l += 1
         return res if res else ""
-
-
-s = "ADOBECODEBANC"
-t = "ABC"
-output = "BANC"
-res = Solution.minWindow(s, t)
-print(res == output)
-
-s = "a"
-t = "a"
-output = "a"
-res = Solution.minWindow(s, t)
-print(res == output)
-
-
-s = "a"
-t = "aa"
-output = ""
-res = Solution.minWindow(s, t)
-print(res == output)

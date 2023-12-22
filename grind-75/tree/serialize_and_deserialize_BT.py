@@ -7,6 +7,7 @@ class TreeNode(object):
 
 
 class Codec:
+    @classmethod
     def serialize(self, root):
         res = []
 
@@ -21,6 +22,7 @@ class Codec:
         dfs(root)
         return ",".join(res)
 
+    @classmethod
     def deserialize(self, data):
         vals = data.split(",")
         i = 0

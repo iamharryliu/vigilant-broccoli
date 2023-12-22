@@ -19,7 +19,6 @@ class MedianFinder:
         return len(self.l) - len(self.s) > 1
 
     def addNum(self, num: int) -> None:
-
         heapq.heappush(self.s, -num)
         while self.is_small_value_greater_than_large_value or self.is_small_list_larger:
             num = -heapq.heappop(self.s)
@@ -36,14 +35,3 @@ class MedianFinder:
         snum = -self.s[0]
         lnum = self.l[0]
         return (snum + lnum) / 2
-
-
-commands = ["MedianFinder", "addNum", "addNum", "findMedian", "addNum", "findMedian"]
-nums = [[], [1], [2], [], [3], []]
-for i, command in enumerate(commands):
-    if command == "MedianFinder":
-        obj = MedianFinder()
-    if command == "addNum":
-        obj.addNum(nums[i][0])
-    if command == "findMedian":
-        print(obj.findMedian())

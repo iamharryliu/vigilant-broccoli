@@ -10,8 +10,8 @@ class TreeNode:
 
 
 class Solution:
+    @classmethod
     def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
-        # RECURSIVE SOLUTION
         found = False
 
         def dfs(node):
@@ -27,9 +27,7 @@ class Solution:
             right = dfs(node.right)
             return left or right or 0
 
-        stack = []
-        dfs(root)
-        return stack[k - 1]
+        return dfs(root)
 
         # ITERATIVE SOLUTION
         # stack = []
