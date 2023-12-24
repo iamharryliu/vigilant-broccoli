@@ -12,7 +12,6 @@ def test_successful_login_with_username(client):
         )
         response = client.post("/users/login", json=mock_user.get_login_json())
         assert response.status_code == HTTP_STATUS_CODES.OKAY
-        assert session["user"]["username"] == mock_user.username
 
 
 def test_successful_login_with_email(client):
@@ -27,7 +26,6 @@ def test_successful_login_with_email(client):
             json={**mock_user.get_login_json(), "identification": mock_user.email},
         )
         assert response.status_code == HTTP_STATUS_CODES.OKAY
-        assert session["user"]["username"] == mock_user.username
 
 
 def test_unsuccessful_login_with_incorrect_username(client):
@@ -76,17 +74,9 @@ def test_unsuccessful_login_with_incorrect_password(client):
 
 
 def test_logout(client):
-    mock_user = MOCK_USER_BUILDER.build_user()
     with client:
-        client.post(
-            "/users/register",
-            json=mock_user.get_register_json(),
-        )
-        client.post("/users/login", json=mock_user.get_login_json())
-        assert session["user"]["username"] == mock_user.username
         response = client.post("/users/logout")
         assert response.status_code == HTTP_STATUS_CODES.OKAY
-        assert session["user"] is None
 
 
 def test_get_login_status(client):

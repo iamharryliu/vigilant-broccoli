@@ -1,5 +1,5 @@
 from flask import request, Blueprint, jsonify
-from App.models import User
+from App.users.models import User
 from App.password import PasswordService
 from App.database import db_session
 from App.exceptions import BadRequestException, EXCEPTION_CODES

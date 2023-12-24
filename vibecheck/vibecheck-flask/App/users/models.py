@@ -1,11 +1,18 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from App.database import Base
 from App.config import USER_CONFIG
+from App import login_manager
+from flask_login import UserMixin
 
 from sqlalchemy.orm import relationship
 
 
-class User(Base):
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(id)
+
+
+class User(Base, UserMixin):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
     username = Column(String(USER_CONFIG.MAX_USERNAME_LENGTH), unique=True)

@@ -1,10 +1,10 @@
-from flask import request, Blueprint, jsonify, session
+from flask import request, Blueprint, jsonify
 from flask_cors import cross_origin
 import bcrypt
-from App.models import User
+from flask_login import login_user, current_user, logout_user
+from App.users.models import User
 from App.config import EXCEPTION_CODES
-from App.exceptions import BadRequestException
-from App.exceptions import UnauthorizedException
+from App.exceptions import BadRequestException, UnauthorizedException
 
 blueprint = Blueprint("users_blueprint", __name__)
 
@@ -22,19 +22,18 @@ def login():
     password = data["password"]
     if not user or not bcrypt.checkpw(password.encode("utf-8"), user.password):
         raise UnauthorizedException()
-    session["user"] = {"username": user.username}
+    login_user(user)
     return jsonify({})
 
 
 @blueprint.route("logout", methods=["POST"])
 @cross_origin(supports_credentials=True)
 def logout():
-    session["user"] = None
+    logout_user()
     return jsonify({})
 
 
 @blueprint.route("get_login_status", methods=["GET"])
 @cross_origin(supports_credentials=True)
 def get_login_status():
-    print(session["user"])
-    return jsonify({"status": session["user"] is not None})
+    return jsonify({"status": current_user.is_authenticated})

@@ -12,7 +12,7 @@ Base.query = db_session.query_property()
 class DatabaseManager:
     @staticmethod
     def init_db():
-        import App.models
+        import App.users.models
 
         Base.metadata.create_all(bind=engine)
 

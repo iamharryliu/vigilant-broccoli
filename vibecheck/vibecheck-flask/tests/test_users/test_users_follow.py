@@ -1,4 +1,4 @@
-from App.models import User
+from App.users.models import User
 from tests.mocks import MOCK_USER_BUILDER
 
 

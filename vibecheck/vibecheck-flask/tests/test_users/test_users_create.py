@@ -1,4 +1,4 @@
-from App.models import User
+from App.users.models import User
 
 from App.config import HTTP_STATUS_CODES, EXCEPTION_CODES
 from tests.mocks import MOCK_USER_BUILDER

@@ -26,4 +26,5 @@ repos:
         entry: pytest vibecheck/
         language: python
         pass_filenames: false
-        additional_dependencies: [pytest, flask, flask_cors, sqlalchemy, bcrypt]
+        additional_dependencies:
+          [pytest, flask, flask_cors, sqlalchemy, bcrypt, flask_login]

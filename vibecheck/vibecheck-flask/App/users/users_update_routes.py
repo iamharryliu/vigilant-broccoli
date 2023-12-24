@@ -1,5 +1,5 @@
-from flask import request, Blueprint, jsonify, session
-from App.models import User
+from flask import request, Blueprint, jsonify
+from App.users.models import User
 from App.database import db_session
 
 blueprint = Blueprint("users_update_blueprint", __name__)
