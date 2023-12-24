@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 from typing import List
 
 
@@ -25,18 +25,3 @@ class Solution:
                         q += graph[key]
                         visited.add(key)
         return 0
-
-
-beginWord = "hit"
-endWord = "cog"
-wordList = ["hot", "dot", "dog", "lot", "log", "cog"]
-output = 5
-res = Solution.ladderLength(beginWord, endWord, wordList)
-print(res == output)
-
-beginWord = "hit"
-endWord = "cog"
-wordList = ["hot", "dot", "dog", "lot", "log"]
-output = 0
-res = Solution.ladderLength(beginWord, endWord, wordList)
-print(res == output)
