@@ -1,9 +1,8 @@
 import { NewsletterService } from './newsletter.service';
-import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
 import { EncryptionService } from '@prettydamntired/node-tools';
 import { EmailSubscription } from '@prettydamntired/personal-website-common';
 
-export class VibecheckLiteService extends VibecheckLite {
+export class VibecheckLiteService {
   static async subscribeEmail(data) {
     const { email, latitude, longitude } = data;
     const emailSubscription = await EmailSubscription.findOne({

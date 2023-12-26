@@ -42,7 +42,7 @@ export class CommonService {
 
   getOutfitRecommendation(location: Location): Observable<any> {
     return this.http.get<any>(
-      `${this.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.GET_OUTFIT_RECOMMENDATION}?lat=${location.latitude}&lon=${location.longitude}`,
+      `https://vibecheck-lite-express.fly.dev/get-outfit-recommendation?lat=${location.latitude}&lon=${location.longitude}`,
     );
   }
 

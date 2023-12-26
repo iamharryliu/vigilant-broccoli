@@ -6,16 +6,6 @@ import { HTTP_STATUS_CODES } from '@prettydamntired/node-tools';
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
 
-router.get('/get-outfit-recommendation', async (req, res) => {
-  const latitude = Number(req.query.lat);
-  const longitude = Number(req.query.lon);
-  const recommendation = await VibecheckLiteService.getOutfitRecommendation({
-    latitude,
-    longitude,
-  });
-  return res.status(HTTP_STATUS_CODES.OK).json({ data: recommendation });
-});
-
 router.post('/subscribe', requireJsonContent, (req, res) => {
   const email = req.body.email;
   if (!email) {
