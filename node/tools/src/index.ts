@@ -1,7 +1,6 @@
 // Consts
 export * from './consts/email.const';
 export * from './consts/http.const';
-export * from './consts/mongo-db.const';
 
 // Models
 export * from './models/email.model';

@@ -1,8 +1,8 @@
+import { MongoClient } from 'mongodb';
 import {
   MailService,
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
-  MONGO_DB_CLIENT,
 } from '../../node/tools/src';
 import {
   PERSONAL_WEBSITE_DB_COLLECTIONS,
@@ -12,6 +12,10 @@ import {
 import { VibecheckLite } from '../vibecheck-lite/src';
 
 main();
+
+const MONGO_DB_SERVER = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net`;
+
+const MONGO_DB_CLIENT = new MongoClient(MONGO_DB_SERVER);
 
 async function main() {
   console.log('Vibecheck lite recommendation script start.');

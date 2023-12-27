@@ -12,7 +12,7 @@ import { router as contactRouter } from './src/routes/contact.router';
 import { router as subscribeRouter } from './src/routes/subscribe.router';
 import { router as VibeCheckLiteRouter } from './src/routes/vibecheck-lite.router';
 import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
-import { MONGO_DB_SERVER, logger } from '@prettydamntired/node-tools';
+import { logger } from '@prettydamntired/node-tools';
 
 const app = express();
 app.use(cors(CORS_OPTIONS));
@@ -29,6 +29,7 @@ export const server = app.listen(PORT as number, HOST, () => {
   logger.info(`Server listening at ${HOST}:${PORT}`);
 });
 
+const MONGO_DB_SERVER = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net`;
 mongoose.connect(MONGO_DB_SERVER, { dbName: process.env.PERSONAL_WEBSITE_DB });
 export const db = mongoose.connection;
 db.getClient;

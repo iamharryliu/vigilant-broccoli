@@ -1,5 +1,8 @@
 {
   "scripts": {
     "start": "ts-node vibecheck-lite-recommendation.ts"
+  },
+  "dependencies": {
+    "mongodb": "^6.3.0"
   }
 }
