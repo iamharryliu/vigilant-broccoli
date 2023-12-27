@@ -7,7 +7,6 @@ import {
 import {
   PERSONAL_WEBSITE_DB_COLLECTIONS,
   PERSONAL_WEBSITE_DB_DATABASES,
-  PERSONAL_WEBSITE_URL,
 } from '../../personal-website/common/src';
 import { VibecheckLite } from '../vibecheck-lite/src';
 
@@ -55,7 +54,7 @@ async function main() {
       path: `${__dirname}/assets/vibecheck-lite.ejs`,
       data: {
         recommendation: recommendation,
-        url: `${PERSONAL_WEBSITE_URL.FRONTEND_REDIRECTED}/unsubscribe-vibecheck-lite?token=${token}`,
+        url: `https://harryliu.design/unsubscribe-vibecheck-lite?token=${token}`,
       },
     };
     console.log(`Sending email to ${email}`);

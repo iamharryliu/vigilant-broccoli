@@ -1,12 +1,13 @@
 import { exec } from 'child_process';
-import { PERSONAL_WEBSITE_URL } from '../../common/src';
 import { SiteMonitor } from '../../../node/tools/src';
 
 main();
 
 async function main() {
   console.log('Backend monitor script started.');
-  const status = await SiteMonitor.getSiteStatus(PERSONAL_WEBSITE_URL.BACKEND);
+  const status = await SiteMonitor.getSiteStatus(
+    'https://harryliu-design-express.fly.dev/',
+  );
   if (!status) {
     restartServer();
   }

@@ -1,10 +1,9 @@
 import { SiteMonitor } from '../../../node/tools/src';
-import { PERSONAL_WEBSITE_URL } from '../../common/src';
 
 const sites = [
-  PERSONAL_WEBSITE_URL.BACKEND,
-  PERSONAL_WEBSITE_URL.FRONTEND,
-  PERSONAL_WEBSITE_URL.FRONTEND_REDIRECTED,
+  'https://harryliu-design-express.fly.dev/',
+  'https://vigilant-broccoli.pages.dev',
+  'https://harryliu.design',
 ];
 
 main();
