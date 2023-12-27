@@ -10,7 +10,6 @@ import { requestLogger } from './src/middlewares/common.middleware';
 import { router } from './src/routes/router';
 import { router as contactRouter } from './src/routes/contact.router';
 import { router as subscribeRouter } from './src/routes/subscribe.router';
-import { router as VibeCheckLiteRouter } from './src/routes/vibecheck-lite.router';
 import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
 import { logger } from '@prettydamntired/node-tools';
 
@@ -20,7 +19,6 @@ app.use(requestLogger);
 app.use(router);
 app.use('/contact', contactRouter);
 app.use('/subscribe', subscribeRouter);
-app.use('/vibecheck-lite', VibeCheckLiteRouter);
 app.use(errorLogger);
 app.use(errorResponder);
 app.use(invalidPathHandler);

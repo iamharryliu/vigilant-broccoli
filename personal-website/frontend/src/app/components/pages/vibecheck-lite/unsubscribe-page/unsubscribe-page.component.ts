@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { VibecheckLiteService } from '@services/vibecheck-lite.service';
 import { APP_PATH } from '@consts/app-route.const';
 import { CommonService } from '@services/common.service';
 import { exhaustMap } from 'rxjs';
@@ -14,7 +15,7 @@ import { exhaustMap } from 'rxjs';
 })
 export class VibecheckLiteUnsubscribePageComponent {
   constructor(
-    private commonService: CommonService,
+    private vibecheckLiteService: VibecheckLiteService,
     private route: ActivatedRoute,
   ) {}
 
@@ -23,8 +24,8 @@ export class VibecheckLiteUnsubscribePageComponent {
 
   unsubscribeEmail$ = this.route.queryParams.pipe(
     exhaustMap(params => {
-      const encryptedEmail = params['token'];
-      return this.commonService.unsubscribeFromVibecheckLite(encryptedEmail);
+      const email = params['token'];
+      return this.vibecheckLiteService.unsubscribeFromVibecheckLite(email);
     }),
   );
 

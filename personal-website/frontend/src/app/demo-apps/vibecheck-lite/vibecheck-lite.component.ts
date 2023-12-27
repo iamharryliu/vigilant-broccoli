@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Observable, map, switchMap } from 'rxjs';
-import { CommonService } from '@services/common.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { CardComponent } from '@components/global/card/card.component';
 import { LoadingSpinnerComponent } from '@components/global/loading-spinner/loading-spinner.component';
 import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centered-app-layout.compoenent';
 import { BrowserLocationService } from '@prettydamntired/node-tools/lib/location/browserLocation.service';
+import { VibecheckLiteService } from '@app/core/services/vibecheck-lite.service';
 
 interface VibecheckLiteResponse {
   status: boolean;
@@ -29,12 +29,12 @@ interface VibecheckLiteResponse {
 export class VibecheckLiteComponent {
   recommendation$!: Observable<VibecheckLiteResponse>;
   constructor(
-    public commonService: CommonService,
+    public vibecheckLiteService: VibecheckLiteService,
     private locationService: BrowserLocationService,
   ) {
     this.recommendation$ = this.locationService.getLocation().pipe(
       switchMap(res => {
-        return commonService
+        return vibecheckLiteService
           .getOutfitRecommendation(res)
           .pipe(map(res => res.data));
       }),

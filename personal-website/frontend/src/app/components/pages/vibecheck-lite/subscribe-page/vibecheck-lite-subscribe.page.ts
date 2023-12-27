@@ -9,9 +9,9 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, exhaustMap } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { CommonService } from '@services/common.service';
 import { APP_PATH } from '@consts/app-route.const';
 import { Router } from '@angular/router';
+import { VibecheckLiteService } from '@services/vibecheck-lite.service';
 
 @Component({
   standalone: true,
@@ -22,7 +22,7 @@ import { Router } from '@angular/router';
 export class VibecheckLiteSubscribePageComponent {
   constructor(
     private http: HttpClient,
-    private commonService: CommonService,
+    private vibecheckLiteService: VibecheckLiteService,
     private router: Router,
   ) {
     this.getCountries().subscribe(countries => {
@@ -38,7 +38,7 @@ export class VibecheckLiteSubscribePageComponent {
           const [latitude, longitude] = (this.form.value.city as string)
             .split(',')
             .map(num => Number(num));
-          return this.commonService.subscribeToVibecheckLite({
+          return this.vibecheckLiteService.subscribeToVibecheckLite({
             email,
             latitude,
             longitude,
