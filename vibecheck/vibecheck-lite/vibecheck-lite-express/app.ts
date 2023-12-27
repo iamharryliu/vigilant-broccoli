@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import { PORT, HOST, CORS_OPTIONS } from './src/configs/app.const';
+import { PORT, HOST, CORS_OPTIONS } from './src/app.const';
 import { logger } from '@prettydamntired/node-tools';
 import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
 import { HTTP_STATUS_CODES } from '@prettydamntired/node-tools';
-import { EmailSubscription } from './src/models/subscriber.model';
+import { EmailSubscription } from './src/app.model';
 
 const app = express();
 app.use(cors(CORS_OPTIONS));
