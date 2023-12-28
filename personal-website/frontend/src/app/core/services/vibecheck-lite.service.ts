@@ -6,7 +6,7 @@ import { VibecheckLiteSubscriptionRequest } from '@models/app.model';
 import { Location } from '@prettydamntired/node-tools';
 
 // const VIBECHECK_LITE_API_URL = 'http://127.0.0.1:3000'
-const VIBECHECK_LITE_API_URL = 'https://vibecheck-lite-express.fly.dev';
+export const VIBECHECK_LITE_API_URL = 'https://vibecheck-lite-express.fly.dev';
 
 @Injectable({
   providedIn: 'root',
