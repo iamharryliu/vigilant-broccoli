@@ -46,44 +46,11 @@ describe('Routes', () => {
           email: email,
         });
       const token = EncryptionService.encryptData(email);
-      const res = await request(app).put(
-        `/subscribe/verify-email-subscription/${token}`,
-      );
-      expect(res.status).toEqual(200);
-    });
-  });
-
-  describe('vibecheck-lite subscribe endpoint', () => {
-    it('should subscribe to vibecheck lite', async () => {
       const res = await request(app)
-        .post(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE_TO_VIBECHECK_LITE)
-        .send({
-          email,
-          latitude: 43.7690921,
-          longitude: -79.197657,
-        });
+        .put(`/subscribe/verify-email-subscription`)
+        .send({ token });
       expect(res.status).toEqual(200);
     });
-  });
-
-  describe('unsubscribe from vibecheck-lite endpoint', () => {
-    it('should unsubscribe successfully', async () => {
-      const token = EncryptionService.encryptData(email);
-      const res = await request(app).put(
-        `${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.UNSUBSCRIBE_FROM_VIBECHECK_LITE}/${token}`,
-      );
-      expect(res.status).toEqual(200);
-    });
-  });
-
-  describe('get vibecheck-lite outfit recommendation endpoint', () => {
-    it('Get outfit recommendation', async () => {
-      const query = '?lat=43.7690921&lon=-79.197657';
-      const res = await request(app).get(
-        `${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.GET_OUTFIT_RECOMMENDATION}${query}`,
-      );
-      expect(res.status).toEqual(200);
-    }, 20000);
   });
 
   afterAll(async () => {

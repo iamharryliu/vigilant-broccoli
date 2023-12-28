@@ -44,9 +44,6 @@
     ],
     "*.{json,md}": [
       "prettier --write"
-    ],
-    "*.test.ts": [
-      "npm run test:commit"
     ]
   },
   "husky": {

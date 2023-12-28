@@ -63,5 +63,10 @@
     "setupFilesAfterEnv": [
       "<rootDir>/setup-jest.ts"
     ]
+  },
+  "lint-staged": {
+    "*.test.ts": [
+      "npm run test:commit"
+    ]
   }
 }
