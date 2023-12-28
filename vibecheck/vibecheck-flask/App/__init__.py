@@ -15,6 +15,10 @@ def create_app():
     CORS(app)
     login_manager.init_app(app)
 
+    @app.route("/")
+    def index():
+        return "Index"
+
     from App.users.routes import (
         users_create_blueprint,
         users_update_blueprint,
