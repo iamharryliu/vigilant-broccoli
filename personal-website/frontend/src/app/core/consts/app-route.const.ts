@@ -9,7 +9,7 @@ import { ENVIRONMENT } from 'src/environments/environment';
 import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscription/verify-email-subscription-page.component';
 import { VibecheckLiteSubscribePageComponent } from '@pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '@pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
-import { ServicesPageComponent } from '@app/src/app/components/pages/services.page/services.page';
+import { ServicesPageComponent } from '@components/pages/services-page/services.page';
 
 export const INDEX_ROUTE: Route = {
   path: '',
