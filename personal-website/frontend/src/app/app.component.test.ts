@@ -5,6 +5,8 @@ import { AppComponent } from '@app/app.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
 
+window.scrollTo = jest.fn();
+
 class MockRouter {
   public ne = new NavigationEnd(
     0,
