@@ -56,11 +56,17 @@
   },
   "jest": {
     "moduleNameMapper": {
+      "src/(.*)": "<rootDir>/src/$1",
       "@app/(.*)": "<rootDir>/src/app/$1",
+      "@components/(.*)": "<rootDir>/src/app/components/$1",
+      "@layouts/(.*)": "<rootDir>/src/app/components/layouts/$1",
+      "@pages/(.*)": "<rootDir>/src/app/components/pages/$1",
+      "@features/(.*)": "<rootDir>/src/app/components/features/$1",
       "@services/(.*)": "<rootDir>/src/app/core/services/$1",
-      "@utils/(.*)": "<rootDir>/src/app/core/utils/$1",
       "@interceptors/(.*)": "<rootDir>/src/app/core/interceptors/$1",
-      "@components/(.*)": "<rootDir>/src/components/$1"
+      "@utils/(.*)": "<rootDir>/src/app/core/utils/$1",
+      "@consts/(.*)": "<rootDir>/src/app/core/consts/$1"
+
     },
     "preset": "jest-preset-angular",
     "setupFilesAfterEnv": [
