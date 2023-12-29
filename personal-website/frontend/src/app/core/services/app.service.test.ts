@@ -29,10 +29,8 @@ describe('AppService', () => {
   });
 
   it('should initialize with default language', () => {
-    const useSpy = jest.spyOn(translateService, 'use');
-
+    const spy = jest.spyOn(translateService, 'use');
     service.init();
-
-    expect(useSpy).toHaveBeenCalledWith(NGX_TRANSLATE_LANGUAGE.DEFAULT);
+    expect(spy).toHaveBeenCalledWith(NGX_TRANSLATE_LANGUAGE.DEFAULT);
   });
 });
