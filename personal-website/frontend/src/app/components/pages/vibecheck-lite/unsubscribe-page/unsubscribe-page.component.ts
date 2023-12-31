@@ -5,7 +5,6 @@ import { VibecheckLiteService } from '@services/vibecheck-lite.service';
 import { APP_PATH } from '@consts/app-route.const';
 import { exhaustMap } from 'rxjs';
 
-// TODO: rename files
 @Component({
   standalone: true,
   selector: 'app-unsubscribe-page',
