@@ -1,6 +1,5 @@
 import { ReturnTopButtonComponent } from '@app/components/global/return-top-button/return-top-button.component';
 
-
 window.scrollTo = jest.fn();
 
 describe('ReturnTopButtonComponent', () => {

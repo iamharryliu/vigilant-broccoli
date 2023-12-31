@@ -13,7 +13,7 @@ describe('NewsLetterSubFormComponent', () => {
     };
 
     component = new NewsLetterSubFormComponent(
-      commonServiceMock as CommonService
+      commonServiceMock as CommonService,
     );
   });
 
@@ -49,7 +49,7 @@ describe('NewsLetterSubFormComponent', () => {
     component.submit();
 
     expect(commonServiceMock.subscribeToNewsletter).toHaveBeenCalledWith(
-      emailRequest
+      emailRequest,
     );
     expect(component.form.value).toEqual({ email: null });
   });

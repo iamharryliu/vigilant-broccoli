@@ -66,7 +66,6 @@
       "@interceptors/(.*)": "<rootDir>/src/app/core/interceptors/$1",
       "@utils/(.*)": "<rootDir>/src/app/core/utils/$1",
       "@consts/(.*)": "<rootDir>/src/app/core/consts/$1"
-
     },
     "preset": "jest-preset-angular",
     "setupFilesAfterEnv": [

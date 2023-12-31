@@ -7,20 +7,22 @@ import { of } from 'rxjs';
 
 describe('ContactComponent', () => {
   let component: ContactComponent;
-  let commonService: CommonService
+  let commonService: CommonService;
   let fixture: ComponentFixture<ContactComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,TranslateModule.forRoot(),],
+      imports: [HttpClientTestingModule, TranslateModule.forRoot()],
     }).compileComponents();
-    commonService = TestBed.inject(CommonService)
+    commonService = TestBed.inject(CommonService);
     fixture = TestBed.createComponent(ContactComponent);
     component = fixture.componentInstance;
   });
 
   it('should call commonService.sendMessage on form submission', () => {
-    const spy = jest.spyOn(commonService, 'sendMessage').mockReturnValue(of({}))
+    const spy = jest
+      .spyOn(commonService, 'sendMessage')
+      .mockReturnValue(of({}));
     const testMessage = {
       name: 'John Doe',
       email: 'john@example.com',
@@ -32,7 +34,7 @@ describe('ContactComponent', () => {
   });
 
   it('should reset form after successful message submission', () => {
-    jest.spyOn(commonService, 'sendMessage').mockReturnValue(of({}))
+    jest.spyOn(commonService, 'sendMessage').mockReturnValue(of({}));
     const testMessage = {
       name: 'Jane Doe',
       email: 'jane@example.com',
@@ -40,6 +42,10 @@ describe('ContactComponent', () => {
     };
     component.form.patchValue(testMessage);
     component.submitForm();
-    expect(component.form.value).toEqual({ name: null, email: null, message: null });
+    expect(component.form.value).toEqual({
+      name: null,
+      email: null,
+      message: null,
+    });
   });
 });

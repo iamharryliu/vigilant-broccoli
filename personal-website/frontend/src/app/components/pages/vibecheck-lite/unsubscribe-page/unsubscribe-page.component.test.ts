@@ -30,11 +30,13 @@ describe('VibecheckLiteUnsubscribePageComponent', () => {
     component = fixture.componentInstance;
   });
 
-  describe('unsubscribe', ()=>{
+  describe('unsubscribe', () => {
     it('should set hasUnsubscribed to true after unsubscribing', () => {
-      mockVibecheckLiteService.unsubscribeFromVibecheckLite.mockReturnValue(of(null));
+      mockVibecheckLiteService.unsubscribeFromVibecheckLite.mockReturnValue(
+        of(null),
+      );
       component.unsubscribe();
       expect(component.hasUnsubscribed).toBe(true);
     });
-  })
+  });
 });
