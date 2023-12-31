@@ -10,7 +10,6 @@ describe('AppService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        AppService,
         {
           provide: TranslateService,
           useValue: {

@@ -3,15 +3,14 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { VibecheckLiteService } from '@services/vibecheck-lite.service';
 import { APP_PATH } from '@consts/app-route.const';
-import { CommonService } from '@services/common.service';
 import { exhaustMap } from 'rxjs';
 
+// TODO: rename files
 @Component({
   standalone: true,
   selector: 'app-unsubscribe-page',
   templateUrl: './unsubscribe-page.component.html',
   imports: [CommonModule, RouterModule],
-  providers: [CommonService],
 })
 export class VibecheckLiteUnsubscribePageComponent {
   constructor(

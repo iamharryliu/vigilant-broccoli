@@ -1,3 +1,4 @@
+// TODO: rename
 export interface EmailSubscriptionRequest {
   email: string;
 }

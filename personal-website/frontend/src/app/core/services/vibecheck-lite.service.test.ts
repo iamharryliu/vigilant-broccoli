@@ -11,7 +11,6 @@ describe('VibecheckLiteService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [VibecheckLiteService],
     });
 
     service = TestBed.inject(VibecheckLiteService);
@@ -31,8 +30,7 @@ describe('VibecheckLiteService', () => {
       latitude: 40.7128,
       longitude: -74.0060,
     };
-
-    const mockResponse = { /* Your mock response here */ };
+    const mockResponse = {};
 
     service.getOutfitRecommendation(mockLocation).subscribe((response) => {
       expect(response).toEqual(mockResponse);
@@ -45,8 +43,7 @@ describe('VibecheckLiteService', () => {
 
   it('should subscribe to Vibecheck Lite', () => {
     const mockRequest: VibecheckLiteSubscriptionRequest = { email:'email', latitude: 42, longitude:42 };
-
-    const mockResponse = { /* Your mock response here */ };
+    const mockResponse = {};
 
     service.subscribeToVibecheckLite(mockRequest).subscribe((response) => {
       expect(response).toEqual(mockResponse);
@@ -59,8 +56,7 @@ describe('VibecheckLiteService', () => {
 
   it('should unsubscribe from Vibecheck Lite', () => {
     const mockEmail = 'test@example.com';
-
-    const mockResponse = { /* Your mock response here */ };
+    const mockResponse = {};
 
     service.unsubscribeFromVibecheckLite(mockEmail).subscribe((response) => {
       expect(response).toEqual(mockResponse);

@@ -14,7 +14,6 @@ import { LinkComponent } from '@components/global/link/link.component';
   selector: 'app-contact',
   templateUrl: './contact.component.html',
   imports: [CommonModule, TranslateModule, ReactiveFormsModule, LinkComponent],
-  providers: [CommonService],
 })
 export class ContactComponent {
   submit$: Subject<boolean> = new Subject();

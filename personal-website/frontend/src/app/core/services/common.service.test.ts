@@ -18,48 +18,39 @@ describe('CommonService', () => {
   });
 
   afterEach(() => {
-    httpMock.verify(); // Verifies that no requests are outstanding after each test
+    httpMock.verify();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should send a message', () => {
-    const messageRequest: MessageRequest = {
-    } as MessageRequest;
-
-    service.sendMessage(messageRequest).subscribe(response => {
-      expect(response).toBeDefined();
+  describe('sendMessage', ()=>{
+    it('should make endpoint call', () => {
+      service.sendMessage({} as MessageRequest).subscribe(response => {
+        expect(response).toBeDefined();
+      });
+      const req = httpMock.expectOne(`${service.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE}`);
+      expect(req.request.method).toBe('POST');
+      req.flush({});
     });
+  })
 
-    const req = httpMock.expectOne(`${service.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE}`);
-    expect(req.request.method).toBe('POST');
-    req.flush({ });
-  });
-
-  it('should subscribe to newsletter', () => {
-    const subscriptionRequest: EmailSubscriptionRequest = {
-    } as EmailSubscriptionRequest;
-
-    service.subscribeToNewsletter(subscriptionRequest).subscribe(response => {
-      expect(response).toBeDefined();
+  describe('subscribeToNewsletter', ()=>{
+    it('should make endpoint call', () => {
+      service.subscribeToNewsletter({} as EmailSubscriptionRequest).subscribe(response => {
+        expect(response).toBeDefined();
+      });
+      const req = httpMock.expectOne(`${service.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE}`);
+      expect(req.request.method).toBe('POST');
+      req.flush({});
     });
+  })
 
-    const req = httpMock.expectOne(`${service.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE}`);
-    expect(req.request.method).toBe('POST');
-    req.flush({});
-  });
-
-  it('should verify email subscription', () => {
-    const token = 'some-token';
-
-    service.verifyEmailSubscription(token).subscribe(response => {
-      expect(response).toBeDefined();
+  describe('verifyEmailSubscription', ()=>{
+    it('should make endpoint call', () => {
+      service.verifyEmailSubscription('token').subscribe(response => {
+        expect(response).toBeDefined();
+      });
+      const req = httpMock.expectOne(`${service.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.VERIFY_SUBSCRIPTION}`);
+      expect(req.request.method).toBe('PUT');
+      req.flush({});
     });
-
-    const req = httpMock.expectOne(`${service.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.VERIFY_SUBSCRIPTION}`);
-    expect(req.request.method).toBe('PUT');
-    req.flush({});
-  });
+  })
 });

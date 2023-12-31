@@ -29,7 +29,6 @@ describe('AppComponent', () => {
       declarations: [AppComponent],
       imports: [RouterTestingModule],
       providers: [
-        Title,
         {
           provide: ActivatedRoute,
           useValue: {
