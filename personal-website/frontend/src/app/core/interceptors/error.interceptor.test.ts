@@ -57,7 +57,7 @@ describe('ErrorInterceptor', () => {
       error: (error: HttpErrorResponse) => {
         expect(error).toBeInstanceOf(HttpErrorResponse);
         expect(alertSpy).toHaveBeenCalledWith(
-          `This is a client side error: client-side error`,
+          'This is a client side error: client-side error',
         );
       },
     });
@@ -84,7 +84,7 @@ describe('ErrorInterceptor', () => {
       error: (error: HttpErrorResponse) => {
         expect(error).toBeInstanceOf(HttpErrorResponse);
         expect(alertSpy).toHaveBeenCalledWith(
-          `This is a server side error:\nserver-side error`,
+          'This is a server side error:\nserver-side error',
         );
       },
     });

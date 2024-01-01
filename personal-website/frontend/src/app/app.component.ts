@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
   getTitle() {
     const child: ActivatedRoute | null = this.route.firstChild;
     const TITLE = child && child.snapshot.data['title'];
-    if (TITLE) {
+    if (TITLE != null) {
       return TITLE;
     }
   }

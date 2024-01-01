@@ -34,7 +34,7 @@ export class VerifyEmailSubscriptionPageComponent {
   ) {
     this.route.queryParams.subscribe(params => {
       const token = params['token'];
-      if (token) {
+      if (token != null) {
         this.isLoading = true;
         setTimeout(() => {
           this.form.controls['token'].setValue(token);

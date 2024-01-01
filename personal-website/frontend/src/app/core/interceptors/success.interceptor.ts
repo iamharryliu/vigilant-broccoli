@@ -20,10 +20,9 @@ export class SuccessInterceptor implements HttpInterceptor {
       tap(event => {
         if (
           event instanceof HttpResponse &&
-          event.url?.startsWith(
-            ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL,
-          ) &&
-          event.body.message
+          event.url != null &&
+          event.url.startsWith(ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL) &&
+          event.body.message != null
         ) {
           alert(event.body.message);
         }

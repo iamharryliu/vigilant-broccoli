@@ -17,7 +17,7 @@ export class RecaptchaInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
-    if (!request.body) {
+    if (request.body == null) {
       return next.handle(request);
     }
     return this.recaptchaV3Service.execute('requestType').pipe(
