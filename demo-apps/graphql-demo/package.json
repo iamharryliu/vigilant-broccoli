@@ -1,13 +1,10 @@
 {
   "name": "graphql-demo",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "serve": "nodemon app.ts"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^4.9.5",

@@ -1,10 +1,8 @@
 {
   "name": "vigilant-broccoli",
-  "description": "",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --fix .",
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
     "format": "prettier --write ."
@@ -13,7 +11,6 @@
     "type": "git",
     "url": "git+https://github.com/iamharryliu/vigilant-broccoli.git"
   },
-  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/iamharryliu/vigilant-broccoli/issues"
