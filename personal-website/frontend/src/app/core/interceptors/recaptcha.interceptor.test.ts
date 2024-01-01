@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RecaptchaInterceptor } from '@interceptors/recaptcha.interceptor';
 import { HttpHandler, HttpRequest, HttpEvent } from '@angular/common/http';
 import { of } from 'rxjs';

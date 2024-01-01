@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SuccessInterceptor } from '@interceptors/success.interceptor';
 import {
   HttpHandler,

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const jsonServer = require('json-server');
 const middleware = jsonServer.defaults();
 const server = jsonServer.create();

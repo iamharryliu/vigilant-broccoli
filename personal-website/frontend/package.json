@@ -7,6 +7,9 @@
     "start:mock": "concurrently --kill-others \"ng serve\"  \"nodemon mock-server/server.js --ext js,ts,json,html\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "lint": "eslint --fix .",
+    "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
+    "format": "prettier --write .",
     "test": "jest --coverage --watch",
     "test:commit": "jest --bail --findRelatedTests"
   },
@@ -73,6 +76,17 @@
     ]
   },
   "lint-staged": {
+    "*.{js,ts}": [
+      "npm run lint",
+      "npm run format"
+    ],
+    "*.{css,scss}": [
+      "npm run lint:css",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ],
     "*.test.ts": [
       "npm run test:commit"
     ]
