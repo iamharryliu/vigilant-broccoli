@@ -14,22 +14,6 @@
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
-        "semi": ["error", "always"],
-        "quotes": ["error", "single"],
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [".*"]
-          }
-        ],
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          {
-            "argsIgnorePattern": "^_",
-            "varsIgnorePattern": "^_",
-            "caughtErrorsIgnorePattern": "^_"
-          }
-        ],
         "@angular-eslint/directive-selector": [
           "error",
           {
@@ -46,9 +30,25 @@
             "style": "kebab-case"
           }
         ],
+        "semi": ["error", "always"],
+        "quotes": ["error", "single"],
         "@angular-eslint/no-empty-lifecycle-method": "off",
         "@typescript-eslint/strict-boolean-expressions": "error",
-        "@typescript-eslint/no-explicit-any": "error"
+        "@typescript-eslint/no-explicit-any": "error",
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [".*"]
+          }
+        ],
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_",
+            "caughtErrorsIgnorePattern": "^_"
+          }
+        ]
       }
     },
     {
@@ -56,12 +56,12 @@
       "extends": [
         "plugin:@angular-eslint/template/recommended",
         "plugin:@angular-eslint/template/accessibility"
-      ]
+      ],
+      "rules": {}
     }
   ],
   "env": {
     "browser": true,
-    "jasmine": true,
     "node": true
   }
 }
