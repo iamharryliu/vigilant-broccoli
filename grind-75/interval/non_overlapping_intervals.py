@@ -14,8 +14,3 @@ class Solution:
                 res += 1
                 lastEnd = min(lastEnd, end)
         return res
-
-
-print(Solution.eraseOverlapIntervals([[1, 2], [2, 3], [3, 4], [1, 3]]) == 1)
-print(Solution.eraseOverlapIntervals([[1, 2], [1, 2], [1, 2]]) == 2)
-print(Solution.eraseOverlapIntervals([[1, 2], [2, 3]]) == 0)

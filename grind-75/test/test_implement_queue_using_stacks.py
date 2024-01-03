@@ -23,4 +23,5 @@ class TestSolution(unittest.TestCase):
                 res.append(q.peek())
             if command == "empty":
                 res.append(q.empty())
-        self.assertEqual(res, [None, None, None, 1, 1, False])
+        expected = [None, None, None, 1, 1, False]
+        self.assertEqual(res, expected)
