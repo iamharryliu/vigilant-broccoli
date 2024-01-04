@@ -1,5 +1,5 @@
 import unittest
-from string.longest_palindromic_substring import Solution
+from string_lc_questions.longest_palindromic_substring import Solution
 
 
 class TestSolution(unittest.TestCase):

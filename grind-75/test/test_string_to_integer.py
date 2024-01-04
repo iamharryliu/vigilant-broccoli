@@ -1,5 +1,5 @@
 import unittest
-from string.string_to_integer import Solution
+from string_lc_questions.string_to_integer import Solution
 
 
 class TestSolution(unittest.TestCase):

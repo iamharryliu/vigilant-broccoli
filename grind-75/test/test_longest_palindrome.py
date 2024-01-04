@@ -1,5 +1,5 @@
 import unittest
-from string.longest_palindrome import Solution
+from string_lc_questions.longest_palindrome import Solution
 
 
 class TestSolution(unittest.TestCase):

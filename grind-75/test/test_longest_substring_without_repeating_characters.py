@@ -1,5 +1,5 @@
 import unittest
-from string.longest_substring_without_repeating_characters import Solution
+from string_lc_questions.longest_substring_without_repeating_characters import Solution
 
 
 class TestSolution(unittest.TestCase):

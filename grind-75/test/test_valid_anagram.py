@@ -1,5 +1,5 @@
 import unittest
-from string.valid_anagram import Solution
+from string_lc_questions.valid_anagram import Solution
 
 
 class TestSolution(unittest.TestCase):

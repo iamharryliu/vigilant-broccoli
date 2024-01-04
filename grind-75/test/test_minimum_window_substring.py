@@ -1,5 +1,5 @@
 import unittest
-from string.minumum_window_substring import Solution
+from string_lc_questions.minumum_window_substring import Solution
 
 
 class TestSolution(unittest.TestCase):

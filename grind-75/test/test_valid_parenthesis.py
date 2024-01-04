@@ -1,5 +1,5 @@
 import unittest
-from string.valid_parenthesis import Solution
+from string_lc_questions.valid_parenthesis import Solution
 
 
 class TestSolution(unittest.TestCase):
