@@ -1,3 +1,5 @@
 [user]
 	name = Harry Liu
 	email = harryliu1995@gmail.com
+[push]
+	autoSetupRemote = true
