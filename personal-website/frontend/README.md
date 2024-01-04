@@ -1,5 +1,12 @@
 # PersonalWebsite
 
+## Snippets
+
+```
+ng version
+ng update
+```
+
 ## References
 
 <!-- Bot Prevention -->
