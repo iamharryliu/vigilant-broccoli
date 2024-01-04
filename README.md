@@ -31,6 +31,15 @@ Based on [this article](https://kinsta.com/blog/http-status-codes/)
 404 - Not found
 500 - Internal server error
 
+## Git
+
+```
+git checkout -b [branch name]
+git add [files]
+git commit -m [message]
+git push
+```
+
 ## References
 
 <!-- Code Maintenance -->
