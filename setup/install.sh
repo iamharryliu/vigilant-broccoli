@@ -1,5 +1,6 @@
 # Install Brew and Git.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+export PATH="/opt/homebrew/bin:$PATH" >> ~/.zshrc
 brew install git
 # Clone monorepo.
 git clone git@github.com:iamharryliu/vigilant-broccoli.git
