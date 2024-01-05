@@ -5,8 +5,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CardComponent } from '@components/global/card/card.component';
 import { LoadingSpinnerComponent } from '@components/global/loading-spinner/loading-spinner.component';
 import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centered-app-layout.compoenent';
-import { LocationService } from '@prettydamntired/node-tools';
 import { VibecheckLiteService } from '@app/core/services/vibecheck-lite.service';
+import { LocationService } from '@services/location.service';
 
 interface VibecheckLiteResponse {
   status: boolean;
@@ -24,7 +24,7 @@ interface VibecheckLiteResponse {
     LoadingSpinnerComponent,
     CenteredAppLayoutComponent,
   ],
-  providers: [LocationService],
+  providers: [],
 })
 export class VibecheckLiteComponent {
   recommendation$!: Observable<VibecheckLiteResponse>;

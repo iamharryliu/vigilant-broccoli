@@ -7,8 +7,8 @@ import {
   VIBECHECK_LITE_API_URL,
   VibecheckLiteService,
 } from '@app/core/services/vibecheck-lite.service';
-import { Location } from '@prettydamntired/node-tools';
 import { VibecheckLiteSubscriptionRequest } from '@models/app.model';
+import { Location } from '@services/location.service';
 
 describe('VibecheckLiteService', () => {
   let service: VibecheckLiteService;
