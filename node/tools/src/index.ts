@@ -4,10 +4,8 @@ export * from './consts/http.const';
 
 // Models
 export * from './models/email.model';
-export * from './models/location.model';
 
 // Services
-export { BrowserLocationService as LocationService } from './services/browserLocation.service';
 export { EmailService as MailService } from './services/email.service';
 export { EncryptionService } from './services/encryption.service';
 export { RecapchaService } from './services/recaptcha.service';

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { VibecheckLiteSubscriptionRequest } from '@models/app.model';
-import { Location } from '@services/location.service';
+import { Location } from '@prettydamntired/browser-tools';
 
 // const VIBECHECK_LITE_API_URL = 'http://127.0.0.1:3000'
 export const VIBECHECK_LITE_API_URL = 'https://vibecheck-lite-express.fly.dev';

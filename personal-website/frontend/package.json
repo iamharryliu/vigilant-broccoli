@@ -25,6 +25,7 @@
     "@angular/router": "^17.0.8",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
+    "@prettydamntired/browser-tools": "^1.0.0",
     "@prettydamntired/personal-website-common": "^1.0.3",
     "ng-recaptcha": "^13.2.1",
     "rxjs": "~7.8.0",

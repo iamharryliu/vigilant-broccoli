@@ -1,9 +1,6 @@
 import { Observable } from 'rxjs';
-// TODO: refactor into frontend node tools library
-export interface Location {
-  latitude: number;
-  longitude: number;
-}
+import { Location } from '../models/location.model';
+
 export class LocationService {
   getLocation(): Observable<Location> {
     return new Observable(observer => {

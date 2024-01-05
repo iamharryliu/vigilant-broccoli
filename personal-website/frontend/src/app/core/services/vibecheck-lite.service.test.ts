@@ -8,7 +8,7 @@ import {
   VibecheckLiteService,
 } from '@app/core/services/vibecheck-lite.service';
 import { VibecheckLiteSubscriptionRequest } from '@models/app.model';
-import { Location } from '@services/location.service';
+import { Location } from '@prettydamntired/browser-tools';
 
 describe('VibecheckLiteService', () => {
   let service: VibecheckLiteService;
