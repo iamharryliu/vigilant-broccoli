@@ -3,6 +3,8 @@
 ## Snippets
 
 ```
+npm install -g @angular/cli && npm i
+
 ng version
 ng update
 ```
