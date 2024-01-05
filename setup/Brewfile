@@ -6,6 +6,7 @@ brew "jenkins"
 brew "node", link: false
 brew "node@20", link: true
 brew "pre-commit"
+brew "zsh-autosuggestions"
 cask "balenaetcher"
 cask "db-browser-for-sqlite"
 cask "discord"
