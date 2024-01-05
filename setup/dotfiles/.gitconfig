@@ -1,5 +1,12 @@
 [user]
 	name = Harry Liu
 	email = harryliu1995@gmail.com
+
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+
 [push]
 	autoSetupRemote = true
