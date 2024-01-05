@@ -27,5 +27,5 @@ alias venvon='source venv/bin/activate'
 
 # Git
 alias greset='git reset HEAD^'
-alias gresetsoft='greset --soft'
-alias gresethard='greset --hard'
+alias undocommit='greset --soft'
+alias deletecommit='greset --hard'
