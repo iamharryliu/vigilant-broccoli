@@ -65,7 +65,7 @@
         "TEXT": "Github"
       },
       "PERSONAL_IG": {
-        "TEXT": "My Instagram"
+        "TEXT": "Main Instagram"
       },
       "SECONDHAND_STORE_IG": {
         "TEXT": "Secondhand Store Instagram"
@@ -78,6 +78,9 @@
       },
       "VIBECHECK_LITE_SUBSCRIBE": {
         "TEXT": "Subscribe to Vibecheck Lite"
+      },
+      "REPEAT_TIMER": {
+        "TEXT": "Repeat Timer"
       },
       "EMAIL": {
         "TEXT": "Contact me"

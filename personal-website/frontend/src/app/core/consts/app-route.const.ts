@@ -119,26 +119,38 @@ const ABOUT_PAGE: Link = {
   url: APP_PATH.ABOUT_PAGE,
   text: 'LINKS.INTERNAL.ABOUT_PAGE',
 };
+
 const CONTACT_PAGE: Link = {
   url: APP_PATH.CONTACT_PAGE,
   text: 'LINKS.INTERNAL.CONTACT_PAGE',
 };
+
 const SERVICES_PAGE: Link = {
   url: APP_PATH.SERVICES_PAGE,
   text: 'LINKS.INTERNAL.SERVICES_PAGE',
 };
+
 const VIBECHECK_LITE_APP: Link = {
   url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_APP_ROUTE.path}`,
   text: 'LINKS.EXTERNAL.VIBECHECK_LITE_APP.TEXT',
   isExternalLink: true,
   target: '_blank',
 };
+
 const VIBECHECK_LITE_SUBSCRIBE: Link = {
   url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_SUBSCRIBE_ROUTE.path}`,
   text: 'LINKS.EXTERNAL.VIBECHECK_LITE_SUBSCRIBE.TEXT',
   isExternalLink: true,
   target: '_blank',
 };
+
+const REPEAT_TIMER: Link = {
+  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/projects/repeat-timer`,
+  text: 'LINKS.EXTERNAL.REPEAT_TIMER.TEXT',
+  isExternalLink: true,
+  target: '_blank',
+};
+
 const LINKEDIN: Link = {
   url: ENVIRONMENT.URLS.LINKEDIN,
   text: 'LINKS.EXTERNAL.LINKEDIN.TEXT',
@@ -176,17 +188,21 @@ const LINK_TREE: Link = {
 };
 
 export const LINKS = {
+  // Site links.
   PERSONAL_WEBSITE,
   ABOUT_PAGE,
   CONTACT_PAGE,
   SERVICES_PAGE,
+  LINK_TREE,
+  // Project links.
   VIBECHECK_LITE_APP,
   VIBECHECK_LITE_SUBSCRIBE,
+  REPEAT_TIMER,
+  // Other links.
   LINKEDIN,
   GITHUB,
   PERSONAL_INSTAGRAM,
   SECONDHAND_STORE_IG,
   SKATE_IG,
   RESUME,
-  LINK_TREE,
 };

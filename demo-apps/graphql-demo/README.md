@@ -1,9 +1,5 @@
 # GraphQL Demo
 
-## Commands
-
-`npm run start`
-
 ## References
 
 [Getting started](https://www.apollographql.com/docs/apollo-server/getting-started/)

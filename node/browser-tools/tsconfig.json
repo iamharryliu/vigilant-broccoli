@@ -10,6 +10,5 @@
     "outDir": "lib",
     "skipLibCheck": true
   },
-  "include": ["src"],
-  "exclude": []
+  "include": ["src"]
 }

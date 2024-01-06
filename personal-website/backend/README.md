@@ -3,15 +3,8 @@
 ## Commands
 
 ```
-npm i
-npm run serve
-npm run test
-```
-
-```
-cd vigilant-broccoli/personal-website/backend
-fly deploy --ha=false
-
+cd ~/vigilant-broccoli/personal-website/backend
+npm i && npm run serve
 ```
 
 ## References

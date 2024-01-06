@@ -3,10 +3,8 @@
 ## Snippets
 
 ```
-npm install -g @angular/cli && npm i
-
-ng version
-ng update
+cd ~/vigilant-broccoli/personal-website/frontend
+npm install -g @angular/cli && npm i && npm run serve
 ```
 
 ## References
