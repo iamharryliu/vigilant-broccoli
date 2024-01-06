@@ -1,9 +1,14 @@
 <app-centered-app-layout>
-  <h1 class="text-center text-2xl">Repeat Timer</h1>
-
+  <h1 class="text-center text-2xl mb-4">Repeat Timer</h1>
+  <input type="number" [(ngModel)]="interval" placeholder="Set interval (ms)"
+    class="w-full border border-gray-300 p-2 rounded mb-4">
+  <p *ngIf="isTimerRunning" class="text-center mb-4">Time left: {{ timeLeft
+    }}</p>
   <button
-    class="text-white bg-black font-semibold px-4 py-2 rounded"
-    (click)="playSoundAtIntervals()">
-    Start repeat timer
-  </button>
+    class="block w-full text-white bg-black font-semibold px-4 py-2 rounded mb-2"
+    (click)="startTimer()"
+    [disabled]="isTimerRunning || interval <= 0">Start</button>
+  <button
+    class="block w-full text-white bg-black font-semibold px-4 py-2 rounded"
+    (click)="stopTimer()" [disabled]="!isTimerRunning">Stop</button>
 </app-centered-app-layout>
