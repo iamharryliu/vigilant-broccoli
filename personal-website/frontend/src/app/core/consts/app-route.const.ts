@@ -10,6 +10,7 @@ import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscr
 import { VibecheckLiteSubscribePageComponent } from '@pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '@pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
 import { ServicesPageComponent } from '@components/pages/services-page/services.page';
+import { RepeatTimerComponent } from '@app/demo-apps/repeat-timer/repeat-timer.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -55,14 +56,19 @@ export const VIBECHECK_LITE_SUBSCRIBE_ROUTE: Route = {
 
 export const VIBECHECK_LITE_ROUTE: Route = {
   path: 'vibecheck-lite',
-  data: { title: ' vibecheck-lite' },
+  data: { title: ' vibecheck lite' },
   children: [VIBECHECK_LITE_APP_ROUTE, VIBECHECK_LITE_SUBSCRIBE_ROUTE],
+};
+export const REPEAT_TIMER_ROUTE: Route = {
+  path: 'repeat-timer',
+  data: { title: ' repeat timer' },
+  component: RepeatTimerComponent,
 };
 
 export const PROJECT_ROUTE: Route = {
   path: 'projects',
   data: { title: ' projects' },
-  children: [VIBECHECK_LITE_ROUTE],
+  children: [VIBECHECK_LITE_ROUTE, REPEAT_TIMER_ROUTE],
 };
 
 export const VERIFY_EMAIL_ROUTE: Route = {

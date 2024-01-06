@@ -19,10 +19,12 @@ import {
 } from '@utils/translate.util';
 import { ErrorInterceptor } from '@interceptors/error.interceptor';
 import { SuccessInterceptor } from '@interceptors/success.interceptor';
+import { RepeatTimerComponent } from '@app/demo-apps/repeat-timer/repeat-timer.component';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
+    RepeatTimerComponent,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
