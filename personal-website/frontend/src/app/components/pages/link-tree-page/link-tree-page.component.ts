@@ -1,4 +1,3 @@
-// TODO: refactor links to open in new tab
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { LINKS } from '@consts/app-route.const';

@@ -1,22 +1,22 @@
 <div class="text-white bg-gray-800 h-screen">
   <app-centered-app-layout>
     <div class="text-center pt-8 mb-8">
-      <h1 class="text-3xl">{{ 'harry liu' }}</h1>
+      <h1 class="text-3xl">harry liu</h1>
     </div>
     <div class="space-y-2 mb-8">
-      <h2 class="text-xl text-center mb-4">{{ 'Software Developer' }}</h2>
+      <h2 class="text-xl text-center mb-4">Software Developer</h2>
       <div *ngFor="let link of CAREER_LINKS" class="text-center">
-        <app-button-link [link]="link"></app-button-link>
+        <app-button-link [link]="link" type="external"></app-button-link>
       </div>
     </div>
-    <h2 class="text-xl text-center mb-4">{{ 'Projects' }}</h2>
+    <h2 class="text-xl text-center mb-4">Projects</h2>
     <div class="space-y-2 mb-8">
       <div *ngFor="let link of APP_LINKS" class="text-center">
         <app-button-link [link]="link"></app-button-link>
       </div>
     </div>
     <div class="space-y-2 mb-8">
-      <h2 class="text-xl text-center mb-4">{{ 'Instagram' }}</h2>
+      <h2 class="text-xl text-center mb-4">Instagram</h2>
       <div *ngFor="let link of INSTAGRAM_LINKS" class="text-center">
         <app-button-link [link]="link"></app-button-link>
       </div>

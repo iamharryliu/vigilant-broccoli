@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { Link } from '@app/core/models/app.model';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -10,10 +11,6 @@ import { TranslateModule } from '@ngx-translate/core';
   imports: [CommonModule, TranslateModule, RouterModule],
 })
 export class ButtonLinkComponent {
-  @Input() link!: {
-    text: string;
-    url: string;
-    target?: string;
-    isExternalLink?: boolean;
-  };
+  @Input() type!: 'internal' | 'external';
+  @Input() link!: Link;
 }

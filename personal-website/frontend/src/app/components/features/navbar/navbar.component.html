@@ -2,13 +2,13 @@
   <div class="flex items-center justify-between h-16">
     <div class="flex-shrink-0">
       <a [routerLink]="NAVBAR.index" class="text-gray-800 text-lg font-bold">
-        {{ 'NAVBAR.BRAND' | translate }}
+        harryliu.design
       </a>
     </div>
     <div class="hidden sm:block">
       <div class="ml-10 flex items-baseline space-x-4">
         <div *ngFor="let link of NAVBAR.links" class="px-3">
-          <app-link [link]="link" [isBold]="true"></app-link>
+          <app-link [link]="link" [isBold]="true" type="internal"></app-link>
         </div>
       </div>
     </div>

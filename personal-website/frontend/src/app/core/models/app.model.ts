@@ -10,11 +10,11 @@ export interface MessageRequest {
 }
 
 export interface Link {
-  url: string;
+  url: {
+    internal?: string;
+    external: string;
+  };
   text: string;
-  target?: string;
-  isExternalLink?: boolean;
-  isButton?: boolean;
 }
 
 export interface VibecheckLiteSubscriptionRequest {

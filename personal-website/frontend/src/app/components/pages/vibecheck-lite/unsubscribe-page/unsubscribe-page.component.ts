@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { VibecheckLiteService } from '@services/vibecheck-lite.service';
-import { APP_PATH } from '@consts/app-route.const';
+import { LINKS } from '@consts/app-route.const';
 import { exhaustMap } from 'rxjs';
 
 @Component({
@@ -18,7 +18,7 @@ export class VibecheckLiteUnsubscribePageComponent {
   ) {}
 
   hasUnsubscribed = false;
-  INDEX_PATH = APP_PATH.INDEX;
+  INDEX_PATH = LINKS.PERSONAL_WEBSITE.url.internal;
 
   unsubscribeEmail$ = this.route.queryParams.pipe(
     exhaustMap(params => {

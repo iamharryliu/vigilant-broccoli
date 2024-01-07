@@ -43,64 +43,6 @@
     "PLACEHOLDER": "Your email address",
     "BUTTON_TEXT": "Subscribe"
   },
-  "NAVBAR": {
-    "BRAND": "harryliu.design",
-    "HOME": "Home",
-    "ABOUT": "About",
-    "CONTACT": "Contact",
-    "VIBECHECK_LITE": "Vibecheck Lite"
-  },
-  "LINKS": {
-    "INTERNAL": {
-      "PERSONAL_WEBSITE": "Personal Website",
-      "ABOUT_PAGE": "About",
-      "CONTACT_PAGE": "Contact",
-      "SERVICES_PAGE": "Services"
-    },
-    "EXTERNAL": {
-      "LINKEDIN": {
-        "TEXT": "LinkedIn"
-      },
-      "GITHUB": {
-        "TEXT": "Github"
-      },
-      "PERSONAL_IG": {
-        "TEXT": "Main Instagram"
-      },
-      "SECONDHAND_STORE_IG": {
-        "TEXT": "Secondhand Store Instagram"
-      },
-      "SKATE_IG": {
-        "TEXT": "Skate Instagram"
-      },
-      "VIBECHECK_LITE_APP": {
-        "TEXT": "Vibecheck Lite App"
-      },
-      "VIBECHECK_LITE_SUBSCRIBE": {
-        "TEXT": "Subscribe to Vibecheck Lite"
-      },
-      "REPEAT_TIMER": {
-        "TEXT": "Repeat Timer"
-      },
-      "EMAIL": {
-        "TEXT": "Contact me"
-      },
-      "RESUME": {
-        "TEXT": "Resume"
-      },
-      "LINK_TREE": {
-        "TEXT": "Link Tree"
-      }
-    },
-    "OTHER": {
-      "HEADER": "More Links"
-    }
-  },
-  "FOOTER": {
-    "SITE_MAP": {
-      "HEADER": "Site Map"
-    }
-  },
   "VIBECHECK_LITE": {
     "HEADER": "Vibecheck Lite",
     "LOADING": {

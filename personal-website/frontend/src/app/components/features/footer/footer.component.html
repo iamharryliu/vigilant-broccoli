@@ -7,20 +7,16 @@
     <div></div>
     <div>
       <div class="pb-4">
-        <h3 class="text-md pb-1">
-          {{ 'FOOTER.SITE_MAP.HEADER' | translate }}
-        </h3>
+        <h3 class="text-md pb-1">Site Map</h3>
         <div *ngFor="let link of FOOTER.SITE_MAP.LINKS">
-          <app-link [link]="link"></app-link>
+          <app-link [link]="link" type="internal"></app-link>
         </div>
       </div>
     </div>
     <div class="pb-4">
-      <h3 class="text-md pb-1">
-        {{ 'LINKS.OTHER.HEADER' | translate }}
-      </h3>
+      <h3 class="text-md pb-1">More Links</h3>
       <div *ngFor="let link of FOOTER.OTHER.LINKS">
-        <app-link [link]="link"></app-link>
+        <app-link [link]="link" type="external"></app-link>
       </div>
     </div>
   </div>

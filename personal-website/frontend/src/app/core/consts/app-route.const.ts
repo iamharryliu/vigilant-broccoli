@@ -32,7 +32,7 @@ export const LINK_TREE_ROUTE: Route = {
 };
 
 export const CONTACT_ROUTE: Route = {
-  path: 'contact-page',
+  path: 'contact',
   data: { title: 'contact page' },
   component: ContactPageComponent,
 };
@@ -89,14 +89,6 @@ export const UNSUBCSRIBE_VIBECHECK_LITE_ROUTE: Route = {
   component: VibecheckLiteUnsubscribePageComponent,
 };
 
-export const APP_PATH = {
-  INDEX: '',
-  ABOUT_PAGE: `/${ABOUT_ROUTE.path}`,
-  CONTACT_PAGE: `/${CONTACT_ROUTE.path}`,
-  SERVICES_PAGE: `/${SERVICES_ROUTE.path}`,
-  VIBECHECK_LITE: `/${PROJECTS_ROUTE.path}/${VIBECHECK_LITE_ROUTE}/${VIBECHECK_LITE_APP_ROUTE.path}`,
-};
-
 export const APP_ROUTES: Routes = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
@@ -109,89 +101,117 @@ export const APP_ROUTES: Routes = [
 ];
 
 const PERSONAL_WEBSITE: Link = {
-  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}`,
-  text: 'LINKS.INTERNAL.PERSONAL_WEBSITE',
-  isExternalLink: true,
-  target: '_blank',
+  url: {
+    internal: INDEX_ROUTE.path,
+    external: ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL,
+  },
+  text: 'Personal Website',
 };
 
 const ABOUT_PAGE: Link = {
-  url: APP_PATH.ABOUT_PAGE,
-  text: 'LINKS.INTERNAL.ABOUT_PAGE',
+  url: {
+    internal: `/${ABOUT_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${ABOUT_ROUTE.path}`,
+  },
+  text: 'About',
 };
 
 const CONTACT_PAGE: Link = {
-  url: APP_PATH.CONTACT_PAGE,
-  text: 'LINKS.INTERNAL.CONTACT_PAGE',
+  url: {
+    internal: `/${CONTACT_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${CONTACT_ROUTE.path}`,
+  },
+  text: 'Contact',
 };
 
 const SERVICES_PAGE: Link = {
-  url: APP_PATH.SERVICES_PAGE,
-  text: 'LINKS.INTERNAL.SERVICES_PAGE',
+  url: {
+    internal: `/${SERVICES_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${SERVICES_ROUTE.path}`,
+  },
+  text: 'Services',
 };
 
 const PROJECTS_PAGE: Link = {
-  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}`,
+  url: {
+    internal: `/${PROJECTS_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}`,
+  },
   text: 'Projects',
-  isExternalLink: true,
-  target: '_blank',
 };
 
 const VIBECHECK_LITE_APP: Link = {
-  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_APP_ROUTE.path}`,
-  text: 'LINKS.EXTERNAL.VIBECHECK_LITE_APP.TEXT',
-  isExternalLink: true,
-  target: '_blank',
+  url: {
+    internal: `/${PROJECTS_ROUTE.path}/${VIBECHECK_LITE_ROUTE}/${VIBECHECK_LITE_APP_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_APP_ROUTE.path}`,
+  },
+  text: 'Vibecheck Lite',
 };
 
 const VIBECHECK_LITE_SUBSCRIBE: Link = {
-  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_SUBSCRIBE_ROUTE.path}`,
-  text: 'LINKS.EXTERNAL.VIBECHECK_LITE_SUBSCRIBE.TEXT',
-  isExternalLink: true,
-  target: '_blank',
+  url: {
+    internal: `/${PROJECTS_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_SUBSCRIBE_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}/${VIBECHECK_LITE_ROUTE.path}/${VIBECHECK_LITE_SUBSCRIBE_ROUTE.path}`,
+  },
+  text: 'Subscribe to Vibecheck Lite',
 };
 
 const REPEAT_TIMER: Link = {
-  url: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/projects/repeat-timer`,
-  text: 'LINKS.EXTERNAL.REPEAT_TIMER.TEXT',
-  isExternalLink: true,
-  target: '_blank',
+  url: {
+    internal: `/${PROJECTS_ROUTE.path}/${REPEAT_TIMER_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}/${REPEAT_TIMER_ROUTE.path}`,
+  },
+  text: 'Repeat Timer',
+};
+
+const LINK_TREE: Link = {
+  url: {
+    internal: ENVIRONMENT.URLS.LINK_TREE,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${LINK_TREE_ROUTE.path}`,
+  },
+  text: 'Link Tree',
 };
 
 const LINKEDIN: Link = {
-  url: ENVIRONMENT.URLS.LINKEDIN,
-  text: 'LINKS.EXTERNAL.LINKEDIN.TEXT',
-  isExternalLink: true,
+  url: {
+    external: ENVIRONMENT.URLS.LINKEDIN,
+  },
+  text: 'LinkedIn',
 };
+
 const GITHUB: Link = {
-  url: ENVIRONMENT.URLS.GITHUB,
-  text: 'LINKS.EXTERNAL.GITHUB.TEXT',
-  isExternalLink: true,
+  url: {
+    external: ENVIRONMENT.URLS.GITHUB,
+  },
+  text: 'Github',
 };
+
 const PERSONAL_INSTAGRAM: Link = {
-  url: ENVIRONMENT.URLS.PERSONAL_IG,
-  text: 'LINKS.EXTERNAL.PERSONAL_IG.TEXT',
-  isExternalLink: true,
+  url: {
+    external: ENVIRONMENT.URLS.PERSONAL_IG,
+  },
+  text: 'Main Instagram',
 };
+
 const SECONDHAND_STORE_IG: Link = {
-  url: ENVIRONMENT.URLS.SECONDHAND_STORE_IG,
-  text: 'LINKS.EXTERNAL.SECONDHAND_STORE_IG.TEXT',
-  isExternalLink: true,
+  url: {
+    external: ENVIRONMENT.URLS.SECONDHAND_STORE_IG,
+  },
+  text: 'Secondhand Store Instagram',
 };
+
 const SKATE_IG: Link = {
-  url: ENVIRONMENT.URLS.SKATE_IG,
-  text: 'LINKS.EXTERNAL.SKATE_IG.TEXT',
-  isExternalLink: true,
+  url: {
+    external: ENVIRONMENT.URLS.SKATE_IG,
+  },
+  text: 'Toronto City Skate Instagram',
 };
+
 const RESUME: Link = {
-  url: ENVIRONMENT.URLS.RESUME,
-  text: 'LINKS.EXTERNAL.RESUME.TEXT',
-  isExternalLink: true,
-};
-const LINK_TREE: Link = {
-  url: ENVIRONMENT.URLS.LINK_TREE,
-  text: 'LINKS.EXTERNAL.LINK_TREE.TEXT',
-  isExternalLink: true,
+  url: {
+    external: ENVIRONMENT.URLS.RESUME,
+  },
+  text: 'Resume',
 };
 
 export const LINKS = {
@@ -201,8 +221,8 @@ export const LINKS = {
   CONTACT_PAGE,
   SERVICES_PAGE,
   LINK_TREE,
-  // Project links.
   PROJECTS_PAGE,
+  // Project links.
   VIBECHECK_LITE_APP,
   VIBECHECK_LITE_SUBSCRIBE,
   REPEAT_TIMER,

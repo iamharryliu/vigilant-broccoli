@@ -9,7 +9,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, exhaustMap } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { APP_PATH } from '@consts/app-route.const';
+import { LINKS } from '@consts/app-route.const';
 import { Router } from '@angular/router';
 import { VibecheckLiteService } from '@services/vibecheck-lite.service';
 
@@ -46,7 +46,9 @@ export class VibecheckLiteSubscribePageComponent {
         }),
       )
       .subscribe(_ => {
-        this.router.navigateByUrl(APP_PATH.INDEX);
+        this.router.navigateByUrl(
+          LINKS.PERSONAL_WEBSITE.url.internal as string,
+        );
       });
   }
 

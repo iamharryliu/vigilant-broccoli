@@ -7,11 +7,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { APP_PATH } from '@consts/app-route.const';
 import { LoadingSpinnerComponent } from '@components/global/loading-spinner/loading-spinner.component';
 import { CommonService } from '@services/common.service';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { LINKS } from '@app/core/consts/app-route.const';
 
 @Component({
   standalone: true,
@@ -52,7 +52,9 @@ export class VerifyEmailSubscriptionPageComponent {
     this.commonService
       .verifyEmailSubscription(this.form.value.token as string)
       .subscribe(_ => {
-        this.router.navigateByUrl(APP_PATH.INDEX);
+        this.router.navigateByUrl(
+          LINKS.PERSONAL_WEBSITE.url.internal as string,
+        );
       });
   }
 }
