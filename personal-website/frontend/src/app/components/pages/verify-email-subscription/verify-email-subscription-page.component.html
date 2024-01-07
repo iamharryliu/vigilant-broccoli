@@ -1,6 +1,7 @@
 <app-general-layout [hasContactForm]="false" [hasSubscribeForm]="false">
   <div
-    class="newsletter-subscription max-w-xl mx-auto bg-white shadow-none rounded pt-8 pb-8">
+    class="newsletter-subscription max-w-xl mx-auto bg-white shadow-none rounded pt-8 pb-8"
+  >
     <ng-container *ngIf="isLoading; else verifyEmailForm">
       <app-loading-spinner></app-loading-spinner>
       <p class="text-center">Verifying Request</p>
@@ -16,7 +17,8 @@
             formControlName="token"
             required
             class="w-7/12 lg:w-min border rounded py-2 px-3 w-3/4 focus:outline-none focus:border-blue-400 mr-2"
-            [placeholder]="'Verification Key'" />
+            [placeholder]="'Verification Key'"
+          />
           <button
             type="submit"
             [disabled]="form.invalid"
@@ -25,7 +27,8 @@
               'bg-gray-300': form.invalid,
               'bg-black': form.valid,
               'hover:bg-blue-600': form.valid
-            }">
+            }"
+          >
             {{ 'EMAIL_SUBSCRIPTION_FORM.BUTTON_TEXT' | translate }}
           </button>
         </div>

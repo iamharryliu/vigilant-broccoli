@@ -2,24 +2,30 @@
   <div class="pt-8">
     <h1 class="text-center text-2xl font-bold mb-4">Repeat Timer</h1>
     <p class="text-center text-lg mb-4">
-      Timer Set for: {{hours}}h{{minutes}}m{{seconds}}s
+      Timer Set for: {{ hours }}h{{ minutes }}m{{ seconds }}s
     </p>
     <div class="grid grid-cols-8 gap-4 mb-4">
       <ng-container *ngFor="let minute of minuteOptions">
-        <button class="col-span-1 bg-blue-500 text-white px-4 py-2 rounded"
-          (click)="addMinutes(minute)">+{{minute}}</button>
+        <button
+          class="col-span-1 bg-blue-500 text-white px-4 py-2 rounded"
+          (click)="addMinutes(minute)"
+        >
+          +{{ minute }}
+        </button>
       </ng-container>
     </div>
     <button
       class="block w-full text-white bg-black font-semibold px-4 py-2 rounded mb-2"
       (click)="startTimer()"
-      [disabled]="isTimerRunning || interval <= 0">
+      [disabled]="isTimerRunning || interval <= 0"
+    >
       Start
     </button>
     <button
       class="block w-full text-white bg-black font-semibold px-4 py-2 rounded"
       (click)="stopTimer()"
-      [disabled]="!isTimerRunning">
+      [disabled]="!isTimerRunning"
+    >
       Stop
     </button>
   </div>
