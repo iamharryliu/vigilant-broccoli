@@ -21,5 +21,5 @@ import { ReturnTopButtonComponent } from '@components/global/return-top-button/r
 })
 export class GeneralLayoutComponent {
   @Input() hasContactForm = true;
-  @Input() hasNewsLetterSignupForm = true;
+  @Input() hasSubscribeForm = true;
 }
