@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment';
-import { EmailSubscriptionRequest, MessageRequest } from '@models/app.model';
+import { SubscribeRequest, MessageRequest } from '@models/app.model';
 import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/personal-website-common';
 
 @Injectable({
@@ -21,7 +21,7 @@ export class CommonService {
     );
   }
 
-  subscribeToNewsletter(request: EmailSubscriptionRequest): Observable<any> {
+  subscribeToNewsletter(request: SubscribeRequest): Observable<any> {
     return this.http.post<any>(
       `${this.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE}`,
       request,

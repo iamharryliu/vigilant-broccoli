@@ -12,7 +12,7 @@ export class ReturnTopButtonComponent {
 
   @HostListener('window:scroll', [])
   onScroll() {
-    this.showScrollButton = window.scrollY > 100; // Change 100 to the desired scroll position
+    this.showScrollButton = window.scrollY > 100;
   }
 
   scrollToTop(): void {

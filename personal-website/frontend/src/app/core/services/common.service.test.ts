@@ -4,7 +4,7 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { MessageRequest, EmailSubscriptionRequest } from '@models/app.model';
+import { MessageRequest, SubscribeRequest } from '@models/app.model';
 import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/personal-website-common';
 
 describe('CommonService', () => {
@@ -40,7 +40,7 @@ describe('CommonService', () => {
   describe('subscribeToNewsletter', () => {
     it('should make endpoint call', () => {
       service
-        .subscribeToNewsletter({} as EmailSubscriptionRequest)
+        .subscribeToNewsletter({} as SubscribeRequest)
         .subscribe(response => {
           expect(response).toBeDefined();
         });

@@ -214,23 +214,32 @@ const RESUME: Link = {
   text: 'Resume',
 };
 
-export const LINKS = {
-  // Site links.
+const INTERNAL_LINKS = {
   PERSONAL_WEBSITE,
   ABOUT_PAGE,
   CONTACT_PAGE,
   SERVICES_PAGE,
   LINK_TREE,
   PROJECTS_PAGE,
-  // Project links.
+};
+
+const PROJECT_LINKS = {
   VIBECHECK_LITE_APP,
   VIBECHECK_LITE_SUBSCRIBE,
   REPEAT_TIMER,
-  // Other links.
+};
+
+const EXTERNAL_LINKS = {
   LINKEDIN,
   GITHUB,
   PERSONAL_INSTAGRAM,
   SECONDHAND_STORE_IG,
   SKATE_IG,
   RESUME,
+};
+
+export const LINKS = {
+  ...INTERNAL_LINKS,
+  ...PROJECT_LINKS,
+  ...EXTERNAL_LINKS,
 };

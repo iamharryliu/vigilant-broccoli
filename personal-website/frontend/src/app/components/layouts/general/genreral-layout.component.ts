@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { ContactComponent } from '@features/contact/contact.component';
 import { FooterComponent } from '@features/footer/footer.component';
 import { NavbarComponent } from '@features/navbar/navbar.component';
-import { NewsLetterSubFormComponent } from '@features/newsletter-sub-form/newsletter-sub-form.component';
+import { NewsLetterSubFormComponent } from '@features/subscribe-form/subscribe-form.component';
 import { ReturnTopButtonComponent } from '@components/global/return-top-button/return-top-button.component';
 
 @Component({

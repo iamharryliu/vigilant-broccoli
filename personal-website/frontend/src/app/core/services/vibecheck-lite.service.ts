@@ -4,9 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { VibecheckLiteSubscriptionRequest } from '@models/app.model';
 import { Location } from '@prettydamntired/browser-tools';
-
-// const VIBECHECK_LITE_API_URL = 'http://127.0.0.1:3000'
-export const VIBECHECK_LITE_API_URL = 'https://vibecheck-lite-express.fly.dev';
+import { ENVIRONMENT } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -16,19 +14,22 @@ export class VibecheckLiteService {
 
   getOutfitRecommendation(location: Location): Observable<any> {
     return this.http.get<any>(
-      `${VIBECHECK_LITE_API_URL}/get-outfit-recommendation?lat=${location.latitude}&lon=${location.longitude}`,
+      `${ENVIRONMENT.URLS.VIBECHECK_LITE}/get-outfit-recommendation?lat=${location.latitude}&lon=${location.longitude}`,
     );
   }
 
   subscribeToVibecheckLite(
     request: VibecheckLiteSubscriptionRequest,
   ): Observable<any> {
-    return this.http.post<any>(`${VIBECHECK_LITE_API_URL}/subscribe`, request);
+    return this.http.post<any>(
+      `${ENVIRONMENT.URLS.VIBECHECK_LITE}/subscribe`,
+      request,
+    );
   }
 
   unsubscribeFromVibecheckLite(email: string): Observable<any> {
     return this.http.delete<any>(
-      `${VIBECHECK_LITE_API_URL}/unsubscribe/${email}`,
+      `${ENVIRONMENT.URLS.VIBECHECK_LITE}/unsubscribe/${email}`,
     );
   }
 }

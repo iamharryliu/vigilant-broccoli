@@ -9,13 +9,13 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { CommonService } from '@services/common.service';
-import { EmailSubscriptionRequest } from '@models/app.model';
+import { SubscribeRequest } from '@models/app.model';
 import { Subject, exhaustMap } from 'rxjs';
 
 @Component({
   standalone: true,
   selector: 'app-newsletter-sub-form',
-  templateUrl: './newsletter-sub-form.component.html',
+  templateUrl: './subscribe-form.component.html',
   imports: [
     CommonModule,
     TranslateModule,
@@ -31,7 +31,7 @@ export class NewsLetterSubFormComponent {
       .pipe(
         exhaustMap(() =>
           this.commonService.subscribeToNewsletter(
-            this.form.value as EmailSubscriptionRequest,
+            this.form.value as SubscribeRequest,
           ),
         ),
       )

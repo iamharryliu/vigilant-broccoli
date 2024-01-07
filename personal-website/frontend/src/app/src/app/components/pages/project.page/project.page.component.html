@@ -1,13 +1,12 @@
 <app-centered-app-layout>
   <div class="pt-8">
-    <h1 class="text-center text-2xl mb-4">{{ 'Projects' }}</h1>
+    <h1 class="text-center text-2xl mb-4">Projects</h1>
     <div class="grid grid-cols-3 gap-4">
       <div *ngFor="let link of LINKS; index as i">
-        <a [href]="link.url" target="_blank"
-          ><div class="p-4 text-center text-white rounded bg-slate-700">
+        <a [href]="link.url.external" target="_blank"><div
+            class="p-4 text-center text-white rounded bg-slate-700">
             {{ link.text }}
-          </div></a
-        >
+          </div></a>
       </div>
     </div>
   </div>

@@ -11,7 +11,7 @@ import { CenteredAppLayoutComponent } from '@app/components/layouts/centered-app
   imports: [CommonModule, FormsModule, CenteredAppLayoutComponent],
 })
 export class RepeatTimerComponent implements OnDestroy {
-  interval: number = 1000; // Default interval in milliseconds
+  interval: number = 1000;
   timeLeft: number = 0;
   private timer: any;
   isTimerRunning: boolean = false;

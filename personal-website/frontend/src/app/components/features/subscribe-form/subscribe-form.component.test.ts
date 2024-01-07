@@ -1,4 +1,4 @@
-import { NewsLetterSubFormComponent } from '@components/features/newsletter-sub-form/newsletter-sub-form.component';
+import { NewsLetterSubFormComponent } from '@app/components/features/subscribe-form/subscribe-form.component';
 import { FormControl } from '@angular/forms';
 import { CommonService } from '@services/common.service';
 import { of } from 'rxjs';
