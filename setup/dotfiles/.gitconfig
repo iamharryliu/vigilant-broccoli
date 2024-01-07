@@ -4,9 +4,9 @@
 
 [alias]
     co = checkout
-    br = branch
-    com = commit
-    st = status
+    b = branch
+    cmmt = commit
+    stat = status
 
 
 [push]
