@@ -1,7 +1,5 @@
 <app-centered-app-layout>
-  <h1 class="pt-4 mb-4 text-2xl font-bold text-center">
-    Vibecheck Lite
-  </h1>
+  <h1 class="pt-4 mb-4 text-2xl font-bold text-center">Vibecheck Lite</h1>
   <hr />
   <app-card>
     <div class="text-sm" *ngIf="recommendation$ | async as data; else loading">
@@ -12,7 +10,9 @@
     <div class="text-sm pt-48 pb-48">
       <app-loading-spinner
         [header]="'Loading...'"
-        [message]="'Please enable location access. We will use your weather location to determine an appropriate outfit.' | translate">
+        [message]="
+          'Please enable location access. We will use your weather location to determine an appropriate outfit.'
+        ">
       </app-loading-spinner>
     </div>
   </ng-template>
