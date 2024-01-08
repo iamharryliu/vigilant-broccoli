@@ -7,7 +7,7 @@
     "build": "ng build",
     "lint": "eslint --fix .",
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
-    "format": "prettier --write .",
+    "format": "prettier --write . --log-level silent",
     "test": "jest",
     "test:commit": "jest --bail --findRelatedTests"
   },
