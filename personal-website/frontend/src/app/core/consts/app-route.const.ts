@@ -10,7 +10,6 @@ import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscr
 import { VibecheckLiteSubscribePageComponent } from '@pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '@pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
 import { ServicesPageComponent } from '@components/pages/services-page/services.page';
-import { RepeatTimerComponent } from '@app/demo-apps/repeat-timer/repeat-timer.component';
 import { ProjectPageComponent } from '@app/src/app/components/pages/project.page/project.page.component';
 
 export const INDEX_ROUTE: Route = {
@@ -66,15 +65,10 @@ export const VIBECHECK_LITE_ROUTE: Route = {
   data: { title: ' vibecheck lite' },
   children: [VIBECHECK_LITE_APP_ROUTE, VIBECHECK_LITE_SUBSCRIBE_ROUTE],
 };
-export const REPEAT_TIMER_ROUTE: Route = {
-  path: 'repeat-timer',
-  data: { title: ' repeat timer' },
-  component: RepeatTimerComponent,
-};
 
 export const PROJECTS_ROUTE: Route = {
   path: 'projects',
-  children: [PROJECTS_INDEX_ROUTE, VIBECHECK_LITE_ROUTE, REPEAT_TIMER_ROUTE],
+  children: [PROJECTS_INDEX_ROUTE, VIBECHECK_LITE_ROUTE],
 };
 
 export const VERIFY_EMAIL_ROUTE: Route = {
@@ -158,8 +152,7 @@ const VIBECHECK_LITE_SUBSCRIBE: Link = {
 
 const REPEAT_TIMER: Link = {
   url: {
-    internal: `/${PROJECTS_ROUTE.path}/${REPEAT_TIMER_ROUTE.path}`,
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}/${REPEAT_TIMER_ROUTE.path}`,
+    external: 'https://repeat-timer.pages.dev/',
   },
   text: 'Repeat Timer',
 };
