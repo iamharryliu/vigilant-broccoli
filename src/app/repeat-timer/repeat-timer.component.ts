@@ -13,16 +13,16 @@ export class RepeatTimerComponent implements OnDestroy {
   minutes: number = 0;
   hours: number = 0;
   timeLeft: number = 0;
-  private timer: any;
+  timer: any;
   isTimerRunning: boolean = false;
   minuteOptions = [1, 2, 5, 10, 15, 20, 30, 60];
 
   addMinutes(minutes: number) {
     this.interval += minutes * 60 * 1000;
-    this.setTimeleft()
+    this.setTimeleft();
   }
 
-  setTimeleft(){
+  setTimeleft() {
     this.timeLeft = this.interval / 1000;
     this.udpdateCountdown();
   }
@@ -50,10 +50,10 @@ export class RepeatTimerComponent implements OnDestroy {
     this.isTimerRunning = false;
   }
 
-  resetTimer(){
-    this.stopTimer()
-    this.interval = 0
-    this.setTimeleft()
+  resetTimer() {
+    this.stopTimer();
+    this.interval = 0;
+    this.setTimeleft();
   }
 
   playSound() {
