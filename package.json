@@ -7,7 +7,7 @@
     "build": "ng build",
     "lint": "eslint --fix .",
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
-    "format": "prettier --write . --log-level silent",
+    "format": "prettier --write .",
     "test": "jest",
     "test:commit": "jest --bail --findRelatedTests"
   },
@@ -52,7 +52,7 @@
     ]
   },
   "lint-staged": {
-    "*.{ts}": [
+    "*.{js,ts}": [
       "npm run lint",
       "npm run format",
       "npm run test:commit"
