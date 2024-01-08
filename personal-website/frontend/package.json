@@ -9,7 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "lint": "eslint --fix .",
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
-    "format": "prettier --write .",
+    "format": "prettier --write . --log-level silent",
     "test": "jest --coverage --watch",
     "test:commit": "jest --bail --findRelatedTests"
   },
@@ -86,9 +86,6 @@
     ],
     "*.{json,md}": [
       "npm run format"
-    ],
-    "*.test.ts": [
-      "npm run test:commit"
     ]
   }
 }

@@ -22,4 +22,12 @@ npm install -g @angular/cli && npm i && npm run serve
 [ngx-translate](https://www.codeandweb.com/babeledit/tutorials/how-to-translate-your-angular-app-with-ngx-translate)
 [Angular ngx-translate on startup](https://mcvendrell.medium.com/configuring-ngx-translate-to-load-at-startup-in-angular-1995e7dd6fcc)
 
-TODO: fix contact email button, remove ng-translate
+TODO:
+
+- fix contact email button
+- remove ng-translate
+- fix commit hook tests
+
+```
+"*.test.ts vs *.{ts}"
+```
