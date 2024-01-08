@@ -1,0 +1,3 @@
+[submodule "repeat-timer"]
+	path = repeat-timer
+	url = git@github.com:iamharryliu/repeat-timer.git
