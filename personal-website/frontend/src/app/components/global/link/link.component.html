@@ -2,9 +2,8 @@
   <a
     [routerLink]="link.url.internal"
     class="text-gray-800 hover:text-gray-400 text-sm"
-    [class.font-medium]="isBold"
-  >
-    {{ link.text | translate }}
+    [class.font-medium]="isBold">
+    {{ link.text }}
   </a>
 </ng-container>
 <ng-template #externalLink>
@@ -12,8 +11,6 @@
     [href]="link.url.external"
     target="_blank"
     class="text-gray-800 hover:text-gray-400 text-sm"
-    [class.font-medium]="isBold"
-  >
-    {{ link.text | translate }}</a
-  >
+    [class.font-medium]="isBold">
+    {{ link.text }}</a>
 </ng-template>

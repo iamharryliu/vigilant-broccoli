@@ -1,6 +1,6 @@
 <app-centered-app-layout>
   <h1 class="pt-4 mb-4 text-2xl font-bold text-center">
-    {{ 'VIBECHECK_LITE.HEADER' | translate }}
+    Vibecheck Lite
   </h1>
   <hr />
   <app-card>
@@ -11,9 +11,8 @@
   <ng-template #loading>
     <div class="text-sm pt-48 pb-48">
       <app-loading-spinner
-        [header]="'VIBECHECK_LITE.LOADING.HEADER' | translate"
-        [message]="'VIBECHECK_LITE.LOADING.MESSAGE' | translate"
-      >
+        [header]="'Loading...'"
+        [message]="'Please enable location access. We will use your weather location to determine an appropriate outfit.' | translate">
       </app-loading-spinner>
     </div>
   </ng-template>
