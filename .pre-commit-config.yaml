@@ -23,7 +23,7 @@ repos:
     hooks:
       - id: pytest
         name: pytest
-        entry: pytest vibecheck/
+        entry: pytest projects/vibecheck/
         language: python
         pass_filenames: false
         additional_dependencies:
