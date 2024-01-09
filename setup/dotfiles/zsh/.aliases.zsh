@@ -31,7 +31,7 @@ alias undocommit='greset --soft'
 alias deletecommit='greset --hard'
 
 # Node
-alias hardnpm='rm -rf node_modules package-lock.json && npm i'
+alias npmhard='rm -rf node_modules package-lock.json && npm i'
 alias monorepo='cd ~/vigilant-broccoli'
 alias cdfrontend='cd ~/vigilant-broccoli/projects/personal-website/frontend'
 alias cdbackend='cd ~/vigilant-broccoli/projects/personal-website/backend'
