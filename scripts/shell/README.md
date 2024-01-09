@@ -1,3 +1,5 @@
+# Shell Scripts
+
 ```
 ./rename_script.sh [directory] [substring] [replacements]
 

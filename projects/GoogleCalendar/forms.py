@@ -10,4 +10,3 @@ class CredentialForm(FlaskForm):
         validators=[DataRequired(), FileAllowed(["json"])],
     )
     submit = SubmitField("Submit")
-

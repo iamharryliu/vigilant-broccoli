@@ -24,13 +24,20 @@ class calendar_api:
         self.tasks = self.get_tasks_from_service()
 
     def get_api_credentials(self):
-        credentials = self.get_credentials_from_token() if os.path.isfile("token.pickle") else None
-        return credentials if credentials and credentials.valid else self.resolve_credentials(credentials)
-    
+        credentials = (
+            self.get_credentials_from_token()
+            if os.path.isfile("token.pickle")
+            else None
+        )
+        return (
+            credentials
+            if credentials and credentials.valid
+            else self.resolve_credentials(credentials)
+        )
+
     def get_credentials_from_token(self):
         with open("token.pickle", "rb") as token:
             return pickle.load(token)
-
 
     def resolve_credentials(self, credentials):
         try:
@@ -91,7 +98,6 @@ class calendar_api:
 
     def get_time_with_timezone(self, time):
         return dateutil.parser.parse(time).replace(tzinfo=pytz.utc)
-    
 
     def get_tasks_for_day(self):
         start, end = get_today(), get_tomorrow()

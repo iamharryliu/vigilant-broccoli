@@ -5,20 +5,21 @@ from pathlib import Path
 import requests
 
 
-logging.basicConfig(filename=f'{Path.home()}/logs/site-monitor.log',
-                    level=logging.INFO,
-                    format='%(asctime)s\t%(levelname)s\t%(message)s')
+logging.basicConfig(
+    filename=f"{Path.home()}/logs/site-monitor.log",
+    level=logging.INFO,
+    format="%(asctime)s\t%(levelname)s\t%(message)s",
+)
 
 
 class SiteMonitor:
-
     def check_servers(servers):
         for server in servers:
             SiteMonitor.check_server(server)
 
     def check_server(server):
         try:
-            r = requests.get(server['url'], timeout=5)
+            r = requests.get(server["url"], timeout=5)
             if r.status_code != 200:
                 SiteMonitor.handle_server_failure(server)
             else:
@@ -30,12 +31,9 @@ class SiteMonitor:
         subject = f'{server["name"]} is down!'
         body = f'Please check on {server["name"]}.'
         logging.critical(subject)
-        email = {
-            "subject":subject,
-            "body":body
-        }
-        logging.info('Notifying site manager.')
+        email = {"subject": subject, "body": body}
+        logging.info("Notifying site manager.")
         MailHandler.email_to_self(email)
-        if 'linode-server' in server:
-            logging.info('Attempting to reboot server.')
+        if "linode-server" in server:
+            logging.info("Attempting to reboot server.")
             LinodeAPI.reboot_server(server)

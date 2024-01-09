@@ -14,7 +14,7 @@ ACTIVITY_COLORS = {
     "TOMATO": "",
     "GRAPE": "Work",
     "GRAPHITE": "",
-    "OTHER": "Other"
+    "OTHER": "Other",
 }
 
 NUMBER_OF_FUTURE_EVENTS = 1000

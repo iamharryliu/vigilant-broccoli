@@ -6,6 +6,7 @@ def get_today():
     today = date.today()
     return datetime.combine(today, datetime.min.time()).replace(tzinfo=pytz.utc)
 
+
 def get_tomorrow():
     return get_today() + timedelta(days=1)
 
@@ -37,7 +38,6 @@ def getEndOfWeekX(week):
 
 
 class Task:
-
     def __init__(self, color, start=0, end=0):
         self.start = start
         self.end = end

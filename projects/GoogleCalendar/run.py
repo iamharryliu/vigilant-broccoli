@@ -19,7 +19,13 @@ def index():
         monday = get_monday_this_week_dt()
         next_week_monday = get_one_week_from_dt(monday)
         return render_template(
-            "index.html", day_data=day_data, week_data=week_data, column_chart=column_chart, today=today, monday=monday, next_week_monday=next_week_monday
+            "index.html",
+            day_data=day_data,
+            week_data=week_data,
+            column_chart=column_chart,
+            today=today,
+            monday=monday,
+            next_week_monday=next_week_monday,
         )
     else:
         return redirect(url_for("credential_form"))

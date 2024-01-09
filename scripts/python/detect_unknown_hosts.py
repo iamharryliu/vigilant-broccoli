@@ -12,7 +12,8 @@ def get_unknown_hosts():
     with open(f"{file}", "r") as f:
         return f.read()
 
-def notify_user(unknown_hosts)
+
+def notify_user(unknown_hosts):
     subject = f"UNKOWN HOSTS IN NETWORK {NETWORK_NAME}"
     body = unknown_hosts
     email = {"subject": subject, "body": body}
