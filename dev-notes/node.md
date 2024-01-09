@@ -9,9 +9,12 @@ npm i
 npm run serve
 ```
 
-Run application tests.
+Run application lint, format, test.
 
 ```
+npm run lint
+npm run lint:css
+npm run format
 npm run test
 ```
 
