@@ -6,16 +6,16 @@ vigilant-broccoli is my personal mono-repo that I use to house all the code (or 
 
 ## Developer Notes
 
-[Angular](dev-notes/angular.md)
+[Angular](notes/dev/angular.md)
 
-[Brew](dev-notes/brew.md)
+[Brew](notes/dev/brew.md)
 
-[FlyIO](dev-notes/flyio.md)
+[FlyIO](notes/dev/flyio.md)
 
-[Git](dev-notes/git.md)
+[Git](notes/dev/git.md)
 
-[Monorepo](dev-notes/monorepo.md)
+[Monorepo](notes/dev/monorepo.md)
 
-[Node](dev-notes/node.md)
+[Node](notes/dev/node.md)
 
-[Web Dev](dev-notes/web-dev.md)
+[Web Dev](notes/dev/web-dev.md)
