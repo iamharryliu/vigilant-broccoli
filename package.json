@@ -32,7 +32,7 @@
     "typescript": "5.1"
   },
   "lint-staged": {
-    "*.{js,ts}": [
+    "*.ts": [
       "npm run lint",
       "npm run format"
     ],

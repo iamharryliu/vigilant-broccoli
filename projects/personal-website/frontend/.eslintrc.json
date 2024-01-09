@@ -62,5 +62,6 @@
   "env": {
     "browser": true,
     "node": true
-  }
+  },
+  "ignorePatterns": ["coverage/**"]
 }

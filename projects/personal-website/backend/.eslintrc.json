@@ -20,5 +20,6 @@
         "caughtErrorsIgnorePattern": "^_"
       }
     ]
-  }
+  },
+  "ignorePatterns": ["coverage/**", "*.js"]
 }
