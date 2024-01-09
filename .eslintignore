@@ -1,3 +1,4 @@
 *.js
 **/lib/**
 **/coverage/**
+**/projects/demo-apps/**

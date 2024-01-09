@@ -39,7 +39,7 @@ query Dogs($id:ID!){
     name
     handlers{
       id,
-      name 
+      name
     }
   }
 }
