@@ -1,6 +1,8 @@
 # Node
 
-## General Commands
+## Commands
+
+### General App Commands
 
 Run application.
 
@@ -18,7 +20,7 @@ npm run format
 npm run test
 ```
 
-## NPM Commands
+### Package Managing Commands
 
 Build and publish.
 
@@ -38,4 +40,5 @@ npm unlink --no-save [package-name]
 ## References
 
 [Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik)
+
 [NPM Link and Unlink](https://dev.to/erinbush/npm-linking-and-unlinking-2h1g)
