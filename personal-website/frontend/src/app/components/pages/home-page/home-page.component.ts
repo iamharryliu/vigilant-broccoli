@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
 import { CardComponent } from '@components/global/card/card.component';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
@@ -14,7 +13,6 @@ import { LINKS } from '@consts/app-route.const';
   imports: [
     CommonModule,
     GeneralLayoutComponent,
-    TranslateModule,
     RouterModule,
     CardComponent,
     LinkComponent,

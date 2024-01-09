@@ -1,11 +1,6 @@
-import {
-  HTTP_INTERCEPTORS,
-  HttpClient,
-  HttpClientModule,
-} from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { AppRoutingModule } from '@app/app-routing.module';
 import { AppComponent } from '@app/app.component';
 import { CredentialsInterceptorService } from '@interceptors/credentials.interceptor';
@@ -13,10 +8,6 @@ import { RecaptchaInterceptor } from '@interceptors/recaptcha.interceptor';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { ENVIRONMENT } from 'src/environments/environment';
 import { AppService } from '@services/app.service';
-import {
-  NGX_TRANSLATE_LANGUAGE,
-  createTranslateLoader,
-} from '@utils/translate.util';
 import { ErrorInterceptor } from '@interceptors/error.interceptor';
 import { SuccessInterceptor } from '@interceptors/success.interceptor';
 
@@ -26,14 +17,6 @@ import { SuccessInterceptor } from '@interceptors/success.interceptor';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    TranslateModule.forRoot({
-      defaultLanguage: NGX_TRANSLATE_LANGUAGE.DEFAULT,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient],
-      },
-    }),
     RecaptchaV3Module,
   ],
   providers: [

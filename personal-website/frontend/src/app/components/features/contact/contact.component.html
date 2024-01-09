@@ -1,13 +1,11 @@
 <div class="grid lg:grid-cols-2">
   <div class="w-11/12 lg:w-5/6 mx-auto text-sm">
     <h2 class="text-md font-semibold mb-4 text-center lg:text-left">
-      {{ 'CONTACT.CONTACT_FORM.HEADER' | translate }}
+      Send me a message
     </h2>
     <form [formGroup]="form" (ngSubmit)="submitForm()">
       <div class="mb-4">
-        <label for="name" class="block text-gray-700">
-          {{ 'CONTACT.CONTACT_FORM.NAME_LABEL' | translate }}</label
-        >
+        <label for="name" class="block text-gray-700"> Name:</label>
         <input
           type="text"
           id="name"
@@ -19,9 +17,7 @@
         />
       </div>
       <div class="mb-4">
-        <label for="email" class="block text-gray-700">
-          {{ 'CONTACT.CONTACT_FORM.EMAIL_LABEL' | translate }}</label
-        >
+        <label for="email" class="block text-gray-700"> Email:</label>
         <input
           type="email"
           id="email"
@@ -33,9 +29,7 @@
         />
       </div>
       <div class="mb-4">
-        <label for="message" class="block text-gray-700">{{
-          'CONTACT.CONTACT_FORM.MESSAGE_LABEL' | translate
-        }}</label>
+        <label for="message" class="block text-gray-700">Message:</label>
         <textarea
           id="message"
           name="message"
@@ -54,22 +48,20 @@
           'hover:bg-blue-600': form.valid
         }"
       >
-        {{ 'CONTACT.CONTACT_FORM.BUTTON_TEXT' | translate }}
+        Submit
       </button>
     </form>
   </div>
   <hr class="lg:hidden mt-8 mb-8" />
   <div class="w-11/12 lg:w-5/6 mx-auto text-center lg:text-left">
     <div class="mb-4 text-sm">
-      <h1 class="mb-2 text-md font-semibold">
-        {{ 'CONTACT.CONTACT_ME.HEADER' | translate }}
-      </h1>
+      <h1 class="mb-2 text-md font-semibold">Contact Me</h1>
       <div class="mb-2">
         <a class="hover:text-gray-400" href="mailto: harryliu1995@gmail.com">
-          {{ 'CONTACT.CONTACT_ME.EMAIL.EMAIL_ADDRESS' | translate }}
+          harryliu1995&#64;gmail.com
         </a>
       </div>
-      <!-- <div>{{ 'CONTACT.CONTACT_ME.PHONE_NUMBER' | translate }}</div> -->
+      <!-- <div>+1 647-608-2991</div> -->
     </div>
     <div class="mb-4">
       <h1 class="mb-2 text-md font-semibold">Social Medias</h1>

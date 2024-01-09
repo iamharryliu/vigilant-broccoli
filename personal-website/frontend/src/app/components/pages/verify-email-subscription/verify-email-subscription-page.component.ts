@@ -10,7 +10,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinnerComponent } from '@components/global/loading-spinner/loading-spinner.component';
 import { CommonService } from '@services/common.service';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
-import { TranslateModule } from '@ngx-translate/core';
 import { LINKS } from '@app/core/consts/app-route.const';
 
 @Component({
@@ -20,7 +19,6 @@ import { LINKS } from '@app/core/consts/app-route.const';
   imports: [
     GeneralLayoutComponent,
     CommonModule,
-    TranslateModule,
     ReactiveFormsModule,
     LoadingSpinnerComponent,
   ],

@@ -3,13 +3,12 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LINKS } from '@consts/app-route.const';
 import { LinkComponent } from '@components/global/link/link.component';
-import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   standalone: true,
   selector: 'app-footer',
   templateUrl: './footer.component.html',
-  imports: [CommonModule, TranslateModule, RouterModule, LinkComponent],
+  imports: [CommonModule, RouterModule, LinkComponent],
 })
 export class FooterComponent {
   FOOTER = {

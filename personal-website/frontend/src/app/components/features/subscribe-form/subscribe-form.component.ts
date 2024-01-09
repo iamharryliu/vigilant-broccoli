@@ -6,7 +6,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { CommonService } from '@services/common.service';
 import { SubscribeRequest } from '@models/app.model';
@@ -16,12 +15,7 @@ import { Subject, exhaustMap } from 'rxjs';
   standalone: true,
   selector: 'app-newsletter-sub-form',
   templateUrl: './subscribe-form.component.html',
-  imports: [
-    CommonModule,
-    TranslateModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
 })
 export class NewsLetterSubFormComponent {
   submit$: Subject<boolean> = new Subject();
