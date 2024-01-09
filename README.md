@@ -23,8 +23,3 @@ npm run format
 <!-- Code Maintenance -->
 
 [Pre-commit with Husky for JS and Python](https://xezzed.medium.com/linting-and-prettifying-frontend-react-with-eslint-on-husky-and-backend-python-with-pylint-on-58687c3e680c)
-
-<!-- NPM -->
-
-[Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik)
-[NPM Link and Unlink](https://dev.to/erinbush/npm-linking-and-unlinking-2h1g)
