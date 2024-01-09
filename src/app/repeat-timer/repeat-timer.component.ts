@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnDestroy } from '@angular/core';
+
+export const ALARM_INTERVAL = 3000;
 
 @Component({
   standalone: true,
@@ -14,15 +16,16 @@ export class RepeatTimerComponent implements OnDestroy {
   hours: number = 0;
   timeLeft: number = 0;
   timer: any;
+  alarm: any;
   isTimerRunning: boolean = false;
   minuteOptions = [1, 2, 5, 10, 15, 20, 30, 60];
 
   addMinutes(minutes: number) {
     this.interval += minutes * 60 * 1000;
-    this.setTimeleft();
+    this.setTimeLeft();
   }
 
-  setTimeleft() {
+  setTimeLeft() {
     this.timeLeft = this.interval / 1000;
     this.udpdateCountdown();
   }
@@ -39,10 +42,18 @@ export class RepeatTimerComponent implements OnDestroy {
       this.timeLeft--;
       this.udpdateCountdown();
       if (this.timeLeft === 0) {
-        this.playSound();
-        this.timeLeft = this.interval / 1000;
+        this.startAlarm();
       }
     }, 1000);
+  }
+
+  startAlarm() {
+    this.stopTimer();
+    this.setTimeLeft();
+    this.playSound();
+    this.alarm = setInterval(() => {
+      this.playSound();
+    }, ALARM_INTERVAL);
   }
 
   stopTimer() {
@@ -53,12 +64,17 @@ export class RepeatTimerComponent implements OnDestroy {
   resetTimer() {
     this.stopTimer();
     this.interval = 0;
-    this.setTimeleft();
+    this.setTimeLeft();
   }
 
   playSound() {
     const audio = new Audio('assets/chime.mp3');
     audio.play();
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove() {
+    clearInterval(this.alarm);
   }
 
   ngOnDestroy() {
