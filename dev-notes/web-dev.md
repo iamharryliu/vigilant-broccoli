@@ -1,6 +1,4 @@
-# Developer Notes
-
-## Web Developer
+# Web Developer
 
 ## Backend Developer
 
