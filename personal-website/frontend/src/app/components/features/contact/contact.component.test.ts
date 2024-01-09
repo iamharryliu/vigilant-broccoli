@@ -2,7 +2,6 @@ import { ContactComponent } from '@components/features/contact/contact.component
 import { CommonService } from '@services/common.service';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 describe('ContactComponent', () => {
@@ -12,7 +11,7 @@ describe('ContactComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, TranslateModule.forRoot()],
+      imports: [HttpClientTestingModule],
     }).compileComponents();
     commonService = TestBed.inject(CommonService);
     fixture = TestBed.createComponent(ContactComponent);

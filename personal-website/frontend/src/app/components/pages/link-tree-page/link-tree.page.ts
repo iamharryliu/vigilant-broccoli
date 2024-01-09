@@ -8,7 +8,7 @@ import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centere
 @Component({
   standalone: true,
   selector: 'app-link-tree-page',
-  templateUrl: './link-tree-page.component.html',
+  templateUrl: './link-tree.page.html',
   imports: [
     CenteredAppLayoutComponent,
     ButtonLinkComponent,

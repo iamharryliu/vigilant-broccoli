@@ -34,7 +34,7 @@
         "quotes": ["error", "single"],
         "@angular-eslint/no-empty-lifecycle-method": "off",
         "@typescript-eslint/strict-boolean-expressions": "error",
-        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-explicit-any": "warn",
         "no-restricted-imports": [
           "error",
           {

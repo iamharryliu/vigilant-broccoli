@@ -5,7 +5,7 @@ import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.compone
 @Component({
   standalone: true,
   selector: 'app-about-page',
-  templateUrl: './about-page.component.html',
+  templateUrl: './about.page.html',
   imports: [CommonModule, GeneralLayoutComponent],
 })
 export class AboutPageComponent {}

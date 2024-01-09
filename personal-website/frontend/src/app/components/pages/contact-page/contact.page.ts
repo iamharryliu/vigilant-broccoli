@@ -4,7 +4,7 @@ import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.compone
 @Component({
   standalone: true,
   selector: 'app-contact-page',
-  templateUrl: './contact-page.component.html',
+  templateUrl: './contact.page.html',
   imports: [GeneralLayoutComponent],
 })
 export class ContactPageComponent {}

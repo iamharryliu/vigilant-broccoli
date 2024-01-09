@@ -10,7 +10,7 @@ import { ENVIRONMENT } from 'src/environments/environment';
   selector: 'app-project.page',
   standalone: true,
   imports: [GeneralLayoutComponent, ButtonLinkComponent, CommonModule],
-  templateUrl: './project.page.component.html',
+  templateUrl: './projects.page.html',
 })
 export class ProjectPageComponent {
   FRONTEND_URL = ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL;

@@ -18,9 +18,4 @@ npm install -g @angular/cli && npm i && npm run serve
 [Mock Server](https://medium.com/geekculture/setting-up-a-mock-backend-with-angular-13-applications-26a21788f7da)
 
 TODO:
-
-- fix commit hook tests
-
-```
-"*.test.ts vs *.{ts}"
-```
+-fix npm packages

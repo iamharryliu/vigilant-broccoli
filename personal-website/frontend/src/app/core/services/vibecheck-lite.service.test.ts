@@ -3,12 +3,9 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import {
-  VIBECHECK_LITE_API_URL,
-  VibecheckLiteService,
-} from '@app/core/services/vibecheck-lite.service';
-import { VibecheckLiteSubscriptionRequest } from '@models/app.model';
-import { Location } from '@prettydamntired/browser-tools';
+import { VibecheckLiteService } from '@app/core/services/vibecheck-lite.service';
+import { Location, VibecheckLiteSubscriptionRequest } from '@models/app.model';
+import { ENVIRONMENT } from 'src/environments/environment';
 
 describe('VibecheckLiteService', () => {
   let service: VibecheckLiteService;
@@ -43,7 +40,7 @@ describe('VibecheckLiteService', () => {
     });
 
     const request = httpMock.expectOne(
-      `${VIBECHECK_LITE_API_URL}/get-outfit-recommendation?lat=${mockLocation.latitude}&lon=${mockLocation.longitude}`,
+      `${ENVIRONMENT.URLS.VIBECHECK_LITE}/get-outfit-recommendation?lat=${mockLocation.latitude}&lon=${mockLocation.longitude}`,
     );
     expect(request.request.method).toBe('GET');
     request.flush(mockResponse);
@@ -61,7 +58,9 @@ describe('VibecheckLiteService', () => {
       expect(response).toEqual(mockResponse);
     });
 
-    const request = httpMock.expectOne(`${VIBECHECK_LITE_API_URL}/subscribe`);
+    const request = httpMock.expectOne(
+      `${ENVIRONMENT.URLS.VIBECHECK_LITE}/subscribe`,
+    );
     expect(request.request.method).toBe('POST');
     request.flush(mockResponse);
   });
@@ -75,7 +74,7 @@ describe('VibecheckLiteService', () => {
     });
 
     const request = httpMock.expectOne(
-      `${VIBECHECK_LITE_API_URL}/unsubscribe/${mockEmail}`,
+      `${ENVIRONMENT.URLS.VIBECHECK_LITE}/unsubscribe/${mockEmail}`,
     );
     expect(request.request.method).toBe('DELETE');
     request.flush(mockResponse);

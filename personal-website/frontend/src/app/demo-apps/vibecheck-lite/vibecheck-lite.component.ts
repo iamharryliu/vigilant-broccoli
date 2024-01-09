@@ -5,7 +5,7 @@ import { CardComponent } from '@components/global/card/card.component';
 import { LoadingSpinnerComponent } from '@components/global/loading-spinner/loading-spinner.component';
 import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centered-app-layout.compoenent';
 import { VibecheckLiteService } from '@app/core/services/vibecheck-lite.service';
-import { LocationService } from '@prettydamntired/browser-tools';
+import { LocationService } from '@app/core/services/location.service';
 
 interface VibecheckLiteResponse {
   status: boolean;

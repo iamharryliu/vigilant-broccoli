@@ -9,7 +9,7 @@ import { LINKS } from '@consts/app-route.const';
 @Component({
   standalone: true,
   selector: 'app-home-page',
-  templateUrl: './home-page.component.html',
+  templateUrl: './home.page.html',
   imports: [
     CommonModule,
     GeneralLayoutComponent,

@@ -1,16 +1,16 @@
 import { Route, Routes } from '@angular/router';
-import { AboutPageComponent } from '@pages/about-page/about-page.component';
-import { HomePageComponent } from '@pages/home-page/home-page.component';
-import { ContactPageComponent } from '@pages/contact-page/contact-page.component';
+import { AboutPageComponent } from '@app/components/pages/about-page/about.page';
+import { HomePageComponent } from '@app/components/pages/home-page/home-page.page';
+import { ContactPageComponent } from '@app/components/pages/contact-page/contact.page';
 import { VibecheckLiteComponent } from '@app/demo-apps/vibecheck-lite/vibecheck-lite.component';
-import { LinkTreePageComponent } from '@pages/link-tree-page/link-tree-page.component';
+import { LinkTreePageComponent } from '@app/components/pages/link-tree-page/link-tree.page';
 import { Link } from '@models/app.model';
 import { ENVIRONMENT } from 'src/environments/environment';
 import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscription/verify-email-subscription-page.component';
 import { VibecheckLiteSubscribePageComponent } from '@pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '@pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
-import { ServicesPageComponent } from '@components/pages/services-page/services.page';
-import { ProjectPageComponent } from '@app/src/app/components/pages/project.page/project.page.component';
+import { ServicesPageComponent } from '@pages/services-page/services.page';
+import { ProjectPageComponent } from '@app/components/pages/projects-page/projects.page';
 
 export const INDEX_ROUTE: Route = {
   path: '',
