@@ -3,7 +3,7 @@
 ## Commands
 
 ```
-cd ~/vigilant-broccoli/personal-website/backend
+cd ~/vigilant-broccoli/projects/personal-website/backend
 npm i && npm run serve
 ```
 

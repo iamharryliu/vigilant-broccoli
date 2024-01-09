@@ -19,7 +19,7 @@ function restartServer() {
   const command = 'fly deploy';
   exec(
     command,
-    { cwd: '/Users/hliu/vigilant-broccoli/personal-website/backend' },
+    { cwd: '/Users/hliu/vigilant-broccoli/projects/personal-website/backend' },
     (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);

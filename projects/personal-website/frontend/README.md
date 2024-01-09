@@ -3,7 +3,7 @@
 ## Snippets
 
 ```
-cd ~/vigilant-broccoli/personal-website/frontend
+cd ~/vigilant-broccoli/projects/personal-website/frontend
 npm install -g @angular/cli && npm i && npm run serve
 ```
 
