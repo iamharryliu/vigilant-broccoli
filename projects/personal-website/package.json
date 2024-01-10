@@ -5,7 +5,7 @@
     "serve": "concurrently \"npm run serve:backend\" \"npm run serve:frontend\"",
     "serve:frontend": "cd frontend && ng serve",
     "serve:backend": "cd backend && npm run serve",
-    "monitor-prod": "cd scripts/src && ts-node monitor-sites.ts",
+    "monitor": "cd scripts/src && ts-node monitor-sites.ts",
     "garbage-collector": "cd scripts/src && ts-node garbage-collector.ts"
   },
   "dependencies": {

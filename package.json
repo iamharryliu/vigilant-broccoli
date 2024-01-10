@@ -5,7 +5,9 @@
   "scripts": {
     "lint": "eslint --fix .",
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
-    "format": "prettier --write . --log-level silent"
+    "format": "prettier --write . --log-level silent",
+    "serve:personal-website": "cd projects/personal-website && npm run serve",
+    "monitor-projects": "cd projects/personal-website && npm run monitor"
   },
   "repository": {
     "type": "git",
