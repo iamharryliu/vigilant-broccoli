@@ -1,5 +1,5 @@
+import { SiteMonitor } from '@prettydamntired/node-tools';
 import { exec } from 'child_process';
-import { SiteMonitor } from '../../../node/tools/src';
 
 main();
 

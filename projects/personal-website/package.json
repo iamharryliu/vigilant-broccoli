@@ -1,0 +1,13 @@
+{
+  "name": "personal-website",
+  "version": "1.0.0",
+  "scripts": {
+    "serve": "concurrently \"npm run serve:backend\" \"npm run serve:frontend\"",
+    "serve:frontend": "cd frontend && ng serve",
+    "serve:backend": "cd backend && npm run serve",
+    "monitor-prod": "cd scripts/src && ts-node monitor-sites.ts"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
