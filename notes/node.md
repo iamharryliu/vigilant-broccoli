@@ -1,5 +1,9 @@
 # Node
 
+## Notes
+
+- _tsconfig.json_ - Configuration for typescript compilation. If the files are not being compiled there's no need for a tsconfig file.
+
 ## Commands
 
 ### General App Commands

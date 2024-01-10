@@ -23,6 +23,20 @@ npm-recursive-install
 pip3 install pre-commit && pre-commit install
 ```
 
+## Commands
+
+### General
+
+```
+npm run monitor-projects
+```
+
+### Personal Website
+
+```
+npm run serve:personal-website
+```
+
 ## Developer Notes
 
 [Angular](notes/angular.md)

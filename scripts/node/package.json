@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "monitor-projects": "ts-node monitor-sites.ts"
+  },
+  "devDependencies": {
+    "@prettydamntired/node-tools": "^1.0.18"
+  }
+}

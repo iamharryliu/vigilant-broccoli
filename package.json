@@ -4,11 +4,10 @@
   "main": "index.js",
   "scripts": {
     "install-all": "npm-recursive-install",
-    "lint": "eslint --fix .",
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
     "format": "prettier --write . --log-level silent",
     "serve:personal-website": "cd projects/personal-website && npm run serve",
-    "monitor-projects": "cd projects/personal-website && npm run monitor"
+    "monitor-projects": "cd scripts/node && npm run monitor-projects"
   },
   "repository": {
     "type": "git",
@@ -34,10 +33,6 @@
     "typescript": "5.1"
   },
   "lint-staged": {
-    "*.ts": [
-      "npm run lint",
-      "npm run format"
-    ],
     "*.{css,scss}": [
       "npm run lint:css",
       "prettier --write"
