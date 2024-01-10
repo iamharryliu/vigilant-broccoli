@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "install-all": "npm-recursive-install",
     "lint": "eslint --fix .",
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
     "format": "prettier --write . --log-level silent",
