@@ -6,6 +6,7 @@
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
     "format": "prettier --write . --log-level silent",
     "serve:personal-website": "cd projects/personal-website && npm run serve",
+    "e2e:personal-website": "cd projects/personal-website && npm run e2e",
     "monitor-projects": "cd scripts/node && npm run monitor-projects"
   },
   "repository": {
