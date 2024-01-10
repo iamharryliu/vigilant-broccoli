@@ -1,2 +1,2 @@
-import { DatabaseManager } from '../../tools/database-manager';
+import { DatabaseManager } from './database-manager';
 DatabaseManager.sendNewsletter();

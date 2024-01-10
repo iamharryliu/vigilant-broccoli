@@ -1,8 +1,10 @@
 {
   "name": "personal-website-scripts",
   "version": "1.0.0",
-  "scripts": {},
   "dependencies": {
     "@prettydamntired/node-tools": "^1.0.18"
+  },
+  "devDependencies": {
+    "mongodb": "^6.3.0"
   }
 }
