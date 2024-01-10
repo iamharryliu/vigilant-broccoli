@@ -1,6 +1,3 @@
 {
-  "root": true,
-  "extends": ["eslint:recommended"],
-
-  "ignorePatterns": ["**/lib/**"]
+  "extends": ["eslint:recommended"]
 }
