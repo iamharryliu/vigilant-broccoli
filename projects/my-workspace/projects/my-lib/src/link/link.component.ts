@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Link } from '@app/core/models/app.model';
+import { Link } from '../models';
+
 
 @Component({
   standalone: true,
-  selector: 'app-link',
+  selector: 'lib-link',
   templateUrl: './link.component.html',
   imports: [CommonModule, RouterModule],
 })

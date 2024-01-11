@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CardComponent } from '@components/global/card/card.component';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
-import { LinkComponent } from '@components/global/link/link.component';
 import { LINKS } from '@consts/app-route.const';
+import { CardComponent, LinkComponent } from '@prettydamntired/my-lib';
 
 @Component({
   standalone: true,

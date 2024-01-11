@@ -7,10 +7,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingSpinnerComponent } from '@components/global/loading-spinner/loading-spinner.component';
 import { CommonService } from '@services/common.service';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
 import { LINKS } from '@app/core/consts/app-route.const';
+import { LoadingSpinnerComponent } from '@prettydamntired/my-lib';
 
 @Component({
   standalone: true,

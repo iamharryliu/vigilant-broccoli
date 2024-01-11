@@ -3,7 +3,7 @@
     class="newsletter-subscription max-w-xl mx-auto bg-white shadow-none rounded pt-8 pb-8"
   >
     <ng-container *ngIf="isLoading; else verifyEmailForm">
-      <app-loading-spinner></app-loading-spinner>
+      <lib-loading-spinner></lib-loading-spinner>
       <p class="text-center">Verifying Request</p>
     </ng-container>
     <ng-template #verifyEmailForm>

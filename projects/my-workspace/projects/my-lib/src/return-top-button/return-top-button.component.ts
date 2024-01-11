@@ -3,7 +3,7 @@ import { Component, HostListener } from '@angular/core';
 
 @Component({
   standalone: true,
-  selector: 'app-return-top-button',
+  selector: 'lib-return-top-button',
   templateUrl: './return-top-button.component.html',
   imports: [CommonModule],
 })

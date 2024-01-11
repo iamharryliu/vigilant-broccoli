@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ButtonLinkComponent } from '@app/components/global/button-link/button-link.component';
 import { GeneralLayoutComponent } from '@app/components/layouts/general/genreral-layout.component';
 import { LINKS } from '@app/core/consts/app-route.const';
 import { Link } from '@app/core/models/app.model';
+import { ButtonLinkComponent } from '@prettydamntired/my-lib';
 import { ENVIRONMENT } from 'src/environments/environment';
 
 @Component({

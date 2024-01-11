@@ -8,13 +8,13 @@
   </app-card>
   <ng-template #loading>
     <div class="text-sm pt-48 pb-48">
-      <app-loading-spinner
+      <lib-loading-spinner
         [header]="'Loading...'"
         [message]="
           'Please enable location access. We will use your weather location to determine an appropriate outfit.'
         "
       >
-      </app-loading-spinner>
+      </lib-loading-spinner>
     </div>
   </ng-template>
 </app-centered-app-layout>
