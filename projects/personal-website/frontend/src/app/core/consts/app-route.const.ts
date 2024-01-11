@@ -9,7 +9,6 @@ import { ENVIRONMENT } from 'src/environments/environment';
 import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscription/verify-email-subscription-page.component';
 import { VibecheckLiteSubscribePageComponent } from '@pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '@pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
-import { ServicesPageComponent } from '@pages/services-page/services.page';
 import { ProjectPageComponent } from '@app/components/pages/projects-page/projects.page';
 
 export const INDEX_ROUTE: Route = {
@@ -34,12 +33,6 @@ export const CONTACT_ROUTE: Route = {
   path: 'contact',
   data: { title: 'contact page' },
   component: ContactPageComponent,
-};
-
-export const SERVICES_ROUTE: Route = {
-  path: 'services',
-  data: { title: 'services page' },
-  component: ServicesPageComponent,
 };
 
 export const VIBECHECK_LITE_APP_ROUTE: Route = {
@@ -87,7 +80,6 @@ export const APP_ROUTES: Routes = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
   CONTACT_ROUTE,
-  SERVICES_ROUTE,
   PROJECTS_ROUTE,
   LINK_TREE_ROUTE,
   VERIFY_EMAIL_ROUTE,
@@ -116,14 +108,6 @@ const CONTACT_PAGE: Link = {
     external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${CONTACT_ROUTE.path}`,
   },
   text: 'Contact',
-};
-
-const SERVICES_PAGE: Link = {
-  url: {
-    internal: `/${SERVICES_ROUTE.path}`,
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${SERVICES_ROUTE.path}`,
-  },
-  text: 'Services',
 };
 
 const PROJECTS_PAGE: Link = {
@@ -183,21 +167,21 @@ const PERSONAL_INSTAGRAM: Link = {
   url: {
     external: ENVIRONMENT.URLS.PERSONAL_IG,
   },
-  text: 'Main Instagram',
+  text: 'Personal Instagram',
 };
 
 const SECONDHAND_STORE_IG: Link = {
   url: {
     external: ENVIRONMENT.URLS.SECONDHAND_STORE_IG,
   },
-  text: 'Secondhand Store Instagram',
+  text: 'Secondhand Store',
 };
 
 const SKATE_IG: Link = {
   url: {
     external: ENVIRONMENT.URLS.SKATE_IG,
   },
-  text: 'Toronto City Skate Instagram',
+  text: 'Toronto City Skate',
 };
 
 const RESUME: Link = {
@@ -211,7 +195,6 @@ const INTERNAL_LINKS = {
   PERSONAL_WEBSITE,
   ABOUT_PAGE,
   CONTACT_PAGE,
-  SERVICES_PAGE,
   LINK_TREE,
   PROJECTS_PAGE,
 };

@@ -14,12 +14,7 @@ export class FooterComponent {
   FOOTER = {
     SITE_MAP: {
       HEADER: 'FOOTER.SITE_MAP.HEADER',
-      LINKS: [
-        LINKS.ABOUT_PAGE,
-        LINKS.CONTACT_PAGE,
-        LINKS.SERVICES_PAGE,
-        LINKS.PROJECTS_PAGE,
-      ],
+      LINKS: [LINKS.ABOUT_PAGE, LINKS.CONTACT_PAGE, LINKS.PROJECTS_PAGE],
     },
     OTHER: {
       HEADER: 'LINKS.OTHER.HEADER',
