@@ -17,7 +17,12 @@ import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centere
   ],
 })
 export class LinkTreePageComponent {
-  LINKS = [LINKS.PERSONAL_INSTAGRAM, LINKS.SECONDHAND_STORE_IG, LINKS.SKATE_IG];
+  LINKS = [
+    LINKS.PERSONAL_WEBSITE,
+    LINKS.PERSONAL_INSTAGRAM,
+    LINKS.SECONDHAND_STORE_IG,
+    LINKS.SKATE_IG,
+  ];
   CAREER_LINKS = [
     LINKS.LINKEDIN,
     LINKS.GITHUB,
