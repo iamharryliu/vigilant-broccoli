@@ -1,6 +1,5 @@
 {
-  "name": "vigilant-broccoli",
-  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "install-all": "npm-recursive-install",
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
