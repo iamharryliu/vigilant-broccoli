@@ -3,7 +3,8 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
 import { LINKS } from '@consts/app-route.const';
-import { CardComponent, LinkComponent } from '@prettydamntired/my-lib';
+import { CardComponent } from '@app/components/global/card/card.component';
+import { LinkComponent } from '@app/components/global/link/link.component';
 
 @Component({
   standalone: true,

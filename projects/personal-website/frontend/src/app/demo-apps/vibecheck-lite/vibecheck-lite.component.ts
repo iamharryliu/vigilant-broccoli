@@ -4,10 +4,8 @@ import { Observable, map, switchMap } from 'rxjs';
 import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centered-app-layout.compoenent';
 import { VibecheckLiteService } from '@app/core/services/vibecheck-lite.service';
 import { LocationService } from '@app/core/services/location.service';
-import {
-  CardComponent,
-  LoadingSpinnerComponent,
-} from '@prettydamntired/my-lib';
+import { CardComponent } from '@app/components/global/card/card.component';
+import { LoadingSpinnerComponent } from '@app/components/global/loading-spinner/loading-spinner.component';
 
 interface VibecheckLiteResponse {
   status: boolean;

@@ -6,7 +6,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LINKS } from '@consts/app-route.const';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { LinkComponent } from '@prettydamntired/my-lib';
+import { LinkComponent } from '@app/components/global/link/link.component';
 
 @Component({
   standalone: true,
