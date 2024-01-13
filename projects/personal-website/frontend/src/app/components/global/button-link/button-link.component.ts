@@ -8,7 +8,6 @@ import { Link } from '@app/core/models/app.model';
   selector: 'lib-button-link',
   templateUrl: './button-link.component.html',
   imports: [CommonModule, RouterModule],
-  styleUrls: ['../tailwind.css'],
 })
 export class ButtonLinkComponent {
   @Input() type!: 'internal' | 'external';
