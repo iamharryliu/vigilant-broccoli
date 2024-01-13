@@ -6,6 +6,7 @@ import { Component, HostListener } from '@angular/core';
   selector: 'lib-return-top-button',
   templateUrl: './return-top-button.component.html',
   imports: [CommonModule],
+  styleUrls: ['../tailwind.css'],
 })
 export class ReturnTopButtonComponent {
   showScrollButton = false;

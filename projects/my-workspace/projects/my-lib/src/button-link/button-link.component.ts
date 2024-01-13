@@ -8,6 +8,7 @@ import { Link } from '../models';
   selector: 'lib-button-link',
   templateUrl: './button-link.component.html',
   imports: [CommonModule, RouterModule],
+  styleUrls: ['../tailwind.css'],
 })
 export class ButtonLinkComponent {
   @Input() type!: 'internal' | 'external';

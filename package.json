@@ -3,7 +3,7 @@
   "scripts": {
     "install-all": "npm-recursive-install",
     "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
-    "format": "prettier --write . --log-level silent",
+    "format": "prettier --write",
     "serve:personal-website": "cd projects/personal-website && npm run serve",
     "e2e:personal-website": "cd projects/personal-website && npm run e2e",
     "monitor-projects": "cd scripts/node && npm run monitor-projects"
@@ -26,10 +26,10 @@
   "lint-staged": {
     "*.{css,scss}": [
       "npm run lint:css",
-      "prettier --write"
+      "npm run format"
     ],
     "*.{json,md}": [
-      "prettier --write"
+      "npm run format"
     ]
   },
   "husky": {

@@ -3,7 +3,6 @@ import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Link } from '../models';
 
-
 @Component({
   standalone: true,
   selector: 'lib-link',

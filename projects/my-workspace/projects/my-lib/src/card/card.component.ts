@@ -4,5 +4,6 @@ import { Component } from '@angular/core';
   standalone: true,
   selector: 'app-card',
   templateUrl: './card.component.html',
+  styleUrls: ['../tailwind.css'],
 })
 export class CardComponent {}
