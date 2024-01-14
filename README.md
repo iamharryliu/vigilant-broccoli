@@ -28,13 +28,21 @@ pip3 install pre-commit && pre-commit install
 ### General
 
 ```
+npm-recursive-install
 npm run monitor-projects
 ```
 
+## Projects
+
 ### Personal Website
+
+[Personal Website](projects/personal-website/README.md)
+
+#### Commands
 
 ```
 npm run serve:personal-website
+npm run e2e:personal-website
 ```
 
 ## Developer Notes
@@ -42,6 +50,8 @@ npm run serve:personal-website
 [Angular](notes/angular.md)
 
 [Brew](notes/brew.md)
+
+[Cron](notes/cron.md)
 
 [FlyIO](notes/flyio.md)
 
