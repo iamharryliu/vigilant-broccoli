@@ -34,9 +34,7 @@ npm run monitor-projects
 
 ## Projects
 
-### Personal Website
-
-[Personal Website](projects/personal-website/README.md)
+### Personal Website - [README](projects/personal-website/README.md)
 
 #### Commands
 
