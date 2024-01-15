@@ -34,6 +34,8 @@ npm run monitor-projects
 
 ## Projects
 
+### Grind 75 - [README] (projects/grind-75/README.md)
+
 ### Personal Website - [README](projects/personal-website/README.md)
 
 #### Commands
