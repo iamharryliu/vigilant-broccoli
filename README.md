@@ -57,6 +57,8 @@ npm run e2e:personal-website
 
 [Git](notes/git.md)
 
+[Leet Code](notes/leet-code.md)
+
 [Monorepo](notes/monorepo.md)
 
 [Node](notes/node.md)
