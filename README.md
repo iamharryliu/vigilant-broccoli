@@ -36,10 +36,6 @@ npm run monitor-projects
 
 ### Grind 75 - [README](projects/grind-75/README.md)
 
-```
-python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75
-```
-
 ### Personal Website - [README](projects/personal-website/README.md)
 
 #### Commands
