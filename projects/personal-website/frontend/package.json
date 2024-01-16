@@ -7,10 +7,15 @@
     "start:mock": "concurrently --kill-others \"ng serve\"  \"nodemon mock-server/server.js --ext js,ts,json,html\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "lint": "eslint --fix",
-    "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
-    "format": "prettier --write",
-    "test": "jest --coverage --watch",
+    "lint": "eslint --fix .",
+    "lint:css": "stylelint '**/*.scss' --fix",
+    "format": "prettier --write .",
+    "test": "jest --coverage .",
+    "checks": "npm run lint && npm run lint:css && npm run format && npm run test",
+    "test:watch": "jest --coverage --watch .",
+    "lint:commit": "eslint --fix",
+    "lint:css:commit": "stylelint '**/*.scss' --fix",
+    "format:commit": "prettier --write",
     "test:commit": "jest --bail --findRelatedTests"
   },
   "private": true,
@@ -48,8 +53,6 @@
     "json-server": "^0.17.4",
     "nodemon": "^3.0.1",
     "postcss": "^8.4.25",
-    "stylelint": "^16.1.0",
-    "stylelint-config-standard": "^36.0.0",
     "tailwindcss": "^3.3.2",
     "typescript": "~5.2.2"
   },
@@ -72,19 +75,17 @@
     ]
   },
   "lint-staged": {
-    "*.{js,ts}": [
-      "npm run lint",
-      "npm run format"
+    "*.ts": [
+      "npm run lint:commit",
+      "npm run format:commit",
+      "npm run test:commit"
     ],
-    "*.{css,scss}": [
-      "npm run lint:css",
-      "npm run format"
+    "*.scss": [
+      "npm run lint:css:commit",
+      "npm run format:commit"
     ],
     "*.{json,md}": [
-      "npm run format"
-    ],
-    "*.ts": [
-      "npm run test:commit"
+      "npm run format:commit"
     ]
   }
 }

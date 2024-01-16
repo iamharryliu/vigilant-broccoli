@@ -5,9 +5,11 @@
   "scripts": {
     "serve": "nodemon app.ts",
     "start": "ts-node app.ts",
-    "lint:all": "eslint --fix .",
-    "format:all": "prettier --write .",
-    "test": "jest --coverage --watch .",
+    "lint": "eslint --fix .",
+    "format": "prettier --write .",
+    "test": "jest --coverage .",
+    "checks": "npm run lint && npm run format && npm run test",
+    "test:watch": "jest --coverage --watch .",
     "lint:commit": "eslint --fix",
     "format:commit": "prettier --write",
     "test:commit": "jest --bail --findRelatedTests"
@@ -39,6 +41,9 @@
       "npm run lint:commit",
       "npm run format:commit",
       "npm run test:commit"
+    ],
+    "*.{json,md}": [
+      "npm run format:commit"
     ]
   }
 }
