@@ -1,5 +1,5 @@
 #
-alias srcsh='source ~/.zshrc'
+alias initsh='source ~/.zshrc'
 
 # cd
 alias ..='cd ..'
@@ -32,6 +32,8 @@ alias deletecommit='greset --hard'
 
 # Node
 alias npmhard='rm -rf node_modules package-lock.json && npm i'
-alias monorepo='cd ~/vigilant-broccoli'
-alias cdfrontend='cd ~/vigilant-broccoli/projects/personal-website/frontend'
-alias cdbackend='cd ~/vigilant-broccoli/projects/personal-website/backend'
+
+# Repo Navigation
+alias cdvb='cd ~/vigilant-broccoli'
+alias cdpwfe='cd ~/vigilant-broccoli/projects/personal-website/frontend'
+alias cdpwbe='cd ~/vigilant-broccoli/projects/personal-website/backend'
