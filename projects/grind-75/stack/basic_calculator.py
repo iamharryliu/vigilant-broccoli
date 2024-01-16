@@ -6,11 +6,11 @@ class Solution:
         i = 0
         while i < len(s):
             if s[i].isdigit():
-                curr = ""
+                num = 0
                 while i < len(s) and s[i].isdigit():
-                    curr += s[i]
+                    num = num * 10 + int(s[i])
                     i += 1
-                res += stack.pop() * int(curr)
+                res += stack.pop() * num
             else:
                 if s[i] in "+(":
                     stack.append(stack[-1])
