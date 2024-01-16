@@ -2,7 +2,6 @@
   "private": true,
   "scripts": {
     "install-all": "npm-recursive-install",
-    "lint:css": "stylelint \"**/*.{css,scss}\" --fix",
     "format": "prettier --write",
     "serve:personal-website": "cd projects/personal-website && npm run serve",
     "e2e:personal-website": "cd projects/personal-website && npm run e2e",
@@ -19,15 +18,9 @@
   "devDependencies": {
     "husky": "^4.3.8",
     "lint-staged": "^13.2.3",
-    "prettier": "^3.0.0",
-    "stylelint": "^16.1.0",
-    "stylelint-config-standard-scss": "^13.0.0"
+    "prettier": "^3.0.0"
   },
   "lint-staged": {
-    "*.{css,scss}": [
-      "npm run lint:css",
-      "npm run format"
-    ],
     "*.{json,md}": [
       "npm run format"
     ]
