@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "install-all": "npm-recursive-install",
-    "format": "prettier --write",
+    "format": "prettier --write .",
+    "format:commit": "prettier --write",
     "serve:personal-website": "cd projects/personal-website && npm run serve",
     "e2e:personal-website": "cd projects/personal-website && npm run e2e",
     "monitor-projects": "cd scripts/node && npm run monitor-projects"
@@ -21,8 +22,8 @@
     "prettier": "^3.0.0"
   },
   "lint-staged": {
-    "*.{json,md}": [
-      "npm run format"
+    "*.{js,jsx,ts,tsx,json,html,css,scss,md}": [
+      "npm run format:commit"
     ]
   },
   "husky": {
