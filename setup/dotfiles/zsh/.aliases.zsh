@@ -3,9 +3,8 @@ alias initsh='source ~/.zshrc'
 
 # cd
 alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
+alias ..x2='cd ../..'
+alias ..x3='cd ../../..'
 
 # mkdir
 alias mkdir='mkdir -pv'
@@ -31,7 +30,8 @@ alias undocommit='greset --soft'
 alias deletecommit='greset --hard'
 
 # Node
-alias npmhard='rm -rf node_modules package-lock.json && npm i'
+alias initnpm='rm -rf node_modules package-lock.json && npm i'
+alias initnpmserve='initnpm && npm run serve'
 
 # Repo Navigation
 alias cdvb='cd ~/vigilant-broccoli'
