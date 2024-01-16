@@ -1,4 +1,3 @@
-#
 alias initsh='source ~/.zshrc'
 
 # cd
