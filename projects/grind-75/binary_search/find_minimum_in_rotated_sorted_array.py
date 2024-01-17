@@ -1,9 +1,10 @@
 import math
+from typing import List
 
 
 class Solution:
     @classmethod
-    def findMin(self, nums):
+    def findMin(self, nums: List[int]) -> int:
         res = math.inf
         l = 0
         r = len(nums) - 1
@@ -16,7 +17,3 @@ class Solution:
                 l = m + 1
             else:
                 r = m - 1
-
-
-res = Solution.findMin([3, 4, 5, 1, 2])
-print(res)
