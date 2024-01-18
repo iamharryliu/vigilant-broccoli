@@ -17,6 +17,7 @@
   "dependencies": {
     "@prettydamntired/node-tools": "^1.0.11",
     "@prettydamntired/personal-website-common": "^1.0.3",
+    "@prettydamntired/test-lib": "^0.0.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "mongoose": "^8.0.1"

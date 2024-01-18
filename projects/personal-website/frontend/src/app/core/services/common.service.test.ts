@@ -1,13 +1,11 @@
-import {
-  CommonService,
-  PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
-} from '@services/common.service';
+import { CommonService } from '@services/common.service';
 import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MessageRequest, SubscribeRequest } from '@models/app.model';
+import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/test-lib';
 
 describe('CommonService', () => {
   let service: CommonService;
