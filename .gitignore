@@ -41,9 +41,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# fly.io
-fly.toml
-
 # Python Ignore
 
 # Byte-compiled / optimized / DLL files
