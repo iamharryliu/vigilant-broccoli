@@ -11,7 +11,7 @@
     "lint:commit": "nx affected -t lint",
     "format:commit": "npm run format",
     "test:commit": "nx affected -t test",
-    "buildnpublish:test-lib": "nx test test-lib && cd ./libs/shared/test-lib && npm version patch && nx build test-lib && cd ../../../dist/libs/shared/test-lib && npm publish --access=public"
+    "buildnpublish:test-lib": "nx test test-lib && cd ./libs/shared/test-lib && npm version patch && nx build test-lib && cd ../../../dist/libs/shared/test-lib && npm publish --access=public && cd ../../../"
   },
   "private": true,
   "devDependencies": {
