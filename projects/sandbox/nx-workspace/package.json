@@ -4,14 +4,14 @@
   "license": "MIT",
   "scripts": {
     "serve:frontend": "nx serve angular-ui",
-    "lint": "nx lint angular-ui && nx lint express-api",
+    "lint": "nx run-many -t lint --fix",
     "format": "nx format:write",
-    "test": "nx test angular-ui && nx test express-api",
+    "test": "nx run-many -t test",
     "e2e": "npx nx run angular-ui-e2e:e2e &&  npx nx run express-api-e2e:e2e",
-    "lint:commit": "npm run lint",
+    "lint:commit": "nx affected -t lint",
     "format:commit": "npm run format",
-    "test:commit": "npm run test",
-    "e2e:commit": "npm run e2e"
+    "test:commit": "nx affected -t test",
+    "buildnpublish:test-lib": "nx test test-lib && cd ./libs/shared/test-lib && npm version patch && nx build test-lib && cd ../../../dist/libs/shared/test-lib && npm publish --access=public"
   },
   "private": true,
   "devDependencies": {
@@ -59,7 +59,8 @@
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
     "typescript": "~5.2.2",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "verdaccio": "^5.0.4"
   },
   "workspaces": [
     "packages/*"
@@ -83,8 +84,13 @@
     "*.ts": [
       "npm run lint:commit",
       "npm run format:commit",
-      "npm run test:commit",
-      "npm run e2e:commit"
+      "npm run test:commit"
+    ],
+    "*.{json,md}": [
+      "npm run format:commit"
     ]
+  },
+  "nx": {
+    "includedScripts": []
   }
 }

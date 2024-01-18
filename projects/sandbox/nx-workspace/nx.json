@@ -44,5 +44,10 @@
     "@nx/angular:component": {
       "style": "scss"
     }
+  },
+  "pluginsConfig": {
+    "@nx/js": {
+      "analyzeSourceFiles": true
+    }
   }
 }
