@@ -7,9 +7,11 @@
     "lint": "nx lint angular-ui && nx lint express-api",
     "format": "nx format:write",
     "test": "nx test angular-ui && nx test express-api",
+    "e2e": "npx nx run angular-ui-e2e:e2e &&  npx nx run express-api-e2e:e2e",
     "lint:commit": "npm run lint",
     "format:commit": "npm run format",
-    "test:commit": "npm run test"
+    "test:commit": "npm run test",
+    "e2e:commit": "npm run e2e"
   },
   "private": true,
   "devDependencies": {
@@ -81,7 +83,8 @@
     "*.ts": [
       "npm run lint:commit",
       "npm run format:commit",
-      "npm run test:commit"
+      "npm run test:commit",
+      "npm run e2e:commit"
     ]
   }
 }
