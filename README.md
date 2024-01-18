@@ -61,6 +61,8 @@ npm run e2e:personal-website
 
 [Monorepo](notes/monorepo.md)
 
+[Nx](notes/nx.md)
+
 [Node](notes/node.md)
 
 [Web Dev](notes/web-dev.md)
