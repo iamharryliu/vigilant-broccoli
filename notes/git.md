@@ -1,5 +1,29 @@
 # Git
 
+## Git Conventions
+
+### Commit conventions
+
+```
+<type>[optional scope]: <description>
+```
+
+#### Commit Types
+
+```
+fix:
+feat:
+build:
+chore:
+ci:
+docs:
+style:
+refactor:
+perf:
+test:
+
+```
+
 ## Subtrees
 
 ```
