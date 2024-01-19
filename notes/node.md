@@ -41,6 +41,10 @@ cd [project]
 npm unlink --no-save [package-name]
 ```
 
+```
+npm i --package-lock-only --workspaces=false
+```
+
 ## References
 
 [Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik)

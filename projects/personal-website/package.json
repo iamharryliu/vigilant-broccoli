@@ -6,7 +6,8 @@
     "serve:frontend": "npm run serve -w frontend",
     "serve:backend": "npm run serve -w backend",
     "e2e": "cd scripts && npm run e2e",
-    "garbage-collector": "cd scripts/src && ts-node garbage-collector.ts"
+    "garbage-collector": "cd scripts/src && ts-node garbage-collector.ts",
+    "deploy:backend": "npm run deploy -w backend"
   },
   "dependencies": {
     "concurrently": "^8.2.2"
