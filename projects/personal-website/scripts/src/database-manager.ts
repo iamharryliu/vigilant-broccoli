@@ -4,9 +4,9 @@ import {
   MailService,
 } from '@prettydamntired/node-tools';
 import {
-  PERSONAL_WEBSITE_DB_DATABASES,
   PERSONAL_WEBSITE_DB_COLLECTIONS,
-} from '../../common/src';
+  PERSONAL_WEBSITE_DB_DATABASES,
+} from '@prettydamntired/test-lib';
 
 const MONGO_DB_SERVER = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net`;
 const MONGO_DB_CLIENT = new MongoClient(MONGO_DB_SERVER);
