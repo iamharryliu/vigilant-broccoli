@@ -1,4 +1,5 @@
 export * from './lib/test-lib';
+import mongoose from 'mongoose';
 
 const VIBECHECK_LITE_ENDPOINTS = {
   SUBSCRIBE_TO_VIBECHECK_LITE: '/vibecheck-lite/subscribe',
@@ -12,3 +13,18 @@ export const PERSONAL_WEBSITE_BACKEND_ENDPOINTS = {
   VERIFY_SUBSCRIPTION: '/subscribe/verify-email-subscription',
   ...VIBECHECK_LITE_ENDPOINTS,
 };
+
+const emailSubscriptionSchema = new mongoose.Schema({
+  email: { type: String, required: true },
+  isVerified: Boolean,
+  dateCreated: Date,
+  vibecheckLiteSubscription: {
+    latitude: Number,
+    longitude: Number,
+  },
+});
+
+export const EmailSubscription = mongoose.model(
+  'EmailSubscription',
+  emailSubscriptionSchema
+);

@@ -1,8 +1,10 @@
 import request from 'supertest';
 import app, { db, server } from './app';
 import { EncryptionService } from '@prettydamntired/node-tools';
-import { EmailSubscription } from '@prettydamntired/personal-website-common';
-import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/test-lib';
+import {
+  EmailSubscription,
+  PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
+} from '@prettydamntired/test-lib';
 
 const email = 'tester@gmail.com';
 
