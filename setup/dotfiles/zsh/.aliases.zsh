@@ -33,6 +33,6 @@ alias initnpm='rm -rf node_modules package-lock.json && npm i'
 alias initnpmserve='initnpm && npm run serve'
 
 # Repo Navigation
-alias cdvb='cd ~/vigilant-broccoli'
-alias cdpwfe='cd ~/vigilant-broccoli/projects/personal-website/frontend'
-alias cdpwbe='cd ~/vigilant-broccoli/projects/personal-website/backend'
+alias cdvb='cd ~/vigilant-broccoli/'
+alias cdpw='cd cd ~/vigilant-broccoli/projects/personal-website/'
+alias cdnx='cd ~/vigilant-broccoli/projects/sandbox/nx-workspace'
