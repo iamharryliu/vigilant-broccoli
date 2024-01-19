@@ -35,4 +35,5 @@ alias initnpmserve='initnpm && npm run serve'
 # Repo Navigation
 alias cdvb='cd ~/vigilant-broccoli/'
 alias cdpw='cd cd ~/vigilant-broccoli/projects/personal-website/'
-alias cdnx='cd ~/vigilant-broccoli/projects/sandbox/nx-workspace'
+alias cdsb='cd ~/vigilant-broccoli/projects/sandbox/'
+alias cdnx='cd ~/vigilant-broccoli/projects/sandbox/nx-workspace/'
