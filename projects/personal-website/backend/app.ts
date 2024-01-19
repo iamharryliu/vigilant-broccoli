@@ -7,16 +7,15 @@ import {
   invalidPathHandler,
 } from './src/middlewares/error.middleware';
 import { requestLogger } from './src/middlewares/common.middleware';
-import { router } from './src/routes/router';
 import { router as contactRouter } from './src/routes/contact.router';
 import { router as subscribeRouter } from './src/routes/subscribe.router';
 import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
-import { logger } from '@prettydamntired/node-tools';
+import { HTTP_STATUS_CODES, logger } from '@prettydamntired/node-tools';
 
 const app = express();
 app.use(cors(CORS_OPTIONS));
 app.use(requestLogger);
-app.use(router);
+app.get('/', (_, res) => res.status(HTTP_STATUS_CODES.OK).send());
 app.use('/contact', contactRouter);
 app.use('/subscribe', subscribeRouter);
 app.use(errorLogger);

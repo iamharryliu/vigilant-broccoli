@@ -6,7 +6,8 @@
     "lint": "eslint --fix .",
     "format:commit": "prettier --write",
     "lint:commit": "eslint --fix",
-    "e2e": "cypress open"
+    "e2e": "cypress run",
+    "e2e:open": "cypress open"
   },
   "dependencies": {
     "@prettydamntired/node-tools": "^1.0.18",
