@@ -4,11 +4,9 @@ import {
   requireJsonContent,
 } from '../middlewares/common.middleware';
 import { NewsletterService } from '../services/newsletter.service';
-import {
-  EncryptionService,
-  HTTP_STATUS_CODES,
-} from '@prettydamntired/node-tools';
+import { EncryptionService } from '@prettydamntired/node-tools';
 import { ResponseError } from '../models/error.model';
+import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));

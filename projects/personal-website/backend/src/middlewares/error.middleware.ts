@@ -1,4 +1,5 @@
-import { HTTP_STATUS_CODES, logger } from '@prettydamntired/node-tools';
+import { logger } from '@prettydamntired/node-tools';
+import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
 
 export const errorLogger = (error, request, response, next) => {
   logger.error(`${error.message}`);
