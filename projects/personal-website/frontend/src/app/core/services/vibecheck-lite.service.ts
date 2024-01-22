@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Location, VibecheckLiteSubscriptionRequest } from '@models/app.model';
+import { VibecheckLiteSubscriptionRequest } from '@models/app.model';
 import { ENVIRONMENT } from 'src/environments/environment';
+import { Location } from '@prettydamntired/test-lib';
 
 @Injectable({
   providedIn: 'root',
