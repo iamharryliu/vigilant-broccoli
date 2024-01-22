@@ -42,7 +42,7 @@
     "@angular-eslint/template-parser": "17.1.1",
     "@angular/cli": "~17.0.9",
     "@angular/compiler-cli": "^17.0.8",
-    "@prettydamntired/test": "^0.0.6",
+    "@prettydamntired/test": "^0.0.7",
     "@types/jest": "^29.5.5",
     "@typescript-eslint/eslint-plugin": "6.13.1",
     "@typescript-eslint/parser": "6.13.1",
