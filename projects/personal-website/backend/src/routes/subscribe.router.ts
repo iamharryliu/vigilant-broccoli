@@ -6,7 +6,7 @@ import {
 import { NewsletterService } from '../services/newsletter.service';
 import { EncryptionService } from '@prettydamntired/node-tools';
 import { ResponseError } from '../models/error.model';
-import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
+import { HTTP_STATUS_CODES } from '@prettydamntired/test';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));

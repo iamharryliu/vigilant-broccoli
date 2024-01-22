@@ -4,7 +4,7 @@ import {
   EncryptionService,
   MailService,
 } from '@prettydamntired/node-tools';
-import { EmailSubscription } from '@prettydamntired/test-lib';
+import { EmailSubscription } from '@prettydamntired/test';
 
 export class NewsletterService {
   static async subscribeEmail(email: string) {

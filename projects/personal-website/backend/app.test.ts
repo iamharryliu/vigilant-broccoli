@@ -4,7 +4,7 @@ import { EncryptionService } from '@prettydamntired/node-tools';
 import {
   EmailSubscription,
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
-} from '@prettydamntired/test-lib';
+} from '@prettydamntired/test';
 
 const email = 'tester@gmail.com';
 

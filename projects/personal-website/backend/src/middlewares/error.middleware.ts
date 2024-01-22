@@ -1,4 +1,4 @@
-import { HTTP_STATUS_CODES, logger } from '@prettydamntired/test-lib';
+import { HTTP_STATUS_CODES, logger } from '@prettydamntired/test';
 
 export const errorLogger = (error, request, response, next) => {
   logger.error(`${error.message}`);
