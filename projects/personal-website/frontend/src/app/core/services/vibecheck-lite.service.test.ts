@@ -6,7 +6,7 @@ import { TestBed } from '@angular/core/testing';
 import { VibecheckLiteService } from '@app/core/services/vibecheck-lite.service';
 import { VibecheckLiteSubscriptionRequest } from '@models/app.model';
 import { ENVIRONMENT } from 'src/environments/environment';
-import { Location } from '@prettydamntired/test-lib';
+import { Location } from '@prettydamntired/test';
 
 describe('VibecheckLiteService', () => {
   let service: VibecheckLiteService;

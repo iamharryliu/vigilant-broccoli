@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { VibecheckLiteSubscriptionRequest } from '@models/app.model';
 import { ENVIRONMENT } from 'src/environments/environment';
-import { Location } from '@prettydamntired/test-lib';
+import { Location } from '@prettydamntired/test';
 
 @Injectable({
   providedIn: 'root',
