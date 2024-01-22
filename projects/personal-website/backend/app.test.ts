@@ -9,12 +9,12 @@ import {
 const email = 'tester@gmail.com';
 
 describe('Routes', () => {
-  test('Test endpoint', async () => {
+  test('/', async () => {
     const res = await request(app).get('/');
     expect(res.status).toEqual(200);
   });
 
-  describe('send message endpoint', () => {
+  describe(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE, () => {
     it('should send message successfully', async () => {
       const res = await request(app)
         .post(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE)
@@ -27,7 +27,7 @@ describe('Routes', () => {
     });
   });
 
-  describe('subscribe endpoint', () => {
+  describe(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE, () => {
     it('should subscribe successfully', async () => {
       const res = await request(app)
         .post(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE)
@@ -38,7 +38,7 @@ describe('Routes', () => {
     });
   });
 
-  describe('verify subscription endpoint', () => {
+  describe(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.VERIFY_SUBSCRIPTION, () => {
     it('should successfully verify email', async () => {
       await request(app)
         .post(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.VERIFY_SUBSCRIPTION)
