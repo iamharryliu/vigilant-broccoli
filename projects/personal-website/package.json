@@ -14,7 +14,6 @@
   },
   "workspaces": [
     "frontend",
-    "backend",
-    "scripts"
+    "backend"
   ]
 }
