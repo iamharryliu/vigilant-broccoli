@@ -13,7 +13,7 @@
     "lint:commit": "eslint --fix",
     "format:commit": "prettier --write",
     "test:commit": "jest --bail --findRelatedTests",
-    "deploy": "npm i --package-lock-only --workspaces=false && fly deploy --ha=false"
+    "deploy": "fly deploy --ha=false"
   },
   "dependencies": {
     "@prettydamntired/node-tools": "^1.0.11",
