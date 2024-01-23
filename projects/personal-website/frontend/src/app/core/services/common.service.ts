@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment';
 import { SubscribeRequest, MessageRequest } from '@models/app.model';
-import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/test';
+import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/test-lib';
 
 @Injectable({
   providedIn: 'root',
