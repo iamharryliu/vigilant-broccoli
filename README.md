@@ -49,6 +49,8 @@ npm run e2e:personal-website
 
 [Angular](notes/angular.md)
 
+[AWS](notes/aws.md)
+
 [Brew](notes/brew.md)
 
 [Cron](notes/cron.md)
