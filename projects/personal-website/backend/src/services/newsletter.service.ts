@@ -3,8 +3,8 @@ import {
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
   MailService,
-} from '@prettydamntired/node-tools';
-import { EmailSubscription } from '@prettydamntired/test';
+} from '@prettydamntired/test-node-tools';
+import { EmailSubscription } from '@prettydamntired/test-lib';
 
 export class NewsletterService {
   static async subscribeEmail(email: string) {

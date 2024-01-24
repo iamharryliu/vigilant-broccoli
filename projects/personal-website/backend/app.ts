@@ -10,7 +10,8 @@ import { requestLogger } from './src/middlewares/common.middleware';
 import { router as contactRouter } from './src/routes/contact.router';
 import { router as subscribeRouter } from './src/routes/subscribe.router';
 import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
-import { HTTP_STATUS_CODES, logger } from '@prettydamntired/test';
+import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
+import { logger } from '@prettydamntired/test-node-tools';
 
 const app = express();
 app.use(cors(CORS_OPTIONS));

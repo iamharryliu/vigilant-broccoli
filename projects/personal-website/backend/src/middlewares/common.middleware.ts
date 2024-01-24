@@ -1,6 +1,6 @@
-import { RecapchaService } from '@prettydamntired/node-tools';
 import { IS_DEV_ENV } from '../configs/app.const';
-import { HTTP_STATUS_CODES, logger } from '@prettydamntired/test';
+import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
+import { RecapchaService, logger } from '@prettydamntired/test-node-tools';
 
 export const requestLogger = (request, response, next) => {
   logger.info('Request Logged');

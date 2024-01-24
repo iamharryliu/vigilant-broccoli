@@ -5,9 +5,9 @@ import {
 } from '../middlewares/common.middleware';
 import {
   DEFAULT_EMAIL_REQUEST,
-  HTTP_STATUS_CODES,
   MailService,
-} from '@prettydamntired/node-tools';
+} from '@prettydamntired/test-node-tools';
+import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));

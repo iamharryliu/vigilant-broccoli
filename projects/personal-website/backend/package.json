@@ -16,11 +16,12 @@
     "deploy": "fly deploy --ha=false"
   },
   "dependencies": {
-    "@prettydamntired/node-tools": "^1.0.11",
-    "@prettydamntired/test": "^0.0.6",
+    "@prettydamntired/test-lib": "^0.0.25",
+    "@prettydamntired/test-node-tools": "^0.0.12",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "mongoose": "^8.0.1"
+    "mongoose": "^8.0.1",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.4.10",
@@ -34,7 +35,6 @@
     "nodemon": "^3.0.1",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
-    "ts-node": "^10.9.1",
     "typescript": "^5.3.2"
   },
   "lint-staged": {
