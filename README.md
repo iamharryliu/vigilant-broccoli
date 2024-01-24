@@ -28,8 +28,15 @@ pip3 install pre-commit && pre-commit install
 ### General
 
 ```
-npm-recursive-install
+npm run install-all
 npm run monitor-projects
+```
+
+### Personal Website
+
+```
+npm run serve:personal-website
+npm run e2e:personal-website
 ```
 
 ## Projects
@@ -37,13 +44,6 @@ npm run monitor-projects
 ### Grind 75 - [README](projects/grind-75/README.md)
 
 ### Personal Website - [README](projects/personal-website/README.md)
-
-#### Commands
-
-```
-npm run serve:personal-website
-npm run e2e:personal-website
-```
 
 ## Developer Notes
 
