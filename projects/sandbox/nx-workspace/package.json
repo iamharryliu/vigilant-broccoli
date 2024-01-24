@@ -11,7 +11,8 @@
     "lint:commit": "nx affected -t lint",
     "format:commit": "npm run format",
     "test:commit": "nx affected -t test",
-    "buildnpublish:test-lib": "nx test test-lib && cd ./libs/shared/test-lib && npm version patch && nx build test-lib && cd ../../../dist/libs/shared/test-lib && npm publish --access=public && cd ../../../"
+    "buildnpublish:test-lib": "nx test test-lib && cd ./libs/shared/test-lib && npm version patch && nx build test-lib && cd ../../../dist/libs/shared/test-lib && npm publish --access=public && cd ../../../",
+    "buildnpublish:test-node-tools": "nx test @prettydamntired/test-node-tools && cd @prettydamntired/test-node-tools && npm version patch && nx build @prettydamntired/test-node-tools && cd ../../dist/@prettydamntired/test-node-tools && npm publish --access=public && cd ../../../"
   },
   "private": true,
   "devDependencies": {
@@ -75,8 +76,11 @@
     "@angular/platform-browser-dynamic": "~17.0.0",
     "@angular/router": "~17.0.0",
     "axios": "^1.0.0",
+    "crypto": "^1.0.1",
+    "ejs": "^3.1.9",
     "express": "^4.18.1",
     "mongoose": "^8.1.0",
+    "nodemailer": "^6.9.8",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "winston": "^3.11.0",
