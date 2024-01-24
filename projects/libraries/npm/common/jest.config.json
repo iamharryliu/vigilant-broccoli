@@ -1,7 +1,0 @@
-{
-  "transform": {
-    "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest"
-  },
-  "testEnvironment": "node",
-  "moduleFileExtensions": ["ts", "js"]
-}
