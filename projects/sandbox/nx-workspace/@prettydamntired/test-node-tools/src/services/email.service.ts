@@ -3,17 +3,26 @@ import { DEFAULT_EJS_TEMPLATE } from '../consts/email.const';
 import { DEFAULT_EMAIL_REQUEST } from '../consts/email.const';
 import ejs from 'ejs';
 import { logger } from './logger.service';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 export class EmailService {
-  static transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.MY_EMAIL,
-      pass: process.env.MY_EMAIL_PASSWORD,
-    },
-  });
+  email: string;
+  password: string;
+  transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
 
-  static sendEmail(request = DEFAULT_EMAIL_REQUEST) {
+  constructor() {
+    this.email = process.env.MY_EMAIL;
+    this.password = process.env.MY_EMAIL_PASSWORD;
+    this.transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.MY_EMAIL,
+        pass: process.env.MY_EMAIL_PASSWORD,
+      },
+    });
+  }
+
+  sendEmail(request = DEFAULT_EMAIL_REQUEST) {
     const mailOption = {
       from: request.from,
       to: request.to,
@@ -30,17 +39,17 @@ export class EmailService {
     });
   }
 
-  static sendEjsEmail(
+  sendEjsEmail(
     request = DEFAULT_EMAIL_REQUEST,
-    template = DEFAULT_EJS_TEMPLATE
+    template = DEFAULT_EJS_TEMPLATE,
   ) {
     return (ejs.renderFile(template.path, template.data) as any).then(
-      (template) => {
+      template => {
         return this.sendEmail({
           ...request,
           html: template,
         });
-      }
+      },
     );
   }
 }

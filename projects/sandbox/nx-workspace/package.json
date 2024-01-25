@@ -80,7 +80,6 @@
     "@angular/router": "~17.0.0",
     "@fastify/autoload": "~5.7.1",
     "@fastify/sensible": "~5.2.0",
-    "@prettydamntired/node-tools": "^1.0.18",
     "axios": "^1.0.0",
     "crypto": "^1.0.1",
     "ejs": "^3.1.9",
