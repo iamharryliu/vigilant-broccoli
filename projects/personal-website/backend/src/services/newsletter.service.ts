@@ -5,6 +5,7 @@ import {
   MailService,
 } from '@prettydamntired/test-node-tools';
 import { EmailSubscription } from '@prettydamntired/test-lib';
+import { IS_DEV_ENV } from '../configs/app.const';
 
 export class NewsletterService {
   static async subscribeEmail(email: string) {
@@ -24,7 +25,9 @@ export class NewsletterService {
     if (isSubscribed && emailSubscription.isVerified) {
       return 'Email is already verified.';
     }
-    await this.sendVerificationEmail(email);
+    if (!IS_DEV_ENV) {
+      await this.sendVerificationEmail(email);
+    }
     return 'Please check verification email.';
   }
 
