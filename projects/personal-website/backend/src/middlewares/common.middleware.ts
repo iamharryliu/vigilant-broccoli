@@ -20,8 +20,9 @@ export const requireJsonContent = (request, response, next) => {
 export const checkRecaptchaToken = async (request, response, next) => {
   if (request.method !== 'GET') {
     const { recaptchaToken } = request.body;
+    const recaptchaService = new RecapchaService();
     const isTrusted =
-      IS_DEV_ENV || (await RecapchaService.isTrustedRequest(recaptchaToken));
+      IS_DEV_ENV || (await recaptchaService.isTrustedRequest(recaptchaToken));
     if (isTrusted) {
       next();
     } else {

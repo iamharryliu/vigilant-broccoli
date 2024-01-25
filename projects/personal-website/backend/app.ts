@@ -16,7 +16,9 @@ import { logger } from '@prettydamntired/test-node-tools';
 const app = express();
 app.use(cors(CORS_OPTIONS));
 app.use(requestLogger);
-app.get('/', (_, res) => res.status(HTTP_STATUS_CODES.OK).send());
+app.get('/', (_, res) =>
+  res.status(HTTP_STATUS_CODES.OK).send('harryliu-design-express'),
+);
 app.use('/contact', contactRouter);
 app.use('/subscribe', subscribeRouter);
 app.use(errorLogger);

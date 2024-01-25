@@ -32,7 +32,8 @@ export class NewsletterService {
   }
 
   static async sendVerificationEmail(email: string) {
-    const token = EncryptionService.encryptData(email);
+    const encryptionService = new EncryptionService();
+    const token = encryptionService.encryptData(email);
     const confirmLink = `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`;
     const subject = 'Email Verification';
     const template = {
@@ -43,8 +44,8 @@ export class NewsletterService {
         siteUrl: process.env.PERSONAL_WEBSITE_FRONTEND_URL,
       },
     };
-
-    return MailService.sendEjsEmail(
+    const mailService = new MailService();
+    return mailService.sendEjsEmail(
       { ...DEFAULT_EMAIL_REQUEST, to: email, subject },
       template,
     );

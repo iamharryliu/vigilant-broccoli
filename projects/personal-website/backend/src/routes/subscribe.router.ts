@@ -29,7 +29,8 @@ router.post('/email-alerts', requireJsonContent, (req, res) => {
 router.put('/verify-email-subscription', async (req, res, next) => {
   const { token } = req.body;
   try {
-    const email = EncryptionService.decryptData(token);
+    const encryptionService = new EncryptionService();
+    const email = encryptionService.decryptData(token);
     if (await NewsletterService.verifyEmail(email)) {
       return res
         .status(HTTP_STATUS_CODES.OK)

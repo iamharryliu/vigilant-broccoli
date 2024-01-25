@@ -20,7 +20,8 @@ router.post('/send-message', requireJsonContent, async (req, res) => {
   const subject = 'Message from personal website.';
   const text = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
   if (!IS_DEV_ENV) {
-    await MailService.sendEmail({
+    const mailService = new MailService();
+    await mailService.sendEmail({
       ...DEFAULT_EMAIL_REQUEST,
       from,
       subject,

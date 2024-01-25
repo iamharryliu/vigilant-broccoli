@@ -45,7 +45,8 @@ describe('Routes', () => {
         .send({
           email: email,
         });
-      const token = EncryptionService.encryptData(email);
+      const encryptionService = new EncryptionService();
+      const token = encryptionService.encryptData(email);
       const res = await request(app)
         .put(`/subscribe/verify-email-subscription`)
         .send({ token });
