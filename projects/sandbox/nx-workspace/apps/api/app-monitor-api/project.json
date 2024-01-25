@@ -1,0 +1,71 @@
+{
+  "name": "app-monitor-api",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/app-monitor-api/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/api/app-monitor-api",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/api/app-monitor-api/src/main.ts",
+        "tsConfig": "apps/api/app-monitor-api/tsconfig.app.json",
+        "assets": ["apps/api/app-monitor-api/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "app-monitor-api:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "app-monitor-api:build:development"
+        },
+        "production": {
+          "buildTarget": "app-monitor-api:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/api/app-monitor-api/jest.config.ts"
+      }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/api/app-monitor-api/Dockerfile . -t app-monitor-api"
+    }
+  },
+  "tags": []
+}
