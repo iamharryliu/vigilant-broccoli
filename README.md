@@ -41,9 +41,9 @@ npm run e2e:personal-website
 
 ## Projects
 
-- Personal Website - [README](projects/personal-website/README.md)
+- [Personal Website](projects/personal-website/) - [README](projects/personal-website/README.md)
 
-- Grind 75 - [README](projects/grind-75/README.md)
+- [Grind 75](projects/grind-75/) - [README](projects/grind-75/README.md)
 
 ## Developer Notes
 
