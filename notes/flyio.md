@@ -17,3 +17,7 @@ fly secrets deploy
 ## Troubleshooting
 
 - Make sure you have set all environment variables before deploying.
+
+## References
+
+- [Fly IO Monorepo](https://fly.io/docs/reference/monorepo/)

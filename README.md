@@ -41,30 +41,38 @@ npm run e2e:personal-website
 
 ## Projects
 
-### Grind 75 - [README](projects/grind-75/README.md)
+- Personal Website - [README](projects/personal-website/README.md)
 
-### Personal Website - [README](projects/personal-website/README.md)
+- Grind 75 - [README](projects/grind-75/README.md)
 
 ## Developer Notes
 
-[Angular](notes/angular.md)
+- [Angular](notes/angular.md)
 
-[AWS](notes/aws.md)
+- [AWS](notes/aws.md)
 
-[Brew](notes/brew.md)
+- [Brew](notes/brew.md)
 
-[Cron](notes/cron.md)
+- [Cron](notes/cron.md)
 
-[FlyIO](notes/flyio.md)
+- [FlyIO](notes/flyio.md)
 
-[Git](notes/git.md)
+- [Git](notes/git.md)
 
-[Leet Code](notes/leet-code.md)
+- [Leet Code](notes/leet-code.md)
 
-[Monorepo](notes/monorepo.md)
+- [Monorepo](notes/monorepo.md)
 
-[Nx](notes/nx.md)
+- [Nx](notes/nx.md)
 
-[Node](notes/node.md)
+- [Node](notes/node.md)
 
-[Web Dev](notes/web-dev.md)
+- [Web Dev](notes/web-dev.md)
+
+## TODO
+
+- [dotenv-defaults](https://github.com/mrsteele/dotenv-defaults)
+
+- [Express structure](https://blog.treblle.com/egergr/)
+
+- [AWS Lambda](https://dev.to/aws-builders/creating-a-serverless-api-using-aws-lambda-and-nodejs-with-typescript-and-expressjs-4kfk)

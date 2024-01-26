@@ -44,3 +44,7 @@ functions:
 	]
 }
 ```
+
+## References
+
+- [IAM User](https://www.youtube.com/watch?v=HuE-QhrmE1c)
