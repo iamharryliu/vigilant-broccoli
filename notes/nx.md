@@ -16,3 +16,7 @@ nx storybook [project-name]
 nx build-storybook [project-name]
 nx test-storybook [project-name]
 ```
+
+## References
+
+- [Folder Structure](https://nx.dev/concepts/more-concepts/folder-structure)
