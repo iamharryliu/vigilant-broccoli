@@ -55,6 +55,8 @@ npm run e2e:personal-website
 
 - [Cron](notes/cron.md)
 
+- [Design Patterns](notes/design-patterns.md)
+
 - [FlyIO](notes/flyio.md)
 
 - [Git](notes/git.md)
@@ -63,9 +65,13 @@ npm run e2e:personal-website
 
 - [Monorepo](notes/monorepo.md)
 
+- [Network Security](notes/network-security/README.md)
+
 - [Nx](notes/nx.md)
 
 - [Node](notes/node.md)
+
+- [Shell](notes/shell/README.md)
 
 - [Web Dev](notes/web-dev.md)
 
