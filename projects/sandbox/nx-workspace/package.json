@@ -80,6 +80,7 @@
     "@angular/platform-browser-dynamic": "~17.0.0",
     "@angular/router": "~17.0.0",
     "@fastify/autoload": "~5.7.1",
+    "@fastify/cors": "^9.0.0",
     "@fastify/sensible": "~5.2.0",
     "axios": "^1.0.0",
     "crypto": "^1.0.1",
