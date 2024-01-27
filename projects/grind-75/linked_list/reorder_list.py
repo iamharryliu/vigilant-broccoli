@@ -1,5 +1,5 @@
 from typing import Optional
-from common import ListNode
+from linked_list.common import ListNode
 
 
 class Solution:
@@ -32,19 +32,3 @@ class Solution:
             l1.next = l2
             l1 = l2
             l2 = next_l2
-
-
-node1 = ListNode(1)
-node2 = ListNode(2)
-node3 = ListNode(3)
-node4 = ListNode(4)
-node5 = ListNode(5)
-node4.next = node5
-node3.next = node4
-node2.next = node3
-node1.next = node2
-
-Solution.reorderList(node1)
-while node1:
-    print(node1.val)
-    node1 = node1.next

@@ -41,30 +41,44 @@ npm run e2e:personal-website
 
 ## Projects
 
-### Grind 75 - [README](projects/grind-75/README.md)
+- [Personal Website](projects/personal-website/) - [README](projects/personal-website/README.md)
 
-### Personal Website - [README](projects/personal-website/README.md)
+- [Grind 75](projects/grind-75/) - [README](projects/grind-75/README.md)
 
 ## Developer Notes
 
-[Angular](notes/angular.md)
+- [Angular](notes/angular.md)
 
-[AWS](notes/aws.md)
+- [AWS](notes/aws.md)
 
-[Brew](notes/brew.md)
+- [Brew](notes/brew.md)
 
-[Cron](notes/cron.md)
+- [Cron](notes/cron.md)
 
-[FlyIO](notes/flyio.md)
+- [Design Patterns](notes/design-patterns.md)
 
-[Git](notes/git.md)
+- [FlyIO](notes/flyio.md)
 
-[Leet Code](notes/leet-code.md)
+- [Git](notes/git.md)
 
-[Monorepo](notes/monorepo.md)
+- [Leet Code](notes/leet-code.md)
 
-[Nx](notes/nx.md)
+- [Monorepo](notes/monorepo.md)
 
-[Node](notes/node.md)
+- [Network Security](notes/network-security/README.md)
 
-[Web Dev](notes/web-dev.md)
+- [Nx](notes/nx.md)
+
+- [Node](notes/node.md)
+
+- [Shell](notes/shell/README.md)
+
+- [Web Dev](notes/web-dev.md)
+
+## TODO
+
+- [dotenv-defaults](https://github.com/mrsteele/dotenv-defaults)
+
+- [Express structure](https://blog.treblle.com/egergr/)
+
+- [AWS Lambda](https://dev.to/aws-builders/creating-a-serverless-api-using-aws-lambda-and-nodejs-with-typescript-and-expressjs-4kfk)
