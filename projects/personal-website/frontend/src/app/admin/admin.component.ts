@@ -16,7 +16,7 @@ export class AdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.http
-      .get('https://app-monitor-api.fly.dev/')
-      .subscribe(data => (this.data = data));
+      .get<any>('https://app-monitor-api.fly.dev/')
+      .subscribe(res => (this.data = res.data));
   }
 }
