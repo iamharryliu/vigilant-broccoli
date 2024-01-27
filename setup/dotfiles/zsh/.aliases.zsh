@@ -27,6 +27,7 @@ alias venvon='source venv/bin/activate'
 alias greset='git reset HEAD^'
 alias undocommit='greset --soft'
 alias deletecommit='greset --hard'
+alias dropbranches='git branch | grep -v "main" | xargs git branch -D'
 
 # Node
 alias initnpm='rm -rf node_modules package-lock.json && npm i'
