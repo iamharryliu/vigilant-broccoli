@@ -1,4 +1,4 @@
-import { SiteMonitor } from '@prettydamntired/node-tools';
+import { SiteMonitor } from '@prettydamntired/test-node-tools';
 
 const sites = [
   'https://harryliu.design',
@@ -6,10 +6,11 @@ const sites = [
   'https://vibecheck-lite-express.fly.dev/',
   'https://harryliu-design-express.fly.dev/',
 ];
+const siteMonitor = new SiteMonitor();
 
 main();
 async function main() {
   console.log('Site monitor script started.');
-  await Promise.all(sites.map(SiteMonitor.monitorSiteActivity));
+  Promise.all(sites.map(siteMonitor.monitorSiteActivity));
   console.log('Site monitor script completed.');
 }

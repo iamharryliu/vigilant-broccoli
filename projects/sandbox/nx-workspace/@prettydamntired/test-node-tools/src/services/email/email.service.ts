@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
-import { DEFAULT_EJS_TEMPLATE } from '../consts/email.const';
-import { DEFAULT_EMAIL_REQUEST } from '../consts/email.const';
+import { DEFAULT_EJS_TEMPLATE } from '../../consts/email.const';
+import { DEFAULT_EMAIL_REQUEST } from '../../consts/email.const';
 import ejs from 'ejs';
-import { logger } from './logger.service';
+import { logger } from '../logging/logger.service';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 export class EmailService {

@@ -1,7 +1,7 @@
 import http from 'http';
 import https from 'https';
-import { EmailService } from '../services/email.service';
-import { DEFAULT_EMAIL_REQUEST } from '../consts/email.const';
+import { EmailService } from '../email/email.service';
+import { DEFAULT_EMAIL_REQUEST } from '../../consts/email.const';
 
 export class SiteMonitor {
   private emailService: EmailService;
@@ -10,7 +10,7 @@ export class SiteMonitor {
     this.emailService = new EmailService();
   }
 
-  async monitorSiteActivity(site: string) {
+  async monitorSiteActivity(site: string): Promise<void> {
     await SiteMonitor.getSiteStatus(site).then(status => {
       let message = `${site} is OK.`;
       if (!status) {
