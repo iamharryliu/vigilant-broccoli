@@ -10,11 +10,18 @@ import { VerifyEmailSubscriptionPageComponent } from '@pages/verify-email-subscr
 import { VibecheckLiteSubscribePageComponent } from '@pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '@pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
 import { ProjectPageComponent } from '@app/components/pages/projects-page/projects.page';
+import { AdminComponent } from '@app/admin/admin.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
   data: { title: 'home' },
   component: HomePageComponent,
+};
+
+export const ADMIN_ROUTE: Route = {
+  path: 'admin',
+  data: { title: 'admin' },
+  component: AdminComponent,
 };
 
 export const ABOUT_ROUTE: Route = {
@@ -78,6 +85,7 @@ export const UNSUBCSRIBE_VIBECHECK_LITE_ROUTE: Route = {
 
 export const APP_ROUTES: Routes = [
   INDEX_ROUTE,
+  ADMIN_ROUTE,
   ABOUT_ROUTE,
   CONTACT_ROUTE,
   PROJECTS_ROUTE,
