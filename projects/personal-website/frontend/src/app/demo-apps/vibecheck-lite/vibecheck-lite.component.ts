@@ -3,11 +3,9 @@ import { Component } from '@angular/core';
 import { Observable, map, switchMap } from 'rxjs';
 import { CenteredAppLayoutComponent } from '@layouts/centered-app-layout/centered-app-layout.compoenent';
 import { VibecheckLiteService } from '@app/core/services/vibecheck-lite.service';
-import {
-  CardComponent,
-  LoadingSpinnerComponent,
-} from '@prettydamntired/angular-ui-lib';
 import { LocationService } from '@prettydamntired/test-lib';
+import { LoadingSpinnerComponent } from '@components/global/loading-spinner/loading-spinner.component';
+import { CardComponent } from '@app/components/global/card/card.component';
 
 interface VibecheckLiteResponse {
   status: boolean;

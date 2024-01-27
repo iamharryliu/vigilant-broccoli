@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '@services/common.service';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
 import { LINKS } from '@app/core/consts/app-route.const';
-import { LoadingSpinnerComponent } from '@prettydamntired/angular-ui-lib';
+import { LoadingSpinnerComponent } from '@app/components/global/loading-spinner/loading-spinner.component';
 
 @Component({
   standalone: true,

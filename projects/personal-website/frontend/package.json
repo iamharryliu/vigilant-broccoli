@@ -28,7 +28,6 @@
     "@angular/platform-browser": "^17.0.8",
     "@angular/platform-browser-dynamic": "^17.0.8",
     "@angular/router": "^17.0.8",
-    "@prettydamntired/angular-ui-lib": "^0.0.4",
     "@prettydamntired/test-lib": "^0.0.27",
     "ng-recaptcha": "^13.2.1",
     "rxjs": "~7.8.0",

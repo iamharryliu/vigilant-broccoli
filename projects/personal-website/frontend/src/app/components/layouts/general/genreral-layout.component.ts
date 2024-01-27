@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { ReturnTopButtonComponent } from '@app/components/global/return-top-button/return-top-button.component';
 import { ContactComponent } from '@features/contact/contact.component';
 import { FooterComponent } from '@features/footer/footer.component';
 import { NavbarComponent } from '@features/navbar/navbar.component';
 import { NewsLetterSubFormComponent } from '@features/subscribe-form/subscribe-form.component';
-import { ReturnTopButtonComponent } from '@prettydamntired/angular-ui-lib';
 
 @Component({
   standalone: true,

@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { GeneralLayoutComponent } from '@layouts/general/genreral-layout.component';
 import { LINKS } from '@consts/app-route.const';
 import { LinkComponent } from '@app/components/global/link/link.component';
-import { CardComponent } from '@prettydamntired/angular-ui-lib';
+import { CardComponent } from '@app/components/global/card/card.component';
 
 @Component({
   standalone: true,
