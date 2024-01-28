@@ -1,11 +1,17 @@
 # test-node-tools
 
-This library was generated with [Nx](https://nx.dev).
+## Environment Variables
 
-## Building
+```
+# Email
+export MY_EMAIL="value"
+export MY_EMAIL_PASSWORD="value"
 
-Run `nx build test-node-tools` to build the library.
+# Encryption
+export SECRET_KEY="value"
+export SECRET_IV="value"
+export ENCRYPTION_METHOD="value"
 
-## Running unit tests
-
-Run `nx test test-node-tools` to execute the unit tests via [Jest](https://jestjs.io).
+# Recaptcha
+export RECAPTCHA_V3_SECRET_KEY="value"
+```
