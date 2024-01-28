@@ -1,3 +1,4 @@
+import 'dotenv-defaults/config';
 import nodemailer from 'nodemailer';
 import { DEFAULT_EJS_TEMPLATE } from '../../consts/email.const';
 import { DEFAULT_EMAIL_REQUEST } from '../../consts/email.const';
@@ -10,9 +11,9 @@ export class EmailService {
   password: string;
   transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
 
-  constructor() {
-    this.email = process.env.MY_EMAIL;
-    this.password = process.env.MY_EMAIL_PASSWORD;
+  constructor(email = undefined, emailPassword = undefined) {
+    this.email = email || process.env.MY_EMAIL;
+    this.password = emailPassword || process.env.MY_EMAIL_PASSWORD;
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {

@@ -1,8 +1,10 @@
+import 'dotenv-defaults/config';
 export class RecapchaService {
   secretKey: string;
 
-  constructor() {
-    this.secretKey = process.env.RECAPTCHA_V3_SECRET_KEY;
+  constructor(recaptchaV3SecretKey = undefined) {
+    this.secretKey =
+      recaptchaV3SecretKey || process.env.RECAPTCHA_V3_SECRET_KEY;
   }
 
   async isTrustedRequest(token: string) {

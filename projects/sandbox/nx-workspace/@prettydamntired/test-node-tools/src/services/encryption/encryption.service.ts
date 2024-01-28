@@ -1,28 +1,35 @@
+import 'dotenv-defaults/config';
 import crypto from 'crypto';
 
 export class EncryptionService {
-  encryptionSecretKey: string;
-  encryptionSecretIv: string;
+  encryptionMethod: string;
+  secretKey: string;
+  secretIv: string;
 
-  constructor() {
-    this.encryptionSecretKey = crypto
+  constructor(
+    encryptionMethod = undefined,
+    secretKey = undefined,
+    secretIv = undefined,
+  ) {
+    this.encryptionMethod = encryptionMethod || process.env.ENCRYPTION_METHOD;
+    this.secretKey = crypto
       .createHash('sha512')
-      .update(process.env.SECRET_KEY)
+      .update(secretKey || process.env.SECRET_KEY)
       .digest('hex')
       .substring(0, 32);
 
-    this.encryptionSecretIv = crypto
+    this.secretIv = crypto
       .createHash('sha512')
-      .update(process.env.SECRET_IV)
+      .update(secretIv || process.env.SECRET_IV)
       .digest('hex')
       .substring(0, 16);
   }
 
   encryptData(data: string) {
     const cipher = crypto.createCipheriv(
-      process.env.ENCRYPTION_METHOD,
-      this.encryptionSecretKey,
-      this.encryptionSecretIv,
+      this.encryptionMethod,
+      this.secretKey,
+      this.secretIv,
     );
     return Buffer.from(
       cipher.update(data, 'utf8', 'hex') + cipher.final('hex'),
@@ -32,9 +39,9 @@ export class EncryptionService {
   decryptData(encryptedData) {
     const buff = Buffer.from(encryptedData, 'base64');
     const decipher = crypto.createDecipheriv(
-      process.env.ENCRYPTION_METHOD,
-      this.encryptionSecretKey,
-      this.encryptionSecretIv,
+      this.encryptionMethod,
+      this.secretKey,
+      this.secretIv,
     );
     return (
       decipher.update(buff.toString('utf8'), 'hex', 'utf8') +
