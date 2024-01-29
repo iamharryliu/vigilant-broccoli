@@ -40,4 +40,6 @@ alias cdsb='cd ~/vigilant-broccoli/projects/sandbox/'
 alias cdnx='cd ~/vigilant-broccoli/projects/sandbox/nx-workspace/'
 
 # Port
-alias killport='kill -9 $(lsof -ti $1)'
+alias killport3000='kill -9 $(lsof -ti :3000)'
+alias killport4200='kill -9 $(lsof -ti :4200)'
+alias killport5000='kill -9 $(lsof -ti :5000)'
