@@ -11,13 +11,14 @@ const app = express();
 app.use(cors(CORS_OPTIONS));
 
 app.get('/', (_, response) => {
-  response.send('Index');
+  response.send('vibecheck-lite-express');
 });
 
 app.get('/get-outfit-recommendation', async (req, res) => {
   const latitude = Number(req.query.lat);
   const longitude = Number(req.query.lon);
-  const recommendation = await VibecheckLite.getOutfitRecommendation({
+  const vibecheckLite = new VibecheckLite();
+  const recommendation = await vibecheckLite.getOutfitRecommendation({
     latitude,
     longitude,
   });

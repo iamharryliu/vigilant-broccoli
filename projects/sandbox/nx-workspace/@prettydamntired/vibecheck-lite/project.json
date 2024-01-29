@@ -1,0 +1,35 @@
+{
+  "name": "@prettydamntired/vibecheck-lite",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "@prettydamntired/vibecheck-lite/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/@prettydamntired/vibecheck-lite",
+        "tsConfig": "@prettydamntired/vibecheck-lite/tsconfig.lib.json",
+        "packageJson": "@prettydamntired/vibecheck-lite/package.json",
+        "main": "@prettydamntired/vibecheck-lite/src/index.ts",
+        "assets": ["@prettydamntired/vibecheck-lite/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs @prettydamntired/vibecheck-lite {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "@prettydamntired/vibecheck-lite/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

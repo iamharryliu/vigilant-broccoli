@@ -18,6 +18,9 @@
       "@prettydamntired/test-lib": ["libs/shared/test-lib/src/index.ts"],
       "@prettydamntired/test-node-tools": [
         "@prettydamntired/test-node-tools/src/index.ts"
+      ],
+      "@prettydamntired/vibecheck-lite": [
+        "@prettydamntired/vibecheck-lite/src/index.ts"
       ]
     }
   },
