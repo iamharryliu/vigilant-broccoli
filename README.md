@@ -65,7 +65,7 @@ npm run e2e:personal-website
 
 - [Monorepo](notes/monorepo.md)
 
-- [Network Security](notes/network-security/README.md)
+- [Network Security](notes/network-security/network-security.md)
 
 - [Nx](notes/nx.md)
 
