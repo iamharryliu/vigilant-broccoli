@@ -3,7 +3,6 @@ import nodemailer from 'nodemailer';
 import { DEFAULT_EJS_TEMPLATE } from '../../consts/email.const';
 import { DEFAULT_EMAIL_REQUEST } from '../../consts/email.const';
 import ejs from 'ejs';
-import { logger } from '../logging/logger.service';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 export class EmailService {
@@ -23,7 +22,9 @@ export class EmailService {
     });
   }
 
-  sendEmail(request = DEFAULT_EMAIL_REQUEST) {
+  sendEmail(
+    request = DEFAULT_EMAIL_REQUEST,
+  ): Promise<SMTPTransport.SentMessageInfo> {
     const mailOption = {
       from: request.from,
       to: request.to,
@@ -31,19 +32,13 @@ export class EmailService {
       text: request.text,
       html: request.html,
     };
-    return this.transporter.sendMail(mailOption, (error, info) => {
-      if (error) {
-        logger.error(error);
-      } else {
-        logger.info('Email sent: ' + info.response);
-      }
-    });
+    return this.transporter.sendMail(mailOption);
   }
 
   sendEjsEmail(
     request = DEFAULT_EMAIL_REQUEST,
     template = DEFAULT_EJS_TEMPLATE,
-  ) {
+  ): Promise<SMTPTransport.SentMessageInfo> {
     return (ejs.renderFile(template.path, template.data) as any).then(
       template => {
         return this.sendEmail({

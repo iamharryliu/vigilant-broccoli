@@ -1,0 +1,15 @@
+{
+  "name": "personal-website-e2e",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "e2e": "cypress run",
+    "e2e:open": "cypress open"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^13.6.3"
+  }
+}

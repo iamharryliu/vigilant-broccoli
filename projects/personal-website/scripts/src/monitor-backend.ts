@@ -1,4 +1,4 @@
-import { SiteMonitor } from '@prettydamntired/node-tools';
+import { SiteMonitor } from '@prettydamntired/test-node-tools';
 import { exec } from 'child_process';
 
 main();
@@ -16,9 +16,8 @@ async function main() {
 
 function restartServer() {
   console.log('Server is down. Attempting to restart.');
-  const command = 'fly deploy';
   exec(
-    command,
+    'fly deploy',
     { cwd: '/Users/hliu/vigilant-broccoli/projects/personal-website/backend' },
     (error, stdout, stderr) => {
       if (error) {

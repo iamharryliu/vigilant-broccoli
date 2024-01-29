@@ -1,8 +1,9 @@
 import { MongoClient } from 'mongodb';
 import {
   DEFAULT_EMAIL_REQUEST,
-  MailService,
-} from '@prettydamntired/node-tools';
+  EmailService,
+  logger,
+} from '@prettydamntired/test-node-tools';
 import {
   PERSONAL_WEBSITE_DB_COLLECTIONS,
   PERSONAL_WEBSITE_DB_DATABASES,
@@ -18,7 +19,7 @@ export class DatabaseManager {
     await this.deleteOutdatedLogs();
   }
   static async deleteOneWeekOldOrOlderUnverifiedUsers() {
-    console.log('Deleting unverified users started.');
+    logger.info('Deleting unverified users started.');
     const emailSubscriptionsCollection = this.database.collection(
       PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
     );
@@ -30,29 +31,29 @@ export class DatabaseManager {
         dateCreated: { $gt: oneWeekAgo },
         isVerified: false,
       })
-      .then(res => console.log(res));
+      .then(res => logger.info(res));
     await MONGO_DB_CLIENT.close();
-    console.log('Deleting unverified users completed.');
+    logger.info('Deleting unverified users completed.');
   }
 
   static async deleteOutdatedLogs() {
-    console.log('Deleting outdated logs started.');
-    console.log('Deleting outdated logs completed.');
+    logger.info('Deleting outdated logs started.');
+    logger.info('Deleting outdated logs completed.');
   }
 
   static async sendNewsletter() {
-    console.log('Sending newsletter started.');
+    logger.info('sendNewsletter: start');
     try {
-      console.log('Retrieving emails started.');
+      logger.info('getEmails: start');
       const emails = await this.getEmails();
-      console.log('Retrieving emails completed.');
-      console.log('Sending emails started.');
-      console.log(`Emailing ${emails.length} subscriber(s).`);
+      logger.info('getEmails - successful');
+
+      logger.info(`sendEmails: start, emailing ${emails.length} subscriber(s)`);
       this.sendEmails(emails);
-      console.log('Sending emails completed.');
+      logger.info('sendEmails: successful');
     } finally {
       await MONGO_DB_CLIENT.close();
-      console.log('Sending newsletter completed.');
+      logger.info('sendNewsletter: unsuccessful');
     }
   }
 
@@ -69,8 +70,9 @@ export class DatabaseManager {
   }
 
   static sendEmails(emails: string[]) {
+    const emailService = new EmailService();
     for (const to of emails) {
-      MailService.sendEmail({ ...DEFAULT_EMAIL_REQUEST, to });
+      emailService.sendEmail({ ...DEFAULT_EMAIL_REQUEST, to });
     }
   }
 }
