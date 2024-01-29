@@ -40,6 +40,19 @@ alias cdsb='cd ~/vigilant-broccoli/projects/sandbox/'
 alias cdnx='cd ~/vigilant-broccoli/projects/sandbox/nx-workspace/'
 
 # Port
-alias killport3000='kill -9 $(lsof -ti :3000)'
-alias killport4200='kill -9 $(lsof -ti :4200)'
-alias killport5000='kill -9 $(lsof -ti :5000)'
+killport() {
+  if [ -z "$1" ]; then
+    echo "Usage: killport <port>"
+    return 1
+  fi
+
+  local port="$1"
+  local pid=$(lsof -t -i :$port)
+
+  if [ -z "$pid" ]; then
+    echo "No process found on port $port"
+  else
+    echo "Killing process $pid running on port $port"
+    kill -9 "$pid"
+  fi
+}
