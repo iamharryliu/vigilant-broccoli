@@ -10,7 +10,7 @@ Object.defineProperty(global, 'window', {
 
 describe('LocationService', () => {
   describe('getLocation', () => {
-    it('should return the correct location', (done) => {
+    it('should return the correct location', done => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
@@ -18,13 +18,13 @@ describe('LocationService', () => {
         },
       };
       mockGeolocation.getCurrentPosition.mockImplementationOnce(
-        (successCallback) => {
+        successCallback => {
           successCallback(mockPosition);
-        }
+        },
       );
 
       const locationService = new LocationService();
-      locationService.getLocation().subscribe((location) => {
+      locationService.getLocation().subscribe(location => {
         expect(location).toEqual({
           latitude: mockPosition.coords.latitude,
           longitude: mockPosition.coords.longitude,

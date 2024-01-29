@@ -12,5 +12,5 @@ const emailSubscriptionSchema = new mongoose.Schema({
 
 export const EmailSubscription = mongoose.model(
   'EmailSubscription',
-  emailSubscriptionSchema
+  emailSubscriptionSchema,
 );
