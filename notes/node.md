@@ -50,3 +50,5 @@ npm i --package-lock-only --workspaces=false
 [Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik)
 
 [NPM Link and Unlink](https://dev.to/erinbush/npm-linking-and-unlinking-2h1g)
+
+[Mock Server](https://medium.com/geekculture/setting-up-a-mock-backend-with-angular-13-applications-26a21788f7da))

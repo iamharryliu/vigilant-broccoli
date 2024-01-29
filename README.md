@@ -41,9 +41,7 @@ npm run e2e:personal-website
 
 ## Projects
 
-- [Personal Website](projects/personal-website/) - [README](projects/personal-website/README.md)
-
-- [Grind 75](projects/grind-75/) - [README](projects/grind-75/README.md)
+- [Personal Website](projects/personal-website/)
 
 ## Developer Notes
 
@@ -56,6 +54,8 @@ npm run e2e:personal-website
 - [Cron](notes/cron.md)
 
 - [Design Patterns](notes/design-patterns.md)
+
+- [Express](notes/express.md)
 
 - [FlyIO](notes/flyio.md)
 
@@ -71,7 +71,7 @@ npm run e2e:personal-website
 
 - [Node](notes/node.md)
 
-- [Shell](notes/shell/README.md)
+- [Shell](notes/shell/shell.md)
 
 - [Web Dev](notes/web-dev.md)
 
