@@ -37,7 +37,7 @@ alias initnpmserve='initnpm && npm run serve'
 alias cdvb='cd ~/vigilant-broccoli/'
 alias cdpw='cd ~/vigilant-broccoli/projects/personal-website/'
 alias cdsb='cd ~/vigilant-broccoli/projects/sandbox/'
-alias cdnx='cd ~/vigilant-broccoli/projects/sandbox/nx-workspace/'
+alias cdnx='cd ~/vigilant-broccoli/projects/nx-workspace/'
 
 # Port
 killport() {
