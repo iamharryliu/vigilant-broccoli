@@ -9,12 +9,14 @@ class Solution:
         Do not return anything, modify head in-place instead.
         """
 
+        # Get middle of ll
         slow = head
         fast = head.next
         while fast and fast.next:
             slow = slow.next
             fast = fast.next.next
 
+        # Reverse second half of ll
         prev = None
         curr = slow.next
         while curr:
@@ -25,6 +27,7 @@ class Solution:
 
         slow.next = None
 
+        # Combine lls
         l1 = head
         l2 = prev
         while l2:
