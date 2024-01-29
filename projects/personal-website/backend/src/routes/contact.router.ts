@@ -5,7 +5,7 @@ import {
 } from '../middlewares/common.middleware';
 import {
   DEFAULT_EMAIL_REQUEST,
-  MailService,
+  EmailService,
 } from '@prettydamntired/test-node-tools';
 import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
 import { IS_DEV_ENV } from '../configs/app.const';
@@ -20,7 +20,7 @@ router.post('/send-message', requireJsonContent, async (req, res) => {
   const subject = 'Message from personal website.';
   const text = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
   if (!IS_DEV_ENV) {
-    const mailService = new MailService();
+    const mailService = new EmailService();
     await mailService.sendEmail({
       ...DEFAULT_EMAIL_REQUEST,
       from,

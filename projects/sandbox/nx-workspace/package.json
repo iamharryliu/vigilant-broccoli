@@ -14,8 +14,8 @@
     "buildnpublish:test-lib": "nx test test-lib && cd ./libs/shared/test-lib && npm version patch && nx build test-lib && cd ../../../dist/libs/shared/test-lib && npm publish --access=public && cd ../../../",
     "buildnpublish:test-node-tools": "nx test @prettydamntired/test-node-tools && cd @prettydamntired/test-node-tools && npm version patch && nx build @prettydamntired/test-node-tools && cd ../../dist/@prettydamntired/test-node-tools && npm publish --access=public && cd ../../../",
     "buildnpublish:vibecheck-lite": "nx test @prettydamntired/vibecheck-lite && cd @prettydamntired/vibecheck-lite && npm version patch && nx build @prettydamntired/vibecheck-lite && cd ../../dist/@prettydamntired/vibecheck-lite && npm publish --access=public && cd ../../../",
-    "deploy:app-monitor-api": "nx build app-monitor-api && flyctl deploy --dockerfile ./apps/api/app-monitor-api/Dockerfile --config ./apps/api/app-monitor-api/fly.toml  && curl -I -m 5 https://app-monitor-api.fly.dev/",
-    "deploy:vibecheck-lite-express": "nx build app-monitor-api && flyctl deploy --dockerfile ./apps/api/vibecheck-lite-express/Dockerfile --config ./apps/api/vibecheck-lite-express/fly.toml && curl -I -m 5 https://vibecheck-lite-express.fly.dev/"
+    "deploy:app-monitor-api": "nx build app-monitor-api && flyctl deploy --dockerfile ./apps/api/app-monitor-api/Dockerfile --config ./apps/api/app-monitor-api/fly.toml  && curl -I -m 10 https://app-monitor-api.fly.dev/",
+    "deploy:vibecheck-lite-express": "nx build app-monitor-api && flyctl deploy --dockerfile ./apps/api/vibecheck-lite-express/Dockerfile --config ./apps/api/vibecheck-lite-express/fly.toml && curl -I -m 10 https://vibecheck-lite-express.fly.dev/"
   },
   "private": true,
   "devDependencies": {
@@ -40,7 +40,6 @@
     "@nx/web": "17.2.8",
     "@nx/webpack": "17.2.8",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
-    "@prettydamntired/test-node-tools": "^0.0.20",
     "@schematics/angular": "~17.0.0",
     "@svgr/webpack": "^8.0.1",
     "@swc-node/register": "~1.6.7",

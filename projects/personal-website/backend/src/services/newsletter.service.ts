@@ -2,7 +2,7 @@ import path from 'path';
 import {
   DEFAULT_EMAIL_REQUEST,
   EncryptionService,
-  MailService,
+  EmailService,
 } from '@prettydamntired/test-node-tools';
 import { EmailSubscription } from '@prettydamntired/test-lib';
 import { IS_DEV_ENV } from '../configs/app.const';
@@ -44,7 +44,7 @@ export class NewsletterService {
         siteUrl: process.env.PERSONAL_WEBSITE_FRONTEND_URL,
       },
     };
-    const mailService = new MailService();
+    const mailService = new EmailService();
     return mailService.sendEjsEmail(
       { ...DEFAULT_EMAIL_REQUEST, to: email, subject },
       template,

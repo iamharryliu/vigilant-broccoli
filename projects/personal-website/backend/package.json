@@ -13,11 +13,11 @@
     "lint:commit": "eslint --fix",
     "format:commit": "prettier --write",
     "test:commit": "jest --bail --findRelatedTests",
-    "deploy": "fly deploy --ha=false"
+    "deploy": "fly deploy --ha=false && curl -I -m 10 https://harryliu-design-express.fly.dev/"
   },
   "dependencies": {
     "@prettydamntired/test-lib": "^0.0.25",
-    "@prettydamntired/test-node-tools": "^0.0.16",
+    "@prettydamntired/test-node-tools": "^0.0.26",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "mongoose": "^8.0.1",
