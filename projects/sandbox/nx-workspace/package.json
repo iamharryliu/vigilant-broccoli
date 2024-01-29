@@ -14,7 +14,8 @@
     "buildnpublish:test-lib": "nx test test-lib && cd ./libs/shared/test-lib && npm version patch && nx build test-lib && cd ../../../dist/libs/shared/test-lib && npm publish --access=public && cd ../../../",
     "buildnpublish:test-node-tools": "nx test @prettydamntired/test-node-tools && cd @prettydamntired/test-node-tools && npm version patch && nx build @prettydamntired/test-node-tools && cd ../../dist/@prettydamntired/test-node-tools && npm publish --access=public && cd ../../../",
     "buildnpublish:vibecheck-lite": "nx test @prettydamntired/vibecheck-lite && cd @prettydamntired/vibecheck-lite && npm version patch && nx build @prettydamntired/vibecheck-lite && cd ../../dist/@prettydamntired/vibecheck-lite && npm publish --access=public && cd ../../../",
-    "deploy:app-monitor-api": "nx build app-monitor-api && flyctl deploy --dockerfile ./apps/api/app-monitor-api/Dockerfile --config ./apps/api/app-monitor-api/fly.toml"
+    "deploy:app-monitor-api": "nx build app-monitor-api && flyctl deploy --dockerfile ./apps/api/app-monitor-api/Dockerfile --config ./apps/api/app-monitor-api/fly.toml",
+    "deploy:vibecheck-lite-express": "nx build app-monitor-api && flyctl deploy --dockerfile ./apps/api/vibecheck-lite-express/Dockerfile --config ./apps/api/vibecheck-lite-express/fly.toml"
   },
   "private": true,
   "devDependencies": {
