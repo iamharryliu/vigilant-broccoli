@@ -38,3 +38,6 @@ alias cdvb='cd ~/vigilant-broccoli/'
 alias cdpw='cd ~/vigilant-broccoli/projects/personal-website/'
 alias cdsb='cd ~/vigilant-broccoli/projects/sandbox/'
 alias cdnx='cd ~/vigilant-broccoli/projects/sandbox/nx-workspace/'
+
+# Port
+alias killport='kill -9 $(lsof -ti $1)'
