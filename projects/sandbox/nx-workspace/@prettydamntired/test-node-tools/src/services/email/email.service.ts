@@ -35,7 +35,7 @@ export class EmailService {
     return this.transporter.sendMail(mailOption);
   }
 
-  sendEjsEmail(
+  async sendEjsEmail(
     request = DEFAULT_EMAIL_REQUEST,
     template = DEFAULT_EJS_TEMPLATE,
   ): Promise<SMTPTransport.SentMessageInfo> {

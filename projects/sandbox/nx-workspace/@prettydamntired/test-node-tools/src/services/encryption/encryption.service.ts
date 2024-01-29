@@ -25,7 +25,7 @@ export class EncryptionService {
       .substring(0, 16);
   }
 
-  encryptData(data: string) {
+  encryptData(data: string): string {
     const cipher = crypto.createCipheriv(
       this.encryptionMethod,
       this.secretKey,
@@ -36,7 +36,7 @@ export class EncryptionService {
     ).toString('base64');
   }
 
-  decryptData(encryptedData) {
+  decryptData(encryptedData): string {
     const buff = Buffer.from(encryptedData, 'base64');
     const decipher = crypto.createDecipheriv(
       this.encryptionMethod,

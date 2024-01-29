@@ -1,4 +1,3 @@
-export * from './lib/test-node-tools';
 // Consts
 export * from './consts/email.const';
 // Models

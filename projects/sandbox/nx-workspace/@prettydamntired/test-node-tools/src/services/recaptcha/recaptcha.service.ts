@@ -7,7 +7,7 @@ export class RecapchaService {
       recaptchaV3SecretKey || process.env.RECAPTCHA_V3_SECRET_KEY;
   }
 
-  async isTrustedRequest(token: string) {
+  async isTrustedRequest(token: string): Promise<boolean> {
     return fetch(`https://www.google.com/recaptcha/api/siteverify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
