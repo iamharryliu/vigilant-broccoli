@@ -53,6 +53,8 @@ npm run e2e:personal-website
 
 - [Cron](notes/cron.md)
 
+- [Cooking](notes/cooking.md)
+
 - [Design Patterns](notes/design-patterns.md)
 
 - [Express](notes/express.md)
