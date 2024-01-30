@@ -28,7 +28,8 @@ alias pipdump='pip freeze  > requirements.txt'
 alias greset='git reset HEAD^'
 alias undocommit='greset --soft'
 alias deletecommit='greset --hard'
-alias dropbranches='git branch | grep -v "main" | xargs git branch -D'
+alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
+alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs git push origin --delete'
 
 # Node
 alias initnpm='rm -rf node_modules package-lock.json && npm i'
