@@ -1,5 +1,5 @@
 # Install Brew packages.
-brew bundle --file ~/vigilant-broccoli/setup/Brewfile
+brew bundle --file ~/vigilant-broccoli/setup/mac/Brewfile
 
 # Setup dotfiles.
 ln -s ~/vigilant-broccoli/setup/dotfiles/.gitconfig ~/.gitconfig

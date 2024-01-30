@@ -14,8 +14,8 @@ brew install git
 
 # Clone monorepo and run install script.
 cd ~ && git clone git@github.com:iamharryliu/vigilant-broccoli.git
-chmod +x ~/vigilant-broccoli/setup/install.sh
-~/vigilant-broccoli/setup/install.sh
+chmod +x ~/vigilant-broccoli/setup/brew/install.sh
+~/vigilant-broccoli/setup/brew/install.sh
 
 cd ~/vigilant-broccoli
 npm i -g recursive-install

@@ -19,9 +19,10 @@ alias ltr='la -rt'
 # Python
 alias python=python3
 alias newvenv='rm -r venv; python -m venv venv; source venv/bin/activate'
-alias makevenv='rm -r venv; python -m venv venv; source venv/bin/activate; pip install -r requirements.txt; pip freeze  > requirements.txt'
+alias makevenv='rm -r venv; python -m venv venv; source venv/bin/activate; pip install -r requirements.txt'
 alias runvenv='source venv/bin/activate; python run.py'
 alias venvon='source venv/bin/activate'
+alias pipdump='pip freeze  > requirements.txt'
 
 # Git
 alias greset='git reset HEAD^'
@@ -56,3 +57,6 @@ killport() {
     kill -9 "$pid"
   fi
 }
+
+# Brew
+alias brewdump='rm ~/vigilant-broccoli/setup/mac/Brewfile && brew bundle dump --file=~/vigilant-broccoli/setup/mac/Brewfile'

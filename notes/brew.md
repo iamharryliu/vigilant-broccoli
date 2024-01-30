@@ -4,6 +4,6 @@
 
 ```
 brew update
-brew bundle dump
-brew bundle --file ~/vigilant-broccoli/setup/Brewfile
+brew bundle dump --file [filename]
+brew bundle --file [filename]
 ```
