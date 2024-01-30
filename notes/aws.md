@@ -4,14 +4,22 @@
 
 CLI requires AWS user access key, secrey access key, region.
 
-### AWS
+### AWS CLI
+
+Setup and Configuration
 
 ```
 brew install awscli
 aws configure
 ```
 
-### Serverless
+Commands
+
+```
+aws iam list-users
+```
+
+### Serverless CLI
 
 ```
 npm install -g serverless
