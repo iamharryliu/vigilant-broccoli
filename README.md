@@ -63,6 +63,8 @@ npm run e2e:personal-website
 
 - [Leet Code](notes/leet-code.md)
 
+- [Javascript](notes/javascript.md)
+
 - [Monorepo](notes/monorepo.md)
 
 - [Network Security](notes/network-security/network-security.md)
