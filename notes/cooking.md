@@ -18,7 +18,7 @@
 
 ## Rice
 
-- Rice 1:1.5
+- 1:1.5 rice to water
 
 # Noodles
 
