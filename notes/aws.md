@@ -1,5 +1,14 @@
 # AWS
 
+## CLI
+
+CLI requires AWS user access key, secrey access key, region.
+
+```
+brew install awscli
+aws configure
+```
+
 ## EC2
 
 ```
