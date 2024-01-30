@@ -4,9 +4,18 @@
 
 CLI requires AWS user access key, secrey access key, region.
 
+### AWS
+
 ```
 brew install awscli
 aws configure
+```
+
+### Serverless
+
+```
+npm install -g serverless
+serverless config credentials --provider aws --key [access-key] --secret [secret-access-key]
 ```
 
 ## EC2
@@ -25,13 +34,20 @@ ssh -i [pemfile] [ec2-user]@[ec2-ip-address]
 ## Lambda
 
 ```
-npm install -g serverless
+# package.json
+"scripts": {
+	"build": "rimraf dist && tsc"
+}
 ```
 
 ```
-npm i serverless-http
-serverless config credentials --provider aws --key [access-key] --secret [secret-access-key]
-serverless deploy
+import serverless from 'serverless-http';
+
+
+...express code
+
+
+export const handler = serverless(app);
 ```
 
 ```
@@ -46,6 +62,11 @@ functions:
     events:
       - http: ANY /
       - http: ANY /{proxy+}
+```
+
+```
+npm i rimraf serverless-http
+npm run build && serverless deploy
 ```
 
 ## S3
@@ -70,3 +91,4 @@ functions:
 ## References
 
 - [IAM User](https://www.youtube.com/watch?v=HuE-QhrmE1c)
+- [Serverless API](https://dev.to/aws-builders/creating-a-serverless-api-using-aws-lambda-and-nodejs-with-typescript-and-expressjs-4kfk)
