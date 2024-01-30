@@ -83,8 +83,6 @@ npm run e2e:personal-website
 
 - [Express structure](https://blog.treblle.com/egergr/)
 
-- [AWS Lambda](https://dev.to/aws-builders/creating-a-serverless-api-using-aws-lambda-and-nodejs-with-typescript-and-expressjs-4kfk)
-
 - Nx library testing
 
 - Nx scripts
