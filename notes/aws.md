@@ -25,18 +25,14 @@ chmod 400 [pemfile]
 ssh -i [pemfile] [ec2-user]@[ec2-ip-address]
 ```
 
-### References
-
-[EC2 Server](https://www.youtube.com/watch?v=T-Pum2TraX4)
-
-[Node on Ubuntu](https://www.freecodecamp.org/news/how-to-install-node-js-on-ubuntu/)
-
 ## Lambda
 
 ```
 # package.json
 "scripts": {
+	...
 	"build": "rimraf dist && tsc"
+	...
 }
 ```
 
@@ -44,7 +40,7 @@ ssh -i [pemfile] [ec2-user]@[ec2-ip-address]
 import serverless from 'serverless-http';
 
 
-...express code
+	...express code...
 
 
 export const handler = serverless(app);
@@ -91,4 +87,6 @@ npm run build && serverless deploy
 ## References
 
 - [IAM User](https://www.youtube.com/watch?v=HuE-QhrmE1c)
+- [EC2 Server](https://www.youtube.com/watch?v=T-Pum2TraX4)
+- [Node on Ubuntu](https://www.freecodecamp.org/news/how-to-install-node-js-on-ubuntu/)
 - [Serverless API](https://dev.to/aws-builders/creating-a-serverless-api-using-aws-lambda-and-nodejs-with-typescript-and-expressjs-4kfk)
