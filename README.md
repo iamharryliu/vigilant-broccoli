@@ -55,7 +55,7 @@ npm run e2e:personal-website
 
 - [Design Patterns](notes/design-patterns.md)
 
-- [Express](notes/express.md)
+- [Express](notes/web-dev/backend/express.md)
 
 - [FlyIO](notes/flyio.md)
 
@@ -76,6 +76,12 @@ npm run e2e:personal-website
 - [Shell](notes/shell/shell.md)
 
 - [Web Dev](notes/web-dev/web-dev.md)
+  - [Frontend](notes/web-dev/frontend/frontend.md)
+    - [Angular](notes/web-dev/frontend/angular.md)
+    - [React](notes/web-dev/frontend//react.md)
+    - [Bootstrap](notes/web-dev/frontend/bootstrap.md)
+  - [Backend](notes/web-dev/backend/backend.md)
+    - [Express](notes/web-dev/backend/express.md)
 
 ## TODO
 
