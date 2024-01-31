@@ -45,8 +45,6 @@ npm run e2e:personal-website
 
 ## Developer Notes
 
-- [Angular](notes/angular.md)
-
 - [AWS](notes/aws.md)
 
 - [Brew](notes/brew.md)
@@ -77,7 +75,7 @@ npm run e2e:personal-website
 
 - [Shell](notes/shell/shell.md)
 
-- [Web Dev](notes/web-dev.md)
+- [Web Dev](notes/web-dev/web-dev.md)
 
 ## TODO
 

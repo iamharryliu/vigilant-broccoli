@@ -1,5 +1,10 @@
 # Web Developer
 
+## Notes
+
+- [Angular](./frontend/angular.md)
+- [Bootstrap](./frontend/bootstrap.md)
+
 ## Backend Developer
 
 - serverside
