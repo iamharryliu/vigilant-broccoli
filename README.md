@@ -43,39 +43,28 @@ npm run e2e:personal-website
 
 - [Personal Website](projects/personal-website/)
 
-## Developer Notes
+## Notes
 
-- [AWS](notes/aws.md)
+- General
 
-- [Brew](notes/brew.md)
+  - [Cooking](notes/cooking.md)
 
-- [Cron](notes/cron.md)
+- Software
 
-- [Cooking](notes/cooking.md)
+  - [Design Patterns](notes/design-patterns.md)
+  - [Leet Code](notes/leet-code.md)
 
-- [Design Patterns](notes/design-patterns.md)
+- OS
 
-- [Express](notes/web-dev/backend/express.md)
-
-- [FlyIO](notes/flyio.md)
-
-- [Git](notes/git.md)
-
-- [Leet Code](notes/leet-code.md)
-
-- [Javascript](notes/javascript.md)
-
-- [Monorepo](notes/monorepo.md)
-
-- [Network Security](notes/network-security/network-security.md)
-
-- [Nx](notes/nx.md)
-
-- [Node](notes/node.md)
-
-- [Shell](notes/shell/shell.md)
+  - [Brew](notes/brew.md)
+  - [Shell](notes/shell/shell.md)
 
 - [Web Dev](notes/web-dev/web-dev.md)
+
+  - [Javascript](notes/javascript.md)
+  - [Node](notes/node.md)
+  - [Monorepo](notes/monorepo.md)
+  - [Nx](notes/nx.md)
   - [Frontend](notes/web-dev/frontend/frontend.md)
     - [Angular](notes/web-dev/frontend/angular.md)
     - [React](notes/web-dev/frontend//react.md)
@@ -83,6 +72,13 @@ npm run e2e:personal-website
   - [Backend](notes/web-dev/backend/backend.md)
     - [Express](notes/web-dev/backend/express.md)
   - [Devops](notes/web-dev/devops/devops.md)
+
+    - [AWS](notes/aws.md)
+    - [Cron](notes/cron.md)
+    - [FlyIO](notes/flyio.md)
+    - [Git](notes/git.md)
+
+  - [Network Security](notes/network-security/network-security.md)
 
 ## TODO
 
