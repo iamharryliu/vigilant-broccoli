@@ -82,8 +82,6 @@ npm run e2e:personal-website
 
 ## TODO
 
-- [Express structure](https://blog.treblle.com/egergr/)
-
 - Nx library testing
 
 - Nx scripts
