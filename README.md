@@ -82,6 +82,7 @@ npm run e2e:personal-website
     - [Bootstrap](notes/web-dev/frontend/bootstrap.md)
   - [Backend](notes/web-dev/backend/backend.md)
     - [Express](notes/web-dev/backend/express.md)
+  - [Devops](notes/web-dev/devops/devops.md)
 
 ## TODO
 
