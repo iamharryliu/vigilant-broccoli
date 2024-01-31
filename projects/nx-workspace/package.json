@@ -3,11 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "serve:frontend": "nx serve angular-ui",
     "lint": "nx run-many -t lint --fix",
     "format": "nx format:write",
     "test": "nx run-many -t test",
-    "e2e": "npx nx run angular-ui-e2e:e2e &&  npx nx run express-api-e2e:e2e",
     "lint:commit": "nx affected -t lint",
     "format:commit": "npm run format",
     "test:commit": "nx affected -t test",
