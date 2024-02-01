@@ -16,7 +16,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs @prettydamntired/vibecheck-lite {args.ver} {args.tag}",
+      "command": "nx test @prettydamntired/vibecheck-lite && cd @prettydamntired/vibecheck-lite && npm version patch && cd ../../dist/@prettydamntired/vibecheck-lite && npm publish --access=public && cd ../../../",
       "dependsOn": ["build"]
     },
     "lint": {

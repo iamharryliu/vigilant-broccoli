@@ -16,7 +16,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs @prettydamntired/test-node-tools {args.ver} {args.tag}",
+      "command": "nx test @prettydamntired/test-node-tools && cd @prettydamntired/test-node-tools && npm version patch && cd ../../dist/@prettydamntired/test-node-tools && npm publish --access=public && cd ../../../",
       "dependsOn": ["build"]
     },
     "lint": {

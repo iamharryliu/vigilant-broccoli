@@ -1,6 +1,6 @@
 {
   "name": "@prettydamntired/vibecheck-lite",
-  "version": "1.0.13",
+  "version": "1.0.18",
   "dependencies": {
     "@prettydamntired/test-lib": "*",
     "dotenv-defaults": "^5.0.2",

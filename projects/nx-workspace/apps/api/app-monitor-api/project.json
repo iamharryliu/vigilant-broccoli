@@ -65,6 +65,10 @@
     "docker-build": {
       "dependsOn": ["build"],
       "command": "docker build -f apps/api/app-monitor-api/Dockerfile . -t app-monitor-api"
+    },
+    "deploy": {
+      "command": "flyctl deploy --dockerfile ./apps/api/app-monitor-api/Dockerfile --config ./apps/api/app-monitor-api/fly.toml  && curl -I -m 10 https://app-monitor-api.fly.dev/",
+      "dependsOn": ["build"]
     }
   },
   "tags": []
