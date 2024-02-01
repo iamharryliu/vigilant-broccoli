@@ -16,8 +16,8 @@
       }
     },
     "publish": {
-      "command": "nx test @prettydamntired/vibecheck-lite && cd @prettydamntired/vibecheck-lite && npm version patch && cd ../../dist/@prettydamntired/vibecheck-lite && npm publish --access=public && cd ../../../",
-      "dependsOn": ["build"]
+      "command": "cd @prettydamntired/vibecheck-lite && npm version patch && cd ../../dist/@prettydamntired/vibecheck-lite && npm publish --access=public && cd ../../../",
+      "dependsOn": ["build", "test", "lint"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",

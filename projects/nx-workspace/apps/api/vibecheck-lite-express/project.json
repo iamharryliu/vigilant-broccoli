@@ -68,8 +68,8 @@
       "command": "docker build -f apps/api/vibecheck-lite-express/Dockerfile . -t vibecheck-lite-express"
     },
     "deploy": {
-      "command": "nx build vibecheck-lite-express && flyctl deploy --dockerfile ./apps/api/vibecheck-lite-express/Dockerfile --config ./apps/api/vibecheck-lite-express/fly.toml && curl -I -m 10 https://vibecheck-lite-express.fly.dev/",
-      "dependsOn": ["build"]
+      "command": "flyctl deploy --dockerfile ./apps/api/vibecheck-lite-express/Dockerfile --config ./apps/api/vibecheck-lite-express/fly.toml && curl -I -m 10 https://vibecheck-lite-express.fly.dev/",
+      "dependsOn": ["build", "test", "lint"]
     }
   },
   "tags": []

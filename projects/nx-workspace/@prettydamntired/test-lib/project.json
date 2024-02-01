@@ -15,8 +15,8 @@
       }
     },
     "publish": {
-      "command": "nx test @prettydamntired/test-lib && cd @prettydamntired/test-lib && npm version patch && cd ../../dist/@prettydamntired/test-lib && npm publish --access=public && cd ../../../",
-      "dependsOn": ["build"]
+      "command": "cd @prettydamntired/test-lib && npm version patch && cd ../../dist/@prettydamntired/test-lib && npm publish --access=public && cd ../../../",
+      "dependsOn": ["build", "test", "lint"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
