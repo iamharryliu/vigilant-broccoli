@@ -31,16 +31,20 @@ Creamy Vegetable Soup
 
 ```
 Ingredients
+
 - 1 large onion
 - 1 pound carrots, peeled (4 to 5 medium)
 - 4 celery sticks
+- 3 medium or 6 small potatos
+
 - olive oil
 - 1/4 tsp pepper flakes
-- 3 medium or 6 small potatoes
 - 3 garlic cloves halved
+
 - 3 cups of stock
 - 2 bay leaves
 - 1/2 tsp dried thyme
+
 - 1/4 cup of cream
 
 Steps

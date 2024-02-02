@@ -85,3 +85,5 @@ npm run e2e:personal-website
 - Nx library testing
 
 - Nx scripts
+
+- FlyIO destroy and create apps
