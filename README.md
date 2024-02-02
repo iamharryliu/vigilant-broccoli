@@ -81,7 +81,7 @@ npm run e2e:personal-website
 
 ## TODO
 
-- Nx scripts
+- [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
 
 - FlyIO destroy and create apps
 
@@ -94,3 +94,7 @@ npm run e2e:personal-website
 - nx cloud
 
 - git docs table of contents
+
+- fix: vibecheck-flask test cases
+
+  -
