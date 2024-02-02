@@ -7,6 +7,7 @@ ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/.rc.zsh ~/.zshrc
 ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/.aliases.zsh ~/.zsh_aliases
 
 # Install Node dependencies.
+brew link node@20
 npm install -g ts-node
 npm install -g @angular/cli
 cd ~/vigilant-broccoli
