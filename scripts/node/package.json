@@ -3,6 +3,6 @@
     "monitor-projects": "ts-node monitor-sites.ts"
   },
   "devDependencies": {
-    "@prettydamntired/test-node-tools": "^0.0.19"
+    "@prettydamntired/test-node-tools": "^0.0.34"
   }
 }

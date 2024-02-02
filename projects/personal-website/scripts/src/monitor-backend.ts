@@ -1,35 +1,35 @@
-import { SiteMonitor } from '@prettydamntired/test-node-tools';
+import { SiteMonitor, logger } from '@prettydamntired/test-node-tools';
 import { exec } from 'child_process';
 
 main();
 
 async function main() {
-  console.log('Backend monitor script started.');
+  logger.info('Backend monitor script started.');
   const status = await SiteMonitor.getSiteStatus(
     'https://harryliu-design-express.fly.dev/',
   );
   if (!status) {
     restartServer();
   }
-  console.log('Backend monitor script completed.');
+  logger.info('Backend monitor script completed.');
 }
 
 function restartServer() {
-  console.log('Server is down. Attempting to restart.');
+  logger.info('Server is down. Attempting to restart.');
   exec(
     'fly deploy',
     { cwd: '/Users/hliu/vigilant-broccoli/projects/personal-website/backend' },
     (error, stdout, stderr) => {
       if (error) {
-        console.log(`error: ${error.message}`);
+        logger.info(`error: ${error.message}`);
         return;
       }
       if (stderr) {
-        console.log(`stderr: ${stderr}`);
+        logger.info(`stderr: ${stderr}`);
         return;
       }
-      console.log(`stdout: ${stdout}`);
-      console.log(`Site successfully restarted.`);
+      logger.info(`stdout: ${stdout}`);
+      logger.info(`Site successfully restarted.`);
     },
   );
 }

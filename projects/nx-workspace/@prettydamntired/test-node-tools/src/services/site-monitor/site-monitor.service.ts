@@ -2,6 +2,7 @@ import http from 'http';
 import https from 'https';
 import { EmailService } from '../email/email.service';
 import { DEFAULT_EMAIL_REQUEST } from '../../consts/email.const';
+import { logger } from '../logging/logger.service';
 
 export class SiteMonitor {
   private emailService: EmailService;
@@ -22,7 +23,7 @@ export class SiteMonitor {
           text: message,
         });
       }
-      console.log(message);
+      logger.info(message);
     });
   }
 

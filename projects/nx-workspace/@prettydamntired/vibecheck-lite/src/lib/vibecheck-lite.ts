@@ -1,6 +1,7 @@
 import 'dotenv-defaults/config';
 import { Location } from '@prettydamntired/test-lib';
 import OpenAI from 'openai';
+import { logger } from '@prettydamntired/test-node-tools';
 
 export class VibecheckLite {
   private openai: OpenAI;
@@ -30,7 +31,7 @@ export class VibecheckLite {
       const res = completion.choices[0].message.content as string;
       return res;
     } catch (err) {
-      console.log(err);
+      logger.error(err);
       return 'Something went wrong.';
     }
   }
@@ -46,7 +47,7 @@ export class VibecheckLite {
       const requestData = data.list.slice(0, 4);
       return requestData;
     } catch (err) {
-      console.log(err);
+      logger.error(err);
     }
   }
 }
