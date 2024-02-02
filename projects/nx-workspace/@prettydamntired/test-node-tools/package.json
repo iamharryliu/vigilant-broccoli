@@ -1,6 +1,6 @@
 {
   "name": "@prettydamntired/test-node-tools",
-  "version": "0.0.31",
+  "version": "0.0.33",
   "dependencies": {
     "crypto": "^1.0.1",
     "ejs": "3.1.9",
