@@ -14,13 +14,8 @@ brew install git
 
 # Clone monorepo and run install script.
 cd ~ && git clone git@github.com:iamharryliu/vigilant-broccoli.git
-chmod +x ~/vigilant-broccoli/setup/brew/install.sh
+chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 ~/vigilant-broccoli/setup/brew/install.sh
-
-cd ~/vigilant-broccoli
-npm i -g recursive-install
-npm-recursive-install
-pip3 install pre-commit && pre-commit install
 ```
 
 ## Commands
@@ -87,3 +82,9 @@ npm run e2e:personal-website
 - Nx scripts
 
 - FlyIO destroy and create apps
+
+- Storing .env
+
+- tmux
+
+- vim
