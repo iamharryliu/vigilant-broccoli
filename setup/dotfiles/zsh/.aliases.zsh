@@ -25,6 +25,11 @@ alias venvon='source venv/bin/activate'
 alias pipdump='pip freeze  > requirements.txt'
 
 # Git
+alias gs='git status'
+alias gb='git branch'
+alias gco='git checkout'
+alias gcob='git checkout -b'
+alias gcommit='git commit -m'
 alias greset='git reset HEAD^'
 alias undocommit='greset --soft'
 alias deletecommit='greset --hard'

@@ -2,12 +2,5 @@
 	name = Harry Liu
 	email = harryliu1995@gmail.com
 
-[alias]
-    co = checkout
-    b = branch
-    cmmt = commit
-    stat = status
-
-
 [push]
 	autoSetupRemote = true
