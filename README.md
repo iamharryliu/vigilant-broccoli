@@ -96,3 +96,5 @@ npm run e2e:personal-website
 - [update install.sh](https://github.com/bartekspitza/dotfiles/blob/master/install.sh)
 
 - dotenv defaults only works within the library, published it won't have the env.defaults.sh files it needs
+
+- nx cloud
