@@ -7,9 +7,9 @@ export class EncryptionService {
   secretIv: string;
 
   constructor(
-    encryptionMethod = undefined,
-    secretKey = undefined,
-    secretIv = undefined,
+    encryptionMethod = 'aes-256-cbc',
+    secretKey = 'key',
+    secretIv = 'secret',
   ) {
     this.encryptionMethod = encryptionMethod || process.env.ENCRYPTION_METHOD;
     this.secretKey = crypto
