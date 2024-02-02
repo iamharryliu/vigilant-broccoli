@@ -3,6 +3,7 @@ import app, { db, server } from './app';
 import { EncryptionService } from '@prettydamntired/test-node-tools';
 import {
   EmailSubscription,
+  HTTP_STATUS_CODES,
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
 } from '@prettydamntired/test-lib';
 
@@ -11,7 +12,7 @@ const email = 'tester@gmail.com';
 describe('Routes', () => {
   test('/', async () => {
     const res = await request(app).get('/');
-    expect(res.status).toEqual(200);
+    expect(res.status).toEqual(HTTP_STATUS_CODES.OK);
   });
 
   describe(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE, () => {
@@ -23,7 +24,7 @@ describe('Routes', () => {
           message: 'message',
           email,
         });
-      expect(res.status).toEqual(200);
+      expect(res.status).toEqual(HTTP_STATUS_CODES.OK);
     });
   });
 
@@ -34,7 +35,7 @@ describe('Routes', () => {
         .send({
           email,
         });
-      expect(res.status).toEqual(200);
+      expect(res.status).toEqual(HTTP_STATUS_CODES.OK);
     });
   });
 
@@ -50,7 +51,7 @@ describe('Routes', () => {
       const res = await request(app)
         .put(`/subscribe/verify-email-subscription`)
         .send({ token });
-      expect(res.status).toEqual(200);
+      expect(res.status).toEqual(HTTP_STATUS_CODES.OK);
     });
   });
 
