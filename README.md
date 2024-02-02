@@ -81,8 +81,6 @@ npm run e2e:personal-website
 
 ## TODO
 
-- Nx library testing
-
 - Nx scripts
 
 - FlyIO destroy and create apps
@@ -98,3 +96,5 @@ npm run e2e:personal-website
 - dotenv defaults only works within the library, published it won't have the env.defaults.sh files it needs
 
 - nx cloud
+
+- git docs table of contents
