@@ -6,18 +6,16 @@ import ejs from 'ejs';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 export class EmailService {
-  email: string;
-  password: string;
-  transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
+  private transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
 
   constructor(email = undefined, emailPassword = undefined) {
-    this.email = email || process.env.MY_EMAIL;
-    this.password = emailPassword || process.env.MY_EMAIL_PASSWORD;
+    const user = email || process.env.MY_EMAIL;
+    const pass = emailPassword || process.env.MY_EMAIL_PASSWORD;
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.MY_EMAIL,
-        pass: process.env.MY_EMAIL_PASSWORD,
+        user,
+        pass,
       },
     });
   }
@@ -39,13 +37,11 @@ export class EmailService {
     request = DEFAULT_EMAIL_REQUEST,
     template = DEFAULT_EJS_TEMPLATE,
   ): Promise<SMTPTransport.SentMessageInfo> {
-    return (ejs.renderFile(template.path, template.data) as any).then(
-      template => {
-        return this.sendEmail({
-          ...request,
-          html: template,
-        });
-      },
-    );
+    return (ejs.renderFile(template.path, template.data) as any).then(html => {
+      return this.sendEmail({
+        ...request,
+        html,
+      });
+    });
   }
 }
