@@ -87,6 +87,8 @@ npm run e2e:personal-website
 
 - Storing .env
 
+- fixing dotenv defaults
+
 - tmux
 
 - vim
@@ -96,5 +98,3 @@ npm run e2e:personal-website
 - git docs table of contents
 
 - fix: vibecheck-flask test cases
-
-  -
