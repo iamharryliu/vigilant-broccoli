@@ -3,14 +3,16 @@ import { EjsTemplate } from '../models/email.model';
 import { EmailRequest } from '../models/email.model';
 
 export const DEFAULT_EMAIL_REQUEST: EmailRequest = {
-  // todo: move this code??
-  // from: `harryliu.design <${process.env.MY_EMAIL}>`,
-  from: `harryliu.design <harryliu1995@gmail.com>`,
+  from: `nickname <${process.env.MY_EMAIL}>`,
   to: process.env.MY_EMAIL,
   subject: 'Default subject',
   text: 'Default message',
 };
 
 export const DEFAULT_EJS_TEMPLATE: EjsTemplate = {
-  path: path.join(__dirname, 'assets/default.ejs'),
+  // TODO: find a better way to do this?
+  path: path.join(__dirname, '../services/assets/default.ejs'),
+  data: {
+    text: 'default text',
+  },
 };

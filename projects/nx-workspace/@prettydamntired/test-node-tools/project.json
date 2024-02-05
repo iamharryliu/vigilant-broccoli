@@ -12,7 +12,10 @@
         "tsConfig": "@prettydamntired/test-node-tools/tsconfig.lib.json",
         "packageJson": "@prettydamntired/test-node-tools/package.json",
         "main": "@prettydamntired/test-node-tools/src/index.ts",
-        "assets": ["@prettydamntired/test-node-tools/*.md"]
+        "assets": [
+          "@prettydamntired/test-node-tools/*.md",
+          "@prettydamntired/test-node-tools/src/services/assets/default.ejs"
+        ]
       }
     },
     "publish": {
