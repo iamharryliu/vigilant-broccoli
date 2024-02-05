@@ -7,6 +7,7 @@ alias ..x3='cd ../../..'
 
 # mkdir
 alias mkdir='mkdir -pv'
+alias mkcd='function _mkcd() { mkdir -p "$1" && cd "$1"; }; _mkcd'
 
 # ls (mac)
 alias ls='ls -FGhl'
