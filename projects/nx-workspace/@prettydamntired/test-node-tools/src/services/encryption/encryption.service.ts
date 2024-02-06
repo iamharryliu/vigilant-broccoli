@@ -1,51 +1,46 @@
-import 'dotenv-defaults/config';
-import crypto from 'crypto';
+import crypto, { Cipher, Decipher } from 'crypto';
 
 export class EncryptionService {
-  encryptionMethod: string;
-  secretKey: string;
-  secretIv: string;
+  cipher: Cipher;
+  decipher: Decipher;
 
   constructor(
     encryptionMethod = 'aes-256-cbc',
     secretKey = 'key',
     secretIv = 'secret',
   ) {
-    this.encryptionMethod = encryptionMethod || process.env.ENCRYPTION_METHOD;
-    this.secretKey = crypto
+    encryptionMethod = encryptionMethod || process.env.ENCRYPTION_METHOD;
+    secretKey = crypto
       .createHash('sha512')
       .update(secretKey || process.env.SECRET_KEY)
       .digest('hex')
       .substring(0, 32);
 
-    this.secretIv = crypto
+    secretIv = crypto
       .createHash('sha512')
       .update(secretIv || process.env.SECRET_IV)
       .digest('hex')
       .substring(0, 16);
+
+    this.cipher = crypto.createCipheriv(encryptionMethod, secretKey, secretIv);
+    this.decipher = crypto.createDecipheriv(
+      encryptionMethod,
+      secretKey,
+      secretIv,
+    );
   }
 
   encryptData(data: string): string {
-    const cipher = crypto.createCipheriv(
-      this.encryptionMethod,
-      this.secretKey,
-      this.secretIv,
-    );
     return Buffer.from(
-      cipher.update(data, 'utf8', 'hex') + cipher.final('hex'),
+      this.cipher.update(data, 'utf8', 'hex') + this.cipher.final('hex'),
     ).toString('base64');
   }
 
   decryptData(encryptedData): string {
     const buff = Buffer.from(encryptedData, 'base64');
-    const decipher = crypto.createDecipheriv(
-      this.encryptionMethod,
-      this.secretKey,
-      this.secretIv,
-    );
     return (
-      decipher.update(buff.toString('utf8'), 'hex', 'utf8') +
-      decipher.final('utf8')
+      this.decipher.update(buff.toString('utf8'), 'hex', 'utf8') +
+      this.decipher.final('utf8')
     );
   }
 }
