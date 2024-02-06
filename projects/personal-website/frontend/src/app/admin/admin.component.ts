@@ -15,14 +15,12 @@ export class AdminComponent implements OnInit {
   data: any;
 
   ngOnInit(): void {
-    this.http
-      .get<any>('https://app-monitor-api.fly.dev/')
-      .subscribe(
-        res =>
-          (this.data = {
-            status: Object.values(res.data).every(value => value === true),
-            data: res.data,
-          }),
-      );
+    this.http.get<any>('https://app-monitor-api.fly.dev/').subscribe(
+      res =>
+        (this.data = {
+          status: Object.values(res.data).every(value => value === true),
+          data: res.data,
+        }),
+    );
   }
 }
