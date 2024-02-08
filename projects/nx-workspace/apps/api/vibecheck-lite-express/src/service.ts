@@ -1,4 +1,5 @@
-import { EmailSubscription, Location } from '@prettydamntired/test-lib';
+import { EmailSubscription } from '@prettydamntired/personal-website-lib';
+import { Location } from '@prettydamntired/test-lib';
 import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
 
 export class Service {

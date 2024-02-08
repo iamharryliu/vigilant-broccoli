@@ -15,6 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@prettydamntired/personal-website-lib": [
+        "@prettydamntired/personal-website-lib/src/index.ts"
+      ],
       "@prettydamntired/test-lib": ["@prettydamntired/test-lib/src/index.ts"],
       "@prettydamntired/test-node-tools": [
         "@prettydamntired/test-node-tools/src/index.ts"
