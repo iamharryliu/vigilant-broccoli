@@ -15,7 +15,6 @@
         "bundle": false,
         "main": "apps/api/vibecheck-lite-express/src/main.ts",
         "tsConfig": "apps/api/vibecheck-lite-express/tsconfig.app.json",
-        "assets": ["apps/api/vibecheck-lite-express/src/assets"],
         "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,

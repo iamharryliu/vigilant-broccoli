@@ -15,7 +15,6 @@
         "bundle": false,
         "main": "apps/api/app-monitor-api/src/main.ts",
         "tsConfig": "apps/api/app-monitor-api/tsconfig.app.json",
-        "assets": ["apps/api/app-monitor-api/src/assets"],
         "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,

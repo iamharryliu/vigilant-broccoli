@@ -93,7 +93,6 @@ npm run e2e:personal-website
   - fixing dotenv defaults
   - checkout Vercel/Netlify
   - cors handling?
-  - api assets folder??
 - not coding
   - marinate baos
   - scanwich
