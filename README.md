@@ -92,5 +92,9 @@ npm run e2e:personal-website
   - Storing .env
   - fixing dotenv defaults
   - checkout Vercel/Netlify
-  - remove crypto from packages
   - cors handling?
+  - api assets folder??
+- not coding
+  - marinate baos
+  - scanwich
+  - cafe hopping
