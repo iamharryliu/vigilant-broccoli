@@ -78,7 +78,6 @@ npm run e2e:personal-website
 - tools
 
   - tmux
-
   - vim
 
 - docs
@@ -94,3 +93,4 @@ npm run e2e:personal-website
   - fixing dotenv defaults
   - checkout Vercel/Netlify
   - remove crypto from packages
+  - cors handling?
