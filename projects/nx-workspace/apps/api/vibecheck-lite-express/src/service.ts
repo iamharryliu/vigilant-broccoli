@@ -1,4 +1,4 @@
-import { EmailSubscription } from '@prettydamntired/personal-website-lib';
+import { EmailSubscription } from '@prettydamntired/personal-website-api-lib';
 import { Location } from '@prettydamntired/test-lib';
 import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
 

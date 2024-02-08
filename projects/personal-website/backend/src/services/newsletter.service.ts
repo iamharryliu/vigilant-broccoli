@@ -4,7 +4,7 @@ import {
   EncryptionService,
   EmailService,
 } from '@prettydamntired/test-node-tools';
-import { EmailSubscription } from '@prettydamntired/test-lib';
+import { EmailSubscription } from '@prettydamntired/personal-website-api-lib';
 import { IS_DEV_ENV } from '../configs/app.const';
 
 export class NewsletterService {

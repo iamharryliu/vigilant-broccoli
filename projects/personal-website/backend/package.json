@@ -16,7 +16,8 @@
     "deploy": "fly deploy --ha=false && curl -I -m 10 https://harryliu-design-express.fly.dev/"
   },
   "dependencies": {
-    "@prettydamntired/test-lib": "^0.0.25",
+    "@prettydamntired/personal-website-api-lib": "^0.0.5",
+    "@prettydamntired/test-lib": "^0.0.32",
     "@prettydamntired/test-node-tools": "^0.0.33",
     "cors": "^2.8.5",
     "express": "^4.18.2",

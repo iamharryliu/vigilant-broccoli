@@ -1,9 +1,8 @@
 {
   "name": "@prettydamntired/personal-website-lib",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "dependencies": {
-    "tslib": "^2.3.0",
-    "mongoose": "^8.1.0"
+    "tslib": "^2.3.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

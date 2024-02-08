@@ -15,6 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@prettydamntired/personal-website-api-lib": [
+        "@prettydamntired/personal-website-api-lib/src/index.ts"
+      ],
       "@prettydamntired/personal-website-lib": [
         "@prettydamntired/personal-website-lib/src/index.ts"
       ],
