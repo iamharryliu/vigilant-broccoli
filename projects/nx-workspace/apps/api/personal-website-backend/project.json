@@ -1,0 +1,76 @@
+{
+  "name": "personal-website-backend",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/personal-website-backend/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/api/personal-website-backend",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/api/personal-website-backend/src/main.ts",
+        "tsConfig": "apps/api/personal-website-backend/tsconfig.app.json",
+        "assets": ["apps/api/personal-website-backend/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "generateLockfile": true,
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "personal-website-backend:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "personal-website-backend:build:development"
+        },
+        "production": {
+          "buildTarget": "personal-website-backend:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/api/personal-website-backend/jest.config.ts"
+      }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/api/personal-website-backend/Dockerfile . -t personal-website-backend"
+    },
+    "deploy": {
+      "command": "flyctl deploy --dockerfile ./apps/api/personal-website-backend/Dockerfile --config ./apps/api/personal-website-backend/fly.toml && curl -I -m 10 https://personal-website-backend.fly.dev/",
+      "dependsOn": ["build", "test", "lint"]
+    }
+  },
+  "tags": []
+}

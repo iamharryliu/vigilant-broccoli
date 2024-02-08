@@ -94,3 +94,4 @@ npm run e2e:personal-website
   - checkout Vercel/Netlify
   - remove crypto from packages
   - cors handling?
+  - api assets folder??
