@@ -89,6 +89,7 @@
     "nodemailer": "^6.9.8",
     "openai": "^4.26.0",
     "rxjs": "~7.8.0",
+    "supertest": "^6.3.4",
     "tslib": "^2.3.0",
     "twilio": "^4.21.0",
     "winston": "^3.11.0",

@@ -1,17 +1,17 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
+import { logger } from '@prettydamntired/test-node-tools';
+import { CORS_OPTIONS, PORT, HOST } from './configs/app.const';
+import { requestLogger } from './middlewares/common.middleware';
 import {
   errorLogger,
   errorResponder,
   invalidPathHandler,
-} from './src/middlewares/error.middleware';
-import { requestLogger } from './src/middlewares/common.middleware';
-import { router as contactRouter } from './src/routes/contact.router';
-import { router as subscribeRouter } from './src/routes/subscribe.router';
-import { PORT, CORS_OPTIONS, HOST } from './src/configs/app.const';
-import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
-import { logger } from '@prettydamntired/test-node-tools';
+} from './middlewares/error.middleware';
+import { router as contactRouter } from './routes/contact.router';
+import { router as subscribeRouter } from './routes/subscribe.router';
 
 const app = express();
 app.use(cors(CORS_OPTIONS));

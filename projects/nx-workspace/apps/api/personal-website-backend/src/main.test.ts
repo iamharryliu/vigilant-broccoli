@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app, { db, server } from './app';
+import app, { db, server } from './main';
 import { EncryptionService } from '@prettydamntired/test-node-tools';
 import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
 import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/personal-website-lib';
