@@ -1,14 +1,9 @@
-## Devops
+# Devops
 
-### Tools
+## References
 
-#### Git
-
-```
-git checkout -b [branch name]
-git add [files]
-git commit -m [message]
-git push
-```
-
-#### Docker
+- [AWS](./aws.md)
+- [Cloudflare](./cloudflare.md)
+- [Docker](./docker.md)
+- [FlyIO](./flyio.md)
+- [Monorepo](./monorepo.md)

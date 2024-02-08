@@ -56,13 +56,13 @@ npm run e2e:personal-website
 - OS
 
   - [Brew](notes/brew.md)
+  - [Cron](notes/cron.md)
   - [Shell](notes/shell/shell.md)
 
 - [Web Dev](notes/web-dev/web-dev.md)
 
   - [Javascript](notes/javascript.md)
   - [Node](notes/node.md)
-  - [Monorepo](notes/monorepo.md)
   - [Nx](notes/nx.md)
   - [Frontend](notes/web-dev/frontend/frontend.md)
     - [Angular](notes/web-dev/frontend/angular.md)
@@ -71,12 +71,6 @@ npm run e2e:personal-website
   - [Backend](notes/web-dev/backend/backend.md)
     - [Express](notes/web-dev/backend/express.md)
   - [Devops](notes/web-dev/devops/devops.md)
-
-    - [AWS](notes/aws.md)
-    - [Cron](notes/cron.md)
-    - [FlyIO](notes/flyio.md)
-    - [Git](notes/git.md)
-
   - [Network Security](notes/network-security/network-security.md)
 
 ## TODO
