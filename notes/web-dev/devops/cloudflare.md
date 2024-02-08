@@ -3,6 +3,7 @@
 # Commands
 
 ```
+npm i -D wrangler @cloudflare/kv-asset-handler
 npx wrangler deploy --config [path to wrangler.toml file]
 ```
 
