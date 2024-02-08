@@ -99,3 +99,4 @@ npm run e2e:personal-website
   - [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
   - Storing .env
   - fixing dotenv defaults
+  - checkout Vercel/Netlify
