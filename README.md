@@ -81,20 +81,21 @@ npm run e2e:personal-website
 
 ## TODO
 
-- [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
+- tools
 
-- FlyIO destroy and create apps
+  - tmux
 
-- Storing .env
+  - vim
 
-- fixing dotenv defaults
+- docs
 
-- tmux
+  - git docs table of contents
 
-- vim
-
-- nx cloud
-
-- git docs table of contents
-
-- fix: vibecheck-flask test cases
+- build
+  - wrangler
+  - nx cloud
+  - fix: vibecheck-flask test cases
+  - FlyIO destroy and create apps
+  - [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
+  - Storing .env
+  - fixing dotenv defaults
