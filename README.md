@@ -86,7 +86,6 @@ npm run e2e:personal-website
   - git docs table of contents
 
 - build
-  - wrangler
   - nx cloud
   - fix: vibecheck-flask test cases
   - FlyIO destroy and create apps
