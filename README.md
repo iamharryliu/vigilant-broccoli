@@ -75,16 +75,16 @@ npm run e2e:personal-website
 
 ## TODO
 
+- not coding
+  - scanwich
+  - cafe hopping
 - tools
-
   - tmux
   - vim
-
-- docs
-
-  - git docs table of contents
-
+- personal website
+  - move frontend into nx-workspace
 - build
+
   - nx cloud
   - fix: vibecheck-flask test cases
   - FlyIO destroy and create apps
@@ -93,7 +93,7 @@ npm run e2e:personal-website
   - fixing dotenv defaults
   - checkout Vercel/Netlify
   - cors handling?
-- not coding
-  - marinate baos
-  - scanwich
-  - cafe hopping
+
+- docs
+
+  - git docs table of contents
