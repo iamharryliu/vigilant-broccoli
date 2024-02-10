@@ -5,6 +5,7 @@ import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
 import {
   GENERAL_ERROR_CODE,
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
+  SubscribeRequest,
 } from '@prettydamntired/personal-website-lib';
 import { EmailSubscription } from '@prettydamntired/personal-website-api-lib';
 
@@ -40,8 +41,10 @@ describe('Routes', () => {
         .post(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE)
         .send({
           email,
-        });
+        } as SubscribeRequest);
       expect(res.status).toEqual(HTTP_STATUS_CODES.OK);
+      const subscribers = await EmailSubscription.find({});
+      expect(subscribers.length).toEqual(1);
     });
 
     it('should return correct error if no email is sent', async () => {
@@ -49,7 +52,7 @@ describe('Routes', () => {
         .post(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE)
         .send({
           email: '',
-        });
+        } as SubscribeRequest);
       expect(res.status).toEqual(HTTP_STATUS_CODES.BAD_REQUEST);
       expect(res.body.error).toEqual(GENERAL_ERROR_CODE.EMAIL_IS_REQUIRED);
     });
@@ -68,6 +71,8 @@ describe('Routes', () => {
         .put(`/subscribe/verify-email-subscription`)
         .send({ token });
       expect(res.status).toEqual(HTTP_STATUS_CODES.OK);
+      const subscriber = await EmailSubscription.findOne({});
+      expect(subscriber.isVerified).toEqual(true);
     });
 
     it('should return correct error if trying to verify non existant email', async () => {
@@ -79,6 +84,10 @@ describe('Routes', () => {
       expect(res.status).toEqual(HTTP_STATUS_CODES.FORBIDDEN);
       expect(res.body.error).toEqual(GENERAL_ERROR_CODE.EMAIL_DOES_NOT_EXIST);
     });
+  });
+
+  afterEach(() => {
+    EmailSubscription.deleteMany({});
   });
 
   afterAll(async () => {
