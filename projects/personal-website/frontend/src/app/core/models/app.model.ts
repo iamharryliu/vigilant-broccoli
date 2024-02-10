@@ -1,7 +1,9 @@
+// todo: use general lib
 export interface SubscribeRequest {
   email: string;
 }
 
+// todo: use general lib
 export interface MessageRequest {
   name: string;
   email: string;

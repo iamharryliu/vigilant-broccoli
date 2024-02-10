@@ -8,9 +8,14 @@ import { EmailSubscription } from '@prettydamntired/personal-website-api-lib';
 const email = 'tester@gmail.com';
 
 describe('Routes', () => {
-  test('/', async () => {
+  test('index', async () => {
     const res = await request(app).get('/');
     expect(res.status).toEqual(HTTP_STATUS_CODES.OK);
+  });
+
+  test('invalid path', async () => {
+    const res = await request(app).get('/asdf');
+    expect(res.status).toEqual(HTTP_STATUS_CODES.INVALID_PATH);
   });
 
   describe(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE, () => {
@@ -34,6 +39,16 @@ describe('Routes', () => {
           email,
         });
       expect(res.status).toEqual(HTTP_STATUS_CODES.OK);
+    });
+
+    it('should return internal server error if no email is sent', async () => {
+      const res = await request(app)
+        .post(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE)
+        .send({
+          email: '',
+        });
+      expect(res.status).toEqual(HTTP_STATUS_CODES.BAD_REQUEST);
+      expect(res.body.error).toBeTruthy();
     });
   });
 

@@ -51,7 +51,9 @@ export class NewsletterService {
     );
   }
 
-  static verifyEmail(email: string) {
+  static verifyEmail(token: string) {
+    const encryptionService = new EncryptionService();
+    const email = encryptionService.decryptData(token);
     return EmailSubscription.findOneAndUpdate(
       {
         email: email,

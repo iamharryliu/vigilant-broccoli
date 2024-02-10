@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
 import { logger } from '@prettydamntired/test-node-tools';
 import { CORS_OPTIONS, PORT, HOST } from './configs/app.const';
 import { requestLogger } from './middlewares/common.middleware';
@@ -10,17 +9,12 @@ import {
   errorResponder,
   invalidPathHandler,
 } from './middlewares/error.middleware';
-import { router as contactRouter } from './routes/contact.router';
-import { router as subscribeRouter } from './routes/subscribe.router';
+import { router } from './router';
 
 const app = express();
 app.use(cors(CORS_OPTIONS));
 app.use(requestLogger);
-app.get('/', (_, res) =>
-  res.status(HTTP_STATUS_CODES.OK).send('harryliu-design-express'),
-);
-app.use('/contact', contactRouter);
-app.use('/subscribe', subscribeRouter);
+app.use(router);
 app.use(errorLogger);
 app.use(errorResponder);
 app.use(invalidPathHandler);
