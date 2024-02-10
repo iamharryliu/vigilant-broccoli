@@ -4,7 +4,7 @@
 
 [CORS](https://expressjs.com/en/resources/middleware/cors.html)
 
-[Express](https://reflectoring.io/getting-started-with-express/)(https://reflectoring.io/getting-started-with-express/)
+[Express](https://reflectoring.io/getting-started-with-express/)
 
 [Google Recaptcha V3 Verify](https://developers.google.com/recaptcha/docs/verify)
 

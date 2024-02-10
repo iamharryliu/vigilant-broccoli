@@ -9,7 +9,7 @@ import {
   errorResponder,
   invalidPathHandler,
 } from './middlewares/error.middleware';
-import { router } from './router';
+import { router } from './routes';
 
 const app = express();
 app.use(cors(CORS_OPTIONS));

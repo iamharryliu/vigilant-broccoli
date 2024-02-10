@@ -5,16 +5,13 @@ import {
   requireJsonContent,
 } from './middlewares/common.middleware';
 import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/personal-website-lib';
-import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
 
 export const router = express.Router();
 router.use(express.json({ limit: 5000 }));
 router.use(checkRecaptchaToken);
 
 // Index
-router.get('/', (_, res) =>
-  res.status(HTTP_STATUS_CODES.OK).send('harryliu-design-express'),
-);
+router.get('/', (_, res) => res.send('harryliu-design-express'));
 // Email Subscription
 router.post(
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE,
