@@ -81,6 +81,8 @@ npm run e2e:personal-website
 - personal website
   - move frontend into nx-workspace
   - refactor vc-lite-express error handling
+  - move error middleware to general lib
+  - update e2e for errors
 - build
 
   - nx cloud
