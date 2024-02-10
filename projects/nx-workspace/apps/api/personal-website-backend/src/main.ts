@@ -10,6 +10,7 @@ import {
   invalidPathHandler,
 } from './middlewares/error.middleware';
 import { router } from './routes';
+import { MONGO_DB_SERVER } from '@prettydamntired/personal-website-api-lib';
 
 const app = express();
 app.use(cors(CORS_OPTIONS));
@@ -23,7 +24,6 @@ export const server = app.listen(PORT as number, HOST, () => {
   logger.info(`Server listening at ${HOST}:${PORT}`);
 });
 
-const MONGO_DB_SERVER = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net`;
 mongoose.connect(MONGO_DB_SERVER, { dbName: process.env.PERSONAL_WEBSITE_DB });
 export const db = mongoose.connection;
 db.once('open', () => {
