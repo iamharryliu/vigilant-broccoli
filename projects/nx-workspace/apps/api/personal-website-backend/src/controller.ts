@@ -2,13 +2,16 @@ import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
 import { ResponseError } from './models/error.model';
 import { NewsletterService } from './services/newsletter.service';
 import { ContactService } from './services/contact.service';
+import { GENERAL_ERROR_CODE } from '@prettydamntired/personal-website-lib';
 
 export class Controller {
   static async subscribeEmail(req, res, next) {
     const email = req.body.email;
     try {
       if (!email) {
-        const err = new Error('Email is required.') as ResponseError;
+        const err = new Error(
+          GENERAL_ERROR_CODE.EMAIL_IS_REQUIRED,
+        ) as ResponseError;
         err.statusCode = HTTP_STATUS_CODES.BAD_REQUEST;
         throw err;
       }
@@ -29,9 +32,11 @@ export class Controller {
           .status(HTTP_STATUS_CODES.OK)
           .json({ message: 'Email has been verified.' });
       }
-      res
-        .status(HTTP_STATUS_CODES.FORBIDDEN)
-        .json({ message: 'Email does not exist.' });
+      const err = new Error(
+        GENERAL_ERROR_CODE.EMAIL_DOES_NOT_EXIST,
+      ) as ResponseError;
+      err.statusCode = HTTP_STATUS_CODES.FORBIDDEN;
+      throw err;
     } catch (error) {
       next(error);
     }
