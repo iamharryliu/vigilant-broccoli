@@ -44,34 +44,31 @@ npm run e2e:personal-website
 
 ## Notes
 
-- General
+### General
 
-  - [Cooking](notes/cooking.md)
+- [Cooking](notes/cooking.md)
 
-- Software
+### Software
 
-  - [Design Patterns](notes/design-patterns.md)
-  - [Leet Code](notes/leet-code.md)
+- [Design Patterns](notes/design-patterns.md)
+- [Leet Code](notes/leet-code.md)
 
-- OS
+### Shell
 
-  - [Brew](notes/brew.md)
-  - [Cron](notes/cron.md)
-  - [Shell](notes/shell/shell.md)
+- [Brew](notes/os/brew.md)
+- [Cron](notes/os/cron.md)
+- [Find](notes/os/find.md)
+- [Grep](notes/os/grep.md)
 
-- [Web Dev](notes/web-dev/web-dev.md)
+### Web Dev
 
-  - [Javascript](notes/javascript.md)
-  - [Node](notes/node.md)
-  - [Nx](notes/nx.md)
-  - [Frontend](notes/web-dev/frontend/frontend.md)
-    - [Angular](notes/web-dev/frontend/angular.md)
-    - [React](notes/web-dev/frontend//react.md)
-    - [Bootstrap](notes/web-dev/frontend/bootstrap.md)
-  - [Backend](notes/web-dev/backend/backend.md)
-    - [Express](notes/web-dev/backend/express.md)
-  - [Devops](notes/web-dev/devops/devops.md)
-  - [Network Security](notes/network-security/network-security.md)
+- [Javascript](notes/web-dev/javascript.md)
+- [Node](notes/web-dev/node.md)
+- [Nx](notes/web-dev/nx.md)
+- [Frontend](notes/web-dev/frontend/frontend.md)
+- [Backend](notes/web-dev/backend/backend.md)
+- [Devops](notes/web-dev/devops/devops.md)
+- [Network Security](notes/network-security/network-security.md)
 
 ## TODO
 

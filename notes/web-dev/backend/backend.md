@@ -2,6 +2,10 @@
 
 - serverside
 
+## Dont's
+
+- never trust anything coming from the frontend application
+
 ## API Development
 
 ### Rest API Design
@@ -65,3 +69,7 @@ HTTP methods return different response status codes depending on the outcome of 
 ## Reference
 
 [HTTP Status Codes](https://kinsta.com/blog/http-status-codes/)
+
+## More Dev Notes (TODO: put in better place when working on this file)
+
+- [Express](notes/web-dev/backend/express.md)
