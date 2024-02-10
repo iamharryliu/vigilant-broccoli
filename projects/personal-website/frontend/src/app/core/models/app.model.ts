@@ -18,6 +18,7 @@ export interface Link {
   text: string;
 }
 
+// todo: use general lib
 export interface VibecheckLiteSubscriptionRequest {
   email: string;
   latitude: number;

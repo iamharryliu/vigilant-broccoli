@@ -36,7 +36,7 @@ export class EncryptionService {
     ).toString('base64');
   }
 
-  decryptData(encryptedData): string {
+  decryptData(encryptedData: string): string {
     const buff = Buffer.from(encryptedData, 'base64');
     return (
       this.decipher.update(buff.toString('utf8'), 'hex', 'utf8') +

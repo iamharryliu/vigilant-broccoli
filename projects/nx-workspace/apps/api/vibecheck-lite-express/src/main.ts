@@ -21,6 +21,7 @@ export const server = app.listen(PORT as number, HOST, () => {
   logger.info(`Server listening at ${HOST}:${PORT}`);
 });
 
+// todo: use environment variable for dbName
 mongoose.connect(MONGO_DB_SERVER, { dbName: 'vibecheck-lite-db' });
 export const db = mongoose.connection;
 db.getClient;
