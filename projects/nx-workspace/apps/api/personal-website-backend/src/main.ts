@@ -26,12 +26,11 @@ export const server = app.listen(PORT as number, HOST, () => {
 const MONGO_DB_SERVER = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net`;
 mongoose.connect(MONGO_DB_SERVER, { dbName: process.env.PERSONAL_WEBSITE_DB });
 export const db = mongoose.connection;
-db.getClient;
-db.on('error', error => {
-  console.error(`MongoDB connection error: ${error}`);
-});
 db.once('open', () => {
   logger.info('Connected to MongoDB');
+});
+db.on('error', error => {
+  logger.error(`MongoDB connection error: ${error}`);
 });
 
 export default app;
