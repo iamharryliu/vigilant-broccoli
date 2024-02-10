@@ -94,6 +94,7 @@ npm run e2e:personal-website
   - fixing dotenv defaults
   - checkout Vercel/Netlify
   - cors handling?
+  - move fly.toml to root level inside config folder
 
 - docs
 
