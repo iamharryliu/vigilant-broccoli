@@ -83,7 +83,7 @@ npm run e2e:personal-website
   - vim
 - personal website
   - move frontend into nx-workspace
-  - work on error handling (logging, response body)
+  - refactor vc-lite-express error handling
 - build
 
   - nx cloud
