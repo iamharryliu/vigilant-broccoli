@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonService } from '@services/common.service';
-import { MessageRequest } from '@models/app.model';
 import { Subject, exhaustMap } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LINKS } from '@consts/app-route.const';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LinkComponent } from '@app/components/global/link/link.component';
+import { MessageRequest } from '@prettydamntired/personal-website-lib';
 
 @Component({
   standalone: true,

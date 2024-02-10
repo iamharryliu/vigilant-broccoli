@@ -7,3 +7,9 @@ export interface MessageRequest {
   email: string;
   message: string;
 }
+
+export interface VibecheckLiteSubscriptionRequest {
+  email: string;
+  latitude: number;
+  longitude: number;
+}

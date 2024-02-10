@@ -8,8 +8,8 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CommonService } from '@services/common.service';
-import { SubscribeRequest } from '@models/app.model';
 import { Subject, exhaustMap } from 'rxjs';
+import { SubscribeRequest } from '@prettydamntired/personal-website-lib';
 
 @Component({
   standalone: true,

@@ -4,8 +4,11 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { MessageRequest, SubscribeRequest } from '@models/app.model';
-import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/personal-website-lib';
+import {
+  MessageRequest,
+  PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
+  SubscribeRequest,
+} from '@prettydamntired/personal-website-lib';
 
 describe('CommonService', () => {
   let service: CommonService;
