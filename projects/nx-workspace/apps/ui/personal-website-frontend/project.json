@@ -6,6 +6,9 @@
   "sourceRoot": "apps/ui/personal-website-frontend/src",
   "tags": [],
   "targets": {
+    "serve:mock": {
+      "command": "concurrently --kill-others \"nx serve personal-website-frontend\"  \"ts-node apps/ui/personal-website-frontend/mock-server/server.ts --ext js,ts,json,html\""
+    },
     "build": {
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
@@ -42,7 +45,13 @@
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/ui/personal-website-frontend/src/environments/environment.ts",
+              "with": "apps/ui/personal-website-frontend/src/environments/environment.development.ts"
+            }
+          ]
         }
       },
       "defaultConfiguration": "production"
