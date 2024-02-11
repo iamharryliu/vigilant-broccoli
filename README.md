@@ -98,3 +98,5 @@ npm run e2e:personal-website
 - docs
 
   - git docs table of contents
+
+- mock server, stylelint
