@@ -83,6 +83,7 @@ npm run e2e:personal-website
   - refactor vc-lite-express error handling
   - move error middleware to general lib
   - update e2e for errors
+  - fix cypress e2e tests, the intercept stubs the request..
 - build
 
   - nx cloud
