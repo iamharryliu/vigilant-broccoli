@@ -1,5 +1,11 @@
 # Devops
 
+## Frontend Deployment Options
+
+- Cloudflare
+- Vercel
+- Netlift
+
 ## References
 
 - [AWS](./aws.md)

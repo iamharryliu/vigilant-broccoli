@@ -83,20 +83,12 @@ npm run e2e:personal-website
   - refactor vc-lite-express error handling
   - move error middleware to general lib
   - update e2e for errors
+  - fix cypress e2e tests, the intercept stubs the request..
 - build
 
   - nx cloud
   - fix: vibecheck-flask test cases
-  - FlyIO destroy and create apps
   - [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
   - Storing .env
   - fixing dotenv defaults
-  - checkout Vercel/Netlify
   - cors handling?
-  - move fly.toml to root level inside config folder
-
-- docs
-
-  - git docs table of contents
-
-- mock server, stylelint
