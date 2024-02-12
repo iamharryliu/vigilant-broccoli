@@ -2,14 +2,6 @@
   "name": "personal-website",
   "version": "1.0.0",
   "scripts": {
-    "serve": "concurrently \"npm run serve:backend\" \"npm run serve:frontend\"",
-    "serve:frontend": "cd frontend && npm run serve",
-    "serve:backend": "cd backend && npm run serve",
-    "e2e": "cd e2e && npm run e2e",
-    "garbage-collector": "cd scripts/src && ts-node garbage-collector.ts",
-    "deploy:backend": "cd backend && npm run deploy"
-  },
-  "dependencies": {
-    "concurrently": "^8.2.2"
+    "garbage-collector": "cd scripts/src && ts-node garbage-collector.ts"
   }
 }

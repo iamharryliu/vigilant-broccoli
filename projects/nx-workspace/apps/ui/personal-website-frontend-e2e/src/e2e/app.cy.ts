@@ -1,13 +1,31 @@
-import { getGreeting } from '../support/app.po';
+const url = 'https://harryliu.design/';
 
-describe('personal-website-frontend-e2e', () => {
-  beforeEach(() => cy.visit('/'));
+describe('harryliu.design', () => {
+  beforeEach(() => {
+    cy.visit(url);
+  });
 
-  it('should display welcome message', () => {
-    // Custom command example, see `../support/commands.ts` file
-    cy.login('my-email@something.com', 'myPassword');
+  describe('contact-form', () => {
+    it('should return successful response on valid input', () => {
+      cy.intercept('POST', '*', { times: 1 }).as('post');
+      cy.get('#contact-form-name-input').type('username');
+      cy.get('#contact-form-email-input').type('user@email.com');
+      cy.get('#contact-form-message-input').type('message');
+      cy.get('#contact-form-submit-button').click();
+      cy.wait('@post').then(interception => {
+        expect(interception.response?.statusCode).to.eq(200);
+      });
+    });
+  });
 
-    // Function helper example, see `../support/app.po.ts` file
-    getGreeting().contains(/Welcome/);
+  describe('subscribe-form', () => {
+    it('should return successful response on valid input', () => {
+      cy.intercept('POST', '*', { times: 1 }).as('post');
+      cy.get('#subscribe-form-email-input').type('user@email.com');
+      cy.get('#subscribe-form-submit-button').click();
+      cy.wait('@post').then(interception => {
+        expect(interception.response?.statusCode).to.eq(200);
+      });
+    });
   });
 });
