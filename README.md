@@ -73,6 +73,7 @@ npm run e2e:personal-website
 ## TODO
 
 - not coding
+  - vday card and plans
   - scanwich
   - cafe hopping
 - tools
