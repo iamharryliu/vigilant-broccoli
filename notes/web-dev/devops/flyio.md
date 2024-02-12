@@ -21,3 +21,7 @@ fly secrets deploy
 ## References
 
 - [Fly IO Monorepo](https://fly.io/docs/reference/monorepo/)
+
+## Todo
+
+- FlyIO destroy and create apps

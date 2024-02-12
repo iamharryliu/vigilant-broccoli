@@ -87,14 +87,7 @@ npm run e2e:personal-website
 
   - nx cloud
   - fix: vibecheck-flask test cases
-  - FlyIO destroy and create apps
   - [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
   - Storing .env
   - fixing dotenv defaults
-  - checkout Vercel/Netlify
   - cors handling?
-  - move fly.toml to root level inside config folder
-
-- docs
-
-  - git docs table of contents
