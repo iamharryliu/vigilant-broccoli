@@ -91,6 +91,10 @@
         "buildTarget": "personal-website-frontend:build",
         "staticFilePath": "dist/apps/ui/personal-website-frontend/browser"
       }
+    },
+    "deploy": {
+      "command": "npx wrangler deploy --config wrangler-configs/personal-website-frontend.toml",
+      "dependsOn": ["build"]
     }
   }
 }

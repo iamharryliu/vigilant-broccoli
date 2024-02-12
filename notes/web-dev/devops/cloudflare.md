@@ -5,6 +5,7 @@
 ```
 npm i -D wrangler @cloudflare/kv-asset-handler
 npx wrangler deploy --config [path to wrangler.toml file]
+npx wrangler delete [name of worker]
 ```
 
 ## References

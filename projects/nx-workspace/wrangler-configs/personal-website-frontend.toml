@@ -1,0 +1,6 @@
+name = "personal-website-frontend"
+main = "src/index.ts"
+compatibility_date = "2024-01-29"
+
+[site]
+bucket = "../dist/apps/ui/personal-website-frontend/browser"
