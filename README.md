@@ -75,20 +75,22 @@ npm run e2e:personal-website
 - tools
   - tmux
   - vim
-- personal website
+- vc lite
   - refactor vc-lite-express error handling
+  - refactor to use current data for outfit recommendation
+- personal website
+  - fix frontend app loading
   - e2e
     - error testing
     - fix intercept, it stubs the request
-  - fix frontend app loading
 - build
 
-  - nx cloud
   - fix: vibecheck-flask test cases
   - [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
   - Storing .env
   - fixing dotenv defaults
   - cors handling?
+  - nx cloud
 
 - not coding
   - vday card and plans
