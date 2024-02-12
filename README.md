@@ -72,10 +72,6 @@ npm run e2e:personal-website
 
 ## TODO
 
-- not coding
-  - vday card and plans
-  - scanwich
-  - cafe hopping
 - tools
   - tmux
   - vim
@@ -85,11 +81,20 @@ npm run e2e:personal-website
     - error testing
     - fix intercept, it stubs the request
   - fix frontend app loading
-  - move error middleware to general lib??
 - build
+
   - nx cloud
   - fix: vibecheck-flask test cases
   - [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
   - Storing .env
   - fixing dotenv defaults
   - cors handling?
+
+- not coding
+  - vday card and plans
+  - meeting @7pm for travel health insurance
+  - handle migration
+  - scanwich
+  - cafe hopping
+- career
+  - add devops to resume

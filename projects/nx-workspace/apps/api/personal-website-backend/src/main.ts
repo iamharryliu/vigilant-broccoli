@@ -1,14 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import { logger } from '@prettydamntired/test-node-tools';
-import { CORS_OPTIONS, PORT, HOST } from './configs/app.const';
-import { requestLogger } from './middlewares/common.middleware';
 import {
   errorLogger,
   errorResponder,
   invalidPathHandler,
-} from './middlewares/error.middleware';
+  logger,
+  requestLogger,
+} from '@prettydamntired/test-node-tools';
+import { CORS_OPTIONS, PORT, HOST } from './configs/app.const';
 import { router } from './routes';
 import { MONGO_DB_SERVER } from '@prettydamntired/personal-website-api-lib';
 

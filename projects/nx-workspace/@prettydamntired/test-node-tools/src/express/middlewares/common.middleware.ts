@@ -1,6 +1,6 @@
-import { IS_DEV_ENV } from '../configs/app.const';
 import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
-import { RecapchaService, logger } from '@prettydamntired/test-node-tools';
+import { RecapchaService } from '../../services/recaptcha/recaptcha.service';
+import { logger } from '../../services/logging/logger.service';
 
 export const requestLogger = (request, response, next) => {
   logger.info('Request Logged');
@@ -21,9 +21,7 @@ export const checkRecaptchaToken = async (request, response, next) => {
   if (request.method !== 'GET') {
     const { recaptchaToken } = request.body;
     const recaptchaService = new RecapchaService();
-    const isTrusted =
-      IS_DEV_ENV || (await recaptchaService.isTrustedRequest(recaptchaToken));
-    if (isTrusted) {
+    if (await recaptchaService.isTrustedRequest(recaptchaToken)) {
       next();
     } else {
       logger.error(`Request from potential bot.`);
