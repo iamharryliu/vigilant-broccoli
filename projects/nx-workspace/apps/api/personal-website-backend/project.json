@@ -67,7 +67,7 @@
       "command": "docker build -f apps/api/personal-website-backend/Dockerfile . -t personal-website-backend"
     },
     "deploy": {
-      "command": "flyctl deploy --dockerfile ./apps/api/personal-website-backend/Dockerfile --config ./fly-configs/harryliu-design-express.toml && curl -I -m 10 https://personal-website-backend.fly.dev/",
+      "command": "flyctl deploy --dockerfile ./apps/api/personal-website-backend/Dockerfile --config ./fly-configs/harryliu-design-express.toml && curl -I -m 10 https://harryliu-design-express.fly.dev/",
       "dependsOn": ["build", "test", "lint"]
     }
   },
