@@ -37,7 +37,7 @@ export class NewsletterService {
     const confirmLink = `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`;
     const subject = 'Email Verification';
     const template = {
-      path: path.join(__dirname, 'verify-subscribe.ejs'),
+      path: path.join(__dirname, '../assets/verify-subscribe.ejs'),
       data: {
         email: email,
         confirmLink: confirmLink,

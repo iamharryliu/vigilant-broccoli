@@ -16,7 +16,7 @@ RUN addgroup --system personal-website-backend && \
 
 COPY dist/apps/api/personal-website-backend personal-website-backend
 # TODO: look into esbuild assets
-COPY apps/api/personal-website-backend/src/services/verify-subscribe.ejs personal-website-backend/apps/api/personal-website-backend/src/services/verify-subscribe.ejs
+COPY apps/api/personal-website-backend/src/assets personal-website-backend/apps/api/personal-website-backend/src/assets
 RUN chown -R personal-website-backend:personal-website-backend .
 
 # You can remove this install step if you build with `--bundle` option.
