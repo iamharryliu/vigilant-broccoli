@@ -1,7 +1,0 @@
-{
-  "name": "personal-website",
-  "version": "1.0.0",
-  "scripts": {
-    "garbage-collector": "cd scripts/src && ts-node garbage-collector.ts"
-  }
-}

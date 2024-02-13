@@ -5,20 +5,23 @@ import {
   logger,
 } from '@prettydamntired/test-node-tools';
 import {
+  MONGO_DB_SERVER,
   PERSONAL_WEBSITE_DB_COLLECTIONS,
   PERSONAL_WEBSITE_DB_DATABASES,
-} from '@prettydamntired/test-lib';
-
-const MONGO_DB_SERVER = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.txzecw2.mongodb.net`;
-const MONGO_DB_CLIENT = new MongoClient(MONGO_DB_SERVER);
+} from '../database/database.const';
 
 export class DatabaseManager {
-  static database = MONGO_DB_CLIENT.db(PERSONAL_WEBSITE_DB_DATABASES.PROD);
-  static async runGarbageCollector() {
+  private client;
+  private database;
+  constructor() {
+    this.client = new MongoClient(MONGO_DB_SERVER);
+    this.database = this.client.db(PERSONAL_WEBSITE_DB_DATABASES.PROD);
+  }
+  async runGarbageCollector() {
     await this.deleteOneWeekOldOrOlderUnverifiedUsers();
     await this.deleteOutdatedLogs();
   }
-  static async deleteOneWeekOldOrOlderUnverifiedUsers() {
+  async deleteOneWeekOldOrOlderUnverifiedUsers() {
     logger.info('Deleting unverified users started.');
     const emailSubscriptionsCollection = this.database.collection(
       PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
@@ -26,22 +29,20 @@ export class DatabaseManager {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    await emailSubscriptionsCollection
-      .deleteMany({
-        dateCreated: { $gt: oneWeekAgo },
-        isVerified: false,
-      })
-      .then(res => logger.info(res));
-    await MONGO_DB_CLIENT.close();
+    await emailSubscriptionsCollection.deleteMany({
+      dateCreated: { $lt: oneWeekAgo },
+      isVerified: false,
+    });
+    await this.client.close();
     logger.info('Deleting unverified users completed.');
   }
 
-  static async deleteOutdatedLogs() {
+  async deleteOutdatedLogs() {
     logger.info('Deleting outdated logs started.');
     logger.info('Deleting outdated logs completed.');
   }
 
-  static async sendNewsletter() {
+  async sendNewsletter() {
     logger.info('sendNewsletter: start');
     try {
       logger.info('getEmails: start');
@@ -52,12 +53,12 @@ export class DatabaseManager {
       this.sendEmails(emails);
       logger.info('sendEmails: successful');
     } finally {
-      await MONGO_DB_CLIENT.close();
+      await this.client.close();
       logger.info('sendNewsletter: unsuccessful');
     }
   }
 
-  static async getEmails() {
+  async getEmails() {
     const emailSubscriptionsCollection = this.database.collection(
       PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
     );
@@ -69,7 +70,7 @@ export class DatabaseManager {
     return emailSubscriptions.map(subscription => subscription.email);
   }
 
-  static sendEmails(emails: string[]) {
+  sendEmails(emails: string[]) {
     const emailService = new EmailService();
     for (const to of emails) {
       emailService.sendEmail({ ...DEFAULT_EMAIL_REQUEST, to });
