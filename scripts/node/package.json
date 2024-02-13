@@ -1,8 +1,1 @@
-{
-  "scripts": {
-    "monitor-projects": "ts-node monitor-sites.ts"
-  },
-  "devDependencies": {
-    "@prettydamntired/test-node-tools": "^0.0.34"
-  }
-}
+{}

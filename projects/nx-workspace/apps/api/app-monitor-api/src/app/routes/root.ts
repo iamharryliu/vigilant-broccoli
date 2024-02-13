@@ -18,4 +18,18 @@ export default async function (fastify: FastifyInstance) {
     });
     return { data: res };
   });
+
+  fastify.get('/monitor-sites', async () => {
+    const sites = [
+      'https://harryliu.design/',
+      'https://harryliu-design-express.fly.dev/',
+      'https://vibecheck-lite-express.fly.dev/',
+    ];
+    const siteMonitor = new SiteMonitor();
+    for (const site of sites) {
+      await siteMonitor.monitorSiteActivity(site);
+    }
+    // Promise.all(sites.map(siteMonitor.monitorSiteActivity));
+    return {};
+  });
 }
