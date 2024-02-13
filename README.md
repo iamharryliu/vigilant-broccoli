@@ -79,6 +79,7 @@ npm run e2e:personal-website
   - refactor vc-lite-express error handling
   - refactor to use current data for outfit recommendation
 - personal website
+  - move scripts to backend api
   - fix frontend app loading
   - e2e
     - error testing
