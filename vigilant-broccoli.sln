@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "projects", "projects", "{A22F9642-466C-4318-AF8F-DA0FFF27B6BC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo-apps", "demo-apps", "{2E16ED6D-C8F1-4A7A-9A56-F96B0F3D21E3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoApi", "projects\demo-apps\dotnet-demo\DemoApi.csproj", "{5FEAF56D-DD62-4C96-8EAB-D3AB06B8A04F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5FEAF56D-DD62-4C96-8EAB-D3AB06B8A04F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FEAF56D-DD62-4C96-8EAB-D3AB06B8A04F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FEAF56D-DD62-4C96-8EAB-D3AB06B8A04F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FEAF56D-DD62-4C96-8EAB-D3AB06B8A04F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2E16ED6D-C8F1-4A7A-9A56-F96B0F3D21E3} = {A22F9642-466C-4318-AF8F-DA0FFF27B6BC}
+		{5FEAF56D-DD62-4C96-8EAB-D3AB06B8A04F} = {2E16ED6D-C8F1-4A7A-9A56-F96B0F3D21E3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {209F7648-9988-4BA3-944D-535D68A60B18}
+	EndGlobalSection
+EndGlobal
