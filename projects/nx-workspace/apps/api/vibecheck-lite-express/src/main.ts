@@ -1,10 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import { PORT, HOST, CORS_OPTIONS } from './app.const';
+import { PORT, HOST, CORS_OPTIONS, IS_DEV_ENV } from './app.const';
 import { logger } from '@prettydamntired/test-node-tools';
 import { Controller } from './controller';
-import { MONGO_DB_SERVER } from '@prettydamntired/personal-website-api-lib';
+import {
+  MONGO_DB_SERVER,
+  VIBECHECK_LITE_DB_NAME,
+} from '@prettydamntired/personal-website-api-lib';
 
 const app = express();
 app.use(cors(CORS_OPTIONS));
@@ -21,8 +24,9 @@ export const server = app.listen(PORT as number, HOST, () => {
   logger.info(`Server listening at ${HOST}:${PORT}`);
 });
 
-// todo: use environment variable for dbName
-mongoose.connect(MONGO_DB_SERVER, { dbName: 'vibecheck-lite-db' });
+mongoose.connect(MONGO_DB_SERVER, {
+  dbName: IS_DEV_ENV ? VIBECHECK_LITE_DB_NAME.DEV : VIBECHECK_LITE_DB_NAME.PROD,
+});
 export const db = mongoose.connection;
 db.getClient;
 db.on('error', error => {
