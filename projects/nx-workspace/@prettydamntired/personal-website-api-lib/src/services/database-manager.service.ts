@@ -7,7 +7,7 @@ import {
 import {
   MONGO_DB_SERVER,
   PERSONAL_WEBSITE_DB_COLLECTIONS,
-  PERSONAL_WEBSITE_DB_DATABASES,
+  PERSONAL_WEBSITE_DB_NAME,
 } from '../database/database.const';
 
 export class DatabaseManager {
@@ -15,7 +15,7 @@ export class DatabaseManager {
   private database;
   constructor() {
     this.client = new MongoClient(MONGO_DB_SERVER);
-    this.database = this.client.db(PERSONAL_WEBSITE_DB_DATABASES.PROD);
+    this.database = this.client.db(PERSONAL_WEBSITE_DB_NAME.PROD);
   }
   async runGarbageCollector() {
     await this.deleteOneWeekOldOrOlderUnverifiedUsers();

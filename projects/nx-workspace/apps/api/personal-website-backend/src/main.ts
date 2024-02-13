@@ -12,7 +12,7 @@ import { CORS_OPTIONS, PORT, HOST, IS_DEV_ENV } from './configs/app.const';
 import { router } from './routes';
 import {
   MONGO_DB_SERVER,
-  PERSONAL_WEBSITE_DB_DATABASES,
+  PERSONAL_WEBSITE_DB_NAME,
 } from '@prettydamntired/personal-website-api-lib';
 
 const app = express();
@@ -29,8 +29,8 @@ export const server = app.listen(PORT as number, HOST, () => {
 
 mongoose.connect(MONGO_DB_SERVER, {
   dbName: IS_DEV_ENV
-    ? PERSONAL_WEBSITE_DB_DATABASES.DEV
-    : PERSONAL_WEBSITE_DB_DATABASES.PROD,
+    ? PERSONAL_WEBSITE_DB_NAME.DEV
+    : PERSONAL_WEBSITE_DB_NAME.PROD,
 });
 export const db = mongoose.connection;
 db.once('open', () => {
