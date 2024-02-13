@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ENVIRONMENT } from '../../../../environments/environment.development';
+import { ENVIRONMENT } from '../../../../environments/environment';
 import { LINKS } from '../../../core/consts/app-route.const';
 import { Link } from '../../../core/models/app.model';
 import { ButtonLinkComponent } from '../../global/button-link/button-link.component';

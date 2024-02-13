@@ -1,5 +1,5 @@
 import { Route, Routes } from '@angular/router';
-import { ENVIRONMENT } from '../../../environments/environment.development';
+import { ENVIRONMENT } from '../../../environments/environment';
 import { AdminComponent } from '../../admin/admin.component';
 import { AboutPageComponent } from '../../components/pages/about-page/about.page';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';

@@ -5,7 +5,7 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { Location } from '@prettydamntired/test-lib';
 import { VibecheckLiteSubscriptionRequest } from '@prettydamntired/personal-website-lib';
-import { ENVIRONMENT } from '../../../environments/environment.development';
+import { ENVIRONMENT } from '../../../environments/environment';
 import { VibecheckLiteService } from './vibecheck-lite.service';
 
 describe('VibecheckLiteService', () => {
