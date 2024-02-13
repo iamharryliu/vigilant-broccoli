@@ -66,7 +66,7 @@
       "command": "docker build -f apps/api/app-monitor-api/Dockerfile . -t app-monitor-api"
     },
     "deploy": {
-      "command": "flyctl deploy --dockerfile ./apps/api/app-monitor-api/Dockerfile --config ./fly-configs/app-monitor-fastify.toml  && curl -I -m 10 https://app-monitor-api.fly.dev/",
+      "command": "flyctl deploy --dockerfile ./apps/api/app-monitor-api/Dockerfile --config ./deployment-configs/fly-configs/app-monitor-fastify.toml  && curl -I -m 10 https://app-monitor-api.fly.dev/",
       "dependsOn": ["build"]
     }
   },

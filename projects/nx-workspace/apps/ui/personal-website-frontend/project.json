@@ -93,7 +93,7 @@
       }
     },
     "deploy": {
-      "command": "npx wrangler deploy --config wrangler-configs/personal-website-frontend.toml",
+      "command": "npx wrangler deploy --config ./deployment-configs/wrangler-configs/personal-website-frontend.toml",
       "dependsOn": ["build"]
     }
   }
