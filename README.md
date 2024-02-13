@@ -79,7 +79,6 @@ npm run e2e:personal-website
   - refactor vc-lite-express error handling
   - refactor to use current data for outfit recommendation
 - personal website
-  - move scripts to backend api
   - fix frontend app loading
   - e2e
     - error testing
@@ -94,10 +93,12 @@ npm run e2e:personal-website
   - nx cloud
 
 - not coding
-  - vday
-    - vday card + sticky notes + flowers
-    - handle migration
-    - meeting @7pm for travel health insurance
+  - working holiday visa
+    - sign into cigna and retrieve
+    - retrieve bank statement
+    - submit documents to migration office
+  - Valentine's day
+    - bowling @8:30, show up for 8??
   - scanwich
   - cafe hopping
 - career
