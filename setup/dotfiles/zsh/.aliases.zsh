@@ -67,3 +67,7 @@ killport() {
 
 # Brew
 alias brewdump='rm ~/vigilant-broccoli/setup/mac/Brewfile && brew bundle dump --file=~/vigilant-broccoli/setup/mac/Brewfile'
+
+
+# Other
+alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'

@@ -15,14 +15,3 @@ class Solution:
                 r -= 1
                 l -= 1
             l += 1
-
-
-nums = [0, 1, 0, 3, 12]
-output = [1, 3, 12, 0, 0]
-res = Solution.moveZeroes(nums)
-print(nums == output)
-
-nums = [0]
-output = [0]
-res = Solution.moveZeroes(nums)
-print(nums == output)
