@@ -93,9 +93,10 @@ npm run e2e:personal-website
   - nx cloud
 
 - not coding
-  - vday card and plans
-  - meeting @7pm for travel health insurance
-  - handle migration
+  - vday
+    - vday card + sticky notes + flowers
+    - handle migration
+    - meeting @7pm for travel health insurance
   - scanwich
   - cafe hopping
 - career
