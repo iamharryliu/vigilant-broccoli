@@ -75,6 +75,8 @@ npm run e2e:personal-website
 - tools
   - tmux
   - vim
+- vc
+  - fix: vibecheck-flask test cases
 - vc lite
   - refactor vc-lite-express error handling
   - refactor to use current data for outfit recommendation
@@ -85,21 +87,16 @@ npm run e2e:personal-website
     - fix intercept, it stubs the request
 - build
 
-  - fix: vibecheck-flask test cases
   - [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
-  - Storing .env
-  - fixing dotenv defaults
-  - cors handling?
-  - nx cloud
 
-- not coding
-  - working holiday visa
-    - sign into cigna and retrieve
-    - retrieve bank statement
-    - submit documents to migration office
-  - Valentine's day
-    - bowling @8:30, show up for 8??
+## Not Coding
+
+- Q1
+  - pad thai prep
+  - bowling @8:30, show up for 8??
+- Q2
+  - add devops to resume
+- Q3
+- Q4
   - scanwich
   - cafe hopping
-- career
-  - add devops to resume
