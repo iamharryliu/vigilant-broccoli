@@ -20,3 +20,4 @@ nx test-storybook [project-name]
 ## References
 
 - [Folder Structure](https://nx.dev/concepts/more-concepts/folder-structure)
+- [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
