@@ -59,6 +59,7 @@ npm run e2e:personal-website
 - [Cron](notes/os/cron.md)
 - [Find](notes/os/find.md)
 - [Grep](notes/os/grep.md)
+- [Vim](notes/os/vim.md)
 
 ### Web Dev
 
@@ -81,9 +82,7 @@ npm run e2e:personal-website
 ## Not Coding
 
 - Q1
-  - flatbread
   - dinner plans
-  - journal about self
   - how to make water blue
 - Q2
   - being myself
