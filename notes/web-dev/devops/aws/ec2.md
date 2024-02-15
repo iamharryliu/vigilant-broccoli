@@ -2,7 +2,7 @@
 
 ```
 chmod 400 [pemfile]
-ssh -i [pemfile] [ec2-user]@[ec2-ip-address]
+ssh -i [pemfile] [ec2-machine-username]@[ec2-machine-ip-address]
 ```
 
 ## References
