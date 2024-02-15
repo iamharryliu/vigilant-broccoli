@@ -26,7 +26,6 @@ export class LinkTreePageComponent {
   CAREER_LINKS = [
     LINKS.LINKEDIN,
     LINKS.GITHUB,
-    LINKS.PROJECTS_PAGE,
     LINKS.RESUME,
     LINKS.CONTACT_PAGE,
   ];

@@ -5,7 +5,6 @@ import { AboutPageComponent } from '../../components/pages/about-page/about.page
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
 import { HomePageComponent } from '../../components/pages/home-page/home-page.page';
 import { LinkTreePageComponent } from '../../components/pages/link-tree-page/link-tree.page';
-import { ProjectPageComponent } from '../../components/pages/projects-page/projects.page';
 import { VerifyEmailSubscriptionPageComponent } from '../../components/pages/verify-email-subscription/verify-email-subscription-page.component';
 import { VibecheckLiteSubscribePageComponent } from '../../components/pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '../../components/pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
@@ -54,12 +53,6 @@ export const VIBECHECK_LITE_SUBSCRIBE_ROUTE: Route = {
   component: VibecheckLiteSubscribePageComponent,
 };
 
-export const PROJECTS_INDEX_ROUTE: Route = {
-  path: '',
-  data: { title: 'projects' },
-  component: ProjectPageComponent,
-};
-
 export const VIBECHECK_LITE_ROUTE: Route = {
   path: 'vibecheck-lite',
   data: { title: ' vibecheck lite' },
@@ -68,7 +61,7 @@ export const VIBECHECK_LITE_ROUTE: Route = {
 
 export const PROJECTS_ROUTE: Route = {
   path: 'projects',
-  children: [PROJECTS_INDEX_ROUTE, VIBECHECK_LITE_ROUTE],
+  children: [VIBECHECK_LITE_ROUTE],
 };
 
 export const VERIFY_EMAIL_ROUTE: Route = {
@@ -142,13 +135,6 @@ const VIBECHECK_LITE_SUBSCRIBE: Link = {
   text: 'Subscribe to Vibecheck Lite',
 };
 
-const REPEAT_TIMER: Link = {
-  url: {
-    external: 'https://repeat-timer.pages.dev/',
-  },
-  text: 'Repeat Timer',
-};
-
 const LINK_TREE: Link = {
   url: {
     internal: ENVIRONMENT.URLS.LINK_TREE,
@@ -210,7 +196,6 @@ const INTERNAL_LINKS = {
 const PROJECT_LINKS = {
   VIBECHECK_LITE_APP,
   VIBECHECK_LITE_SUBSCRIBE,
-  REPEAT_TIMER,
 };
 
 const EXTERNAL_LINKS = {
