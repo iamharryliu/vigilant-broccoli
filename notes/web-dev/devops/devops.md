@@ -8,7 +8,7 @@
 
 ## References
 
-- [AWS](./aws.md)
+- [AWS](./aws/aws.md)
 - [Cloudflare](./cloudflare.md)
 - [Docker](./docker.md)
 - [FlyIO](./flyio.md)
