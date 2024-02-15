@@ -1,0 +1,6 @@
+name = "app-name"
+main = "src/index.ts"
+compatibility_date = "2024-01-29"
+
+[site]
+bucket = "[path to source code]"
