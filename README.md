@@ -76,15 +76,17 @@ npm run e2e:personal-website
   - fix: vibecheck-flask test cases
 - vc lite
   - refactor vc-lite-express error handling
-  - add getRecommendation fn for current weather
+  - new getRecommendation fn for current weather
 
 ## Not Coding
 
 - Q1
-  - pad thai prep
-  - bowling @8:30, show up for 8??
+  - flatbread
+  - dinner plans
+  - journal about self
   - how to make water blue
 - Q2
+  - being myself
   - add devops to resume
 - Q3
 - Q4

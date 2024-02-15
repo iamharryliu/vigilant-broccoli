@@ -1,7 +1,16 @@
+import { MongoClient } from 'mongodb';
 import 'dotenv-defaults/config';
 import { Location } from '@prettydamntired/test-lib';
 import OpenAI from 'openai';
-import { logger } from '@prettydamntired/test-node-tools';
+import {
+  DEFAULT_EMAIL_REQUEST,
+  EmailService,
+  logger,
+} from '@prettydamntired/test-node-tools';
+import {
+  MONGO_DB_SERVER,
+  PERSONAL_WEBSITE_DB_COLLECTIONS,
+} from '@prettydamntired/personal-website-api-lib';
 
 export class VibecheckLite {
   private openai: OpenAI;
@@ -49,5 +58,51 @@ export class VibecheckLite {
     } catch (err) {
       logger.error(err);
     }
+  }
+
+  async emailSubscribedUsers() {
+    logger.info('Vibecheck lite recommendation script start.');
+    const MONGO_DB_CLIENT = new MongoClient(MONGO_DB_SERVER);
+    const database = MONGO_DB_CLIENT.db('vibecheck-lite');
+    const emailSubscriptionsCollection = database.collection(
+      PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
+    );
+    const emailSubscriptions = (
+      await emailSubscriptionsCollection.find({}).toArray()
+    ).map(data => {
+      return {
+        email: data.email,
+        latitude: data.latitude,
+        longitude: data.longitude,
+      };
+    });
+
+    const emailPromises = emailSubscriptions.map(async emailSubscription => {
+      const { email, latitude, longitude } = emailSubscription;
+      logger.info(`Getting outfit recommendation for ${email}`);
+      const subject = 'Vibecheck Lite Outfit Recommendation';
+      const request = {
+        ...DEFAULT_EMAIL_REQUEST,
+        to: email,
+        subject,
+      };
+      const recommendation = (await this.getOutfitRecommendation({
+        latitude: latitude as number,
+        longitude: longitude as number,
+      })) as string;
+      const template = {
+        path: `${__dirname}/assets/vibecheck-lite.ejs`,
+        data: {
+          recommendation: recommendation,
+          url: `https://harryliu.design/unsubscribe-vibecheck-lite?token=${email}`,
+        },
+      };
+      logger.info(`Sending email to ${email}`);
+      const mailService = new EmailService();
+      return mailService.sendEjsEmail(request, template);
+    });
+
+    await Promise.all(emailPromises);
+    await MONGO_DB_CLIENT.close();
   }
 }
