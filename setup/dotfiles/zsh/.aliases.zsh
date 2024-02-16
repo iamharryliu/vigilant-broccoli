@@ -68,6 +68,14 @@ killport() {
 # Brew
 alias brewdump='rm ~/vigilant-broccoli/setup/mac/Brewfile && brew bundle dump --file=~/vigilant-broccoli/setup/mac/Brewfile'
 
+# FlyIO
+alias flystatus='flyctl status --config'
+alias flymachinestatus='flyctl machine status'
+alias flymachinestart='flyctl machine start --config'
+alias flymachinestop='flyctl machine stop --config'
+alias flyscalecount='flyctl scale count'
+alias flylogs='flyctl logs --config'
+alias flyssh='fly ssh console --config'
 
 # Other
 alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'
