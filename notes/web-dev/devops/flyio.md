@@ -11,12 +11,15 @@ flyctl logs --config [config-file]
 
 ```
 fly launch
-fly secrets set [env variable]=[val] --stage
-fly deploy --dockerfile [docker-file] --config [config-file] --ha=false
+fly launch --no-deploy
+fly deploy --ha=false
+fly deploy --dockerfile [docker-file] --config [config-file]
+fly apps destroy [app-name]
 ```
 
 ```
 fly secrets set [KEY]=[VALUE]
+fly secrets set [KEY]=[VALUE] --stage
 fly secrets list
 fly secrets deploy
 ```
