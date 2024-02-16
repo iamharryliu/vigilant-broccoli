@@ -81,13 +81,13 @@ npm run e2e:personal-website
 
 ## Not Coding
 
-- Q1
-  - dinner plans
-  - how to make water blue
-- Q2
+- Q1 - important + urgent
+  - handle visa application
+- Q2 - important + not urgent
   - being myself
   - add devops to resume
-- Q3
+  - learn tmux
+- Q3 - not important + urgent
 - Q4
   - scanwich
   - cafe hopping
