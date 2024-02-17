@@ -77,7 +77,6 @@ npm run e2e:personal-website
 - vc
   - fix: vibecheck-flask test cases
 - vc lite
-  - refactor vc-lite-express error handling
   - new getRecommendation fn for current weather
 
 ## Not Coding

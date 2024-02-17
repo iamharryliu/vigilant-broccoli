@@ -15,11 +15,13 @@ describe('Routes', () => {
   test('index', async () => {
     const res = await request(app).get('/');
     expect(res.status).toEqual(HTTP_STATUS_CODES.OK);
+    expect(res.text).toEqual('harryliu-design-express');
   });
 
   test('invalid path', async () => {
     const res = await request(app).get('/asdf');
     expect(res.status).toEqual(HTTP_STATUS_CODES.INVALID_PATH);
+    expect(res.body.error).toEqual(GENERAL_ERROR_CODE.INVALID_PATH);
   });
 
   describe(PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE, () => {

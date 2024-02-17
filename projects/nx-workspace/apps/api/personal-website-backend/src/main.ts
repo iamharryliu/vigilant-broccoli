@@ -16,12 +16,16 @@ import {
 } from '@prettydamntired/personal-website-api-lib';
 
 const app = express();
+
+// Routes
 app.use(cors(CORS_OPTIONS));
 app.use(requestLogger);
 app.use(router);
+
+// Error Middleware
+app.use(invalidPathHandler);
 app.use(errorLogger);
 app.use(errorResponder);
-app.use(invalidPathHandler);
 
 export const server = app.listen(PORT as number, HOST, () => {
   logger.info(`Server listening at ${HOST}:${PORT}`);
