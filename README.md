@@ -68,6 +68,7 @@ npm run e2e:personal-website
 - [Nx](notes/web-dev/nx.md)
 - [Frontend](notes/web-dev/frontend/frontend.md)
 - [Backend](notes/web-dev/backend/backend.md)
+- [Postgres](notes/postgres.md)
 - [Devops](notes/web-dev/devops/devops.md)
 - [Network Security](notes/network-security/network-security.md)
 
@@ -82,12 +83,14 @@ npm run e2e:personal-website
 ## Not Coding
 
 - Q1 - important + urgent
+  - comviq phone plan
+  - skanetrafiken cc issue
   - handle visa application
 - Q2 - important + not urgent
   - being myself
   - add devops to resume
   - learn tmux
 - Q3 - not important + urgent
-- Q4
+- Q4 - not important + not urgent
   - scanwich
   - cafe hopping

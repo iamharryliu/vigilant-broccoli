@@ -78,5 +78,9 @@ alias flyscalecount='flyctl scale count'
 alias flylogs='flyctl logs --config'
 alias flyssh='fly ssh console --config'
 
+# Postgres
+alias startsql='brew services start postgresql'
+alias stopsql='brew services stop postgresql'
+
 # Other
 alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'
