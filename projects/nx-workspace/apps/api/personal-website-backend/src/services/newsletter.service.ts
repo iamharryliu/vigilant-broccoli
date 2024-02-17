@@ -34,14 +34,17 @@ export class NewsletterService {
   static async sendVerificationEmail(email: string) {
     const encryptionService = new EncryptionService();
     const token = encryptionService.encryptData(email);
-    const confirmLink = `${process.env.PERSONAL_WEBSITE_FRONTEND_URL}/verify-email-subscription?token=${token}`;
+    const frontendUrl = IS_DEV_ENV
+      ? 'http://localhost:4200'
+      : 'https://harryliu.design';
+    const confirmLink = `${frontendUrl}/verify-email-subscription?token=${token}`;
     const subject = 'Email Verification';
     const template = {
       path: path.join(__dirname, '../assets/verify-subscribe.ejs'),
       data: {
         email: email,
         confirmLink: confirmLink,
-        siteUrl: process.env.PERSONAL_WEBSITE_FRONTEND_URL,
+        siteUrl: frontendUrl,
       },
     };
     const mailService = new EmailService();
