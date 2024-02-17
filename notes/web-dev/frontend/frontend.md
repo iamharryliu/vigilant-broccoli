@@ -1,5 +1,11 @@
 # Frontend Developer
 
+- [Angular](angular.md)
+- [React](react.md)
+- [Bootstrap](bootstrap.md)
+
+## What is a frontend
+
 - clientside
 
 ## Dont's
@@ -29,7 +35,3 @@ Used to style a web page. Think color, font, spacing, size, borders, etc.
 - generally requires using other dependecies (libraries, tools, etc..)
 
 ## More Dev Notes (TODO: put in better place when working on this file)
-
-[Angular](notes/web-dev/frontend/angular.md)
-[React](notes/web-dev/frontend//react.md)
-[Bootstrap](notes/web-dev/frontend/bootstrap.md)

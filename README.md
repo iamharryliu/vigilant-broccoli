@@ -66,10 +66,10 @@ npm run e2e:personal-website
 - [Javascript](notes/web-dev/javascript.md)
 - [Node](notes/web-dev/node.md)
 - [Nx](notes/web-dev/nx.md)
-- [Frontend](notes/web-dev/frontend/frontend.md)
-- [Backend](notes/web-dev/backend/backend.md)
-- [Postgres](notes/postgres.md)
 - [Devops](notes/web-dev/devops/devops.md)
+- [Backend](notes/web-dev/backend/backend.md)
+- [Database](notes/web-dev/database/database.md)
+- [Frontend](notes/web-dev/frontend/frontend.md)
 - [Network Security](notes/network-security/network-security.md)
 
 ## TODO
