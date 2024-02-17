@@ -83,6 +83,10 @@ alias flyscalecount='flyctl scale count'
 alias flylogs='flyctl logs --config'
 alias flyssh='fly ssh console --config'
 
+export harryliu_design_express_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/harryliu-design-express.toml'
+export vibecheck_lite_express_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/vibecheck-lite-express.toml'
+export app_monitor_api_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/app-monitor-fastify.toml'
+
 # Postgres
 alias startsql='brew services start postgresql'
 alias stopsql='brew services stop postgresql'

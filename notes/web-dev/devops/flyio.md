@@ -14,7 +14,8 @@ fly launch
 fly launch --no-deploy
 fly deploy --ha=false
 fly deploy --dockerfile [docker-file] --config [config-file]
-fly apps destroy [app-name]
+fly apps list
+fly apps destroy [app-name]a
 ```
 
 ```
