@@ -69,6 +69,11 @@ killport() {
 # Brew
 alias brewdump='rm ~/vigilant-broccoli/setup/mac/Brewfile && brew bundle dump --file=~/vigilant-broccoli/setup/mac/Brewfile'
 
+# Wrangler
+alias wranglerdeploy='npx wrangler pages deploy'
+alias wranglerdelete='npx wrangler pages delete'
+alias wranglerls='npx wrangler pages project list'
+
 # FlyIO
 alias flystatus='flyctl status --config'
 alias flymachinestatus='flyctl machine status'

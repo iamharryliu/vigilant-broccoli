@@ -8,6 +8,9 @@ npm install wrangler --save-dev
 # Pages
 npx wrangler pages dev [path to app dist]
 npx wrangler pages deploy [path to app dist]
+npx wrangler pages deploy [path to app dist] --project name [project-name]
+npx wrangler pages project delete [project-name]
+npx wrangler pages project list
 
 code node_modules/.cache/wrangler/pages.json
 
