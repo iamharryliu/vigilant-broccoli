@@ -85,6 +85,8 @@ npm run e2e:personal-website
   - comviq phone plan
   - skanetrafiken cc issue
   - handle visa application
+  - uniqlo marimekko bag
+  - use uniqlo puffer
 - Q2 - important + not urgent
   - being myself
   - add devops to resume
