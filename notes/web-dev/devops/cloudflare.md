@@ -9,6 +9,8 @@ npm install wrangler --save-dev
 npx wrangler pages dev [path to app dist]
 npx wrangler pages deploy [path to app dist]
 
+code node_modules/.cache/wrangler/pages.json
+
 # Workers
 npm i -D wrangler @cloudflare/kv-asset-handler
 npx wrangler deploy --config [path to wrangler.toml file]
