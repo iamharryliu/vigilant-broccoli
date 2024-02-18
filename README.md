@@ -53,13 +53,16 @@ npm run e2e:personal-website
 - [Design Patterns](notes/design-patterns.md)
 - [Leet Code](notes/leet-code.md)
 
-### Shell
+### OS
 
 - [Brew](notes/os/brew.md)
-- [Cron](notes/os/cron.md)
-- [Find](notes/os/find.md)
-- [Grep](notes/os/grep.md)
-- [Vim](notes/os/vim.md)
+
+### Command Line
+
+- [Cron](notes/os/command-line/cron.md)
+- [Find](notes/os/command-line/find.md)
+- [Grep](notes/os/command-line/grep.md)
+- [Vim](notes/os/command-line/vim.md)
 
 ### Web Dev
 
@@ -82,8 +85,10 @@ npm run e2e:personal-website
 ## Not Coding
 
 - Q1 - important + urgent
-  - comviq phone plan
-  - skanetrafiken cc issue
+  - cc issue
+    - call cc company
+    - comviq phone plan
+    - test skanetrafiken
   - handle visa application
   - uniqlo marimekko bag
   - use uniqlo puffer
