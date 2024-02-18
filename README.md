@@ -78,8 +78,6 @@ npm run e2e:personal-website
   - fix: vibecheck-flask test cases
 - vc lite
   - new getRecommendation fn for current weather
-- cicd
-  - deploy cloudflare frontend apps using 'wrangler pages deploy [app]'
 
 ## Not Coding
 

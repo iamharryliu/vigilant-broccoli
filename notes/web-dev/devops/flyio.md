@@ -12,10 +12,8 @@ flyctl logs --config [config-file]
 ```
 fly launch
 fly launch --no-deploy
-fly deploy --ha=false
-fly deploy --dockerfile [docker-file] --config [config-file]
 fly apps list
-fly apps destroy [app-name]a
+fly apps destroy [app-name]
 ```
 
 ```
@@ -23,9 +21,9 @@ fly secrets set [KEY]=[VALUE]
 fly secrets set [KEY]=[VALUE] --stage
 fly secrets list
 fly secrets deploy
-```
+fly deploy --ha=false
+fly deploy --dockerfile [docker-file] --config [config-file]
 
-```
 flyctl status --config
 flyctl machine status [machine_id]
 flyctl machine start --config [config_file]
@@ -51,7 +49,3 @@ fly ssh console --config [config_file]
 ## References
 
 - [Fly IO Monorepo](https://fly.io/docs/reference/monorepo/)
-
-## Todo
-
-- FlyIO destroy and create apps
