@@ -22,6 +22,11 @@ psql postgres -U [username]
 DROP USER [username]
 ```
 
+```
+# Test connection string
+pg_isready -d [connection_string]
+```
+
 ## Linux
 
 ```

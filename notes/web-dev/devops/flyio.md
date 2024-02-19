@@ -42,6 +42,18 @@ fly ssh issue --agent
 fly ssh console --config [config_file]
 ```
 
+### Postgres
+
+```
+flyctl postgres create
+flyctl postgres connect -a [db-name]
+flyctl proxy 5432 -a [db-name]
+
+fly ips list --app [app-name]
+fly ips allocate-v4 --app [app-name]
+fly ips allocate-v4 --app [app-name] --shared
+```
+
 ## Troubleshooting
 
 - Make sure you have set all environment variables before deploying.
@@ -49,3 +61,4 @@ fly ssh console --config [config_file]
 ## References
 
 - [Fly IO Monorepo](https://fly.io/docs/reference/monorepo/)
+- [Setup Postgres](https://medium.com/data-folks-indonesia/setup-free-postgresql-on-fly-io-and-import-database-3f8f891cbc71)
