@@ -4,6 +4,7 @@ import { DEFAULT_EJS_TEMPLATE } from '../../consts/email.const';
 import { DEFAULT_EMAIL_REQUEST } from '../../consts/email.const';
 import ejs from 'ejs';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { logger } from '../logging/logger.service';
 
 export class EmailService {
   private transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
@@ -11,6 +12,9 @@ export class EmailService {
   constructor(email = undefined, emailPassword = undefined) {
     const user = email || process.env.MY_EMAIL;
     const pass = emailPassword || process.env.MY_EMAIL_PASSWORD;
+    if (!user && !pass) {
+      logger.error('EmailService not properly configured.');
+    }
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {

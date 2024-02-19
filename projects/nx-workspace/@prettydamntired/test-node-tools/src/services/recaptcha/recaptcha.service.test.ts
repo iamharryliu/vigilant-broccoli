@@ -1,7 +1,11 @@
 import { RecaptchaService } from './recaptcha.service';
 
-// Mock the fetch function
 global.fetch = jest.fn();
+jest.mock('../logging/logger.service', () => ({
+  logger: {
+    error: jest.fn(),
+  },
+}));
 
 describe('RecaptchaService', () => {
   let recaptchaService: RecaptchaService;
@@ -13,8 +17,11 @@ describe('RecaptchaService', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-  it('should be created', () => {
-    expect(recaptchaService).toBeTruthy();
+
+  describe('constructor', () => {
+    it('should create an instance of EmailService', () => {
+      expect(recaptchaService).toBeInstanceOf(RecaptchaService);
+    });
   });
 
   describe('isTrustedRequest', () => {

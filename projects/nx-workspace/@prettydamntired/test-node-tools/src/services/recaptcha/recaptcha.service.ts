@@ -1,10 +1,13 @@
 import 'dotenv-defaults/config';
+import { logger } from '../logging/logger.service';
 export class RecaptchaService {
   secretKey: string;
 
-  constructor(recaptchaV3SecretKey = undefined) {
-    this.secretKey =
-      recaptchaV3SecretKey || process.env.RECAPTCHA_V3_SECRET_KEY;
+  constructor(secretKey = undefined) {
+    this.secretKey = secretKey || process.env.RECAPTCHA_V3_SECRET_KEY;
+    if (!this.secretKey) {
+      logger.error('RecaptchaService not properly configured.');
+    }
   }
 
   async isTrustedRequest(token: string): Promise<boolean> {
