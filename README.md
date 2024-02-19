@@ -85,15 +85,13 @@ npm run e2e:personal-website
 ## Not Coding
 
 - Q1 - important + urgent
-  - garbage run
-  - breakfast wraps
+  - laundry
   - cc issue
     - call cc company
     - comviq phone plan
     - test skanetrafiken
   - handle visa application
-  - uniqlo marimekko bag
-  - use uniqlo puffer
+  - uniqlo marimekko bag, https://www.uniqlo.com/uk/en/product/round-mini-shoulder-bag-466335.html?dwvar_466335_color=COL02&dwvar_466335_size=SIZ999
 - Q2 - important + not urgent
   - being myself
   - add devops to resume
@@ -101,4 +99,3 @@ npm run e2e:personal-website
 - Q3 - not important + urgent
 - Q4 - not important + not urgent
   - scanwich
-  - cafe hopping
