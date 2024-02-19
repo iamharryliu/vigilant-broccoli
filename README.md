@@ -85,6 +85,8 @@ npm run e2e:personal-website
 ## Not Coding
 
 - Q1 - important + urgent
+  - garbage run
+  - breakfast wraps
   - cc issue
     - call cc company
     - comviq phone plan
