@@ -90,8 +90,9 @@ npm run e2e:personal-website
     - call cc company
     - comviq phone plan(https://comviq.se/tanka)
     - test skanetrafiken
+    - uniqlo marimekko bag, https://www.uniqlo.com/uk/en/product/round-mini-shoulder-bag-466335.html?dwvar_466335_color=COL02&dwvar_466335_size=SIZ999
   - handle visa application
-  - uniqlo marimekko bag, https://www.uniqlo.com/uk/en/product/round-mini-shoulder-bag-466335.html?dwvar_466335_color=COL02&dwvar_466335_size=SIZ999
+  - practice db server handling
 - Q2 - important + not urgent
   - being myself
   - add devops to resume
