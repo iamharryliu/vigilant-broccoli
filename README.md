@@ -88,7 +88,7 @@ npm run e2e:personal-website
   - laundry
   - cc issue
     - call cc company
-    - comviq phone plan
+    - comviq phone plan(https://comviq.se/tanka)
     - test skanetrafiken
   - handle visa application
   - uniqlo marimekko bag, https://www.uniqlo.com/uk/en/product/round-mini-shoulder-bag-466335.html?dwvar_466335_color=COL02&dwvar_466335_size=SIZ999

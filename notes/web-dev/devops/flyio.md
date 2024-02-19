@@ -61,4 +61,8 @@ fly ips allocate-v4 --app [app-name] --shared
 ## References
 
 - [Fly IO Monorepo](https://fly.io/docs/reference/monorepo/)
+
+### Postgres
+
 - [Setup Postgres](https://medium.com/data-folks-indonesia/setup-free-postgresql-on-fly-io-and-import-database-3f8f891cbc71)
+- [External Connections](https://fly.io/docs/postgres/connecting/connecting-external/)
