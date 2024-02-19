@@ -93,8 +93,10 @@ alias brewstopsql='brew services stop postgresql'
 alias sqlstatus='pg_isready -d'
 
 # Fly Postgres
-alias flypostgres='flyctl postgres connect --app'
-alias flypostgres='flyctl postgres connect --app testsql'
+alias flysqlconnnect='flyctl postgres connect --app'
+alias flysqlproxyapp='flyctl proxy 5432 --app'
+alias flysqlconntestdb='flyctl postgres connect --app testsql'
+alias flysqlproxytestdb='flyctl proxy 5432 --app testsql'
 
 # Other
 alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'
