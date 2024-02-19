@@ -1,4 +1,5 @@
 import crypto, { Cipher, Decipher } from 'crypto';
+import { logger } from '../logging/logger.service';
 
 export class EncryptionService {
   cipher: Cipher;
@@ -9,6 +10,12 @@ export class EncryptionService {
     secretKey = 'key',
     secretIv = 'secret',
   ) {
+    secretKey = secretKey || process.env.SECRET_KEY;
+    secretIv = secretIv || process.env.SECRET_IV;
+    if (secretKey === 'key' || secretIv === 'secret') {
+      logger.warn('EncryptionService using default properties.');
+    }
+
     encryptionMethod = encryptionMethod || process.env.ENCRYPTION_METHOD;
     secretKey = crypto
       .createHash('sha512')

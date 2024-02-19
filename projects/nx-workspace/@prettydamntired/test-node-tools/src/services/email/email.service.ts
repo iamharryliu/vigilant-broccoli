@@ -12,8 +12,8 @@ export class EmailService {
   constructor(email = undefined, emailPassword = undefined) {
     const user = email || process.env.MY_EMAIL;
     const pass = emailPassword || process.env.MY_EMAIL_PASSWORD;
-    if (!user && !pass) {
-      logger.error('EmailService not properly configured.');
+    if (!user || !pass) {
+      logger.error('EmailService is not configured properly.');
     }
     this.transporter = nodemailer.createTransport({
       service: 'gmail',

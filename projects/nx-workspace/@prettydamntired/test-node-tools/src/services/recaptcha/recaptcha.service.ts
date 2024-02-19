@@ -6,7 +6,7 @@ export class RecaptchaService {
   constructor(secretKey = undefined) {
     this.secretKey = secretKey || process.env.RECAPTCHA_V3_SECRET_KEY;
     if (!this.secretKey) {
-      logger.error('RecaptchaService not properly configured.');
+      logger.error('RecaptchaService is not configured properly.');
     }
   }
 
