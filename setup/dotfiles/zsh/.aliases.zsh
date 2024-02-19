@@ -88,8 +88,13 @@ export vibecheck_lite_express_config='/Users/hliu/vigilant-broccoli/projects/nx-
 export app_monitor_api_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/app-monitor-fastify.toml'
 
 # Postgres
-alias startsql='brew services start postgresql'
-alias stopsql='brew services stop postgresql'
+alias brewstartsql='brew services start postgresql'
+alias brewstopsql='brew services stop postgresql'
+alias sqlstatus='pg_isready -d'
+
+# Fly Postgres
+alias flypostgres='flyctl postgres connect --app'
+alias flypostgres='flyctl postgres connect --app testsql'
 
 # Other
 alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'
