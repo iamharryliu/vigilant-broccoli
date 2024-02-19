@@ -1,5 +1,5 @@
 import 'dotenv-defaults/config';
-export class RecapchaService {
+export class RecaptchaService {
   secretKey: string;
 
   constructor(recaptchaV3SecretKey = undefined) {

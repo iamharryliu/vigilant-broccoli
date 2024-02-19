@@ -6,7 +6,7 @@ export * from './models/email.model';
 export { logger } from './services/logging/logger.service';
 export { EmailService } from './services/email/email.service';
 export { EncryptionService } from './services/encryption/encryption.service';
-export { RecapchaService } from './services/recaptcha/recaptcha.service';
+export { RecaptchaService } from './services/recaptcha/recaptcha.service';
 export { SiteMonitor } from './services/site-monitor/site-monitor.service';
 export { TextMessageService } from './services/text-message/text-message.service';
 export { CronService } from './services/cron.service';

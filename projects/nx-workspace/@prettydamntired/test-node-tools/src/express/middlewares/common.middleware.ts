@@ -1,5 +1,5 @@
 import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
-import { RecapchaService } from '../../services/recaptcha/recaptcha.service';
+import { RecaptchaService } from '../../services/recaptcha/recaptcha.service';
 import { logger } from '../../services/logging/logger.service';
 
 export const requestLogger = (request, response, next) => {
@@ -20,7 +20,7 @@ export const requireJsonContent = (request, response, next) => {
 export const checkRecaptchaToken = async (request, response, next) => {
   if (request.method !== 'GET') {
     const { recaptchaToken } = request.body;
-    const recaptchaService = new RecapchaService();
+    const recaptchaService = new RecaptchaService();
     if (await recaptchaService.isTrustedRequest(recaptchaToken)) {
       next();
     } else {
