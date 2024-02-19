@@ -88,8 +88,8 @@ export vibecheck_lite_express_config='/Users/hliu/vigilant-broccoli/projects/nx-
 export app_monitor_api_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/app-monitor-fastify.toml'
 
 # Postgres
-alias brewstartsql='brew services start postgresql'
-alias brewstopsql='brew services stop postgresql'
+alias brewsqlstart='brew services start postgresql'
+alias brewsqlstop='brew services stop postgresql'
 alias sqlstatus='pg_isready -d'
 
 # Fly Postgres
