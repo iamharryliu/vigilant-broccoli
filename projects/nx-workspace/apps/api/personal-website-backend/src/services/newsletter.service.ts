@@ -49,7 +49,12 @@ export class NewsletterService {
     };
     const mailService = new EmailService();
     return mailService.sendEjsEmail(
-      { ...DEFAULT_EMAIL_REQUEST, to: email, subject },
+      {
+        ...DEFAULT_EMAIL_REQUEST,
+        from: `harryliu.design <${process.env.MY_EMAIL}>`,
+        to: email,
+        subject,
+      },
       template,
     );
   }

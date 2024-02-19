@@ -83,6 +83,7 @@ export class VibecheckLite {
       const subject = 'Vibecheck Lite Outfit Recommendation';
       const request = {
         ...DEFAULT_EMAIL_REQUEST,
+        from: `nickname <${process.env.MY_EMAIL}>`,
         to: email,
         subject,
       };
