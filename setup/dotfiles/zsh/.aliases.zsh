@@ -75,13 +75,20 @@ alias wranglerdelete='npx wrangler pages delete'
 alias wranglerls='npx wrangler pages project list'
 
 # FlyIO
-alias flystatus='flyctl status --config'
+alias flystatus='flyctl status --app'
 alias flymachinestatus='flyctl machine status'
-alias flymachinestart='flyctl machine start --config'
-alias flymachinestop='flyctl machine stop --config'
+alias flymachinestart='flyctl machine start --app'
+alias flymachinestop='flyctl machine stop --app'
 alias flyscalecount='flyctl scale count'
-alias flylogs='flyctl logs --config'
-alias flyssh='fly ssh console --config'
+alias flylogs='flyctl logs --app'
+alias flyssh='fly ssh console --app'
+
+# Fly Postgres
+alias flysqlconnnect='flyctl postgres connect --app'
+alias flysqlproxyapp='flyctl proxy 5432 --app'
+alias flysqlconntestdb='flyctl postgres connect --app testsql'
+alias flysqlproxytestdb='flyctl proxy 5432 --app testsql'
+
 
 export harryliu_design_express_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/harryliu-design-express.toml'
 export vibecheck_lite_express_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/vibecheck-lite-express.toml'
@@ -91,12 +98,6 @@ export app_monitor_api_config='/Users/hliu/vigilant-broccoli/projects/nx-workspa
 alias brewsqlstart='brew services start postgresql'
 alias brewsqlstop='brew services stop postgresql'
 alias sqlstatus='pg_isready -d'
-
-# Fly Postgres
-alias flysqlconnnect='flyctl postgres connect --app'
-alias flysqlproxyapp='flyctl proxy 5432 --app'
-alias flysqlconntestdb='flyctl postgres connect --app testsql'
-alias flysqlproxytestdb='flyctl proxy 5432 --app testsql'
 
 # Other
 alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'
