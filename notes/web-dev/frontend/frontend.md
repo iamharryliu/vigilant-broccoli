@@ -33,5 +33,3 @@ Used to style a web page. Think color, font, spacing, size, borders, etc.
 - a library
 - less opinionated
 - generally requires using other dependecies (libraries, tools, etc..)
-
-## More Dev Notes (TODO: put in better place when working on this file)

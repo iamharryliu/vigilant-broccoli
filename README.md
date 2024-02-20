@@ -38,10 +38,6 @@ npm run serve:personal-website
 npm run e2e:personal-website
 ```
 
-## Projects
-
-- [Personal Website](projects/personal-website/)
-
 ## Notes
 
 ### General
@@ -75,14 +71,16 @@ npm run e2e:personal-website
 - [Frontend](notes/web-dev/frontend/frontend.md)
 - [Network Security](notes/network-security/network-security.md)
 
-## TODO
+## Todo
+
+### Coding
 
 - vc
   - fix: vibecheck-flask test cases
 - vc lite
   - new getRecommendation fn for current weather
 
-## Not Coding
+### Not Coding
 
 - Q1 - important + urgent
   - cc issue

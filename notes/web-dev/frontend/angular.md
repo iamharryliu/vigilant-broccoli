@@ -5,31 +5,22 @@
 Angular CLI
 
 ```
+# Install
 npm install -g @angular/cli
 npm install -g @angular/cli@latest
-ng new [appname]
-ng g c <component-name>
-ng g s <service-name>
-ng g d <directive-name>
-ng g m <module-name>
-```
 
-```
-npm i && npm run serve
 ng version
 ng update
-```
 
-```
-TODO: ng g commands
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+ng new [appname]
+ng g component|directive|pipe|service|class|guard|interface|enum|module`
+
+npm i && ng serve
 ```
 
 ## References
 
-Copy Service
-
-[Recapcha](https://dev.to/rodrigokamada/adding-the-google-recaptcha-v3-to-an-angular-application-kge)
+[Recaptcha](https://dev.to/rodrigokamada/adding-the-google-recaptcha-v3-to-an-angular-application-kge)
 
 [ngx-translate](https://www.codeandweb.com/babeledit/tutorials/how-to-translate-your-angular-app-with-ngx-translate)
 

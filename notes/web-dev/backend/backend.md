@@ -1,5 +1,9 @@
 # Backend Developer
 
+- [Express](notes/web-dev/backend/express.md)
+
+## What is a backend
+
 - serverside
 
 ## Dont's
@@ -69,7 +73,3 @@ HTTP methods return different response status codes depending on the outcome of 
 ## Reference
 
 [HTTP Status Codes](https://kinsta.com/blog/http-status-codes/)
-
-## More Dev Notes (TODO: put in better place when working on this file)
-
-- [Express](notes/web-dev/backend/express.md)
