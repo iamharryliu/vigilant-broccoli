@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, jsonify
 
-errors = Blueprint("errors", __name__, template_folder="templates")
+errors = Blueprint("errors", __name__)
 
 
 # Bad request.
