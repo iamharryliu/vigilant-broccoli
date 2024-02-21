@@ -89,13 +89,13 @@ npm run e2e:personal-website
 ### Not Coding
 
 - Q1 - important + urgent
+  - no knead dough
   - cc issue
     - call cc company
     - comviq phone plan(https://comviq.se/tanka)
     - test skanetrafiken
     - uniqlo marimekko bag, https://www.uniqlo.com/uk/en/product/round-mini-shoulder-bag-466335.html?dwvar_466335_color=COL02&dwvar_466335_size=SIZ999
   - handle visa application
-  - practice db server handling
   - taxes
 - Q2 - important + not urgent
   - being myself
