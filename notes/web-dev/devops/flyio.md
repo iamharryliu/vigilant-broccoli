@@ -14,7 +14,7 @@ fly launch
 fly launch --no-deploy
 fly apps list
 fly apps destroy [app_name]
-fly apps open [app_name]
+fly apps open --app [app_name]
 ```
 
 ```

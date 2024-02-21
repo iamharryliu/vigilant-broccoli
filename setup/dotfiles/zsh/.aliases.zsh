@@ -76,7 +76,7 @@ alias wranglerls='npx wrangler pages project list'
 
 # FlyIO
 alias flyls='fly apps list'
-alias flyopen='fly apps open'
+alias flyopen='fly apps open --app'
 alias flydestroy='fly apps destroy'
 alias flystatus='flyctl status --app'
 alias flymachinestatus='flyctl machine status'
