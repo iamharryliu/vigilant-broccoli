@@ -5,6 +5,7 @@
 ## What is a backend
 
 - serverside
+- session cookies can only persist on the same domain
 
 ## Dont's
 

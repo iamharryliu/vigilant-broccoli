@@ -75,6 +75,9 @@ npm run e2e:personal-website
 
 ### Coding
 
+- learning
+  - jwt implementation
+  - tmux
 - vc
   - fix: vibecheck-flask test cases
 - vc lite
