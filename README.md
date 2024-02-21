@@ -75,8 +75,13 @@ npm run e2e:personal-website
 
 ### Coding
 
-- learning
+- reading
   - jwt implementation
+  - session vs jwt
+  - local storage vs session storage vs cookies
+  - how does xss attacks work
+  - how does csrf attacks work
+  - Redis
   - tmux
 - vc
   - fix: vibecheck-flask test cases
