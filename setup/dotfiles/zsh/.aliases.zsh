@@ -5,6 +5,10 @@ alias ..='cd ..'
 alias ..x2='cd ../..'
 alias ..x3='cd ../../..'
 
+# Monorepo Navigation
+alias cdvb='cd ~/vigilant-broccoli/'
+alias cdnx='cd ~/vigilant-broccoli/projects/nx-workspace/'
+
 # mkdir
 alias mkdir='mkdir -pv'
 alias mkcd='function _mkcd() { mkdir -p "$1" && cd "$1"; }; _mkcd'
@@ -41,12 +45,6 @@ alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\
 # Node
 alias initnpm='rm -rf node_modules package-lock.json && npm i'
 alias initnpmserve='initnpm && npm run serve'
-
-# Repo Navigation
-alias cdvb='cd ~/vigilant-broccoli/'
-alias cdpw='cd ~/vigilant-broccoli/projects/personal-website/'
-alias cdsb='cd ~/vigilant-broccoli/projects/sandbox/'
-alias cdnx='cd ~/vigilant-broccoli/projects/nx-workspace/'
 
 # Port
 killport() {
@@ -91,11 +89,6 @@ alias flysqlconnnect='flyctl postgres connect --app'
 alias flysqlproxyapp='flyctl proxy 5432 --app'
 alias flysqlconntestdb='flyctl postgres connect --app testsql'
 alias flysqlproxytestdb='flyctl proxy 5432 --app testsql'
-
-
-export harryliu_design_express_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/harryliu-design-express.toml'
-export vibecheck_lite_express_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/vibecheck-lite-express.toml'
-export app_monitor_api_config='/Users/hliu/vigilant-broccoli/projects/nx-workspace/deployment-configs/fly-configs/app-monitor-fastify.toml'
 
 # Postgres
 alias brewsqlstart='brew services start postgresql'
