@@ -2,7 +2,7 @@
 
 ## About
 
-vigilant-broccoli is my personal mono-repo that I use to house all the code (or most) that I am working on.
+vigilant-broccoli is my personal mono-repo that I use to house all the code (or most) that I am working on and documentation.
 
 ## Machine Setup
 
@@ -89,7 +89,6 @@ npm run e2e:personal-website
 ### Not Coding
 
 - Q1 - important + urgent
-  - no knead dough
   - cc issue
     - call cc company
     - comviq phone plan(https://comviq.se/tanka)
