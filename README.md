@@ -28,14 +28,6 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 
 ```
 npm run install-all
-npm run monitor-projects
-```
-
-### Personal Website
-
-```
-npm run serve:personal-website
-npm run e2e:personal-website
 ```
 
 ## Notes

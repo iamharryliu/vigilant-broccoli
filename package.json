@@ -3,10 +3,7 @@
   "scripts": {
     "install-all": "npm-recursive-install",
     "format": "prettier --write .",
-    "format:commit": "prettier --write",
-    "serve:personal-website": "cd projects/personal-website && npm run serve",
-    "e2e:personal-website": "cd projects/personal-website && npm run e2e",
-    "monitor-projects": "cd scripts/node && npm run monitor-projects"
+    "format:commit": "prettier --write"
   },
   "repository": {
     "type": "git",
