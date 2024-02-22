@@ -32,36 +32,9 @@ npm run install-all
 
 ## Notes
 
-### General
-
-- [Cooking](notes/cooking.md)
-
-### Software
-
-- [Design Patterns](notes/design-patterns.md)
-- [Leet Code](notes/leet-code.md)
-
-### OS
-
-- [Brew](notes/os/brew.md)
-
-### Command Line
-
-- [Cron](notes/os/command-line/cron.md)
-- [Find](notes/os/command-line/find.md)
-- [Grep](notes/os/command-line/grep.md)
-- [Vim](notes/os/command-line/vim.md)
-
-### Web Dev
-
-- [Javascript](notes/web-dev/javascript.md)
-- [Node](notes/web-dev/node.md)
-- [Nx](notes/web-dev/nx.md)
-- [Devops](notes/web-dev/devops/devops.md)
-- [Backend](notes/web-dev/backend/backend.md)
-- [Database](notes/web-dev/database/database.md)
-- [Frontend](notes/web-dev/frontend/frontend.md)
-- [Network Security](notes/network-security/network-security.md)
+- [Dance](notes/dance/)
+- [Language Learning](notes/language-learning/)
+- [Web Development](notes/software/web-dev/)
 
 ## Todo
 

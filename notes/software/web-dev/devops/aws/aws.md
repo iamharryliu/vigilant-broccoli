@@ -21,9 +21,9 @@ aws iam list-users
 
 ## Services
 
-- [EC2](./ec2.md)
-- [S3](./s3.md)
-- [Lambda](./lambda.md)
+- EC2 - cloud server, pay for the time running the server
+- S3 - storage service
+- Lambda - serverless functions, pay for computation time
 
 ## References
 

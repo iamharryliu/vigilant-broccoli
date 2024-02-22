@@ -1,9 +1,5 @@
 # Frontend Developer
 
-- [Angular](angular.md)
-- [React](react.md)
-- [Bootstrap](bootstrap.md)
-
 ## What is a frontend
 
 - clientside

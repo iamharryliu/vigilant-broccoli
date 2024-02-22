@@ -1,7 +1,5 @@
 # Backend Developer
 
-- [Express](notes/web-dev/backend/express.md)
-
 ## What is a backend
 
 - serverside

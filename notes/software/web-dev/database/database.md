@@ -1,7 +1,5 @@
 # Database
 
-- [Postgres](postgres.md)
-
 ## References
 
 - [Restore DB using Azure Data Studio](https://www.quackit.com/sql_server/mac/how_to_restore_a_bak_file_using_azure_data_studio.cfm)
