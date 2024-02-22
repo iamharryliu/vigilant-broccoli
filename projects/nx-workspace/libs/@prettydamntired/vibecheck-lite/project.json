@@ -1,0 +1,35 @@
+{
+  "name": "@prettydamntired/vibecheck-lite",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@prettydamntired/vibecheck-lite/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@prettydamntired/vibecheck-lite",
+        "tsConfig": "libs/@prettydamntired/vibecheck-lite/tsconfig.lib.json",
+        "packageJson": "libs/@prettydamntired/vibecheck-lite/package.json",
+        "main": "libs/@prettydamntired/vibecheck-lite/src/index.ts",
+        "assets": ["libs/@prettydamntired/vibecheck-lite/*.md"]
+      }
+    },
+    "publish": {
+      "command": "cd libs/@prettydamntired/vibecheck-lite && npm version patch && cd ../../../dist/libs/@prettydamntired/vibecheck-lite && npm publish --access=public && cd ../../../",
+      "dependsOn": ["build", "test", "lint"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/@prettydamntired/vibecheck-lite/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

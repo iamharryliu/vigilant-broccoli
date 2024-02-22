@@ -1,0 +1,20 @@
+{
+  "name": "@prettydamntired/test-node-tools",
+  "version": "0.0.93",
+  "dependencies": {
+    "ejs": "3.1.9",
+    "nodemailer": "^6.9.8",
+    "tslib": "^2.3.0",
+    "winston": "^3.11.0",
+    "dotenv-defaults": "^5.0.2",
+    "twilio": "^4.21.0",
+    "@prettydamntired/test-lib": "*",
+    "axios": "^1.0.0",
+    "@prettydamntired/personal-website-lib": "*"
+  },
+  "devDependencies": {
+    "@types/dotenv-defaults": "^2.0.4",
+    "@types/ejs": "^3.1.5",
+    "@types/nodemailer": "^6.4.14"
+  }
+}

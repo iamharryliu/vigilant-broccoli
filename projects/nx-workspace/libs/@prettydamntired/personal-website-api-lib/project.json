@@ -1,0 +1,35 @@
+{
+  "name": "@prettydamntired/personal-website-api-lib",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@prettydamntired/personal-website-api-lib/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@prettydamntired/personal-website-api-lib",
+        "tsConfig": "libs/@prettydamntired/personal-website-api-lib/tsconfig.lib.json",
+        "packageJson": "libs/@prettydamntired/personal-website-api-lib/package.json",
+        "main": "libs/@prettydamntired/personal-website-api-lib/src/index.ts",
+        "assets": ["libs/@prettydamntired/personal-website-api-lib/*.md"]
+      }
+    },
+    "publish": {
+      "command": "cd libs/@prettydamntired/personal-website-api-lib && npm version patch && cd ../../../dist/libs/@prettydamntired/personal-website-api-lib && npm publish --access=public && cd ../../../",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/@prettydamntired/personal-website-api-lib/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
