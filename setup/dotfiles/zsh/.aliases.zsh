@@ -85,15 +85,15 @@ alias flylogs='flyctl logs --app'
 alias flyssh='fly ssh console --app'
 
 # Fly Postgres
-alias flysqlconnnect='flyctl postgres connect --app'
-alias flysqlproxyapp='flyctl proxy 5432 --app'
+alias flysqlconn='flyctl postgres connect --app'
+alias flysqlproxy='flyctl proxy 5432 --app'
 alias flysqlconntestdb='flyctl postgres connect --app testsql'
 alias flysqlproxytestdb='flyctl proxy 5432 --app testsql'
 
 # Postgres
 alias brewsqlstart='brew services start postgresql'
 alias brewsqlstop='brew services stop postgresql'
-alias sqlstatus='pg_isready -d'
+alias sqlstatus='pg_isready -h localhost -p 5432'
 
 # Other
 alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'

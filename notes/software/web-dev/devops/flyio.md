@@ -40,7 +40,7 @@ flyctl logs --app [app_name]
 Issue new credential.
 
 ```
-fly ssh issue -d
+fly ssh issue --dotssh
 fly ssh issue --agent
 fly ssh console --app [app_name]
 ```
@@ -49,8 +49,8 @@ fly ssh console --app [app_name]
 
 ```
 flyctl postgres create
-flyctl postgres connect -a [db-name]
-flyctl proxy 5432 -a [db-name]
+flyctl postgres connect --app [db-name]
+flyctl proxy 5432 --app [db-name]
 
 fly ips list --app [app_name]
 fly ips allocate-v4 --app [app_name]
