@@ -3,7 +3,6 @@ import { SiteMonitor } from '@prettydamntired/test-node-tools';
 
 const sites = [
   'https://harryliu.design/',
-  'https://vigilant-broccoli.pages.dev/',
   'https://harryliu-design-express.fly.dev/',
   'https://vibecheck-lite-express.fly.dev/',
 ];
@@ -20,11 +19,6 @@ export default async function (fastify: FastifyInstance) {
   });
 
   fastify.get('/monitor-sites', async () => {
-    const sites = [
-      'https://harryliu.design/',
-      'https://harryliu-design-express.fly.dev/',
-      'https://vibecheck-lite-express.fly.dev/',
-    ];
     const siteMonitor = new SiteMonitor();
     for (const site of sites) {
       await siteMonitor.monitorSiteActivity(site);
