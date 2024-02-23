@@ -1,8 +1,10 @@
 # EC2
 
 ```
+aws ec2 start-instances --instance-ids [instance_id]
+
 chmod 400 [pemfile]
-ssh -i [pemfile] [ec2-machine-username]@[ec2-machine-ip-address]
+ssh -i [pemfile] [ec2_machine_username]@[ec2_machine_ip_address]
 ```
 
 ## References
