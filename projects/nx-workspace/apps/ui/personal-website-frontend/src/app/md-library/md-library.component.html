@@ -1,7 +1,9 @@
-<div *ngIf="fileContent">
-  <app-folder-item [item]="fileContent"></app-folder-item>
-</div>
-<br />
-<pre>
-  {{ fileService.selectedFileData }}
-</pre>
+<app-general-layout>
+  <div *ngIf="fileContent">
+    <app-folder-item [item]="fileContent"></app-folder-item>
+  </div>
+  <br />
+  <pre>
+    {{ fileService.selectedFileData }}
+  </pre>
+</app-general-layout>
