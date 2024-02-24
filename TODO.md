@@ -11,9 +11,7 @@
   - handle visa application
   - taxes
 - Q2 - important + not urgent
-  - being myself
-  - add devops to resume
-  - learn tmux
+  - making more balanced meals
 - Q3 - not important + urgent
 - Q4 - not important + not urgent
   - scanwich
@@ -30,3 +28,5 @@
 - docs
   - docs for dotnet
   - docs for spring boot
+- other
+  - add devops to resume
