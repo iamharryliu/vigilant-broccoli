@@ -3,7 +3,7 @@ export const ENVIRONMENT = {
   RECAPTCHA_V3_SITE_KEY: '6LfAdbMoAAAAAOR8IRGqw-3gPj8Fdl5GHqm6wzOF',
   URLS: {
     PERSONAL_WEBSITE_FRONTEND_URL: 'https://harryliu.design',
-    PERSONAL_WEBSITE_BACKEND_URL: 'https://harryliu-design-express.fly.dev',
+    PERSONAL_WEBSITE_BACKEND_URL: 'https://api.harryliu.design',
     LINKEDIN: 'https://www.linkedin.com/in/iamharryliu/',
     GITHUB: 'https://github.com/iamharryliu',
     PERSONAL_IG: 'https://www.instagram.com/prettydamntired/',
