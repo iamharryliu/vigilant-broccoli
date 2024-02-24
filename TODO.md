@@ -21,7 +21,7 @@
 - personal website overhaul
   - model after [this site](https://danielms.site/)
 - md library
-  - display folder structure and allow user to select filepath
+  - update build to copy notes folder to assets
 - reading
   - Redis
   - tmux

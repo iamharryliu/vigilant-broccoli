@@ -10,6 +10,7 @@ import { VibecheckLiteSubscribePageComponent } from '../../components/pages/vibe
 import { VibecheckLiteUnsubscribePageComponent } from '../../components/pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
 import { VibecheckLiteComponent } from '../../demo-apps/vibecheck-lite/vibecheck-lite.component';
 import { Link } from '../models/app.model';
+import { MdLibraryComponent } from '../../md-library/md-library.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -21,6 +22,12 @@ export const ADMIN_ROUTE: Route = {
   path: 'admin',
   data: { title: 'admin' },
   component: AdminComponent,
+};
+
+export const DOCS_ROUTE: Route = {
+  path: 'docs',
+  data: { title: 'docs' },
+  component: MdLibraryComponent,
 };
 
 export const ABOUT_ROUTE: Route = {
@@ -82,6 +89,7 @@ export const APP_ROUTES: Routes = [
   ABOUT_ROUTE,
   CONTACT_ROUTE,
   PROJECTS_ROUTE,
+  DOCS_ROUTE,
   LINK_TREE_ROUTE,
   VERIFY_EMAIL_ROUTE,
   UNSUBCSRIBE_VIBECHECK_LITE_ROUTE,
@@ -185,12 +193,21 @@ const RESUME: Link = {
   text: 'Resume',
 };
 
+const DOCS_LIBRARY: Link = {
+  url: {
+    internal: `/${DOCS_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${DOCS_ROUTE.path}`,
+  },
+  text: 'Docs Library',
+};
+
 const INTERNAL_LINKS = {
   PERSONAL_WEBSITE,
   ABOUT_PAGE,
   CONTACT_PAGE,
   LINK_TREE,
   PROJECTS_PAGE,
+  DOCS_LIBRARY,
 };
 
 const PROJECT_LINKS = {

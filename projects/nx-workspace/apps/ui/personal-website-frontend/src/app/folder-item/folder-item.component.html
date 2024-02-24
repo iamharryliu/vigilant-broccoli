@@ -1,0 +1,17 @@
+<div *ngIf="item">
+  <div *ngIf="item.type === 'folder'">
+    <div (click)="toggle()">
+      <span [class.collapsed]="!expanded" class="folder-icon">📁</span>
+      <strong>{{ item.name }}</strong>
+    </div>
+    <div *ngIf="expanded" style="margin-left: 20px">
+      <app-folder-item
+        *ngFor="let child of item.children"
+        [item]="child"
+      ></app-folder-item>
+    </div>
+  </div>
+  <div *ngIf="item.type === 'file'">
+    <div (click)="selectFile(item.filepath)">{{ item.name }}</div>
+  </div>
+</div>
