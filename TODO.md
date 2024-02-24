@@ -18,6 +18,10 @@
 
 ## Coding
 
+- personal website overhaul
+  - model after [this site](https://danielms.site/)
+- md library
+  - display folder structure and allow user to select filepath
 - reading
   - Redis
   - tmux
