@@ -18,8 +18,6 @@
 
 ## Coding
 
-- dns
-  - make sure api, www, and reg url working
 - reading
   - Redis
   - tmux
