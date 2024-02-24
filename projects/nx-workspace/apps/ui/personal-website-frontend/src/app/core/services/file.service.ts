@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import { marked } from 'marked';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +20,14 @@ export class FileService {
   }
 
   selectFile(filepath: string): void {
-    this.getMdFile(filepath).subscribe(data => (this.selectedFileData = data));
+    const markdownParser = marked.setOptions({});
+    this.getMdFile(filepath)
+      .pipe(
+        tap(
+          async data =>
+            (this.selectedFileData = await markdownParser.parse(data)),
+        ),
+      )
+      .subscribe();
   }
 }
