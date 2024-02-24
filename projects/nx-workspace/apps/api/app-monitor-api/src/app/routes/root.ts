@@ -3,7 +3,7 @@ import { SiteMonitor } from '@prettydamntired/test-node-tools';
 
 const sites = [
   'https://harryliu.design/',
-  'https://harryliu-design-express.fly.dev/',
+  'https://api.harryliu.design/',
   'https://vibecheck-lite-express.fly.dev/',
 ];
 
