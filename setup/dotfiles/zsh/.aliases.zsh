@@ -89,8 +89,9 @@ alias flysqlconntestdb='flyctl postgres connect --app testsql'
 alias flysqlproxytestdb='flyctl proxy 5432 --app testsql'
 
 # AWS
-alias startec2instance="aws ec2 start-instances --instance-ids $ec2_instance"
-alias stopec2instance="aws ec2 stop-instances --instance-ids $ec2_instance"
+alias awsauto="aws --cli-auto-prompt"
+alias startec2="aws ec2 start-instances --instance-ids $ec2_instance"
+alias stopec2="aws ec2 stop-instances --instance-ids $ec2_instance"
 alias sshec2="ssh -i ~/certs/ec2-instance.pem $ec2_instance_username_ip_address"
 
 # vigilant-broccoli
