@@ -4,18 +4,32 @@
 
 Sunday
 
+- ask gf her favorite things about her past bfs
 - light haircut
 - treat scalp
 - apartment cleanup
+- ask gf for help with cell plan
+- plan week dinners
+  - soups??
 
-## Monday
+Monday
 
 - taxes
 - available offline?
 
-## Tuesday
+Tuesday
 
 -
+
+Wednesday
+
+Thursday
+
+Friday
+
+Saturday
+
+Sunday
 
 ## Quadrants
 
