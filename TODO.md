@@ -8,6 +8,7 @@ Sunday
 - haircut?
 - treat scalp
 - test out cc using different network
+- available offline?
 
 ## Monday
 
