@@ -4,15 +4,14 @@
 
 Sunday
 
-- apartment cleanup
-- haircut?
+- light haircut
 - treat scalp
-- test out cc using different network
-- available offline?
+- apartment cleanup
 
 ## Monday
 
 - taxes
+- available offline?
 
 ## Tuesday
 
@@ -39,7 +38,8 @@ Sunday
   - model after [this site](https://danielms.site/)
 - md library
   - style md library
-  - add language learning google sheet to md lib and delete sheet
+  - light/dark mode
+  - add document icon
 - reading
   - rsync
   - Redis
