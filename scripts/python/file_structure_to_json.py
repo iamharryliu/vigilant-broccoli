@@ -1,5 +1,6 @@
 import os
 import json
+import sys
 
 
 def folder_to_json(folder_path, root_path):
@@ -33,8 +34,12 @@ def save_json(data, output_file):
 
 
 if __name__ == "__main__":
-    folder_path = input("Enter the path of the folder: ")
-    output_file = input("Enter the output JSON file name: ")
+    if len(sys.argv) != 3:
+        print("Usage: python script.py <folder_path> <output_file>")
+        sys.exit(1)
+
+    folder_path = sys.argv[1]
+    output_file = sys.argv[2]
 
     if os.path.exists(folder_path) and os.path.isdir(folder_path):
         data = folder_to_json(folder_path, folder_path)

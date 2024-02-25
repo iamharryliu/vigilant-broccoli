@@ -1,6 +1,9 @@
 <div class="flex">
   <div class="w-1/4">
-    <app-folder-item [item]="fileContent"></app-folder-item>
+    <app-folder-item
+      *ngIf="fileContent$ | async as folderItem"
+      [item]="folderItem"
+    ></app-folder-item>
   </div>
   <div class="w-3/4">
     <div [innerHTML]="fileService.selectedFileData"></div>

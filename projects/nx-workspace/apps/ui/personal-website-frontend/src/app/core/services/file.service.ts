@@ -12,11 +12,13 @@ export class FileService {
   constructor(private http: HttpClient) {}
 
   getFileContent(): Observable<any> {
-    return this.http.get('assets/notes.json');
+    return this.http.get('assets/md-library/md-library.json');
   }
 
   getMdFile(filepath: string): Observable<any> {
-    return this.http.get(`assets/notes/${filepath}`, { responseType: 'text' });
+    return this.http.get(`assets/md-library/notes/${filepath}`, {
+      responseType: 'text',
+    });
   }
 
   selectFile(filepath: string): void {

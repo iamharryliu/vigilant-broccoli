@@ -41,3 +41,6 @@ Thumbs.db
 .nx/cache
 
 .angular
+
+# Custom
+apps/ui/personal-website-frontend/src/assets/md-library/

@@ -9,6 +9,16 @@
     "serve:mock": {
       "command": "concurrently --kill-others \"nx serve personal-website-frontend\"  \"ts-node apps/ui/personal-website-frontend/mock-server/server.ts --ext js,ts,json,html\""
     },
+    "pre-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "ts-node file_structure_to_json.ts ../../notes ./apps/ui/personal-website-frontend/src/assets/md-library/md-library.json && cp -r ../../notes apps/ui/personal-website-frontend/src/assets/md-library/notes"
+          }
+        ]
+      }
+    },
     "build": {
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
@@ -54,7 +64,8 @@
           ]
         }
       },
-      "defaultConfiguration": "production"
+      "defaultConfiguration": "production",
+      "dependsOn": ["pre-build"]
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
