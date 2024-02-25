@@ -94,6 +94,11 @@ alias startec2="aws ec2 start-instances --instance-ids $ec2_instance"
 alias stopec2="aws ec2 stop-instances --instance-ids $ec2_instance"
 alias sshec2="ssh -i ~/certs/ec2-instance.pem $ec2_instance_username_ip_address"
 
+# NX
+alias nxdeploy="nx deploy --skip-nx-cache"
+alias nxbuildall="nx run-many -t=build"
+alias nxdeployall="nx run-many -t=deploy"
+
 # vigilant-broccoli
 alias brewdump='rm ~/vigilant-broccoli/setup/mac/Brewfile && brew bundle dump --file=~/vigilant-broccoli/setup/mac/Brewfile'
 alias cdvb='cd ~/vigilant-broccoli/'
