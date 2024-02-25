@@ -3,6 +3,7 @@
 ## Not Coding
 
 - Q1 - important + urgent
+  - bake bread
   - cc issue
     - call cc company
     - comviq phone plan(https://comviq.se/tanka)
@@ -21,7 +22,7 @@
 - personal website overhaul
   - model after [this site](https://danielms.site/)
 - md library
-  - solution to either 1. update notes and assets on build or 2. script to update notes and assets
+  - style md library
 - reading
   - Redis
   - tmux
