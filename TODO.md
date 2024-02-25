@@ -6,6 +6,7 @@ Sunday
 
 - apartment cleanup
 - haircut?
+- treat scalp
 - test out cc using different network
 
 ## Monday
