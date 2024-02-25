@@ -37,6 +37,7 @@ Sunday
   - model after [this site](https://danielms.site/)
 - md library
   - style md library
+  - add language learning spread md files
 - reading
   - Redis
   - tmux
