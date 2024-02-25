@@ -5,6 +5,7 @@
 Sunday
 
 - shower
+- apartment cleanup
 - boil handwarmers
 - haircut?
 - test out cc using different network
