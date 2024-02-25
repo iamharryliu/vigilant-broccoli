@@ -21,7 +21,7 @@
 - personal website overhaul
   - model after [this site](https://danielms.site/)
 - md library
-  - update build to copy notes folder to assets
+  - solution to either 1. update notes and assets on build or 2. script to update notes and assets
 - reading
   - Redis
   - tmux
