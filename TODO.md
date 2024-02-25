@@ -52,7 +52,6 @@ Sunday
 - md library
   - style md library
   - light/dark mode
-  - add document icon
 - reading
   - rsync
   - Redis
