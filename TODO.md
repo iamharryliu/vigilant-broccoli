@@ -22,7 +22,6 @@
   - model after [this site](https://danielms.site/)
 - md library
   - update build to copy notes folder to assets
-  - style md conttent
 - reading
   - Redis
   - tmux

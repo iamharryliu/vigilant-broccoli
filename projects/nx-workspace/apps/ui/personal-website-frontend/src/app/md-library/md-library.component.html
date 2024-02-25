@@ -1,5 +1,9 @@
- <div *ngIf="fileContent">
-  <app-folder-item [item]="fileContent"></app-folder-item>
+<div class="flex">
+  <div class="w-1/4">
+    <app-folder-item [item]="fileContent"></app-folder-item>
+  </div>
+  <div class="w-3/4">
+    <div [innerHTML]="fileService.selectedFileData"></div>
+  </div>
 </div>
-<br />
-<div [innerHTML]="fileService.selectedFileData"></div>
+<lib-return-top-button></lib-return-top-button>
