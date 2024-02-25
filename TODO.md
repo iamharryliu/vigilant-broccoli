@@ -5,6 +5,7 @@
 Sunday
 
 - shower
+- boil handwarmers
 - haircut?
 - test out cc using different network
 
