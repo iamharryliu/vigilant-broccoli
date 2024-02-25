@@ -1,10 +1,10 @@
 <div class="flex min-h-screen">
-  <div class="w-1/5 bg-gray-200">
+  <div class="w-1/5 bg-gray-200 pl-3 pt-2">
     <app-folder-item
       *ngIf="fileContent$ | async as folderItem"
       [item]="folderItem"></app-folder-item>
   </div>
-  <div class="w-4/5">
+  <div class="w-4/5 pl-4">
     <div [innerHTML]="fileService.selectedFileData"></div>
   </div>
   <lib-return-top-button></lib-return-top-button>

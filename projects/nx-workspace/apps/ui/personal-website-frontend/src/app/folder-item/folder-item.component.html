@@ -1,8 +1,10 @@
 <div *ngIf="item">
   <div *ngIf="item.type === 'folder'">
-    <div (click)="toggle()">
-      <span [class.collapsed]="!expanded" class="folder-icon">📁</span>
-      <span [class.font-bold]="expanded">{{ item.name }}</span>
+    <div (click)="toggle()"
+      class="folder">
+      <span *ngIf="!expanded" class="folder">📁</span>
+      <span *ngIf="expanded">📂</span>
+      <span class="ml-2" [class.font-bold]="expanded">{{ item.name }}</span>
     </div>
     <div *ngIf="expanded" style="margin-left: 20px">
       <app-folder-item
