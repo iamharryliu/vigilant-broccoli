@@ -4,21 +4,20 @@
 
 Sunday
 
-- ask gf her favorite things about her past bfs
-- light haircut
-- treat scalp
-- apartment cleanup
 - ask gf for help with cell plan
 - plan week dinners
   - soups??
 
 Monday
 
+- light haircut
+- treat scalp
 - taxes
 - available offline?
 
 Tuesday
 
+- apartment cleanup
 -
 
 Wednesday
