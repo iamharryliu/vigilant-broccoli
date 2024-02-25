@@ -37,7 +37,7 @@ Sunday
   - model after [this site](https://danielms.site/)
 - md library
   - style md library
-  - add language learning spread md files
+  - add language learning google sheet to md lib and delete sheet
 - reading
   - rsync
   - Redis
