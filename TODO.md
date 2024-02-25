@@ -39,6 +39,7 @@ Sunday
   - style md library
   - add language learning spread md files
 - reading
+  - rsync
   - Redis
   - tmux
 - vc
