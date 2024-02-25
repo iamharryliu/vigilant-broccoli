@@ -44,3 +44,59 @@
 | we             | vi                  | nous             |               |                   |                 |
 | you(plural)    | ni                  | vous             |               |                   |                 |
 | they           | de                  | ils/elles        |               |                   |
+|                |                     |                  |               |                   |                 |
+|                |                     |                  |               |                   |                 |
+| Time           |                     |                  |               |                   |                 |
+| now            | nu                  | maintenant       | ahora         |
+| today          | i dag               | aujourdhui       | hoy           |
+| tonight        | i kväll             | ce soir          | esta noche    |
+| tomorrow       | i morgon            | demain           | manana        |
+| yesterday      | i går               | hier             | ayer          |
+| never          | aldrig              | jamais           | nunca         |
+| always         | altig               | toujours         | siempre       |
+|                |                     |                  |               |                   |                 |
+|                |                     |                  |               |                   |                 |
+| Question Words |                     |                  |               |
+| who            | vem/vilka           | qui              | quien         |
+| what           | vad                 | que              | que           |
+| when           | när                 | quand            | cuando        |
+| at what time   | vilken tid          | a quelle heure   | a que hora    |
+| where          | var                 | ou               | donde         |
+| why            | varför              | pourquoi         | por que       |
+| how            | hur                 | comment          | como          |
+| how much       | hur mycket          | combien          | cuanto        |
+| which          | vilken              | quel             | cual          |
+|                |                     |                  |               |
+|                |                     |                  |
+| English        | Swedish             | French           | Spanish       |
+| to want        | att villja          | voulir           | querer        |
+| to go          |                     | aller            | ir            |
+| to have        |                     | avoir            | tener         |
+| to take        |                     | prendre          | tomar         |
+| to try         |                     | essayer          | probar        |
+| to eat         |                     | manger           | comer         |
+| to drink       |                     | boire            | beber         |
+| to make        |                     | faire            | hacer         |
+| to change      |                     | changer          | cambiar       |
+| to need        | att behova          |                  |               |
+| to know        | att veta            |                  |               |
+| do you have?   |                     |                  | tienes        |
+| I have         |                     | j'ai             | he            |
+| I'm going      |                     | je vais          | voy           |
+| You go         |                     | tu vas           | va            |
+|                |                     |                  |               |
+|                |                     |                  |               |
+| I have ordered |                     | j'ai commande    | he pedido     |
+| I have eaten   |                     | j'ai mange       | he comido     |
+| it was         |                     | c'etait          | fue           |
+|                |                     |                  | estuvo        |
+|                |                     |                  |               |
+| I would        |                     | je voudrais      | quiero        |
+| do you want    |                     | voulez vou       | quiere        |
+|                |                     |                  |               |
+| do you have    |                     |                  | tiene         |
+|                |                     |                  |               |
+|                |                     |                  |               |
+|                |                     |                  |               |
+|                |                     |                  |               |
+|                |                     |                  |
