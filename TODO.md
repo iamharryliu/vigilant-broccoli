@@ -2,14 +2,11 @@
 
 ## Planning
 
-Sunday
+Monday
 
 - ask gf for help with cell plan
 - plan week dinners
   - soups??
-
-Monday
-
 - light haircut
 - treat scalp
 - taxes
@@ -44,6 +41,12 @@ Sunday
 - Q3 - not important + urgent
 - Q4 - not important + not urgent
   - scanwich
+
+## Blogs
+
+- friction
+- monorepo - using a single github repo for EVERYTHING (almost everything)
+- drawing
 
 ## Coding
 
