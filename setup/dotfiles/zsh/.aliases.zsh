@@ -104,3 +104,6 @@ alias brewdump='rm ~/vigilant-broccoli/setup/mac/Brewfile && brew bundle dump --
 alias cdvb='cd ~/vigilant-broccoli/'
 alias cdnx='cd ~/vigilant-broccoli/projects/nx-workspace/'
 alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'
+
+# Other
+alias updatetodos="git add ~/vigilant-broccoli/TODO.md && git commit -m 'docs: update TODO.md'"
