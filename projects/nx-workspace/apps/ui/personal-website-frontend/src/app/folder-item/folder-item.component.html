@@ -2,13 +2,12 @@
   <div *ngIf="item.type === 'folder'">
     <div (click)="toggle()">
       <span [class.collapsed]="!expanded" class="folder-icon">📁</span>
-      <strong>{{ item.name }}</strong>
+      <span [class.font-bold]="expanded">{{ item.name }}</span>
     </div>
     <div *ngIf="expanded" style="margin-left: 20px">
       <app-folder-item
         *ngFor="let child of item.children"
-        [item]="child"
-      ></app-folder-item>
+        [item]="child"></app-folder-item>
     </div>
   </div>
   <div *ngIf="item.type === 'file'">
