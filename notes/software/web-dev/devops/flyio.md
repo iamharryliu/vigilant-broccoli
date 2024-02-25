@@ -57,6 +57,15 @@ fly ips allocate-v4 --app [app_name]
 fly ips allocate-v4 --app [app_name] --shared
 ```
 
+### DNS
+
+```
+fly certs add [domain_name] --app [app_name]
+fly certs remove [domain_name] --app [app_name]
+fly certs list --app [app_name]
+fly certs show [hostname] --app [app_name]
+```
+
 ## Troubleshooting
 
 - Make sure you have set all environment variables before deploying.
