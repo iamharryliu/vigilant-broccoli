@@ -36,7 +36,7 @@ Sunday
     - uniqlo marimekko bag, https://www.uniqlo.com/uk/en/product/round-mini-shoulder-bag-466335.html?dwvar_466335_color=COL02&dwvar_466335_size=SIZ999
   - handle visa application
 - Q2 - important + not urgent
-  - making more balanced meals
+  - get involved in open source
 - Q3 - not important + urgent
 - Q4 - not important + not urgent
   - scanwich
