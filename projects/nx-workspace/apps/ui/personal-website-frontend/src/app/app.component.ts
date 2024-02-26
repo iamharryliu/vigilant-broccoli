@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, tap } from 'rxjs';
+import { AppService } from './core/services/app.service';
 
 @Component({
   selector: 'app-root',
@@ -11,8 +12,24 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private titleService: Title,
+    private appService: AppService,
     private route: ActivatedRoute,
-  ) {}
+  ) {
+    this.checkWindowSize();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(_: any) {
+    this.checkWindowSize();
+  }
+
+  checkWindowSize() {
+    if (window.innerWidth < 640) {
+      this.appService.setIsMobile();
+    } else {
+      this.appService.setIsBrowser();
+    }
+  }
 
   ngOnInit(): void {
     this.router.events
