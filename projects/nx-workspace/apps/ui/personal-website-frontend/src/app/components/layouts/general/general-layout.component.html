@@ -1,18 +1,14 @@
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-  <app-navbar></app-navbar>
-  <div #ref><ng-content></ng-content></div>
-  <hr *ngIf="ref.children.length" />
-  <div
-    *ngIf="hasContactForm"
-    class="w-11/12 md:w-5/6 lg:w-2/3 mx-auto pt-14 pb-14"
-  >
-    <app-contact></app-contact>
+<div class="lg:flex">
+  <div class="h-min lg:h-screen w-full lg:w-2/5 border-r-2">
+    <div class="flex items-center h-full">
+      <div class="w-full">
+        <p class="text-center">Brand</p>
+        <p class="text-center">One liner</p>
+      </div>
+    </div>
   </div>
-  <hr *ngIf="hasContactForm" />
-  <div *ngIf="hasSubscribeForm" class="pb-8 pt-8">
-    <app-newsletter-sub-form></app-newsletter-sub-form>
+  <div class="lg:h-screen lg:overflow-y-scroll w-full lg:w-3/5">
+    <app-navbar></app-navbar>
+    <div #ref><ng-content></ng-content></div>
   </div>
-  <hr *ngIf="hasSubscribeForm" />
-  <app-footer></app-footer>
 </div>
-<lib-return-top-button></lib-return-top-button>

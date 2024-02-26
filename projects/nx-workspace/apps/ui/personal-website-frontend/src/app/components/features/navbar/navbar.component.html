@@ -1,17 +1,8 @@
-<nav>
-  <div class="flex items-center justify-between h-16">
-    <div class="flex-shrink-0">
-      <a [routerLink]="NAVBAR.index" class="text-gray-800 text-lg font-bold">
-        harryliu.design
-      </a>
-    </div>
-    <div class="hidden sm:block">
-      <div class="ml-10 flex items-baseline space-x-4">
-        <div *ngFor="let link of NAVBAR.links" class="px-3">
-          <lib-link [link]="link" [isBold]="true" type="internal"></lib-link>
-        </div>
-      </div>
+<nav class="flex items-center justify-between h-16 ml-3">
+  <div class="flex items-baseline space-x-4">
+    <div *ngFor="let link of NAVBAR.links" class="pr-3">
+      <lib-link [link]="link" type="internal"></lib-link>
     </div>
   </div>
-  <hr />
 </nav>
+<hr />
