@@ -9,7 +9,7 @@ Monday
   - soups??
   - crispy cheese potatos
 - taxes
-- available offline?
+- make dough
 
 Tuesday
 
@@ -48,7 +48,6 @@ Sunday
 
   - add devops to resume
   - md library
-    - style md library
     - light/dark mode
   - implement as const, as const + (type of const)[keyof typeof const]
 
@@ -67,6 +66,7 @@ Sunday
 
 - Blogs
   - friction
+  - adapting
   - monorepo - using a single github repo for EVERYTHING (almost everything)
   - drawing
 - Code
