@@ -1,8 +1,16 @@
-# Life Hacks
+# Carryon
 
-## EDC / Packing
+## Day to Day
 
-### Digital EDC
+- phone
+- wallet
+- keys
+- reading material
+- general agenda
+- sunglasses
+- chaptick
+
+## Digital
 
 - digital documentation
   - driver's license
@@ -13,24 +21,14 @@
   - reading content
   - music/videos/movies
 
-### Day to Day EDC
-
-- phone
-- wallet
-- keys
-- reading material
-- general agenda
-- sunglasses
-- chaptick
-
-### WFH EDC
+## WFH
 
 - laptop
 - charger + adapter extension
 - laptop stand
 - phone stand
 
-### Travel Pack
+## Travel
 
 - passport, wallet, phone
 - toiletry
@@ -46,14 +44,14 @@
   TIER 3
 - flashlight
 
-### BJJ Pack
+## BJJ
 
 -bjj bag + water bottle
 
-### Skateboard Pack
+## Skateboard
 
--skateboard + skate tool
+- skateboard + skate tool
 
-### Skateboard Pack
+## Skateboard
 
--blades + skate tool
+- blades + skate tool

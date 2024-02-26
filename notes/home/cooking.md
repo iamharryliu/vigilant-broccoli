@@ -1,8 +1,21 @@
 # Cooking Notes
 
+## Recipe Testing
+
+Tomato Soup
+
+- roasted tomatoes
+- roasted onion
+- chili
+- ginger
+- vege stock
+- coconut milk
+- vinegar
+- salt & pepper
+
 ## Notes
 
-- Make new food in smaller batche
+- Make new food in smaller batches
 - Noodles
   - Always pre-boil noodles to make more workable.
   - Rinse noodle in cold water after boiling to stop cooking.
