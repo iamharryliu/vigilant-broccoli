@@ -8,6 +8,7 @@ import { MarkdownService } from '@prettydamntired/test-lib';
 })
 export class FileService {
   selectedFileData?: string;
+  isFileSelected = false;
 
   constructor(private http: HttpClient) {}
 
@@ -24,11 +25,16 @@ export class FileService {
   selectFile(filepath: string): void {
     this.getMdFile(filepath)
       .pipe(
-        tap(
-          async data =>
-            (this.selectedFileData = await MarkdownService.parse(data)),
-        ),
+        tap(async data => {
+          this.selectedFileData = await MarkdownService.parse(data);
+          this.isFileSelected = true;
+        }),
       )
       .subscribe();
+  }
+
+  closeSelectedFile() {
+    this.selectedFileData = undefined;
+    this.isFileSelected = false;
   }
 }
