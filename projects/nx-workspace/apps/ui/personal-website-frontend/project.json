@@ -14,7 +14,7 @@
       "options": {
         "commands": [
           {
-            "command": "ts-node file_structure_to_json.ts ../../notes ./apps/ui/personal-website-frontend/src/assets/md-library/md-library.json && rsync -r ../../notes apps/ui/personal-website-frontend/src/assets/md-library/"
+            "command": "ts-node file_structure_to_json.ts ../../notes ./apps/ui/personal-website-frontend/src/assets/md-library/md-library.json && rsync -r ../../notes apps/ui/personal-website-frontend/src/assets/md-library/ --delete"
           }
         ]
       }
