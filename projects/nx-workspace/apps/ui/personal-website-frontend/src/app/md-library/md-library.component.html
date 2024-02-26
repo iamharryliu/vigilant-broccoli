@@ -1,20 +1,27 @@
 <div class="flex">
   <div
     class="h-screen overflow-y-scroll w-full sm:w-1/5 pl-3 pt-2 border-r-2"
-    [class.hidden]="appService.isMobile && fileService.isFileSelected">
+    [class.hidden]="appService.isMobile && fileService.isFileSelected"
+  >
     <app-folder-item
       *ngIf="fileContent$ | async as folderItem"
-      [item]="folderItem"></app-folder-item>
+      [item]="folderItem"
+    ></app-folder-item>
   </div>
   <div
     class="h-screen overflow-y-scroll sm:block sm:w-4/5 pl-4"
-    [class.hidden]="appService.isMobile && !fileService.isFileSelected">
+    [class.hidden]="appService.isMobile && !fileService.isFileSelected"
+  >
     <div [innerHTML]="fileService.selectedFileData"></div>
   </div>
   <div
     class="absolute top-0 right-0 m-4 cursor-pointer"
-    [class.hidden]="(appService.isMobile && !fileService.isFileSelected) || appService.isBrowser"
-    (click)="close()">
+    [class.hidden]="
+      (appService.isMobile && !fileService.isFileSelected) ||
+      appService.isBrowser
+    "
+    (click)="close()"
+  >
     <div>X</div>
   </div>
   <lib-return-top-button></lib-return-top-button>
