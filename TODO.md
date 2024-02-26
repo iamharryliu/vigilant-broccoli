@@ -4,24 +4,22 @@
 
 Monday
 
-- automate md-library upload
-- plan week dinners
-  - taco wraps
-  - soups??
-  - crispy cheese potatos
-- taxes
-- make dough
-
 Tuesday
 
+- automate md-library upload??
+- make mayo
+- crispy cheese potato snack
 - apartment cleanup
--
 
 Wednesday
 
 Thursday
 
+- cheddar broccoli soup?
+
 Friday
+
+- taco wraps
 
 Saturday
 
@@ -74,6 +72,8 @@ Sunday
   - image art
   - typing game
   - recipe app?
+  - wiki bio app
+- what’s the actual cost?? (raw material + production cost vs retail)
 
 ## Food
 
