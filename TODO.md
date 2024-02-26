@@ -8,8 +8,6 @@ Monday
   - taco wraps
   - soups??
   - crispy cheese potatos
-- light haircut
-- treat scalp
 - taxes
 - available offline?
 
