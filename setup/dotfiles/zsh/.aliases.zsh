@@ -108,4 +108,5 @@ alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind
 
 # Other
 alias updatetodos="git add ~/vigilant-broccoli/TODO.md && git commit -m 'docs: update TODO.md'"
-alias updatemd="cdnx && nx deploy personal-website-frontend"
+alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
+alias commitmd="cdvb && git add README.md TODO.md notes/**/*.md && git commit -m 'docs: update md files'"
