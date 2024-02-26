@@ -7,6 +7,7 @@ Monday
 - plan week dinners
   - taco wraps
   - soups??
+  - crispy cheese potatos
 - light haircut
 - treat scalp
 - taxes
