@@ -4,6 +4,7 @@
 
 Monday
 
+- automate md-library upload
 - plan week dinners
   - taco wraps
   - soups??
@@ -72,8 +73,14 @@ Sunday
 - Code
   - image art
   - typing game
+  - recipe app?
 
 ## Food
 
 - soup
 - learn pickling preservation styles
+
+## Drawing
+
+- practice drawing different angles of geometric 3D forms
+-
