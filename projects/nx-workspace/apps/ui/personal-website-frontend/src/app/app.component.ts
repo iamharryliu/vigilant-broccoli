@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, tap } from 'rxjs';
 import { AppService } from './core/services/app.service';
+import { TAILWIND_BREAKPOINTS } from '@prettydamntired/test-lib';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,7 @@ export class AppComponent implements OnInit {
   }
 
   checkWindowSize() {
-    if (window.innerWidth < 640) {
+    if (window.innerWidth < TAILWIND_BREAKPOINTS.MD) {
       this.appService.setIsMobile();
     } else {
       this.appService.setIsBrowser();
