@@ -4,7 +4,6 @@
 
 Monday
 
-- ask gf for help with cell plan
 - plan week dinners
   - taco wraps
   - soups??
@@ -42,6 +41,7 @@ Sunday
 - Q3 - not important + urgent
 - Q4 - not important + not urgent
   - scanwich
+  - studio 234
 
 ## Coding
 
@@ -60,7 +60,6 @@ Sunday
   - docs for spring boot
   - fix: vibecheck-flask test cases
 - Q3
-
   - rsync
   - Redis
   - tmux
