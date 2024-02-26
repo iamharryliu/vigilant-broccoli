@@ -6,6 +6,7 @@ Monday
 
 - ask gf for help with cell plan
 - plan week dinners
+  - taco wraps
   - soups??
 - light haircut
 - treat scalp
@@ -27,7 +28,7 @@ Saturday
 
 Sunday
 
-## Quadrants
+## Not Coding
 
 - Q1 - important + urgent
   - cc issue
@@ -42,29 +43,39 @@ Sunday
 - Q4 - not important + not urgent
   - scanwich
 
-## Blogs
-
-- friction
-- monorepo - using a single github repo for EVERYTHING (almost everything)
-- drawing
-
 ## Coding
 
-- personal website overhaul
-  - model after [this site](https://danielms.site/)
-- md library
-  - style md library
-  - light/dark mode
-- reading
+- Q1
+
+  - add devops to resume
+  - md library
+    - style md library
+    - light/dark mode
+  - implement as const, as const + (type of const)[keyof typeof const]
+
+- Q2
+  - personal website overhaul, model after [this site](https://danielms.site/)
+  - new getRecommendation fn for current weather
+  - docs for dotnet
+  - docs for spring boot
+  - fix: vibecheck-flask test cases
+- Q3
+
   - rsync
   - Redis
   - tmux
-- vc
-  - fix: vibecheck-flask test cases
-- vc lite
-  - new getRecommendation fn for current weather
-- docs
-  - docs for dotnet
-  - docs for spring boot
-- other
-  - add devops to resume
+
+## Future Projects
+
+- Blogs
+  - friction
+  - monorepo - using a single github repo for EVERYTHING (almost everything)
+  - drawing
+- Code
+  - image art
+  - typing game
+
+## Food
+
+- soup
+- learn pickling preservation styles
