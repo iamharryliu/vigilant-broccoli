@@ -4,4 +4,4 @@
 
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=iamharryliu" alt="danielmichaels" /> </p>
 
-![Views]("https://komarev.com/ghpvc/?username=iamharryliu")
+![Views](https://komarev.com/ghpvc/?username=iamharryliu)
