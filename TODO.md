@@ -50,7 +50,9 @@ Sunday
   - update .aliases.zsh to cd first to avoid long paths
   - add devops to resume
   - md library
-    - light/dark mode
+    - add responsive navbar collapse
+    - pick a profile picure
+    - light/dark mode?
   - implement as const, as const + (type of const)[keyof typeof const]
 
 - Q2
