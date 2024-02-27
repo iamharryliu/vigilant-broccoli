@@ -45,9 +45,7 @@ export class VibecheckLiteSubscribePageComponent {
         }),
       )
       .subscribe(_ => {
-        this.router.navigateByUrl(
-          LINKS.PERSONAL_WEBSITE.url.internal as string,
-        );
+        this.router.navigateByUrl(LINKS.INDEX_PAGE.url.internal as string);
       });
   }
 

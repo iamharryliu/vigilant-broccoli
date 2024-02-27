@@ -13,7 +13,7 @@ import { LinkComponent } from '../../global/link/link.component';
 })
 export class NavbarComponent {
   NAVBAR: { index: string; links: Link[] } = {
-    index: LINKS.PERSONAL_WEBSITE.url.internal as string,
-    links: [LINKS.PERSONAL_WEBSITE, LINKS.MD_LIBRARY, LINKS.ABOUT_PAGE],
+    index: LINKS.INDEX_PAGE.url.internal as string,
+    links: [LINKS.MD_LIBRARY, LINKS.ABOUT_PAGE],
   };
 }
