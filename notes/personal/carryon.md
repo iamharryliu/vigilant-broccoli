@@ -55,3 +55,11 @@
 ## Skateboard
 
 - blades + skate tool
+
+## Drawing
+
+- pencil case
+  - pens
+  - pencil
+  - eraser
+  - ruler
