@@ -6,6 +6,8 @@ Monday
 
 Tuesday
 
+- bake bread
+- check https://support.harryliu.design/
 - automate md-library upload??
 - make mayo
 - crispy cheese potato snack
@@ -57,7 +59,6 @@ Sunday
   - docs for spring boot
   - fix: vibecheck-flask test cases
 - Q3
-  - rsync
   - Redis
   - tmux
 
@@ -83,4 +84,4 @@ Sunday
 ## Drawing
 
 - practice drawing different angles of geometric 3D forms
--
+- practice shading shapes with different light sources
