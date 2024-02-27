@@ -7,7 +7,6 @@ Monday
 Tuesday
 
 - bake bread
-- check https://support.harryliu.design/
 - automate md-library upload??
 - make mayo
 - crispy cheese potato snack
