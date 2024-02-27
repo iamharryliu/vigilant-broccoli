@@ -27,9 +27,9 @@ test:
 ## Subtrees
 
 ```
-git subtree add --prefix=<subtree-name> <repository-url> <branch-name>
-git subtree pull --prefix=<subtree-name> <repository-url> <branch-name> --squash
-git subtree push --prefix=<subtree-name> <repository-url> <branch-name>
+git subtree add --prefix=[filepath] [repo_url] [branch_name]
+git subtree pull --prefix=[filepath] [repo_url] [branch_name] --squash
+git subtree push --prefix=[filepath] [repo_url] [branch_name]
 ```
 
 ## Commands
