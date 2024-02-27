@@ -6,11 +6,12 @@ Monday
 
 Tuesday
 
-- bake bread
-- automate md-library upload??
 - make mayo
 - crispy cheese potato snack
 - apartment cleanup
+- flowertech
+  - study job posting
+  - book interview time
 
 Wednesday
 
