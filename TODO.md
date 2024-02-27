@@ -49,9 +49,16 @@ Sunday
 
   - update .aliases.zsh to cd first to avoid long paths
   - add devops to resume
+  - personal-website
+    - add subdomains
+      - links.harryliu.design
+      - docs.harryliu.design
+    - ui
+      - responsive collapsable navbar
+      - pick a profile picure
+      - projects section
+      - blog section
   - md library
-    - add responsive navbar collapse
-    - pick a profile picure
     - light/dark mode?
   - implement as const, as const + (type of const)[keyof typeof const]
 
