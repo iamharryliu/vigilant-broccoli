@@ -32,7 +32,7 @@ alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
 alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs git push origin --delete'
 
 # Github
-alias updategitreadme="cdvb && git add iamharryliu/README.md && git commit -m 'docs: update github profile readme' && git subtree push --prefix=iamharryliu git@github.com:iamharryliu/iamharryliu.git main"
+alias updategitreadme="cdvb && git add iamharryliu && git commit -m 'docs: update github profile readme' && git subtree push --prefix=iamharryliu git@github.com:iamharryliu/iamharryliu.git main"
 
 # Port
 killport() {
