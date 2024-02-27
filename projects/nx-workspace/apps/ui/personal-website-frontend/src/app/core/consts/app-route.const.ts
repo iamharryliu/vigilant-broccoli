@@ -2,7 +2,6 @@ import { Route, Routes } from '@angular/router';
 import { ENVIRONMENT } from '../../../environments/environment';
 import { AdminComponent } from '../../admin/admin.component';
 import { AboutPageComponent } from '../../components/pages/about-page/about.page';
-import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
 import { HomePageComponent } from '../../components/pages/home-page/home-page.page';
 import { LinkTreePageComponent } from '../../components/pages/link-tree-page/link-tree.page';
 import { VerifyEmailSubscriptionPageComponent } from '../../components/pages/verify-email-subscription/verify-email-subscription-page.component';
@@ -40,12 +39,6 @@ export const LINK_TREE_ROUTE: Route = {
   path: 'links',
   data: { title: ' link tree' },
   component: LinkTreePageComponent,
-};
-
-export const CONTACT_ROUTE: Route = {
-  path: 'contact',
-  data: { title: 'contact page' },
-  component: ContactPageComponent,
 };
 
 export const VIBECHECK_LITE_APP_ROUTE: Route = {
@@ -87,7 +80,6 @@ export const APP_ROUTES: Routes = [
   INDEX_ROUTE,
   ADMIN_ROUTE,
   ABOUT_ROUTE,
-  CONTACT_ROUTE,
   PROJECTS_ROUTE,
   DOCS_ROUTE,
   LINK_TREE_ROUTE,
@@ -95,12 +87,12 @@ export const APP_ROUTES: Routes = [
   UNSUBCSRIBE_VIBECHECK_LITE_ROUTE,
 ];
 
-const PERSONAL_WEBSITE: Link = {
+const INDEX_PAGE: Link = {
   url: {
     internal: INDEX_ROUTE.path,
     external: ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL,
   },
-  text: 'Personal Website',
+  text: 'Home',
 };
 
 const ABOUT_PAGE: Link = {
@@ -109,14 +101,6 @@ const ABOUT_PAGE: Link = {
     external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${ABOUT_ROUTE.path}`,
   },
   text: 'About',
-};
-
-const CONTACT_PAGE: Link = {
-  url: {
-    internal: `/${CONTACT_ROUTE.path}`,
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${CONTACT_ROUTE.path}`,
-  },
-  text: 'Contact',
 };
 
 const PROJECTS_PAGE: Link = {
@@ -193,21 +177,20 @@ const RESUME: Link = {
   text: 'Resume',
 };
 
-const DOCS_LIBRARY: Link = {
+const MD_LIBRARY: Link = {
   url: {
     internal: `/${DOCS_ROUTE.path}`,
     external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${DOCS_ROUTE.path}`,
   },
-  text: 'Docs Library',
+  text: 'MD',
 };
 
 const INTERNAL_LINKS = {
-  PERSONAL_WEBSITE,
+  PERSONAL_WEBSITE: INDEX_PAGE,
   ABOUT_PAGE,
-  CONTACT_PAGE,
   LINK_TREE,
   PROJECTS_PAGE,
-  DOCS_LIBRARY,
+  MD_LIBRARY,
 };
 
 const PROJECT_LINKS = {
