@@ -11,6 +11,7 @@ Tuesday
 - flowertech
   - study job posting
   - book interview time
+- add drawing notes to carryon.md
 
 Wednesday
 
