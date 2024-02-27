@@ -10,6 +10,7 @@ import { VibecheckLiteUnsubscribePageComponent } from '../../components/pages/vi
 import { VibecheckLiteComponent } from '../../demo-apps/vibecheck-lite/vibecheck-lite.component';
 import { Link } from '../models/app.model';
 import { MdLibraryComponent } from '../../md-library/md-library.component';
+import { ProjectsPageComponent } from '../../components/pages/projects-page.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -59,9 +60,15 @@ export const VIBECHECK_LITE_ROUTE: Route = {
   children: [VIBECHECK_LITE_APP_ROUTE, VIBECHECK_LITE_SUBSCRIBE_ROUTE],
 };
 
+export const PROJECTS_PAGE_ROUTE: Route = {
+  path: '',
+  data: { title: 'projects' },
+  component: ProjectsPageComponent,
+};
+
 export const PROJECTS_ROUTE: Route = {
   path: 'projects',
-  children: [VIBECHECK_LITE_ROUTE],
+  children: [VIBECHECK_LITE_ROUTE, PROJECTS_PAGE_ROUTE],
 };
 
 export const VERIFY_EMAIL_ROUTE: Route = {
@@ -85,6 +92,7 @@ export const APP_ROUTES: Routes = [
   LINK_TREE_ROUTE,
   VERIFY_EMAIL_ROUTE,
   UNSUBCSRIBE_VIBECHECK_LITE_ROUTE,
+  PROJECTS_PAGE_ROUTE,
 ];
 
 const INDEX_PAGE: Link = {

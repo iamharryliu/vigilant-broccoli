@@ -12,8 +12,10 @@ import { LinkComponent } from '../../global/link/link.component';
   imports: [CommonModule, RouterModule, LinkComponent],
 })
 export class NavbarComponent {
-  NAVBAR: { index: string; links: Link[] } = {
-    index: LINKS.INDEX_PAGE.url.internal as string,
-    links: [LINKS.MD_LIBRARY, LINKS.ABOUT_PAGE],
-  };
+  LINKS: Link[] = [
+    LINKS.INDEX_PAGE,
+    LINKS.PROJECTS_PAGE,
+    LINKS.MD_LIBRARY,
+    LINKS.ABOUT_PAGE,
+  ];
 }
