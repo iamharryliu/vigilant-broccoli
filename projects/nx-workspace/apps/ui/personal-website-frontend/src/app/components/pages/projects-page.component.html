@@ -1,29 +1,5 @@
 <app-general-layout>
-  <div class="pt-8 pb-8">
-    <div class="w-11/12 mx-auto">
-      <h1>Projects Page</h1>
-      <ul class="list-disc ml-4">
-        <li>
-          <lib-link [link]="LINKS.MD_LIBRARY"></lib-link> - <span>My personal
-            public documentation library of almost everything I know haha
-          </span>
-        </li>
-        <li>
-          <lib-link [link]="LINKS.VIBECHECK_LITE_APP"></lib-link> - <span>
-            functional
-            fashion-weather lifestyle tool to
-            assist the user in deciding what to wear based on the
-            weather and user preferences
-          </span>
-        </li>
-        <li>
-          <lib-link [link]="LINKS.SECONDHAND_STORE_IG"></lib-link> - <span>
-            I run a small
-            secondhand Instagram store and hold occasional clothing
-            markets/swaps to find new homes for old pieces.
-          </span>
-        </li>
-      </ul>
-    </div>
+  <div class="w-11/12 mx-auto">
+    <app-markdown-page [filepath]="contentFilepath"></app-markdown-page>
   </div>
 </app-general-layout>

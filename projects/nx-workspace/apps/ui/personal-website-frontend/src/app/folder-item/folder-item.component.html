@@ -1,7 +1,6 @@
-<div *ngIf="item">
+<div *ngIf="item" class="item">
   <div *ngIf="item.type === 'folder'">
-    <div (click)="toggle()"
-      class="folder">
+    <div (click)="toggle()">
       <span *ngIf="!expanded" class="folder">📁</span>
       <span *ngIf="expanded">📂</span>
       <span class="ml-2" [class.font-bold]="expanded">{{ item.name }}</span>
@@ -9,12 +8,14 @@
     <div *ngIf="expanded" style="margin-left: 20px">
       <app-folder-item
         *ngFor="let child of item.children"
-        [item]="child"></app-folder-item>
+        [item]="child"
+      ></app-folder-item>
     </div>
   </div>
   <div *ngIf="item.type === 'file'">
     <span>📄</span>
-    <span class="ml-2" (click)="selectFile(item.filepath)">{{ item.name
-      }}</span>
+    <span class="ml-2" (click)="selectFile(item.filepath)">{{
+      item.name
+    }}</span>
   </div>
 </div>

@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, exhaustMap, from } from 'rxjs';
 import { MarkdownService } from '@prettydamntired/test-lib';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FileService {
-  selectedFileData?: string;
   isFileSelected = false;
+  selectedFile?: string;
 
   constructor(private http: HttpClient) {}
 
@@ -16,25 +16,23 @@ export class FileService {
     return this.http.get('assets/md-library/md-library.json');
   }
 
-  getMdFile(filepath: string): Observable<any> {
-    return this.http.get(`assets/md-library/notes/${filepath}`, {
-      responseType: 'text',
-    });
+  getFileAsText(filepath: string) {
+    return this.http.get(filepath, { responseType: 'text' });
+  }
+
+  parseMdFile(filepath: string): Observable<string> {
+    return this.getFileAsText(filepath).pipe(
+      exhaustMap(data => from(MarkdownService.parse(data))),
+    );
   }
 
   selectFile(filepath: string): void {
-    this.getMdFile(filepath)
-      .pipe(
-        tap(async data => {
-          this.selectedFileData = await MarkdownService.parse(data);
-          this.isFileSelected = true;
-        }),
-      )
-      .subscribe();
+    this.selectedFile = `assets/md-library/notes/${filepath}`;
+    this.isFileSelected = true;
   }
 
   closeSelectedFile() {
-    this.selectedFileData = undefined;
+    this.selectedFile = undefined;
     this.isFileSelected = false;
   }
 }

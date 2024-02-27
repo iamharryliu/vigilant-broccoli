@@ -2,14 +2,19 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GeneralLayoutComponent } from '../layouts/general/genreral-layout.component';
 import { LinkComponent } from '../global/link/link.component';
-import { LINKS } from '../../core/consts/app-route.const';
+import { MarkdownPageComponent } from '../global/markdown-page/markdown.page.component';
 
 @Component({
   selector: 'app-projects-page',
   standalone: true,
-  imports: [CommonModule, GeneralLayoutComponent, LinkComponent],
+  imports: [
+    CommonModule,
+    GeneralLayoutComponent,
+    LinkComponent,
+    MarkdownPageComponent,
+  ],
   templateUrl: './projects-page.component.html',
 })
 export class ProjectsPageComponent {
-  LINKS = LINKS;
+  contentFilepath = 'assets/projects.md';
 }

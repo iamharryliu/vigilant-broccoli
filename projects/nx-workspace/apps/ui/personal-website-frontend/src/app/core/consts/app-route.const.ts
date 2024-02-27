@@ -2,7 +2,7 @@ import { Route, Routes } from '@angular/router';
 import { ENVIRONMENT } from '../../../environments/environment';
 import { AdminComponent } from '../../admin/admin.component';
 import { AboutPageComponent } from '../../components/pages/about-page/about.page';
-import { HomePageComponent } from '../../components/pages/home-page/home-page.page';
+import { HomePageComponent } from '../../components/pages/home-page/home.page';
 import { LinkTreePageComponent } from '../../components/pages/link-tree-page/link-tree.page';
 import { VerifyEmailSubscriptionPageComponent } from '../../components/pages/verify-email-subscription/verify-email-subscription-page.component';
 import { VibecheckLiteSubscribePageComponent } from '../../components/pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';

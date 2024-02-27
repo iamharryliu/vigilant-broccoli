@@ -1,11 +1,13 @@
 <app-general-layout>
-  <div class="w-11/12 lg:w-2/3 mx-auto pt-8 pb-8">
-    <h1 class="text-lg mb-2">About me</h1>
-    <p class="text-sm mb-2"></p>
-    <p class="text-sm mb-8"></p>
+  <div class="w-11/12 mx-auto">
+    <div class="mb-8">
+      <app-markdown-page [filepath]="contentFilepath"></app-markdown-page>
+    </div>
+    <hr class="mb-8" />
     <div class="mb-8">
       <app-contact></app-contact>
     </div>
+    <hr class="mb-8" />
     <app-newsletter-sub-form></app-newsletter-sub-form>
   </div>
 </app-general-layout>

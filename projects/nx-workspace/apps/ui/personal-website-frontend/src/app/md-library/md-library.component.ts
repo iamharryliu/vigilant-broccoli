@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FileService } from '../core/services/file.service';
 import { FolderItemComponent } from '../folder-item/folder-item.component';
@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
 import { LINKS } from '../core/consts/app-route.const';
 import { LinkComponent } from '../components/global/link/link.component';
+import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 
 @Component({
   selector: 'app-md-library',
@@ -16,10 +17,9 @@ import { LinkComponent } from '../components/global/link/link.component';
     FolderItemComponent,
     GeneralLayoutComponent,
     LinkComponent,
+    MarkdownPageComponent,
   ],
   templateUrl: './md-library.component.html',
-  styleUrl: './md-library.component.scss',
-  encapsulation: ViewEncapsulation.None,
 })
 export class MdLibraryComponent {
   indexLink = LINKS.INDEX_PAGE;
@@ -30,6 +30,6 @@ export class MdLibraryComponent {
   }
 
   close() {
-    this.fileService.isFileSelected = false;
+    this.fileService.closeSelectedFile();
   }
 }
