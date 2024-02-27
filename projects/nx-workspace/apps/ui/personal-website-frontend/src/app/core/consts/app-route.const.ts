@@ -137,10 +137,10 @@ const VIBECHECK_LITE_SUBSCRIBE: Link = {
 
 const LINK_TREE: Link = {
   url: {
-    internal: ENVIRONMENT.URLS.LINK_TREE,
+    internal: `/${LINK_TREE_ROUTE.path}`,
     external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${LINK_TREE_ROUTE.path}`,
   },
-  text: 'Link Tree',
+  text: 'Links',
 };
 
 const LINKEDIN: Link = {
@@ -168,7 +168,7 @@ const SECONDHAND_STORE_IG: Link = {
   url: {
     external: ENVIRONMENT.URLS.SECONDHAND_STORE_IG,
   },
-  text: 'Secondhand Store',
+  text: 'harrysellsshit',
 };
 
 const SKATE_IG: Link = {
