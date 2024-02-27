@@ -8,7 +8,6 @@ Tuesday
 
 - make mayo
 - crispy cheese potato snack
-- apartment cleanup
 - flowertech
   - study job posting
   - book interview time
@@ -68,6 +67,7 @@ Sunday
 
 - Blogs
   - friction
+  - workflows
   - adapting
   - monorepo - using a single github repo for EVERYTHING (almost everything)
   - drawing
