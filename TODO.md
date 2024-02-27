@@ -47,6 +47,7 @@ Sunday
 
 - Q1
 
+  - update .aliases.zsh to cd first to avoid long paths
   - add devops to resume
   - md library
     - light/dark mode
