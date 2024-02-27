@@ -4,7 +4,6 @@
 | :----------------- | :------------------ | :--------------- | :------------ | :---------------- | :-------------- |
 | yes                | ja                  | oui              | si            | si                | si              |
 | no                 | nej                 | non              | no            | nao               | no              |
-| here               | här                 | ici              | aqui          | aqui              | qui             |
 | good               | bra                 | bon/bonne        | bueno/buena   | bom/boa/bons/boas | buono           |
 | bad                | dålig               | mal              | malo/mala     | mau               | cattivo/cattiva |
 | but                | men                 | mais             | pero          | mas(mash or mass) | ma              |
@@ -27,6 +26,9 @@
 |                    |                     |                  |               |                   |                 |
 | this               | den här             | esto             |               |                   |                 |
 | that               | den där             | eso              |               |                   |                 |
+|                    |                     |                  |               |                   |                 |
+| here               | här                 | ici              | aqui          | aqui              | qui             |
+| there              | där                 | là               | allí          |                   |                 |
 |                    |                     |                  |               |                   |                 |
 | sorry              | förlåt              |                  |               |                   |                 |
 | excuse me          | ursäkta mig         |                  |               |                   |                 |
@@ -126,9 +128,9 @@
 | I would            |                     | je voudrais      | quiero        |
 | do you want        |                     | voulez vou       | quiere        |
 |                    |                     |                  |               |
-| do you have        |                     |                  | tiene         |
+| do you have        | har du              |                  | tiene         |
 |                    |                     |                  |               |
 |                    |                     |                  |               |
-|                    |                     |                  |               |
+| there is           | det finns           | il y a           | hay           |
 |                    |                     |                  |               |
 |                    |                     |                  |
