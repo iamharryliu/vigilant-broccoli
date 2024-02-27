@@ -18,7 +18,7 @@ export class VibecheckLiteUnsubscribePageComponent {
   ) {}
 
   hasUnsubscribed = false;
-  INDEX_PATH = LINKS.PERSONAL_WEBSITE.url.internal;
+  INDEX_PATH = LINKS.INDEX_PAGE.url.internal;
 
   unsubscribeEmail$ = this.route.queryParams.pipe(
     exhaustMap(params => {

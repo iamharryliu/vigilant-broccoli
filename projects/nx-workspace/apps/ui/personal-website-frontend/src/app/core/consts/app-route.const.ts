@@ -95,12 +95,12 @@ export const APP_ROUTES: Routes = [
   UNSUBCSRIBE_VIBECHECK_LITE_ROUTE,
 ];
 
-const PERSONAL_WEBSITE: Link = {
+const INDEX_PAGE: Link = {
   url: {
     internal: INDEX_ROUTE.path,
     external: ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL,
   },
-  text: 'Personal Website',
+  text: 'Home',
 };
 
 const ABOUT_PAGE: Link = {
@@ -202,7 +202,7 @@ const DOCS_LIBRARY: Link = {
 };
 
 const INTERNAL_LINKS = {
-  PERSONAL_WEBSITE,
+  INDEX_PAGE,
   ABOUT_PAGE,
   CONTACT_PAGE,
   LINK_TREE,

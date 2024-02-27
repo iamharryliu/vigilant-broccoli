@@ -2,6 +2,9 @@
   <div
     class="h-screen overflow-y-scroll w-full md:w-1/5 pl-3 pt-2 border-r-2"
     [class.hidden]="appService.isMobile && fileService.isFileSelected">
+    <div class="mb-2">
+      <lib-link [link]="indexLink" [isBold]="true" type="internal"></lib-link>
+    </div>
     <app-folder-item
       *ngIf="fileContent$ | async as folderItem"
       [item]="folderItem"></app-folder-item>

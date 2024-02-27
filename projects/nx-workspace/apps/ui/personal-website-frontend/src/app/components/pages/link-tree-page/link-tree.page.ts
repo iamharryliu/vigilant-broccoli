@@ -18,7 +18,7 @@ import { CenteredAppLayoutComponent } from '../../layouts/centered-app-layout/ce
 })
 export class LinkTreePageComponent {
   LINKS = [
-    LINKS.PERSONAL_WEBSITE,
+    LINKS.INDEX_PAGE,
     LINKS.PERSONAL_INSTAGRAM,
     LINKS.SECONDHAND_STORE_IG,
     LINKS.SKATE_IG,
