@@ -1,5 +1,13 @@
 # Cooking Notes
 
+## 5 Tastes
+
+- sweet
+- sour
+- bitter
+- salty
+- umami
+
 ## Reminders
 
 - Make new food in smaller batches
@@ -22,6 +30,7 @@
 - strain egg
 - simmering water with splash of vinegar
 - light swirl and lightly drop egg in water
+- boil for 3 mins and poke to check if it's done
 
 ## Bread
 

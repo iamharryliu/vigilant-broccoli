@@ -31,6 +31,9 @@ alias deletecommit='greset --hard'
 alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
 alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs git push origin --delete'
 
+# Github
+alias updategitreadme="cdvb && git add iamharryliu && git commit -m 'docs: update github profile readme' && git subtree push --prefix=iamharryliu git@github.com:iamharryliu/iamharryliu.git main"
+
 # Port
 killport() {
   if [ -z "$1" ]; then
@@ -110,4 +113,4 @@ alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind
 # Other
 alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
 alias committodo="git add ~/vigilant-broccoli/TODO.md && git commit -m 'docs: update TODO.md'"
-alias commitmd="cdvb && git add README.md TODO.md notes/**/*.md && git commit -m 'docs: update md files'"
+alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md && git commit -m 'docs: update md files'"
