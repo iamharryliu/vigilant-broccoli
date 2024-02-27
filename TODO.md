@@ -4,6 +4,7 @@
 
 - Q1
 
+  - rename journal to personal or something
   - md wrapper component??
   - update .aliases.zsh to cd first to avoid long paths
   - add devops to resume
