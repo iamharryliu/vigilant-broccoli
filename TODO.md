@@ -5,7 +5,6 @@
 - Q1
 
   - rename journal to personal or something
-  - md wrapper component??
   - update .aliases.zsh to cd first to avoid long paths
   - add devops to resume
   - personal-website
@@ -18,6 +17,8 @@
       - projects section
       - blog section
   - md library
+    - markdown page links router + open in new tab
+    - double check ui before deploy to prod
     - light/dark mode?
   - implement as const, as const + (type of const)[keyof typeof const]
 
