@@ -4,30 +4,25 @@
 
 - Q1
 
-  - add devops to resume
+  - docs for dotnet
+  - look into preventing DDOS
   - personal-website
-    - add subdomains
-      - links.harryliu.design
-      - docs.harryliu.design
     - ui
-      - responsive collapsable navbar
-      - pick a profile picure
-      - projects section
       - blog section
-  - md library
-    - markdown page links router + open in new tab
-    - double check ui before deploy to prod
+      - markdown page links router + open in new tab
     - light/dark mode?
-  - implement as const, as const + (type of const)[keyof typeof const]
 
 - Q2
 
+  - add devops to resume
   - get involved in open source
-  - personal website overhaul, model after [this site](https://danielms.site/)
+  - add subdomains
+    - links.harryliu.design
+    - docs.harryliu.design
   - new getRecommendation fn for current weather
-  - docs for dotnet
   - docs for spring boot
   - fix: vibecheck-flask test cases
+  - implement as const, as const + (type of const)[keyof typeof const]
 
 - Q3
   - github actions
