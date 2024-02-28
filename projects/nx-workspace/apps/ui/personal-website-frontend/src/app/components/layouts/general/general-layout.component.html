@@ -1,5 +1,6 @@
+<app-navbar class="lg:hidden"></app-navbar>
 <div class="lg:flex">
-  <div class="h-min lg:h-screen w-full lg:w-2/5 border-r-2">
+  <div class="h-min lg:h-screen w-full lg:w-2/5 border-r-2 pt-24">
     <div class="flex items-center h-fit lg:h-5/6">
       <div class="w-full">
         <div class="flex w-full justify-center mb-6">
@@ -14,7 +15,7 @@
     </div>
   </div>
   <div class="lg:h-screen lg:overflow-y-scroll w-full lg:w-3/5">
-    <app-navbar></app-navbar>
+    <app-navbar class="invisible lg:visible"></app-navbar>
     <div #ref><ng-content></ng-content></div>
   </div>
 </div>

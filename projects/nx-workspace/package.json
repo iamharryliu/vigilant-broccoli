@@ -86,6 +86,7 @@
     "@fastify/autoload": "~5.7.1",
     "@fastify/cors": "^9.0.0",
     "@fastify/sensible": "~5.2.0",
+    "@fortawesome/fontawesome-free": "^6.5.1",
     "axios": "^1.0.0",
     "bootstrap": "^5.3.2",
     "dotenv-defaults": "^5.0.2",

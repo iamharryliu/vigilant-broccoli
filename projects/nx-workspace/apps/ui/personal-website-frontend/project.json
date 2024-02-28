@@ -33,7 +33,10 @@
           "apps/ui/personal-website-frontend/src/favicon.ico",
           "apps/ui/personal-website-frontend/src/assets"
         ],
-        "styles": ["apps/ui/personal-website-frontend/src/styles.scss"],
+        "styles": [
+          "apps/ui/personal-website-frontend/src/styles.scss",
+          "node_modules/@fortawesome/fontawesome-free/css/all.css"
+        ],
         "scripts": []
       },
       "configurations": {

@@ -12,4 +12,9 @@ import { LinkComponent } from '../../global/link/link.component';
 })
 export class NavbarComponent {
   LINKS = LINKS;
+  isNavbarOpen = false;
+
+  toggleNavbar() {
+    this.isNavbarOpen = !this.isNavbarOpen;
+  }
 }
