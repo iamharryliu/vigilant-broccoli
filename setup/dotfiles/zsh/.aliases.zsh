@@ -117,3 +117,6 @@ alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md &&
 # harryliu.design
 alias servepw='cdnx && npm run serve:personal-website'
 alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
+
+# Journal
+alias pushJournal="cd ~/journal && git add . && git commit -m 'docs: update journal' && git push"
