@@ -11,6 +11,7 @@ import { VibecheckLiteComponent } from '../../demo-apps/vibecheck-lite/vibecheck
 import { Link } from '../models/app.model';
 import { MdLibraryComponent } from '../../md-library/md-library.component';
 import { ProjectsPageComponent } from '../../components/pages/projects-page.component';
+import { LeetCodePageComponent } from '../../leet-code/leet-code-page.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -83,6 +84,12 @@ export const UNSUBCSRIBE_VIBECHECK_LITE_ROUTE: Route = {
   component: VibecheckLiteUnsubscribePageComponent,
 };
 
+export const LEETCODE_ROUTE: Route = {
+  path: 'grind-75',
+  data: { title: 'grind 75' },
+  component: LeetCodePageComponent,
+};
+
 export const APP_ROUTES: Routes = [
   INDEX_ROUTE,
   ADMIN_ROUTE,
@@ -93,6 +100,7 @@ export const APP_ROUTES: Routes = [
   VERIFY_EMAIL_ROUTE,
   UNSUBCSRIBE_VIBECHECK_LITE_ROUTE,
   PROJECTS_PAGE_ROUTE,
+  LEETCODE_ROUTE,
 ];
 
 const INDEX_PAGE: Link = {

@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FileService } from '../core/services/file.service';
-import { FolderItemComponent } from '../folder-item/folder-item.component';
-import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
-import { Observable } from 'rxjs';
-import { AppService } from '../core/services/app.service';
 import { LINKS } from '../core/consts/app-route.const';
+import { Observable } from 'rxjs';
+import { FileService } from '../core/services/file.service';
+import { AppService } from '../core/services/app.service';
 import { LinkComponent } from '../components/global/link/link.component';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
+import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
+import { FolderItemComponent } from '../folder-item/folder-item.component';
 
 @Component({
-  selector: 'app-md-library',
+  selector: 'app-leet-code-page',
   standalone: true,
   imports: [
     CommonModule,
@@ -19,15 +19,16 @@ import { MarkdownPageComponent } from '../components/global/markdown-page/markdo
     LinkComponent,
     MarkdownPageComponent,
   ],
-  templateUrl: './md-library.component.html',
+  templateUrl: './leet-code-page.component.html',
+  styleUrl: '../md.scss',
 })
-export class MdLibraryComponent {
+export class LeetCodePageComponent {
   indexLink = LINKS.INDEX_PAGE;
   fileContent$: Observable<string>;
 
   constructor(public fileService: FileService, public appService: AppService) {
     this.fileContent$ = this.fileService.getFolderStructure(
-      'assets/md-library/md-library.json',
+      'assets/grind-75/grind-75.json',
     );
   }
 

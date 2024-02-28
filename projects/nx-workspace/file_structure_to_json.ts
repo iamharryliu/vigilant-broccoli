@@ -1,4 +1,3 @@
-// TODO: move this file
 import fs from 'fs';
 import path from 'path';
 
@@ -7,6 +6,12 @@ interface FileNode {
   type: 'folder' | 'file';
   filepath: string;
   children?: FileNode[];
+}
+
+const ignorePatterns: RegExp[] = [/__pycache__/];
+
+function shouldIgnore(itemPath: string): boolean {
+  return ignorePatterns.some(pattern => pattern.test(itemPath));
 }
 
 function folderToJson(folderPath: string, rootPath: string): FileNode {
@@ -21,6 +26,10 @@ function folderToJson(folderPath: string, rootPath: string): FileNode {
 
   for (const item of items) {
     const itemPath = path.join(folderPath, item);
+
+    if (shouldIgnore(itemPath)) {
+      continue; // Skip ignored files/folders
+    }
 
     if (fs.statSync(itemPath).isDirectory()) {
       result.children?.push(folderToJson(itemPath, rootPath));
