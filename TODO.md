@@ -4,8 +4,6 @@
 
 - Q1
 
-  - rename journal to personal or something
-  - update .aliases.zsh to cd first to avoid long paths
   - add devops to resume
   - personal-website
     - add subdomains
