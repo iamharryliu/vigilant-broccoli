@@ -175,7 +175,7 @@ const SKATE_IG: Link = {
   url: {
     external: ENVIRONMENT.URLS.SKATE_IG,
   },
-  text: 'Toronto City Skate',
+  text: 'torontocityskate',
 };
 
 const RESUME: Link = {
