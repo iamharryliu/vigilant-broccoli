@@ -4,18 +4,19 @@
 
 - Q1
 
+  - github action to deploy on push and other tasks
   - docs for dotnet
-  - look into preventing DDOS
   - personal-website
     - ui
       - blog section
       - markdown page links router + open in new tab
-    - light/dark mode?
 
 - Q2
 
+  - look into preventing DDOS
   - add devops to resume
   - get involved in open source
+  - make test cases faster (vibecheck-flask test seems to be slow)
   - add subdomains
     - links.harryliu.design
     - docs.harryliu.design
