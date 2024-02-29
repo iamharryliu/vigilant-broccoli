@@ -1,5 +1,7 @@
 # vigilant-broccoli
 
+[broccoli image](https://i.pinimg.com/564x/b7/62/38/b762386c0bbb20dec77c2632f73d28a8.jpg)
+
 ## About
 
 vigilant-broccoli is my personal mono-repo that I use to house all the code (or most) and documentation that I am working on.
