@@ -8,6 +8,7 @@ import { AppService } from '../core/services/app.service';
 import { LINKS } from '../core/consts/app-route.const';
 import { LinkComponent } from '../components/global/link/link.component';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
+import { MarkdownPageService } from '../core/services/markdown-library.service';
 
 @Component({
   selector: 'app-md-library',
@@ -25,13 +26,17 @@ export class MdLibraryComponent {
   indexLink = LINKS.INDEX_PAGE;
   fileContent$: Observable<string>;
 
-  constructor(public fileService: FileService, public appService: AppService) {
+  constructor(
+    private fileService: FileService,
+    public appService: AppService,
+    public markdownLibraryService: MarkdownPageService,
+  ) {
     this.fileContent$ = this.fileService.getFolderStructure(
       'assets/md-library/md-library.json',
     );
   }
 
   close() {
-    this.fileService.closeSelectedFile();
+    this.markdownLibraryService.closeSelectedFile();
   }
 }

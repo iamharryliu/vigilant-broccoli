@@ -1,32 +1,34 @@
-
 <div class="flex">
-    <div
-        class="h-screen overflow-y-scroll w-full md:w-1/4 pl-3 pt-2 border-r-2"
-        [class.hidden]="appService.isMobile && fileService.isFileSelected">
-        <div class="mb-2">
-            <lib-link [link]="indexLink" [isBold]="true"
-                type="internal"></lib-link>
-        </div>
-        <app-folder-item
-            *ngIf="fileContent$ | async as folderItem"
-            [item]="folderItem"></app-folder-item>
+  <div
+    class="h-screen overflow-y-scroll w-full md:w-1/4 pl-3 pt-2 border-r-2"
+    [class.hidden]="appService.isMobile && leetCodePageService.isFileSelected"
+  >
+    <div class="mb-2">
+      <lib-link [link]="indexLink" [isBold]="true" type="internal"></lib-link>
     </div>
-    <div
-        class="h-screen overflow-y-scroll md:block md:w-3/4 pl-4"
-        [class.hidden]="appService.isMobile && !fileService.isFileSelected">
-        {{fileService.selectedFile}}
-        <code>
-            <pre [innerHTML]="fileService.data">
-            </pre>
-        </code>
-    </div>
-    <div
-        class="absolute top-0 right-0 m-4 cursor-pointer"
-        [class.hidden]="
-        (appService.isMobile && !fileService.isFileSelected) ||
-        appService.isBrowser
-      "
-        (click)="close()">
-        <div>X</div>
-    </div>
+    <app-folder-item
+      *ngIf="fileContent$ | async as folderItem"
+      [item]="folderItem"
+      (fileEmitter)="leetCodePageService.selectFile($event)"
+    ></app-folder-item>
+  </div>
+  <div
+    class="h-screen overflow-y-scroll md:block md:w-3/4 pl-4"
+    [class.hidden]="appService.isMobile && !leetCodePageService.isFileSelected"
+    *ngIf="leetCodePageService.selectedContent$ | async as content"
+  >
+    <code>
+      <pre [innerHTML]="content"></pre>
+    </code>
+  </div>
+  <div
+    class="absolute top-0 right-0 m-4 cursor-pointer"
+    [class.hidden]="
+      (appService.isMobile && !leetCodePageService.isFileSelected) ||
+      appService.isBrowser
+    "
+    (click)="close()"
+  >
+    <div>X</div>
+  </div>
 </div>

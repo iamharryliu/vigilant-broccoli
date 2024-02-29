@@ -1,6 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FileService } from '../core/services/file.service';
 
 @Component({
   selector: 'app-folder-item',
@@ -12,13 +11,12 @@ import { FileService } from '../core/services/file.service';
 })
 export class FolderItemComponent {
   @Input() item: any;
+  @Output() fileEmitter = new EventEmitter();
 
   expanded: boolean = false;
 
-  constructor(private fileService: FileService) {}
-
   selectFile(path: string) {
-    this.fileService.selectFile(path);
+    this.fileEmitter.emit(path);
   }
 
   toggle(): void {

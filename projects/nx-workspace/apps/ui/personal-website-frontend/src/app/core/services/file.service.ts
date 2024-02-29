@@ -16,10 +16,6 @@ type FileStructureFilepath =
   providedIn: 'root',
 })
 export class FileService {
-  isFileSelected = false;
-  selectedFile?: string;
-  data!: string;
-
   constructor(private http: HttpClient) {}
 
   getFolderStructure(
@@ -36,22 +32,5 @@ export class FileService {
     return this.getFileAsText(filepath).pipe(
       exhaustMap(data => from(MarkdownService.parse(data))),
     );
-  }
-
-  selectFile(filepath: string): void {
-    if (filepath.endsWith('.md')) {
-      this.selectedFile = `assets/md-library/notes/${filepath}`;
-      this.isFileSelected = true;
-    }
-    if (filepath.endsWith('.py')) {
-      this.getFileAsText(`assets/grind-75/${filepath}`).subscribe(
-        data => (this.data = data),
-      );
-    }
-  }
-
-  closeSelectedFile(): void {
-    this.selectedFile = undefined;
-    this.isFileSelected = false;
   }
 }
