@@ -1,7 +1,7 @@
 # Todo
 
 - blog section
-- DocsMD - url for specific doc
+- DocsMD - url for specific doc, wildcardroute vs query params?
 
 ## Quadrants
 
