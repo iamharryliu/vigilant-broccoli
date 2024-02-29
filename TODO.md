@@ -2,6 +2,7 @@
 
 - blog section
 - DocsMD - url for specific doc, wildcardroute vs query params?
+- git aliases for different git types
 
 ## Quadrants
 
