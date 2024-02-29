@@ -1,5 +1,6 @@
 <form [formGroup]="form" (ngSubmit)="submit()" class="text-center">
-  <label for="email" class="mr-2 text-mb"> Newsletter Signup: </label>
+  <label for="subscribe-form-email-input" class="mr-2 text-mb"> Newsletter
+    Signup: </label>
   <br class="lg:hidden" />
   <input
     type="email"
@@ -9,8 +10,7 @@
     autocomplete="email"
     required
     class="w-7/12 lg:w-min border rounded py-2 px-3 focus:outline-none focus:border-blue-400 mr-2"
-    [placeholder]="'Your email address'"
-  />
+    [placeholder]="'Your email address'" />
   <button
     type="submit"
     id="subscribe-form-submit-button"
@@ -20,8 +20,7 @@
       'bg-gray-300': form.invalid,
       'bg-black': form.valid,
       'hover:bg-blue-600': form.valid
-    }"
-  >
+    }">
     Subscribe
   </button>
 </form>
