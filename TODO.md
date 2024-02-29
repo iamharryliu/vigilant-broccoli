@@ -1,14 +1,14 @@
 # Todo
 
-- blog section
-- DocsMD - url for specific doc, wildcardroute vs query params?
 - git aliases for different git types
-- refactor md and fileservices to libraries
+- blog section
 
 ## Quadrants
 
 - Q1
 
+  - refactor md and fileservices to libraries
+  - DocsMD - url for specific doc, wildcardroute vs query params?
   - github action to deploy on push and other tasks
   - docs for dotnet
   - personal-website
