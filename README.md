@@ -1,6 +1,6 @@
 # vigilant-broccoli
 
-![broccoli image](https://i.pinimg.com/564x/b7/62/38/b762386c0bbb20dec77c2632f73d28a8.jpg)
+<img src="https://i.pinimg.com/564x/b7/62/38/b762386c0bbb20dec77c2632f73d28a8.jpg" alt="broccoli" width="200"/>
 
 ## About
 
