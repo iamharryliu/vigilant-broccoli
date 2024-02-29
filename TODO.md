@@ -1,5 +1,8 @@
 # Todo
 
+- blog section
+- DocsMD - url for specific doc
+
 ## Quadrants
 
 - Q1
@@ -8,7 +11,6 @@
   - docs for dotnet
   - personal-website
     - ui
-      - blog section
       - markdown page links router + open in new tab
 
 - Q2
