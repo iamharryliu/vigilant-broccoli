@@ -3,6 +3,7 @@
 - blog section
 - DocsMD - url for specific doc, wildcardroute vs query params?
 - git aliases for different git types
+- refactor md and fileservices to libraries
 
 ## Quadrants
 
