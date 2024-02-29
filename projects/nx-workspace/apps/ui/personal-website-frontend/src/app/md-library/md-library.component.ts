@@ -23,7 +23,7 @@ import { MarkdownPageService } from '../core/services/markdown-library.service';
   templateUrl: './md-library.component.html',
 })
 export class MdLibraryComponent {
-  indexLink = LINKS.INDEX_PAGE;
+  indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
   fileContent$: Observable<string>;
 
   constructor(

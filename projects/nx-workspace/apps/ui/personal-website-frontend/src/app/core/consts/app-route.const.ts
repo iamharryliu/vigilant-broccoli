@@ -198,7 +198,7 @@ const MD_LIBRARY: Link = {
     internal: `/${DOCS_ROUTE.path}`,
     external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${DOCS_ROUTE.path}`,
   },
-  text: 'MD',
+  text: 'DocsMD',
 };
 
 const INTERNAL_LINKS = {

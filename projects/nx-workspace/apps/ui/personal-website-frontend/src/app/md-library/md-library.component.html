@@ -8,6 +8,7 @@
     <div class="mb-2">
       <lib-link [link]="indexLink" [isBold]="true" type="internal"></lib-link>
     </div>
+    <h1 class="text-xl font-bold mb-2">DocsMD</h1>
     <app-folder-item
       *ngIf="fileContent$ | async as folderItem"
       [item]="folderItem"

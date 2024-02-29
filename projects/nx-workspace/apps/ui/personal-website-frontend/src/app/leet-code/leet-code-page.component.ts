@@ -24,7 +24,7 @@ import { LeetCodePageService } from '../core/services/leet-code.service';
   styleUrl: '../md.scss',
 })
 export class LeetCodePageComponent {
-  indexLink = LINKS.INDEX_PAGE;
+  indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
   fileContent$: Observable<string>;
 
   constructor(
