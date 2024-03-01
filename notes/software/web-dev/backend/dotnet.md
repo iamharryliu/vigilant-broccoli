@@ -13,6 +13,9 @@ dotnet tool install --global dotnet-ef
 dotnet ef dbcontext Scaffold "Server=localhost,1401;Initial Catalog=AdventureWorksLT2022;Persist Security Info=False;User ID=SA;Password=password1!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" Microsoft.EntityFrameworkCore.SqlServer -o Model
  dotnet ef dbcontext scaffold "Server=.\;Database=AdventureWorksLT2012;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Model
  dotnet ef dbcontext scaffold "Server=.\;Database=AdventureWorksLT2012;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Model -c "AdventureContext"
+
+# Swagger
+http://localhost:5290/swagger/index.html
 ```
 
 ## References
