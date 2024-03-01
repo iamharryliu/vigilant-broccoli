@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FileService } from './file.service';
+import { FileService } from '../core/services/file.service';
 import { Observable } from 'rxjs';
 
 @Injectable({

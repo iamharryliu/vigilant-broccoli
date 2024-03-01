@@ -8,7 +8,7 @@ import { AppService } from '../core/services/app.service';
 import { DOCS_MD_ROUTE, LINKS } from '../core/consts/app-route.const';
 import { LinkComponent } from '../components/global/link/link.component';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
-import { MarkdownPageService } from '../core/services/markdown-library.service';
+import { MarkdownPageService } from './docs-md.page.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({

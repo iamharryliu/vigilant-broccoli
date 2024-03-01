@@ -8,7 +8,7 @@ import { LinkComponent } from '../components/global/link/link.component';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { FolderItemComponent } from '../folder-item/folder-item.component';
-import { LeetCodePageService } from '../core/services/leet-code.service';
+import { LeetCodePageService } from './leet-code.page.service';
 
 @Component({
   selector: 'app-leet-code-page',
