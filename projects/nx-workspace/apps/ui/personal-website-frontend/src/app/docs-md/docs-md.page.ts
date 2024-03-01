@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FileService } from '../core/services/file.service';
 import { FolderItemComponent } from '../folder-item/folder-item.component';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
-import { LINKS } from '../core/consts/app-route.const';
+import { DOCS_MD_ROUTE, LINKS } from '../core/consts/app-route.const';
 import { LinkComponent } from '../components/global/link/link.component';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { MarkdownPageService } from '../core/services/markdown-library.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-md-library',
@@ -22,7 +23,7 @@ import { MarkdownPageService } from '../core/services/markdown-library.service';
   ],
   templateUrl: './docs-md.page.html',
 })
-export class MdLibraryComponent {
+export class MdLibraryComponent implements OnInit {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
   fileContent$: Observable<string>;
 
@@ -30,13 +31,50 @@ export class MdLibraryComponent {
     private fileService: FileService,
     public appService: AppService,
     public markdownLibraryService: MarkdownPageService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {
     this.fileContent$ = this.fileService.getFolderStructure(
       'assets/md-library/md-library.json',
     );
   }
 
+  ngOnInit(): void {
+    const filename = this.route.snapshot.paramMap.get(
+      'markdownFilename',
+    ) as string;
+    if (filename) {
+      this.fileContent$.subscribe(data => {
+        const filepath = this.getFilepath(data, `${filename}.md`) as string;
+        this.markdownLibraryService.selectFile(filepath);
+      });
+    }
+  }
+
+  selectFile(file: any) {
+    this.markdownLibraryService.selectFile(file.filepath);
+    this.router.navigateByUrl(`/docs-md/${file.name.split('.')[0]}`);
+  }
+
   close() {
     this.markdownLibraryService.closeSelectedFile();
+    this.router.navigateByUrl(DOCS_MD_ROUTE.path as string);
+  }
+
+  private getFilepath(folder: any, filename: string): string | null {
+    for (const item of folder.children) {
+      if (item.type === 'file' && item.name === filename) {
+        return item.filepath;
+      }
+
+      if (item.type === 'folder') {
+        const result = this.getFilepath(item, filename);
+        if (result) {
+          return result;
+        }
+      }
+    }
+
+    return null;
   }
 }

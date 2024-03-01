@@ -25,16 +25,16 @@ export const ADMIN_ROUTE: Route = {
   component: AdminComponent,
 };
 
-export const DOCS_MD_FILE_ROUTE: Route = {
-  path: ':filename',
-  data: { title: 'DocsMD' },
-  component: MdLibraryComponent,
-};
-
+// TODO: MOVE DocsMD to its own project
 export const DOCS_MD_ROUTE: Route = {
   path: 'docs-md',
   data: { title: 'DocsMD' },
-  children: [DOCS_MD_FILE_ROUTE],
+  component: MdLibraryComponent,
+};
+export const DOCS_MD_FILE_ROUTE: Route = {
+  path: 'docs-md/:markdownFilename',
+  data: { title: 'DocsMD' },
+  component: MdLibraryComponent,
 };
 
 export const ABOUT_ROUTE: Route = {
@@ -102,11 +102,16 @@ export const APP_ROUTES: Routes = [
   ABOUT_ROUTE,
   PROJECTS_ROUTE,
   DOCS_MD_ROUTE,
+  DOCS_MD_FILE_ROUTE,
   LINK_TREE_ROUTE,
   VERIFY_EMAIL_ROUTE,
   UNSUBCSRIBE_VIBECHECK_LITE_ROUTE,
   PROJECTS_PAGE_ROUTE,
   LEETCODE_ROUTE,
+  {
+    path: '**',
+    redirectTo: '',
+  },
 ];
 
 const INDEX_PAGE: Link = {

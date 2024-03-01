@@ -15,8 +15,6 @@
   </div>
   <div *ngIf="item.type === 'file'">
     <span>📄</span>
-    <span class="ml-2" (click)="selectFile(item.filepath)">{{
-      item.name
-    }}</span>
+    <span class="ml-2" (click)="selectFile(item)">{{ item.name }}</span>
   </div>
 </div>

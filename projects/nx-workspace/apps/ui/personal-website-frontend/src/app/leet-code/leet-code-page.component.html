@@ -10,7 +10,7 @@
     <app-folder-item
       *ngIf="fileContent$ | async as folderItem"
       [item]="folderItem"
-      (fileEmitter)="leetCodePageService.selectFile($event)"
+      (fileEmitter)="leetCodePageService.selectFile($event.filepath)"
     ></app-folder-item>
   </div>
   <div
