@@ -20,7 +20,7 @@ import { MarkdownPageService } from '../core/services/markdown-library.service';
     LinkComponent,
     MarkdownPageComponent,
   ],
-  templateUrl: './md-library.component.html',
+  templateUrl: './docs-md.page.html',
 })
 export class MdLibraryComponent {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
