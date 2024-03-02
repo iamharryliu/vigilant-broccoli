@@ -15,7 +15,7 @@ import { GeneralLayoutComponent } from '../../layouts/general/genreral-layout.co
 @Component({
   standalone: true,
   selector: 'app-verify-email-subscription-page',
-  templateUrl: './verify-email-subscription-page.component.html',
+  templateUrl: './verify-email-subscription.page.html',
   imports: [
     GeneralLayoutComponent,
     CommonModule,

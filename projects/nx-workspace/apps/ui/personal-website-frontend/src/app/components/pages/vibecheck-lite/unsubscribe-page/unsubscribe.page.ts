@@ -8,7 +8,7 @@ import { VibecheckLiteService } from '../../../../core/services/vibecheck-lite.s
 @Component({
   standalone: true,
   selector: 'app-unsubscribe-page',
-  templateUrl: './unsubscribe-page.component.html',
+  templateUrl: './unsubscribe.page.html',
   imports: [CommonModule, RouterModule],
 })
 export class VibecheckLiteUnsubscribePageComponent {

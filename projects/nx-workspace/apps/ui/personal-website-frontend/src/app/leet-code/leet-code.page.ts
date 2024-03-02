@@ -20,7 +20,7 @@ import { FolderItemComponent, FolderItem } from 'general-components';
     LinkComponent,
     MarkdownPageComponent,
   ],
-  templateUrl: './leet-code-page.component.html',
+  templateUrl: './leet-code.page.html',
   styleUrl: '../md.scss',
 })
 export class LeetCodePageComponent {

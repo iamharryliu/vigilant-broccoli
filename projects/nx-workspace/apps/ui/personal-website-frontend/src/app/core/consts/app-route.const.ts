@@ -4,14 +4,14 @@ import { AdminComponent } from '../../admin/admin.component';
 import { AboutPageComponent } from '../../components/pages/about-page/about.page';
 import { HomePageComponent } from '../../components/pages/home-page/home.page';
 import { LinkTreePageComponent } from '../../components/pages/link-tree-page/link-tree.page';
-import { VerifyEmailSubscriptionPageComponent } from '../../components/pages/verify-email-subscription/verify-email-subscription-page.component';
+import { VerifyEmailSubscriptionPageComponent } from '../../components/pages/verify-email-subscription-page/verify-email-subscription.page';
 import { VibecheckLiteSubscribePageComponent } from '../../components/pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
-import { VibecheckLiteUnsubscribePageComponent } from '../../components/pages/vibecheck-lite/unsubscribe-page/unsubscribe-page.component';
+import { VibecheckLiteUnsubscribePageComponent } from '../../components/pages/vibecheck-lite/unsubscribe-page/unsubscribe.page';
 import { VibecheckLiteComponent } from '../../demo-apps/vibecheck-lite/vibecheck-lite.component';
 import { Link } from '../models/app.model';
 import { MdLibraryComponent } from '../../docs-md/docs-md.page';
-import { ProjectsPageComponent } from '../../components/pages/projects-page.component';
-import { LeetCodePageComponent } from '../../leet-code/leet-code-page.component';
+import { ProjectsPageComponent } from '../../components/pages/projects-page/projects.page';
+import { LeetCodePageComponent } from '../../leet-code/leet-code.page';
 
 export const INDEX_ROUTE: Route = {
   path: '',

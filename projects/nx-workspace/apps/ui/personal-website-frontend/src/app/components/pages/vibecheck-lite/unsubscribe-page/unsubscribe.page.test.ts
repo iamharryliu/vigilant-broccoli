@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { VibecheckLiteService } from '../../../../core/services/vibecheck-lite.service';
-import { VibecheckLiteUnsubscribePageComponent } from './unsubscribe-page.component';
+import { VibecheckLiteUnsubscribePageComponent } from './unsubscribe.page';
 
 describe('VibecheckLiteUnsubscribePageComponent', () => {
   let component: VibecheckLiteUnsubscribePageComponent;
