@@ -28,5 +28,6 @@ jobs:
       - uses: nrwl/nx-set-shas@v3
       # - run: git branch --track main origin/main
       # - run: npx nx-cloud record -- nx format:check
+      - run: npx nx pre-build personal-website-frontend
       # - run: npx nx run-many --target=build --all
       - run: npx nx affected -t lint test build e2e-ci
