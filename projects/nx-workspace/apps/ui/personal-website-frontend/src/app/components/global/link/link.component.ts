@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Link } from '../../../core/models/app.model';
 
@@ -13,4 +13,9 @@ export class LinkComponent {
   @Input() type!: 'internal' | 'external';
   @Input() link!: Link;
   @Input() isBold = false;
+  @Output() clickEmitter = new EventEmitter();
+
+  click() {
+    this.clickEmitter.emit(null);
+  }
 }

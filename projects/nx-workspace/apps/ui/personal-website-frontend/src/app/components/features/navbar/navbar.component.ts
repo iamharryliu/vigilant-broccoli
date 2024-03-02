@@ -14,6 +14,10 @@ export class NavbarComponent {
   LINKS = LINKS;
   isNavbarOpen = false;
 
+  collapseNavbar() {
+    this.isNavbarOpen = false;
+  }
+
   toggleNavbar() {
     this.isNavbarOpen = !this.isNavbarOpen;
   }

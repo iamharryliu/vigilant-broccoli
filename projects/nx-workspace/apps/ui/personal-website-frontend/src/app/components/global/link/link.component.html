@@ -1,6 +1,7 @@
 <ng-container *ngIf="type === 'internal'; else externalLink">
   <a
     [routerLink]="link.url.internal"
+    (click)="click()"
     class="text-gray-800 hover:text-gray-400 text-sm"
     [class.font-medium]="isBold"
   >
@@ -10,6 +11,7 @@
 <ng-template #externalLink>
   <a
     [href]="link.url.external"
+    (click)="click()"
     target="_blank"
     class="text-gray-800 hover:text-gray-400 text-sm"
     [class.font-medium]="isBold"
