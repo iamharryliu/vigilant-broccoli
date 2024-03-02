@@ -1,5 +1,5 @@
 <!-- Browser Nav -->
-<nav class="invisible lg:visible">
+<nav class="hidden lg:block">
   <div class="flex items-center justify-between h-16 ml-6">
     <div class="space-x-4">
       <lib-link [link]="LINKS.INDEX_PAGE" type="internal"></lib-link>
@@ -12,8 +12,7 @@
 </nav>
 
 <!-- Mobile Nav -->
-<!-- TODO: fix sticky -->
-<div class="absolute top-0 w-full">
+<div class="sticky top-0 w-full bg-white">
   <div class="lg:hidden flex justify-end mr-8 pt-3 pb-3">
     <button (click)="toggleNavbar()" class="text-gray-600 focus:outline-none">
       <i class="fas fa-bars"></i>
