@@ -1,0 +1,394 @@
+{
+  "name": "notes",
+  "type": "folder",
+  "filepath": "",
+  "children": [
+    {
+      "name": "art",
+      "type": "folder",
+      "filepath": "art",
+      "children": [
+        {
+          "name": "drawing.md",
+          "type": "file",
+          "filepath": "art/drawing.md"
+        }
+      ]
+    },
+    {
+      "name": "dance",
+      "type": "folder",
+      "filepath": "dance",
+      "children": [
+        {
+          "name": "bachata.md",
+          "type": "file",
+          "filepath": "dance/bachata.md"
+        },
+        {
+          "name": "salsa.md",
+          "type": "file",
+          "filepath": "dance/salsa.md"
+        }
+      ]
+    },
+    {
+      "name": "health",
+      "type": "folder",
+      "filepath": "health",
+      "children": [
+        {
+          "name": "maintenance.md",
+          "type": "file",
+          "filepath": "health/maintenance.md"
+        }
+      ]
+    },
+    {
+      "name": "home",
+      "type": "folder",
+      "filepath": "home",
+      "children": [
+        {
+          "name": "food",
+          "type": "folder",
+          "filepath": "home/food",
+          "children": [
+            {
+              "name": "coffee.md",
+              "type": "file",
+              "filepath": "home/food/coffee.md"
+            },
+            {
+              "name": "cooking.md",
+              "type": "file",
+              "filepath": "home/food/cooking.md"
+            }
+          ]
+        },
+        {
+          "name": "home-diy.md",
+          "type": "file",
+          "filepath": "home/home-diy.md"
+        }
+      ]
+    },
+    {
+      "name": "language-learning",
+      "type": "folder",
+      "filepath": "language-learning",
+      "children": [
+        {
+          "name": "french",
+          "type": "folder",
+          "filepath": "language-learning/french",
+          "children": [
+            {
+              "name": "french.md",
+              "type": "file",
+              "filepath": "language-learning/french/french.md"
+            }
+          ]
+        },
+        {
+          "name": "language-spread.md",
+          "type": "file",
+          "filepath": "language-learning/language-spread.md"
+        },
+        {
+          "name": "swedish.md",
+          "type": "file",
+          "filepath": "language-learning/swedish.md"
+        }
+      ]
+    },
+    {
+      "name": "places",
+      "type": "folder",
+      "filepath": "places",
+      "children": [
+        {
+          "name": "toronto.md",
+          "type": "file",
+          "filepath": "places/toronto.md"
+        }
+      ]
+    },
+    {
+      "name": "software",
+      "type": "folder",
+      "filepath": "software",
+      "children": [
+        {
+          "name": "design-patterns.md",
+          "type": "file",
+          "filepath": "software/design-patterns.md"
+        },
+        {
+          "name": "leet-code.md",
+          "type": "file",
+          "filepath": "software/leet-code.md"
+        },
+        {
+          "name": "os",
+          "type": "folder",
+          "filepath": "software/os",
+          "children": [
+            {
+              "name": "brew.md",
+              "type": "file",
+              "filepath": "software/os/brew.md"
+            },
+            {
+              "name": "command-line",
+              "type": "folder",
+              "filepath": "software/os/command-line",
+              "children": [
+                {
+                  "name": "command-line.md",
+                  "type": "file",
+                  "filepath": "software/os/command-line/command-line.md"
+                },
+                {
+                  "name": "cron.md",
+                  "type": "file",
+                  "filepath": "software/os/command-line/cron.md"
+                },
+                {
+                  "name": "find.md",
+                  "type": "file",
+                  "filepath": "software/os/command-line/find.md"
+                },
+                {
+                  "name": "grep.md",
+                  "type": "file",
+                  "filepath": "software/os/command-line/grep.md"
+                },
+                {
+                  "name": "vim.md",
+                  "type": "file",
+                  "filepath": "software/os/command-line/vim.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "programming-languages",
+          "type": "folder",
+          "filepath": "software/programming-languages",
+          "children": [
+            {
+              "name": "javascript",
+              "type": "folder",
+              "filepath": "software/programming-languages/javascript",
+              "children": [
+                {
+                  "name": "javascript.md",
+                  "type": "file",
+                  "filepath": "software/programming-languages/javascript/javascript.md"
+                }
+              ]
+            },
+            {
+              "name": "python",
+              "type": "folder",
+              "filepath": "software/programming-languages/python",
+              "children": [
+                {
+                  "name": "pip.md",
+                  "type": "file",
+                  "filepath": "software/programming-languages/python/pip.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "web-dev",
+          "type": "folder",
+          "filepath": "software/web-dev",
+          "children": [
+            {
+              "name": "backend",
+              "type": "folder",
+              "filepath": "software/web-dev/backend",
+              "children": [
+                {
+                  "name": "backend.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/backend/backend.md"
+                },
+                {
+                  "name": "dotnet.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/backend/dotnet.md"
+                },
+                {
+                  "name": "express.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/backend/express.md"
+                },
+                {
+                  "name": "jwt.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/backend/jwt.md"
+                },
+                {
+                  "name": "spring-boot.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/backend/spring-boot.md"
+                }
+              ]
+            },
+            {
+              "name": "database",
+              "type": "folder",
+              "filepath": "software/web-dev/database",
+              "children": [
+                {
+                  "name": "database.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/database/database.md"
+                },
+                {
+                  "name": "postgres.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/database/postgres.md"
+                }
+              ]
+            },
+            {
+              "name": "devops",
+              "type": "folder",
+              "filepath": "software/web-dev/devops",
+              "children": [
+                {
+                  "name": "aws",
+                  "type": "folder",
+                  "filepath": "software/web-dev/devops/aws",
+                  "children": [
+                    {
+                      "name": "aws.md",
+                      "type": "file",
+                      "filepath": "software/web-dev/devops/aws/aws.md"
+                    },
+                    {
+                      "name": "ec2.md",
+                      "type": "file",
+                      "filepath": "software/web-dev/devops/aws/ec2.md"
+                    },
+                    {
+                      "name": "lambda.md",
+                      "type": "file",
+                      "filepath": "software/web-dev/devops/aws/lambda.md"
+                    },
+                    {
+                      "name": "s3.md",
+                      "type": "file",
+                      "filepath": "software/web-dev/devops/aws/s3.md"
+                    }
+                  ]
+                },
+                {
+                  "name": "cloudflare.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/devops/cloudflare.md"
+                },
+                {
+                  "name": "devops.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/devops/devops.md"
+                },
+                {
+                  "name": "dns.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/devops/dns.md"
+                },
+                {
+                  "name": "docker.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/devops/docker.md"
+                },
+                {
+                  "name": "flyio.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/devops/flyio.md"
+                },
+                {
+                  "name": "git.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/devops/git.md"
+                },
+                {
+                  "name": "github.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/devops/github.md"
+                },
+                {
+                  "name": "monorepo.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/devops/monorepo.md"
+                }
+              ]
+            },
+            {
+              "name": "frontend",
+              "type": "folder",
+              "filepath": "software/web-dev/frontend",
+              "children": [
+                {
+                  "name": "angular.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/frontend/angular.md"
+                },
+                {
+                  "name": "bootstrap.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/frontend/bootstrap.md"
+                },
+                {
+                  "name": "frontend.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/frontend/frontend.md"
+                },
+                {
+                  "name": "react.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/frontend/react.md"
+                }
+              ]
+            },
+            {
+              "name": "network-security",
+              "type": "folder",
+              "filepath": "software/web-dev/network-security",
+              "children": [
+                {
+                  "name": "network-security.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/network-security/network-security.md"
+                },
+                {
+                  "name": "sherlock.md",
+                  "type": "file",
+                  "filepath": "software/web-dev/network-security/sherlock.md"
+                }
+              ]
+            },
+            {
+              "name": "node.md",
+              "type": "file",
+              "filepath": "software/web-dev/node.md"
+            },
+            {
+              "name": "nx.md",
+              "type": "file",
+              "filepath": "software/web-dev/nx.md"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
