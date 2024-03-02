@@ -16,5 +16,5 @@ import { MarkdownPageComponent } from '../../global/markdown-page/markdown.page.
   templateUrl: './projects.page.html',
 })
 export class ProjectsPageComponent {
-  contentFilepath = 'assets/projects.md';
+  contentFilepath = 'assets/site-content/projects.md';
 }
