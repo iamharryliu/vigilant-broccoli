@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FileService } from '../core/services/file.service';
-import { FolderItemComponent } from '../folder-item/folder-item.component';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
@@ -10,6 +9,7 @@ import { LinkComponent } from '../components/global/link/link.component';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { MarkdownPageService } from './docs-md.page.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FolderItemComponent, FolderItem } from 'general-components';
 
 @Component({
   selector: 'app-md-library',
@@ -25,7 +25,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class MdLibraryComponent implements OnInit {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
-  fileContent$: Observable<string>;
+  fileContent$: Observable<FolderItem>;
 
   constructor(
     private fileService: FileService,

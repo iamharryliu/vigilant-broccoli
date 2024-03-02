@@ -29,7 +29,8 @@
       ],
       "@prettydamntired/vibecheck-lite": [
         "libs/@prettydamntired/vibecheck-lite/src/index.ts"
-      ]
+      ],
+      "general-components": ["libs/angular/general-components/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FolderItem } from '../models';
 
 @Component({
-  selector: 'app-folder-item',
+  selector: 'lib-folder-item',
   standalone: true,
   imports: [CommonModule],
 
@@ -10,13 +11,13 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./folder-item.component.scss'],
 })
 export class FolderItemComponent {
-  @Input() item: any;
+  @Input() item!: FolderItem;
   @Output() fileEmitter = new EventEmitter();
 
   expanded: boolean = false;
 
-  selectFile(path: string) {
-    this.fileEmitter.emit(path);
+  selectFile(file: FolderItem) {
+    this.fileEmitter.emit(file);
   }
 
   toggle(): void {

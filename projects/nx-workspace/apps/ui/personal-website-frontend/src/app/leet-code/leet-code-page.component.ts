@@ -7,8 +7,8 @@ import { AppService } from '../core/services/app.service';
 import { LinkComponent } from '../components/global/link/link.component';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
-import { FolderItemComponent } from '../folder-item/folder-item.component';
 import { LeetCodePageService } from './leet-code.page.service';
+import { FolderItemComponent, FolderItem } from 'general-components';
 
 @Component({
   selector: 'app-leet-code-page',
@@ -25,7 +25,7 @@ import { LeetCodePageService } from './leet-code.page.service';
 })
 export class LeetCodePageComponent {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
-  fileContent$: Observable<string>;
+  fileContent$: Observable<FolderItem>;
 
   constructor(
     public fileService: FileService,
