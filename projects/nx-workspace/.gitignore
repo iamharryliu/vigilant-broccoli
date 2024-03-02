@@ -43,5 +43,7 @@ Thumbs.db
 .angular
 
 # Custom
-apps/ui/personal-website-frontend/src/assets/md-library/notes
+apps/ui/personal-website-frontend/src/assets/md-library/
+!apps/ui/personal-website-frontend/src/assets/md-library/.gitkeep
 apps/ui/personal-website-frontend/src/assets/grind-75/
+!apps/ui/personal-website-frontend/src/assets/grind-75/.gitkeep
