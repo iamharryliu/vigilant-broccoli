@@ -10,6 +10,8 @@
 
   - DocsMD
     - split into separate application
+      - refactor services, components into libs
+      - create new angular app
     - host at docs.harryliu.design
   - Google Task / Code Editor integration
     - draft solutiion
