@@ -39,3 +39,10 @@ jobs:
       - run: npx nx run-many --target=build --all
       - run: npx nx deploy personal-website-backend
       # - run: npx nx affected -t lint test build e2e-ci
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist/apps/ui/personal-website-frontend/browser --project-name=harryliu-design-angular
