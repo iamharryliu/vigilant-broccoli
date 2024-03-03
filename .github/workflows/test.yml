@@ -21,7 +21,7 @@ jobs:
       - run: npm ci
       - uses: nrwl/nx-set-shas@v3
       # - run: flyctl deploy --remote-only
-      - run: nx build personal-website-backend
-      - run: nx deploy personal-website-backend
+      - run: npx nx build personal-website-backend
+      - run: npx nx deploy personal-website-backend
         env:
           FLY_API_TOKEN: ${{ secrets.HARRYLIU_DESIGN_EXPRESS_FLY_API_TOKEN }}
