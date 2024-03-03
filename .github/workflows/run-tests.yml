@@ -29,10 +29,10 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      - run: echo "$MONGO_DB_USERNAME"
       # - run: npx nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="e2e-ci"
       - run: npm ci
       - uses: nrwl/nx-set-shas@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
       # - run: git branch --track main origin/main
       # - run: npx nx-cloud record -- nx format:check
       # - run: npx nx pre-build personal-website-frontend
