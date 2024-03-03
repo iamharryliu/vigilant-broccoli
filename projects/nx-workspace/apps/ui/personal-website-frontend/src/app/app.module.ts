@@ -6,10 +6,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CredentialsInterceptorService } from './core/interceptors/credentials.interceptor';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
-import { RecaptchaInterceptor } from './core/interceptors/recaptcha.interceptor';
 import { SuccessInterceptor } from './core/interceptors/success.interceptor';
 import { AppService } from './core/services/app.service';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
+import { RecaptchaInterceptor } from 'general-components';
 
 @NgModule({
   declarations: [AppComponent],

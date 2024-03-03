@@ -4,3 +4,5 @@ export { FolderItemComponent } from './lib/folder-item/folder-item.component';
 export * from './lib/models';
 // Services
 export { FileService } from './lib/services/file.service';
+// Interceptors
+export { RecaptchaInterceptor } from './lib/interceptors/recaptcha-interceptor/recaptcha.interceptor';
