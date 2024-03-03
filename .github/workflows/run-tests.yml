@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  FLY_API_TOKEN: ${{ secrets.HARRYLIU_DESIGN_EXPRESS_FLY_API_TOKEN }}
+  # FLY_API_TOKEN: ${{ secrets.HARRYLIU_DESIGN_EXPRESS_FLY_API_TOKEN }}
   MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
   MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
 jobs:
@@ -33,6 +33,12 @@ jobs:
       - run: npm ci
       - uses: nrwl/nx-set-shas@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       # - run: git branch --track main origin/main
       # - run: npx nx-cloud record -- nx format:check
       # - run: npx nx pre-build personal-website-frontend
