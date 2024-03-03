@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { FileService } from '../../../core/services/file.service';
+import { FileService } from 'general-components';
 
 @Component({
   selector: 'app-markdown-page',

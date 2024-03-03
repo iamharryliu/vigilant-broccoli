@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, exhaustMap, from } from 'rxjs';
 import { MarkdownService } from '@prettydamntired/test-lib';
+import { FolderItem } from '../models';
 
-// TODO: mv
-export const FILE_STRUCTURE_PATHS = {
+const FILE_STRUCTURE_PATHS = {
   MD_LIBRARY: 'assets/md-library/md-library.json',
   LEET_CODE: 'assets/grind-75/grind-75.json',
 } as const;
@@ -20,8 +20,8 @@ export class FileService {
 
   getFolderStructure(
     fileStructureFilepath: FileStructureFilepath,
-  ): Observable<any> {
-    return this.http.get(fileStructureFilepath);
+  ): Observable<FolderItem> {
+    return this.http.get<FolderItem>(fileStructureFilepath);
   }
 
   getFileAsText(filepath: string): Observable<string> {

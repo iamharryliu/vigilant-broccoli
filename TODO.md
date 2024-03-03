@@ -14,9 +14,10 @@
       - create new angular app
     - host at docs.harryliu.design
   - Google Task / Code Editor integration
-    - draft solutiion
+    - push q1 tasks to Google tasks
+    - parse q1 tasks into tasks and subtasks
+    - push to google tasks
   - Github Actions
-    - fix failing action (new branch created without assets issue)
     - deploy on push and other tasks
 
 - Q2

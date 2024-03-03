@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LINKS } from '../core/consts/app-route.const';
 import { Observable } from 'rxjs';
-import { FileService } from '../core/services/file.service';
 import { AppService } from '../core/services/app.service';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
@@ -11,6 +10,7 @@ import {
   FolderItemComponent,
   FolderItem,
   LinkComponent,
+  FileService,
 } from 'general-components';
 
 @Component({

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FileService } from '../core/services/file.service';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
@@ -12,6 +11,7 @@ import {
   FolderItemComponent,
   FolderItem,
   LinkComponent,
+  FileService,
 } from 'general-components';
 
 @Component({
