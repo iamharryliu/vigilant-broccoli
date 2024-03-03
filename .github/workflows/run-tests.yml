@@ -33,11 +33,11 @@ jobs:
       - run: npm ci
       - uses: nrwl/nx-set-shas@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       # - run: git branch --track main origin/main
       # - run: npx nx-cloud record -- nx format:check
       # - run: npx nx pre-build personal-website-frontend
       - run: npx nx run-many --target=build --all
       - run: npx nx deploy personal-website-backend
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       # - run: npx nx affected -t lint test build e2e-ci
