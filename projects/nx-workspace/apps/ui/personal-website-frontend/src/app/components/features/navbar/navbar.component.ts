@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LINKS } from '../../../core/consts/app-route.const';
-import { LinkComponent } from '../../global/link/link.component';
+import { LinkComponent } from 'general-components';
 
 @Component({
   standalone: true,

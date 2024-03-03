@@ -1,2 +1,4 @@
-export * from './lib/folder-item/folder-item.component';
+export { LinkComponent } from './lib/link/link.component';
+export { ButtonLinkComponent } from './lib/button-link/button-link.component';
+export { FolderItemComponent } from './lib/folder-item/folder-item.component';
 export * from './lib/models';

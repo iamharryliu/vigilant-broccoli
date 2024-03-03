@@ -6,7 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
 import { LINKS } from '../../../core/consts/app-route.const';
 import { CommonService } from '../../../core/services/common.service';
-import { LinkComponent } from '../../global/link/link.component';
+import { LinkComponent } from 'general-components';
 
 @Component({
   standalone: true,

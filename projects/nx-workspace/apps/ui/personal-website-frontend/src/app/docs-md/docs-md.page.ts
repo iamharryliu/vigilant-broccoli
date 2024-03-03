@@ -5,11 +5,14 @@ import { GeneralLayoutComponent } from '../components/layouts/general/genreral-l
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
 import { DOCS_MD_ROUTE, LINKS } from '../core/consts/app-route.const';
-import { LinkComponent } from '../components/global/link/link.component';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { MarkdownPageService } from './docs-md.page.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FolderItemComponent, FolderItem } from 'general-components';
+import {
+  FolderItemComponent,
+  FolderItem,
+  LinkComponent,
+} from 'general-components';
 
 @Component({
   selector: 'app-md-library',

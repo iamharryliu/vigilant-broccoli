@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GeneralLayoutComponent } from '../../layouts/general/genreral-layout.component';
-import { LinkComponent } from '../../global/link/link.component';
 import { MarkdownPageComponent } from '../../global/markdown-page/markdown.page.component';
+import { LinkComponent } from 'general-components';
 
 @Component({
   selector: 'app-projects-page',

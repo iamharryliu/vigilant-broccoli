@@ -8,10 +8,10 @@ import { VerifyEmailSubscriptionPageComponent } from '../../components/pages/ver
 import { VibecheckLiteSubscribePageComponent } from '../../components/pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '../../components/pages/vibecheck-lite/unsubscribe-page/unsubscribe.page';
 import { VibecheckLiteComponent } from '../../demo-apps/vibecheck-lite/vibecheck-lite.component';
-import { Link } from '../models/app.model';
 import { MdLibraryComponent } from '../../docs-md/docs-md.page';
 import { ProjectsPageComponent } from '../../components/pages/projects-page/projects.page';
 import { LeetCodePageComponent } from '../../leet-code/leet-code.page';
+import { Link } from 'general-components';
 
 export const INDEX_ROUTE: Route = {
   path: '',

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Link } from '../../../core/models/app.model';
+import { Link } from '../models';
 
 @Component({
   standalone: true,

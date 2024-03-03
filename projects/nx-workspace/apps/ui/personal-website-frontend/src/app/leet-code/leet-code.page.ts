@@ -4,11 +4,14 @@ import { LINKS } from '../core/consts/app-route.const';
 import { Observable } from 'rxjs';
 import { FileService } from '../core/services/file.service';
 import { AppService } from '../core/services/app.service';
-import { LinkComponent } from '../components/global/link/link.component';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { LeetCodePageService } from './leet-code.page.service';
-import { FolderItemComponent, FolderItem } from 'general-components';
+import {
+  FolderItemComponent,
+  FolderItem,
+  LinkComponent,
+} from 'general-components';
 
 @Component({
   selector: 'app-leet-code-page',
