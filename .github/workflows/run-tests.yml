@@ -33,5 +33,5 @@ jobs:
       # - run: npx nx-cloud record -- nx format:check
       # - run: npx nx pre-build personal-website-frontend
       - run: npx nx run-many --target=build --all
-      - run: npx nx deploy harryliu-design-express
+      - run: npx nx deploy personal-website-backend
       # - run: npx nx affected -t lint test build e2e-ci
