@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  # FLY_API_TOKEN: ${{ secrets.HARRYLIU_DESIGN_EXPRESS_FLY_API_TOKEN }}
+  FLY_API_TOKEN: ${{ secrets.HARRYLIU_DESIGN_EXPRESS_FLY_API_TOKEN }}
   MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
   MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
 jobs:
@@ -38,6 +38,4 @@ jobs:
       # - run: npx nx pre-build personal-website-frontend
       - run: npx nx run-many --target=build --all
       - run: npx nx deploy personal-website-backend
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       # - run: npx nx affected -t lint test build e2e-ci
