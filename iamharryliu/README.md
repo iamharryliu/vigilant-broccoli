@@ -2,9 +2,9 @@
 
 #### Software Developer from Toronto 🇨🇦
 
-[harryliu.design](https://harryliu.design/)
-[LinkedIn](https://www.linkedin.com/in/iamharryliu/)
-[Email](mailto: harryliu1995@gmail.com)
+- [harryliu.design](https://harryliu.design/)
+- [LinkedIn](https://www.linkedin.com/in/iamharryliu/)
+- [Email](mailto:harryliu1995@gmail.com)
 
 ![Views](https://komarev.com/ghpvc/?username=iamharryliu)
 
