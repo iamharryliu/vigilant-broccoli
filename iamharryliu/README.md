@@ -2,7 +2,7 @@
 
 #### Software Developer from Toronto 🇨🇦
 
-- [Personal Website](https://harryliu.design/)
+- [harryliu.design](https://harryliu.design/)
 - [LinkedIn](https://www.linkedin.com/in/iamharryliu/)
 - [harryliu1995@gmail.com](mailto:harryliu1995@gmail.com)
 
