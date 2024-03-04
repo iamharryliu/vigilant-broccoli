@@ -37,3 +37,5 @@
 - Q3
   - Redis
   - tmux
+  - aws
+    - cloudformation
