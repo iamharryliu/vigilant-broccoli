@@ -9,13 +9,13 @@ permissions:
   actions: read
   contents: read
 
-env:
-  FLY_API_TOKEN: ${{ secrets.HARRYLIU_DESIGN_EXPRESS_FLY_API_TOKEN }}
-  MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
-  MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
 jobs:
   main:
     runs-on: ubuntu-latest
+    env:
+      FLY_API_TOKEN: ${{ secrets.HARRYLIU_DESIGN_EXPRESS_FLY_API_TOKEN }}
+      MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
+      MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
     environment:
       name: production
     defaults:
@@ -36,11 +36,10 @@ jobs:
       # - run: git branch --track main origin/main
       # - run: npx nx-cloud record -- nx format:check
       - run: npx nx affected -t lint test build e2e-ci
-      # - run: npx nx run-many --target=build --all
       - run: npx nx deploy personal-website-backend
-      - name: Build
+      - name: Build harryliu-design-ui
         run: npx nx build personal-website-frontend
-      - name: Deploy
+      - name: Deploy harryliu-design-ui
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
