@@ -14,7 +14,7 @@ export class LeetCodePageService {
 
   selectFile(filepath: string) {
     this.selectedContent$ = this.fileService.getFileAsText(
-      `assets/grind-75/${filepath}`,
+      `assets/grind-75/grind-75/${filepath}`,
     );
     this.isFileSelected = true;
   }

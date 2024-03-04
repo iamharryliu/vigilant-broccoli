@@ -36,6 +36,7 @@ export class LeetCodePageComponent {
     public leetCodePageService: LeetCodePageService,
   ) {
     this.fileContent$ = this.fileService.getFolderStructure(
+      // TODO: fix file structure
       'assets/grind-75/grind-75.json',
     );
   }
