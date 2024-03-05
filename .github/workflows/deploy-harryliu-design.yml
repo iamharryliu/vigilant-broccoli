@@ -13,7 +13,7 @@ jobs:
   main:
     runs-on: ubuntu-latest
     env:
-      FLY_API_TOKEN: ${{ secrets.HARRYLIU_DESIGN_EXPRESS_FLY_API_TOKEN }}
+      FLY_API_TOKEN: ${{ secrets.FLYIO_AUTH_TOKEN }}
       MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
       MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
     environment:
