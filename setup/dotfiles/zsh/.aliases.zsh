@@ -85,6 +85,7 @@ alias stopflymachine='flyctl machine stop --app'
 alias flyscalecount='flyctl scale count'
 alias flylogs='flyctl logs --app'
 alias flyssh='fly ssh console --app'
+alias flycreatetoken='flyctl tokens create deploy --app'
 
 # Fly Postgres
 alias flysqlconn='flyctl postgres connect --app'
