@@ -2,9 +2,15 @@ import { FastifyInstance } from 'fastify';
 import { SiteMonitor } from '@prettydamntired/test-node-tools';
 
 const sites = [
+  // harryliu.design
   'https://harryliu.design/',
   'https://api.harryliu.design/',
+
+  // Vibecheck Lite
   'https://vibecheck-lite-express.fly.dev/',
+
+  // Vibecheck
+  'https://vibecheck-angular.harryliu.design/',
 ];
 
 export default async function (fastify: FastifyInstance) {
