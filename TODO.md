@@ -4,6 +4,11 @@
 
 - Q1
 
+  - deploy app-monitor-api with new endpoint to check
+  - deploy vibecheck-angular and vibecheck-flask
+  - make notes for https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
+  - update email signature
+
   - personal-website
 
     - blog section
