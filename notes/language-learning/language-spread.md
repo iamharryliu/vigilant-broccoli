@@ -55,7 +55,7 @@
 | less               | mindre              | moins            | menos         |                   |                 |
 | a bit              | lite                |                  | un poco       |                   |                 |
 | too much           | för mycket          | trop             | demasiado     |                   | troppo          |
-|                    |                     |                  |               |                   |                 |
+| every              | varje               | tous             | todos         |                   |                 |
 |                    |                     |                  |               |                   |                 |
 | for me             | för mig             | pour moi         |               |                   |                 |
 | for you            | för dig             | pour toi         |               |                   |                 |
@@ -69,7 +69,7 @@
 | yesterday          | i går               | hier             | ayer          |
 | never              | aldrig              | jamais           | nunca         |
 | always             | altig               | toujours         | siempre       |
-|                    |                     |                  |               |                   |                 |
+| sometimes          | ibland              |                  |               |                   |                 |
 |                    |                     |                  |               |                   |                 |
 | **question**       |                     |                  |               |
 | who                | vem/vilka           | qui              | quien         |
