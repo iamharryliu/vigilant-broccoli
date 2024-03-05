@@ -5,12 +5,16 @@
 ```
 npm install wrangler --save-dev
 
-# Pages
-npx wrangler pages dev [project]
-CLOUDFLARE_ACCOUNT_ID=$CLOUDFLARE_ID npx wrangler pages deploy [project]
-npx wrangler pages deploy [path to app dist]
-npx wrangler pages deploy [path to app dist] --project-name [project-name]
-npx wrangler pages project delete [project-name]
+# Development
+npx wrangler pages dev [path_to_app_dist]
+
+# Deployment
+CLOUDFLARE_ACCOUNT_ID=$CLOUDFLARE_ID npx wrangler pages deploy [path_to_app_dist]
+# New project.
+npx wrangler pages deploy [path_to_app_dist]
+# Existing project
+npx wrangler pages deploy [path_to_app_dist] --project-name [project_name]
+npx wrangler pages project delete [project_name]
 npx wrangler pages project list
 
 

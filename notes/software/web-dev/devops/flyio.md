@@ -35,6 +35,13 @@ flyctl scale count [n] --app [app_name]
 flyctl logs --app [app_name]
 ```
 
+```
+# Authentication token
+flyctl auth token
+# Application token
+flyctl tokens create deploy
+```
+
 ### SSH
 
 Issue new credential.

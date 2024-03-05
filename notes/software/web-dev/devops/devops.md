@@ -5,3 +5,11 @@
 - Cloudflare
 - Vercel
 - Netlift
+
+## CICD
+
+### Deployment
+
+#### Manual Deployment
+
+#### Automated Deployment
