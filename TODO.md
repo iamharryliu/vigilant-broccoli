@@ -5,8 +5,6 @@
 - Q1
 
   - deploy vibecheck-angular and vibecheck-flask
-  - make notes for https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
-  - update email signature
 
   - personal-website
 
