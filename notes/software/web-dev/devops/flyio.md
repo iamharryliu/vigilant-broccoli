@@ -86,3 +86,4 @@ fly certs show [hostname] --app [app_name]
 - [Setup Postgres](https://medium.com/data-folks-indonesia/setup-free-postgresql-on-fly-io-and-import-database-3f8f891cbc71)
 - [External Connections](https://fly.io/docs/postgres/connecting/connecting-external/)
 - [Python App](https://fly.io/docs/languages-and-frameworks/python/)
+- [Github Actions](https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/)
