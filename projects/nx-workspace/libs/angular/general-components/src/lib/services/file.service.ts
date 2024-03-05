@@ -28,7 +28,7 @@ export class FileService {
     return this.http.get(filepath, { responseType: 'text' });
   }
 
-  parseMdFile(filepath: string): Observable<string> {
+  getParsedMdFile(filepath: string): Observable<string> {
     return this.getFileAsText(filepath).pipe(
       exhaustMap(data => from(MarkdownService.parse(data))),
     );

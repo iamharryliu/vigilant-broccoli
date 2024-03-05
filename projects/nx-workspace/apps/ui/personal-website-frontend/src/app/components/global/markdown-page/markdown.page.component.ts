@@ -17,6 +17,6 @@ export class MarkdownPageComponent implements OnChanges {
   constructor(private fileService: FileService) {}
 
   ngOnChanges(): void {
-    this.content$ = this.fileService.parseMdFile(this.filepath);
+    this.content$ = this.fileService.getParsedMdFile(this.filepath);
   }
 }
