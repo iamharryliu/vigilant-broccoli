@@ -3,7 +3,7 @@ import { EjsTemplate } from '../models/email.model';
 import { EmailRequest } from '../models/email.model';
 
 export const DEFAULT_EMAIL_REQUEST: EmailRequest = {
-  from: `nickname <${process.env.MY_EMAIL}>`,
+  from: `Email Service <${process.env.MY_EMAIL}>`,
   to: process.env.MY_EMAIL,
   subject: 'Default subject',
   text: 'Default message',
