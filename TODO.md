@@ -13,10 +13,6 @@
       - refactor services, components into libs
       - create new angular app
     - host at docs.harryliu.design
-  - Google Task / Code Editor integration
-    - push q1 tasks to Google tasks
-    - parse q1 tasks into tasks and subtasks
-    - push to google tasks
   - Github Actions
     - deploy on push and other tasks
 
@@ -33,6 +29,10 @@
   - docs for spring boot
   - fix: vibecheck-flask test cases
   - implement as const, as const + (type of const)[keyof typeof const]
+  - Google Task / Code Editor integration
+    - push q1 tasks to Google tasks
+    - parse q1 tasks into tasks and subtasks
+    - push to google tasks
 
 - Q3
   - Redis
