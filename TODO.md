@@ -4,7 +4,9 @@
 
 - Q1
 
-  - deploy vibecheck-angular and vibecheck-flask
+  - Vibecheck
+
+    - trouble shoot vibecheck angular/flask intergration
 
   - personal-website
 
