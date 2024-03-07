@@ -1,16 +1,14 @@
-<div class="text-white bg-gray-800 h-screen">
+<div class="min-h-screen">
   <app-centered-app-layout>
     <div class="text-center pt-8 mb-8">
-      <h1 class="text-3xl">harry liu</h1>
-    </div>
-    <!-- <div class="space-y-2 mb-8">
-      <div *ngFor="let link of LINKS" class="text-center">
-        <lib-button-link [link]="link"></lib-button-link>
+      <div class="flex justify-center mb-6">
+        <img id="profile-picture" src="assets/profile-picture.jpg" />
       </div>
-    </div> -->
+      <h1 class="text-3xl">Harry Liu</h1>
+
+    </div>
     <div class="space-y-2 mb-8">
-      <!-- <h2 class="text-xl text-center mb-4">Software</h2> -->
-      <div *ngFor="let link of CAREER_LINKS" class="text-center">
+      <div *ngFor="let link of LINKS" class="text-center">
         <lib-button-link [link]="link" type="external"></lib-button-link>
       </div>
     </div>
