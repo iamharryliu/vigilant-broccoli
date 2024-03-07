@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class MarkdownPageService {
+export class DocsMdPageService {
   isFileSelected = false;
   selectedFile?: string;
 

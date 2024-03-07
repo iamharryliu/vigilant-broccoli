@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
 import { DOCS_MD_ROUTE, LINKS } from '../core/consts/app-route.const';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
-import { MarkdownPageService } from './docs-md.page.service';
+import { DocsMdPageService } from './docs-md.page.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   FolderItemComponent,
@@ -33,7 +33,7 @@ export class MdLibraryComponent implements OnInit {
   constructor(
     private fileService: FileService,
     public appService: AppService,
-    public markdownLibraryService: MarkdownPageService,
+    public markdownLibraryService: DocsMdPageService,
     private router: Router,
     private route: ActivatedRoute,
   ) {
