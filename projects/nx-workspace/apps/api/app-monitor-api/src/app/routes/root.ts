@@ -11,6 +11,7 @@ const sites = [
 
   // Vibecheck
   'https://vibecheck-angular.harryliu.design/',
+  'https://vibecheck-flask.harryliu.design/',
 ];
 
 export default async function (fastify: FastifyInstance) {
