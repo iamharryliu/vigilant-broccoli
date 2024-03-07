@@ -13,23 +13,15 @@
     - update typography
     - blog section
 
-  - DocsMD
-    - split into separate application
-      - refactor services, components into libs
-      - create new angular app
-    - host at docs.harryliu.design
-  - Github Actions
-    - deploy on push and other tasks
+  - automate getting resume
+  - add devops to resume
 
 - Q2
 
   - aliases to open commonly opened windows
   - look into preventing DDOS
-  - add devops to resume
   - get involved in open source
   - make test cases faster (vibecheck-flask test seems to be slow)
-  - add subdomains
-    - links.harryliu.design
   - new getRecommendation fn for current weather
   - docs for spring boot
   - fix: vibecheck-flask test cases
