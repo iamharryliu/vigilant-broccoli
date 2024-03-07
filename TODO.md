@@ -6,10 +6,11 @@
 
   - Vibecheck
 
-    - trouble shoot vibecheck angular/flask intergration
+    - store images somewhere, maybe Cloudflare R2
 
   - personal-website
 
+    - update typography
     - blog section
 
   - DocsMD
