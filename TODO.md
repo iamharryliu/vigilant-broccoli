@@ -4,6 +4,8 @@
 
 - Q1
 
+  - secrets and api key handling
+
   - Vibecheck
 
     - store images somewhere, maybe Cloudflare R2
