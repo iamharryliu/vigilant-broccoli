@@ -8,7 +8,8 @@
 
   - Vibecheck
 
-    - store images somewhere, maybe Cloudflare R2
+    - R2 storage bucket integration
+      - configs to handle mocking for dev DIT and SIT with R2
 
   - personal-website
 
