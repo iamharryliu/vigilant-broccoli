@@ -4,39 +4,54 @@
 
 - Q1
 
-  - secrets and api key handling
+  - aliases to open commonly opened windows
+
+    - bill pay
+
+  - playing defense
+
+    - build: secrets and api key handling
+    - feat: look into preventing DDOS
+      - user limiting
 
   - Vibecheck
 
-    - R2 storage bucket integration
+    - feat: R2 storage bucket integration
       - configs to handle mocking for dev DIT and SIT with R2
       - shell script in python dev setup script
+    - fix: flask test cases
+    - introduce service files?
+    - refactor
+      - breakup unit tests
+      - breakup configs
 
-  - personal-website
+  - harryliu.design
 
-    - update typography
-    - blog section
-
-  - automate getting resume
-  - add devops to resume
+    - style: update typography
+    - feat: blog section
+    - automate getting resume
+    - add devops to resume
 
 - Q2
 
-  - aliases to open commonly opened windows
-  - look into preventing DDOS
-  - get involved in open source
+  - google searching something
+  - chatGPT
+  - YouTube
+  - billing
+  - reaching out
+    - blog posts
+    - get involved in open source
   - make test cases faster (vibecheck-flask test seems to be slow)
   - new getRecommendation fn for current weather
-  - docs for spring boot
-  - fix: vibecheck-flask test cases
   - implement as const, as const + (type of const)[keyof typeof const]
-  - Google Task / Code Editor integration
-    - push q1 tasks to Google tasks
-    - parse q1 tasks into tasks and subtasks
-    - push to google tasks
 
 - Q3
-  - Redis
-  - tmux
-  - aws
-    - cloudformation
+
+  - read later
+
+    - Redis
+    - tmux
+    - aws
+      - cloudformation
+
+  - docs for spring boot
