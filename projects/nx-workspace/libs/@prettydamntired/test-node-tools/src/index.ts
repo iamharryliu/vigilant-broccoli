@@ -9,7 +9,6 @@ export { EncryptionService } from './services/encryption/encryption.service';
 export { RecaptchaService } from './services/recaptcha/recaptcha.service';
 export { SiteMonitor } from './services/site-monitor/site-monitor.service';
 export { TextMessageService } from './services/text-message/text-message.service';
-export { CronService } from './services/cron.service';
 // Express
 export * from './express/middlewares/common.middleware';
 export * from './express/middlewares/error.middleware';

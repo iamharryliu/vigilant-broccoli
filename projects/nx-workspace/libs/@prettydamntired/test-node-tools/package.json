@@ -9,7 +9,6 @@
     "dotenv-defaults": "^5.0.2",
     "twilio": "^4.21.0",
     "@prettydamntired/test-lib": "*",
-    "axios": "^1.0.0",
     "@prettydamntired/personal-website-lib": "*"
   },
   "devDependencies": {
