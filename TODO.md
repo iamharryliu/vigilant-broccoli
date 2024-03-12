@@ -21,14 +21,16 @@
 
   - Vibecheck
 
+    - testing
+
+      - refactor unit tests
+      - breakup unit tests
+      - breakup configs
+
     - feat: R2 storage bucket integration
       - configs to handle mocking for dev DIT and SIT with R2
       - shell script in python dev setup script
-    - fix: flask test cases
     - introduce service files?
-    - refactor
-      - breakup unit tests
-      - breakup configs
 
   - harryliu.design
 
