@@ -4,15 +4,20 @@
 
 - Q1
 
-  - aliases to open commonly opened windows
+  - CICD
 
-    - bill pay
-
-  - playing defense
-
+    - act to test Gitbhub actions locally
+    - Github aciton to save data
+    - use Github actions to replace cronjobs
     - build: secrets and api key handling
     - feat: look into preventing DDOS
       - user limiting
+    - virus scanning
+    - budget alerts for services
+
+  - aliases to open commonly opened windows
+
+    - bill pay
 
   - Vibecheck
 
@@ -49,9 +54,14 @@
 
   - read later
 
+    - how does load balancing work??
     - Redis
     - tmux
     - aws
       - cloudformation
+    - kubernetes
+    - open ssh port at home?
+    - online payment form
+    - Sveltfire
 
   - docs for spring boot
