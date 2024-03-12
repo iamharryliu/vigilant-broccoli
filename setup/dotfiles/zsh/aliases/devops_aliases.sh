@@ -39,8 +39,11 @@ alias sshec2="ssh -i ~/certs/ec2-instance.pem $ec2_instance_username_ip_address"
 alias wranglerls='npx wrangler pages project list'
 alias wranglerdeploy='npx wrangler pages deploy'
 alias wranglerdelete='npx wrangler pages delete'
-
-function rmr2() {
+# R2
+alias r2ls='npx wrangler r2 bucket list'
+alias r2create='npx wrangler r2 bucket create'
+alias r2delete='npx wrangler r2 bucket delete'
+function r2clear() {
     aws s3 rm "s3://$1" --endpoint-url "https://$CLOUDFLARE_ID.r2.cloudflarestorage.com" --recursive
 }
 
