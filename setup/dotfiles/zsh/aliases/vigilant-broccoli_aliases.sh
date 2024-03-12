@@ -8,7 +8,7 @@ alias committodo="cdvb && git add TODO.md && git commit -m 'docs: update TODO.md
 alias commitdotfiles="cdvb && git add setup/dotfiles && git commit -m 'docs: update TODO.md'"
 alias commitjournal="git add ~/journal/ && git commit -m 'docs: update journal'"
 alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md && gc docs 'update md files'"
-alias commitaliases="cdvb && git add setup/dotfiles/zsh/.aliases.zsh && gc feat aliases 'update .aliases.zsh'"
+alias commitaliases="cdvb && git add setup/dotfiles/zsh/.aliases.zsh setup/dotfiles/zsh/aliases/* setup/dotfiles/zsh/scripts/* && gc feat aliases 'update .aliases.zsh'"
 
 # Github
 alias updategitreadme="cd ~/iamharryliu && git add . && git commit -m 'docs: update github profile readme' && git push"

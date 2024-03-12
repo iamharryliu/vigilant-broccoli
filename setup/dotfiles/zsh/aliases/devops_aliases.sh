@@ -40,6 +40,10 @@ alias wranglerls='npx wrangler pages project list'
 alias wranglerdeploy='npx wrangler pages deploy'
 alias wranglerdelete='npx wrangler pages delete'
 
+function rmr2() {
+    aws s3 rm "s3://$1" --endpoint-url "https://$CLOUDFLARE_ID.r2.cloudflarestorage.com" --recursive
+}
+
 # FlyIO
 alias flydashboard='open -a "Google Chrome" "https://fly.io/dashboard"'
 alias flyls='fly apps list'
