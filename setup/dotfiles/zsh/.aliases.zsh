@@ -138,6 +138,8 @@ alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md &&
 # Github
 alias updategitreadme="cd ~/iamharryliu && git add . && git commit -m 'docs: update github profile readme' && git push"
 alias chromevb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli"'
+alias chromevb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
+
 
 # harryliu.design
 alias servepw='cdnx && npm run serve:personal-website'
