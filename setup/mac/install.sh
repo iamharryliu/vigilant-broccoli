@@ -19,6 +19,8 @@ if ask "Symlink dotfiles?"; then
     ln -s ~/vigilant-broccoli/setup/dotfiles/.gitconfig ~/.gitconfig
     ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/.rc.zsh ~/.zshrc
     ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/.aliases.zsh ~/.zsh_aliases
+    ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/aliases ~/shell-aliases
+    chmod -R +x ~/shell-aliases/
     ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/scripts ~/shell-scripts
     chmod -R +x ~/shell-scripts/
 fi
