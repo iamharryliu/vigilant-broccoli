@@ -1,5 +1,15 @@
 alias initsh='source ~/.zshrc'
 
+# Quick Links
+alias opengmail='open -a "Google Chrome" "https://gmail.com/"'
+alias openyoutube='open -a "Google Chrome" "https://www.youtube.com/"'
+alias openudemy='open -a "Google Chrome" "https://www.udemy.com/"'
+alias openmemrise='open -a "Google Chrome" "https://app.memrise.com/dashboard"'
+alias openamazon='open -a "Google Chrome" "https://www.amazon.ca/"'
+alias google="~/shell-scripts/google_search.sh"
+alias youtube="~/shell-scripts/youtube_search.sh"
+alias amazon="~/shell-scripts/amazon_search.sh"
+
 # dir commands
 alias ..='cd ..'
 alias ..x2='cd ../..'
@@ -79,7 +89,7 @@ alias pipdump='pip freeze  > requirements.txt'
 # Node
 alias initnpm='rm -rf node_modules package-lock.json && npm i'
 alias initnpmserve='initnpm && npm run serve'
-alias chromenpm='open -a "Google Chrome" "https://www.npmjs.com/settings/prettydamntired/packages"'
+alias mynpmpackages='open -a "Google Chrome" "https://www.npmjs.com/settings/prettydamntired/packages"'
 
 # Postgres
 alias startbrewsql='brew services start postgresql'
@@ -87,7 +97,7 @@ alias stopbrewsql='brew services stop postgresql'
 alias sqlstatus='pg_isready -h localhost -p 5432'
 
 # MongoDB
-alias chromemongo='open -a "Google Chrome" "https://cloud.mongodb.com/v2/"'
+alias mongodashboard='open -a "Google Chrome" "https://cloud.mongodb.com/v2/"'
 
 # Wrangler
 alias wranglerls='npx wrangler pages project list'
@@ -95,7 +105,7 @@ alias wranglerdeploy='npx wrangler pages deploy'
 alias wranglerdelete='npx wrangler pages delete'
 
 # FlyIO
-alias chromefly='open -a "Google Chrome" "https://fly.io/dashboard"'
+alias flydashboard='open -a "Google Chrome" "https://fly.io/dashboard"'
 alias flyls='fly apps list'
 alias flyopen='fly apps open --app'
 alias flydestroy='fly apps destroy'
@@ -138,8 +148,8 @@ alias commitaliases="cdvb && git add setup/dotfiles/zsh/.aliases.zsh && gc feat 
 
 # Github
 alias updategitreadme="cd ~/iamharryliu && git add . && git commit -m 'docs: update github profile readme' && git push"
-alias chromevb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli"'
-alias chromevb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
+alias openvb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli"'
+alias openvbactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
 
 
 # harryliu.design
@@ -148,10 +158,3 @@ alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
 
 # Journal
 alias pushJournal="cd ~/journal && git add . && git commit -m 'docs: update journal' && git push"
-
-# Links
-alias chromegmail='open -a "Google Chrome" "https://gmail.com/"'
-alias chromenyt='open -a "Google Chrome" "https://www.youtube.com/"'
-alias chromeudemy='open -a "Google Chrome" "https://www.udemy.com/"'
-alias chromememrise='open -a "Google Chrome" "https://app.memrise.com/dashboard"'
-alias chromeamazon='open -a "Google Chrome" "https://www.amazon.ca/"'
