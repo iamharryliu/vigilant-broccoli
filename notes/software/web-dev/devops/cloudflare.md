@@ -32,3 +32,5 @@ npx wrangler delete [name of worker]
 - [Deploy an existing static site](https://developers.cloudflare.com/workers/configuration/sites/start-from-existing/)
 - [Wrangler Commands](https://developers.cloudflare.com/workers/wrangler/commands/#deploy)
 - [Github Actions](https://developers.cloudflare.com/workers/wrangler/ci-cd)
+- [Python and R2](https://developers.cloudflare.com/r2/examples/aws/boto3/)
+- [R2 Bucket CLI](https://developers.cloudflare.com/r2/api/workers/workers-api-usage/#5-access-your-r2-bucket-from-your-worker)
