@@ -1,6 +1,6 @@
 # Cloudflare
 
-# Commands
+## Commands
 
 ```
 npm install wrangler --save-dev
