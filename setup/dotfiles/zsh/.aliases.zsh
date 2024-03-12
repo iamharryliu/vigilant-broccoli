@@ -1,15 +1,11 @@
 alias initsh='source ~/.zshrc'
 
-# cd
+# dir commands
 alias ..='cd ..'
 alias ..x2='cd ../..'
 alias ..x3='cd ../../..'
-
-# mkdir
 alias mkdir='mkdir -pv'
 alias mkcd='function _mkcd() { mkdir -p "$1" && cd "$1"; }; _mkcd'
-
-# ls (mac)
 alias ls='ls -FGhl'
 alias la='ls -A'
 alias lS='la -S'
@@ -17,7 +13,7 @@ alias lSr='la -Sr'
 alias lt='la -t'
 alias ltr='la -rt'
 
-# Git
+# git
 alias gs='git status'
 alias gb='git branch'
 alias gco='git checkout'
@@ -32,9 +28,27 @@ alias undocommit='greset --soft'
 alias deletecommit='greset --hard'
 alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
 alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs git push origin --delete'
-
-# Github
-alias updategitreadme="cd ~/iamharryliu && git add . && git commit -m 'docs: update github profile readme' && git push"
+# conventional commit
+function gc() {
+  if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <git_type> [<project>] <message>"
+    exit 1
+  fi
+  git_type="$1"
+  project=""
+  message=""
+  if [ "$#" -eq 3 ]; then
+    project="$2"
+    message="$3"
+    commit_message="$git_type($project): $message"
+  else
+    project=""
+    message="$2"
+    commit_message="$git_type: $message"
+  fi
+  git commit -m "$commit_message"
+  echo "$commit_message"
+}
 
 # Port
 killport() {
@@ -65,18 +79,23 @@ alias pipdump='pip freeze  > requirements.txt'
 # Node
 alias initnpm='rm -rf node_modules package-lock.json && npm i'
 alias initnpmserve='initnpm && npm run serve'
+alias chromenpm='open -a "Google Chrome" "https://www.npmjs.com/settings/prettydamntired/packages"'
 
 # Postgres
 alias startbrewsql='brew services start postgresql'
 alias stopbrewsql='brew services stop postgresql'
 alias sqlstatus='pg_isready -h localhost -p 5432'
 
+# MongoDB
+alias chromemongo='open -a "Google Chrome" "https://cloud.mongodb.com/v2/"'
+
 # Wrangler
+alias wranglerls='npx wrangler pages project list'
 alias wranglerdeploy='npx wrangler pages deploy'
 alias wranglerdelete='npx wrangler pages delete'
-alias wranglerls='npx wrangler pages project list'
 
 # FlyIO
+alias chromefly='open -a "Google Chrome" "https://fly.io/dashboard"'
 alias flyls='fly apps list'
 alias flyopen='fly apps open --app'
 alias flydestroy='fly apps destroy'
@@ -88,8 +107,7 @@ alias flyscalecount='flyctl scale count'
 alias flylogs='flyctl logs --app'
 alias flyssh='fly ssh console --app'
 alias flycreatetoken='flyctl tokens create deploy --app'
-
-# Fly Postgres
+# Postgres
 alias flysqlconn='flyctl postgres connect --app'
 alias flysqlproxy='flyctl proxy 5432 --app'
 alias flysqlconntestdb='flyctl postgres connect --app testsql'
@@ -117,6 +135,10 @@ alias commitdotfiles="cdvb && git add setup/dotfiles && git commit -m 'docs: upd
 alias commitjournal="git add ~/journal/ && git commit -m 'docs: update journal'"
 alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md && git commit -m 'docs: update md files'"
 
+# Github
+alias updategitreadme="cd ~/iamharryliu && git add . && git commit -m 'docs: update github profile readme' && git push"
+alias chromevb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli"'
+
 # harryliu.design
 alias servepw='cdnx && npm run serve:personal-website'
 alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
@@ -124,25 +146,9 @@ alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
 # Journal
 alias pushJournal="cd ~/journal && git add . && git commit -m 'docs: update journal' && git push"
 
-# Git Commit
-
-function gc() {
-  if [ "$#" -lt 2 ]; then
-    echo "Usage: $0 <git_type> [<project>] <message>"
-    exit 1
-  fi
-  git_type="$1"
-  project=""
-  message=""
-  if [ "$#" -eq 3 ]; then
-    project="$2"
-    message="$3"
-    commit_message="$git_type($project): $message"
-  else
-    project=""
-    message="$2"
-    commit_message="$git_type: $message"
-  fi
-  git commit -m "$commit_message"
-  echo "$commit_message"
-}
+# Links
+alias chromegmail='open -a "Google Chrome" "https://gmail.com/"'
+alias chromenyt='open -a "Google Chrome" "https://www.youtube.com/"'
+alias chromeudemy='open -a "Google Chrome" "https://www.udemy.com/"'
+alias chromememrise='open -a "Google Chrome" "https://app.memrise.com/dashboard"'
+alias chromeamazon='open -a "Google Chrome" "https://www.amazon.ca/"'
