@@ -24,13 +24,4 @@ export default async function (fastify: FastifyInstance) {
     });
     return { data: res };
   });
-
-  fastify.get('/monitor-sites', async () => {
-    const siteMonitor = new SiteMonitor();
-    for (const site of sites) {
-      await siteMonitor.monitorSiteActivity(site);
-    }
-    // Promise.all(sites.map(siteMonitor.monitorSiteActivity));
-    return {};
-  });
 }
