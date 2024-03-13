@@ -7,6 +7,7 @@ alias openchatgpt='open -a "Google Chrome" "https://chat.openai.com/"'
 alias google="~/shell-scripts/google_search.sh"
 alias youtube="~/shell-scripts/youtube_search.sh"
 alias amazon="~/shell-scripts/amazon_search.sh"
+alias pinterest="~/shell-scripts/pinterest_search.sh"
 
 # Language Learning
 alias openmemrise='open -a "Google Chrome" "https://app.memrise.com/dashboard"'
