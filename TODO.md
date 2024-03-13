@@ -34,8 +34,7 @@
 
     - style: update typography
     - feat: blog section
-    - automate getting resume
-    - add devops to resume
+    - automate getting resume, sync to desktop??
 
 - Q2
 
