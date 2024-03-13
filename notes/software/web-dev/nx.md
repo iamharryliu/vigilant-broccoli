@@ -23,3 +23,4 @@ nx test-storybook [project-name]
 
 - [Folder Structure](https://nx.dev/concepts/more-concepts/folder-structure)
 - [Nx scripts](https://www.youtube.com/watch?v=PRURABLaS8s)
+- [Run single NX script](https://stackoverflow.com/questions/67692895/how-to-run-a-single-typescript-file-with-nx)
