@@ -20,7 +20,6 @@
 | excuse me                      | ursäkta mig           |                  |               |                   |                 |
 | you're welcome                 | varsågod              |                  |               |                   |                 |
 | thank you                      | tack                  | merci            | gracias       |                   |                 |
-|                                |                       |                  |               |                   |                 |
 | **pronouns**                   |                       |                  |               |                   |                 |
 | I                              | jag                   | je               | yo            |                   |                 |
 | you                            | du                    | tu               | tú            |                   |                 |
@@ -28,7 +27,6 @@
 | we                             | vi                    | nous             |               |                   |                 |
 | you (plural)                   | ni                    | vous             |               |                   |                 |
 | they                           | de                    | ils/elles        |               |                   |                 |
-|                                |                       |                  |               |                   |                 |
 | **social**                     |                       |                  |               |                   |                 |
 | hello                          | hej                   | salut            | hola          | ola               | ciao            |
 | goodbye                        | hejdå                 | au revoir        | ciao          | tchau             | arrivederci     |
@@ -38,10 +36,9 @@
 | good night                     | god natt              | bonne nuit       | buenas noches | boa noite         | buona notte     |
 | see you soon                   | vi ses                | a bientot        | haste luego   | ate logo          | a dopo          |
 | my name is                     | jag heter             | je m'apelle      | me llamo      |                   |                 |
-|                                |                       |                  |               |                   |                 |
 | **adjectives**                 |                       |                  |               |                   |                 |
-| this                           | den här               | esto             |               |                   |                 |
-| that                           | den där               | eso              |               |                   |                 |
+| this                           | den här               | ce/cette/c'      | esto          |                   |                 |
+| that                           | den där               | ce/cette/c'      | eso           |                   |                 |
 | there is                       | det finns             | il y a           | hay           |
 | big                            | stor                  | grande           | grande        |                   |                 |
 | small                          | liten/små(plural)     | petit            | pequeno       |                   |                 |
@@ -52,13 +49,11 @@
 | every                          | varje                 | tous             | todos         |                   |                 |
 | for me                         | för mig               | pour moi         |               |                   |                 |
 | for you                        | för dig               | pour toi         |               |                   |                 |
-|                                |                       |                  |               |                   |                 |
 | **location**                   |                       |                  |               |                   |                 |
 | here                           | här                   | ici              | aqui          | aqui              | qui             |
 | there                          | där                   | là               | allí          |                   |                 |
 | near here                      | nära här              | pres d'ici       | cerda de aqui |                   |                 |
 | I am going to [person's] house | je vais chez [person] |                  |               |                   |                 |
-|                                |                       |                  |               |                   |                 |
 | **time**                       |                       |                  |               |                   |                 |
 | now                            | nu                    | maintenant       | ahora         |
 | today                          | i dag                 | aujourdhui       | hoy           |
@@ -67,8 +62,7 @@
 | yesterday                      | i går                 | hier             | ayer          |
 | never                          | aldrig                | jamais           | nunca         |
 | always                         | altig                 | toujours         | siempre       |
-| sometimes                      | ibland                |                  |               |                   |                 |
-|                                |                       |                  |               |                   |                 |
+| sometimes                      | ibland                | quelquefois      | a veces       |                   |                 |
 | **question**                   |                       |                  |               |
 | who                            | vem/vilka             | qui              | quien         |
 | what                           | vad                   | que              | que           |
@@ -81,7 +75,6 @@
 | which                          | vilken                | quel             | cual          |
 | do you want?                   | vill du?              | voulez-vous?     | quiere?       |
 | do you have?                   | har du?               | avez-vous?       | tiene?        |
-|                                |                       |                  |               |
 | verbs                          |                       |                  |
 | to want                        | att villja            | voulir           | querer        |
 | to go                          | att gå                | aller            | ir            |
@@ -113,19 +106,3 @@
 | I would                        |                       | je voudrais      | quiero        |
 | it was                         |                       | c'etait          | fue           |
 |                                |                       |                  | estuvo        |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |               |
-|                                |                       |                  |
