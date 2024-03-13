@@ -4,6 +4,16 @@
   "sourceRoot": "libs/@prettydamntired/test-node-tools/src",
   "projectType": "library",
   "targets": {
+    "run-script": {
+      "executor": "nx:run-commands",
+      "configurations": {
+        "monitor-apps": {
+          "commands": [
+            "npx ts-node libs/@prettydamntired/test-node-tools/custom-scripts/app-monitor-script.ts"
+          ]
+        }
+      }
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],

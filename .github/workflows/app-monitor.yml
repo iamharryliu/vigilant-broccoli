@@ -1,0 +1,21 @@
+name: Monitor Apps
+on:
+  schedule:
+    - cron: '0 */1 * * *'
+  push:
+    branches:
+      - main
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./projects/nx-workspace
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npx nx run @prettydamntired/test-node-tools:run-script:monitor-apps
