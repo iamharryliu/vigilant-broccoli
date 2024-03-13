@@ -205,3 +205,6 @@ coverage
 
 # Databases
 *.db
+
+# C# Dev Kit
+.mono/
