@@ -4,7 +4,7 @@ alias brewdump='rm ~/vigilant-broccoli/setup/mac/Brewfile && brew bundle dump --
 alias cdvb='cd ~/vigilant-broccoli/'
 alias cdnx='cd ~/vigilant-broccoli/projects/nx-workspace/'
 alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'
-alias pushtodo="cdvb && git add TODO.md && gc docs update TODO.md' && gpush"
+alias pushtodo="cdvb && git add TODO.md && gc docs 'update TODO.md' && gpush"
 alias pushmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md && gc docs 'update md files' && gpush"
 alias pushdotfiles="cdvb && git add setup/dotfiles && gc docs 'update dotfiles' && gpush"
 # Journal
