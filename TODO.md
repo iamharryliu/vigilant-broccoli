@@ -35,10 +35,6 @@
 
 - Q2
 
-  - google searching something
-  - chatGPT
-  - YouTube
-  - billing
   - reaching out
     - blog posts
     - get involved in open source
