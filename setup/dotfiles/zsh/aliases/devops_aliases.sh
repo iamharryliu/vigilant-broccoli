@@ -63,8 +63,8 @@ alias flycreatetoken='flyctl tokens create deploy --app'
 # Postgres
 alias flysqlconn='flyctl postgres connect --app'
 alias flysqlproxy='flyctl proxy 5432 --app'
-alias flysqlconntestdb='flyctl postgres connect --app testsql'
-alias flysqlproxytestdb='flyctl proxy 5432 --app testsql'
+alias flysqlconntest='flyctl postgres connect --app testsql'
+alias flysqlstarttest='flyctl proxy 5432 --app testsql'
 
 # NX
 alias nxbuild="cdnx && nx build --skip-nx-cache"
