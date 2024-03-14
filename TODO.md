@@ -2,22 +2,19 @@
 
 ## Quadrants
 
+- use Github actions to replace cronjobs
+
 - Q1
 
   - CICD
 
     - act to test Gitbhub actions locally
     - Github aciton to save data
-    - use Github actions to replace cronjobs
     - build: secrets and api key handling
     - feat: look into preventing DDOS
       - user limiting
     - virus scanning
     - budget alerts for services
-
-  - aliases to open commonly opened windows
-
-    - bill pay
 
   - Vibecheck
 

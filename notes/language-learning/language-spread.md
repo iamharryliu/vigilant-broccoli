@@ -90,6 +90,8 @@
 | to know                        | att veta              |                  |               |
 | to understand                  | att förstå            |                  |               |
 | to see                         | att se                | voir             | ver           |
+| to buy                         | att köpa              | acheter          | comprar       |
+| to sell                        | att sälja             | vendre           | vender        |
 | to look                        | att titta             | regarder         |               |
 | to come                        | att titta             | venir            |               |
 | I want                         | jag vill              | je veux          | quiero        | quero             |                 |
