@@ -107,6 +107,11 @@ export const LEETCODE_ROUTE: Route = {
   data: { title: 'grind 75' },
   component: LeetCodePageComponent,
 };
+export const LEETCODE_SOLUTION_ROUTE: Route = {
+  path: 'grind-75/:filename',
+  data: { title: 'grind75' },
+  component: LeetCodePageComponent,
+};
 
 export const APP_ROUTES: Routes = [
   INDEX_ROUTE,
@@ -121,6 +126,7 @@ export const APP_ROUTES: Routes = [
   UNSUBCSRIBE_VIBECHECK_LITE_ROUTE,
   PROJECTS_PAGE_ROUTE,
   LEETCODE_ROUTE,
+  LEETCODE_SOLUTION_ROUTE,
   {
     path: '**',
     redirectTo: '',

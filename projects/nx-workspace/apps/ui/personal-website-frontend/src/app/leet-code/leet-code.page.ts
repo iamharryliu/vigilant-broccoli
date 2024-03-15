@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LINKS } from '../core/consts/app-route.const';
 import { Observable } from 'rxjs';
@@ -12,6 +12,7 @@ import {
   LinkComponent,
   FileService,
 } from 'general-components';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-leet-code-page',
@@ -26,7 +27,7 @@ import {
   templateUrl: './leet-code.page.html',
   styleUrl: '../md.scss',
 })
-export class LeetCodePageComponent {
+export class LeetCodePageComponent implements OnInit {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
   fileContent$: Observable<FolderItem>;
 
@@ -34,6 +35,7 @@ export class LeetCodePageComponent {
     public fileService: FileService,
     public appService: AppService,
     public leetCodePageService: LeetCodePageService,
+    private route: ActivatedRoute,
   ) {
     this.fileContent$ = this.fileService.getFolderStructure(
       // TODO: fix file structure
@@ -41,7 +43,35 @@ export class LeetCodePageComponent {
     );
   }
 
+  ngOnInit(): void {
+    const filename = this.route.snapshot.paramMap.get('filename') as string;
+    if (filename) {
+      this.fileContent$.subscribe(data => {
+        const filepath = this.getFilepath(data, `${filename}.py`) as string;
+        this.leetCodePageService.selectFile(filepath);
+      });
+    }
+  }
+
   close() {
     this.leetCodePageService.closeSelectedFile();
+  }
+
+  private getFilepath(folder: any, filename: string): string | null {
+    for (const item of folder.children) {
+      console.log(filename);
+      if (item.type === 'file' && item.name === filename) {
+        return item.filepath;
+      }
+
+      if (item.type === 'folder') {
+        const result = this.getFilepath(item, filename);
+        if (result) {
+          return result;
+        }
+      }
+    }
+
+    return null;
   }
 }
