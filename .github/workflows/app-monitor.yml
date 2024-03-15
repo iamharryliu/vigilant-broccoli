@@ -8,6 +8,9 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
+    env:
+      MY_EMAIL: ${{ secrets.MY_EMAIL }}
+      MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
     defaults:
       run:
         working-directory: ./projects/nx-workspace
