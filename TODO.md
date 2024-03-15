@@ -2,6 +2,7 @@
 
 ## Quadrants
 
+- create blog feature
 - use Github actions to replace cronjobs
 
 - Q1
@@ -55,5 +56,7 @@
     - open ssh port at home?
     - online payment form
     - Sveltfire
+    - view encapsulation
 
   - docs for spring boot
+  -

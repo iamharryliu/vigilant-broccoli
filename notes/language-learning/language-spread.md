@@ -36,6 +36,7 @@
 | good night                     | god natt              | bonne nuit       | buenas noches | boa noite         | buona notte     |
 | see you soon                   | vi ses                | a bientot        | haste luego   | ate logo          | a dopo          |
 | my name is                     | jag heter             | je m'apelle      | me llamo      |                   |                 |
+| get well soon                  | krya på dig           |                  |
 | **adjectives**                 |                       |                  |               |                   |                 |
 | this                           | den här               | ce/cette/c'      | esto          |                   |                 |
 | that                           | den där               | ce/cette/c'      | eso           |                   |                 |
