@@ -26,6 +26,14 @@ npx wrangler deploy --config [path to wrangler.toml file]
 npx wrangler delete [name of worker]
 ```
 
+### R2
+
+```
+wrangler r2 bucket create [YOUR_BUCKET_NAME]
+wrangler r2 bucket list
+wrangler r2 bucket delete [BUCKET_TO_DELETE]
+```
+
 ## References
 
 - [Deploy an existing static site](https://developers.cloudflare.com/workers/configuration/sites/start-from-existing/)

@@ -19,13 +19,7 @@
 
   - Vibecheck
 
-    - testing
-      - switch to using pytest
-        - refactor unit tests
-        - breakup unit tests
-    - feat: R2 storage bucket integration
-      - configs to handle mocking for dev DIT and SIT with R2
-      - shell script in python dev setup script
+    - fly deploy slow?
     - introduce service files?
 
   - harryliu.design

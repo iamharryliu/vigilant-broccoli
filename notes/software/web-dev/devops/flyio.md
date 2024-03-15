@@ -62,6 +62,10 @@ flyctl proxy 5432 --app [db-name]
 fly ips list --app [app_name]
 fly ips allocate-v4 --app [app_name]
 fly ips allocate-v4 --app [app_name] --shared
+
+# Connection
+psql postgres://postgres:[password]@[appname].internal:5432/[db]
+psql postgresql://postgres:[password]@localhost:5432/[db]
 ```
 
 ### DNS
@@ -80,9 +84,7 @@ fly certs show [hostname] --app [app_name]
 ## References
 
 - [Fly IO Monorepo](https://fly.io/docs/reference/monorepo/)
-
-### Postgres
-
+- [Connecting to Postgres App](https://fly.io/docs/postgres/connecting/app-connection-examples/)
 - [Setup Postgres](https://medium.com/data-folks-indonesia/setup-free-postgresql-on-fly-io-and-import-database-3f8f891cbc71)
 - [External Connections](https://fly.io/docs/postgres/connecting/connecting-external/)
 - [Python App](https://fly.io/docs/languages-and-frameworks/python/)
