@@ -1,5 +1,9 @@
 # French
 
+## Turning verbs negative
+
+ne/n' [verb] pas
+
 ## Irregular -er verbs
 
 | Pronoun   | avoir | aller  | etre   |
