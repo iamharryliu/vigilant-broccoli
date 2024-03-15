@@ -12,6 +12,7 @@ import { MdLibraryComponent } from '../../docs-md/docs-md.page';
 import { ProjectsPageComponent } from '../../components/pages/projects-page/projects.page';
 import { LeetCodePageComponent } from '../../leet-code/leet-code.page';
 import { Link } from 'general-components';
+import { BlogDirectoryComponent } from '../../blog-directory/blog-directory.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -35,6 +36,17 @@ export const DOCS_MD_FILE_ROUTE: Route = {
   path: 'docs-md/:markdownFilename',
   data: { title: 'DocsMD' },
   component: MdLibraryComponent,
+};
+
+export const BLOGS_ROUTE: Route = {
+  path: 'blogs',
+  data: { title: 'blogs' },
+  component: BlogDirectoryComponent,
+};
+export const BLOG_ROUTE: Route = {
+  path: 'blog/:markdownFilename',
+  data: { title: 'blog' },
+  component: BlogDirectoryComponent,
 };
 
 export const ABOUT_ROUTE: Route = {
@@ -102,6 +114,7 @@ export const APP_ROUTES: Routes = [
   ABOUT_ROUTE,
   PROJECTS_ROUTE,
   DOCS_MD_ROUTE,
+  BLOGS_ROUTE,
   DOCS_MD_FILE_ROUTE,
   LINK_TREE_ROUTE,
   VERIFY_EMAIL_ROUTE,
