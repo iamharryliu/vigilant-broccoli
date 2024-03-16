@@ -66,6 +66,7 @@ fly ips allocate-v4 --app [app_name] --shared
 # Connection
 psql postgres://postgres:[password]@[appname].internal:5432/[db]
 psql postgresql://postgres:[password]@localhost:5432/[db]
+psql postgres://postgres:[password]@testsql.flycast:5432/[db]
 ```
 
 ### DNS
