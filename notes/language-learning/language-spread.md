@@ -26,6 +26,7 @@
 | we                             | vi                    | nous                 |               |                   |                 |
 | you (plural)                   | ni                    | vous                 |               |                   |                 |
 | they                           | de                    | ils/elles            |               |                   |                 |
+| he/she/they                    | sin/sitt/sina         |                      |               |
 | **social**                     |                       |                      |               |                   |                 |
 | hello                          | hej                   | salut                | hola          | ola               | ciao            |
 | goodbye                        | hejdå                 | au revoir            | ciao          | tchau             | arrivederci     |
@@ -46,9 +47,11 @@
 | less                           | mindre                | moins                | menos         |                   |                 |
 | a bit                          | lite                  |                      | un poco       |                   |                 |
 | too much                       | för mycket            | trop                 | demasiado     |                   | troppo          |
+| all                            | alla                  |                      |               |                   |                 |
 | every                          | varje                 | tous                 | todos         |                   |                 |
 | for me                         | för mig               | pour moi             |               |                   |                 |
 | for you                        | för dig               | pour toi             |               |                   |                 |
+| again                          | igen                  |                      |
 | **location**                   |                       |                      |               |                   |                 |
 | here                           | här                   | ici                  | aqui          | aqui              | qui             |
 | there                          | där                   | là                   | allí          |                   |                 |
