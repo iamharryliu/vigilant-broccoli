@@ -50,6 +50,7 @@ function r2clear() {
 # FlyIO
 alias flydashboard='open -a "Google Chrome" "https://fly.io/dashboard"'
 alias flyls='fly apps list'
+alias flydeploy='fly deploy --ha=false'
 alias flyopen='fly apps open --app'
 alias flydestroy='fly apps destroy'
 alias flystatus='flyctl status --app'
@@ -59,6 +60,13 @@ alias stopflymachine='flyctl machine stop --app'
 alias restartflymachine='flyctl machine restart --app'
 alias flyscalecount='flyctl scale count'
 alias flylogs='flyctl logs --app'
+function flymonitor() {
+    if [ -z "$1" ]; then
+        echo "Usage: fly-monitor <app_name>"
+        return 1
+    fi
+    open "https://fly.io/apps/$1/monitoring"
+}
 alias flyssh='fly ssh console --app'
 alias flycreatetoken='flyctl tokens create deploy --app'
 # Postgres
@@ -66,6 +74,7 @@ alias flysqlconn='flyctl postgres connect --app'
 alias flysqlproxy='flyctl proxy 5432 --app'
 alias flysqlconntest='flyctl postgres connect --app testsql'
 alias flysqlstarttest='flyctl proxy 5432 --app testsql'
+
 
 # NX
 alias nxbuild="cdnx && nx build --skip-nx-cache"
