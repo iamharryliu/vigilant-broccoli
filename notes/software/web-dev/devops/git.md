@@ -40,3 +40,10 @@ git add [files]
 git commit -m [message]
 git push
 ```
+
+## Git Magic
+
+```
+# Add to .gitignore but keep file.
+git update-index --assume-unchanged <file>
+```
