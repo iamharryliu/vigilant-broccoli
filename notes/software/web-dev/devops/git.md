@@ -43,7 +43,11 @@ git push
 
 ## Git Magic
 
+### Ignore file changes
+
 ```
-# Add to .gitignore but keep file.
 git update-index --assume-unchanged <file>
+git update-index --no-assume-unchanged <file>
+# List of files assumed unchanged
+git ls-files -v | grep '^h'
 ```
