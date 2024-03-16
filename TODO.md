@@ -4,6 +4,7 @@
 
 - create blog feature
 - use Github actions to replace cronjobs
+- monitor quicklink https://fly.io/apps/vibecheck-flask/monitoring
 
 - Q1
 
