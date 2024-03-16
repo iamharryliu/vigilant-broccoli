@@ -19,6 +19,7 @@
 | excuse me                      | ursäkta mig           |                      |               |                   |                 |
 | you're welcome                 | varsågod              |                      |               |                   |                 |
 | thank you                      | tack                  | merci                | gracias       |                   |                 |
+| it is                          | är det                | c'est                | lo es/esta    |
 | **pronouns**                   |                       |                      |               |                   |                 |
 | I                              | jag                   | je                   | yo            |                   |                 |
 | you                            | du                    | tu                   | tú            |                   |                 |
@@ -38,8 +39,8 @@
 | my name is                     | jag heter             | je m'apelle          | me llamo      |                   |                 |
 | get well soon                  | krya på dig           |                      |
 | **adjectives**                 |                       |                      |               |                   |                 |
-| this                           | den här               | ce/cette/c'          | esto          |                   |                 |
-| that                           | den där               | ce/cette/c'          | eso           |                   |                 |
+| this                           | den här               | ceci - ce/cette/c'   | esto          |                   |                 |
+| that                           | den där               | celà - ce/cette/c'   | eso           |                   |                 |
 | there is                       | det finns             | il y a               | hay           |
 | big                            | stor                  | grande               | grande        |                   |                 |
 | small                          | liten/små(plural)     | petit                | pequeno       |                   |                 |
@@ -77,6 +78,7 @@
 | how                            | hur                   | comment              | como          |
 | how much                       | hur mycket            | combien              | cuanto        |
 | which                          | vilken                | quel                 | cual          |
+| is it..?                       | det är                | est-ce/c'            | es/esta..?    |
 | are you going to..?            | ska du..?             | est-ce que tu vas..? | va a..?       |
 | do you want..?                 | vill du..?            | voulez-vous..?       | quiere..?     |
 | do you have..?                 | har du..?             | avez-vous..?         | tiene..?      |
