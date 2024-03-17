@@ -13,6 +13,7 @@ import { ProjectsPageComponent } from '../../components/pages/projects-page/proj
 import { LeetCodePageComponent } from '../../leet-code/leet-code.page';
 import { Link } from 'general-components';
 import { BlogDirectoryComponent } from '../../blog-directory/blog-directory.component';
+import { BlogComponent } from '../../blog/blog.component';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -38,15 +39,16 @@ export const DOCS_MD_FILE_ROUTE: Route = {
   component: MdLibraryComponent,
 };
 
-export const BLOGS_ROUTE: Route = {
+export const BLOG_DIRECTORY_ROUTE: Route = {
   path: 'blogs',
   data: { title: 'blogs' },
   component: BlogDirectoryComponent,
 };
+
 export const BLOG_ROUTE: Route = {
-  path: 'blog/:markdownFilename',
+  path: 'blogs/:date/:filename',
   data: { title: 'blog' },
-  component: BlogDirectoryComponent,
+  component: BlogComponent,
 };
 
 export const ABOUT_ROUTE: Route = {
@@ -119,7 +121,8 @@ export const APP_ROUTES: Routes = [
   ABOUT_ROUTE,
   PROJECTS_ROUTE,
   DOCS_MD_ROUTE,
-  BLOGS_ROUTE,
+  BLOG_DIRECTORY_ROUTE,
+  BLOG_ROUTE,
   DOCS_MD_FILE_ROUTE,
   LINK_TREE_ROUTE,
   VERIFY_EMAIL_ROUTE,
