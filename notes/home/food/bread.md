@@ -1,5 +1,9 @@
 # Bread
 
+## Sourdough Starter
+
+- don’t overfeed : 2:1:1, 1:1:1 should be max (starter:water:flour), if you put too much flour and water compared with starter, you are diluting acidity and thus preventing good bacteria and yeast to thrive!
+
 ## Round Bread
 
 - 2:1 flour to water, add spoons of water if needed to make sure just damp

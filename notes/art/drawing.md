@@ -1,6 +1,6 @@
 # Drawing
 
-## Golden Rules
+## Rule of Thumb
 
 - use light pressure
 - focus more on what you're drawing then what's on paper (thoroughly study the subject)
