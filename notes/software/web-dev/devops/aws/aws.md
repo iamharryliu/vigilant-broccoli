@@ -19,12 +19,6 @@ Commands
 aws iam list-users
 ```
 
-## Services
-
-- EC2 - cloud server, pay for the time running the server
-- S3 - storage service
-- Lambda - serverless functions, pay for computation time
-
 ## References
 
 - [IAM User](https://www.youtube.com/watch?v=HuE-QhrmE1c)
