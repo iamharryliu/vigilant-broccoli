@@ -38,3 +38,4 @@ alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
 
 # Health Checks
 alias freedomusage='open -a "Google Chrome" "https://myaccount.freedommobile.ca/usage"'
+alias presto='open -a "Google Chrome" "https://www.prestocard.ca/en/account-dashboard"'
