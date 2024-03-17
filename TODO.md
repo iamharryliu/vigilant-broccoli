@@ -4,6 +4,8 @@
 
 - create blog feature
 - use Github actions to replace cronjobs
+- google translate script
+- spotify to youtube download
 
 - Q1
 

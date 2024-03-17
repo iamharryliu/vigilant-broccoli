@@ -20,6 +20,7 @@
 | you're welcome                 | varsågod              |                      |               |                   |                 |
 | thank you                      | tack                  | merci                | gracias       |                   |                 |
 | it is                          | är det                | c'est                | lo es/esta    |
+| take care                      | tan hom om dig        |                      |
 | **pronouns**                   |                       |                      |               |                   |                 |
 | I                              | jag                   | je                   | yo            |                   |                 |
 | you                            | du                    | tu                   | tú            |                   |                 |
