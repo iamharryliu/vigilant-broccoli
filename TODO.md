@@ -5,6 +5,11 @@
 - Q1
 
   - blog feature
+    - directory
+      - directory to open file
+    - blog page
+      - display file using markdown component
+      - return to blog
   - spotify to youtube download cron action
 
 - Q2
