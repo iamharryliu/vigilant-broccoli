@@ -1,46 +1,18 @@
 # Todo
 
-## Quadrants
-
-- create blog feature
-- use Github actions to replace cronjobs
-- google translate script
-- spotify to youtube download
+## Vigilant Broccoli
 
 - Q1
 
-  - CICD
-
-    - act to test Gitbhub actions locally
-    - Github aciton to save data
-    - build: secrets and api key handling
-    - feat: look into preventing DDOS
-      - user limiting
-    - virus scanning
-    - budget alerts for services
-
-  - Vibecheck
-
-    - loading spinner
-      - loads late??
-      - helper text not hidden (maybe delete it)
-    - fly deploy slow?
-    - introduce service files?
-
-  - harryliu.design
-
-    - style: update typography
-    - feat: blog section
-    - automate getting resume, sync to desktop??
+  - blog feature
+  - spotify to youtube download cron action
 
 - Q2
 
-  - reaching out
-    - blog posts
-    - get involved in open source
-  - make test cases faster (vibecheck-flask test seems to be slow)
-  - new getRecommendation fn for current weather
-  - implement as const, as const + (type of const)[keyof typeof const]
+  - google translate script quick alias
+  - use Github actions to replace cronjobs
+  - blog writing
+  - get involved in open source
 
 - Q3
 
@@ -58,4 +30,51 @@
     - view encapsulation
 
   - docs for spring boot
-  -
+
+## CICD
+
+- Q1
+
+  - build: secrets and api key handling
+
+- Q2
+
+  - act to test Gitbhub actions locally
+  - Github actions to save data
+  - feat: look into preventing DDOS
+    - user limiting
+
+- Q3
+
+  - virus scanning
+  - budget alerts for services
+
+# Vibecheck
+
+- Q1
+
+- technical delivery plan
+  - release app in phases
+  - new getRecommendation fn for current weather
+- marketing plan
+  - pay cheap influencers to use the application
+- Q2
+  - loading spinner
+    - loads late??
+    - helper text not hidden (maybe delete it)
+  - fly deploy slow?
+  - introduce service files?
+
+## harryliu.design
+
+- Q1
+- Q2
+  - style: update typography
+  - feat: blog section
+  - automate getting resume, sync to desktop??
+
+## Quadrant Template
+
+- Q1
+- Q2
+- Q3
