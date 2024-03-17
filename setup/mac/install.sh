@@ -23,6 +23,7 @@ if ask "Symlink dotfiles?"; then
     chmod -R +x ~/shell-aliases/
     ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/scripts ~/shell-scripts
     chmod -R +x ~/shell-scripts/
+    ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/.env.sh ~/.env.sh
 fi
 
 
