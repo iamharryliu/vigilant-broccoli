@@ -19,6 +19,9 @@
 
   - Vibecheck
 
+    - loading spinner
+      - loads late??
+      - helper text not hidden (maybe delete it)
     - fly deploy slow?
     - introduce service files?
 
