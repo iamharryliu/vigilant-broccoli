@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
+import { NewsLetterSubFormComponent } from '../components/features/subscribe-form/subscribe-form.component';
 
 interface Blog {
   title: string;
@@ -10,7 +11,7 @@ interface Blog {
 @Component({
   selector: 'app-blog-directory',
   standalone: true,
-  imports: [CommonModule, GeneralLayoutComponent],
+  imports: [CommonModule, GeneralLayoutComponent, NewsLetterSubFormComponent],
   templateUrl: './blog-directory.component.html',
 })
 export class BlogDirectoryComponent implements OnInit {
