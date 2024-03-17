@@ -1,3 +1,9 @@
-<pre>
-    {{ blogsByYear | json }}
-</pre>
+<app-general-layout>
+  <div *ngFor="let year of getObjectKeys(blogsByYear)">
+    <h2 class="text-lg mb-2">{{ year }}</h2>
+    <div *ngFor="let item of blogsByYear[year]" class="flex justify-between">
+      <p class="mr-4">{{ item.title }}</p>
+      <p>{{ item.date | date : 'MMM d' }}</p>
+    </div>
+  </div>
+</app-general-layout>

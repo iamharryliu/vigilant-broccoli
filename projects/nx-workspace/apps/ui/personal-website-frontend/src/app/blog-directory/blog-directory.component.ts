@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 
 interface Blog {
   title: string;
@@ -9,7 +10,7 @@ interface Blog {
 @Component({
   selector: 'app-blog-directory',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, GeneralLayoutComponent],
   templateUrl: './blog-directory.component.html',
 })
 export class BlogDirectoryComponent implements OnInit {
@@ -24,7 +25,7 @@ export class BlogDirectoryComponent implements OnInit {
     files.forEach(file => {
       const parts = file.split('-');
       const year = parts[0];
-      const title = parts.slice(3).join('-').replace('.md', '').trim();
+      const title = this.titleCase(parts[3].replace('.md', '').trim());
       const date = new Date(parts.slice(0, 3).join('-'));
       const blog: Blog = { title, date };
       if (!this.blogsByYear[year]) {
@@ -32,5 +33,17 @@ export class BlogDirectoryComponent implements OnInit {
       }
       this.blogsByYear[year].push(blog);
     });
+  }
+
+  getObjectKeys(obj: any): string[] {
+    return Object.keys(obj);
+  }
+
+  titleCase(str: string): string {
+    return str
+      .toLowerCase()
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 }
