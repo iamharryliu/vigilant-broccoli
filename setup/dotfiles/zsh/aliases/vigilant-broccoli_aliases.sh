@@ -5,8 +5,11 @@ alias cdvb='cd ~/vigilant-broccoli/'
 alias cdnx='cd ~/vigilant-broccoli/projects/nx-workspace/'
 alias grind75='python -m unittest discover -s ~/vigilant-broccoli/projects/grind-75'
 alias pushtodo="cdvb && git add TODO.md && gc docs 'update TODO.md' && gpush"
-alias pushmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md && gc docs 'update md files' && gpush"
-alias pushdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles' && gpush"
+alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md && gc docs 'update md files'"
+alias pushmd="commitmd && gpush"
+alias commitdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles'"
+alias pushdotfiles="commitdotfiles && gpush"
+
 # Journal
 alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpush"
 alias updaterepos="cd ~/journal && gpull && cd ~/vigilant-broccoli && gpull"
