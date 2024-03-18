@@ -9,13 +9,16 @@ alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md &&
 alias pushmd="commitmd && gpush"
 alias commitdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles'"
 alias pushdotfiles="commitdotfiles && gpush"
+function downloadplaylist() {
+  spotdl download "$1" --output ~/Downloads
+}
 
 # Journal
 alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpush"
 alias updaterepos="cd ~/journal && gpull && cd ~/vigilant-broccoli && gpull"
 
 # Github
-alias updategitreadme="cd ~/iamharryliu && git add . && gc docs 'update github profile readme' && gpush"
+alias pushgitreadme="cd ~/iamharryliu && gpull && git add . && gc docs 'update github profile readme' && gpush"
 alias openvb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli"'
 alias openvbactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
 
