@@ -9,9 +9,7 @@ alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md &&
 alias pushmd="commitmd && gpush"
 alias commitdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles'"
 alias pushdotfiles="commitdotfiles && gpush"
-function downloadplaylist() {
-  spotdl download "$1" --output ~/Downloads
-}
+alias dldjmusic='python ~/vigilant-broccoli/scripts/python/spotify_to_dj_library.py'
 
 # Journal
 alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpush"
