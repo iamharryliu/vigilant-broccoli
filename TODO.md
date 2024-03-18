@@ -4,35 +4,34 @@
 
 - Q1
 
-  - blog feature
+  - feat: blog feature
     - directory
       - directory to open file
     - blog page
       - display file using markdown component
       - return to blog
-  - spotify to youtube download cron action
+  - feat: spotify to youtube download cron action
 
 - Q2
 
-  - google translate script quick alias
+  - feat: google translate script quick alias
   - use Github actions to replace cronjobs
-  - blog writing
-  - get involved in open source
+  - chore: blog writing
+  - chore: get involved in open source
 
 - Q3
 
   - read later
 
-    - how does load balancing work??
+    - load balancing
     - Redis
     - tmux
     - aws
       - cloudformation
-    - kubernetes
     - open ssh port at home?
     - online payment form
     - Sveltfire
-    - view encapsulation
+    - angular view encapsulation
 
   - docs for spring boot
 
@@ -40,19 +39,19 @@
 
 - Q1
 
+  - build: upgrade nx
   - build: secrets and api key handling
+  - feat: virus scanning
+  - feat: budget alerts for services
 
 - Q2
 
-  - act to test Gitbhub actions locally
-  - Github actions to save data
+  - chore: act to test Gitbhub actions locally
+  - feat: Github actions to save data
   - feat: look into preventing DDOS
     - user limiting
 
 - Q3
-
-  - virus scanning
-  - budget alerts for services
 
 # Vibecheck
 
