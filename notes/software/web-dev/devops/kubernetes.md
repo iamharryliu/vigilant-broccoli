@@ -1,5 +1,8 @@
 # Kubernetes
 
+- open source CICD tool originally designed by Google
+- provides automating software deployment, scaling, and management
+
 ## Components
 
 ### Control Plane
@@ -20,7 +23,6 @@
   - container runtime - runs containers
   - kublet - daemen communicates with control plane
   - kube-proxy - routes traffic to correct paths, load balances
-  - worker node
   - pods
 
 ### Pods
