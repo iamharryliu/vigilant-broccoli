@@ -1,4 +1,4 @@
-name: GTA Update Alert
+name: GTA Update Alert - Email Subscribers
 
 on:
   push: { branches: ['main'] }

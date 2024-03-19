@@ -1,4 +1,4 @@
-name: GTA Update Alert
+name: GTA Update Alert - Personal
 
 on:
   push: { branches: ['main'] }
