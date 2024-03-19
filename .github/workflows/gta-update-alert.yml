@@ -27,7 +27,8 @@ jobs:
         env:
           MY_EMAIL: ${{ secrets.MY_EMAIL }}
           MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
-      - run: 'echo "$MY_EMAIL_PASSWORD" > key'
-        shell: bash
+      - name: 'check is MY_SECRET exists'
         env:
-          MY_EMAIL_PASSWORD: ${{secrets.MY_EMAIL_PASSWORD}}
+          super_secret: ${{ secrets.MY_SECRET }}
+        if: ${{ env.super_secret == '' }}
+        run: 'echo "echo the secret \"MY_SECRET\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it'
