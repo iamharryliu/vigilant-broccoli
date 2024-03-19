@@ -9,7 +9,11 @@ from tools.mail_handler import MailHandler
 
 url = "https://gtaupdate.com/"
 key_words = ["GALLOWAY RD", "KINGSTON RD", "LAWRENCE AVE"]
-emails = ["harryliu1995@gmail.com"]
+emails = [
+    "harryliu1995@gmail.com",
+    "dnchanners@gmail.com",
+    "zhenzhentradingco@gmail.com",
+]
 
 
 class HTMLPageParser:

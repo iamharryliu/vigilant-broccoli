@@ -13,19 +13,19 @@ jobs:
       run:
         working-directory: ./scripts/python/gta_update
     steps:
-      - name: Checkout code
+      - name: Checkout code.
         uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Set up Python.
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-      - name: Install dependencies
+      - name: Install dependencies.
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Run Python script
-        run: python gta_update.py
+      - name: Run script.
         env:
           MY_EMAIL: ${{ secrets.MY_EMAIL }}
           MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
+        run: python gta_update.py
