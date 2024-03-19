@@ -43,7 +43,7 @@ class MailHandler:
         msg["From"] = email["from"]
         msg["To"] = email["to"]
         msg["Subject"] = Header(email["subject"], "utf-8").encode()
-        msg_content = MIMEText(body, "plain", "utf-8")
+        msg_content = MIMEText(email["body"], "plain", "utf-8")
         msg.attach(msg_content)
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
@@ -68,7 +68,7 @@ class MailHandler:
         emails = [{**message, "to": email} for email in emails]
         threads = []
         for email in emails:
-            thread = threading.Thread(target=MailHandler.send_email, args=(email,))
+            thread = threading.Thread(target=MailHandler.send_465_email, args=(email,))
             threads.append(thread)
             thread.start()
 
