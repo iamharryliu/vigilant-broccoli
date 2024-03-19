@@ -1,6 +1,7 @@
 import os
 import sys
 import threading
+import urllib
 
 sys.path.append("..")
 from html_parser import HTMLPageParser
@@ -28,8 +29,8 @@ def email_to_list(
             args=(
                 {
                     **email,
-                    "body": email["body"]
-                    + f"\n\nIf you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev/unsubscribe?email={email}",
+                    "body": f"If you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(email['to'])}\n\n"
+                    + email["body"],
                 },
             ),
         )

@@ -28,7 +28,7 @@ def submit():
                 conn.commit()
                 cur.close()
                 conn.close()
-                return redirect(url_for("index"))
+                return f"You have successfully subscribed {email}."
             except:
                 return "Have you already signed up?"
         else:
@@ -51,16 +51,16 @@ def unsubscribe():
     if email:
         try:
             conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute("DELETE FROM emails WHERE email = %s", (email,))
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM emails WHERE email = %s", (email,))
             conn.commit()
-            cur.close()
+            cursor.close()
             conn.close()
-            return f"You have successfully unsubscribed {email}"
+            return f"You have successfully unsubscribed {email}."
         except:
-            return "Something weent wrong."
+            return "Something went wrong."
     else:
-        return "woops"
+        return "Something went wrong."
 
 
 if __name__ == "__main__":
