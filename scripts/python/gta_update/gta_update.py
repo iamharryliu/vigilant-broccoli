@@ -10,6 +10,7 @@ from tools.mail_handler import MailHandler
 url = "https://gtaupdate.com/"
 key_words = ["GALLOWAY RD", "KINGSTON RD", "LAWRENCE AVE"]
 emails = ["harryliu1995@gmail.com"]
+MailHandler.send_email()
 
 
 class HTMLPageParser:
@@ -53,14 +54,14 @@ class HTMLPageParser:
         return results
 
 
-results = HTMLPageParser.get_rows_from_html()
-if results:
-    results = [result for result in results if result]
-    MailHandler.email_to_list(
-        emails,
-        message={
-            "from": "GTA Update",
-            "subject": "GTA Update",
-            "body": MailHandler.format_for_email(results),
-        },
-    )
+# results = HTMLPageParser.get_rows_from_html()
+# if results:
+#     results = [result for result in results if result]
+#     MailHandler.email_to_list(
+#         emails,
+#         message={
+#             "from": "GTA Update",
+#             "subject": "GTA Update",
+#             "body": MailHandler.format_for_email(results),
+#         },
+#     )

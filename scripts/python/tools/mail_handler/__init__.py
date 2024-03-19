@@ -6,11 +6,17 @@ import os, smtplib, ssl, threading
 EMAIL_ADDRESS = os.environ.get("MY_EMAIL")
 EMAIL_PASSWORD = os.environ.get("MY_EMAIL_PASSWORD")
 
-DEFAULT_SEND_TO_SELF_EMAIL = {
+
+DEFAULT_EMAIL = {
     "from": "yourself",
     "to": EMAIL_ADDRESS,
     "subject": "subject",
     "body": "body",
+}
+
+DEFAULT_SEND_TO_SELF_EMAIL = {
+    **DEFAULT_EMAIL,
+    "from": "yourself",
 }
 
 
@@ -21,7 +27,7 @@ class MailHandler:
         )
         return formatted_text
 
-    def send_email(email):
+    def send_email(email=DEFAULT_EMAIL):
         with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
             smtp.ehlo()
             smtp.starttls()
