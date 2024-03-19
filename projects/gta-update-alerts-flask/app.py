@@ -29,8 +29,8 @@ def submit():
                 cur.close()
                 conn.close()
                 return redirect(url_for("index"))
-            except Exception as e:
-                return f"An error occurred: {e}"
+            except:
+                return "Something went wrong."
         else:
             return "Email address cannot be empty."
 
