@@ -3,15 +3,12 @@ import sys
 sys.path.append("..")
 from html_parser import HTMLPageParser
 from tools.mail_handler import MailHandler
-from datetime import timedelta
-
 
 emails = [
     "harryliu1995@gmail.com",
 ]
-key_words = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
 
-results = HTMLPageParser.get_recent_alerts(key_words, frequency=timedelta(minutes=5))
+results = HTMLPageParser.get_recent_alerts()
 if results:
     results = [result for result in results if result]
     MailHandler.email_to_list(
