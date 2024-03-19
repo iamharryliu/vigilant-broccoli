@@ -25,7 +25,7 @@ class MailHandler:
         formatted_text = "\n\n".join(
             [" ".join(map(str, sublist)) for sublist in list_of_lists]
         )
-        return formatted_text
+        return "Check https://gtaupdate.com/ for more info.\n\n" + formatted_text
 
     def send_email(email=DEFAULT_EMAIL):
         with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
