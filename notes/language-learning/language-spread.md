@@ -58,6 +58,10 @@
 | here                           | här                   | ici                  | aqui          | aqui              | qui             |
 | there                          | där                   | là                   | allí          |                   |                 |
 | near here                      | nära här              | pres d'ici           | cerda de aqui |                   |                 |
+| far from                       | långt ifrån           | loin de              | lejos de      |                   |                 |
+| between                        | mellan                |                      |               |
+| next to                        | brevid                |                      |               |
+| my house                       |                       | chez moi             |               |
 | I am going to [person's] house | je vais chez [person] |                      |               |                   |                 |
 | **time**                       |                       |                      |               |                   |                 |
 | now                            | nu                    | maintenant           | ahora         |
