@@ -30,7 +30,7 @@ def submit():
                 conn.close()
                 return redirect(url_for("index"))
             except:
-                return "Something went wrong."
+                return "Have you already signed up?"
         else:
             return "Email address cannot be empty."
 
