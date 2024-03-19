@@ -7,9 +7,6 @@ on:
 jobs:
   run_script:
     runs-on: ubuntu-latest
-    env:
-      MY_EMAIL: ${{ secrets.MY_EMAIL }}
-      MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
     defaults:
       run:
         working-directory: ./scripts/python/gta_update
@@ -27,3 +24,6 @@ jobs:
           pip install -r requirements.txt
       - name: Run Python script
         run: python gta_update.py
+        env:
+          MY_EMAIL: ${{ secrets.MY_EMAIL }}
+          MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
