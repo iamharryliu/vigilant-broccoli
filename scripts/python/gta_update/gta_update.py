@@ -11,8 +11,6 @@ from tools.mail_handler import MailHandler
 url = "https://gtaupdate.com/"
 emails = [
     "harryliu1995@gmail.com",
-    "dnchanners@gmail.com",
-    "zhenzhentradingco@gmail.com",
 ]
 
 
