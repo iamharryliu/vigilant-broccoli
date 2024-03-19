@@ -26,7 +26,8 @@ def main():
             message={
                 "from": "GTA Update",
                 "subject": "GTA Update",
-                "body": MailHandler.format_for_email(results),
+                "body": MailHandler.format_for_email(results)
+                + f"\n\nIf you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev//unsubscribe?email={email}",
             },
         )
 

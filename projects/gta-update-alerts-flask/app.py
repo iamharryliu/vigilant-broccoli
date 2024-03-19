@@ -45,8 +45,9 @@ def alert_users():
     return {"emails": emails}
 
 
-@app.delete("/unsubscribe/<email>")
-def unsubscribe(email):
+@app.get("/unsubscribe")
+def unsubscribe():
+    email = request.args.get("email")
     if email:
         try:
             conn = get_db_connection()
