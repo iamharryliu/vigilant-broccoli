@@ -9,7 +9,7 @@ alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md &&
 alias pushmd="commitmd && gpush"
 alias commitdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles'"
 alias pushdotfiles="commitdotfiles && gpush"
-alias dldjmusic='python ~/vigilant-broccoli/scripts/python/dj-scripts/spotify_to_dj_library.py'
+alias dldjmusic='cd ~/vigilant-broccoli/scripts/python/dj-scripts/ && source venv/bin/activate && python spotify_to_dj_library.py'
 
 # Journal
 alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpush"
