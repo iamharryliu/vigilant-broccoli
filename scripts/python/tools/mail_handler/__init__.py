@@ -1,6 +1,7 @@
-import os
-import smtplib
-import threading
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
+from email.mime.text import MIMEText
+import os, smtplib, ssl, threading
 
 EMAIL_ADDRESS = os.environ.get("MY_EMAIL")
 EMAIL_PASSWORD = os.environ.get("MY_EMAIL_PASSWORD")
@@ -21,6 +22,27 @@ class MailHandler:
         return formatted_text
 
     def send_email(email):
+        with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.ehlo()
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            subject = email["subject"]
+            body = email["body"]
+            message = f"Subject: {subject}\n\n{body}"
+            smtp.sendmail(email["from"], email["to"], message)
+
+    def send_465_email(email):
+        msg = MIMEMultipart()
+        msg["From"] = email["from"]
+        msg["To"] = email["to"]
+        msg["Subject"] = Header(email["subject"], "utf-8").encode()
+        msg_content = MIMEText(body, "plain", "utf-8")
+        msg.attach(msg_content)
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            server.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, msg.as_string())
         with smtplib.SMTP("smtp.gmail.com", 465) as smtp:
             smtp.ehlo()
             smtp.starttls()
