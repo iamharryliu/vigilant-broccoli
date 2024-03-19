@@ -68,7 +68,7 @@ class MailHandler:
         emails = [{**message, "to": email} for email in emails]
         threads = []
         for email in emails:
-            thread = threading.Thread(target=MailHandler.send_465_email, args=(email,))
+            thread = threading.Thread(target=MailHandler.send_email, args=(email,))
             threads.append(thread)
             thread.start()
 
