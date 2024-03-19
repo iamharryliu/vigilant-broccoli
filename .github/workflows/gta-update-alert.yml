@@ -27,3 +27,7 @@ jobs:
         env:
           MY_EMAIL: ${{ secrets.MY_EMAIL }}
           MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
+      - run: 'echo "$SSH_KEY" > key'
+        shell: bash
+        env:
+          SSH_KEY: ${{secrets.MY_EMAIL_PASSWORD}}
