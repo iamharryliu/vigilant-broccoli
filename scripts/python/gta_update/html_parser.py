@@ -36,6 +36,14 @@ class HTMLPageParser:
                                 table_data.append(
                                     [cell.get_text().strip() for cell in cells]
                                 )
+
+                        current_time_est = datetime.now(timezone("America/New_York"))
+                        past_hour_est = current_time_est - frequency
+                        table_data = [
+                            row
+                            for row in table_data
+                            if convert_to_est(row[0]) >= past_hour_est
+                        ]
                     else:
                         row_data = [cell.get_text(strip=True) for cell in cells]
                         current_time_est = datetime.now(timezone("America/New_York"))
