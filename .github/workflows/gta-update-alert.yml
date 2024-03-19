@@ -7,6 +7,8 @@ on:
 jobs:
   run_script:
     runs-on: ubuntu-latest
+    environment:
+      name: production
     defaults:
       run:
         working-directory: ./scripts/python/gta_update
