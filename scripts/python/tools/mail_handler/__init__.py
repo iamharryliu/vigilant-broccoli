@@ -21,7 +21,7 @@ class MailHandler:
         return formatted_text
 
     def send_email(email):
-        with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+        with smtplib.SMTP("smtp.gmail.com", 465) as smtp:
             smtp.ehlo()
             smtp.starttls()
             smtp.ehlo()
