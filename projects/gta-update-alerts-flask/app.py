@@ -45,5 +45,22 @@ def alert_users():
     return {"emails": emails}
 
 
+@app.delete("/unsubscribe/<email>")
+def unsubscribe(email):
+    if email:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("DELETE FROM emails WHERE email = %s", (email,))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return f"You have successfully unsubscribed {email}"
+        except:
+            return "Something weent wrong."
+    else:
+        return "woops"
+
+
 if __name__ == "__main__":
     app.run(debug=True)
