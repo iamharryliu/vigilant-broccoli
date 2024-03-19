@@ -8,6 +8,8 @@ from datetime import timedelta
 
 emails = [
     "harryliu1995@gmail.com",
+    "dnchanners@gmail.com",
+    "zhenzhentradingco@gmail.com",
 ]
 key_words = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
 
