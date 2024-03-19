@@ -12,9 +12,6 @@ jobs:
     defaults:
       run:
         working-directory: ./scripts/python/gta_update
-    env:
-      MY_EMAIL: ${{ secrets.MY_EMAIL }}
-      MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -29,8 +26,6 @@ jobs:
           pip install -r requirements.txt
       - name: Run Python script
         run: python gta_update.py
-      - name: 'check is MY_SECRET exists'
         env:
-          super_secret: ${{ secrets.MY_EMAIL_PASSWORD }}
-        if: ${{ env.super_secret == '' }}
-        run: 'echo "echo the secret \"MY_EMAIL_PASSWORD\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it'
+          MY_EMAIL: ${{ secrets.MY_EMAIL }}
+          MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
