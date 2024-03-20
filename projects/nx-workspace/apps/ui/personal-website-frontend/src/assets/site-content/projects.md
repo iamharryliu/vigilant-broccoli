@@ -3,7 +3,7 @@
 ## Personal
 
 - [vigilant-broccoli](https://github.com/iamharryliu/vigilant-broccoli) - My personal mono-repo that I use to house all the code (or most) and documentation that I am working on.
-- [DocsMD](https://harryliu.design/docs-md) - A personal public collection of markdown files written by me.
+- [DocsMD](https://harryliu.design/docs-md) - My public library of markdown files written by me to keep notes for software development, personal hobbies, and more.
 - [Grind 75](https://harryliu.design/grind-75) - Compilation of Python solutions for [the Grind 75 list](https://www.techinterviewhandbook.org/grind75) leet code questions.
 - [harrysellsshit](https://www.instagram.com/harrysellsshit/) - My secondhand Instagram store. I hold occasional clothing markets/swaps to find new homes for old pieces.
 
