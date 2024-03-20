@@ -18,21 +18,20 @@ def index():
 
 @app.post("/submit")
 def submit():
-    if request.method == "POST":
-        email = request.form["email"]
-        if email:
-            try:
-                conn = get_db_connection()
-                cur = conn.cursor()
-                cur.execute("INSERT INTO emails (email) VALUES (%s)", (email,))
-                conn.commit()
-                cur.close()
-                conn.close()
-                return f"You have successfully subscribed {email}."
-            except:
-                return "Have you already signed up?"
-        else:
-            return "Email address cannot be empty."
+    email = request.form["email"]
+    if email:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("INSERT INTO emails (email) VALUES (%s)", (email,))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return f"You have successfully subscribed {email}."
+        except:
+            return "Something went wrong. Have you already signed up?"
+    else:
+        return redirect(url_for("index"))
 
 
 @app.get("/get_emails")
@@ -60,7 +59,7 @@ def unsubscribe():
         except:
             return "Something went wrong."
     else:
-        return "Something went wrong."
+        return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
