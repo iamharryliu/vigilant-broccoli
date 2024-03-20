@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 import requests
 from bs4 import BeautifulSoup
-import threading
 from pytz import timezone
 
 

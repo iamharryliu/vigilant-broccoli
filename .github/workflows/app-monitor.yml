@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-    env:
-      MY_EMAIL: ${{ secrets.MY_EMAIL }}
-      MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
     defaults:
       run:
         working-directory: ./projects/nx-workspace
@@ -26,4 +23,6 @@ jobs:
       - name: run script
         env:
           SITES: 'https://harryliu.design/,https://api.harryliu.design/,https://vibecheck-lite-express.fly.dev/,https://vibecheck-angular.harryliu.design/,https://vibecheck-flask.harryliu.design/'
+          MY_EMAIL: ${{ secrets.MY_EMAIL }}
+          MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
         run: npx nx run @prettydamntired/test-node-tools:run-script:monitor-apps
