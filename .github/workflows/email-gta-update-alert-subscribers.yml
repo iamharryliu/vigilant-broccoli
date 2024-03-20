@@ -27,11 +27,13 @@ jobs:
       - name: print
         env:
           MY_EMAIL: ${{ secrets.GTA_UPDATE_ALERT_EMAIL }}
+          TEST: ${{ secrets.MY_EMAIL }}
           MY_EMAIL_PASSWORD: ${{ secrets.GTA_UPDATE_ALERT_EMAIL_PASSWORD }}
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
         run: |
           echo "GTA_UPDATE_ALERT_EMAIL: $GTA_UPDATE_ALERT_EMAIL"
           echo "GTA_UPDATE_ALERT_EMAIL_PASSWORD: $GTA_UPDATE_ALERT_EMAIL_PASSWORD"
+          echo "GTA_UPDATE_ALERT_EMAIL: $TEST"
       - name: Run script.
         env:
           MY_EMAIL: ${{ secrets.GTA_UPDATE_ALERT_EMAIL }}
