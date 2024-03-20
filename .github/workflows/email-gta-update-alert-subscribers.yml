@@ -25,6 +25,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: print
+        env:
+          MY_EMAIL: ${{ secrets.GTA_UPDATE_ALERT_EMAIL }}
+          MY_EMAIL_PASSWORD: ${{ secrets.GTA_UPDATE_ALERT_EMAIL_PASSWORD }}
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
         run: |
           echo "GTA_UPDATE_ALERT_EMAIL: $GTA_UPDATE_ALERT_EMAIL"
           echo "GTA_UPDATE_ALERT_EMAIL_PASSWORD: $GTA_UPDATE_ALERT_EMAIL_PASSWORD"
