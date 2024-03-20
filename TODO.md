@@ -10,11 +10,10 @@
     - blog page
       - display file using markdown component
       - return to blog
-  - feat: spotify music download to DJ Music Library cron action
+  - test: dj library cronjob
 
 - ## Q2
 
-  - feat: google translate script quick alias
   - feat: use Github actions to replace cronjobs
   - harryliu.design
     - feat: automate getting resume, sync to desktop??
@@ -24,6 +23,7 @@
   - passive
     - chore: blog writing
     - chore: get involved in open source
+  - feat: google translate script quick alias
 
 - Q3
 
