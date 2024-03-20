@@ -23,11 +23,12 @@ def email_to_list(
 ):
     emails = [{**message, "to": email} for email in emails]
     threads = []
-    MailHandler.EMAIL_ADDRESS = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
-    MailHandler.EMAIL_PASSWORD = os.environ.get("GTA_UPDATE_ALERT_EMAIL_PASSWORD")
+    EMAIL_ADDRESS = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
+    EMAIL_ADDRESS_PASSWORD = os.environ.get("GTA_UPDATE_ALERT_EMAIL_PASSWORD")
+    mailHandler = MailHandler(EMAIL_ADDRESS, EMAIL_ADDRESS_PASSWORD)
     for email in emails:
         thread = threading.Thread(
-            target=MailHandler.send_email,
+            target=mailHandler.send_email,
             args=(
                 {
                     **email,
@@ -42,6 +43,13 @@ def email_to_list(
         thread.join()
 
 
+def format_for_email(list_of_lists):
+    formatted_text = "\n\n".join(
+        [" ".join(map(str, sublist)) for sublist in list_of_lists]
+    )
+    return "Check https://gtaupdate.com/ for more info.\n\n" + formatted_text
+
+
 def main():
     emails = get_emails()
     results = HTMLPageParser.get_recent_alerts()
@@ -52,7 +60,7 @@ def main():
             message={
                 "from": "GTA Update",
                 "subject": "GTA Update",
-                "body": MailHandler.format_for_email(results),
+                "body": format_for_email(results),
             },
         )
 
