@@ -24,7 +24,7 @@ def email_to_list(
     emails = [{**message, "to": email} for email in emails]
     threads = []
     EMAIL_ADDRESS = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
-    print(EMAIL_ADDRESS)
+    print(len(EMAIL_ADDRESS) == 30)
     EMAIL_ADDRESS_PASSWORD = os.environ.get("GTA_UPDATE_ALERT_EMAIL_PASSWORD")
     mailHandler = MailHandler(EMAIL_ADDRESS, EMAIL_ADDRESS_PASSWORD)
     for email in emails:
