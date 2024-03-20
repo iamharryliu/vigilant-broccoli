@@ -1,8 +1,7 @@
-name: Deploy Nx Apps
+name: Redeploy Frontend (for DocsMD updates)
 on:
-  push:
-    branches:
-      - main
+  push: { branches: ['main'] }
+  schedule: [{ cron: '*/15 * * * *' }]
 
 permissions:
   actions: read
@@ -11,12 +10,6 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
-    env:
-      FLY_API_TOKEN: ${{ secrets.FLYIO_AUTH_TOKEN }}
-      MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
-      MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
-      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_TWILIO_AUTH_TOKEN }}
     environment:
       name: production
     defaults:
@@ -30,16 +23,9 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      # - run: npx nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="e2e-ci"
       - run: npm ci
       - uses: nrwl/nx-set-shas@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      # - run: git branch --track main origin/main
-      # - run: npx nx-cloud record -- nx format:check
-      # TODO: figure out how to get e2e to pass
-      # - run: npx nx affected -t lint test build e2e-ci deploy
-      - run: npx nx affected -t lint test build deploy
-      # TODO: conditional deployment??
       - name: Build harryliu-design-ui
         run: npx nx build personal-website-frontend
       - name: Deploy harryliu-design-ui
