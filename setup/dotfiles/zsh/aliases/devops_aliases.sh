@@ -1,3 +1,6 @@
+# Open Mail
+alias openmail="code /var/mail/$whoami"
+
 # Port
 killport() {
   if [ -z "$1" ]; then
