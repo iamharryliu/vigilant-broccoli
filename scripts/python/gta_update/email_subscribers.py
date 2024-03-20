@@ -23,6 +23,8 @@ def email_to_list(
 ):
     emails = [{**message, "to": email} for email in emails]
     threads = []
+    MailHandler.EMAIL_ADDRESS = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
+    MailHandler.EMAIL_PASSWORD = os.environ.get("wcpqjmfwqptycdhp")
     for email in emails:
         thread = threading.Thread(
             target=MailHandler.send_email,

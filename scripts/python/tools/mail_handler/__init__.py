@@ -1,11 +1,7 @@
-from email.mime.multipart import MIMEMultipart
-from email.header import Header
-from email.mime.text import MIMEText
-import os, smtplib, ssl, threading
+import os, smtplib, threading
 
 EMAIL_ADDRESS = os.environ.get("MY_EMAIL")
 EMAIL_PASSWORD = os.environ.get("MY_EMAIL_PASSWORD")
-
 
 DEFAULT_EMAIL = {
     "from": "yourself",
@@ -21,6 +17,9 @@ DEFAULT_SEND_TO_SELF_EMAIL = {
 
 
 class MailHandler:
+    EMAIL_ADDRESS = EMAIL_ADDRESS
+    EMAIL_PASSWORD = EMAIL_PASSWORD
+
     def format_for_email(list_of_lists):
         formatted_text = "\n\n".join(
             [" ".join(map(str, sublist)) for sublist in list_of_lists]
@@ -32,14 +31,14 @@ class MailHandler:
             smtp.ehlo()
             smtp.starttls()
             smtp.ehlo()
-            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.login(MailHandler.EMAIL_ADDRESS, MailHandler.EMAIL_PASSWORD)
             subject = email["subject"]
             body = email["body"]
             message = f"Subject: {subject}\n\n{body}"
             smtp.sendmail(email["from"], email["to"], message)
 
     def email_to_self(message=DEFAULT_SEND_TO_SELF_EMAIL):
-        MailHandler.send_email({**message, "to": EMAIL_ADDRESS})
+        MailHandler.send_email({**message, "to": MailHandler.EMAIL_ADDRESS})
 
     def email_to_list(
         emails, message={"from": "Mail Handler", "subject": "subject", "body": "body"}
