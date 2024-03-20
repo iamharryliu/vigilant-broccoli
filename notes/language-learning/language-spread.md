@@ -107,6 +107,7 @@
 | to sell                        | att sälja             | vendre               | vender        |
 | to look                        | att titta             | regarder             |               |
 | to come                        | att komma             | venir                | venir         |
+| to give                        |                       |                      |               |
 | I want                         | jag vill              | je veux              | quiero        | quero             |                 |
 | I have                         | jag har               | j'ai                 | tengo         |
 | I'm going                      |                       | je vais              | voy           |
