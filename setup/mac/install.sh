@@ -1,3 +1,5 @@
+REPO_NAME="vigilant-broccoli"
+
 function ask() {
     read -p "$1 (Y/n): " resp
     if [ -z "$resp" ]; then
@@ -11,19 +13,19 @@ function ask() {
 
 # Install Brew dependencies.
 if ask "Install Brew dependencies?"; then
-    brew bundle --file ~/vigilant-broccoli/setup/mac/Brewfile
+    brew bundle --file ~/$REPO_NAME/setup/mac/Brewfile
 fi
 
 # Setup dotfiles.
 if ask "Symlink dotfiles?"; then
-    ln -s ~/vigilant-broccoli/setup/dotfiles/.gitconfig ~/.gitconfig
-    ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/.rc.zsh ~/.zshrc
-    ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/.aliases.zsh ~/.zsh_aliases
-    ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/aliases ~/shell-aliases
+    ln -s ~/$REPO_NAME/setup/dotfiles/.gitconfig ~/.gitconfig
+    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/.rc.zsh ~/.zshrc
+    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/.aliases.zsh ~/.zsh_aliases
+    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/aliases ~/shell-aliases
     chmod -R +x ~/shell-aliases/
-    ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/scripts ~/shell-scripts
+    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/scripts ~/shell-scripts
     chmod -R +x ~/shell-scripts/
-    ln -s ~/vigilant-broccoli/setup/dotfiles/zsh/.env.sh ~/.env.sh
+    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/.env.sh ~/.env.sh
 fi
 
 
