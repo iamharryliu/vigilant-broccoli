@@ -33,7 +33,7 @@ if ask "Install Node dependencies?"; then
     brew link node@20
     npm install -g ts-node
     npm install -g @angular/cli
-    cd ~/vigilant-broccoli
+    cd ~/$REPO_NAME
     npm i -g recursive-install
     npm-recursive-install
 fi
