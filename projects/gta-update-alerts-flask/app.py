@@ -27,7 +27,9 @@ def submit():
             conn.commit()
             cur.close()
             conn.close()
-            return f"You have successfully subscribed {email}."
+            return (
+                f"You have successfully subscribed {email}, you can close this window."
+            )
         except:
             return "Something went wrong. Have you already signed up?"
     else:
@@ -55,7 +57,7 @@ def unsubscribe():
             conn.commit()
             cursor.close()
             conn.close()
-            return f"You have successfully unsubscribed {email}."
+            return f"You have successfully unsubscribed {email}, you can close this window."
         except:
             return "Something went wrong."
     else:
