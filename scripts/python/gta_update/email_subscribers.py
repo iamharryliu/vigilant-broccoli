@@ -36,7 +36,7 @@ def email_users(users):
 
 def main():
     emails = get_emails()
-    users = [{"email": email, "keywords": [""]} for email in emails]
+    users = [{"email": email, "districts": [], "keywords": []} for email in emails]
     # users = [{"email": "harryliu1995@gmail.com", "keywords": [""]}]
     for user in users:
         GTAUpdateApp.get_recent_alerts_for_user(user)

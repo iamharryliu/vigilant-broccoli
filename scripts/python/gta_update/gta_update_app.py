@@ -46,9 +46,7 @@ ALL_GTA_ALERTS = get_all_gta_alerts()
 
 class GTAUpdateApp:
     def get_recent_alerts_for_user(user, interval=timedelta(hours=1)):
-        filtered_alerts = GTAUpdateApp.filter_alerts_by_keywords(
-            user["keywords"], interval
-        )
+        filtered_alerts = GTAUpdateApp.filter_alerts_per_user(user, interval)
         if filtered_alerts:
             message = {
                 "from": "GTA Update",
@@ -59,15 +57,20 @@ class GTAUpdateApp:
             }
             user["message"] = message
 
-    def filter_alerts_by_keywords(keywords, interval=timedelta(hours=1)):
+    def filter_alerts_per_user(user, interval=timedelta(hours=1)):
+        divisions = user["divisions"]
+        keywords = user["keywords"]
         current_time_est = datetime.now(timezone("America/New_York"))
         past_hour_est = current_time_est - interval
         return [
             row
             for row in ALL_GTA_ALERTS
             if (
-                GTAUpdateApp.text_contains_keyword(row[1], keywords)
-                or GTAUpdateApp.text_contains_keyword(row[2], keywords)
+                GTAUpdateApp.text_contains_keyword(row[1], divisions)
+                if divisions
+                else True and GTAUpdateApp.text_contains_keyword(row[2], keywords)
+                if keywords
+                else True
             )
             and convert_to_est(row[0]) >= past_hour_est
         ]

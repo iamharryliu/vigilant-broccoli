@@ -11,10 +11,12 @@ from tools.mail_handler import MailHandler
 
 emails = [
     "harryliu1995@gmail.com",
-    # "dnchanners@gmail.com",
-    # "zhenzhentradingco@gmail.com",
+    "dnchanners@gmail.com",
+    "zhenzhentradingco@gmail.com",
 ]
-keywords = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
+divisions = ["TFS234", "43 Div", "42 Div", "TFS 235"]
+keywords = []
+# keywords = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
 
 
 def email_users(users):
@@ -36,7 +38,10 @@ def email_users(users):
 
 
 def main():
-    users = [{"email": email, "keywords": keywords} for email in emails]
+    users = [
+        {"email": email, "keywords": keywords, "divisions": divisions}
+        for email in emails
+    ]
     for user in users:
         GTAUpdateApp.get_recent_alerts_for_user(user, interval=timedelta(minutes=5))
     email_users(users)
