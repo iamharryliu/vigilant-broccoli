@@ -23,7 +23,6 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - uses: nrwl/nx-set-shas@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Build harryliu-design-ui
         run: npx nx build personal-website-frontend
