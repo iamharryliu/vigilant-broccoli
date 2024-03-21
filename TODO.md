@@ -40,6 +40,8 @@
     - online payment form
     - Sveltfire
     - angular view encapsulation
+    - webpack vs vite
+    - swc vs babel
 
   - docs: spring boot
 
