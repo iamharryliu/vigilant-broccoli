@@ -209,14 +209,14 @@ const SECONDHAND_STORE_IG: Link = {
   url: {
     external: ENVIRONMENT.URLS.SECONDHAND_STORE_IG,
   },
-  text: 'harrysellsshit',
+  text: 'Secondhand Store harrysellsshit',
 };
 
 const SKATE_IG: Link = {
   url: {
     external: ENVIRONMENT.URLS.SKATE_IG,
   },
-  text: 'torontocityskate',
+  text: 'Toronto City Skate',
 };
 
 const RESUME: Link = {
