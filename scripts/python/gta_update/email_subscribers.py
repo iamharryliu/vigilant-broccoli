@@ -51,8 +51,8 @@ def format_for_email(list_of_lists):
 
 
 def main():
-    # emails = get_emails()
-    emails = ["harryliu1995@gmail.com"]
+    emails = get_emails()
+    # emails = ["harryliu1995@gmail.com"]
     results = GTAUpdateApp.get_recent_alerts()
     if results:
         results = [result for result in results if result]

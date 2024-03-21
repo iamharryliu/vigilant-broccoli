@@ -37,7 +37,6 @@ class GTAUpdateApp:
                                 )
 
                         current_time_est = datetime.now(timezone("America/New_York"))
-                        print("current", current_time_est)
                         past_hour_est = current_time_est - frequency
                         table_data = [
                             row
@@ -57,7 +56,7 @@ class GTAUpdateApp:
 
 
 def convert_to_est(time_str):
-    today_date = datetime.now(timezone("America/New_York"))
+    today_date = datetime.now(timezone("America/New_York")).date()
     if "-" in time_str:
         datetime_str = f"{time_str} {today_date.year}"
         time_obj = datetime.strptime(datetime_str, "%b-%d %I:%M %p %Y")

@@ -1,8 +1,8 @@
 name: GTA Update Alert - Email Subscribers
 
 on:
-  push: { branches: ['main'] }
-  # schedule: [{ cron: '0 */1 * * *' }]
+  # push: { branches: ['main'] }
+  schedule: [{ cron: '0 */1 * * *' }]
 
 jobs:
   run_script:
