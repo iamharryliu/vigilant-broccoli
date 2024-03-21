@@ -22,14 +22,6 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 ~/vigilant-broccoli/setup/mac/install.sh
 ```
 
-## Commands
-
-### General
-
-```
-npm run install-all
-```
-
 ## Github Action Status
 
 [![Deploy Nx Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml)
