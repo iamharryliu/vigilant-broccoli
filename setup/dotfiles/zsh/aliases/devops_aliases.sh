@@ -23,6 +23,7 @@ killport() {
 alias initnpm='rm -rf node_modules package-lock.json && npm i'
 alias initnpmserve='initnpm && npm run serve'
 alias mynpmpackages='open -a "Google Chrome" "https://www.npmjs.com/settings/prettydamntired/packages"'
+alias installall='npm run install-all'
 
 # Postgres
 alias startbrewsql='brew services start postgresql'
