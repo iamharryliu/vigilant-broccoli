@@ -47,6 +47,7 @@ class GTAUpdateApp:
                     else:
                         row_data = [cell.get_text(strip=True) for cell in cells]
                         current_time_est = datetime.now(timezone("America/New_York"))
+                        print("current", current_time_est)
                         past_hour_est = current_time_est - frequency
                         if convert_to_est(row_data[0]) >= past_hour_est:
                             table_data.append(row_data)
