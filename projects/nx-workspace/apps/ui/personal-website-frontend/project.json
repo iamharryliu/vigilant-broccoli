@@ -29,10 +29,7 @@
         "polyfills": ["zone.js"],
         "tsConfig": "apps/ui/personal-website-frontend/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": [
-          "apps/ui/personal-website-frontend/src/favicon.ico",
-          "apps/ui/personal-website-frontend/src/assets"
-        ],
+        "assets": ["apps/ui/personal-website-frontend/src/assets"],
         "styles": [
           "apps/ui/personal-website-frontend/src/styles.scss",
           "node_modules/@fortawesome/fontawesome-free/css/all.css"
