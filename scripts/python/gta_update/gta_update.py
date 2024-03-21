@@ -14,7 +14,7 @@ emails = [
     "dnchanners@gmail.com",
     "zhenzhentradingco@gmail.com",
 ]
-divisions = ["TFS234", "43 Div", "42 Div", "TFS 235"]
+divisions = ["TFS234", "43 Div"]
 keywords = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
 
 
