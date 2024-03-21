@@ -62,18 +62,24 @@ class GTAUpdateApp:
         keywords = user["keywords"]
         current_time_est = datetime.now(timezone("America/New_York"))
         past_hour_est = current_time_est - interval
-        return [
+        res = [
             row
             for row in ALL_GTA_ALERTS
             if (
-                GTAUpdateApp.text_contains_keyword(row[1], divisions)
-                if divisions
-                else True and GTAUpdateApp.text_contains_keyword(row[2], keywords)
-                if keywords
-                else True
+                (
+                    GTAUpdateApp.text_contains_keyword(row[1], divisions)
+                    if divisions
+                    else True
+                )
+                and (
+                    GTAUpdateApp.text_contains_keyword(row[2], keywords)
+                    if keywords
+                    else True
+                )
             )
             and convert_to_est(row[0]) >= past_hour_est
         ]
+        return res
 
     def text_contains_keyword(text, keywords):
         for keyword in keywords:
