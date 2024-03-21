@@ -57,7 +57,7 @@ class GTAUpdateApp:
 
 
 def convert_to_est(time_str):
-    today_date = datetime.now().date()
+    today_date = datetime.now(timezone("America/New_York"))
     if "-" in time_str:
         datetime_str = f"{time_str} {today_date.year}"
         time_obj = datetime.strptime(datetime_str, "%b-%d %I:%M %p %Y")
