@@ -10,7 +10,7 @@ emails = [
 ]
 
 
-class HTMLPageParser:
+class GTAUpdateApp:
     def text_contains_keyword(text, keywords):
         for keyword in keywords:
             if keyword in text:
@@ -29,7 +29,7 @@ class HTMLPageParser:
                     cells = row.find_all(["td"])
                     if key_words:
                         for cell in cells:
-                            if HTMLPageParser.text_contains_keyword(
+                            if GTAUpdateApp.text_contains_keyword(
                                 cell.get_text().strip(), key_words
                             ):
                                 table_data.append(
@@ -37,6 +37,7 @@ class HTMLPageParser:
                                 )
 
                         current_time_est = datetime.now(timezone("America/New_York"))
+                        print("current", current_time_est)
                         past_hour_est = current_time_est - frequency
                         table_data = [
                             row
@@ -64,4 +65,5 @@ def convert_to_est(time_str):
         time_obj = datetime.strptime(datetime_str, "%Y-%m-%d %I:%M %p")
     est = timezone("America/New_York")
     time_obj = est.localize(time_obj)
+    print(time_obj)
     return time_obj

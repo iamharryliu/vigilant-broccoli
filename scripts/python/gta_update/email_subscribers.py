@@ -4,7 +4,7 @@ import threading
 import urllib
 
 sys.path.append("..")
-from html_parser import HTMLPageParser
+from gta_update_app import GTAUpdateApp
 from tools.mail_handler import MailHandler
 import requests
 
@@ -51,8 +51,9 @@ def format_for_email(list_of_lists):
 
 
 def main():
-    emails = get_emails()
-    results = HTMLPageParser.get_recent_alerts()
+    # emails = get_emails()
+    emails = ["harryliu1995@gmail.com"]
+    results = GTAUpdateApp.get_recent_alerts()
     if results:
         results = [result for result in results if result]
         email_to_list(

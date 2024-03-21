@@ -4,7 +4,7 @@ import sys
 sys.path.append("..")
 
 from email_subscribers import format_for_email
-from html_parser import HTMLPageParser
+from gta_update_app import GTAUpdateApp
 from tools.mail_handler import MailHandler
 from datetime import timedelta
 
@@ -16,7 +16,7 @@ emails = [
 ]
 key_words = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
 
-results = HTMLPageParser.get_recent_alerts(key_words, frequency=timedelta(minutes=5))
+results = GTAUpdateApp.get_recent_alerts(key_words, frequency=timedelta(minutes=5))
 if results:
     results = [result for result in results if result]
     EMAIL_ADDRESS = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
