@@ -1,9 +1,9 @@
-# Relationships
+# Stretches
 
-## Love Languages
+## Daily Stretches
 
-- words of affirmation
-- acts of service
-- gifts
-- quality time
-- physical touch
+- couch stretch
+- bar hang
+- pancake
+- seal pose
+- deep lunge

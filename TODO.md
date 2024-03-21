@@ -4,6 +4,8 @@
 
 - Q1
 
+  - feat: GTA update alert
+    - email subject based on notification type (GTA, district, street levels)?
   - feat: blog feature
     - directory
       - directory to open file
