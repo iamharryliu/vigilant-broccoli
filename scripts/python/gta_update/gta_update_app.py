@@ -58,7 +58,7 @@ class GTAUpdateApp:
             user["message"] = message
 
     def filter_alerts_per_user(user, interval=timedelta(hours=1)):
-        divisions = user["divisions"]
+        districts = user["districts"]
         keywords = user["keywords"]
         current_time_est = datetime.now(timezone("America/New_York"))
         past_hour_est = current_time_est - interval
@@ -67,8 +67,8 @@ class GTAUpdateApp:
             for row in ALL_GTA_ALERTS
             if (
                 (
-                    GTAUpdateApp.text_contains_keyword(row[1], divisions)
-                    if divisions
+                    GTAUpdateApp.text_contains_keyword(row[1], districts)
+                    if districts
                     else True
                 )
                 and (

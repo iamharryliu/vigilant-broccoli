@@ -14,7 +14,7 @@ emails = [
     "dnchanners@gmail.com",
     "zhenzhentradingco@gmail.com",
 ]
-divisions = ["TFS234", "43 Div"]
+districts = ["TFS234", "43 Div"]
 keywords = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
 
 
@@ -38,7 +38,7 @@ def email_users(users):
 
 def main():
     users = [
-        {"email": email, "keywords": keywords, "divisions": divisions}
+        {"email": email, "keywords": keywords, "districts": districts}
         for email in emails
     ]
     for user in users:
