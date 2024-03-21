@@ -1,7 +1,7 @@
 echo "~Shell initialized.~"
+export REPO_NAME="vigilant-broccoli"
 source ~/.zsh_aliases
 source ~/.env.sh
-REPO_NAME="vigilant-broccoli"
 
 export PATH="/opt/homebrew/bin:$PATH"
 if [[ $(sysctl -n machdep.cpu.brand_string | grep -c "Apple") -gt 0 ]]; then
