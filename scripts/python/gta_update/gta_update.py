@@ -14,7 +14,7 @@ emails = [
     # "dnchanners@gmail.com",
     # "zhenzhentradingco@gmail.com",
 ]
-keywords = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD", "ALARM"]
+keywords = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
 
 
 def email_users(users):
