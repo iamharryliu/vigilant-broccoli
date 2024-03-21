@@ -34,6 +34,7 @@
       }
     }
   },
+  "neverConnectToCloud": true,
   "nxCloudAccessToken": "ZTAwNjE1NTEtNzczYS00MTQyLTk2YjEtZDg1MmM2ZjNiMGY1fHJlYWQtd3JpdGU=",
   "generators": {
     "@nx/angular:application": {
