@@ -1,32 +1,46 @@
+from datetime import timedelta
 import os
 import sys
+import threading
 
 sys.path.append("..")
 
-from email_subscribers import format_for_email
 from gta_update_app import GTAUpdateApp
 from tools.mail_handler import MailHandler
-from datetime import timedelta
 
 
 emails = [
     "harryliu1995@gmail.com",
-    "dnchanners@gmail.com",
-    "zhenzhentradingco@gmail.com",
+    # "dnchanners@gmail.com",
+    # "zhenzhentradingco@gmail.com",
 ]
-key_words = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
+keywords = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD", "ALARM"]
 
-results = GTAUpdateApp.get_recent_alerts(key_words, frequency=timedelta(minutes=5))
-if results:
-    results = [result for result in results if result]
+
+def email_users(users):
+    users = [user for user in users if "message" in user]
+    # print(users)
     EMAIL_ADDRESS = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
     EMAIL_ADDRESS_PASSWORD = os.environ.get("GTA_UPDATE_ALERT_EMAIL_PASSWORD")
     mailHandler = MailHandler(EMAIL_ADDRESS, EMAIL_ADDRESS_PASSWORD)
-    mailHandler.email_to_list(
-        emails,
-        message={
-            "from": "GTA Update",
-            "subject": "GTA Update",
-            "body": format_for_email(results),
-        },
-    )
+    threads = []
+    for user in users:
+        thread = threading.Thread(
+            target=mailHandler.send_email, args=(user["message"],)
+        )
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+
+def main():
+    users = [{"email": email, "keywords": keywords} for email in emails]
+    for user in users:
+        GTAUpdateApp.get_recent_alerts_for_user(user, interval=timedelta(minutes=5))
+    email_users(users)
+
+
+if __name__ == "__main__":
+    main()

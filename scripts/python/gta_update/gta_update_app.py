@@ -2,57 +2,13 @@ from datetime import datetime, timedelta
 import requests
 from bs4 import BeautifulSoup
 from pytz import timezone
+import urllib
 
 
 url = "https://gtaupdate.com/"
 emails = [
     "harryliu1995@gmail.com",
 ]
-
-
-class GTAUpdateApp:
-    def text_contains_keyword(text, keywords):
-        for keyword in keywords:
-            if keyword in text:
-                return True
-        return False
-
-    def get_recent_alerts(key_words=None, frequency=timedelta(hours=1)):
-        response = requests.get(url)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.content, "html.parser")
-            table = soup.find("table")
-            if table:
-                rows = table.find_all("tr")
-                table_data = []
-                for row in rows[1:]:
-                    cells = row.find_all(["td"])
-                    if key_words:
-                        for cell in cells:
-                            if GTAUpdateApp.text_contains_keyword(
-                                cell.get_text().strip(), key_words
-                            ):
-                                table_data.append(
-                                    [cell.get_text().strip() for cell in cells]
-                                )
-
-                        current_time_est = datetime.now(timezone("America/New_York"))
-                        past_hour_est = current_time_est - frequency
-                        table_data = [
-                            row
-                            for row in table_data
-                            if convert_to_est(row[0]) >= past_hour_est
-                        ]
-                    else:
-                        row_data = [cell.get_text(strip=True) for cell in cells]
-                        current_time_est = datetime.now(timezone("America/New_York"))
-                        past_hour_est = current_time_est - frequency
-                        print(convert_to_est(row_data[0]), past_hour_est)
-                        if convert_to_est(row_data[0]) >= past_hour_est:
-                            table_data.append(row_data)
-                return table_data
-        else:
-            print(f"Failed to fetch URL: {url}")
 
 
 def convert_to_est(time_str):
@@ -66,3 +22,64 @@ def convert_to_est(time_str):
     est = timezone("America/New_York")
     time_obj = est.localize(time_obj)
     return time_obj
+
+
+def get_all_gta_alerts():
+    response = requests.get(url)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, "html.parser")
+        table = soup.find("table")
+        if table:
+            rows = table.find_all("tr")
+            table_data = []
+            for row in rows[1:]:
+                cells = row.find_all(["td"])
+                row_data = [cell.get_text(strip=True) for cell in cells]
+                table_data.append(row_data)
+            return table_data
+    else:
+        print(f"Failed to fetch URL: {url}")
+
+
+ALL_GTA_ALERTS = get_all_gta_alerts()
+
+
+class GTAUpdateApp:
+    def get_recent_alerts_for_user(user, interval=timedelta(hours=1)):
+        filtered_alerts = GTAUpdateApp.filter_alerts_by_keywords(
+            user["keywords"], interval
+        )
+        if filtered_alerts:
+            message = {
+                "from": "GTA Update",
+                "to": user["email"],
+                "subject": "GTA Update",
+                "body": f"If you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(user['email'])}\n\n"
+                + GTAUpdateApp.format_for_email(filtered_alerts),
+            }
+            user["message"] = message
+
+    def filter_alerts_by_keywords(keywords, interval=timedelta(hours=1)):
+        current_time_est = datetime.now(timezone("America/New_York"))
+        past_hour_est = current_time_est - interval
+        return [
+            row
+            for row in ALL_GTA_ALERTS
+            if (
+                GTAUpdateApp.text_contains_keyword(row[1], keywords)
+                or GTAUpdateApp.text_contains_keyword(row[2], keywords)
+            )
+            and convert_to_est(row[0]) >= past_hour_est
+        ]
+
+    def text_contains_keyword(text, keywords):
+        for keyword in keywords:
+            if keyword in text:
+                return True
+        return False
+
+    def format_for_email(list_of_lists):
+        formatted_text = "\n\n".join(
+            [" ".join(map(str, sublist)) for sublist in list_of_lists]
+        )
+        return "Check https://gtaupdate.com/ for more info.\n\n" + formatted_text

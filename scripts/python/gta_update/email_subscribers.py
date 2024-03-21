@@ -1,7 +1,6 @@
 import os
 import sys
 import threading
-import urllib
 
 sys.path.append("..")
 from gta_update_app import GTAUpdateApp
@@ -18,52 +17,30 @@ def get_emails():
     return emails
 
 
-def email_to_list(
-    emails, message={"from": "Mail Handler", "subject": "subject", "body": "body"}
-):
-    emails = [{**message, "to": email} for email in emails]
-    threads = []
+def email_users(users):
+    users = [user for user in users if "message" in user]
     EMAIL_ADDRESS = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
     EMAIL_ADDRESS_PASSWORD = os.environ.get("GTA_UPDATE_ALERT_EMAIL_PASSWORD")
     mailHandler = MailHandler(EMAIL_ADDRESS, EMAIL_ADDRESS_PASSWORD)
-    for email in emails:
+    threads = []
+    for user in users:
         thread = threading.Thread(
-            target=mailHandler.send_email,
-            args=(
-                {
-                    **email,
-                    "body": f"If you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(email['to'])}\n\n"
-                    + email["body"],
-                },
-            ),
+            target=mailHandler.send_email, args=(user["message"],)
         )
         threads.append(thread)
         thread.start()
+
     for thread in threads:
         thread.join()
 
 
-def format_for_email(list_of_lists):
-    formatted_text = "\n\n".join(
-        [" ".join(map(str, sublist)) for sublist in list_of_lists]
-    )
-    return "Check https://gtaupdate.com/ for more info.\n\n" + formatted_text
-
-
 def main():
     emails = get_emails()
-    # emails = ["harryliu1995@gmail.com"]
-    results = GTAUpdateApp.get_recent_alerts()
-    if results:
-        results = [result for result in results if result]
-        email_to_list(
-            emails,
-            message={
-                "from": "GTA Update",
-                "subject": "GTA Update",
-                "body": format_for_email(results),
-            },
-        )
+    users = [{"email": email, "keywords": [""]} for email in emails]
+    # users = [{"email": "harryliu1995@gmail.com", "keywords": [""]}]
+    for user in users:
+        GTAUpdateApp.get_recent_alerts_for_user(user)
+    email_users(users)
 
 
 if __name__ == "__main__":
