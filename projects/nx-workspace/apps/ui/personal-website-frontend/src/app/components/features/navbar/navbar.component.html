@@ -4,8 +4,8 @@
     <div class="space-x-4">
       <lib-link [link]="LINKS.INDEX_PAGE" type="internal"></lib-link>
       <lib-link [link]="LINKS.PROJECTS_PAGE" type="internal"></lib-link>
-      <lib-link [link]="LINKS.MD_LIBRARY" type="internal"></lib-link>
-      <lib-link [link]="LINKS.LINK_TREE" type="internal"></lib-link>
+      <!-- <lib-link [link]="LINKS.MD_LIBRARY" type="internal"></lib-link> -->
+      <!-- <lib-link [link]="LINKS.LINK_TREE" type="internal"></lib-link> -->
     </div>
   </div>
   <hr />
@@ -26,29 +26,25 @@
         <lib-link
           [link]="LINKS.INDEX_PAGE"
           type="internal"
-          (clickEmitter)="collapseNavbar()"
-        ></lib-link>
+          (clickEmitter)="collapseNavbar()"></lib-link>
       </div>
       <div class="flex justify-center">
         <lib-link
           [link]="LINKS.PROJECTS_PAGE"
           type="internal"
-          (clickEmitter)="collapseNavbar()"
-        ></lib-link>
+          (clickEmitter)="collapseNavbar()"></lib-link>
       </div>
       <div class="flex justify-center">
         <lib-link
           [link]="LINKS.MD_LIBRARY"
           type="internal"
-          (clickEmitter)="collapseNavbar()"
-        ></lib-link>
+          (clickEmitter)="collapseNavbar()"></lib-link>
       </div>
       <div class="flex justify-center">
         <lib-link
           [link]="LINKS.LINK_TREE"
           type="internal"
-          (clickEmitter)="collapseNavbar()"
-        ></lib-link>
+          (clickEmitter)="collapseNavbar()"></lib-link>
       </div>
     </div>
   </div>
