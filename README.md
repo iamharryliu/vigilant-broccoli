@@ -30,7 +30,7 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 npm run install-all
 ```
 
-## Github Action Statuses
+## Github Action Status
 
 [![Deploy Nx Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml)
 
