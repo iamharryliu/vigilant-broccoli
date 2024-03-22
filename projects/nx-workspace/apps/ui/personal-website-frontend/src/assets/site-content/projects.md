@@ -2,14 +2,14 @@
 
 - [vigilant-broccoli](https://github.com/iamharryliu/vigilant-broccoli) - Personal mono-repo, houses all my code and documentation.
 
-[![Deploy Nx Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml) [![Monitor Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml)
-
 - [Grind 75](https://harryliu.design/grind-75) - Compilation of Python solutions for [the Grind 75 list](https://www.techinterviewhandbook.org/grind75) leet code questions.
 - [GTA Update Alerts](https://gta-update-alerts-flask.fly.dev/) - Subscribe to get hourly notifications for Toronto Police Service and Fire Service alerts.
 
-[![GTA Update Alert - Email Subscribers](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-gta-update-alert-subscribers.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-gta-update-alert-subscribers.yml) [![Deploy GTA Update Alert App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-gta-update-alert.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-gta-update-alert.yml)
-
 - [Vibecheck Lite](https://harryliu.design/projects/vibecheck-lite/app) - Is a functional fashion-weather lifestyle tool to assist the user in deciding what to wear.
+
+[![Deploy Nx Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml) [![Monitor Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml)
+
+[![GTA Update Alert - Email Subscribers](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-gta-update-alert-subscribers.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-gta-update-alert-subscribers.yml) [![Deploy GTA Update Alert App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-gta-update-alert.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-gta-update-alert.yml)
 
 ### Github Action Status
 
