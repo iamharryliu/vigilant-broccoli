@@ -37,7 +37,11 @@ for i in range(2, 6):
 print(len(TFS_DATA) == 84)
 
 TFS_STATIONS = [
-    {"name": f"TFS {station[0]}", "district": station[1], "location": station[8]}
+    {
+        "name": f"TFS {station[0]}",
+        "district": station[1],
+        "location": station[8].split(",")[0],
+    }
     for station in TFS_DATA
 ]
 
