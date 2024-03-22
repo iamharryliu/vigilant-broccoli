@@ -1,26 +1,4 @@
-import os
-import subprocess
-import threading
-
-
-dj_music_directory = "~/My Drive/DJ Music Library"
-
-
-def download_playlist(playlist):
-    try:
-        fname = convert_to_slug(playlist["name"])
-        output = f"{dj_music_directory}/{fname}"
-        output = os.path.expanduser(output)
-        subprocess.run(
-            ["spotdl", "download", playlist["url"], "--output", output], check=True
-        )
-        print(f"Playlist {playlist['name']} downloaded successfully.")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to download playlist {playlist['name']}. Error: {e}")
-
-
-def convert_to_slug(text):
-    return "-".join(text.lower().split())
+from spotify_to_mp3_service import SpotifyToMp3Service
 
 
 def main():
@@ -63,21 +41,8 @@ def main():
         },
     ]
 
-    # for playlist in playlists:
-    #     print(f"Downloading playlist: {playlist['name']}")
-    #     try:
-    #         download_playlist(playlist)
-    #         print(f"Playlist {playlist['name']} downloaded successfully.")
-    #     except subprocess.CalledProcessError as e:
-    #         print(f"Failed to download playlist {playlist['name']}. Error: {e}")
-
-    threads = []
-    for playlist in playlists:
-        thread = threading.Thread(target=download_playlist, args=(playlist,))
-        thread.start()
-        threads.append(thread)
-    for thread in threads:
-        thread.join()
+    service = SpotifyToMp3Service()
+    service.download_playlists(playlists)
 
 
 if __name__ == "__main__":
