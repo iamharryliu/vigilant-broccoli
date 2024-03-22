@@ -10,8 +10,10 @@ alias pushmd="commitmd && gpush"
 alias commitdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles'"
 alias pushdotfiles="commitdotfiles && gpush"
 alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
-alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/ && source venv/bin/activate && python spotify_to_dj_library.py"
 alias vbactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
+# DJ Stuff
+alias pushspottoyt='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
+alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
 
 # Journal
 alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpush"
