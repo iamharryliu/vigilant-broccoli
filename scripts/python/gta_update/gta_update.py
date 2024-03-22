@@ -16,6 +16,7 @@ emails = [
 ]
 districts = ["TFS234", "43 Div"]
 keywords = ["GALLOWAY RD", "LAWRENCE AVE", "MORNINGSIDE AVE", "KINGSTON RD"]
+keywords = []
 
 
 def email_users(users):
