@@ -1,8 +1,10 @@
-# DJ Scripts
+# Spotify to MP3 Download
 
-## Setup
+## Requirements
 
-### Mac
+- Python
+
+## Setup and Run (for Mac)
 
 Commands
 
@@ -23,5 +25,4 @@ python download_music.py
 # Cronjob for keeping playlists in sync.
 crontab -e
 0 */1 * * * cd ~/spotify-to-mp3/ && source venv/bin/activate && python download_music.py
-
 ```
