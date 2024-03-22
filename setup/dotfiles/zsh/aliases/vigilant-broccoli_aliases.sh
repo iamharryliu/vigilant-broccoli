@@ -12,7 +12,7 @@ alias pushdotfiles="commitdotfiles && gpush"
 alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
 alias vbactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
 # DJ Stuff
-alias pushspottoyt='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
+alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
 alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
 
 # Journal
