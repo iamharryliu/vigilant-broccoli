@@ -94,7 +94,9 @@ class GTAUpdateApp:
         formatted_text = "\n\n".join(
             [" ".join(map(str, sublist)) for sublist in list_of_lists]
         )
-        return "Check https://gtaupdate.com/ for more info.\n\n" + formatted_text
+        return (
+            "Check https://gtaupdate.com/ for more info.\n\n" + formatted_text + "\n\n"
+        )
 
     @staticmethod
     def get_unsubscribe_message(email):
