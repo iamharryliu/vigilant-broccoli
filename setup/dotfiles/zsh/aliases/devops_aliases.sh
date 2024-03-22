@@ -1,5 +1,6 @@
 # Open Mail
-alias openmail="code /var/mail/$whoami"
+alias openmail="code /var/mail/$(whoami)"
+alias emptymail="echo '' > /var/mail/$(whoami)"
 
 # Port
 killport() {
