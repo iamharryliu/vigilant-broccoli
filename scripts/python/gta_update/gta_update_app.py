@@ -98,4 +98,4 @@ class GTAUpdateApp:
 
     @staticmethod
     def get_unsubscribe_message(email):
-        return f"If you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote()}\n\n"
+        return f"If you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(email)}\n\n"
