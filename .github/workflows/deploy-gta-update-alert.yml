@@ -1,0 +1,22 @@
+name: Deploy Nx Apps
+on:
+  push: { branches: ['main'] }
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      FLY_API_TOKEN: ${{ secrets.FLYIO_AUTH_TOKEN }}
+      GTA_UPDATE_ALERTS_DB: ${{ secrets.GTA_UPDATE_ALERTS_DB }}
+    environment:
+      name: production
+    defaults:
+      run:
+        working-directory: ./projects/nx-workspace
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: fly deploy --ha=false
