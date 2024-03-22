@@ -24,7 +24,7 @@
         <input type="email" name="email" required />
       </div>
       <div class="row mb-3">
-        <label>Choose TPS Divisions:</label><br />
+        <label>Choose Toronto Police Service Divisions:</label><br />
         <div class="col-md overflow-auto border mb-3" style="max-height: 200px">
           {% for division in TPS_DIVISIONS %}
           <input
@@ -38,7 +38,7 @@
           ><br />
           {% endfor %}<br />
         </div>
-        <label>Choose TFS Stations:</label><br />
+        <label>Choose Toronto Fire Service Stations:</label><br />
         <div class="col-md overflow-auto border" style="max-height: 200px">
           {% for station in TFS_STATIONS %}
           <input
