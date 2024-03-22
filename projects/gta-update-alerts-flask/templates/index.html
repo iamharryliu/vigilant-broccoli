@@ -24,8 +24,8 @@
         <input type="email" name="email" required />
       </div>
       <div class="row mb-3">
-        <div class="col-md overflow-auto border" style="max-height: 200px">
-          <label>Choose TPS Divisions:</label><br />
+        <label>Choose TPS Divisions:</label><br />
+        <div class="col-md overflow-auto border mb-3" style="max-height: 200px">
           {% for division in TPS_DIVISIONS %}
           <input
             type="checkbox"
@@ -38,17 +38,17 @@
           ><br />
           {% endfor %}<br />
         </div>
+        <label>Choose TFS Stations:</label><br />
         <div class="col-md overflow-auto border" style="max-height: 200px">
-          <label>Choose TFS Stations:</label><br />
-          {% for division in TFS_STATIONS %}
+          {% for station in TFS_STATIONS %}
           <input
             type="checkbox"
-            name="divisions"
-            value="{{ division.name }}"
-            id="{{ division.name }}"
+            name="stations"
+            value="{{ station.name }}"
+            id="{{ station.name }}"
           />
-          <label for="{{ division }}"
-            >{{ division.name }} - {{division.location}}</label
+          <label for="{{ stations }}"
+            >{{ station.name }} - {{station.location}}</label
           ><br />
           {% endfor %}<br />
         </div>

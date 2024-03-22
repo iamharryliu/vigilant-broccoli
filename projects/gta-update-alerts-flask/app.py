@@ -1,4 +1,5 @@
 import os
+import re
 from flask import Flask, render_template, request, redirect, url_for, flash
 import psycopg2
 
@@ -52,19 +53,32 @@ def index():
     )
 
 
+def division_string(text):
+    pattern = r"^(\d+) Division$"
+    return re.match(pattern, text).group(1) + " Div"
+
+
 @app.post("/submit")
 def submit():
     email = request.form["email"]
+    tps_divisions = request.form.getlist("divisions")
+    tps_divisions = [division_string(division) for division in tps_divisions]
+    tfs_stations = request.form.getlist("stations")
+    districts = tps_divisions + tfs_stations
+    districts = ",".join(districts)
     if email:
         try:
-            conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute("INSERT INTO emails (email) VALUES (%s)", (email,))
-            conn.commit()
-            cur.close()
-            conn.close()
+            connection = get_db_connection()
+            cursor = connection.cursor()
+            cursor.execute(
+                "INSERT INTO emails (email, districts) VALUES (%s, %s) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts",
+                (email, districts),
+            )
+            connection.commit()
+            cursor.close()
+            connection.close()
             flash(
-                f"You have successfully subscribed {email}, you can close this window.",
+                f"You have successfully subscribed {email}.",
                 "success",
             )
             return redirect(url_for("index"))
@@ -75,14 +89,21 @@ def submit():
         return redirect(url_for("index"))
 
 
-@app.get("/get_emails")
-def alert_users():
+@app.get("/get_users")
+def get_users():
     conn = get_db_connection()
     cursor = conn.cursor()
-    query = "SELECT email FROM emails;"
+    query = "SELECT email, districts, keywords FROM emails;"
     cursor.execute(query)
-    emails = [email[0] for email in cursor.fetchall()]
-    return {"emails": emails}
+    users = [
+        {
+            "email": user[0],
+            "districts": user[1].split(",") if user[1] else [],
+            "keywords": user[2] if user[2] else [],
+        }
+        for user in cursor.fetchall()
+    ]
+    return {"users": users}
 
 
 @app.get("/unsubscribe")
@@ -96,9 +117,11 @@ def unsubscribe():
             conn.commit()
             cursor.close()
             conn.close()
-            return f"You have successfully unsubscribed {email}, you can close this window."
+            flash(f"You have successfully unsubscribed {email}.", "danger")
+            return redirect(url_for("index"))
         except:
-            return "Something went wrong."
+            flash("Something went wrong.")
+            return redirect(url_for("index"))
     else:
         return redirect(url_for("index"))
 

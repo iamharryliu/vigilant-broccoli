@@ -10,11 +10,12 @@ import requests
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 
 
-def get_emails():
-    response = requests.get("https://gta-update-alerts-flask.fly.dev/get_emails")
+def get_users():
+    response = requests.get("https://gta-update-alerts-flask.fly.dev/get_users")
+    # response = requests.get("http://localhost:5000/get_users")
     data = response.json()
-    emails = data.get("emails", [])
-    return emails
+    users = data.get("users", [])
+    return users
 
 
 def email_users(users):
@@ -35,8 +36,15 @@ def email_users(users):
 
 
 def main():
-    emails = get_emails()
-    users = [{"email": email, "districts": [], "keywords": []} for email in emails]
+    emails = get_users()
+    users = [
+        {
+            "email": user["email"],
+            "districts": user["districts"],
+            "keywords": user["keywords"],
+        }
+        for user in emails
+    ]
     # users = [{"email": "harryliu1995@gmail.com", "keywords": [""]}]
     for user in users:
         GTAUpdateApp.get_recent_alerts_for_user(user)
