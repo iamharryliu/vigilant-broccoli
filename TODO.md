@@ -5,14 +5,14 @@
 - Q1
 
   - feat: GTA update alert
-    - email subject based on notification type (GTA, district, street levels)?
+    - keyword filters
+    - live vs hourly updates
   - feat: blog feature
     - directory
       - directory to open file
     - blog page
       - display file using markdown component
       - return to blog
-  - test: dj library cronjob
 
 - ## Q2
 
