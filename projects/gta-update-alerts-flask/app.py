@@ -1,8 +1,9 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import psycopg2
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 import requests
@@ -62,11 +63,14 @@ def submit():
             conn.commit()
             cur.close()
             conn.close()
-            return (
-                f"You have successfully subscribed {email}, you can close this window."
+            flash(
+                f"You have successfully subscribed {email}, you can close this window.",
+                "success",
             )
+            return redirect(url_for("index"))
         except:
-            return "Something went wrong. Have you already signed up?"
+            flash("Something went wrong. Have you already signed up?", "danger")
+            return redirect(url_for("index"))
     else:
         return redirect(url_for("index"))
 

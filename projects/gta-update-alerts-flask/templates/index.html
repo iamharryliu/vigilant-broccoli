@@ -13,6 +13,10 @@
   </head>
   <body div class="container-md pt-3">
     <h1>Subscribe to GTA Update Alerts</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div class="alert alert-{{category}}">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
     <p>Hourly Toronto alert notifications.</p>
     <form action="/submit" method="post">
       <div class="mb-3">
