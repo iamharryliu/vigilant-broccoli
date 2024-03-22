@@ -55,8 +55,8 @@ class GTAUpdateApp:
                 "to": user["email"],
                 "subject": "GTA Update",
                 "body": GENEREAL_MESSAGE
-                + GTAUpdateApp.get_unsubscribe_message(user["email"])
-                + GTAUpdateApp.format_for_email(filtered_alerts),
+                + GTAUpdateApp.format_for_email(filtered_alerts)
+                + GTAUpdateApp.get_unsubscribe_message(user["email"]),
             }
             user["message"] = message
 
