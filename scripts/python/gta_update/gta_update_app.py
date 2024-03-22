@@ -43,6 +43,8 @@ def get_all_gta_alerts():
 
 ALL_GTA_ALERTS = get_all_gta_alerts()
 
+GENEREAL_MESSAGE = "Too noisy? You can add filters such as TPS and TFS districts to reduce the noise at https://gta-update-alerts-flask.fly.dev/.\n\n"
+
 
 class GTAUpdateApp:
     def get_recent_alerts_for_user(user, interval=timedelta(hours=1)):
@@ -52,7 +54,8 @@ class GTAUpdateApp:
                 "from": "GTA Update",
                 "to": user["email"],
                 "subject": "GTA Update",
-                "body": f"If you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(user['email'])}\n\n"
+                "body": GENEREAL_MESSAGE
+                + GTAUpdateApp.get_unsubscribe_message(user["email"])
                 + GTAUpdateApp.format_for_email(filtered_alerts),
             }
             user["message"] = message
@@ -92,3 +95,7 @@ class GTAUpdateApp:
             [" ".join(map(str, sublist)) for sublist in list_of_lists]
         )
         return "Check https://gtaupdate.com/ for more info.\n\n" + formatted_text
+
+    @staticmethod
+    def get_unsubscribe_message(email):
+        return f"If you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote()}\n\n"
