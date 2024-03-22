@@ -42,6 +42,9 @@ DROP DATABASE [db-name];
 CREATE TABLE [table-name]
 \d [table-name]
 DROP TABLE [table-name]
+# Get Table Schema
+\d+ table name;
+
 
 # Test connection string
 pg_isready -d [connection_string]
