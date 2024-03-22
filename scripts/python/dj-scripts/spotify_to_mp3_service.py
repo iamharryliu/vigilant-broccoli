@@ -4,7 +4,9 @@ import threading
 
 
 class SpotifyToMp3Service:
-    def __init__(self, output=os.environ.get("MUSIC_LIBRARY") or "~/Music"):
+    def __init__(
+        self, output=os.environ.get("MUSIC_LIBRARY") or "~/Spotify_to_MP3_Downloads"
+    ):
         print(f"'{output}' selected as output folder")
         self.output = output
 
