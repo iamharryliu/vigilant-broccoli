@@ -6,6 +6,7 @@ sys.path.append("../../..")
 from gta_update_app import GTAUpdateApp
 from scripts.python.tools.mail_handler import MailHandler
 import requests
+from datetime import timedelta
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 
@@ -47,7 +48,7 @@ def main():
     ]
     # users = [{"email": "harryliu1995@gmail.com", "keywords": [""]}]
     for user in users:
-        GTAUpdateApp.get_recent_alerts_for_user(user)
+        GTAUpdateApp.get_recent_alerts_for_user(user, interval=timedelta(minutes=5))
     email_users(users)
 
 
