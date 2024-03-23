@@ -3,10 +3,10 @@ import os
 import sys
 import threading
 
-sys.path.append("..")
+sys.path.append("../../..")
 
 from gta_update_app import GTAUpdateApp
-from tools.mail_handler import MailHandler
+from scripts.python.tools.mail_handler import MailHandler
 
 
 emails = [
