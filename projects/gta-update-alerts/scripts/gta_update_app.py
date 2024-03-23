@@ -56,7 +56,8 @@ class GTAUpdateApp:
                 "subject": "GTA Update",
                 "body": GENEREAL_MESSAGE
                 + GTAUpdateApp.format_for_email(filtered_alerts)
-                + GTAUpdateApp.get_unsubscribe_message(user["email"]),
+                + "Unsubscribe: https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(email)}\n\n"
+                + "Check https://gtaupdate.com/ for more info.\n\n",
             }
             user["message"] = message
 
@@ -94,10 +95,4 @@ class GTAUpdateApp:
         formatted_text = "\n\n".join(
             [" ".join(map(str, sublist)) for sublist in list_of_lists]
         )
-        return (
-            "Check https://gtaupdate.com/ for more info.\n\n" + formatted_text + "\n\n"
-        )
-
-    @staticmethod
-    def get_unsubscribe_message(email):
-        return f"If you want to unsubscribe please click this link https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(email)}\n\n"
+        return formatted_text + "\n\n"
