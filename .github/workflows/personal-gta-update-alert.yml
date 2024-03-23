@@ -1,6 +1,7 @@
 name: GTA Update Alert - Personal
 
 on:
+  push: { branches: ['main'] }
   schedule: [{ cron: '*/5 * * * *' }]
 
 jobs:
@@ -10,7 +11,7 @@ jobs:
       name: production
     defaults:
       run:
-        working-directory: ./scripts/python/gta_update
+        working-directory: ./projects/gta-update-alerts/scripts
     steps:
       - name: Checkout code.
         uses: actions/checkout@v2
