@@ -2,9 +2,16 @@ import os
 import re
 from flask import Flask, render_template, request, redirect, url_for, flash
 import psycopg2
+from google_recaptcha import ReCaptcha
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+
+recaptcha = ReCaptcha(
+    app=app,
+    site_key=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY"),
+    site_secret=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY"),
+)
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 import requests
@@ -50,8 +57,10 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
+    if request.method == "POST":
+        submit_form()
     return render_template(
         "index.html", TPS_DIVISIONS=TPS_DIVISIONS, TFS_STATIONS=TFS_STATIONS
     )
@@ -62,8 +71,10 @@ def division_string(text):
     return re.match(pattern, text).group(1) + " Div"
 
 
-@app.post("/submit")
-def submit():
+def submit_form():
+    if not recaptcha.verify():
+        flash("Something went wrong. Have you already signed up?", "danger")
+        return redirect(url_for("index"))
     email = request.form["email"]
     tps_divisions = request.form.getlist("divisions")
     tps_divisions = [division_string(division) for division in tps_divisions]

@@ -21,7 +21,7 @@
       Hourly Toronto TPS and TFS alert notifications. Subscribe by entering your
       email and selecting districts to filter your notifications.
     </p>
-    <form action="/submit" method="post">
+    <form action="{{ url_for('index') }}" method="post">
       <div class="mb-4">
         <label for="email" class="form-label">Email:</label>
         <input
@@ -73,6 +73,7 @@
         </div>
       </div>
       <button class="btn btn-primary" type="submit">Submit</button>
+      {{ recaptcha }}
     </form>
     <br />
     <small>
