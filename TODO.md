@@ -7,6 +7,7 @@
   - feat: GTA update alert
     - keyword filters
     - live vs hourly updates
+    - add recaptcha
   - feat: blog feature
     - directory
       - directory to open file
