@@ -54,13 +54,14 @@
 | for me                         | för mig               | pour moi             |               |                   |                 |
 | for you                        | för dig               | pour toi             |               |                   |                 |
 | again                          | igen                  |                      |
+| another                        | en till               |                      |               |
 | **location**                   |                       |                      |               |                   |                 |
 | here                           | här                   | ici                  | aqui          | aqui              | qui             |
 | there                          | där                   | là                   | allí          |                   |                 |
-| near here                      | nära här              | pres d'ici           | cerda de aqui |                   |                 |
+| near here                      | nära här              | pres d'ici           | cerca de aqui |                   |                 |
 | far from                       | långt ifrån           | loin de              | lejos de      |                   |                 |
 | between                        | mellan                |                      |               |
-| next to                        | brevid                |                      |               |
+| next to                        | brevid                | à côté de            |               |
 | my house                       |                       | chez moi             |               |
 | I am going to [person's] house | je vais chez [person] |                      |               |                   |                 |
 | **time**                       |                       |                      |               |                   |                 |

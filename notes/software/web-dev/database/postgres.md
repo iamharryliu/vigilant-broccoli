@@ -48,6 +48,8 @@ DROP TABLE [table-name]
 
 # Test connection string
 pg_isready -d [connection_string]
+
+DELETE FROM [table_name] WHERE email = [email];
 ```
 
 ## Linux Commands
