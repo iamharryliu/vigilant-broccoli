@@ -208,3 +208,6 @@ coverage
 
 # C# Dev Kit
 .mono/
+
+credentials.json
+token.pickle

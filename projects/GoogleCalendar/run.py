@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, jsonify, redirect, url_for
+from flask import Flask, render_template, redirect, url_for
 from google_calendar import calendar_api
 from utils import get_today, get_monday_this_week_dt, get_one_week_from_dt
 from forms import CredentialForm
