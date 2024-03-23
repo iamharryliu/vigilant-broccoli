@@ -25,7 +25,7 @@
       <div class="mb-4">
         <label for="email" class="form-label">Email:</label>
         <input
-          class="form-label form-control shadow"
+          class="form-control shadow"
           type="email"
           name="email"
           id="email"
@@ -33,7 +33,7 @@
         />
       </div>
       <div class="mb-4">
-        <label class="fw-bold"
+        <label class="form-label"
           >Select Toronto Police Service Divisions (optional):</label
         ><br />
         <div class="overflow-auto card mb-4 shadow" style="max-height: 200px">
@@ -52,7 +52,7 @@
           </div>
           {% endfor %}<br />
         </div>
-        <label class="fw-bold"
+        <label class="form-label"
           >Select Toronto Fire Service Stations (optional):</label
         ><br />
         <div class="overflow-auto card mb-4 shadow" style="max-height: 200px">
@@ -71,6 +71,18 @@
           </div>
           {% endfor %}<br />
         </div>
+      </div>
+      <div class="mb-4">
+        <label for="keywords" class="form-label"
+          >Key words (optional, enter comma separated keywords that you are
+          interested in for your filter):</label
+        >
+        <textarea
+          name="keywords"
+          class="form-control"
+          id="keywords"
+          rows="3"
+        ></textarea>
       </div>
       <button class="btn btn-primary" type="submit">Submit</button>
       {{ recaptcha }}

@@ -73,21 +73,24 @@ def division_string(text):
 
 def submit_form():
     if not recaptcha.verify():
-        flash("Something went wrong. Have you already signed up?", "danger")
         return redirect(url_for("index"))
     email = request.form["email"]
     tps_divisions = request.form.getlist("divisions")
     tps_divisions = [division_string(division) for division in tps_divisions]
     tfs_stations = request.form.getlist("stations")
     districts = tps_divisions + tfs_stations
-    districts = ",".join(districts)
+    keywords = request.form["keywords"]
+    keywords = keywords.upper()
+    keywords = keywords.replace(" ", "")
+    keywords = [keyword for keyword in keywords.split(",") if keyword]
+    ",".join(keywords)
     if email:
         try:
             connection = get_db_connection()
             cursor = connection.cursor()
             cursor.execute(
-                "INSERT INTO emails (email, districts) VALUES (%s, %s) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts",
-                (email, districts),
+                "INSERT INTO emails (email, districts, keywords) VALUES (%s, %s, %s) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts, keywords = EXCLUDED.keywords",
+                (email, districts, keywords),
             )
             connection.commit()
             cursor.close()
