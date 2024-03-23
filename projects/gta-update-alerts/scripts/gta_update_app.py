@@ -56,7 +56,7 @@ class GTAUpdateApp:
                 "subject": f"GTA Update - {len(filtered_alerts)} New Alerts",
                 "body": GENEREAL_MESSAGE
                 + GTAUpdateApp.format_for_email(filtered_alerts)
-                + f"Unsubscribe: https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(email)}\n\n"
+                + f"Unsubscribe: https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(user['email'])}\n\n"
                 + "Check https://gtaupdate.com/ for more info.\n\n",
             }
             user["message"] = message
