@@ -1,9 +1,9 @@
 ## Technical Projects
 
 - [vigilant-broccoli](https://github.com/iamharryliu/vigilant-broccoli) - Personal mono-repo, houses all my code and documentation.
-- [Grind 75](https://harryliu.design/grind-75) - Compilation of Python solutions for [the Grind 75 list](https://www.techinterviewhandbook.org/grind75) leet code questions.
 - [GTA Update Alerts](https://gta-update-alerts-flask.fly.dev/) - Subscribe to get hourly notifications for Toronto Police Service and Fire Service alerts.
 - [Vibecheck Lite](https://harryliu.design/projects/vibecheck-lite/app) - Is a functional fashion-weather lifestyle tool to assist the user in deciding what to wear.
+- [Grind 75](https://harryliu.design/grind-75) - My collection of Python solutions for [the Grind 75 list](https://www.techinterviewhandbook.org/grind75) leet code questions.
 
 ### Github Action Status
 
