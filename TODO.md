@@ -6,14 +6,11 @@
 
   - fly secrets shortcut
   - feat: GTA update alert
-    - keyword filters
-    - live vs hourly updates
+    - handle live updating, Github actions cannot guarantee 5 minute intervals
   - feat: blog feature
-    - directory
-      - directory to open file
-    - blog page
-      - display file using markdown component
-      - return to blog
+    - admin entry to enter details
+    - blog styling
+    - email alerts for blogs
 
 - ## Q2
 
