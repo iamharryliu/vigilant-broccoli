@@ -1,7 +1,7 @@
 name: GTA Update Alert - Email Subscribers
 
 on:
-  schedule: [{ cron: '*/15 * * * *' }]
+  schedule: [{ cron: '*/5 * * * *' }]
 
 jobs:
   run_script:
@@ -28,4 +28,4 @@ jobs:
           GTA_UPDATE_ALERT_EMAIL: ${{ secrets.GTA_UPDATE_ALERT_EMAIL }}
           GTA_UPDATE_ALERT_EMAIL_PASSWORD: ${{ secrets.GTA_UPDATE_ALERT_EMAIL_PASSWORD }}
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
-        run: python email_subscribers.py 15
+        run: python email_subscribers.py 30
