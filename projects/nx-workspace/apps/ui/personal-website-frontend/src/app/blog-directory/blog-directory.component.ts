@@ -3,8 +3,10 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { NewsLetterSubFormComponent } from '../components/features/subscribe-form/subscribe-form.component';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 interface Blog {
+  type: string;
   filename: string;
   title: string;
   date: any;
@@ -20,21 +22,30 @@ interface Blog {
 export class BlogDirectoryComponent implements OnInit {
   blogsByYear: { [year: string]: Blog[] } = {};
 
-  constructor(private router: Router, public datePipe: DatePipe) {}
+  constructor(
+    private router: Router,
+    public datePipe: DatePipe,
+    private http: HttpClient,
+  ) {}
 
   ngOnInit(): void {
-    this.fetchBlogs();
+    this.http.get('assets/blogs.json').subscribe(data => {
+      this.fetchBlogs(data as string[]);
+    });
   }
 
-  fetchBlogs(): void {
-    const filenames = ['2024-03-15-test_blog.md'];
+  fetchBlogs(filenames: string[]): void {
     filenames.forEach(filename => {
       const parts = filename.split('-');
+      parts[parts.length - 1] = parts[parts.length - 1]
+        .replace('.md', '')
+        .trim();
       const year = parts[0];
-      const title = this.titleCase(parts[3].replace('.md', '').trim());
+      const title = this.titleCase(parts[3]);
       const [y, m, d] = parts.slice(0, 3).map(Number);
       const date = new Date(`${m}-${d}-${y}`);
-      const blog: Blog = { filename, title, date };
+      const type = parts[4];
+      const blog: Blog = { filename, title, date, type };
       if (!this.blogsByYear[year]) {
         this.blogsByYear[year] = [];
       }

@@ -1,10 +1,19 @@
 <app-general-layout>
-  <div *ngFor="let year of getObjectKeys(blogsByYear)" class="mb-8">
-    <h2 class="text-lg mb-2">{{ year }}</h2>
-    <div *ngFor="let blog of blogsByYear[year]" class="flex justify-between">
-      <p class="mr-4" (click)="goToBlog(blog)">{{ blog.title }}</p>
-      <p>{{ blog.date | date : 'MMM d' }}</p>
+  <div class="p-6">
+    <div *ngFor="let year of getObjectKeys(blogsByYear)" class="mb-8">
+      <h2 class="text-lg mb-2">{{ year }}</h2>
+      <div *ngFor="let blog of blogsByYear[year]" class="flex justify-between">
+        <p class="mr-4" (click)="goToBlog(blog)">
+          {{ blog.title }}
+          <span
+            class="inline-block bg-slate-700 font-bold text-xs text-white px-2 rounded"
+            >{{ blog.type }}</span
+          >
+        </p>
+
+        <p>{{ blog.date | date : 'MMM d' }}</p>
+      </div>
     </div>
+    <app-newsletter-sub-form></app-newsletter-sub-form>
   </div>
-  <app-newsletter-sub-form></app-newsletter-sub-form>
 </app-general-layout>
