@@ -116,7 +116,7 @@ def get_users():
     users = [
         {
             "email": user[0],
-            "districts": user[1].split(",") if user[1] else [],
+            "districts": user[1] if user[1] else [],
             "keywords": user[2] if user[2] else [],
         }
         for user in cursor.fetchall()
