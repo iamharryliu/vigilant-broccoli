@@ -1,3 +1,5 @@
+alias pingtest='ping google.com'
+
 # Open Mail
 alias openmail="code /var/mail/$(whoami)"
 alias emptymail="echo '' > /var/mail/$(whoami)"
