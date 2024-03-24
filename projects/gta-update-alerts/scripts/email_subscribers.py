@@ -26,7 +26,7 @@ def email_users(users):
     mailHandler = MailHandler(EMAIL_ADDRESS, EMAIL_ADDRESS_PASSWORD)
     threads = []
     for user in users:
-        print(f"Emailing: {users}")
+        print(f"Emailing: {user['email']}")
         thread = threading.Thread(
             target=mailHandler.send_email, args=(user["message"],)
         )
