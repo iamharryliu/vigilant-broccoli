@@ -48,7 +48,7 @@ def main():
         for user in emails
     ]
     for user in users:
-        GTAUpdateApp.get_recent_alerts_for_user(user, interval=timedelta(minutes=5))
+        GTAUpdateApp.get_recent_alerts_for_user(user, interval=timedelta(minutes=15))
     email_users(users)
 
 
