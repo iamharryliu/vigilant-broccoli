@@ -1,0 +1,197 @@
+{
+  "TPS_DIVISIONS": [
+    { "name": "11 Division", "location": " 2054 Davenport Rd." },
+    { "name": "12 Division", "location": "200 Trethewey Dr." },
+    {
+      "name": "14 Division",
+      "location": " 350 Dovercourt Rd. (14 Sub-Station is located at Exhibition Place)"
+    },
+    { "name": "22 Division", "location": " 3699 Bloor St. W." },
+    { "name": "23 Division", "location": " 5230 Finch Ave. W." },
+    { "name": "31 Division", "location": " 40 Norfinch Dr." },
+    { "name": "51 Division", "location": " 51 Parliament St." },
+    { "name": "52 Division", "location": " 255 Dundas St. W." },
+    { "name": "13 Division", "location": " 1435 Eglinton Av. W" },
+    { "name": "32 Division", "location": " 30 Ellerslie Ave." },
+    { "name": "33 Division", "location": " 50 Upjohn Rd." },
+    { "name": "41 Division", "location": " 2222 Eglinton Ave. E." },
+    { "name": "42 Division", "location": " 242 Milner Ave. E." },
+    { "name": "43 Division", "location": " 4331 Lawrence Ave. E" },
+    { "name": "53 Division", "location": " 75 Eglinton Ave. W." },
+    { "name": "55 Division", "location": " 101 Coxwell Ave." }
+  ],
+  "TFS_STATIONS": [
+    { "name": "TFS 111", "district": "11", "location": "3300 Bayview Avenue" },
+    { "name": "TFS 112", "district": "11", "location": "5700 Bathurst Street" },
+    {
+      "name": "TFS 113",
+      "district": "11",
+      "location": "700 Seneca Hill Drive"
+    },
+    { "name": "TFS 114", "district": "11", "location": "12 Canterbury Place" },
+    {
+      "name": "TFS 115",
+      "district": "11",
+      "location": "115 Parkway Forest Drive"
+    },
+    {
+      "name": "TFS 116",
+      "district": "11",
+      "location": "255 Esther Shiner Boulevard"
+    },
+    {
+      "name": "TFS 121",
+      "district": "11",
+      "location": "10 William Carson Crescent"
+    },
+    { "name": "TFS 122", "district": "11", "location": "2545 Bayview Avenue" },
+    { "name": "TFS 123", "district": "13", "location": "143 Bond Avenue" },
+    { "name": "TFS 125", "district": "13", "location": "1109 Leslie Street" },
+    { "name": "TFS 131", "district": "13", "location": "3135 Yonge Street" },
+    {
+      "name": "TFS 132",
+      "district": "13",
+      "location": "476 Lawrence Avenue West"
+    },
+    {
+      "name": "TFS 133",
+      "district": "13",
+      "location": "1507 Lawrence Avenue West"
+    },
+    { "name": "TFS 134", "district": "13", "location": "16 Montgomery Avenue" },
+    { "name": "TFS 135", "district": "13", "location": "325 Chaplin Crescent" },
+    { "name": "TFS 141", "district": "14", "location": "4100 Keele Street" },
+    { "name": "TFS 142", "district": "14", "location": "2753 Jane Street" },
+    {
+      "name": "TFS 143",
+      "district": "14",
+      "location": "1009 Sheppard Avenue West"
+    },
+    { "name": "TFS 144", "district": "14", "location": "2945 Keele Street" },
+    { "name": "TFS 145", "district": "14", "location": "20 Beffort Road" },
+    { "name": "TFS 146", "district": "14", "location": "2220 Jane Street" },
+    { "name": "TFS 211", "district": "21", "location": "900 Tapscott Road" },
+    {
+      "name": "TFS 212",
+      "district": "21",
+      "location": "8500 Sheppard Avenue East"
+    },
+    { "name": "TFS 213", "district": "21", "location": "7 Lapsley Road" },
+    { "name": "TFS 214", "district": "21", "location": "745 Meadowvale Road" },
+    {
+      "name": "TFS 215",
+      "district": "21",
+      "location": "5318 Lawrence Avenue East"
+    },
+    {
+      "name": "TFS 221",
+      "district": "22",
+      "location": "2575 Eglinton Avenue East"
+    },
+    { "name": "TFS 222", "district": "22", "location": "755 Warden Avenue" },
+    { "name": "TFS 223", "district": "22", "location": "116 Dorset Road" },
+    { "name": "TFS 224", "district": "22", "location": "1313 Woodbine Avenue" },
+    { "name": "TFS 225", "district": "22", "location": "3600 Danforth Avenue" },
+    { "name": "TFS 226", "district": "22", "location": "87 Main Street" },
+    {
+      "name": "TFS 227",
+      "district": "22",
+      "location": "1904 Queen Street East"
+    },
+    { "name": "TFS 231", "district": "23", "location": "740 Markham Road" },
+    { "name": "TFS 232", "district": "23", "location": "1550 Midland Avenue" },
+    { "name": "TFS 233", "district": "23", "location": "59 Curlew Drive" },
+    { "name": "TFS 234", "district": "23", "location": "40 Coronation Drive" },
+    { "name": "TFS 235", "district": "23", "location": "200 Bermondsey Road" },
+    { "name": "TFS 241", "district": "24", "location": "3325 Warden Avenue" },
+    { "name": "TFS 242", "district": "24", "location": "2733 Brimley Road" },
+    {
+      "name": "TFS 243",
+      "district": "24",
+      "location": "4560 Sheppard Avenue East"
+    },
+    { "name": "TFS 244", "district": "24", "location": "2340 Birchmount Road" },
+    { "name": "TFS 245", "district": "24", "location": "1600 Birchmount Road" },
+    { "name": "TFS 311", "district": "31", "location": "20 Balmoral Avenue" },
+    { "name": "TFS 312", "district": "31", "location": "34 Yorkville Street" },
+    {
+      "name": "TFS 313",
+      "district": "31",
+      "location": "411 Bloor Street East"
+    },
+    { "name": "TFS 314", "district": "31", "location": "12 Grosvenor Street" },
+    { "name": "TFS 315", "district": "31", "location": "132 Bellevue Avenue" },
+    { "name": "TFS 321", "district": "32", "location": "231 McRae Drive" },
+    { "name": "TFS 322", "district": "32", "location": "256 Cosburn Avenue" },
+    { "name": "TFS 323", "district": "32", "location": "153 Chatham Avenue" },
+    {
+      "name": "TFS 324",
+      "district": "32",
+      "location": "840 Gerrard Street East"
+    },
+    {
+      "name": "TFS 325",
+      "district": "32",
+      "location": "475 Dundas Street East"
+    },
+    { "name": "TFS 326", "district": "32", "location": "30 Knox Avenue" },
+    { "name": "TFS 331", "district": "33", "location": "33 Claremont Street" },
+    {
+      "name": "TFS 332",
+      "district": "33",
+      "location": "260 Adelaide Street West"
+    },
+    {
+      "name": "TFS 333",
+      "district": "33",
+      "location": "207 Front Street East"
+    },
+    { "name": "TFS 334", "district": "33", "location": "339 Queens Quay West" },
+    { "name": "TFS 335", "district": "33", "location": "235 Cibola Avenue" },
+    { "name": "TFS 341", "district": "34", "location": "555 Oakwood Avenue" },
+    { "name": "TFS 342", "district": "34", "location": "106 Ascot Avenue" },
+    { "name": "TFS 343", "district": "34", "location": "65 Hendrick Avenue" },
+    { "name": "TFS 344", "district": "34", "location": "240 Howland Avenue" },
+    { "name": "TFS 345", "district": "34", "location": "1285 Dufferin Street" },
+    { "name": "TFS 346", "district": "34", "location": "90 Quebec Street" },
+    { "name": "TFS 411", "district": "41", "location": "75 Toryork Drive" },
+    { "name": "TFS 412", "district": "41", "location": "267 Humberline Drive" },
+    { "name": "TFS 413", "district": "41", "location": "1549 Albion Road" },
+    { "name": "TFS 415", "district": "41", "location": "2120 Kipling Avenue" },
+    { "name": "TFS 421", "district": "42", "location": "6 Lambton Avenue" },
+    { "name": "TFS 422", "district": "42", "location": "590 Jane Street" },
+    { "name": "TFS 423", "district": "42", "location": "358 Keele Street" },
+    { "name": "TFS 425", "district": "42", "location": "83 Deforest Road" },
+    { "name": "TFS 426", "district": "42", "location": "140 Lansdowne Avenue" },
+    {
+      "name": "TFS 431",
+      "district": "43",
+      "location": "308 Prince Edward Drive South"
+    },
+    { "name": "TFS 432", "district": "43", "location": "155 The East Mall" },
+    { "name": "TFS 433", "district": "43", "location": "615 Royal York Road" },
+    { "name": "TFS 434", "district": "43", "location": "3 Lunness Road" },
+    { "name": "TFS 435", "district": "43", "location": "130 Eighth Street" },
+    {
+      "name": "TFS 441",
+      "district": "44",
+      "location": "947 Martin Grove Road"
+    },
+    {
+      "name": "TFS 442",
+      "district": "44",
+      "location": "2015 Lawrence Avenue West"
+    },
+    {
+      "name": "TFS 443",
+      "district": "44",
+      "location": "1724 Islington Avenue"
+    },
+    { "name": "TFS 444", "district": "44", "location": "666 Renforth Drive" },
+    {
+      "name": "TFS 445",
+      "district": "44",
+      "location": "280 Burnhamthorpe Road"
+    }
+  ]
+}

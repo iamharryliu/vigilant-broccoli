@@ -1,11 +1,20 @@
 import os
-import re
 from flask import Flask, render_template, request, redirect, url_for, flash
 import psycopg2
 from google_recaptcha import ReCaptcha
+from utils import get_districts_data, convert_division_string_for_scraping_data
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+
+DISTRICT_DATA = get_districts_data()
+
+DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
+
+
+def get_db_connection():
+    return psycopg2.connect(DATABASE_URL)
+
 
 recaptcha = ReCaptcha(
     app=app,
@@ -13,70 +22,25 @@ recaptcha = ReCaptcha(
     site_secret=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY"),
 )
 
-DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
-import requests
-from bs4 import BeautifulSoup
-
-url = "https://en.wikipedia.org/wiki/Toronto_Police_Service"
-response = requests.get(url)
-soup = BeautifulSoup(response.text, "html.parser")
-TPS_DATA = []
-for i in range(3, 5):
-    for li in soup.find_all("div", class_="div-col")[i].find_all("li"):
-        text = li.text.strip()
-        TPS_DATA.append(li.text.strip().split(","))
-TPS_DIVISIONS = [
-    {"name": division[0], "location": division[1]} for division in TPS_DATA
-]
-print(len(TPS_DIVISIONS) == 16)
-
-url = "https://en.wikipedia.org/wiki/Toronto_Fire_Services"
-response = requests.get(url)
-soup = BeautifulSoup(response.text, "html.parser")
-TFS_DATA = []
-for i in range(2, 6):
-    table = soup.find_all("table", class_="wikitable")[i]
-    for row in table.find_all("tr")[1:]:
-        row_data = []
-        cells = row.find_all(["th", "td"])
-        row_data.extend(cell.get_text(strip=True) for cell in cells)
-        TFS_DATA.append(row_data)
-print(len(TFS_DATA) == 84)
-
-TFS_STATIONS = [
-    {
-        "name": f"TFS {station[0]}",
-        "district": station[1],
-        "location": station[8].split(",")[0],
-    }
-    for station in TFS_DATA
-]
-
-
-def get_db_connection():
-    return psycopg2.connect(DATABASE_URL)
-
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    if request.method == "POST":
+    if request.method == "POST" and recaptcha.verify():
         submit_form()
     return render_template(
-        "index.html", TPS_DIVISIONS=TPS_DIVISIONS, TFS_STATIONS=TFS_STATIONS
+        "index.html",
+        TPS_DIVISIONS=DISTRICT_DATA["TPS_DIVISIONS"],
+        TFS_STATIONS=DISTRICT_DATA["TFS_STATIONS"],
     )
 
 
-def division_string(text):
-    pattern = r"^(\d+) Division$"
-    return re.match(pattern, text).group(1) + " Div"
-
-
 def submit_form():
-    if not recaptcha.verify():
-        return redirect(url_for("index"))
     email = request.form["email"]
     tps_divisions = request.form.getlist("divisions")
-    tps_divisions = [division_string(division) for division in tps_divisions]
+    tps_divisions = [
+        convert_division_string_for_scraping_data(division)
+        for division in tps_divisions
+    ]
     tfs_stations = request.form.getlist("stations")
     districts = tps_divisions + tfs_stations
     keywords = request.form["keywords"]
