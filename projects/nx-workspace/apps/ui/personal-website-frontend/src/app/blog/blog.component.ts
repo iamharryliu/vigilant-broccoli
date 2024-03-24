@@ -22,9 +22,11 @@ export class BlogComponent implements OnInit {
 
   ngOnInit(): void {
     const date = this.route.snapshot.paramMap.get('date') as string;
-    const filename = this.route.snapshot.paramMap.get('filename') as string;
+    const subject = this.route.snapshot.paramMap.get('type') as string;
+    let filename = this.route.snapshot.paramMap.get('filename') as string;
+    filename = filename.replace(/\s/g, '%20');
     if (filename) {
-      this.filename = `assets/blogs/${date}-${filename}.md`;
+      this.filename = `assets/blogs/${date}-${filename}-${subject}.md`;
     }
   }
 }

@@ -46,7 +46,7 @@ export const BLOG_DIRECTORY_ROUTE: Route = {
 };
 
 export const BLOG_ROUTE: Route = {
-  path: 'blogs/:date/:filename',
+  path: 'blogs/:date/:type/:filename',
   data: { title: 'blog' },
   component: BlogComponent,
 };

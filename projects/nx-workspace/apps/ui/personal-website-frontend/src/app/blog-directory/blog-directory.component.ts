@@ -70,6 +70,6 @@ export class BlogDirectoryComponent implements OnInit {
     const date = this.datePipe.transform(blog.date, 'yyyy-MM-dd');
     const title = parts[3].replace('.md', '').trim();
     console.log(`/blogs/${date}/${title}`);
-    this.router.navigateByUrl(`/blogs/${date}/${title}`);
+    this.router.navigateByUrl(`/blogs/${date}/${blog.type}/${title}`);
   }
 }
