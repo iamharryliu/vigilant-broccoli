@@ -19,7 +19,6 @@
     - feat: automate getting resume, sync to desktop??
     - feat: loading spinners
     - style: update typography
-    - feat: blog section
   - passive
     - chore: blog writing
     - chore: get involved in open source
