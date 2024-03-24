@@ -4,13 +4,15 @@
 
 - Q1
 
-  - fly secrets shortcut
-  - feat: GTA update alert
-    - handle live updating, Github actions cannot guarantee 5 minute intervals
   - feat: blog feature
     - admin entry to enter details
     - blog styling
     - email alerts for blogs
+  - feat: GTA update alert
+
+    - handle live updating, Github actions cannot guarantee 5 minute intervals
+
+  - fly secrets shortcut
 
 - ## Q2
 
