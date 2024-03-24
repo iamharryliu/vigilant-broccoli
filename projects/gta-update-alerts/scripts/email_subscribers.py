@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 import threading
@@ -13,7 +14,6 @@ DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 
 def get_users():
     response = requests.get("https://gta-update-alerts-flask.fly.dev/get_users")
-    # response = requests.get("http://localhost:5000/get_users")
     data = response.json()
     users = data.get("users", [])
     return users
@@ -38,6 +38,10 @@ def email_users(users):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Process alerts for users.")
+    parser.add_argument("minutes", type=int, help="Interval in minutes")
+    args = parser.parse_args()
+    minutes = args.minutes
     emails = get_users()
     users = [
         {
@@ -48,7 +52,9 @@ def main():
         for user in emails
     ]
     for user in users:
-        GTAUpdateApp.get_recent_alerts_for_user(user, interval=timedelta(minutes=15))
+        GTAUpdateApp.get_recent_alerts_for_user(
+            user, interval=timedelta(minutes=minutes)
+        )
     email_users(users)
 
 
