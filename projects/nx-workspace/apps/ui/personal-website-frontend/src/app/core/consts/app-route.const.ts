@@ -221,7 +221,7 @@ const SKATE_IG: Link = {
 
 const RESUME: Link = {
   url: {
-    external: ENVIRONMENT.URLS.RESUME,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/assets/HarryLiu-Resume.pdf`,
   },
   text: 'Resume',
 };
