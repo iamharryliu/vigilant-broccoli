@@ -4,6 +4,7 @@
 
 - Q1
 
+  - deploy on push for personal-website frontend
   - feat: blog feature
     - admin entry to enter details
     - blog styling
