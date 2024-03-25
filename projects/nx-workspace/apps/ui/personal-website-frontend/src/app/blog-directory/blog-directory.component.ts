@@ -20,7 +20,7 @@ interface Blog {
   templateUrl: './blog-directory.component.html',
 })
 export class BlogDirectoryComponent implements OnInit {
-  blogsByYear: { [year: string]: Blog[] } = {};
+  blogsByYear: Record<string, Blog[]> = {};
 
   constructor(
     private router: Router,

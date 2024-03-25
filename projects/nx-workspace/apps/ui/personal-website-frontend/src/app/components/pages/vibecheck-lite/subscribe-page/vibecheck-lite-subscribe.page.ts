@@ -49,7 +49,7 @@ export class VibecheckLiteSubscribePageComponent {
       });
   }
 
-  submit$: Subject<boolean> = new Subject();
+  submit$ = new Subject<boolean>();
 
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),

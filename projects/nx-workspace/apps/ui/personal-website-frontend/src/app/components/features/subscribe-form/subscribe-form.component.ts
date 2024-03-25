@@ -18,7 +18,7 @@ import { CommonService } from '../../../core/services/common.service';
   imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
 })
 export class NewsLetterSubFormComponent {
-  submit$: Subject<boolean> = new Subject();
+  submit$ = new Subject<boolean>();
 
   constructor(private commonService: CommonService) {
     this.submit$

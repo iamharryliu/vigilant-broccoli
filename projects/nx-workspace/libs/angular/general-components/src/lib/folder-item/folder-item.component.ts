@@ -14,7 +14,7 @@ export class FolderItemComponent {
   @Input() item!: FolderItem;
   @Output() fileEmitter = new EventEmitter();
 
-  expanded: boolean = false;
+  expanded = false;
 
   selectFile(file: FolderItem) {
     this.fileEmitter.emit(file);

@@ -15,7 +15,7 @@ import { LinkComponent } from 'general-components';
   imports: [CommonModule, ReactiveFormsModule, LinkComponent],
 })
 export class ContactComponent {
-  submit$: Subject<boolean> = new Subject();
+  submit$ = new Subject<boolean>();
 
   constructor(private commonService: CommonService) {
     this.submit$
