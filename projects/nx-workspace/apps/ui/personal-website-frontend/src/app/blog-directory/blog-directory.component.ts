@@ -42,8 +42,8 @@ export class BlogDirectoryComponent implements OnInit {
         .trim();
       const year = parts[0];
       const title = this.titleCase(parts[3]);
-      const [y, m, d] = parts.slice(0, 3).map(Number);
-      const date = new Date(`${m}-${d}-${y}`);
+      const [y, m, d] = parts.slice(0, 3).map(String);
+      const date = new Date(`${y}-${m}-${d}T00:00`);
       const type = parts[4];
       const blog: Blog = { filename, title, date, type };
       if (!this.blogsByYear[year]) {
@@ -67,9 +67,8 @@ export class BlogDirectoryComponent implements OnInit {
 
   goToBlog(blog: Blog) {
     const parts = blog.filename.split('-');
-    const date = this.datePipe.transform(blog.date, 'yyyy-MM-dd');
+    const date = this.datePipe.transform(blog.date.toISOString(), 'yyyy-MM-dd');
     const title = parts[3].replace('.md', '').trim();
-    console.log(`/blogs/${date}/${title}`);
-    this.router.navigateByUrl(`/blogs/${date}/${blog.type}/${title}`);
+    this.router.navigateByUrl(`blogs/${date}/${blog.type}/${title}`);
   }
 }
