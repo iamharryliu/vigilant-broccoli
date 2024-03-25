@@ -234,12 +234,20 @@ const MD_LIBRARY: Link = {
   text: 'DocsMD',
 };
 
+const BLOGS: Link = {
+  url: {
+    internal: `/${BLOG_DIRECTORY_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${BLOG_DIRECTORY_ROUTE.path}`,
+  },
+  text: 'Blog',
+};
 const INTERNAL_LINKS = {
   INDEX_PAGE,
   ABOUT_PAGE,
   LINK_TREE,
   PROJECTS_PAGE,
   MD_LIBRARY,
+  BLOGS,
 };
 
 const PROJECT_LINKS = {
