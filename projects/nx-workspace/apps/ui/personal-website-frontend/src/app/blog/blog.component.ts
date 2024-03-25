@@ -4,11 +4,16 @@ import { ActivatedRoute } from '@angular/router';
 import { AppService } from '../core/services/app.service';
 import { DocsMdPageService } from '../docs-md/docs-md.page.service';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
+import { NewsLetterSubFormComponent } from '../components/features/subscribe-form/subscribe-form.component';
 
 @Component({
   selector: 'app-blog-directory',
   standalone: true,
-  imports: [MarkdownPageComponent, GeneralLayoutComponent],
+  imports: [
+    MarkdownPageComponent,
+    GeneralLayoutComponent,
+    NewsLetterSubFormComponent,
+  ],
   templateUrl: './blog.component.html',
 })
 export class BlogComponent implements OnInit {
