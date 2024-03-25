@@ -42,7 +42,7 @@ alias presto='open -a "Google Chrome" "https://www.prestocard.ca/en/account-dash
 alias checkpaidservices='freedomusage && preso'
 
 alias applestorage='open -a "Google Chrome" "https://www.icloud.com/storage/"'
-alias googlestorage='open -a "Google Chrome" "https://www.icloud.com/storage/"'
+alias googlestorage='open -a "Google Chrome" "https://one.google.com/storage"'
 alias checkstorage='applestorage && googlestorage'
 
 # Photos
