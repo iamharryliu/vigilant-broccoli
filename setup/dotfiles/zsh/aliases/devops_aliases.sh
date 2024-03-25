@@ -88,3 +88,6 @@ alias nxbuild="cdnx && nx build --skip-nx-cache"
 alias nxdeploy="cdnx && nx deploy --skip-nx-cache"
 alias nxbuildall="cdnx nx run-many -t=build"
 alias nxdeployall="cdnx nx run-many -t=deploy"
+
+# Analytics
+alias openanalytics='open -a "Google Chrome" "https://analytics.google.com/analytics/web/#/p433700665/reports/reportinghub"'

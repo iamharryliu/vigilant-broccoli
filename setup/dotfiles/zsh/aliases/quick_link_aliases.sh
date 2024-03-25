@@ -3,7 +3,7 @@ alias opengmail='open -a "Google Chrome" "https://gmail.com/"'
 alias openyoutube='open -a "Google Chrome" "https://www.youtube.com/"'
 alias openudemy='open -a "Google Chrome" "https://www.udemy.com/"'
 alias openamazon='open -a "Google Chrome" "https://www.amazon.ca/"'
-alias openchatgpt='open -a "Google Chrome" "https://chat.openai.com/"'
+alias openchat='open -a "Google Chrome" "https://chat.openai.com/"'
 alias google="~/shell-scripts/google_search.sh"
 alias youtube="~/shell-scripts/youtube_search.sh"
 alias amazon="~/shell-scripts/amazon_search.sh"
@@ -39,3 +39,11 @@ alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
 # Health Checks
 alias freedomusage='open -a "Google Chrome" "https://myaccount.freedommobile.ca/usage"'
 alias presto='open -a "Google Chrome" "https://www.prestocard.ca/en/account-dashboard"'
+alias checkpaidservices='freedomusage && preso'
+
+alias applestorage='open -a "Google Chrome" "https://www.icloud.com/storage/"'
+alias googlestorage='open -a "Google Chrome" "https://www.icloud.com/storage/"'
+alias checkstorage='applestorage && googlestorage'
+
+# Photos
+alias googlephotos='open -a "Google Chrome" "https://photos.google.com/?pli=1"'
