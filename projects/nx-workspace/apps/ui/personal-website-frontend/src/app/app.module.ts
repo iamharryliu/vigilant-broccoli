@@ -10,7 +10,10 @@ import { SuccessInterceptor } from './core/interceptors/success.interceptor';
 import { AppService } from './core/services/app.service';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { RecaptchaInterceptor } from 'general-components';
-import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
+import {
+  NgxGoogleAnalyticsModule,
+  NgxGoogleAnalyticsRouterModule,
+} from 'ngx-google-analytics';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +23,7 @@ import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
     HttpClientModule,
     RecaptchaV3Module,
     NgxGoogleAnalyticsModule.forRoot(ENVIRONMENT.ANALYTICS_ID),
+    NgxGoogleAnalyticsRouterModule,
   ],
   providers: [
     {
