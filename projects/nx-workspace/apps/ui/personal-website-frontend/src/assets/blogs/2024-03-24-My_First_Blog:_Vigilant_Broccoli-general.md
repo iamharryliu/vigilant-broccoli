@@ -8,7 +8,7 @@ There's many things I want to write about but I guess I'll start by telling abou
 
 ### **_What is vigilant-broccoli?_**
 
-_vigilant-broccoli_ is my personal monorepo (a topic I will write about in the future), essentially a compilation of code and documents written by me, bundled up and stored somewhere on the internet. That includes this blog, everything on _harryliu.design_ and more. I got the name _vigilant-broccoli_ from a random name generator when I initially created the repository on Github(a place code people put code). The original intention of _vigilant-broccoli_ was to be more or less a software development toolkit (similar to a toolbox for a repairman) containing things from generic base applications built on popular technologies, code snippets, sandbox environments, etc.. but it became more than just that..
+_vigilant-broccoli_ is my personal monorepo (a topic I will write about in the future), essentially a compilation of code and documents written by me, bundled up and stored somewhere on the internet. That includes this blog, everything on _harryliu.design_ and more. What you're lookng at right now is _vigilant-broccoli_. The original intention of _vigilant-broccoli_ was to be more or less a software development toolkit (similar to a toolbox for a repairman) containing things from generic base applications built on popular technologies, code snippets, sandbox environments, etc.. but it became more than just that.. Also if you're curious, the name _vigilant-broccoli_ from a random name generator when I initially created the repository on Github(a place code people put code).
 
 <div style="text-align:center;">
     <img title="Divine Tree" alt="Divine Tree" src="https://static1.dualshockersimages.com/wordpress/wp-content/uploads/2022/10/Divine-Tree-Mob-Psycho.jpg" height="200px">
@@ -19,7 +19,7 @@ _vigilant-broccoli_ is my personal monorepo (a topic I will write about in the f
 - **Software Development:** First and foremost _vigilant-broccoli_ is where I exercise my enthusiasm for software development. It's where I work on my craft, writing code, and building things that I feel like. _vigilant-broccoli_ has gotten to the point that it not only makes my software development life easier but more enjoyable.
 - **Personal Life**: _vigilant-broccoli_ grew to be more than just a software development toolkit, it has became more involved in my personal life in ways that I wouldn't have imagined at the time of starting the codebase. _vigilant-broccoli_ has integrated with my personal lifestyle and hobbies, containing documentation for my interests such as cooking recipes and notes, code scripts that I use to make enjoying my hobbies easier, and organization tools for my thoughts and time management.
 
-_vigilant broccoli_ is a reflection of me in code. It's the ten thousand hours plus of work that have I put into coding, wrapped up into about 20Mb of data. It's my interests and hobbies, a lifestyle tool, a safe space, and a project that I will probably work on for years to come hopefully.
+_vigilant broccoli_ is an extension of myself, it's the ten thousand hours plus of work that have I put into coding, wrapped up into about 20Mb of data, it's my interests and hobbies, a lifestyle tool, a safe space, and a project that I will probably work on for years to come hopefully.
 
 So with the explanation of _vigilant-broccoli_ out the way I can address why I am blogging. I think it comes down to these 3 key reasons:
 
