@@ -43,6 +43,7 @@ export class BlogDirectoryComponent implements OnInit {
       const year = parts[0];
       const title = this.titleCase(parts[3]);
       const [y, m, d] = parts.slice(0, 3).map(String);
+      // TODO: clean this up
       const date = new Date(`${y}-${m}-${d}T00:00`);
       const type = parts[4];
       const blog: Blog = { filename, title, date, type };
