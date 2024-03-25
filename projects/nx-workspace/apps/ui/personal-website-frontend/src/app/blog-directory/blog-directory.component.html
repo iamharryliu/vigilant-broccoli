@@ -6,8 +6,9 @@
         <p class="mr-4" (click)="goToBlog(blog)">
           {{ blog.title }}
           <span
-            class="inline-block bg-slate-700 font-bold text-xs text-white px-2 rounded">{{
-            blog.type }}</span>
+            class="inline-block bg-slate-700 font-bold text-xs text-white px-2 rounded"
+            >{{ blog.type }}</span
+          >
         </p>
 
         <p>{{ blog.date | date : 'MMM d' }}</p>
