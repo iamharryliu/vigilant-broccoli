@@ -35,4 +35,9 @@ I always wanted to participate more in the hobbies I'm in but didn't know how. I
 
 It's a bit of give and take here.. Writing the code to make this blog tool feeds my coding hobby and the blog tool itself feeds my creative writing which also is going to fuel the mental engagement with my other interests through the topics I'm going to blog about. I really do get a kick out of writing lines of code and writing a blog too seemed fun enough. 😅
 
-Like _vigilant-broccoli_ my blog series is a work in progress and probably going to get a bit of a makeover to make it look a bit less ugly. If you read this far I appreciate your interst and hope you were able to take something away from it. Feel free to share your opinion on my blog series, would love to hear what you have to say. Until next time. ✌️
+Like _vigilant-broccoli_ my blog series is a work in progress and probably going to get a bit of a makeover to make it look a bit less ugly. If you read this far I appreciate your interst and hope you were able to take something away from it. Feel free to share your opinion on my blog series, would love to hear what you have to say. Until next time.
+
+### More info:
+
+- vigilant-broccoli - https://github.com/iamharryliu/vigilant-broccoli
+- Monorepo wiki - https://en.wikipedia.org/wiki/Monorepo
