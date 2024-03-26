@@ -4,6 +4,7 @@ import { GeneralLayoutComponent } from '../components/layouts/general/genreral-l
 import { NewsLetterSubFormComponent } from '../components/features/subscribe-form/subscribe-form.component';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { BlogService } from '../core/services/blog.service';
 
 interface Blog {
   type: string;
@@ -26,6 +27,7 @@ export class BlogDirectoryComponent implements OnInit {
     private router: Router,
     public datePipe: DatePipe,
     private http: HttpClient,
+    private blogService: BlogService,
   ) {}
 
   ngOnInit(): void {
@@ -41,7 +43,7 @@ export class BlogDirectoryComponent implements OnInit {
         .replace('.md', '')
         .trim();
       const year = parts[0];
-      const title = this.titleCase(parts[3]);
+      const title = this.blogService.titleCase(parts[3]);
       const [y, m, d] = parts.slice(0, 3).map(String);
       // TODO: clean this up
       const date = new Date(`${y}-${m}-${d}T00:00`);
@@ -59,10 +61,6 @@ export class BlogDirectoryComponent implements OnInit {
 
   getObjectKeys(obj: any): string[] {
     return Object.keys(obj);
-  }
-
-  titleCase(str: string): string {
-    return str.split('_').join(' ');
   }
 
   goToBlog(blog: Blog) {

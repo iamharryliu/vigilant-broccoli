@@ -1,9 +1,11 @@
+// TODO: refactor!!
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, tap } from 'rxjs';
 import { AppService } from './core/services/app.service';
 import { TAILWIND_BREAKPOINTS } from '@prettydamntired/test-lib';
+import { BlogService } from './core/services/blog.service';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +17,7 @@ export class AppComponent implements OnInit {
     private titleService: Title,
     private appService: AppService,
     private route: ActivatedRoute,
+    private blogService: BlogService,
   ) {
     this.checkWindowSize();
   }
@@ -46,6 +49,11 @@ export class AppComponent implements OnInit {
 
   getTitle() {
     const child: ActivatedRoute | null = this.route.firstChild;
+    console.log(this.route.firstChild);
+    const filename = this.route.firstChild?.snapshot.params['filename'];
+    if (filename) {
+      return this.blogService.titleCase(filename);
+    }
     const TITLE = child && child.snapshot.data['title'];
     if (TITLE != null) {
       return TITLE;

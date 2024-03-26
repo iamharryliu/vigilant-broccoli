@@ -2,8 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AppComponent } from './app.component';
+import { BlogService } from './core/services/blog.service';
 
 window.scrollTo = jest.fn();
 
@@ -19,6 +20,12 @@ class MockRouter {
   });
 }
 
+class MockBlogService {
+  getBlogPosts() {
+    return of([]);
+  }
+}
+
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let titleService: Title;
@@ -30,11 +37,18 @@ describe('AppComponent', () => {
       imports: [RouterTestingModule],
       providers: [
         {
+          provide: BlogService,
+          useClass: MockBlogService,
+        },
+        {
           provide: ActivatedRoute,
           useValue: {
             firstChild: {
               snapshot: {
                 data: {},
+                params: {
+                  filename: '',
+                },
               },
             },
           },
