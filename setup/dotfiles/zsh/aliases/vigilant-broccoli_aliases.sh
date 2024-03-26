@@ -4,12 +4,14 @@ alias brewdump="rm ~/$REPO_NAME/setup/mac/Brewfile && brew bundle dump --file=~/
 alias cdvb="cd ~/$REPO_NAME/"
 alias cdnx="cd ~/$REPO_NAME/projects/nx-workspace/"
 alias grind75="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75"
-alias pushtodo="cdvb && git add TODO.md && gc docs 'update TODO.md' && gpush"
-alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md && gc docs 'update md files'"
+# TODO: deprecate commit and pushmd
+alias commitmd="cdvb && git add TODO.md snippets/*.md notes/**/*.md && gc docs 'update md files'"
 alias pushmd="commitmd && gpush"
+alias pushtodo="cdvb && git add TODO.md && gc docs todo 'update TODO.md' && gpush"
+alias pushreadme="cdvb && git add README.md && gc docs readme 'update root README.md' && gpush"
 # TODO: look at cost benefit of this vs git magic
 alias commitdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles'"
-alias pushaliases="cdvb && git add setup/dotfiles/**/aliases && gc feat aliases 'update aliases'"
+alias pushaliases="cdvb && git add setup/dotfiles/**/aliases && gc feat aliases 'update aliases' && gpush"
 alias pushdotfiles="commitdotfiles && gpush"
 alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
 alias openactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
