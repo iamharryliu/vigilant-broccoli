@@ -30,7 +30,7 @@ export class BlogComponent implements OnInit {
     const subject = this.route.snapshot.paramMap.get('type') as string;
     let filename = this.route.snapshot.paramMap.get('filename') as string;
     filename = filename.replace(/\s/g, '%20');
-    if (filename && subject !== undefined) {
+    if (filename && subject === undefined) {
       this.filename = `assets/blogs/${date}-${filename}.md`;
     } else {
       this.filename = `assets/blogs/${date}-${filename}-${subject}.md`;
