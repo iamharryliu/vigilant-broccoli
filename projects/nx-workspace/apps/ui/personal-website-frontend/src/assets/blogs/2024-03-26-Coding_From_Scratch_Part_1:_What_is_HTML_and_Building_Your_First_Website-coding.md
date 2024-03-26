@@ -16,7 +16,7 @@ Let's get into it and build our first _website_.
 - save the file on your computer Desktop as _hello-world.html_
 - Double click the hello-world.html file on your Desktop and voila, you have created your first webpage!
 
-HTML is a block style language written in what they call **tags** that **open and close** like the **&lt;h1></h1>** used and **self enclosing tags** such as the **&lt;hr/>** tag used. For a complete list of the different types of HTML tags you can use checkout the link in the _References_ section.
+HTML is a block style language written in what they call **tags** that **open and close** like the **&lt;h1>&lt;/h1>** used and **self enclosing tags** such as the **&lt;hr/>** tag used. For a complete list of the different types of HTML tags you can use checkout the link in the _References_ section.
 
 ## References
 
