@@ -4,10 +4,9 @@
 
 - Q1
 
-  - deploy on push for personal-website frontend
   - feat: blog feature
-    - admin entry to enter details
-    - blog styling
+    - deploy on push for personal-website frontend + hook for blogs.json
+    - blog styling and urls handling
     - email alerts for blogs
   - feat: GTA update alert
 
