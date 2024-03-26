@@ -2,7 +2,7 @@
 
 ## About
 
-vigilant-broccoli is my personal mono-repo that I use to house all the code (or most) and documentation that I am working on.
+vigilant-broccoli is my personal monorepo, developer toolkit and passion project.
 
 <img src="https://i.pinimg.com/564x/b7/62/38/b762386c0bbb20dec77c2632f73d28a8.jpg" alt="broccoli" width="200"/>
 
