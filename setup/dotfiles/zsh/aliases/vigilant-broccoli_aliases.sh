@@ -8,6 +8,7 @@ alias pushtodo="cdvb && git add TODO.md && gc docs 'update TODO.md' && gpush"
 alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md && gc docs 'update md files'"
 alias pushmd="commitmd && gpush"
 alias commitdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles'"
+alias pushaliases="cdvb && git add setup/dotfiles/**/aliases && gc feat aliases 'update aliases'"
 alias pushdotfiles="commitdotfiles && gpush"
 alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
 alias openactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
@@ -27,3 +28,4 @@ alias openvbactions='open -a "Google Chrome" "https://github.com/iamharryliu/vig
 # harryliu.design
 alias servepw="cdnx && npm run serve:personal-website"
 alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
+alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'update site content' && gpush"
