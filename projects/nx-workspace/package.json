@@ -117,7 +117,5 @@
       "npm run format:commit"
     ]
   },
-  "nx": {
-    "includedScripts": []
-  }
+  "nx": {}
 }
