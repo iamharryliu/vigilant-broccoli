@@ -47,3 +47,9 @@ alias checkstorage='applestorage && googlestorage'
 
 # Photos
 alias googlephotos='open -a "Google Chrome" "https://photos.google.com/?pli=1"'
+
+# Iceskating
+alias heronparkleisureskateschedule='open -a "Google Chrome" "https://www.toronto.ca/data/parks/prd/skating/dropin/leisure/index.html#loc_633"'
+alias centennialskateschedule='open -a "Google Chrome" "https://www.toronto.ca/data/parks/prd/skating/dropin/leisure/index.html#loc_537"'
+alias scarboroughvillageskateschedule='open -a "Google Chrome" "https://www.toronto.ca/data/parks/prd/skating/dropin/leisure/index.html#loc_743"'
+alias checkiceskatetimes='heronparkleisureskateschedule && centennialskateschedule && scarboroughvillageskateschedule'
