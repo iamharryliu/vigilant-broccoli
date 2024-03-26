@@ -84,7 +84,8 @@
 | how                            | hur                   | comment              | como          |
 | how much                       | hur mycket            | combien              | cuanto        |
 | which                          | vilken                | quel                 | cual          |
-| is it..?                       | det är                | est-ce/c'            | es/esta..?    |
+| is it..?                       | det är..?             | est-ce/c'..?         | es/esta..?    |
+| is there..?                    | det finns..?          | il y a..?            | hay..?        |
 | are you going to..?            | ska du..?             | est-ce que tu vas..? | va a..?       |
 | do you want..?                 | vill du..?            | voulez-vous..?       | quiere..?     |
 | do you have..?                 | har du..?             | avez-vous..?         | tiene..?      |
