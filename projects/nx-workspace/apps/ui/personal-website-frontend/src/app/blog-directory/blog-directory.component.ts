@@ -52,6 +52,9 @@ export class BlogDirectoryComponent implements OnInit {
       }
       this.blogsByYear[year].push(blog);
     });
+    Object.values(this.blogsByYear).forEach(blogs => {
+      blogs.sort((a, b) => b.date.getTime() - a.date.getTime());
+    });
   }
 
   getObjectKeys(obj: any): string[] {
@@ -59,11 +62,7 @@ export class BlogDirectoryComponent implements OnInit {
   }
 
   titleCase(str: string): string {
-    return str
-      .toLowerCase()
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+    return str.split('_').join(' ');
   }
 
   goToBlog(blog: Blog) {
