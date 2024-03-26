@@ -7,6 +7,7 @@ alias grind75="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75"
 alias pushtodo="cdvb && git add TODO.md && gc docs 'update TODO.md' && gpush"
 alias commitmd="cdvb && git add README.md TODO.md snippets/*.md notes/**/*.md && gc docs 'update md files'"
 alias pushmd="commitmd && gpush"
+# TODO: look at cost benefit of this vs git magic
 alias commitdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles'"
 alias pushaliases="cdvb && git add setup/dotfiles/**/aliases && gc feat aliases 'update aliases'"
 alias pushdotfiles="commitdotfiles && gpush"
