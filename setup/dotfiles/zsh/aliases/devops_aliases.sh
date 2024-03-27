@@ -56,6 +56,9 @@ function r2clear() {
 
 # FlyIO
 alias flydashboard='open -a "Google Chrome" "https://fly.io/dashboard"'
+alias flyscalecount='flyctl scale count'
+alias flylogs='flyctl logs --app'
+
 alias flyls='fly apps list'
 alias flydeploy='fly deploy --ha=false'
 alias flyopen='fly apps open --app'
@@ -65,8 +68,7 @@ alias flymachinestatus='flyctl machine status'
 alias startflymachine='flyctl machine start --app'
 alias stopflymachine='flyctl machine stop --app'
 alias restartflymachine='flyctl machine restart --app'
-alias flyscalecount='flyctl scale count'
-alias flylogs='flyctl logs --app'
+alias flysetsecret='~/shell-scripts/set_fly_secret.sh'
 function flymonitor() {
     if [ -z "$1" ]; then
         echo "Usage: fly-monitor <app_name>"

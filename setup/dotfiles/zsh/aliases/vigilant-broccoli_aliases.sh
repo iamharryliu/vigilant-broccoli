@@ -11,7 +11,7 @@ alias pushtodo="cdvb && git add TODO.md && gc docs todo 'update TODO.md' && gpus
 alias pushreadme="cdvb && git add README.md && gc docs readme 'update root README.md' && gpush"
 # TODO: look at cost benefit of this vs git magic
 alias commitdotfiles="cdvb && git add setup/dotfiles && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles'"
-alias pushaliases="cdvb && git add setup/dotfiles/**/aliases && gc feat aliases 'update aliases' && gpush"
+alias pushaliases="cdvb && git add setup/dotfiles/zsh/aliases/ setup/dotfiles/zsh/scripts/ && gc feat aliases 'update aliases' && gpush"
 alias pushdotfiles="commitdotfiles && gpush"
 alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
 alias openactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
