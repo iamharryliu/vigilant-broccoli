@@ -2,7 +2,7 @@
 
 Now that you have your super awesome site from [Coding From Scratch Part 1](https://harryliu.design/blogs/2024-03-26/coding/Coding_From_Scratch_Part_1:_What_is_HTML_and_Building_Your_First_Website) we might want to make style changes to it so let's do something about that.
 
-Web developers style websites with instructions called **CSS** (Cascading Style Sheet) which is a text file that **gives instructions on how our blocks of HTML should be styled**. There are several layers to CSS(as with any topic) and since this is more of a laymen/beginner tutorial we will keep it fairly simple with the bare bone basics of the gist of what we can do with it and how web developers write CSS.
+Web developers style websites with instructions called **CSS** (Cascading Style Sheet) which is a **text file that gives instructions on how our blocks of HTML should be styled**. There are several layers to CSS(as with any topic) and since this is more of a laymen/beginner tutorial we will keep it fairly simple with the bare bone basics of the gist of what we can do with it and how web developers write CSS.
 
 <p style="color: red; font-size: 24px;">This is a paragraph with red text and larger font size.</p>
 <p style="background-color: blue; color: white;">This is another paragraph with blue background and white text.</p>
@@ -71,8 +71,20 @@ In your HTML file you can write a link tag to link the stylesheet from _style.cs
 <p>This paragraph tag uses external styling.</p>
 ```
 
+There you go! In this blog we described very generally what CSS is and 3 different ways to style CSS! If you tried the three different methods I mentioned above then you should get similar looking results in terms of style for all three of them (different text content).
+
+## Site Makeover
+
+So let's add some styling to our personal website from the previous blog. If you add the inline styling to the _hello-world.html_ file from part one you should get a stylized website.
+
+```
+<h1 style="text-align: center; color: #333; font-family: Arial, sans-serif;">Hello World, this is my first website</h1>
+<hr style="border-color: #333;">
+<p style="text-align: center; font-size: 16px; line-height: 1.6; color: #666; font-family: Arial, sans-serif;">This is a paragraph in my website</p>
+```
+
+There we go, we got some style on our cool website now!
+
 ## Summary
 
-There you go! In this blog we described very generally what CSS is and 3 different ways to style CSS! If you tried the three different methods I mentioned above then you should get similar looking results in terms of style for all three of them (different text content). In short, **CSS is what web developers use to tell HTML how it should look** and they can be implemented in three different ways: _inline, internal/embedded, external_.
-
-Of couse there are the more advanced CSS techniques such as display types, overflow, float, z-index and more but this blog is suppose to be bite sized digestable chunks of software development knowledge to get a beginner understanding what web development is so I will save those topics for a more advance level overview.
+In short, **CSS is what web developers use to tell HTML how it should look** and it can be implemented in three different ways: _inline, internal/embedded, external_.
