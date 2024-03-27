@@ -12,9 +12,9 @@ Here's an example that you can paste into an HTML file.
 
 ```
 
-In this example we changed the style of the typography of the lines of text but there are even more styling options that can be manipulated with CSS. Here's a few to name off the top of my head:
+In this example we showcse two different styled paragraphs. There are many more styling options that can be manipulated with CSS and here's a few to name off the top of my head:
 
-- typography (ie from our example above)
+- typography (ie.from our example above)
 - spacing (margin and padding)
 - backgrounds
 - borders
