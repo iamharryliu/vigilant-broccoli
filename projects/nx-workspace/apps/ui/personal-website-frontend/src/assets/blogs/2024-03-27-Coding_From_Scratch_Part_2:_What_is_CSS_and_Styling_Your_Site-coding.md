@@ -18,7 +18,7 @@ In this example we showcse two different styled paragraphs. There are many more 
 - spacing (margin and padding)
 - backgrounds
 - borders
-- and many more options
+- [find even more options here](https://www.w3schools.com/css/)
 
 ## CSS Implementation
 
@@ -95,3 +95,7 @@ There we go, we got some style on our cool website now!
 ## Summary
 
 In short, **CSS is what web developers use to tell HTML how it should look** and it can be implemented in three different ways: _inline, internal/embedded, external_.
+
+## References
+
+[Learn more about CSS](https://www.w3schools.com/css/)
