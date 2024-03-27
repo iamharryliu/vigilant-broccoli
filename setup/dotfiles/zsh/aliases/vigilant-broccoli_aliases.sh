@@ -32,3 +32,4 @@ alias openvbactions='open -a "Google Chrome" "https://github.com/iamharryliu/vig
 alias servepw="cdnx && npm run serve:personal-website"
 alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
 alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'update site content' && gpush"
+alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
