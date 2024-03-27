@@ -1,11 +1,16 @@
-# Coding From Scratch: What is CSS and Styling Your Site
+# Coding From Scratch Part 2: What is CSS and Styling Your Site
 
 Now that you have your super awesome site from [Coding From Scratch Part 1](https://harryliu.design/blogs/2024-03-26/coding/Coding_From_Scratch_Part_1:_What_is_HTML_and_Building_Your_First_Website) we might want to make style changes to it so let's do something about that.
 
 Web developers style websites with instructions called **CSS** (Cascading Style Sheet) which is a **text file that gives instructions on how our blocks of HTML should be styled**. There are several layers to CSS(as with any topic) and since this is more of a laymen/beginner tutorial we will keep it fairly simple with the bare bone basics of the gist of what we can do with it and how web developers write CSS.
 
+Here's an example that you can paste into an HTML file.
+
+```
 <p style="color: red; font-size: 24px;">This is a paragraph with red text and larger font size.</p>
 <p style="background-color: blue; color: white;">This is another paragraph with blue background and white text.</p>
+
+```
 
 In this example we changed the style of the typography of the lines of text but there are even more styling options that can be manipulated with CSS. Here's a few to name off the top of my head:
 
@@ -13,7 +18,9 @@ In this example we changed the style of the typography of the lines of text but 
 - spacing (margin and padding)
 - backgrounds
 - borders
-- and many more options.
+- and many more options
+
+## CSS Implementation
 
 **CSS can be implemented on HTML files in 3 different ways**:
 
@@ -21,7 +28,7 @@ In this example we changed the style of the typography of the lines of text but 
 - internal/embedded CSS
 - external CSS
 
-The following are examples of these implementations that you can try out on your computer.
+The following are examples of the three different implementation methods that you can try out on your HTML files.
 
 ### Inline CSS
 
@@ -51,7 +58,7 @@ Paste following code in an _HTML_ file and open in a browser.
 
 ### External CSS
 
-The last method of implementing CSS requires creating a separate file that is used to contain all the CSS and used to apply on the HTML file. This method is used to access CSS files outside of the HTML for reasons such as using external styling libraries and keeping a separation of concern bewteen the HTML files (visual blocks that make up the site) and CSS (styling instuction for visual blocks). A simple way of how this would be implemented is done by the following:
+The last method of implementing CSS requires creating a separate file that is used to contain all the CSS. This method is used to access CSS files outside of the HTML for reasons such as using external styling libraries and keeping a separation of concern bewteen the HTML files (visual blocks that make up the site) and CSS (styling instuction for visual blocks). A simple way of how this would be implemented is done by the following:
 
 Creating a separate file that contains your external CSS called _style.css_ and adding in this code:
 

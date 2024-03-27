@@ -1,4 +1,4 @@
-# Coding From Scratch: What is HTML and Building Your First Website
+# Coding From Scratch Part 1: What is HTML and Building Your First Website
 
 At the base of any website there is some sort of implementation of **HTML** (HyperText Markup Language). HTML is base building block of visual components for web browsing, it is used to create and organize the building blocks of a web page. Think headers, paragraphs, tables, navbars, footers, etc.
 
