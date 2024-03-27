@@ -3,15 +3,10 @@
 ## Vigilant Broccoli
 
 - Q1
-
-  - harryliu.design
-
-- ## Q2
+- Q2
 
   - feat: use Github actions to replace cronjobs
   - harryliu.design
-    - feat: automate getting resume, sync to desktop??
-    - feat: loading spinners
     - style: update typography
   - feat: google translate script quick alias
 
