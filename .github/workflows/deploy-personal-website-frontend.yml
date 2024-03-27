@@ -1,5 +1,6 @@
 name: Redeploy Frontend (for DocsMD updates)
 on:
+  push: { branches: ['main'] }
   schedule: [{ cron: '*/15 * * * *' }]
 
 permissions:
