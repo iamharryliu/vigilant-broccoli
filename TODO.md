@@ -4,15 +4,7 @@
 
 - Q1
 
-  - feat: blog feature
-    - deploy on push for personal-website frontend + hook for blogs.json
-    - blog styling and urls handling
-    - email alerts for blogs
-  - feat: GTA update alert
-
-    - handle live updating, Github actions cannot guarantee 5 minute intervals
-
-  - fly secrets shortcut
+  - harryliu.design
 
 - ## Q2
 
@@ -21,9 +13,6 @@
     - feat: automate getting resume, sync to desktop??
     - feat: loading spinners
     - style: update typography
-  - passive
-    - chore: blog writing
-    - chore: get involved in open source
   - feat: google translate script quick alias
 
 - Q3
