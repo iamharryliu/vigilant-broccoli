@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Subject, exhaustMap } from 'rxjs';
+import { EMPTY, Subject, catchError, exhaustMap, finalize } from 'rxjs';
 import { SubscribeRequest } from '@prettydamntired/personal-website-lib';
 import { CommonService } from '../../../core/services/common.service';
 
@@ -19,19 +19,28 @@ import { CommonService } from '../../../core/services/common.service';
 })
 export class NewsLetterSubFormComponent {
   submit$ = new Subject<boolean>();
+  isLoading = false;
 
   constructor(private commonService: CommonService) {
     this.submit$
       .pipe(
         exhaustMap(() =>
-          this.commonService.subscribeToNewsletter(
-            this.form.value as SubscribeRequest,
-          ),
+          this.commonService
+            .subscribeToNewsletter(this.form.value as SubscribeRequest)
+            .pipe(
+              catchError(error => {
+                console.error('An error occurred:', error);
+                this.isLoading = false;
+                return EMPTY;
+              }),
+              finalize(() => {
+                this.isLoading = false;
+                this.form.reset();
+              }),
+            ),
         ),
       )
-      .subscribe(_ => {
-        this.form.reset();
-      });
+      .subscribe();
   }
 
   form = new FormGroup({
@@ -39,6 +48,7 @@ export class NewsLetterSubFormComponent {
   });
 
   submit() {
+    this.isLoading = true;
     this.submit$.next(true);
   }
 }
