@@ -4,9 +4,7 @@ alias brewdump="rm ~/$REPO_NAME/setup/mac/Brewfile && brew bundle dump --file=~/
 alias cdvb="cd ~/$REPO_NAME/"
 alias cdnx="cd ~/$REPO_NAME/projects/nx-workspace/"
 alias grind75="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75"
-# TODO: deprecate commit and pushmd
-alias commitmd="cdvb && git add TODO.md snippets/*.md notes/**/*.md && gc docs 'update md files'"
-alias pushmd="commitmd && gpush"
+alias pushnotes="cdvb && git add notes/**/*.md && gc docs 'update md notes' && gpush"
 alias pushtodo="cdvb && git add TODO.md && gc docs todo 'update TODO.md' && gpush"
 alias pushreadme="cdvb && git add README.md && gc docs readme 'update root README.md' && gpush"
 # TODO: look at cost benefit of this vs git magic
