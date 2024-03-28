@@ -5,11 +5,6 @@
 - Q1
 - Q2
 
-  - feat: use Github actions to replace cronjobs
-  - harryliu.design
-    - style: update typography
-  - feat: google translate script quick alias
-
 - Q3
 
   - docs: read later
@@ -26,8 +21,12 @@
     - webpack vs vite
     - swc vs babel
 
+  - harryliu.design
+    - style: update typography
   - docs: spring boot
   - feat: keeps DocsMD folder structure open on left pane for opened files
+  - feat: google translate script quick alias
+  - feat: use Github actions to replace cronjobs
 
 ## CICD
 
