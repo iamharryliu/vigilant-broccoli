@@ -1,7 +1,0 @@
-<ng-container *ngIf="!data; else elseBlock">
-  <lib-loading-spinner></lib-loading-spinner>
-</ng-container>
-
-<ng-template #elseBlock>
-  <pre>{{ data | json }}</pre>
-</ng-template>

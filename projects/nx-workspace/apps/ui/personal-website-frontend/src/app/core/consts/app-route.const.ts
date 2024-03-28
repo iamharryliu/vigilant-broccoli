@@ -1,6 +1,5 @@
 import { Route, Routes } from '@angular/router';
 import { ENVIRONMENT } from '../../../environments/environment';
-import { AdminComponent } from '../../admin/admin.component';
 import { AboutPageComponent } from '../../components/pages/about-page/about.page';
 import { HomePageComponent } from '../../components/pages/home-page/home.page';
 import { LinkTreePageComponent } from '../../components/pages/link-tree-page/link-tree.page';
@@ -19,12 +18,6 @@ export const INDEX_ROUTE: Route = {
   path: '',
   data: { title: 'home' },
   component: HomePageComponent,
-};
-
-export const ADMIN_ROUTE: Route = {
-  path: 'admin',
-  data: { title: 'admin' },
-  component: AdminComponent,
 };
 
 // TODO: MOVE DocsMD to its own project
@@ -117,7 +110,6 @@ export const LEETCODE_SOLUTION_ROUTE: Route = {
 
 export const APP_ROUTES: Routes = [
   INDEX_ROUTE,
-  ADMIN_ROUTE,
   ABOUT_ROUTE,
   PROJECTS_ROUTE,
   DOCS_MD_ROUTE,
