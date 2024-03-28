@@ -1,7 +1,11 @@
-// TODO: refactor!!
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  NavigationEnd,
+  Router,
+} from '@angular/router';
 import { filter, tap } from 'rxjs';
 import { AppService } from './core/services/app.service';
 import { TAILWIND_BREAKPOINTS } from '@prettydamntired/test-lib';
@@ -22,47 +26,40 @@ export class AppComponent implements OnInit {
     this.checkWindowSize();
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(_: any) {
-    this.checkWindowSize();
-  }
-
-  checkWindowSize() {
-    if (window.innerWidth < TAILWIND_BREAKPOINTS.MD) {
-      this.appService.setIsMobile();
-    } else {
-      this.appService.setIsBrowser();
-    }
-  }
-
   ngOnInit(): void {
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
         tap(() => {
           window.scrollTo(0, 0);
-          this.setTitle(this.getTitle());
+          this.setTitle();
         }),
       )
       .subscribe();
   }
 
-  getTitle() {
-    const child: ActivatedRoute | null = this.route.firstChild;
-    console.log(this.route.firstChild);
-    const filename = this.route.firstChild?.snapshot.params['filename'];
+  private setTitle(): void {
+    const snapshot: ActivatedRouteSnapshot = this.route.firstChild
+      ?.snapshot as ActivatedRouteSnapshot;
+    const filename = snapshot.params['filename'];
+    let title = '';
     if (filename) {
-      return this.blogService.titleCase(filename);
+      title = this.blogService.titleCase(filename);
     }
-    const TITLE = child && child.snapshot.data['title'];
-    if (TITLE != null) {
-      return TITLE;
-    }
+    title = snapshot.data['title'];
+    this.titleService.setTitle(`design by harry - ${title}`);
   }
 
-  setTitle(title: string) {
-    if (title) {
-      this.titleService.setTitle(`design by harry - ${title}`);
+  @HostListener('window:resize', ['$event'])
+  onResize(_: any) {
+    this.checkWindowSize();
+  }
+
+  private checkWindowSize() {
+    if (window.innerWidth < TAILWIND_BREAKPOINTS.MD) {
+      this.appService.setIsMobile();
+    } else {
+      this.appService.setIsBrowser();
     }
   }
 }

@@ -7,8 +7,6 @@ export class AppService {
   isBrowser = false;
   isMobile = false;
 
-  // init() {}
-
   setIsMobile() {
     this.isBrowser = false;
     this.isMobile = true;

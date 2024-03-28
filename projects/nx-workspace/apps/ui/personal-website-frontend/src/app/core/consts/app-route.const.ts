@@ -20,7 +20,6 @@ export const INDEX_ROUTE: Route = {
   component: HomePageComponent,
 };
 
-// TODO: MOVE DocsMD to its own project
 export const DOCS_MD_ROUTE: Route = {
   path: 'docs-md',
   data: { title: 'DocsMD' },
