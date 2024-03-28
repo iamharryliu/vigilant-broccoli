@@ -27,6 +27,7 @@
     - swc vs babel
 
   - docs: spring boot
+  - feat: keeps DocsMD folder structure open on left pane for opened files
 
 ## CICD
 
