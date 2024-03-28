@@ -32,31 +32,48 @@ export class BlogDirectoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.get('assets/blogs.json').subscribe(data => {
-      this.fetchBlogs(data as string[]);
+      this.setBlogs(data as string[]);
     });
   }
 
-  fetchBlogs(filenames: string[]): void {
+  setBlogs(filenames: string[]): void {
     filenames.forEach(filename => {
-      const parts = filename.split('-');
-      parts[parts.length - 1] = parts[parts.length - 1]
-        .replace('.md', '')
-        .trim();
-      const year = parts[0];
-      const title = this.blogService.titleCase(parts[3]);
-      const [y, m, d] = parts.slice(0, 3).map(String);
-      // TODO: clean this up
-      const date = new Date(`${y}-${m}-${d}T00:00`);
-      const type = parts[4];
-      const blog: Blog = { filename, title, date, type };
-      if (!this.blogsByYear[year]) {
-        this.blogsByYear[year] = [];
-      }
-      this.blogsByYear[year].push(blog);
+      const [year, month, day, title, type] = this.parseFilename(filename);
+      const date = new Date(`${year}-${month}-${day}T00:00`);
+      const formattedTitle = this.blogService.titleCase(title);
+      const blog: Blog = { filename, title: formattedTitle, date, type };
+      this.addToBlogsByYear(year, blog);
     });
-    Object.values(this.blogsByYear).forEach(blogs => {
-      blogs.sort((a, b) => b.date.getTime() - a.date.getTime());
-    });
+
+    this.sortBlogsByYear();
+  }
+
+  private parseFilename(
+    filename: string,
+  ): [string, string, string, string, string] {
+    const parts = filename
+      .replace('.md', '')
+      .split('-')
+      .map(part => part.trim());
+    const [year, month, day, ...rest] = parts;
+    const title = rest.slice(0, -1).join('-');
+    const type = rest[rest.length - 1];
+    return [year, month, day, title, type];
+  }
+
+  private addToBlogsByYear(year: string, blog: Blog): void {
+    if (!this.blogsByYear[year]) {
+      this.blogsByYear[year] = [];
+    }
+    this.blogsByYear[year].push(blog);
+  }
+
+  private sortBlogsByYear(): void {
+    for (const year in this.blogsByYear) {
+      this.blogsByYear[year].sort(
+        (a, b) => b.date.getTime() - a.date.getTime(),
+      );
+    }
   }
 
   getObjectKeys(obj: any): string[] {
