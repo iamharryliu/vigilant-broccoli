@@ -31,3 +31,17 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 [![Deploy GTA Update Alert App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-gta-update-alert.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-gta-update-alert.yml)
 
 [![GTA Update Alert - Email Subscribers](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-gta-update-alert-subscribers.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-gta-update-alert-subscribers.yml)
+
+## Folder Structure
+
+- setup - machine setup configurations and scripts
+- notes - collection of markdown notes
+- projects - collection of personal projects
+- scripts - collection of personal scripts
+- snippets - random snippers
+
+## Management
+
+- pre-commit hook, husky, eslint, prettier
+- Github Actions
+- Nx Monorepo
