@@ -27,10 +27,5 @@
     "hooks": {
       "pre-commit.legacy": "lint-staged"
     }
-  },
-  "dependencies": {
-    "@google-cloud/local-auth": "^2.1.0",
-    "axios": "^1.6.7",
-    "googleapis": "^105.0.0"
   }
 }
