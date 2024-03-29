@@ -27,7 +27,7 @@ alias openNeo='open -a "Google Chrome" "https://member.neofinancial.com/login"'
 alias openMBNA='open -a "Google Chrome" "https://www.mbna.ca/en"'
 alias OpenCTTriangle='open -a "Google Chrome" "https://www.ctfs.com/content/dash/en/public/login.html"'
 alias openHomeDepot='open -a "Google Chrome" "https://citiretailservices.citibankonline.com/RSnextgen/svc/launch/index.action?siteId=CACN_HOMEDEPOT#signon"'
-alias openHomeDepot='open -a "Google Chrome" "https://myaccount.freedommobile.ca/home"'
+alias openHomeDepot='open -a "Google Chrome" "https://www.homedepot.ca/en/home/credit-services.html"'
 alias paybill='openTD && openNeo && openMBNA && OpenCTTriangle && openHomeDepot'
 
 # Billing
