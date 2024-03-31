@@ -21,9 +21,9 @@ import { ButtonLinkComponent, Link } from 'general-components';
 })
 export class LinkTreePageComponent {
   LINKS: Link[] = [
-    { ...LINKS.INDEX_PAGE, text: 'Personal Website' },
     LINKS.RESUME,
     LINKS.GITHUB,
+    { ...LINKS.INDEX_PAGE, text: 'Personal Website' },
     LINKS.LINKEDIN,
     // LINKS.PERSONAL_INSTAGRAM,
     // LINKS.SKATE_IG,
