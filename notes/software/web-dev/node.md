@@ -24,6 +24,12 @@ npm run format
 npm run test
 ```
 
+## Bundlers/Transpilers
+
+- webpack
+- rollup
+- babel
+
 ## References
 
-[Mock Server](https://medium.com/geekculture/setting-up-a-mock-backend-with-angular-13-applications-26a21788f7da))
+[Mock Server](https://medium.com/geekculture/setting-up-a-mock-backend-with-angular-13-applications-26a21788f7da)
