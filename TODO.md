@@ -1,9 +1,12 @@
-# Todo
+# TODO
 
 ## Vigilant Broccoli
 
 - Q1
 - Q2
+
+  - feat: keep DocsMD folder structure open on left pane for opened files
+  - refactor: implement Angular signals
 
 - Q3
 
@@ -18,14 +21,10 @@
     - online payment form
     - Sveltfire
     - angular view encapsulation
-    - webpack vs vite
-    - swc vs babel
 
   - harryliu.design
     - style: update typography
   - docs: spring boot
-  - feat: keeps DocsMD folder structure open on left pane for opened files
-  - feat: google translate script quick alias
   - feat: use Github actions to replace cronjobs
 
 ## CICD
@@ -46,7 +45,7 @@
 
 - Q3
 
-# Vibecheck
+## Vibecheck
 
 - Q1
 
@@ -61,6 +60,18 @@
     - helper text not hidden (maybe delete it)
   - refactor: introduce service files?
   - fix: fly deploy slow?
+
+## Toronto Alerts
+
+- ui:
+  - autocomplete tagging
+  - container size
+- feat:
+  - guard users endpoint with github actions whitelist
+  - blog section for SEO
+  - implement Google ads
+  - proper email
+  - proper domain name
 
 ## Quadrant Template
 
