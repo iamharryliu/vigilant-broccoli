@@ -57,3 +57,9 @@ def get_districts_from_json():
 def convert_division_string_for_scraping_data(text):
     pattern = r"^(\d+) Division$"
     return re.match(pattern, text).group(1) + " Div"
+
+
+def get_github_action_ip_addresses():
+    response = requests.get("https://api.github.com/meta")
+    github_meta = response.json()
+    return github_meta["actions"]

@@ -2,7 +2,11 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 import psycopg2
 from google_recaptcha import ReCaptcha
-from utils import get_districts_data, convert_division_string_for_scraping_data
+from utils import (
+    get_districts_data,
+    convert_division_string_for_scraping_data,
+    get_github_action_ip_addresses,
+)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
@@ -73,19 +77,23 @@ def submit_form():
 
 @app.get("/get_users")
 def get_users():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    query = "SELECT email, districts, keywords FROM emails;"
-    cursor.execute(query)
-    users = [
-        {
-            "email": user[0],
-            "districts": user[1] if user[1] else [],
-            "keywords": user[2] if user[2] else [],
-        }
-        for user in cursor.fetchall()
-    ]
-    return {"users": users}
+    github_action_ips = get_github_action_ip_addresses()
+    client_ip = request.remote_addr
+    if client_ip in github_action_ips:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        query = "SELECT email, districts, keywords FROM emails;"
+        cursor.execute(query)
+        users = [
+            {
+                "email": user[0],
+                "districts": user[1] if user[1] else [],
+                "keywords": user[2] if user[2] else [],
+            }
+            for user in cursor.fetchall()
+        ]
+        return {"users": users}
+    return redirect(url_for("index"))
 
 
 @app.get("/unsubscribe")
