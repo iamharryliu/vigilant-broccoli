@@ -79,6 +79,7 @@ def submit_form():
 def get_users():
     github_action_ips = get_github_action_ip_addresses()
     client_ip = request.remote_addr
+    print(request.remote_addr)
     if client_ip in github_action_ips:
         conn = get_db_connection()
         cursor = conn.cursor()
