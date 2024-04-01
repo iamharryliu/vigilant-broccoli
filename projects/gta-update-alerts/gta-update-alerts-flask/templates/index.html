@@ -10,93 +10,100 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='custom.css') }}"
+    />
   </head>
-  <body div class="container-md pt-3">
-    <h1 class="text-center">Toronto Update Alerts</h1>
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-    <div class="alert alert-{{category}}">{{ message }}</div>
-    {% endfor %} {% endif %} {% endwith %}
-    <p>
-      Near live Toronto TPS and TFS email alert notifications. Subscribe by
-      entering your email and selecting districts and keywords to filter your
-      notifications.
-    </p>
-    <form action="{{ url_for('index') }}" method="post">
-      <div class="mb-4">
-        <label for="email" class="form-label">Email:</label>
-        <input
-          class="form-control shadow"
-          type="email"
-          name="email"
-          id="email"
-          required
-        />
-      </div>
-      <div class="mb-4">
-        <label class="form-label"
-          >Select Toronto Police Service Divisions (optional):</label
-        ><br />
-        <div class="overflow-auto card mb-4 shadow" style="max-height: 200px">
-          {% for district in TPS_DIVISIONS %}
-          <div class="border-bottom p-2">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              name="divisions"
-              value="{{ district.name }}"
-              id="{{ district.name }}"
-            />
-            <label for="{{ district.name }}" class="form-check-label"
-              >{{ district.name }} - {{district.location}}</label
-            ><br />
-          </div>
-          {% endfor %}<br />
+  <body>
+    <div class="container pt-3">
+      <h1 class="text-center">Toronto Update Alerts</h1>
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{category}}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
+      <p>
+        Near live Toronto TPS and TFS email alert notifications. Subscribe by
+        entering your email and selecting districts and keywords to filter your
+        notifications.
+      </p>
+      <form action="{{ url_for('index') }}" method="post">
+        <div class="mb-4">
+          <label for="email" class="form-label">Email:</label>
+          <input
+            class="form-control shadow"
+            type="email"
+            name="email"
+            id="email"
+            required
+          />
         </div>
-        <label class="form-label"
-          >Select Toronto Fire Service Stations (optional):</label
-        ><br />
-        <div class="overflow-auto card mb-4 shadow" style="max-height: 200px">
-          {% for district in TFS_STATIONS %}
-          <div class="border-bottom p-2">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              name="stations"
-              value="{{ district.name }}"
-              id="{{ district.name }}"
-            />
-            <label for="{{ district.name }}" class="form-check-label"
-              >{{ district.name }} - {{district.location}}</label
-            ><br />
+        <div class="mb-4">
+          <label class="form-label"
+            >Select Toronto Police Service Divisions (optional):</label
+          ><br />
+          <div class="overflow-auto card mb-4 shadow" style="max-height: 200px">
+            {% for district in TPS_DIVISIONS %}
+            <div class="border-bottom p-2">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="divisions"
+                value="{{ district.name }}"
+                id="{{ district.name }}"
+              />
+              <label for="{{ district.name }}" class="form-check-label"
+                >{{ district.name }} - {{district.location}}</label
+              ><br />
+            </div>
+            {% endfor %}<br />
           </div>
-          {% endfor %}<br />
+          <label class="form-label"
+            >Select Toronto Fire Service Stations (optional):</label
+          ><br />
+          <div class="overflow-auto card mb-4 shadow" style="max-height: 200px">
+            {% for district in TFS_STATIONS %}
+            <div class="border-bottom p-2">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="stations"
+                value="{{ district.name }}"
+                id="{{ district.name }}"
+              />
+              <label for="{{ district.name }}" class="form-check-label"
+                >{{ district.name }} - {{district.location}}</label
+              ><br />
+            </div>
+            {% endfor %}<br />
+          </div>
         </div>
-      </div>
-      <div class="mb-4">
-        <label for="keywords" class="form-label"
-          >Key words (optional, enter comma separated keywords that you are
-          interested in for your filter):</label
-        >
-        <textarea
-          name="keywords"
-          class="form-control"
-          id="keywords"
-          rows="3"
-        ></textarea>
-      </div>
-      <button class="btn btn-primary" type="submit">Submit</button>
-      {{ recaptcha }}
-    </form>
-    <br />
-    <small>
+        <div class="mb-4">
+          <label for="keywords" class="form-label"
+            >Key words (optional, enter comma separated keywords that you are
+            interested in for your filter):</label
+          >
+          <textarea
+            name="keywords"
+            class="form-control"
+            id="keywords"
+            rows="3"
+          ></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+        {{ recaptcha }}
+      </form>
+      <br />
+    </div>
+    <p class="text-bg-dark text-center fs-6 pb-0 footer">
       Not affiliated with Toronto Police Services, Toronto Fire Services, or The
-      City of Toronto - In case of Emergency call 911. <br />Alerts scraped from
+      City of Toronto - In case of Emergency call 911. Alerts scraped from
       <a href="https://gtaupdate.com/" target="_blank"
         >https://gtaupdate.com/</a
       >
-      by Iain J. Grant.<br />
-    </small>
+      by Iain J. Grant.
+    </p>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
