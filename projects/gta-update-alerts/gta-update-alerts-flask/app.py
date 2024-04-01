@@ -77,6 +77,7 @@ def submit_form():
 
 @app.get("/get_users")
 def get_users():
+    print("hit")
     github_action_ips = get_github_action_ip_addresses()
     client_ip = request.remote_addr
     print(request.remote_addr)
