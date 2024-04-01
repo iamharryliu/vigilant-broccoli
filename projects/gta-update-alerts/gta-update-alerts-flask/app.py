@@ -77,25 +77,24 @@ def submit_form():
 
 @app.get("/get_users")
 def get_users():
-    print("hit")
-    github_action_ips = get_github_action_ip_addresses()
-    client_ip = request.remote_addr
-    print(request.remote_addr)
-    if client_ip in github_action_ips:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        query = "SELECT email, districts, keywords FROM emails;"
-        cursor.execute(query)
-        users = [
-            {
-                "email": user[0],
-                "districts": user[1] if user[1] else [],
-                "keywords": user[2] if user[2] else [],
-            }
-            for user in cursor.fetchall()
-        ]
-        return {"users": users}
-    return redirect(url_for("index"))
+    # github_action_ips = get_github_action_ip_addresses()
+    # github_action_ips = github_action_ips
+    # client_ip = request.remote_addr
+    # if client_ip in github_action_ips:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "SELECT email, districts, keywords FROM emails;"
+    cursor.execute(query)
+    users = [
+        {
+            "email": user[0],
+            "districts": user[1] if user[1] else [],
+            "keywords": user[2] if user[2] else [],
+        }
+        for user in cursor.fetchall()
+    ]
+    return {"users": users}
+    # return redirect(url_for("index"))
 
 
 @app.get("/unsubscribe")
