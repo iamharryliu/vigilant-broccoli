@@ -29,6 +29,8 @@ npm run test
 - webpack
 - rollup
 - babel
+- SWC (sppedy web compiler)
+- Vite
 
 ## References
 
