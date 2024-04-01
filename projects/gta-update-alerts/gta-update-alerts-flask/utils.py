@@ -3,8 +3,15 @@ from bs4 import BeautifulSoup
 
 
 def get_districts_data():
-    # return get_districts_from_wiki()
-    return get_districts_from_json()
+    # districts = return get_districts_from_wiki()
+    districts = get_districts_from_json()
+    districts["TPS_DIVISIONS"] = sorted(
+        districts["TPS_DIVISIONS"], key=lambda district: district["name"]
+    )
+    districts["TFS_STATIONS"] = sorted(
+        districts["TFS_STATIONS"], key=lambda district: district["name"]
+    )
+    return districts
 
 
 def get_districts_from_wiki():
