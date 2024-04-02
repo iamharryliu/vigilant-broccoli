@@ -13,9 +13,7 @@ alias pushaliases="cdvb && git add setup/dotfiles/zsh/aliases/ setup/dotfiles/zs
 alias pushdotfiles="commitdotfiles && gpush"
 alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
 alias openactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
-# DJ Stuff
-alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
-alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
+alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'update progress.md' && gpush"
 
 # Journal
 alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpush"
@@ -31,3 +29,7 @@ alias servepw="cdnx && npm run serve:personal-website"
 alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
 alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'update site content' && gpush"
 alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
+
+# DJ Stuff
+alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
+alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
