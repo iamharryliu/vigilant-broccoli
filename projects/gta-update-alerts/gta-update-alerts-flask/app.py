@@ -11,8 +11,6 @@ from utils import (
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
-DISTRICT_DATA = get_districts_data()
-
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 
 
@@ -29,10 +27,18 @@ recaptcha = ReCaptcha(
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    return render_template(
+        "index.html",
+    )
+
+
+@app.route("/subscribe", methods=["GET", "POST"])
+def subscribe():
+    DISTRICT_DATA = get_districts_data()
     if request.method == "POST" and recaptcha.verify():
         submit_form()
     return render_template(
-        "index.html",
+        "pages/subscribe-page.html",
         TPS_DIVISIONS=DISTRICT_DATA["TPS_DIVISIONS"],
         TFS_STATIONS=DISTRICT_DATA["TFS_STATIONS"],
     )

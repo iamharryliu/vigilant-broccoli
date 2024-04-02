@@ -1,9 +1,43 @@
 {% extends 'layout.html' %} {% block content %}
-<p>
-  Near live Toronto TPS and TFS email alert notifications. Subscribe by entering
-  your email and selecting districts and keywords to filter your notifications.
-</p>
-{% include 'forms/alerts-form.html' %}
-<br />
+<div class="row gx-3">
+  <div class="col-12 col-md-6 mb-4">
+    <div class="card">
+      <img
+        src="{{url_for('static', filename='toronto.jpg')}}"
+        class="card-img-top"
+        alt="Toronto"
+      />
+      <div class="card-body">
+        <h5 class="card-title">Subscribe to Alerts</h5>
+        <p class="card-text">
+          Near live Toronto TPS and TFS email alert notifications. Subscribe by
+          entering your email and selecting districts and keywords to filter
+          your notifications.
+        </p>
+        <a
+          href="https://torontoalerts.com/subscribe"
+          class="btn btn-primary stretched-link"
+          >Subscribe</a
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="card">
+      <img
+        src="{{url_for('static', filename='toronto.jpg')}}"
+        class="card-img-top"
+        alt="Toronto"
+      />
+      <div class="card-body">
+        <h5 class="card-title">GTA Update Dashboard</h5>
+        <p class="card-text">GTA Update Dashboard by Iain J. Grant</p>
+        <a href="https://gtaupdate.com/" class="btn btn-primary stretched-link"
+          >GTA Update</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
