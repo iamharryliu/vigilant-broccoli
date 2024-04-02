@@ -4,7 +4,7 @@ Recently I have been looking for ways to improve in software development but at 
 
 ## What is a monorepo?
 
-Monorepos are repositories that store the code for a number of different projects in a **single repository instead of multiple different ones**, a **shareable codebase**. This is a practice that is exercised by many large tech companies such as Google, Microsoft, and Facebook to create a **single source of truth** for their devlopers.
+Monorepos are repositories that store the code for a number of different projects in a **single repository instead of multiple different ones**, a **shareable codebase**. This is a practice that is exercised by many large tech companies such as Google, Microsoft, and Facebook to create a **single source of truth** for their developers.
 
 ## Why I use a monorepo.
 
