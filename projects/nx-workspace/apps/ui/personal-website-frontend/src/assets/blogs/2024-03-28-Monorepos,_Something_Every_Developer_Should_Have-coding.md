@@ -1,6 +1,6 @@
 # Personal Monorepo, Every Developer Should Have One
 
-Recently I have been looking for ways to improve in software development but at the same time have fun doing so. I believe I have finally found a balance by picking up the practices of a monorepo. I see my personal monorepo as a passion project but with direct value to my career path as a developer.
+Recently I have been looking for ways to improve in software development but at the same time have fun doing so. I believe I have finally found a balance by picking up monorepo practices. I see my personal monorepo as a passion project but with direct value to my career path as a developer.
 
 ## What is a monorepo?
 
