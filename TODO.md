@@ -65,13 +65,10 @@
 
 - ui:
   - autocomplete tagging
-  - container size
 - feat:
   - guard users endpoint with github actions whitelist
   - blog section for SEO
-  - implement Google ads
   - proper email
-  - proper domain name
 
 ## Quadrant Template
 
