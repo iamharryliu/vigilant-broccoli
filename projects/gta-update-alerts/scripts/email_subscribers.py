@@ -4,7 +4,7 @@ import sys
 import threading
 
 sys.path.append("../../..")
-from gta_update_app import GTAUpdateApp
+from toronto_alerts_app import TorontoAlertsApp
 from scripts.python.tools.mail_handler import MailHandler
 import requests
 from datetime import timedelta
@@ -52,7 +52,7 @@ def main():
         for user in emails
     ]
     for user in users:
-        GTAUpdateApp.get_recent_alerts_for_user(
+        TorontoAlertsApp.get_recent_alerts_for_user(
             user, interval=timedelta(minutes=minutes)
         )
     email_users(users)

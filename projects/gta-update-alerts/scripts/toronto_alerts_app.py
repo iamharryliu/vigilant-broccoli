@@ -5,10 +5,7 @@ from pytz import timezone
 import urllib
 
 
-url = "https://gtaupdate.com/"
-emails = [
-    "harryliu1995@gmail.com",
-]
+scrape_url = "https://gtaupdate.com/"
 
 
 def convert_to_est(time_str):
@@ -25,7 +22,7 @@ def convert_to_est(time_str):
 
 
 def get_all_gta_alerts():
-    response = requests.get(url)
+    response = requests.get(scrape_url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, "html.parser")
         table = soup.find("table")
@@ -38,25 +35,25 @@ def get_all_gta_alerts():
                 table_data.append(row_data)
             return table_data
     else:
-        print(f"Failed to fetch URL: {url}")
+        print(f"Failed to fetch URL: {scrape_url}")
 
 
 ALL_GTA_ALERTS = get_all_gta_alerts()
 
 
-class GTAUpdateApp:
+class TorontoAlertsApp:
     def get_recent_alerts_for_user(user, interval=timedelta(hours=1)):
-        filtered_alerts = GTAUpdateApp.filter_alerts_per_user(user, interval)
+        filtered_alerts = TorontoAlertsApp.filter_alerts_per_user(user, interval)
         if filtered_alerts:
             message = {
-                "from": "GTA Update",
+                "from": "Toronto Alerts",
                 "to": user["email"],
-                "subject": f"GTA Update - {len(filtered_alerts)} New Alerts",
+                "subject": f"Toronto Alerts - {len(filtered_alerts)} New Alerts",
                 "body": "Alerts:\n\n"
-                + GTAUpdateApp.format_for_email(filtered_alerts)
-                + f"Unsubscribe: https://gta-update-alerts-flask.fly.dev/unsubscribe?email={urllib.parse.quote(user['email'])}\n\n"
+                + TorontoAlertsApp.format_for_email(filtered_alerts)
+                + f"Unsubscribe: https://torontoalerts.com/unsubscribe?email={urllib.parse.quote(user['email'])}\n\n"
                 + "Check https://gtaupdate.com/ for more info.\n\n"
-                + "Too noisy? Update filters such as TPS and TFS districts to reduce the noise at https://gta-update-alerts-flask.fly.dev/.\n\n",
+                + "Too noisy? Update filters such as TPS and TFS districts to reduce the noise at https://torontoalerts.com/\n\n",
             }
             user["message"] = message
 
@@ -70,12 +67,12 @@ class GTAUpdateApp:
             for row in ALL_GTA_ALERTS
             if (
                 (
-                    GTAUpdateApp.text_contains_keyword(row[1], districts)
+                    TorontoAlertsApp.text_contains_keyword(row[1], districts)
                     if districts
                     else True
                 )
                 and (
-                    GTAUpdateApp.text_contains_keyword(row[2], keywords)
+                    TorontoAlertsApp.text_contains_keyword(row[2], keywords)
                     if keywords
                     else True
                 )
