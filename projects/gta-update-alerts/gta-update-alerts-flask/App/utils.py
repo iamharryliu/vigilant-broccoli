@@ -73,7 +73,7 @@ def markdown_to_html(text):
 
 def get_blog_files():
     blog_files = []
-    blogs_dir = "static/blogs"
+    blogs_dir = "App/static/blogs"
     if os.path.exists(blogs_dir):
         for filename in os.listdir(blogs_dir):
             if filename.endswith(".md"):
