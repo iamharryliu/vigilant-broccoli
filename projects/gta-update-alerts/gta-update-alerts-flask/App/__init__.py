@@ -31,7 +31,7 @@ def create_app():
     def index():
         # blogs = get_blog_files()
         blogs = []
-        return render_template("pages/home-page/index.html", blogs=blogs)
+        return render_template("pages/home-page/index.html", title="Home", blogs=blogs)
 
     @app.route("/subscribe", methods=["GET", "POST"])
     def subscribe():
@@ -40,6 +40,7 @@ def create_app():
             submit_form()
         return render_template(
             "pages/subscribe-page.html",
+            title="Subscribe",
             TPS_DIVISIONS=DISTRICT_DATA["TPS_DIVISIONS"],
             TFS_STATIONS=DISTRICT_DATA["TFS_STATIONS"],
         )
@@ -123,13 +124,14 @@ def create_app():
     @app.get("/blogs")
     def blogs():
         blogs = get_blog_files()
-        return render_template("pages/blogs-directory.html", blogs=blogs)
+        return render_template("pages/blogs-directory.html", title="Blogs", blogs=blogs)
 
     @app.get("/blog")
     def blog():
         blog_content = get_blog_files()[0]["content"]
         return render_template(
             "pages/blog-page.html",
+            title="Blog Name",
             blog_content=markdown_to_html(blog_content),
         )
 
