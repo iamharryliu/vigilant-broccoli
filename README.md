@@ -24,13 +24,13 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 
 ## Github Action Statuses
 
-[![Deploy Nx Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml)
+[![vigilant-broccoli - Deploy Nx Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml)
 
-[![Monitor Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml)
+[![vigilant-broccoli - Monitor Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml)
 
-[![Deploy GTA Update Alert App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-gta-update-alert.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-gta-update-alert.yml)
+[![Toronto Alerts - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app.yml)
 
-[![GTA Update Alert - Email Subscribers](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-gta-update-alert-subscribers.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-gta-update-alert-subscribers.yml)
+[![Toronto Alerts - Email Subscribers Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-toronto-alerts-subscribers.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-toronto-alerts-subscribers.yml)
 
 ## Folder Structure
 
