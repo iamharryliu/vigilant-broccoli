@@ -1,4 +1,4 @@
-name: Deploy GTA Update Alert App
+name: Deploy Toronto Alerts App
 on:
   push: { branches: ['main'] }
 
