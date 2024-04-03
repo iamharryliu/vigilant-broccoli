@@ -1,5 +1,14 @@
 # TODO
 
+## Toronto Alerts
+
+- ui:
+  - autocomplete tagging
+- feat:
+  - guard users endpoint with github actions whitelist
+  - blog section for SEO
+  - proper email
+
 ## Vigilant Broccoli
 
 - Q1
@@ -60,15 +69,6 @@
     - helper text not hidden (maybe delete it)
   - refactor: introduce service files?
   - fix: fly deploy slow?
-
-## Toronto Alerts
-
-- ui:
-  - autocomplete tagging
-- feat:
-  - guard users endpoint with github actions whitelist
-  - blog section for SEO
-  - proper email
 
 ## Quadrant Template
 
