@@ -23,10 +23,9 @@
   <body class="bg-dark">
     {% include 'header.html' %}
     <div class="bg-white">
-      <div class="container pt-3">
-        {% include 'alerts.html' %}
-        <main>{% block content %}{% endblock %}</main>
-      </div>
+      <main class="container pt-3 pb-3">
+        {% include 'alerts.html' %} {% block content %}{% endblock %}
+      </main>
     </div>
     {% include 'footer.html' %}
     <script
