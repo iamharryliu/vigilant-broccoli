@@ -25,7 +25,7 @@ if ask "Symlink dotfiles?"; then
     chmod -R +x ~/shell-aliases/
     ln -s ~/$REPO_NAME/setup/dotfiles/zsh/scripts ~/shell-scripts
     chmod -R +x ~/shell-scripts/
-    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/.env.sh ~/.env.sh
+    cat ~/$REPO_NAME/setup/dotfiles/zsh/.env.sh >> ~/.env.sh
 fi
 
 
