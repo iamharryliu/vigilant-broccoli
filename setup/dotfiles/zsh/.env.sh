@@ -4,10 +4,6 @@ export PORT=3000
 export MY_EMAIL="email"
 export MY_EMAIL_PASSWORD="password"
 
-# Mongo
-export MONGO_DB_USERNAME="username"
-export MONGO_DB_PASSWORD="password"
-
 # Recaptcha
 export RECAPTCHA_V3_SECRET_KEY="secretKey"
 
@@ -31,5 +27,20 @@ export CLOUDFLARE_ID='cloudflareId'
 export AWS_ACCESS_KEY_ID='accessKey'
 export AWS_SECRET_ACCESS_KEY='secretAccessKey'
 
-# Vibecheck
-export VIBECHECK_SQL_DB="postgresql://postgres:[password]@localhost:5432/[bucketName]"
+# Databases
+# Postgres
+export VIBECHECK_SQL_DB="postgresql://postgres:[password]@localhost:5432/[dnName]"
+# Mongo
+export MONGO_DB_USERNAME="username"
+export MONGO_DB_PASSWORD="password"
+
+# Toronto Alerts
+export GTA_UPDATE_ALERT_EMAIL="email"
+export GTA_UPDATE_ALERT_EMAIL_PASSWORD="password"
+export GTA_UPDATE_ALERTS_DB="connectionString"
+export GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY="siteKey"
+export GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY="secretKey"
+
+# Personal Projects
+export SECRET_KEY='secretKey'
+export MUSIC_LIBRARY='~/My Drive/DJ Music Library'
