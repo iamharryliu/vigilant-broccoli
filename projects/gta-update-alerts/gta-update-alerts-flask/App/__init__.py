@@ -120,6 +120,11 @@ def create_app():
         else:
             return redirect(url_for("index"))
 
+    @app.get("/blogs")
+    def blogs():
+        blogs = get_blog_files()
+        return render_template("pages/blogs-directory.html", blogs=blogs)
+
     @app.get("/blog")
     def blog():
         blog_content = get_blog_files()[0]["content"]
