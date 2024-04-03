@@ -7,8 +7,7 @@ alias pushnotes="cdvb && git add notes/**/*.md && gc docs 'update md notes' && g
 alias pushtodo="cdvb && git add TODO.md && gc docs todo 'update TODO.md' && gpush"
 alias pushreadme="cdvb && git add README.md && gc docs readme 'update root README.md' && gpush"
 alias pushaliases="cdvb && git add setup/dotfiles/zsh/aliases/ setup/dotfiles/zsh/scripts/ && gc feat aliases 'update aliases' && gpush"
-# TODO: look at cost benefit of this vs git magic
-alias pushdotfiles="cdvb && git add setup/dotfiles/* && git reset setup/dotfiles/zsh/.env.sh && gc docs 'update dotfiles' && gpush"
+alias pushdotfiles="cdvb && git add setup/dotfiles/* && gc docs 'update dotfiles' && gpush"
 alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
 alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'update progress.md' && gpush"
 
