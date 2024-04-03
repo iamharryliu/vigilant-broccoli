@@ -1,4 +1,4 @@
-name: GTA Update Alert - Email Subscribers
+name: Toronto Alerts - Email Subscribers
 
 on:
   schedule: [{ cron: '*/5 * * * *' }]

@@ -1,4 +1,4 @@
-name: Deploy Toronto Alerts App
+name: Toronto Alerts - Deploy App
 on:
   push: { branches: ['main'] }
 

@@ -13,7 +13,7 @@ DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 
 
 def get_users():
-    response = requests.get("https://gta-update-alerts-flask.fly.dev/get_users")
+    response = requests.get("https://torontoalerts.com/get_users")
     data = response.json()
     users = data.get("users", [])
     return users
