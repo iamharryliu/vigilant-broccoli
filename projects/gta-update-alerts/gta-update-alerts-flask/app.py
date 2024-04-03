@@ -3,9 +3,11 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import psycopg2
 from google_recaptcha import ReCaptcha
 from utils import (
+    get_blog_files,
     get_districts_data,
     convert_division_string_for_scraping_data,
     get_github_action_ip_addresses,
+    markdown_to_html,
 )
 
 app = Flask(__name__)
@@ -27,9 +29,9 @@ recaptcha = ReCaptcha(
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template(
-        "index.html",
-    )
+    # blogs = get_blog_files()
+    blogs = []
+    return render_template("pages/home-page/index.html", blogs=blogs)
 
 
 @app.route("/subscribe", methods=["GET", "POST"])
@@ -121,6 +123,15 @@ def unsubscribe():
             return redirect(url_for("index"))
     else:
         return redirect(url_for("index"))
+
+
+@app.get("/blog")
+def blog():
+    blog_content = get_blog_files()[0]["content"]
+    return render_template(
+        "pages/blog-page.html",
+        blog_content=markdown_to_html(blog_content),
+    )
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
+import os
 import json, re, requests
 from bs4 import BeautifulSoup
+import markdown
 
 
 def get_districts_data():
@@ -63,3 +65,21 @@ def get_github_action_ip_addresses():
     response = requests.get("https://api.github.com/meta")
     github_meta = response.json()
     return github_meta["actions"]
+
+
+def markdown_to_html(text):
+    return markdown.markdown(text)
+
+
+def get_blog_files():
+    blog_files = []
+    blogs_dir = "static/blogs"
+    if os.path.exists(blogs_dir):
+        for filename in os.listdir(blogs_dir):
+            if filename.endswith(".md"):
+                with open(os.path.join(blogs_dir, filename), "r") as f:
+                    content = f.read()
+                    blog_files.append(
+                        {"title": filename[:-3], "content": markdown_to_html(content)}
+                    )
+    return blog_files
