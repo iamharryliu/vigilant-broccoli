@@ -52,7 +52,7 @@ def get_districts_from_wiki():
 
 
 def get_districts_from_json():
-    with open("district_data.json", "r") as f:
+    with open("App/static/district_data.json", "r") as f:
         return json.load(f)
 
 
