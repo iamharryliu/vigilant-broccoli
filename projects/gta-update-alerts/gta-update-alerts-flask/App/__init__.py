@@ -83,10 +83,11 @@ def create_app():
 
     @app.get("/get_users")
     def get_users():
-        # github_action_ips = get_github_action_ip_addresses()
-        # github_action_ips = github_action_ips
-        # client_ip = request.remote_addr
-        # if client_ip in github_action_ips:
+        # GITHUB_ACTIONS_IP_ADDRESSES = get_github_action_ip_addresses()
+        # GITHUB_ACTIONS_IP_ADDRESSES = [IP[0:-3] for IP in GITHUB_ACTIONS_IP_ADDRESSES]
+        # headers_list = request.headers.getlist("X-Forwarded-For")
+        # client_ip = headers_list[0] if headers_list else request.remote_addr
+        # print(client_ip, request.remote_addr, headers_list, len(GITHUB_ACTIONS_IP_ADDRESSES))
         conn = get_db_connection()
         cursor = conn.cursor()
         query = "SELECT email, districts, keywords FROM emails;"
@@ -100,7 +101,6 @@ def create_app():
             for user in cursor.fetchall()
         ]
         return {"users": users}
-        # return redirect(url_for("index"))
 
     @app.get("/unsubscribe")
     def unsubscribe():
