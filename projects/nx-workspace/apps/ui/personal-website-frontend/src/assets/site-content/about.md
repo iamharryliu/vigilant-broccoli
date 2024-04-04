@@ -2,8 +2,6 @@
 
 Toronto, Canada 🇨🇦.
 
-**Looking for software developer opportunities in Malmö, Sweden.**
-
 Passionate software enthusiast who is capable of handling your application needs. Open to hearing about new and interesting opportunities.
 
 Expertise in:
