@@ -182,6 +182,13 @@ const LINKEDIN: Link = {
   text: 'LinkedIn',
 };
 
+const KOFI: Link = {
+  url: {
+    external: ENVIRONMENT.URLS.KOFI,
+  },
+  text: 'Buy me a coffee!',
+};
+
 const GITHUB: Link = {
   url: {
     external: ENVIRONMENT.URLS.GITHUB,
@@ -253,6 +260,7 @@ const EXTERNAL_LINKS = {
   SECONDHAND_STORE_IG,
   SKATE_IG,
   RESUME,
+  KOFI,
 };
 
 export const LINKS = {

@@ -15,5 +15,6 @@ export const ENVIRONMENT = {
       'https://docs.google.com/document/d/1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU/edit?usp=sharing',
     LINK_TREE: 'http://localhost:4200/links',
     VIBECHECK_LITE: 'https://vibecheck-lite-express.fly.dev',
+    KOFI: 'https://ko-fi.com/prettydamntired',
   },
 };
