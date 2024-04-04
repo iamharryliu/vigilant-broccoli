@@ -23,3 +23,7 @@
 ## Flat Bread
 
 - 3:1 flour to water
+
+## Bagels
+
+https://www.sophisticatedgourmet.com/2009/10/new-york-style-bagel-recipe/
