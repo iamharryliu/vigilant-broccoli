@@ -9,6 +9,7 @@ from App.utils import (
     get_github_action_ip_addresses,
     markdown_to_html,
 )
+from App.const import ENDPOINT
 
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
@@ -27,13 +28,13 @@ def create_app():
     def get_db_connection():
         return psycopg2.connect(DATABASE_URL)
 
-    @app.route("/", methods=["GET", "POST"])
+    @app.route(ENDPOINT.INDEX, methods=["GET", "POST"])
     def index():
         # blogs = get_blog_files()
         blogs = []
         return render_template("pages/home-page/index.html", title="Home", blogs=blogs)
 
-    @app.route("/subscribe", methods=["GET", "POST"])
+    @app.route(ENDPOINT.SUBSCRIBE, methods=["GET", "POST"])
     def subscribe():
         DISTRICT_DATA = get_districts_data()
         if request.method == "POST" and recaptcha.verify():
@@ -81,7 +82,7 @@ def create_app():
         else:
             return redirect(url_for("index"))
 
-    @app.get("/get_users")
+    @app.get(ENDPOINT.GET_USERS)
     def get_users():
         # GITHUB_ACTIONS_IP_ADDRESSES = get_github_action_ip_addresses()
         # GITHUB_ACTIONS_IP_ADDRESSES = [IP[0:-3] for IP in GITHUB_ACTIONS_IP_ADDRESSES]
@@ -102,7 +103,7 @@ def create_app():
         ]
         return {"users": users}
 
-    @app.get("/unsubscribe")
+    @app.get(ENDPOINT.UNSUBSCRUBE)
     def unsubscribe():
         email = request.args.get("email")
         if email:
@@ -121,12 +122,12 @@ def create_app():
         else:
             return redirect(url_for("index"))
 
-    @app.get("/blogs")
+    @app.get(ENDPOINT.BLOGS)
     def blogs():
         blogs = get_blog_files()
         return render_template("pages/blogs-directory.html", title="Blogs", blogs=blogs)
 
-    @app.get("/blog")
+    @app.get(ENDPOINT.BLOG)
     def blog():
         blog_content = get_blog_files()[0]["content"]
         return render_template(
