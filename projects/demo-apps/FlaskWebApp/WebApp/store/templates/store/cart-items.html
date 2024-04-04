@@ -1,0 +1,67 @@
+{% for item in cart_items %}
+<div class="row pt-3 pb-3">
+  <div class="col-3 col-lg-3">
+    <img
+      class="img-fluid mb-3"
+      src="{{ url_for('static', filename='images/store/products/' + item.product.image_file) }}"
+    />
+  </div>
+  <div class="col-9 col-lg-6">
+    {{item.product.name}}<br />
+    Item: {{ item.product.code }}<br />
+    Price: ${{ '%0.2f' | format(item.product.price) }} <br />
+    Size: {{ item.size }}<br />
+    Color: {{ item.product.color }}<br />
+    <a
+      class="btn btn-link"
+      href='{{ url_for("store.cart_item_update", item_id=item.id ) }}'
+      >Edit</a
+    >|
+    <form
+      action='{{ url_for("store.cart_delete_item", item_id=item.id) }}'
+      method="POST"
+      style="display: inline"
+    >
+      <input class="btn btn-link" type="submit" value="Remove" />
+    </form>
+    |
+    <form
+      class="d-inline"
+      method="post"
+      action='{{ url_for("store.cart_update") }}'
+    >
+      <select
+        class="custom-select d-inline"
+        id="{{item.id}}"
+        name="{{ item.id }}"
+        style="width: 4em; text-align-last: center"
+      >
+        {% for value in range(1,11) %}
+        <option
+          value="{{value}}"
+          {%
+          if
+          item.quantity=""
+          ="value"
+          %}
+          selected
+          {%
+          endif
+          %}
+        >
+          {{value}}
+        </option>
+        {% endfor %}
+      </select>
+    </form>
+    <script type="text/javascript">
+      $('#{{item.id}}').change(function () {
+        this.form.submit();
+      });
+    </script>
+  </div>
+</div>
+<hr />
+{% else %}
+<h6 align="center">Is currently empty...</h6>
+{% endfor %}

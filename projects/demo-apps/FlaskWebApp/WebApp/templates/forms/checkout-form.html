@@ -1,0 +1,505 @@
+<form method="POST">
+  {{ form.hidden_tag() }}
+  <div class="content-section">
+    <fieldset>
+      <legend>1. Contact Information</legend>
+      <div class="form-group">
+        {{ form.email.label(class="form-control-label") }} {% if
+        form.email.errors %} {{ form.email(class="form-control form-control-lg
+        is-invalid", autocomplete="off") }}
+        <div class="invalid-feedback">
+          {% for error in form.email.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.email(class="form-control", placeholder='Email',
+        autocomplete="off") }} {% endif %}
+      </div>
+      <div class="form-check">
+        {{ form.newsletter_sub(class="form-check-input", data_toggle="collapse",
+        data_target="#collapseExample", checked=True) }} {{
+        form.newsletter_sub.label(class="form-check-label") }}
+      </div>
+    </fieldset>
+  </div>
+  <div class="content-section">
+    <fieldset>
+      <legend>2. Shipping</legend>
+      <div class="row">
+        <div class="form-group col-md-6">
+          {{ form.shipping_first_name.label(class="form-control-label") }} {% if
+          form.shipping_first_name.errors %} {{
+          form.shipping_first_name(class="form-control form-control-lg
+          is-invalid", autocomplete="off") }}
+          <div class="invalid-feedback">
+            {% for error in form.shipping_first_name.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %} {{ form.shipping_first_name(class="form-control",
+          placeholder='First Name (optional)', autocomplete="off") }} {% endif
+          %}
+        </div>
+        <div class="form-group col-md-6">
+          {{ form.shipping_last_name.label(class="form-control-label") }} {% if
+          form.shipping_last_name.errors %} {{
+          form.shipping_last_name(class="form-control form-control-lg
+          is-invalid", autocomplete="off") }}
+          <div class="invalid-feedback">
+            {% for error in form.shipping_last_name.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %} {{ form.shipping_last_name(class="form-control",
+          placeholder='Last Name', autocomplete="off") }} {% endif %}
+        </div>
+        <div class="form-group col-12">
+          {{ form.shipping_address.label(class="form-control-label") }} {% if
+          form.shipping_address.errors %} {{
+          form.shipping_address(class="form-control form-control-lg is-invalid",
+          autocomplete="off") }}
+          <div class="invalid-feedback">
+            {% for error in form.shipping_address.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %} {{ form.shipping_address(class="form-control",
+          placeholder='Street address, P.O. box, company name, c/o',
+          autocomplete="off") }} {% endif %}
+        </div>
+        <div class="form-group col-12">
+          {{ form.shipping_address_unit.label(class="form-control-label") }} {%
+          if form.shipping_address_unit.errors %} {{
+          form.shipping_address_unit(class="form-control form-control-lg
+          is-invalid", autocomplete="off") }}
+          <div class="invalid-feedback">
+            {% for error in form.shipping_address_unit.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %} {{ form.shipping_address_unit(class="form-control",
+          placeholder='Apartments, suite, etc (optional)', autocomplete="off")
+          }} {% endif %}
+        </div>
+        <div class="form-group col-12">
+          {{ form.shipping_city.label(class="form-control-label") }} {% if
+          form.shipping_city.errors %} {{ form.shipping_city(class="form-control
+          form-control-lg is-invalid", autocomplete="off") }}
+          <div class="invalid-feedback">
+            {% for error in form.shipping_city.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %} {{ form.shipping_city(class="form-control",
+          placeholder='City', autocomplete="off") }} {% endif %}
+        </div>
+        <div class="form-group col-sm-4">
+          {{ form.shipping_region.label(class="form-control-label") }} {% if
+          form.shipping_region.errors %} {{
+          form.shipping_region(class="form-control form-control-lg is-invalid")
+          }}
+          <div class="invalid-feedback">
+            {% for error in form.shipping_region.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %} {{ form.shipping_region(class="form-control") }} {% endif
+          %}
+        </div>
+        <div class="form-group col-sm-4">
+          {{ form.shipping_country.label(class="form-control-label") }} {% if
+          form.shipping_country.errors %} {{
+          form.shipping_country(class="form-control form-control-lg is-invalid")
+          }}
+          <div class="invalid-feedback">
+            {% for error in form.shipping_country.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %} {{ form.shipping_country(class="form-control") }} {% endif
+          %}
+        </div>
+        <div class="form-group col-sm-4">
+          {{ form.shipping_postal_code.label(class="form-control-label") }} {%
+          if form.shipping_postal_code.errors %} {{
+          form.shipping_postal_code(class="form-control form-control-lg
+          is-invalid", autocomplete="off") }}
+          <div class="invalid-feedback">
+            {% for error in form.shipping_postal_code.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %} {{ form.shipping_postal_code(class="form-control",
+          placeholder='Postal Code', autocomplete="off") }} {% endif %}
+        </div>
+
+        <div class="form-group col-12">
+          {{ form.shipping_phone_number.label(class="form-control-label") }} {%
+          if form.shipping_phone_number.errors %} {{
+          form.shipping_phone_number(class="form-control form-control-lg
+          is-invalid", autocomplete="off") }}
+          <div class="invalid-feedback">
+            {% for error in form.shipping_phone_number.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %} {{ form.shipping_phone_number(class="form-control",
+          placeholder='Phone', autocomplete="off") }} {% endif %}
+        </div>
+      </div>
+      <!-- <legend>Shipping Options</legend>
+			<div class='form-group'>
+				<div class="custom-control custom-radio">
+					<input type="radio" id="radio_button_1" name="shipping_options" class="custom-control-input"
+						value='standard' checked form='shipping_option'>
+					<label class="custom-control-label" for="radio_button_1">Standard ( x - x Business Days
+						)</label>
+				</div>
+				<div class="custom-control custom-radio">
+					<input type="radio" id="radio_button_2" name="shipping_options" class="custom-control-input"
+						value='express' form='shipping_option'>
+					<label class="custom-control-label" for="radio_button_2">Express ( x - x Business Days</label>
+				</div>
+			</div> -->
+      <div class="form-group">
+        <legend>
+          {{ form.shipping_method.label(class="form-check-label") }}
+        </legend>
+        {% for subfield in form.shipping_method %}
+        <div class="custom-control custom-radio">
+          {{ subfield(class='custom-control-input')
+          }}{{subfield.label(class='custom-control-label')}}
+        </div>
+        {% endfor %}
+      </div>
+    </fieldset>
+  </div>
+  <div class="content-section">
+    <fieldset>
+      <legend>3. Payment</legend>
+      <div class="form-group">
+        {{ form.card_number.label(class="form-control-label") }} {% if
+        form.card_number.errors %} {{ form.card_number(class="form-control
+        form-control-lg is-invalid", autocomplete='off') }}
+        <div class="invalid-feedback">
+          {% for error in form.number.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.card_number(class="form-control", placeholder='Card
+        Number', autocomplete='off') }} {% endif %}
+      </div>
+      <div class="form-group">
+        {{ form.card_name.label(class="form-control-label") }} {% if
+        form.card_name.errors %} {{ form.card_name(class="form-control
+        form-control-lg is-invalid", autocomplete='off') }}
+        <div class="invalid-feedback">
+          {% for error in form.card_name.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.card_name(class="form-control", placeholder='Name On
+        Card', autocomplete='off') }} {% endif %}
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group">
+            {{ form.card_expiration_month.label(class="form-control-label") }}
+            {% if form.card_expiration_month.errors %} {{
+            form.card_expiration_month(class="form-control form-control-lg
+            is-invalid", placeholder='Month') }}
+            <div class="invalid-feedback">
+              {% for error in form.card_expiration_month.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.card_expiration_month(class="form-control",
+            placeholder='Month') }} {% endif %}
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            {{ form.card_expiration_year.label(class="form-control-label") }} {%
+            if form.card_expiration_year.errors %} {{
+            form.card_expiration_year(class="form-control form-control-lg
+            is-invalid", placeholder="Year") }}
+            <div class="invalid-feedback">
+              {% for error in form.card_expiration_year.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.card_expiration_year(class="form-control",
+            placeholder="Year") }} {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <legend>Billing Address</legend>
+      <div class="form-check">
+        {{ form.same_as_shipping(class="form-check-input",
+        data_toggle="collapse", data_target="#collapseExample", checked=True) }}
+        {{ form.same_as_shipping.label(class="form-check-label") }}
+      </div>
+      <div class="collapse" id="collapseExample">
+        <div class="row">
+          <div class="form-group col-md-6">
+            {{ form.billing_first_name.label(class="form-control-label") }} {%
+            if form.billing_first_name.errors %} {{
+            form.billing_first_name(class="form-control form-control-lg
+            is-invalid", autocomplete="off") }}
+            <div class="invalid-feedback">
+              {% for error in form.billing_first_name.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.billing_first_name(class="form-control",
+            placeholder='First Name (optional)', autocomplete="off") }} {% endif
+            %}
+          </div>
+          <div class="form-group col-md-6">
+            {{ form.billing_last_name.label(class="form-control-label") }} {% if
+            form.billing_last_name.errors %} {{
+            form.billing_last_name(class="form-control form-control-lg
+            is-invalid", autocomplete="off") }}
+            <div class="invalid-feedback">
+              {% for error in form.billing_last_name.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.billing_last_name(class="form-control",
+            placeholder='Last Name', autocomplete="off") }} {% endif %}
+          </div>
+          <div class="form-group col-12">
+            {{ form.billing_address.label(class="form-control-label") }} {% if
+            form.billing_address.errors %} {{
+            form.billing_address(class="form-control form-control-lg
+            is-invalid", autocomplete="off") }}
+            <div class="invalid-feedback">
+              {% for error in form.billing_address.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.billing_address(class="form-control",
+            placeholder='Street address, P.O. box, company name, c/o',
+            autocomplete="off") }} {% endif %}
+          </div>
+          <div class="form-group col-12">
+            {{ form.billing_address_unit.label(class="form-control-label") }} {%
+            if form.billing_address_unit.errors %} {{
+            form.billing_address_unit(class="form-control form-control-lg
+            is-invalid", autocomplete="off") }}
+            <div class="invalid-feedback">
+              {% for error in form.billing_address_unit.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.billing_address_unit(class="form-control",
+            placeholder='Apartments, suite, etc (optional)', autocomplete="off")
+            }} {% endif %}
+          </div>
+          <div class="form-group col-12">
+            {{ form.billing_city.label(class="form-control-label") }} {% if
+            form.billing_city.errors %} {{ form.billing_city(class="form-control
+            form-control-lg is-invalid", autocomplete="off") }}
+            <div class="invalid-feedback">
+              {% for error in form.billing_city.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.billing_city(class="form-control",
+            placeholder='City', autocomplete="off") }} {% endif %}
+          </div>
+          <div class="form-group col-sm-4">
+            {{ form.billing_region.label(class="form-control-label") }} {% if
+            form.billing_region.errors %} {{
+            form.billing_region(class="form-control form-control-lg is-invalid")
+            }}
+            <div class="invalid-feedback">
+              {% for error in form.billing_region.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.billing_region(class="form-control") }} {% endif
+            %}
+          </div>
+          <div class="form-group col-sm-4">
+            {{ form.billing_country.label(class="form-control-label") }} {% if
+            form.billing_country.errors %} {{
+            form.billing_country(class="form-control form-control-lg
+            is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.billing_country.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.billing_country(class="form-control") }} {% endif
+            %}
+          </div>
+          <div class="form-group col-sm-4">
+            {{ form.billing_postal_code.label(class="form-control-label") }} {%
+            if form.billing_postal_code.errors %} {{
+            form.billing_postal_code(class="form-control form-control-lg
+            is-invalid", autocomplete="off") }}
+            <div class="invalid-feedback">
+              {% for error in form.billing_postal_code.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.billing_postal_code(class="form-control",
+            placeholder='Postal Code', autocomplete="off") }} {% endif %}
+          </div>
+
+          <div class="form-group col-12">
+            {{ form.billing_phone_number.label(class="form-control-label") }} {%
+            if form.billing_phone_number.errors %} {{
+            form.billing_phone_number(class="form-control form-control-lg
+            is-invalid", autocomplete="off") }}
+            <div class="invalid-feedback">
+              {% for error in form.billing_phone_number.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.billing_phone_number(class="form-control",
+            placeholder='Phone', autocomplete="off") }} {% endif %}
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+  <div class="content-section">
+    <legend>4. Review and Purchase</legend>
+    <p>Review your information and purchase when you’re ready.</p>
+    <div class="mb-3">
+      <button
+        type="button"
+        class="btn btn-link btn-small p-0 m-0 mr-2"
+        data-toggle="modal"
+        data-target="#returnPolicy"
+      >
+        Return Policy
+      </button>
+      <button
+        type="button"
+        class="btn btn-link btn-small p-0 m-0 ml-2"
+        data-toggle="modal"
+        data-target="#termsOfService"
+      >
+        Terms of Service
+      </button>
+    </div>
+    {{ form.submit(class="btn btn-block btn-dark") }}
+  </div>
+</form>
+
+<div
+  class="modal fade"
+  id="returnPolicy"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Return Policy</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          WITHIN 3 days of the delivery date, you may return full priced,
+          untouched items that are in their original packaging. Get in contact
+          (support@maedbymae.com) immediately for return authorization and more
+          information.<br /><br />
+
+          After 72 hours of the delivery date, no returns or exchanges will be
+          excepted.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-block btn-dark"
+          data-dismiss="modal"
+        >
+          Ok
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="termsOfService"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Terms of Serivice</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Customers are responsible for shipping charges and proper packaging.
+          The return policy is subject to ALL the following:<br /><br />
+
+          · Items must be returned unused and in their original state. Returns
+          that are damaged, unsellable or late may not be accepted and will be
+          sent back to the customer.<br /><br />
+
+          · A re-stocking fee of 20% may be applicable for specific returns.<br /><br />
+
+          · Returned items can be exchanged instead of obtaining a refund, but
+          only in the same color, condition, and value. These are all subject to
+          availability.<br /><br />
+
+          · All custom made orders are non-returnable and therefor
+          non-refundable.<br /><br />
+
+          · All discounted sale items are final sale.<br /><br />
+
+          · Maed by Mae makes every effort possible to accurately portray colors
+          and depictions of all products as they appear on the site. As computer
+          monitors vary, exact accuracy cannot be guaranteed.<br /><br />
+
+          · All handmaed wood products are all subject to slight variations and
+          unique characteristics.<br /><br />
+
+          · Returns or exchanges that have been used or altered in any way,
+          shape or form will not be accepted and they must be shipped in the
+          original packaging, and arrive in their proper state or exactly how
+          the buyer received.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-block btn-dark"
+          data-dismiss="modal"
+        >
+          Ok
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

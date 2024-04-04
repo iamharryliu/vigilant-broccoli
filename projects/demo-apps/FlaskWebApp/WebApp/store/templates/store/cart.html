@@ -1,0 +1,33 @@
+{% extends 'layout.html' %} {% block content %}
+<div class="content-section">
+  <h1 class="text-center">Your Cart</h1>
+  <hr />
+
+  {% include 'store/cart-items.html' %}
+  <h5 align="right">
+    Subtotal ({{cart.quantity}} items): CDN${{ '%0.2f' |
+    format(cart.total|float) }}
+  </h5>
+  <hr />
+
+  <div class="clearfix">
+    <div class="float-right">
+      <form
+        class="d-inline"
+        method="post"
+        action='{{ url_for("store.cart_clear") }}'
+      >
+        <input type="submit" value="Clear Cart" class="btn btn-primary" />
+      </form>
+
+      <form
+        class="d-inline"
+        method="POST"
+        action='{{url_for("store.submit_cart")}}'
+      >
+        <input type="submit" value="Checkout" class="btn btn-primary" />
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

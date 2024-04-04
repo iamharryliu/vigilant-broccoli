@@ -1,0 +1,26 @@
+{% extends "layout.html" %} {% block content %}
+
+<!-- User Header -->
+<div class="content-section">
+  {% include 'users/account/components/user-header.html' %} {% include
+  'users/account/components/tabs.html' %}
+  <div class="clearfix mb-3">
+    <h1 class="float-left">Posts by {{ user.username }} ({{ posts.total }})</h1>
+    {% if user==current_user %}
+    <div class="float-md-right mt-2">
+      {% include 'posts/components/create-post-button.html' %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Posts -->
+  {% if posts.total==0 %}
+  <h4 class="text-center m-5">User has not made any posts yet..</h4>
+  {% endif %} {% for post in posts.items %} {% include
+  'posts/components/post-detail.html' %} {% endfor %}
+
+  <!-- Pagination -->
+  {% include 'posts/components/pagination.html' %}
+</div>
+
+{% endblock content %}

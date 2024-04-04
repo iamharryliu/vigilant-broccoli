@@ -1,0 +1,18 @@
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item">
+    <a
+      class="nav-link {% if request.endpoint=='users.user_posts' %}active{% endif %}"
+      href="{{ url_for('users.user_posts', username=user.username) }}"
+      >Posts</a
+    >
+  </li>
+  {% if user == current_user %}
+  <li class="nav-item">
+    <a
+      class="nav-link {% if request.endpoint=='users.account_settings' %}active{% endif %}"
+      href="{{ url_for('users.account_settings') }}"
+      >Account Settings</a
+    >
+  </li>
+  {% endif %}
+</ul>

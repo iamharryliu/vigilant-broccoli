@@ -1,0 +1,41 @@
+{% extends "layout.html" %} {% block content %}
+
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('static', filename='css/store.css') }}"
+/>
+<div class="mb-3">
+  <form method="POST" action="{{url_for('store.search')}}" id="search">
+    <div class="input-group">
+      <input
+        type="text"
+        name="search"
+        class="form-control"
+        placeholder="Search for.."
+        autocomplete="off"
+      />
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="products row">
+  {% for product in products %}
+  <a
+    href="{{url_for('store.product', product_id=product.id) }}"
+    class="btn col-sm-6 col-lg-4 col-xl-3"
+  >
+    <img
+      class="img-fluid mb-3"
+      src="{{ url_for('static', filename='images/store/products/' + product.image_file) }}"
+    />
+    <h5>{{product.name}}</h5>
+    ${{ '%0.2f' | format(product.price | float) }} CAD
+  </a>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+<form method="POST" action="{{url_for('posts.search')}}" id="search"></form>
+<div class="input-group" style="width: 100%">
+  {% if current_user.is_authenticated %} {% include
+  'posts/components/current-user-posts-button.html' %} {% include
+  'posts/components/create-post-button.html' %} {% endif %}
+  <input
+    form="search"
+    class="form-control"
+    type="search"
+    placeholder="Search"
+    name="search"
+    autocomplete="off"
+  />
+  <div class="input-group-append">
+    <button form="search" class="btn btn-outline-secondary" type="submit">
+      Search
+    </button>
+  </div>
+</div>

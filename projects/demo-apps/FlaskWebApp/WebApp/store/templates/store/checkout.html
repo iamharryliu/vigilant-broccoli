@@ -1,0 +1,21 @@
+{% extends 'layout.html' %} {% block content %} {% include
+'forms/checkout-form.html' %}
+<script>
+  $('#submit').click(function () {
+    if ($('#same_as_shipping').is(':checked')) {
+      $('#billing_first_name').val($('#shipping_first_name').val());
+      $('#billing_last_name').val($('#shipping_last_name').val());
+      $('#billing_address').val($('#shipping_address').val());
+      $('#billing_address_unit').val($('#shipping_address_unit').val());
+      $('#billing_city').val($('#shipping_city').val());
+      $('#billing_region').val($('#shipping_region').val());
+      $('#billing_country').val($('#shipping_country').val());
+      $('#billing_address_unit').val($('#shipping_address_unit').val());
+      $('#billing_postal_code').val($('#shipping_postal_code').val());
+      $('#billing_postal_code').val($('#shipping_postal_code').val());
+      $('#billing_phone_number').val($('#shipping_phone_number').val());
+    }
+  });
+</script>
+
+{% endblock %}

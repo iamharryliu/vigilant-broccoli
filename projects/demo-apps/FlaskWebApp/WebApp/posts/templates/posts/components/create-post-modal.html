@@ -1,0 +1,64 @@
+<div
+  class="modal fade"
+  id="createPost"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="newPostModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content container">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newPostModalLabel">Create Post</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="{{url_for('posts.add_post_route')}}">
+        <div class="modal-body">
+          {{ create_post_form.hidden_tag() }}
+          <fieldset>
+            <div class="form-group">
+              {{ create_post_form.title.label(class="form-control-label") }} {%
+              if create_post_form.title.errors %} {{
+              create_post_form.title(class="form-control form-control-lg
+              is-invalid", autocomplete='off') }}
+              <div class="invalid-feedback">
+                {% for error in create_post_form.title.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %} {{ create_post_form.title(class="form-control
+              form-control-lg", autocomplete='off') }} {% endif %}
+            </div>
+            <div class="form-group">
+              {{ create_post_form.content.label(class="form-control-label") }}
+              {% if create_post_form.content.errors %} {{
+              create_post_form.content(class="form-control form-control-lg
+              is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in create_post_form.content.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %} {{ create_post_form.content(class="form-control
+              form-control-lg", rows=5) }} {% endif %}
+            </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+          <input type="hidden" name="url" value="{{ create_redirect }}" />
+          {{ create_post_form.submit(class="btn btn-outline-info") }}
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
