@@ -11,7 +11,7 @@ jobs:
       name: production
     defaults:
       run:
-        working-directory: ./projects/toronto-alerts/gta-update-alerts-flask
+        working-directory: ./projects/toronto-alerts/toronto-alerts-flask
     steps:
       - uses: actions/checkout@v4
         with:
