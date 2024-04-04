@@ -13,7 +13,7 @@
 - ui:
   - autocomplete tagging
 - feat:
-  - guard users endpoint with github actions whitelist
+  - guard users endpoint with github actions whitelist or performing cron within the server instance?
   - blog section for SEO
   - proper email
 
