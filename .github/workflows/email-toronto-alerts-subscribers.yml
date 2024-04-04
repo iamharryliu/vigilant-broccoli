@@ -10,7 +10,7 @@ jobs:
       name: production
     defaults:
       run:
-        working-directory: ./projects/gta-update-alerts/scripts
+        working-directory: ./projects/toronto-alerts/scripts
     steps:
       - name: Checkout code.
         uses: actions/checkout@v2
