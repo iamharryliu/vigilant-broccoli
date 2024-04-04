@@ -2,6 +2,14 @@
 
 ## Toronto Alerts
 
+- preliminary steps
+  - building twitter service to scrape tweets with Tweepy
+    - tweet ttc updates, email all applicable users
+- scaling
+  - mobile application, ios/android, free at first then change to paid service
+  - text notifications with Twilio? possibly paid service
+  - contact gtaupdate dude
+  - application unit testing
 - ui:
   - autocomplete tagging
 - feat:
