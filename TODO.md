@@ -4,20 +4,26 @@
 
 - preliminary steps
 
-  - building twitter service to scrape tweets with Tweepy
-    - tweet ttc updates, email all applicable users
-    - https://developer.twitter.com/en/products/twitter-api
-    - $100 per month
-    - email service and parse data from there
-    - https://www.ttc.ca/my-ttc-eservices
-  - Google android store, 1 time cost of $25
-  - Apple Store, yearly cost of $99
+  - TTC notifications
 
-- scaling
-  - mobile application, ios/android, free at first then change to paid service
-  - text notifications with Twilio? possibly paid service
-  - contact gtaupdate dude
+    - building twitter service to scrape tweets with Tweepy
+      - https://developer.twitter.com/en/products/twitter-api
+      - $100 per month
+    - TTC email services
+      - https://www.ttc.ca/my-ttc-eservices
+      - script to check for new emails
+      - free
+    - parse data and email all applicable users
+
+  - mobile application
+    - Google android store, 1 time cost of $25
+    - Apple Store, yearly cost of $99
+  - text notifications
+    - https://www.twilio.com/en-us/sms/pricing/ca
   - application unit testing
+  - chores
+    - contact gtaupdate dude
+
 - ui:
   - autocomplete tagging
 - feat:
