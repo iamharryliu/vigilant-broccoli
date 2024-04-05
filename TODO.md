@@ -3,8 +3,16 @@
 ## Toronto Alerts
 
 - preliminary steps
+
   - building twitter service to scrape tweets with Tweepy
     - tweet ttc updates, email all applicable users
+    - https://developer.twitter.com/en/products/twitter-api
+    - $100 per month
+    - email service and parse data from there
+    - https://www.ttc.ca/my-ttc-eservices
+  - Google android store, 1 time cost of $25
+  - Apple Store, yearly cost of $99
+
 - scaling
   - mobile application, ios/android, free at first then change to paid service
   - text notifications with Twilio? possibly paid service
