@@ -33,3 +33,6 @@ alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && sou
 
 # Grind 75
 alias grind75="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75"
+
+# Toronto Alerts
+alias cdtorontoalerts="cdvb && cd projects/toronto-alerts"
