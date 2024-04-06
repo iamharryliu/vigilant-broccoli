@@ -53,3 +53,6 @@ alias heronparkleisureskateschedule='open -a "Google Chrome" "https://www.toront
 alias centennialskateschedule='open -a "Google Chrome" "https://www.toronto.ca/data/parks/prd/skating/dropin/leisure/index.html#loc_537"'
 alias scarboroughvillageskateschedule='open -a "Google Chrome" "https://www.toronto.ca/data/parks/prd/skating/dropin/leisure/index.html#loc_743"'
 alias checkskatingtimes='heronparkleisureskateschedule && centennialskateschedule && scarboroughvillageskateschedule'
+
+# Utility
+alias findmy='open -a "Google Chrome" "https://www.icloud.com/find/"'
