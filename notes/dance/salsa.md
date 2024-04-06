@@ -1,5 +1,13 @@
 # Salsa
 
+On1 vs. On2
+
+|       |     |     |     |     |     |     |     |     |
+| :---: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Count |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
+|  On1  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |  S  |
+|  On2  |  S  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |
+
 SOCIALS
 Hammerlocks
 cuban turns
