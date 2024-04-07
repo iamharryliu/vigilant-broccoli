@@ -1,5 +1,7 @@
 # TODO
 
+- make first PYPI libraries
+
 ## Vigilant Broccoli
 
 - Q1

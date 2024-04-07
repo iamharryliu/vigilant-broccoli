@@ -135,3 +135,15 @@ yoyo variations
 3 - throw hand -> crossbody -> yoyo -> presentation right turn
 3 - throw hand -> crossbody with hand up -> shoulder check ->yoyo -> presentation -> right turn
 3 - throw hand -> crossbody with hand up -> shoulder check ->yoyo -> presentation -> right turn
+
+## Misc
+
+- salsa off combo
+  - left to left hand hold into men's right turn into a break
+  - cross body lead x2
+  - breadback reverse crossbody lead thing
+  - switch to right to right handhold to crossbody inside turn
+  - spider double turn
+  - side to side step thing
+  - forward pull follow, lead walk around with a right hand waist check
+  - break into shines and swap partners
