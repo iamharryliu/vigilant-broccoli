@@ -10,8 +10,7 @@ export const DEFAULT_EMAIL_REQUEST: EmailRequest = {
 };
 
 export const DEFAULT_EJS_TEMPLATE: EjsTemplate = {
-  // TODO: find a better way to do this?
-  path: path.join(__dirname, '../services/assets/default.ejs'),
+  path: path.resolve(__dirname, '../services/assets/default.ejs'),
   data: {
     text: 'default text',
   },
