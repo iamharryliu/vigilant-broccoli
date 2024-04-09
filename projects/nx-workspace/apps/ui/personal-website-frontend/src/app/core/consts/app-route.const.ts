@@ -186,7 +186,7 @@ const KOFI: Link = {
   url: {
     external: ENVIRONMENT.URLS.KOFI,
   },
-  text: 'Buy me a coffee!',
+  text: 'Buy me a coffee? 🥺',
 };
 
 const GITHUB: Link = {
