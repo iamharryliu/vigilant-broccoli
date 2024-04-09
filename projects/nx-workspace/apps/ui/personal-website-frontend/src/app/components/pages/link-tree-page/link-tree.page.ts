@@ -21,13 +21,13 @@ import { ButtonLinkComponent, Link } from 'general-components';
 })
 export class LinkTreePageComponent {
   LINKS: Link[] = [
+    LINKS.RESUME,
+    LINKS.LINKEDIN,
     LINKS.GITHUB,
     { ...LINKS.INDEX_PAGE, text: 'Personal Website' },
-    LINKS.LINKEDIN,
-    LINKS.KOFI,
-    // LINKS.RESUME,
+    LINKS.SKATE_IG,
     // LINKS.PERSONAL_INSTAGRAM,
-    // LINKS.SKATE_IG,
     // LINKS.SECONDHAND_STORE_IG,
+    LINKS.KOFI,
   ];
 }
