@@ -28,8 +28,7 @@
 
 - 440g flour 1 tbsp salt
 - 2 tbsp yeast + 1 tbsp honey + 1/2 cup warm water, stir after 5 minutes
-  mix flour
-- combine and knead dough
+- combine and add 1/3 cup warm water and knead dough
 - brush bowl with oil and coat dough, let rise for 1 hour then punch it down and let it rest another 10 minutes
 - divide dough into 8 pieces and round the into balls and make a hole + stretch into shape
 - rest on oil coated cookie sheet
