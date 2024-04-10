@@ -38,7 +38,9 @@
   </div>
   <hr class="mt-4 mb-4" />
 
-  <h2 class="mb-4">Other Online Toronto Services</h2>
+  <h2 class="mb-4 text-center">Other Online Toronto Services</h2>
+
+  <h3>TTC</h3>
 
   <div class="col-12 col-sm-6 mb-4">
     <div class="card h-100">
@@ -48,8 +50,25 @@
         alt="Toronto"
       />
       <div class="card-body">
-        <h5 class="card-title">TTC Email Notifications</h5>
-        <p class="card-text">Get updates for your commute via email.</p>
+        <h5 class="card-title">Service Alerts</h5>
+        <a
+          href=" https://www.ttc.ca/service-alerts"
+          class="stretched-link"
+          target="_blank"
+        ></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-sm-6 mb-4">
+    <div class="card h-100">
+      <img
+        src="{{url_for('static', filename='images/ttc.jpg')}}"
+        class="card-img-top"
+        alt="Toronto"
+      />
+      <div class="card-body">
+        <h5 class="card-title">Email Alerts</h5>
         <a
           href="https://www.ttc.ca/my-ttc-eservices"
           class="stretched-link"
@@ -67,8 +86,7 @@
         alt="Toronto"
       />
       <div class="card-body">
-        <h5 class="card-title">TTC Twitter</h5>
-        <p class="card-text">Service alerts from TTC Transit Control</p>
+        <h5 class="card-title">Alerts Twitter</h5>
         <a
           href="https://twitter.com/ttcnotices?lang=en"
           class="stretched-link"
@@ -78,24 +96,7 @@
     </div>
   </div>
 
-  <div class="col-12 col-sm-6 mb-4">
-    <div class="card h-100">
-      <img
-        src="{{url_for('static', filename='images/storm.jpg')}}"
-        class="card-img-top"
-        alt="Toronto"
-      />
-      <div class="card-body">
-        <h5 class="card-title">City Weather Alerts</h5>
-        <p class="card-text">Weather alerts From the City</p>
-        <a
-          href="https://weather.gc.ca/warnings/report_e.html?on61="
-          class="stretched-link"
-          target="_blank"
-        ></a>
-      </div>
-    </div>
-  </div>
+  <h3>TPS</h3>
 
   <div class="col-12 col-sm-6 mb-4">
     <div class="card h-100">
@@ -106,9 +107,28 @@
       />
       <div class="card-body">
         <h5 class="card-title">Toronto Police Service Maps</h5>
-        <p class="card-text">Infographic maps provided by TPS.</p>
         <a
           href="https://data.torontopolice.on.ca/pages/maps"
+          class="stretched-link"
+          target="_blank"
+        ></a>
+      </div>
+    </div>
+  </div>
+
+  <h3>Other</h3>
+
+  <div class="col-12 col-sm-6 mb-4">
+    <div class="card h-100">
+      <img
+        src="{{url_for('static', filename='images/storm.jpg')}}"
+        class="card-img-top"
+        alt="Toronto"
+      />
+      <div class="card-body">
+        <h5 class="card-title">Weather Alerts</h5>
+        <a
+          href="https://weather.gc.ca/warnings/report_e.html?on61="
           class="stretched-link"
           target="_blank"
         ></a>
@@ -125,7 +145,6 @@
       />
       <div class="card-body">
         <h5 class="card-title">GTA Update Dashboard</h5>
-        <p class="card-text">Live update Dashboard by Iain J. Grant</p>
         <a
           href="https://gtaupdate.com/"
           class="stretched-link"
