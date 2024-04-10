@@ -26,4 +26,16 @@
 
 ## Bagels
 
-https://www.sophisticatedgourmet.com/2009/10/new-york-style-bagel-recipe/
+- 440g flour 1 tbsp salt
+- 2 tbsp yeast + 1 tbsp honey + 1/2 cup warm water, stir after 5 minutes
+  mix flour
+- combine and knead dough
+- brush bowl with oil and coat dough, let rise for 1 hour then punch it down and let it rest another 10 minutes
+- divide dough into 8 pieces and round the into balls and make a hole + stretch into shape
+- rest on oil coated cookie sheet
+- bring pot of water to a boil + preheat to 425 with convection bake
+- boil both sides of bagels in water for 2 minutes
+- coat bagels in egg wash and add topping if wanted
+- bake for 20-25 minutes
+
+[Recipe](https://www.sophisticatedgourmet.com/2009/10/new-york-style-bagel-recipe/)
