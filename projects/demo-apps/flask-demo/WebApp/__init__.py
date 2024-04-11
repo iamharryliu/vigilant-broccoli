@@ -1,7 +1,5 @@
 from flask import Flask
 from WebApp.config import AppConfig
-from WebApp.main.routes import main
-from WebApp.errors.handlers import errors
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -27,6 +25,10 @@ def create_app():
     login_manager.init_app(app)
 
     # Add Blurprints
+    from WebApp.main.routes import main
+
     app.register_blueprint(main)
+    from WebApp.errors.handlers import errors
+
     app.register_blueprint(errors)
     return app
