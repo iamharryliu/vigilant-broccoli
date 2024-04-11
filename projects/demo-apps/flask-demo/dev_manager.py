@@ -2,7 +2,7 @@ import sys
 from WebApp import create_app, db, bcrypt
 from WebApp.models import User
 from WebApp.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG, PROD_CONFIG
-from json_placeholder import get_users
+from utils.mock.json_placeholder import get_users
 
 COMMANDS = {
     "RUNSERVER": "runserver",
