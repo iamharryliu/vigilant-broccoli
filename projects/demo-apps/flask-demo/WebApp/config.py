@@ -4,7 +4,7 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 ROOT_PATH = os.path.abspath(os.path.join(DIR_PATH, os.pardir))
 
 
-class AppConfig:
+class SERVER_CONFIG:
     PORT_NUMBER = 5000
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -26,3 +26,19 @@ class AppConfig:
     RECAPTCHA_PUBLIC_KEY = os.environ.get("RECAPTCHA_PUBLIC_KEY")
     RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY")
     RECAPTCHA_OPTIONS = os.environ.get("RECAPTCHA_OPTIONS")
+
+
+class TEST_CONFIG(SERVER_CONFIG):
+    ENVIRONMENT = "TEST"
+
+
+class DIT_CONFIG(SERVER_CONFIG):
+    ENVIRONMENT = "DIT"
+
+
+class SIT_CONFIG(SERVER_CONFIG):
+    ENVIRONMENT = "SIT"
+
+
+class PROD_CONFIG(SERVER_CONFIG):
+    ENVIRONMENT = "PROD"
