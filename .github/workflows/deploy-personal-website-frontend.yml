@@ -1,4 +1,5 @@
-name: Redeploy Frontend (for DocsMD updates)
+# TODO: fix pdf deployment
+name: Redeploy Frontend for CMS updates
 on:
   workflow_dispatch
   # push: { branches: ['main'] }
