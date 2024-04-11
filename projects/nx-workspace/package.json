@@ -6,7 +6,7 @@
     "serve:personal-website": "concurrently \"nx serve personal-website-frontend\" \"nx serve personal-website-backend\"",
     "lint": "nx run-many -t lint --fix",
     "format": "nx format:write",
-    "test": "nx run-many -t test",
+    "test:all": "nx run-many -t test",
     "lint:commit": "nx affected -t lint",
     "format:commit": "npm run format",
     "test:commit": "nx affected -t test"
