@@ -1,14 +1,10 @@
 # TODO
 
-- make first PYPI libraries
-
 ## Vigilant Broccoli
 
 - Q1
+  - make first PYPI libraries
 - Q2
-
-  - feat: keep DocsMD folder structure open on left pane for opened files
-  - refactor: implement Angular signals
 
 - Q3
 
@@ -28,6 +24,7 @@
     - style: update typography
   - docs: spring boot
   - feat: use Github actions to replace cronjobs
+  - refactor: implement Angular signals
 
 ## CICD
 
