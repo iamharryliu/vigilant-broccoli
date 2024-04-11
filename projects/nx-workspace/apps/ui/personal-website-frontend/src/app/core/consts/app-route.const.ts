@@ -7,7 +7,7 @@ import { VerifyEmailSubscriptionPageComponent } from '../../components/pages/ver
 import { VibecheckLiteSubscribePageComponent } from '../../components/pages/vibecheck-lite/subscribe-page/vibecheck-lite-subscribe.page';
 import { VibecheckLiteUnsubscribePageComponent } from '../../components/pages/vibecheck-lite/unsubscribe-page/unsubscribe.page';
 import { VibecheckLiteComponent } from '../../demo-apps/vibecheck-lite/vibecheck-lite.component';
-import { MdLibraryComponent } from '../../docs-md/docs-md.page';
+import { DocsMdPageComponent } from '../../docs-md/docs-md.page';
 import { ProjectsPageComponent } from '../../components/pages/projects-page/projects.page';
 import { LeetCodePageComponent } from '../../leet-code/leet-code.page';
 import { Link } from 'general-components';
@@ -23,12 +23,13 @@ export const INDEX_ROUTE: Route = {
 export const DOCS_MD_ROUTE: Route = {
   path: 'docs-md',
   data: { title: 'DocsMD' },
-  component: MdLibraryComponent,
+  redirectTo: 'docs-md/',
+  pathMatch: 'full',
 };
 export const DOCS_MD_FILE_ROUTE: Route = {
   path: 'docs-md/:markdownFilename',
   data: { title: 'DocsMD' },
-  component: MdLibraryComponent,
+  component: DocsMdPageComponent,
 };
 
 export const BLOG_DIRECTORY_ROUTE: Route = {

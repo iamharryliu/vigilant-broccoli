@@ -26,7 +26,7 @@ import {
   ],
   templateUrl: './docs-md.page.html',
 })
-export class MdLibraryComponent implements OnInit {
+export class DocsMdPageComponent implements OnInit {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
   fileContent$: Observable<FolderItem>;
 
