@@ -1,4 +1,4 @@
-# Coding From Scratch Part 3: What is a Styling Library
+# Coding From Scratch Part 3: What is a Styling Library and Using Bootstrap
 
 From the previous lesson you learned about CSS and how to style HTML components using the 3 different methods of implementing CSS styling (inline, internal/embedded, and external CSS). If you played around with styling your site with CSS you may have begun to notice the difficulty of writing your own CSS and organizing it when it becomes more complex. Styling web pages with CSS is a skill and takes time to hone before being able to get it exactly how you want it
 
