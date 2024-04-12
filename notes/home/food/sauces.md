@@ -7,10 +7,10 @@
 - blend 1 cup of oil, drip first quarter of fluid then slowly pour
 - add 1 teaspoon lemon juice
 
+[Recipe](https://www.inspiredtaste.net/25943/homemade-mayonnaise-recipe/)
+
 ## Garlic Confit
 
 - pealed garlic
 - olive oil
-- heal olive oil and garlic until lightly bubbling for 2 hours
-
-[Recipe](https://www.inspiredtaste.net/25943/homemade-mayonnaise-recipe/)
+- heat olive oil and garlic until lightly bubbling for 2 hours
