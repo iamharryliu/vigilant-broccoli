@@ -1,8 +1,11 @@
-from flask import flash
+import re
+from flask import flash, session, redirect, url_for, request
 from flask_mail import Message
+from flask_login import login_user
 from WebApp import db, bcrypt, mail
 from WebApp.models import User
 from WebApp.users.forms import (
+    LoginForm,
     RegistrationForm,
 )
 
@@ -23,3 +26,21 @@ def send_register_email(user):
     msg = Message("You have signed up.", recipients=[user.email])
     msg.body = "You have signed up."
     mail.send(msg)
+
+
+def handle_login():
+    form = LoginForm()
+    identification = form.identification.data
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", identification):
+        user = User.query.filter_by(username=identification).first()
+    else:
+        user = User.query.filter_by(email=identification).first()
+    if user and bcrypt.check_password_hash(user.password, form.password.data):
+        session.clear()
+        login_user(user, remember=form.remember.data)
+        next_page = request.args.get("next")
+        flash("Login successful!", "success")
+        return redirect(next_page) if next_page else redirect(url_for("main.home"))
+    else:
+        flash("Login unsuccessful. Please check email and password.", "danger")
+        return redirect(url_for("users.login"))

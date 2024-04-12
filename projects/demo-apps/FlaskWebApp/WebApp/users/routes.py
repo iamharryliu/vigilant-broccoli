@@ -43,16 +43,6 @@ def confirm_email_token(token):
     return redirect(url_for("posts.posts"))
 
 
-@users_blueprint.route("/login", methods=["GET", "POST"])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
-    form = LoginForm()
-    if form.validate_on_submit():
-        return handle_login()
-    return render_template("users/login.html", title="Login", form=form)
-
-
 @users_blueprint.route("/logout")
 def logout():
     logout_user()
