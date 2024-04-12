@@ -43,15 +43,6 @@ def confirm_email_token(token):
     return redirect(url_for("posts.posts"))
 
 
-@users_blueprint.route("/logout")
-def logout():
-    logout_user()
-    session.clear()
-    create_anon_cart()
-    flash("You have been logged out.", "success")
-    return redirect(url_for("main.home"))
-
-
 @users_blueprint.route("/<string:username>", methods=["GET", "POST"])
 @users_blueprint.route("/<string:username>/posts", methods=["GET", "POST"])
 def user_posts(username):

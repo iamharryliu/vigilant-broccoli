@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, flash, redirect, render_template, url_for
+from flask import Blueprint, flash, redirect, render_template, url_for
 from WebApp.main.utils import handle_contact_message
 from WebApp.main.forms import ContactForm
 
@@ -7,7 +7,10 @@ main = Blueprint("main", __name__, template_folder="templates")
 
 @main.route("/")
 def home():
-    return jsonify({"message": "message"})
+    return render_template(
+        "index.html",
+        title="Index",
+    )
 
 
 @main.route("/contact", methods=["GET", "POST"])
