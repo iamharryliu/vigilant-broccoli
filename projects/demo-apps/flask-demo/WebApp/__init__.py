@@ -15,6 +15,7 @@ mail = Mail()
 
 
 def create_app(config=DIT_CONFIG):
+    # Initialize App
     app = Flask(__name__)
     app.url_map.strict_slashes = False
     app.config.from_object(config)

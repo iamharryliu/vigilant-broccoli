@@ -6,19 +6,22 @@ from App.utils import (
     get_blog_files,
     get_districts_data,
     convert_division_string_for_scraping_data,
-    get_github_action_ip_addresses,
     markdown_to_html,
 )
+from App.config import DIT_CONFIG
 from App.const import ENDPOINT
 
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 
 
-def create_app():
-    app = Flask(__name__, template_folder="templates")
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+def create_app(config=DIT_CONFIG):
+    # Initialize App
+    app = Flask(__name__)
+    app.url_map.strict_slashes = False
+    app.config.from_object(config)
 
+    # Initialize Dependencies
     recaptcha = ReCaptcha(
         app=app,
         site_key=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY"),
@@ -84,11 +87,6 @@ def create_app():
 
     @app.get(ENDPOINT.GET_USERS)
     def get_users():
-        # GITHUB_ACTIONS_IP_ADDRESSES = get_github_action_ip_addresses()
-        # GITHUB_ACTIONS_IP_ADDRESSES = [IP[0:-3] for IP in GITHUB_ACTIONS_IP_ADDRESSES]
-        # headers_list = request.headers.getlist("X-Forwarded-For")
-        # client_ip = headers_list[0] if headers_list else request.remote_addr
-        # print(client_ip, request.remote_addr, headers_list, len(GITHUB_ACTIONS_IP_ADDRESSES))
         conn = get_db_connection()
         cursor = conn.cursor()
         query = "SELECT email, districts, keywords FROM emails;"
