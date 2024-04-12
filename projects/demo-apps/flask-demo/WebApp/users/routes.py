@@ -18,6 +18,14 @@ users_blueprint = Blueprint(
 )
 
 
+@users_blueprint.route("/")
+def index():
+    return render_template(
+        "users_index.html",
+        title="Users Index",
+    )
+
+
 @users_blueprint.route("/get_users")
 def get_users():
     users = User.query.all()
