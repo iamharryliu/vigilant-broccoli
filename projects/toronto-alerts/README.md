@@ -4,7 +4,6 @@
 
 - Q1
 
-  - implement analytics
   - defense
 
     - guard users endpoint with github actions whitelist or performing cron within the server instance?

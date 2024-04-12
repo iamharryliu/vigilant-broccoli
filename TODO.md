@@ -15,7 +15,7 @@
     - tmux
     - aws
       - cloudformation
-    - open ssh port at home?
+    - open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
     - online payment form
     - Sveltfire
     - angular view encapsulation
