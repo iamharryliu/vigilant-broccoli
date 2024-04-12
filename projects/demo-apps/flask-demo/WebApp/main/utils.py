@@ -1,13 +1,12 @@
+import os
 from flask_mail import Message
 from WebApp import mail
 from WebApp.main.forms import ContactForm
 
-contact_email = "harryliu1995@gmail.com"
-
 
 def handle_contact_message():
     send_contact_message()
-    # send_contact_reply()
+    send_contact_reply()
 
 
 def send_contact_message():
@@ -17,9 +16,11 @@ def send_contact_message():
     body = f"""Name: {name}
 Email: {form.email.data}
 Phone: {form.phone.data}
-Message: {form.message. data}
+Message: {form.message.data}
 	"""
-    message = Message(recipients=[contact_email], body=body, subject=subject)
+    message = Message(
+        recipients=[os.environ.get("MY_EMAIL")], body=body, subject=subject
+    )
     mail.send(message)
 
 
