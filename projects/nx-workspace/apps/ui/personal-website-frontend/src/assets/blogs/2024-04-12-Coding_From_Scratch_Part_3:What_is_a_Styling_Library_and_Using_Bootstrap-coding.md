@@ -1,8 +1,8 @@
 # Coding From Scratch Part 3: What is a Styling Library
 
-From the previous lesson you learned about CSS and how to style HTML components using the 3 different methods of implementing CSS styling (inline, internal/embedded, and external CSS). If you played around with CSS and trying to create styles yourself you may begin to notice the difficulty of writing your own CSS and organizing it.
+From the previous lesson you learned about CSS and how to style HTML components using the 3 different methods of implementing CSS styling (inline, internal/embedded, and external CSS). If you played around with stylin CSS you may begin to notice the difficulty of writing your own CSS and organizing it when it becomes more complex.
 
-Fortunately for us there are styling libraries which are essentially external CSS libraries written by other developers to help with styling HTML pages. In this lesson we are going to ditch the previously manual styled inline CSS and opt for using a styling library called [Bootstrap](https://getbootstrap.com/). We're going to use some code from the [Getting Started with Bootstrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/) template for our _hello-world.html_ so our code will look like this now.
+Fortunately for us there are styling libraries. Styling libraries are external CSS libraries written by other developers to help with styling HTML pages. In this lesson we are going to ditch the previously manual styled inline CSS and opt for using a styling library called [Bootstrap](https://getbootstrap.com/). We're going to use some code from the [Getting Started with Bootstrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/) template for our _hello-world.html_ so our code will look like this now.
 
 ```
 <!doctype html>
@@ -20,7 +20,7 @@ Fortunately for us there are styling libraries which are essentially external CS
 </html>
 ```
 
-Some generic HTML page boiler plate tags were added that you may not be familiar with but the most important tags to pay attention to right now is the &lt;link> tag which is essentially the external CSS that is being applied to the HTML page which you should be able to see if you open the HTML page on a browser.
+Some generic HTML page boiler plate tags were added that you may not be familiar with but the most important tags to pay attention to right now is the &lt;link> tag which is the external CSS that is being applied to the HTML page that you should be able to see if you open the HTML page on a browser. Voila, you have styled a web page using a styling library.
 
 ## References
 
