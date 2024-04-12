@@ -32,6 +32,7 @@
 | you (plural)                   | ni                    | vous                 |                 |                   |                 |
 | they                           | de                    | ils/elles            |                 |                   |                 |
 | he/she/they                    | sin/sitt/sina         |                      |                 |
+|                                |                       | toi                  | usted           |
 | **social**                     |                       |                      |                 |                   |                 |
 | hello                          | hej                   | salut                | hola            | ola               | ciao            |
 | goodbye                        | hejdå                 | au revoir            | ciao            | tchau             | arrivederci     |
@@ -58,6 +59,8 @@
 | for you                        | för dig               | pour toi             |                 |                   |                 |
 | again                          | igen                  |                      |
 | another                        | en till               |                      |                 |
+| without                        |                       | sans                 | sin             |                   |
+| not                            |                       | pas                  |                 |                   |
 | **location**                   |                       |                      |                 |                   |                 |
 | here                           | här                   | ici                  | aqui            | aqui              | qui             |
 | there                          | där                   | là                   | allí            |                   |                 |
