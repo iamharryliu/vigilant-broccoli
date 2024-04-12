@@ -2,10 +2,10 @@ from flask import Blueprint, flash, redirect, render_template, url_for
 from WebApp.main.utils import handle_contact_message
 from WebApp.main.forms import ContactForm
 
-main = Blueprint("main", __name__, template_folder="templates")
+main_blueprint = Blueprint("main", __name__, template_folder="templates")
 
 
-@main.route("/")
+@main_blueprint.route("/")
 def home():
     return render_template(
         "main_index.html",
@@ -13,7 +13,7 @@ def home():
     )
 
 
-@main.route("/contact", methods=["GET", "POST"])
+@main_blueprint.route("/contact", methods=["GET", "POST"])
 def contact():
     form = ContactForm()
     if form.validate_on_submit():
