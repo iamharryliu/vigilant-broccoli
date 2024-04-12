@@ -1,47 +1,63 @@
 import imaplib
 import email
 import os
+import re
 
 IMAP_SERVER = "imap.gmail.com"
 USERNAME = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
 PASSWORD = os.environ.get("GTA_UPDATE_ALERT_EMAIL_PASSWORD")
-FILTER_SENDERS = ["myttc.e-alerts@ttc.ca"]
-
-# Connect to the Gmail IMAP server
+TTC_ALERTS_EMAIL = "myttc.e-alerts@ttc.ca"
+FILTER_SENDERS = [TTC_ALERTS_EMAIL]
 mail = imaplib.IMAP4_SSL(IMAP_SERVER)
 mail.login(USERNAME, PASSWORD)
-
-# Select the mailbox (inbox in this case)
 mail.select("inbox")
 
-# Search for all unseen emails
-result, data = mail.search(None, "UNSEEN")
+result, data = mail.search(None, f'(FROM "{TTC_ALERTS_EMAIL}")')
+email_ids = data[0].split()
 
-# Iterate over each email ID
-for num in data[0].split():
-    # Fetch the email based on its ID
-    result, data = mail.fetch(num, "(RFC822)")
-    raw_email = data[0][1]
-    # Parse the raw email using the email library
-    msg = email.message_from_bytes(raw_email)
-    # Print the email sender, subject, and body
-    sender = msg["From"]
-    print(msg["From"])
-    if any(sender.startswith(sender_email) for sender_email in FILTER_SENDERS):
-        print("From:", msg["From"])
-        print("Subject:", msg["Subject"])
-        # If the email has multiple parts, iterate over them
-        if msg.is_multipart():
-            for part in msg.walk():
-                content_type = part.get_content_type()
-                content_disposition = str(part.get("Content-Disposition"))
-                if "attachment" not in content_disposition:
-                    body = part.get_payload(decode=True)
-                    print("Body:", body)
-        else:
-            # If the email has a single part, directly get the payload
-            body = msg.get_payload(decode=True)
-            print("Body:", body)
 
-# Logout from the server
+def parse_data(entry):
+    match = re.match(
+        r"^(.*?): (Minor delays|Regular service|No service|Detour) (.*)", entry
+    )
+    return {
+        "service": match.group(1).strip(),
+        "status": match.group(2).strip(),
+        "location": match.group(3).strip(),
+    }
+
+
+def get_data_from_email_ids(email_ids, limit=10):
+    res = []
+    for num in email_ids[-(limit):]:
+        _, data = mail.fetch(num, "(RFC822)")
+        raw_email = data[0][1]
+        msg = email.message_from_bytes(raw_email)
+        subject = msg["Subject"]
+        if "Elevator" in subject:
+            continue
+
+        parsed_data = parse_data(subject)
+        print(parsed_data)
+        res.append(parse_data)
+    return res
+
+
+data = get_data_from_email_ids(email_ids)
 mail.logout()
+
+res = {}
+
+for alert in data:
+    service = alert["service"]
+    status = alert["status"]
+    location = alert["location"]
+    # print(location)
+    if service not in res:
+        res[service] = {}
+    if status != "Regular service":
+        res[service][location] = status
+    if status == "Regular service":
+        del res[service][location]
+
+print(res)
