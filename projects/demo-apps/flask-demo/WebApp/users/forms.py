@@ -37,30 +37,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Log In")
 
 
-class UpdateAccountForm(FlaskForm):
-    username = StringField(
-        "Username", validators=[DataRequired(), Length(min=2, max=20)]
-    )
-    email = StringField("Email", validators=[DataRequired(), Email()])
-    picture = FileField(
-        "Update Profile Picture", validators=[FileAllowed(["jpg", "png"])]
-    )
-    subscription_status = BooleanField("Subscribed")
-    submit = SubmitField("Update")
-
-    def validate_username(self, username):
-        if username.data != current_user.username:
-            user = User.query.filter_by(username=username.data).first()
-            if user:
-                raise ValidationError("Username is taken.")
-
-    def validate_email(self, email):
-        if email.data != current_user.email:
-            user = User.query.filter_by(email=email.data).first()
-            if user:
-                raise ValidationError("Email is taken.")
-
-
 class RequestResetForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     submit = SubmitField("Request Password Reset")

@@ -33,17 +33,6 @@ from WebApp.store.utils import create_anon_cart
 users_blueprint = Blueprint("users", __name__, template_folder="templates")
 
 
-@users_blueprint.route("/register", methods=["GET", "POST"])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        register_user()
-        return redirect(url_for("users.login"))
-    return render_template("users/register.html", title="Register", form=form)
-
-
 @users_blueprint.route("/confirm_email/<token>", methods=["GET", "POST"])
 def confirm_email_token(token):
     user = User.verify_confirm_email_token(token)

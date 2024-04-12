@@ -1,7 +1,12 @@
 from dataclasses import dataclass
-from WebApp import db
+from WebApp import db, login_manager
 import uuid
 from flask_login import UserMixin
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 
 @dataclass

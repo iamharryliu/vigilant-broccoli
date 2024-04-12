@@ -15,20 +15,6 @@ import os, re, secrets
 from PIL import Image
 
 
-def register_user():
-    form = RegistrationForm()
-    hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-    user = User(
-        username=form.username.data, email=form.email.data, password=hashed_password
-    )
-    cart = Cart(customer=user)
-    db.session.add(user)
-    db.session.add(cart)
-    db.session.commit()
-    # send_register_email(user)
-    flash(f"Account created for {form.username.data}! You can now login.", "success")
-
-
 def send_register_email(user):
     msg = Message("Thanks for signing up.", recipients=[user.email])
     msg.body = f"""\

@@ -7,11 +7,11 @@ from flask_mail import Mail
 
 
 db = SQLAlchemy()
-mail = Mail()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = "users.login"
 login_manager.login_message_category = "info"
+mail = Mail()
 
 
 def create_app(config=DIT_CONFIG):
@@ -23,12 +23,15 @@ def create_app(config=DIT_CONFIG):
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    mail.init_app(app)
 
     # Import Blueprints
     from WebApp.main.routes import main
+    from WebApp.users.routes import users_blueprint
     from WebApp.errors.handlers import errors
 
     # Add Blurprints
     app.register_blueprint(main)
+    app.register_blueprint(users_blueprint)
     app.register_blueprint(errors)
     return app

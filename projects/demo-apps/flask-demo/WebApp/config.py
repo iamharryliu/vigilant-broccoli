@@ -17,9 +17,9 @@ class SERVER_CONFIG:
     MAIL_SERVER = "smtp.googlemail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get("EMAIL_USERNAME")
-    MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-    MAIL_DEFAULT_SENDER = os.environ.get("EMAIL_DEFAULT_SENDER")
+    MAIL_USERNAME = os.environ.get("MY_EMAIL")
+    MAIL_PASSWORD = os.environ.get("MY_EMAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER = os.environ.get("MY_EMAIL")
 
     # Flask-WTF
     RECAPTCHA_USE_SSL = os.environ.get("RECAPTCHA_USE_SSL")
