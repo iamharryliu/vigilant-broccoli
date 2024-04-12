@@ -1,7 +1,10 @@
-# Toronto Alerts Roadmap
+# Toronto Alerts
+
+## Roadmap
 
 - Q1
 
+  - implement analytics
   - defense
 
     - guard users endpoint with github actions whitelist or performing cron within the server instance?
@@ -10,7 +13,6 @@
   - application unit testing
   - ui:
     - autocomplete tagging
-    - migrate to use ui app?
   - TTC notifications
 
     - building twitter service to scrape tweets with Tweepy
@@ -20,16 +22,20 @@
       - https://www.ttc.ca/my-ttc-eservices
       - script to check for new emails
       - free
+    - try to scrape this api endpoint
+      - https://alerts.ttc.ca/api/alerts/live-alerts
+      - https://www.ttc.ca/service-alerts
     - parse data and email all applicable users
 
 - Q2
-
   - mobile application
     - Google android store, 1 time cost of $25
     - Apple Store, yearly cost of $99
   - text notifications
     - https://www.twilio.com/en-us/sms/pricing/ca
-
 - Q3
+
   - blog section for SEO
   - proper email
+
+    - migrate to use ui app?
