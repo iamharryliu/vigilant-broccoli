@@ -1,8 +1,8 @@
 # Coding From Scratch Part 3: What is a Styling Library
 
-From the previous lesson you learned about CSS and how to style HTML components using the 3 different methods of implementing CSS styling (inline, internal/embedded, and external CSS). If you played around with stylin CSS you may begin to notice the difficulty of writing your own CSS and organizing it when it becomes more complex.
+From the previous lesson you learned about CSS and how to style HTML components using the 3 different methods of implementing CSS styling (inline, internal/embedded, and external CSS). If you played around with styling your site with CSS you may have begun to notice the difficulty of writing your own CSS and organizing it when it becomes more complex styles. Styling a web pages with CSS is a skill and takes time to hone before being able to style a web page exactly how we would like it.
 
-Fortunately for us there are styling libraries. Styling libraries are external CSS libraries written by other developers to help with styling HTML pages. In this lesson we are going to ditch the previously manual styled inline CSS and opt for using a styling library called [Bootstrap](https://getbootstrap.com/). We're going to use some code from the [Getting Started with Bootstrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/) template for our _hello-world.html_ so our code will look like this now.
+Fortunately for us there are styling libraries. Styling libraries are generic external CSS libraries written by other developers to help with styling HTML pages. In this lesson we are going to ditch the previously manual styled inline CSS and opt for using a styling library called [Bootstrap](https://getbootstrap.com/). We're going to use some code from the [Getting Started with Bootstrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/) template for our _hello-world.html_. Our code styled with boot strap will look like this now:
 
 ```
 <!doctype html>
