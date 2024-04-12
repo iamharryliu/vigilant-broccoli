@@ -35,18 +35,18 @@ def get_users():
 @users_blueprint.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
+        return redirect(url_for("users.index"))
     form = RegistrationForm()
     if form.validate_on_submit():
         register_user()
-        return redirect(url_for("main.home"))
+        return redirect(url_for("users.index"))
     return render_template("forms/register_form.html", title="Register", form=form)
 
 
 @users_blueprint.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
+        return redirect(url_for("users.index"))
     form = LoginForm()
     if form.validate_on_submit():
         return handle_login()
@@ -57,4 +57,4 @@ def login():
 def logout():
     logout_user()
     flash("You have been logged out.", "success")
-    return redirect(url_for("main.home"))
+    return redirect(url_for("users.index"))

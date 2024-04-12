@@ -1,4 +1,14 @@
 {% extends 'components/layout.html' %} {% block content %}
 <h1>Users Index Page</h1>
-{% if current_user.is_authenticated %} Current User: {{current_user.username}}
-{% else %} Not logged in {% endif %} {% endblock %}
+{% if current_user.is_authenticated %}
+<div>Current User: {{current_user}}</div>
+<div>
+  <a href="{{url_for('users.logout')}}">Logout</a>
+</div>
+
+{% else %}
+<div>Not logged in</div>
+<div>
+  <a href="{{url_for('users.login')}}">Login</a>
+</div>
+{% endif %} {% endblock %}
