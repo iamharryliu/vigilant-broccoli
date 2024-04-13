@@ -4,12 +4,9 @@
 
 - Q1
 
-  - defense
-
-    - guard users endpoint with github actions whitelist or performing cron within the server instance?
-    - contact gtaupdate dude
-
+  - guard users endpoint with github actions whitelist or performing cron within the server instance?
   - application unit testing
+
   - ui:
     - autocomplete tagging
   - TTC notifications
@@ -38,6 +35,8 @@
   - proper email
 
     - migrate to use ui app?
+
+  - contact gtaupdate dude
 
 ## Vigilant Broccoli
 
