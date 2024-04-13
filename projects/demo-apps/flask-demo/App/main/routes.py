@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
-from WebApp.main.utils import handle_contact_message
-from WebApp.main.forms import ContactForm
+from App.main.utils import handle_contact_message
+from App.main.forms import ContactForm
 
 main_blueprint = Blueprint("main", __name__, template_folder="templates")
 

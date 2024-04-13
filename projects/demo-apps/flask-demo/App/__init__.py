@@ -1,5 +1,5 @@
 from flask import Flask
-from WebApp.config import DIT_CONFIG
+from App.config import DIT_CONFIG
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -27,9 +27,9 @@ def create_app(config=DIT_CONFIG):
     mail.init_app(app)
 
     # Import Blueprints
-    from WebApp.main.routes import main_blueprint
-    from WebApp.users.routes import users_blueprint
-    from WebApp.errors.handlers import errors_blueprint
+    from App.main.routes import main_blueprint
+    from App.users.routes import users_blueprint
+    from App.errors.handlers import errors_blueprint
 
     # Add Blurprints
     app.register_blueprint(main_blueprint)

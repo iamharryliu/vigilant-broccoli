@@ -2,9 +2,9 @@ import re
 from flask import flash, session, redirect, url_for, request
 from flask_mail import Message
 from flask_login import login_user
-from WebApp import db, bcrypt, mail
-from WebApp.models import User
-from WebApp.users.forms import (
+from App import db, bcrypt, mail
+from App.models import User
+from App.users.forms import (
     LoginForm,
     RegistrationForm,
 )

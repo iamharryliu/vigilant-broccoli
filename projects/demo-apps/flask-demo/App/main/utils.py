@@ -1,7 +1,7 @@
 import os
 from flask_mail import Message
-from WebApp import mail
-from WebApp.main.forms import ContactForm
+from App import mail
+from App.main.forms import ContactForm
 
 
 def handle_contact_message():

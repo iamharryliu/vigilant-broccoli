@@ -1,6 +1,6 @@
 from flask import current_app
 from dataclasses import dataclass
-from WebApp import db, login_manager
+from App import db, login_manager
 import uuid
 from flask_login import UserMixin
 from itsdangerous.serializer import Serializer

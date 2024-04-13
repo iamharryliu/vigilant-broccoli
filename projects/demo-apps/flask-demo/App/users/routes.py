@@ -6,12 +6,12 @@ from flask import (
     flash,
 )
 from flask_login import current_user, logout_user
-from WebApp.users.forms import (
+from App.users.forms import (
     RegistrationForm,
     LoginForm,
 )
-from WebApp.users.utils import register_user, handle_login
-from WebApp.models import User
+from App.users.utils import register_user, handle_login
+from App.models import User
 
 users_blueprint = Blueprint(
     "users", __name__, template_folder="templates", url_prefix="/users"
