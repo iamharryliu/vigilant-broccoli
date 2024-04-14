@@ -11,7 +11,7 @@
 ### Instructions
 
 - Mix warm water and yeast, wait 5 minutes to let yeast activate
-- Mix salt, flour add yeast water
+- Mix salt and flour and mix with the yeast water
 - Knead dough until it makes a taut ball, add spoonfuls of water to dough until consistency seems right.
 - Put a few tbsp oil in a bowl and roll the dough in so that the dough is lightly covered.
 - Rest the dough in the bowl for 1 hour.
@@ -24,19 +24,25 @@
 
 ## Round Bread
 
-- 2:1 flour to water, add spoons of water if needed to make sure just damp
-- yeast and salt
-- no knead
-- tucks and pulls as needed
-- let the dough rest up to 24 hours
-- flour surface and tuck dough into a ball
-- optional: proofing bowl
-  - spray with water and coat with flour
-  - let bowl dry for an hour
-  - let dough rest in bowl
-- drop dough onto parchment and transfer baking pot
-- optional: cut design into dough
-- bake for 30 minutes with lid on and additional 10 minutes for color (more or less depending on preference)
+### Ingredients
+
+- 2:1 flour to water
+- tbsp yeast
+- tbsp salt
+
+### Instructions
+
+- Mix warm water and yeast, wait 5 minutes to let yeast activate.
+- Mix salt and flour and mix with the yeast water.
+- Optional kneading.
+- Let the dough rest up to 24 hours.
+- Flour surface and tuck dough into a taut ball.
+- Prep proofing bowl:
+  - Spray with water, coat with flour, and let bowl dry.
+- Let dough proof in bowl.
+- Preheat oven to 400°F.
+- Transfer dough onto parchment paper and score the dough.
+- Transfer the parchment paper and dough to a dutch oven and bake for 30 minutes with lid on. Bake for additional 10-15 minutes to get more browning on the bread surface.
 
 ## Bagels
 
