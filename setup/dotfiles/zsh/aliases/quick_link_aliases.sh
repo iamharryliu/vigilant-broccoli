@@ -13,7 +13,7 @@ alias pinterest="~/shell-scripts/pinterest_search.sh"
 alias memrise='open -a "Google Chrome" "https://community-courses.memrise.com/dashboard"'
 alias communitymemrise='open -a "Google Chrome" "https://app.memrise.com/dashboard"'
 alias udemyspanish='open -a "Google Chrome" "https://www.udemy.com/course/3-minute-spanish-course-5/learn"'
-alias udemyfrench='open -a "Google Chrolame" "https://www.udemy.com/course/3-minute-french-course-8/learn"'
+alias udemyfrench='open -a "Google Chrome" "https://www.udemy.com/course/3-minute-french-course-8/learn"'
 alias googletranslate='open -a "Google Chrome" "https://translate.google.com/"'
 alias languagelearn="memrise && communitymemrise && udemyspanish && udemyfrench && googletranslate"
 
