@@ -2,13 +2,13 @@
 
 ## Flat Bread
 
-Ingredients
+### Ingredients
 
 - 3:1 flour to water
 - 1 tsp yeast
 - 1 tsp salt
 
-Instructions
+### Instructions
 
 - Mix warm water and yeast, wait 5 minutes to let yeast activate
 - Mix salt, flour add yeast water
@@ -23,8 +23,6 @@ Instructions
 - Repeat with other dough balls until finished.
 
 ## Round Bread
-
-git l
 
 - 2:1 flour to water, add spoons of water if needed to make sure just damp
 - yeast and salt
