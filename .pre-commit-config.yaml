@@ -25,3 +25,13 @@ repos:
       #   pass_filenames: false
       #   additional_dependencies:
       #     [pytest, flask, flask_cors, sqlalchemy, bcrypt, flask_login]
+
+  - repo: local
+    hooks:
+      - id: flask-demo-tests
+        name: Test Flask Demo
+        entry: pytest projects/demo-apps/flask-demo
+        language: python
+        types: [python]
+        pass_filenames: false
+        always_run: true
