@@ -3,8 +3,8 @@
 ## Flat Bread
 
 - 3:1 flour to water
-- tbsp yeast
-- tbsp salt
+- 1 tbsp yeast
+- 1 tbsp salt
 
 ## Round Bread
 
