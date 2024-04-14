@@ -10,8 +10,8 @@
 
 ### Instructions
 
-- Mix warm water and yeast, wait 5 minutes to let yeast activate
-- Mix salt and flour and mix with the yeast water
+- Mix warm water and yeast, wait 5 minutes to let yeast activate.
+- Mix salt and flour and mix with the yeast water.
 - Knead dough until it makes a taut ball, add spoonfuls of water to dough until consistency seems right.
 - Put a few tbsp oil in a bowl and roll the dough in so that the dough is lightly covered.
 - Rest the dough in the bowl for 1 hour.
