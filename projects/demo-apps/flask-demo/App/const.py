@@ -1,3 +1,10 @@
+class ENVIRONMENT_TYPE:
+    TEST = "TEST"
+    DIT = "DIT"
+    SIT = "SIT"
+    PROD = "PROD"
+
+
 class USER_CONFIG:
     MAX_USERNAME_LENGTH = 30
     MAX_EMAIL_LENGTH = 30
