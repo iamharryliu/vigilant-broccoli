@@ -1,8 +1,10 @@
 # Bread
 
-## Sourdough Starter
+## Flat Bread
 
-- don’t overfeed : 2:1:1, 1:1:1 should be max (starter:water:flour), if you put too much flour and water compared with starter, you are diluting acidity and thus preventing good bacteria and yeast to thrive!
+- 3:1 flour to water
+- tbsp yeast
+- tbsp salt
 
 ## Round Bread
 
@@ -20,10 +22,6 @@
 - optional: cut design into dough
 - bake for 30 minutes with lid on and additional 10 minutes for color (more or less depending on preference)
 
-## Flat Bread
-
-- 3:1 flour to water
-
 ## Bagels
 
 - 440g flour 1 tbsp salt
@@ -38,3 +36,7 @@
 - bake for 20-25 minutes
 
 [Recipe](https://www.sophisticatedgourmet.com/2009/10/new-york-style-bagel-recipe/)
+
+## Sourdough Starter
+
+- Don’t overfeed : 2:1:1, 1:1:1 should be max (starter:water:flour), if you put too much flour and water compared with starter, you are diluting acidity and thus preventing good bacteria and yeast to thrive.
