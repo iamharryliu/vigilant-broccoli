@@ -1,0 +1,6 @@
+name = "cloud-8-skate-angular"
+main = "src/index.ts"
+compatibility_date = "2024-01-29"
+
+[site]
+bucket = "../../dist/apps/ui/cloud-8-skate-angular/browser"

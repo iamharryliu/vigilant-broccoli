@@ -1,0 +1,76 @@
+{
+  "name": "cloud-8-skate-angular",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/ui/cloud-8-skate-angular/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/ui/cloud-8-skate-angular",
+        "index": "apps/ui/cloud-8-skate-angular/src/index.html",
+        "browser": "apps/ui/cloud-8-skate-angular/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/ui/cloud-8-skate-angular/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/ui/cloud-8-skate-angular/src/favicon.ico",
+          "apps/ui/cloud-8-skate-angular/src/assets"
+        ],
+        "styles": ["apps/ui/cloud-8-skate-angular/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "cloud-8-skate-angular:build:production"
+        },
+        "development": {
+          "buildTarget": "cloud-8-skate-angular:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "cloud-8-skate-angular:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
+      "dependsOn": ["build"]
+    }
+  }
+}
