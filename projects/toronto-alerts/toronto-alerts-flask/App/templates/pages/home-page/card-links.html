@@ -49,7 +49,25 @@
 
   {% include 'components/ttc_links.html' %}
 
-  <h3>TPS</h3>
+  <h3>TPS & TFS</h3>
+
+  <div class="col-12 col-sm-6 mb-4">
+    <div class="card h-100">
+      <img
+        src="{{url_for('static', filename='images/gtaupdate.png')}}"
+        class="card-img-top"
+        alt="Toronto"
+      />
+      <div class="card-body">
+        <h5 class="card-title">GTA Update Dashboard</h5>
+        <a
+          href="https://gtaupdate.com/"
+          class="stretched-link"
+          target="_blank"
+        ></a>
+      </div>
+    </div>
+  </div>
 
   <div class="col-12 col-sm-6 mb-4">
     <div class="card h-100">
@@ -82,24 +100,6 @@
         <h5 class="card-title">Weather Alerts</h5>
         <a
           href="https://weather.gc.ca/warnings/report_e.html?on61="
-          class="stretched-link"
-          target="_blank"
-        ></a>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-12 col-sm-6 mb-4">
-    <div class="card h-100">
-      <img
-        src="{{url_for('static', filename='images/gtaupdate.png')}}"
-        class="card-img-top"
-        alt="Toronto"
-      />
-      <div class="card-body">
-        <h5 class="card-title">GTA Update Dashboard</h5>
-        <a
-          href="https://gtaupdate.com/"
           class="stretched-link"
           target="_blank"
         ></a>
