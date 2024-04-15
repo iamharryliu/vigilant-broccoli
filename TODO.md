@@ -1,6 +1,5 @@
 # TODO
 
-- nx is hanging
 - frontend deployments are buggy
 
 ## Toronto Alerts
