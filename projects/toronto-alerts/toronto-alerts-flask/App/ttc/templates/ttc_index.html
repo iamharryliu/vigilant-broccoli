@@ -1,3 +1,13 @@
 {% extends 'layout.html' %} {% block content %}
-<h5 class="mb-2">TTC Service Alerts</h5>
-{% include 'components/ttc_route_alerts.html'%} {% endblock %}
+<div class="mb-4">
+  <h5 class="mb-2">TTC Service Alerts</h5>
+  <hr />
+  {% include 'components/ttc_route_alerts.html'%}
+</div>
+<div>
+  <h5>Other TTC Resources</h5>
+  <hr />
+  <div class="row gx-3">{% include 'components/ttc_links.html' %}</div>
+</div>
+
+{% endblock %}
