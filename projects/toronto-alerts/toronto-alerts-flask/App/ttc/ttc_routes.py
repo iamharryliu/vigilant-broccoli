@@ -6,6 +6,6 @@ ttc_blueprint = Blueprint(
 )
 
 
-@ttc_blueprint.route("/")
+@ttc_blueprint.route("")
 def index():
     return render_template("ttc_index.html", title="TTC", ttc_alerts=get_ttc_alerts())
