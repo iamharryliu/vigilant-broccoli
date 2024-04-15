@@ -1,0 +1,4 @@
+<div class="mb-4">
+  {% for notice in ttc_alerts["notices"] %} {{ notice["description"] | safe }}
+  {% endfor %}
+</div>

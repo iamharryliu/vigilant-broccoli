@@ -2,11 +2,14 @@
 <div class="mb-4">
   <h5 class="mb-2">TTC Service Alerts</h5>
   <hr />
-  {% include 'components/ttc_route_alerts.html'%}
+
+  {% if not ttc_alerts["notices"] and not ttc_alerts["route_alerts"] %} {%
+  include 'components/ttc/ttc_no_alerts.html' %} {% else %} {% include
+  'components/ttc/ttc_notices_alert.html' %} {% include
+  'components/ttc/ttc_route_alerts.html' %} {% endif %}
 </div>
+<hr class="mt-4 mb-4" />
 <div>
-  <h5>Other TTC Resources</h5>
-  <hr />
   <div class="row gx-3">{% include 'components/ttc_links.html' %}</div>
 </div>
 
