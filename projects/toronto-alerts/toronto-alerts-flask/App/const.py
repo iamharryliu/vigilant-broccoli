@@ -5,3 +5,4 @@ class ENDPOINT:
     BLOGS = "/blogs"
     BLOG = "/blog"
     GET_USERS = "/get_users"
+    TTC = "/ttc"
