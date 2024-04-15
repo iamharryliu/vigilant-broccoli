@@ -24,12 +24,14 @@ headers = {
 TTC_SERVICE_ALERTS_URL = "https://alerts.ttc.ca/api/alerts/live-alerts"
 
 
-def get_ttc_route_alerts():
+def get_ttc_alerts():
     res = requests.get(TTC_SERVICE_ALERTS_URL, headers=headers)
     json = res.json()
     routes = [route for route in json["routes"]]
+    ttc_notices = [route for route in routes if route["alertType"] == "SiteWide"]
     ttc_route_alerts = [route for route in routes if route["alertType"] == "Planned"]
-    return ttc_route_alerts
+    res = {"notices": ttc_notices, "route_alerts": ttc_route_alerts}
+    return res
 
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
@@ -59,7 +61,7 @@ def create_app(config=DIT_CONFIG):
             "pages/home-page/index.html",
             title="Home",
             blogs=blogs,
-            ttc_route_alerts=get_ttc_route_alerts(),
+            ttc_alerts=get_ttc_alerts(),
         )
 
     from App.ttc.ttc_routes import ttc_blueprint
