@@ -27,8 +27,8 @@
 ### Ingredients
 
 - 2:1 flour to water
-- tbsp yeast
-- tbsp salt
+- 1 tsp yeast
+- 1 tsp salt
 
 ### Instructions
 

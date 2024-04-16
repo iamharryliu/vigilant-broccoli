@@ -2,10 +2,22 @@
 
 ## Mayo
 
-- blend an egg for 20s
-- blend 1/2 tbsp salt, 1tbsp dijon mustard, 1tbsp white vinegar
-- blend 1 cup of oil, drip first quarter of fluid then slowly pour
-- add 1 teaspoon lemon juice
+### Ingredients
+
+- an egg
+- 1 tbsp dijon mustard
+- 1 tbsp white vinegar
+- 1 cup of oil
+- 1/4 tsp salt
+- 1 tsp of lemon juice
+
+### Instructions
+
+- Blend an egg for 20s
+- Blend in salt, mustard, vinegar
+- Blend oil, drip first quarter of fluid then slowly pour
+- Blend a teaspoon lemon juice
+- add more salt, vinegar, lemon juice to taste
 
 [Recipe](https://www.inspiredtaste.net/25943/homemade-mayonnaise-recipe/)
 
