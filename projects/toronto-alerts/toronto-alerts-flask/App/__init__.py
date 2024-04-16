@@ -78,7 +78,7 @@ def create_app(config=DIT_CONFIG):
                 connection = get_db_connection()
                 cursor = connection.cursor()
                 cursor.execute(
-                    "INSERT INTO emails (email, districts, keywords) VALUES (%s, %s, %s) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts, keywords = EXCLUDED.keywords",
+                    "INSERT INTO emails (email, districts, keywords, confirmed_email) VALUES (%s, %s, %s, TRUE) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts, keywords = EXCLUDED.keywords",
                     (email, districts, keywords),
                 )
                 connection.commit()
