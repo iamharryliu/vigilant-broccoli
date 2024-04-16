@@ -15,7 +15,7 @@ alias communitymemrise='open -a "Google Chrome" "https://app.memrise.com/dashboa
 alias udemyspanish='open -a "Google Chrome" "https://www.udemy.com/course/3-minute-spanish-course-5/learn"'
 alias udemyfrench='open -a "Google Chrome" "https://www.udemy.com/course/3-minute-french-course-8/learn"'
 alias googletranslate='open -a "Google Chrome" "https://translate.google.com/"'
-alias languagelearn="memrise && communitymemrise && udemyspanish && udemyfrench && googletranslate"
+alias languagelearn="googletranslate && communitymemrise && udemyspanish && udemyfrench && memrise"
 
 # Career
 alias openresume='open -a "Google Chrome" "https://docs.google.com/document/d/1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU/edit#heading=h.uzt44hq0695d"'
