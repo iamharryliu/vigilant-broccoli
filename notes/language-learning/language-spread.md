@@ -23,7 +23,6 @@
 | take care                      | tan hom om dig        |                      |
 | **emotions**                   |                       |                      |                  |
 | angry                          | arg                   | fâché                | enojado/enojada  |
-|                                |                       |                      |                  |
 | **Pronouns**                   |                       |                      |                  |                   |                 |
 | I                              | jag                   | je                   | yo               |                   |                 |
 | you                            | du                    | tu                   | tú               |                   |                 |
@@ -43,7 +42,6 @@
 | see you soon                   | vi ses                | a bientot            | haste luego      | ate logo          | a dopo          |
 | my name is                     | jag heter             | je m'apelle          | me llamo         |                   |                 |
 | get well soon                  | krya på dig           |                      |
-|                                |                       |                      |                  |
 | **Adjectives**                 |                       |                      |                  |                   |                 |
 | this                           | den här               | ceci - ce/cette/c'   | esto             |                   |                 |
 | that                           | den där               | celà - ce/cette/c'   | eso              |                   |                 |
@@ -62,7 +60,6 @@
 | another                        | en till               |                      |                  |
 | without                        |                       | sans                 | sin              |                   |
 | not                            |                       | pas                  |                  |                   |
-|                                |                       |                      |                  |
 | **Possessive Words**           |                       |                      |                  |
 | his/hers                       | hans/hennes           |                      |                  |
 | yours                          | er                    | vôtre                | tuya             |
@@ -78,7 +75,6 @@
 | next to                        | brevid                | à côté de            |                  |
 | my house                       |                       | chez moi             |                  |
 | I am going to [person's] house | je vais chez [person] |                      |                  |                   |                 |
-|                                |                       |                      |                  |
 | **Time**                       |                       |                      |                  |                   |                 |
 | now                            | nu                    | maintenant           | ahora            |
 | today                          | i dag                 | aujourdhui           | hoy              |
@@ -89,7 +85,7 @@
 | always                         | alltid                | toujours             | siempre          | sempre            | sempre          |
 | sometimes                      | ibland                | quelquefois          | a veces          |                   |                 |
 | later                          | senare                | plus tard            | mas tarde        |                   |                 |
-| **question**                   |                       |                      |                  |
+| **Question Words**             |                       |                      |                  |
 | who                            | vem/vilka             | qui                  | quien            |
 | what                           | vad                   | que                  | que              |
 | when                           | när                   | quand                | cuando           |
@@ -105,7 +101,6 @@
 | do you want..?                 | vill du..?            | voulez-vous..?       | quiere..?        |
 | do you have..?                 | har du..?             | avez-vous..?         | tiene..?         |
 | can I..?                       |                       | puis je..?           | puedo..?         |
-|                                |                       |                      |                  |
 | **Verbs**                      |                       |                      |
 | to want                        | att villja            | voulir               | querer           |
 | to go                          | att gå                | aller                | ir               |
