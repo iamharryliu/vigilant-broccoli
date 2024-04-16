@@ -34,3 +34,6 @@ class FLASH_CATEGORY:
     WARNING = "warning"
     ERROR = "error"
     DANGER = "danger"
+
+
+TOKEN_EXPIRE_TIME_IN_SECONDS = 5 * 60
