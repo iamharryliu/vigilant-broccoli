@@ -43,7 +43,7 @@ CREATE TABLE [table-name]
 \d [table-name]
 DROP TABLE [table-name]
 # Get Table Schema
-\d+ table name;
+\d+ [table_name];
 
 
 # Test connection string

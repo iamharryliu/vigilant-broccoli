@@ -65,9 +65,12 @@
 - Bring a pot of water to a boil and start preheating the oven to 425 with convection bake.
 - Boil both sides of the bagel dough in water for 2 minutes and return to tray.
 - Coat the boiled dough in egg wash and add any topping you'd like.
-  - Toppings - Caraway seeds, cinnamon sugar, coarse salt, minced fresh garlic, minced fresh onion, poppy seeds, sesame seeds, everything bagel seasoning, or a mix of your favorite flavors.
+
 - Bake the tray in the oven for 20-25 minutes.
 
+### Notes
+
+Topping ideas - Caraway seeds, cinnamon sugar, coarse salt, minced fresh garlic, minced fresh onion, poppy seeds, sesame seeds, everything bagel seasoning, or a mix of your favorite flavors.
 [Recipe](https://www.sophisticatedgourmet.com/2009/10/new-york-style-bagel-recipe/)
 
 ## Sourdough Starter
