@@ -41,10 +41,11 @@
     <div class="card">
       <div class="card-body">
         {% if not ttc_alerts["notices"] and not ttc_alerts["route_alerts"] %} {%
-        include 'components/ttc/ttc_no_alerts.html' %} {% else %} {% include
-        'components/ttc/ttc_notices.html' %} {% include
-        'components/ttc/ttc_route_alerts.html' %} {% endif %}
-
+        include 'components/ttc/ttc_no_alerts.html' %} {% else %}
+        <div class="mb-4 fst-italic">
+          {% include 'components/ttc/ttc_notices.html' %}
+        </div>
+        {% include 'components/ttc/ttc_route_alerts.html' %} {% endif %}
         <a
           href="{{url_for('ttc.index')}}"
           class="stretched-link"
@@ -56,7 +57,9 @@
 
   {% include 'components/ttc_links.html' %}
 
-  <h3>TPS & TFS</h3>
+  <hr class="mt-4 mb-4" />
+
+  <h3 class="mb-4">TPS & TFS</h3>
 
   <div class="col-12 col-sm-6 mb-4">
     <div class="card h-100">
@@ -94,7 +97,7 @@
     </div>
   </div>
 
-  <h3>Other</h3>
+  <h3 class="mb-4">Other</h3>
 
   <div class="col-12 col-sm-6 mb-4">
     <div class="card h-100">
