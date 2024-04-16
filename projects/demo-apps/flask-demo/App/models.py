@@ -4,7 +4,7 @@ from App import db, login_manager
 from App.const import USER_CONFIG
 import uuid
 from flask_login import UserMixin
-from itsdangerous.serializer import Serializer
+from itsdangerous import URLSafeTimedSerializer as Serializer
 
 
 @login_manager.user_loader
@@ -23,9 +23,9 @@ class User(db.Model, UserMixin):
     )
     password = db.Column(db.String(USER_CONFIG.MAX_PASSWORD_LENGTH), nullable=False)
 
-    def get_token(self, expires_sec=1800):
-        s = Serializer(current_app.config["SECRET_KEY"], expires_sec)
-        return s.dumps({"user_id": self.id}).decode("utf-8")
+    def get_token(self):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        return s.dumps({"user_id": self.id})
 
     @staticmethod
     def verify_token(token):

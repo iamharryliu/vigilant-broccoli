@@ -1,11 +1,8 @@
 {% include 'components/alerts.html' %}
-<form method="POST">
+<form method="POST" action="{{ url_for('users.register') }}">
   {{ form.hidden_tag() }}
   <fieldset class="form-group">
-    <legend>
-      Register
-      <form></form>
-    </legend>
+    <legend>Register</legend>
     <div class="form-group">
       {{ form.username.label(class="form-control-label") }} {% if
       form.username.errors %} {{ form.username(class="form-control

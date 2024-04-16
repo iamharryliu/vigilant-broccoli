@@ -1,10 +1,4 @@
-from flask import (
-    Blueprint,
-    render_template,
-    redirect,
-    url_for,
-    flash,
-)
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, logout_user
 from App.users.forms import (
     RegistrationForm,
@@ -57,4 +51,14 @@ def login():
 def logout():
     logout_user()
     flash("You have been logged out.", "success")
+    return redirect(url_for("users.index"))
+
+
+@users_blueprint.route("/verify")
+def verify_user():
+    token = request.args.get("token")
+    if User.verify_token(token):
+        flash("User has been verified.", "success")
+    else:
+        flash("Invalid request", "error")
     return redirect(url_for("users.index"))

@@ -23,8 +23,9 @@ def register_user():
 
 
 def send_register_email(user):
-    msg = Message("You have signed up.", recipients=[user.email])
-    msg.body = "You have signed up."
+    msg = Message("Flask Demo: Verify Email", recipients=[user.email])
+    token = user.get_token()
+    msg.body = f"http://localhost:5000/users/verify?token={token}"
     mail.send(msg)
 
 

@@ -1,5 +1,5 @@
 import pytest
-from App.const import HTTP_STATUS_CODES
+from App.const import HTTP_STATUS_CODE
 
 
 class TestErrorHandling:
@@ -9,4 +9,4 @@ class TestErrorHandling:
 
     def test_404(self):
         r = self.client.get("/asdfasdf")
-        assert r.status_code == HTTP_STATUS_CODES.NOT_FOUND_ERROR
+        assert r.status_code == HTTP_STATUS_CODE.NOT_FOUND_ERROR
