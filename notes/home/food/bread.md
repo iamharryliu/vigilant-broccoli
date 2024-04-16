@@ -46,7 +46,7 @@
 
 ## Bagels
 
-### Ingrediesnts
+### Ingredients
 
 - 2 tsp yeast
 - 4 tsp sugar
@@ -71,6 +71,9 @@
 ### Notes
 
 Topping ideas - Caraway seeds, cinnamon sugar, coarse salt, minced fresh garlic, minced fresh onion, poppy seeds, sesame seeds, everything bagel seasoning, or a mix of your favorite flavors.
+
+### Reference
+
 [Recipe](https://www.sophisticatedgourmet.com/2009/10/new-york-style-bagel-recipe/)
 
 ## Sourdough Starter
