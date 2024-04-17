@@ -5,12 +5,14 @@
       <div
         *ngFor="let blog of blogsByYear[year]"
         class="flex justify-between cursor-pointer"
-        (click)="goToBlog(blog)">
+        (click)="goToBlog(blog)"
+      >
         <p class="mr-4">
           {{ blog.title }}
           <span
-            class="inline-block bg-slate-700 font-bold text-xs text-white px-2 rounded">{{
-            blog.type }}</span>
+            class="inline-block bg-slate-700 font-bold text-xs text-white px-2 rounded"
+            >{{ blog.type }}</span
+          >
         </p>
 
         <p>{{ blog.date | date : 'MMMM d' }}</p>
