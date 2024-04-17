@@ -7,10 +7,7 @@ main_blueprint = Blueprint("main", __name__, template_folder="templates")
 
 @main_blueprint.route("/")
 def home():
-    return render_template(
-        "main_index.html",
-        title="Index",
-    )
+    return "flask-demo"
 
 
 @main_blueprint.route("/contact", methods=["GET", "POST"])

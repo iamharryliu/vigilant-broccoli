@@ -4,6 +4,7 @@ from App.users.forms import (
     RegistrationForm,
     LoginForm,
 )
+from App import db
 from App.users.utils import register_user, handle_login
 from App.models import User
 
@@ -12,18 +13,10 @@ users_blueprint = Blueprint(
 )
 
 
-@users_blueprint.route("/")
+@users_blueprint.route("")
 def index():
-    return render_template(
-        "users_index.html",
-        title="Users Index",
-    )
-
-
-@users_blueprint.route("/get_users")
-def get_users():
     users = User.query.all()
-    return {"users": users}
+    return render_template("users_index.html", title="Users Index", users=users)
 
 
 @users_blueprint.route("/register", methods=["GET", "POST"])
@@ -57,8 +50,13 @@ def logout():
 @users_blueprint.route("/verify")
 def verify_user():
     token = request.args.get("token")
-    if User.verify_token(token):
+    print(token)
+    user = User.verify_token(token)
+    if user:
+        user.is_verified = True
+        db.session.commit()
         flash("User has been verified.", "success")
     else:
+        print("hit2")
         flash("Invalid request", "error")
     return redirect(url_for("users.index"))

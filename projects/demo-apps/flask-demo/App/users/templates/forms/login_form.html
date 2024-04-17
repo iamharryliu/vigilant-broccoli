@@ -1,5 +1,5 @@
 {% include 'components/alerts.html' %}
-<form method="POST" action="{{ url_for('users/login') }}">
+<form method="POST" action="{{ url_for('users.login') }}">
   {{ form.hidden_tag() }}
   <fieldset class="form-group">
     <legend>Login Form</legend>

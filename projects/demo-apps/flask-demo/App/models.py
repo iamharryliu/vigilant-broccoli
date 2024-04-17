@@ -21,6 +21,7 @@ class User(db.Model, UserMixin):
     email: str = db.Column(
         db.String(USER_CONFIG.MAX_EMAIL_LENGTH), unique=True, nullable=False
     )
+    is_verified: str = db.Column(db.Boolean, default=False)
     password = db.Column(db.String(USER_CONFIG.MAX_PASSWORD_LENGTH), nullable=False)
 
     def get_token(self):
