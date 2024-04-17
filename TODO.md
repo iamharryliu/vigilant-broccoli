@@ -12,17 +12,6 @@
   - ui:
     - autocomplete tagging
   - TTC notifications
-
-    - building twitter service to scrape tweets with Tweepy
-      - https://developer.twitter.com/en/products/twitter-api
-      - $100 per month
-    - TTC email services
-      - https://www.ttc.ca/my-ttc-eservices
-      - script to check for new emails
-      - free
-    - try to scrape this api endpoint
-      - https://alerts.ttc.ca/api/alerts/live-alerts
-      - https://www.ttc.ca/service-alerts
     - parse data and email all applicable users
 
 - Q2
