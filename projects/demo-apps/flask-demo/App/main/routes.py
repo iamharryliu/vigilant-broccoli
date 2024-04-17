@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, url_for
+from flask import Blueprint, redirect, render_template, url_for
 from App.main.utils import handle_contact_message
 from App.main.forms import ContactForm
 
@@ -15,6 +15,5 @@ def contact():
     form = ContactForm()
     if form.validate_on_submit():
         handle_contact_message()
-        flash(f"Your message has been sent.", "success")
         return redirect(url_for("main.home"))
     return render_template("forms/contact_form.html", title="Contact", form=form)

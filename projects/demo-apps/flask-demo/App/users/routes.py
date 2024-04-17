@@ -1,11 +1,15 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import current_user, logout_user
+from flask import Blueprint, render_template, redirect, url_for
+from flask_login import current_user
 from App.users.forms import (
     RegistrationForm,
     LoginForm,
 )
-from App import db
-from App.users.utils import register_user, handle_login
+from App.users.utils import (
+    register_user,
+    handle_login,
+    handle_logout,
+    handle_verify_user,
+)
 from App.models import User
 
 users_blueprint = Blueprint(
@@ -42,21 +46,9 @@ def login():
 
 @users_blueprint.route("/logout")
 def logout():
-    logout_user()
-    flash("You have been logged out.", "success")
-    return redirect(url_for("users.index"))
+    return handle_logout()
 
 
 @users_blueprint.route("/verify")
 def verify_user():
-    token = request.args.get("token")
-    print(token)
-    user = User.verify_token(token)
-    if user:
-        user.is_verified = True
-        db.session.commit()
-        flash("User has been verified.", "success")
-    else:
-        print("hit2")
-        flash("Invalid request", "error")
-    return redirect(url_for("users.index"))
+    return handle_verify_user()

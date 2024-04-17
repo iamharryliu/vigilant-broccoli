@@ -1,4 +1,5 @@
 import os
+from flask import flash
 from flask_mail import Message
 from App import mail
 from App.main.forms import ContactForm
@@ -7,6 +8,7 @@ from App.main.forms import ContactForm
 def handle_contact_message():
     send_contact_message()
     send_contact_reply()
+    flash(f"Your message has been sent.", "success")
 
 
 def send_contact_message():

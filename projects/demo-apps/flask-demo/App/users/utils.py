@@ -1,7 +1,7 @@
 import re
 from flask import flash, session, redirect, url_for, request
 from flask_mail import Message
-from flask_login import login_user
+from flask_login import login_user, logout_user
 from App import db, bcrypt, mail
 from App.models import User
 from App.users.forms import (
@@ -45,3 +45,21 @@ def handle_login():
     else:
         flash("Login unsuccessful. Please check email and password.", "danger")
         return redirect(url_for("users.login"))
+
+
+def handle_logout():
+    logout_user()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("users.index"))
+
+
+def handle_verify_user():
+    token = request.args.get("token")
+    user = User.verify_token(token)
+    if user:
+        user.is_verified = True
+        db.session.commit()
+        flash("User has been verified.", "success")
+    else:
+        flash("Invalid request", "error")
+    return redirect(url_for("users.index"))
