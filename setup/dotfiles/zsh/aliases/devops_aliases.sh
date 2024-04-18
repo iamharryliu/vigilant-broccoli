@@ -65,9 +65,9 @@ alias flyopen='fly apps open --app'
 alias flydestroy='fly apps destroy'
 alias flystatus='flyctl status --app'
 alias flymachinestatus='flyctl machine status'
-alias startflymachine='flyctl machine start --app'
-alias stopflymachine='flyctl machine stop --app'
-alias restartflymachine='flyctl machine restart --app'
+alias flystartmachine='flyctl machine start --app'
+alias flystopmachine='flyctl machine stop --app'
+alias flyrestartmachine='flyctl machine restart --app'
 alias flyset='~/shell-scripts/set_fly_secret.sh'
 alias flyunset='~/shell-scripts/unset_fly_secret.sh'
 alias flysecretsls='flyctl secrets list'
@@ -78,7 +78,7 @@ function flymonitor() {
     fi
     open "https://fly.io/apps/$1/monitoring"
 }
-alias flyssh='fly ssh console --app'
+alias flyssh='if [ "$#" -eq 1 ]; then fly ssh console --app $1; else fly ssh console; fi'
 alias flycreatetoken='flyctl tokens create deploy --app'
 # Postgres
 alias flysqlconn='flyctl postgres connect --app'
