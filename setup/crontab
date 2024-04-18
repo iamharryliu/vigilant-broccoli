@@ -1,0 +1,3 @@
+0 * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && ~/shell-scripts/download_music.sh
+*/5 * * * * cp ~/Downloads/HarryLiu-Resume.pdf ~/vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf
+* * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd vigilant-broccoli/scripts/python/scrape-ttc-lines && source venv/bin/activate && python scrape_ttc_lines.py

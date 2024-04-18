@@ -12,6 +12,7 @@ TTC_SERVICE_ALERTS_URL = "https://alerts.ttc.ca/api/alerts/live-alerts"
 
 
 def main():
+    print("Scraping TTC Service Lines")
     res = requests.get(TTC_SERVICE_ALERTS_URL, headers=headers)
     json = res.json()
     routes = [route for route in json["routes"]]
