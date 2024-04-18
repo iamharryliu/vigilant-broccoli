@@ -39,6 +39,8 @@
 
   - docs: read later
     - devops
+      - secrets manager
+        - Hashicorp Vault
       - load balancing
       - Redis
       - tmux
