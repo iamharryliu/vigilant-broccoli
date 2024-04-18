@@ -1,5 +1,7 @@
+import base64
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, current_app
+from flask_mail import Mail, Message
 import psycopg2
 from google_recaptcha import ReCaptcha
 from App.utils import (
@@ -14,6 +16,7 @@ from App.ttc.utils import get_ttc_alerts
 
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
+mail = Mail()
 
 
 def create_app(config=DIT_CONFIG):
@@ -28,6 +31,7 @@ def create_app(config=DIT_CONFIG):
         site_key=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY"),
         site_secret=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY"),
     )
+    mail.init_app(app)
 
     def get_db_connection():
         return psycopg2.connect(DATABASE_URL)
@@ -50,8 +54,11 @@ def create_app(config=DIT_CONFIG):
     @app.route(ENDPOINT.SUBSCRIBE, methods=["GET", "POST"])
     def subscribe():
         DISTRICT_DATA = get_districts_data()
-        if request.method == "POST" and recaptcha.verify():
-            submit_form()
+        if request.method == "POST" and (
+            current_app.config["ENVIRONMENT"] != "ENVIRONMENT_TYPE.PROD"
+            or recaptcha.verify()
+        ):
+            return submit_form()
         return render_template(
             "pages/subscribe-page.html",
             title="Subscribe",
@@ -78,22 +85,47 @@ def create_app(config=DIT_CONFIG):
                 connection = get_db_connection()
                 cursor = connection.cursor()
                 cursor.execute(
-                    "INSERT INTO emails (email, districts, keywords, confirmed_email) VALUES (%s, %s, %s, TRUE) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts, keywords = EXCLUDED.keywords",
+                    "INSERT INTO emails (email, districts, keywords, confirmed_email) VALUES (%s, %s, %s, FALSE) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts, keywords = EXCLUDED.keywords",
                     (email, districts, keywords),
                 )
                 connection.commit()
                 cursor.close()
                 connection.close()
+                send_verification_email(email)
                 flash(
-                    f"You have successfully subscribed {email}.",
+                    f"Please verify your email {email}.",
                     "success",
                 )
                 return redirect(url_for("index"))
-            except:
+            except Exception as e:
                 flash("Something went wrong. Have you already signed up?", "danger")
                 return redirect(url_for("index"))
         else:
             return redirect(url_for("index"))
+
+    def send_verification_email(email):
+        msg = Message("Toronto Alerts - Verify Email", recipients=[email])
+        token = base64.b64encode(email.encode("utf-8")).decode("utf-8")
+        msg.body = f"http://localhost:5000/verify?token={token}"
+        mail.send(msg)
+
+    @app.get(ENDPOINT.VERIFY_EMAIL)
+    def verify_email():
+        token = request.args.get("token")
+        email = base64.b64decode(token).decode("utf-8")
+        if email:
+            connection = get_db_connection()
+            cursor = connection.cursor()
+            cursor.execute(
+                f"UPDATE emails SET confirmed_email = TRUE WHERE email = '{email}';",
+            )
+            connection.commit()
+            cursor.close()
+            connection.close()
+            flash("User has been verified.", "success")
+        else:
+            flash("Invalid request", "error")
+        return redirect(url_for("index"))
 
     @app.get(ENDPOINT.GET_USERS)
     def get_users():
