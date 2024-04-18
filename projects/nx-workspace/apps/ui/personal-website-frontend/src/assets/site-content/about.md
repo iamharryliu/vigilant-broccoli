@@ -1,8 +1,6 @@
-# Hey, I'm Harry 👋
+## Hey, I'm Harry 👋
 
-Toronto, Canada 🇨🇦.
-
-Passionate software enthusiast who is capable of handling your application needs. Open to hearing about new and interesting opportunities.
+I am a software enthusiast who is capable of handling your application needs from Toronto, Canada. Currently open to hearing about new and interesting opportunities.
 
 Expertise in:
 
