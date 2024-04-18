@@ -1,6 +1,6 @@
 ### Hey, I'm Harry 👋
 
-I am a software enthusiast who is capable of handling your application needs from _Toronto, Canada_. Currently open to hearing about new and interesting opportunities.
+I am a software enthusiast who is capable of handling your application needs _from Toronto, Canada_. Currently open to hearing about new and interesting opportunities.
 
 #### Expertise in:
 
