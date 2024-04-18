@@ -38,17 +38,15 @@
 - Q3
 
   - docs: read later
-
-    - load balancing
-    - Redis
-    - tmux
-    - aws
-      - cloudformation
+    - devops
+      - load balancing
+      - Redis
+      - tmux
+      - aws
+        - cloudformation
     - open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
     - online payment form
     - Sveltfire
-    - angular view encapsulation
-
   - harryliu.design
     - style: update typography
   - docs: spring boot
