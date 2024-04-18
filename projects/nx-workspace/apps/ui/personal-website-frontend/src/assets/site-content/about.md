@@ -1,8 +1,8 @@
-## Hey, I'm Harry 👋
+### Hey, I'm Harry 👋
 
-I am a software enthusiast who is capable of handling your application needs from Toronto, Canada. Currently open to hearing about new and interesting opportunities.
+I am a software enthusiast who is capable of handling your application needs from _Toronto, Canada_. Currently open to hearing about new and interesting opportunities.
 
-Expertise in:
+#### Expertise in:
 
 - **Software Design**: Application Architecture, REST API Design, UI/UX Design, Database Architecture
 
