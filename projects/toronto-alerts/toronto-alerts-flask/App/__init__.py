@@ -97,7 +97,7 @@ def create_app(config=DIT_CONFIG):
                     "success",
                 )
                 return redirect(url_for("index"))
-            except Exception as e:
+            except:
                 flash("Something went wrong. Have you already signed up?", "danger")
                 return redirect(url_for("index"))
         else:
