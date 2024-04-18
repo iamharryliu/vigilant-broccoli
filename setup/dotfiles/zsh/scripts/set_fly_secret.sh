@@ -1,21 +1,20 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: $0 <key_name> <key_value> [app_name]"
+    echo "Usage: $0 '[secret_name]=[value] [secret_name]=[value]..' [app_name](optional)"
     exit 1
 }
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 1 ]; then
     usage
 fi
 
-KEY_NAME="$1"
-KEY_VALUE="$2"
+KVP="$1"
 
-if [ -n "$3" ]; then
-    USE_APP="--app $3"
+if [ -n "$2" ]; then
+    USE_APP="--app $2"
 else
     USE_APP=""
 fi
 
-fly secrets set "${KEY_NAME}=${KEY_VALUE}" $USE_APP --stage
+fly secrets set $KVP $USE_APP --stage

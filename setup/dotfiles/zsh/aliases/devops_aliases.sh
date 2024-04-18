@@ -68,7 +68,9 @@ alias flymachinestatus='flyctl machine status'
 alias startflymachine='flyctl machine start --app'
 alias stopflymachine='flyctl machine stop --app'
 alias restartflymachine='flyctl machine restart --app'
-alias flysetsecret='~/shell-scripts/set_fly_secret.sh'
+alias flyset='~/shell-scripts/set_fly_secret.sh'
+alias flyunset='~/shell-scripts/unset_fly_secret.sh'
+alias flysecretsls='flyctl secrets list'
 function flymonitor() {
     if [ -z "$1" ]; then
         echo "Usage: fly-monitor <app_name>"
