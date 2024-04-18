@@ -1,0 +1,2 @@
+SHELL=/bin/sh
+0 * * * * echo "Hello from cron" >> /app/var/log/cron.log 2>&1
