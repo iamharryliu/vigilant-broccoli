@@ -6,13 +6,13 @@
 
 ## CLI
 
-### Arp
+### ARP (Address Resolution Protocol)
 
 ```
 arp -a
 ```
 
-### Nmap
+### Nmap - Network Mapper
 
 ```
 nmap -sn 192.168.1.1/24
