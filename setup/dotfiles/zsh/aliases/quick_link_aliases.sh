@@ -57,3 +57,8 @@ alias checkskatingtimes='heronparkleisureskateschedule && centennialskateschedul
 
 # Utility
 alias findmy='open -a "Google Chrome" "https://www.icloud.com/find/"'
+
+# Git
+alias gitme='open -a "Google Chrome" "https://github.com/iamharryliu"'
+alias gitvb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli"'
+alias gitactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'

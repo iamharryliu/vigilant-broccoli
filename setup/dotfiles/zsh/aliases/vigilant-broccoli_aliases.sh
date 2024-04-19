@@ -13,26 +13,23 @@ alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'up
 
 # Journal
 alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpush"
-alias updaterepos="cd ~/journal && gpull && cd ~/$REPO_NAME && gpull"
 
 # Github
 alias pushgitreadme="cd ~/iamharryliu && gpull && git add . && gc docs 'update github profile readme' && gpush"
-alias openvb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli"'
-# Github Actions
-alias openactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
 
 # harryliu.design
-alias servepw="cdnx && npm run serve:personal-website"
-alias deploypwui="cdnx && nx deploy personal-website-frontend --skip-nx-cache"
+alias serve-harryliu-design="cdnx && npm run serve:personal-website"
+alias deploy-harryliu-design="cdnx && nx deploy personal-website-frontend"
 alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'update site content' && gpush"
+# Blogs
 alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
-
-# DJ Stuff
-alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
-alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
-
 # Grind 75
 alias grind75="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75"
 
 # Toronto Alerts
 alias cdtorontoalerts="cdvb && cd projects/toronto-alerts"
+alias sshpi="ssh hliu@192.168.1.104"
+
+# DJ Stuff
+alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
+alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
