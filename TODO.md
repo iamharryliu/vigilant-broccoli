@@ -33,6 +33,7 @@
 
 - Q1
   - make first PYPI libraries
+  - work on FlyIO scripts
 - Q2
 
 - Q3
