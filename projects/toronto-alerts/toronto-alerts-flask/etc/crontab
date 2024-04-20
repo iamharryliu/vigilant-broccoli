@@ -1,4 +1,4 @@
 # TODO: I think that venv is being removed on the github action deployment
 SHELL=/bin/sh
 # */5 * * * * echo "Hello from cron, ${pwd}" >> /app/var/log/cron.log 2>&1 && cd /code && . venv/bin/activate && echo "hit" >> mid.txt && /usr/local/bin/python scripts/email_subscribers.py 5 && echo "done" >> /app/var/log/cron.log
-* * * * * cd /code && . venv/bin/activate && /usr/local/bin/python scripts/email_subscribers.py 1 >> /app/var/log/debug.log 2>&1
+* * * * * cd /code && python -m venv venv; . venv/bin/activate && /usr/local/bin/python scripts/email_subscribers.py 1 >> /app/var/log/debug.log 2>&1
