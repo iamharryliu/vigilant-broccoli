@@ -1,19 +1,33 @@
-import argparse
-import os
-import threading
+import os, argparse, threading, psycopg2
 from toronto_alerts_app import TorontoAlertsApp
 from mail_handler import MailHandler
-import requests
 from datetime import timedelta
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 
 
+def get_db_connection():
+    return psycopg2.connect(DATABASE_URL)
+
+
 def get_users():
-    response = requests.get("https://torontoalerts.com/get_users")
-    data = response.json()
-    users = data.get("users", [])
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "SELECT email, districts, keywords FROM emails;"
+    cursor.execute(query)
+    users = [
+        {
+            "email": user[0],
+            "districts": user[1] if user[1] else [],
+            "keywords": user[2] if user[2] else [],
+        }
+        for user in cursor.fetchall()
+    ]
     return users
+    # response = requests.get("https://torontoalerts.com/get_users")
+    # data = response.json()
+    # users = data.get("users", [])
+    # return users
 
 
 def email_users(users):

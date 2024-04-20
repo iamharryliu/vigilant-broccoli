@@ -127,22 +127,6 @@ def create_app(config=DIT_CONFIG):
             flash("Invalid request", "error")
         return redirect(url_for("index"))
 
-    @app.get(ENDPOINT.GET_USERS)
-    def get_users():
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        query = "SELECT email, districts, keywords FROM emails;"
-        cursor.execute(query)
-        users = [
-            {
-                "email": user[0],
-                "districts": user[1] if user[1] else [],
-                "keywords": user[2] if user[2] else [],
-            }
-            for user in cursor.fetchall()
-        ]
-        return {"users": users}
-
     @app.get(ENDPOINT.UNSUBSCRUBE)
     def unsubscribe():
         email = request.args.get("email")
