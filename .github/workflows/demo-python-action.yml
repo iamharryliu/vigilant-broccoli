@@ -1,4 +1,4 @@
-name: Toronto Alerts - Email Subscribers
+name: Demo Python Action
 
 on:
   push: { branches: ['yourbranch'] }
@@ -11,7 +11,7 @@ jobs:
       name: production
     defaults:
       run:
-        working-directory: ./projects/toronto-alerts/toronto-alerts-flask
+        working-directory: /dir
     steps:
       - name: Checkout code.
         uses: actions/checkout@v2
@@ -26,7 +26,5 @@ jobs:
           pip install -r requirements.txt
       - name: Run script.
         env:
-          GTA_UPDATE_ALERT_EMAIL: ${{ secrets.GTA_UPDATE_ALERT_EMAIL }}
-          GTA_UPDATE_ALERT_EMAIL_PASSWORD: ${{ secrets.GTA_UPDATE_ALERT_EMAIL_PASSWORD }}
-          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
-        run: python scripts/email_subscribers.py 10
+          SECRET: ${{ secrets.SECRET }}
+        run: python script.py
