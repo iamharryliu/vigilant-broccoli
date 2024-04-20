@@ -1,5 +1,5 @@
 import re
-from flask import flash, session, redirect, url_for, request
+from flask import flash, session, redirect, url_for, request, current_app
 from flask_mail import Message
 from flask_login import login_user, logout_user
 from App import db, bcrypt, mail
@@ -25,7 +25,7 @@ def register_user():
 def send_register_email(user):
     msg = Message("Flask Demo: Verify Email", recipients=[user.email])
     token = user.get_token()
-    msg.body = f"http://localhost:5000/users/verify?token={token}"
+    msg.body = f"{current_app.config.get('BACKEND_APP_URL')}/users/verify?token={token}"
     mail.send(msg)
 
 

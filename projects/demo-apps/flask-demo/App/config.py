@@ -4,10 +4,22 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 ROOT_PATH = os.path.abspath(os.path.join(DIR_PATH, os.pardir))
 
 
+PORT_NUMBER = 5000
+
+
+class ENVIRONMENT_TYPE:
+    TEST = "TEST"
+    DIT = "DIT"
+    SIT = "SIT"
+    PROD = "PROD"
+
+
 class SERVER_CONFIG:
-    PORT_NUMBER = 5000
+    PORT_NUMBER = PORT_NUMBER
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY")
+
+    BACKEND_APP_URL = f"http://localhost:{PORT_NUMBER}"
 
     # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{ROOT_PATH}/site.db"
@@ -29,16 +41,16 @@ class SERVER_CONFIG:
 
 
 class TEST_CONFIG(SERVER_CONFIG):
-    ENVIRONMENT = "TEST"
+    ENVIRONMENT = ENVIRONMENT_TYPE.TEST
 
 
 class DIT_CONFIG(SERVER_CONFIG):
-    ENVIRONMENT = "DIT"
+    ENVIRONMENT = ENVIRONMENT_TYPE.DIT
 
 
 class SIT_CONFIG(SERVER_CONFIG):
-    ENVIRONMENT = "SIT"
+    ENVIRONMENT = ENVIRONMENT_TYPE.SIT
 
 
 class PROD_CONFIG(SERVER_CONFIG):
-    ENVIRONMENT = "PROD"
+    ENVIRONMENT = ENVIRONMENT_TYPE.PROD
