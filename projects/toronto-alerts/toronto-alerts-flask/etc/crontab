@@ -1,2 +1,3 @@
 SHELL=/bin/sh
-0 * * * * echo "Hello from cron" >> /app/var/log/cron.log 2>&1
+# */5 * * * * echo "Hello from cron, ${pwd}" >> /app/var/log/cron.log 2>&1 && cd /code && . venv/bin/activate && echo "hit" >> mid.txt && /usr/local/bin/python scripts/email_subscribers.py 5 && echo "done" >> /app/var/log/cron.log
+*/5 * * * * cd /code && . venv/bin/activate && echo "hit" >> mid.txt && /usr/local/bin/python scripts/email_subscribers.py 5

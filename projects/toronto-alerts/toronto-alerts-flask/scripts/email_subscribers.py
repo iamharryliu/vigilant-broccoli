@@ -1,11 +1,8 @@
 import argparse
 import os
-import sys
 import threading
-
-sys.path.append("../../..")
 from toronto_alerts_app import TorontoAlertsApp
-from scripts.python.tools.mail_handler import MailHandler
+from mail_handler import MailHandler
 import requests
 from datetime import timedelta
 

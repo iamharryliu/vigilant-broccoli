@@ -1,7 +1,10 @@
 name: Toronto Alerts - Email Subscribers
 
 on:
-  schedule: [{ cron: '*/5 * * * *' }]
+  # schedule: [{ cron: '*/5 * * * *' }]
+  pull_request:
+    branches:
+      - 'benchmark/**'
 
 jobs:
   run_script:
@@ -10,7 +13,7 @@ jobs:
       name: production
     defaults:
       run:
-        working-directory: ./projects/toronto-alerts/scripts
+        working-directory: ./projects/toronto-alerts/toronto-alerts-flask
     steps:
       - name: Checkout code.
         uses: actions/checkout@v2
@@ -28,4 +31,4 @@ jobs:
           GTA_UPDATE_ALERT_EMAIL: ${{ secrets.GTA_UPDATE_ALERT_EMAIL }}
           GTA_UPDATE_ALERT_EMAIL_PASSWORD: ${{ secrets.GTA_UPDATE_ALERT_EMAIL_PASSWORD }}
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
-        run: python email_subscribers.py 10
+        run: python scripts/email_subscribers.py 10
