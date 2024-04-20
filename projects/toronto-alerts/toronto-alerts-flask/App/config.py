@@ -3,11 +3,22 @@ import os
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 ROOT_PATH = os.path.abspath(os.path.join(DIR_PATH, os.pardir))
 
+PORT_NUMBER = 5000
+
+
+class ENVIRONMENT_TYPE:
+    TEST = "TEST"
+    DIT = "DIT"
+    SIT = "SIT"
+    PROD = "PROD"
+
 
 class SERVER_CONFIG:
-    PORT_NUMBER = 5000
+    PORT_NUMBER = PORT_NUMBER
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY")
+
+    BACKEND_APP_URL = f"http://localhost:{PORT_NUMBER}"
 
     # Recaptcha
     RECAPTCHA_SITE_KEY = os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY")
@@ -20,13 +31,6 @@ class SERVER_CONFIG:
     MAIL_USERNAME = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
     MAIL_PASSWORD = os.environ.get("GTA_UPDATE_ALERT_EMAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
-
-
-class ENVIRONMENT_TYPE:
-    TEST = "TEST"
-    DIT = "DIT"
-    SIT = "SIT"
-    PROD = "PROD"
 
 
 class TEST_CONFIG(SERVER_CONFIG):
@@ -42,4 +46,5 @@ class SIT_CONFIG(SERVER_CONFIG):
 
 
 class PROD_CONFIG(SERVER_CONFIG):
+    BACKEND_APP_URL = "https://torontoalerts.com/"
     ENVIRONMENT = ENVIRONMENT_TYPE.PROD

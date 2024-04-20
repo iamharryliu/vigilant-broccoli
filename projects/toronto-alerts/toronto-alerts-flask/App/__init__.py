@@ -106,7 +106,7 @@ def create_app(config=DIT_CONFIG):
     def send_verification_email(email):
         msg = Message("Toronto Alerts - Verify Email", recipients=[email])
         token = base64.b64encode(email.encode("utf-8")).decode("utf-8")
-        msg.body = f"http://localhost:5000/verify?token={token}"
+        msg.body = f"{current_app.config.get('BACKEND_APP_URL')}/verify?token={token}"
         mail.send(msg)
 
     @app.get(ENDPOINT.VERIFY_EMAIL)

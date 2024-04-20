@@ -1,3 +1,8 @@
+{
+  echo "GTA_UPDATE_ALERT_EMAIL=${GTA_UPDATE_ALERT_EMAIL}"
+  echo "GTA_UPDATE_ALERT_EMAIL_PASSWORD=${GTA_UPDATE_ALERT_EMAIL_PASSWORD}"
+} >> /etc/environment
+
 set -e
 
 mkdir -p /app/var/log
