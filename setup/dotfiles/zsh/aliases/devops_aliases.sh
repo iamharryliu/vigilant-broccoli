@@ -79,6 +79,7 @@ function flymonitor() {
     open "https://fly.io/apps/$1/monitoring"
 }
 alias flyssh='if [ "$#" -eq 1 ]; then fly ssh console --app $1; else fly ssh console; fi'
+alias flyrssh='if [ "$#" -eq 1 ]; then fly ssh console --app $1; else flyctl machine restart && fly ssh console; fi'
 alias flycreatetoken='flyctl tokens create deploy --app'
 # Postgres
 alias flysqlconn='flyctl postgres connect --app'
