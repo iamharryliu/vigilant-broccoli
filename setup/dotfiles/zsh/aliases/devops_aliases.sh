@@ -55,7 +55,7 @@ function r2clear() {
 }
 
 # FlyIO
-alias flydashboard='open -a "Google Chrome" "https://fly.io/dashboard"'
+alias flydash='open -a "Google Chrome" "https://fly.io/dashboard"'
 alias flyscalecount='flyctl scale count'
 alias flylogs='flyctl logs --app'
 
