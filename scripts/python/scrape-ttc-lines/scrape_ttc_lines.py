@@ -1,4 +1,4 @@
-import requests, json
+import requests, json, re
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36",
@@ -26,11 +26,23 @@ def save_json(new_data, filepath="ttc_lines.json"):
     try:
         with open(filepath, "r") as file:
             data_list = json.load(file)
-            data_list = sorted(list(set(data_list + new_data)), key=int)
+            data_list = sort_with_letters(list(set(data_list + new_data)))
     except:
         data_list = new_data
     with open(filepath, "w") as file:
         json.dump(data_list, file, indent=4)
+
+
+def sort_with_letters(numbers):
+    num_part = [int(re.match(r"\d+", num).group()) for num in numbers]
+    letter_part = [
+        re.search(r"[a-zA-Z]+", num).group() if re.search(r"[a-zA-Z]+", num) else ""
+        for num in numbers
+    ]
+    sorted_nums = sorted(num_part)
+    sorted_letters = sorted(letter_part)
+    sorted_list = [f"{num}{letter}" for num, letter in zip(sorted_nums, sorted_letters)]
+    return sorted_list
 
 
 if __name__ == "__main__":
