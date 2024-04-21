@@ -6,13 +6,14 @@
 
 - Q1
 
-  - guard users endpoint with github actions whitelist or performing cron within the server instance?
-  - application unit testing
+  - alerts to build
 
+    - rain alert
+    - ttc notifications (select routes)
+
+  - application unit testing
   - ui:
     - autocomplete tagging
-  - TTC notifications
-    - parse data and email all applicable users
 
 - Q2
   - mobile application
