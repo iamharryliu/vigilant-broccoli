@@ -1,9 +1,9 @@
-{{weather_data["weather"]["temp"]}}°C, Feels Like:
-{{weather_data["weather"]["feels_like"]}}°C <br />
-{{weather_data["weather"]["temp_min"]}}°C to Max:
+{{weather_data["weather"]["temp"]}}°C | Feels Like:
+{{weather_data["weather"]["feels_like"]}}°C |
+{{weather_data["weather"]["temp_min"]}}°C to
 {{weather_data["weather"]["temp_max"]}}°C<br />
-Weather Condition: {{weather_data["weather"]["description"]}}<br />
-Cloudiness: {{weather_data["weather"]["clouds"]}}% | Humidity:
-{{weather_data["weather"]["humidity"]}}%<br />
+Today is {{weather_data["weather"]["description"]}}.<br />
+{{weather_data["weather"]["clouds"]}}% Cloudiness |
+{{weather_data["weather"]["humidity"]}}% Humidity<br />
 Sunrise: {{weather_data["sun"]["sunrise"].strftime('%-H:%M')}}am | Sunset:
 {{weather_data["sun"]["sunset"].strftime('%-H:%M')}}pm<br />
