@@ -11,3 +11,8 @@
   - https://www.instagram.com/prettydamntired/
   - https://www.instagram.com/torontocityskate/
   - https://www.instagram.com/harrysellsshit/
+
+## Special Characters
+
+Celsius - °C
+Farhenheit - °F
