@@ -1,5 +1,4 @@
 import base64
-from datetime import datetime
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash, current_app
 from flask_mail import Mail, Message
@@ -10,8 +9,8 @@ from App.utils import (
     get_districts_data,
     convert_division_string_for_scraping_data,
     markdown_to_html,
-    get_weather_data,
 )
+from App.weather.utils import get_weather_data
 from App.config import DIT_CONFIG
 from App.const import ENDPOINT
 from App.ttc.utils import get_ttc_alerts
@@ -50,8 +49,10 @@ def create_app(config=DIT_CONFIG):
             ttc_alerts=get_ttc_alerts(),
         )
 
+    from App.weather.weather_routes import weather_blueprint
     from App.ttc.ttc_routes import ttc_blueprint
 
+    app.register_blueprint(weather_blueprint)
     app.register_blueprint(ttc_blueprint)
 
     @app.route(ENDPOINT.SUBSCRIBE, methods=["GET", "POST"])
@@ -161,12 +162,6 @@ def create_app(config=DIT_CONFIG):
             "pages/blog-page.html",
             title="Blog Name",
             blog_content=markdown_to_html(blog_content),
-        )
-
-    @app.get(ENDPOINT.WEATHER)
-    def weather_page():
-        return render_template(
-            "pages/weather-page.html", title="Weather", weather_data=get_weather_data()
         )
 
     return app
