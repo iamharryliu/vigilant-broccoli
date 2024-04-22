@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash, current_app
 from flask_mail import Mail, Message
@@ -13,6 +14,8 @@ from App.utils import (
 from App.config import DIT_CONFIG
 from App.const import ENDPOINT
 from App.ttc.utils import get_ttc_alerts
+import requests
+import pytz
 
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
@@ -38,12 +41,40 @@ def create_app(config=DIT_CONFIG):
 
     @app.route(ENDPOINT.INDEX, methods=["GET", "POST"])
     def index():
+        data = requests.get(
+            f"https://api.openweathermap.org/data/2.5/weather?q=toronto&appid={os.environ.get('OPENWEATHER_API_KEY')}"
+        ).json()
+
+        sunrise = datetime.utcfromtimestamp(data["sys"]["sunrise"])
+        sunset = datetime.utcfromtimestamp(data["sys"]["sunset"])
+
+        # Convert UTC datetime to Toronto timezone
+        toronto_timezone = pytz.timezone("America/Toronto")
+        sunrise = sunrise.replace(tzinfo=pytz.utc).astimezone(toronto_timezone)
+        sunset = sunset.replace(tzinfo=pytz.utc).astimezone(toronto_timezone)
+
+        weather_data = {
+            "sun": {
+                "sunrise": sunrise,
+                "sunset": sunset,
+            },
+            "weather": {
+                "description": data["weather"][0]["description"],
+                "temp": round(data["main"]["temp"] - 273.15),
+                "feels_like": round(data["main"]["feels_like"] - 273.15),
+                "temp_min": round(data["main"]["temp_min"] - 273.15),
+                "temp_max": round(data["main"]["temp_max"] - 273.15),
+                "clouds": data["clouds"]["all"],
+                "humidity": data["main"]["humidity"],
+            },
+        }
         # blogs = get_blog_files()
         blogs = []
         return render_template(
             "pages/home-page/index.html",
             title="Home",
             blogs=blogs,
+            weather_data=weather_data,
             ttc_alerts=get_ttc_alerts(),
         )
 

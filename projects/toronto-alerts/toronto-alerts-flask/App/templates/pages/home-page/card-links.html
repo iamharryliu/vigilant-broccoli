@@ -93,8 +93,24 @@
     </div>
   </div>
 
-  <h3 class="mb-4">Other</h3>
+  <h3 class="mb-4">Weather</h3>
 
+  <div class="col-12 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Current Weather</h5>
+        Temperature: {{weather_data["weather"]["temp"]}}°C | Feels Like:
+        {{weather_data["weather"]["feels_like"]}}°C | Min:
+        {{weather_data["weather"]["temp_min"]}}°C | Max:
+        {{weather_data["weather"]["temp_max"]}}°C<br />
+        Weather Condition: {{weather_data["weather"]["description"]}}<br />
+        Cloudiness: {{weather_data["weather"]["clouds"]}}% | Humidity:
+        {{weather_data["weather"]["humidity"]}}%<br />
+        Sunrise: {{weather_data["sun"]["sunrise"].strftime('%-H:%M')}}am |
+        Sunset: {{weather_data["sun"]["sunset"].strftime('%-H:%M')}}pm<br />
+      </div>
+    </div>
+  </div>
   <div class="col-12 col-sm-6 mb-4">
     <div class="card h-100">
       <img
