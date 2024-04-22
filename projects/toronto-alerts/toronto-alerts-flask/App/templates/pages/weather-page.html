@@ -1,0 +1,15 @@
+{% extends 'layout.html' %} {% block content %}
+
+<div class="row gx-3">
+  <div class="col-12 mb-4"></div>
+
+  <div class="col-12 col-sm-6 mb-4p">
+    {% include 'weather/weather_info_card.html' %}
+  </div>
+
+  <div class="col-12 col-sm-6 mb-4">
+    {% include 'weather/weather_alerts_link_card.html' %}
+  </div>
+</div>
+
+{% endblock %}

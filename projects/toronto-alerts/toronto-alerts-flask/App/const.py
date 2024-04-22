@@ -7,3 +7,4 @@ class ENDPOINT:
     BLOG = "/blog"
     GET_USERS = "/get_users"
     TTC = "/ttc"
+    WEATHER = "/weather"
