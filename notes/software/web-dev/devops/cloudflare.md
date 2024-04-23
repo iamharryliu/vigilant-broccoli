@@ -37,6 +37,7 @@ wrangler r2 bucket delete [BUCKET_TO_DELETE]
 
 ## References
 
+- [Commands](https://developers.cloudflare.com/workers/wrangler/commands/)
 - [Deploy an existing static site](https://developers.cloudflare.com/workers/configuration/sites/start-from-existing/)
 - [Github Actions](https://developers.cloudflare.com/workers/wrangler/ci-cd)
 - [Python and R2](https://developers.cloudflare.com/r2/examples/aws/boto3/)

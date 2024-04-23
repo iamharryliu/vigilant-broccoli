@@ -62,3 +62,6 @@ alias findmy='open -a "Google Chrome" "https://www.icloud.com/find/"'
 alias gitme='open -a "Google Chrome" "https://github.com/iamharryliu"'
 alias gitvb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli"'
 alias gitactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
+
+# Toronto Alerts
+alias torontoalerts='open -a "Google Chrome" "https://torontoalerts.com/"'

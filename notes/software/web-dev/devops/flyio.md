@@ -78,6 +78,44 @@ fly certs list --app [app_name]
 fly certs show [hostname] --app [app_name]
 ```
 
+## Fly Cron
+
+```
+# Dockerfile
+
+...
+
+RUN apt-get update
+RUN apt-get install -y cron
+COPY etc/crontab /app/etc/crontab
+
+COPY run.sh /app/run.sh
+RUN ["chmod", "+x", "/app/run.sh"]
+CMD /app/run.sh
+```
+
+```
+# crontab
+
+SHELL=/bin/sh
+* * * * * echo "hit" >> /code/cron.log
+```
+
+```
+# run.sh
+
+{
+  echo "SECRET=${SECRET}"
+} >> /etc/environment
+
+set -e
+crontab /app/etc/crontab
+cron
+
+...
+
+```
+
 ## Troubleshooting
 
 - Make sure you have set all environment variables before deploying.
