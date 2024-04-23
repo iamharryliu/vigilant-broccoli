@@ -1,8 +1,11 @@
+import base64
 import os
 import json, re, requests
 from bs4 import BeautifulSoup
 import markdown
-import pytz
+from App import mail
+from flask import current_app
+from flask_mail import Message
 
 
 def get_districts_data():
@@ -62,12 +65,6 @@ def convert_division_string_for_scraping_data(text):
     return re.match(pattern, text).group(1) + " Div"
 
 
-def get_github_action_ip_addresses():
-    response = requests.get("https://api.github.com/meta")
-    github_meta = response.json()
-    return github_meta["actions"]
-
-
 def markdown_to_html(text):
     return markdown.markdown(text)
 
@@ -84,3 +81,10 @@ def get_blog_files():
                         {"title": filename[:-3], "content": markdown_to_html(content)}
                     )
     return blog_files
+
+
+def send_verification_email(email):
+    msg = Message("Toronto Alerts - Verify Email", recipients=[email])
+    token = base64.b64encode(email.encode("utf-8")).decode("utf-8")
+    msg.body = f"{current_app.config.get('BACKEND_APP_URL')}/verify?token={token}"
+    mail.send(msg)

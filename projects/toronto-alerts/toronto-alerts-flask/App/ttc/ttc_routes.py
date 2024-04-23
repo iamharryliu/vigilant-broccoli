@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from App import get_ttc_alerts
+from App.ttc.utils import get_ttc_alerts
 
 ttc_blueprint = Blueprint(
     "ttc", __name__, url_prefix="/ttc", template_folder="templates"

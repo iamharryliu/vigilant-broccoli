@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template
-from App import get_ttc_alerts
 from App.weather.utils import get_weather_data
 
 weather_blueprint = Blueprint(
