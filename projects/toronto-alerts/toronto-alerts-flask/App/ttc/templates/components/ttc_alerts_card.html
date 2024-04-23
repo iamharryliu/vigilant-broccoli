@@ -2,12 +2,12 @@
   <div class="card-body">
     <h5 class="card-title">TTC Alerts</h5>
     {% if not ttc_alerts["notices"] and not ttc_alerts["route_alerts"] %} {%
-    include 'components/ttc/ttc_no_alerts.html' %} {% else %} {% if
+    include 'components/ttc_no_alerts.html' %} {% else %} {% if
     ttc_alerts["notices"] %}
     <div class="mb-4 fst-italic">
-      {% include 'components/ttc/ttc_notices.html' %}
+      {% include 'components/ttc_notices.html' %}
     </div>
-    {% endif %} {% include 'components/ttc/ttc_route_alerts.html' %} {% endif %}
+    {% endif %} {% include 'components/ttc_route_alerts.html' %} {% endif %}
     <a
       href="{{url_for('ttc.index')}}"
       class="btn btn-light stretched-link"
