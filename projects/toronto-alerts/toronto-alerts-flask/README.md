@@ -52,6 +52,6 @@ SELECT * from emails;
 
 ## References
 
-[OpenWeather Current Weather Data API Call](https://openweathermap.org/current)
-[TTC API](https://alerts.ttc.ca/api/alerts/live-alerts)
-[GTA Update](https://gtaupdate.com/)
+- [OpenWeather Current Weather Data API Call](https://openweathermap.org/current)
+- [TTC API](https://alerts.ttc.ca/api/alerts/live-alerts)
+- [GTA Update](https://gtaupdate.com/)
