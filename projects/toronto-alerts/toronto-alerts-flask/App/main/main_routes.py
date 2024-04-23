@@ -91,12 +91,12 @@ def submit_form():
                 f"Please verify your email {email}.",
                 "success",
             )
-            return redirect(url_for("index"))
+            return redirect(url_for("main.index"))
         except:
             flash("Something went wrong. Have you already signed up?", "danger")
-            return redirect(url_for("index"))
+            return redirect(url_for("main.index"))
     else:
-        return redirect(url_for("index"))
+        return redirect(url_for("main.index"))
 
 
 @main_blueprint.get(ENDPOINT.VERIFY_EMAIL)
@@ -115,7 +115,7 @@ def verify_email():
         flash("User has been verified.", "success")
     else:
         flash("Invalid request", "error")
-    return redirect(url_for("index"))
+    return redirect(url_for("main.index"))
 
 
 def get_db_connection():
@@ -134,12 +134,12 @@ def unsubscribe():
             cursor.close()
             conn.close()
             flash(f"You have successfully unsubscribed {email}.", "danger")
-            return redirect(url_for("index"))
+            return redirect(url_for("main.index"))
         except:
             flash("Something went wrong.")
-            return redirect(url_for("index"))
+            return redirect(url_for("main.index"))
     else:
-        return redirect(url_for("index"))
+        return redirect(url_for("main.index"))
 
 
 @main_blueprint.get(ENDPOINT.BLOGS)
