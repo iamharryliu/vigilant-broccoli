@@ -8,7 +8,8 @@
 
   - alerts to build
 
-    - rain alert
+    - scraping for TPS and TFS alerts
+    - rain/snow/storm alert
     - ttc notifications (select routes)
 
   - application unit testing
