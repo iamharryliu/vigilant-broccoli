@@ -24,10 +24,6 @@ def get_users():
         for user in cursor.fetchall()
     ]
     return users
-    # response = requests.get("https://torontoalerts.com/get_users")
-    # data = response.json()
-    # users = data.get("users", [])
-    # return users
 
 
 def email_users(users):
