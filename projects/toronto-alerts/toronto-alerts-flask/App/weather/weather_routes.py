@@ -9,5 +9,5 @@ weather_blueprint = Blueprint(
 @weather_blueprint.get("")
 def index():
     return render_template(
-        "pages/weather-page.html", title="Weather", weather_data=get_weather_data()
+        "weather-page.html", title="Weather", weather_data=get_weather_data()
     )

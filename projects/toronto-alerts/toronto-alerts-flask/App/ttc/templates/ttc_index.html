@@ -1,4 +1,4 @@
-{% extends 'layout.html' %} {% block content %}
+{% extends 'components/layout.html' %} {% block content %}
 <div class="mb-4">
   <h5 class="mb-2">TTC Service Alerts</h5>
   <hr />
@@ -10,7 +10,7 @@
 </div>
 <hr class="mt-4 mb-4" />
 <div>
-  <div class="row gx-3">{% include 'components/ttc_links.html' %}</div>
+  <div class="row gx-3">{% include 'ttc_links.html' %}</div>
 </div>
 
 {% endblock %}
