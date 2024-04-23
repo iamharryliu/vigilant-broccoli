@@ -1,2 +1,2 @@
 SHELL=/bin/sh
-* * * * * cd /code && python -m venv venv; . venv/bin/activate && /usr/local/bin/python scripts/email_subscribers.py 1 >> /code/debug.log 2>&1
+* * * * * cd /code && python -m venv venv; . venv/bin/activate && /usr/local/bin/python scripts/email_subscribers.py 1 >> /code/debug.log 2>&1 && current_date=$(date "+%H:%M:%S   %d/%m/%y") && echo $current_date > /code/lastrun.txt
