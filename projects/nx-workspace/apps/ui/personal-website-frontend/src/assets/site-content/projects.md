@@ -1,9 +1,9 @@
 ## Technical Projects
 
 - [vigilant-broccoli](https://github.com/iamharryliu/vigilant-broccoli) - Personal mono-repo, houses all my code and documentation.
-- [Toronto Alerts](https://torontoalerts.com/) - Centralized service for Toronto Service Alerts.
-- [DocsMD](https://harryliu.design/docs-md) - Personal public library of markdown files.
-- [Grind 75](https://harryliu.design/grind-75) - My collection of Python solutions for [the Grind 75 list](https://www.techinterviewhandbook.org/grind75) leet code questions.
+- [Toronto Alerts](https://torontoalerts.com/) - Notification service for Toronto based service alerts.
+- [DocsMD](https://harryliu.design/docs-md) - Personal library of markdown files.
+- [Grind 75](https://harryliu.design/grind-75) - Collection of Python solutions for [the Grind 75 list](https://www.techinterviewhandbook.org/grind75) leet code questions.
 - [Vibecheck Lite](https://harryliu.design/projects/vibecheck-lite/app) - A functional fashion-weather lifestyle tool to assist the user in deciding what to wear.
 
 ### Github Action Status
