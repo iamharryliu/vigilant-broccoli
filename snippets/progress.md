@@ -5,3 +5,4 @@
 2024-04-05 - coding - Ran a basic hello world cron script with FlyIO server.
 2024-04-16 - coding - Build a chatbot.
 2024-04-20 - coding - Run production ready cron script on FlyIO server.
+2024-04-23 - cooking - First sourdough bread attempt.
