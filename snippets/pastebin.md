@@ -4,6 +4,7 @@
 
 - Index - https://harryliu.design/
 - Links - https://harryliu.design/links
+- Projects - https://harryliu.design/projects
 - Resume - https://harryliu.design/assets/HarryLiu-Resume.pdf
 
 ## Career
