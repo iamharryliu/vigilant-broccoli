@@ -6,7 +6,6 @@
 
 set -e
 
-mkdir -p /app/var/log
 crontab /app/etc/crontab
 cron
 
