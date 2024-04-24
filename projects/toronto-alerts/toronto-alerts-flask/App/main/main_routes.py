@@ -18,7 +18,9 @@ import psycopg2
 from App.utils import get_blog_files, markdown_to_html, send_verification_email
 from App.weather.utils import get_weather_data
 from App.ttc.utils import get_ttc_alerts
+from scripts.utils import get_parsed_x_hours_of_alerts
 
+# TODO: fix recaptcha
 # from google_recaptcha import ReCaptcha
 
 
@@ -41,6 +43,7 @@ def index():
         blogs=blogs,
         weather_data=get_weather_data(),
         ttc_alerts=get_ttc_alerts(),
+        gta_updates=get_parsed_x_hours_of_alerts(hours=0.5),
     )
 
 
