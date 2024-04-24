@@ -9,8 +9,7 @@
   - migrate to wtforms
   - alerts to build
 
-    - scraping for TPS and TFS alerts
-    - rain/snow/storm alert
+    - email rain/snow/storm alert
     - ttc notifications (select routes)
 
   - application unit testing
