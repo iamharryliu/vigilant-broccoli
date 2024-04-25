@@ -43,6 +43,16 @@ def index():
         blogs=blogs,
         weather_data=get_weather_data(),
         ttc_alerts=get_ttc_alerts(),
+        gta_updates=get_parsed_x_hours_of_alerts(hours=0.25),
+    )
+
+
+@main_blueprint.route(ENDPOINT.DASHBOARD)
+def dashboard():
+    return render_template(
+        "pages/dashboard.html",
+        weather_data=get_weather_data(),
+        ttc_alerts=get_ttc_alerts(),
         gta_updates=get_parsed_x_hours_of_alerts(hours=0.5),
     )
 

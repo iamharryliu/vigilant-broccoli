@@ -8,3 +8,4 @@ class ENDPOINT:
     GET_USERS = "/get_users"
     TTC = "/ttc"
     WEATHER = "/weather"
+    DASHBOARD = "/dashboard"
