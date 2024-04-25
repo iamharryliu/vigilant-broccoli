@@ -1,7 +1,5 @@
 # TODO
 
-- frontend deployments are buggy
-
 ## Toronto Alerts
 
 - Q1
