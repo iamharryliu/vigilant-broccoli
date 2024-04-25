@@ -1,9 +1,42 @@
-<div class="card h-100">
-  <div class="card-body">
-    <h5 class="card-title">Current Weather</h5>
-    <div class="mb-2">{% include 'current_weather.html' %}</div>
-    <a href="{{url_for('weather.index')}}" class="btn btn-light stretched-link"
-      >More</a
-    >
+<div class="row">
+  <div class="col mb-2">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title text-center">
+          {{weather_data["weather"]["temp"]}}°C
+        </h5>
+        <div class="mb-2 text-center">
+          {{weather_data["weather"]["description"].title()}}
+        </div>
+        <div class="mb-2 text-center">
+          H: {{weather_data["weather"]["temp_min"]}}°C L:
+          {{weather_data["weather"]["temp_max"]}}°C
+        </div>
+        <div class="mb-2 text-center fst-italic">
+          Feels Like {{weather_data["weather"]["feels_like"]}}°C
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col mb-2">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5>Sunrise</h5>
+        <p>{{weather_data["sun"]["sunrise"].strftime('%-H:%M')}}am</p>
+
+        <h5>Sunset</h5>
+        <p>{{weather_data["sun"]["sunset"].strftime('%-H:%M')}}pm</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col mb-2">
+    <div class="card h-100">
+      <div class="card-body">
+        <h6>{{weather_data["weather"]["clouds"]}}% Cloudiness</h6>
+        <h6>{{weather_data["weather"]["humidity"]}}% Humidity</h6>
+      </div>
+    </div>
   </div>
 </div>
