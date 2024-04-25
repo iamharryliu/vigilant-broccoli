@@ -1,17 +1,5 @@
 <div class="row gx-3">
-  <div class="col-12 mb-4">
-    <div class="card h-100">
-      <img
-        src="{{url_for('static', filename='images/toronto.jpg')}}"
-        class="card-img-top"
-        alt="Toronto"
-      />
-      <div class="card-body">
-        <h5 class="card-title">Subscribe to Toronto Alerts</h5>
-        <a href="{{url_for('main.subscribe')}}" class="stretched-link"></a>
-      </div>
-    </div>
-  </div>
+  <div class="col-12 mb-4">{% include 'components/subscribe-card.html' %}</div>
 
   <div class="col-12 mb-4">{% include 'weather_info_card.html' %}</div>
   <div class="col-12 mb-4">{% include 'components/ttc_alerts_card.html' %}</div>
