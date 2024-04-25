@@ -7,3 +7,4 @@
 2024-04-20 - coding - Run production ready cron script on FlyIO server.
 2024-04-23 - cooking - First sourdough bread attempt. Didn't rise as much as it should have. Better start or let rest longer?
 2024-04-24 - cooking - First time cooking salmon. It got a tad bit dring leaving in oven after baking.
+2024-04-25 - cooking - First time making using store bought pancake mix to make pancakes. Still working on heat handling.
