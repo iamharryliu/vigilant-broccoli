@@ -19,7 +19,8 @@ from App.utils import get_blog_files, markdown_to_html, send_verification_email
 from App.weather.utils import get_weather_data
 from App.ttc.utils import get_ttc_alerts
 from scripts.utils import get_parsed_x_hours_of_alerts
-from flask_recaptcha import ReCaptcha
+
+# from flask_recaptcha import ReCaptcha
 
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
@@ -51,15 +52,16 @@ def dashboard():
 
 @main_blueprint.route(ENDPOINT.SUBSCRIBE, methods=["GET", "POST"])
 def subscribe():
-    recaptcha = ReCaptcha(
-        app=current_app,
-        site_key=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY"),
-        site_secret=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY"),
-    )
+    # recaptcha = ReCaptcha(
+    #     app=current_app,
+    #     site_key=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY"),
+    #     site_secret=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY"),
+    # )
     DISTRICT_DATA = get_districts_data()
     if request.method == "POST" and (
-        current_app.config["ENVIRONMENT"] != "ENVIRONMENT_TYPE.PROD"
-        or recaptcha.verify()
+        current_app.config["ENVIRONMENT"]
+        != "ENVIRONMENT_TYPE.PROD"
+        # or recaptcha.verify()
     ):
         return submit_form()
     return render_template(
