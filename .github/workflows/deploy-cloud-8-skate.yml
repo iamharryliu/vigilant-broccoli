@@ -1,11 +1,6 @@
-name: Redeploy Frontend for CMS updates
+name: Deploy cloud-8-skate-angular
 on:
   push: { branches: ['main'] }
-  schedule: [{ cron: '*/15 * * * *' }]
-
-permissions:
-  actions: read
-  contents: read
 
 jobs:
   main:
@@ -24,12 +19,12 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - name: Build harryliu-design-ui
-        run: npx nx build personal-website-frontend
-      - name: Deploy harryliu-design-ui
+      - name: Build cloud-8-skate-angular
+        run: npx nx build cloud-8-skate-angular
+      - name: Deploy cloud-8-skate-angular
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: projects/nx-workspace
-          command: pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-design-angular
+          command: pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular
