@@ -1,0 +1,11 @@
+[
+  {
+    "name": "app_name",
+    "password_key_values": {
+      "KEY": "value"
+    },
+    "working_directory": "directory",
+    "dockerfile": "path_to_dockerfile",
+    "config": "path_to_config.toml"
+  }
+]
