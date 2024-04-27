@@ -1,0 +1,63 @@
+[
+  {
+    "name": "app-monitor-api",
+    "password_key_values": {
+      "MY_EMAIL": "email",
+      "MY_EMAIL_PASSWORD": "password"
+    }
+  },
+  {
+    "name": "gta-update-alerts-flask",
+    "password_key_values": {
+      "DB_CONNECTION_STRING": "string",
+      "GTA_UPDATE_ALERT_EMAIL": "email",
+      "GTA_UPDATE_ALERT_EMAIL_PASSWORD": "password",
+      "GTA_UPDATE_ALERTS_DB": "database",
+      "GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY": "key",
+      "GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY": "key",
+      "OPENWEATHER_API_KEY": "key",
+      "SECRET_KEY": "key"
+    }
+  },
+  {
+    "name": "harryliu-design-express",
+    "password_key_values": {
+      "ENCRYPTION_METHOD": "method",
+      "MONGO_DB_PASSWORD": "password",
+      "MONGO_DB_USERNAME": "username",
+      "MY_EMAIL": "email",
+      "MY_EMAIL_PASSWORD": "password",
+      "NODE_ENV": "env",
+      "PERSONAL_WEBSITE_DB": "db_string",
+      "PERSONAL_WEBSITE_FRONTEND_URL": "frontend_url",
+      "RECAPTCHA_V3_SECRET_KEY": "key",
+      "SECRET_IV": "secret",
+      "SECRET_KEY": "key"
+    }
+  },
+  {
+    "name": "vibecheck-flask",
+    "password_key_values": {
+      "AWS_ACCESS_KEY_ID": "key_id",
+      "AWS_SECRET_ACCESS_KEY": "key",
+      "CLOUDFLARE_ID": "id",
+      "VIBECHECK_SQL_DB": "connection_string"
+    }
+  },
+  {
+    "name": "vibecheck-lite-express",
+    "password_key_values": {
+      "ENCRYPTION_METHOD": "method",
+      "MONGO_DB_PASSWORD": "password",
+      "MONGO_DB_USERNAME": "username",
+      "MY_EMAIL": "email",
+      "MY_EMAIL_PASSWORD": "password",
+      "OPENAI_API_KEY": "key",
+      "OPENWEATHER_API_KEY": "key",
+      "PERSONAL_WEBSITE_DB": "db_string",
+      "PERSONAL_WEBSITE_FRONTEND_URL": "frontend_url",
+      "SECRET_IV": "secret",
+      "SECRET_KEY": "key"
+    }
+  }
+]
