@@ -30,8 +30,6 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 
 [![Toronto Alerts - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app.yml)
 
-[![Toronto Alerts - Email Subscribers Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-toronto-alerts-subscribers.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/email-toronto-alerts-subscribers.yml)
-
 ## Folder Structure
 
 - setup - machine setup configurations and scripts
