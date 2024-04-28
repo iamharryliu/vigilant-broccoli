@@ -5,11 +5,7 @@
 - Q1
 
   - migrate to wtforms
-  - alerts to build
-
-    - email rain/snow/storm alert
-    - ttc notifications (select routes)
-
+  - build more alerts
   - application unit testing
   - ui:
     - autocomplete tagging
@@ -60,8 +56,6 @@
 
 - Q1
 
-  - build: upgrade nx
-  - build: secrets and api key handling
   - feat: virus scanning
   - feat: budget alerts for services
 
