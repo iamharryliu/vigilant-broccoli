@@ -10,3 +10,4 @@
 2024-04-25 - cooking - First time making using store bought pancake mix to make pancakes. Still working on heat handling.
 2024-04-26 - cooking - First time trying butter basted carrots. Pretty yummy.
 2024-04-26 - coding - Created first secrets manager.
+2024-04-29 - cooking - Tried a ravioli recipe. Ravioli came out kind of dry and flavour did not stick to it well?
