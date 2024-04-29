@@ -5,8 +5,7 @@
 - Q1
 
   - migrate to wtforms
-  - build more alerts
-  - application unit testing
+  - base application unit testing
   - ui:
     - autocomplete tagging
 
