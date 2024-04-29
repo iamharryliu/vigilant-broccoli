@@ -2,15 +2,25 @@ import os
 from flask import Flask
 from flask_mail import Mail
 from App.config import DIT_CONFIG
+from google_recaptcha import ReCaptcha
 
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
 mail = Mail()
+recaptcha = None
 
 
 def create_app(config=DIT_CONFIG):
     # Initialize App
     app = Flask(__name__)
+
+    # TODO: fix this later
+    global recaptcha
+    recaptcha = ReCaptcha(
+        app=app,
+        site_key=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY"),
+        site_secret=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY"),
+    )
     app.url_map.strict_slashes = False
     app.config.from_object(config)
 
