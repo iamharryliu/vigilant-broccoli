@@ -83,6 +83,12 @@
   - refactor: introduce service files?
   - fix: fly deploy slow?
 
+## harryliu.design
+
+- Q1
+- Q2
+  - add personal google map links
+
 ## Quadrant Template
 
 - Q1
