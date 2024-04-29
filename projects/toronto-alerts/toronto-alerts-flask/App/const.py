@@ -9,3 +9,4 @@ class ENDPOINT:
     TTC = "/ttc"
     WEATHER = "/weather"
     DASHBOARD = "/dashboard"
+    MORE = "/more"

@@ -160,3 +160,11 @@ def blog():
         title="Blog Name",
         blog_content=markdown_to_html(blog_content),
     )
+
+
+@main_blueprint.get(ENDPOINT.MORE)
+def more():
+    return render_template(
+        "pages/more-page.html",
+        title="More",
+    )
