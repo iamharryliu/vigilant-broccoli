@@ -10,6 +10,7 @@ alias pushaliases="cdvb && git add setup/dotfiles/zsh/aliases/ setup/dotfiles/zs
 alias pushdotfiles="cdvb && git add setup/dotfiles/* && gc docs 'update dotfiles' && gpush"
 alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
 alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'update progress.md' && gpush"
+alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf && gc docs resume 'update resume' && gpush"
 
 # Journal
 alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpush"
