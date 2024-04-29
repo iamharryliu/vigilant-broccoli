@@ -34,7 +34,7 @@ alias stopbrewsql='brew services stop postgresql'
 alias sqlstatus='pg_isready -h localhost -p 5432'
 
 # MongoDB
-alias mongodashboard='open -a "Google Chrome" "https://cloud.mongodb.com/v2/"'
+alias mongodash='open -a "Google Chrome" "https://cloud.mongodb.com/v2/"'
 
 # AWS
 alias awsauto="aws --cli-auto-prompt"
@@ -56,18 +56,22 @@ function r2clear() {
 
 # FlyIO
 alias flydash='open -a "Google Chrome" "https://fly.io/dashboard"'
-alias flyscalecount='flyctl scale count'
-alias flylogs='flyctl logs --app'
-
+# Apps
 alias flyls='fly apps list'
+# App
+alias flycreatetoken='flyctl tokens create deploy --app'
 alias flydeploy='fly deploy --ha=false'
 alias flyopen='fly apps open --app'
 alias flydestroy='fly apps destroy'
-alias flystatus='flyctl status --app'
-alias flymachinestatus='flyctl machine status'
 alias flystartmachine='flyctl machine start --app'
 alias flystopmachine='flyctl machine stop --app'
-alias flysecretsls='flyctl secrets list'
+function flylogs() {
+    if [[ $# -eq 0 ]]; then
+        flyctl logs
+    else
+        flyctl logs --app "$1"
+    fi
+}
 function flymonitor() {
     if [ -z "$1" ]; then
         echo "Usage: fly-monitor <app_name>"
@@ -75,9 +79,16 @@ function flymonitor() {
     fi
     open "https://fly.io/apps/$1/monitoring"
 }
-alias flyssh='if [ "$#" -eq 1 ]; then fly ssh console --app $1; else fly ssh console; fi'
+function flyssh() {
+    if [[ $# -eq 0 ]]; then
+        flyctl ssh console
+    else
+        flyctl ssh console --app "$1"
+    fi
+}
 alias flyrssh='if [ "$#" -eq 1 ]; then fly ssh console --app $1; else flyctl machine restart && fly ssh console; fi'
-alias flycreatetoken='flyctl tokens create deploy --app'
+# Secrets
+alias flysetsecrets='cdvb && cd projects/secret-manager && python flyio_secret_manager.py'
 # Postgres
 alias flysqlconn='flyctl postgres connect --app'
 alias flysqlproxy='flyctl proxy 5432 --app'
