@@ -57,14 +57,24 @@ function r2clear() {
 # FlyIO
 alias flydash='open -a "Google Chrome" "https://fly.io/dashboard"'
 # Apps
+alias flylaunch='fly launch'
 alias flyls='fly apps list'
 # App
-alias flycreatetoken='flyctl tokens create deploy --app'
+# Create and Destroy
 alias flydeploy='fly deploy --ha=false'
-alias flyopen='fly apps open --app'
+alias flyview='fly apps open --app'
 alias flydestroy='fly apps destroy'
+# Start and Stop Machines
 alias flystartmachine='flyctl machine start --app'
 alias flystopmachine='flyctl machine stop --app'
+function flyrestart() {
+    if [[ $# -eq 0 ]]; then
+        flyctl apps restart
+    else
+        flyctl apps restart "$1"
+    fi
+}
+# Logs
 function flylogs() {
     if [[ $# -eq 0 ]]; then
         flyctl logs
@@ -79,6 +89,7 @@ function flymonitor() {
     fi
     open "https://fly.io/apps/$1/monitoring"
 }
+# SSH
 function flyssh() {
     if [[ $# -eq 0 ]]; then
         flyctl ssh console
@@ -86,7 +97,15 @@ function flyssh() {
         flyctl ssh console --app "$1"
     fi
 }
-alias flyrssh='if [ "$#" -eq 1 ]; then fly ssh console --app $1; else flyctl machine restart && fly ssh console; fi'
+function flyrssh() {
+    if [[ $# -eq 0 ]]; then
+        flyrestart
+        flyssh
+    else
+        flyrestart "$1"
+        flyssh "$1"
+    fi
+}
 # Secrets
 alias flysetsecrets='cdvb && cd projects/secret-manager && python flyio_secret_manager.py'
 # Postgres
@@ -94,7 +113,8 @@ alias flysqlconn='flyctl postgres connect --app'
 alias flysqlproxy='flyctl proxy 5432 --app'
 alias flysqlconntest='flyctl postgres connect --app testsql'
 alias flysqlstarttest='flyctl proxy 5432 --app testsql'
-
+# Token
+alias flycreatetoken='flyctl tokens create deploy --app'
 
 # NX
 alias nxbuild="cdnx && nx build --skip-nx-cache"
