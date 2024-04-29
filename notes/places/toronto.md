@@ -23,3 +23,10 @@
 
 - Egg Club - hash brown
 - Fresca Pizza - Margherita pizza
+
+## Cons
+
+- Monopolies owning everything.
+- Residential issues
+  - 2 stair rule for buildings over 2 stories.
+  - Supply and demand.

@@ -21,6 +21,7 @@
 | thank you                      | tack                  | merci                | gracias          |                   |                 |
 | it is                          | är det                | c'est                | lo es/esta       |
 | take care                      | tan hom om dig        |                      |
+| be careful                     | var försiktig         |                      |
 | **emotions**                   |                       |                      |                  |
 | angry                          | arg                   | fâché                | enojado/enojada  |
 | **Pronouns**                   |                       |                      |                  |                   |                 |
