@@ -9,6 +9,7 @@ alias pushaliases="cdvb && git add setup/dotfiles/zsh/aliases/ setup/dotfiles/zs
 alias pushdotfiles="cdvb && git add setup/dotfiles/* && gc docs 'update dotfiles' && gpush"
 alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
 alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'update progress.md' && gpush"
+alias pushsnippets="cdvb && git add snippets/ && gc docs snippers 'update snippets' && gpush"
 alias cdnx="cd ~/$REPO_NAME/projects/nx-workspace/"
 # harryliu.design
 alias serve-harryliu-design="cdnx && npm run serve:personal-website"
