@@ -125,6 +125,8 @@
 | to drive                       | att köra              | conduire             |                  |
 | to love                        | att älska             |                      |                  |
 | to hate                        | att hate              |                      |                  |
+| to remember                    | att glömma            |                      |                  |
+| to wait                        | att vänta             |                      |                  |
 | I want                         | jag vill              | je veux              | quiero           | quero             |                 |
 | I have                         | jag har               | j'ai                 | tengo            |
 | I'm going                      |                       | je vais              | voy              |
