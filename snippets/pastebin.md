@@ -18,17 +18,6 @@
 - https://www.instagram.com/torontocityskate/
 - https://www.instagram.com/harrysellsshit/
 
-## Special Characters
-
-### Tempearature
-
-Celsius - °C
-Farhenheit - °F
-
-### Currency
-
-£ [number]
-
 ## Other
 
 - address - https://maps.app.goo.gl/E6q6Bnau5dA8AgU4A
