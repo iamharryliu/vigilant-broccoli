@@ -6,7 +6,10 @@
           {{weather_data["weather"]["temp"]}}°C
         </h5>
         <div class="mb-2 text-center">
-          {{weather_data["weather"]["description"].title()}}
+          <span
+            class="badge text-bg-{{ weather_data['weather']['badge_color']}}"
+            >{{weather_data["weather"]["description"].title()}}</span
+          >
         </div>
         <div class="mb-2 text-center">
           H: {{weather_data["weather"]["temp_min"]}}°C L:

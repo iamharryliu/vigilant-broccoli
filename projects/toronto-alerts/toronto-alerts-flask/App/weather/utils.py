@@ -4,6 +4,12 @@ from datetime import datetime
 import pytz
 
 
+def get_badge_color(weather_id):
+    if weather_id >= 800:
+        return "light"
+    return "warning"
+
+
 def get_weather_data():
     data = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?q=toronto&appid={os.environ.get('OPENWEATHER_API_KEY')}"
@@ -24,6 +30,7 @@ def get_weather_data():
         },
         "weather": {
             "description": data["weather"][0]["description"],
+            "badge_color": get_badge_color(data["weather"][0]["id"]),
             "temp": round(data["main"]["temp"] - 273.15),
             "feels_like": round(data["main"]["feels_like"] - 273.15),
             "temp_min": round(data["main"]["temp_min"] - 273.15),
