@@ -17,9 +17,11 @@ alias pushactions="cdvb && git add .github/workflows && gc build github-actions 
 alias pushdotfiles="cdvb && git add setup/dotfiles/* && gc docs 'update dotfiles' && gpush"
 alias pushaliases="cdvb && git add setup/dotfiles/zsh/aliases/ setup/dotfiles/zsh/scripts/ && gc feat aliases 'update aliases' && gpush"
 # Homebrew
-alias brewdump="cd vb && rm setup/mac/Brewfile && brew bundle dump --file=setup/mac/Brewfile"
+alias brewdump="cdvb && rm setup/mac/Brewfile && brew bundle dump --file=setup/mac/Brewfile"
 alias pushbrew="cdvb && git add setup/mac/Brewfile && gc feat brew 'update brew' && gpush"
 # Projects
+# Secrets Manager
+alias pushsecretsmanager="cdvb && git add projects/secret-manager/ && gc build 'update secrets manager' && gpush"
 # Nx
 alias cdnx="cd ~/$REPO_NAME/projects/nx-workspace/"
 # harryliu.design
