@@ -127,6 +127,30 @@ function NestedComponent() {
 }
 ```
 
+### useRef
+
+Used to persist values between renders.
+
+```
+const count = useRef(0);
+useEffect(() => {
+  count.current = count.current + 1;
+});
+
+{count.current}
+```
+
+```
+const [value, setValue] = useState("");
+const previousValue = useRef("");
+
+useEffect(() => {
+  previousValue.current = inputValue;
+}, [inputValue]);
+
+
+```
+
 ## References
 
 [W3 React Tutorial](https://www.w3schools.com/REACT/)
