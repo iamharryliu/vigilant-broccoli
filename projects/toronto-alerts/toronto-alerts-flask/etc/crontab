@@ -1,3 +1,4 @@
 SHELL=/bin/sh
 * * * * * echo '' > /code/hit.txt
 * * * * * (cd /code && /usr/local/bin/python -m venv venv && . venv/bin/activate && /usr/local/bin/python scripts/email_subscribers.py 1) >> /code/debug.log 2>&1
+*/5 * * * * (cd /code && /usr/local/bin/python -m venv venv && . venv/bin/activate && /usr/local/bin/python scripts/email_weather_alert.py) >> /code/debug.log 2>&1
