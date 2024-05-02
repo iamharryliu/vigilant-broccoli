@@ -20,6 +20,7 @@ from App.weather.utils import get_weather_data
 from App.ttc.utils import get_ttc_alerts
 from scripts.utils import get_parsed_x_hours_of_alerts
 from App import recaptcha
+from psycopg2 import sql
 
 
 DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
@@ -83,10 +84,10 @@ def submit_form():
         try:
             connection = get_db_connection()
             cursor = connection.cursor()
-            cursor.execute(
-                "INSERT INTO emails (email, districts, keywords, confirmed_email) VALUES (%s, %s, %s, FALSE) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts, keywords = EXCLUDED.keywords",
-                (email, districts, keywords),
+            insert_query = sql.SQL(
+                "INSERT INTO emails (email, districts, keywords, confirmed_email) VALUES (%s, %s, %s, FALSE) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts, keywords = EXCLUDED.keywords"
             )
+            cursor.execute(insert_query, (email, districts, keywords))
             connection.commit()
             cursor.close()
             connection.close()

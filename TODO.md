@@ -4,7 +4,6 @@
 
 - Q1
 
-  - migrate to wtforms
   - base application unit testing
   - ui:
     - autocomplete tagging
