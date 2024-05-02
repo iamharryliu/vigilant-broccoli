@@ -11,7 +11,7 @@ alias gtranslate='open -a "Google Chrome" "https://translate.google.com/"'
 alias gmail='open -a "Google Chrome" "https://gmail.com/"'
 alias gphotos='open -a "Google Chrome" "https://photos.google.com/?pli=1"'
 alias gcalendar='open -a "Google Chrome" "https://calendar.google.com/calendar/u/0/r"'
-alias gstorage='open -a "Google Chrome" "https://one.google.com/storage"'
+alias gstorage='open -a "Google Chrome" "https://one.google.com/storage/management"'
 # Apple
 alias findmy='open -a "Google Chrome" "https://www.icloud.com/find/"'
 alias applestorage='open -a "Google Chrome" "https://www.icloud.com/storage/"'
