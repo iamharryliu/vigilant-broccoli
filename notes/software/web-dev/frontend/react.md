@@ -14,10 +14,10 @@ root.render(<p>Hello World</p>);
 
 ```
 function Component() {
-  return <h2>I am a component</h2>;
+  return <></>;
 }
 
-export default Car;
+export default Component;
 ```
 
 ```
@@ -28,9 +28,9 @@ root.render(<Component />);
 
 ```
 function Component(props) {
-  return <h2>Received {props.value}</h2>;
+  return <>{props.value}</>;
 }
-root.render(<Car value="value"/>);
+root.render(<Component value="value"/>);
 ```
 
 ## Routing
@@ -56,21 +56,77 @@ export default function App() {
 const Layout = () => {
   return (
     <>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/something">Something</Link>
-          </li>
-          <li>
-            <Link to="/something-else">Something Else</Link>
-          </li>
-        </ul>
-      </nav>
+      <Link to="/">Home</Link>
+      <Link to="/something">Something</Link>
+      <Link to="/something-else">Something Else</Link>
       <Outlet />
     </>
   )
 };
 ```
+
+## Hooks
+
+### useState
+
+```
+const [state, setState] = useState(data);
+```
+
+### setState
+
+```
+setState(previousState => {
+  return { ...previousState, { stateChanges... } }
+});
+```
+
+### useEffect
+
+```
+useEffect(() => {
+// Runs on every render
+});
+
+useEffect(() => {
+// Runs only on the first render
+}, []);
+
+useEffect(() => {
+// Runs on the first render
+// And any time any dependency value changes
+}, [prop, state]);
+```
+
+### createContext
+
+```
+import { useState, createContext } from "react";
+import ReactDOM from "react-dom/client";
+const Context = createContext()
+```
+
+```
+function Component() {
+  const [state, setState] = useState(data);
+
+  return (
+    <Context.Provider value={user}>
+      <ChildComponent />
+    </Context.Provider>
+  );
+}
+```
+
+```
+function NestedComponent() {
+  const data = useContext(Context);
+  return (
+    <>{data}</>
+  );
+}
+```
+
+## References
+
+[W3 React Tutorial](https://www.w3schools.com/REACT/)
