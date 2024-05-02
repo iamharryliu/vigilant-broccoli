@@ -32,11 +32,11 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 
 ## Folder Structure
 
-- setup - machine setup configurations and scripts
-- notes - collection of markdown notes
-- projects - collection of personal projects
-- scripts - collection of personal scripts
-- snippets - random snippers
+- setup - Setup scripts and configurations.
+- notes
+- projects
+- scripts
+- snippets
 
 ## Management
 
