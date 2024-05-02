@@ -5,7 +5,7 @@
 ```
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
-root.render(<p>Hello World</p>);
+root.render(<>Your HTML</>);
 ```
 
 ## Components
@@ -14,7 +14,7 @@ root.render(<p>Hello World</p>);
 
 ```
 function Component() {
-  return <></>;
+  return <>Your HTML</>;
 }
 
 export default Component;
