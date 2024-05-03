@@ -14,9 +14,8 @@ class TorontoAlertsApp:
                 "subject": f"Toronto Alerts - {len(filtered_alerts)} New Alerts",
                 "body": "Alerts:\n\n"
                 + TorontoAlertsApp.format_for_email(filtered_alerts)
-                + f"Unsubscribe: https://torontoalerts.com/unsubscribe?email={urllib.parse.quote(user['email'])}\n\n"
-                + "Check https://gtaupdate.com/ for more info.\n\n"
-                + "Too noisy? Update filters such as TPS and TFS districts to reduce the noise at https://torontoalerts.com/\n\n",
+                + "Too noisy? Update filters such as TPS and TFS districts to reduce the noise at https://torontoalerts.com/\n\n"
+                + f"Unsubscribe: https://torontoalerts.com/unsubscribe?email={urllib.parse.quote(user['email'])}\n\n",
             }
             user["message"] = message
 
