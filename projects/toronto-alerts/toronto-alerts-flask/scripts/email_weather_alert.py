@@ -15,8 +15,8 @@ def main():
             "message": {
                 "from": "Toronto Alerts",
                 "to": user["email"],
-                "subject": f"Toronto Alerts - Weather",
-                "body": f"Today's weather is {weather_data['weather']['description']}.",
+                "subject": f"Toronto Alerts - Weather - {weather_data['weather']['description']}, {weather_data['weather']['temp']}°C ",
+                "body": f"Today's weather is {weather_data['weather']['description']}, {weather_data['weather']['temp_min']}°C to {weather_data['weather']['temp_max']}°C.\n\nCurrently {weather_data['weather']['temp'],}°C.\nFeels like {weather_data['weather']['feels_like']}°C\n\n{weather_data['weather']['clouds']}% Cloudiness\n{weather_data['weather']['humidity']}% Humidity\n\nSunrise at {weather_data['sun']['sunrise'].strftime('%-H:%M')}am\n Sunset at {weather_data['sun']['sunset'].strftime('%-H:%M')}pm",
             },
         }
         for user in users
