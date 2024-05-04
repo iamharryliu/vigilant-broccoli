@@ -8,6 +8,25 @@ const root = ReactDOM.createRoot(container);
 root.render(<>Your HTML</>);
 ```
 
+### Event Handling
+
+```
+<button onClick={handleButtonClick}>On Click</button>
+```
+
+### Conditionals
+
+```
+{condition} && <div>Block</div>
+{condition} ? <div>Block</div> : <div>Else Block</div>
+```
+
+### Lists
+
+```
+{list.map((car) => <div key={car.id}>Content</div>)}
+```
+
 ## Components
 
 ### Functional Components
