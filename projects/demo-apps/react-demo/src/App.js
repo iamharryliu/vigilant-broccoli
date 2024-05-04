@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { FunctionComponent } from './components/FunctionComponent';
+import { FunctionComponent } from './FunctionComponent';
 
 const Context = createContext();
 const INITIAL_CONTEXT = { key: 'value' };
@@ -15,7 +15,11 @@ function App() {
   const items = [{ id: 1 }, { id: 2 }, { id: 3 }];
 
   // Props
+  const componentName = 'Main Component';
   const propsChildrenData = 'content from parent';
+  function parentFunction(childName) {
+    alert(`${componentName} fn being called from ${childName}`);
+  }
 
   // Hooks
   const [data, setData] = useState(INITIAL_CONTEXT);
@@ -48,7 +52,8 @@ function App() {
         <pre>{JSON.stringify(data, null, 2)}</pre>
         <button onClick={() => handleButtonClick()}>Update Context</button>
         <button onClick={() => resetContext()}>Reset Context</button>
-        <FunctionComponent>
+        <h3>Props</h3>
+        <FunctionComponent parentFunction={parentFunction}>
           <span>{propsChildrenData}</span>
         </FunctionComponent>
       </Context.Provider>
