@@ -8,9 +8,9 @@
 
 ### Github Action Status
 
-[![Deploy Nx Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-actions.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-actions.yml) [![Monitor Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-actions.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-actions.yml)
+[![Deploy Nx Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-action.yml) [![Monitor Apps](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-action.yml)
 
-[![Toronto Alerts - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-actions.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-actions.yml)
+[![Toronto Alerts - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-action.yml)
 
 <hr/>
 
