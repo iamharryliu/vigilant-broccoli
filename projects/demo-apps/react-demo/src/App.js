@@ -1,26 +1,15 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { FunctionComponent } from './FunctionComponent';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './layouts/GeneralPageLayout';
+import IndexPage from './pages/IndexPage';
+import ConditionalsPage from './pages/ConditionalsPage';
+import ListsPage from './pages/ListsPage';
+import PropsPage from './pages/PropsPage';
 
-const Context = createContext();
+const AppContext = createContext();
 const INITIAL_CONTEXT = { key: 'value' };
 
 function App() {
-  // Conditionals
-  const [condition, setCondition] = useState(false);
-  const toggleCondition = () => {
-    setCondition(!condition);
-  };
-
-  // Lists
-  const items = [{ id: 1 }, { id: 2 }, { id: 3 }];
-
-  // Props
-  const componentName = 'Main Component';
-  const propsChildrenData = 'content from parent';
-  function parentFunction(childName) {
-    alert(`${componentName} fn being called from ${childName}`);
-  }
-
   // Hooks
   const [data, setData] = useState(INITIAL_CONTEXT);
   const handleButtonClick = () => {
@@ -37,26 +26,24 @@ function App() {
 
   return (
     <>
-      <Context.Provider value={data}>
+      <AppContext.Provider value={data}>
         <h1>React Demo</h1>
-        <h3>Conditionals</h3>
-        <button onClick={() => toggleCondition()}>Toggle Condition</button>
-        <span>Condition is {JSON.stringify(condition)}</span>
-        {condition ? <div>true code block</div> : <div>false code block</div>}
-        <h3>Lists</h3>
-        {items.map(item => (
-          <div key={item.id}>{JSON.stringify(item)}</div>
-        ))}
         <h3>Hooks</h3>
         Context:
         <pre>{JSON.stringify(data, null, 2)}</pre>
         <button onClick={() => handleButtonClick()}>Update Context</button>
         <button onClick={() => resetContext()}>Reset Context</button>
-        <h3>Props</h3>
-        <FunctionComponent parentFunction={parentFunction}>
-          <span>{propsChildrenData}</span>
-        </FunctionComponent>
-      </Context.Provider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<IndexPage />} />
+              <Route path="conditionals" element={<ConditionalsPage />} />
+              <Route path="lists" element={<ListsPage />} />
+              <Route path="props" element={<PropsPage />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AppContext.Provider>
     </>
   );
 }
