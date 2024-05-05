@@ -1,4 +1,4 @@
-name: Deploy cloud-8-skate-angular
+name: Cloud 8 Skate - Deploy App
 on:
   push: { branches: ['main'] }
 
@@ -19,10 +19,8 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - name: Build cloud-8-skate-angular
-        run: npx nx build cloud-8-skate-angular
-      - name: Deploy cloud-8-skate-angular
-        uses: cloudflare/wrangler-action@v3
+      - run: npx nx build cloud-8-skate-angular
+      - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
