@@ -26,15 +26,18 @@ def save_json(new_data, filepath="ttc_lines.json"):
     try:
         with open(filepath, "r") as file:
             data_list = json.load(file)
-            data_list = sort_with_letters(list(set(data_list + new_data)))
+            data_list = list(set(data_list + new_data))
+            data_list = sorted(data_list, key=custom_sort_key)
     except:
         data_list = new_data
     with open(filepath, "w") as file:
-        json.dump(data_list, file, indent=4)
+        json.dump(data_list, file, indent=2)
 
 
-def sort_with_letters(numbers):
-    return sorted(numbers, key=lambda x: int(re.match(r"\d+", x).group()))
+def custom_sort_key(route):
+    numeric_part = int(re.match(r"\d+", route).group())
+    alpha_part = route[len(str(numeric_part)) :]
+    return (numeric_part, alpha_part)
 
 
 if __name__ == "__main__":
