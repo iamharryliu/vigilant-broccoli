@@ -4,6 +4,7 @@ import { Outlet, Link } from 'react-router-dom';
 const Layout = () => {
   return (
     <>
+      <h1>React Demo App</h1>
       <nav>
         <ul>
           <li>
@@ -17,6 +18,9 @@ const Layout = () => {
           </li>
           <li>
             <Link to="/props">Props</Link>
+          </li>
+          <li>
+            <Link to="/hooks">Hooks</Link>
           </li>
         </ul>
       </nav>
