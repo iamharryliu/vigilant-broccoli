@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { LINKS } from '../../../core/consts/app-route.const';
+import { LINKS } from '../../../core/consts/routes.const';
 import { LinkComponent } from 'general-components';
 
 @Component({

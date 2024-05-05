@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { exhaustMap } from 'rxjs/operators';
-import { LINKS } from '../../../../core/consts/app-route.const';
+import { LINKS } from '../../../../core/consts/routes.const';
 import { VibecheckLiteService } from '../../../../core/services/vibecheck-lite.service';
 
 @Component({

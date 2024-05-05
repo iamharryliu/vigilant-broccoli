@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
-import { LINKS } from '../../../core/consts/app-route.const';
+import { LINKS } from '../../../core/consts/routes.const';
 import { CommonService } from '../../../core/services/common.service';
 import { LinkComponent } from 'general-components';
 

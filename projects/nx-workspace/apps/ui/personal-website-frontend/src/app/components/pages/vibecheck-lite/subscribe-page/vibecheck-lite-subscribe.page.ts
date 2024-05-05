@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, exhaustMap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { LINKS } from '../../../../core/consts/app-route.const';
+import { LINKS } from '../../../../core/consts/routes.const';
 import { VibecheckLiteService } from '../../../../core/services/vibecheck-lite.service';
 
 @Component({

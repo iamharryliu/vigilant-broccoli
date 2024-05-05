@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LINKS } from '../core/consts/app-route.const';
+import { LINKS } from '../core/consts/routes.const';
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
 import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';

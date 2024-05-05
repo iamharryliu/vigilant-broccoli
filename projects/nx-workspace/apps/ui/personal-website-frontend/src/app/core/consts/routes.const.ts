@@ -108,7 +108,7 @@ export const LEETCODE_SOLUTION_ROUTE: Route = {
   component: LeetCodePageComponent,
 };
 
-export const APP_ROUTES: Routes = [
+export const ROUTES: Routes = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
   PROJECTS_ROUTE,

@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LINKS } from '../../../core/consts/app-route.const';
+import { LINKS } from '../../../core/consts/routes.const';
 import { CommonService } from '../../../core/services/common.service';
 import { LoadingSpinnerComponent } from '../../global/loading-spinner/loading-spinner.component';
 import { GeneralLayoutComponent } from '../../layouts/general/genreral-layout.component';
