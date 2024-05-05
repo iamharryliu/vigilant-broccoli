@@ -5,6 +5,7 @@ import React, {
   useReducer,
   useState,
 } from 'react';
+import useFetch from '../custom-hooks/useFetch';
 
 // createContext
 const Context = createContext();
@@ -15,9 +16,9 @@ const HooksPage = () => {
   const [state, setState] = useState(INITIAL_STATE);
   const handleButtonClick = () => {
     setState(previousState => {
-      dispatch({ type: REDUCER_ACTION.TYPE_1 });
       return { ...previousState, newKey: 'newValue!' };
     });
+    dispatch({ type: REDUCER_ACTION.TYPE_1 });
   };
   const resetContext = () => {
     dispatch({});
@@ -47,6 +48,9 @@ const HooksPage = () => {
   };
   const [count, dispatch] = useReducer(reducer, INITIAL_COUNT);
 
+  // Custome Hooks
+  const [data] = useFetch('https://jsonplaceholder.typicode.com/todos');
+
   return (
     <>
       <Context.Provider value={state}>
@@ -60,6 +64,11 @@ const HooksPage = () => {
         {count}
         <h3>useContext</h3>
         <HooksChild />
+        <h3>Custom Hooks</h3>
+        {data &&
+          data.slice(0, 2).map(item => {
+            return <p key={item.id}>{item.title}</p>;
+          })}
       </Context.Provider>
     </>
   );
