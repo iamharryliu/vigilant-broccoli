@@ -65,6 +65,7 @@ const HooksPage = () => {
         <h3>useContext</h3>
         <HooksChild />
         <h3>Custom Hooks</h3>
+        <h4>useFetch</h4>
         {data &&
           data.slice(0, 2).map(item => {
             return <p key={item.id}>{item.title}</p>;
@@ -79,7 +80,7 @@ const HooksChild = () => {
   const state = useContext(Context);
   return (
     <>
-      <h3>Child Component</h3>
+      <h4>Child Component</h4>
       {JSON.stringify(state, null, 2)}
     </>
   );
