@@ -32,6 +32,7 @@ def save_json(new_data, filepath="ttc_lines.json"):
         data_list = new_data
     with open(filepath, "w") as file:
         json.dump(data_list, file, indent=2)
+        file.write("\n")
 
 
 def custom_sort_key(route):
