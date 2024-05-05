@@ -7,7 +7,7 @@ import ListsPage from './pages/ListsPage';
 import PropsPage from './pages/PropsPage';
 import HooksPage from './pages/HooksPage';
 
-function App() {
+export default function App() {
   return (
     <>
       <BrowserRouter>
@@ -24,5 +24,3 @@ function App() {
     </>
   );
 }
-
-export default App;

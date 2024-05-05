@@ -1,9 +1,15 @@
-import React, { createContext, useEffect, useReducer, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react';
+
+// createContext
+const Context = createContext();
 
 const HooksPage = () => {
-  // useContext
-  const AppContext = createContext();
-
   // useState
   const INITIAL_STATE = { key: 'value' };
   const [state, setState] = useState(INITIAL_STATE);
@@ -43,7 +49,7 @@ const HooksPage = () => {
 
   return (
     <>
-      <AppContext.Provider value={state}>
+      <Context.Provider value={state}>
         <h2>Hooks Page</h2>
         <h3>useState</h3>
         <pre>{JSON.stringify(state, null, 2)}</pre>
@@ -52,7 +58,20 @@ const HooksPage = () => {
         <button onClick={() => resetContext()}>Reset Context</button>
         <h3>useReducer</h3>
         {count}
-      </AppContext.Provider>
+        <h3>useContext</h3>
+        <HooksChild />
+      </Context.Provider>
+    </>
+  );
+};
+
+const HooksChild = () => {
+  // useContext
+  const state = useContext(Context);
+  return (
+    <>
+      <h3>Child Component</h3>
+      {JSON.stringify(state, null, 2)}
     </>
   );
 };
