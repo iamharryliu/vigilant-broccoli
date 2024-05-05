@@ -166,7 +166,7 @@ const focusInput = () => {
   inputElement.current.focus();
 };
 
-<button onClick={focusInput}>Focus Input</button>~
+<button onClick={focusInput}>Focus Input</button>
 ```
 
 Tracking input changes.
