@@ -22,14 +22,6 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 ~/vigilant-broccoli/setup/mac/install.sh
 ```
 
-## Github Action Statuses
-
-[![vigilant-broccoli - Deploy Nx Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-action.yml)
-
-[![vigilant-broccoli - Monitor Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-action.yml)
-
-[![Toronto Alerts - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-action.yml)
-
 ## Folder Structure
 
 - setup - Setup scripts and configurations.
