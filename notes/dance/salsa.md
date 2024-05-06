@@ -146,3 +146,5 @@ yoyo variations
   - side to side step thing
   - forward pull follow, lead walk around with a right hand waist check
   - break into shines and swap partners
+- salsa off combo
+- open break footing into hammerlock turn, shoulder turn, double turn, waist turn catch
