@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useReducer,
+  useRef,
   useState,
 } from 'react';
 import useFetch from '../custom-hooks/useFetch';
@@ -48,8 +49,26 @@ const HooksPage = () => {
   };
   const [count, dispatch] = useReducer(reducer, INITIAL_COUNT);
 
-  // Custome Hooks
+  // Custom Hooks
   const [data] = useFetch('https://jsonplaceholder.typicode.com/todos');
+
+  // useRef
+  const [inputValue, setInputValue] = useState('');
+  const useRefCount = useRef(0);
+  useEffect(() => {
+    useRefCount.current = useRefCount.current + 1;
+  });
+
+  const inputElement = useRef();
+  const focusInput = () => {
+    inputElement.current.focus();
+  };
+
+  const previousInputValue = useRef('');
+
+  useEffect(() => {
+    previousInputValue.current = inputValue;
+  }, [inputValue]);
 
   return (
     <>
@@ -70,6 +89,24 @@ const HooksPage = () => {
           data.slice(0, 2).map(item => {
             return <p key={item.id}>{item.title}</p>;
           })}
+        <h3>useRef</h3>
+        <label>useRef Input Element: </label>
+        <input
+          type="text"
+          value={inputValue}
+          ref={inputElement}
+          onChange={e => setInputValue(e.target.value)}
+        />
+        <p>
+          Used for counting amount of keeping track of amount of renders without
+          re-rendering.
+        </p>
+        <span>Render Count: {useRefCount.current}</span>
+        <p>Used for manipulating the DOM.</p>
+        <button onClick={focusInput}>Focus Input</button>
+        <p>Used for tracking state changes.</p>
+        <p>Current Value: {inputValue}</p>
+        <p>Previous Value: {previousInputValue.current}</p>
       </Context.Provider>
     </>
   );
