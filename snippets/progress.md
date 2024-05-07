@@ -13,4 +13,5 @@
 2024-04-29 - cooking - Tried a ravioli recipe. Ravioli came out kind of dry and flavour did not stick to it well?
 2024-05-01 - cooking - Tried making smash burgers for the first time. Pretty simple and fun to make.
 2024-05-03 - cooking - Tried making Tahdig, a cripsy Persion rice for the first time. Need to work on the heat handling for this one because it came out a bit dry.
-2024-05-07 - coding - start learning Go lang
+2024-05-07 - coding - Started to learn Go Lang to boost my devops skills and write faster apps.
+2024-05-07 - cooking - Tried making braised pork for the first time. It came out pretty good. Think it would hit a lot harder with some oyster sauce to top it off.
