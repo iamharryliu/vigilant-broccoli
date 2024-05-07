@@ -25,12 +25,21 @@ repos:
       #   pass_filenames: false
       #   additional_dependencies:
       #     [pytest, flask, flask_cors, sqlalchemy, bcrypt, flask_login]
-
   - repo: local
     hooks:
       - id: flask-demo-tests
         name: Test Flask Demo
         entry: ./projects/demo-apps/flask-demo/venv/bin/pytest projects/demo-apps/flask-demo
+        language: python
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        additional_dependencies: [flask]
+  - repo: local
+    hooks:
+      - id: toronto-alerts-flask
+        name: Toronto Alerts
+        entry: ./projects/toronto-alerts/toronto-alerts-flask/venv/bin/pytest projects/toronto-alerts/toronto-alerts-flask
         language: python
         types: [python]
         pass_filenames: false
