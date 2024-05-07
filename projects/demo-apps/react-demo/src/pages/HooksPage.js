@@ -19,7 +19,6 @@ const HooksPage = () => {
     setState(previousState => {
       return { ...previousState, newKey: 'newValue!' };
     });
-    dispatch({ type: REDUCER_ACTION.TYPE_1 });
   };
   const resetContext = () => {
     dispatch({});
@@ -33,21 +32,39 @@ const HooksPage = () => {
   useEffect(() => {
     console.log('This runs when there is a change to the state.');
   }, [state]);
+  useEffect(() => {
+    return () => console.log('This runs when component unmounts.');
+  }, []);
 
   // useReducer
   const REDUCER_ACTION = {
-    TYPE_1: 'TYPE_1',
+    INCREMENT: 'INCREMENT',
+    DECREMENT: 'DECREMENT',
+    RESET: 'RESET',
   };
   const INITIAL_COUNT = 0;
   const reducer = (state, action) => {
     switch (action.type) {
-      case REDUCER_ACTION.TYPE_1:
+      case REDUCER_ACTION.INCREMENT:
         return state + 1;
+      case REDUCER_ACTION.DECREMENT:
+        return state - 1;
+      case REDUCER_ACTION.RESET:
+        return INITIAL_COUNT;
       default:
-        return 0;
+        return state;
     }
   };
   const [count, dispatch] = useReducer(reducer, INITIAL_COUNT);
+  const incrementReducer = () => {
+    dispatch({ type: REDUCER_ACTION.INCREMENT });
+  };
+  const decrementReducer = () => {
+    dispatch({ type: REDUCER_ACTION.DECREMENT });
+  };
+  const resetReducer = () => {
+    dispatch({ type: REDUCER_ACTION.RESET });
+  };
 
   // Custom Hooks
   const [data] = useFetch('https://jsonplaceholder.typicode.com/todos');
@@ -57,7 +74,7 @@ const HooksPage = () => {
   const useRefCount = useRef(0);
   useEffect(() => {
     useRefCount.current = useRefCount.current + 1;
-  });
+  }, [inputValue]);
 
   const inputElement = useRef();
   const focusInput = () => {
@@ -76,19 +93,27 @@ const HooksPage = () => {
         <h2>Hooks Page</h2>
         <h3>useState</h3>
         <pre>{JSON.stringify(state, null, 2)}</pre>
+
         <h3>useState - setState</h3>
         <button onClick={() => handleButtonClick()}>Update Context</button>
         <button onClick={() => resetContext()}>Reset Context</button>
+
         <h3>useReducer</h3>
+        <button onClick={() => incrementReducer()}>Update Context</button>
+        <button onClick={() => decrementReducer()}>Reset Context</button>
+        <button onClick={() => resetReducer()}>Reset Context</button>
         {count}
+
         <h3>useContext</h3>
         <HooksChild />
+
         <h3>Custom Hooks</h3>
         <h4>useFetch</h4>
         {data &&
           data.slice(0, 2).map(item => {
             return <p key={item.id}>{item.title}</p>;
           })}
+
         <h3>useRef</h3>
         <label>useRef Input Element: </label>
         <input

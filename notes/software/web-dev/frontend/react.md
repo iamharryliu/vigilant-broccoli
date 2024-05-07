@@ -104,17 +104,18 @@ setState(previousState => {
 
 ```
 useEffect(() => {
-// Runs on every render
+  // Runs on every render
 });
 
 useEffect(() => {
-// Runs only on the first render
+  // Runs only on the first render
+  ...code to run on first render
+  return () => cleanupCode()
 }, []);
 
 useEffect(() => {
-// Runs on the first render
-// And any time any dependency value changes
-}, [prop, state]);
+  // Runs any time any dependency values change
+}, [state, ...]);
 ```
 
 ### createContext
