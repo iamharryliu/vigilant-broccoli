@@ -1,41 +1,16 @@
 # TODO
 
-## Toronto Alerts
-
-- Q1
-
-  - base application unit testing
-  - ui:
-    - autocomplete tagging
-
-- Q2
-  - mobile application
-    - Google android store, 1 time cost of $25
-    - Apple Store, yearly cost of $99
-  - text notifications
-    - https://www.twilio.com/en-us/sms/pricing/ca
-- Q3
-
-  - blog section for SEO
-  - proper email
-
-    - migrate to use ui app?
-
-  - contact gtaupdate dude
-
 ## Vigilant Broccoli
 
 - Q1
   - make first PYPI libraries
-  - work on FlyIO scripts
 - Q2
 
 - Q3
 
   - docs: read later
     - devops
-      - secrets manager
-        - Hashicorp Vault
+      - Hashicorp Vault
       - load balancing
       - Redis
       - tmux
@@ -49,6 +24,27 @@
   - docs: spring boot
   - feat: use Github actions to replace cronjobs
   - refactor: implement Angular signals
+
+## harryliu.design
+
+- Q1
+- Q2
+  - add personal google map links
+- Q3
+
+## Toronto Alerts
+
+- Q1
+- Q2
+  - mobile application
+    - Google android store, 1 time cost of $25
+    - Apple Store, yearly cost of $99
+  - text notifications
+    - https://www.twilio.com/en-us/sms/pricing/ca
+- Q3
+  - proper email
+  - migrate to use ui app?
+  - contact gtaupdate dude
 
 ## CICD
 
@@ -81,12 +77,6 @@
     - helper text not hidden (maybe delete it)
   - refactor: introduce service files?
   - fix: fly deploy slow?
-
-## harryliu.design
-
-- Q1
-- Q2
-  - add personal google map links
 
 ## Quadrant Template
 
