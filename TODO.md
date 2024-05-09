@@ -4,6 +4,7 @@
 
 - Q1
   - make first PYPI libraries
+  - github CLI manager - https://cli.github.com/manual/gh_secret_set
 - Q2
 
 - Q3
