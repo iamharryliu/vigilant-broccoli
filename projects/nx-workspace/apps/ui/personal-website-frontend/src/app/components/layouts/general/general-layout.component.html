@@ -35,10 +35,8 @@
     </div>
   </div>
   <div class="lg:h-screen lg:overflow-y-scroll w-full lg:w-3/5 relative">
-    <app-navbar class="hidden lg:hidden"></app-navbar>
+    <app-navbar class="invisible lg:visible"></app-navbar>
     <div #ref><ng-content></ng-content></div>
-    <div class="lg:hidden">
-      <app-footer></app-footer>
-    </div>
+    <app-footer class="lg:hidden"></app-footer>
   </div>
 </div>
