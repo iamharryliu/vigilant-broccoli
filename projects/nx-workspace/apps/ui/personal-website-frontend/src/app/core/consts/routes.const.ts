@@ -13,6 +13,7 @@ import { LeetCodePageComponent } from '../../leet-code/leet-code.page';
 import { Link } from 'general-components';
 import { BlogDirectoryComponent } from '../../blog-directory/blog-directory.component';
 import { BlogComponent } from '../../blog/blog.component';
+import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -48,6 +49,12 @@ export const ABOUT_ROUTE: Route = {
   path: 'about',
   data: { title: 'about' },
   component: AboutPageComponent,
+};
+
+export const CONTACT_ROUTE: Route = {
+  path: 'contact',
+  data: { title: 'contact' },
+  component: ContactPageComponent,
 };
 
 export const LINK_TREE_ROUTE: Route = {
@@ -111,6 +118,7 @@ export const LEETCODE_SOLUTION_ROUTE: Route = {
 export const ROUTES: Routes = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
+  CONTACT_ROUTE,
   PROJECTS_ROUTE,
   DOCS_MD_ROUTE,
   BLOG_DIRECTORY_ROUTE,
@@ -142,6 +150,14 @@ const ABOUT_PAGE: Link = {
     external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${ABOUT_ROUTE.path}`,
   },
   text: 'About',
+};
+
+const CONTACT_PAGE: Link = {
+  url: {
+    internal: `/${CONTACT_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${ABOUT_ROUTE.path}`,
+  },
+  text: 'Contact',
 };
 
 const PROJECTS_PAGE: Link = {
@@ -243,6 +259,7 @@ const BLOGS: Link = {
 const INTERNAL_LINKS = {
   INDEX_PAGE,
   ABOUT_PAGE,
+  CONTACT_PAGE,
   LINK_TREE,
   PROJECTS_PAGE,
   MD_LIBRARY,
