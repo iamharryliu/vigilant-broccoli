@@ -7,3 +7,7 @@ export * from './requests.model';
 
 // Vibecheck Lite
 export * from './vibechecklite.model';
+
+export const APP_NAME = {
+  HARRYLIU_DESIGN: 'HARRYLIU_DESIGN',
+};

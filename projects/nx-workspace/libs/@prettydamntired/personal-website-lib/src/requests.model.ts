@@ -3,6 +3,7 @@ export interface SubscribeRequest {
 }
 
 export interface MessageRequest {
+  appName: string;
   name: string;
   email: string;
   message: string;

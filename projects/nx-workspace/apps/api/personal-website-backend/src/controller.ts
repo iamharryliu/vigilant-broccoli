@@ -43,9 +43,8 @@ export class Controller {
   }
 
   static async sendMessage(req, res, next) {
-    const { name, email, message } = req.body;
     try {
-      await ContactService.sendMessage({ name, email, message });
+      await ContactService.sendMessage(req.body);
       res.json({ success: true });
     } catch (error) {
       next(error);
