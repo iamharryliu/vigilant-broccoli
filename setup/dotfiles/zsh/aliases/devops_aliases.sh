@@ -107,7 +107,7 @@ function flyrssh() {
     fi
 }
 # Secrets
-alias flysetsecrets='cdvb && cd projects/secret-manager && python flyio_secret_manager.py'
+alias flysetsecrets='cdvb && cd projects/secrets-manager && python flyio_secrets_manager.py'
 # Postgres
 alias flysqlconn='flyctl postgres connect --app'
 alias flysqlproxy='flyctl proxy 5432 --app'
