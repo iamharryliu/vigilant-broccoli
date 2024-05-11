@@ -17,7 +17,3 @@ I am a software enthusiast who is capable of handling your application needs _fr
 - **Testing Frameworks**: Jest, Cypress, Pytest
 
 - **Databases**: SQL(Postgres), noSQL(MongoDB)
-
-<hr/>
-
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=iamharryliu)](https://github.com/iamharryliu/github-readme-stats)
