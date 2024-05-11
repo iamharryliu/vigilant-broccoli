@@ -27,3 +27,21 @@
 ## Caramelization
 
 - caramelized onions
+
+## Salads
+
+- lettuce leaves
+- cucumber
+- green bell pepper
+- cherry tomatoes
+- feta cheese
+- thinly sliced red onion
+- mint leaves
+- olives
+- olive oil
+- garlic clove
+- vinegar
+- dijon mustard
+- dried oregano
+- sea salt
+- black pepper
