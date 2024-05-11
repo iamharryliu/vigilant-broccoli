@@ -46,6 +46,7 @@
   - proper email
   - migrate to use ui app?
   - contact gtaupdate dude
+  - weird bug with manual deploy, venv/bin/python does not exist..
 
 ## CICD
 
