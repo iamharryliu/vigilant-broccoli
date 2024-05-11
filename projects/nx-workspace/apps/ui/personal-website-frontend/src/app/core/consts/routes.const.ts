@@ -83,12 +83,12 @@ export const VIBECHECK_LITE_ROUTE: Route = {
 
 export const PROJECTS_PAGE_ROUTE: Route = {
   path: '',
-  data: { title: 'projects' },
   component: ProjectsPageComponent,
 };
 
 export const PROJECTS_ROUTE: Route = {
   path: 'projects',
+  data: { title: 'projects' },
   children: [VIBECHECK_LITE_ROUTE, PROJECTS_PAGE_ROUTE],
 };
 
