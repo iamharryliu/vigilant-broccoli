@@ -13,8 +13,8 @@
       "TORONTO_ALERTS_EMAIL": "email",
       "TORONTO_ALERTS_EMAIL_PASSWORD": "password",
       "TORONTO_ALERTS_DB": "database",
-      "GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY": "key",
-      "GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY": "key",
+      "TORONTO_ALERTS_RECAPTCHA_SECRET_KEY": "key",
+      "TORONTO_ALERTS_RECAPTCHA_SITE_KEY": "key",
       "OPENWEATHER_API_KEY": "key",
       "SECRET_KEY": "key"
     }

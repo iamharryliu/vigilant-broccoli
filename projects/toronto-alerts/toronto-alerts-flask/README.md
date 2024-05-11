@@ -17,8 +17,8 @@ export SECRET_KEY='secret_key'
 export TORONTO_ALERTS_DB=""
 export TORONTO_ALERTS_EMAIL="email"
 export TORONTO_ALERTS_EMAIL_PASSWORD="password"
-export GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY="key"
-export GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY="key"
+export TORONTO_ALERTS_RECAPTCHA_SITE_KEY="key"
+export TORONTO_ALERTS_RECAPTCHA_SECRET_KEY="key"
 ```
 
 Setup Python environment.

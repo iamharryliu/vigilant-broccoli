@@ -18,8 +18,8 @@ def create_app(config=DIT_CONFIG):
     global recaptcha
     recaptcha = ReCaptcha(
         app=app,
-        site_key=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY"),
-        site_secret=os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY"),
+        site_key=os.environ.get("TORONTO_ALERTS_RECAPTCHA_SITE_KEY"),
+        site_secret=os.environ.get("TORONTO_ALERTS_RECAPTCHA_SECRET_KEY"),
     )
     app.url_map.strict_slashes = False
     app.config.from_object(config)

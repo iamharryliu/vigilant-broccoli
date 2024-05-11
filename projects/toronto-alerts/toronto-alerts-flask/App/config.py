@@ -21,8 +21,8 @@ class SERVER_CONFIG:
     BACKEND_APP_URL = f"http://localhost:{PORT_NUMBER}"
 
     # Recaptcha
-    RECAPTCHA_SITE_KEY = os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY")
-    RECAPTCHA_SECRET_KEY = os.environ.get("GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY")
+    RECAPTCHA_SITE_KEY = os.environ.get("TORONTO_ALERTS_RECAPTCHA_SITE_KEY")
+    RECAPTCHA_SECRET_KEY = os.environ.get("TORONTO_ALERTS_RECAPTCHA_SECRET_KEY")
 
     # Flask-Mail
     MAIL_SERVER = "smtp.googlemail.com"
