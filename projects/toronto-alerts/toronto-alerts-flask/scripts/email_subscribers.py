@@ -3,7 +3,7 @@ from toronto_alerts_app import TorontoAlertsApp
 from mail_handler import MailHandler
 from datetime import timedelta
 
-DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
+DATABASE_URL = os.environ.get("TORONTO_ALERTS_DB")
 
 
 def get_db_connection():

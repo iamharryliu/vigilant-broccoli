@@ -5,7 +5,7 @@ from App.config import DIT_CONFIG
 from google_recaptcha import ReCaptcha
 
 
-DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
+DATABASE_URL = os.environ.get("TORONTO_ALERTS_DB")
 mail = Mail()
 recaptcha = None
 

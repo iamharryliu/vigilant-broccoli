@@ -23,7 +23,7 @@ from App import recaptcha
 from psycopg2 import sql
 
 
-DATABASE_URL = os.environ.get("GTA_UPDATE_ALERTS_DB")
+DATABASE_URL = os.environ.get("TORONTO_ALERTS_DB")
 main_blueprint = Blueprint("main", __name__, url_prefix="", template_folder="templates")
 
 
