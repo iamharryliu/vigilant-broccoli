@@ -35,8 +35,8 @@ export MONGO_DB_USERNAME="username"
 export MONGO_DB_PASSWORD="password"
 
 # Toronto Alerts
-export GTA_UPDATE_ALERT_EMAIL="email"
-export GTA_UPDATE_ALERT_EMAIL_PASSWORD="password"
+export TORONTO_ALERTS_EMAIL="email"
+export TORONTO_ALERTS_EMAIL_PASSWORD="password"
 export TORONTO_ALERTS_DB="connectionString"
 export GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY="siteKey"
 export GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY="secretKey"

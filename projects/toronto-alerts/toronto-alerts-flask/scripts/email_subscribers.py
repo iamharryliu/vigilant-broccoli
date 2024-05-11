@@ -28,8 +28,8 @@ def get_users():
 
 def email_users(users):
     users = [user for user in users if "message" in user]
-    EMAIL_ADDRESS = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
-    EMAIL_ADDRESS_PASSWORD = os.environ.get("GTA_UPDATE_ALERT_EMAIL_PASSWORD")
+    EMAIL_ADDRESS = os.environ.get("TORONTO_ALERTS_EMAIL")
+    EMAIL_ADDRESS_PASSWORD = os.environ.get("TORONTO_ALERTS_EMAIL_PASSWORD")
     mailHandler = MailHandler(EMAIL_ADDRESS, EMAIL_ADDRESS_PASSWORD)
     threads = []
     for user in users:

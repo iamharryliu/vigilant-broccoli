@@ -10,8 +10,8 @@
     "name": "gta-update-alerts-flask",
     "password_key_values": {
       "DB_CONNECTION_STRING": "string",
-      "GTA_UPDATE_ALERT_EMAIL": "email",
-      "GTA_UPDATE_ALERT_EMAIL_PASSWORD": "password",
+      "TORONTO_ALERTS_EMAIL": "email",
+      "TORONTO_ALERTS_EMAIL_PASSWORD": "password",
       "TORONTO_ALERTS_DB": "database",
       "GTA_UPDATE_ALERTS_RECAPTCHA_SECRET_KEY": "key",
       "GTA_UPDATE_ALERTS_RECAPTCHA_SITE_KEY": "key",

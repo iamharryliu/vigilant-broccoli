@@ -4,8 +4,8 @@ import os
 import re
 
 IMAP_SERVER = "imap.gmail.com"
-USERNAME = os.environ.get("GTA_UPDATE_ALERT_EMAIL")
-PASSWORD = os.environ.get("GTA_UPDATE_ALERT_EMAIL_PASSWORD")
+USERNAME = os.environ.get("TORONTO_ALERTS_EMAIL")
+PASSWORD = os.environ.get("TORONTO_ALERTS_EMAIL_PASSWORD")
 TTC_ALERTS_EMAIL = "myttc.e-alerts@ttc.ca"
 FILTER_SENDERS = [TTC_ALERTS_EMAIL]
 mail = imaplib.IMAP4_SSL(IMAP_SERVER)
