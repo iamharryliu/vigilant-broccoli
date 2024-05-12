@@ -18,7 +18,9 @@ import {
 const app = express();
 
 // Routes
-app.use(cors(CORS_OPTIONS));
+if (!IS_DEV_ENV) {
+  app.use(cors(CORS_OPTIONS));
+}
 app.use(requestLogger);
 app.use(router);
 
