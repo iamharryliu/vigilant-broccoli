@@ -17,6 +17,7 @@ export const errorLogger = (
   response: any,
   next: any,
 ) => {
+  logger.info(error.message);
   logger.error(error.message);
   next(error);
 };
