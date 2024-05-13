@@ -6,11 +6,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ENVIRONMENT } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CredentialsInterceptorService } from './core/interceptors/credentials.interceptor';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { SuccessInterceptor } from './core/interceptors/success.interceptor';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
-import { RecaptchaInterceptor } from 'general-components';
+import {
+  CredentialsInterceptorService,
+  RecaptchaInterceptor,
+} from 'general-components';
 import {
   NgxGoogleAnalyticsModule,
   NgxGoogleAnalyticsRouterModule,
