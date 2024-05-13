@@ -1,5 +1,5 @@
 import express from 'express';
-// import cors from 'cors';
+import cors from 'cors';
 import mongoose from 'mongoose';
 import {
   errorLogger,
@@ -8,8 +8,7 @@ import {
   logger,
   requestLogger,
 } from '@prettydamntired/test-node-tools';
-import { PORT, HOST, IS_DEV_ENV, ALLOWED_ORIGINS } from './configs/app.const';
-// import { CORS_OPTIONS, PORT, HOST, IS_DEV_ENV, ALLOWED_ORIGINS } from './configs/app.const';
+import { CORS_OPTIONS, PORT, HOST, IS_DEV_ENV } from './configs/app.const';
 import { router } from './routes';
 import {
   MONGO_DB_SERVER,
@@ -19,20 +18,7 @@ import {
 const app = express();
 
 // Routes
-if (!IS_DEV_ENV) {
-  app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (ALLOWED_ORIGINS.includes(origin)) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-      res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-      );
-    }
-    next();
-  });
-}
+app.use(cors(CORS_OPTIONS));
 app.use(requestLogger);
 app.use(router);
 
