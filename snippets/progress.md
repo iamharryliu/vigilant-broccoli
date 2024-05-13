@@ -15,3 +15,4 @@
 2024-05-03 - cooking - Tried making Tahdig, a cripsy Persion rice for the first time. Need to work on the heat handling for this one because it came out a bit dry.
 2024-05-07 - coding - Started to learn Go Lang to boost my devops skills and write faster apps.
 2024-05-07 - cooking - Tried making braised pork for the first time. It came out pretty good. Think it would hit a lot harder with some oyster sauce to top it off.
+2024-05-13 - coding - CORS across different sites (cloud8skate.com to api.harryliu.design).
