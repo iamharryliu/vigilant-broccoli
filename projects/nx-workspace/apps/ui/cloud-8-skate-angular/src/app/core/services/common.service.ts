@@ -23,7 +23,7 @@ export class CommonService {
       {
         appName: APP_NAME.HARRYLIU_DESIGN,
         from: `'${name}' <${email}>`,
-        subject: 'Message from personal website.',
+        subject: 'Message from Cloud8Skate.',
         text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
       },
     );

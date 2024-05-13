@@ -9,6 +9,13 @@ export const ALLOWED_ORIGINS = [
   'https://cloud8skate.com',
 ];
 export const CORS_OPTIONS = {
-  origin: ALLOWED_ORIGINS,
+  origin: function (origin, callback) {
+    // Check if the incoming origin is in the allowed origins list
+    if (ALLOWED_ORIGINS.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 };
