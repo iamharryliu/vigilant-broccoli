@@ -20,6 +20,7 @@ const app = express();
 // Routes
 if (!IS_DEV_ENV) {
   app.use(cors(CORS_OPTIONS));
+  app.options('*', cors(CORS_OPTIONS));
 }
 app.use(requestLogger);
 app.use(router);
