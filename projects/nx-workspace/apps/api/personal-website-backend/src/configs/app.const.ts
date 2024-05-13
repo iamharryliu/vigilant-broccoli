@@ -5,6 +5,7 @@ export const PORT = process.env.PORT || 3000;
 export const ALLOWED_ORIGINS = [
   'https://harryliu.design',
   'https://torontoalerts.com',
+  'https://cloud8skate.com',
 ];
 export const CORS_OPTIONS = {
   origin: ALLOWED_ORIGINS,
