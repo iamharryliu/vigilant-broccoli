@@ -1,9 +1,11 @@
+import { AppName } from '.';
+
 export interface SubscribeRequest {
   email: string;
 }
 
 export interface MessageRequest {
-  appName: string;
+  appName: AppName;
   name: string;
   email: string;
   message: string;

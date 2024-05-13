@@ -5,7 +5,7 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { MessageRequest } from '@prettydamntired/personal-website-lib';
+import { AppName, MessageRequest } from '@prettydamntired/personal-website-lib';
 import { Subject, exhaustMap } from 'rxjs';
 import { CommonService } from '../services/common.service';
 import { CommonModule } from '@angular/common';
@@ -21,7 +21,7 @@ import { Link } from '../models';
 export class ContactComponent {
   submit$ = new Subject<boolean>();
   @Input() LINKS: Link[] = [];
-  @Input() APP_NAME!: string; //TODO: type this
+  @Input() APP_NAME!: AppName;
 
   constructor(private commonService: CommonService) {
     this.submit$
