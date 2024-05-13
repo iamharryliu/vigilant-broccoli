@@ -9,6 +9,7 @@ export const ALLOWED_ORIGINS = [
 ];
 export const CORS_OPTIONS = {
   origin: function (origin, callback) {
+    console.log(origin);
     if (!origin || ALLOWED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
