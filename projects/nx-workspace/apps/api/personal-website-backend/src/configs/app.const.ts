@@ -3,6 +3,8 @@ export const HOST = process.env.HOST || LOCAL_HOST_IP_ADDRESS;
 export const IS_DEV_ENV = HOST === LOCAL_HOST_IP_ADDRESS;
 export const PORT = process.env.PORT || 3000;
 export const ALLOWED_ORIGINS = [
+  'http://localhost:4200',
+  'https://harryliu.design',
   'https://torontoalerts.com',
   'https://cloud8skate.com',
 ];
