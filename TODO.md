@@ -3,15 +3,23 @@
 ## Vigilant Broccoli
 
 - Q1
-  - make first PYPI libraries
+
   - github CLI manager - https://cli.github.com/manual/gh_secret_set
+  - enhance core libraries
+
+    - testing
+
+  - refactor: implement Angular signals
+
 - Q2
+
+  - feat: use Github actions to replace cronjobs
+  - make first PYPI libraries
 
 - Q3
 
   - docs: read later
     - devops
-      - Hashicorp Vault
       - load balancing
       - Redis
       - tmux
@@ -20,17 +28,14 @@
     - open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
     - online payment form
     - Sveltfire
-  - harryliu.design
-    - style: update typography
   - docs: spring boot
-  - feat: use Github actions to replace cronjobs
-  - refactor: implement Angular signals
 
 ## harryliu.design
 
 - Q1
 - Q2
   - add personal google map links
+  - style: update typography
 - Q3
 
 ## Toronto Alerts
