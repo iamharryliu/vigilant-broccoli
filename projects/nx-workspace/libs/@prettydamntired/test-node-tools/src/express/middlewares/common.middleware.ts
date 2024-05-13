@@ -22,12 +22,13 @@ export const checkRecaptchaToken = async (request, response, next) => {
     const { recaptchaToken } = request.body;
     const recaptchaService = new RecaptchaService();
     if (await recaptchaService.isTrustedRequest(recaptchaToken)) {
+      logger.info(`Successful request from origin: ${request.headers.origin}`);
       next();
     } else {
-      logger.error(`Request from potential bot.`);
-      response
-        .status(HTTP_STATUS_CODES.FORBIDDEN)
-        .json({ message: 'Forbidden.' });
+      logger.error(
+        `Unsuccessful request from origin: ${request.headers.origin}. Potential bot detected.`,
+      );
+      response.status(HTTP_STATUS_CODES.FORBIDDEN).send();
     }
   } else {
     next();
