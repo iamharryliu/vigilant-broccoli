@@ -1,7 +1,7 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
-import { CommonService } from '../../../core/services/common.service';
+import { CommonService } from '../services/common.service';
 import { ContactComponent } from './contact.component';
 
 describe('ContactComponent', () => {

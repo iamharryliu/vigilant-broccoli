@@ -6,7 +6,15 @@ import {
   MessageRequest,
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
 } from '@prettydamntired/personal-website-lib';
-import { ENVIRONMENT } from '../../../environments/environment';
+
+const APP_MAPPER = {
+  [APP_NAME.HARRYLIU_DESIGN]: {
+    endpoint: 'https://api.harryliu.design',
+  },
+  [APP_NAME.CLOUD_8_SKATE]: {
+    endpoint: 'https://api.harryliu.design',
+  },
+};
 
 @Injectable({
   providedIn: 'root',
@@ -14,16 +22,14 @@ import { ENVIRONMENT } from '../../../environments/environment';
 export class CommonService {
   constructor(private http: HttpClient) {}
 
-  BACKEND_URL = ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL;
-
   sendMessage(request: MessageRequest): Observable<any> {
-    const { email, name, message } = request;
+    const { appName, email, name, message } = request;
     return this.http.post<any>(
-      `${this.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE}`,
+      `${APP_MAPPER[appName].endpoint}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE}`,
       {
-        appName: APP_NAME.HARRYLIU_DESIGN,
+        appName: appName,
         from: `'${name}' <${email}>`,
-        subject: 'Message from Cloud8Skate.',
+        subject: `${appName} - Message from ${name}(${email})`,
         text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
       },
     );

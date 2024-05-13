@@ -1,21 +1,27 @@
-import { Component } from '@angular/core';
-import { Subject, exhaustMap } from 'rxjs';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, Input } from '@angular/core';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
-import { LINKS } from '../../../core/consts/routes.const';
-import { CommonService } from '../../../core/services/common.service';
-import { LinkComponent } from 'general-components';
+import { Subject, exhaustMap } from 'rxjs';
+import { CommonService } from '../services/common.service';
+import { CommonModule } from '@angular/common';
+import { LinkComponent } from '../link/link.component';
+import { Link } from '../models';
 
 @Component({
   standalone: true,
-  selector: 'app-contact',
+  selector: 'lib-contact',
   templateUrl: './contact.component.html',
   imports: [CommonModule, ReactiveFormsModule, LinkComponent],
 })
 export class ContactComponent {
   submit$ = new Subject<boolean>();
+  @Input() LINKS: Link[] = [];
+  @Input() APP_NAME!: string; //TODO: type this
 
   constructor(private commonService: CommonService) {
     this.submit$
@@ -23,6 +29,7 @@ export class ContactComponent {
         exhaustMap(() =>
           this.commonService.sendMessage({
             ...(this.form.value as MessageRequest),
+            appName: this.APP_NAME,
           }),
         ),
       )
@@ -36,13 +43,6 @@ export class ContactComponent {
     email: new FormControl('', [Validators.required, Validators.email]),
     message: new FormControl('', Validators.required),
   });
-
-  LINKS = [
-    LINKS.LINKEDIN,
-    LINKS.PERSONAL_INSTAGRAM,
-    LINKS.SECONDHAND_STORE_IG,
-    LINKS.SKATE_IG,
-  ];
 
   submitForm() {
     this.submit$.next(true);
