@@ -6,4 +6,4 @@ export * from './lib/models';
 export { FileService } from './lib/services/file.service';
 // Interceptors
 export { RecaptchaInterceptor } from './lib/interceptors/recaptcha-interceptor/recaptcha.interceptor';
-export { CredentialsInterceptorService } from './lib/interceptors/credentials.interceptor';
+export { CredentialsInterceptorService } from './lib/interceptors/credentials-interceptor/credentials.interceptor';
