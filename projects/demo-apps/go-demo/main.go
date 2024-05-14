@@ -22,4 +22,16 @@ func main() {
 	// Sprintf
 	concatenated_str := fmt.Sprintf("String Value: %v\nNumber Value: %v", string_value, number_value)
 	fmt.Println(concatenated_str)
+
+	// Arrays
+	values := []int{1, 2, 3, 4}
+	fmt.Println(
+		values,
+		len(values),
+		values[1:4],
+		values[:3],
+		values[2:],
+		append(values, 5),
+	)
+
 }
