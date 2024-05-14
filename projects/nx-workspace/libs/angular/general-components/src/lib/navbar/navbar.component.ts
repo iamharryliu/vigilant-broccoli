@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { LINKS } from '../../../core/consts/routes.const';
-import { LinkComponent } from 'general-components';
+import { LinkComponent } from '../link/link.component';
 
 @Component({
   standalone: true,
-  selector: 'app-navbar',
+  selector: 'lib-navbar',
   templateUrl: './navbar.component.html',
   imports: [CommonModule, RouterModule, LinkComponent],
 })
 export class NavbarComponent {
-  LINKS = LINKS;
+  // TODO: type this later
+  @Input() links: any[] = [];
   isNavbarOpen = false;
 
   collapseNavbar() {

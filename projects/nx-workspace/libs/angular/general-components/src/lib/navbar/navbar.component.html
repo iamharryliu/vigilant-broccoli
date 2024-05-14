@@ -1,0 +1,35 @@
+<!-- Browser Nav -->
+<nav class="hidden lg:block">
+  <div class="flex items-center justify-between h-16 ml-6">
+    <div class="space-x-4">
+      <lib-link
+        *ngFor="let link of links"
+        [link]="link"
+        [type]="link.type"
+      ></lib-link>
+    </div>
+  </div>
+  <hr />
+</nav>
+
+<!-- Mobile Nav -->
+<div class="sticky top-0 w-full bg-white z-10">
+  <div class="lg:hidden flex justify-end mr-8 pt-3 pb-3">
+    <button (click)="toggleNavbar()" class="text-gray-600 focus:outline-none">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+  <hr />
+
+  <div class="w-full bg-gray-300 pt-3 pb-3" [class.hidden]="!isNavbarOpen">
+    <div class="space-y-3">
+      <div class="flex justify-center" *ngFor="let link of links">
+        <lib-link
+          [link]="link"
+          type="internal"
+          (clickEmitter)="collapseNavbar()"
+        ></lib-link>
+      </div>
+    </div>
+  </div>
+</div>

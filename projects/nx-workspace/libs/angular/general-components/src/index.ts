@@ -5,8 +5,13 @@ export { RecaptchaInterceptor } from './lib/interceptors/recaptcha-interceptor/r
 export { CredentialsInterceptorService } from './lib/interceptors/credentials-interceptor/credentials.interceptor';
 // Services
 export { FileService } from './lib/services/file.service';
+
 // Components
+// Navbar
+export { NavbarComponent } from './lib/navbar/navbar.component';
+// Links
 export { LinkComponent } from './lib/link/link.component';
 export { ButtonLinkComponent } from './lib/button-link/button-link.component';
-export { FolderItemComponent } from './lib/folder-item/folder-item.component';
+// Message
 export { ContactComponent } from './lib/contact/contact.component';
+export { FolderItemComponent } from './lib/folder-item/folder-item.component';
