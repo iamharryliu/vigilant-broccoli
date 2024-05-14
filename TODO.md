@@ -13,6 +13,8 @@
 
 - Q2
 
+  - handle/refactor
+    - "node_modules/@fortawesome/fontawesome-free/css/all.css"
   - feat: use Github actions to replace cronjobs
   - make first PYPI libraries
 
