@@ -2,13 +2,13 @@
 <nav class="hidden lg:block">
   <div class="flex items-center justify-between h-16 ml-6">
     <div class="space-x-4">
+      <ng-content select="[header]"></ng-content>
       <lib-link
         *ngFor="let link of links"
         [link]="link"
         [isLight]="isLight"
         [isBold]="isBold"
-        [type]="link.type"
-      ></lib-link>
+        [type]="link.type"></lib-link>
     </div>
   </div>
 </nav>
@@ -27,8 +27,7 @@
         <lib-link
           [link]="link"
           type="internal"
-          (clickEmitter)="collapseNavbar()"
-        ></lib-link>
+          (clickEmitter)="collapseNavbar()"></lib-link>
       </div>
     </div>
   </div>
