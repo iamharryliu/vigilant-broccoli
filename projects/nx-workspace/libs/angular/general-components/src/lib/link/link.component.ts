@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Link, LinkType } from '../models';
+import { LINK_TYPE, Link, LinkType } from '../models';
 
 @Component({
   standalone: true,
@@ -10,7 +10,7 @@ import { Link, LinkType } from '../models';
   imports: [CommonModule, RouterModule],
 })
 export class LinkComponent {
-  @Input() type!: LinkType;
+  @Input() type: LinkType = LINK_TYPE.EXTERNAL;
   @Input() link!: Link;
   @Input() isBold = false;
   @Output() clickEmitter = new EventEmitter();

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { NavbarComponent } from '../features/navbar/navbar.component';
+import { NavbarSectionComponent } from '../features/navbar-section/navbar-section.component';
 
 @Component({
   standalone: true,
   selector: 'app-general-layout',
   templateUrl: './general-layout.component.html',
-  imports: [NavbarComponent],
+  imports: [NavbarSectionComponent],
 })
 export class GeneralLayoutComponent {}
