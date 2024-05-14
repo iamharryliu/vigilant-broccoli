@@ -5,8 +5,9 @@
       <lib-link
         *ngFor="let link of links"
         [link]="link"
-        [type]="link.type"
-      ></lib-link>
+        [isLight]="isLight"
+        [isBold]="isBold"
+        [type]="link.type"></lib-link>
     </div>
   </div>
 </nav>
@@ -25,8 +26,7 @@
         <lib-link
           [link]="link"
           type="internal"
-          (clickEmitter)="collapseNavbar()"
-        ></lib-link>
+          (clickEmitter)="collapseNavbar()"></lib-link>
       </div>
     </div>
   </div>

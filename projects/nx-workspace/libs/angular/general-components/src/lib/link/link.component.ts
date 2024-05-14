@@ -12,6 +12,7 @@ import { LINK_TYPE, Link, LinkType } from '../models';
 export class LinkComponent {
   @Input() type: LinkType = LINK_TYPE.EXTERNAL;
   @Input() link!: Link;
+  @Input() isLight = false;
   @Input() isBold = false;
   @Output() clickEmitter = new EventEmitter();
 

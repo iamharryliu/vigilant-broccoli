@@ -2,9 +2,12 @@
   <a
     [routerLink]="link.url.internal"
     (click)="click()"
-    class="text-gray-800 hover:text-gray-400 text-sm"
-    [class.font-medium]="isBold"
-  >
+    class="text-sm"
+    [class.text-gray-800]="!isLight"
+    [class.hover:text-gray-400]="!isLight"
+    [class.text-white]="isLight"
+    [class.hover:text-gray-200]="isLight"
+    [class.font-medium]="isBold">
     {{ link.text }}
   </a>
 </ng-container>
@@ -13,9 +16,9 @@
     [href]="link.url.external"
     (click)="click()"
     target="_blank"
-    class="text-gray-800 hover:text-gray-400 text-sm"
-    [class.font-medium]="isBold"
-  >
-    {{ link.text }}</a
-  >
+    class="text-sm"
+    [class.text-gray-800]="!isLight"
+    [class.hover:text-gray-400]="!isLight"
+    [class.font-medium]="isBold">
+    {{ link.text }}</a>
 </ng-template>
