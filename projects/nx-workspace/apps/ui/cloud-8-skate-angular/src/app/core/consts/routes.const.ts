@@ -44,14 +44,14 @@ const CLOUD_8_SKATE_IG: Link = {
   url: {
     external: 'https://www.instagram.com/cloud8skate/',
   },
-  text: 'Cloud8Skate IG',
+  text: 'Cloud8Skate Instagram',
 };
 
 const TORONTO_CITY_SKATE_IG: Link = {
   url: {
     external: 'https://www.instagram.com/torontocityskate/',
   },
-  text: 'Toronto City Skate IG',
+  text: 'Toronto City Skate Instagram',
 };
 
 export const EXTERNAL_LINKS = {

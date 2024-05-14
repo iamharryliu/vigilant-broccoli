@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ContactComponent } from 'general-components';
-import { LINKS } from '../../core/consts/routes.const';
+import { LINKS } from '../../../core/consts/routes.const';
 import { APP_NAME } from '@prettydamntired/personal-website-lib';
 
 @Component({
