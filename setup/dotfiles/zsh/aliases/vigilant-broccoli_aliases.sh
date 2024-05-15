@@ -28,6 +28,8 @@ alias cdnx="cd ~/$REPO_NAME/projects/nx-workspace/"
 alias serve-harryliu-design="cdnx && npm run serve:personal-website"
 alias deploy-harryliu-design="cdnx && nx manual-deploy personal-website-frontend"
 alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'update site content' && gpush"
+alias pushc8spagecontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'update site content' && gpush"
+
 alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf && gc docs resume 'update resume' && gpush"
 alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
 # Grind 75
