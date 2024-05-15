@@ -7,7 +7,7 @@ alias gitactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigila
 alias cdvb="cd ~/$REPO_NAME/"
 alias pushreadme="cdvb && git add README.md && gc docs readme 'update root README.md' && gpush"
 alias pushnotes="cdvb && git add notes/**/*.md && gc docs 'update md notes' && gpush"
-alias pushtodo="cdvb && git add TODO.md && gc docs todo 'update TODO.md' && gpush"
+alias pushtodo="cdvb && git add todo/ && gc docs todo 'update TODO.md' && gpush"
 alias pushsnippets="cdvb && git add snippets/ && gc docs snippets 'update snippets' && gpush"
 alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'update progress.md' && gpush"
 # Actions
