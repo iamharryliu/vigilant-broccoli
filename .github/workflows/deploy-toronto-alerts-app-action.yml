@@ -1,4 +1,4 @@
-name: Toronto Alerts - Deploy App
+name: Toronto Alerts Flask - Deploy App
 on:
   push: { branches: ['main'] }
 

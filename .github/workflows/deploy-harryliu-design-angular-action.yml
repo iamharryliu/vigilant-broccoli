@@ -1,6 +1,7 @@
-name: Redeploy Frontend for CMS updates
+name: Deploy harryliu.design Angular - Deploy App
 on:
   push: { branches: ['main'] }
+  # Handles CMS Updates
   schedule: [{ cron: '*/15 * * * *' }]
 
 permissions:

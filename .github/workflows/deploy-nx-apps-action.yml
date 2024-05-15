@@ -1,4 +1,4 @@
-name: Deploy Nx Apps
+name: Deploy Nx Apps - Deploy Apps
 on:
   push: { branches: ['main'] }
 

@@ -1,6 +1,5 @@
-name: Monitor Apps
+name: App Health Check
 on:
-  push: { branches: ['main'] }
   schedule: [{ cron: '*/15 * * * *' }]
 jobs:
   main:

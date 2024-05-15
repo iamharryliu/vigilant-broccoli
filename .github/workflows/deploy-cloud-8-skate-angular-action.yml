@@ -1,4 +1,4 @@
-name: Cloud 8 Skate - Deploy App
+name: Cloud 8 Skate Angular - Deploy App
 on:
   push: { branches: ['main'] }
 
