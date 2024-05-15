@@ -2,4 +2,4 @@
 
 ## References
 
-[Markdown Badges](https://dev.to/envoy_/150-badges-for-github-pnk)
+[Markdown Badges](https://github.com/Ileriayo/markdown-badges)
