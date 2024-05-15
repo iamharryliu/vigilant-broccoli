@@ -12,6 +12,6 @@ import { LINKS } from '../../../core/consts/routes.const';
 export class NavbarSectionComponent {
   links = [
     { ...LINKS.HOME, type: LINK_TYPE.INTERNAL },
-    { ...LINKS.CONTACT, type: LINK_TYPE.INTERNAL },
+    // { ...LINKS.CONTACT, type: LINK_TYPE.INTERNAL },
   ];
 }

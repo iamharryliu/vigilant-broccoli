@@ -30,7 +30,7 @@ const HOME: Link = {
   url: {
     internal: `/${HOME_PAGE_ROUTE.path}`,
   },
-  text: 'Home',
+  text: 'Cloud8',
 };
 
 const CONTACT: Link = {
