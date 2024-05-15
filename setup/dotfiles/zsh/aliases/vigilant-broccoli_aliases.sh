@@ -11,7 +11,7 @@ alias pushtodo="cdvb && git add todo/ && gc docs todo 'update TODO.md' && gpush"
 alias pushsnippets="cdvb && git add snippets/ && gc docs snippets 'update snippets' && gpush"
 alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'update progress.md' && gpush"
 # Actions
-alias pushactions="cdvb && git add .github/workflows && gc build github-actions 'update actions' && gpush"
+alias pushactions="cdvb && git add .github/workflows/ && gc build github-actions 'update actions' && gpush"
 # Setup
 # Dotfiles
 alias pushdotfiles="cdvb && git add setup/dotfiles/* && gc docs 'update dotfiles' && gpush"
