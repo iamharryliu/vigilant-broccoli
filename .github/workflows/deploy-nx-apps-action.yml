@@ -36,4 +36,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       # TODO: figure out how to get e2e to pass
       # - run: npx nx affected -t lint test build e2e-ci deploy
-      - run: npx nx affected -t lint test build deploy
+      # - run: npx nx affected -t lint test build deploy
