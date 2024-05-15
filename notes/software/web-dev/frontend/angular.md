@@ -20,6 +20,15 @@ npm i && ng serve
 
 ## Templating
 
+### Style
+
+```
+[style.attribute]="booleanName ? 'trueValue' : 'falseValue'"
+[class.name]="booleanName ? 'trueValue' : 'falseValue'"
+[ngClass]="{ 'className1': boolean }"
+[ngStyle]="{ 'attribute': value }"
+```
+
 ### Multiple ng-content
 
 ```
