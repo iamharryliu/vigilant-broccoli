@@ -61,3 +61,6 @@ alias checkskatingtimes='heronparkleisureskateschedule && centennialskateschedul
 
 # Toronto Alerts
 alias torontoalerts='open -a "Google Chrome" "https://torontoalerts.com/"'
+
+# Message Services
+alias igchat='open -a "Google Chrome" "https://www.instagram.com/direct/inbox/"'
