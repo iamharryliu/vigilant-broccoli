@@ -12,6 +12,7 @@ import { LinkComponent } from '../link/link.component';
 export class NavbarComponent {
   // TODO: type this later
   @Input() links: any[] = [];
+  @Input() textSize: 'sm' | 'lg' | undefined;
   @Input() isLight = false;
   @Input() isBold = false;
   isNavbarOpen = false;
