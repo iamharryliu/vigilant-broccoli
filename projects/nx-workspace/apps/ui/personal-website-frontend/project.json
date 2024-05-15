@@ -106,10 +106,6 @@
     "manual-deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-design-angular",
       "dependsOn": ["build"]
-    },
-    "deploy": {
-      "command": "pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
-      "dependsOn": ["build"]
     }
   }
 }

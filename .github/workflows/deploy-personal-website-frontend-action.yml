@@ -1,6 +1,6 @@
 name: Redeploy Frontend for CMS updates
 on:
-  push: { branches: ['mainz'] }
+  push: { branches: ['main'] }
   schedule: [{ cron: '*/15 * * * *' }]
 
 permissions:
