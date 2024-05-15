@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { ActivatedRoute } from '@angular/router';
 import { AppService } from '../core/services/app.service';
 import { DocsMdPageService } from '../docs-md/docs-md.page.service';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { NewsLetterSubFormComponent } from '../components/features/subscribe-form/subscribe-form.component';
+import { MarkdownPageComponent } from 'general-components';
 
 @Component({
   selector: 'app-blog-directory',

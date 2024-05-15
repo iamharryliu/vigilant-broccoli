@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { LINKS } from '../core/consts/routes.const';
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
-import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { LeetCodePageService } from './leet-code.page.service';
 import {
@@ -11,6 +10,7 @@ import {
   FolderItem,
   LinkComponent,
   FileService,
+  MarkdownPageComponent,
 } from 'general-components';
 import { ActivatedRoute } from '@angular/router';
 

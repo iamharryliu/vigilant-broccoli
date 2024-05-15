@@ -4,7 +4,6 @@ import { GeneralLayoutComponent } from '../components/layouts/general/genreral-l
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
 import { DOCS_MD_ROUTE, LINKS } from '../core/consts/routes.const';
-import { MarkdownPageComponent } from '../components/global/markdown-page/markdown.page.component';
 import { DocsMdPageService } from './docs-md.page.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -12,6 +11,7 @@ import {
   FolderItem,
   LinkComponent,
   FileService,
+  MarkdownPageComponent,
 } from 'general-components';
 
 @Component({

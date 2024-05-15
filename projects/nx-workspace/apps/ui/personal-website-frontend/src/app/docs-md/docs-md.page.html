@@ -18,9 +18,9 @@
     [class.hidden]="
       appService.isMobile && !markdownLibraryService.isFileSelected
     ">
-    <app-markdown-page
+    <lib-markdown-page
       *ngIf="markdownLibraryService.selectedFile"
-      [filepath]="markdownLibraryService.selectedFile"></app-markdown-page>
+      [filepath]="markdownLibraryService.selectedFile"></lib-markdown-page>
   </div>
   <div
     class="absolute top-0 right-0 m-4 cursor-pointer"

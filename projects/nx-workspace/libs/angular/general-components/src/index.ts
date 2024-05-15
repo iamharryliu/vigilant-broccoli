@@ -19,3 +19,6 @@ export { ButtonLinkComponent } from './lib/button-link/button-link.component';
 // Message
 export { ContactComponent } from './lib/contact/contact.component';
 export { FolderItemComponent } from './lib/folder-item/folder-item.component';
+// Markdown
+
+export { MarkdownPageComponent } from './lib/markdown-page/markdown.page.component';

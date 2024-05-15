@@ -1,13 +1,13 @@
 import { Component, Input, OnChanges, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { MarkdownService } from 'general-components';
+import { MarkdownService } from '../services/markdown.service';
 
 @Component({
-  selector: 'app-markdown-page',
+  selector: 'lib-markdown-page',
   standalone: true,
   imports: [CommonModule],
-  styleUrl: '../../../md.scss',
+  styleUrl: './md.scss',
   templateUrl: './markdown.page.component.html',
   encapsulation: ViewEncapsulation.ShadowDom,
 })

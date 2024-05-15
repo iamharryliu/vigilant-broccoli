@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { GeneralLayoutComponent } from '../../layouts/general/genreral-layout.component';
-import { MarkdownPageComponent } from '../../global/markdown-page/markdown.page.component';
+import { MarkdownPageComponent } from 'general-components';
 
 @Component({
   standalone: true,
