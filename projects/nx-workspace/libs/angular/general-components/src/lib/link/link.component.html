@@ -2,13 +2,14 @@
   <a
     [routerLink]="link.url.internal"
     (click)="click()"
-    [class.text-sm]="textSize==='sm'"
-    [class.text-lg]="textSize==='lg'"
+    [class.text-sm]="textSize === 'sm'"
+    [class.text-lg]="textSize === 'lg'"
     [class.text-gray-800]="!isLight"
     [class.hover:text-gray-400]="!isLight"
     [class.text-white]="isLight"
     [class.hover:text-gray-200]="isLight"
-    [class.font-medium]="isBold">
+    [class.font-medium]="isBold"
+  >
     {{ link.text }}
   </a>
 </ng-container>
@@ -17,10 +18,12 @@
     [href]="link.url.external"
     (click)="click()"
     target="_blank"
-    [class.text-sm]="textSize==='sm'"
-    [class.text-lg]="textSize==='lg'"
+    [class.text-sm]="textSize === 'sm'"
+    [class.text-lg]="textSize === 'lg'"
     [class.text-gray-800]="!isLight"
     [class.hover:text-gray-400]="!isLight"
-    [class.font-medium]="isBold">
-    {{ link.text }}</a>
+    [class.font-medium]="isBold"
+  >
+    {{ link.text }}</a
+  >
 </ng-template>
