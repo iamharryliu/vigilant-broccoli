@@ -31,9 +31,15 @@
       </div>
     </div>
   </div>
-
   <div class="lg:w-1/2 mx-auto pt-8 pb-8">
-    <app-contact-section></app-contact-section>
+    <hr />
+    <div class="mt-16 mb-16">
+      <lib-markdown-page [filepath]="contentFilepath"></lib-markdown-page>
+    </div>
+    <hr />
+    <div class="mt-16 mb-16">
+      <app-contact-section></app-contact-section>
+    </div>
   </div>
 
   <div class="columns-3 ps-4 pe-4">
