@@ -30,6 +30,10 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - uses: superfly/flyctl-actions/setup-flyctl@master
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       # TODO: figure out how to get e2e to pass
       # - run: npx nx affected -t lint test build e2e-ci deploy
       - run: npx nx affected -t lint test build deploy
