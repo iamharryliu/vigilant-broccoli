@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, exhaustMap, from } from 'rxjs';
-import { MarkdownService } from '@prettydamntired/test-lib';
+import { Observable } from 'rxjs';
 import { FolderItem } from '../models';
 
 const FILE_STRUCTURE_PATHS = {
@@ -22,15 +21,5 @@ export class FileService {
     fileStructureFilepath: FileStructureFilepath,
   ): Observable<FolderItem> {
     return this.http.get<FolderItem>(fileStructureFilepath);
-  }
-
-  getFileAsText(filepath: string): Observable<string> {
-    return this.http.get(filepath, { responseType: 'text' });
-  }
-
-  getParsedMdFile(filepath: string): Observable<string> {
-    return this.getFileAsText(filepath).pipe(
-      exhaustMap(data => from(MarkdownService.parse(data))),
-    );
   }
 }

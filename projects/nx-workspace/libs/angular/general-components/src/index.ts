@@ -1,10 +1,14 @@
 // Models
 export * from './lib/models';
+
 // Interceptors
 export { RecaptchaInterceptor } from './lib/interceptors/recaptcha-interceptor/recaptcha.interceptor';
 export { CredentialsInterceptorService } from './lib/interceptors/credentials-interceptor/credentials.interceptor';
+
 // Services
 export { FileService } from './lib/services/file.service';
+export { MarkdownService } from './lib/services/markdown.service';
+export { HttpService } from './lib/services/http.service';
 
 // Components
 // Navbar

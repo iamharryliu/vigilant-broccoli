@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FileService } from 'general-components';
+import { HttpService } from 'general-components';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -10,10 +10,10 @@ export class LeetCodePageService {
   isFileSelected = false;
   selectedContent$!: Observable<string>;
 
-  constructor(private fileService: FileService) {}
+  constructor(private httpService: HttpService) {}
 
   selectFile(filepath: string) {
-    this.selectedContent$ = this.fileService.getFileAsText(
+    this.selectedContent$ = this.httpService.getFileAsText(
       `assets/grind-75/grind-75/${filepath}`,
     );
     this.isFileSelected = true;

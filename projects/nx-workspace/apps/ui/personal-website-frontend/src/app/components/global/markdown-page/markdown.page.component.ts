@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { FileService } from 'general-components';
+import { MarkdownService } from 'general-components';
 
 @Component({
   selector: 'app-markdown-page',
@@ -14,9 +14,9 @@ import { FileService } from 'general-components';
 export class MarkdownPageComponent implements OnChanges {
   @Input() filepath = '';
   content$?: Observable<string>;
-  constructor(private fileService: FileService) {}
+  constructor(private mdService: MarkdownService) {}
 
   ngOnChanges(): void {
-    this.content$ = this.fileService.getParsedMdFile(this.filepath);
+    this.content$ = this.mdService.getParsedMdFile(this.filepath);
   }
 }
