@@ -1,8 +1,8 @@
 name: Demo Python Action
 
 on:
-  push: { branches: ['yourbranch'] }
-  # schedule: [{ cron: '*/5 * * * *' }]
+  push: { branches: ['branch_name'] }
+  schedule: [{ cron: '* * * * *' }]
 
 jobs:
   run_script:
