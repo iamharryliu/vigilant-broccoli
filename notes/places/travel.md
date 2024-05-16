@@ -4,6 +4,7 @@
 
 🇨🇦 Canada
 🇺🇸 United States
+🇭🇰 Hong Kong
 🇨🇳 China
 🇲🇽 Mexico
 🇮🇹 Italy
