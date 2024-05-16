@@ -1,6 +1,6 @@
 # Travel
 
-## Countries Traveled To
+## Countries That I Have Traveled To
 
 🇨🇦 Canada
 🇺🇸 United States
