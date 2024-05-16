@@ -34,7 +34,8 @@ alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blo
 # Grind 75
 alias grind75="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75"
 # Toronto Alerts
-alias cdtorontoalerts="cdvb && cd projects/toronto-alerts"
+alias cdtorontoalerts="cdvb && cd projects/toronto-alerts/toronto-alerts-flask"
+alias servetorontoalerts="cdtorontoalerts && venvon && flaskrun"
 # Cloud8
 alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
 alias pushc8spagecontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'update site content' && gpush"
