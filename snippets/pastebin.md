@@ -17,6 +17,7 @@
 - https://www.instagram.com/prettydamntired/
 - https://www.instagram.com/torontocityskate/
 - https://www.instagram.com/harrysellsshit/
+- https://www.instagram.com/cloud8skate/
 
 ## Other
 
