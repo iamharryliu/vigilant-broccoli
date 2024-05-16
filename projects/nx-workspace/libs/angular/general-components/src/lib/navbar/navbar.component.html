@@ -9,14 +9,13 @@
         [textSize]="textSize"
         [isLight]="isLight"
         [isBold]="isBold"
-        [type]="link.type"
-      ></lib-link>
+        [type]="link.type"></lib-link>
     </div>
   </div>
 </nav>
 
 <!-- Mobile Nav -->
-<div class="sticky top-0 w-full bg-white z-10">
+<div class="sticky top-0 w-full z-10">
   <div class="lg:hidden flex justify-end mr-8 pt-3 pb-3">
     <button (click)="toggleNavbar()" class="text-gray-600 focus:outline-none">
       <i class="fas fa-bars"></i>
@@ -30,8 +29,7 @@
           [link]="link"
           [textSize]="textSize"
           type="internal"
-          (clickEmitter)="collapseNavbar()"
-        ></lib-link>
+          (clickEmitter)="collapseNavbar()"></lib-link>
       </div>
     </div>
   </div>
