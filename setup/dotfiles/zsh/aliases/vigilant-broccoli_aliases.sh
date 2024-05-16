@@ -25,6 +25,7 @@ alias pushsecretsmanager="cdvb && git add projects/secret-manager/ && gc build '
 # Nx
 alias cdnx="cd ~/$REPO_NAME/projects/nx-workspace/"
 # harryliu.design
+alias servehld="cdnx && nx serve personal-website-frontend"
 alias serve-harryliu-design="cdnx && npm run serve:personal-website"
 alias deploy-harryliu-design="cdnx && nx manual-deploy personal-website-frontend"
 alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'update site content' && gpush"
