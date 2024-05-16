@@ -14,11 +14,18 @@ import { Link } from 'general-components';
 import { BlogDirectoryComponent } from '../../blog-directory/blog-directory.component';
 import { BlogComponent } from '../../blog/blog.component';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
+import { CareerPageComponent } from '../../components/pages/career-page/career.page';
 
 export const INDEX_ROUTE: Route = {
   path: '',
   data: { title: 'home' },
   component: HomePageComponent,
+};
+
+export const CAREER_ROUTE: Route = {
+  path: 'career',
+  data: { title: 'career' },
+  component: CareerPageComponent,
 };
 
 export const DOCS_MD_ROUTE: Route = {
@@ -118,6 +125,7 @@ export const LEETCODE_SOLUTION_ROUTE: Route = {
 export const ROUTES: Routes = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
+  CAREER_ROUTE,
   CONTACT_ROUTE,
   PROJECTS_ROUTE,
   DOCS_MD_ROUTE,
