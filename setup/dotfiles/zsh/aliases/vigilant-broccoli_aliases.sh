@@ -1,9 +1,9 @@
 # Github
-alias gitme='open -a "Google Chrome" "https://github.com/iamharryliu"'
+alias gitme='chrome "https://github.com/iamharryliu"'
 alias pushgitprofile="cd ~/iamharryliu && gpull && git add . && gc docs 'update github profile readme' && gpush"
 # vigilant-broccoli
-alias gitvb='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli"'
-alias gitactions='open -a "Google Chrome" "https://github.com/iamharryliu/vigilant-broccoli/actions"'
+alias gitvb='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
+alias gitactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
 alias cdvb="cd ~/$REPO_NAME/"
 alias pushreadme="cdvb && git add README.md && gc docs readme 'update root README.md' && gpush"
 alias pushnotes="cdvb && git add notes/**/*.md && gc docs 'update md notes' && gpush"

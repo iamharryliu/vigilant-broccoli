@@ -25,7 +25,7 @@ killport() {
 # Node
 alias initnpm='rm -rf node_modules package-lock.json && npm i'
 alias initnpmserve='initnpm && npm run serve'
-alias mynpmpackages='open -a "Google Chrome" "https://www.npmjs.com/settings/prettydamntired/packages"'
+alias mynpmpackages='chrome "https://www.npmjs.com/settings/prettydamntired/packages"'
 alias installall='npm run install-all'
 
 # Postgres
@@ -34,7 +34,7 @@ alias stopbrewsql='brew services stop postgresql'
 alias sqlstatus='pg_isready -h localhost -p 5432'
 
 # MongoDB
-alias mongodash='open -a "Google Chrome" "https://cloud.mongodb.com/v2/"'
+alias mongodash='chrome "https://cloud.mongodb.com/v2/"'
 
 # AWS
 alias awsauto="aws --cli-auto-prompt"
@@ -55,7 +55,7 @@ function r2clear() {
 }
 
 # FlyIO
-alias flydash='open -a "Google Chrome" "https://fly.io/dashboard"'
+alias flydash='chrome "https://fly.io/dashboard"'
 # Apps
 alias flylaunch='fly launch'
 alias flyls='fly apps list'
@@ -123,4 +123,4 @@ alias nxbuildall="cdnx nx run-many -t=build"
 alias nxdeployall="cdnx nx run-many -t=deploy"
 
 # Analytics
-alias openanalytics='open -a "Google Chrome" "https://analytics.google.com/analytics/web/#/p433700665/reports/reportinghub"'
+alias openanalytics='chrome "https://analytics.google.com/analytics/web/#/p433700665/reports/reportinghub"'
