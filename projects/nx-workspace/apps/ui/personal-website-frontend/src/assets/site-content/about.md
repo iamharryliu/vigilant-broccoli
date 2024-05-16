@@ -4,7 +4,8 @@ Just a chill guy who likes doing chill things.
 
 #### Connect
 
-[![Gmail Badge](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:harryliu1995@gmail.com) [![Instagram Badge](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com/prettydamntired/)
+[![Gmail Badge](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:harryliu1995@gmail.com) [![Contact Badge](https://img.shields.io/badge/Send_A_Message-20B2AA?style=for-the-badge)](https://harryliu.design/contact)
+[![Instagram Badge](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com/prettydamntired/)
 
 #### Personal Interests
 
