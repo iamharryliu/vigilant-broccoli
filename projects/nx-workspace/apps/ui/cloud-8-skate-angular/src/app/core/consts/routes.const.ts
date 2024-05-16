@@ -2,6 +2,7 @@ import { Route } from '@angular/router';
 import { Link } from 'general-components';
 import { HomePageComponent } from '../../components/pages/home-page/home-page.component';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact-page.component';
+import { FaqPageComponent } from '../../components/pages/faq-page/faq.page';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -15,6 +16,12 @@ export const CONTACT_PAGE_ROUTE: Route = {
   component: ContactPageComponent,
 };
 
+export const FAQ_PAGE_ROUTE: Route = {
+  path: 'faq',
+  data: { title: 'FAQ' },
+  component: FaqPageComponent,
+};
+
 const WILD_CARD_ROUTE: Route = {
   path: '**',
   redirectTo: '',
@@ -23,6 +30,7 @@ const WILD_CARD_ROUTE: Route = {
 export const ROUTES: Route[] = [
   HOME_PAGE_ROUTE,
   CONTACT_PAGE_ROUTE,
+  FAQ_PAGE_ROUTE,
   WILD_CARD_ROUTE,
 ];
 
@@ -31,6 +39,13 @@ const HOME: Link = {
     internal: `/${HOME_PAGE_ROUTE.path}`,
   },
   text: 'Cloud8',
+};
+
+const FAQ: Link = {
+  url: {
+    internal: `/${FAQ_PAGE_ROUTE.path}`,
+  },
+  text: 'FAQ',
 };
 
 const CONTACT: Link = {
@@ -54,13 +69,18 @@ const TORONTO_CITY_SKATE_IG: Link = {
   text: 'Toronto City Skate Instagram',
 };
 
+export const INTERNAL_LINKS = {
+  HOME,
+  CONTACT,
+  FAQ,
+};
+
 export const EXTERNAL_LINKS = {
   CLOUD_8_SKATE_IG,
   TORONTO_CITY_SKATE_IG,
 };
 
 export const LINKS = {
-  HOME,
-  CONTACT,
+  ...INTERNAL_LINKS,
   ...EXTERNAL_LINKS,
 };
