@@ -28,7 +28,6 @@ alias cdnx="cd ~/$REPO_NAME/projects/nx-workspace/"
 alias serve-harryliu-design="cdnx && npm run serve:personal-website"
 alias deploy-harryliu-design="cdnx && nx manual-deploy personal-website-frontend"
 alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'update site content' && gpush"
-alias pushc8spagecontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'update site content' && gpush"
 
 alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf && gc docs resume 'update resume' && gpush"
 alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
@@ -36,6 +35,9 @@ alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blo
 alias grind75="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75"
 # Toronto Alerts
 alias cdtorontoalerts="cdvb && cd projects/toronto-alerts"
+# Cloud8
+alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
+alias pushc8spagecontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'update site content' && gpush"
 # DJ Stuff
 alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
 alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
