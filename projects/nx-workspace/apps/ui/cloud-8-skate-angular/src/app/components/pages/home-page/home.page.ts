@@ -7,7 +7,7 @@ import { MarkdownPageComponent } from 'general-components';
 @Component({
   standalone: true,
   selector: 'app-home-page',
-  templateUrl: './home-page.component.html',
+  templateUrl: './home.page.html',
   imports: [
     GeneralLayoutComponent,
     ContactSectionComponent,

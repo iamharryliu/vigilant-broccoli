@@ -1,8 +1,8 @@
 import { Route } from '@angular/router';
 import { Link } from 'general-components';
-import { HomePageComponent } from '../../components/pages/home-page/home-page.component';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact-page.component';
 import { FaqPageComponent } from '../../components/pages/faq-page/faq.page';
+import { HomePageComponent } from '../../components/pages/home-page/home.page';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
