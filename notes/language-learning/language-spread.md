@@ -78,14 +78,17 @@
 | I am going to [person's] house | je vais chez [person] |                      |                  |                   |                 |
 | **Time**                       |                       |                      |                  |                   |                 |
 | now                            | nu                    | maintenant           | ahora            |
-| today                          | i dag                 | aujourdhui           | hoy              |
-| tonight                        | i kväll               | ce soir              | esta noche       |
-| tomorrow                       | i morgon              | demain               | mañana           |
-| yesterday                      | i går                 | hier                 | ayer             |
+| today                          | idag                  | aujourdhui           | hoy              |
+| tonight                        | ikväll                | ce soir              | esta noche       |
+| tomorrow                       | imorgon               | demain               | mañana           |
+| yesterday                      | igår                  | hier                 | ayer             |
 | never                          | aldrig                | jamais               | nunca            |
 | always                         | alltid                | toujours             | siempre          | sempre            | sempre          |
 | sometimes                      | ibland                | quelquefois          | a veces          |                   |                 |
 | later                          | senare                | plus tard            | mas tarde        |                   |                 |
+| afternoon                      | eftermiddag           | après-midi           | tarde            |
+| evening                        | kväll                 | soir                 | noche            |
+| night                          | natt                  | nuit                 | noche            |
 | **Question Words**             |                       |                      |                  |
 | who                            | vem/vilka             | qui                  | quien            |
 | what                           | vad                   | que                  | que              |
