@@ -1,21 +1,17 @@
 # FAQ
 
-## What is Cloud8?
-
-Cloud8 is a Toronto based skating collective. Our mission is to live our best skate lives.
-
 ## Where can I find Cloud8?
 
-Cloud8 can usually be found at either <a href="https://maps.app.goo.gl/Aqu6WuqkiFAagZEK8" target="_blank">The Bentway</a>, <a href="https://maps.app.goo.gl/BEv617tQgPUvRZGW8" target="_blank">College Park</a>, and ice skating rinks around Toronto.
+Cloud8 can usually be found at either [The Bentway](https://maps.app.goo.gl/Aqu6WuqkiFAagZEK8), [College Park](https://maps.app.goo.gl/BEv617tQgPUvRZGW8), and various ice skating rinks around Toronto.
 
-## How can I join the group?
+## What kind of skating does Cloud8 do?
 
-Simple! Just show up and skate with us!
+Cloud8 welcomes enthusiasts of all skating styles, including inline, quad, and ice skating. No matter your preference, you'll fit right in!
 
-## What kind of skating do you guys do?
+## Do you have events?
 
-Any kind of skating really. There are inline skaters, quad skaters, and ice skaters in the group. If you are interested in any of these you will fit right in.
+Yes, we do! Follow our Instagram page [@cloud8skate](https://www.instagram.com/cloud8skate/) to stay updated on our events.
 
-## Do you guys have events?
+## How can I join?
 
-Pay attention to our instagram page <a href="https://www.instagram.com/cloud8skate/" target="_blank">@cloud8skate</a>.
+It's simple! Just show up and skate with us!
