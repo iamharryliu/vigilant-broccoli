@@ -2,46 +2,45 @@
 
 ## Sauce/Oil
 
-- garlic confit (roast)
-- mayo (mix)
+- Garlic confit (roast)
+- Mayo (mix)
 
 ## Bake
 
-- flatbread
-- sourdough
-- foccacia
+- Flatbread
+- Sourdough
+- Foccacia
 
 ## Roast
 
-- roasted peppers
-- roasted potatoes (roast)
-- roasted garlic (roast)
-- roasted veggies (roast)
+- Garlic
+- Potatoes
+- Peppers
 
 ## Pickling
 
-- carrots
-- cucumbers
-- red onions
+- Red onions
+- Carrots
+- Cucumbers
 
 ## Caramelization
 
-- caramelized onions
+- Caramelized onions
 
 ## Salads
 
-- lettuce leaves
-- cucumber
-- green bell pepper
-- cherry tomatoes
-- feta cheese
-- thinly sliced red onion
-- mint leaves
-- olives
-- olive oil
-- garlic clove
-- vinegar
-- dijon mustard
-- dried oregano
-- sea salt
-- black pepper
+- Lettuce leaves
+- Cucumber
+- Green bell pepper
+- Cherry tomatoes
+- Feta cheese
+- Thinly sliced red onion
+- Mint leaves
+- Olives
+- Olive oil
+- Garlic clove
+- Vinegar
+- Dijon mustard
+- Dried oregano
+- Sea salt
+- Black pepper
