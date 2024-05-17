@@ -61,6 +61,8 @@
 | another                        | en till               |                      |                  |
 | without                        |                       | sans                 | sin              |                   |
 | not                            |                       | pas                  |                  |                   |
+| hot                            | varme                 | chaud                | caliente         |                   |
+| cold                           | kall                  | froid                | frío             |                   |
 | **Possessive Words**           |                       |                      |                  |
 | his/hers                       | hans/hennes           |                      |                  |
 | yours                          | er                    | vôtre                | tuya             |
@@ -143,5 +145,4 @@
 | I have ordered                 |                       | j'ai commande        | he pedido        |
 | I have eaten                   |                       | j'ai mange           | he comido        |
 | I would                        |                       | je voudrais          | quiero           |
-| it was                         |                       | c'etait              | fue              |
-|                                |                       |                      | estuvo           |
+| it was                         | var                   | c'etait              | estuvo /fue?     |
