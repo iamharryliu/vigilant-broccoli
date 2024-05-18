@@ -17,4 +17,8 @@ import { MarkdownPageComponent } from 'general-components';
 export class HomePageComponent {
   EXTERNAL_LINKS = EXTERNAL_LINKS;
   contentFilepath = 'assets/site-content/about.md';
+
+  scrollTo(section: string) {
+    document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+  }
 }

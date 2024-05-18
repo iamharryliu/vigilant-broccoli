@@ -1,5 +1,5 @@
 <app-general-layout>
-  <div class="relative h-dvh">
+  <div class="h-dvh relative">
     <img
       class="absolute w-full h-full object-contain"
       src="assets/cloud8skate.png"
@@ -23,14 +23,46 @@
         </a>
       </div>
     </div>
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+      <button (click)="scrollTo('about-section')" class="btn-primary">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
   </div>
   <div class="lg:w-1/2 mx-auto pt-8 pb-8">
-    <div class="flex h-dvh">
+    <div class="flex h-dvh relative" id="about-section">
       <div class="w-full m-auto">
         <lib-markdown-page [filepath]="contentFilepath"></lib-markdown-page>
       </div>
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+        <button (click)="scrollTo('contact-section')" class="btn-primary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
     </div>
-    <div class="flex h-dvh">
+    <div class="flex h-dvh" id="contact-section">
       <div class="w-full m-auto">
         <app-contact-section></app-contact-section>
       </div>
