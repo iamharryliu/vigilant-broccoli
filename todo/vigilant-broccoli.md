@@ -3,9 +3,12 @@
 - Q1
 
   - github CLI manager - https://cli.github.com/manual/gh_secret_set
+  - script to check links if they still work
   - enhance core libraries
 
-    - testing
+    - angular lib - enhance navbar
+      - handle isNavbar open on breakpoints
+    - testing?
 
   - feat: virus scanning
   - feat: budget alerts for services
