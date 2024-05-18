@@ -3,6 +3,7 @@ import { Link } from 'general-components';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact-page.component';
 import { FaqPageComponent } from '../../components/pages/faq-page/faq.page';
 import { HomePageComponent } from '../../components/pages/home-page/home.page';
+import { MorePageComponent } from '../../components/pages/more-page/more.page';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -22,6 +23,12 @@ export const FAQ_PAGE_ROUTE: Route = {
   component: FaqPageComponent,
 };
 
+export const MORE_PAGE_ROUTE: Route = {
+  path: 'more',
+  data: { title: 'More Info' },
+  component: MorePageComponent,
+};
+
 const WILD_CARD_ROUTE: Route = {
   path: '**',
   redirectTo: '',
@@ -30,6 +37,7 @@ const WILD_CARD_ROUTE: Route = {
 export const ROUTES: Route[] = [
   HOME_PAGE_ROUTE,
   CONTACT_PAGE_ROUTE,
+  MORE_PAGE_ROUTE,
   FAQ_PAGE_ROUTE,
   WILD_CARD_ROUTE,
 ];
@@ -46,6 +54,12 @@ const FAQ: Link = {
     internal: `/${FAQ_PAGE_ROUTE.path}`,
   },
   text: 'FAQ',
+};
+const MORE: Link = {
+  url: {
+    internal: `/${MORE_PAGE_ROUTE.path}`,
+  },
+  text: 'More Info',
 };
 
 const CONTACT: Link = {
@@ -73,6 +87,7 @@ export const INTERNAL_LINKS = {
   HOME,
   CONTACT,
   FAQ,
+  MORE,
 };
 
 export const EXTERNAL_LINKS = {
