@@ -14,6 +14,7 @@ alias gphotos='chrome "https://photos.google.com/?pli=1"'
 alias gcalendar='chrome "https://calendar.google.com/calendar/u/0/r"'
 alias gstorage='chrome "https://one.google.com/storage/management"'
 alias gdrive='chrome "https://drive.google.com/drive/u/0/my-drive"'
+alias gmaps='chrome "https://www.google.com/maps"'
 # Apple
 alias findmy='chrome "https://www.icloud.com/find/"'
 alias applestorage='chrome "https://www.icloud.com/storage/"'
