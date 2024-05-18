@@ -1,7 +1,13 @@
 # TODO
 
-## Quadrant Template
-
 - Q1 - important, urgent
+  - image gallery
 - Q2 - important, not urgent
-- Q3 - not important, urgent
+  - more info
+    - skate locations
+    - tutorial videos
+  - skate explanations
+    - wheel setups - flat, rocker, anti rocker, toe stop, etc...
+    - wheel sizes
+    - wheel durometer
+    -
