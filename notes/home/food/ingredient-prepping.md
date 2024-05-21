@@ -5,11 +5,11 @@
 - Garlic confit (roast)
 - Mayo (mix)
 
-## Bake
+## Bread
 
-- Flatbread
-- Sourdough
-- Foccacia
+- Sourdough Starter
+  - Scallion pancakes.
+  - Sourdough bread.
 
 ## Roast
 
