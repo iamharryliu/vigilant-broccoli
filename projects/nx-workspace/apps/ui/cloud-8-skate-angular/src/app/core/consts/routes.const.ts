@@ -4,6 +4,7 @@ import { ContactPageComponent } from '../../components/pages/contact-page/contac
 import { FaqPageComponent } from '../../components/pages/faq-page/faq.page';
 import { HomePageComponent } from '../../components/pages/home-page/home.page';
 import { MorePageComponent } from '../../components/pages/more-page/more.page';
+import { CalendarPageComponent } from '../../components/pages/calendar-page/calendar-page.component';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -29,6 +30,12 @@ export const MORE_PAGE_ROUTE: Route = {
   component: MorePageComponent,
 };
 
+export const CALENDAR_PAGE_ROUTE: Route = {
+  path: 'calendar',
+  data: { title: 'Calendar' },
+  component: CalendarPageComponent,
+};
+
 const WILD_CARD_ROUTE: Route = {
   path: '**',
   redirectTo: '',
@@ -38,6 +45,7 @@ export const ROUTES: Route[] = [
   HOME_PAGE_ROUTE,
   CONTACT_PAGE_ROUTE,
   MORE_PAGE_ROUTE,
+  CALENDAR_PAGE_ROUTE,
   FAQ_PAGE_ROUTE,
   WILD_CARD_ROUTE,
 ];
@@ -49,12 +57,20 @@ const HOME: Link = {
   text: 'Cloud8',
 };
 
+const CALENDAR: Link = {
+  url: {
+    internal: `/${CALENDAR_PAGE_ROUTE.path}`,
+  },
+  text: 'Calendar',
+};
+
 const FAQ: Link = {
   url: {
     internal: `/${FAQ_PAGE_ROUTE.path}`,
   },
   text: 'FAQ',
 };
+
 const MORE: Link = {
   url: {
     internal: `/${MORE_PAGE_ROUTE.path}`,
@@ -86,6 +102,7 @@ const TORONTO_CITY_SKATE_IG: Link = {
 export const INTERNAL_LINKS = {
   HOME,
   CONTACT,
+  CALENDAR,
   FAQ,
   MORE,
 };

@@ -7,7 +7,7 @@ More information for Toronto related skate places.
 
 | Venue                             | Location                                                                                                        | Type         |
 | :-------------------------------- | :-------------------------------------------------------------------------------------------------------------- | :----------- |
-| The Bentway                       | <a href="https://maps.app.goo.gl/7QMJpL29Bk3XusKP9" target="_blank">250 Fort York Blvd, Toronto, ON M5V 3K9</a> | Outdoor Rink |
+| The Bentway                       | <a href="https://maps.app.goo.gl/kTC4r7oZL8nwevrTA" target="_blank">250 Fort York Blvd, Toronto, ON M5V 3K9</a> | Outdoor Rink |
 | College Park                      | <a href="https://maps.app.goo.gl/RQdcdErBK22KMcmo9" target="_blank">444 Yonge St, Toronto, ON M5B 2H4</a>       | Outdoor Rink |
 | Toronto Metropolitan University\* | <a href="https://maps.app.goo.gl/3n2xZAexRvyMV28BA" target="_blank">350 Victoria St, Toronto, ON M5B 2K3</a>    | Outdoor Rink |
 | Nathan Phillips Square\*          | <a href="https://maps.app.goo.gl/7fXJKZe1Uh9DMwKo9" target="_blank">100 Queen St W, Toronto, ON M5H 2N1</a>     | Outdoor Rink |

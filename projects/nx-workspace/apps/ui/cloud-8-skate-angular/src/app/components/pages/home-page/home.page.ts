@@ -3,6 +3,7 @@ import { EXTERNAL_LINKS } from '../../../core/consts/routes.const';
 import { ContactSectionComponent } from '../../features/contact-section/contact-section.component';
 import { GeneralLayoutComponent } from '../../layouts/general-layout.component';
 import { MarkdownPageComponent } from 'general-components';
+import { CalendarSectionComponent } from '../../features/calendar-section/calendar-section.component';
 
 @Component({
   standalone: true,
@@ -12,6 +13,7 @@ import { MarkdownPageComponent } from 'general-components';
     GeneralLayoutComponent,
     ContactSectionComponent,
     MarkdownPageComponent,
+    CalendarSectionComponent,
   ],
 })
 export class HomePageComponent {
