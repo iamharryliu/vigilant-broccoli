@@ -4,8 +4,8 @@
 
 - Time: Clothing exchange all day, 5:30 races at the Bentway, Solo Inline city skate starts at 7:30pm
 - Location: <a href="https://maps.app.goo.gl/kTC4r7oZL8nwevrTA" target="_blank">Bentway, 50 Fort York Blvd, Toronto, ON M5V 3K9</a>
-- <a href="https://www.instagram.com/p/C6wnqDuxVxL/" target="_blank">Details for Solo Inline Skate</a>
 - Clothing Exchange: Bring clothes to exchange or sell. We will hopefully have vehicles for storage for those of us that are going on the city skate.
+- Solo Inline Skate: <a href="https://www.instagram.com/p/C6wnqDuxVxL/" target="_blank">Details</a>
 
 #### Saturday May 25, 2024 - Toronto Roll
 
