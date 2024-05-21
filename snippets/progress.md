@@ -16,3 +16,4 @@
 2024-05-07 - coding - Started to learn Go Lang to boost my devops skills and write faster apps.
 2024-05-07 - cooking - Tried making braised pork for the first time. It came out pretty good. Think it would hit a lot harder with some oyster sauce to top it off.
 2024-05-13 - coding - CORS across different sites (cloud8skate.com to api.harryliu.design).
+2024-05-21 - skating - Learned how to do outside edge mohawawk.
