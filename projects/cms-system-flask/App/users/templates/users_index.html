@@ -1,0 +1,18 @@
+{% extends 'components/layout.html' %} {% block content %}
+<h1>Current User Status:</h1>
+{% if current_user.is_authenticated %}
+<div>Current User: {{current_user}}</div>
+<div>
+  <a href="{{url_for('users.logout')}}">Logout</a>
+</div>
+
+{% else %}
+<div>No user currently logged in.</div>
+<div>
+  <a href="{{url_for('users.login')}}">Login</a><br />
+  <a href="{{url_for('users.register')}}">Register</a>
+</div>
+{% endif %}
+
+<h1>Users</h1>
+{{users}} {% endblock %}
