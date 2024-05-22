@@ -10,14 +10,14 @@ import { LINK_TYPE, Link, LinkType } from '../models';
   imports: [CommonModule, RouterModule],
 })
 export class LinkComponent {
-  @Input() type: LinkType = LINK_TYPE.EXTERNAL;
+  @Input() type?: LinkType = LINK_TYPE.EXTERNAL;
   @Input() link!: Link;
   @Input() textSize: 'sm' | 'lg' | undefined;
   @Input() isLight = false;
   @Input() isBold = false;
-  @Output() clickEmitter = new EventEmitter();
+  @Output() clickEmitter = new EventEmitter<void>();
 
   click() {
-    this.clickEmitter.emit(null);
+    this.clickEmitter.emit();
   }
 }
