@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LinkComponent } from '../link/link.component';
-import { Link } from '../models';
+import { Link, TextSize } from '../models';
 
 @Component({
   standalone: true,
@@ -12,7 +12,7 @@ import { Link } from '../models';
 })
 export class NavbarComponent {
   @Input() links: Link[] = [];
-  @Input() textSize: 'sm' | 'lg' | undefined;
+  @Input() textSize?: TextSize;
   @Input() isLight = false;
   @Input() isBold = false;
   isNavbarOpen = false;
