@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class DocsMdPageService {
   isFileSelected = true;
-  selectedFile? = 'assets/md-library/docs-md.md';
+  selectedFile? = 'assets/docs-md.md';
 
   selectFile(filepath: string) {
     this.selectedFile = `assets/md-library/notes/${filepath}`;
