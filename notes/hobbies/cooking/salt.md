@@ -6,6 +6,10 @@
 - Salt brings out the flavour of anything that it penetrates
 - Salt reduces bitterness and enhancles sweetness
 
+### With Protein
+
+- Helps meat proteins retain moisture when salted early.
+
 ## 2 Kinds of Salt to Have
 
 - Bulk bought kosher or sea salt for everyday cooking.
