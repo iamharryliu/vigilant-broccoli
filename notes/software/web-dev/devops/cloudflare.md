@@ -29,6 +29,8 @@ npx wrangler delete [name of worker]
 
 ### R2
 
+- Configure access tokens to access desired buckets.
+
 ```
 wrangler r2 bucket create [YOUR_BUCKET_NAME]
 wrangler r2 bucket list
