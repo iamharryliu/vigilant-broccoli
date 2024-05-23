@@ -1,7 +1,7 @@
 import sys
 from App import create_app, db, bcrypt
 from App.models import User
-from App.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG, PROD_CONFIG
+from App.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG
 from utils.mock.json_placeholder import get_users
 
 COMMANDS = {
@@ -45,9 +45,6 @@ class DevManager:
         self.app.run(debug=True)
 
     def setup_db(self, db):
-        app = create_app()
-        ctx = app.app_context()
-        ctx.push()
         db.drop_all()
         db.create_all()
 
