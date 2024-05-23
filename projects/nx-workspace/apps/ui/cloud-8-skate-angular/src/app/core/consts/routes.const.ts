@@ -5,6 +5,7 @@ import { FaqPageComponent } from '../../components/pages/faq-page/faq.page';
 import { HomePageComponent } from '../../components/pages/home-page/home.page';
 import { MorePageComponent } from '../../components/pages/more-page/more.page';
 import { CalendarPageComponent } from '../../components/pages/calendar-page/calendar-page.component';
+import { TerminologyPageComponent } from '../../components/pages/terminology-page/terminology.page';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -30,6 +31,12 @@ export const MORE_PAGE_ROUTE: Route = {
   component: MorePageComponent,
 };
 
+export const TERMINOLOGY_PAGE_ROUTE: Route = {
+  path: 'skate-terminology',
+  data: { title: 'Skate Terminology' },
+  component: TerminologyPageComponent,
+};
+
 export const CALENDAR_PAGE_ROUTE: Route = {
   path: 'calendar',
   data: { title: 'Calendar' },
@@ -44,6 +51,7 @@ const WILD_CARD_ROUTE: Route = {
 export const ROUTES: Route[] = [
   HOME_PAGE_ROUTE,
   CONTACT_PAGE_ROUTE,
+  TERMINOLOGY_PAGE_ROUTE,
   MORE_PAGE_ROUTE,
   CALENDAR_PAGE_ROUTE,
   FAQ_PAGE_ROUTE,
