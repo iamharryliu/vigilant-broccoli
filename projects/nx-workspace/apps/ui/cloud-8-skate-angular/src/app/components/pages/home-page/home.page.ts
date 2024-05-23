@@ -4,6 +4,7 @@ import { ContactSectionComponent } from '../../features/contact-section/contact-
 import { GeneralLayoutComponent } from '../../layouts/general-layout.component';
 import { MarkdownPageComponent } from 'general-components';
 import { CalendarSectionComponent } from '../../features/calendar-section/calendar-section.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -14,6 +15,7 @@ import { CalendarSectionComponent } from '../../features/calendar-section/calend
     ContactSectionComponent,
     MarkdownPageComponent,
     CalendarSectionComponent,
+    RouterModule,
   ],
 })
 export class HomePageComponent {

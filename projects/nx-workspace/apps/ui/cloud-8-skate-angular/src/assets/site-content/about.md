@@ -1,8 +1,10 @@
 # Cloud8
 
-Cloud8 is a Toronto-based skating collective with a mission to live our best skate lives. You can usually find us goofing around at [The Bentway](https://maps.app.goo.gl/Aqu6WuqkiFAagZEK8) or [College Park](https://maps.app.goo.gl/BEv617tQgPUvRZGW8).
+Cloud8 is a Toronto-based skating collective with a mission to live our best skate lives. You can usually find us goofing around at [The Bentway](https://maps.app.goo.gl/Aqu6WuqkiFAagZEK8) or [College Park](https://maps.app.goo.gl/BEv617tQgPUvRZGW8). We are passionate for all types of skating and styles, inline skating/rollerblading, rollerskating/quadskating, and ice skating.
 
-Follow our Instagram page [@cloud8skate](https://www.instagram.com/cloud8skate/)!
-
+[Calendar](https://cloud8skate.com/calendar)
 [FAQ](https://cloud8skate.com/faq)
 [More Info](https://cloud8skate.com/more)
+
+Follow us on Instagram
+[@cloud8skate](https://www.instagram.com/cloud8skate/)!
