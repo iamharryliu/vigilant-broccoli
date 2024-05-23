@@ -6,10 +6,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
-import {
-  CredentialsInterceptorService,
-  RecaptchaInterceptor,
-} from 'general-components';
+import { RecaptchaInterceptor } from 'general-components';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { ENVIRONMENT } from '../environments/environment';
 import {
@@ -26,12 +23,6 @@ export const appConfig: ApplicationConfig = {
     ),
     importProvidersFrom(NgxGoogleAnalyticsRouterModule),
     provideHttpClient(withInterceptorsFromDi()),
-
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: CredentialsInterceptorService,
-      multi: true,
-    },
     {
       provide: RECAPTCHA_V3_SITE_KEY,
       useValue: ENVIRONMENT.RECAPTCHA_V3_SITE_KEY,

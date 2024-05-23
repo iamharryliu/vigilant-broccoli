@@ -17,21 +17,21 @@ users_blueprint = Blueprint(
 )
 
 
-@users_blueprint.route("")
-def index():
-    users = User.query.all()
-    return render_template("users_index.html", title="Users Index", users=users)
+# @users_blueprint.route("")
+# def index():
+#     users = User.query.all()
+#     return render_template("users_index.html", title="Users Index", users=users)
 
 
-@users_blueprint.route("/register", methods=["GET", "POST"])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        register_user()
-        return redirect(url_for("main.index"))
-    return render_template("forms/register_form.html", title="Register", form=form)
+# @users_blueprint.route("/register", methods=["GET", "POST"])
+# def register():
+#     if current_user.is_authenticated:
+#         return redirect(url_for("main.index"))
+#     form = RegistrationForm()
+#     if form.validate_on_submit():
+#         register_user()
+#         return redirect(url_for("main.index"))
+#     return render_template("forms/register_form.html", title="Register", form=form)
 
 
 @users_blueprint.route("/login", methods=["GET", "POST"])
@@ -49,6 +49,6 @@ def logout():
     return handle_logout()
 
 
-@users_blueprint.route("/verify")
-def verify_user():
-    return handle_verify_user()
+# @users_blueprint.route("/verify")
+# def verify_user():
+#     return handle_verify_user()

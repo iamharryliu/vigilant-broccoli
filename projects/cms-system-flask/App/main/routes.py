@@ -1,7 +1,8 @@
-from flask import Blueprint, redirect, render_template, url_for
+from flask import Blueprint, redirect, render_template, url_for, request, flash
 from flask_login import login_required, current_user
 from App.main.utils import handle_contact_message
-from App.main.forms import ContactForm
+from App.main.forms import ContactForm, ContentForm
+from App.utils import save_text, get_text
 
 main_blueprint = Blueprint("main", __name__, template_folder="templates")
 
@@ -22,7 +23,15 @@ def contact():
     return render_template("forms/contact_form.html", title="Contact", form=form)
 
 
-@main_blueprint.route("/dashboard")
+@main_blueprint.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
-    return render_template("dashboard.html", title="Dashboard")
+    form = ContentForm()
+    if request.method == "GET":
+        form.content.data = get_text()
+    if form.validate_on_submit():
+        content = form.content.data
+        save_text(content)
+        flash(f"You have successfully updated the content.", "success")
+        return redirect(url_for("main.dashboard"))
+    return render_template("dashboard.html", title="Dashboard", form=form)

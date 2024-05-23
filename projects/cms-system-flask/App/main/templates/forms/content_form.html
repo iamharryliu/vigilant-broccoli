@@ -1,0 +1,15 @@
+<form method="POST">
+  {{ form.hidden_tag() }}
+  <fieldset>
+    <legend>Page Content</legend>
+    {{ form.content.label(class="form-label") }} {% if form.content.errors %} {{
+    form.content(class="form-control form-control-lg is-invalid") }}
+    <div class="invalid-feedback">
+      {% for error in form.phone.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %} {{ form.content(class="form-control mb-4", rows=20) }} {% endif
+    %} {{ form.submit(class="btn btn-primary") }}
+  </fieldset>
+</form>
