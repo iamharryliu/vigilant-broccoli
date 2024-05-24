@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, redirect, url_for
 from App.const import HTTP_STATUS_CODE
 
 errors_blueprint = Blueprint("errors", __name__)
@@ -25,7 +25,7 @@ def error_403(error):
 # Not found error.
 @errors_blueprint.app_errorhandler(HTTP_STATUS_CODE.NOT_FOUND_ERROR)
 def error_404(error):
-    return {"error": str(error)}, HTTP_STATUS_CODE.NOT_FOUND_ERROR
+    return redirect(url_for("main.index"))
 
 
 # Internal server error.
