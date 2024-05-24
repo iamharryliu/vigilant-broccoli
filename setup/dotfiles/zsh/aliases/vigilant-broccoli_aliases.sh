@@ -34,6 +34,8 @@ alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/H
 alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
 # Grind 75
 alias grind75="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75"
+# CMS System
+alias servecmssystem="cdvb; cd projects/cms-system-flask/; venvon; flaskrun"
 # Toronto Alerts
 alias cdtorontoalerts="cdvb && cd projects/toronto-alerts/toronto-alerts-flask"
 alias servetorontoalerts="cdtorontoalerts && venvon && flaskrun"
