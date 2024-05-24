@@ -15,6 +15,7 @@ class ENVIRONMENT_TYPE:
 
 
 class SERVER_CONFIG:
+    APP_NAME = "Flask Demo"
     PORT_NUMBER = PORT_NUMBER
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY")
