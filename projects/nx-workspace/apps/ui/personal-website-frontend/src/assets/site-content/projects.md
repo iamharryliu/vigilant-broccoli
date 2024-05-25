@@ -9,6 +9,7 @@
 ### Github Action Status
 
 [![App Health Check Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-action.yml)
+[![CMS Flask - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cms-flask-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cms-flask-action.yml)
 [![Deploy Nx Apps - Deploy Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-action.yml)
 [![Deploy harryliu.design Angular - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-harryliu-design-angular-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-harryliu-design-angular-action.yml)
 [![Toronto Alerts Flask - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-action.yml)
