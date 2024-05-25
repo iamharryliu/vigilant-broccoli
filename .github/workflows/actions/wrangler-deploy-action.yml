@@ -1,0 +1,34 @@
+name: Deploy Cloudflare App - Deploy App
+on:
+  push: { branches: ['main'] }
+  schedule: [{ cron: '* * * * *' }]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    defaults:
+      run:
+        working-directory: [dir]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - name: Build [app_name]
+        run: [run_build_script]
+      - name: Deploy [app_name]
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy [dist_path] --project-name [project_name]

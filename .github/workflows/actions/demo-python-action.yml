@@ -1,7 +1,7 @@
 name: Demo Python Action
 
 on:
-  push: { branches: ['branch_name'] }
+  push: { branches: ['main'] }
   schedule: [{ cron: '* * * * *' }]
 
 jobs:
