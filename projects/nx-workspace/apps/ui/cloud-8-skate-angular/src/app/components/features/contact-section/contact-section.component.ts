@@ -11,5 +11,5 @@ import { APP_NAME } from '@prettydamntired/personal-website-lib';
 })
 export class ContactSectionComponent {
   APP_NAME = APP_NAME.CLOUD_8_SKATE;
-  LINKS = [LINKS.CLOUD_8_SKATE_IG, LINKS.TORONTO_CITY_SKATE_IG];
+  LINKS = [LINKS.CLOUD_8_SKATE_IG];
 }
