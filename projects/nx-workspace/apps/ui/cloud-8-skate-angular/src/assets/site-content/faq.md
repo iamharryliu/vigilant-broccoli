@@ -15,3 +15,7 @@ Yes, we do! Pay attention to our [calendar](https://cloud8skate.com/calendar) an
 ## How can I join?
 
 It's simple! Just show up and skate with us!
+
+## Where can I find the cool music you guys listen to? 🔥🔥
+
+You can find that heat on our [playlists page](https://cloud8skate.com/playlists)! 👀

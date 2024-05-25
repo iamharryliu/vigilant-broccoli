@@ -13,6 +13,7 @@ export class NavbarSectionComponent {
   links = [
     { ...LINKS.HOME, type: LINK_TYPE.INTERNAL },
     { ...LINKS.CALENDAR, type: LINK_TYPE.INTERNAL },
+    { ...LINKS.PLAYLISTS, type: LINK_TYPE.INTERNAL },
     { ...LINKS.FAQ, type: LINK_TYPE.INTERNAL },
     { ...LINKS.MORE, type: LINK_TYPE.INTERNAL },
     { ...LINKS.CONTACT, type: LINK_TYPE.INTERNAL },

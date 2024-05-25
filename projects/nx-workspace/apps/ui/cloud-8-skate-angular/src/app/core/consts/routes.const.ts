@@ -6,6 +6,7 @@ import { HomePageComponent } from '../../components/pages/home-page/home.page';
 import { MorePageComponent } from '../../components/pages/more-page/more.page';
 import { CalendarPageComponent } from '../../components/pages/calendar-page/calendar-page.component';
 import { TerminologyPageComponent } from '../../components/pages/terminology-page/terminology.page';
+import { PlaylistsPageComponent } from '../../components/pages/playlists-page/playlists.page';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -31,6 +32,12 @@ export const MORE_PAGE_ROUTE: Route = {
   component: MorePageComponent,
 };
 
+export const PLAYLISTS_PAGE_ROUTE: Route = {
+  path: 'playlists',
+  data: { title: 'Playlists' },
+  component: PlaylistsPageComponent,
+};
+
 export const TERMINOLOGY_PAGE_ROUTE: Route = {
   path: 'skate-terminology',
   data: { title: 'Skate Terminology' },
@@ -51,10 +58,11 @@ const WILD_CARD_ROUTE: Route = {
 export const ROUTES: Route[] = [
   HOME_PAGE_ROUTE,
   CONTACT_PAGE_ROUTE,
-  TERMINOLOGY_PAGE_ROUTE,
   MORE_PAGE_ROUTE,
   CALENDAR_PAGE_ROUTE,
   FAQ_PAGE_ROUTE,
+  PLAYLISTS_PAGE_ROUTE,
+  TERMINOLOGY_PAGE_ROUTE,
   WILD_CARD_ROUTE,
 ];
 
@@ -83,7 +91,7 @@ const MORE: Link = {
   url: {
     internal: `/${MORE_PAGE_ROUTE.path}`,
   },
-  text: 'More Info',
+  text: 'More',
 };
 
 const CONTACT: Link = {
@@ -91,6 +99,13 @@ const CONTACT: Link = {
     internal: `/${CONTACT_PAGE_ROUTE.path}`,
   },
   text: 'Contact',
+};
+
+const PLAYLISTS: Link = {
+  url: {
+    internal: `/${PLAYLISTS_PAGE_ROUTE.path}`,
+  },
+  text: 'Playlists',
 };
 
 const CLOUD_8_SKATE_IG: Link = {
@@ -113,6 +128,7 @@ export const INTERNAL_LINKS = {
   CALENDAR,
   FAQ,
   MORE,
+  PLAYLISTS,
 };
 
 export const EXTERNAL_LINKS = {

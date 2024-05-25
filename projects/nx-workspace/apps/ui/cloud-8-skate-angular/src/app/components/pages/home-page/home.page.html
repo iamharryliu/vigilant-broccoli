@@ -16,16 +16,21 @@
         </h2>
       </div>
       <div class="flex justify-center">
+        <button
+          (click)="scrollTo('about-section')"
+          class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic">
+          About
+        </button>
+        <a
+          routerLink="/calendar"
+          class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic">
+          Calendar
+        </a>
         <a
           [href]="EXTERNAL_LINKS.CLOUD_8_SKATE_IG.url.external"
           target="_blank"
-          class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-stone-300 dark:focus:ring-stone-900 text-xs lg:text-basic">
+          class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic">
           Instagram
-        </a>
-        <a
-          routerLink="/calendar"
-          class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-stone-300 dark:focus:ring-stone-900 text-xs lg:text-basic">
-          Event Calendar
         </a>
       </div>
     </div>
