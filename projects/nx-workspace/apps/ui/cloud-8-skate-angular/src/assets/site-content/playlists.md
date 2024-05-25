@@ -1,6 +1,6 @@
 ## Playlists
 
-Collection of Cloud8 Skate member playlists. 😮‍💨
+Collection of playlists curated by Cloud8. ☁️
 
 #### Playlists
 
