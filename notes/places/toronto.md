@@ -1,5 +1,10 @@
 # Toronto
 
+## Hobbies
+
+- [Skating](https://www.instagram.com/cloud8skate/)
+- [Salsa](https://torontodancesalsa.ca/)
+
 ## Scarborough
 
 ### Cafe
