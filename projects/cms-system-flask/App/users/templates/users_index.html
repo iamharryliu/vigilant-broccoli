@@ -1,4 +1,4 @@
-{% extends 'components/layout.html' %} {% block content %}
+{% extends 'layouts/layout.html' %} {% block content %}
 <h1>Current User Status:</h1>
 {% if current_user.is_authenticated %}
 <div>Current User: {{current_user}}</div>

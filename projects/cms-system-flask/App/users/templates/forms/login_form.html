@@ -1,4 +1,4 @@
-{% extends 'components/layout.html' %} {% block content %}
+{% extends 'layouts/layout.html' %} {% block content %}
 
 <form method="POST" action="{{ url_for('users.login') }}">
   {{ form.hidden_tag() }}
