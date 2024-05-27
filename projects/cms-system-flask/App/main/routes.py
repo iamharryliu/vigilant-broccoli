@@ -1,8 +1,17 @@
-from flask import Blueprint, redirect, render_template, url_for, request, flash
+from flask import (
+    Blueprint,
+    redirect,
+    render_template,
+    url_for,
+    request,
+    flash,
+    current_app,
+)
 from flask_login import login_required, current_user
 from App.main.utils import handle_contact_message
-from App.main.forms import ContactForm, ContentForm
+from App.main.forms import ContactForm, ContentForm, UploadForm
 from App.utils import save_text, get_text
+from App.utils import save_file
 
 main_blueprint = Blueprint("main", __name__, template_folder="templates")
 
@@ -28,10 +37,24 @@ def contact():
 def dashboard():
     form = ContentForm()
     if request.method == "GET":
-        form.content.data = get_text()
+        form.content.data = get_text(
+            f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md"
+        )
     if form.validate_on_submit():
         content = form.content.data
-        save_text(content)
+        save_text(content, f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md")
         flash(f"You have successfully updated the content.", "success")
         return redirect(url_for("main.dashboard"))
     return render_template("dashboard.html", title="Dashboard", form=form)
+
+
+@main_blueprint.route("/upload", methods=["GET", "POST"])
+@login_required
+def upload_images():
+    form = UploadForm()
+    if form.validate_on_submit():
+        files = form.images.data
+        for file in files:
+            save_file(file, f"images/{file.filename}")
+        return redirect(url_for("main.upload_images"))
+    return render_template("upload.html", form=form)

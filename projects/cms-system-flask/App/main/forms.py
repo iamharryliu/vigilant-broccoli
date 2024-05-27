@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField
+from wtforms import StringField, TextAreaField, SubmitField, MultipleFileField
 from wtforms.validators import DataRequired, Email
 
 
@@ -15,3 +15,8 @@ class ContactForm(FlaskForm):
 class ContentForm(FlaskForm):
     content = TextAreaField("Content", validators=[DataRequired()])
     submit = SubmitField("Send")
+
+
+class UploadForm(FlaskForm):
+    images = MultipleFileField("Images", validators=[DataRequired()])
+    submit = SubmitField("Upload")
