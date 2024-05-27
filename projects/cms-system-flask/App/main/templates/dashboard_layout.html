@@ -1,0 +1,23 @@
+{% extends 'components/layout.html' %} {% block content %}
+<h1>Dashboard</h1>
+{% include 'navtabs.html' %}
+<div class="row">
+  <div class="col-12 col-lg-2 mb-3">
+    <div class="list-group">
+      <a
+        href="{{url_for('main.dashboard')}}"
+        class="list-group-item list-group-item-action list-group-item-secondary"
+        >Calendar</a
+      >
+      <a
+        href="{{url_for('main.upload_images')}}"
+        class="list-group-item list-group-item-action list-group-item-secondary disabled"
+        >Images</a
+      >
+    </div>
+  </div>
+  <div class="col-12 col-lg-10">
+    {% block dashboard_content %} {% endblock %}
+  </div>
+</div>
+{% endblock %}

@@ -45,7 +45,7 @@ def dashboard():
         save_text(content, f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md")
         flash(f"You have successfully updated the content.", "success")
         return redirect(url_for("main.dashboard"))
-    return render_template("dashboard.html", title="Dashboard", form=form)
+    return render_template("edit_calendar_page.html", title="Dashboard", form=form)
 
 
 @main_blueprint.route("/upload", methods=["GET", "POST"])
@@ -53,8 +53,10 @@ def dashboard():
 def upload_images():
     form = UploadForm()
     if form.validate_on_submit():
+        directory_name = form.directory_name.data.strip()
         files = form.images.data
         for file in files:
-            save_file(file, f"images/{file.filename}")
+            save_file(file, f"images/{directory_name}/{file.filename}")
+        flash(f"You have successfully uploaded the {directory_name}.", "success")
         return redirect(url_for("main.upload_images"))
     return render_template("upload.html", form=form)

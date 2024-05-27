@@ -18,5 +18,6 @@ class ContentForm(FlaskForm):
 
 
 class UploadForm(FlaskForm):
+    directory_name = StringField("Album Name", validators=[DataRequired()])
     images = MultipleFileField("Images", validators=[DataRequired()])
     submit = SubmitField("Upload")
