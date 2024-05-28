@@ -22,6 +22,27 @@ const root = ReactDOM.createRoot(container);
 root.render(<>HTML Content </>);
 ```
 
+#### Re-render
+
+Happens on state value _changes_ if the value of a variable is reassigned. Re-render will not happen for object values that are modified.
+
+```
+// No re-render for modified list.
+list.push(value)
+setValue(list)
+// Re-renders for modified list.
+const newList = [...list]
+newList.push(value)
+set(newList)
+
+// No re-render for modified object.
+dict.key = value
+// Re-renders for modified object.
+const newDict = {...dict}
+newDict.key = value
+set(newDict)
+```
+
 ## Event Handling
 
 ```
@@ -98,15 +119,17 @@ const Layout = () => {
 };
 ```
 
-## Hooks
+## State Management
 
-### useState
+### Hooks
+
+#### useState
 
 ```
 const [state, setState] = useState(data);
 ```
 
-### setState
+#### setState
 
 ```
 setState(previousState => {
@@ -114,7 +137,7 @@ setState(previousState => {
 });
 ```
 
-## useReducer
+#### useReducer
 
 ```
 const reducer = (state, action) => {
@@ -138,7 +161,7 @@ function Component() {
 }
 ```
 
-### useEffect
+#### useEffect
 
 ```
 useEffect(() => {
@@ -156,7 +179,7 @@ useEffect(() => {
 }, [state, ...]);
 ```
 
-### createContext
+#### createContext
 
 ```
 import { useState, createContext } from "react";
@@ -185,7 +208,7 @@ function NestedComponent() {
 }
 ```
 
-### useRef
+#### useRef
 
 useRef is used to persist values between renders and prevent infinite re-renders.
 
@@ -225,7 +248,7 @@ useEffect(() => {
 />
 ```
 
-## useCallback
+#### useCallback
 
 ```
 // Will ALWAYS get hit on re-render.
@@ -239,7 +262,7 @@ const fn = useCallback(() => {
 }, [props]);
 ```
 
-## useMemo
+#### useMemo
 
 ```
 const value = expensiveCalculation(state);
