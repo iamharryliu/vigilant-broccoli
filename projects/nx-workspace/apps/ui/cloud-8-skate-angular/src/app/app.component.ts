@@ -7,10 +7,11 @@ import {
   Router,
   RouterModule,
 } from '@angular/router';
+import { GeneralLayoutComponent } from './components/layouts/general-layout.component';
 
 @Component({
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, GeneralLayoutComponent],
   selector: 'app-root',
   templateUrl: './app.component.html',
 })

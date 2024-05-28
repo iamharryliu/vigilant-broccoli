@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { EXTERNAL_LINKS } from '../../../core/consts/routes.const';
 import { ContactSectionComponent } from '../../features/contact-section/contact-section.component';
-import { GeneralLayoutComponent } from '../../layouts/general-layout.component';
 import { MarkdownPageComponent } from 'general-components';
 import { CalendarSectionComponent } from '../../features/calendar-section/calendar-section.component';
 import { RouterModule } from '@angular/router';
@@ -11,7 +10,6 @@ import { RouterModule } from '@angular/router';
   selector: 'app-home-page',
   templateUrl: './home.page.html',
   imports: [
-    GeneralLayoutComponent,
     ContactSectionComponent,
     MarkdownPageComponent,
     CalendarSectionComponent,
