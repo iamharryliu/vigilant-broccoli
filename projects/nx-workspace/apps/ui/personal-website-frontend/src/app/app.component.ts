@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, effect, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import {
   ActivatedRoute,
@@ -6,7 +6,6 @@ import {
   NavigationEnd,
   Router,
 } from '@angular/router';
-import { filter, tap } from 'rxjs';
 import { AppService } from './core/services/app.service';
 import { TAILWIND_BREAKPOINTS } from '@prettydamntired/test-lib';
 import { BlogService } from './core/services/blog.service';
@@ -15,7 +14,9 @@ import { BlogService } from './core/services/blog.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
+  private navigatedSignal = signal<NavigationEnd | null>(null);
+
   constructor(
     private router: Router,
     private titleService: Title,
@@ -24,18 +25,27 @@ export class AppComponent implements OnInit {
     private blogService: BlogService,
   ) {
     this.checkWindowSize();
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.navigatedSignal.set(event);
+      }
+    });
+
+    effect(
+      () => {
+        if (this.navigatedSignal()) {
+          this.handlePageNavigate();
+        }
+      },
+      { allowSignalWrites: true },
+    );
   }
 
-  ngOnInit(): void {
-    this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationEnd),
-        tap(() => {
-          window.scrollTo(0, 0);
-          this.setTitle();
-        }),
-      )
-      .subscribe();
+  private handlePageNavigate() {
+    window.scrollTo(0, 0);
+    this.setTitle();
+    this.navigatedSignal.set(null);
   }
 
   private setTitle(): void {
