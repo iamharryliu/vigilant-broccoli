@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import {
   ActivatedRoute,
@@ -7,7 +7,6 @@ import {
   Router,
   RouterModule,
 } from '@angular/router';
-import { filter, tap } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -15,23 +14,34 @@ import { filter, tap } from 'rxjs';
   selector: 'app-root',
   templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
+  private navigatedSignal = signal<NavigationEnd | null>(null);
+
   constructor(
     private router: Router,
     private titleService: Title,
     private route: ActivatedRoute,
-  ) {}
+  ) {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.navigatedSignal.set(event);
+      }
+    });
 
-  ngOnInit(): void {
-    this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationEnd),
-        tap(() => {
-          window.scrollTo(0, 0);
-          this.setTitle();
-        }),
-      )
-      .subscribe();
+    effect(
+      () => {
+        if (this.navigatedSignal()) {
+          this.handlePageNavigate();
+        }
+      },
+      { allowSignalWrites: true },
+    );
+  }
+
+  private handlePageNavigate() {
+    window.scrollTo(0, 0);
+    this.setTitle();
+    this.navigatedSignal.set(null);
   }
 
   private setTitle(): void {
