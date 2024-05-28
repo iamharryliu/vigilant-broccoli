@@ -9,7 +9,7 @@ from flask import (
 )
 from flask_login import login_required
 from App.main.forms import ContentForm, UploadForm
-from App.utils import save_text, get_text, get_subdirectories
+from App.utils import save_text, get_text, get_subdirectories, get_filenames
 from App.utils import save_file
 
 cms_dashboard_blueprint = Blueprint(
@@ -26,6 +26,7 @@ def dashboard():
 @cms_dashboard_blueprint.route("page_content", methods=["GET", "POST"])
 @login_required
 def page_content():
+    filenames = get_filenames("content/")
     form = ContentForm()
     if request.method == "GET":
         form.content.data = get_text(
