@@ -1,6 +1,11 @@
-import { Component, Input, OnChanges, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  ViewEncapsulation,
+  effect,
+  input,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
 import { MarkdownService } from '../services/markdown.service';
 
 @Component({
@@ -11,12 +16,17 @@ import { MarkdownService } from '../services/markdown.service';
   templateUrl: './markdown.page.component.html',
   encapsulation: ViewEncapsulation.ShadowDom,
 })
-export class MarkdownPageComponent implements OnChanges {
-  @Input() filepath = '';
-  content$?: Observable<string>;
-  constructor(private mdService: MarkdownService) {}
+export class MarkdownPageComponent {
+  filepath = input('');
+  contentSignal = signal<string>('');
 
-  ngOnChanges(): void {
-    this.content$ = this.mdService.getParsedMdFile(this.filepath);
+  constructor(private mdService: MarkdownService) {
+    effect(() => {
+      if (this.filepath) {
+        this.mdService.getParsedMdFile(this.filepath()).subscribe(content => {
+          this.contentSignal.set(content);
+        });
+      }
+    });
   }
 }
