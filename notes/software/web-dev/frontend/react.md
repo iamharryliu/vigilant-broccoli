@@ -112,6 +112,30 @@ setState(previousState => {
 });
 ```
 
+## useReducer
+
+```
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "value":
+      // has acess to action data
+      return change(state)
+    default:
+      return state;
+  }
+};
+
+function Component() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const handleComplete = (state) => {
+    dispatch({ type: "COMPLETE", ...data });
+  };
+
+  ...
+}
+```
+
 ### useEffect
 
 ```
