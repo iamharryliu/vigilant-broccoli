@@ -2,10 +2,17 @@
 
 ## Render
 
-```mermaid
-graph LR
-A[Render Phase] --> B[Commit Phase] --> C[DOM]
-```
+- React checks for state value changes top down from the root of the app component to the child components.
+- React flags components for re-rendering when their state or props change.
+- React will not re-render a component if:
+  - Initial state changed to the same value.
+  - State changed and after being changed again to the same value, will start bailing on subsequent renders.
+- Re-render flow: Render Phase -> Commit Phase -> DOM
+  - Render Phase - React calculates what changes need to be made to the virtual DOM. This is a pure computation phase where React creates a new virtual DOM tree to compare with the previous one.
+  - Commit Phase: React applies the necessary changes to the real DOM. This phase includes:
+    - Applying changes to the DOM.
+    - Invoking lifecycle methods like componentDidMount and componentDidUpdate.
+    - Running any effects scheduled with useEffect.
 
 ### Render Phase
 
@@ -13,11 +20,6 @@ A[Render Phase] --> B[Commit Phase] --> C[DOM]
 const container = document.getElementById('rootId');
 const root = ReactDOM.createRoot(container);
 root.render(<>HTML Content </>);
-```
-
-```mermaid
-graph LR
-A[JSX] --> B[React Elements] --> C[DOM]
 ```
 
 ## Event Handling
