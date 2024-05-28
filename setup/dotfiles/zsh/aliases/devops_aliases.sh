@@ -111,8 +111,8 @@ alias flysetsecrets='cdvb && cd projects/secrets-manager && python flyio_secrets
 # Postgres
 alias flysqlconn='flyctl postgres connect --app'
 alias flysqlproxy='flyctl proxy 5432 --app'
-alias flysqlconntest='flyctl postgres connect --app testsql'
-alias flysqlstarttest='flyctl proxy 5432 --app testsql'
+alias connectsql='flyctl postgres connect --app testsql'
+alias servesql='flyctl proxy 5432 --app testsql'
 # Token
 alias flycreatetoken='flyctl tokens create deploy --app'
 
