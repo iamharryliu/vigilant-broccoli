@@ -2,10 +2,22 @@
 
 ## Render
 
+```mermaid
+graph LR
+A[Render Phase] --> B[Commit Phase] --> C[DOM]
 ```
-const container = document.getElementById('root');
+
+### Render Phase
+
+```
+const container = document.getElementById('rootId');
 const root = ReactDOM.createRoot(container);
-root.render(<>Your HTML</>);
+root.render(<>HTML Content </>);
+```
+
+```mermaid
+graph LR
+A[JSX] --> B[React Elements] --> C[DOM]
 ```
 
 ## Event Handling
