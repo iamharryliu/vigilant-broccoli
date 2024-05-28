@@ -57,3 +57,11 @@ def get_file(filename):
 def get_text(filename):
     file_obj = get_file(filename)
     return file_obj.read().decode("utf-8")
+
+
+def get_subdirectories(prefix=None):
+    s3 = get_s3_client()
+    s3_objects = s3.list_objects(
+        Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix, Delimiter="/"
+    ).get("CommonPrefixes")
+    return [d["Prefix"] for d in s3_objects]

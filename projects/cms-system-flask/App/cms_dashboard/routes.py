@@ -9,7 +9,7 @@ from flask import (
 )
 from flask_login import login_required
 from App.main.forms import ContentForm, UploadForm
-from App.utils import save_text, get_text
+from App.utils import save_text, get_text, get_subdirectories
 from App.utils import save_file
 
 cms_dashboard_blueprint = Blueprint(
@@ -44,12 +44,15 @@ def page_content():
 @cms_dashboard_blueprint.route("/images", methods=["GET", "POST"])
 @login_required
 def images():
+    directories = get_subdirectories("images/")
     form = UploadForm()
     if form.validate_on_submit():
         directory_name = form.directory_name.data.strip()
         files = form.images.data
         for file in files:
             save_file(file, f"images/{directory_name}/{file.filename}")
-        flash(f"You have successfully uploaded the {directory_name}.", "success")
+        flash(f"You have successfully uploaded {directory_name}.", "success")
         return redirect(url_for("cms.images"))
-    return render_template("pages/upload.html", title="Images", form=form)
+    return render_template(
+        "pages/upload.html", title="Images", form=form, directories=directories
+    )

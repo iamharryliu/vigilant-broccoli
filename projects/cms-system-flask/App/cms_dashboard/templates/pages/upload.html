@@ -1,6 +1,14 @@
 {% extends 'layouts/dashboard_layout.html' %} {% block dashboard_content %}
-<h1>Upload Images</h1>
+<h1>Image Gallery</h1>
+
+<div class="row align-items-start">
+  {% for directory in directories %}
+  <div class="col-4">{{ directory }}</div>
+  {% endfor %}
+</div>
+
 <form method="POST" enctype="multipart/form-data">
+  <legend>Add Image</legend>
   {{ form.hidden_tag() }}
   <div>
     {{ form.directory_name.label }}<br />
