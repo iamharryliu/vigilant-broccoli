@@ -119,8 +119,8 @@ alias flycreatetoken='flyctl tokens create deploy --app'
 # NX
 alias nxbuild="cdnx && nx build --skip-nx-cache"
 alias nxdeploy="cdnx && nx deploy --skip-nx-cache"
-alias nxbuildall="cdnx nx run-many -t=build"
-alias nxdeployall="cdnx nx run-many -t=deploy"
+alias nxbuildall="cdnx && nx run-many -t=build"
+alias nxdeployall="cdnx && nx run-many -t=deploy"
 
 # Analytics
 alias openanalytics='chrome "https://analytics.google.com/analytics/web/#/p433700665/reports/reportinghub"'
