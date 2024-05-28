@@ -30,8 +30,9 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 - scripts
 - snippets
 
-## Management
+## References
 
-- pre-commit hook, husky, eslint, prettier
-- Github Actions
-- Nx Monorepo
+- [Github Actions](https://github.com/features/actions)
+- [Nx Monorepo](https://nx.dev/)
+- [Node](https://nodejs.org/en)
+- [Python](https://www.python.org/)
