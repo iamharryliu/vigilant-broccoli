@@ -44,9 +44,7 @@ def page_content():
         save_text(content, f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md")
         flash(f"You have successfully updated the content.", "success")
         return redirect(url_for("cms.dashboard"))
-    return render_template(
-        "pages/edit_calendar_page.html", title="Page Content", form=form
-    )
+    return render_template("pages/edit_content.html", title="Page Content", form=form)
 
 
 @cms_dashboard_blueprint.route("/images", methods=["GET", "POST"])
@@ -63,4 +61,12 @@ def images():
         return redirect(url_for("cms.images"))
     return render_template(
         "pages/upload.html", title="Images", form=form, directories=directories
+    )
+
+
+@cms_dashboard_blueprint.route("/images/<album_name>", methods=["GET", "POST"])
+@login_required
+def image_album(album_name):
+    return render_template(
+        "pages/edit_image_album.html", title="Edit Album", album_name=album_name
     )
