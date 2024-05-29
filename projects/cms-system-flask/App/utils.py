@@ -69,5 +69,7 @@ def get_subdirectories(prefix=None):
 
 def get_filenames(prefix=None):
     s3 = get_s3_client()
-    files = [s3.list_objects(Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix)]
-    return [file["Key"] for file in files[0]["Contents"]]
+    s3_objects = [
+        s3.list_objects(Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix)
+    ]
+    return [f["Key"] for f in s3_objects[0]["Contents"]]

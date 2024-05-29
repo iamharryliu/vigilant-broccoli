@@ -1,3 +1,4 @@
+import os
 from flask import (
     Blueprint,
     redirect,
@@ -9,8 +10,15 @@ from flask import (
 )
 from flask_login import login_required
 from App.main.forms import ContentForm, UploadForm
-from App.utils import save_text, get_text, get_subdirectories, get_filenames
+from App.utils import save_text, get_text, get_subdirectories
 from App.utils import save_file
+
+
+def get_filename(path):
+    normalized_path = os.path.normpath(path)
+    folder_name = os.path.basename(normalized_path)
+    return folder_name
+
 
 cms_dashboard_blueprint = Blueprint(
     "cms", __name__, template_folder="templates", url_prefix="/cms"
@@ -26,7 +34,6 @@ def dashboard():
 @cms_dashboard_blueprint.route("page_content", methods=["GET", "POST"])
 @login_required
 def page_content():
-    filenames = get_filenames("content/")
     form = ContentForm()
     if request.method == "GET":
         form.content.data = get_text(
@@ -45,7 +52,7 @@ def page_content():
 @cms_dashboard_blueprint.route("/images", methods=["GET", "POST"])
 @login_required
 def images():
-    directories = get_subdirectories("images/")
+    directories = [get_filename(path) for path in get_subdirectories("images/")]
     form = UploadForm()
     if form.validate_on_submit():
         directory_name = form.directory_name.data.strip()

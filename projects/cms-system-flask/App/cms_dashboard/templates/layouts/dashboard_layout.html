@@ -3,13 +3,7 @@
 {% include 'components/navtabs.html' %}
 <div class="row">
   <div class="col-12 col-lg-2 mb-3">
-    <div class="list-group">
-      <a
-        href="{{url_for('cms.dashboard')}}"
-        class="list-group-item list-group-item-action list-group-item-secondary"
-        >Calendar</a
-      >
-    </div>
+    <div class="list-group">{% block list_group_links %} {% endblock %}</div>
   </div>
   <div class="col-12 col-lg-10">
     {% block dashboard_content %} {% endblock %}
