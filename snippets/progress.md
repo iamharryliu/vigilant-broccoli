@@ -19,3 +19,4 @@
 2024-05-21 - skating - Learned how to do outside edge mohawawk.
 2024-05-22 - coding - Integrate first CMS code.
 2024-05-27 - coding - Write first Angular Signal.
+2024-05-28 - cooking - Cooked with butter beans for the first time. Tried a creamy miso spinach butter beans recipe.
