@@ -10,8 +10,13 @@ from flask import (
 )
 from flask_login import login_required
 from App.main.forms import ContentForm, UploadForm
-from App.utils import save_text, get_text, get_subdirectories
-from App.utils import save_file
+from App.utils import (
+    save_text,
+    get_text,
+    get_subdirectories,
+    save_file,
+    delete_directory,
+)
 
 
 def get_filename(path):
@@ -64,9 +69,8 @@ def images():
     )
 
 
-@cms_dashboard_blueprint.route("/images/<album_name>", methods=["GET", "POST"])
+@cms_dashboard_blueprint.route("/images/<album_name>/delete", methods=["POST"])
 @login_required
-def image_album(album_name):
-    return render_template(
-        "pages/edit_image_album.html", title="Edit Album", album_name=album_name
-    )
+def delete_album(album_name):
+    delete_directory("images/" + album_name)
+    return redirect(url_for("cms.images"))

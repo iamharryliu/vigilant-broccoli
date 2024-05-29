@@ -1,4 +1,4 @@
-from flask import current_app
+from flask import current_app, flash
 from App.config import LOCAL_BUCKET_ENVIRONMENTS
 import os
 from io import BytesIO
@@ -26,8 +26,8 @@ def get_local_path(fname):
 
 def save_file(file, filename):
     if current_app.config["ENVIRONMENT"] not in LOCAL_BUCKET_ENVIRONMENTS:
-        s3 = get_s3_client()
-        s3.upload_fileobj(file, current_app.config["BUCKET_NAME"], filename)
+        s3_client = get_s3_client()
+        s3_client.upload_fileobj(file, current_app.config["BUCKET_NAME"], filename)
     else:
         filepath = get_local_path(filename)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
@@ -43,9 +43,11 @@ def save_text(text, filename):
 
 def get_file(filename):
     if current_app.config["ENVIRONMENT"] not in LOCAL_BUCKET_ENVIRONMENTS:
-        s3 = get_s3_client()
+        s3_client = get_s3_client()
         file_obj = BytesIO()
-        s3.download_fileobj(current_app.config["BUCKET_NAME"], filename, file_obj)
+        s3_client.download_fileobj(
+            current_app.config["BUCKET_NAME"], filename, file_obj
+        )
         file_obj.seek(0)
         return file_obj
     else:
@@ -60,16 +62,39 @@ def get_text(filename):
 
 
 def get_subdirectories(prefix=None):
-    s3 = get_s3_client()
-    s3_objects = s3.list_objects(
+    s3_client = get_s3_client()
+    s3_objects = s3_client.list_objects(
         Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix, Delimiter="/"
     ).get("CommonPrefixes")
-    return [d["Prefix"] for d in s3_objects]
+    return [d["Prefix"] for d in s3_objects] if s3_objects else []
 
 
 def get_filenames(prefix=None):
-    s3 = get_s3_client()
+    s3_client = get_s3_client()
     s3_objects = [
-        s3.list_objects(Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix)
+        s3_client.list_objects(Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix)
     ]
     return [f["Key"] for f in s3_objects[0]["Contents"]]
+
+
+def delete_directory(prefix):
+    s3_client = get_s3_client()
+    response = s3_client.list_objects(
+        Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix
+    )
+    if "Contents" not in response:
+        flash(
+            f'No objects found with prefix {prefix} in bucket {current_app.config["BUCKET_NAME"]}',
+            "warning",
+        )
+        return
+    objects_to_delete = [{"Key": obj["Key"]} for obj in response["Contents"]]
+    if objects_to_delete:
+        s3_client.delete_objects(
+            Bucket=current_app.config["BUCKET_NAME"],
+            Delete={"Objects": objects_to_delete},
+        )
+    flash(
+        f'All objects with prefix {prefix} have been deleted from bucket {current_app.config["BUCKET_NAME"]}',
+        "success",
+    )
