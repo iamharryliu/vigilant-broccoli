@@ -58,7 +58,7 @@ export class AppComponent {
     let title = '';
     title = snapshot.data['title'];
     this.titleService.setTitle(
-      `Cloud8Skate - Toronto Skate Community for Inline Skate, Rollerblade, Quad Skate, Roller Skates, and Ice Skate - ${title}`,
+      `Cloud8Skate - Toronto Inline, Rollerblade, Quad, and Ice Skate Community - ${title}`,
     );
   }
 }
