@@ -10,5 +10,6 @@
       - wheel setups - flat, rocker, anti rocker, toe stop, etc...
       - wheel sizes
       - wheel durometer
+  - feat: enhance SEO
 
 - Q2 - important, not urgent
