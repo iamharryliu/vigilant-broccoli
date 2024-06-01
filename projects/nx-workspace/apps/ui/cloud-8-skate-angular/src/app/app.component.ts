@@ -50,6 +50,8 @@ export class AppComponent {
       ?.snapshot as ActivatedRouteSnapshot;
     let title = '';
     title = snapshot.data['title'];
-    this.titleService.setTitle(`Cloud8- ${title}`);
+    this.titleService.setTitle(
+      `Cloud8Skate - Inline Skate, Rollerblade, Quadskate, Rollerskates, and Ice Skate - ${title}`,
+    );
   }
 }
