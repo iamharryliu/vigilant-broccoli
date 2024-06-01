@@ -1,5 +1,5 @@
 import { Component, effect, signal } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import {
   ActivatedRoute,
   ActivatedRouteSnapshot,
@@ -22,6 +22,7 @@ export class AppComponent {
     private router: Router,
     private titleService: Title,
     private route: ActivatedRoute,
+    private meta: Meta,
   ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -37,6 +38,12 @@ export class AppComponent {
       },
       { allowSignalWrites: true },
     );
+
+    this.meta.addTag({
+      name: 'description',
+      content:
+        'Join Cloud8, Toronto’s skate community for inline skates, rollerblades, quad skates, roller skates, and ice skates. Find events, tips, and more!',
+    });
   }
 
   private handlePageNavigate() {
@@ -51,7 +58,7 @@ export class AppComponent {
     let title = '';
     title = snapshot.data['title'];
     this.titleService.setTitle(
-      `Cloud8Skate - Inline Skate, Rollerblade, Quadskate, Rollerskates, and Ice Skate - ${title}`,
+      `Cloud8Skate - Toronto Skate Community for Inline Skate, Rollerblade, Quad Skate, Roller Skates, and Ice Skate - ${title}`,
     );
   }
 }
