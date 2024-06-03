@@ -24,7 +24,10 @@ root.render(<>HTML Content </>);
 
 #### Re-render
 
-Happens on state value _changes_ if the value of a variable is reassigned. Re-render will not happen for object values that are modified.
+- A component can re-render if:
+  - A component calls a setter function or a dispatch function.
+  - If parent components are re-rendered.
+- Happens on state value _changes_ if the value of a variable is reassigned. Re-render will not happen for object values that are modified.
 
 ```
 // No re-render for modified list.
@@ -43,23 +46,128 @@ newDict.key = value
 set(newDict)
 ```
 
+#### Render Optimization
+
+##### Same Element Reference
+
+Unoptimized Solution Without Same Element Reference
+
+```
+export const AppComponent = () => {
+  ...
+  return (
+    <>
+      <ParentComponent/>
+    <>
+  )
+}
+
+export const ParentComponent = () => {
+  ...
+  return (
+    <>
+      <ChildComponent/> // Child component declared inside of ParentComponent
+    <>
+  )
+}
+```
+
+vs. Optimized Solution With Same Element Reference
+
+```
+
+export const AppComponent = () => {
+  ...
+  return (
+    <>
+      <ParentComponent>
+        <ChildComponent/> // Child component passed as a prop to ParentComponent
+      </ParentComponent>
+    <>
+  )
+}
+
+export const ParentComponent = ({ children }) =>{
+  ...
+  return (
+    <>
+      { children }
+    <>
+  )
+}
+```
+
+##### React Memo
+
+Unoptimized Solution Without React Memo
+
+```
+export const ChildComponent = () => {
+  ...
+  return (
+    <>
+      <ChildComponent/>
+    <>
+  )
+}
+
+export const ParentComponent = () => {
+  ...
+  return (
+    <>
+      <ChildComponent state="state"/>
+    <>
+  )
+}
+
+```
+
+Optimized Solution With React Memo
+
+```
+export const ChildComponent = () => {
+  ...
+  return (
+    <>
+      <ChildComponent/>
+    <>
+  )
+}
+export const MemoizedChildComponent = React.memo(ChildComponent)
+
+export const ParentComponent = () => {
+  ...
+  return (
+    <>
+      <MemoizedChildComponent state="state"/>
+    <>
+  )
+}
+```
+
 ## Event Handling
 
 ```
+
 <button onClick={handleButtonClick}>On Click</button>
+
 ```
 
 ## Conditionals
 
 ```
+
 {condition} && <div>Block</div>
 {condition} ? <div>Block</div> : <div>Else Block</div>
+
 ```
 
 ## Lists
 
 ```
+
 {list.map((car) => <div key={car.id}>Content</div>)}
+
 ```
 
 ## Components
@@ -67,56 +175,66 @@ set(newDict)
 ### Functional Components
 
 ```
+
 function Component() {
-  return <>Your HTML</>;
+return <>Your HTML</>;
 }
 
 export default Component;
+
 ```
 
 ```
+
 root.render(<Component />);
+
 ```
 
 #### Props
 
 ```
+
 function Component(props) {
-  return <>{props.value}</>;
+return <>{props.value}</>;
 }
 root.render(<Component value="value"/>);
+
 ```
 
 ## Routing
 
 ```
+
 export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="something" element={<Something />} />
-          <Route path="something-else" element={<SomethingElse />} />
-          <Route path="*" element={<NoPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+return (
+<BrowserRouter>
+<Routes>
+<Route path="/" element={<Layout />}>
+<Route index element={<Home />} />
+<Route path="something" element={<Something />} />
+<Route path="something-else" element={<SomethingElse />} />
+<Route path="\*" element={<NoPage />} />
+</Route>
+</Routes>
+</BrowserRouter>
+);
 }
+
 ```
 
 ```
+
 const Layout = () => {
-  return (
-    <>
-      <Link to="/">Home</Link>
-      <Link to="/something">Something</Link>
-      <Link to="/something-else">Something Else</Link>
-      <Outlet />
-    </>
-  )
+return (
+<>
+<Link to="/">Home</Link>
+<Link to="/something">Something</Link>
+<Link to="/something-else">Something Else</Link>
+<Outlet />
+</>
+)
 };
+
 ```
 
 ## State Management
@@ -126,86 +244,100 @@ const Layout = () => {
 #### useState
 
 ```
+
 const [state, setState] = useState(data);
+
 ```
 
 #### setState
 
 ```
+
 setState(previousState => {
-  return { ...previousState, { stateChanges... } }
+return { ...previousState, { stateChanges... } }
 });
+
 ```
 
 #### useReducer
 
 ```
+
 const reducer = (state, action) => {
-  switch (action.type) {
-    case "value":
-      // has acess to action data
-      return change(state)
-    default:
-      return state;
-  }
+switch (action.type) {
+case "value":
+// has acess to action data
+return change(state)
+default:
+return state;
+}
 };
 
 function Component() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+const [state, dispatch] = useReducer(reducer, initialState);
 
-  const handleComplete = (state) => {
-    dispatch({ type: "COMPLETE", ...data });
-  };
+const handleComplete = (state) => {
+dispatch({ type: "COMPLETE", ...data });
+};
 
-  ...
+...
 }
+
 ```
 
 #### useEffect
 
 ```
+
 useEffect(() => {
-  // Runs on every render
+// Runs on every render
 });
 
 useEffect(() => {
-  // Runs only on the first render
-  ...code to run on first render
-  return () => cleanupCode()
+// Runs only on the first render
+...code to run on first render
+return () => cleanupCode()
 }, []);
 
 useEffect(() => {
-  // Runs any time any dependency values change
+// Runs any time any dependency values change
 }, [state, ...]);
+
 ```
 
 #### createContext
 
 ```
+
 import { useState, createContext } from "react";
 import ReactDOM from "react-dom/client";
 const Context = createContext()
+
 ```
 
 ```
+
 function Component() {
-  const [state, setState] = useState(data);
+const [state, setState] = useState(data);
 
-  return (
-    <Context.Provider value={user}>
-      <ChildComponent />
-    </Context.Provider>
-  );
+return (
+<Context.Provider value={user}>
+<ChildComponent />
+</Context.Provider>
+);
 }
+
 ```
 
 ```
+
 function NestedComponent() {
-  const data = useContext(Context);
-  return (
-    <>{data}</>
-  );
+const data = useContext(Context);
+return (
+<>{data}</>
+);
 }
+
 ```
 
 #### useRef
@@ -213,61 +345,71 @@ function NestedComponent() {
 useRef is used to persist values between renders and prevent infinite re-renders.
 
 ```
+
 const count = useRef(0);
 useEffect(() => {
-    count.current = count.current + 1;
+count.current = count.current + 1;
 });
+
 ```
 
 DOM Manipulation.
 
 ```
+
 const inputElement = useRef();
 
 const focusInput = () => {
-  inputElement.current.focus();
+inputElement.current.focus();
 };
 
 <button onClick={focusInput}>Focus Input</button>
+
 ```
 
 Tracking input changes.
 
 ```
+
 const [inputValue, setValue] = useState("");
 const previousValue = useRef("");
 
 useEffect(() => {
-  previousValue.current = inputValue;
+previousValue.current = inputValue;
 }, [inputValue]);
 
 <input
-  type="text"
-  value={inputValue}
-  onChange={(e) => setInputValue(e.target.value)}
+type="text"
+value={inputValue}
+onChange={(e) => setInputValue(e.target.value)}
 />
+
 ```
 
 #### useCallback
 
 ```
+
 // Will ALWAYS get hit on re-render.
 const fn = () => {
-  setState((value) => [...value, newData]);
+setState((value) => [...value, newData]);
 };
 
 // Will only re-render when props have changed
 const fn = useCallback(() => {
-  setState((value) => {...stateValue, newData});
+setState((value) => {...stateValue, newData});
 }, [props]);
+
 ```
 
 #### useMemo
 
 ```
+
 const value = expensiveCalculation(state);
 // vs
 const value = useMemo(() => expensiveCalculation(state), [state]);
+
 ```
 
 ## References
