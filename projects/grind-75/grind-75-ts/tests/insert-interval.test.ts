@@ -1,4 +1,4 @@
-import { insert } from '../insert-interval';
+import { insert } from '../array/insert-interval';
 
 describe('inserInterval', () => {
   test('insert works as expected', () => {

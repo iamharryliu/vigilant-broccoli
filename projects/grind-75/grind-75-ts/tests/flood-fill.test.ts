@@ -1,4 +1,4 @@
-import { floodFill } from '../flood-fill';
+import { floodFill } from '../graph/flood-fill';
 
 test('floodFill', () => {
   let res = floodFill(
