@@ -1,4 +1,4 @@
-function floodFill(
+export function floodFill(
   image: number[][],
   sr: number,
   sc: number,

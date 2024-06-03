@@ -1,4 +1,7 @@
-function insert(intervals: number[][], newInterval: number[]): number[][] {
+export function insert(
+  intervals: number[][],
+  newInterval: number[],
+): number[][] {
   let res: number[][] = [];
 
   for (let i = 0; i < intervals.length; i++) {
