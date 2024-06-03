@@ -33,7 +33,7 @@ alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/ass
 alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf && gc docs resume 'update resume' && gpush"
 alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
 # Grind 75
-alias grind75="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75"
+alias grind75python="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75/grind-75-python"
 # CMS
 alias servecms="cdvb; cd projects/cms-system-flask/; venvon; flaskrun"
 # Toronto Alerts

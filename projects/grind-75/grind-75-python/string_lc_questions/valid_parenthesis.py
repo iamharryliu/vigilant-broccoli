@@ -4,13 +4,16 @@ class Solution:
         stack = []
         hmap = {"]": "[", "}": "{", ")": "("}
         for char in s:
-            # Add opening brackets to stack
+            # Is open bracket.
             if char in hmap.values():
                 stack.append(char)
-            # Check if closing bracket breaks rules
+
+            # Is closing bracket.
             elif char in hmap.keys():
-                if stack == [] or hmap[char] != stack.pop():
+                if not stack or hmap[char] != stack.pop():
                     return False
+
+            # Is neither.
             else:
                 return False
-        return stack == []
+        return not stack
