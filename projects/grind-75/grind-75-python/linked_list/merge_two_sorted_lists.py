@@ -1,17 +1,21 @@
+from typing import Optional
 from linked_list.common import ListNode
 
 
 class Solution:
     @classmethod
-    def mergeTwoLists(self, l1, l2):
-        dummy = curr = ListNode(0)
-        while l1 and l2:
-            if l1.val < l2.val:
-                curr.next = l1
-                l1 = l1.next
+    def mergeTwoLists(
+        self, list1: Optional[ListNode], list2: Optional[ListNode]
+    ) -> Optional[ListNode]:
+        dummy = ListNode()
+        curr = dummy
+        while list1 and list2:
+            if list1.val < list2.val:
+                curr.next = list1
+                list1 = list1.next
             else:
-                curr.next = l2
-                l2 = l2.next
+                curr.next = list2
+                list2 = list2.next
             curr = curr.next
-        curr.next = l1 or l2
+        curr.next = list1 or list2
         return dummy.next
