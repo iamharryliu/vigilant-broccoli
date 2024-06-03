@@ -4,22 +4,7 @@ from flask_mail import Message
 from flask_login import login_user, logout_user
 from App import db, bcrypt, mail
 from App.models import User
-from App.users.forms import (
-    LoginForm,
-    RegistrationForm,
-)
-
-
-def register_user():
-    form = RegistrationForm()
-    hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-    user = User(
-        username=form.username.data, email=form.email.data, password=hashed_password
-    )
-    db.session.add(user)
-    db.session.commit()
-    send_register_email(user)
-    flash(f"Account created for {form.username.data}! You can now login.", "success")
+from App.users.forms import LoginForm
 
 
 def send_register_email(user):
@@ -50,16 +35,4 @@ def handle_login():
 def handle_logout():
     logout_user()
     flash("You have been logged out.", "success")
-    return redirect(url_for("main.index"))
-
-
-def handle_verify_user():
-    token = request.args.get("token")
-    user = User.verify_token(token)
-    if user:
-        user.is_verified = True
-        db.session.commit()
-        flash("User has been verified.", "success")
-    else:
-        flash("Invalid request", "error")
     return redirect(url_for("main.index"))

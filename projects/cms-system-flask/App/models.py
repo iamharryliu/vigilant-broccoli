@@ -18,9 +18,7 @@ class User(db.Model, UserMixin):
     username: str = db.Column(
         db.String(USER_CONFIG.MAX_USERNAME_LENGTH), unique=True, nullable=False
     )
-    email: str = db.Column(
-        db.String(USER_CONFIG.MAX_EMAIL_LENGTH), unique=True, nullable=False
-    )
+    email: str = db.Column(db.String(USER_CONFIG.MAX_EMAIL_LENGTH), unique=True)
     is_verified: str = db.Column(db.Boolean, default=False)
     password = db.Column(db.String(USER_CONFIG.MAX_PASSWORD_LENGTH), nullable=False)
 
