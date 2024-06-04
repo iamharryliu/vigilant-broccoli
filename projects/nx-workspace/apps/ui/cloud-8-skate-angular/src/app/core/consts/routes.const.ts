@@ -32,6 +32,12 @@ export const MORE_PAGE_ROUTE: Route = {
   component: MorePageComponent,
 };
 
+export const MORE_SUBPAGE_ROUTE: Route = {
+  path: 'more/:id',
+  data: { title: 'More Info' },
+  component: MorePageComponent,
+};
+
 export const PLAYLISTS_PAGE_ROUTE: Route = {
   path: 'playlists',
   data: { title: 'Playlists' },
