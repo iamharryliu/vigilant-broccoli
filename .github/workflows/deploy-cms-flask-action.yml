@@ -11,7 +11,7 @@ jobs:
       name: production
     defaults:
       run:
-        working-directory: ./projects/cms-system-flask
+        working-directory: ./projects/cms-flask
     steps:
       - uses: actions/checkout@v4
         with:

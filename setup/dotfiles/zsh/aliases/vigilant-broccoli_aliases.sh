@@ -35,7 +35,7 @@ alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blo
 # Grind 75
 alias grind75python="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75/grind-75-python"
 # CMS
-alias servecms="cdvb; cd projects/cms-system-flask/; venvon; flaskrun"
+alias servecms="cdvb; cd projects/cms-flask/; venvon; flaskrun"
 # Toronto Alerts
 alias cdtorontoalerts="cdvb && cd projects/toronto-alerts/toronto-alerts-flask"
 alias servetorontoalerts="cdtorontoalerts && venvon && flaskrun"
