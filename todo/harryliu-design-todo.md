@@ -7,4 +7,3 @@
   - feat: jobhunt mode configuration
   - fix: mailto links
   - style: update typography
-- Q3
