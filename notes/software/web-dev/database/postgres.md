@@ -36,6 +36,12 @@ DROP USER [username];
 CREATE DATABASE [db-name];
 DROP DATABASE [db-name];
 \c [db-name]
+## Kill all connections to DB except for yours.
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = 'your_db'
+  AND pid <> pg_backend_pid();
+
 
 # Tables
 \dt
