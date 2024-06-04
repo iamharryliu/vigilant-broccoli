@@ -1,9 +1,9 @@
+import os
 import requests
 
 
 class OpenWeatherService:
     OW_BASE_URL = "https://api.openweathermap.org/data/2.5"
-    APP_ID = "appid=aece3df66a4c1d04d7783fc4d7aa009f"
 
     def get_weather_data(latitude, longitude):
         location_query = OpenWeatherService.get_location_query(latitude, longitude)
@@ -25,4 +25,4 @@ class OpenWeatherService:
         return f"{OpenWeatherService.OW_BASE_URL}/weather?{location_query}"
 
     def get_location_query(latitude, longtitude):
-        return f"lat={latitude}&lon={longtitude}&{OpenWeatherService.APP_ID}"
+        return f"lat={latitude}&lon={longtitude}&appid={os.environ.get('OPENWEATHER_API_KEY')}"
