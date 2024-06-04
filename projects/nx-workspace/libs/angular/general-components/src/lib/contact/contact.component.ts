@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { AppName, MessageRequest } from '@prettydamntired/personal-website-lib';
-import { Subject, exhaustMap } from 'rxjs';
+import { Subject, exhaustMap, tap } from 'rxjs';
 import { CommonService } from '../services/common.service';
 import { CommonModule } from '@angular/common';
 import { LinkComponent } from '../link/link.component';
@@ -22,10 +22,14 @@ export class ContactComponent {
   submit$ = new Subject<boolean>();
   @Input() LINKS: Link[] = [];
   @Input() APP_NAME!: AppName;
+  loading = false;
 
   constructor(private commonService: CommonService) {
     this.submit$
       .pipe(
+        tap(() => {
+          this.loading = true;
+        }),
         exhaustMap(() =>
           this.commonService.sendMessage({
             ...(this.form.value as MessageRequest),
@@ -34,6 +38,7 @@ export class ContactComponent {
         ),
       )
       .subscribe(_ => {
+        this.loading = false;
         this.form.reset();
       });
   }
