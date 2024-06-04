@@ -10,4 +10,4 @@ Toronto related skate places and skate information.
 
 ### Info
 
-- <a href="https://cloud8skate.com/more/skate-shops" target="_blank">Skate Terminology</a>
+- <a href="https://cloud8skate.com/more/skate-terminology" target="_blank">Skate Terminology</a>
