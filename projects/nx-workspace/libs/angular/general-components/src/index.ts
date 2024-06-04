@@ -11,6 +11,8 @@ export { MarkdownService } from './lib/services/markdown.service';
 export { HttpService } from './lib/services/http.service';
 
 // Components
+// Buttons
+export { LoadingButtonComponent } from './lib/loading-button/loading-button.component';
 // Navbar
 export { NavbarComponent } from './lib/navbar/navbar.component';
 // Links
@@ -20,5 +22,4 @@ export { ButtonLinkComponent } from './lib/button-link/button-link.component';
 export { ContactComponent } from './lib/contact/contact.component';
 export { FolderItemComponent } from './lib/folder-item/folder-item.component';
 // Markdown
-
 export { MarkdownPageComponent } from './lib/markdown-page/markdown.page.component';

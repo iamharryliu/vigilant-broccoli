@@ -11,12 +11,18 @@ import { CommonService } from '../services/common.service';
 import { CommonModule } from '@angular/common';
 import { LinkComponent } from '../link/link.component';
 import { Link } from '../models';
+import { LoadingButtonComponent } from '../loading-button/loading-button.component';
 
 @Component({
   standalone: true,
   selector: 'lib-contact',
   templateUrl: './contact.component.html',
-  imports: [CommonModule, ReactiveFormsModule, LinkComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    LinkComponent,
+    LoadingButtonComponent,
+  ],
 })
 export class ContactComponent {
   submit$ = new Subject<boolean>();

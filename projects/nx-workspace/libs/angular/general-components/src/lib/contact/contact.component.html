@@ -6,7 +6,8 @@
     <form [formGroup]="form" (ngSubmit)="submitForm()">
       <div class="mb-4">
         <label for="contact-form-name-input" class="block text-gray-700">
-          Name:</label>
+          Name:</label
+        >
         <input
           type="text"
           id="contact-form-name-input"
@@ -14,11 +15,13 @@
           formControlName="name"
           autocomplete="given-name"
           required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+        />
       </div>
       <div class="mb-4">
         <label for="contact-form-email-input" class="block text-gray-700">
-          Email:</label>
+          Email:</label
+        >
         <input
           type="email"
           id="contact-form-email-input"
@@ -26,42 +29,26 @@
           formControlName="email"
           autocomplete="email"
           required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+        />
       </div>
       <div class="mb-4">
-        <label for="contact-form-message-input"
-          class="block text-gray-700">Message:</label>
+        <label for="contact-form-message-input" class="block text-gray-700"
+          >Message:</label
+        >
         <textarea
           id="contact-form-message-input"
           name="message"
           formControlName="message"
           required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"></textarea>
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
       </div>
-      <button
-        id="contact-form-submit-button"
-        type="submit"
+      <lib-loading-button
+        [loading]="loading"
         [disabled]="form.invalid || loading"
-        class="text-white font-semibold px-4 py-2 rounded-lg focus:outline-none focus:ring w-full lg:w-min"
-        [ngClass]="{
-    'bg-gray-300': form.invalid,
-    'bg-black': form.valid,
-    'hover:bg-blue-600': form.valid && !loading,
-    'cursor-not-allowed': loading
-  }">
-        <ng-container *ngIf="!loading; else loadingTemplate">
-          Submit
-        </ng-container>
-        <ng-template #loadingTemplate>
-          <svg class="animate-spin h-5 w-5 text-white"
-            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10"
-              stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C6.477 0 2 4.477 2 10h2zm2 5.292A7.952 7.952 0 014 12H2c0 3.866 2.239 7.155 5.292 8.708l1.416-1.416z"></path>
-          </svg>
-        </ng-template>
-      </button>
+        buttonText="Submit"
+      ></lib-loading-button>
     </form>
   </div>
   <hr class="lg:hidden mt-8 mb-8" />
