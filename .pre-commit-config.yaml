@@ -18,13 +18,6 @@ repos:
         entry: python -m unittest discover -s ./projects/grind-75/grind-75-python
         language: python
         pass_filenames: false
-      # - id: vibecheck-flask-tests
-      #   name: Vibeheck Flask unit tests.
-      #   entry: pytest projects/vibecheck/vibecheck-flask
-      #   language: python
-      #   pass_filenames: false
-      #   additional_dependencies:
-      #     [pytest, flask, flask_cors, sqlalchemy, bcrypt, flask_login]
   - repo: local
     hooks:
       - id: flask-demo-tests
