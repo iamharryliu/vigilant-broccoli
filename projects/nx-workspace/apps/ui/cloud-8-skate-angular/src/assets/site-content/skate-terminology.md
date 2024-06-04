@@ -44,3 +44,4 @@ Mounting refers to the type of connection on the boot to which the frame attache
 ## References
 
 [Inline Wheel Rotation](https://skating.thierstein.net/Knowledge/Inline_Skating_Rollerblading_Information_Wheel_rotation.html)
+[Durometer and Wheel Hardness](https://bladeville.com/blog/hardness-of-inline-skate-wheels)
