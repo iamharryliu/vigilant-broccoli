@@ -2,6 +2,14 @@
 
 - Q1
 
+  - skill gaps
+
+    - database handling
+      - SQL without using ORM
+      - database backup
+        - backing up database
+        - restoring database from backup
+
   - script to check links if they still work
   - enhance core libraries
 
