@@ -28,17 +28,14 @@ def create_app(config=DIT_CONFIG):
     mail.init_app(app)
 
     # Import Blueprints
-    from App.main.routes import main_blueprint
-    from App.users.routes import users_blueprint
-    from App.errors.handlers import errors_blueprint
+    from App.routes import ui_blueprint
     from App.api.api_blueprint import api_blueprint
+    from App.errors.handlers import errors_blueprint
 
-    # UI Blueprints
-    app.register_blueprint(main_blueprint)
-    app.register_blueprint(users_blueprint)
-    app.register_blueprint(errors_blueprint)
-    # API Blueprints.
+    # Register Blueprints
+    app.register_blueprint(ui_blueprint)
     app.register_blueprint(api_blueprint)
+    app.register_blueprint(errors_blueprint)
 
     @app.errorhandler(BadRequestException)
     def handle_bad_request(error):

@@ -8,12 +8,3 @@ main_blueprint = Blueprint("main", __name__, template_folder="templates")
 @main_blueprint.route("/")
 def index():
     return "flask-demo"
-
-
-@main_blueprint.route("/contact", methods=["GET", "POST"])
-def contact():
-    form = ContactForm()
-    if form.validate_on_submit():
-        handle_contact_message()
-        return redirect(url_for("main.index"))
-    return render_template("forms/contact_form.html", title="Contact", form=form)

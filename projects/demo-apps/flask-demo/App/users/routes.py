@@ -12,12 +12,10 @@ from App.users.utils import (
 )
 from App.models import User
 
-users_blueprint = Blueprint(
-    "users", __name__, template_folder="templates", url_prefix="/users"
-)
+users_blueprint = Blueprint("users", __name__, template_folder="templates")
 
 
-@users_blueprint.route("")
+@users_blueprint.route("/users")
 def index():
     users = User.query.all()
     return render_template("users_index.html", title="Users Index", users=users)
