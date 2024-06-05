@@ -10,3 +10,10 @@ class Solution:
             curr = max(curr + num, num)
             res = max(res, curr)
         return res
+
+
+"""
+Kadane's Algorithm
+Time Complexity - O(n)
+Space Complexity - O(1)
+"""

@@ -1,12 +1,18 @@
 class Solution:
     @classmethod
     def lengthOfLongestSubstring(self, s: str) -> int:
-        curr = ""
+        c_index = {}
+        left = 0
         res = 0
-        for c in s:
-            if c in curr:
-                i = curr.index(c)
-                curr = curr[i + 1 :]
-            curr += c
-            res = max(res, len(curr))
+        for right, c in enumerate(s):
+            if c in c_index and left <= c_index[c]:
+                left = c_index[c] + 1
+            c_index[c] = right
+            res = max(res, right - left + 1)
         return res
+
+
+"""
+Time Complexity - O(n)
+Space Complexity - O(n)
+"""

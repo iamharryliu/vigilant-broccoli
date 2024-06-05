@@ -4,6 +4,8 @@
 
 ### Heaps
 
+Efficient for priority queues and finding the k smallest or largest in a collection.
+
 - top O(n)
 
 - insert O(logn)

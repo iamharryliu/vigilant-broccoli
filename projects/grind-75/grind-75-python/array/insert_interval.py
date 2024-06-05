@@ -22,3 +22,9 @@ class Solution:
 
         res.append(newInterval)
         return res
+
+
+"""
+Time Complexity - O(n)
+Space Complexity - O(n)
+"""
