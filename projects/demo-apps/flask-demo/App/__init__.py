@@ -32,6 +32,7 @@ def create_app(config=DIT_CONFIG):
     from App.users.routes import users_blueprint
     from App.errors.handlers import errors_blueprint
     from App.api.users.routes import api_users_create_blueprint
+    from App.api.users.routes import api_users_session_blueprint
 
     # UI Blueprints
     app.register_blueprint(main_blueprint)
@@ -39,6 +40,7 @@ def create_app(config=DIT_CONFIG):
     app.register_blueprint(errors_blueprint)
     # API Blueprints.
     app.register_blueprint(api_users_create_blueprint)
+    app.register_blueprint(api_users_session_blueprint)
 
     @app.errorhandler(BadRequestException)
     def handle_bad_request(error):
