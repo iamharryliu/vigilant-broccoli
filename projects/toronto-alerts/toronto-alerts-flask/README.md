@@ -46,7 +46,14 @@ flaskrun
 Commands
 
 ```
-\c gta_update_alerts_db
+\c toronto_alerts_db
+CREATE TABLE emails (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    districts TEXT NOT NULL DEFAULT '{}',
+    keywords TEXT NOT NULL DEFAULT '{}',
+    confirmed_email BOOLEAN NOT NULL DEFAULT FALSE
+);
 SELECT * from emails;
 ```
 
