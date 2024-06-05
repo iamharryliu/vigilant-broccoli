@@ -31,20 +31,14 @@ def create_app(config=DIT_CONFIG):
     from App.main.routes import main_blueprint
     from App.users.routes import users_blueprint
     from App.errors.handlers import errors_blueprint
-    from App.api.users.routes import api_users_create_blueprint
-    from App.api.users.routes import api_users_session_blueprint
-    from App.api.users.routes import api_users_update_blueprint
-    from App.api.users.routes import api_users_follow_blueprint
+    from App.api.api_blueprint import api_blueprint
 
     # UI Blueprints
     app.register_blueprint(main_blueprint)
     app.register_blueprint(users_blueprint)
     app.register_blueprint(errors_blueprint)
     # API Blueprints.
-    app.register_blueprint(api_users_create_blueprint)
-    app.register_blueprint(api_users_session_blueprint)
-    app.register_blueprint(api_users_update_blueprint)
-    app.register_blueprint(api_users_follow_blueprint, url_prefix="/users")
+    app.register_blueprint(api_blueprint)
 
     @app.errorhandler(BadRequestException)
     def handle_bad_request(error):

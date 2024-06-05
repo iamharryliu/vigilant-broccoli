@@ -3,7 +3,7 @@ from App import db, bcrypt
 from App.models import User
 from App.exceptions import BadRequestException, EXCEPTION_CODE
 
-blueprint = Blueprint("users_create_blueprint", __name__, url_prefix="/api/users")
+blueprint = Blueprint("users_create_blueprint", __name__)
 
 
 @blueprint.route("register", methods=["POST"])

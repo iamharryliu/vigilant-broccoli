@@ -2,7 +2,7 @@ from flask import request, Blueprint, jsonify
 from App.models import User
 from App import db
 
-blueprint = Blueprint("users_update_blueprint", __name__, url_prefix="/api/users")
+blueprint = Blueprint("users_update_blueprint", __name__)
 
 
 @blueprint.route("update_username", methods=["POST"])

@@ -2,7 +2,7 @@ from App.models import User
 from App.const import HTTP_STATUS_CODE, EXCEPTION_CODE
 from tests.mocks import MOCK_USER_BUILDER
 
-REGISTER_ENDPOINT = "/api/users/register"
+REGISTER_ENDPOINT = "/api/register"
 
 
 def test_successful_register(client):

@@ -1,10 +1,10 @@
 from tests.mocks import MOCK_USER_BUILDER
 from App.const import HTTP_STATUS_CODE, EXCEPTION_CODE
 
-REGISTER_ENDPOINT = "/api/users/register"
-LOGIN_ENDPOINT = "/api/users/login"
-LOGOUT_ENDPOINT = "/api/users/logout"
-LOGIN_STATUS_ENDPOINT = "/api/users/get_login_status"
+REGISTER_ENDPOINT = "/api/register"
+LOGIN_ENDPOINT = "/api/login"
+LOGOUT_ENDPOINT = "/api/logout"
+LOGIN_STATUS_ENDPOINT = "/api/get_login_status"
 
 
 def test_successful_login_with_username(client):

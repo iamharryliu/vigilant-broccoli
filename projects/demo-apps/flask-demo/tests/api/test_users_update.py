@@ -2,11 +2,11 @@ from App.models import User
 from tests.mocks import MOCK_USER_BUILDER
 
 
-REGISTER_ENDPOINT = "/api/users/register"
-LOGIN_ENDPOINT = "/api/users/login"
-UPDATE_USERNAME_ENDPOINT = "/api/users/update_username"
-UPDATE_EMAIL_ENDPOINT = "/api/users/update_email"
-UPDATE_PASSWORD_ENDPOINT = "/api/users/update_password"
+REGISTER_ENDPOINT = "/api/register"
+LOGIN_ENDPOINT = "/api/login"
+UPDATE_USERNAME_ENDPOINT = "/api/update_username"
+UPDATE_EMAIL_ENDPOINT = "/api/update_email"
+UPDATE_PASSWORD_ENDPOINT = "/api/update_password"
 
 
 def test_update_username(client):

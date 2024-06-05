@@ -6,7 +6,7 @@ from App.models import User
 from App.const import EXCEPTION_CODE
 from App.exceptions import BadRequestException, UnauthorizedException
 
-blueprint = Blueprint("users_blueprint", __name__, url_prefix="/api/users")
+blueprint = Blueprint("users_blueprint", __name__)
 
 
 @blueprint.route("login", methods=["POST"])
