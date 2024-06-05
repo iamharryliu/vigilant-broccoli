@@ -12,6 +12,11 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
+class User_followers(db.Model):
+    follower_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+
+
 @dataclass
 class User(db.Model, UserMixin):
     id = db.Column(db.String, default=lambda: uuid.uuid4().hex, primary_key=True)
@@ -23,6 +28,15 @@ class User(db.Model, UserMixin):
     )
     is_verified: str = db.Column(db.Boolean, default=False)
     password = db.Column(db.String(USER_CONFIG.MAX_PASSWORD_LENGTH), nullable=False)
+
+    following = db.relationship(
+        "User",
+        secondary="user_followers",
+        primaryjoin=(User_followers.followed_id == id),
+        secondaryjoin=(User_followers.follower_id == id),
+        backref="followers",
+        lazy=True,
+    )
 
     def get_token(self):
         s = Serializer(current_app.config["SECRET_KEY"])

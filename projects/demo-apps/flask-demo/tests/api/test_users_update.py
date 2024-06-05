@@ -4,8 +4,6 @@ from tests.mocks import MOCK_USER_BUILDER
 
 REGISTER_ENDPOINT = "/api/users/register"
 LOGIN_ENDPOINT = "/api/users/login"
-LOGOUT_ENDPOINT = "/api/users/logout"
-LOGIN_STATUS_ENDPOINT = "/api/users/get_login_status"
 UPDATE_USERNAME_ENDPOINT = "/api/users/update_username"
 UPDATE_EMAIL_ENDPOINT = "/api/users/update_email"
 UPDATE_PASSWORD_ENDPOINT = "/api/users/update_password"
