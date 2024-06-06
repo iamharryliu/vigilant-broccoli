@@ -26,6 +26,7 @@ class Solution:
 
 
 """
+Two Pointer Technique
 Time Complexity - O(nlogn)
 Space Complexity - O(n)
 """
