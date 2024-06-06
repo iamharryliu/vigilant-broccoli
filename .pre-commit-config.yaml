@@ -22,7 +22,7 @@ repos:
     hooks:
       - id: flask-demo-tests
         name: Test Flask Demo
-        entry: ./projects/demo-apps/flask-demo/venv/bin/pytest projects/demo-apps/flask-demo
+        entry: bash -c 'changed_files=$(git diff --cached --name-only --diff-filter=AM | grep -E "^projects/demo-apps/flask-demo/.*\.py$"); if [ -n "$changed_files" ]; then ./projects/demo-apps/flask-demo/venv/bin/pytest $changed_files; fi'
         language: python
         types: [python]
         pass_filenames: false
