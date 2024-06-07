@@ -13,3 +13,9 @@ class Solution:
             res[i] *= p
             p *= nums[i]
         return res
+
+
+"""
+Time Complexity - O(n)
+Space Complexity - O(n)
+"""
