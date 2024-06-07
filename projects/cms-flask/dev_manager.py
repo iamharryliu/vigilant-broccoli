@@ -2,13 +2,11 @@ import sys
 from App import create_app, db, bcrypt
 from App.models import User
 from App.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG
-from utils.mock.json_placeholder import get_users
 from getpass import getpass
 
 COMMANDS = {
     "RUNSERVER": "runserver",
     "SETUP_DB": "setup_db",
-    "SETUP_MOCK": "setup_mock",
     "CREATE_USER": "create_user",
 }
 
@@ -16,19 +14,6 @@ ENVIRONMENTS = {"TEST", "SIT", "DIT"}
 
 
 DEFAULT_PASSWORD = "password"
-
-
-def create_users():
-    users = get_users()
-    for user in users:
-        hashed_password = bcrypt.generate_password_hash(DEFAULT_PASSWORD).decode(
-            "utf-8"
-        )
-        user = User(
-            username=user["username"], email=user["email"], password=hashed_password
-        )
-        db.session.add(user)
-    db.session.commit()
 
 
 class DevManager:
@@ -64,14 +49,6 @@ class DevManager:
         db.session.commit()
         print("Admin user has successfully been created.")
 
-    def setup_mock(self, db):
-        app = create_app()
-        ctx = app.app_context()
-        ctx.push()
-        db.drop_all()
-        db.create_all()
-        create_users()
-
 
 def main():
     env = sys.argv[1]
@@ -81,8 +58,6 @@ def main():
         devManager.runserver()
     elif command == COMMANDS["SETUP_DB"]:
         devManager.setup_db(db)
-    elif command == COMMANDS["SETUP_MOCK"]:
-        devManager.setup_mock(db)
     elif command == COMMANDS["CREATE_USER"]:
         devManager.create_user(db)
     else:
