@@ -14,3 +14,9 @@ class Solution:
         leftSideValid = self.isValidBST(root.left, root.val, floor)
         rightSideValid = self.isValidBST(root.right, ceiling, root.val)
         return leftSideValid and rightSideValid
+
+
+"""
+Time Complexity - O(n)
+Space Complexity - O(logn)
+"""
