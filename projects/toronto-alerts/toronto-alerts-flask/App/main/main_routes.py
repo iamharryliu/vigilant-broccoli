@@ -9,18 +9,17 @@ from flask import (
     redirect,
     url_for,
 )
+from App import db, recaptcha
 from App.utils import (
     get_districts_data,
     convert_division_string_for_scraping_data,
 )
 from App.const import ENDPOINT
-import psycopg2
+from App.models import Subscription
 from App.utils import get_blog_files, markdown_to_html, send_verification_email
 from App.weather.utils import get_weather_data
 from App.ttc.utils import get_ttc_alerts
 from scripts.utils import get_parsed_x_hours_of_alerts
-from App import recaptcha
-from psycopg2 import sql
 
 
 DATABASE_URL = os.environ.get("TORONTO_ALERTS_DB")
@@ -82,49 +81,40 @@ def submit_form():
     ",".join(keywords)
     if email:
         try:
-            connection = get_db_connection()
-            cursor = connection.cursor()
-            insert_query = sql.SQL(
-                "INSERT INTO emails (email, districts, keywords, confirmed_email) VALUES (%s, %s, %s, FALSE) ON CONFLICT (email) DO UPDATE SET districts = EXCLUDED.districts, keywords = EXCLUDED.keywords"
+            subscription = Subscription(
+                email=email,
+                districts=districts,
+                keywords=keywords,
+                confirmed_email=False,
             )
-            cursor.execute(insert_query, (email, districts, keywords))
-            connection.commit()
-            cursor.close()
-            connection.close()
+            db.session.add(subscription)
+            db.session.commit()
             send_verification_email(email)
             flash(
                 f"Please verify your email {email}.",
                 "success",
             )
-            return redirect(url_for("main.index"))
         except:
-            flash("Something went wrong. Have you already signed up?", "danger")
-            return redirect(url_for("main.index"))
-    else:
-        return redirect(url_for("main.index"))
+            flash("Something went wrong.", "danger")
+            return redirect(url_for("main.subscribe"))
+    return redirect(url_for("main.index"))
 
 
 @main_blueprint.get(ENDPOINT.VERIFY_EMAIL)
 def verify_email():
     token = request.args.get("token")
-    email = base64.b64decode(token).decode("utf-8")
-    if email:
-        connection = get_db_connection()
-        cursor = connection.cursor()
-        cursor.execute(
-            f"UPDATE emails SET confirmed_email = TRUE WHERE email = '{email}';",
-        )
-        connection.commit()
-        cursor.close()
-        connection.close()
-        flash("User has been verified.", "success")
+    subscription = base64.b64decode(token).decode("utf-8")
+    if subscription:
+        subscription = Subscription.query.filter_by(email=subscription).one_or_none()
+        if subscription:
+            subscription.confirmed_email = True
+            db.session.commit()
+            flash("User has been verified.", "success")
+        else:
+            flash(f"Email not found.", "danger")
     else:
         flash("Invalid request", "error")
     return redirect(url_for("main.index"))
-
-
-def get_db_connection():
-    return psycopg2.connect(DATABASE_URL)
 
 
 @main_blueprint.get(ENDPOINT.UNSUBSCRUBE)
@@ -132,14 +122,15 @@ def unsubscribe():
     email = request.args.get("email")
     if email:
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM emails WHERE email = %s", (email,))
-            conn.commit()
-            cursor.close()
-            conn.close()
-            flash(f"You have successfully unsubscribed {email}.", "danger")
-            return redirect(url_for("main.index"))
+            subscription = Subscription.query.filter_by(email=email).one_or_none()
+            if subscription:
+                db.session.delete(subscription)
+                db.session.commit()
+                flash(f"You have successfully unsubscribed {email}.", "success")
+                return redirect(url_for("main.index"))
+            else:
+                flash(f"Email not found.", "danger")
+                return redirect(url_for("main.index"))
         except:
             flash("Something went wrong.")
             return redirect(url_for("main.index"))

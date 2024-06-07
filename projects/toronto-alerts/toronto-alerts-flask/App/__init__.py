@@ -1,11 +1,12 @@
 import os
 from flask import Flask
 from flask_mail import Mail
+from flask_sqlalchemy import SQLAlchemy
 from App.config import DIT_CONFIG
 from google_recaptcha import ReCaptcha
 
 
-DATABASE_URL = os.environ.get("TORONTO_ALERTS_DB")
+db = SQLAlchemy()
 mail = Mail()
 recaptcha = None
 
@@ -25,6 +26,7 @@ def create_app(config=DIT_CONFIG):
     app.config.from_object(config)
 
     # Initialize Dependencies
+    db.init_app(app)
     mail.init_app(app)
 
     # Import Blueprints

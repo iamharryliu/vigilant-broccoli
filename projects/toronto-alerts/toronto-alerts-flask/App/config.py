@@ -24,6 +24,10 @@ class SERVER_CONFIG:
     RECAPTCHA_SITE_KEY = os.environ.get("TORONTO_ALERTS_RECAPTCHA_SITE_KEY")
     RECAPTCHA_SECRET_KEY = os.environ.get("TORONTO_ALERTS_RECAPTCHA_SECRET_KEY")
 
+    # Flask-SQLAlchemy
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{ROOT_PATH}/site.db"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     # Flask-Mail
     MAIL_SERVER = "smtp.googlemail.com"
     MAIL_PORT = 587
@@ -43,8 +47,10 @@ class DIT_CONFIG(SERVER_CONFIG):
 
 class SIT_CONFIG(SERVER_CONFIG):
     ENVIRONMENT = ENVIRONMENT_TYPE.SIT
+    SQLALCHEMY_DATABASE_URI = os.environ.get("TORONTO_ALERTS_DB")
 
 
 class PROD_CONFIG(SERVER_CONFIG):
-    BACKEND_APP_URL = "https://torontoalerts.com/"
     ENVIRONMENT = ENVIRONMENT_TYPE.PROD
+    BACKEND_APP_URL = "https://torontoalerts.com/"
+    SQLALCHEMY_DATABASE_URI = os.environ.get("TORONTO_ALERTS_DB")

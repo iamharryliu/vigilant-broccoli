@@ -1,15 +1,11 @@
 import sys
 from App import create_app, db
-from App.config import DIT_CONFIG, SIT_CONFIG, TEST_CONFIG
-import utils
-import dev.mock.utils as mock_utils
+from App.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG
+from App.models import Subscription
 
 COMMANDS = {
     "RUNSERVER": "runserver",
-    "CREATE_ADMIN": "create_admin",
     "SETUP_DB": "setup_db",
-    "SETUP_MOCK": "setup_mock",
-    "CLEANUP": "cleanup",
 }
 
 ENVIRONMENTS = {"TEST", "SIT", "DIT"}
@@ -30,8 +26,9 @@ class DevManager:
     def runserver(self):
         self.app.run(debug=True)
 
-    def setup_db(self):
-        utils.setup_db(db)
+    def setup_db(self, db):
+        db.drop_all()
+        db.create_all()
 
 
 def main():
@@ -40,14 +37,8 @@ def main():
     devManager = DevManager(env)
     if command == COMMANDS["RUNSERVER"]:
         devManager.runserver()
-    elif command == COMMANDS["CREATE_ADMIN"]:
-        utils.create_admin(db)
     elif command == COMMANDS["SETUP_DB"]:
-        utils.setup_db(db)
-    elif command == COMMANDS["SETUP_MOCK"]:
-        mock_utils.reset_mock(db)
-    elif command == COMMANDS["CLEANUP"]:
-        utils.cleanup(db)
+        devManager.setup_db(db)
     else:
         print(f"Unknown command '{command}' has been entered.")
 
