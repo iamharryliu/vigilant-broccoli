@@ -81,14 +81,15 @@ def submit_form():
     ",".join(keywords)
     if email:
         try:
+            subscription = Subscription.query.filter_by(email=email).first()
+            if subscription:
+                db.session.delete(subscription)
             subscription = Subscription(
                 email=email,
                 districts=districts,
                 keywords=keywords,
-                confirmed_email=False,
             )
             db.session.add(subscription)
-            db.session.commit()
             send_verification_email(email)
             flash(
                 f"Please verify your email {email}.",
