@@ -1,5 +1,15 @@
 <!-- Browser Nav -->
-<nav class="hidden lg:block">
+<nav
+  class="hidden lg:block transition"
+  [ngClass]="{
+    fixed: isFixed,
+    'w-full': isFixed,
+    'z-10': isFixed,
+    'fade-out': isFading,
+    bgColor
+  }"
+  [class]="bgColor"
+>
   <div class="flex items-center justify-between h-16 ml-6">
     <div class="space-x-4">
       <ng-content select="[browserBrand]"></ng-content>
@@ -9,14 +19,19 @@
         [textSize]="textSize"
         [isLight]="isLight"
         [isBold]="isBold"
-        [type]="link.type"></lib-link>
+        [type]="link.type"
+      ></lib-link>
     </div>
   </div>
+  <hr />
 </nav>
 
 <!-- Mobile Nav -->
-<div class="sticky top-0 w-full z-10">
-  <div class="lg:hidden flex justify-between ml-4 mr-8 pt-3 pb-3">
+<div
+  class="sticky top-0 w-full z-10 lg:hidden bg-white transition"
+  [ngClass]="{ 'fade-out': isFading }"
+>
+  <div class="flex justify-between ml-4 mr-8 pt-3 pb-3">
     <div>
       <ng-content select="[mobileBrand]"></ng-content>
     </div>
@@ -25,15 +40,20 @@
     </button>
   </div>
 
-  <div class="w-full bg-gray-300 pt-3 pb-3" [class.hidden]="!isNavbarOpen">
+  <div
+    class="absolute w-full bg-gray-300 pt-3 pb-3"
+    [class.hidden]="!isMobileNavOpen"
+  >
     <div class="space-y-3">
       <div class="flex justify-center" *ngFor="let link of links">
         <lib-link
           [link]="link"
           [textSize]="textSize"
           type="internal"
-          (clickEmitter)="collapseNavbar()"></lib-link>
+          (clickEmitter)="collapseNavbar()"
+        ></lib-link>
       </div>
     </div>
   </div>
+  <hr />
 </div>

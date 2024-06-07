@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Event, RouterModule } from '@angular/router';
 import { LinkComponent } from '../link/link.component';
 import { Link, TextSize } from '../models';
 
@@ -8,20 +8,50 @@ import { Link, TextSize } from '../models';
   standalone: true,
   selector: 'lib-navbar',
   templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.scss'],
   imports: [CommonModule, RouterModule, LinkComponent],
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
+  @Input() bgColor = '';
   @Input() links: Link[] = [];
   @Input() textSize?: TextSize;
   @Input() isLight = false;
   @Input() isBold = false;
-  isNavbarOpen = false;
+  @Input() isFixed = false;
+  private previousScrollTop = 0;
+  private initialized = false;
+  isMobileNavOpen = false;
+  isFading = false;
+
+  ngOnInit(): void {
+    // Initialize after a short delay to avoid immediate fade on refresh
+    this.previousScrollTop = window.scrollY;
+    setTimeout(() => {
+      this.initialized = true;
+    }, 1000);
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll(_: Event): void {
+    if (!this.initialized) {
+      return;
+    }
+
+    const currentScroll = window.scrollY;
+    if (currentScroll > this.previousScrollTop) {
+      this.isFading = true;
+      this.isMobileNavOpen = false;
+    } else {
+      this.isFading = false;
+    }
+    this.previousScrollTop = currentScroll;
+  }
 
   collapseNavbar() {
-    this.isNavbarOpen = false;
+    this.isMobileNavOpen = false;
   }
 
   toggleNavbar() {
-    this.isNavbarOpen = !this.isNavbarOpen;
+    this.isMobileNavOpen = !this.isMobileNavOpen;
   }
 }
