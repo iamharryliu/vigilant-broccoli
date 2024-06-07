@@ -9,11 +9,7 @@ COMMANDS = {
     "SETUP_DB": "setup_db",
     "CREATE_USER": "create_user",
 }
-
 ENVIRONMENTS = {"TEST", "SIT", "DIT"}
-
-
-DEFAULT_PASSWORD = "password"
 
 
 class DevManager:

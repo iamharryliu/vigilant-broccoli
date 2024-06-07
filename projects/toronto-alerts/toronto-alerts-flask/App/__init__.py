@@ -14,6 +14,8 @@ recaptcha = None
 def create_app(config=DIT_CONFIG):
     # Initialize App
     app = Flask(__name__)
+    app.url_map.strict_slashes = False
+    app.config.from_object(config)
 
     # TODO: fix this later
     global recaptcha
@@ -22,8 +24,6 @@ def create_app(config=DIT_CONFIG):
         site_key=os.environ.get("TORONTO_ALERTS_RECAPTCHA_SITE_KEY"),
         site_secret=os.environ.get("TORONTO_ALERTS_RECAPTCHA_SECRET_KEY"),
     )
-    app.url_map.strict_slashes = False
-    app.config.from_object(config)
 
     # Initialize Dependencies
     db.init_app(app)

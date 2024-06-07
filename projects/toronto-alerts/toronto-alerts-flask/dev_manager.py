@@ -1,13 +1,11 @@
 import sys
 from App import create_app, db
 from App.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG
-from App.models import Subscription
 
 COMMANDS = {
     "RUNSERVER": "runserver",
     "SETUP_DB": "setup_db",
 }
-
 ENVIRONMENTS = {"TEST", "SIT", "DIT"}
 
 

@@ -11,7 +11,6 @@ COMMANDS = {
     "SETUP_MOCK": "setup_mock",
     "CLEANUP": "cleanup",
 }
-
 ENVIRONMENTS = {"TEST", "SIT", "DIT"}
 
 

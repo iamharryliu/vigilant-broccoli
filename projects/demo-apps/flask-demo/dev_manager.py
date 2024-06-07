@@ -6,7 +6,6 @@ COMMANDS = {
     "RUNSERVER": "runserver",
     "SETUP_DB": "setup_db",
 }
-
 ENVIRONMENTS = {"TEST", "SIT", "DIT"}
 
 
