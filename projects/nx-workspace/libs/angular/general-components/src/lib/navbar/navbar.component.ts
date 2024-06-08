@@ -17,7 +17,8 @@ export class NavbarComponent implements OnInit {
   @Input() textSize?: TextSize;
   @Input() isLight = false;
   @Input() isBold = false;
-  @Input() isFixed = false;
+  @Input() isFixedForBrowser = false;
+  @Input() isFixedForMobile = false;
   private previousScrollTop = 0;
   private initialized = false;
   isMobileNavOpen = false;

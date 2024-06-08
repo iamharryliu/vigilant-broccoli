@@ -2,9 +2,9 @@
 <nav
   class="hidden lg:block transition"
   [ngClass]="{
-    fixed: isFixed,
-    'w-full': isFixed,
-    'z-10': isFixed,
+    fixed: isFixedForBrowser,
+    'w-full': isFixedForBrowser,
+    'z-10': isFixedForBrowser,
     'fade-out': isFading,
     bgColor
   }"
@@ -28,8 +28,13 @@
 
 <!-- Mobile Nav -->
 <div
-  class="sticky top-0 w-full z-10 lg:hidden bg-white transition"
-  [ngClass]="{ 'fade-out': isFading }"
+  class="lg:hidden bg-white transition"
+  [class]="isFixedForMobile ? 'fixed' : 'sticky'"
+  [ngClass]="{
+    'w-full': isFixedForMobile,
+    'z-10': isFixedForMobile,
+    'fade-out': isFading
+  }"
 >
   <div class="flex justify-between ml-4 mr-8 pt-3 pb-3">
     <div>
