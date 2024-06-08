@@ -1,7 +1,14 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from App import create_app
 import os, argparse, threading, psycopg2
 from toronto_alerts_app import TorontoAlertsApp
 from mail_handler import MailHandler
 from datetime import timedelta
+from App.config import SIT_CONFIG
+from App.models import Subscription
 
 DATABASE_URL = os.environ.get("TORONTO_ALERTS_DB")
 
@@ -11,19 +18,11 @@ def get_db_connection():
 
 
 def get_users():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    query = "SELECT email, districts, keywords FROM emails;"
-    cursor.execute(query)
-    users = [
-        {
-            "email": user[0],
-            "districts": user[1] if user[1] else [],
-            "keywords": user[2] if user[2] else [],
-        }
-        for user in cursor.fetchall()
-    ]
-    return users
+    app = create_app(config=SIT_CONFIG)
+    ctx = app.app_context()
+    ctx.push()
+    subscriptions = Subscription.query.all()
+    return subscriptions
 
 
 def email_users(users):
@@ -52,9 +51,9 @@ def main():
     emails = get_users()
     users = [
         {
-            "email": user["email"],
-            "districts": user["districts"],
-            "keywords": user["keywords"],
+            "email": user.email,
+            "districts": user.districts.split(","),
+            "keywords": user.keywords.split(","),
         }
         for user in emails
     ]

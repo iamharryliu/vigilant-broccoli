@@ -74,22 +74,26 @@ def submit_form():
     ]
     tfs_stations = request.form.getlist("stations")
     districts = tps_divisions + tfs_stations
+    districts = ",".join(districts)
     keywords = request.form["keywords"]
     keywords = keywords.upper()
     keywords = keywords.replace(" ", "")
     keywords = [keyword for keyword in keywords.split(",") if keyword]
-    ",".join(keywords)
+    keywords = ",".join(keywords)
     if email:
         try:
             subscription = Subscription.query.filter_by(email=email).first()
             if subscription:
-                db.session.delete(subscription)
-            subscription = Subscription(
-                email=email,
-                districts=districts,
-                keywords=keywords,
-            )
-            db.session.add(subscription)
+                subscription.districts = districts
+                subscription.keywords = keywords
+            else:
+                subscription = Subscription(
+                    email=email,
+                    districts=districts,
+                    keywords=keywords,
+                )
+                db.session.add(subscription)
+            db.session.commit()
             send_verification_email(email)
             flash(
                 f"Please verify your email {email}.",
