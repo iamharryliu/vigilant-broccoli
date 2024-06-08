@@ -34,18 +34,18 @@ export class NavbarComponent implements OnInit {
 
   @HostListener('window:scroll', ['$event'])
   onWindowScroll(_: Event): void {
-    if (!this.initialized) {
+    console.log(window.scrollY);
+    if (!this.initialized || window.scrollY <= 0) {
       return;
     }
 
-    const currentScroll = window.scrollY;
-    if (currentScroll > this.previousScrollTop) {
+    if (window.scrollY > this.previousScrollTop) {
       this.isFading = true;
       this.isMobileNavOpen = false;
     } else {
       this.isFading = false;
     }
-    this.previousScrollTop = currentScroll;
+    this.previousScrollTop = window.scrollY;
   }
 
   collapseNavbar() {
