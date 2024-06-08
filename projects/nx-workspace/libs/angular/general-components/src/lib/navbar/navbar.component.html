@@ -8,8 +8,7 @@
     'fade-out': isFading,
     bgColor
   }"
-  [class]="bgColor"
->
+  [class]="bgColor">
   <div class="flex items-center justify-between h-16 ml-6">
     <div class="space-x-4">
       <ng-content select="[browserBrand]"></ng-content>
@@ -19,8 +18,7 @@
         [textSize]="textSize"
         [isLight]="isLight"
         [isBold]="isBold"
-        [type]="link.type"
-      ></lib-link>
+        [type]="link.type"></lib-link>
     </div>
   </div>
   <hr />
@@ -28,14 +26,11 @@
 
 <!-- Mobile Nav -->
 <div
-  class="lg:hidden bg-white transition"
-  [class]="isFixedForMobile ? 'fixed' : 'sticky'"
+  class="lg:hidden bg-white z-10 transition"
+  [class]="isFixedForMobile ? 'fixed w-full' : 'sticky top-0'"
   [ngClass]="{
-    'w-full': isFixedForMobile,
-    'z-10': isFixedForMobile,
     'fade-out': isFading
-  }"
->
+  }">
   <div class="flex justify-between ml-4 mr-8 pt-3 pb-3">
     <div>
       <ng-content select="[mobileBrand]"></ng-content>
@@ -47,16 +42,14 @@
 
   <div
     class="absolute w-full bg-gray-300 pt-3 pb-3"
-    [class.hidden]="!isMobileNavOpen"
-  >
+    [class.hidden]="!isMobileNavOpen">
     <div class="space-y-3">
       <div class="flex justify-center" *ngFor="let link of links">
         <lib-link
           [link]="link"
           [textSize]="textSize"
           type="internal"
-          (clickEmitter)="collapseNavbar()"
-        ></lib-link>
+          (clickEmitter)="collapseNavbar()"></lib-link>
       </div>
     </div>
   </div>
