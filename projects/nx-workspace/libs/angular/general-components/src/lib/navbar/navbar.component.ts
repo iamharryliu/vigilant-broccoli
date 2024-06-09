@@ -25,7 +25,6 @@ export class NavbarComponent implements OnInit {
   isFading = false;
 
   ngOnInit(): void {
-    // Initialize after a short delay to avoid immediate fade on refresh
     this.previousScrollTop = window.scrollY;
     setTimeout(() => {
       this.initialized = true;
@@ -34,7 +33,6 @@ export class NavbarComponent implements OnInit {
 
   @HostListener('window:scroll', ['$event'])
   onWindowScroll(_: Event): void {
-    console.log(window.scrollY);
     if (!this.initialized || window.scrollY <= 0) {
       return;
     }
