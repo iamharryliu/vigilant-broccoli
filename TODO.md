@@ -3,26 +3,13 @@
 ## vigilant-broccoli
 
 - Q1
-- Q2
-
-  - feat: Script to check links if they still work.
-  - feat: Budget alerts for services.
-  - feat: Virus scanning for uploads.
-  - chore: Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
-
   - handle/refactor
     - "node_modules/@fortawesome/fontawesome-free/css/all.css"
-  - feat: use Github actions to replace cronjobs
-  - make first PYPI libraries
-  - refactor: implement Angular signals
-  - chore: act to test Gitbhub actions locally
-  - feat: Github actions to save data
-  - feat: look into preventing DDOS
-
-    - user limiting
+- Q2
 
   - docs: read later
-    - devops
+    - chore: Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
+      - chore: Look into handling DDOS attacks
       - load balancing
       - Redis
       - tmux
@@ -33,7 +20,9 @@
 
 ## CMS
 
-- Q1 - important, urgent
+- Q1
+- Q2
+  - feat: Virus scanning for uploads.
   - feat: Implement db backup
   - feat: rename db to cms_db
   - feat: user management
@@ -41,12 +30,11 @@
     - super admin user management
     - user app access
     - handle receiving emails for message request
-- Q2 - important, not urgent
 
 ## Cloud8
 
 - Q1 - important, urgent
-
+- Q2 - important, not urgent
   - feat: cms
     - integrate image gallery
   - chore: content
@@ -57,13 +45,10 @@
       - wheel durometer
   - feat: enhance SEO
 
-- Q2 - important, not urgent
-
 ## Toronto Alerts
 
 - Q1
 - Q2
-
   - proper email
   - migrate to use ui app?
   - contact gtaupdate dude
@@ -77,9 +62,9 @@
 ## harryliu.design
 
 - Q1
+- Q2
   - feat: add personal google map links
   - feat: change wallpaper color
-- Q2
   - feat: jobhunt mode configuration
   - fix: mailto links
   - style: update typography
@@ -98,3 +83,10 @@
     - helper text not hidden (maybe delete it)
   - refactor: introduce service files?
   - fix: fly deploy slow?
+
+## App Monitor
+
+- Q1
+- Q2
+  - feat: Script to check links if they still work.
+  - feat: Budget alerts for services.
