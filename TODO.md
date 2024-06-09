@@ -1,5 +1,36 @@
 # TODO
 
+## vigilant-broccoli
+
+- Q1
+- Q2
+
+  - feat: Script to check links if they still work.
+  - feat: Budget alerts for services.
+  - feat: Virus scanning for uploads.
+  - chore: Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
+
+  - handle/refactor
+    - "node_modules/@fortawesome/fontawesome-free/css/all.css"
+  - feat: use Github actions to replace cronjobs
+  - make first PYPI libraries
+  - refactor: implement Angular signals
+  - chore: act to test Gitbhub actions locally
+  - feat: Github actions to save data
+  - feat: look into preventing DDOS
+
+    - user limiting
+
+  - docs: read later
+    - devops
+      - load balancing
+      - Redis
+      - tmux
+      - aws
+        - cloudformation
+    - open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
+    - online payment form
+
 ## CMS
 
 - Q1 - important, urgent
