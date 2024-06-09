@@ -1,13 +1,12 @@
 <!-- Browser Nav -->
 <nav
   class="hidden lg:block transition"
-  [ngClass]="{
+  [ngClass]="{sticky: isStickyForBrowser,
+    'top-0': isStickyForBrowser,
     fixed: isFixedForBrowser,
     'w-full': isFixedForBrowser,
     'z-10': isFixedForBrowser,
-    'fade-out': isFading,
-    bgColor
-  }"
+    'fade-out': isFading}"
   [class]="bgColor">
   <div class="flex items-center justify-between h-16 ml-6">
     <div class="space-x-4">
