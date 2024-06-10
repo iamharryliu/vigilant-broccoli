@@ -18,6 +18,9 @@ These databases provide a foundation for creating new databases and are integral
 # Connect / Disconnect
 psql postgres
 \q
+# .pgpass
+hostname:port:database:username:password
+chmod 600 ~/.pgpass
 
 # Users
 \du
