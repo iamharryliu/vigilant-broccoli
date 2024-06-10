@@ -12,14 +12,9 @@
 
 These databases provide a foundation for creating new databases and are integral to the functioning of PostgreSQL. The template0 database is essentially read-only, while template1 can be modified to suit specific needs. When you create a new database without specifying a template, it is usually based on template1.
 
-## Mac Commands
+### Commands
 
 ```
-# Setup
-brew install postgresql
-brew services start postgresql
-brew services stop postgresql
-
 # Connect / Disconnect
 psql postgres
 \q
@@ -42,6 +37,10 @@ FROM pg_stat_activity
 WHERE pg_stat_activity.datname = 'your_db'
   AND pid <> pg_backend_pid();
 
+# Backup Database
+pg_dump -h localhost -U postgres [db_name] > [backup.sql]
+createdb -h localhost -U postgres [targetdatabase]
+psql -h localhost -U postgres -d [targetdatabase] -f [mydatabase_dump.sql]
 
 # Tables
 \dt
@@ -51,11 +50,19 @@ DROP TABLE [table-name]
 # Get Table Schema
 \d+ [table_name];
 
-
 # Test connection string
 pg_isready -d [connection_string]
 
-DELETE FROM [table_name] WHERE email = [email];
+DELETE FROM [table_name] WHERE [column_name] = [value];
+```
+
+## Mac Commands
+
+```
+# Setup
+brew install postgresql
+brew services start postgresql
+brew services stop postgresql
 ```
 
 ## Linux Commands

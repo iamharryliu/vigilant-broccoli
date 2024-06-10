@@ -67,6 +67,13 @@ fly ips allocate-v4 --app [app_name] --shared
 psql postgres://postgres:[password]@[appname].internal:5432/[db]
 psql postgresql://postgres:[password]@localhost:5432/[db]
 psql postgres://postgres:[password]@testsql.flycast:5432/[db]
+# Backup
+fly postgres list
+fly volumes list -a [app_name]
+fly volumes snapshots list [volume_id]
+fly postgres create --snapshot-id [snapshot_id]
+fly postgres detach [db_name]
+fly postgres attach [restrored_db_name]
 ```
 
 ### DNS
