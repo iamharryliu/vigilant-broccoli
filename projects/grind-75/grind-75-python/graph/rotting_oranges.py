@@ -35,3 +35,9 @@ class Solution:
             time += 1
             fresh -= len(q)
         return time if fresh == 0 else -1
+
+
+"""
+Time Complexity - O(m × n)
+Space Complexity - O(m × n)
+"""
