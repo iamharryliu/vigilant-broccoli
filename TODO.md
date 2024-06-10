@@ -3,8 +3,6 @@
 ## vigilant-broccoli
 
 - Q1
-  - handle/refactor
-    - "node_modules/@fortawesome/fontawesome-free/css/all.css"
 - Q2
 
   - docs: read later
