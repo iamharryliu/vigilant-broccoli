@@ -8,7 +8,7 @@ from flask_login import current_user
 from App.main.utils import handle_contact_message
 from App.main.forms import ContactForm
 
-main_blueprint = Blueprint("main", __name__, template_folder="templeates")
+main_blueprint = Blueprint("main", __name__, template_folder="templates")
 
 
 @main_blueprint.route("/")

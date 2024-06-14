@@ -15,50 +15,57 @@ def get_s3_client():
     )
 
 
-def get_local_path(fname):
+def get_local_path(filepath):
     return os.path.join(
         current_app.root_path,
         current_app.config["BUCKET_NAME"],
-        current_app.config["CONTENT_DIRECTORY"],
-        fname,
+        filepath,
     )
 
 
-def save_file(file, filename):
+def save_file(file, filepath):
     if current_app.config["ENVIRONMENT"] not in LOCAL_BUCKET_ENVIRONMENTS:
         s3_client = get_s3_client()
-        s3_client.upload_fileobj(file, current_app.config["BUCKET_NAME"], filename)
+        s3_client.upload_fileobj(file, current_app.config["BUCKET_NAME"], filepath)
     else:
-        filepath = get_local_path(filename)
+        filepath = get_local_path(filepath)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, "wb") as f:
             f.write(file.read())
-    return filename
 
 
-def save_text(text, filename):
+def save_text(text, filepath):
     text_bytes = BytesIO(text.encode("utf-8"))
-    return save_file(text_bytes, filename)
+    save_file(text_bytes, filepath)
 
 
-def get_file(filename):
+def get_file(filepath):
     if current_app.config["ENVIRONMENT"] not in LOCAL_BUCKET_ENVIRONMENTS:
         s3_client = get_s3_client()
         file_obj = BytesIO()
         s3_client.download_fileobj(
-            current_app.config["BUCKET_NAME"], filename, file_obj
+            current_app.config["BUCKET_NAME"], filepath, file_obj
         )
         file_obj.seek(0)
         return file_obj
     else:
-        filepath = get_local_path(filename)
+        # TODO: Should this be here? maybe do it inside the save instead and have a default for no content?
+        ensure_file_exists(filepath)
+        filepath = get_local_path(filepath)
         with open(filepath, "rb") as f:
             return BytesIO(f.read())
 
 
-def get_text(filename):
-    file_obj = get_file(filename)
+def get_text_from_filepath(filepath):
+    file_obj = get_file(filepath)
     return file_obj.read().decode("utf-8")
+
+
+def ensure_file_exists(filepath):
+    filepath = get_local_path(filepath)
+    if not os.path.exists(filepath):
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        open(filepath, "wb").close()
 
 
 def get_subdirectories(prefix=None):

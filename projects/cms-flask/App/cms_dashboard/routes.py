@@ -12,7 +12,7 @@ from flask_login import login_required
 from App.main.forms import ContentForm, UploadForm
 from App.utils import (
     save_text,
-    get_text,
+    get_text_from_filepath,
     get_subdirectories,
     save_file,
     delete_directory,
@@ -40,13 +40,12 @@ def dashboard():
 @login_required
 def page_content():
     form = ContentForm()
+    filepath = f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md"
     if request.method == "GET":
-        form.content.data = get_text(
-            f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md"
-        )
+        form.content.data = get_text_from_filepath(filepath)
     if form.validate_on_submit():
         content = form.content.data
-        save_text(content, f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md")
+        save_text(content, filepath)
         flash(f"You have successfully updated the content.", "success")
         return redirect(url_for("cms.dashboard"))
     return render_template("pages/edit_content.html", title="Page Content", form=form)
