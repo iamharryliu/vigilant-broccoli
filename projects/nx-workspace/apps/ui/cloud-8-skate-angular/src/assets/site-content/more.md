@@ -1,6 +1,7 @@
 # More Info
 
-Toronto related skate places and skate information.
+Find out more info for Toronto related skate information
+If you are looking for more info on _Cloud8Skate_ you can checkout our [FAQ](https://cloud8skate.com/faq).
 
 ### Places
 
