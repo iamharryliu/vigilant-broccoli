@@ -10,7 +10,6 @@ import {
   FolderItemComponent,
   FolderItem,
   LinkComponent,
-  FileService,
   MarkdownPageComponent,
 } from 'general-components';
 
@@ -31,15 +30,12 @@ export class DocsMdPageComponent implements OnInit {
   fileContent$: Observable<FolderItem>;
 
   constructor(
-    private fileService: FileService,
     public appService: AppService,
-    public markdownLibraryService: DocsMdPageService,
+    public docsMdPageService: DocsMdPageService,
     private router: Router,
     private route: ActivatedRoute,
   ) {
-    this.fileContent$ = this.fileService.getFolderStructure(
-      'assets/md-library/md-library.json',
-    );
+    this.fileContent$ = this.docsMdPageService.getFileContent();
   }
 
   ngOnInit(): void {
@@ -48,36 +44,22 @@ export class DocsMdPageComponent implements OnInit {
     ) as string;
     if (filename) {
       this.fileContent$.subscribe(data => {
-        const filepath = this.getFilepath(data, `${filename}.md`) as string;
-        this.markdownLibraryService.selectFile(filepath);
+        const filepath = this.docsMdPageService.getFilepath(
+          data,
+          `${filename}.md`,
+        ) as string;
+        this.docsMdPageService.selectFile(filepath);
       });
     }
   }
 
   selectFile(file: any) {
-    this.markdownLibraryService.selectFile(file.filepath);
+    this.docsMdPageService.selectFile(file.filepath);
     this.router.navigateByUrl(`/docs-md/${file.name.split('.')[0]}`);
   }
 
   close() {
-    this.markdownLibraryService.closeSelectedFile();
+    this.docsMdPageService.closeSelectedFile();
     this.router.navigateByUrl(DOCS_MD_ROUTE.path as string);
-  }
-
-  private getFilepath(folder: any, filename: string): string | null {
-    for (const item of folder.children) {
-      if (item.type === 'file' && item.name === filename) {
-        return item.filepath;
-      }
-
-      if (item.type === 'folder') {
-        const result = this.getFilepath(item, filename);
-        if (result) {
-          return result;
-        }
-      }
-    }
-
-    return null;
   }
 }
