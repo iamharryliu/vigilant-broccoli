@@ -21,10 +21,23 @@ class User(db.Model, UserMixin):
     email: str = db.Column(db.String(USER_CONFIG.MAX_EMAIL_LENGTH), unique=True)
     is_verified: str = db.Column(db.Boolean, default=False)
     password = db.Column(db.String(USER_CONFIG.MAX_PASSWORD_LENGTH), nullable=False)
+    privileges = db.relationship(
+        "Privilege", back_populates="user", cascade="all, delete-orphan"
+    )
 
     def get_token(self):
         s = Serializer(current_app.config["SECRET_KEY"])
         return s.dumps({"user_id": self.id})
+
+    def add_privilege(self, application_type):
+        new_privilege = Privilege(user_id=self.id, application_type=application_type)
+        db.session.add(new_privilege)
+        db.session.commit()
+
+    def has_privilege(self, application_type):
+        return any(
+            priv.application_type == application_type for priv in self.privileges
+        )
 
     @staticmethod
     def verify_token(token):
@@ -34,3 +47,11 @@ class User(db.Model, UserMixin):
         except:
             return None
         return User.query.get(user_id)
+
+
+@dataclass
+class Privilege(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey("user.id"), nullable=False)
+    application_type = db.Column(db.String, nullable=False)
+    user = db.relationship("User", back_populates="privileges")

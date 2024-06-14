@@ -43,6 +43,14 @@ class DevManager:
         user = User(username=username, password=hashed_password)
         db.session.add(user)
         db.session.commit()
+        while True:
+            application_type = input(
+                "Enter application type for privilege (or type 'done' to finish): "
+            )
+            if application_type.lower() == "done":
+                break
+            user.add_privilege(application_type)
+
         print("Admin user has successfully been created.")
 
 
