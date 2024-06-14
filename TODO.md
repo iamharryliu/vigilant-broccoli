@@ -61,11 +61,12 @@
 
 - Q1
 - Q2
-  - feat: add personal google map links
-  - feat: change wallpaper color
-  - feat: jobhunt mode configuration
-  - fix: mailto links
-  - style: update typography
+  - refactor(docs-md): folder item starting with folders inside notes and expand on refresh
+  - feat(harryliu.design): add personal google map links
+  - feat(harryliu.design): change wallpaper color
+  - feat(harryliu.design): jobhunt mode configuration
+  - fix(harryliu.design): mailto links
+  - style(harryliu.design): update typography
 
 # Vibecheck
 
