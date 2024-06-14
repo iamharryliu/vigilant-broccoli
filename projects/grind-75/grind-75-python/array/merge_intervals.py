@@ -13,3 +13,9 @@ class Solution:
             else:
                 res.append([s, e])
         return res
+
+
+"""
+Time Complexity - O(nlogn)
+Space Complexity - O(n)
+"""

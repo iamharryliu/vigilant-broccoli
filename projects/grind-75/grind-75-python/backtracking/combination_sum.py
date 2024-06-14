@@ -6,14 +6,21 @@ class Solution:
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
         res = []
 
-        def backtrack(i=0, arr=[]):
-            if i == len(candidates) or sum(arr) > target:
+        def backtrack(i=0, curr=[], total=0):
+            if i == len(candidates) or total > target:
                 return
-            if sum(arr) == target:
-                res.append(arr)
+            if sum(curr) == target:
+                res.append(curr[:])
                 return
-            backtrack(i, arr + [candidates[i]])
-            backtrack(i + 1, arr)
+            num = candidates[i]
+            backtrack(i, curr + [num], total + num)
+            backtrack(i + 1, curr, total)
 
         backtrack()
         return res
+
+
+"""
+Time Complexity - O(2ⁿ)
+Space Complexity - O(target / min(candidates))
+"""

@@ -6,13 +6,21 @@ class Solution:
     def permute(self, nums: List[int]) -> List[List[int]]:
         res = []
 
-        def backtrack(arr=[]):
-            if len(arr) == len(nums):
-                res.append(arr)
+        def backtrack(curr=[]):
+            if len(curr) == len(nums):
+                res.append(curr[:])
                 return
-            for n in nums:
-                if n not in arr:
-                    backtrack(arr + [n])
+            for num in nums:
+                if num not in curr:
+                    curr.append(num)
+                    backtrack(curr)
+                    curr.pop()
 
         backtrack()
         return res
+
+
+"""
+Time Complexity - O(n × n!)
+Space Complexity - O(n × n!)
+"""
