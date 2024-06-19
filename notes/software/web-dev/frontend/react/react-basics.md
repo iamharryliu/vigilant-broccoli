@@ -3,9 +3,7 @@
 ## Event Handling
 
 ```
-
 <button onClick={handleButtonClick}>On Click</button>
-
 ```
 
 ### Rendering
@@ -13,18 +11,14 @@
 #### Conditional Rendering
 
 ```
-
 { condition && <div>Block</div> }
 { condition ? <div>Block</div> : <div>Else Block</div> }
-
 ```
 
 #### List Rendering
 
 ```
-
 { list.map((items) => <div>{items.key})</div> }
-
 ```
 
 ## Components
@@ -32,30 +26,25 @@
 ### Functional Components
 
 ```
-
 function Component() {
 return <>Your HTML</>;
 }
 
 export default Component;
-
 ```
 
 ```
-
 root.render(<Component />);
-
 ```
 
 #### Props
 
 ```
-
 function Component(props) {
-return <>{props.value}</>;
+    return <>{props.value}</>;
 }
-root.render(<Component value="value"/>);
 
+root.render(<Component value="value"/>);
 ```
 
 ## Routing
