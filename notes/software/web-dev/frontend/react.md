@@ -1,4 +1,4 @@
 # React
 
-[React Basics](https://harryliu.design/react-basics)
-[React Render](http://localhost:4200/docs-md/react-render)
+[React Basics](https://harryliu.design/docs-md/react-basics)
+[React Render](https://harryliu.design/docs-md/react-render)
