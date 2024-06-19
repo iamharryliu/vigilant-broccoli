@@ -8,20 +8,22 @@
 
 ```
 
-## Conditionals
+### Rendering
+
+#### Conditional Rendering
 
 ```
 
-{condition} && <div>Block</div>
-{condition} ? <div>Block</div> : <div>Else Block</div>
+{ condition && <div>Block</div> }
+{ condition ? <div>Block</div> : <div>Else Block</div> }
 
 ```
 
-## Lists
+#### List Rendering
 
 ```
 
-{list.map((car) => <div key={car.id}>Content</div>)}
+{ list.map((items) => <div>{items.key})</div> }
 
 ```
 
@@ -59,37 +61,33 @@ root.render(<Component value="value"/>);
 ## Routing
 
 ```
-
 export default function App() {
-return (
-<BrowserRouter>
-<Routes>
-<Route path="/" element={<Layout />}>
-<Route index element={<Home />} />
-<Route path="something" element={<Something />} />
-<Route path="something-else" element={<SomethingElse />} />
-<Route path="\*" element={<NoPage />} />
-</Route>
-</Routes>
-</BrowserRouter>
-);
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="something" element={<Something />} />
+                <Route path="something-else" element={<SomethingElse />} />
+                <Route path="\*" element={<NoPage />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 }
-
 ```
 
 ```
-
 const Layout = () => {
-return (
-<>
-<Link to="/">Home</Link>
-<Link to="/something">Something</Link>
-<Link to="/something-else">Something Else</Link>
-<Outlet />
-</>
-)
+    return (
+        <>
+            <Link to="/">Home</Link>
+            <Link to="/something">Something</Link>
+            <Link to="/something-else">Something Else</Link>
+            <Outlet />
+        </>
+    )
 };
-
 ```
 
 ## State Management
@@ -99,79 +97,68 @@ return (
 #### useState
 
 ```
-
 const [state, setState] = useState(data);
-
 ```
 
 #### setState
 
 ```
-
 setState(previousState => {
-return { ...previousState, { stateChanges... } }
+    return { ...previousState, { stateChanges... } }
 });
-
 ```
 
 #### useReducer
 
 ```
-
 const reducer = (state, action) => {
-switch (action.type) {
-case "value":
-// has acess to action data
-return change(state)
-default:
-return state;
-}
+    switch (action.type) {
+        case "value":
+            // has acess to action data
+            return change(state)
+        default:
+            return state;
+    }
 };
 
 function Component() {
-const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducer, initialState);
 
-const handleComplete = (state) => {
-dispatch({ type: "COMPLETE", ...data });
-};
+    const handleComplete = (state) => {
+    dispatch({ type: "COMPLETE", ...data });
+    };
 
-...
+    ...
 }
-
 ```
 
 #### useEffect
 
 ```
-
 useEffect(() => {
-// Runs on every render
+    // Runs on every render
 });
 
 useEffect(() => {
 // Runs only on the first render
-...code to run on first render
-return () => cleanupCode()
+    ...code to run on first render
+    return () => cleanupCode()
 }, []);
 
 useEffect(() => {
-// Runs any time any dependency values change
+    // Runs any time any dependency values change
 }, [state, ...]);
-
 ```
 
 #### createContext
 
 ```
-
 import { useState, createContext } from "react";
 import ReactDOM from "react-dom/client";
 const Context = createContext()
-
 ```
 
 ```
-
 function Component() {
 const [state, setState] = useState(data);
 
@@ -181,18 +168,15 @@ return (
 </Context.Provider>
 );
 }
-
 ```
 
 ```
-
 function NestedComponent() {
 const data = useContext(Context);
 return (
 <>{data}</>
 );
 }
-
 ```
 
 #### useRef
@@ -200,18 +184,15 @@ return (
 useRef is used to persist values between renders and prevent infinite re-renders.
 
 ```
-
 const count = useRef(0);
 useEffect(() => {
 count.current = count.current + 1;
 });
-
 ```
 
 DOM Manipulation.
 
 ```
-
 const inputElement = useRef();
 
 const focusInput = () => {
@@ -219,13 +200,11 @@ inputElement.current.focus();
 };
 
 <button onClick={focusInput}>Focus Input</button>
-
 ```
 
 Tracking input changes.
 
 ```
-
 const [inputValue, setValue] = useState("");
 const previousValue = useRef("");
 
@@ -238,13 +217,11 @@ type="text"
 value={inputValue}
 onChange={(e) => setInputValue(e.target.value)}
 />
-
 ```
 
 #### useCallback
 
 ```
-
 // Will ALWAYS get hit on re-render.
 const fn = () => {
 setState((value) => [...value, newData]);
@@ -254,17 +231,14 @@ setState((value) => [...value, newData]);
 const fn = useCallback(() => {
 setState((value) => {...stateValue, newData});
 }, [props]);
-
 ```
 
 #### useMemo
 
 ```
-
 const value = expensiveCalculation(state);
 // vs
 const value = useMemo(() => expensiveCalculation(state), [state]);
-
 ```
 
 ## References
