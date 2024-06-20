@@ -22,11 +22,10 @@
 - Q2
   - feat: Virus scanning for uploads.
   - feat: Implement db backup
-  - feat: rename db to cms_db
+    - Automate pg_dump to a S3 location.
+  - feat: implement image gallery
   - feat: user management
-    - user permissions
     - super admin user management
-    - user app access
     - handle receiving emails for message request
 
 ## Cloud8
@@ -35,13 +34,13 @@
 - Q2 - important, not urgent
   - feat: cms
     - integrate image gallery
-  - chore: content
-    - tutorial videos
-    - skate explanations
-      - wheel setups - flat, rocker, anti rocker, toe stop, etc...
-      - wheel sizes
-      - wheel durometer
   - feat: enhance SEO
+    - feat: content
+      - tutorial videos
+      - skate explanations
+        - wheel setups - flat, rocker, anti rocker, toe stop, etc...
+        - wheel sizes
+        - wheel durometer
 
 ## Toronto Alerts
 
