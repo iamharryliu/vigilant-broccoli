@@ -17,8 +17,16 @@
 
 #### List Rendering
 
+- Keys are used in list rendering to reduce unnecessary re-rendering.
+- Index as key anti-pattern
+  - Use index as key when:
+    - Items do not have unique ID
+    - The list is a static list and will not change.
+    - The list will never be reordered or filtered.
+  - Preferably use some sort of hashed value for the key.
+
 ```
-{ list.map((items) => <div>{items.key})</div> }
+{ list.map((item, index) => <div key={index}>{item.key})</div> }
 ```
 
 ## Components
