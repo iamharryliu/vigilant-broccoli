@@ -6,18 +6,15 @@
 
 ## Commands
 
-### General App Commands
-
-Run application.
-
 ```
 npm i
+npm i --yes
+```
+
+### General App Commands
+
+```
 npm run serve
-```
-
-Run application lint, format, test.
-
-```
 npm run lint
 npm run lint:css
 npm run format

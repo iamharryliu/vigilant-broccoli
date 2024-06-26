@@ -1,5 +1,11 @@
 # Web Development
 
+## Basics
+
+- HTML
+- CSS
+- Javascript
+
 ## Architecture
 
 ## Battle of the Frontends
