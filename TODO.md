@@ -4,22 +4,24 @@
 
 - Q1
 - Q2
-
+  - chore: Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
+  - chore: Look into handling DDOS attacks
+  - chore: open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
+  - chore: online payment form
   - docs: read later
-    - chore: Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
-      - chore: Look into handling DDOS attacks
-      - load balancing
-      - Redis
-      - tmux
-      - aws
-        - cloudformation
-    - open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
-    - online payment form
+    - load balancing
+    - Redis
+    - tmux
+    - aws
+    - cloudformation
+    - browser media downloads for offline use (like YouTube downlaods)
 
 ## CMS
 
 - Q1
 - Q2
+  - feat: App handling
+    - redirect rules to cms site from admin.whaterver.com, https://developers.cloudflare.com/fundamentals/setup/manage-domains/redirect-domain/
   - feat: Virus scanning for uploads.
   - feat: Implement db backup
     - Automate pg_dump to a S3 location.
