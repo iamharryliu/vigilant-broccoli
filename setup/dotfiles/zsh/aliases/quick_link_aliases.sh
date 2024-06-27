@@ -3,9 +3,11 @@ alias chrome='open -a "Google Chrome"'
 alias google="~/shell-scripts/google_search.sh"
 alias youtube="~/shell-scripts/youtube_search.sh"
 alias chatgpt='chrome "https://chat.openai.com/"'
-alias amazon="~/shell-scripts/amazon_search.sh"
 alias pinterest="~/shell-scripts/pinterest_search.sh"
 alias gtranslate='chrome "https://translate.google.com/"'
+# Consumerism
+alias amazon="~/shell-scripts/amazon_search.sh"
+alias karmanow='chrome "https://www.karmanow.com/my-items"'
 
 # Online Services
 # Google Services

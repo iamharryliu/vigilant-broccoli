@@ -26,7 +26,7 @@ def handle_login():
         login_user(user, remember=form.remember.data)
         next_page = request.args.get("next")
         flash("Login successful!", "success")
-        return redirect(next_page) if next_page else redirect(url_for("main.index"))
+        return redirect(next_page) if next_page else redirect(url_for("cms.index"))
     else:
         flash("Login unsuccessful. Please check email and password.", "danger")
         return redirect(url_for("users.login"))
@@ -35,4 +35,4 @@ def handle_login():
 def handle_logout():
     logout_user()
     flash("You have been logged out.", "success")
-    return redirect(url_for("main.index"))
+    return redirect(url_for("cms.index"))
