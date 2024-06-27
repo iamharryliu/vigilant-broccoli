@@ -34,7 +34,7 @@ export class LeetCodePageComponent implements OnInit {
   constructor(
     public fileService: FileService,
     public appService: AppService,
-    public leetCodePageService: LeetCodePageService,
+    public pageService: LeetCodePageService,
     private route: ActivatedRoute,
   ) {
     this.fileContent$ = this.fileService.getFolderStructure(
@@ -47,13 +47,13 @@ export class LeetCodePageComponent implements OnInit {
     if (filename) {
       this.fileContent$.subscribe(data => {
         const filepath = this.getFilepath(data, `${filename}.py`) as string;
-        this.leetCodePageService.selectFile(filepath);
+        this.pageService.selectFile(filepath);
       });
     }
   }
 
   close() {
-    this.leetCodePageService.closeSelectedFile();
+    this.pageService.closeSelectedFile();
   }
 
   private getFilepath(folder: any, filename: string): string | null {

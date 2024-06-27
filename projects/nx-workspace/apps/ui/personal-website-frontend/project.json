@@ -14,7 +14,7 @@
       "options": {
         "commands": [
           {
-            "command": "ts-node build_blog_json.ts && ts-node file_structure_to_json.ts ../../notes ./apps/ui/personal-website-frontend/src/assets/md-library/md-library.json  && rsync -r ../../notes apps/ui/personal-website-frontend/src/assets/md-library/ --delete && ts-node file_structure_to_json.ts ../grind-75 ./apps/ui/personal-website-frontend/src/assets/grind-75/grind-75.json && rsync -ar ../grind-75 apps/ui/personal-website-frontend/src/assets/grind-75/grind-75/ --delete"
+            "command": "ts-node build_blog_json.ts && ts-node file_structure_to_json.ts ../../notes ./apps/ui/personal-website-frontend/src/assets/md-library/md-library.json  && rsync -r ../../notes apps/ui/personal-website-frontend/src/assets/md-library/ --delete && ts-node file_structure_to_json.ts ../grind-75 ./apps/ui/personal-website-frontend/src/assets/grind-75/grind-75.json && rsync -ar ../grind-75 apps/ui/personal-website-frontend/src/assets/grind-75/ --delete"
           }
         ]
       }
