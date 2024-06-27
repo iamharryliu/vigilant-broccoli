@@ -35,4 +35,4 @@ def handle_login():
 def handle_logout():
     logout_user()
     flash("You have been logged out.", "success")
-    return redirect(url_for("cms.index"))
+    return redirect(url_for("users.login"))
