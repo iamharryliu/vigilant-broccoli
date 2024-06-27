@@ -1,11 +1,13 @@
 # Git
 
-## Git Conventions
-
-### Commit conventions
+## Conventions
 
 ```
-<type>[optional scope]: <description>
+Commits
+<type>(optional_scope): <description>
+
+Branch Naming
+<type>/<scope>-<description>
 ```
 
 #### Commit Types
@@ -35,7 +37,7 @@ git subtree push --prefix=[filepath] [repo_url] [branch_name]
 ## Commands
 
 ```
-git checkout -b [branch name]
+git checkout -b [branch_name]
 git add [files]
 git commit -m [message]
 git push
