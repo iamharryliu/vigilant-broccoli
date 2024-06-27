@@ -1,7 +1,8 @@
 import sys
+from flask import current_app
 from App import create_app, db, bcrypt
 from App.models import User
-from App.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG
+from App.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG, ENVIRONMENT_TYPE
 from getpass import getpass
 
 COMMANDS = {
@@ -34,24 +35,28 @@ class DevManager:
     def create_user(self, db):
         username = input("Enter username: ")
         password = getpass("Enter password: ")
-        confirm_password = getpass("Confirm password: ")
-        if password != confirm_password:
-            if input("Try again(y/n): ") == "y":
-                self.create_user(db)
-            return
+        if current_app.config["ENVIRONMENT"] is not ENVIRONMENT_TYPE.DIT:
+            confirm_password = getpass("Confirm password: ")
+            if password != confirm_password:
+                if input("Try again(y/n): ") == "y":
+                    self.create_user(db)
+                return
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
         user = User(username=username, password=hashed_password)
         db.session.add(user)
         db.session.commit()
         while True:
             application_type = input(
-                "Enter application type for privilege (or type 'done' to finish): "
+                "Enter application type for privilege or nothing to finish): "
             )
-            if application_type.lower() == "done":
+            if not application_type:
                 break
-            user.add_privilege(application_type)
+            if not user.has_privilege(application_type):
+                user.add_privilege(application_type)
+            else:
+                print("User already has this privilege.")
 
-        print("Admin user has successfully been created.")
+        print("User has successfully been created.")
 
 
 def main():
