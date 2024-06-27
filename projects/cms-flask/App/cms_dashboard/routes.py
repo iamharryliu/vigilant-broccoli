@@ -26,7 +26,6 @@ def requires_privilege():
         def decorated_function(*args, **kwargs):
             app_name = kwargs.get("app_name")
             if not current_user.has_privilege(app_name):
-                flash("You do not have the necessary privileges to access this page.")
                 return redirect(url_for("cms.index"))
             return f(*args, **kwargs)
 
