@@ -211,3 +211,5 @@ coverage
 
 credentials.json
 token.pickle
+
+.obsidian
