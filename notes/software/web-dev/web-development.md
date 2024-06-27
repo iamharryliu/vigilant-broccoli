@@ -4,7 +4,7 @@
 
 - HTML
 - CSS
-  - Javascript
+- Javascript
 
 ## Architecture
 
