@@ -57,7 +57,9 @@ def index():
 def apps():
     if len(current_user.privileges) == 1:
         return redirect(
-            url_for("cms.dashboard"), url=current_user.privileges[0].application_type
+            url_for(
+                "cms.dashboard", app_name=current_user.privileges[0].application_type
+            ),
         )
     privileges = [privilege.application_type for privilege in current_user.privileges]
     return render_template(
