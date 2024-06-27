@@ -1,0 +1,14 @@
+{% extends 'layouts/layout.html' %} {% block content %}
+
+<h1>Your Apps</h1>
+<ul class="list-group">
+  {% for privilege in privileges %}
+  <a
+    href="{{url_for('cms.dashboard', app_name=privilege)}}"
+    class="list-group-item list-group-item-action"
+    >{{ privilege }}</a
+  >
+  {% endfor %}
+</ul>
+
+{% endblock %}

@@ -25,7 +25,7 @@ def error_403(error):
 # Not found error.
 @errors_blueprint.app_errorhandler(HTTP_STATUS_CODE.NOT_FOUND_ERROR)
 def error_404(error):
-    return redirect(url_for("main.index"))
+    return redirect(url_for("cms.index"))
 
 
 # Internal server error.
