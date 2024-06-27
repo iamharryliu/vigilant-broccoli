@@ -58,7 +58,6 @@ export class LeetCodePageComponent implements OnInit {
 
   private getFilepath(folder: any, filename: string): string | null {
     for (const item of folder.children) {
-      console.log(filename);
       if (item.type === 'file' && item.name === filename) {
         return item.filepath;
       }
