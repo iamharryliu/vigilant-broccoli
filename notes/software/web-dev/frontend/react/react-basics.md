@@ -47,12 +47,19 @@ root.render(<Component />);
 
 #### Props
 
+##### Passing Props
+
 ```
-function Component(props) {
-    return <>{props.value}</>;
+<Component value="value"/>
+const Component = (props) => {
+    return <>{{ props.value }}</>
 }
 
-root.render(<Component value="value"/>);
+// With Destructuring
+<Component {...props}>
+const Component = ({ value, ...}) => {
+    return <>{{ value }}</>
+}
 ```
 
 ## Routing
