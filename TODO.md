@@ -48,6 +48,10 @@
 
 - Q1
 - Q2
+  - feat:
+    - select hours to get notified for weather subscription
+    - select subway and bus lines to subscribe to
+    - Events of the week.
   - proper email
   - migrate to use ui app?
   - contact gtaupdate dude
@@ -62,12 +66,12 @@
 
 - Q1
 - Q2
-  - refactor(docs-md): folder item starting with folders inside notes and expand on refresh
-  - feat(harryliu.design): add personal google map links
-  - feat(harryliu.design): change wallpaper color
-  - feat(harryliu.design): jobhunt mode configuration
-  - fix(harryliu.design): mailto links
+  - feat: add personal google map links
+  - feat: change wallpaper color
+  - fix: mailto links
+  - feat(grind-75): specify which programming language
   - style(harryliu.design): update typography
+  - feat: jobhunt mode configuration
 
 # Vibecheck
 
