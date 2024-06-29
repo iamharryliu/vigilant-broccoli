@@ -9,11 +9,6 @@
   - chore: open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
   - chore: online payment form
   - docs: read later
-    - load balancing
-    - Redis
-    - tmux
-    - aws
-    - cloudformation
     - browser media downloads for offline use (like YouTube downlaods)
 
 ## CMS
