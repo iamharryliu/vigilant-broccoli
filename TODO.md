@@ -60,12 +60,11 @@
 
 - Q1
 - Q2
-  - feat: add personal google map links
-  - feat: change wallpaper color
-  - fix: mailto links
   - feat(grind-75): specify which programming language
   - style(harryliu.design): update typography
   - feat: jobhunt mode configuration
+  - feat: add personal google map links
+  - fix: mailto links
 
 # Vibecheck
 
