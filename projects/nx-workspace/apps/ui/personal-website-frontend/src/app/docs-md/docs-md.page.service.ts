@@ -31,21 +31,4 @@ export class DocsMdPageService {
     this.selectedFile = DEFAULT_MD_FILE;
     this.isFileSelected = false;
   }
-
-  getFilepath(folder: any, filename: string): string | null {
-    for (const item of folder.children) {
-      if (item.type === 'file' && item.name === filename) {
-        return item.filepath;
-      }
-
-      if (item.type === 'folder') {
-        const result = this.getFilepath(item, filename);
-        if (result) {
-          return result;
-        }
-      }
-    }
-
-    return null;
-  }
 }

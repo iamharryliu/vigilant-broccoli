@@ -11,6 +11,7 @@ import {
   FolderItem,
   LinkComponent,
   MarkdownPageComponent,
+  FileService,
 } from 'general-components';
 
 @Component({
@@ -31,6 +32,7 @@ export class DocsMdPageComponent implements OnInit {
 
   constructor(
     public appService: AppService,
+    private fileService: FileService,
     public docsMdPageService: DocsMdPageService,
     private router: Router,
     private route: ActivatedRoute,
@@ -44,7 +46,7 @@ export class DocsMdPageComponent implements OnInit {
     ) as string;
     if (filename) {
       this.fileContent$.subscribe(data => {
-        const filepath = this.docsMdPageService.getFilepath(
+        const filepath = this.fileService.getFilepath(
           data,
           `${filename}.md`,
         ) as string;

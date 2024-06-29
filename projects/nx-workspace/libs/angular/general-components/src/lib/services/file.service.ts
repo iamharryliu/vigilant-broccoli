@@ -22,4 +22,21 @@ export class FileService {
   ): Observable<FolderItem> {
     return this.http.get<FolderItem>(fileStructureFilepath);
   }
+
+  getFilepath(folder: any, filename: string): string {
+    for (const item of folder.children) {
+      if (item.type === 'file' && item.name === filename) {
+        return item.filepath;
+      }
+
+      if (item.type === 'folder') {
+        const result = this.getFilepath(item, filename);
+        if (result) {
+          return result;
+        }
+      }
+    }
+
+    return '';
+  }
 }
