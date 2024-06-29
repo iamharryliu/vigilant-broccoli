@@ -20,7 +20,6 @@
   - feat: Virus scanning for uploads.
   - feat: Implement db backup
     - Automate pg_dump to a S3 location.
-  - feat: implement image gallery
   - feat: user management
     - super admin user management
     - handle receiving emails for message request
