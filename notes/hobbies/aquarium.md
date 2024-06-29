@@ -17,3 +17,7 @@
 ## Shrimp
 
 ### Cherry Shrimp
+
+## References
+
+[Aquarium Playlist](https://youtube.com/playlist?list=PLaryycHmvlkc5LQ424kUVzTpE0_oeFh4z&si=YOhqPfq0otwAU3-Q)
