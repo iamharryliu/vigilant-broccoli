@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FolderItem } from '../models';
 
@@ -10,13 +10,24 @@ import { FolderItem } from '../models';
   templateUrl: './folder-item.component.html',
   styleUrls: ['./folder-item.component.scss'],
 })
-export class FolderItemComponent {
+export class FolderItemComponent implements OnInit {
   @Input() item!: FolderItem;
+  @Input() filepath?: string;
   @Output() fileEmitter = new EventEmitter();
-
   expanded = false;
+  subpath?: string;
 
-  selectFile(file: FolderItem) {
+  ngOnInit(): void {
+    if (this.filepath) {
+      const dir = this.filepath.split('/')[0];
+      if (this.item.name === dir) {
+        this.subpath = this.filepath.split('/').slice(1).join('/');
+        this.expanded = true;
+      }
+    }
+  }
+
+  selectFile(file: FolderItem): void {
     this.fileEmitter.emit(file);
   }
 

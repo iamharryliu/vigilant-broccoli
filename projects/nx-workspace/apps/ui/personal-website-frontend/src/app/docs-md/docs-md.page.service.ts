@@ -10,6 +10,8 @@ const DEFAULT_MD_FILE = 'assets/docs-md.md';
 export class DocsMdPageService {
   selectedFile = DEFAULT_MD_FILE;
   isFileSelected = true;
+  selectedFilepath = '';
+
   constructor(private fileService: FileService) {}
 
   getFileContent(): Observable<FolderItem> {
@@ -19,6 +21,8 @@ export class DocsMdPageService {
   }
 
   selectFile(filepath: string) {
+    // TODO: refactor this later..
+    this.selectedFilepath = filepath;
     this.selectedFile = `assets/md-library/notes/${filepath}`;
     this.isFileSelected = true;
   }

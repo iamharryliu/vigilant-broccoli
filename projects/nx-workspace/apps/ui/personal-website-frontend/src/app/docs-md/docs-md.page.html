@@ -8,10 +8,14 @@
       <lib-link [link]="indexLink" [isBold]="true" type="internal"></lib-link>
     </div>
     <h1 class="text-xl font-bold mb-2">DocsMD</h1>
-    <lib-folder-item
-      *ngIf="fileContent$ | async as folderItem"
-      [item]="folderItem"
-      (fileEmitter)="selectFile($event)"></lib-folder-item>
+    <ng-container *ngIf="fileContent$ | async as rootFolder">
+      <lib-folder-item
+        *ngFor="let folderItem of rootFolder.children"
+        [filepath]="docsMdPageService.selectedFilepath"
+        [item]="folderItem"
+        (fileEmitter)="selectFile($event)"></lib-folder-item>
+    </ng-container>
+
   </div>
   <div
     class="h-screen overflow-y-scroll md:block md:w-4/5 pl-4 pr-4"

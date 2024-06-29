@@ -9,8 +9,8 @@
       <lib-folder-item
         *ngFor="let child of item.children"
         [item]="child"
-        (fileEmitter)="selectFile($event)"
-      ></lib-folder-item>
+        [filepath]="subpath"
+        (fileEmitter)="selectFile($event)"></lib-folder-item>
     </div>
   </div>
   <div *ngIf="item.type === 'file'">

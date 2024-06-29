@@ -53,12 +53,12 @@ export class DocsMdPageComponent implements OnInit {
     }
   }
 
-  selectFile(file: any) {
+  selectFile(file: any): void {
     this.docsMdPageService.selectFile(file.filepath);
     this.router.navigateByUrl(`/docs-md/${file.name.split('.')[0]}`);
   }
 
-  close() {
+  close(): void {
     this.docsMdPageService.closeSelectedFile();
     this.router.navigateByUrl(DOCS_MD_ROUTE.path as string);
   }
