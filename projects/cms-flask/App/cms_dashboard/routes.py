@@ -87,7 +87,7 @@ def page_content(app_name):
         content = form.content.data
         save_text(content, filepath)
         flash(f"You have successfully updated the content.", "success")
-        return redirect(url_for("cms.page_content"))
+        return redirect(url_for("cms.page_content", app_name=app_name))
     return render_template(
         "pages/edit_content.html", title="Page Content", app_name=app_name, form=form
     )
