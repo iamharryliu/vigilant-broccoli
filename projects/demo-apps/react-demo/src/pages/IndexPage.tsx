@@ -3,7 +3,10 @@ import React from 'react';
 const IndexPage = () => {
   return (
     <>
-      <h2>Index Page of React Demo</h2>
+      <h1>React Demo</h1>
+      <p>
+        A react demo application built to understand the core concepts of React.
+      </p>
     </>
   );
 };
