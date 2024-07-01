@@ -1,4 +1,3 @@
-// Main.js
 import React from 'react';
 
 type MainProps = {
