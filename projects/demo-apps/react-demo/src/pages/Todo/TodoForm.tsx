@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useState } from 'react';
 import { useTodos } from './TodoContext';
 
 export default function TodoForm() {
   const { addTodo } = useTodos();
   const [inputValue, setInputValue] = useState('');
+  const inputElement = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputElement.current) {
+      focusInput();
+    }
+  }, []);
+
+  const focusInput = () => {
+    if (inputElement.current) {
+      inputElement.current.focus();
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,9 +30,12 @@ export default function TodoForm() {
   return (
     <form onSubmit={handleSubmit}>
       <div className="input-group mb-3">
-        <span className="input-group-text">Todo</span>
+        <span className="input-group-text" onClick={focusInput}>
+          Todo
+        </span>
         <input
           type="text"
+          ref={inputElement}
           value={inputValue}
           onChange={e => setInputValue(e.target.value)}
           className="form-control"
