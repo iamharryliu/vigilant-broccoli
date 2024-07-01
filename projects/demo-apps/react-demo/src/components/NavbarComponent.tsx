@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import 'bootstrap/js/src/collapse.js';
 import { Collapse } from 'bootstrap';
@@ -16,15 +16,52 @@ const COLLAPSABLE_NAVBAR_CONTENT = {
 };
 
 export default function NavbarComponent() {
+  const [isCollapse, setIsCollapse] = useState(true);
+
   function collapse() {
+    const navbarCollapse = document.getElementById(
+      COLLAPSABLE_NAVBAR_CONTENT.ID,
+    );
+    if (navbarCollapse && !isCollapse) {
+      const collapse = new Collapse(navbarCollapse);
+      collapse.hide();
+    }
+  }
+
+  function toggle() {
     const navbarCollapse = document.getElementById(
       COLLAPSABLE_NAVBAR_CONTENT.ID,
     );
     if (navbarCollapse) {
       const collapse = new Collapse(navbarCollapse);
-      collapse.hide();
+      collapse.toggle();
     }
   }
+
+  useEffect(() => {
+    const navbarCollapse = document.getElementById(
+      COLLAPSABLE_NAVBAR_CONTENT.ID,
+    );
+
+    if (navbarCollapse) {
+      const handleShown = () => {
+        setIsCollapse(false);
+      };
+
+      const handleHidden = () => {
+        setIsCollapse(true);
+      };
+
+      navbarCollapse.addEventListener('shown.bs.collapse', handleShown);
+      navbarCollapse.addEventListener('hidden.bs.collapse', handleHidden);
+
+      // Cleanup event listeners on component unmount
+      return () => {
+        navbarCollapse.removeEventListener('shown.bs.collapse', handleShown);
+        navbarCollapse.removeEventListener('hidden.bs.collapse', handleHidden);
+      };
+    }
+  }, []);
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -32,15 +69,7 @@ export default function NavbarComponent() {
         <Link className="navbar-brand" to="/">
           React Demo
         </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
+        <button className="navbar-toggler" type="button" onClick={toggle}>
           <span className="navbar-toggler-icon"></span>
         </button>
         <div
