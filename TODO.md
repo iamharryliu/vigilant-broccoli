@@ -65,6 +65,7 @@
   - feat: jobhunt mode configuration
   - feat: add personal google map links
   - fix: mailto links
+  - fix: spotify link
 
 # Vibecheck
 
