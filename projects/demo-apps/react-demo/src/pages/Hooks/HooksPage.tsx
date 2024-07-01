@@ -5,18 +5,32 @@ const HooksPage = () => {
   return (
     <>
       <h2>Hooks Page</h2>
-      <Link className="nav-link" to="/hooks/useState">
-        useState Demo
-      </Link>
-      <Link className="nav-link" to="/hooks/useEffect">
-        useEffect Demo
-      </Link>
-      <Link className="nav-link" to="/hooks/useReducer">
-        useReducer Demo
-      </Link>
-      <Link className="nav-link" to="/hooks/useRef">
-        useRef Demo
-      </Link>
+      <div className="list-group">
+        <Link
+          className="list-group-item list-group-item-action"
+          to="/hooks/useState"
+        >
+          useState Demo
+        </Link>
+        <Link
+          className="list-group-item list-group-item-action"
+          to="/hooks/useEffect"
+        >
+          useEffect Demo
+        </Link>
+        <Link
+          className="list-group-item list-group-item-action"
+          to="/hooks/useReducer"
+        >
+          useReducer Demo
+        </Link>
+        <Link
+          className="list-group-item list-group-item-action"
+          to="/hooks/useRef"
+        >
+          useRef Demo
+        </Link>
+      </div>
     </>
   );
 };
