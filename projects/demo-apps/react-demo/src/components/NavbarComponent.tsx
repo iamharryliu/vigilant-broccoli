@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import 'bootstrap/js/src/collapse.js';
 
 export default function NavbarComponent() {
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
-          Home
+          React Demo
         </Link>
         <button
           className="navbar-toggler"
