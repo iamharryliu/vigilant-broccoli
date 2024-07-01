@@ -36,6 +36,16 @@ export default function NavbarComponent() {
                 Props
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/hooks">
+                Hooks
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/todo">
+                Todo
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
