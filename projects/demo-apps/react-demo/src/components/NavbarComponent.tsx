@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import 'bootstrap/js/src/collapse.js';
 import { Collapse } from 'bootstrap';
 
-function toTitleCase(str: string) {
-  return str.replace(
+const toTitleCase = (str: string) =>
+  str.replace(
     /\w\S*/g,
     text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
   );
-}
 
 const COLLAPSABLE_NAVBAR_CONTENT = {
   ID: 'navbarSupportedContent',
@@ -16,27 +15,25 @@ const COLLAPSABLE_NAVBAR_CONTENT = {
 };
 
 export default function NavbarComponent() {
-  const [isCollapse, setIsCollapse] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
-  function collapse() {
+  const collapse = useCallback(() => {
     const navbarCollapse = document.getElementById(
       COLLAPSABLE_NAVBAR_CONTENT.ID,
     );
-    if (navbarCollapse && !isCollapse) {
-      const collapse = new Collapse(navbarCollapse);
-      collapse.hide();
+    if (navbarCollapse && !isCollapsed) {
+      new Collapse(navbarCollapse).hide();
     }
-  }
+  }, [isCollapsed]);
 
-  function toggle() {
+  const toggle = () => {
     const navbarCollapse = document.getElementById(
       COLLAPSABLE_NAVBAR_CONTENT.ID,
     );
     if (navbarCollapse) {
-      const collapse = new Collapse(navbarCollapse);
-      collapse.toggle();
+      new Collapse(navbarCollapse).toggle();
     }
-  }
+  };
 
   useEffect(() => {
     const navbarCollapse = document.getElementById(
@@ -45,17 +42,16 @@ export default function NavbarComponent() {
 
     if (navbarCollapse) {
       const handleShown = () => {
-        setIsCollapse(false);
+        setIsCollapsed(false);
       };
 
       const handleHidden = () => {
-        setIsCollapse(true);
+        setIsCollapsed(true);
       };
 
       navbarCollapse.addEventListener('shown.bs.collapse', handleShown);
       navbarCollapse.addEventListener('hidden.bs.collapse', handleHidden);
 
-      // Cleanup event listeners on component unmount
       return () => {
         navbarCollapse.removeEventListener('shown.bs.collapse', handleShown);
         navbarCollapse.removeEventListener('hidden.bs.collapse', handleHidden);
