@@ -15,22 +15,18 @@ setState(previousState => {
 ```
 const reducer = (state, action) => {
     switch (action.type) {
-        case "value":
-            // has acess to action data
+        case ACTION_TYPE:
             return change(state)
         default:
             return state;
     }
 };
 
-function Component() {
+const Component() = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
-
-    const handleComplete = (state) => {
-    dispatch({ type: "COMPLETE", ...data });
+    const dispatchSomething = (data) => {
+        dispatch({ type: "COMPLETE", data });
     };
-
-    ...
 }
 ```
 
