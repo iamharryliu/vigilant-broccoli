@@ -49,14 +49,25 @@ root.render(<Component />);
 
 ##### Passing Props
 
+###### Children Props
+
 ```
-<Component value="value"/>
+<Component><SomethingFromParent/></Component>
+
+const Component = (props) => {
+    return <>{ props.children }</>
+}
+
+
+<Component ={data}/>
+
 const Component = (props) => {
     return <>{{ props.value }}</>
 }
 
 // With Destructuring
-<Component {...props}>
+<Component {data}/>
+
 const Component = ({ value, ...}) => {
     return <>{{ value }}</>
 }
