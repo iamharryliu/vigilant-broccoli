@@ -4,7 +4,7 @@ import { ChildComponent } from '../ChildComponent';
 const PropsPage = () => {
   const componentName = 'Main Component';
   const contentFromParent = 'content from parent';
-  function parentFunction(childName) {
+  function parentFunction(childName: string) {
     alert(`${componentName} fn being called from ${childName}`);
   }
 

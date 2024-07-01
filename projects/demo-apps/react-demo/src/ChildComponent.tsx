@@ -1,6 +1,9 @@
 import React from 'react';
 
-export const ChildComponent = props => {
+export const ChildComponent = (props: {
+  children: any;
+  parentFunction: any;
+}) => {
   let componentName = 'Child Functional Component';
   return (
     <>
