@@ -3,12 +3,22 @@ import { Link } from 'react-router-dom';
 import 'bootstrap/js/src/collapse.js';
 import { Collapse } from 'bootstrap';
 
-const COLLAPSABLE_NAVBAR_CONTENT_ID = 'navbarSupportedContent';
+function toTitleCase(str: string) {
+  return str.replace(
+    /\w\S*/g,
+    text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
+  );
+}
+
+const COLLAPSABLE_NAVBAR_CONTENT = {
+  ID: 'navbarSupportedContent',
+  LINKS: ['hooks', 'todo'],
+};
 
 export default function NavbarComponent() {
   function collapse() {
     const navbarCollapse = document.getElementById(
-      COLLAPSABLE_NAVBAR_CONTENT_ID,
+      COLLAPSABLE_NAVBAR_CONTENT.ID,
     );
     if (navbarCollapse) {
       const collapse = new Collapse(navbarCollapse);
@@ -35,19 +45,18 @@ export default function NavbarComponent() {
         </button>
         <div
           className="collapse navbar-collapse"
-          id={COLLAPSABLE_NAVBAR_CONTENT_ID}
+          id={COLLAPSABLE_NAVBAR_CONTENT.ID}
         >
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <Link className="nav-link" to="/hooks" onClick={collapse}>
-                Hooks
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/todo" onClick={collapse}>
-                Todo
-              </Link>
-            </li>
+            {COLLAPSABLE_NAVBAR_CONTENT.LINKS.map(link => {
+              return (
+                <li className="nav-item" key={link}>
+                  <Link className="nav-link" to={link} onClick={collapse}>
+                    {toTitleCase(link)}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
