@@ -5,8 +5,12 @@ import IndexPage from './pages/IndexPage';
 import ConditionalsPage from './pages/ConditionalsPage';
 import ListsPage from './pages/ListsPage';
 import PropsPage from './pages/PropsPage';
-import HooksPage from './pages/HooksPage';
+import HooksPage from './pages/Hooks/HooksPage';
 import TodoPage from './pages/Todo/TodoPage';
+import UseEffectDemo from './pages/Hooks/UseEffectDemo';
+import UseStateDemo from './pages/Hooks/UseStateDemo';
+import UseReducerDemo from './pages/Hooks/UseReducerDemo';
+import UseRefDemo from './pages/Hooks/UseRef';
 
 export default function App() {
   return (
@@ -20,6 +24,10 @@ export default function App() {
             <Route path="props" element={<PropsPage />} />
             <Route path="hooks" element={<HooksPage />} />
             <Route path="todo" element={<TodoPage />} />
+            <Route path="hooks/useEffect" element={<UseEffectDemo />} />
+            <Route path="hooks/useState" element={<UseStateDemo />} />
+            <Route path="hooks/useReducer" element={<UseReducerDemo />} />
+            <Route path="hooks/useRef" element={<UseRefDemo />} />
           </Route>
         </Routes>
       </BrowserRouter>
