@@ -23,16 +23,6 @@ export default function NavbarComponent() {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link" to="/conditional-render">
-                Conditional Render
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/props">
-                Props
-              </Link>
-            </li>
-            <li className="nav-item">
               <Link className="nav-link" to="/hooks">
                 Hooks
               </Link>
