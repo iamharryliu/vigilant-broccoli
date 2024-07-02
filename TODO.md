@@ -60,6 +60,7 @@
 
 - Q1
 - Q2
+  - feat(docs-md): print md file only
   - feat(grind-75): specify which programming language
   - style(harryliu.design): update typography
   - feat: jobhunt mode configuration
