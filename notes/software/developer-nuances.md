@@ -1,5 +1,6 @@
 # Nuances
 
+- Functional Programming vs Object Oriented Programming
 - SQL vs NoSQL vs GraphQL
   - SQL for relational storage
   - NoSQL for non relational storage
