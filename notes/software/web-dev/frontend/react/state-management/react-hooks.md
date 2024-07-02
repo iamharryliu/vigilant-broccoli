@@ -13,20 +13,50 @@ setState(previousState => {
 ## useReducer
 
 ```
-const reducer = (state, action) => {
+const reducer = (state: StateType, action: ActionType): StateType => {
     switch (action.type) {
         case ACTION_TYPE:
-            return change(state)
+            return doSomthingWith(action.payload)
         default:
             return state;
     }
 };
 
 const Component() = () => {
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
     const dispatchSomething = (data) => {
         dispatch({ type: "COMPLETE", data });
     };
+    dispatchSomething({type:ACTION_TYPE, payload:{}})
+};
+```
+
+## createContext
+
+```
+const context = createContext<Type>(...)
+const { unpackedContextValue } = useContext(context)
+
+```
+
+```
+const Component() => {
+const [state, setState] = useState(data);
+
+return (
+<Context.Provider value={state, dispatchFunction...}>
+    {children}
+</Context.Provider>
+);
+}
+```
+
+```
+const NestedComponent = () => {
+const data = useContext(Context);
+    return (
+        <>{data}</>
+    );
 }
 ```
 
@@ -46,35 +76,6 @@ useEffect(() => {
 useEffect(() => {
     // Runs any time any dependency values change
 }, [state, ...]);
-```
-
-## createContext
-
-```
-import { useState, createContext } from "react";
-import ReactDOM from "react-dom/client";
-const Context = createContext()
-```
-
-```
-function Component() {
-const [state, setState] = useState(data);
-
-return (
-<Context.Provider value={user}>
-<ChildComponent />
-</Context.Provider>
-);
-}
-```
-
-```
-function NestedComponent() {
-const data = useContext(Context);
-return (
-<>{data}</>
-);
-}
 ```
 
 ## useRef
