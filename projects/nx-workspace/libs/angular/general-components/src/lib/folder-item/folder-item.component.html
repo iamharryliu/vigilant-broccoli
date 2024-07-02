@@ -3,8 +3,9 @@
     <div (click)="toggle()" [class.font-bold]="expanded">
       <span *ngIf="!expanded" class="folder mr-2">📁</span>
       <span *ngIf="expanded" class="mr-2">📂</span>
-      <span *ngIf="isTitleCase ; else noPipe">{{ item.name |
-        hyphenatedToTitleCase }}</span>
+      <span *ngIf="isTitleCase; else noPipe">{{
+        item.name | hyphenatedToTitleCase
+      }}</span>
     </div>
     <div *ngIf="expanded" style="margin-left: 20px">
       <lib-folder-item
@@ -12,16 +13,18 @@
         [item]="child"
         [isTitleCase]="isTitleCase"
         [filepath]="subpath"
-        (fileEmitter)="selectFile($event)"></lib-folder-item>
+        (fileEmitter)="selectFile($event)"
+      ></lib-folder-item>
     </div>
   </div>
   <div *ngIf="item.type === 'file'" (click)="selectFile(item)">
     <span class="mr-2">📄</span>
-    <span *ngIf="isTitleCase ; else noPipe">{{ item.name |
-      hyphenatedToTitleCase }}</span>
+    <span *ngIf="isTitleCase; else noPipe">{{
+      item.name | hyphenatedToTitleCase
+    }}</span>
   </div>
 </div>
 
 <ng-template #noPipe>
-  <span>{{item.name}}</span>
+  <span>{{ item.name }}</span>
 </ng-template>
