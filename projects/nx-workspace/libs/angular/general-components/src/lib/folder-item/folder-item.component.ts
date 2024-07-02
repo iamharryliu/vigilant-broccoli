@@ -1,18 +1,19 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FolderItem } from '../models';
+import { HyphenatedToTitleCasePipe } from '../pipes/hyphenated-to-titlecase.pipe';
 
 @Component({
   selector: 'lib-folder-item',
   standalone: true,
-  imports: [CommonModule],
-
+  imports: [CommonModule, HyphenatedToTitleCasePipe],
   templateUrl: './folder-item.component.html',
   styleUrls: ['./folder-item.component.scss'],
 })
 export class FolderItemComponent implements OnInit {
   @Input() item!: FolderItem;
   @Input() filepath?: string;
+  @Input() isTitleCase = false;
   @Output() fileEmitter = new EventEmitter();
   expanded = false;
   subpath?: string;

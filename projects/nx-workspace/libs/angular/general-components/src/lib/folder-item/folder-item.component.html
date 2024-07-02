@@ -1,21 +1,27 @@
 <div *ngIf="item" class="item">
   <div *ngIf="item.type === 'folder'">
-    <div (click)="toggle()">
-      <span *ngIf="!expanded" class="folder">📁</span>
-      <span *ngIf="expanded">📂</span>
-      <span class="ml-2" [class.font-bold]="expanded">{{ item.name }}</span>
+    <div (click)="toggle()" [class.font-bold]="expanded">
+      <span *ngIf="!expanded" class="folder mr-2">📁</span>
+      <span *ngIf="expanded" class="mr-2">📂</span>
+      <span *ngIf="isTitleCase ; else noPipe">{{ item.name |
+        hyphenatedToTitleCase }}</span>
     </div>
     <div *ngIf="expanded" style="margin-left: 20px">
       <lib-folder-item
         *ngFor="let child of item.children"
         [item]="child"
+        [isTitleCase]="isTitleCase"
         [filepath]="subpath"
-        (fileEmitter)="selectFile($event)"
-      ></lib-folder-item>
+        (fileEmitter)="selectFile($event)"></lib-folder-item>
     </div>
   </div>
-  <div *ngIf="item.type === 'file'">
-    <span>📄</span>
-    <span class="ml-2" (click)="selectFile(item)">{{ item.name }}</span>
+  <div *ngIf="item.type === 'file'" (click)="selectFile(item)">
+    <span class="mr-2">📄</span>
+    <span *ngIf="isTitleCase ; else noPipe">{{ item.name |
+      hyphenatedToTitleCase }}</span>
   </div>
 </div>
+
+<ng-template #noPipe>
+  <span>{{item.name}}</span>
+</ng-template>

@@ -9,6 +9,8 @@ export { CredentialsInterceptorService } from './lib/interceptors/credentials-in
 export { FileService } from './lib/services/file.service';
 export { MarkdownService } from './lib/services/markdown.service';
 export { HttpService } from './lib/services/http.service';
+// Pipes
+export { HyphenatedToTitleCasePipe } from './lib/pipes/hyphenated-to-titlecase.pipe';
 
 // Components
 // Buttons
