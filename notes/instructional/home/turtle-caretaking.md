@@ -23,7 +23,7 @@
 
 ## Feeding
 
-- Feed every other day one the odd days of the month (1, 3, 5, 7, 9...)
+- Feed every other day on the odd days of the month (1, 3, 5, 7, 9...).
 - Feed the size of his head at most.
 
 ## Water Change / Refill
