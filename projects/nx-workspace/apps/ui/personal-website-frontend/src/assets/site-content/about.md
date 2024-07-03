@@ -13,6 +13,10 @@ Just a chill guy who likes doing chill things.
 [![TorontoCitySkate Badge](https://img.shields.io/badge/Toronto_City_Skate-20B2AA?style=for-the-badge)](https://www.instagram.com/torontocityskate/) [![Cloud8Skate Badge](https://img.shields.io/badge/Cloud8Skate-20B2AA?style=for-the-badge)](https://cloud8skate.com/)
 [![Personal Projects Badge](https://img.shields.io/badge/Secondhand_Store-20B2AA?style=for-the-badge)](https://www.instagram.com/harrysellsshit/)
 
+#### My Maps
+
+[![Toronto Food Places](https://img.shields.io/badge/Toronto_Food_Places-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/Vm1PmWbGbbV6ftD86)
+
 #### Career
 
 [![LinkedIn Badge](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/iamharryliu/) [![Career Snapshot](https://img.shields.io/badge/Career_Snapshot-20B2AA?style=for-the-badge)](https://harryliu.design/career) [![Resume Badge](https://img.shields.io/badge/Resume-20B2AA?style=for-the-badge)](https://harryliu.design/assets/HarryLiu-Resume.pdf)

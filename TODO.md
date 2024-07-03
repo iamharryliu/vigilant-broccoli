@@ -57,7 +57,6 @@
 - Q1
 - Q2
   - feat(grind-75): specify which programming language
-  - feat: add personal google map links
 
 # Vibecheck
 
