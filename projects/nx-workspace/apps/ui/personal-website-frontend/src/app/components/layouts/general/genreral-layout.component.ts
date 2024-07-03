@@ -4,6 +4,7 @@ import { LINKS } from '../../../core/consts/routes.const';
 import { RouterModule } from '@angular/router';
 import { FooterComponent } from '../../features/footer/footer.component';
 import { NavbarSectionComponent } from '../../features/navbar-section/navbar-section.component';
+import { ENVIRONMENT } from '../../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -23,4 +24,5 @@ export class GeneralLayoutComponent {
   @Input() hasContactForm = true;
   @Input() hasSubscribeForm = true;
   LINKS = LINKS;
+  ENVIRONMENT = ENVIRONMENT;
 }

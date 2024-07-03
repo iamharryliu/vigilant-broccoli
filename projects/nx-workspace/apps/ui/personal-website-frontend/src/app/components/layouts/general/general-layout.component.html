@@ -9,7 +9,7 @@
         </div>
         <h1 class="text-center mb-6 text-2xl">harryliu.design</h1>
         <p class="text-center mb-6">I code sometimes.</p>
-        <div class="flex justify-center space-x-4">
+        <div class="flex justify-center space-x-3">
           <a href="https://www.instagram.com/prettydamntired/" target="_blank">
             <i class="fa-brands fa-instagram fa-xl"></i>
           </a>
@@ -24,12 +24,13 @@
           <a [routerLink]="LINKS.CONTACT_PAGE.url.internal">
             <i class="fa-solid fa-envelope fa-xl"></i>
           </a>
-          <a [routerLink]="LINKS.INDEX_PAGE.url.internal">
+          <a [routerLink]="LINKS.LINK_TREE.url.internal">
             <i class="fa-solid fa-link fa-xl"></i>
           </a>
-          <!-- <a href="https://www.linkedin.com/in/iamharryliu/" target="_blank">
+          <a *ngIf="ENVIRONMENT.JOB_HUNT_MODE"
+            href="https://www.linkedin.com/in/iamharryliu/" target="_blank">
             <i class="fa-brands fa-linkedin fa-xl"></i>
-          </a> -->
+          </a>
         </div>
       </div>
     </div>
