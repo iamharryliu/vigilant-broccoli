@@ -25,10 +25,12 @@
       appService.isMobile && !docsMdPageService.isFileSelected
     "
   >
-    <lib-markdown-page
-      *ngIf="docsMdPageService.selectedFile"
-      [filepath]="docsMdPageService.selectedFile"
-    ></lib-markdown-page>
+    <span id="section-to-print">
+      <lib-markdown-page
+        *ngIf="docsMdPageService.selectedFile"
+        [filepath]="docsMdPageService.selectedFile"
+      ></lib-markdown-page>
+    </span>
   </div>
   <div
     class="absolute top-0 right-0 m-4 cursor-pointer"
