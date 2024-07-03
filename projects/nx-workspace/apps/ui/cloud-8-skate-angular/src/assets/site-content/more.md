@@ -12,3 +12,8 @@ If you are looking for more info on _Cloud8Skate_ you can checkout our [FAQ page
 ### Info
 
 - <a href="https://cloud8skate.com/more/skate-terminology">Skate Terminology</a>
+
+## Skate Tutorials
+
+[15 things to make you a better skate.](https://www.youtube.com/watch?v=L8Gs_eyIPFA&t=51s)
+[Easiest Five Grinds to Learn](https://www.youtube.com/watch?v=6ciZnbMA7Xo)
