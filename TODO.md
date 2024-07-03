@@ -7,9 +7,6 @@
 - Q2
   - chore: Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
   - chore: online payment form
-  - docs: read later
-    - browser media downloads for offline use (like YouTube downlaods)
-    - open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
 
 ## CMS
 
@@ -32,7 +29,6 @@
     - integrate image gallery
   - feat: enhance SEO
     - feat: content
-      - tutorial videos
       - skate explanations
         - wheel setups - flat, rocker, anti rocker, toe stop, etc...
         - wheel sizes
@@ -87,3 +83,8 @@
 - Q2
   - feat: Script to check links if they still work.
   - feat: Budget alerts for services.
+
+## Learn
+
+- docs: browser media downloads for offline use (like YouTube downlaods)
+- docs: open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
