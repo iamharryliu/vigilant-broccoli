@@ -103,7 +103,6 @@ h6 {
   }
 }
 
-
 a {
   color: blue;
 }
@@ -190,7 +189,12 @@ pre {
     padding: 1in; // Adds padding around the printed content
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     page-break-after: avoid;
     font-weight: bold;
   }
@@ -225,12 +229,17 @@ pre {
     margin-bottom: 0.5em;
   }
 
-  p, ul, ol, blockquote, pre {
+  p,
+  ul,
+  ol,
+  blockquote,
+  pre {
     page-break-inside: avoid;
     margin-bottom: 1em;
   }
 
-  ul, ol {
+  ul,
+  ol {
     padding-left: 1.5em;
   }
 
@@ -240,7 +249,8 @@ pre {
     color: #555;
   }
 
-  code, pre {
+  code,
+  pre {
     font-family: 'Courier New', Courier, monospace;
     font-size: 10pt;
   }
