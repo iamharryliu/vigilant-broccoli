@@ -1,8 +1,7 @@
 <div class="flex">
   <div
     class="h-screen overflow-y-scroll w-full md:w-1/4 pl-3 pt-2 border-r-2"
-    [class.hidden]="appService.isMobile && pageService.isFileSelected"
-  >
+    [class.hidden]="appService.isMobile && pageService.isFileSelected">
     <div class="mb-2">
       <lib-link [link]="indexLink" [isBold]="true" type="internal"></lib-link>
     </div>
@@ -10,17 +9,15 @@
     <lib-folder-item
       *ngIf="fileContent$ | async as folderItem"
       [item]="folderItem"
-      (fileEmitter)="pageService.selectFile($event.filepath)"
-    ></lib-folder-item>
+      (fileEmitter)="pageService.selectFile($event.filepath)"></lib-folder-item>
   </div>
   <div
     class="h-screen overflow-y-scroll w-full md:block md:w-3/4 pl-4 pr-4 pt-4"
     [class.hidden]="appService.isMobile && !pageService.isFileSelected"
-    *ngIf="pageService.selectedContent$ | async as content"
-  >
-    <code>
-      <pre [innerHTML]="content"></pre>
-    </code>
+    *ngIf="pageService.selectedContent$ | async as content">
+    <pre>
+      <code [innerHTML]="content"></code>
+    </pre>
   </div>
   <div
     class="absolute top-0 right-0 m-4 cursor-pointer"
@@ -28,8 +25,7 @@
       (appService.isMobile && !pageService.isFileSelected) ||
       appService.isBrowser
     "
-    (click)="close()"
-  >
+    (click)="close()">
     <div>X</div>
   </div>
 </div>
