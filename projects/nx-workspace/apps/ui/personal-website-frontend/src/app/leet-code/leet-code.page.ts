@@ -25,7 +25,7 @@ import { ActivatedRoute } from '@angular/router';
     MarkdownPageComponent,
   ],
   templateUrl: './leet-code.page.html',
-  // styleUrl: '../md.scss',
+  styleUrl: '../md.scss',
 })
 export class LeetCodePageComponent implements OnInit {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
