@@ -13,12 +13,9 @@ Just a chill guy who likes doing chill things.
 [![TorontoCitySkate Badge](https://img.shields.io/badge/Toronto_City_Skate-20B2AA?style=for-the-badge)](https://www.instagram.com/torontocityskate/) [![Cloud8Skate Badge](https://img.shields.io/badge/Cloud8Skate-20B2AA?style=for-the-badge)](https://cloud8skate.com/)
 [![Personal Projects Badge](https://img.shields.io/badge/Secondhand_Store-20B2AA?style=for-the-badge)](https://www.instagram.com/harrysellsshit/)
 
-#### My Maps
+#### My Toronto Maps
 
-[![Toronto Food Spots](https://img.shields.io/badge/Toronto_Food_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/Vm1PmWbGbbV6ftD86)
-[![Toronto Drink Spots](https://img.shields.io/badge/Toronto_Drink_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/qWopvXmCnxn3WXxR8)
-[![Toronto Dessert Spots](https://img.shields.io/badge/Toronto_Dessert_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6)
-[![Toronto Work Cafes](https://img.shields.io/badge/Toronto_Work_Cafes-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
+[![Toronto Food Spots](https://img.shields.io/badge/Food_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/Vm1PmWbGbbV6ftD86)[![Toronto Drink Spots](https://img.shields.io/badge/Drink_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/qWopvXmCnxn3WXxR8)[![Toronto Dessert Spots](https://img.shields.io/badge/Dessert_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6)[![Toronto Work Cafes](https://img.shields.io/badge/Work_Cafes-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
 
 #### Career
 
