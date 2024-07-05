@@ -1,6 +1,8 @@
 # Nuances
 
 - Functional Programming vs Object Oriented Programming
+  - Functional programming for simplicity and state immutability.
+  - OOP is clean when done correctly.
 - SQL vs NoSQL vs GraphQL
   - SQL for relational storage
   - NoSQL for non relational storage
