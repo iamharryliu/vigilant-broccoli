@@ -2,9 +2,8 @@
   <div
     class="h-screen overflow-y-scroll w-full md:w-1/5 pl-3 pt-2 border-r-2"
     [class.hidden]="
-      appService.isMobile && docsMdPageService.isFileSelected
-    "
-  >
+      appService.isMobile && pageService.isFileSelected
+    ">
     <div class="mb-2">
       <lib-link [link]="indexLink" [isBold]="true" type="internal"></lib-link>
     </div>
@@ -12,34 +11,30 @@
     <ng-container *ngIf="fileContent$ | async as rootFolder">
       <lib-folder-item
         *ngFor="let folderItem of rootFolder.children"
-        [filepath]="docsMdPageService.selectedFilepath"
+        [filepath]="pageService.selectedFilepath"
         [item]="folderItem"
         (fileEmitter)="selectFile($event)"
-        [isTitleCase]="true"
-      ></lib-folder-item>
+        [isTitleCase]="true"></lib-folder-item>
     </ng-container>
   </div>
   <div
     class="h-screen overflow-y-scroll md:block md:w-4/5 pl-4 pr-4"
     [class.hidden]="
-      appService.isMobile && !docsMdPageService.isFileSelected
-    "
-  >
+      appService.isMobile && !pageService.isFileSelected
+    ">
     <span id="section-to-print">
       <lib-markdown-page
-        *ngIf="docsMdPageService.selectedFile"
-        [filepath]="docsMdPageService.selectedFile"
-      ></lib-markdown-page>
+        *ngIf="pageService.selectedFile && pageService.isFileSelected"
+        [filepath]="pageService.selectedFile"></lib-markdown-page>
     </span>
   </div>
   <div
     class="absolute top-0 right-0 m-4 cursor-pointer"
     [class.hidden]="
-      (appService.isMobile && !docsMdPageService.isFileSelected) ||
+      (appService.isMobile && !pageService.isFileSelected) ||
       appService.isBrowser
     "
-    (click)="close()"
-  >
+    (click)="close()">
     <div>X</div>
   </div>
 </div>

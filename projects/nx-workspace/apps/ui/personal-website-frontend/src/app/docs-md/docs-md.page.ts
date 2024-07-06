@@ -33,11 +33,11 @@ export class DocsMdPageComponent implements OnInit {
   constructor(
     public appService: AppService,
     private fileService: FileService,
-    public docsMdPageService: DocsMdPageService,
+    public pageService: DocsMdPageService,
     private router: Router,
     private route: ActivatedRoute,
   ) {
-    this.fileContent$ = this.docsMdPageService.getFileContent();
+    this.fileContent$ = this.pageService.getFileContent();
   }
 
   ngOnInit(): void {
@@ -50,18 +50,18 @@ export class DocsMdPageComponent implements OnInit {
           data,
           `${filename}.md`,
         ) as string;
-        this.docsMdPageService.selectFile(filepath);
+        this.pageService.selectFile(filepath);
       });
     }
   }
 
   selectFile(file: any): void {
-    this.docsMdPageService.selectFile(file.filepath);
+    this.pageService.selectFile(file.filepath);
     this.router.navigateByUrl(`/docs-md/${file.name.split('.')[0]}`);
   }
 
   close(): void {
-    this.docsMdPageService.closeSelectedFile();
+    this.pageService.closeSelectedFile();
     this.router.navigateByUrl(DOCS_MD_ROUTE.path as string);
   }
 }
