@@ -3,7 +3,6 @@
 ## vigilant-broccoli
 
 - Q1
-  - feat(app-monitor): Script to check links if they still work.
   - feat(cms-flask): redirect rules to cms site from admin.whaterver.com, https://developers.cloudflare.com/fundamentals/setup/manage-domains/redirect-domain/
   - feat(cms-flask): Implement db backup, automate pg_dump to a S3 location.
 - Q2
