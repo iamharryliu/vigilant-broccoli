@@ -62,14 +62,17 @@ fi
 
 
 if ask "Setup macOS Dock?"; then
+    dockutil --add "/Applications/Mail.app"
     dockutil --add "/Applications/Google Chrome.app"
-    dockutil --add "/Applications/WhatsApp.app"
-    dockutil --add "/Applications/Spotify.app"
-    dockutil --add "/Applications/NordVPN.app"
     dockutil --add "/Applications/Mail.app"
     dockutil --add "/Applications/Visual Studio Code.app"
-    dockutil --add "/Applications/Slack.app"
     dockutil --add "/Applications/Obsidian.app"
+    dockutil --add "/Applications/Messages.app"
+    dockutil --add "/Applications/FaceTime.app"
+    dockutil --add "/Applications/WhatsApp.app"
+    dockutil --add "/Applications/Slack.app"
+    dockutil --add "/Applications/Spotify.app"
+    dockutil --add "/Applications/NordVPN.app"
     defaults write com.apple.dock autohide -bool true
     killall Dock
 fi
