@@ -42,3 +42,17 @@ fi
 if ask "Install Python dependencies?"; then
     pip3 install pre-commit && pre-commit install
 fi
+
+
+if ask "Setup macOS Dock?"; then
+    dockutil --add "/Applications/Google Chrome.app"
+    dockutil --add "/Applications/WhatsApp.app"
+    dockutil --add "/Applications/Spotify.app"
+    dockutil --add "/Applications/NordVPN.app"
+    dockutil --add "/Applications/Mail.app"
+    dockutil --add "/Applications/Visual Studio Code.app"
+    dockutil --add "/Applications/Slack.app"
+    dockutil --add "/Applications/Obsidian.app"
+    defaults write com.apple.dock autohide -bool true
+    killall Dock
+fi
