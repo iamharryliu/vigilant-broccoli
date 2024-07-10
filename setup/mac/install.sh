@@ -16,18 +16,35 @@ if ask "Install Brew dependencies?"; then
     brew bundle --file ~/$REPO_NAME/setup/mac/Brewfile
 fi
 
+create_symlink() {
+    local target=$1
+    local link_name=$2
+
+    if [ -L "$link_name" ]; then
+        echo "Symbolic link $link_name already exists."
+    elif [ -e "$link_name" ]; then
+        echo "File $link_name already exists but is not a symbolic link."
+    else
+        ln -s "$target" "$link_name"
+        echo "Created symbolic link $link_name -> $target"
+    fi
+}
+
 # Setup dotfiles.
 if ask "Symlink dotfiles?"; then
-    ln -s ~/$REPO_NAME/setup/dotfiles/.gitconfig ~/.gitconfig
-    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/.rc.zsh ~/.zshrc
-    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/.aliases.zsh ~/.zsh_aliases
-    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/aliases ~/shell-aliases
-    chmod -R +x ~/shell-aliases/
-    ln -s ~/$REPO_NAME/setup/dotfiles/zsh/scripts ~/shell-scripts
-    chmod -R +x ~/shell-scripts/
-    cat ~/$REPO_NAME/setup/dotfiles/zsh/.env.sh >> ~/.env.sh
+    create_symlink "$REPO_PATH/.gitconfig" "$HOME/.gitconfig"
+    create_symlink "$REPO_PATH/zsh/.rc.zsh" "$HOME/.zshrc"
+    create_symlink "$REPO_PATH/zsh/.aliases.zsh" "$HOME/.zsh_aliases"
+    create_symlink "$REPO_PATH/zsh/aliases" "$HOME/shell-aliases"
+    chmod -R +x "$HOME/shell-aliases/"
+    create_symlink "$REPO_PATH/zsh/scripts" "$HOME/shell-scripts"
+    chmod -R +x "$HOME/shell-scripts/"
+
 fi
 
+if ask "Use default .env.sh?"; then
+    cat ~/$REPO_NAME/setup/dotfiles/zsh/.env.sh >> ~/.env.sh
+fi
 
 if ask "Install Node dependencies?"; then
     brew link node@20
