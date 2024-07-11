@@ -117,7 +117,7 @@ export const LEETCODE_ROUTE: Route = {
   component: LeetCodePageComponent,
 };
 export const LEETCODE_SOLUTION_ROUTE: Route = {
-  path: 'grind-75/:filename',
+  path: 'grind-75/:language/:filename',
   data: { title: 'grind75' },
   component: LeetCodePageComponent,
 };

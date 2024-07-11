@@ -14,7 +14,6 @@
       - wheel sizes
       - wheel durometer
       - checkout https://canadabladers.ca/ for inspiration
-  - feat(grind-75): specify which programming language
   - chore(docs): Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
   - chore(docs): Look into handling DDOS attacks
   - chore(docs): online payment form

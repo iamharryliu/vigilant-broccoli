@@ -12,7 +12,9 @@ import {
   FileService,
   MarkdownPageComponent,
 } from 'general-components';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+
+const hmap = {'go':{extension:'go'},'python':{extension:'py'},'typescript':{extension:'ts'}};
 
 @Component({
   selector: 'app-leet-code-page',
@@ -36,6 +38,7 @@ export class LeetCodePageComponent implements OnInit {
     public appService: AppService,
     public pageService: LeetCodePageService,
     private route: ActivatedRoute,
+    private router: Router,
   ) {
     this.fileContent$ = this.fileService.getFolderStructure(
       'assets/grind-75/grind-75.json',
@@ -43,13 +46,31 @@ export class LeetCodePageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // TODO: refactor typing
+    const language = this.route.snapshot.paramMap.get('language') as 'python'|'go'|'typescript';
     const filename = this.route.snapshot.paramMap.get('filename') as string;
     if (filename) {
+      const extension = hmap[language].extension;
       this.fileContent$.subscribe(data => {
-        const filepath = this.fileService.getFilepath(data, `${filename}.py`);
+        const filepath = this.fileService.getFilepath(data, `${filename}.${extension}`);
         this.pageService.selectFile(filepath);
       });
     }
+  }
+  
+  // TODO: find a better way to do this
+  private getKeyFromExtension(ext:any) {
+    for (const key in hmap) {
+      if (hmap[key as 'python'|'go'|'typescript' ].extension === ext) {
+        return key;
+      }
+    }
+    return null;
+  }
+
+  selectFile(file: any): void {
+    this.pageService.selectFile(file.filepath);
+    this.router.navigateByUrl(`/grind-75/${this.getKeyFromExtension(file.name.split('.')[1])}/${file.name.split('.')[0]}`);
   }
 
   close() {

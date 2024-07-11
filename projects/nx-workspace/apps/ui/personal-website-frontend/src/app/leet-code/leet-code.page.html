@@ -10,17 +10,16 @@
       <lib-folder-item
         *ngFor="let folderItem of rootFolder.children"
         [item]="folderItem"
-        (fileEmitter)="pageService.selectFile($event.filepath)"
-        [isTitleCase]="true"></lib-folder-item>
+        (fileEmitter)="selectFile($event)"></lib-folder-item>
     </ng-container>
   </div>
   <div
     class="h-screen overflow-y-scroll w-full md:block md:w-3/4 pl-4 pr-4 pt-4"
     [class.hidden]="appService.isMobile && !pageService.isFileSelected"
     *ngIf="pageService.selectedContent$ | async as content">
-    <pre>
-      <code [innerHTML]="content"></code>
-    </pre>
+    <code>
+      <pre [innerHTML]="content"></pre>
+    </code>
   </div>
   <div
     class="absolute top-0 right-0 m-4 cursor-pointer"
