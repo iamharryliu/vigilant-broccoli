@@ -52,6 +52,7 @@ if ask "Install Node dependencies?"; then
     npm install -g @angular/cli
     cd ~/$REPO_NAME
     npm i -g recursive-install
+    npm add --global nx@latest
     npm-recursive-install
 fi
 
