@@ -11,14 +11,14 @@ def get_all_gta_alerts():
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, "html.parser")
         table = soup.find("table")
+        table_data = []
         if table:
             rows = table.find_all("tr")
-            table_data = []
             for row in rows[1:]:
                 cells = row.find_all(["td"])
                 row_data = [cell.get_text(strip=True) for cell in cells]
                 table_data.append(row_data)
-            return table_data
+        return table_data
     else:
         print(f"Failed to fetch URL: {GTA_UPDATE_URL}")
 

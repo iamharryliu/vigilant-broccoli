@@ -1,5 +1,8 @@
 # TODO
 
+git config --unset-all core.hooksPath
+pre-commit install
+
 ## vigilant-broccoli
 
 - Q1
