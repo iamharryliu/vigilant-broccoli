@@ -9,6 +9,7 @@
     <ng-container *ngIf="fileContent$ | async as rootFolder">
       <lib-folder-item
         *ngFor="let folderItem of rootFolder.children"
+        [filepath]="pageService.selectedFilepath"
         [item]="folderItem"
         (fileEmitter)="selectFile($event)"></lib-folder-item>
     </ng-container>

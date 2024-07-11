@@ -9,10 +9,12 @@ export class LeetCodePageService {
   data!: string;
   isFileSelected = false;
   selectedContent$!: Observable<string>;
+  selectedFilepath = '';
 
   constructor(private httpService: HttpService) {}
 
   selectFile(filepath: string) {
+    this.selectedFilepath = filepath;
     this.selectedContent$ = this.httpService.getFileAsText(
       `assets/grind-75/grind-75/${filepath}`,
     );
