@@ -24,3 +24,5 @@
   - Single Page Application
     - High user interactivity
     - Content changes while viewing.
+
+- types vs interfaces
