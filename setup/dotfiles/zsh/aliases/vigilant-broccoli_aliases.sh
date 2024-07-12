@@ -13,6 +13,7 @@ alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'up
 # Actions
 alias pushactions="cdvb && git add .github/workflows/ && gc build github-actions 'update actions' && gpush"
 # Setup
+alias pushsetup="cdvb && git add setup/ && gc feat 'enhance setup scripts' && gpush"
 # Dotfiles
 alias pushdotfiles="cdvb && git add setup/dotfiles/* && gc docs 'update dotfiles' && gpush"
 alias pushaliases="cdvb && git add setup/dotfiles/zsh/aliases/ setup/dotfiles/zsh/scripts/ && gc feat aliases 'update aliases' && gpush"
