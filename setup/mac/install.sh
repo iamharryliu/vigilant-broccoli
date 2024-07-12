@@ -78,6 +78,7 @@ if ask "Setup macOS Dock?"; then
     dockutil --add "/Applications/Slack.app"
     dockutil --add "/Applications/Spotify.app"
     dockutil --add "/Applications/NordVPN.app"
+    defaults write com.apple.dock show-recents -bool false
     defaults write com.apple.dock orientation -string right
     defaults write com.apple.dock autohide -bool true
 
