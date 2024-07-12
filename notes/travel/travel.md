@@ -23,6 +23,9 @@
 - Toilets
   - Paywalls
   - Stall gaps
+- Retail
+  - One way designed stores
+  - Preserved frontend store design allowed by one ways wrapping towards backend of building to allow space for frontend stores
 
 ## Slovenia
 
