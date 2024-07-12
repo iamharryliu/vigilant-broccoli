@@ -13,6 +13,13 @@ arr.every((val) => condition);
 arr.includes(value);
 ```
 
+## Objects
+
+```
+Object.keys(object)
+Object.values(object)
+```
+
 ## Async / Asynchronous Functions
 
 ### Promises
