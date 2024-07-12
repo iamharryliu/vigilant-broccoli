@@ -63,6 +63,8 @@ fi
 
 
 if ask "Setup macOS Dock?"; then
+    dockutil --add "/System/Applications/System Settings.app"
+    dockutil --add "/System/Applications/Utilities/Terminal.app"
     dockutil --add "/Applications/Mail.app"
     dockutil --add "/Applications/Google Chrome.app"
     dockutil --add "/Applications/Mail.app"
@@ -74,6 +76,15 @@ if ask "Setup macOS Dock?"; then
     dockutil --add "/Applications/Slack.app"
     dockutil --add "/Applications/Spotify.app"
     dockutil --add "/Applications/NordVPN.app"
+    defaults write com.apple.dock orientation -string right
     defaults write com.apple.dock autohide -bool true
+
+    defaults write com.apple.dock wvous-tr-corner -int 2
+    defaults write com.apple.dock wvous-tr-modifier -int 0
+    defaults write com.apple.dock wvous-bl-corner -int 4
+    defaults write com.apple.dock wvous-bl-modifier -int 0
+    defaults write com.apple.dock wvous-br-corner -int 13
+    defaults write com.apple.dock wvous-br-modifier -int 0
+
     killall Dock
 fi
