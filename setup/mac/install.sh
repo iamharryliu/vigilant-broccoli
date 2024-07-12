@@ -63,6 +63,8 @@ fi
 
 
 if ask "Setup macOS Dock?"; then
+    defaults write com.apple.dock persistent-apps -array
+    defaults write com.apple.dock persistent-others -array
     dockutil --add "/System/Applications/System Settings.app"
     dockutil --add "/System/Applications/Utilities/Terminal.app"
     dockutil --add "/Applications/Mail.app"
@@ -81,9 +83,9 @@ if ask "Setup macOS Dock?"; then
 
     defaults write com.apple.dock wvous-tr-corner -int 2
     defaults write com.apple.dock wvous-tr-modifier -int 0
-    defaults write com.apple.dock wvous-bl-corner -int 4
+    defaults write com.apple.dock wvous-bl-corner -int 13
     defaults write com.apple.dock wvous-bl-modifier -int 0
-    defaults write com.apple.dock wvous-br-corner -int 13
+    defaults write com.apple.dock wvous-br-corner -int 4
     defaults write com.apple.dock wvous-br-modifier -int 0
 
     killall Dock
