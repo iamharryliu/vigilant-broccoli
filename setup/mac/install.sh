@@ -1,5 +1,6 @@
 REPO_NAME="vigilant-broccoli"
-ZSH_PATH="$REPO_NAME/setup/dotfiles/zsh"
+DOTFILES_DIR="$REPO_NAME/setup/dotfiles"
+ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
 
 function ask() {
     read -p "$1 (Y/n): " resp
@@ -33,18 +34,18 @@ create_symlink() {
 
 # Setup dotfiles.
 if ask "Symlink dotfiles?"; then
-    create_symlink "$REPO_NAME/.gitconfig" "$HOME/.gitconfig"
-    create_symlink "$ZSH_PATH/.rc.zsh" "$HOME/.zshrc"
-    create_symlink "$ZSH_PATH/.aliases.zsh" "$HOME/.zsh_aliases"
-    create_symlink "$ZSH_PATH/aliases" "$HOME/shell-aliases"
-    create_symlink "$ZSH_PATH/scripts" "$HOME/shell-scripts"
+    create_symlink "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
+    create_symlink "$ZSH_DOTFILES_DIR/.rc.zsh" "$HOME/.zshrc"
+    create_symlink "$ZSH_DOTFILES_DIR/.aliases.zsh" "$HOME/.zsh_aliases"
+    create_symlink "$ZSH_DOTFILES_DIR/aliases" "$HOME/shell-aliases"
+    create_symlink "$ZSH_DOTFILES_DIR/scripts" "$HOME/shell-scripts"
     chmod -R +x "$HOME/shell-aliases/"
     chmod -R +x "$HOME/shell-scripts/"
     source ~/.zshrc
 fi
 
 if ask "Use default .env.sh?"; then
-    cat ~/$ZSH_PATH/.env.sh >> ~/.env.sh
+    cat ~/$ZSH_DOTFILES_DIR/.env.sh >> ~/.env.sh
 fi
 
 if ask "Install Node dependencies?"; then
