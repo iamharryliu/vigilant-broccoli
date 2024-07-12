@@ -1,5 +1,5 @@
-REPO_NAME="vigilant-broccoli"
-DOTFILES_DIR="$REPO_NAME/setup/dotfiles"
+REPO_DIR="vigilant-broccoli"
+DOTFILES_DIR="$REPO_DIR/setup/dotfiles"
 ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
 
 function ask() {
@@ -15,7 +15,7 @@ function ask() {
 
 # Install Brew dependencies.
 if ask "Install Brew dependencies?"; then
-    brew bundle --file ~/$REPO_NAME/setup/mac/Brewfile
+    brew bundle --file ~/$REPO_DIR/setup/mac/Brewfile
 fi
 
 create_symlink() {
@@ -52,19 +52,21 @@ if ask "Install Node dependencies?"; then
     brew link node@20
     npm install -g ts-node
     npm install -g @angular/cli
-    cd ~/$REPO_NAME
+    cd ~/$REPO_DIR
     npm i -g recursive-install
     npm add --global nx@latest
     npm-recursive-install
 fi
 
 
-if ask "Install Python dependencies?"; then
+if ask "Setup git hooks?"; then
+    cd ~/$REPO_DIR
+    git config --unset-all core.hooksPath
     pip3 install pre-commit && pre-commit install
 fi
 
 
-if ask "Setup macOS Dock?"; then
+if ask "Setup macOS preferences?"; then
     defaults write com.apple.dock persistent-apps -array
     defaults write com.apple.dock persistent-others -array
     dockutil --add "/System/Applications/System Settings.app"

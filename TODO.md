@@ -1,8 +1,7 @@
 # TODO
 
-git config --unset-all core.hooksPath
-pre-commit install
 set divvy privacy and security a11y
+recursive makevenv
 
 ## vigilant-broccoli
 
