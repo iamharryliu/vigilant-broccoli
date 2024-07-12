@@ -120,6 +120,7 @@ alias flycreatetoken='flyctl tokens create deploy --app'
 alias nxbuild="cdnx && nx build --skip-nx-cache"
 alias nxdeploy="cdnx && nx deploy --skip-nx-cache"
 alias nxbuildall="cdnx && nx run-many -t=build"
+alias nxtestall="cdnx && nx run-many -t=test"
 alias nxdeployall="cdnx && nx run-many -t=deploy"
 
 # Analytics
