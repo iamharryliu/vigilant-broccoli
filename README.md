@@ -10,16 +10,26 @@ vigilant-broccoli, my personal open source development kit and monorepo.
 
 ### Mac
 
+RSA Setup
+
 ```
-# Install Brew and Git.
+ssh-keygen -b 4096 -t rsa
+```
+
+Install Brew and Git.
+
+```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 export PATH="/opt/homebrew/bin:$PATH" >> ~/.zshrc
 brew install git
 
-# Clone monorepo and run install script.
+Clone monorepo and run install script.
+```
+
 cd ~ && git clone git@github.com:iamharryliu/vigilant-broccoli.git
 chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 ~/vigilant-broccoli/setup/mac/install.sh
+
 ```
 
 ## Folder Structure
@@ -29,3 +39,4 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 - projects
 - scripts
 - snippets
+```
