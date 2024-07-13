@@ -1,12 +1,5 @@
 # Salsa
 
-On1 vs. On2
-
-| Count |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
-| :---: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-|  On1  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |  S  |
-|  On2  |  S  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |
-
 SOCIALS
 Hammerlocks
 cuban turns
@@ -14,30 +7,91 @@ s turns
 right hand
 body waves
 dips
-
-Escalation
--double turns
--s turn
-
 Hard to lead moves
 -tunnel
 -walk arounds
 -s-turns
 -body wave variations
 
+## Basics
+
+- forward/back basic
+- side basic
+- open break
+
+## '123' Step Moves
+
+- Crossbody
+- Breakback
+- \*inside or outside turns
+
+## '567' Step Moves
+
+- Reverse turn
+
+### '567' Exits
+
+- Shoulder check
+- Hammerlock
+
+### Entries to Spider Turns
+
+- Right over left, basic or breakback into spider turn
+
+## Entires
+
+### Power Entries
+
+- Crossbody push
+- Around the worlds
+
+#### Entries to Rainbow
+
+- Left over right -> crossbody -> rainbow
+- Right to left -> breakback -> rainbow
+
+### Entries to Wraps
+
+crossbody -> wrap
+side to side -> wrap
+
+### Entries to Side by Side
+
+- lasso entry - open handhold -> crossbody lead -> half turn
+- handtoss entry - handtoss -> half turn -> catch hand
+
+## Shines
+
+### Exits to Shines
+
+breakback arm push turn
+
+- breakback hand toss
+- crossbody wrist pull spin
+- lvl 2 Suzi Q
+- lvl 3 Suzi Q
+- knee tap toe taps
+- around the world
+- forward suzi q
+- kicks
+
+## Timing
+
+On1 vs. On2
+
+| Count |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
+| :---: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+|  On1  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |  S  |
+|  On2  |  S  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |
+
+Escalation
+
+- Double Turns
+- S - Turn
+
 Rainbows and wraps
 -vampire wrap
 -titanic
-
-BASICS
-forward/back basic
-side basic
-open break
-
-CROSSBODY
-Crossbody lead
-Crossbody inside turn
-Crossbody outside turn
 
 HANDCHANGE
 drop hands
@@ -46,45 +100,10 @@ men's half turn left/right (2 counts)
 position switch with server tray (1 count)
 server turn (1 count)
 throw partner's arm behind back (1 turn)
-
-REVERSE TURNS
-Reverse turn
-Reverse turn with shoulder check
-Reverse turn with hammerlock
-
-BREAKBACKS
-open hold -> breakback inside turn
-open hold -> breakback outside turn
-
-POWER ENTRIES TO POWER BREAKBACKS
-crossbody push
-leaning out turn
-
 CROSS ARM EXITS TO OPEN HANDHOLD
 release arms
 shoulder combs
 crossbody turn comb
-
-ENTRIES TO SPIDER
-right over left -> basic -> spider turn
-right over left -> breakback -> spider turn
-
-ENTRIES TO RAINBOW
-left over right -> crossbody -> rainbow
-right to left -> breakback -> rainbow
-
-ENTRIES TO WRAPS
-crossbody -> wrap
-side to side -> wrap
-
-ENTRIES TO SIDE TO SIDE
-lasso entry - open handhold -> crossbody lead -> half turn
-handtoss entry - handtoss -> half turn -> catch hand
-
-EXITS TO SHINES
-breakback arm push turn
-breakback hand toss
-crossbody wrist pull spin
 
 LEVEL 3 SEQUENCES
 breakback walk around (breakback->walk around->open waist->step back->open waist->crossbody turn)
@@ -119,14 +138,6 @@ Coca Cola shadow
 Crossbody -> shoulder turn -> shoulder check -> wind -> spin -> Coca Cola -> shadow position -> crossbody -> titanic -> double turn -> hand switch -> cuddle position -> side dip -> 2 sin
 LEVEL 6
 Breakback -> server turn -> shadow double turn ->break back -> waist grab, prep, turn -> hook turn catch -> hook turn into men’s hammerlock -> reverse turn into shadow -> trailing back turn -> double -> comb and crossbody lead
-
-SHINES
-lvl 2 Suzi Q
-lvl 3 Suzi Q
-knee tap toe taps
-around the world
-forward suzi q
-kicks
 
 yoyo variations
 1 - crossbody -> yoyo -> repeat? -> left hand turn exit
