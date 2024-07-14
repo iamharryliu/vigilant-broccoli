@@ -12,7 +12,6 @@
 | for me                         | för mig               | pour moi             | para mi          | para mim          | per me          |
 | the                            | [noun]en/[noun]et     | le/la/les            | el/la/los/las    | o/a/os/as         |                 |
 | it                             |                       | le/la                | lo/la            |                   |                 |
-| very                           | mycket                | tres                 | muy              | muito             | molto           |
 | also                           | också                 | tambien              | tambien          | tambem            | anche           |
 | and                            | och                   | et                   | y                | e                 | e               |
 | sorry                          | förlåt                |                      |                  |                   |                 |
@@ -51,8 +50,10 @@
 | small                          | liten/små(plural)     | petit                | pequeno          |                   |                 |
 | more                           | mer/fler(numerical)   | plus                 | mas              |                   |                 |
 | less                           | mindre                | moins                | menos            |                   |                 |
-| a bit                          | lite                  |                      | un poco          |                   |                 |
+| very                           | mycket                | tres                 | muy              | muito             | molto           |
+| a lot                          | mycket                | beaucoup             | mucho            |
 | too much                       | för mycket            | trop                 | demasiado        |                   | troppo          |
+| a bit                          | lite                  |                      | un poco          |                   |                 |
 | all                            | alla                  |                      |                  |                   |                 |
 | every                          | varje                 | tous                 | todos            |                   |                 |
 | for me                         | för mig               | pour moi             |                  |                   |                 |
@@ -146,3 +147,4 @@
 | I have eaten                   |                       | j'ai mange           | he comido        |                   |                 |
 | I would                        |                       | je voudrais          | quiero           |                   |                 |
 | it was                         | var                   | c'etait              | estuvo /fue?     |                   |                 |
+| thing                          | sak                   | chose                | cosa             |                   |                 |
