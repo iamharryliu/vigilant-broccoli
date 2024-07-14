@@ -1,4 +1,4 @@
-# Cooking Techniques
+# Stir Fry Techniques
 
 ## Vegetable Stir Fry
 

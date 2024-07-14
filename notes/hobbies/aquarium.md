@@ -4,9 +4,9 @@
 
 ### Types of Filtration
 
-- Mechanical Filtration
-- Chemical Filtration
-- Biological Filtration
+- Mechanical Filtration - Involves the physical removal of particulate matter from the water, such as uneaten food, fish waste, and other debris. This type of filtration uses a physical barrier, like sponges, filter pads, or floss, to trap and hold the particles.
+- Chemical Filtration - Uses chemical processes to remove dissolved impurities and contaminants from the water. This is typically achieved through the use of activated carbon or other chemical media.
+- Biological Filtration - Involves the use of beneficial bacteria to break down toxic nitrogenous waste products, such as ammonia and nitrite, into less harmful nitrate. This process is known as the nitrogen cycle. Beneficial bacteria colonize surfaces within the aquarium, such as the substrate, decorations, and filter media.
 
 ## References
 

@@ -22,7 +22,7 @@
   - Tortilla
   - Egg
   - Shredded cheese
-  - Toppings
+  - Toppings - Chopped lettuce, tomatoes, caramelized onions, fried mushrooms, mince
   - Sauce
 - Scallion Pancake
   - Sourdough discard
