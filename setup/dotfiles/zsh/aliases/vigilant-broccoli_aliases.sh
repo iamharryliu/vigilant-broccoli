@@ -54,6 +54,3 @@ alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpus
 
 # Other
 alias sshpi="ssh hliu@192.168.1.104"
-
-
-alias updateinstallscripts="cdvb && git add setup/ && gc feat setup 'update install scripts' && gpush"

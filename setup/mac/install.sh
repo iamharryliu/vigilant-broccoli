@@ -1,5 +1,7 @@
 REPO_DIR="vigilant-broccoli"
-DOTFILES_DIR="$REPO_DIR/setup/dotfiles"
+SETUP_DIR="$REPO_DIR/setup"
+MAC_SETUP_DIR="$SETUP_DIR/mac"
+DOTFILES_DIR="$SETUP_DIR/dotfiles"
 ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
 
 function ask() {
@@ -67,31 +69,6 @@ fi
 
 
 if ask "Setup macOS preferences?"; then
-    defaults write com.apple.dock persistent-apps -array
-    defaults write com.apple.dock persistent-others -array
-    dockutil --add "/System/Applications/System Settings.app"
-    dockutil --add "/System/Applications/Utilities/Terminal.app"
-    dockutil --add "/Applications/Mail.app"
-    dockutil --add "/Applications/Google Chrome.app"
-    dockutil --add "/Applications/Mail.app"
-    dockutil --add "/Applications/Visual Studio Code.app"
-    dockutil --add "/Applications/Obsidian.app"
-    dockutil --add "/Applications/Messages.app"
-    dockutil --add "/Applications/FaceTime.app"
-    dockutil --add "/Applications/WhatsApp.app"
-    dockutil --add "/Applications/Slack.app"
-    dockutil --add "/Applications/Spotify.app"
-    dockutil --add "/Applications/NordVPN.app"
-    defaults write com.apple.dock show-recents -bool false
-    defaults write com.apple.dock orientation -string right
-    defaults write com.apple.dock autohide -bool true
-
-    defaults write com.apple.dock wvous-tr-corner -int 2
-    defaults write com.apple.dock wvous-tr-modifier -int 0
-    defaults write com.apple.dock wvous-bl-corner -int 13
-    defaults write com.apple.dock wvous-bl-modifier -int 0
-    defaults write com.apple.dock wvous-br-corner -int 4
-    defaults write com.apple.dock wvous-br-modifier -int 0
-
-    killall Dock
+    chmod +x "$HOME/$MAC_SETUP_DIR/setup_macos_preferences.sh"
+    . $HOME/$MAC_SETUP_DIR/setup_macos_preferences.sh
 fi
