@@ -2,11 +2,15 @@
 
 ## General
 
+### Paradigms
+
 - Functional Programming vs Object Oriented Programming
   - Functional programming for simplicity and state immutability.
   - OOP is clean when done correctly.
+- GoLang vs Python
+  - GoLang has more power under the hood. Compiled vs interpreted.
 
-## Database
+### Database
 
 - SQL vs NoSQL vs GraphQL
   - SQL for relational storage
@@ -27,15 +31,3 @@
   - Single Page Application
     - High user interactivity
     - Content changes while viewing.
-
-## Python
-
-- psycopg2 vs psycopg2-binary
-  - The binary package is a practical choice for development and testing but in production it is advised to use the package built from sources
-  - Building psycopg requires a few prerequisites (a C compiler, some external development library packages)
-
-## Typescript
-
-- Types vs Interfaces
-  - Interfaces can be merged.
-  - Interfaces compile faster.

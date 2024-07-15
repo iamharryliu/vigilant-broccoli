@@ -36,6 +36,7 @@ Visited after one of the worst rainstorms they have had in years.
 ## Things that I Liked
 
 - Absolutely beautiful drives going from Glascow to The Isle of Skye. Stunning mountains, hills, beach, and ocean views. Also lots of cute sheep running around that cheered me up a lot whenever we were close to them.
+- First time in a long time that time felt like it was going at a normal pace.
 
 ### Things That I Disliked
 
