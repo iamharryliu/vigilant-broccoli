@@ -8,7 +8,7 @@ vigilant-broccoli, my personal open source development kit and monorepo.
 
 ## Machine Setup
 
-### Mac
+### Macbook Pro (MBP)
 
 Install Brew and Git.
 
