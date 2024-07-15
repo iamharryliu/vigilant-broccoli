@@ -2,6 +2,18 @@ from datetime import datetime, timedelta
 from pytz import timezone
 import urllib
 from utils import get_all_gta_alerts, convert_to_est
+import logging
+
+# Configure the logger
+logging.basicConfig(
+    level=logging.DEBUG,  # Set the logging level to DEBUG
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",  # Define the log message format
+    filename="app.log",  # Log messages will be saved to 'app.log'
+    filemode="w",  # Use 'w' for overwriting the file each time, 'a' for appending to the file
+)
+
+# Create a logger object
+logger = logging.getLogger(__name__)
 
 
 class TorontoAlertsApp:
@@ -41,6 +53,7 @@ class TorontoAlertsApp:
             )
             and convert_to_est(row[0]) >= past_hour_est
         ]
+        logger.debug(res)
         return res
 
     def text_contains_keyword(text, keywords):
