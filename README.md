@@ -10,33 +10,32 @@ vigilant-broccoli, my personal open source development kit and monorepo.
 
 ### Mac
 
-RSA Setup
-
-```
-ssh-keygen -b 4096 -t rsa
-```
-
 Install Brew and Git.
 
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 export PATH="/opt/homebrew/bin:$PATH" >> ~/.zshrc
 brew install git
-
-Clone monorepo and run install script.
 ```
 
+Setup RSA key.
+
+```
+ssh-keygen -b 4096 -t rsa
+```
+
+Clone monorepo and run install script.
+
+```
 cd ~ && git clone git@github.com:iamharryliu/vigilant-broccoli.git
 chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 ~/vigilant-broccoli/setup/mac/install.sh
-
 ```
 
 ## Folder Structure
 
+- notes - Collection of markdown notes.
+- projects - Software projects.
+- scripts - Software scripts.
 - setup - Setup scripts and configurations.
-- notes
-- projects
-- scripts
-- snippets
-```
+- snippets - Text and code snippets for quick copy and paste.
