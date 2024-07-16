@@ -1,29 +1,23 @@
 # TODO
 
-set divvy privacy and security a11y
-recursive makevenv
-
 ## vigilant-broccoli
 
 - Q1
   - feat(cms-flask): Implement db backup, automate pg_dump to a S3 location.
+  - feat(cms-flask): user management
+    - super admin user management
+    - handle receiving emails for message request
 - Q2
+  - feat(cms-flask): Virus scanning for uploads.
   - feat(cms-flask): integrate image gallery
   - feat(app-monitor): Budget alerts for services.
+  - feat(setup): set divvy privacy and security a11y
+  - feat(setup): recursive makevenv
   - chore(docs): Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
   - chore(docs): Look into handling DDOS attacks
   - chore(docs): online payment form
   - chore(docs): browser media downloads for offline use (like YouTube downlaods)
   - chore(docs): open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
-
-## CMS
-
-- Q1
-- Q2
-  - feat: Virus scanning for uploads.
-  - feat: user management
-    - super admin user management
-    - handle receiving emails for message request
 
 ## Toronto Alerts
 
