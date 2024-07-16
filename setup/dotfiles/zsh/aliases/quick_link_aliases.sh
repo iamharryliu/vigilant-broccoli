@@ -69,3 +69,7 @@ alias torontoalerts='chrome "https://torontoalerts.com/"'
 
 # Message Services
 alias igchat='chrome "https://www.instagram.com/direct/inbox/"'
+
+# Obsidian
+alias openNotes="open 'obsidian://open?vault=notes'"
+alias openJournal="open 'obsidian://open?vault=journal'"
