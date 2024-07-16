@@ -54,3 +54,4 @@ alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpus
 
 # Other
 alias sshpi="ssh hliu@192.168.1.104"
+alias machinesetup="cdvb && ./setup/mac/install.sh"
