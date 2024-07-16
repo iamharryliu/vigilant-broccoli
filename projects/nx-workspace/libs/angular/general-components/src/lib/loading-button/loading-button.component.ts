@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
+const DEFAULT_SUBMIT_BUTTON_TEXT = 'Submit';
+
 @Component({
   standalone: true,
   selector: 'lib-loading-button',
@@ -10,5 +12,5 @@ import { Component, Input } from '@angular/core';
 export class LoadingButtonComponent {
   @Input() loading = false;
   @Input() disabled = false;
-  @Input() buttonText = 'Submit';
+  @Input() buttonText = DEFAULT_SUBMIT_BUTTON_TEXT;
 }

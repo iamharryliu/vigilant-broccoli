@@ -1,13 +1,12 @@
 <div class="grid lg:grid-cols-2">
   <div class="w-11/12 lg:w-5/6 mx-auto text-sm">
     <h2 class="text-md font-semibold mb-4 text-center lg:text-left">
-      Message Us!
+      {{headerText}}
     </h2>
     <form [formGroup]="form" (ngSubmit)="submitForm()">
       <div class="mb-4">
         <label for="contact-form-name-input" class="block text-gray-700">
-          Name:</label
-        >
+          Name:</label>
         <input
           type="text"
           id="contact-form-name-input"
@@ -15,13 +14,11 @@
           formControlName="name"
           autocomplete="given-name"
           required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-        />
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
       </div>
       <div class="mb-4">
         <label for="contact-form-email-input" class="block text-gray-700">
-          Email:</label
-        >
+          Email:</label>
         <input
           type="email"
           id="contact-form-email-input"
@@ -29,26 +26,22 @@
           formControlName="email"
           autocomplete="email"
           required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-        />
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
       </div>
       <div class="mb-4">
-        <label for="contact-form-message-input" class="block text-gray-700"
-          >Message:</label
-        >
+        <label for="contact-form-message-input"
+          class="block text-gray-700">Message:</label>
         <textarea
           id="contact-form-message-input"
           name="message"
           formControlName="message"
           required
-          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-        ></textarea>
+          class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300"></textarea>
       </div>
       <lib-loading-button
         [loading]="loading"
         [disabled]="form.invalid || loading"
-        buttonText="Submit"
-      ></lib-loading-button>
+        buttonText="Submit"></lib-loading-button>
     </form>
   </div>
   <hr class="lg:hidden mt-8 mb-8" />

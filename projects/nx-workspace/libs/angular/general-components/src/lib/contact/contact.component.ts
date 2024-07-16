@@ -28,6 +28,7 @@ export class ContactComponent {
   submit$ = new Subject<boolean>();
   @Input() LINKS: Link[] = [];
   @Input() APP_NAME!: AppName;
+  @Input() headerText = 'Message Us!';
   loading = false;
 
   constructor(private commonService: CommonService) {
