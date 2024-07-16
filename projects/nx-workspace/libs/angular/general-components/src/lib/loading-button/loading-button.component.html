@@ -1,14 +1,13 @@
 <button
   type="submit"
   [disabled]="disabled || loading"
-  class="text-white font-semibold px-4 py-2 rounded-lg focus:outline-none focus:ring w-full lg:w-min"
+  class="text-white font-semibold py-2 rounded-lg focus:outline-none focus:ring w-full lg:w-auto lg:min-w-28 flex items-center justify-center"
   [ngClass]="{
     'bg-gray-300': disabled,
     'bg-black': !disabled && !loading,
     'hover:bg-blue-600': !disabled && !loading,
     'cursor-not-allowed': loading
-  }"
->
+  }">
   <ng-container *ngIf="!loading; else loadingTemplate">
     {{ buttonText }}
   </ng-container>
@@ -17,21 +16,18 @@
       class="animate-spin h-5 w-5 text-white"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
-      viewBox="0 0 24 24"
-    >
+      viewBox="0 0 24 24">
       <circle
         class="opacity-25"
         cx="12"
         cy="12"
         r="10"
         stroke="currentColor"
-        stroke-width="4"
-      ></circle>
+        stroke-width="4"></circle>
       <path
         class="opacity-75"
         fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C6.477 0 2 4.477 2 10h2zm2 5.292A7.952 7.952 0 014 12H2c0 3.866 2.239 7.155 5.292 8.708l1.416-1.416z"
-      ></path>
+        d="M4 12a8 8 0 018-8V0C6.477 0 2 4.477 2 10h2zm2 5.292A7.952 7.952 0 014 12H2c0 3.866 2.239 7.155 5.292 8.708l1.416-1.416z"></path>
     </svg>
   </ng-template>
 </button>
