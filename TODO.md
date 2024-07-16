@@ -6,17 +6,10 @@ recursive makevenv
 ## vigilant-broccoli
 
 - Q1
-  - feat(cms-flask): redirect rules to cms site from admin.whaterver.com, https://developers.cloudflare.com/fundamentals/setup/manage-domains/redirect-domain/
   - feat(cms-flask): Implement db backup, automate pg_dump to a S3 location.
 - Q2
   - feat(cms-flask): integrate image gallery
   - feat(app-monitor): Budget alerts for services.
-  - docs(cloud8): enhance SEO content
-    - skate explanations
-      - wheel setups - flat, rocker, anti rocker, toe stop, etc...
-      - wheel sizes
-      - wheel durometer
-      - checkout https://canadabladers.ca/ for inspiration
   - chore(docs): Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
   - chore(docs): Look into handling DDOS attacks
   - chore(docs): online payment form
