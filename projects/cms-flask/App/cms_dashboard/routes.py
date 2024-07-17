@@ -60,6 +60,28 @@ def users():
     return render_template("pages/users_list.html", title="Apps List", users=users)
 
 
+@cms_dashboard_blueprint.route("users/<username>")
+@login_required
+def user_details(username):
+    user = User.query.filter_by(username=username).first()
+    return render_template(
+        "pages/user_details.html", title=f"User Details - {username}", user=user
+    )
+
+
+@cms_dashboard_blueprint.route("users/<username>/delete", methods=["POST"])
+@login_required
+def delete_user(username):
+    user = User.query.filter_by(username=username).first()
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        flash(f"User {username} has been deleted.", "success")
+    else:
+        flash(f"User {username} not found.", "danger")
+    return redirect(url_for("cms.users"))
+
+
 @cms_dashboard_blueprint.route("/users/add_user", methods=["GET", "POST"])
 @login_required
 def add_user():
