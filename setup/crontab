@@ -1,4 +1,11 @@
-0 * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && ~/shell-scripts/download_music.sh
-* * * * * cp ~/Downloads/HarryLiu-Resume.pdf ~/vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf
-* * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd vigilant-broccoli/scripts/python/scrape-ttc-lines && source venv/bin/activate && python scrape_ttc_lines.py
+# Career
+# Backup vb
 */5 * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd vigilant-broccoli/scripts/python/backup && source venv/bin/activate && python save_vigilant_broccoli.py
+# Update Resume
+* * * * * cp ~/Downloads/HarryLiu-Resume.pdf ~/vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf
+# Projects
+# Scrape TTC Lines
+* * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd vigilant-broccoli/scripts/python/scrape-ttc-lines && source venv/bin/activate && python scrape_ttc_lines.py
+# Other
+# Download DJ Music
+0 * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && ~/shell-scripts/download_music.sh
