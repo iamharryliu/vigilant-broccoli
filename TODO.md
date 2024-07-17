@@ -3,7 +3,6 @@
 ## vigilant-broccoli
 
 - Q1
-  - feat(cms-flask): Implement db backup, automate pg_dump to a S3 location.
   - feat(cms-flask): user management
     - super admin user management
     - handle receiving emails for message request
