@@ -9,6 +9,7 @@ from flask import (
     current_app,
 )
 from flask_login import login_required, current_user
+from App import db, bcrypt
 from App.models import User
 from App.main.forms import ContentForm, UploadForm, UserForm
 from App.utils import (
@@ -59,10 +60,27 @@ def users():
     return render_template("pages/users_list.html", title="Apps List", users=users)
 
 
-@cms_dashboard_blueprint.route("users/add_user")
+@cms_dashboard_blueprint.route("/users/add_user", methods=["GET", "POST"])
 @login_required
 def add_user():
     form = UserForm()
+    try:
+        if form.validate_on_submit():
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode(
+                "utf-8"
+            )
+            user = User(
+                username=form.username.data,
+                email=form.email.data,
+                password=hashed_password,
+            )
+            db.session.add(user)
+            db.session.commit()
+            flash("User has been added successfully!", "success")
+            return redirect(url_for("cms.users"))
+    except:
+        flash("Unsuccessful user registration.", "danger")
+        return redirect(url_for("cms.add_user"))
     return render_template("pages/add_user_page.html", title="Add User", form=form)
 
 
