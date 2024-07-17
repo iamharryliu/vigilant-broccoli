@@ -4,11 +4,15 @@
 
 - Q1
   - feat(cms-flask): user management
-    - super admin user management
+    - user management
+    - privilege management
+    - app management
+    - dynamic page contents
+      - blogs
+      - image galleries
     - handle receiving emails for message request
 - Q2
   - feat(cms-flask): Virus scanning for uploads.
-  - feat(cms-flask): integrate image gallery
   - feat(app-monitor): Budget alerts for services.
   - feat(setup): set divvy privacy and security a11y
   - feat(setup): recursive makevenv
