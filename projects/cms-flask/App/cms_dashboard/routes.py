@@ -11,7 +11,7 @@ from flask import (
 from flask_login import login_required, current_user
 from App import db, bcrypt
 from App.models import User
-from App.main.forms import ContentForm, UploadForm, UserForm
+from App.main.forms import ContentForm, UploadForm, CreateUserForm, UpdateUserForm
 from App.utils import (
     save_text,
     get_text_from_filepath,
@@ -60,12 +60,28 @@ def users():
     return render_template("pages/users_list.html", title="Apps List", users=users)
 
 
-@cms_dashboard_blueprint.route("users/<username>")
+@cms_dashboard_blueprint.route("users/<username>", methods=["GET", "POST"])
 @login_required
 def user_details(username):
     user = User.query.filter_by(username=username).first()
+    form = UpdateUserForm()
+    if form.validate_on_submit():
+        try:
+            user.username = form.username.data
+            user.email = form.email.data
+            db.session.commit()
+
+            flash("Successful user update.", "success")
+        except:
+            flash("Unsuccessful user update.", "danger")
+        return redirect(url_for("cms.user_details", username=username))
+    form.username.data = user.username
+    form.email.data = user.email
     return render_template(
-        "pages/user_details.html", title=f"User Details - {username}", user=user
+        "pages/user_details.html",
+        title=f"User Details - {username}",
+        user=user,
+        form=form,
     )
 
 
@@ -85,9 +101,9 @@ def delete_user(username):
 @cms_dashboard_blueprint.route("/users/add_user", methods=["GET", "POST"])
 @login_required
 def add_user():
-    form = UserForm()
-    try:
-        if form.validate_on_submit():
+    form = CreateUserForm()
+    if form.validate_on_submit():
+        try:
             hashed_password = bcrypt.generate_password_hash(form.password.data).decode(
                 "utf-8"
             )
@@ -100,10 +116,10 @@ def add_user():
             db.session.commit()
             flash("User has been added successfully!", "success")
             return redirect(url_for("cms.users"))
-    except:
-        flash("Unsuccessful user registration.", "danger")
-        return redirect(url_for("cms.add_user"))
-    return render_template("pages/add_user_page.html", title="Add User", form=form)
+        except:
+            flash("Unsuccessful user registration.", "danger")
+            return redirect(url_for("cms.add_user"))
+    return render_template("pages/create_user_page.html", title="Add User", form=form)
 
 
 @cms_dashboard_blueprint.route("apps")

@@ -5,18 +5,29 @@ from wtforms import (
     SubmitField,
     MultipleFileField,
     PasswordField,
+    EmailField,
 )
 from wtforms.validators import DataRequired, Email, EqualTo
 
 
-class UserForm(FlaskForm):
+class CreateUserForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired(), Email()])
+    email = EmailField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
     confirm_password = PasswordField(
         "Confirm Password", validators=[DataRequired(), EqualTo("password")]
     )
     submit = SubmitField("Add User")
+
+
+class UpdateUserForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    confirm_password = PasswordField(
+        "Confirm Password", validators=[DataRequired(), EqualTo("password")]
+    )
+    submit = SubmitField("Update User")
 
 
 class ContactForm(FlaskForm):
