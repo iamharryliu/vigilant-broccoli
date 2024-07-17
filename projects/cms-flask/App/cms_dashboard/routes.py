@@ -9,7 +9,8 @@ from flask import (
     current_app,
 )
 from flask_login import login_required, current_user
-from App.main.forms import ContentForm, UploadForm
+from App.models import User
+from App.main.forms import ContentForm, UploadForm, UserForm
 from App.utils import (
     save_text,
     get_text_from_filepath,
@@ -49,6 +50,20 @@ cms_dashboard_blueprint = Blueprint(
 @login_required
 def index():
     return redirect(url_for("cms.apps"))
+
+
+@cms_dashboard_blueprint.route("users")
+@login_required
+def users():
+    users = User.query.all()
+    return render_template("pages/users_list.html", title="Apps List", users=users)
+
+
+@cms_dashboard_blueprint.route("users/add_user")
+@login_required
+def add_user():
+    form = UserForm()
+    return render_template("pages/add_user_page.html", title="Add User", form=form)
 
 
 @cms_dashboard_blueprint.route("apps")

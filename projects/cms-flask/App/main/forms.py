@@ -1,6 +1,22 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField, MultipleFileField
-from wtforms.validators import DataRequired, Email
+from wtforms import (
+    StringField,
+    TextAreaField,
+    SubmitField,
+    MultipleFileField,
+    PasswordField,
+)
+from wtforms.validators import DataRequired, Email, EqualTo
+
+
+class UserForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    confirm_password = PasswordField(
+        "Confirm Password", validators=[DataRequired(), EqualTo("password")]
+    )
+    submit = SubmitField("Add User")
 
 
 class ContactForm(FlaskForm):
