@@ -1,14 +1,16 @@
 <ul class="nav nav-tabs mb-4">
   <li class="nav-item">
     <a
-      class="nav-link active"
-      aria-current="page"
+      class="nav-link {{'active' if active_tab == 'page_content'}}"
       href="{{url_for('cms.page_content', app_name=app_name)}}"
       >Page Content</a
     >
   </li>
-
   <li class="nav-item">
-    <a class="nav-link disabled" aria-current="page" href="#">Images</a>
+    <a
+      class="nav-link {{'active' if active_tab == 'settings'}}"
+      href="{{url_for('cms.app_settings', app_name=app_name)}}"
+      >Settings</a
+    >
   </li>
 </ul>

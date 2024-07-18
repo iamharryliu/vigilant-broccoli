@@ -17,6 +17,7 @@ from App.main.forms import (
     CreateUserForm,
     UpdateUserForm,
     CreateAppForm,
+    UpdateAppForm,
 )
 from App.utils import (
     save_text,
@@ -185,6 +186,30 @@ def dashboard(app_name):
     return redirect(url_for("cms.page_content", app_name=app_name))
 
 
+@cms_dashboard_blueprint.route("/<app_name>/settings", methods=["GET", "POST"])
+@login_required
+@requires_privilege()
+def app_settings(app_name):
+    app = Application.query.filter_by(name=app_name).first()
+    form = UpdateAppForm()
+    if form.validate_on_submit():
+        try:
+            app.name = form.name.data
+            db.session.commit()
+            flash("Successful user update.", "success")
+        except:
+            flash("Unsuccessful user update.", "danger")
+        return redirect(url_for("cms.app_settings", app_name=app.name))
+    form.name.data = app.name
+    return render_template(
+        "pages/app_settings_page.html",
+        title=f"Settings - {app_name}",
+        app_name=app_name,
+        form=form,
+        active_tab="settings",
+    )
+
+
 @cms_dashboard_blueprint.route(
     "/<app_name>/dashboard/page_content", methods=["GET", "POST"]
 )
@@ -201,7 +226,11 @@ def page_content(app_name):
         flash(f"You have successfully updated the content.", "success")
         return redirect(url_for("cms.page_content", app_name=app_name))
     return render_template(
-        "pages/edit_content.html", title="Page Content", app_name=app_name, form=form
+        "pages/edit_content.html",
+        title="Page Content",
+        app_name=app_name,
+        form=form,
+        active_tab="page_content",
     )
 
 

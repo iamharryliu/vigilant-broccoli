@@ -35,6 +35,11 @@ class UpdateUserForm(FlaskForm):
     submit = SubmitField("Update User")
 
 
+class UpdateAppForm(FlaskForm):
+    name = StringField("App Name", validators=[DataRequired()])
+    submit = SubmitField("Update App")
+
+
 class ContactForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired(), Email()])

@@ -1,0 +1,10 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block dashboard_content %}
+<div class="mb-4">
+  <h1>General</h1>
+  {% include 'forms/update_app_form.html' %}
+</div>
+<div>
+  <h1>Danger</h1>
+  {%include 'forms/delete_app_button.html' %}
+</div>
+{% endblock %}

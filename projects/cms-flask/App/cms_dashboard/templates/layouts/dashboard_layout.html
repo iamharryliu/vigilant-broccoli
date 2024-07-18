@@ -1,14 +1,5 @@
 {% extends 'layouts/layout.html' %} {% block content %}
 <h1>Dashboard</h1>
-<form
-  action="{{ url_for('cms.delete_app', app_name=app_name) }}"
-  method="POST"
-  onsubmit="return confirm('Are you sure you want to delete {{app_name}}?');"
->
-  <button type="submit" class="btn btn-danger float-right">
-    Delete {{ app_name }}
-  </button>
-</form>
 {% include 'components/navtabs.html' %}
 <div class="row">
   <div class="col-12 col-lg-2 mb-3">
