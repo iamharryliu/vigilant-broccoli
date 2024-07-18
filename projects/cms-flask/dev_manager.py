@@ -1,16 +1,19 @@
+import getpass
 import sys
 from flask import current_app
 from App import create_app, db, bcrypt
-from App.models import User
+from App.models import User, Application
 from App.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG, ENVIRONMENT_TYPE
 from App.const import USER_TYPE
-from getpass import getpass
 
-COMMANDS = {
-    "RUNSERVER": "runserver",
-    "SETUP_DB": "setup_db",
-    "CREATE_USER": "create_user",
-}
+
+class COMMAND:
+    RUNSERVER = "runserver"
+    SETUP_DB = "setup_db"
+    CREATE_USER = "create_user"
+    CREATE_APP = "create_app"
+
+
 ENVIRONMENTS = {"TEST", "SIT", "DIT"}
 
 
@@ -33,7 +36,25 @@ class DevManager:
         db.drop_all()
         db.create_all()
 
-    def create_user(self, db):
+    def create_app(self, db):
+        app_name: str = input("Enter app name: ")
+        # app_name: str = 'app_name'
+        app: Application = Application(name=app_name)
+        db.session.add(app)
+        db.session.commit()
+        # user = self.create_user(db)
+        # app.users.append(user)
+        # db.session.commit()
+        while input("Would you like to add users?(y/n): ") == "y":
+            user = self.create_user(db)
+            app.users.append(user)
+            db.session.commit()
+            print("User has successfully been created.")
+        print("App has successfully been created.")
+
+    def create_user(self, db) -> User:
+        # username = 'username'
+        # password = 'password'
         username = input("Enter username: ")
         password = getpass("Enter password: ")
         if current_app.config["ENVIRONMENT"] is not ENVIRONMENT_TYPE.DIT:
@@ -46,23 +67,25 @@ class DevManager:
         user = User(
             username=username,
             password=hashed_password,
-            user_type=USER_TYPE.SYSTEM_ADMIN,
+            user_type=USER_TYPE.USER,
         )
         db.session.add(user)
         db.session.commit()
-        print("User has successfully been created.")
+        return user
 
 
 def main():
     env = sys.argv[1]
     command = sys.argv[2]
     devManager = DevManager(env)
-    if command == COMMANDS["RUNSERVER"]:
+    if command == COMMAND.RUNSERVER:
         devManager.runserver()
-    elif command == COMMANDS["SETUP_DB"]:
+    elif command == COMMAND.SETUP_DB:
         devManager.setup_db(db)
-    elif command == COMMANDS["CREATE_USER"]:
+    elif command == COMMAND.CREATE_USER:
         devManager.create_user(db)
+    elif command == COMMAND.CREATE_APP:
+        devManager.create_app(db)
     else:
         print(f"Unknown command '{command}' has been entered.")
 

@@ -158,9 +158,9 @@ def apps():
     apps = []
     if current_user.user_type == USER_TYPE.SYSTEM_ADMIN:
         apps = [app.name for app in Application.query.all()]
-    if len(current_user.user_applications) == 1:
+    if len(current_user.applications) == 1:
         return redirect(
-            url_for("cms.dashboard", app_name=current_user.user_applications[0].name),
+            url_for("cms.dashboard", app_name=current_user.applications[0].name),
         )
     return render_template("pages/apps_list.html", title="Apps List", apps=apps)
 
