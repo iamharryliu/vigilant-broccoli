@@ -1,14 +1,16 @@
 {% extends 'layouts/layout.html' %} {% block content %}
-
 <h1>Your Apps</h1>
 <ul class="list-group">
-  {% for privilege in privileges %}
+  <li class="list-group-item list-group-item-primary">
+    <span>Apps</span>
+    <a href="{{url_for('cms.create_app')}}" class="btn float-end">Add App</a>
+  </li>
+  {% for app in apps %}
   <a
-    href="{{url_for('cms.dashboard', app_name=privilege)}}"
+    href="{{url_for('cms.dashboard', app_name=app)}}"
     class="list-group-item list-group-item-action"
-    >{{ privilege }}</a
+    >{{ app }}</a
   >
   {% endfor %}
 </ul>
-
 {% endblock %}

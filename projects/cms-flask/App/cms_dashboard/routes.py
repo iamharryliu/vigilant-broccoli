@@ -10,8 +10,14 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from App import db, bcrypt
-from App.models import User
-from App.main.forms import ContentForm, UploadForm, CreateUserForm, UpdateUserForm
+from App.models import User, Application
+from App.main.forms import (
+    ContentForm,
+    UploadForm,
+    CreateUserForm,
+    UpdateUserForm,
+    CreateAppForm,
+)
 from App.utils import (
     save_text,
     get_text_from_filepath,
@@ -19,6 +25,7 @@ from App.utils import (
     save_file,
     delete_directory,
 )
+from App.const import FLASH_CATEGORY, USER_TYPE
 from functools import wraps
 
 
@@ -27,9 +34,13 @@ def requires_privilege():
         @wraps(f)
         def decorated_function(*args, **kwargs):
             app_name = kwargs.get("app_name")
-            if not current_user.has_privilege(app_name):
-                return redirect(url_for("cms.index"))
-            return f(*args, **kwargs)
+            if (
+                current_user.user_type == USER_TYPE.SYSTEM_ADMIN
+                or current_user.has_privilege(app_name)
+            ):
+                return f(*args, **kwargs)
+            flash("You do not have permission.", FLASH_CATEGORY.WARNING)
+            return redirect(url_for("cms.index"))
 
         return decorated_function
 
@@ -98,9 +109,9 @@ def delete_user(username):
     return redirect(url_for("cms.users"))
 
 
-@cms_dashboard_blueprint.route("/users/add_user", methods=["GET", "POST"])
+@cms_dashboard_blueprint.route("/users/create_user", methods=["GET", "POST"])
 @login_required
-def add_user():
+def create_user():
     form = CreateUserForm()
     if form.validate_on_submit():
         try:
@@ -118,23 +129,53 @@ def add_user():
             return redirect(url_for("cms.users"))
         except:
             flash("Unsuccessful user registration.", "danger")
-            return redirect(url_for("cms.add_user"))
-    return render_template("pages/create_user_page.html", title="Add User", form=form)
+            return redirect(url_for("cms.create_user"))
+    return render_template(
+        "pages/create_user_page.html", title="Create User", form=form
+    )
+
+
+@cms_dashboard_blueprint.route("/apps/create_app", methods=["GET", "POST"])
+@login_required
+def create_app():
+    form = CreateAppForm()
+    if form.validate_on_submit():
+        try:
+            app = Application(name=form.name.data)
+            db.session.add(app)
+            db.session.commit()
+            flash("App has been added successfully!", "success")
+            return redirect(url_for("cms.apps"))
+        except:
+            flash("Unsuccessful app creation.", "danger")
+            return redirect(url_for("cms.create_app"))
+    return render_template("pages/create_app_page.html", title="Create App", form=form)
 
 
 @cms_dashboard_blueprint.route("apps")
 @login_required
 def apps():
-    if len(current_user.privileges) == 1:
+    apps = []
+    if current_user.user_type == USER_TYPE.SYSTEM_ADMIN:
+        apps = [app.name for app in Application.query.all()]
+    if len(current_user.user_applications) == 1:
         return redirect(
-            url_for(
-                "cms.dashboard", app_name=current_user.privileges[0].application_type
-            ),
+            url_for("cms.dashboard", app_name=current_user.user_applications[0].name),
         )
-    privileges = [privilege.application_type for privilege in current_user.privileges]
-    return render_template(
-        "pages/apps_list.html", title="Apps List", privileges=privileges
-    )
+    return render_template("pages/apps_list.html", title="Apps List", apps=apps)
+
+
+@cms_dashboard_blueprint.route("apps/<app_name>/delete", methods=["POST"])
+@login_required
+def delete_app(app_name):
+    application = Application.query.filter_by(name=app_name).first()
+    if application:
+        db.session.delete(application)
+        db.session.commit()
+        flash(f"Application {app_name} has been deleted.", "success")
+    else:
+        flash(f"Application {app_name} not found.", "danger")
+    return redirect(url_for("cms.apps"))
 
 
 @cms_dashboard_blueprint.route("/<app_name>/dashboard")

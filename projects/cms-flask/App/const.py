@@ -36,4 +36,9 @@ class FLASH_CATEGORY:
     DANGER = "danger"
 
 
+class USER_TYPE:
+    SYSTEM_ADMIN = "SYSTEM_ADMIN"
+    USER = "USER"
+
+
 TOKEN_EXPIRE_TIME_IN_SECONDS = 5 * 60

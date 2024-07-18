@@ -3,7 +3,9 @@
 <ul class="list-group">
   <li class="list-group-item list-group-item-primary">
     <span>Users</span>
-    <a href="{{url_for('cms.add_user')}}" class="btn float-end">Add User</a>
+    <a href="{{url_for('cms.create_user')}}" class="btn float-end"
+      >Create User</a
+    >
   </li>
   {% for user in users %}
   <a

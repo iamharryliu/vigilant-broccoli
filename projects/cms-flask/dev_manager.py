@@ -3,6 +3,7 @@ from flask import current_app
 from App import create_app, db, bcrypt
 from App.models import User
 from App.config import TEST_CONFIG, DIT_CONFIG, SIT_CONFIG, ENVIRONMENT_TYPE
+from App.const import USER_TYPE
 from getpass import getpass
 
 COMMANDS = {
@@ -42,20 +43,13 @@ class DevManager:
                     self.create_user(db)
                 return
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
-        user = User(username=username, password=hashed_password)
+        user = User(
+            username=username,
+            password=hashed_password,
+            user_type=USER_TYPE.SYSTEM_ADMIN,
+        )
         db.session.add(user)
         db.session.commit()
-        while True:
-            application_type = input(
-                "Enter application type for privilege or nothing to finish): "
-            )
-            if not application_type:
-                break
-            if not user.has_privilege(application_type):
-                user.add_privilege(application_type)
-            else:
-                print("User already has this privilege.")
-
         print("User has successfully been created.")
 
 

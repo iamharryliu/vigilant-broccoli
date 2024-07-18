@@ -17,7 +17,12 @@ class CreateUserForm(FlaskForm):
     confirm_password = PasswordField(
         "Confirm Password", validators=[DataRequired(), EqualTo("password")]
     )
-    submit = SubmitField("Add User")
+    submit = SubmitField("Create User")
+
+
+class CreateAppForm(FlaskForm):
+    name = StringField("App Name", validators=[DataRequired()])
+    submit = SubmitField("Create App")
 
 
 class UpdateUserForm(FlaskForm):
