@@ -3,10 +3,7 @@
 ## vigilant-broccoli
 
 - Q1
-  - feat(cms-flask): user management
-    - user management
-    - privilege management
-    - app management
+  - feat(cms-flask):
     - dynamic page contents
       - blogs
       - image galleries
