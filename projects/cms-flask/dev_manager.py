@@ -1,5 +1,5 @@
-import getpass
 import sys
+from getpass import getpass
 from flask import current_app
 from App import create_app, db, bcrypt
 from App.models import User, Application
@@ -55,6 +55,8 @@ class DevManager:
     def create_user(self, db) -> User:
         # username = 'username'
         # password = 'password'
+
+        is_super_user = input("Super user? (y/n): ")
         username = input("Enter username: ")
         password = getpass("Enter password: ")
         if current_app.config["ENVIRONMENT"] is not ENVIRONMENT_TYPE.DIT:
@@ -67,7 +69,7 @@ class DevManager:
         user = User(
             username=username,
             password=hashed_password,
-            user_type=USER_TYPE.USER,
+            user_type=USER_TYPE.SYSTEM_ADMIN if is_super_user else USER_TYPE.USER,
         )
         db.session.add(user)
         db.session.commit()
