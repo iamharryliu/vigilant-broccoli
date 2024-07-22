@@ -1,14 +1,3 @@
-# General Links
-alias chrome='open -a "Google Chrome"'
-alias google="~/shell-scripts/google_search.sh"
-alias youtube="~/shell-scripts/youtube_search.sh"
-alias chatgpt='chrome "https://chat.openai.com/"'
-alias pinterest="~/shell-scripts/pinterest_search.sh"
-alias gtranslate='chrome "https://translate.google.com/"'
-# Consumerism
-alias amazon="~/shell-scripts/amazon_search.sh"
-alias karmanow='chrome "https://www.karmanow.com/my-items"'
-
 # Online Services
 # Google Services
 alias gmail='chrome "https://gmail.com/"'
@@ -22,6 +11,26 @@ alias findmy='chrome "https://www.icloud.com/find/"'
 alias applestorage='chrome "https://www.icloud.com/storage/"'
 # Storage
 alias checkstorage='applestorage && gstorage'
+
+# General Links
+alias chrome='open -a "Google Chrome"'
+alias google="~/shell-scripts/google_search.sh"
+alias youtube="~/shell-scripts/youtube_search.sh"
+alias chatgpt='chrome "https://chat.openai.com/"'
+alias pinterest="~/shell-scripts/pinterest_search.sh"
+alias gtranslate='chrome "https://translate.google.com/"'
+# Consumerism
+alias amazon="~/shell-scripts/amazon_search.sh"
+alias karmanow='chrome "https://www.karmanow.com/my-items"'
+
+# Message Services
+alias igchat='chrome "https://www.instagram.com/direct/inbox/"'
+alias fbmessenger="chrome 'https://www.messenger.com/'"
+alias slackchat="chrome 'https://app.slack.com/client/'"
+
+# Obsidian
+alias openNotes="open 'obsidian://open?vault=notes'"
+alias openJournal="open 'obsidian://open?vault=journal'"
 
 # Learning
 alias udemy='chrome "https://www.udemy.com/"'
@@ -57,19 +66,11 @@ alias openOpenAIBilling='chrome "https://platform.openai.com/account/billing/ove
 alias openAWSBilling='chrome "https://us-east-1.console.aws.amazon.com/costmanagement/home?region=us-east-1#/home"'
 alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
 
-# Iceskating
+# Toronto
+# Toronto Alerts
+alias torontoalerts='chrome "https://torontoalerts.com/"'
+# Ice Skating
 alias heronparkleisureskateschedule='chrome "https://www.toronto.ca/data/parks/prd/skating/dropin/leisure/index.html#loc_633"'
 alias centennialskateschedule='chrome "https://www.toronto.ca/data/parks/prd/skating/dropin/leisure/index.html#loc_537"'
 alias scarboroughvillageskateschedule='chrome "https://www.toronto.ca/data/parks/prd/skating/dropin/leisure/index.html#loc_743"'
 alias checkskatingtimes='heronparkleisureskateschedule && centennialskateschedule && scarboroughvillageskateschedule'
-
-
-# Toronto Alerts
-alias torontoalerts='chrome "https://torontoalerts.com/"'
-
-# Message Services
-alias igchat='chrome "https://www.instagram.com/direct/inbox/"'
-
-# Obsidian
-alias openNotes="open 'obsidian://open?vault=notes'"
-alias openJournal="open 'obsidian://open?vault=journal'"
