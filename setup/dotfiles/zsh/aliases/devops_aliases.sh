@@ -64,10 +64,11 @@ alias flyls='fly apps list'
 # Create and Destroy
 alias flydeploy='fly deploy --ha=false'
 alias flyview='fly apps open --app'
-alias flydestroy='fly apps destroy'
+alias flyadestroy='fly apps destroy'
 # Start and Stop Machines
-alias flystartmachine='flyctl machine start --app'
-alias flystopmachine='flyctl machine stop --app'
+alias flymstart='flyctl machine start'
+alias flymstop='flyctl machine stop '
+alias flymdestroy='flyctl machine destroy'
 function flyrestart() {
     if [[ $# -eq 0 ]]; then
         flyctl apps restart
