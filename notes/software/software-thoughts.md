@@ -14,3 +14,4 @@
 - Thinking like a lead
   - Development team's familiarity with the technologies.
   - Open to new ideas.
+- Vendor lockin
