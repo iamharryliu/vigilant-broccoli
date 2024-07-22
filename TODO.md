@@ -4,10 +4,10 @@
 
 - Q1
   - feat(cms-flask):
-    - dynamic page contents
-      - blogs
-      - image galleries
-    - handle receiving emails for message request
+    - Dynamic page contents.
+      - Blogs.
+      - Image galleries.
+    - Handle receiving emails for message requests.
 - Q2
   - feat(cms-flask): Virus scanning for uploads.
   - feat(app-monitor): Budget alerts for services.
