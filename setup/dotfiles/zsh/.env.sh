@@ -12,7 +12,7 @@ export OPENWEATHER_API_KEY="secretKey"
 export OPENAI_API_KEY="secretKey"
 
 # Twilio
-export TWILIO_ACCOUNT_SID="accountSid"
+export TWILIO_ACCOUNT_SID="ACaccountSid"
 export TWILIO_AUTH_TOKEN="accountAuthToken"
 export TWILIO_PHONE_NUMBER="phoneNumber"
 export TWILIO_DEFAULT_TO_NUMBER="phoneNumber"
