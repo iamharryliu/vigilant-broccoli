@@ -18,6 +18,10 @@
 - ORM vs Raw SQL Queries
   - ORM for straightforward CRUD and simple things.
   - SQL for reporting and more complex things.
+- SQL vs GraphQL
+  - GraphQL provides a contract between front and backend.
+  - Enables user to request for exactly what they want.
+  - GraphQL requires more overhead to setup.
 
 ## Web Applications
 

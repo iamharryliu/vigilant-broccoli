@@ -11,3 +11,6 @@
 - ChatGPT
   - Just another tool like Google search engine
   - Raised the entry bar of becoming a software developer since it can perform what most junior engineers can do.
+- Thinking like a lead
+  - Development team's familiarity with the technologies.
+  - Open to new ideas.
