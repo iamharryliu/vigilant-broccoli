@@ -8,8 +8,6 @@
       - Blogs.
       - Image galleries.
     - Handle receiving emails for message requests.
-  - refactor(react-demo):
-    - Consume react session application.
 - Q2
   - feat(cms-flask): Virus scanning for uploads.
   - feat(app-monitor): Budget alerts for services.
