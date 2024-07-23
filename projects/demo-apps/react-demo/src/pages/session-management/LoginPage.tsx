@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
@@ -6,15 +6,15 @@ const LoginPage = () => {
   const [identification, setIdentification] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleIdentificationChange = e => {
-    setIdentification(e.target.value);
+  const handleIdentificationChange = (e: React.FormEvent<HTMLInputElement>) => {
+    setIdentification(e.currentTarget.value);
   };
 
-  const handlePasswordChange = e => {
-    setPassword(e.target.value);
+  const handlePasswordChange = (e: React.FormEvent<HTMLInputElement>) => {
+    setPassword(e.currentTarget.value);
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const userData = {

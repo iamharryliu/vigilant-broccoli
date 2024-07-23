@@ -11,7 +11,7 @@ const toTitleCase = (str: string) =>
 
 const COLLAPSABLE_NAVBAR_CONTENT = {
   ID: 'navbarSupportedContent',
-  LINKS: ['hooks', 'todo'],
+  LINKS: ['hooks', 'todo', 'session'],
 };
 
 export default function NavbarComponent() {
