@@ -5,7 +5,8 @@ DOTFILES_DIR="$SETUP_DIR/dotfiles"
 ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
 
 function ask() {
-    read -p "$1 (Y/n): " resp
+    echo -n "$1 (Y/n): "
+    read resp
     if [ -z "$resp" ]; then
         response_lc="y" # empty is Yes
     else
