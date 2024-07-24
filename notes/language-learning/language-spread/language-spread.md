@@ -108,17 +108,4 @@
 | do you want..?                 | vill du..?            | voulez-vous..?       | quiere..?        |                   |                 |
 | do you have..?                 | har du..?             | avez-vous..?         | tiene..?         |                   |                 |
 | can I..?                       |                       | puis je..?           | puedo..?         |                   |                 |
-| I want                         | jag vill              | je veux              | quiero           | quero             |                 |
-| I have                         | jag har               | j'ai                 | tengo            |                   |                 |
-| I'm going                      |                       | je vais              | voy              |                   |                 |
-| You go                         |                       | tu vas               | va               |                   |                 |
-| to have an opinion             | att tycka             |                      |                  |                   |                 |
-| to believe                     | att tro               |                      |                  |                   |                 |
-| I should                       | jag borde             | je devrais           |                  |                   |                 |
-| I am                           | jag är                | je suis              | estoy            |                   |                 |
-| I ordered                      | jag beställde         | j'ai commande        | he pedido        |                   |                 |
-| I have ordered                 |                       | j'ai commande        | he pedido        |                   |                 |
-| I have eaten                   |                       | j'ai mange           | he comido        |                   |                 |
-| I would                        |                       | je voudrais          | quiero           |                   |                 |
-| it was                         | var                   | c'etait              | estuvo /fue?     |                   |                 |
 | thing                          | sak                   | chose                | cosa             |                   |                 |
