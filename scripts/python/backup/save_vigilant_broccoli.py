@@ -5,13 +5,15 @@ FILENAME = "vigilant-broccoli.zip"
 
 
 def download_file(url, directory):
-    print("Backup started.")
+    # DEBUG LINE
+    # print("Backup started.")
     response = requests.get(url)
     if response.status_code == 200:
         file_path = os.path.join(directory, FILENAME)
         with open(file_path, "wb") as f:
             f.write(response.content)
-        print(f"Backup successfully downloaded to {file_path}")
+        # DEBUG LINE
+        # print(f"Backup successfully downloaded to {file_path}")
     else:
         print("Failed to backup.")
 
