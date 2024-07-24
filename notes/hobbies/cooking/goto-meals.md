@@ -18,7 +18,8 @@
 
 ## Brunch
 
-- Breakfast Wraps
+- Omelette
+- Wrap
   - Tortilla
   - Egg
   - Shredded cheese
@@ -36,3 +37,8 @@
   - Tomato Paste
   - Shredded Cheese
   - Toppings
+- Foccacia Sandwiches
+  - Foccacia
+  - Filling
+  - Sauce
+- Ramen

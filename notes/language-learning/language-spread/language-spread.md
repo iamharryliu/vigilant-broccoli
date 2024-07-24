@@ -19,6 +19,7 @@
 | you're welcome                 | varsågod              |                      |                  |                   |                 |
 | thank you                      | tack                  | merci                | gracias          |                   |                 |
 | it is                          | är det                | c'est                | lo es/esta       |                   |                 |
+| they are                       | är det                | ce sont              | los son          |                   |                 |
 | take care                      | tan hom om dig        |                      |                  |                   |                 |
 | be careful                     | var försiktig         |                      |                  |                   |                 |
 | **emotions**                   |                       |                      |                  |                   |                 |
@@ -72,7 +73,7 @@
 | **location**                   |                       |                      |                  |                   |                 |
 | here                           | här                   | ici                  | aqui             | aqui              | qui             |
 | there                          | där                   | là                   | allí             |                   |                 |
-| near here                      | nära här              | pres d'ici           | cerca de aqui    |                   |                 |
+| here                           | nära här              | pres d'ici           | cerca de aqui    |                   |                 |
 | near                           | nära                  | près                 | cerca            |                   |                 |
 | far from                       | långt ifrån           | loin de              | lejos de         |                   |                 |
 | between                        | mellan                |                      |                  |                   |                 |
@@ -92,6 +93,7 @@
 | afternoon                      | eftermiddag           | après-midi           | tarde            |                   |                 |
 | evening                        | kväll                 | soir                 | noche            |                   |                 |
 | night                          | natt                  | nuit                 | noche            |                   |                 |
+| at _n_ o clock                 |                       | a _n_ heures         | a las _n_        |                   |                 |
 | **Question Words**             |                       |                      |                  |                   |                 |
 | who                            | vem/vilka             | qui                  | quien            |                   |                 |
 | what                           | vad                   | que                  | que              |                   |                 |
