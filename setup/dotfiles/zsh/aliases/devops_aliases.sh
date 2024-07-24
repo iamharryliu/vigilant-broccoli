@@ -126,4 +126,5 @@ alias nxtestall="cdnx && nx run-many -t=test"
 alias nxdeployall="cdnx && nx run-many -t=deploy"
 
 # Analytics
-alias openanalytics='chrome "https://analytics.google.com/analytics/web/#/p433700665/reports/reportinghub"'
+alias ganalytics='chrome "https://analytics.google.com/analytics/"'
+alias gcaptcha='chrome "https://www.google.com/recaptcha/admin/"'
