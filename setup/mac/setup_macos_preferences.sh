@@ -13,7 +13,6 @@ dockutil --add "/Applications/WhatsApp.app"
 dockutil --add "/Applications/Slack.app"
 dockutil --add "/Applications/Spotify.app"
 dockutil --add "/Applications/NordVPN.app"
-dockutil --add "/Applications/Wyze.app"
 dockutil --add "/Applications/AppCleaner.app"
 defaults write com.apple.dock show-recents -bool false
 defaults write com.apple.dock orientation -string right
