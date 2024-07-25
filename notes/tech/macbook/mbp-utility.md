@@ -1,5 +1,8 @@
 # MBP Utility
 
+- Alfred
+  - Turn off Keyboard Shortcuts Spotlight
+  - Change Alfred to _CMD + Space_
 - Dropzone - Hold Option to delete Dropzone items.
 - AltTab
   - Controls > Shortcut 1 (All Tabs in All Apps) - Options + tab
