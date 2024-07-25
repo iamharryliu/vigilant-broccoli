@@ -2,20 +2,8 @@
 <div class="mb-4">
   <h1>General</h1>
   {% include 'forms/update_app_form.html' %} {% include
-  'forms/create_user_group_form.html' %} {% if user_groups %}
-  <div class="card my-3">
-    <div class="card-header">User Groups</div>
-    <ul class="list-group list-group-flush">
-      {% for user_group in user_groups %}
-      <a
-        class="list-group-item list-group-item-action"
-        href="{{url_for('cms.user_group_details', app_name=app_name, user_group_name=user_group.name)}}"
-        >{{user_group.name}}</a
-      >
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
+  'forms/create_user_group_form.html' %} {% if user_groups %} {% include
+  'components/user_groups.html' %} {% endif %}
 </div>
 <div>
   <h1>Danger</h1>
