@@ -3,11 +3,9 @@
   <h1>General</h1>
   {% include 'forms/update_app_form.html' %} {% include
   'forms/create_user_group_form.html' %} {% if user_groups %}
-  <div class="card">
-    <div class="card-header">
-      <span>User Groups</span>
-    </div>
-    <ul class="list-group my-3">
+  <div class="card my-3">
+    <div class="card-header">User Groups</div>
+    <ul class="list-group list-group-flush">
       {% for user_group in user_groups %}
       <a
         class="list-group-item list-group-item-action"
