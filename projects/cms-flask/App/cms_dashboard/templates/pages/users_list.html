@@ -1,20 +1,25 @@
 {% extends 'layouts/layout.html' %} {% block content %}
 
-<ul class="list-group">
-  <li class="list-group-item bg-dark text-white">
-    <span>Users</span>
-    <a href="{{url_for('cms.create_user')}}" class="btn float-end"
+<div class="card">
+  <div class="card-header">
+    <span>Users</span
+    ><a href="{{url_for('cms.create_user')}}" class="btn btn-sm float-end"
       >Create User</a
     >
-  </li>
-  {% for user in users %}
-  <a
-    href="{{url_for('cms.user_details', username=user.username)}}"
-    class="list-group-item list-group-item-action"
-  >
-    {{user.username}}
-  </a>
-  {% endfor %}
-</ul>
+  </div>
+  <ul class="list-group">
+    <li class="list-group-item bg-dark text-white">
+      <span>Users</span>
+    </li>
+    {% for user in users %}
+    <a
+      href="{{url_for('cms.user_details', username=user.username)}}"
+      class="list-group-item list-group-item-action"
+    >
+      {{user.username}}
+    </a>
+    {% endfor %}
+  </ul>
+</div>
 
 {% endblock %}
