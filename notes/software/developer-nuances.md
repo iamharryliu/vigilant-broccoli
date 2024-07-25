@@ -35,3 +35,5 @@
   - Single Page Application
     - High user interactivity
     - Content changes while viewing.
+
+- Session Token vs JWT
