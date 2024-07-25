@@ -1,8 +1,7 @@
 from flask import current_app
 from App import db, login_manager
-from App.const import USER_TYPE
-from App.const import USER_CONFIG, TOKEN_EXPIRE_TIME_IN_SECONDS
-import uuid
+from App.const import USER_TYPE, USER_CONFIG, TOKEN_EXPIRE_TIME_IN_SECONDS
+from App.utils import generate_uuid
 from flask_login import UserMixin
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from datetime import datetime, UTC
@@ -14,28 +13,33 @@ def load_user(user_id):
 
 
 class Application(db.Model):
-    id = db.Column(db.String, default=lambda: uuid.uuid4().hex, primary_key=True)
+    id = db.Column(db.String, default=generate_uuid, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
     description = db.Column(db.Text)
+    groups = db.relationship(
+        "Group", secondary="application_group", back_populates="applications"
+    )
     created_at = db.Column(db.DateTime, default=datetime.now(UTC))
     updated_at = db.Column(
         db.DateTime, default=datetime.now(UTC), onupdate=datetime.now(UTC)
     )
 
 
-class UserApplication(db.Model):
-    id = db.Column(db.String, default=lambda: uuid.uuid4().hex, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey("user.id"), nullable=False)
-    application_id = db.Column(
-        db.String, db.ForeignKey("application.id"), nullable=False
+class Group(db.Model):
+    id = db.Column(db.String, default=generate_uuid, primary_key=True)
+    name = db.Column(db.String, unique=True, nullable=False)
+    applications = db.relationship(
+        "Application", secondary="application_group", back_populates="groups"
     )
-    assigned_at = db.Column(db.DateTime, default=datetime.now())
-    expires_at = db.Column(db.DateTime, nullable=True)
-    db.UniqueConstraint("user_id", "application_id", name="unique_user_application")
+    users = db.relationship("User", secondary="user_group", back_populates="groups")
+    created_at = db.Column(db.DateTime, default=datetime.now(UTC))
+    updated_at = db.Column(
+        db.DateTime, default=datetime.now(UTC), onupdate=datetime.now(UTC)
+    )
 
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.String, default=lambda: uuid.uuid4().hex, primary_key=True)
+    id = db.Column(db.String, default=generate_uuid, primary_key=True)
     username = db.Column(
         db.String(USER_CONFIG.MAX_USERNAME_LENGTH), unique=True, nullable=False
     )
@@ -43,14 +47,7 @@ class User(db.Model, UserMixin):
     is_verified = db.Column(db.Boolean, default=False)
     password = db.Column(db.String(USER_CONFIG.MAX_PASSWORD_LENGTH), nullable=False)
     user_type = db.Column(db.String, default=USER_TYPE.USER, nullable=False)
-    applications = db.relationship(
-        "Application",
-        secondary="user_application",
-        primaryjoin=(UserApplication.user_id == id),
-        secondaryjoin=(UserApplication.application_id == Application.id),
-        backref="users",
-        lazy=True,
-    )
+    groups = db.relationship("Group", secondary="user_group", back_populates="users")
 
     def get_token(self):
         s = Serializer(current_app.config["SECRET_KEY"])
@@ -67,9 +64,44 @@ class User(db.Model, UserMixin):
 
     def has_privilege(self, app_name):
         application = Application.query.filter_by(name=app_name).first()
+        if not application:
+            return False
+        for group in self.groups:
+            if group in application.groups:
+                return True
+        return False
+
+    def query_applications(self):
         return (
-            UserApplication.query.filter_by(
-                user_id=self.id, application_id=application.id
-            ).first()
-            is not None
+            db.session.query(Application)
+            .join(application_group)
+            .join(Group)
+            .join(user_group)
+            .filter(user_group.c.user_id == self.id)
         )
+
+    def get_applications(self):
+        return self.query_applications().all()
+
+    def count_applications(self):
+        return (
+            db.session.query(Application)
+            .join(application_group)
+            .join(Group)
+            .join(user_group)
+            .filter(user_group.c.user_id == self.id)
+            .count()
+        )
+
+
+application_group = db.Table(
+    "application_group",
+    db.Column("application_id", db.String, db.ForeignKey("application.id")),
+    db.Column("group_id", db.String, db.ForeignKey("group.id")),
+)
+
+user_group = db.Table(
+    "user_group",
+    db.Column("user_id", db.String, db.ForeignKey("user.id")),
+    db.Column("group_id", db.String, db.ForeignKey("group.id")),
+)

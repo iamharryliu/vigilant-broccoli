@@ -2,17 +2,15 @@
   {{ form.hidden_tag() }}
   <fieldset>
     <legend>Create App</legend>
-    <form method="POST" action>
-      {{ form.hidden_tag() }}
-      <div class="form-group">
-        {{ form.name.label(class="form-label") }} {{
-        form.name(class="form-control") }} {% for error in form.name.errors %}
-        <div class="text-danger">{{ error }}</div>
-        {% endfor %}
-      </div>
-      <div class="form-group mt-4">
-        {{ form.submit(class="btn btn-primary") }}
-      </div>
-    </form>
+    <div class="form-group">
+      {{ form.name.label(class="form-label") }} {{
+      form.name(class="form-control", placeholder=form.name.label.text) }} {%
+      for error in form.name.errors %}
+      <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+    <div class="form-group mt-4">
+      {{ form.submit(class="btn btn-sm btn-primary") }}
+    </div>
   </fieldset>
 </form>

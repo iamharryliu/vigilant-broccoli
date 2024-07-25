@@ -3,9 +3,9 @@ from wtforms import (
     StringField,
     TextAreaField,
     SubmitField,
-    MultipleFileField,
     PasswordField,
     EmailField,
+    MultipleFileField,
 )
 from wtforms.validators import DataRequired, Email, EqualTo
 
@@ -20,9 +20,20 @@ class CreateUserForm(FlaskForm):
     submit = SubmitField("Create User")
 
 
+class CreateGroupForm(FlaskForm):
+    name = StringField("User Group Name", validators=[DataRequired()])
+    application = StringField("Application", validators=[DataRequired()])
+    submit = SubmitField("Create User Group")
+
+
 class CreateAppForm(FlaskForm):
     name = StringField("App Name", validators=[DataRequired()])
     submit = SubmitField("Create App")
+
+
+class UpdateAppForm(FlaskForm):
+    name = StringField("App Name", validators=[DataRequired()])
+    submit = SubmitField("Update App Name")
 
 
 class UpdateUserForm(FlaskForm):
@@ -33,11 +44,6 @@ class UpdateUserForm(FlaskForm):
         "Confirm Password", validators=[DataRequired(), EqualTo("password")]
     )
     submit = SubmitField("Update User")
-
-
-class UpdateAppForm(FlaskForm):
-    name = StringField("App Name", validators=[DataRequired()])
-    submit = SubmitField("Update App")
 
 
 class ContactForm(FlaskForm):

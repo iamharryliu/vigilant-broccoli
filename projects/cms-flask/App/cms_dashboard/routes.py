@@ -10,7 +10,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from App import db, bcrypt
-from App.models import User, Application
+from App.models import User, Application, Group
 from App.main.forms import (
     ContentForm,
     UploadForm,
@@ -18,6 +18,7 @@ from App.main.forms import (
     UpdateUserForm,
     CreateAppForm,
     UpdateAppForm,
+    CreateGroupForm,
 )
 from App.utils import (
     save_text,
@@ -25,27 +26,30 @@ from App.utils import (
     get_subdirectories,
     save_file,
     delete_directory,
+    generate_password,
 )
 from App.const import FLASH_CATEGORY, USER_TYPE
 from functools import wraps
 
 
-def requires_privilege():
-    def decorator(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            app_name = kwargs.get("app_name")
-            if (
-                current_user.user_type == USER_TYPE.SYSTEM_ADMIN
-                or current_user.has_privilege(app_name)
-            ):
-                return f(*args, **kwargs)
-            flash("You do not have permission.", FLASH_CATEGORY.WARNING)
-            return redirect(url_for("cms.index"))
+def requires_privilege(fn):
+    @wraps(fn)
+    def decorated_function(*args, **kwargs):
+        print("hit")
+        app_name = (
+            kwargs.get("app_name")
+            or request.args.get("app_name")
+            or request.form.get("app_name")
+        )
+        if (
+            current_user.user_type == USER_TYPE.SYSTEM_ADMIN
+            or current_user.has_privilege(app_name)
+        ):
+            return fn(*args, **kwargs)
+        flash("You do not have permission.", FLASH_CATEGORY["WARNING"])
+        return redirect(url_for("cms.index"))
 
-        return decorated_function
-
-    return decorator
+    return decorated_function
 
 
 def get_filename(path):
@@ -116,9 +120,7 @@ def create_user():
     form = CreateUserForm()
     if form.validate_on_submit():
         try:
-            hashed_password = bcrypt.generate_password_hash(form.password.data).decode(
-                "utf-8"
-            )
+            hashed_password = generate_password(form.password.data)
             user = User(
                 username=form.username.data,
                 email=form.email.data,
@@ -156,13 +158,14 @@ def create_app():
 @cms_dashboard_blueprint.route("apps")
 @login_required
 def apps():
-    apps = []
     if current_user.user_type == USER_TYPE.SYSTEM_ADMIN:
         apps = [app.name for app in Application.query.all()]
-    if len(current_user.applications) == 1:
+    elif current_user.count_applications() == 1:
         return redirect(
-            url_for("cms.dashboard", app_name=current_user.applications[0].name),
+            url_for("cms.dashboard", app_name=current_user.get_applications()[0].name),
         )
+    else:
+        apps = current_user.get_applications()
     return render_template("pages/apps_list.html", title="Apps List", apps=apps)
 
 
@@ -181,40 +184,126 @@ def delete_app(app_name):
 
 @cms_dashboard_blueprint.route("/<app_name>/dashboard")
 @login_required
-@requires_privilege()
+@requires_privilege
 def dashboard(app_name):
     return redirect(url_for("cms.page_content", app_name=app_name))
 
 
 @cms_dashboard_blueprint.route("/<app_name>/settings", methods=["GET", "POST"])
 @login_required
-@requires_privilege()
+@requires_privilege
 def app_settings(app_name):
+    updateAppForm = UpdateAppForm()
+    updateAppForm.name.data = app_name
+    createGroupForm = CreateGroupForm()
+    createGroupForm.application.data = app_name
     app = Application.query.filter_by(name=app_name).first()
-    form = UpdateAppForm()
+    user_groups = app.groups
+    return render_template(
+        "pages/app_settings_page.html",
+        app_name=app_name,
+        user_groups=user_groups,
+        updateAppForm=updateAppForm,
+        createGroupForm=createGroupForm,
+        active_tab="settings",
+    )
+
+
+@cms_dashboard_blueprint.route("/<app_name>/update_app_name", methods=["POST"])
+@login_required
+def update_app_name(app_name):
+    form = UpdateAppForm(request.form)
+    app = Application.query.filter_by(name=app_name).first()
     if form.validate_on_submit():
         try:
             app.name = form.name.data
             db.session.commit()
-            flash("Successful user update.", "success")
+            flash("Successfully updated name.", "success")
+            return redirect(url_for("cms.app_settings", app_name=app.name))
         except:
-            flash("Unsuccessful user update.", "danger")
-        return redirect(url_for("cms.app_settings", app_name=app.name))
-    form.name.data = app.name
+            flash("Unsuccessfully updated name.", "danger")
+    return redirect(url_for("cms.app_settings", app_name=app_name))
+
+
+@cms_dashboard_blueprint.route("/<app_name>/create_user_group", methods=["POST"])
+@login_required
+def create_user_group(app_name):
+    form = CreateGroupForm(request.form)
+    app = Application.query.filter_by(name=form.application.data).first()
+    if form.validate_on_submit():
+        try:
+            user_group = Group(name=form.name.data)
+            db.session.add(user_group)
+            app.groups.append(user_group)
+            db.session.commit()
+            flash("User group has been added successfully!", "success")
+        except:
+            flash("Unsuccessful user group creation.", "danger")
+    return redirect(url_for("cms.app_settings", app_name=app_name))
+
+
+@cms_dashboard_blueprint.route(
+    "/<app_name>/user_group/<user_group_name>", methods=["GET", "POST"]
+)
+@login_required
+def user_group_details(app_name, user_group_name):
+    group = Group.query.filter_by(name=user_group_name).first()
+    form = CreateUserForm()
+    if form.validate_on_submit():
+        try:
+            hashed_password = generate_password(form.password.data)
+            user = User(
+                username=form.username.data,
+                email=form.email.data,
+                password=hashed_password,
+            )
+            db.session.add(user)
+            group.users.append(user)
+            db.session.commit()
+            flash("User has been added successfully!", "success")
+            return redirect(
+                url_for(
+                    "cms.user_group_details",
+                    app_name=app_name,
+                    user_group_name=user_group_name,
+                )
+            )
+        except:
+            flash("Unsuccessful user registration.", "danger")
+            return redirect(
+                url_for(
+                    "cms.user_group_details",
+                    app_name=app_name,
+                    user_group_name=user_group_name,
+                )
+            )
     return render_template(
-        "pages/app_settings_page.html",
-        title=f"Settings - {app_name}",
+        "pages/user_group_details_page.html",
+        title="Page Content",
         app_name=app_name,
+        user_group=group,
         form=form,
-        active_tab="settings",
     )
+
+
+@cms_dashboard_blueprint.route("user_groups/<user_group_name>/delete", methods=["POST"])
+@login_required
+def delete_user_group(user_group_name):
+    user_group = Group.query.filter_by(name=user_group_name).first()
+    if user_group:
+        db.session.delete(user_group)
+        db.session.commit()
+        flash(f"User group {user_group.name} has been deleted.", "success")
+    else:
+        flash(f"User group {user_group_name} not found.", "danger")
+    return redirect(url_for("cms.apps"))
 
 
 @cms_dashboard_blueprint.route(
     "/<app_name>/dashboard/page_content", methods=["GET", "POST"]
 )
 @login_required
-@requires_privilege()
+@requires_privilege
 def page_content(app_name):
     form = ContentForm()
     filepath = f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md"

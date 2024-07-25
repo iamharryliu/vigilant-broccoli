@@ -1,8 +1,10 @@
 from flask import current_app, flash
+from App import bcrypt
 from App.config import LOCAL_BUCKET_ENVIRONMENTS
 import os
 from io import BytesIO
 import boto3
+import uuid
 
 
 def get_s3_client():
@@ -105,3 +107,11 @@ def delete_directory(prefix):
         f'All objects with prefix {prefix} have been deleted from bucket {current_app.config["BUCKET_NAME"]}',
         "success",
     )
+
+
+def generate_uuid():
+    return uuid.uuid4().hex
+
+
+def generate_password(password):
+    return bcrypt.generate_password_hash(password).decode("utf-8")
