@@ -9,7 +9,7 @@
       >Create User</a
     >
   </div>
-  <ul class="list-group">
+  <ul class="list-group list-group-flush">
     {% for user in users %}
     <a
       href="{{url_for('cms.user_details', username=user.username)}}"
