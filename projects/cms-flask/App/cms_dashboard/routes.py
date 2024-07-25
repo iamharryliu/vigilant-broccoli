@@ -296,7 +296,9 @@ def delete_user_group(user_group_name):
         flash(f"User group {user_group.name} has been deleted.", "success")
     else:
         flash(f"User group {user_group_name} not found.", "danger")
-    return redirect(url_for("cms.apps"))
+    return redirect(
+        url_for("cms.app_settings", app_name=user_group.applications[0].name)
+    )
 
 
 @cms_dashboard_blueprint.route(
