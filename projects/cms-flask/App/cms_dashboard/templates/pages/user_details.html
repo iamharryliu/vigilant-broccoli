@@ -2,11 +2,7 @@
 <h1>User Details - {{user.username}}</h1>
 <div class="my-3">
   <ul class="list-group">
-    <li
-      class="list-group-item list-group-item-action list-group-item-dark active"
-    >
-      Applications
-    </li>
+    <li class="list-group-item bg-dark text-white">Applications</li>
     {% for app in user.get_applications() %}
     <a
       class="list-group-item list-group-item-action"
