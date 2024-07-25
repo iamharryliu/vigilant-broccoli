@@ -35,7 +35,6 @@ from functools import wraps
 def requires_privilege(fn):
     @wraps(fn)
     def decorated_function(*args, **kwargs):
-        print("hit")
         app_name = (
             kwargs.get("app_name")
             or request.args.get("app_name")
