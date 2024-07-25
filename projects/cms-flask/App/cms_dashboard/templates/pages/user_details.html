@@ -1,20 +1,23 @@
 {% extends 'layouts/layout.html' %} {% block content %}
 <h1>User Details - {{user.username}}</h1>
-
-<div class="card my-3">
-  <div class="card-header">Applications</div>
-  <ul class="list-group list-group-flush">
-    {% for app in user.get_applications() %}
-    <a
-      class="list-group-item list-group-item-action"
-      href="{{ url_for('cms.app_settings', app_name=app.name) }}"
-    >
-      {{app.name}}
-    </a>
-    {% endfor %}
-  </ul>
+{% if user.count_applications() > 0 %}
+<div class="my-3">
+  <h2>User applications</h2>
+  <div class="card my-2">
+    <div class="card-header">Applications</div>
+    <ul class="list-group list-group-flush">
+      {% for app in user.get_applications() %}
+      <a
+        class="list-group-item list-group-item-action"
+        href="{{ url_for('cms.app_settings', app_name=app.name) }}"
+      >
+        {{app.name}}
+      </a>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
-{% include 'forms/update_user_form.html' %}
+{% endif %} {% include 'forms/update_user_form.html' %}
 <form
   action="{{ url_for('cms.delete_user', username=user.username) }}"
   method="POST"
