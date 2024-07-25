@@ -3,14 +3,13 @@
 <div class="card">
   <div class="card-header">
     <span>Users</span
-    ><a href="{{url_for('cms.create_user')}}" class="btn btn-sm float-end"
+    ><a
+      href="{{url_for('cms.create_user')}}"
+      class="btn btn-sm btn-dark float-end"
       >Create User</a
     >
   </div>
   <ul class="list-group">
-    <li class="list-group-item bg-dark text-white">
-      <span>Users</span>
-    </li>
     {% for user in users %}
     <a
       href="{{url_for('cms.user_details', username=user.username)}}"
