@@ -3,18 +3,20 @@
   <h1>General</h1>
   {% include 'forms/update_app_form.html' %} {% include
   'forms/create_user_group_form.html' %} {% if user_groups %}
-  <ul class="list-group my-3">
-    <li class="list-group-item bg-dark text-white">
+  <div class="card">
+    <div class="card-header">
       <span>User Groups</span>
-    </li>
-    {% for user_group in user_groups %}
-    <a
-      class="list-group-item list-group-item-action"
-      href="{{url_for('cms.user_group_details', app_name=app_name, user_group_name=user_group.name)}}"
-      >{{user_group.name}}</a
-    >
-    {% endfor %}
-  </ul>
+    </div>
+    <ul class="list-group my-3">
+      {% for user_group in user_groups %}
+      <a
+        class="list-group-item list-group-item-action"
+        href="{{url_for('cms.user_group_details', app_name=app_name, user_group_name=user_group.name)}}"
+        >{{user_group.name}}</a
+      >
+      {% endfor %}
+    </ul>
+  </div>
   {% endif %}
 </div>
 <div>
