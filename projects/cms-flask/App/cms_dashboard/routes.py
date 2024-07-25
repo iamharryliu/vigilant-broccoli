@@ -9,7 +9,7 @@ from flask import (
     current_app,
 )
 from flask_login import login_required, current_user
-from App import db, bcrypt
+from App import db
 from App.models import User, Application, Group
 from App.main.forms import (
     ContentForm,
