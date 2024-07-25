@@ -47,9 +47,10 @@ psql -h localhost -U postgres -d [targetdatabase] -f [mydatabase_dump.sql]
 
 # Tables
 \dt
-CREATE TABLE [table-name]
+CREATE TABLE [table-name];
 \d [table-name]
-DROP TABLE [table-name]
+DROP TABLE [table-name];
+DROP TABLE [table-name] cascade;
 # Get Table Schema
 \d+ [table_name];
 
