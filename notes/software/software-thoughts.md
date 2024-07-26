@@ -15,3 +15,8 @@
   - Development team's familiarity with the technologies.
   - Open to new ideas.
 - Vendor lockin
+
+# Web Development Preferences
+
+- Building with Node and taking advantage of shareable code between applications.
+- Lightweight solutions over heavyweight solutions.

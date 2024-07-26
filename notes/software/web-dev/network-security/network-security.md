@@ -1,6 +1,9 @@
 # Network Security
 
-- Do not trust user input.
+## General Guidelines
+
+- Never trust user input.
+- Never store secrets on a client-side application.
 
 ## Password Cracking
 

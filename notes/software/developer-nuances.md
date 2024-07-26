@@ -2,9 +2,9 @@
 
 ## General
 
-### Paradigms
+## Paradigms
 
-- Functional Programming vs Object Oriented Programming
+- Functional Programming vs Object Oriented Programming (OOP)
   - Functional programming for simplicity and state immutability.
   - OOP is clean when done correctly.
 - GoLang vs Python
@@ -36,4 +36,4 @@
     - High user interactivity
     - Content changes while viewing.
 
-- Session Token vs JWT - https://www.youtube.com/watch?v=fyTxwIa-1U0
+- [Session Vs JWT: The Differences You May Not Know!](https://www.youtube.com/watch?v=fyTxwIa-1U0)
