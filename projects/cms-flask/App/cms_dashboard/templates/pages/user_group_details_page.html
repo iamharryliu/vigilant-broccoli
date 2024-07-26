@@ -10,16 +10,19 @@
 </div>
 {% if user_group.users %}
 <p>Members of user group <em>{{user_group.name}}</em>.</p>
-<ul class="list-group">
-  {% for user in user_group.users %}
-  <a
-    class="list-group-item list-group-item-action"
-    href="{{ url_for('cms.user_details', username=user.username) }}"
-  >
-    {{user.username}}
-  </a>
-  {% endfor %}
-</ul>
+<div class="card">
+  <div class="card-header">Users</div>
+  <ul class="list-group list-group-flush">
+    {% for user in user_group.users %}
+    <a
+      class="list-group-item list-group-item-action"
+      href="{{ url_for('cms.user_details', username=user.username) }}"
+    >
+      {{user.username}}
+    </a>
+    {% endfor %}
+  </ul>
+</div>
 {% else %}
 <em>Currently no users in this group.</em>
 {% endif %} {% endblock %}
