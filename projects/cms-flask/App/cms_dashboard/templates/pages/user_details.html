@@ -17,14 +17,5 @@
     </ul>
   </div>
 </div>
-{% endif %} {% include 'forms/update_user_form.html' %}
-<form
-  action="{{ url_for('cms.delete_user', username=user.username) }}"
-  method="POST"
-  onsubmit="return confirm('Are you sure you want to delete {{user.username}}?');"
-  class="my-3"
->
-  <legend>Delete User</legend>
-  <button type="submit" class="btn btn-danger float-right">Delete User</button>
-</form>
-{% endblock %}
+{% endif %} {% include 'forms/update_user_form.html' %} {% include
+'forms/delete_user_button.html' %} {% endblock %}
