@@ -1,14 +1,14 @@
 {% extends 'layouts/layout.html' %} {% block content %}
 <h1>User Group Details - {{user_group.name}}</h1>
-<div class="my-3">
-  <h2 class="d-inline">Users</h2>
+<div class="my-2">
+  <h4 class="d-inline">Users in Group</h4>
   <a
-    href="{{url_for('cms.dashboard', app_name=app_name)}}"
-    class="btn btn-sm btn-outline-dark float-end"
+    href="{{url_for('cms.create_user_for_user_group', app_name=app_name, user_group_name=user_group.name)}}"
+    class="btn btn-sm btn-dark float-end"
     >Add User To Group</a
   >
-  <hr />
 </div>
+{% if user_group.users %}
 <p>Members of user group <em>{{user_group.name}}</em>.</p>
 <ul class="list-group">
   {% for user in user_group.users %}
@@ -20,5 +20,6 @@
   </a>
   {% endfor %}
 </ul>
-{% include 'forms/create_user_form.html' %} {% include
-'forms/delete_user_group_button.html' %} {% endblock %}
+{% else %}
+<em>Currently no users in this group.</em>
+{% endif %} {% endblock %}

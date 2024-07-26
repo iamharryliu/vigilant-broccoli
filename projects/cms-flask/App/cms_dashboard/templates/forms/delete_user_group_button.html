@@ -2,10 +2,8 @@
   action="{{ url_for('cms.delete_user_group', user_group_name=user_group.name) }}"
   method="POST"
   onsubmit="return confirm('Are you sure you want to delete {{user_group.name}}?');"
-  class="my-3"
 >
-  <legend>Delete</legend>
-  <button type="submit" class="btn btn-danger float-right">
-    Delete User Group <em>{{ user_group.name }}</em>
+  <button type="submit" class="btn btn-danger btn-sm">
+    <i class="bi bi-trash3-fill"></i>
   </button>
 </form>

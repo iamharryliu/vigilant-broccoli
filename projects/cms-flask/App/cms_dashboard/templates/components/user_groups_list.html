@@ -1,12 +1,21 @@
+<div class="my-2">
+  <h4 class="d-inline">User Groups</h4>
+  <a
+    href="{{url_for('cms.create_user_group', app_name=app_name)}}"
+    class="btn btn-sm btn-dark float-end disabled"
+    >New User Group</a
+  >
+</div>
 <div class="card my-3">
   <div class="card-header">User Groups</div>
   <ul class="list-group list-group-flush">
     {% for user_group in user_groups %}
     <a
-      class="list-group-item list-group-item-action"
+      class="list-group-item list-group-item-action d-flex justify-content-between"
       href="{{url_for('cms.user_group_details', app_name=app_name, user_group_name=user_group.name)}}"
-      >{{user_group.name}}</a
     >
-    {% endfor %}
+      <span> {{user_group.name}} </span>
+      {% include 'forms/delete_user_group_button.html' %} {% endfor %}
+    </a>
   </ul>
 </div>

@@ -247,6 +247,20 @@ def create_user_group(app_name):
 @login_required
 def user_group_details(app_name, user_group_name):
     group = Group.query.filter_by(name=user_group_name).first()
+    return render_template(
+        "pages/user_group_details_page.html",
+        title="Page Content",
+        app_name=app_name,
+        user_group=group,
+    )
+
+
+@cms_dashboard_blueprint.route(
+    "/<app_name>/user_group/<user_group_name>/create_user", methods=["GET", "POST"]
+)
+@login_required
+def create_user_for_user_group(app_name, user_group_name):
+    group = Group.query.filter_by(name=user_group_name).first()
     form = CreateUserForm()
     if form.validate_on_submit():
         try:
@@ -277,7 +291,7 @@ def user_group_details(app_name, user_group_name):
                 )
             )
     return render_template(
-        "pages/user_group_details_page.html",
+        "pages/create_user_for_user_group_page.html",
         title="Page Content",
         app_name=app_name,
         user_group=group,
