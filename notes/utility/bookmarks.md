@@ -1,6 +1,6 @@
 # Bookmarks
 
-Collection of sorted bookmarks
+Collection of sorted bookmarks.
 
 ## Developer Tutorials
 
@@ -11,4 +11,4 @@ Collection of sorted bookmarks
 
 ### Talks
 
-[A Philosophy of Software Design | John Ousterhout | Talks at Google](https://www.youtube.com/watch?v=bmSAYlu0NcY&t=3002s)
+- [A Philosophy of Software Design | John Ousterhout | Talks at Google](https://www.youtube.com/watch?v=bmSAYlu0NcY&t=3002s)
