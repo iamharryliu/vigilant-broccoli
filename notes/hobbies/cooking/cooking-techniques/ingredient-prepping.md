@@ -1,21 +1,29 @@
 # Ingredient Prepping
 
-## Sauce/Oil
+## Cutting
 
-- Garlic confit (roast)
-- Mayo (mix)
+- Julienne Carrots
+- Diced Cucumbers
+- Sliced Onions
+
+## Sauces/Oils
+
+- Garlic Confit
+- Mayo
 
 ## Bread
 
 - Sourdough Starter
-  - Scallion pancakes.
-  - Sourdough bread.
+  - Scallion Pancakes
+  - Sourdough Bread
 
-## Roast
+## Roasting
 
 - Garlic
 - Potatoes
+- Sweet Potatoes
 - Peppers
+- Chickpeas
 
 ## Pickling
 
@@ -44,3 +52,8 @@
 - Dried oregano
 - Sea salt
 - Black pepper
+
+## Proteins
+
+- Baked Tofu
+- Marinated tofu
