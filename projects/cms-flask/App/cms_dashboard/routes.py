@@ -224,21 +224,29 @@ def update_app_name(app_name):
     return redirect(url_for("cms.app_settings", app_name=app_name))
 
 
-@cms_dashboard_blueprint.route("/<app_name>/create_user_group", methods=["POST"])
+@cms_dashboard_blueprint.route("/<app_name>/create_user_group", methods=["GET", "POST"])
 @login_required
 def create_user_group(app_name):
-    form = CreateGroupForm(request.form)
-    app = Application.query.filter_by(name=form.application.data).first()
+    form = CreateGroupForm()
     if form.validate_on_submit():
         try:
+            app = Application.query.filter_by(name=form.application.data).first()
             user_group = Group(name=form.name.data)
             db.session.add(user_group)
             app.groups.append(user_group)
             db.session.commit()
             flash("User group has been added successfully!", "success")
+            return redirect(url_for("cms.app_settings", app_name=app_name))
         except:
             flash("Unsuccessful user group creation.", "danger")
-    return redirect(url_for("cms.app_settings", app_name=app_name))
+            return redirect(url_for("cms.create_user_group", app_name=app_name))
+    form.application.data = Application.query.filter_by(name=app_name).first().name
+    return render_template(
+        "pages/create_user_group_page.html",
+        app_name=app_name,
+        form=form,
+        active_tab="settings",
+    )
 
 
 @cms_dashboard_blueprint.route(

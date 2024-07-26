@@ -1,8 +1,7 @@
 {% extends 'layouts/dashboard_layout.html' %} {% block dashboard_content %}
 <div class="mb-4">
   <h1>General</h1>
-  {% include 'forms/update_app_form.html' %} {% include
-  'forms/create_user_group_form.html' %} {% if user_groups %} {% include
+  {% include 'forms/update_app_form.html' %} {% if user_groups %} {% include
   'components/user_groups_list.html' %} {% endif %}
 </div>
 <div>
