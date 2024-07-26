@@ -16,3 +16,11 @@ Of course you can add all these folders to a single workspace in a code editor b
 - Saving the monorepo to a Google Drive folder on personal machine.
 - Copying my Resume from my Downloads folder to my personal website. (TODO: automate Git push)
 - Script to download my Spotify playlists for DJing.
+
+More
+
+- Setup scripts for a new machine.
+  - Should have configuration choices to choose between work and personal setup.
+- Boilerplate code of demo applications.
+- Demo applications of commonly used software services to understand tools.
+- A knowledge bank to keep notes, snippets, and other tidbits.

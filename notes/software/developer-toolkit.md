@@ -1,5 +1,0 @@
-- Setup scripts for a new machine.
-  - Should have configuration choices to choose between work and personal setup.
-- Boilerplate code of demo applications.
-- Demo applications of commonly used software services to understand tools.
-- A knowledge bank to keep notes, snippets, and other tidbits.
