@@ -8,8 +8,9 @@
       - Blogs.
       - Image galleries.
     - Handle receiving emails for message requests.
+    - Virus scanning for uploads.
+  - refactor(contact-center)
 - Q2
-  - feat(cms-flask): Virus scanning for uploads.
   - feat(app-monitor): Budget alerts for services.
   - feat(setup): set divvy privacy and security a11y
   - feat(setup): recursive makevenv
