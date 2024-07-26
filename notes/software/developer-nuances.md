@@ -36,4 +36,4 @@
     - High user interactivity
     - Content changes while viewing.
 
-- Session Token vs JWT
+- Session Token vs JWT - https://www.youtube.com/watch?v=fyTxwIa-1U0
