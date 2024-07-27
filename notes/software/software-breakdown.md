@@ -4,16 +4,29 @@
 
   - Frontend
 
-    - Styling
-      - UI Libraries
-        - Components
-        - Utility Functions
-    - Form Control
-    - Accessibility(A11y)
-    - Internationalization(i18n)
+    - Templates
+
+      - HTML
+      - Components
+      - Forms
+        - Form Validation
+      - Styling
+        - CSS
+        - Typography
+        - Spacing
+        - UI Libraries
+      - Accessibility(A11y)
+      - Internationalization(i18n)
+
+    - Routes
 
   - Backend
   - Database
+    - Schema
+    - SQL
+      - One to Many
+      - Many to Many
+    - NoSQL
     - Backing up
   - Devops
     - IaC
