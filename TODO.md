@@ -14,6 +14,7 @@
   - feat(app-monitor): Budget alerts for services.
   - feat(setup): set divvy privacy and security a11y
   - feat(setup): recursive makevenv
+  - feat(setup): configuration choices for personal/work
   - chore(docs): Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
   - chore(docs): Look into handling DDOS attacks
   - chore(docs): online payment form
