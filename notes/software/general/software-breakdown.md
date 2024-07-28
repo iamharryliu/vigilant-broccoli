@@ -21,6 +21,14 @@
     - Routes
 
   - Backend
+    - Request Types - GET, POST, PUT, DELETE
+    - Input Values
+      - Query Parameters
+      - Path Parameters
+      - Header Parameters
+      - Body Parameters
+      - Form Data
+      - Cookies
   - Database
     - Schema
     - SQL

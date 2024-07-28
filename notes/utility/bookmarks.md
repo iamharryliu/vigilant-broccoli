@@ -2,7 +2,9 @@
 
 Collection of sorted bookmarks.
 
-## Developer Tutorials
+## Software
+
+- [Design Joy](https://www.designjoy.co/#plans)
 
 ### Frameworks
 
@@ -12,3 +14,9 @@ Collection of sorted bookmarks.
 ### Talks
 
 - [A Philosophy of Software Design | John Ousterhout | Talks at Google](https://www.youtube.com/watch?v=bmSAYlu0NcY&t=3002s)
+
+## Fashion
+
+- https://www.kaileemckenzie.co/homeshop
+- https://staatsballett.co/en-ca
+- https://www.kaileemckenzie.co/
