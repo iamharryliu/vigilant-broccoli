@@ -1,7 +1,7 @@
 {% extends 'layouts/layout.html' %} {% block content %}
 <div class="my-2">
   <h4 class="d-inline">Your Apps</h4>
-  <a href="{{url_for('cms.create_app')}}" class="btn btn-dark float-end"
+  <a href="{{url_for('cms.create_app')}}" class="btn btn-sm btn-dark float-end"
     >Add App</a
   >
 </div>
@@ -10,9 +10,9 @@
   <ul class="list-group list-group-flush">
     {% for app in apps %}
     <a
-      href="{{url_for('cms.dashboard', app_name=app)}}"
+      href="{{url_for('cms.dashboard', app_name=app.name)}}"
       class="list-group-item list-group-item-action"
-      >{{ app }}</a
+      >{{ app.name }}</a
     >
     {% endfor %}
   </ul>

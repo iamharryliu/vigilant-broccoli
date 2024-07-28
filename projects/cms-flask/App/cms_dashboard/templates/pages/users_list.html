@@ -1,12 +1,11 @@
 {% extends 'layouts/layout.html' %} {% block content %}
-
 <div class="my-2">
   <h4 class="d-inline">User Groups</h4>
   <a href="{{url_for('cms.create_user')}}" class="btn btn-sm btn-dark float-end"
     >Create User</a
   >
 </div>
-<div class="card">
+<div class="card my-3">
   <div class="card-header">Users</div>
   <ul class="list-group list-group-flush">
     {% for user in users %}

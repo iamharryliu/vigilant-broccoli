@@ -158,7 +158,7 @@ def create_app():
 @login_required
 def apps():
     if current_user.user_type == USER_TYPE.SYSTEM_ADMIN:
-        apps = [app.name for app in Application.query.all()]
+        apps = [app for app in Application.query.all()]
     elif current_user.count_applications() == 1:
         return redirect(
             url_for("cms.dashboard", app_name=current_user.get_applications()[0].name),
