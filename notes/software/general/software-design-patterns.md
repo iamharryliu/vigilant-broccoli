@@ -28,7 +28,3 @@ How objects communicate with each other.
 - Observer - push based system, one to many relationship where many objects subscribe to events from another object
 - Mediator - middleman/broker class that helps with communication
 - State - solves issue of handling state using large switch statements that check state by passing in objects tha (class with function that checks multiple conditions vs class that takes in value with the appropriate values), less API change
-
-## Referances
-
-[10 Design Patterns Explained in 10 Minutes](https://www.youtube.com/watch?v=tv-_1er1mWI&t=139s)

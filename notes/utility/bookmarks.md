@@ -5,6 +5,7 @@ Collection of sorted bookmarks.
 ## Software
 
 - [Design Joy](https://www.designjoy.co/#plans)
+- [10 Design Patterns Explained in 10 Minutes](https://www.youtube.com/watch?v=tv-_1er1mWI&t=139s)
 
 ### Frameworks
 
