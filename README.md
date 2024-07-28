@@ -36,6 +36,15 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 
 - notes - Collection of markdown notes.
 - projects - Software projects.
+  - Nx workspace for Typescript projects
+  - Demo/Sandbox Applications
+  - Leetcode Solutions
+  - Other Projects
 - scripts - Software scripts.
 - setup - Setup scripts and configurations.
 - snippets - Text and code snippets for quick copy and paste.
+
+## Automation
+
+- Commit Hooks
+- Crontab
