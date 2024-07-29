@@ -198,7 +198,7 @@ def app_settings(app_name):
     app = Application.query.filter_by(name=app_name).first()
     user_groups = app.groups
     return render_template(
-        "pages/app_settings_page.html",
+        "pages/app_settings/app_settings_page.html",
         app_name=app_name,
         user_groups=user_groups,
         updateAppForm=updateAppForm,
