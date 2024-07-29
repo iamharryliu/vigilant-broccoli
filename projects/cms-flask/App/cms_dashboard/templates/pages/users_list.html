@@ -10,7 +10,7 @@
   <ul class="list-group list-group-flush">
     {% for user in users %}
     <a
-      href="{{url_for('cms.user_details', username=user.username)}}"
+      href="{{ user.get_url()}}"
       class="list-group-item list-group-item-action"
     >
       {{user.username}}

@@ -89,7 +89,7 @@ def user_details(username):
             flash("Successful user update.", "success")
         except:
             flash("Unsuccessful user update.", "danger")
-        return redirect(url_for("cms.user_details", username=username))
+        return user.get_redirect()
     form.username.data = user.username
     form.email.data = user.email
     return render_template(
@@ -160,9 +160,8 @@ def apps():
     if current_user.user_type == USER_TYPE.SYSTEM_ADMIN:
         apps = [app for app in Application.query.all()]
     elif current_user.count_applications() == 1:
-        return redirect(
-            url_for("cms.dashboard", app_name=current_user.get_applications()[0].name),
-        )
+        app = current_user.get_applications()[0]
+        return app.get_redirect()
     else:
         apps = current_user.get_applications()
     return render_template("pages/apps_list.html", title="Apps List", apps=apps)
@@ -218,7 +217,7 @@ def update_app_name(app_name):
             app.name = form.name.data
             db.session.commit()
             flash("Successfully updated name.", "success")
-            return redirect(url_for("cms.app_settings", app_name=app.name))
+            return app.get_redirect()
         except:
             flash("Unsuccessfully updated name.", "danger")
     return redirect(url_for("cms.app_settings", app_name=app_name))
@@ -236,7 +235,7 @@ def create_user_group(app_name):
             app.groups.append(user_group)
             db.session.commit()
             flash("User group has been added successfully!", "success")
-            return redirect(url_for("cms.app_settings", app_name=app_name))
+            return app.get_redirect()
         except:
             flash("Unsuccessful user group creation.", "danger")
             return redirect(url_for("cms.create_user_group", app_name=app_name))

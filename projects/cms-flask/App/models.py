@@ -1,4 +1,4 @@
-from flask import current_app
+from flask import current_app, redirect, url_for
 from App import db, login_manager
 from App.const import USER_TYPE, USER_CONFIG, TOKEN_EXPIRE_TIME_IN_SECONDS
 from App.utils import generate_uuid
@@ -23,6 +23,12 @@ class Application(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.now(UTC), onupdate=datetime.now(UTC)
     )
+
+    def get_url(self):
+        return url_for("cms.dashboard", app_name=self.name)
+
+    def get_redirect(self):
+        return redirect()
 
 
 class Group(db.Model):
@@ -92,6 +98,12 @@ class User(db.Model, UserMixin):
             .filter(user_group.c.user_id == self.id)
             .count()
         )
+
+    def get_url(self):
+        return url_for("cms.user_details", username=self.username)
+
+    def get_redirect(self):
+        return redirect(self.get_url())
 
 
 application_group = db.Table(
