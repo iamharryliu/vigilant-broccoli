@@ -8,7 +8,7 @@
 ## During Skate
 
 - Share a live location.
-- Have first aid kits, skate tools, and skate parts handy just in case.
+- Have first aid kits, skate tools, and spare skate parts.
 
 ## Lessons from Preview Skates
 
