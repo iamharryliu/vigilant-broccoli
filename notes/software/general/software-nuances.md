@@ -12,16 +12,12 @@
 
 ### Database
 
-- SQL vs NoSQL vs GraphQL
+- SQL vs NoSQL
   - SQL for relational storage
   - NoSQL for non relational storage
 - ORM vs Raw SQL Queries
   - ORM for straightforward CRUD and simple things.
   - SQL for reporting and more complex things.
-- SQL vs GraphQL
-  - GraphQL provides a contract between front and backend.
-  - Enables user to request for exactly what they want.
-  - GraphQL requires more overhead to setup.
 
 ## Web Applications
 
@@ -37,3 +33,7 @@
     - Content changes while viewing.
 
 - [Session Vs JWT: The Differences You May Not Know!](https://www.youtube.com/watch?v=fyTxwIa-1U0)
+- REST vs GraphQL
+  - GraphQL provides a contract between front and backend.
+  - Enables user to request for exactly what they want.
+  - GraphQL requires more overhead to setup.

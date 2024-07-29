@@ -1,5 +1,13 @@
 # Basics
 
+index.html > index.tsx > App.tsx
+
+## Getting Started
+
+```
+npx create-react-app [app_name]
+```
+
 ## Event Handling
 
 ```
@@ -34,42 +42,44 @@
 ### Functional Components
 
 ```
-function Component() {
-return <>Your HTML</>;
+export default function Component() {
+	return <>Your HTML</>;
 }
-
-export default Component;
 ```
 
 ```
 root.render(<Component />);
 ```
 
-#### Props
+### Props
 
-##### Passing Props
-
-###### Children Props
+#### Children Props
 
 ```
-<Component><SomethingFromParent/></Component>
+<Component>
+	<SomethingFromParent/>
+</Component>
 
 const Component = (props) => {
     return <>{ props.children }</>
 }
+```
 
-
-<Component ={data}/>
+```
+<Component value={data}/>
 
 const Component = (props) => {
-    return <>{{ props.value }}</>
+	return <>{{ props.value }}</>
 }
+```
 
-// With Destructuring
-<Component {data}/>
+#### Destructuring
 
-const Component = ({ value, ...}) => {
-    return <>{{ value }}</>
+```
+<Component {...data}/>
+
+const Component = ({ value1, value2, ...}) => {
+  return ...
 }
 ```
 
@@ -77,30 +87,30 @@ const Component = ({ value, ...}) => {
 
 ```
 export default function App() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="something" element={<Something />} />
-                <Route path="something-else" element={<SomethingElse />} />
-                <Route path="\*" element={<NoPage />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+    <Routes>
+    <Route path="/" element={<Layout />}>
+    <Route index element={<Home />} />
+    <Route path="something" element={<Something />} />
+    <Route path="something-else" element={<SomethingElse />} />
+    <Route path="\*" element={<NoPage />} />
+    </Route>
+    </Routes>
+    </BrowserRouter>
+  );
 }
 ```
 
 ```
 const Layout = () => {
-    return (
-        <>
-            <Link to="/">Home</Link>
-            <Link to="/something">Something</Link>
-            <Link to="/something-else">Something Else</Link>
-            <Outlet />
-        </>
-    )
+  return (
+  <>
+    <Link to="/">Home</Link>
+    <Link to="/something">Something</Link>
+    <Link to="/something-else">Something Else</Link>
+    <Outlet />
+  </>
+  )
 };
 ```
