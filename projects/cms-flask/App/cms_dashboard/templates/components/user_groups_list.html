@@ -6,6 +6,7 @@
     >New User Group</a
   >
 </div>
+{% if user_groups %}
 <div class="card my-3">
   <div class="card-header">User Groups</div>
   <ul class="list-group list-group-flush">
@@ -19,3 +20,6 @@
     </a>
   </ul>
 </div>
+{% else %}
+<em>This application currently has no user groups.</em>
+{% endif %}

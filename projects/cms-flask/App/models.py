@@ -28,7 +28,7 @@ class Application(db.Model):
         return url_for("cms.dashboard", app_name=self.name)
 
     def get_redirect(self):
-        return redirect()
+        return redirect(self.get_url())
 
 
 class Group(db.Model):

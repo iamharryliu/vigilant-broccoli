@@ -5,6 +5,7 @@
     >Add App</a
   >
 </div>
+{% if apps %}
 <div class="card my-3">
   <div class="card-header">Apps</div>
   <ul class="list-group list-group-flush">
@@ -15,4 +16,6 @@
     {% endfor %}
   </ul>
 </div>
-{% endblock %}
+{% else %}
+<em>You currently have access to no applications.</em>
+{% endif %} {% endblock %}

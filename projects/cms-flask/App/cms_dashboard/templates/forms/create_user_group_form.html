@@ -1,20 +1,20 @@
 <form
   method="POST"
   action="{{ url_for('cms.create_user_group', app_name=app_name) }}"
-  class="my-4"
 >
   {{ form.hidden_tag() }}
   <fieldset>
     <legend>Create User Group</legend>
-    <div class="input-group">
-      <div class="form-floating">
+    {{form.application(class="visually-hidden")}} {{
+    form.name.label(class="form-label") }}
+    <div class="row row-cols-lg-auto g-3 align-items-center">
+      <div class="col-12">
         {{ form.name(class="form-control", placeholder=form.name.label.text) }}
-        {{ form.name.label() }}
+        {% for error in form.name.errors %}
+        <div class="text-danger">{{ error }}</div>
+        {% endfor %}
       </div>
-      {% for error in form.name.errors %}
-      <div class="text-danger">{{ error }}</div>
-      {% endfor %} {{ form.submit(class="btn btn-primary") }}
+      <div class="col-12">{{ form.submit(class="btn btn-dark") }}</div>
     </div>
-    {{form.application(class="visually-hidden")}}
   </fieldset>
 </form>

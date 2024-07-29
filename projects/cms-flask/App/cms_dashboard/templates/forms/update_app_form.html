@@ -5,16 +5,16 @@
 >
   {{ updateAppForm.hidden_tag() }}
   <fieldset>
-    <legend>Update App</legend>
-    <div class="input-group">
-      <div class="form-floating">
+    {{ updateAppForm.name.label(class="form-label") }}
+    <div class="row row-cols-lg-auto g-3 align-items-center">
+      <div class="col-12">
         {{ updateAppForm.name(class="form-control",
-        placeholder=updateAppForm.name.label.text) }} {{
-        updateAppForm.name.label() }}
+        placeholder=updateAppForm.name.label.text) }} {% for error in
+        updateAppForm.name.errors %}
+        <div class="text-danger">{{ error }}</div>
+        {% endfor %}
       </div>
-      {% for error in updateAppForm.name.errors %}
-      <div class="text-danger">{{ error }}</div>
-      {% endfor %} {{ updateAppForm.submit(class="btn btn-primary") }}
+      <div class="col-12">{{ updateAppForm.submit(class="btn btn-dark") }}</div>
     </div>
   </fieldset>
 </form>
