@@ -11,6 +11,7 @@ import SessionManagementPage from './pages/session-management/SessionManagementP
 import LoginPage from './pages/session-management/LoginPage';
 import RegisterPage from './pages/session-management/RegisterPage';
 import StatusPage from './pages/session-management/StatusPage';
+import PathNotFoundPage from './pages/PathNotFoundPage';
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="hooks/useReducer" element={<UseReducerDemo />} />
             <Route path="hooks/useRef" element={<UseRefDemo />} />
             <Route path="todo" element={<TodoPage />} />
+            <Route path="*" element={<PathNotFoundPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
