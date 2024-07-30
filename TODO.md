@@ -3,6 +3,7 @@
 ## vigilant-broccoli
 
 - Q1
+
   - feat(cms-flask):
     - Dynamic page contents.
       - Blogs.
@@ -10,6 +11,7 @@
     - Handle receiving emails for message requests.
     - Virus scanning for uploads.
   - refactor(contact-center)
+
 - Q2
   - feat(app-monitor): Budget alerts for services.
   - feat(setup): set divvy privacy and security a11y
