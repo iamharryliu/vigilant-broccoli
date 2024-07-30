@@ -93,7 +93,7 @@ def user_details(username):
     form.username.data = user.username
     form.email.data = user.email
     return render_template(
-        "pages/user_details.html",
+        "pages/user_details/user_details_page.html",
         title=f"User Details - {username}",
         user=user,
         form=form,
