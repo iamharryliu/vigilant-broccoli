@@ -1,11 +1,43 @@
 # Basics
 
-index.html > index.tsx > App.tsx
-
 ## Getting Started
 
 ```
 npx create-react-app [app_name]
+```
+
+## How React Works
+
+```
+index.html > index.tsx > App.tsx
+```
+
+```
+// index.html
+<div id="root"></div>
+```
+
+```
+// index.tsx
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement,
+);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);
+```
+
+```
+// App.tsx
+export default function App() {
+  return (
+    <>
+      ...
+    </>
+  );
+}
 ```
 
 ## Event Handling
@@ -86,20 +118,16 @@ const Component = ({ value1, value2, ...}) => {
 ## Routing
 
 ```
-export default function App() {
-  return (
-    <BrowserRouter>
-    <Routes>
+<BrowserRouter>
+  <Routes>
     <Route path="/" element={<Layout />}>
-    <Route index element={<Home />} />
-    <Route path="something" element={<Something />} />
-    <Route path="something-else" element={<SomethingElse />} />
-    <Route path="\*" element={<NoPage />} />
+      <Route index element={<IndexPage />} />
+      <Route path="page1" element={<Page1 />} />
+      <Route path="page2" element={<Page2 />} />
+      <Route path="\*" element={<NoPage />} />
     </Route>
-    </Routes>
-    </BrowserRouter>
-  );
-}
+  </Routes>
+</BrowserRouter>
 ```
 
 ```

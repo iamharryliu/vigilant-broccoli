@@ -24,10 +24,7 @@ const reducer = (state: StateType, action: ActionType): StateType => {
 
 const Component() = () => {
     const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-    const dispatchSomething = (data) => {
-        dispatch({ type: "COMPLETE", data });
-    };
-    dispatchSomething({type:ACTION_TYPE, payload:{}})
+    dispatch({ type: "ACTION_TYPE", payload: data });
 };
 ```
 
@@ -41,13 +38,13 @@ const { unpackedContextValue } = useContext(context)
 
 ```
 const Component() => {
-const [state, setState] = useState(data);
+    const [state, setState] = useState(data);
 
-return (
-<Context.Provider value={state, dispatchFunction...}>
-    {children}
-</Context.Provider>
-);
+    return (
+        <Context.Provider value={state, dispatchFunction...}>
+            {children}
+        </Context.Provider>
+    );
 }
 ```
 
