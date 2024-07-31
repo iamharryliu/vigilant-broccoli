@@ -27,8 +27,9 @@ function folderToJson(folderPath: string, rootPath: string): FileNode {
   for (const item of items) {
     const itemPath = path.join(folderPath, item);
 
+    // Skip ignored files/folders
     if (shouldIgnore(itemPath)) {
-      continue; // Skip ignored files/folders
+      continue;
     }
 
     if (fs.statSync(itemPath).isDirectory()) {
@@ -41,8 +42,18 @@ function folderToJson(folderPath: string, rootPath: string): FileNode {
       });
     }
   }
-
+  // Sort Files
+  if (result.children) result.children = sortFiles(result.children);
   return result;
+}
+
+function sortFiles(files: FileNode[]): FileNode[] {
+  return files.sort((a, b) => {
+    if (a.type === b.type) {
+      return a.name.localeCompare(b.name);
+    }
+    return a.type === 'folder' ? -1 : 1;
+  });
 }
 
 function saveJson(data: FileNode, outputFile: string): void {
