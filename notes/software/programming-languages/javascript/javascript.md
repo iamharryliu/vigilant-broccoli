@@ -86,3 +86,9 @@ Promise.any([promise1, promise2, promise3])
   doSomethingWithError(error); // AggregateError if all promises reject
 });
 ```
+
+## Debug
+
+```
+debugger
+```
