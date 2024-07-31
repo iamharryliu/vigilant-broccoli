@@ -13,6 +13,7 @@
 - Building applications with a shared codebase.
 - Using commit hooks to test and depploy code.
 - Using a debugger tool over printing lines and running code over and over again.
+- Meeting management.
 
 ## Being a Team Player
 
