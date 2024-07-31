@@ -21,6 +21,7 @@ alias pinterest="~/shell-scripts/pinterest_search.sh"
 alias gtranslate='chrome "https://translate.google.com/"'
 # Utility
 alias numi='open -a "Numi"'
+alias speedtest="chrome 'https://www.speedtest.net/'"
 # Consumerism
 alias amazon="~/shell-scripts/amazon_search.sh"
 alias karmanow='chrome "https://www.karmanow.com/my-items"'
