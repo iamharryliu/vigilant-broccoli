@@ -17,8 +17,6 @@ nisse
 
 jag skulle vilja ha - I would like
 
-Hej, jag heter Harry
-
 Tack sa mycket, jattersnallt (very kind)
 
 Ingen fara - no problem
