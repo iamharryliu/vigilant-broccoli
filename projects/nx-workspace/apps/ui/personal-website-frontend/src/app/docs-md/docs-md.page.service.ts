@@ -20,6 +20,13 @@ export class DocsMdPageService {
     );
   }
 
+  selectDefaultFile() {
+    // TODO: refactor this later..
+    this.selectedFilepath = '';
+    this.selectedFile = DEFAULT_MD_FILE;
+    this.isFileSelected = true;
+  }
+
   selectFile(filepath: string) {
     // TODO: refactor this later..
     this.selectedFilepath = filepath;
