@@ -76,8 +76,3 @@ Topping ideas - Caraway seeds, cinnamon sugar, coarse salt, minced fresh garlic,
 
 - Don’t overfeed : 2:1:1, 1:1:1 should be max (starter:water:flour), if you put too much flour and water compared with starter, you are diluting acidity and thus preventing good bacteria and yeast to thrive.
 - [Mini Starter](https://www.youtube.com/watch?v=xBvvlcdO93I)
-
-## Favorite Recipes
-
-[Sourdough with AP Flour](https://www.theclevercarrot.com/2020/04/artisan-sourdough-with-all-purpose-flour/)
-[Bagel Recipe](https://www.sophisticatedgourmet.com/2009/10/new-york-style-bagel-recipe/)
