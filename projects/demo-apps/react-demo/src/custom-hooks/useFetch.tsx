@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Todo } from '../pages/todo/TodoContext';
+import { Todo } from '../pages/todo/state/TodoContext';
 
 const useFetch = (url: string): Todo[] => {
   const [data, setData] = useState<Todo[]>([]);
