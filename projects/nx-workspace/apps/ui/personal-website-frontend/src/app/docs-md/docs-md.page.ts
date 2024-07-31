@@ -55,9 +55,15 @@ export class DocsMdPageComponent implements OnInit {
     }
   }
 
-  selectFile(file: any): void {
-    this.pageService.selectFile(file.filepath);
-    this.router.navigateByUrl(`/docs-md/${file.name.split('.')[0]}`);
+  selectFile(file?: FolderItem): void {
+    let pathUrl = `/${DOCS_MD_ROUTE.path}`;
+    if (file) {
+      pathUrl += `/${file.name.split('.')[0]}`;
+      this.pageService.selectFile(file.filepath);
+    } else {
+      this.pageService.selectFile();
+    }
+    this.router.navigateByUrl(pathUrl);
   }
 
   close(): void {

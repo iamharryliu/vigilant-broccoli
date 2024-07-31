@@ -26,12 +26,7 @@ export class DocsMdPageService {
     return `assets/md-library/notes/${this.selectedFilepath}`;
   }
 
-  selectDefaultFile() {
-    this.selectedFilepath = '';
-    this.isFileSelected = true;
-  }
-
-  selectFile(filepath: string) {
+  selectFile(filepath = '') {
     this.selectedFilepath = filepath;
     this.isFileSelected = true;
   }
