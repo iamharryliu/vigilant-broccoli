@@ -7,8 +7,11 @@
     <div class="mb-2">
       <lib-link [link]="indexLink" [isBold]="true" type="internal"></lib-link>
     </div>
-    <h1 class="text-xl font-bold mb-2"
-      (click)="pageService.selectDefaultFile()">DocsMD</h1>
+    <h1
+      class="text-xl font-bold mb-2"
+      (click)="pageService.selectDefaultFile()">
+      DocsMD
+    </h1>
     <ng-container *ngIf="fileContent$ | async as rootFolder">
       <lib-folder-item
         *ngFor="let folderItem of rootFolder.children"
@@ -25,8 +28,8 @@
     ">
     <span id="section-to-print">
       <lib-markdown-page
-        *ngIf="pageService.selectedFile && pageService.isFileSelected"
-        [filepath]="pageService.selectedFile"></lib-markdown-page>
+        *ngIf="pageService.isFileSelected"
+        [filepath]="pageService.getFilepath"></lib-markdown-page>
     </span>
   </div>
   <div

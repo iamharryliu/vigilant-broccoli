@@ -8,7 +8,6 @@ const DEFAULT_MD_FILE = 'assets/docs-md.md';
   providedIn: 'root',
 })
 export class DocsMdPageService {
-  selectedFile = DEFAULT_MD_FILE;
   isFileSelected = true;
   selectedFilepath = '';
 
@@ -20,22 +19,24 @@ export class DocsMdPageService {
     );
   }
 
+  get getFilepath(): string {
+    if (!this.selectedFilepath) {
+      return DEFAULT_MD_FILE;
+    }
+    return `assets/md-library/notes/${this.selectedFilepath}`;
+  }
+
   selectDefaultFile() {
-    // TODO: refactor this later..
     this.selectedFilepath = '';
-    this.selectedFile = DEFAULT_MD_FILE;
     this.isFileSelected = true;
   }
 
   selectFile(filepath: string) {
-    // TODO: refactor this later..
     this.selectedFilepath = filepath;
-    this.selectedFile = `assets/md-library/notes/${filepath}`;
     this.isFileSelected = true;
   }
 
   closeSelectedFile(): void {
-    this.selectedFile = DEFAULT_MD_FILE;
     this.isFileSelected = false;
   }
 }
