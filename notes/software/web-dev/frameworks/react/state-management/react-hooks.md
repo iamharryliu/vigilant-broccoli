@@ -16,7 +16,7 @@ setState(previousState => {
 const reducer = (state: StateType, action: ActionType): StateType => {
     switch (action.type) {
         case ACTION_TYPE:
-            return doSomthingWith(action.payload)
+            return updateState(action.payload)
         default:
             return state;
     }
@@ -31,8 +31,13 @@ const Component() = () => {
 ## createContext
 
 ```
-const context = createContext<Type>(...)
-const { unpackedContextValue } = useContext(context)
+const ItemsContext = createContext<Type>({
+    k1: v1,
+    ...
+    fn1: () => {},
+    ...
+})
+export const useItems = useContext(ItemsContext)
 
 ```
 
@@ -41,9 +46,9 @@ const Component() => {
     const [state, setState] = useState(data);
 
     return (
-        <Context.Provider value={state, dispatchFunction...}>
+        <ItemsContext.Provider value={state, dispatchFunction...}>
             {children}
-        </Context.Provider>
+        </ItemsContext.Provider>
     );
 }
 ```
