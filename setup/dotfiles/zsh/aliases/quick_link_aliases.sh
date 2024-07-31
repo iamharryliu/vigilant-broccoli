@@ -22,6 +22,7 @@ alias gtranslate='chrome "https://translate.google.com/"'
 # Utility
 alias numi='open -a "Numi"'
 alias speedtest="chrome 'https://www.speedtest.net/'"
+alias pwgen="chrome 'https://passwordsgenerator.net/'"
 # Consumerism
 alias amazon="~/shell-scripts/amazon_search.sh"
 alias karmanow='chrome "https://www.karmanow.com/my-items"'
@@ -53,6 +54,7 @@ alias jobhunt='openresume && openlinkedin'
 alias openTD='chrome "https://authentication.td.com/uap-ui/?consumer=easyweb&locale=en_CA#/uap/login"'
 # Investment
 alias questtrade='chrome "https://login.questrade.com/account/login"'
+alias tfsaroom="chrome 'https://www.moneysense.ca/save/investing/tfsa-contribution-room-calculator/'"
 # Credit Accounts
 alias openNeo='chrome "https://member.neofinancial.com/login"'
 alias openMBNA='chrome "https://www.mbna.ca/en"'
