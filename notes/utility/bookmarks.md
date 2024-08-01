@@ -2,6 +2,10 @@
 
 Collection of sorted bookmarks.
 
+## Food
+
+- [New York-Style Bagel Recipe](https://www.sophisticatedgourmet.com/2009/10/new-york-style-bagel-recipe/)
+
 ## Software
 
 - [Design Joy](https://www.designjoy.co/#plans)
