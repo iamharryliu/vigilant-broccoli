@@ -16,8 +16,11 @@
 
 ## Hobbies
 
-- [Skating](https://www.instagram.com/cloud8skate/)
-- [Salsa](https://torontodancesalsa.ca/)
+- Inline Skating
+  - [Cloud8Skate](https://www.instagram.com/cloud8skate/) - Inline/Quad Skate group.
+- Salsa Places
+  - [Toronto Dance Salsa(TDS)](https://torontodancesalsa.ca/) - A salsa/bachata school in North York.
+  - [Toronto Dance Fridays(TDF)](https://torontodancefridays.com/) - A salsa/bachata dance social.
 
 ## Food & Drink
 
@@ -25,7 +28,7 @@
 
 ## Cons
 
-- Monopolies owning everything.\
+- Monopolies owning everything.
 - Population issue.
 - Residential issues
   - 2 stair rule for buildings over 2 stories.
