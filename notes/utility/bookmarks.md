@@ -16,6 +16,11 @@ Collection of sorted bookmarks.
 
 - [A Philosophy of Software Design | John Ousterhout | Talks at Google](https://www.youtube.com/watch?v=bmSAYlu0NcY&t=3002s)
 
+## Skate
+
+- [AMALL Trick Tips: Carving Bowls](https://www.youtube.com/watch?v=jz8nMScAT-4)
+- [bruno loewe stunts](https://www.youtube.com/watch?v=p8CRjNLrres)
+
 ## Fashion
 
 - https://www.kaileemckenzie.co/homeshop

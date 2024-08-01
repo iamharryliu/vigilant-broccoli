@@ -8,7 +8,7 @@
 - ½ cup water
 - bring pickling liquid to a boil and remove from heat
 
-## Quick Pickled Onions
+## [Quick Pickled Onions](https://www.instagram.com/p/C1pOsOpMH3A/)
 
 - 1/2 medium red onion, thinly sliced
 - 1 clove garlic, grated
@@ -17,5 +17,3 @@
 - 1 tsp maple syrup (optional)
 - 1/4 cup cilantro, minced
 - Kosher salt
-
-[Reference](https://www.instagram.com/p/C1pOsOpMH3A/)
