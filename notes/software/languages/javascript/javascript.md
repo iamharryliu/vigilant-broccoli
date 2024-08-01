@@ -1,5 +1,28 @@
 # Javascript
 
+## Console
+
+```
+console.log(message)
+console.warn(message)
+console.error(message)
+console.dir(object)
+console.table(array_or_object  )
+console.assert(condition, message)
+console.time()
+console.timeEnd()
+```
+
+## Debug
+
+- [Freeze screen & inspect disappearing elements #DevToolsTips](https://www.youtube.com/watch?v=Qzmb9bdNzZ4&list=WL&index=18)
+
+```
+debugger
+```
+
+nx
+
 ## Arrays
 
 ```
@@ -85,10 +108,4 @@ Promise.any([promise1, promise2, promise3])
 .catch((error) => {
   doSomethingWithError(error); // AggregateError if all promises reject
 });
-```
-
-## Debug
-
-```
-debugger
 ```
