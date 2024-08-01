@@ -6,6 +6,8 @@
 npx create-nx-workspace@latest [workspace-name]
 npm install -D @nx/angular
 
+nx run-many -t=[type]
+nx build [library] --with-deps
 --skip-nx-cache
 ```
 
