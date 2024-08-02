@@ -33,4 +33,22 @@ Collection of sorted bookmarks.
 
 ## Cool Videos
 
-[Painted Turtles Defrost Back to Life | Frozen Planet II | BBC Earth](https://www.youtube.com/watch?v=NwGHJTk3W3U)
+- [Painted Turtles Defrost Back to Life | Frozen Planet II | BBC Earth](https://www.youtube.com/watch?v=NwGHJTk3W3U)
+
+## Inspirations
+
+- [NAV](<https://en.wikipedia.org/wiki/Nav_(rapper)>)
+
+### Fashion
+
+- [The Unknown Vlogs(Kofi)](https://www.youtube.com/@unknownvlogs)
+- [Ken Ijima](https://www.youtube.com/@iwantvag69)
+
+### Software
+
+- [thenewboston](https://www.youtube.com/@thenewboston)
+- [Clever Programmer](https://www.youtube.com/@CleverProgrammer)
+- [Tech Lead](https://www.youtube.com/@TechLead)
+- [Corey Scafer](https://www.youtube.com/@coreyms)
+- [Codevolution](https://www.youtube.com/@Codevolution)
+- [Daniel Michaels]()
