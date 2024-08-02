@@ -5,7 +5,7 @@ From _Toronto, Canada_ 🇨🇦, currently based in _Malmö, Sweden_ 🇸🇪.
 
 #### Expertise in:
 
-- **Software Design**: Application Architecture, REST API Design, UI/UX Design, Database Architecture
+- **Software Design**: Application Design, REST API Design, UI/UX Design, Database Design
 
 - **Node/Javascript Frameworks**: Angular, React, Express
 
