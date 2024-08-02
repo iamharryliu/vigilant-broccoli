@@ -1,5 +1,11 @@
 # Frontend Developer
 
+## Design Patterns
+- MVC(Model, View, Controller)
+  - Model - Handles database.
+  - View - Handles presentation.
+  - Controller - Handles incoming request from user.
+
 ## What is frontend development?
 
 - HTML - Used to create and organize the building blocks of a web page. Think headers, paragraphs, tables, navbars, footers, etc.
