@@ -3,7 +3,6 @@
 ## Commands
 
 ```
-
 python cleaner.py
 python bot.py
 ```
