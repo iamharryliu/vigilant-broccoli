@@ -4,6 +4,7 @@
 
 - Q1
 
+  - Update git flows, commit > pull --rebase > push
   - feat(cms-flask):
     - Dynamic page contents.
       - Blogs.
