@@ -12,6 +12,7 @@
   - Garlic
   - Potatoes
   - Sweet Potatoes
+  - Cauliflower
   - Peppers
   - Chickpeas
 - Caramelization

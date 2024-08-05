@@ -9,3 +9,10 @@
 
 - Consistency.
 - Accepting failure as a lesson.
+
+# Project Architecture
+
+- Constant file to store loose variables.
+- Type annotations.
+- Code formatter.
+- Tests on bug fixes.
