@@ -1,6 +1,6 @@
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
-import { TodoProvider } from '../../stores/TodoContext';
+import { TodoProvider } from '../../stores/todo/TodoContext';
 
 export default function TodoPage() {
   return (

@@ -5,9 +5,9 @@ import {
   useEffect,
   useReducer,
 } from 'react';
-import useFetch from '../hooks/useFetch';
-import { TODO_ENDPOINT } from '../config';
-import { Todo, TodoContextType } from '../types';
+import useFetch from '../../hooks/useFetch';
+import { TODO_ENDPOINT } from '../../config';
+import { Todo, TodoContextType } from '../../types';
 import { todoReducer, TODO_ACTION } from './TodoReducer';
 
 const INITIAL_STATE: Todo[] = [];

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useState } from 'react';
-import { useTodos } from '../../../stores/TodoContext';
+import { useTodos } from '../../../stores/todo/TodoContext';
 
 export default function TodoForm() {
   const { addTodo } = useTodos();

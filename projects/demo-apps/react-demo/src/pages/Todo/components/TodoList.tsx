@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTodos } from '../../../stores/TodoContext';
+import { useTodos } from '../../../stores/todo/TodoContext';
 
 export default function TodoList() {
   const { todos, updateTodo, deleteTodo } = useTodos();
