@@ -7,6 +7,7 @@ import {
 } from 'react';
 import useFetch from '../../../custom-hooks/useFetch';
 import { TODO_ACTION, todoReducer } from './TodoReducer';
+import { GET_TODOS_ENDPOINT } from '../../../config';
 
 export type Todo = {
   id: number;
@@ -33,7 +34,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [todos, dispatch] = useReducer(todoReducer, INITIAL_STATE);
-  const data = useFetch('https://jsonplaceholder.typicode.com/todos');
+  let data = useFetch(GET_TODOS_ENDPOINT);
 
   useEffect(() => {
     if (data) {
