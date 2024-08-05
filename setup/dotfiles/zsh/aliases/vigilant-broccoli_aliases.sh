@@ -1,10 +1,15 @@
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
 alias pushgitprofile="cd ~/iamharryliu && gpull && git add . && gc docs 'update github profile readme' && gpush"
+# Directory
+alias cdvb="cd ~/$REPO_NAME/"
+alias cdjournal="cd ~/$REPO_NAME/journal"
+alias cdprojects="cd ~/$REPO_NAME/projects"
+alias cdnx="cd projects && cd demo-apps"
+alias cdnx="cd projects && cd nx-workspace"
 # vigilant-broccoli
 alias gitvb='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
 alias gitactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
-alias cdvb="cd ~/$REPO_NAME/"
 alias pushreadme="cdvb && git add README.md && gc docs readme 'update root README.md' && gpush"
 alias pushnotes="cdvb && git add notes/ && gc docs 'update md notes' && gpush"
 alias pushtodo="cdvb && git add TODO.md && gc docs todo 'update TODO.md' && gpush"
@@ -23,8 +28,6 @@ alias pushbrew="cdvb && git add setup/mac/Brewfile && gc feat brew 'update brew'
 # Projects
 # Secrets Manager
 alias pushsecretsmanager="cdvb && git add projects/secret-manager/ && gc build 'update secrets manager' && gpush"
-# Nx
-alias cdnx="cd ~/$REPO_NAME/projects/nx-workspace/"
 # harryliu.design
 alias servehld="cdnx && nx serve personal-website-frontend"
 alias serve-harryliu-design="cdnx && npm run serve:personal-website"
@@ -50,7 +53,7 @@ alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotif
 alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
 
 # Journal
-alias pushJournal="cd ~/journal && git add . && gc docs 'update journal' && gpush"
+alias pushjournal="cdjournal && git add . && gc docs 'update journal' && gpush"
 
 # Other
 alias sshpi="ssh hliu@192.168.1.104"
