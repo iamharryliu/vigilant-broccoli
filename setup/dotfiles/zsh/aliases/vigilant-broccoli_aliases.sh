@@ -3,10 +3,13 @@ alias gitme='chrome "https://github.com/iamharryliu"'
 alias pushgitprofile="cd ~/iamharryliu && gpull && git add . && gc docs 'update github profile readme' && gpush"
 # Directory
 alias cdvb="cd ~/$REPO_NAME/"
-alias cdjournal="cd ~/$REPO_NAME/journal"
+alias cdjournal="cd ~/journal"
 alias cdprojects="cd ~/$REPO_NAME/projects"
-alias cdnx="cd projects && cd demo-apps"
-alias cdnx="cd projects && cd nx-workspace"
+alias cddemoapps="cdprojects && cd demo-apps"
+alias cdnx="cdprojects && cd nx-workspace"
+# Demo Apps
+alias serveReactDemo="cddemoapps && cd react-demo && npm run start"
+alias serveExpressDemo="cddemoapps && cd express-demo && npm run serve"
 # vigilant-broccoli
 alias gitvb='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
 alias gitactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
@@ -53,7 +56,7 @@ alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotif
 alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
 
 # Journal
-alias pushjournal="cdjournal && git add . && gc docs 'update journal' && gpush"
+alias pushJournal="cdjournal && git add . && gc docs 'update journal' && gpush"
 
 # Other
 alias sshpi="ssh hliu@192.168.1.104"
