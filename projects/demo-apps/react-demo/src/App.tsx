@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from './layouts/GeneralPageLayout';
 import IndexPage from './pages/IndexPage';
 import HooksPage from './pages/hooks/HooksPage';
 import TodoPage from './pages/todo/TodoPage';
@@ -12,6 +11,7 @@ import LoginPage from './pages/session-management/LoginPage';
 import RegisterPage from './pages/session-management/RegisterPage';
 import StatusPage from './pages/session-management/StatusPage';
 import PathNotFoundPage from './pages/PathNotFoundPage';
+import Layout from './components/layouts/GeneralPageLayout';
 
 export default function App() {
   return (

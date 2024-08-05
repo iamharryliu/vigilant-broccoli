@@ -5,23 +5,13 @@ import {
   useEffect,
   useReducer,
 } from 'react';
-import useFetch from '../../../custom-hooks/useFetch';
-import { TODO_ACTION, todoReducer } from './TodoReducer';
-import { TODO_ENDPOINT } from '../../../config';
-
-export type Todo = {
-  id: number;
-  title: string;
-};
-
-type TodoContextType = {
-  todos: Todo[];
-  addTodo: (title: string) => void;
-  updateTodo: (id: number, title: string) => void;
-  deleteTodo: (id: number) => void;
-};
+import useFetch from '../hooks/useFetch';
+import { TODO_ACTION, todoReducer } from '../pages/todo/state/TodoReducer';
+import { TODO_ENDPOINT } from '../config';
+import { Todo, TodoContextType } from '../types';
 
 const INITIAL_STATE: Todo[] = [];
+
 const TodoContext = createContext<TodoContextType>({
   todos: INITIAL_STATE,
   addTodo: () => {},
@@ -29,7 +19,6 @@ const TodoContext = createContext<TodoContextType>({
   deleteTodo: () => {},
 });
 
-export const useTodos = () => useContext(TodoContext);
 export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -67,3 +56,5 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
     </TodoContext.Provider>
   );
 };
+
+export const useTodos = () => useContext(TodoContext);

@@ -1,4 +1,4 @@
-import { Todo } from './TodoContext';
+import { Todo } from '../../../types';
 
 export const TODO_ACTION = {
   SET_TODOS: 'SET_TODOS',
