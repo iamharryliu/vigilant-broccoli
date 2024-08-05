@@ -14,5 +14,6 @@
 
 - Constant file to store loose variables.
 - Type annotations.
+- Linting.
 - Code formatter.
 - Tests on bug fixes.
