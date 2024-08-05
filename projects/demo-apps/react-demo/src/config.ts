@@ -1,2 +1,5 @@
 const TODO_API_URL = 'http://localhost:8080/todo'
-export const GET_TODOS_ENDPOINT=`${TODO_API_URL}/getTodos`
+export const TODO_ENDPOINT = {
+    GET_TODOS: `${TODO_API_URL}/getTodos`,
+    CREATE_TODO: `${TODO_API_URL}/addTodo`
+}

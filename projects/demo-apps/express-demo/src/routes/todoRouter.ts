@@ -1,23 +1,21 @@
 import express from 'express';
-import axios from 'axios';
-import { PLACEHOLDER_URL } from '../configs/app.const';
+import { fetchInitialTodos, generateId } from '../util';
+import { HTTP_STATUS_CODES } from '../const';
 
 let todos=[];
-const fetchInitialTodos = async () => {
-  try {
-    const response = await axios.get(PLACEHOLDER_URL.TODO_URL);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching initial todos:', error);
-    return [];
-  }
-};
 fetchInitialTodos().then((data) => {
   todos = data;
 });
 
 export const todoRouter = express.Router();
 
-todoRouter.get('/getTodos', (req, res) => {
+todoRouter.get('/getTodos', (_, res) => {
     res.json(todos);
+});
+
+todoRouter.post('/addTodo', (req, res) => {
+  const { title } = req.body;
+  const newTodo = { id: generateId(), title };
+  todos.push(newTodo);
+  res.status(HTTP_STATUS_CODES.CREATED).json(newTodo);
 });

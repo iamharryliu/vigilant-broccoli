@@ -7,7 +7,7 @@ import {
 } from './src/middlewares/errormiddleware';
 import { requestLogger } from './src/middlewares/middleware';
 import { router } from './src/routes/router';
-import { CORS_OPTIONS, PORT } from './src/configs/app.const';
+import { CORS_OPTIONS, PORT } from './src/const';
 import { todoRouter } from './src/routes/todoRouter';
 
 

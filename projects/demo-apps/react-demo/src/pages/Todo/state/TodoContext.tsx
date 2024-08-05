@@ -7,7 +7,7 @@ import {
 } from 'react';
 import useFetch from '../../../custom-hooks/useFetch';
 import { TODO_ACTION, todoReducer } from './TodoReducer';
-import { GET_TODOS_ENDPOINT } from '../../../config';
+import { TODO_ENDPOINT } from '../../../config';
 
 export type Todo = {
   id: number;
@@ -34,7 +34,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [todos, dispatch] = useReducer(todoReducer, INITIAL_STATE);
-  let data = useFetch(GET_TODOS_ENDPOINT);
+  let data = useFetch(TODO_ENDPOINT.GET_TODOS);
 
   useEffect(() => {
     if (data) {
@@ -42,7 +42,14 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [data]);
 
-  const addTodo = useCallback((title: string) => {
+  const addTodo = useCallback(async (title: string) => {
+    fetch(TODO_ENDPOINT.CREATE_TODO, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title }),
+    });
     dispatch({ type: TODO_ACTION.ADD_TODO, payload: title });
   }, []);
 
