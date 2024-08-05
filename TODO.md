@@ -4,6 +4,7 @@
 
 - Q1
 
+  - feat(toronto-alerts): update email header to be more explicit
   - Update git flows, commit > pull --rebase > push
   - feat(cms-flask):
     - Dynamic page contents.
@@ -23,24 +24,11 @@
   - chore(docs): online payment form
   - chore(docs): browser media downloads for offline use (like YouTube downlaods)
   - chore(docs): open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
-
-## Toronto Alerts
-
-- Q1
-- Q2
-  - feat:
-    - select hours to get notified for weather subscription
-    - select subway and bus lines to subscribe to
-    - Events of the week.
-  - proper email
-  - migrate to use ui app?
-  - contact gtaupdate dude
-  - weird bug with manual deploy, venv/bin/python does not exist..
-  - Mobile planning
-    - Google android store, 1 time cost of $25
-    - Apple Store, yearly cost of $99
-    - text notifications
-      - https://www.twilio.com/en-us/sms/pricing/ca
+  - feat(toronto-alerts): select hours to get notified for weather subscription
+  - feat(toronto-alerts): select subway and bus lines to subscribe to
+  - feat(toronto-alerts): Events of the week.
+  - fix(toronto-alerts): weird bug with manual deploy, venv/bin/python does not exist..
+  -
 
 # Vibecheck
 
