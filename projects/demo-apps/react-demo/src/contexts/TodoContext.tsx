@@ -14,16 +14,22 @@ const INITIAL_STATE: Todo[] = [];
 
 const TodoContext = createContext<TodoContextType>({
   todos: INITIAL_STATE,
-  addTodo: () => {},
-  updateTodo: () => {},
-  deleteTodo: () => {},
+  addTodo: () => {
+    throw new Error('addTodo function not initialized');
+  },
+  updateTodo: () => {
+    throw new Error('updateTodo function not initialized');
+  },
+  deleteTodo: () => {
+    throw new Error('deleteTodo function not initialized');
+  },
 });
 
 export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [todos, dispatch] = useReducer(todoReducer, INITIAL_STATE);
-  let data = useFetch(TODO_ENDPOINT.GET_TODOS);
+  const data = useFetch(TODO_ENDPOINT.GET_TODOS);
 
   useEffect(() => {
     if (data) {

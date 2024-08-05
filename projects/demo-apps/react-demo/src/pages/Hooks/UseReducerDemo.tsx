@@ -9,7 +9,7 @@ type REDUCER_ACTION_KEYS = keyof typeof REDUCER_ACTION;
 export type ReducerAction = (typeof REDUCER_ACTION)[REDUCER_ACTION_KEYS];
 
 const INITIAL_COUNT = 0;
-const reducer = (state: any, action: { type: ReducerAction }) => {
+const reducer = (state: number, action: { type: ReducerAction }) => {
   switch (action.type) {
     case REDUCER_ACTION.INCREMENT:
       return state + 1;
