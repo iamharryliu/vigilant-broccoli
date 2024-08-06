@@ -249,7 +249,7 @@ const RESUME: Link = {
   text: 'Resume',
 };
 
-const MD_LIBRARY: Link = {
+const DOCS_MD: Link = {
   url: {
     internal: `/${DOCS_MD_ROUTE.path}`,
     external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${DOCS_MD_ROUTE.path}`,
@@ -270,7 +270,7 @@ const INTERNAL_LINKS = {
   CONTACT_PAGE,
   LINK_TREE,
   PROJECTS_PAGE,
-  MD_LIBRARY,
+  DOCS_MD,
   BLOGS,
 };
 
