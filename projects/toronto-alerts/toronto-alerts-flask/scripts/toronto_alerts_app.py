@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
-from pytz import timezone
-import urllib
-from utils import get_all_gta_alerts, convert_to_est
 import logging
+import urllib
+from pytz import timezone
+from utils import get_all_gta_alerts, convert_to_est
 
 # Configure the logger
 logging.basicConfig(
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class TorontoAlertsApp:
+    @staticmethod
     def get_recent_alerts_for_user(user, interval=timedelta(hours=1)):
         filtered_alerts = TorontoAlertsApp.filter_alerts_per_user(user, interval)
         if filtered_alerts:
@@ -31,6 +32,7 @@ class TorontoAlertsApp:
             }
             user["message"] = message
 
+    @staticmethod
     def filter_alerts_per_user(user, interval=timedelta(hours=1)):
         districts = user["districts"]
         keywords = user["keywords"]
@@ -56,12 +58,14 @@ class TorontoAlertsApp:
         logger.debug(res)
         return res
 
+    @staticmethod
     def text_contains_keyword(text, keywords):
         for keyword in keywords:
             if keyword in text:
                 return True
         return False
 
+    @staticmethod
     def format_for_email(list_of_lists):
         formatted_text = "\n\n".join(
             [" ".join(map(str, sublist)) for sublist in list_of_lists]
