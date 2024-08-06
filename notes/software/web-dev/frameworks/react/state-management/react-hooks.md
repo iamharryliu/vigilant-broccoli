@@ -1,5 +1,27 @@
 # React Hooks
 
+- Hooks - Provider > Context > Reducer > Data and Dispatch Functions
+
+## useEffect
+
+```
+// Runs on every render
+useEffect(() => {
+    ...
+});
+
+// Runs only on the first render
+useEffect(() => {
+    ...
+    return () => cleanupCode()
+}, []);
+
+// Runs any time any dependency values change
+useEffect(() => {
+    ...
+}, [...values_to_watch]);
+```
+
 ## useState
 
 ```
@@ -10,74 +32,53 @@ setState(previousState => {
 });
 ```
 
+## useContext
+
+```
+type Context{
+	...
+}
+
+const context = createContext<Context>({
+    ...data,
+    ...functions
+})
+
+useSomething = useContext(context)
+
+const WrapperComponent() => {
+	...
+    return (
+        <Context.Provider value={...data, ...functions}>
+            {children}
+        </Context.Provider>
+    );
+}
+
+const ChildComponent() => {
+	const { ...data, ...functions } = useSomething();
+}
+```
+
 ## useReducer
 
 ```
+
 const reducer = (state: StateType, action: ActionType): StateType => {
-    switch (action.type) {
+    const { type, payload } = action;
+    switch (type) {
         case ACTION_TYPE:
-            return updateState(action.payload)
+            ...
         default:
             return state;
     }
 };
 
 const Component() = () => {
-    const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+    const [data, dispatch] = useReducer(reducer, INITIAL_STATE);
     dispatch({ type: "ACTION_TYPE", payload: data });
 };
-```
 
-## createContext
-
-```
-const ItemsContext = createContext<Type>({
-    k1: v1,
-    ...
-    fn1: () => {},
-    ...
-})
-export const useItems = useContext(ItemsContext)
-
-```
-
-```
-const Component() => {
-    const [state, setState] = useState(data);
-
-    return (
-        <ItemsContext.Provider value={state, dispatchFunction...}>
-            {children}
-        </ItemsContext.Provider>
-    );
-}
-```
-
-```
-const NestedComponent = () => {
-const data = useContext(Context);
-    return (
-        <>{data}</>
-    );
-}
-```
-
-## useEffect
-
-```
-useEffect(() => {
-    // Runs on every render
-});
-
-useEffect(() => {
-// Runs only on the first render
-    ...code to run on first render
-    return () => cleanupCode()
-}, []);
-
-useEffect(() => {
-    // Runs any time any dependency values change
-}, [state, ...]);
 ```
 
 ## useRef
