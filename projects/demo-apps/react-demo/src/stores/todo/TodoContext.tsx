@@ -1,7 +1,6 @@
 import {
   createContext,
   useCallback,
-  useContext,
   useEffect,
   useReducer,
 } from 'react';
@@ -12,7 +11,7 @@ import { todoReducer, TODO_ACTION } from './TodoReducer';
 
 const INITIAL_STATE: Todo[] = [];
 
-const TodoContext = createContext<TodoContextType>({
+export const TodoContext = createContext<TodoContextType>({
   todos: INITIAL_STATE,
   addTodo: () => {
     throw new Error('addTodo function not initialized');
@@ -49,10 +48,20 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const updateTodo = useCallback((id: number, title: string) => {
+    fetch(`${TODO_ENDPOINT.UPDATE_TODO}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title }),
+    });
     dispatch({ type: TODO_ACTION.UPDATE_TODO, payload: { id, title } });
   }, []);
 
   const deleteTodo = useCallback((id: number) => {
+    fetch(`${TODO_ENDPOINT.DELETE_TODO}/${id}`, {
+      method: 'DELETE',
+    });
     dispatch({ type: TODO_ACTION.DELETE_TODO, payload: id });
   }, []);
 
@@ -62,5 +71,3 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
     </TodoContext.Provider>
   );
 };
-
-export const useTodos = () => useContext(TodoContext);
