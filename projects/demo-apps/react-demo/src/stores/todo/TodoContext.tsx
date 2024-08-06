@@ -13,8 +13,8 @@ const INITIAL_STATE: Todo[] = [];
 
 export const TodoContext = createContext<TodoContextType>({
   todos: INITIAL_STATE,
-  addTodo: () => {
-    throw new Error('addTodo function not initialized');
+  createTodo: () => {
+    throw new Error('createTodo function not initialized');
   },
   updateTodo: () => {
     throw new Error('updateTodo function not initialized');
@@ -36,26 +36,28 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [data]);
 
-  const addTodo = useCallback(async (title: string) => {
-    fetch(TODO_ENDPOINT.CREATE_TODO, {
+  const createTodo = useCallback(async (title: string) => {
+    const response = await fetch(TODO_ENDPOINT.CREATE_TODO, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ title }),
     });
-    dispatch({ type: TODO_ACTION.ADD_TODO, payload: title });
+    const payload = await response.json()
+    dispatch({ type: TODO_ACTION.CREATE_TODO, payload});
   }, []);
 
-  const updateTodo = useCallback((id: number, title: string) => {
-    fetch(`${TODO_ENDPOINT.UPDATE_TODO}/${id}`, {
+  const updateTodo = useCallback(async (id: number, title: string) => {
+    const response = await fetch(`${TODO_ENDPOINT.UPDATE_TODO}/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ title }),
     });
-    dispatch({ type: TODO_ACTION.UPDATE_TODO, payload: { id, title } });
+    const payload = await response.json()
+    dispatch({ type: TODO_ACTION.UPDATE_TODO, payload});
   }, []);
 
   const deleteTodo = useCallback((id: number) => {
@@ -66,7 +68,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <TodoContext.Provider value={{ todos, addTodo, updateTodo, deleteTodo }}>
+    <TodoContext.Provider value={{ todos, createTodo, updateTodo, deleteTodo }}>
       {children}
     </TodoContext.Provider>
   );

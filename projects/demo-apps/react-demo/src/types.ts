@@ -5,7 +5,7 @@ export type Todo = {
 
 export type TodoContextType = {
   todos: Todo[];
-  addTodo: (title: string) => void;
+  createTodo: (title: string) => void;
   updateTodo: (id: number, title: string) => void;
   deleteTodo: (id: number) => void;
 };

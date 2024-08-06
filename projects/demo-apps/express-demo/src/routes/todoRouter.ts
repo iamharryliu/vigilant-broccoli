@@ -13,7 +13,7 @@ todoRouter.get('/getTodos', (_, res) => {
     res.json(todos);
 });
 
-todoRouter.post('/addTodo', (req, res) => {
+todoRouter.post('/createTodo', (req, res) => {
   const { title } = req.body;
   const newTodo = { id: generateId(), title };
   todos.push(newTodo);
@@ -36,7 +36,7 @@ todoRouter.put('/updateTodo/:id', (req, res) => {
 
 todoRouter.delete('/deleteTodo/:id', (req, res) => {
   const { id } = req.params;
-  const todoIndex = todos.findIndex(todo => todo.id === parseInt(id));
+  const todoIndex = todos.findIndex(todo => todo.id);
 
   if (todoIndex === -1) {
     return res.status(404).json({ message: 'Todo not found' });

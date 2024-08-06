@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTodos } from '../../../hooks/useTodo';
 
 export default function TodoForm() {
-  const { addTodo } = useTodos();
+  const { createTodo } = useTodos();
   const [inputValue, setInputValue] = useState('');
   const inputElement = useRef<HTMLInputElement>(null);
 
@@ -22,7 +22,7 @@ export default function TodoForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim()) {
-      addTodo(inputValue);
+      createTodo(inputValue);
       setInputValue('');
     }
   };
