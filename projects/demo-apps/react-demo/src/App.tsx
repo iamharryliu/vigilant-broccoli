@@ -12,6 +12,7 @@ import RegisterPage from './pages/session-management/RegisterPage';
 import StatusPage from './pages/session-management/StatusPage';
 import PathNotFoundPage from './pages/PathNotFoundPage';
 import Layout from './components/layouts/GeneralPageLayout';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function App() {
   return (
