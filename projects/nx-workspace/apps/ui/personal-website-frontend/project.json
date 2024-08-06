@@ -14,7 +14,7 @@
       "options": {
         "commands": [
           {
-            "command": "ts-node build_blog_json.ts && ts-node file_structure_to_json.ts ../../notes ./apps/ui/personal-website-frontend/src/assets/md-library/md-library.json && rsync -r ../../notes apps/ui/personal-website-frontend/src/assets/md-library/ --delete && rsync -ar --include '*/' --include '*.ts' --include '*.go' --include '*.py' --exclude '*' ../grind-75 apps/ui/personal-website-frontend/src/assets/grind-75/ --delete  && ts-node file_structure_to_json.ts apps/ui/personal-website-frontend/src/assets/grind-75/ ./apps/ui/personal-website-frontend/src/assets/grind-75/grind-75.json"
+            "command": "ts-node build_blog_json.ts && ts-node file_structure_to_json.ts ../../notes ./apps/ui/personal-website-frontend/src/assets/md-library/md-library.json && rsync -r ../../notes apps/ui/personal-website-frontend/src/assets/md-library/ --delete && rsync -ar --include '*/' --include '*.ts' --include '*.go' --include '*.py' --exclude '*' ../grind-75 apps/ui/personal-website-frontend/src/assets/grind-75/ --delete  && ts-node file_structure_to_json.ts apps/ui/personal-website-frontend/src/assets/grind-75/grind-75/ ./apps/ui/personal-website-frontend/src/assets/grind-75/grind-75.json"
           }
         ]
       }
