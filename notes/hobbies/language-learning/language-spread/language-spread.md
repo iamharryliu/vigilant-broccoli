@@ -5,6 +5,7 @@
 | **General**                    |                       |                      |                  |                   |                 |
 | yes                            | ja                    | oui                  | si               | si                | si              |
 | no                             | nej                   | non                  | no               | nao               | no              |
+| maybe                          | kanske                | peut être            | tal vez          |                   |                 |
 | good                           | bra                   | bon/bonne            | bueno/buena      | bom/boa/bons/boas | buono           |
 | bad                            | dålig                 | mal                  | malo/mala        | mau               | cattivo/cattiva |
 | but                            | men                   | mais                 | pero             | mas(mash or mass) | ma              |
@@ -46,6 +47,7 @@
 | **Adjectives**                 |                       |                      |                  |                   |                 |
 | this                           | den här               | ceci - ce/cette/c'   | esto             |                   |                 |
 | that                           | den där               | celà - ce/cette/c'   | eso              |                   |                 |
+| both                           | båda                  |                      |                  |                   |                 |
 | there is                       | det finns             | il y a               | hay              |                   |                 |
 | big                            | stor                  | grande               | grande           |                   |                 |
 | small                          | liten/små(plural)     | petit                | pequeno          |                   |                 |
