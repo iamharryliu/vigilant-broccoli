@@ -39,39 +39,43 @@ export default function TodoList() {
 
   return (
     <ul className="list-group">
-      {todos.map(todo => (
-        <li className="list-group-item" key={todo.id}>
-          {editingId === todo.id ? (
-            <input
-              type="text"
-              value={editingValue}
-              onChange={handleInputChange}
-              onBlur={handleTodoUpdate}
-              onKeyDown={handleInputKeyDown}
-              autoFocus
-            />
-          ) : (
-            <span onClick={() => handleEditClick(todo.id, todo.title)}>
-              {todo.title}
-            </span>
-          )}
+      {todos.length ? (
+        todos.map(todo => (
+          <li className="list-group-item" key={todo.id}>
+            {editingId === todo.id ? (
+              <input
+                type="text"
+                value={editingValue}
+                onChange={handleInputChange}
+                onBlur={handleTodoUpdate}
+                onKeyDown={handleInputKeyDown}
+                autoFocus
+              />
+            ) : (
+              <span onClick={() => handleEditClick(todo.id, todo.title)}>
+                {todo.title}
+              </span>
+            )}
 
-          <div className="float-end">
-            <button
-              onClick={() => handleEditClick(todo.id, todo.title)}
-              className="btn btn-primary me-2"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => handleDeleteClick(todo.id)}
-              className="btn btn-danger"
-            >
-              Delete
-            </button>
-          </div>
-        </li>
-      ))}
+            <div className="float-end">
+              <button
+                onClick={() => handleEditClick(todo.id, todo.title)}
+                className="btn btn-primary me-2"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteClick(todo.id)}
+                className="btn btn-danger"
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))
+      ) : (
+        <p className="text-center my-4">You currently have no todo items.</p>
+      )}
     </ul>
   );
 }
