@@ -6,6 +6,7 @@
 
 ```
 git pull --rebase
+git rebase --continue
 git rebase --abort
 ```
 
