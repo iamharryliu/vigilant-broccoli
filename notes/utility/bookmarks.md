@@ -2,6 +2,12 @@
 
 Collection of sorted bookmarks.
 
+## Health
+
+- [How to massage your partners upper back and neck: A guide by a Professional Massage Therapist](https://www.youtube.com/watch?v=sP5SmDftmQo&t=6s)
+- [Massage Tips with Mike Hovi](https://www.youtube.com/watch?v=v_ki24JVkgU)
+- [Most Effective Massage Techniques](https://www.youtube.com/watch?v=E6twzRRJEkY)
+
 ## Food
 
 - [New York-Style Bagel Recipe](https://www.sophisticatedgourmet.com/2009/10/new-york-style-bagel-recipe/)
