@@ -29,6 +29,7 @@ console.timeEnd()
 
 ```
 debugger
+throw new Error("STOP");
 ```
 
 nx
