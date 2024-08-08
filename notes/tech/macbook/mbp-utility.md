@@ -1,5 +1,23 @@
 # MBP Utility
 
+## Keyboard Shortcuts
+
+### Screenshot
+
+- Save to Desktop - shift + command + 3
+- Save to Clipboard - ctrl + shift + command + 3
+
+### Snipping Tool
+
+- Save to Desktop - shift + command + 4
+- Copy to Clipboard ctrl + shift + command + 4
+
+### Screenshot Window
+
+- Save to Desktop - shift + command + 4 + space
+
+## Tools
+
 - Alfred
   - Turn off Keyboard Shortcuts Spotlight
   - Change Alfred to _CMD + Space_
