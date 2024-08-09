@@ -2,9 +2,13 @@ from collections import defaultdict, deque
 from typing import List
 
 
+# TODO: Bi-directional BFS?
 class Solution:
     @classmethod
     def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        if endWord not in wordList:
+            return 0
+
         graph = defaultdict(list)
         for word in wordList + [beginWord]:
             for i in range(len(word)):
