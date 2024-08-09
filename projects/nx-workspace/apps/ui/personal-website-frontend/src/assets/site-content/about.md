@@ -10,8 +10,8 @@ Just a chill guy who likes doing chill things.
 #### Personal Interests
 
 [![Spotify Badge](https://img.shields.io/badge/Spotify-1ED760?style=for-the-badge&logo=spotify&logoColor=white)](https://open.spotify.com/user/22z5agodra7fwhm2erdqn5bjq) [![Goodreads](https://img.shields.io/badge/Goodreads-F3F1EA?style=for-the-badge&logo=goodreads&logoColor=372213)](https://www.goodreads.com/user/show/74043883-harry)
+[![Secondhand Store](https://img.shields.io/badge/Secondhand_Store-20B2AA?style=for-the-badge)](https://www.instagram.com/harrysellsshit/) [![Software Projects](https://img.shields.io/badge/software_projects-20B2AA?style=for-the-badge)](https://harryliu.design/projects)
 [![TorontoCitySkate Badge](https://img.shields.io/badge/Toronto_City_Skate-20B2AA?style=for-the-badge)](https://www.instagram.com/torontocityskate/) [![Cloud8Skate Badge](https://img.shields.io/badge/Cloud8Skate-20B2AA?style=for-the-badge)](https://cloud8skate.com/)
-[![Personal Projects Badge](https://img.shields.io/badge/Secondhand_Store-20B2AA?style=for-the-badge)](https://www.instagram.com/harrysellsshit/)
 
 #### My Maps
 
@@ -28,3 +28,4 @@ Just a chill guy who likes doing chill things.
 #### Buy me a coffee? :)
 
 [![Ko-Fi Badge](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/prettydamntired)
+[![Amazon Wishlist](https://img.shields.io/badge/wishlist-20B2AA?style=for-the-badge)](https://www.amazon.ca/hz/wishlist/ls/3CK4DHDPYDDL7?ref_=wl_share)
