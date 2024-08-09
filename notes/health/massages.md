@@ -2,7 +2,7 @@
 
 - Avoid bones.
 - Balance massages so you do not only focus on a local point.
-- Be careful massaging the neck. Make them short and light.
+- Be careful massaging the neck. Make it short and light.
 - Communicate.
 - Technique.
   - Duck Grip > Pincer Grip
