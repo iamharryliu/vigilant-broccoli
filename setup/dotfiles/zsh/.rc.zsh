@@ -1,4 +1,3 @@
-export REPO_NAME="vigilant-broccoli"
 source ~/.zsh_aliases
 source ~/.env.sh
 

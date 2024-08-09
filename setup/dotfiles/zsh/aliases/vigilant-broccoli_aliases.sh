@@ -1,12 +1,23 @@
+# Directories
+REPO_NAME="vigilant-broccoli"
+JOURNAL_DIR="~/journal"
+REPO_DIR="~/$REPO_NAME"
+PROJECTS_DIR="$REPO_DIR/projects"
+GRIND75_DIR="$PROJECTS_DIR/grind-75"
+NX_DIR="$PROJECTS_DIR/nx-workspace"
+# Directory
+alias cdvb="cd $REPO_DIR"
+alias cdjournal="cd $JOURNAL_DIR"
+alias cdprojects="cd $PROJECTS_DIR"
+alias cdgrind75="cd $GRIND75_DIR"
+alias cdgrind75ts="cdgrind75 && cd typescript"
+alias cdgrind75py="cdgrind75 && cd python"
+alias cdgrind75go="cdgrind75 && cd go"
+alias cddemoapps="cdprojects && cd demo-apps"
+alias cdnx="cd $NX_DIR"
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
 alias pushgitprofile="cd ~/iamharryliu && gpull && git add . && gc docs 'update github profile readme' && gpush"
-# Directory
-alias cdvb="cd ~/$REPO_NAME/"
-alias cdjournal="cd ~/journal"
-alias cdprojects="cd ~/$REPO_NAME/projects"
-alias cddemoapps="cdprojects && cd demo-apps"
-alias cdnx="cdprojects && cd nx-workspace"
 # Demo Apps
 alias serveReactDemo="cddemoapps && cd react-demo && npm run start"
 alias serveExpressDemo="cddemoapps && cd express-demo && npm run serve"
@@ -40,7 +51,8 @@ alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/ass
 alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf && gc docs resume 'update resume' && gpush"
 alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
 # Grind 75
-alias grind75python="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75/grind-75-python"
+alias testgrind75py="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75/python"
+alias testgrind75ts="npx jest ~/$REPO_NAME/projects/grind-75/typescript"
 # CMS
 alias servecms="cdvb; cd projects/cms-flask/; venvon; flaskrun"
 alias servecmsdev="cdvb; cd projects/cms-flask/; venvon; python dev_manager.py DIT runserver"
