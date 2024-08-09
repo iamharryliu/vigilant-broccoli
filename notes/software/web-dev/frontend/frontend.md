@@ -1,6 +1,7 @@
 # Frontend Developer
 
 ## Design Patterns
+
 - MVC(Model, View, Controller)
   - Model - Handles database.
   - View - Handles presentation.

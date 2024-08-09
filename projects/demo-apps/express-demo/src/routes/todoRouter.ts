@@ -2,15 +2,15 @@ import express from 'express';
 import { fetchInitialTodos, generateId } from '../util';
 import { HTTP_STATUS_CODES } from '../const';
 
-let todos=[];
-fetchInitialTodos().then((data) => {
+let todos = [];
+fetchInitialTodos().then(data => {
   todos = data;
 });
 
 export const todoRouter = express.Router();
 
 todoRouter.get('/getTodos', (_, res) => {
-    res.json(todos);
+  res.json(todos);
 });
 
 todoRouter.post('/createTodo', (req, res) => {
@@ -19,7 +19,6 @@ todoRouter.post('/createTodo', (req, res) => {
   todos.push(newTodo);
   res.status(HTTP_STATUS_CODES.CREATED).json(newTodo);
 });
-
 
 todoRouter.put('/updateTodo/:id', (req, res) => {
   const { id } = req.params;

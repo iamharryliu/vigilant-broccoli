@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useReducer,
-} from 'react';
+import { createContext, useCallback, useEffect, useReducer } from 'react';
 import useFetch from '../../hooks/useFetch';
 import { TODO_ENDPOINT } from '../../config';
 import { Todo, TodoContextType } from '../../types';
@@ -44,8 +39,8 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
       },
       body: JSON.stringify({ title }),
     });
-    const payload = await response.json()
-    dispatch({ type: TODO_ACTION.CREATE_TODO, payload});
+    const payload = await response.json();
+    dispatch({ type: TODO_ACTION.CREATE_TODO, payload });
   }, []);
 
   const updateTodo = useCallback(async (id: number, title: string) => {
@@ -56,8 +51,8 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
       },
       body: JSON.stringify({ title }),
     });
-    const payload = await response.json()
-    dispatch({ type: TODO_ACTION.UPDATE_TODO, payload});
+    const payload = await response.json();
+    dispatch({ type: TODO_ACTION.UPDATE_TODO, payload });
   }, []);
 
   const deleteTodo = useCallback((id: number) => {

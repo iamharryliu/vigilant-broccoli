@@ -1,13 +1,16 @@
 <!-- Browser Nav -->
 <nav
   class="hidden lg:block transition"
-  [ngClass]="{sticky: isStickyForBrowser,
+  [ngClass]="{
+    sticky: isStickyForBrowser,
     'top-0': isStickyForBrowser,
     fixed: isFixedForBrowser,
     'w-full': isFixedForBrowser,
     'z-10': isFixedForBrowser,
-    'fade-out': isFading}"
-  [class]="bgColor">
+    'fade-out': isFading
+  }"
+  [class]="bgColor"
+>
   <div class="flex items-center justify-between h-16 ml-6">
     <div class="space-x-4">
       <ng-content select="[browserBrand]"></ng-content>
@@ -17,7 +20,8 @@
         [textSize]="textSize"
         [isLight]="isLight"
         [isBold]="isBold"
-        [type]="link.type"></lib-link>
+        [type]="link.type"
+      ></lib-link>
     </div>
   </div>
   <hr />
@@ -29,7 +33,8 @@
   [class]="isFixedForMobile ? 'fixed w-full' : 'sticky top-0'"
   [ngClass]="{
     'fade-out': isFading
-  }">
+  }"
+>
   <div class="flex justify-between ml-4 mr-8 pt-3 pb-3">
     <div>
       <ng-content select="[mobileBrand]"></ng-content>
@@ -41,14 +46,16 @@
 
   <div
     class="absolute w-full bg-gray-300 pt-3 pb-3"
-    [class.hidden]="!isMobileNavOpen">
+    [class.hidden]="!isMobileNavOpen"
+  >
     <div class="space-y-3">
       <div class="flex justify-center" *ngFor="let link of links">
         <lib-link
           [link]="link"
           [textSize]="textSize"
           type="internal"
-          (clickEmitter)="collapseNavbar()"></lib-link>
+          (clickEmitter)="collapseNavbar()"
+        ></lib-link>
       </div>
     </div>
   </div>

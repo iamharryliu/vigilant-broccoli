@@ -10,12 +10,11 @@ import { router } from './src/routes/router';
 import { CORS_OPTIONS, PORT } from './src/const';
 import { todoRouter } from './src/routes/todoRouter';
 
-
 const app = express();
 app.use(cors());
 app.options('*', cors(CORS_OPTIONS));
 app.use(router);
-app.use('/todo', todoRouter)
+app.use('/todo', todoRouter);
 app.use(requestLogger);
 app.use(errorLogger);
 app.use(errorResponder);

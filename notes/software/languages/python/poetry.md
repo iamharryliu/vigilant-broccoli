@@ -7,17 +7,17 @@
 ```
 poetry init
 poetry env list
-poetry env info 
+poetry env info
 poetry env info -p
-poetry config virtualenvs.in-project true 
+poetry config virtualenvs.in-project true
 
 poetry install
-poetry install --no-root 
+poetry install --no-root
 poetry add [dependency]
 poetry add [dependency]@[version_number ]
 
-poetry shell   
-poetry show 
+poetry shell
+poetry show
 poetry remove [dependency]
 exit
 ```
