@@ -13,9 +13,12 @@ Just a chill guy who likes doing chill things.
 [![TorontoCitySkate Badge](https://img.shields.io/badge/Toronto_City_Skate-20B2AA?style=for-the-badge)](https://www.instagram.com/torontocityskate/) [![Cloud8Skate Badge](https://img.shields.io/badge/Cloud8Skate-20B2AA?style=for-the-badge)](https://cloud8skate.com/)
 [![Personal Projects Badge](https://img.shields.io/badge/Secondhand_Store-20B2AA?style=for-the-badge)](https://www.instagram.com/harrysellsshit/)
 
-#### My Toronto Maps
+#### My Maps
 
-[![Toronto Food Spots](https://img.shields.io/badge/Food_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/Vm1PmWbGbbV6ftD86) [![Toronto Drink Spots](https://img.shields.io/badge/Drink_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/qWopvXmCnxn3WXxR8) [![Toronto Dessert Spots](https://img.shields.io/badge/Dessert_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6) [![Toronto Work Cafes](https://img.shields.io/badge/Work_Cafes-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
+[![Food Spots](https://img.shields.io/badge/Food_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/Vm1PmWbGbbV6ftD86) [![Drink Spots](https://img.shields.io/badge/Drink_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/qWopvXmCnxn3WXxR8) [![Dessert Spots](https://img.shields.io/badge/Dessert_Spots-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6) [![Work Cafes](https://img.shields.io/badge/Work_Cafes-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
+[![Parks](https://maps.app.goo.gl/eUoBxWQ4AEgkKqo87)] [![Hiking](https://maps.app.goo.gl/tsXqEsDxfpRQqdH39)]
+[![Museums and Galleries](https://maps.app.goo.gl/CKpbtVuNWe77PPNj7)] [![Music Venues](https://maps.app.goo.gl/Mbzr4JsFmDF3NTj16)] [![Shopping](https://maps.app.goo.gl/wy4hepNkFaocei2H7)] [![Skate Spots](https://maps.app.goo.gl/xNK9fZqokRFTdxPD8)] [![Other Activities](https://maps.app.goo.gl/oadYKuGkHwH1DoQX7)]
+[![Accomodations](https://maps.app.goo.gl/6ZkoBuAXcJTd2zdD7)] [![Parking](https://maps.app.goo.gl/BiZ8yHGQvWCZi1MU9)]
 
 #### Career
 
