@@ -54,3 +54,9 @@ for r in range(len(grid)):
 ```
 dp[key] = dp.get(key, 0)
 ```
+
+## Nuances Between Languages
+
+| Builtin Data Structure | Python | Typescript | Go  |
+| :--------------------: | :----: | :--------: | :-: |
+|   Default Dictionary   |   Y    |     N      |     |
