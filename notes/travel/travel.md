@@ -41,3 +41,7 @@ Visited after one of the worst rainstorms they have had in years.
 ### Things That I Disliked
 
 - It was my first time doing lefthand driving and doing it on a campervan made it even more difficult. I ended up grinding the passenger tires and smashing up the driver side mirror before adjusting to driving in the Highlands. Thank god the actual mirror was still intact so we could finish the trip.
+
+## Life in Sweden
+
+- Summer vacation.

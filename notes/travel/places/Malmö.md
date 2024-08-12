@@ -22,9 +22,9 @@
 
 ### Retail Pharmacy
 
-    - [Apoteket](https://www.apoteket.se/apotek/)
-    - [Normal](https://www.normal.eu/find-store/)
-    - [Kicks](https://www.kicks.se/butiker)
+- [Apoteket](https://www.apoteket.se/apotek/)
+- [Normal](https://www.normal.eu/find-store/)
+- [Kicks](https://www.kicks.se/butiker)
 
 ## Hobby
 
