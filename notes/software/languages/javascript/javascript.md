@@ -10,6 +10,11 @@
 - null
 - undefined
 
+### Type Annotation
+
+- [JSDocs](https://devhints.io/jsdoc)
+- [Typescript](https://www.typescriptlang.org/)
+
 ## Console
 
 ```
