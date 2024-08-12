@@ -12,6 +12,3 @@ if [ "$IS_CRON" != "true" ]; then
         source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
     fi
 fi
-
-chmod -R +x ~/shell-aliases/
-chmod -R +x ~/shell-scripts/
