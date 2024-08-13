@@ -1,6 +1,6 @@
 # Burgers
 
-## Smash Burger
+## [Smash Burger](https://youtu.be/Wwgn5k_TzKM?si=Rcinz-GFbeqjROBa)
 
 ### Ingredients
 
