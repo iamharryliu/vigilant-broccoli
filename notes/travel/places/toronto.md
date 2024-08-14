@@ -6,7 +6,10 @@
 
 - [TTC](https://www.ttc.ca/) - For main traveling inner city.
 - [GO Transit](https://www.gotransit.com/en) - For traveling to outer city.
-- [Bike Share](https://members.bikesharetoronto.com/mobile/plans)
+  - [Plan a Trip](https://www.gotransit.com/en/plan-your-trip)
+- [Bike Share](https://bikesharetoronto.com/)
+  - [Pricing](https://members.bikesharetoronto.com/mobile/plans)
+  - [Map](https://bikesharetoronto.com/system-map/)
 
 ### Communication
 
