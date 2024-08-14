@@ -6,6 +6,7 @@
 
   - feat(toronto-alerts): update email header to be more explicit
   - feat(dj-scripts): spotify playlist scrape
+    - only way to get playlists is through OAUTH flow
   - Update git flows, commit > pull --rebase > push
   - feat(cms-flask):
     - Dynamic page contents.
