@@ -53,6 +53,11 @@ git commit -m [message]
 git push
 ```
 
+### Undos
+```
+git push origin [COMMIT_HASH]:refs/heads/[BRANCH_NAME] --force
+```
+
 ## Git Magic
 
 ### Ignore file changes
