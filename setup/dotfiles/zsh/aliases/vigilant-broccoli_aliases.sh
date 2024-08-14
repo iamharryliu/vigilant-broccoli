@@ -51,9 +51,10 @@ alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/ass
 alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf && gc docs resume 'update resume' && gpush"
 alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
 # Grind 75
-alias testgrind75py="python -m unittest discover -s ~/$REPO_NAME/projects/grind-75/python"
-alias testgrind75ts="cdgrind75 && cd typescript/ && npx jest ~/$REPO_NAME/projects/grind-75/typescript"
-alias testgrind75="testgrind75py && testgrind75ts"
+alias testgrind75py="python -m unittest discover -s $GRIND75_DIR/python"
+alias testgrind75ts="cdgrind75ts && npx jest $GRIND75_DIR/typescript"
+alias testgrind75go="go test $GRIND75_DIR/..."
+alias testgrind75="testgrind75py && testgrind75ts && testgrind75go"
 # CMS
 alias servecms="cdvb; cd projects/cms-flask/; venvon; flaskrun"
 alias servecmsdev="cdvb; cd projects/cms-flask/; venvon; python dev_manager.py DIT runserver"

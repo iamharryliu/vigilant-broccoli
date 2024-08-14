@@ -1,5 +1,7 @@
+package util
+
 func isValid(s string) bool {
-    stack := []rune{}
+	stack := []rune{}
 	hmap := map[rune]rune{']': '[', '}': '{', ')': '('}
 
 	for _, char := range s {
