@@ -47,3 +47,5 @@ apps/ui/personal-website-frontend/src/assets/md-library/notes/
 apps/ui/personal-website-frontend/src/assets/md-library/md-library.json
 apps/ui/personal-website-frontend/src/assets/grind-75/
 !apps/ui/personal-website-frontend/src/assets/grind-75/.gitkeep
+
+.env

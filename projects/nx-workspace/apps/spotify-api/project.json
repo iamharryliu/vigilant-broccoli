@@ -1,0 +1,66 @@
+{
+  "name": "spotify-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/spotify-api/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/spotify-api",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/spotify-api/src/main.ts",
+        "tsConfig": "apps/spotify-api/tsconfig.app.json",
+        "assets": ["apps/spotify-api/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "spotify-api:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "spotify-api:build:development"
+        },
+        "production": {
+          "buildTarget": "spotify-api:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/spotify-api/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
