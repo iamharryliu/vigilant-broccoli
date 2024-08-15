@@ -7,8 +7,6 @@ class SpotifyToMp3Service:
     def __init__(
         self, output=os.environ.get("MUSIC_LIBRARY") or "~/Spotify_to_MP3_Downloads"
     ):
-        # DEBUG LINE
-        # print(f"'{output}' selected as output folder")
         self.output = output
 
     def download_playlists(self, playlists):
@@ -26,8 +24,6 @@ class SpotifyToMp3Service:
             output = f"{self.output}/{fname}"
 
             output = os.path.expanduser(output)
-            # DEBUG LINE
-            # print(f"Downloading {output}")
             subprocess.run(
                 ["spotdl", "download", playlist["url"], "--output", output],
                 check=True,
@@ -35,7 +31,7 @@ class SpotifyToMp3Service:
                 stderr=subprocess.DEVNULL,
             )
             # DEBUG LINE
-            # print(f"Playlist {playlist['name']} downloaded successfully.")
+            # print(f"Playlist '{playlist['name']}' downloaded successfully.")
         except subprocess.CalledProcessError as e:
             print(f"Failed to download playlist {playlist['name']}. Error: {e}")
 
