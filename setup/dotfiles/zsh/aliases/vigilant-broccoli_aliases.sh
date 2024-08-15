@@ -2,6 +2,7 @@
 REPO_NAME="vigilant-broccoli"
 JOURNAL_DIR="~/journal"
 REPO_DIR="~/$REPO_NAME"
+VB_DIR="~/$REPO_NAME"
 PROJECTS_DIR="$REPO_DIR/projects"
 GRIND75_DIR="$PROJECTS_DIR/grind-75"
 NX_DIR="$PROJECTS_DIR/nx-workspace"
@@ -22,6 +23,9 @@ alias pushgitprofile="cd ~/iamharryliu && gpull && git add . && gc docs 'update 
 alias serveReactDemo="cddemoapps && cd react-demo && npm run start"
 alias serveExpressDemo="cddemoapps && cd express-demo && npm run serve"
 # vigilant-broccoli
+alias pullvb="cd $VB_DIR && gpull"
+alias pulljournal="cd $JOURNAL_DIR && gpull"
+alias pullall='pulljournal && pullvb'
 alias gitvb='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
 alias gitactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
 alias pushreadme="cdvb && git add README.md && gc docs readme 'update root README.md' && gpush"
