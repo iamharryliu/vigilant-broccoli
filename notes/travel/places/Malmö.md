@@ -1,6 +1,7 @@
 # Malmö
 
 ## Utility
+
 ### Transportation
 
 - [Skånetrafiken]
@@ -13,7 +14,6 @@
 ### Communication
 
 - [Comviq Fastpris Mini Plan](https://www.comviq.se/kontantkort)
-
 
 ## Food & Drink
 

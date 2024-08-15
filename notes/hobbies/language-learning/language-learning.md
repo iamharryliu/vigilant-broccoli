@@ -5,6 +5,7 @@
 - [Lingoda](https://www.lingoda.com/en/) for immersive online classes.
 
 ## Cheatsheets
+
 - [Language Spread](https://harryliu.design/docs-md/language-spread)
 - [Verbs](https://harryliu.design/docs-md/language-spread-verbs)
 - [Numbers](https://harryliu.design/docs-md/language-spread-numbers)
