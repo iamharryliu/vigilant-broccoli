@@ -46,7 +46,7 @@ export async function fetchPlaylists(accessToken) {
     .filter(
       playlist =>
         playlist.description &&
-        playlist.description.toLowerCase().includes('mix'),
+        playlist.description === ('mix'),
     )
     .map(playlist => ({
       name: playlist.name,
