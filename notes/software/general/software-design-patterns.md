@@ -1,8 +1,8 @@
 # Design Patterns
 
-- Creational Patterns - patterns based on how obhects are created
-- Structural Patterns - patterns based on how objects relate to each other
-- Behavioral Patterns - patterns based on how object communicate with each other
+- Creational Patterns - Patterns based on how objects are created.
+- Structural Patterns - Patterns based on how objects relate to each other.
+- Behavioral Patterns - Patterns based on how object communicate with each other.
 
 ## Creational
 

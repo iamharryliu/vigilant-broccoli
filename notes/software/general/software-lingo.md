@@ -6,7 +6,8 @@
   - CPU bound - Used when actual calculations or processes are being done and require more computer resource.
   - IO bound - Used used when you are reading/writing to a location such as to a disk or over the network.
 - Ternary Operator - A one line if else statement.
-- URL (Uniform Resource Locator)
+- URI - Uniform Resource Indicator
+- URL - Uniform Resource Locator
 
 ```
 foo://example.com:8042/over/there?name=ferret#nose
