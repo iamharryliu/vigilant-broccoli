@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import threading
 
@@ -10,6 +11,12 @@ class SpotifyToMp3Service:
         self.output = output
 
     def download_playlists(self, playlists):
+        for dir_name in os.listdir(os.path.expanduser(self.output)):
+            dir_path = os.path.join(self.output, dir_name)
+            if dir_name not in [
+                playlist["name"] for playlist in playlists
+            ] and os.path.isdir(os.path.expanduser(dir_path)):
+                shutil.rmtree(os.path.expanduser(dir_path))
         threads = []
         for playlist in playlists:
             thread = threading.Thread(target=self.download_playlist, args=(playlist,))
@@ -20,18 +27,14 @@ class SpotifyToMp3Service:
 
     def download_playlist(self, playlist):
         try:
-            fname = SpotifyToMp3Service.convert_to_slug_case(playlist["name"])
-            output = f"{self.output}/{fname}"
-
+            output = f"{self.output}/{playlist['name']}"
             output = os.path.expanduser(output)
             subprocess.run(
-                ["spotdl", "download", playlist["url"], "--output", output],
+                ["spotdl", "download", playlist["url"], "--output", f"{output}"],
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
-            # DEBUG LINE
-            # print(f"Playlist '{playlist['name']}' downloaded successfully.")
         except subprocess.CalledProcessError as e:
             print(f"Failed to download playlist {playlist['name']}. Error: {e}")
 
