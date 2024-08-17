@@ -4,6 +4,7 @@
 
 - Script should start from a main function.
 - Consider design for development vs production script (what APIs can the dev environment access?)
+- Logging for errors and performance(how long the script takes to run).
 
 ```
 - main
