@@ -2,14 +2,12 @@
 
 ## Getting Started
 
-```
-npx create-react-app [app_name]
-```
+- Create react project using [Vite].
 
 ## How React Works
 
 ```
-index.html > index.tsx > App.tsx
+_index.html_ > _main.tsx_ > _App.tsx_
 ```
 
 ```
@@ -18,7 +16,7 @@ index.html > index.tsx > App.tsx
 ```
 
 ```
-// index.tsx
+// main.tsx
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
@@ -85,17 +83,7 @@ root.render(<Component />);
 
 ### Props
 
-#### Children Props
-
-```
-<Component>
-	<SomethingFromParent/>
-</Component>
-
-const Component = (props) => {
-    return <>{ props.children }</>
-}
-```
+#### Props Values
 
 ```
 <Component value={data}/>
@@ -105,7 +93,7 @@ const Component = (props) => {
 }
 ```
 
-#### Destructuring
+#### Destructuring Props Values
 
 ```
 <Component {...data}/>
@@ -115,10 +103,32 @@ const Component = ({ value1, value2, ...}) => {
 }
 ```
 
+#### Children Props
+
+```
+<Component>
+	<ChildrenData/>
+</Component>
+
+const Component = (props) => {
+    return <>{ props.children }</>
+}
+```
+
 ## Routing
 
 ```
+npm install react-router-dom
+```
+
+```
 <BrowserRouter>
+  <nav>
+    <Link to="/">Home</Link>
+    <Link to="/something">Something</Link>
+    <Link to="/something-else">Something Else</Link>
+    <Outlet />
+  </nav>
   <Routes>
     <Route path="/" element={<Layout />}>
       <Route index element={<IndexPage />} />
@@ -130,15 +140,84 @@ const Component = ({ value1, value2, ...}) => {
 </BrowserRouter>
 ```
 
+### Route Parameters
+
 ```
-const Layout = () => {
-  return (
-  <>
-    <Link to="/">Home</Link>
-    <Link to="/something">Something</Link>
-    <Link to="/something-else">Something Else</Link>
-    <Outlet />
-  </>
-  )
+const UserProfile = () => {
+  const { username } = useParams();
+  return <h2>User Profile for {username}</h2>;
 };
+
+function App() {
+  return (
+    <Router>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/user/johndoe">John Doe</Link>
+        <Link to="/user/janedoe">Jane Doe</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<h2>Home Page</h2>} />
+        <Route path="/user/:username" element={<UserProfile />} />
+      </Routes>
+    </Router>
+  );
+}
+```
+
+### Nested Routing
+
+```
+const Dashboard = () => (
+  <div>
+    <h2>Dashboard</h2>
+    <nav>
+      <Link to="stats">Stats</Link>
+      <Link to="settings">Settings</Link>
+    </nav>
+    <Outlet />
+  </div>
+);
+
+function App() {
+  return (
+    <Router>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/dashboard">Dashboard</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<h2>Home Page</h2>} />
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route path="stats" element={<Stats />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
+}
+```
+
+### Protected Routes
+
+```
+const ProtectedRoute = ({ element: Component, ...rest }) => {
+  return isAuthenticated() ? <Component {...rest} /> : <Navigate to="/login" />;
+};
+
+function App() {
+  return (
+    <Router>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/dashboard">Dashboard</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<h2>Home Page</h2>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<ProtectedRoute element={Dashboard} />} />
+      </Routes>
+    </Router>
+  );
+}
 ```

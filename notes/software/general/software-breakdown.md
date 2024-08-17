@@ -7,7 +7,6 @@
     - Templates
 
       - HTML
-      - Components
       - Forms
         - Form Validation
       - Styling
@@ -15,10 +14,22 @@
         - Typography
         - Spacing
         - UI Libraries
+      - Rendering
+        - Handling conditional rendering.
+        - Handling list rendering.
+      - Components
+        - Handle passing values between components.
+      - Event Handling
+        - Handling button click.
+        - Handling input change.
       - Accessibility(A11y)
       - Internationalization(i18n)
 
     - Routes
+      - Handling route parameters
+      - Handling nested routes.
+      - Handling protected routes.
+      - Handling invalid pages.
 
   - Backend
     - Request Types - GET, POST, PUT, DELETE
