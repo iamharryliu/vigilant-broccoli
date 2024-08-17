@@ -1,5 +1,5 @@
 # Directories
-REPO_NAME="vigilant-broccoli"
+export REPO_NAME="vigilant-broccoli"
 JOURNAL_DIR="~/journal"
 REPO_DIR="~/$REPO_NAME"
 VB_DIR="~/$REPO_NAME"

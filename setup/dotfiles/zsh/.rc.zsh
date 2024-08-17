@@ -1,3 +1,4 @@
+echo "~Shell initialized.~"
 source ~/.zsh_aliases
 source ~/.env.sh
 
