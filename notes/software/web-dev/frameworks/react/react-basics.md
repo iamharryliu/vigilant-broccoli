@@ -3,6 +3,7 @@
 ## Getting Started
 
 - Create react project using [Vite].
+- [Folder Structures in React Projects](https://dev.to/itswillt/folder-structures-in-react-projects-3dp8)
 
 ## How React Works
 

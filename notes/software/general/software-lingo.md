@@ -1,5 +1,9 @@
 # Software Lingo
 
+## Technical Terms
+
+- Closure - Enables functions to keep state.
+
 ## General
 
 - CPU bound and IO bound
