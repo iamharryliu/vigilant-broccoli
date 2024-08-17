@@ -1,4 +1,4 @@
-alias initsh='source ~/.zshrc'
+alias initsh='echo "~Shell initialized.~" && source ~/.zshrc'
 
 source ~/shell-aliases/utils.sh
 source ~/shell-aliases/dir_aliases.sh
