@@ -80,6 +80,9 @@
   - Kadane's Algorithm
   - Time Complexity - O(n)
   - Space Complexity - O(1)
+- K Closest Points to Origin
+  - Time Complexity - O(Nlogk)
+  - Space Complexity - O(k)
 - Longest Substring Without Repeating Characters
   - Kadane's Algorithm
   - Time Complexity - O(n)
