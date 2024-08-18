@@ -80,3 +80,11 @@
   - Kadane's Algorithm
   - Time Complexity - O(n)
   - Space Complexity - O(1)
+- Longest Substring Without Repeating Characters
+  - Kadane's Algorithm
+  - Time Complexity - O(n)
+  - Space Complexity - O(n)
+- Three Sum
+  - Two Pointer Technique
+  - Time Complexity - O(nlogn)
+  - Space Complexity - O(n)

@@ -81,6 +81,10 @@ max(n1,n2)
 abs(n)
 ```
 
+```
+nums.sort()
+```
+
 #### Typescript
 
 ```
@@ -98,4 +102,8 @@ Math.infinity
 Math.min(n1,n2)
 Math.max(n1,n2)
 Math.abs(n)
+```
+
+```
+nums.sort((a,b) => a - b)
 ```
