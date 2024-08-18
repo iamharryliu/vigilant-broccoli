@@ -6,13 +6,6 @@ class Solution:
     def floodFill(
         self, image: List[List[int]], sr: int, sc: int, color: int
     ) -> List[List[int]]:
-        """
-        :type image: List[List[int]]
-        :type sr: int
-        :type sc: int
-        :type color: int
-        :rtype: List[List[int]]
-        """
         old_color = image[sr][sc]
         visited = set()
         directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]

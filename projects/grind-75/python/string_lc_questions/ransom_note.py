@@ -1,12 +1,13 @@
 class Solution:
     @classmethod
     def canConstruct(self, ransomNote: str, magazine: str) -> bool:
-        for c in set(ransomNote):
-            if ransomNote.count(c) > magazine.count(c):
+        ransom_count = {}
+        magazine_count = {}
+        for char in magazine:
+            magazine_count[char] = magazine_count.get(char, 0) + 1
+        for char in ransomNote:
+            ransom_count[char] = ransom_count.get(char, 0) + 1
+        for char, count in ransom_count.items():
+            if magazine_count.get(char, 0) < count:
                 return False
         return True
-
-
-print(Solution.canConstruct(ransomNote="a", magazine="b") == False)
-print(Solution.canConstruct(ransomNote="aa", magazine="ab") == False)
-print(Solution.canConstruct(ransomNote="aa", magazine="aab") == True)

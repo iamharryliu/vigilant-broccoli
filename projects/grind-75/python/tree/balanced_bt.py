@@ -5,17 +5,17 @@ from tree.common import TreeNode
 class Solution:
     @classmethod
     def isBalanced(self, root: Optional[TreeNode]) -> bool:
-        res = True
+        isBalanced = True
 
         def dfs(node=root):
-            nonlocal res
+            nonlocal isBalanced
             if not node:
                 return 0
-            l = dfs(node.left)
-            r = dfs(node.right)
-            if abs(l - r) > 1:
-                res = False
-            return max(l, r) + 1
+            max_height_l = dfs(node.left)
+            max_height_r = dfs(node.right)
+            if abs(max_height_l - max_height_r) > 1:
+                isBalanced = False
+            return max(max_height_l, max_height_r) + 1
 
         dfs()
-        return res
+        return isBalanced

@@ -60,3 +60,42 @@ dp[key] = dp.get(key, 0)
 | Builtin Data Structure | Python | Typescript | Go  |
 | :--------------------: | :----: | :--------: | :-: |
 |   Default Dictionary   |   Y    |     N      |     |
+
+### Default Dictionary
+
+#### Python
+
+```
+hmap = {}
+for c in s:
+	hmap[c] = hmap.get(c, 0) + 1
+hmap.items()
+hmap.keys()
+hmap.values()
+```
+
+```
+math.inf
+min(n1,n2)
+max(n1,n2)
+abs(n)
+```
+
+#### Typescript
+
+```
+const hmap:{[key:string]:number} = {}
+for (const key of s){
+	hmap[key] = (hmap[key] || 0) + 1
+}
+Object.entries(hmap)
+Object.keys(hmap)
+Object.entires(hmap)
+```
+
+```
+Math.infinity
+Math.min(n1,n2)
+Math.max(n1,n2)
+Math.abs(n)
+```
