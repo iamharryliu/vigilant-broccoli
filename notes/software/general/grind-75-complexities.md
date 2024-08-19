@@ -26,6 +26,7 @@
 | Contains Duplicate                                  |      O(n)       |       O(n)       |                              |
 | Maximum Subarray                                    |      O(n)       |       O(1)       | Kadane's Algorithm           |
 | Insert Interval                                     |      O(n)       |       O(n)       |                              |
+| 01 Matrix                                           |    O(m × n)     |     O(m × n)     |                              |
 | K Closest Points to Origin                          |    O(nlogk)     |       O(k)       |                              |
 | Longest Substring Without Repeating Characters      |      O(n)       |       O(n)       |                              |
 | Three Sum                                           |    O(nlogn)     |       O(n)       | Two Pointer Technique        |
