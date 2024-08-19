@@ -15,6 +15,10 @@
 
 - [Comviq Fastpris Mini Plan](https://www.comviq.se/kontantkort)
 
+### Emergency
+
+- [Important Phone Numbers](https://www.krisinformation.se/en/finding-help-and-services/important-phone-numbers)
+
 ## Food & Drink
 
 - [Food Spots](https://maps.app.goo.gl/Vm1PmWbGbbV6ftD86)
