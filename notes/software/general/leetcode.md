@@ -79,6 +79,7 @@ math.inf
 min(n1,n2)
 max(n1,n2)
 abs(n)
+int(n)
 ```
 
 ```
@@ -102,6 +103,7 @@ Math.infinity
 Math.min(n1,n2)
 Math.max(n1,n2)
 Math.abs(n)
+Math.floor(n)/Math.trunc(n)
 ```
 
 ```

@@ -31,3 +31,5 @@
 | Longest Substring Without Repeating Characters      |      O(n)       |       O(n)       |                              |
 | Three Sum                                           |    O(nlogn)     |       O(n)       | Two Pointer Technique        |
 | Binary Tree Level Order Traversal                   |      O(n)       |       O(n)       |                              |
+| Clone Graph                                         |    O(V + E)     |     O(V + E)     |                              |
+| Evaluate Reverse Polish Notation                    |      O(n)       |       O(n)       |                              |

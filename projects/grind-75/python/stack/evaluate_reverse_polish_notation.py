@@ -20,9 +20,3 @@ class Solution:
             else:
                 stack.append(int(c))
         return stack.pop()
-
-
-"""
-Time Complexity - O(n)
-Space Complexity - O(n)
-"""
