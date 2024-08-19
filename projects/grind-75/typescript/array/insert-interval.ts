@@ -1,22 +1,23 @@
-export function insert(
-  intervals: number[][],
-  newInterval: number[],
-): number[][] {
-  let res: number[][] = [];
+export default function insert(intervals: number[][], newInterval: number[]): number[][] {
+  const res = [];
+  let i = 0;
 
-  for (let i = 0; i < intervals.length; i++) {
-    const interval = intervals[i];
-    if (interval[1] < newInterval[0]) {
+  while (i < intervals.length && intervals[i][1] < newInterval[0]) {
       res.push(intervals[i]);
-    } else if (interval[0] > newInterval[1]) {
-      res.push(newInterval);
-      return res.concat(intervals.slice(i));
-    } else {
-      newInterval = [
-        Math.min(interval[0], newInterval[0]),
-        Math.max(interval[1], newInterval[1]),
-      ];
-    }
+      i++;
   }
-  return res.concat(newInterval);
+
+  while (i < intervals.length && intervals[i][0] <= newInterval[1]) {
+      newInterval[0] = Math.min(newInterval[0], intervals[i][0]);
+      newInterval[1] = Math.max(newInterval[1], intervals[i][1]);
+      i++;
+  }
+  res.push(newInterval);
+
+  while (i < intervals.length) {
+      res.push(intervals[i]);
+      i++;
+  }
+
+  return res;
 }
