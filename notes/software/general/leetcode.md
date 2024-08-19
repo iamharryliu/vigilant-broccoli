@@ -99,7 +99,7 @@ Object.entires(hmap)
 ```
 
 ```
-Math.infinity
+Infinity
 Math.min(n1,n2)
 Math.max(n1,n2)
 Math.abs(n)

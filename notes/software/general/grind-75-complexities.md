@@ -35,3 +35,4 @@
 | Evaluate Reverse Polish Notation                    |       O(n)        |                O(n)                 |                              |
 | Course Schedule                                     |     O(V + E)      |              O(V + E)               |                              |
 | Implement Trie (Prefix Tree)                        | O(length of word) | O(number of words × length of word) |                              |
+| Coin Change                                         | O(coins × amount) |              O(amount)              |                              |
