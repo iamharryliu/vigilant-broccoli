@@ -26,9 +26,3 @@ class Solution:
             if dfs(course):
                 return False
         return True
-
-
-"""
-Time Complexity - O(V + E)
-Space Complexity - O(V + E)
-"""

@@ -1,7 +1,4 @@
-class TrieNode:
-    def __init__(self):
-        self.children = {}
-        self.isEnd = False
+from trie.common import TrieNode
 
 
 class Trie:
@@ -31,16 +28,3 @@ class Trie:
                 return False
             curr = curr.children[c]
         return True
-
-
-# Your Trie object will be instantiated and called as such:
-# obj = Trie()
-# obj.insert(word)
-# param_2 = obj.search(word)
-# param_3 = obj.startsWith(prefix)
-
-
-"""
-Time Complexity - O(length of word)
-Space Complexity - O(number of words × length of word)
-"""
