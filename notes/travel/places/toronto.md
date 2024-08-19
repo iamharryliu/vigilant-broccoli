@@ -15,6 +15,9 @@
 
 - Use roaming because Toronto phone plans suck.
 
+### Emergency
+- [Emergency Services](https://www.tps.ca/contact/9-1-1-emergency/) - 9-1-1 is only to be used in emergency situations. An emergency is any situation that requires immediate assistance from a police officer, a firefighter or a paramedic. Sometimes all three will respond, such as in the event of a serious traffic collision where people are trapped or injured. If you are ever in doubt of whether a situation is an emergency, you should call 9-1-1.
+- [TTC Safe](https://www.ttc.ca/riding-the-ttc/safety-and-security/safe-ttc-app) - The SafeTTC App is a mobile app for both iOS and Android that offers TTC customers a quick and discreet method for reporting harassment, safety concerns or suspicious activity directly to the TTC’s Transit Control Centre.
 ## Food & Drink
 
 [Food Spots](https://maps.app.goo.gl/Vm1PmWbGbbV6ftD86)
