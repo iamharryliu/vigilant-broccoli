@@ -18,7 +18,7 @@ alias cddemoapps="cdprojects && cd demo-apps"
 alias cdnx="cd $NX_DIR"
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
-alias pushgitprofile="cd ~/iamharryliu && gpull && git add . && gc docs 'update github profile readme' && gpush"
+alias pushgitprofile="cd ~/iamharryliu && gpull && git add . && gc docs 'Update Github profile README.md' && gpush"
 # Demo Apps
 alias serveReactDemo="cddemoapps && cd react-demo && npm run start"
 alias serveExpressDemo="cddemoapps && cd express-demo && npm run serve"
@@ -28,32 +28,32 @@ alias pulljournal="cd $JOURNAL_DIR && gpull"
 alias pullall='pulljournal && pullvb'
 alias gitvb='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
 alias gitactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
-alias pushreadme="cdvb && git add README.md && gc docs readme 'update root README.md' && gpush"
-alias pushnotes="cdvb && git add notes/ && gc docs 'update md notes' && gpush"
-alias pushtodo="cdvb && git add TODO.md && gc docs todo 'update TODO.md' && gpush"
-alias pushsnippets="cdvb && git add snippets/ && gc docs snippets 'update snippets' && gpush"
-alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'update progress.md' && gpush"
+alias pushreadme="cdvb && git add README.md && gc docs readme 'Update root README.md file.' && gpush"
+alias pushnotes="cdvb && git add notes/ && gc docs 'Update Markdown notes.' && gpush"
+alias pushtodo="cdvb && git add TODO.md && gc docs todo 'Update TODO.md file.' && gpush"
+alias pushsnippets="cdvb && git add snippets/ && gc docs snippets 'Update snippets.' && gpush"
+alias pushprogress="cdvb && git add snippets/progress.md && gc docs progress 'Update progress.md file.' && gpush"
 # Actions
-alias pushactions="cdvb && git add .github/workflows/ && gc build github-actions 'update actions' && gpush"
+alias pushactions="cdvb && git add .github/workflows/ && gc build github-actions 'Update Github actions.' && gpush"
 # Setup
-alias pushsetup="cdvb && git add setup/ && gc feat setup 'enhance setup scripts' && gpush"
+alias pushsetup="cdvb && git add setup/ && gc feat setup 'Update setup scripts.' && gpush"
 # Dotfiles
-alias pushdotfiles="cdvb && git add setup/dotfiles/* && gc docs 'update dotfiles' && gpush"
-alias pushaliases="cdvb && git add setup/dotfiles/zsh/aliases/ setup/dotfiles/zsh/scripts/ && gc feat aliases 'update aliases' && gpush"
+alias pushdotfiles="cdvb && git add setup/dotfiles/* && gc docs 'Update dotfiles.' && gpush"
+alias pushaliases="cdvb && git add setup/dotfiles/zsh/aliases/ setup/dotfiles/zsh/scripts/ && gc feat aliases 'Update aliases.' && gpush"
 # Homebrew
 alias brewdump="cdvb && rm setup/mac/Brewfile && brew bundle dump --file=setup/mac/Brewfile"
-alias pushbrew="cdvb && git add setup/mac/Brewfile && gc feat brew 'update brew' && gpush"
+alias pushbrew="cdvb && git add setup/mac/Brewfile && gc feat brew 'Update Brew file.' && gpush"
 # Projects
 # Secrets Manager
-alias pushsecretsmanager="cdvb && git add projects/secret-manager/ && gc build 'update secrets manager' && gpush"
+alias pushsecretsmanager="cdvb && git add projects/secret-manager/ && gc build 'Update secrets manager.' && gpush"
 # harryliu.design
 alias servehld="cdnx && nx serve personal-website-frontend"
 alias serve-harryliu-design="cdnx && npm run serve:personal-website"
 alias deploy-harryliu-design="cdnx && nx manual-deploy personal-website-frontend"
-alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'update site content' && gpush"
+alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'Update site content.' && gpush"
 
-alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf && gc docs resume 'update resume' && gpush"
-alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'update blog' && gpush"
+alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf && gc docs resume 'Update resume.' && gpush"
+alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'Update blog.' && gpush"
 # Grind 75
 alias testgrind75py="python -m unittest discover -s $GRIND75_DIR/python"
 alias testgrind75ts="cdgrind75ts && npx jest $GRIND75_DIR/typescript"
@@ -68,13 +68,13 @@ alias servetorontoalerts="cdtorontoalerts && venvon && flaskrun"
 alias pushlines="cdvb && git add scripts/python/scrape-ttc-lines/ttc_lines.json && gc chore toronto-alerts 'add lines' && gpush"
 # Cloud8
 alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
-alias pushc8spagecontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'update site content' && gpush"
+alias pushc8spagecontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'Update site content.' && gpush"
 # DJ Stuff
 alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
 alias dldjmusic="cd ~/$REPO_NAME/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
 
 # Journal
-alias pushJournal="cdjournal && git add . && gc docs 'update journal' && gpush"
+alias pushJournal="cdjournal && git add . && gc docs 'Update journal.' && gpush"
 
 # Other
 alias sshpi="ssh hliu@192.168.1.104"
