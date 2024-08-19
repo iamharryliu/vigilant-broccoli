@@ -1,104 +1,32 @@
 # Grind 75 Complexities
 
-- Two Sum
-  - Time Complexity - O(n)
-  - Space Complexity - O(n)
-- Valid Parenthesis
-  - Time Complexity - O(n)
-  - Space Complexity - O(n)
-- Merge Two Sorted Lists
-  - Time Complexity - O(n1 + n2)
-  - Space Complexity - O(1)
-- Best Time to Buy and Sell Stock
-
-  - Time Complexity - O(n)
-  - Space Complexity - O(1)
-
-- Valid Palindrome
-  - Time Complexity - O(n)
-  - Space Complexity - O(1)
-- Invert Binary Tree
-  - Time Complexity - O(n)
-  - Space Complexity - O(n)
-- Valid Anagram
-
-  - Time Complexity - O(m + n)
-  - Space Complexity - O(n)
-
-- Binary Search
-  - Time Complexity - O(logn)
-  - Space Complexity - O(1)
-- Flood Fill
-  - Time Complexity - O(m x n)
-  - Space Complexity - O(m x n)
-- Lowest Common Ancestor of a Binary Tree
-
-  - Iterative Approach
-    - Time Complexity - O(h)
-    - Space Complexity - O(1)
-  - Recursive Approach
-    - Time Complexity - O(h)
-    - Space Complexity - O(h)
-
-- Balanced Binary Tree
-  - Time Complexity - O(n)
-  - Space Complexity - O(n)
-- First Bad Version
-  - Time Complexity - O(logn)
-  - Space Complexity - O(1)
-- Ransom Note
-  - Time Complexity - O(m + n)
-  - Space Complexity - O(m + n)
-- Climbing Stairs
-  - Time Complexity - O(n)
-  - Space Complexity - O(1)
-- Longest Palindrome
-  - Time Complexity - O(n)
-  - Space Complexity - O(n)
-- Majority Element
-  - Boyer-Moore Voting Algorithm
-  - Time Complexity - O(n)
-  - Space Complexity - O(1)
-- Add Binary
-  - Time Complexity - O(max(m, n))
-  - Space Complexity - O(max(m, n))
-- Diameter of Binary Tree
-  - Time Complexity - O(n)
-  - Space Complexity - O(h)
-- Middle of the Linked List
-  - Time Complexity - O(n)
-  - Space Complexity - O(1)
-- Maximum Depth of Binary Tree
-
-  - Time Complexity - O(n)
-  - Space Complexity - O(1)
-
-- Contains Duplicate
-  - Time Complexity - O(n)
-  - Space Complexity - O(n)
-- Maximum Subarray
-  - Kadane's Algorithm
-  - Time Complexity - O(n)
-  - Space Complexity - O(1)
-- Insert Interval
-  - Time Complexity - O(n)
-  - Space Complexity - O(n)
-
-- K Closest Points to Origin
-  - Time Complexity - O(nlogk)
-  - Space Complexity - O(k)
-- K Close
-
-  - Time Complexity - O(klogn)
-  - Space Complexity - O(k)
-- Longest Substring Without Repeating Characters
-  - Kadane's Algorithm
-  - Time Complexity - O(n)
-  - Space Complexity - O(n)
-- Three Sum
-  - Two Pointer Technique
-  - Time Complexity - O(nlogn)
-  - Space Complexity - O(n)
-- Order Level Traversal
-  - Time Complexity - O(n)
-  - Space Complexity - O(n)
+| Question                                            | Time Complexity | Space Complexity | Note                         |
+| :-------------------------------------------------- | :-------------: | :--------------: | :--------------------------- |
+| Two Sum                                             |      O(n)       |       O(n)       |                              |
+| Valid Parenthesis                                   |      O(n)       |       O(n)       |                              |
+| Merge Two Sorted Lists                              |   O(n1 + n2)    |       O(1)       |                              |
+| Best Time to Buy and Sell Stock                     |      O(n)       |       O(1)       |                              |
+| Valid Palindrome                                    |      O(n)       |       O(1)       |                              |
+| Invert Binary Tree                                  |      O(n)       |       O(n)       |                              |
+| Valid Anagram                                       |    O(m + n)     |       O(n)       |                              |
+| Binary Search                                       |     O(logn)     |       O(1)       |                              |
+| Flood Fill                                          |    O(m x n)     |     O(m x n)     |                              |
+| Lowest Common Ancestor of a Binary Tree (iterative) |      O(h)       |       O(1)       |                              |
+| Lowest Common Ancestor of a Binary Tree (recursive) |      O(h)       |       O(h)       |                              |
+| Balanced Binary Tree                                |      O(n)       |       O(n)       |                              |
+| First Bad Version                                   |     O(logn)     |       O(1)       |                              |
+| Ransom Note                                         |    O(m + n)     |     O(m + n)     |                              |
+| Climbing Stairs                                     |      O(n)       |       O(1)       |                              |
+| Longest Palindrome                                  |      O(n)       |       O(n)       |                              |
+| Majority Element                                    |      O(n)       |       O(1)       | Boyer-Moore Voting Algorithm |
+| Add Binary                                          |  O(max(m, n))   |   O(max(m, n))   |                              |
+| Diameter of Binary Tree                             |      O(n)       |       O(h)       |                              |
+| Middle of the Linked List                           |      O(n)       |       O(1)       |                              |
+| Maximum Depth of Binary Tree                        |      O(n)       |       O(1)       |                              |
+| Contains Duplicate                                  |      O(n)       |       O(n)       |                              |
+| Maximum Subarray                                    |      O(n)       |       O(1)       | Kadane's Algorithm           |
+| Insert Interval                                     |      O(n)       |       O(n)       |                              |
+| K Closest Points to Origin                          |    O(nlogk)     |       O(k)       |                              |
+| Longest Substring Without Repeating Characters      |      O(n)       |       O(n)       |                              |
+| Three Sum                                           |    O(nlogn)     |       O(n)       | Two Pointer Technique        |
+| Binary Tree Level Order Traversal                   |      O(n)       |       O(n)       |                              |

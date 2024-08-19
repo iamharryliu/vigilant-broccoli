@@ -10,9 +10,3 @@ class Solution:
             c_index[c] = right
             res = max(res, right - left + 1)
         return res
-
-
-"""
-Time Complexity - O(n)
-Space Complexity - O(n)
-"""
