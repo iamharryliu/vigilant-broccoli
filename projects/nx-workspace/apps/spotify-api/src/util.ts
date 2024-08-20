@@ -43,11 +43,7 @@ export async function fetchPlaylists(accessToken) {
     nextUrl = playlistsData.next;
   }
   const playlists = allPlaylists
-    .filter(
-      playlist =>
-        playlist.description &&
-        playlist.description === ('mix'),
-    )
+    .filter(playlist => playlist.description && playlist.description === 'mix')
     .map(playlist => ({
       name: playlist.name,
       url: playlist.external_urls.spotify,
