@@ -43,3 +43,14 @@ Scheduler used to automate script executions.
 
 - nano
 - vim
+
+## Logging
+
+```
+# Log to same file.
+[command] > [output.log] 2>&1
+# Log to different files.
+[command] > [output.log] 2> [error.log]
+# Log only errors.
+[command] 2> [error.log]
+```
