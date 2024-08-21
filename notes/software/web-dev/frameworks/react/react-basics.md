@@ -39,6 +39,13 @@ export default function App() {
 }
 ```
 
+## State Management
+
+- Prop drilling from ancestor components.
+- Context API.
+- Custom hooks.
+- State management libraries.
+
 ## Event Handling
 
 ```
@@ -87,7 +94,7 @@ root.render(<Component />);
 #### Props Values
 
 ```
-<Component value={data}/>
+<Component value={value}/>
 
 const Component = (props) => {
 	return <>{{ props.value }}</>

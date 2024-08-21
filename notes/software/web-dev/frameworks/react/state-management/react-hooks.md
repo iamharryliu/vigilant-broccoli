@@ -7,19 +7,21 @@
 ```
 // Runs on every render
 useEffect(() => {
-    ...
+    ...sideEffects
+    return () => cleanupCode()
 });
 
 // Runs only on the first render
 useEffect(() => {
-    ...
+    ...sideEffects
     return () => cleanupCode()
 }, []);
 
 // Runs any time any dependency values change
 useEffect(() => {
-    ...
-}, [...values_to_watch]);
+    ...sideEffects
+    return () => cleanupCode()
+}, [...dependencies]);
 ```
 
 ## useState
@@ -84,6 +86,13 @@ const Component() = () => {
 ## useRef
 
 useRef is used to persist values between renders and prevent infinite re-renders.
+Use case scenarios:
+
+- Accessing DOM Elements Directly
+- Storing Mutable Values and Avoiding Re-render Loops
+- Keeping Track of Previous Values
+- Persisting Data Across Renders such as keeping track of loading on form submit
+- Referencing child components
 
 ```
 const count = useRef(0);
@@ -123,6 +132,8 @@ onChange={(e) => setInputValue(e.target.value)}
 
 ## useCallback
 
+Prevents re-creation of functions on every render, which is useful when passing functions as props to child components. It helps avoid unnecessary re-renders in child components that rely on reference equality of props.
+
 ```
 // Will ALWAYS get hit on re-render.
 const fn = () => {
@@ -136,6 +147,8 @@ setState((value) => {...stateValue, newData});
 ```
 
 ## useMemo
+
+Prevents re-execution of expensive calculations, such as filtering a large array or performing complex computations.
 
 ```
 const value = expensiveCalculation(state);

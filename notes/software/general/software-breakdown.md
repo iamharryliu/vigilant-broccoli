@@ -26,10 +26,24 @@
       - Internationalization(i18n)
 
     - Routes
+
       - Handling route parameters
       - Handling nested routes.
       - Handling protected routes.
       - Handling invalid pages.
+
+    - Requests
+
+      - Race conditions.
+      - Memory leaks.
+      - Error handling.
+      - Loading states.
+      - Performance and optimization.
+
+    - Asynchronous Stuff
+      - Event listeners.
+      - Timers.
+      - Subscriptions.
 
   - Backend
     - Request Types - GET, POST, PUT, DELETE
