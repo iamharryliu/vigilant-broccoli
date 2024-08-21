@@ -16,7 +16,7 @@
   - Peppers
   - Chickpeas
 - Caramelization
-  - Caramelized onions
+  - [Caramelized Onions](https://www.seriouseats.com/quick-caramelized-onions-recipe)
 - Salads
   - Lettuce leaves
   - Cucumber
