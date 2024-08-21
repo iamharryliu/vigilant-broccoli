@@ -6,7 +6,7 @@ class TimeMap:
         self.hmap = defaultdict(list)
 
     def set(self, key: str, value: str, timestamp: int) -> None:
-        self.hmap[key].append([value, timestamp])
+        self.hmap[key].append((value, timestamp))
 
     def get(self, key: str, timestamp: int) -> str:
         res = ""
@@ -15,14 +15,13 @@ class TimeMap:
         r = len(values) - 1
         while l <= r:
             m = (l + r) // 2
-            m_values = values[m]
-            t = m_values[1]
-            if t == timestamp:
-                return m_values[0]
-            if t < timestamp:
+            value, time = values[m]
+            if time == timestamp:
+                return value
+            if time < timestamp:
                 l = m + 1
-                res = m_values[0]
-            if t > timestamp:
+                res = value
+            if time > timestamp:
                 r = m - 1
         return res
 
