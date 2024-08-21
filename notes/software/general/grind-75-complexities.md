@@ -42,5 +42,6 @@
 | Time Based Key-Value Store                                 | Set Fn - O(1), Get Fn - O(logn) |    Set Fn - O(n) - Get Fn - O(1)    |                              |
 | Coin Change                                                |        O(coins × amount)        |              O(amount)              | dp=[...1], dp[0]=0           |                              |
 | Word Break                                                 |                                 |                                     | dp=[...False], dp[-1]=True   |                              |
+| Binary Tree Right Side View                                |              O(n)               |                O(n)                 |                              |                              |
 | Unique Paths                                               |             O(m×n)              |                O(n)                 | dp=[...1]                    |                              |
 | Basic Calculator                                           |              O(n)               |                O(n)                 | stack=[], sign=1, i=0, res=0 |                              |
