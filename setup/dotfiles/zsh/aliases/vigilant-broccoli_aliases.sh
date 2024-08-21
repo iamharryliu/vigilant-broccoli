@@ -65,7 +65,7 @@ alias servecmsdev="cdvb; cd projects/cms-flask/; venvon; python dev_manager.py D
 # Toronto Alerts
 alias cdtorontoalerts="cdvb && cd projects/toronto-alerts/toronto-alerts-flask"
 alias servetorontoalerts="cdtorontoalerts && venvon && flaskrun"
-alias pushlines="cdvb && git add scripts/python/scrape-ttc-lines/ttc_lines.json && gc chore toronto-alerts 'add lines' && gpush"
+alias pushlines="cdvb && git add scripts/python/scrape-ttc-lines/ttc_lines.json && gc chore toronto-alerts 'Add TTC lines.' && gpush"
 # Cloud8
 alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
 alias pushc8spagecontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'Update site content.' && gpush"
