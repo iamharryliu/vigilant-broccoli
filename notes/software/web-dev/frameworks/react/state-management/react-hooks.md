@@ -36,6 +36,8 @@ setState(previousState => {
 
 ## useContext
 
+Use context without provider will not rerender in context change, provider gives access to state changes.
+
 ```
 type Context{
 	...
