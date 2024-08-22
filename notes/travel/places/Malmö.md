@@ -41,3 +41,8 @@
 ## Library
 
 - [Malmö Stad Biblioteken](https://malmo.se/Uppleva-och-gora/Biblioteken/Vara-bibliotek.html)
+
+## Waste Management
+
+- [https://www.thenewbieguide.se/waste-sorting-and-disposal-in-sweden/](https://www.thenewbieguide.se/waste-sorting-and-disposal-in-sweden/)
+- [Guide of waste sorting in Sweden](https://medium.com/@kevinli1/guide-of-waste-sorting-in-sweden-9653e3048b15)
