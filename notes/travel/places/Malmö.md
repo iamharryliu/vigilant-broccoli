@@ -46,3 +46,11 @@
 
 - [https://www.thenewbieguide.se/waste-sorting-and-disposal-in-sweden/](https://www.thenewbieguide.se/waste-sorting-and-disposal-in-sweden/)
 - [Guide of waste sorting in Sweden](https://medium.com/@kevinli1/guide-of-waste-sorting-in-sweden-9653e3048b15)
+
+## Finance
+
+- [Tax Agency](https://www.skatteverket.se/)
+
+## Immigration
+
+- [Migration Agency](https://www.migrationsverket.se/English.html)
