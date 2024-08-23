@@ -7,6 +7,7 @@
   - feat(toronto-alerts): update email header to be more explicit
   - feat(dj-scripts): spotify playlist scrape
     - Handle [Spotify rate limits](https://developer.spotify.com/documentation/web-api/concepts/rate-limits).
+    - Fix playlists output.
   - Update git flows, commit > pull --rebase > push
   - feat(cms-flask):
     - Dynamic page contents.
