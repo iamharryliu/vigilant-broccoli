@@ -3,7 +3,8 @@
 ## vigilant-broccoli
 
 - Q1
-
+  - feat: Migration to new domain..
+- Q2
   - feat(toronto-alerts): update email header to be more explicit
   - feat(dj-scripts): spotify playlist scrape
     - Handle [Spotify rate limits](https://developer.spotify.com/documentation/web-api/concepts/rate-limits).
@@ -16,8 +17,6 @@
     - Handle receiving emails for message requests.
     - Virus scanning for uploads.
   - refactor(contact-center)
-
-- Q2
   - feat(app-monitor): Budget alerts for services.
   - feat(setup): set divvy privacy and security a11y
   - feat(setup): recursive makevenv
