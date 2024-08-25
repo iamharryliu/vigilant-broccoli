@@ -15,7 +15,8 @@
 | Lowest Common Ancestor of a Binary Search Tree (recursive) |              O(h)               |                O(h)                 |                              |                              |
 | Balanced Binary Tree                                       |              O(n)               |                O(n)                 |                              |                              |
 | Linked List Cycle                                          |              O(n)               |                O(1)                 |                              |                              |
-| First Bad Version                                          |             O(logn)             |                O(1)                 |                              |                              |
+| Implement Queue using Stacks                               |              O(n)               |                O(1)                 |                              | need ts tc                   |
+| First Bad Version                                          |             O(logn)             |                O(1)                 |                              | need ts tc                   |
 | Ransom Note                                                |            O(m + n)             |              O(m + n)               |                              |                              |
 | Climbing Stairs                                            |              O(n)               |                O(1)                 |                              |                              |
 | Longest Palindrome                                         |              O(n)               |                O(n)                 |                              |                              |
