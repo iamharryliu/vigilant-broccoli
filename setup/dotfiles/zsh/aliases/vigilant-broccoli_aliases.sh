@@ -79,3 +79,6 @@ alias pushJournal="cdjournal && git add . && gc docs 'Update journal.' && gpush"
 # Other
 alias sshpi="ssh hliu@192.168.1.104"
 alias machinesetup="cdvb && ./setup/mac/install.sh"
+## Obsidian
+alias openNotes="open 'obsidian://open?vault=notes'"
+alias openJournal="open 'obsidian://open?vault=journal'"

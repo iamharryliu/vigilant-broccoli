@@ -128,3 +128,9 @@ alias nxdeployall="cdnx && nx run-many -t=deploy"
 # Analytics
 alias ganalytics='chrome "https://analytics.google.com/analytics/"'
 alias gcaptcha='chrome "https://www.google.com/recaptcha/admin/"'
+
+# Dev Billing
+alias openFlyBilling='chrome "https://fly.io/dashboard/personal/billing"'
+alias openOpenAIBilling='chrome "https://platform.openai.com/account/billing/overview"'
+alias openAWSBilling='chrome "https://us-east-1.console.aws.amazon.com/costmanagement/home?region=us-east-1#/home"'
+alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
