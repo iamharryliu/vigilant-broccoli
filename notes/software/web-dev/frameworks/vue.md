@@ -78,9 +78,11 @@ const router = createRouter({
 - v-model - Create two-way data binding on form inputs.
 
 ```
-const value = ref(null);
+const ref = ref(null);
+console.log(ref.value)
+
 <input
-  v-model="value"
+  v-model="ref"
   @blur="blurHandler"
   @keyup.enter="enterHandler"
 >

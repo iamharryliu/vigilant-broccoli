@@ -1,23 +1,41 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useTodoStore } from '../store/todoStore.ts'
 import { storeToRefs } from 'pinia'
+import TodoForm from '../components/forms/TodoForm.vue'
 
 const todoStore = useTodoStore()
+const { todos } = storeToRefs(todoStore)
+const { fetchTodos, updateTodo, deleteTodo } = todoStore
 
-const { todos, editingId, editingValue } = storeToRefs(todoStore)
-
-const { fetchTodos, handleEditClick, handleTodoUpdate, deleteTodo } =
-  todoStore
+const editingId = ref<number | null>(null)
+const editingValue = ref<string | null>(null)
 
 onMounted(async () => {
   await fetchTodos()
 })
+
+const handleEditClick = (todo: Todo) => {
+  editingId.value = todo.id
+  editingValue.value = todo.title
+}
+
+const handleTodoUpdate = () => {
+  if (!editingValue.value) {
+    deleteTodo(editingId.value!)
+    return
+  }
+  updateTodo({ id: editingId.value!, title: editingValue.value })
+  editingId.value = null
+  editingValue.value = ''
+}
+
 </script>
 
 <template>
   <main class="container">
     <h1>Todo</h1>
+    <TodoForm />
     <ul class="list-group">
       <template v-if="todos.length">
         <li class="list-group-item" v-for="todo in todos" :key="todo.id">

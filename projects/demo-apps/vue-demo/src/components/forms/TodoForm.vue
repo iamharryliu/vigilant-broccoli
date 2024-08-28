@@ -9,6 +9,17 @@
 </template>
 
 <script setup lang="ts">
-const todo = ''
-const handleSubmit = () => {}
+import { ref } from 'vue'
+import { useTodoStore } from '../../store/todoStore.ts'
+
+const todoStore = useTodoStore()
+const { createTodo } = todoStore
+const todo = ref('')
+
+const handleSubmit = () => {
+  if (todo.value) {
+    createTodo(todo.value)
+    todo.value = ''
+  }
+}
 </script>

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios from 'axios'
+import { TODO_ENDPOINT } from '@/config'
 
 export type Todo = {
   id: number
@@ -9,8 +10,6 @@ export type Todo = {
 
 export const useTodoStore = defineStore('todo', () => {
   const todos = ref<Todo[]>([])
-  const editingId = ref<number | null>(null)
-  const editingValue = ref<string | null>(null)
 
   const fetchTodos = async () => {
     try {
@@ -21,19 +20,25 @@ export const useTodoStore = defineStore('todo', () => {
     }
   }
 
-  const handleEditClick = (todo: Todo) => {
-    editingId.value = todo.id
-    editingValue.value = todo.title
-  }
+  const createTodo = async (title: string) => {
+    try {
+      const response = await axios.post(
+        TODO_ENDPOINT.CREATE_TODO,
+        {
+          title
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
 
-  const handleTodoUpdate = () => {
-    if (!editingValue.value) {
-      deleteTodo(editingId.value!)
-      return
+      const payload = response.data
+      todos.value = [...todos.value, payload]
+    } catch (error) {
+      console.error('Error creating todo:', error)
     }
-    updateTodo({ id: editingId.value!, title: editingValue.value })
-    editingId.value = null
-    editingValue.value = ''
   }
 
   const updateTodo = (updatedTodo: Todo) => {
@@ -47,10 +52,7 @@ export const useTodoStore = defineStore('todo', () => {
   return {
     todos,
     fetchTodos,
-    editingId,
-    editingValue,
-    handleEditClick,
-    handleTodoUpdate,
+    createTodo,
     updateTodo,
     deleteTodo
   }
