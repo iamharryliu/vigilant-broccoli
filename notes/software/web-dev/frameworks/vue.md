@@ -59,7 +59,13 @@ const router = createRouter({
 <li v-for="link in items" :key="item.key">
 ```
 
-#### Event Handling
+## Components
+
+- `<template>` Defines the HTML structure.
+- `<script>` Contains the component's logic.
+- `<style>` Adds styles specific to the component.
+
+## Event Handling
 
 ```
 <button v-on:click="function">Reverse Message</button>
@@ -67,7 +73,9 @@ const router = createRouter({
 <button @click="function(arg)">Toggle Login Status</button>
 ```
 
-#### Form Handling
+## Form Handling
+
+- v-model - Create two-way data binding on form inputs.
 
 ```
 const value = ref(null);
@@ -77,3 +85,9 @@ const value = ref(null);
   @keyup.enter="enterHandler"
 >
 ```
+
+## Lifecycle Hooks
+
+- `onMounted()` - Called after the component is mounted to the DOM.
+- `onUpdated()` - Called after a reactive data change causes a re-render.
+- `unUnmounted()`- Called right before the component is removed from the DOM.

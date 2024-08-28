@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 const todos = ref([])
+const editingId = ref<number | null>(null)
+const editingValue = ref<string | null>(null)
 
 onMounted(async () => {
   try {
@@ -13,30 +15,28 @@ onMounted(async () => {
   }
 })
 
-const editingId = ref<number|null>(null);
-const editingValue = ref<string|null>(null);
 
 const handleEditClick = (todo) => {
   editingId.value = todo.id
   editingValue.value = todo.title
-};
+}
 
-const handleTodoUpdate = () =>{
+const handleTodoUpdate = () => {
   if (!editingValue.value) {
-    deleteTodo(editingId);
-    return;
+    deleteTodo(editingId)
+    return
   }
-  updateTodo({id:editingId.value, title: editingValue.value});
-  editingId.value=null
-  editingValue.value=''
+  updateTodo({ id: editingId.value, title: editingValue.value })
+  editingId.value = null
+  editingValue.value = ''
 }
 
 const updateTodo = (updatedTodo) => {
-  todos.value = todos.value.map(todo => (updatedTodo.id === todo.id ? updatedTodo : todo))
+  todos.value = todos.value.map((todo) => (updatedTodo.id === todo.id ? updatedTodo : todo))
 }
 
 const deleteTodo = (id: number) => {
-  todos.value = todos.value.filter(todo=>todo.id!=id)
+  todos.value = todos.value.filter((todo) => todo.id != id)
 }
 </script>
 
@@ -47,12 +47,12 @@ const deleteTodo = (id: number) => {
       <template v-if="todos.length">
         <li class="list-group-item" v-for="todo in todos" :key="todo.id">
           <input
-          v-if="editingId === todo.id"
-                type="text"
-                v-model="editingValue"
-                @blur="handleTodoUpdate"
-                @keyup.enter="handleTodoUpdate"
-              />
+            v-if="editingId === todo.id"
+            type="text"
+            v-model="editingValue"
+            @blur="handleTodoUpdate"
+            @keyup.enter="handleTodoUpdate"
+          />
           <span v-else @click="handleEditClick(todo)">
             {{ todo.title }}
           </span>
