@@ -12,6 +12,10 @@ onMounted(async () => {
     console.error('Error fetching todos:', error)
   }
 })
+
+const deleteTodo = (id: number) => {
+  todos.value = todos.value.filter(todo=>todo.id!=id)
+}
 </script>
 
 <template>
@@ -25,7 +29,7 @@ onMounted(async () => {
           </span>
           <div class="float-end">
             <button class="btn btn-primary me-2">Edit</button>
-            <button class="btn btn-danger">Delete</button>
+            <button class="btn btn-danger" @click="deleteTodo(todo.id)">Delete</button>
           </div>
         </li>
       </template>
