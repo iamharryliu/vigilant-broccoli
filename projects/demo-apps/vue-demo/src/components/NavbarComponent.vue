@@ -17,7 +17,7 @@ const toTitleCase = (str: string) =>
   <header>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
-        <RouterLink class="navbar-brand" to="/">Home</RouterLink>
+        <RouterLink class="navbar-brand" to="/">Vue Demo</RouterLink>
         <button class="navbar-toggler" type="button" @click="toggle">
           <span class="navbar-toggler-icon"></span>
         </button>
