@@ -13,6 +13,28 @@ onMounted(async () => {
   }
 })
 
+const editingId = ref<number|null>(null);
+const editingValue = ref<string|null>(null);
+
+const handleEditClick = (todo) => {
+  editingId.value = todo.id
+  editingValue.value = todo.title
+};
+
+const handleTodoUpdate = () =>{
+  if (!editingValue.value) {
+    deleteTodo(editingId);
+    return;
+  }
+  updateTodo({id:editingId.value, title: editingValue.value});
+  editingId.value=null
+  editingValue.value=''
+}
+
+const updateTodo = (updatedTodo) => {
+  todos.value = todos.value.map(todo => (updatedTodo.id === todo.id ? updatedTodo : todo))
+}
+
 const deleteTodo = (id: number) => {
   todos.value = todos.value.filter(todo=>todo.id!=id)
 }
@@ -24,11 +46,18 @@ const deleteTodo = (id: number) => {
     <ul class="list-group">
       <template v-if="todos.length">
         <li class="list-group-item" v-for="todo in todos" :key="todo.id">
-          <span>
+          <input
+          v-if="editingId === todo.id"
+                type="text"
+                v-model="editingValue"
+                @blur="handleTodoUpdate"
+                @keyup.enter="handleTodoUpdate"
+              />
+          <span v-else @click="handleEditClick(todo)">
             {{ todo.title }}
           </span>
           <div class="float-end">
-            <button class="btn btn-primary me-2">Edit</button>
+            <button class="btn btn-primary me-2" @click="handleEditClick(todo)">Edit</button>
             <button class="btn btn-danger" @click="deleteTodo(todo.id)">Delete</button>
           </div>
         </li>

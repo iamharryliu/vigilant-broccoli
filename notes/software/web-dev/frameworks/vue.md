@@ -36,10 +36,8 @@ const router = createRouter({
 #### Binding
 
 ```
-
 <a :href="url">...</a>
 <button :disabled="isButtonDisabled">...</button>
-
 <div :class="{ active: isActive }">...</div>
 ```
 
@@ -67,4 +65,15 @@ const router = createRouter({
 <button v-on:click="function">Reverse Message</button>
 <button @click="function">Toggle Login Status</button>
 <button @click="function(arg)">Toggle Login Status</button>
+```
+
+#### Form Handling
+
+```
+const value = ref(null);
+<input
+  v-model="value"
+  @blur="blurHandler"
+  @keyup.enter="enterHandler"
+>
 ```
