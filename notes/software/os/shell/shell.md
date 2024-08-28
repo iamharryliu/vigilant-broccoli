@@ -53,4 +53,6 @@ Scheduler used to automate script executions.
 [command] > [output.log] 2> [error.log]
 # Log only errors.
 [command] 2> [error.log]
+
+du -sh DIRECTORY
 ```
