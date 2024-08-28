@@ -1,43 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { onMounted } from 'vue'
+import { useTodoStore } from '../store/todoStore.ts'
+import { storeToRefs } from 'pinia'
 
-const todos = ref([])
-const editingId = ref<number | null>(null)
-const editingValue = ref<string | null>(null)
+const todoStore = useTodoStore()
+
+const { todos, editingId, editingValue } = storeToRefs(todoStore)
+
+const { fetchTodos, handleEditClick, handleTodoUpdate, deleteTodo } =
+  todoStore
 
 onMounted(async () => {
-  try {
-    const response = await axios.get('https://jsonplaceholder.typicode.com/todos')
-    todos.value = response.data.slice(0, 10)
-  } catch (error) {
-    console.error('Error fetching todos:', error)
-  }
+  await fetchTodos()
 })
-
-
-const handleEditClick = (todo) => {
-  editingId.value = todo.id
-  editingValue.value = todo.title
-}
-
-const handleTodoUpdate = () => {
-  if (!editingValue.value) {
-    deleteTodo(editingId)
-    return
-  }
-  updateTodo({ id: editingId.value, title: editingValue.value })
-  editingId.value = null
-  editingValue.value = ''
-}
-
-const updateTodo = (updatedTodo) => {
-  todos.value = todos.value.map((todo) => (updatedTodo.id === todo.id ? updatedTodo : todo))
-}
-
-const deleteTodo = (id: number) => {
-  todos.value = todos.value.filter((todo) => todo.id != id)
-}
 </script>
 
 <template>
