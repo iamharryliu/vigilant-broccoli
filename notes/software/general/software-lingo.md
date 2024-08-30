@@ -25,8 +25,22 @@ scheme    authority      path        query     hash
 - Elastisearch - Open source search and analytics engine.
 - Redis - Open source in-memory datastore used for database caching.
 - Hadoop
+
   - Storage - Hadoop Distribute File System. Has copies of data on multiple systems making it fault tolerant.
   - MapReduce
     - Splits data into parts and processes it in different nodes for load balancing and saving time.
     - Map, Reduce, Shuffle
   - Yet Another Resource Manager(YARN) - Resource management and scheduling
+
+- Bundlers - Used for combining files, managing dependencies, and optimizing the output for performance, making the application ready for deployment.
+- Transpilers - Used for transforming code syntax and features, making sure the code runs across different environments.
+- Javascript
+
+  - Nx - Monorepo CI tool.
+  - Nuxt - Opinionated Vue.
+  - Next - Opinionated React.
+  - Webpack (bundler)
+  - Rollup (bundler)
+  - Babel (compiler)
+  - SWC (sppedy web compiler)
+  - Vite (build tool, uses Rollup to bundle)
