@@ -33,6 +33,14 @@ const router = createRouter({
 
 ### Template
 
+#### Interpolation
+
+```
+<span> {{ msg }} </span>
+<span v-text='msg'></span>
+<span v-html='rawHTML'></span>
+```
+
 #### Binding
 
 ```
@@ -56,7 +64,8 @@ const router = createRouter({
 #### List Rendering
 
 ```
-<li v-for="link in items" :key="item.key">
+<li v-for='item in items' :key='item.key'></li>
+<li v-for='(item, index) in items'></li>
 ```
 
 ## Components
