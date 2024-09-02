@@ -30,8 +30,16 @@ https://www.googleapis.com/auth/userinfo.email
 # GAM
 
 - [GAM](https://github.com/GAM-team/GAM)
-  - [GAM Commands](https://github.com/GAM-team/GAM/wiki#more-simple-gam-commands)
+
+  - [Wiki](https://github.com/GAM-team/GAM/wiki/GoogleDriveManagement#creating-and-uploading-drive-files-for-users)
+  - [GAM Directory Commands](https://github.com/GAM-team/GAM/wiki/GAM3DirectoryCommands)
+  - [GAM Drive Transfer](https://github.com/GAM-team/GAM/wiki/Data-Transfers#request-a-data-transfer)
+  - [GAM Discussion](https://groups.google.com/g/google-apps-manager)
+
 - [GYB](https://github.com/GAM-team/got-your-back)
+  - [Wiki](https://github.com/GAM-team/got-your-back/wiki)
+  - [Performing a Backup](https://github.com/GAM-team/got-your-back/wiki#performing-a-backup)
+  - [Performing a Restore](https://github.com/GAM-team/got-your-back/wiki#performing-a-restore)
 - [Reuse GAM](https://groups.google.com/g/google-apps-manager/c/DsWO3PKSAAM)
 
 ```

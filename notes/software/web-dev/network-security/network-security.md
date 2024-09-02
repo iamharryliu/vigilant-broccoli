@@ -9,6 +9,13 @@
 - Never trust user input.
 - Never store secrets on a client-side application.
 
+## Types of Authentication
+
+- API Key - Generated key used to pass through requests to access API.
+- OAuth - Clientside application will redirect to a third party authorization (Google, Facebook, Apple, etc) and grant an OAuth Token.
+- SSO -When the user signs in sucessfully they are granted an authentication token that is used to remember the user is verified.
+- OTP - One time password that is passed to the user usually via email or password.
+
 ## Password Cracking
 
 - Brute force
