@@ -26,14 +26,14 @@ alias gam="~/bin/gam/gam"
 alias gyb="~/bin/gyb/gyb"
 
 gam oauth info
+
 gam info user
-gam info user EMAIL
 gam print users
+gam info user EMAIL
 gam delete user EMAIL
 
 gam print transferapps
 gam create datatransfer FROM_EMAIL gdrive TO_EMAIL privacy_level shared,private
-
 
 gyb --email EMAIL --action backup --local-folder FOLDER  --spam-trash --search QUERY --service-account
 gyb --email EMAIL --action estimate --local-folder FOLDER  --spam-trash --search QUERY --service-account
