@@ -2,6 +2,44 @@
 
 - [Pricing](https://workspace.google.com/pricing)
 
+## GAM
+
+### Reference
+
+- [GAM](https://github.com/GAM-team/GAM)
+
+  - [Wiki](https://github.com/GAM-team/GAM/wiki/GoogleDriveManagement#creating-and-uploading-drive-files-for-users)
+  - [GAM Directory Commands](https://github.com/GAM-team/GAM/wiki/GAM3DirectoryCommands)
+  - [GAM Drive Transfer](https://github.com/GAM-team/GAM/wiki/Data-Transfers#request-a-data-transfer)
+  - [GAM Discussion](https://groups.google.com/g/google-apps-manager)
+
+- [GYB](https://github.com/GAM-team/got-your-back)
+  - [Wiki](https://github.com/GAM-team/got-your-back/wiki)
+  - [Performing a Backup](https://github.com/GAM-team/got-your-back/wiki#performing-a-backup)
+  - [Performing a Restore](https://github.com/GAM-team/got-your-back/wiki#performing-a-restore)
+- [Reuse GAM](https://groups.google.com/g/google-apps-manager/c/DsWO3PKSAAM)
+
+### Commands
+
+```
+alias gam="~/bin/gam/gam"
+alias gyb="~/bin/gyb/gyb"
+
+gam oauth info
+gam info user
+gam info user EMAIL
+gam print users
+gam delete user EMAIL
+
+gam print transferapps
+gam create datatransfer FROM_EMAIL gdrive TO_EMAIL privacy_level shared,private
+
+
+gyb --email EMAIL --action backup --local-folder FOLDER  --spam-trash --search QUERY --service-account
+gyb --email EMAIL --action estimate --local-folder FOLDER  --spam-trash --search QUERY --service-account
+gyb --email EMAIL --action restore --local-folder FOLDER --service-account
+```
+
 ## Domain Wide Delegation
 
 - [Delegating domain-wide authority to the service account](https://developers.google.com/identity/protocols/oauth2/service-account#delegatingauthority)
@@ -25,24 +63,4 @@ https://www.googleapis.com/auth/photoslibrary.readonly,
 https://www.googleapis.com/auth/spreadsheets,
 https://www.googleapis.com/auth/tasks,
 https://www.googleapis.com/auth/userinfo.email
-```
-
-# GAM
-
-- [GAM](https://github.com/GAM-team/GAM)
-
-  - [Wiki](https://github.com/GAM-team/GAM/wiki/GoogleDriveManagement#creating-and-uploading-drive-files-for-users)
-  - [GAM Directory Commands](https://github.com/GAM-team/GAM/wiki/GAM3DirectoryCommands)
-  - [GAM Drive Transfer](https://github.com/GAM-team/GAM/wiki/Data-Transfers#request-a-data-transfer)
-  - [GAM Discussion](https://groups.google.com/g/google-apps-manager)
-
-- [GYB](https://github.com/GAM-team/got-your-back)
-  - [Wiki](https://github.com/GAM-team/got-your-back/wiki)
-  - [Performing a Backup](https://github.com/GAM-team/got-your-back/wiki#performing-a-backup)
-  - [Performing a Restore](https://github.com/GAM-team/got-your-back/wiki#performing-a-restore)
-- [Reuse GAM](https://groups.google.com/g/google-apps-manager/c/DsWO3PKSAAM)
-
-```
-alias gam="~/bin/gam/gam"
-alias gyb="~/bin/gyb/gyb"
 ```
