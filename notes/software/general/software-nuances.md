@@ -37,3 +37,13 @@
   - GraphQL provides a contract between front and backend.
   - Enables user to request for exactly what they want.
   - GraphQL requires more overhead to setup.
+
+# Backend
+
+- POST vs PUT vs PATCH
+
+# Frontend
+
+## Javascript
+
+- Axios vs Fetch
