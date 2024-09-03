@@ -12,7 +12,7 @@ ENV PORT=3000
 WORKDIR /app
 
 RUN addgroup --system vibecheck-lite-express && \
-          adduser --system -G vibecheck-lite-express vibecheck-lite-express
+    adduser --system -G vibecheck-lite-express vibecheck-lite-express
 
 COPY dist/apps/api/vibecheck-lite-express vibecheck-lite-express
 RUN chown -R vibecheck-lite-express:vibecheck-lite-express .
