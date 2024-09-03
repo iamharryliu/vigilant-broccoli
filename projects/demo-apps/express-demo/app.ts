@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.options('*', cors(CORS_OPTIONS));
 app.use(router);
-app.use('/todo', todoRouter);
+app.use('/todos', todoRouter);
 app.use(requestLogger);
 app.use(errorLogger);
 app.use(errorResponder);
