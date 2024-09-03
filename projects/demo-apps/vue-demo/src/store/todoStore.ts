@@ -13,7 +13,7 @@ export const useTodoStore = defineStore('todo', () => {
 
   const fetchTodos = async () => {
     try {
-      const response = await axios.get('https://jsonplaceholder.typicode.com/todos')
+      const response = await axios.get(TODO_API_URL)
       todos.value = response.data.slice(0, 10)
     } catch (error) {
       console.error('Error fetching todos: ', error)
@@ -58,7 +58,7 @@ export const useTodoStore = defineStore('todo', () => {
 
   const deleteTodo = async (id: number) => {
     try {
-      const response = await axios.delete(`${TODO_API_URL}/${id}`, TODO_HEADERS)
+      const response = await axios.delete(`${TODO_API_URL}/${id}`)
       if (response.status === 200) todos.value = todos.value.filter((todo) => todo.id != id)
     } catch (error) {
       console.log('Error deleting todo: ', error)

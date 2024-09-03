@@ -1,6 +1,6 @@
 import { createContext, useCallback, useEffect, useReducer } from 'react';
 import useFetch from '../../hooks/useFetch';
-import { TODO_ENDPOINT } from '../../config';
+import { TODO_API_URL, TODO_HEADERS } from '../../config';
 import { Todo, TodoContextType } from '../../types';
 import { todoReducer, TODO_ACTION } from './TodoReducer';
 
@@ -23,7 +23,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [todos, dispatch] = useReducer(todoReducer, INITIAL_STATE);
-  const data = useFetch(TODO_ENDPOINT.GET_TODOS);
+  const data = useFetch(TODO_API_URL);
 
   useEffect(() => {
     if (data) {
@@ -32,11 +32,9 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [data]);
 
   const createTodo = useCallback(async (title: string) => {
-    const response = await fetch(TODO_ENDPOINT.CREATE_TODO, {
+    const response = await fetch(TODO_API_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      ...TODO_HEADERS,
       body: JSON.stringify({ title }),
     });
     const payload = await response.json();
@@ -44,19 +42,17 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const updateTodo = useCallback(async (id: number, title: string) => {
-    const response = await fetch(`${TODO_ENDPOINT.UPDATE_TODO}/${id}`, {
+    const response = await fetch(`${TODO_API_URL}/${id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ title }),
+      ...TODO_HEADERS,
+      body: JSON.stringify({ id, title }),
     });
     const payload = await response.json();
     dispatch({ type: TODO_ACTION.UPDATE_TODO, payload });
   }, []);
 
   const deleteTodo = useCallback((id: number) => {
-    fetch(`${TODO_ENDPOINT.DELETE_TODO}/${id}`, {
+    fetch(`${TODO_API_URL}/${id}`, {
       method: 'DELETE',
     });
     dispatch({ type: TODO_ACTION.DELETE_TODO, payload: id });
