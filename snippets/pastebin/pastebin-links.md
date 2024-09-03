@@ -12,6 +12,7 @@
 - Github - https://github.com/iamharryliu
 - LinkedIn - https://www.linkedin.com/in/iamharryliu/
 - Demo Apps
+  - [Express Demo](https://express-demo.fly.dev/)
   - [React Demo](https://react-demo-dcx.pages.dev/)
   - [Vue Demo](https://vue-demo-5gs.pages.dev/)
 
