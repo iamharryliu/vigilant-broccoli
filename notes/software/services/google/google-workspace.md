@@ -10,7 +10,9 @@
 
   - [Wiki](https://github.com/GAM-team/GAM/wiki/GoogleDriveManagement#creating-and-uploading-drive-files-for-users)
   - [GAM Directory Commands](https://github.com/GAM-team/GAM/wiki/GAM3DirectoryCommands)
-  - [GAM Drive Transfer](https://github.com/GAM-team/GAM/wiki/Data-Transfers#request-a-data-transfer)
+  - GAM Drive Handling
+    - [GAM Drive Transfer](https://github.com/GAM-team/GAM/wiki/Data-Transfers#request-a-data-transfer)
+    - [Driv File Querying](https://developers.google.com/drive/api/guides/search-files)
   - [GAM Discussion](https://groups.google.com/g/google-apps-manager)
 
 - [GYB](https://github.com/GAM-team/got-your-back)
