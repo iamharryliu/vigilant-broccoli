@@ -96,3 +96,8 @@
 
   - State Management
   - SEO
+
+- Application Monitoring
+  - Distributed Tracing: Understanding the flow of requests across microservices.
+  - Performance Monitoring: Monitoring application performance through metrics.
+  - Logging: Contextualizing trace and metric data with relevant logs.

@@ -10,12 +10,12 @@ npx wrangler pages dev [path_to_app_dist]
 
 # Deployment
 # New project.
-wrangler pages project create [project_name]
-CLOUDFLARE_ACCOUNT_ID=$CLOUDFLARE_ID npx wrangler pages deploy [dist] --project-name
-npx wrangler pages deploy [dist]
+wrangler pages project create PROJECT_NAME
+CLOUDFLARE_ACCOUNT_ID=$CLOUDFLARE_ID npx wrangler pages deploy [dist] --project-name PROJECT_NAME
+npx wrangler pages deploy DIST_PATH
 # Existing project
-npx wrangler pages deploy [dist] --project-name [project_name]
-npx wrangler pages project delete [project_name]
+npx wrangler pages deploy [dist] --project-name PROJECT_NAME
+npx wrangler pages project delete PROJECT_NAME
 npx wrangler pages project list
 
 
