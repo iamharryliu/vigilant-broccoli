@@ -1,0 +1,26 @@
+name: React Demo - Deploy App
+on:
+  push: { branches: ['main'] }
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    defaults:
+      run:
+        working-directory: ./projects/demo-apps/react-demo
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          workingDirectory: projects/demo-apps/react-demo
+          command: pages deploy dist --project-name react-demo
