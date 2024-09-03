@@ -63,7 +63,7 @@ alias flyls='fly apps list'
 # App
 # Create and Destroy
 alias flydeploy='fly deploy --ha=false'
-alias flyview='fly apps open --app'
+alias flyopen='fly apps open --app'
 alias flyadestroy='fly apps destroy'
 # Start and Stop Machines
 alias flymstart='flyctl machine start'
