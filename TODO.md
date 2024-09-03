@@ -3,7 +3,7 @@
 ## vigilant-broccoli
 
 - Q1
-  - feat: Migration to new domain..
+  - feat(harryliu.design): Migration to new domain..
 - Q2
   - resume update
     - add soft skills
