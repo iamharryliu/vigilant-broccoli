@@ -5,6 +5,15 @@
 - Q1
   - feat: Migration to new domain..
 - Q2
+  - resume update
+    - add soft skills
+      - Team player
+      - Strong communication
+      - Strong listening skills
+      - Open to asking questions or being asked questions
+      - Capable of explaining technical ideas to non technical people
+    - add metrics
+    - remove fluff words
   - feat(toronto-alerts): update email header to be more explicit
   - feat(dj-scripts): spotify playlist scrape
     - Handle [Spotify rate limits](https://developer.spotify.com/documentation/web-api/concepts/rate-limits).
