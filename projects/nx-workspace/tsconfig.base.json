@@ -27,6 +27,9 @@
       "@prettydamntired/test-node-tools": [
         "libs/@prettydamntired/test-node-tools/src/index.ts"
       ],
+      "@prettydamntired/todo-lib": [
+        "libs/@prettydamntired/todo-lib/src/index.ts"
+      ],
       "@prettydamntired/vibecheck-lite": [
         "libs/@prettydamntired/vibecheck-lite/src/index.ts"
       ],

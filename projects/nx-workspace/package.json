@@ -32,6 +32,7 @@
     "@nx/jest": "17.3.0",
     "@nx/js": "17.3.0",
     "@nx/node": "17.3.0",
+    "@nx/vite": "17.3.0",
     "@nx/web": "17.3.0",
     "@nx/webpack": "17.3.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
@@ -48,6 +49,8 @@
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "6.21.0",
     "@typescript-eslint/parser": "6.21.0",
+    "@vitest/coverage-v8": "^1.0.4",
+    "@vitest/ui": "^1.0.4",
     "autoprefixer": "^10.4.0",
     "concurrently": "^8.2.2",
     "cypress": "^13.0.0",
@@ -71,6 +74,9 @@
     "typescript": "5.3.3",
     "url-loader": "^4.1.1",
     "verdaccio": "^5.0.4",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "~2.3.0",
+    "vitest": "^1.0.4",
     "wrangler": "^3.27.0"
   },
   "workspaces": [
