@@ -1,7 +1,4 @@
-export type Todo = {
-  id: number;
-  title: string;
-};
+import { Todo } from '@prettydamntired/todo-lib';
 
 export type TodoContextType = {
   todos: Todo[];

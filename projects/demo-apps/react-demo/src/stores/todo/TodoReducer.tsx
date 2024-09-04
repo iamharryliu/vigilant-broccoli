@@ -1,4 +1,4 @@
-import { Todo } from '../../types';
+import { Todo } from "@prettydamntired/todo-lib";
 
 export const TODO_ACTION = {
   CREATE_TODO: 'CREATE_TODO',

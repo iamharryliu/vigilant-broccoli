@@ -14,6 +14,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@prettydamntired/todo-lib": "^0.0.13",
     "axios": "^1.7.5",
     "bootstrap": "^5.3.3",
     "pinia": "^2.1.7",

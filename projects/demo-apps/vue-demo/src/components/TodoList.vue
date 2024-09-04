@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useTodoStore } from '../store/todoStore'
-import type { Todo } from '../store/todoStore'
+import type { Todo } from '@prettydamntired/todo-lib'
 import { storeToRefs } from 'pinia'
 
 const todoStore = useTodoStore()

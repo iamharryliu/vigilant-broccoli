@@ -1,5 +1,5 @@
+import { Todo } from '@prettydamntired/todo-lib';
 import { useState, useEffect } from 'react';
-import { Todo } from '../types';
 
 const useFetch = (url: string): Todo[] => {
   const [data, setData] = useState<Todo[]>([]);

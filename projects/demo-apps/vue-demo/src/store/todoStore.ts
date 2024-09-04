@@ -2,11 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios from 'axios'
 import { TODO_API_URL, TODO_HEADERS } from '@/config'
-
-export type Todo = {
-  id: number
-  title: string
-}
+import type { Todo } from '@prettydamntired/todo-lib'
 
 export const useTodoStore = defineStore('todo', () => {
   const todos = ref<Todo[]>([])
