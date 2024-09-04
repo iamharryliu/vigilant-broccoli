@@ -1,4 +1,4 @@
-import { Todo } from "@prettydamntired/todo-lib";
+import { Todo } from '@prettydamntired/todo-lib';
 
 export const TODO_ACTION = {
   CREATE_TODO: 'CREATE_TODO',
@@ -20,14 +20,14 @@ export const todoReducer = (todos: Todo[], action: TodoAction): Todo[] => {
   const { type, payload } = action;
 
   switch (type) {
-    case TODO_ACTION.CREATE_TODO:{
+    case TODO_ACTION.CREATE_TODO: {
       const todo = {
         ...payload,
         id:
           todos.reduce((max, todo) => {
-            return todo.id > max ? todo.id : max
-          }, Number.NEGATIVE_INFINITY) + 1
-      }
+            return todo.id > max ? todo.id : max;
+          }, Number.NEGATIVE_INFINITY) + 1,
+      };
 
       return [...todos, todo];
     }
