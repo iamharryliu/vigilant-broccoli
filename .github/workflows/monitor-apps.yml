@@ -1,7 +1,7 @@
 name: Monitor Apps
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/5 * * * *'
 jobs:
   main:
     runs-on: ubuntu-latest
