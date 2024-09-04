@@ -11,13 +11,14 @@ alias openSlackBrowser="chrome 'https://app.slack.com/client/'"
 alias gmail='chrome "https://gmail.com/"'
 alias gcalendar='chrome "https://calendar.google.com/calendar/u/0/r"'
 alias gdrive='chrome "https://drive.google.com/drive/u/0/my-drive"'
-alias checkstorage='applestorage && gstorage'
+alias gcontacts='chrome "https://contacts.google.com/"'
 ## Apple
 alias findmy='chrome "https://www.icloud.com/find/"'
 ## Storage
-alias gstorage='chrome "https://one.google.com/storage/management"'
 alias gphotos='chrome "https://photos.google.com/?pli=1"'
+alias gstorage='chrome "https://one.google.com/storage/management"'
 alias applestorage='chrome "https://www.icloud.com/storage/"'
+alias checkstorage='applestorage && gstorage'
 
 # Utility
 ## General
