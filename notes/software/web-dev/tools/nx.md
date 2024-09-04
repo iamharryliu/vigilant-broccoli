@@ -4,6 +4,10 @@
 
 ```
 npx create-nx-workspace@latest [workspace-name]
+
+nx migrate latest
+nx migrate --run-migrations
+
 npm install -D @nx/angular
 
 nx run-many -t=[type]
