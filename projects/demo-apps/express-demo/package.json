@@ -8,7 +8,8 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@prettydamntired/todo-lib": "^0.0.10",
+    "@prettydamntired/common-lib": "^0.0.3",
+    "@prettydamntired/todo-lib": "^0.0.13",
     "axios": "^1.7.5",
     "cors": "^2.8.5",
     "express": "^4.18.2"

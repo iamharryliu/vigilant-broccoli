@@ -1,4 +1,4 @@
-import { HTTP_STATUS_CODES } from '@prettydamntired/todo-lib';
+import { HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
 
 export const errorLogger = (error, request, response, next) => {
   console.log(`Error: ${error.message}`);

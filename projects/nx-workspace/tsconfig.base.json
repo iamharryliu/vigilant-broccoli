@@ -15,6 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@prettydamntired/common-lib": [
+        "libs/@prettydamntired/common-lib/src/index.ts"
+      ],
       "@prettydamntired/personal-website-api-lib": [
         "libs/@prettydamntired/personal-website-api-lib/src/index.ts"
       ],
