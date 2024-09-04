@@ -1,3 +1,5 @@
+import { HTTP_STATUS_CODES } from '@prettydamntired/todo-lib';
+
 export const errorLogger = (error, request, response, next) => {
   console.log(`Error: ${error.message}`);
   next(error);
@@ -9,6 +11,6 @@ export const errorResponder = (error, request, response, next) => {
 };
 
 export const invalidPathHandler = (request, response, next) => {
-  response.status(400);
+  response.status(HTTP_STATUS_CODES.BAD_REQUEST);
   response.send('invalid path');
 };

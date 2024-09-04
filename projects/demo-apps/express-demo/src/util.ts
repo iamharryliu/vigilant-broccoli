@@ -1,6 +1,6 @@
+import { Todo } from '@prettydamntired/todo-lib';
 import { TODO_API_URL, TODO_HEADERS } from './const';
 import axios from 'axios';
-import { Todo } from './models/models';
 
 export const handleApiCall = async (
   apiCall: () => Promise<any>,
