@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import {} from '@angular/common/http';
 import { Component } from '@angular/core';
 import {
   FormControl,
@@ -15,7 +15,7 @@ import { CommonService } from '../../../core/services/common.service';
   standalone: true,
   selector: 'app-newsletter-sub-form',
   templateUrl: './subscribe-form.component.html',
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+  imports: [CommonModule, ReactiveFormsModule],
 })
 export class NewsLetterSubFormComponent {
   submit$ = new Subject<boolean>();

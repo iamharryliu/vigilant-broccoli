@@ -6,7 +6,7 @@ import {
   HttpEvent,
 } from '@angular/common/http';
 import { Observable, exhaustMap } from 'rxjs';
-import { ReCaptchaV3Service } from 'ng-recaptcha';
+import { ReCaptchaV3Service } from 'ng-recaptcha-2';
 
 @Injectable()
 export class RecaptchaInterceptor implements HttpInterceptor {

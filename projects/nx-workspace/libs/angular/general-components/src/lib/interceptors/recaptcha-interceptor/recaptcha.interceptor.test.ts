@@ -1,6 +1,6 @@
 import { HttpHandler, HttpRequest, HttpEvent } from '@angular/common/http';
 import { of } from 'rxjs';
-import { ReCaptchaV3Service } from 'ng-recaptcha';
+import { ReCaptchaV3Service } from 'ng-recaptcha-2';
 import { RecaptchaInterceptor } from './recaptcha.interceptor';
 
 describe('RecaptchaInterceptor', () => {

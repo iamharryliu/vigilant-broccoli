@@ -58,5 +58,6 @@ export default defineConfig({
       reportsDirectory: '../../../coverage/libs/@prettydamntired/todo-lib',
       provider: 'v8',
     },
+    passWithNoTests: true,
   },
 });
