@@ -1,4 +1,4 @@
-import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
+import { HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
 import { Service } from './service';
 
 export class Controller {

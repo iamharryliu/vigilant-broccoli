@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app, { db, server } from './main';
 import { EncryptionService } from '@prettydamntired/test-node-tools';
-import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
+import { HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
 import {
   GENERAL_ERROR_CODE,
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS,

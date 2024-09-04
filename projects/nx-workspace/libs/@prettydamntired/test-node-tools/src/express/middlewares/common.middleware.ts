@@ -1,4 +1,4 @@
-import { HTTP_STATUS_CODES } from '@prettydamntired/test-lib';
+import { HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
 import { RecaptchaService } from '../../services/recaptcha/recaptcha.service';
 import { logger } from '../../services/logging/logger.service';
 
