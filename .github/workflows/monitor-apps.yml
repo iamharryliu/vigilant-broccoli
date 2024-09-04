@@ -1,6 +1,6 @@
 name: App Health Check
 on:
-  schedule: [{ cron: '0 0 * * *' }]
+  schedule: [{ cron: '*/5 * * * *' }]
 jobs:
   main:
     runs-on: ubuntu-latest
@@ -11,8 +11,6 @@ jobs:
         working-directory: ./projects/nx-workspace
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: 20
