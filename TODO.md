@@ -5,6 +5,8 @@
 - Q1
   - feat(harryliu.design): Migration to new domain..
 - Q2
+  - fix(nx): publish -> build caching preventing new dist
+  - docs(monitor-apps): cleaner way to store apps that need to be monitored
   - resume update
     - add soft skills
       - Team player
