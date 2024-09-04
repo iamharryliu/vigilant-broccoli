@@ -108,7 +108,7 @@
     "mongoose": "^8.1.0",
     "ng-recaptcha-2": "^14.0.0",
     "ngx-google-analytics": "^14.0.1",
-    "nodemailer": "^6.9.8",
+    "nodemailer": "^6.9.9",
     "openai": "^4.26.0",
     "rxjs": "~7.8.0",
     "supertest": "^6.3.4",
