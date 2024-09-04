@@ -39,7 +39,7 @@
   - feat(toronto-alerts): select subway and bus lines to subscribe to
   - feat(toronto-alerts): Events of the week.
   - fix(toronto-alerts): weird bug with manual deploy, venv/bin/python does not exist..
-  - feat(malmo-alert): malmo weather alert
+  - feat(malmo-alert): Malmo weather alert such as rain alerts.
 
 # Vibecheck
 
