@@ -8,12 +8,12 @@
 
 ### Github Action Status
 
-[![App Health Check Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps-action.yml)
-[![CMS Flask - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cms-flask-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cms-flask-action.yml)
-[![Deploy Nx Apps - Deploy Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps-action.yml)
-[![Deploy harryliu.design Angular - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-harryliu-design-angular-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-harryliu-design-angular-action.yml)
-[![Toronto Alerts Flask - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts-app-action.yml)
-[![Cloud 8 Skate Angular - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cloud-8-skate-angular-action.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cloud-8-skate-angular-action.yml)
+[![App Health Check Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml)
+[![CMS Flask - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cms-flask-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cms-flask-deploy.yml)
+[![Deploy Nx Apps - Deploy Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/nx-apps-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/nx-apps-deploy.yml)
+[![Deploy harryliu.design Angular - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/harryliu-design-angular-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/harryliu-design-angular-deploy.yml)
+[![Toronto Alerts Flask - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/toronto-alerts-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/toronto-alerts-deploy.yml)
+[![Cloud 8 Skate Angular - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cloud-8-skate-angular-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cloud-8-skate-angular-deploy.yml)
 
 <hr/>
 
