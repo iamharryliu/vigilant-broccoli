@@ -1,6 +1,6 @@
 # Directories
 export REPO_NAME="vigilant-broccoli"
-JOURNAL_DIR="~/journal"
+JOURNAL_DIR="~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/journal"
 REPO_DIR="~/$REPO_NAME"
 VB_DIR="~/$REPO_NAME"
 PROJECTS_DIR="$REPO_DIR/projects"
