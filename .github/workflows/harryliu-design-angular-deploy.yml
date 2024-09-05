@@ -1,4 +1,4 @@
-name: Deploy harryliu.design Angular - Deploy App
+name: Deploy harryliu.design (Angular)
 on:
   push: { branches: ['main'] }
   # Handles CMS Updates
