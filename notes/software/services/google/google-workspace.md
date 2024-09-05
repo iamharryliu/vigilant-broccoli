@@ -13,6 +13,7 @@
   - GAM Drive Handling
     - [GAM Drive Transfer](https://github.com/GAM-team/GAM/wiki/Data-Transfers#request-a-data-transfer)
     - [Driv File Querying](https://developers.google.com/drive/api/guides/search-files)
+  - [Admin Handling](https://github.com/GAM-team/GAM/wiki/Managing-Admins)
   - [GAM Discussion](https://groups.google.com/g/google-apps-manager)
 
 - [GYB](https://github.com/GAM-team/got-your-back)
@@ -31,6 +32,8 @@ gam oauth info
 
 gam info user
 gam print users
+gam print admins
+gam print admins role _SEED_ADMIN_ROLE
 gam info user EMAIL
 gam delete user EMAIL
 
