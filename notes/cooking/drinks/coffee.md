@@ -1,6 +1,15 @@
 # Coffee
 
-## Reminders
+## Moka Pot
 
-- add sweetener before pulling expresso shot
-- light amount of water to clean steam wand
+- Beans - Medium to dark roast.
+- Grind Size - Coarser than espresso.
+- Heat
+  - Start with hot water.
+  - Low heat.
+  - Kill heat before the coffee starts to come out sputtery.
+
+## Espresso
+
+- Add sweetener before pulling expresso shot.
+- Light amount of water to clean steam wand.
