@@ -9,12 +9,13 @@
   - Blueberries
   - Sweetener
 - Overnight Oats
-  - Whole grain oats
+  - Whole Grain Oats
   - Yogurt
   - Milk
-  - Chia seeds
+  - Chia Seeds
   - Honey
-  - Fruit topping - blueberries, strawberries, peaches
+  - Fruit Toppings - blueberries, strawberries, peaches
+- Congee
 
 ## Brunch
 
@@ -22,13 +23,13 @@
 - Wrap
   - Tortilla
   - Egg
-  - Shredded cheese
-  - Toppings - Chopped lettuce, tomatoes, caramelized onions, fried mushrooms, mince
+  - Shredded Cheese
+  - Toppings - Chopped Lettuce, Tomatoes, Caramelized Onions, Fried Mushrooms, Mince
   - Sauce
 - Scallion Pancake
-  - Sourdough discard
-  - Green onions
-  - Lao gan ma
+  - Sourdough Discard
+  - Green Onions
+  - Lao Gan Ma
 
 ## Lunch / Dinner
 
@@ -37,8 +38,3 @@
   - Tomato Paste
   - Shredded Cheese
   - Toppings
-- Foccacia Sandwiches
-  - Foccacia
-  - Filling
-  - Sauce
-- Ramen
