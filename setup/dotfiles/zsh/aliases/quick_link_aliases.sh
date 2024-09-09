@@ -28,7 +28,9 @@ alias youtube="~/shell-scripts/youtube_search.sh"
 alias gmaps='chrome "https://www.google.com/maps"'
 alias gtranslate='chrome "https://translate.google.com/"'
 alias pinterest="~/shell-scripts/pinterest_search.sh"
-alias chatgpt='chrome "https://chatgpt.com/"'
+alias chatgpt='function _gptquery() { local query=$(echo "$*" | sed "s/ /%20/g"); open "https://chatgpt.com/?q=${query}"; }; _gptquery'
+
+
 alias numi='open -a "Numi"'
 alias speedtest="chrome 'https://www.speedtest.net/'"
 alias pwgen="chrome 'https://passwordsgenerator.net/'"
