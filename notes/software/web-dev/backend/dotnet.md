@@ -3,8 +3,8 @@
 ```
 dotnet --version
 
-# Setup new app.
-dotnet new [webapp|razor|classlib|console]
+# Setup new app. [Available template arguments](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-new#arguments)
+dotnet new TEMPLATE
 dotnet run
 
 # Create database models.

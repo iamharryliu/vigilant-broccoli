@@ -38,3 +38,8 @@
   - Tomato Paste
   - Shredded Cheese
   - Toppings
+- [Mexican Fried Rice](https://www.youtube.com/watch?v=UNMrwudowfg&list=WL&index=16&t=3s)
+  - Peppers
+  - Onion
+  - Garlic
+  - Tomato Purée

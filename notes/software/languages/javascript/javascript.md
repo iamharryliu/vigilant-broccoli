@@ -5,8 +5,6 @@
 - string
 - number
 - boolean
-- bigint
-- symbol
 - null
 - undefined
 
@@ -14,6 +12,21 @@
 
 - [JSDocs](https://devhints.io/jsdoc)
 - [Typescript](https://www.typescriptlang.org/)
+
+#### JSDocs
+
+```
+{Type}
+{Type1|Type2}
+{Object}
+{Object.<key, value>}
+{Promise<Type>}
+
+@typedef {Type}
+@type {Type}
+@returns {Type}
+@throws {Error}
+```
 
 ## Console
 
