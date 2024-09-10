@@ -134,3 +134,7 @@ alias openFlyBilling='chrome "https://fly.io/dashboard/personal/billing"'
 alias openOpenAIBilling='chrome "https://platform.openai.com/account/billing/overview"'
 alias openAWSBilling='chrome "https://us-east-1.console.aws.amazon.com/costmanagement/home?region=us-east-1#/home"'
 alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
+
+# Google Workspace
+alias gam="~/bin/gam/gam"
+alias gyb="~/bin/gyb/gyb"
