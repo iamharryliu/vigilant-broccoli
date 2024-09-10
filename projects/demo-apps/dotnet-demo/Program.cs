@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 var MyAllowSpecificOrigins = "_MyAllowSubdomainPolicy";
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpClient();
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -38,10 +40,16 @@ app.UseCors(builder => builder
 
 app.UseHttpsRedirection();
 
+app.MapGet("/", () =>
+{
+    return Results.Ok();
+});
 app.MapGet("/getCustomers", async (AdventureWorksLt2022Context context) =>
 {
     var customers = await context.Customers.ToListAsync();
     return Results.Ok(customers);
 });
+
+app.MapControllers();
 
 app.Run();

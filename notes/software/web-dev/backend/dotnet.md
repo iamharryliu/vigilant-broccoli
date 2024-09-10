@@ -1,6 +1,8 @@
 # Dotnet
 
 ```
+dotnet --version
+
 # Setup new app.
 dotnet new [webapp|razor|classlib|console]
 dotnet run
