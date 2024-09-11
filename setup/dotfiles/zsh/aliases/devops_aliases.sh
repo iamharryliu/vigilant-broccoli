@@ -138,3 +138,5 @@ alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
 # Google Workspace
 alias gam="~/bin/gam/gam"
 alias gyb="~/bin/gyb/gyb"
+alias advgam="~/bin/gamadv-xtd3/gam"
+export GAMCFGDIR="~/GAMConfig"
