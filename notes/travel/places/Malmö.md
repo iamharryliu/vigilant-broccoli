@@ -7,9 +7,12 @@
 - [Skånetrafiken]
   - [Google Play Store](https://play.google.com/store/apps/details?id=se.skanetrafiken.washington&pcampaignid=web_share)
   - [Apple Store](https://apps.apple.com/se/app/sk%C3%A5netrafiken/id1180539331)
-- [Bike Share](https://www.malmobybike.se/en)
+- [Bike Share Malmo](https://www.malmobybike.se/en)
   - [Pricing](https://www.malmobybike.se/en/subscriptions-and-rates)
   - [Map](https://www.malmobybike.se/en/map)
+- [Bike Share Lund](https://www.lundahoj.se/en/home)
+  - [Pricing](https://www.lundahoj.se/en/offers/groups)
+  - [Map](https://www.lundahoj.se/en/mapping)
 
 ### Communication
 
