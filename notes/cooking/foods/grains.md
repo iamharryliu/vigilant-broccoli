@@ -5,7 +5,30 @@
 - 1:1.5 rice to water
 - add butter to boiled water to prevent sticking before cooking
 
+## Granola Cereal
+
+- Granola
+- Milk
+- Yogurt
+- Fruits such as blueberries, bananas, or strawberries.
+- Sweetener
+
 ## Porridges
+
+### Overnight Oats
+
+Overnight base:
+
+- One banana mixed with equal parts milk.
+- Half cup rolled oats.
+- Tablespoon of chia seeds.
+
+Next morning top with:
+
+- Peanut butter.
+- Some granola for texture.
+- Honey or brown sugar to sweeten.
+- Fruit such as blueberries, blackberries, raspberries, or strawberries.
 
 ### Congee
 

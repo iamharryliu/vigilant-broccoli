@@ -33,6 +33,7 @@
   - Dried oregano
   - Sea salt
   - Black pepper
+  - Edamame
 - Proteins
   - Baked Tofu
   - Marinated tofu

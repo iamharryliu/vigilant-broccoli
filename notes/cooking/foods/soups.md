@@ -1,6 +1,6 @@
 # Soups
 
-Creamy Vegetable Soup
+[Creamy Vegetable Soup](https://www.inspiredtaste.net/9603/creamy-vegetable-soup-recipe/)
 
 ```
 Ingredients

@@ -3,18 +3,7 @@
 ## Breakfast
 
 - Cereal
-  - Granola
-  - Milk
-  - Yogurt
-  - Blueberries
-  - Sweetener
 - Overnight Oats
-  - Whole Grain Oats
-  - Yogurt
-  - Milk
-  - Chia Seeds
-  - Honey
-  - Fruit Toppings - blueberries, strawberries, peaches
 - Congee
 
 ## Brunch
@@ -33,13 +22,11 @@
 
 ## Lunch / Dinner
 
+- Rice Recipes
+  - Fried Rice
+  - Mexican Rice
 - Pizza
   - Flatbread
   - Tomato Paste
   - Shredded Cheese
   - Toppings
-- [Mexican Fried Rice](https://www.youtube.com/watch?v=UNMrwudowfg&list=WL&index=16&t=3s)
-  - Peppers
-  - Onion
-  - Garlic
-  - Tomato Purée
