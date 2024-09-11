@@ -7,7 +7,6 @@
   - feat: automate upgrades
     - brew upgrade visual-studio-code
 - Q2
-  - fix: Investigate shell taking # comments as a command.
   - fix(nx): publish -> build caching preventing new dist
   - docs(monitor-apps): cleaner way to store apps that need to be monitored
   - resume update

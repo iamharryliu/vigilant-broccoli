@@ -1,5 +1,6 @@
 source ~/.zsh_aliases
 source ~/.env.sh
+setopt interactive_comments
 
 export PATH="/opt/homebrew/bin:$PATH"
 
