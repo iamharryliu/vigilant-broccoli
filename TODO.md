@@ -9,20 +9,11 @@
 - Q2
   - fix(nx): publish -> build caching preventing new dist
   - docs(monitor-apps): cleaner way to store apps that need to be monitored
-  - resume update
-    - add soft skills
-      - Team player
-      - Strong communication
-      - Strong listening skills
-      - Open to asking questions or being asked questions
-      - Capable of explaining technical ideas to non technical people
-    - add metrics
-    - remove fluff words
   - feat(toronto-alerts): update email header to be more explicit
   - feat(dj-scripts): spotify playlist scrape
     - Handle [Spotify rate limits](https://developer.spotify.com/documentation/web-api/concepts/rate-limits).
-    - Fix playlists output.
-  - Update git flows, commit > pull --rebase > push
+  - Fix playlists output.
+- Update git flows, commit > pull --rebase > push
   - feat(cms-flask):
     - Dynamic page contents.
       - Blogs.
@@ -33,7 +24,6 @@
   - feat(app-monitor): Budget alerts for services.
   - feat(setup): set divvy privacy and security a11y
   - feat(setup): recursive makevenv
-  - feat(setup): configuration choices for personal/work
   - chore(docs): Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
   - chore(docs): Look into handling DDOS attacks
   - chore(docs): online payment form
