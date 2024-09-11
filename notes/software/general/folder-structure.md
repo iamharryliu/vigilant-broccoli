@@ -1,6 +1,15 @@
 # Folder Structure
 
-# Script Writing
+## General
+
+- Config files.
+- Assets files.
+- Constant files.
+- Utility files.
+- Test files.
+- Error handling files.
+
+## Script Writing
 
 - Script should start from a main function.
 - Consider design for development vs production script (what APIs can the dev environment access?)

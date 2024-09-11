@@ -3,6 +3,8 @@
 ## Technical Terms
 
 - Closure - Enables functions to keep state.
+- Test Driven Development (TDD) - Onely useful if you know most of the requirements beforehand otherwise code is subject to change which means written tests are also subject to change.
+- ChatGPT - Just another tool like Google search engine. Raised the entry bar of becoming a software developer since it can perform what most junior engineers can do.
 
 ## General
 
