@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MarkdownService } from '../services/markdown.service';
+import { ScrollService } from '../services/scroll.service';
 
 @Component({
   selector: 'lib-markdown-page',
@@ -20,11 +21,15 @@ export class MarkdownPageComponent {
   filepath = input('');
   contentSignal = signal<string>('');
 
-  constructor(private mdService: MarkdownService) {
+  constructor(
+    private mdService: MarkdownService,
+    private scrollService: ScrollService,
+  ) {
     effect(() => {
       if (this.filepath) {
         this.mdService.getParsedMdFile(this.filepath()).subscribe(content => {
           this.contentSignal.set(content);
+          this.scrollService.scrollToAnchor();
         });
       }
     });
