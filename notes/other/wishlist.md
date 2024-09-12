@@ -1,5 +1,6 @@
 # Wishlist
 
+- [reMarkable Notebook](https://remarkable.com/)
 - Rollerblade Bag
 - Career Books
 
@@ -10,6 +11,9 @@
   - [Salux Wash Cloth](https://www.amazon.se/-/en/Salux-Nylon-Japanese-Beauty-Clothes/dp/B000CSDDDG?th=1)
 - Clothes
   - Home sandals.
+  - Cap
+    - [NEW ERA nos league ess 9forty neyyan](https://www.stadium.se/herr/herrklader/kepsar/397442101101/new-era.nos-league-ess-9forty-neyyan.brswhi)
+  - Hoodie
   - Repair
     - Versace jean button.
     - Black pants hem.
