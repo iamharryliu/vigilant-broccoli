@@ -21,23 +21,10 @@
 - Brute force
   - Works on short passwords or passwords that use limited amount of characters.
 
-## OSINT
+## Tools
 
-## Commands
-
-```
-# Router Details
-/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I
-```
-
-### ARP (Address Resolution Protocol)
-
-```
-arp -a
-```
-
-### Nmap - Network Mapper
-
-```
-nmap -sn 192.168.1.1/24
-```
+- [Network Tools]()
+- [OSINT Tools]()
+- [Password Cracking Tools]()
+- [Penetration Testing Tools]()
+- [Wireless Security Tools]()

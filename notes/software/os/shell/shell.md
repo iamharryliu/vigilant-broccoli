@@ -35,6 +35,12 @@ Stand for global regular expression print. Used for searching plain-text files f
 grep [options] [regex] [file(s)]
 ```
 
+### ARP (Address Resolution Protocol)
+
+```
+arp -a
+```
+
 ## cron
 
 Scheduler used to automate script executions.
