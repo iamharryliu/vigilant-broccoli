@@ -1,4 +1,4 @@
-name: Deploy App CMS Flask 
+name: Deploy CMS (Flask)
 on:
   push: { branches: ['main'] }
 
