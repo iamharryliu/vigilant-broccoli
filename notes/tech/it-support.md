@@ -42,3 +42,14 @@
 
 - Used primarily on older Mac systems, particularly those using PowerPC processors.
 - Limited compatibility compared to GPT, but necessary for compatibility with older Mac systems.
+
+## HR System
+
+## Onboard Process
+
+- Setup workspace groups.
+- Setup email signature.
+
+## Offboard Process
+
+- Data retention.

@@ -2,8 +2,8 @@
 
 ## Rice
 
-- 1:1.5 rice to water
-- add butter to boiled water to prevent sticking before cooking
+- Water ratio 1:1.5(adjust based on rice)
+- Before cooking you can add a neutral oil to water to prevent sticking.
 
 ## Granola Cereal
 
