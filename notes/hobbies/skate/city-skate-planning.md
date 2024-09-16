@@ -1,4 +1,4 @@
-# City Skates
+# City Skate Planning
 
 ## Preparation
 

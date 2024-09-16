@@ -40,3 +40,9 @@
 - Put garlic in oven safe dish and fill with enough olive oil to cover garlic.
 - Add thyme, rosemary, and peppercorns.
 - Bake dish in oven for 2 hours.
+
+## Roux
+
+- 1:1 oil to flour ratio
+- Slowly add flour while mixing until it mixes to preferred consistency.
+- Cook until it browns to preferred color.

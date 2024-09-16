@@ -57,3 +57,8 @@
 ## Immigration
 
 - [Migration Agency](https://www.migrationsverket.se/English.html)
+
+## Souvenirs/Gifts
+
+- [Kebab Sauce](https://schysstkak.se/het-kebabsas)
+- [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
