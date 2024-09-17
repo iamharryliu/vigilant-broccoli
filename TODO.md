@@ -12,8 +12,6 @@
     - Look into handling DDOS attacks.
     - How to build online payment form?
     - Hpw to handle open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
-  - feat: automate upgrades
-    - brew upgrade visual-studio-code
   - fix(nx): publish -> build caching preventing new dist
   - docs(monitor-apps): cleaner way to store apps that need to be monitored
   - feat(dj-scripts): spotify playlist scrape
