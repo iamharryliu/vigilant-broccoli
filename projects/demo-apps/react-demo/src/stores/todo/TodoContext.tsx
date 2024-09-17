@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useId,
-  useReducer,
-} from 'react';
+import { createContext, useCallback, useEffect, useReducer } from 'react';
 import useFetch from '../../hooks/useFetch';
 import { TODO_API_URL, TODO_HEADERS } from '../../config';
 import { TodoContextType } from '../../types';
@@ -37,9 +31,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
       dispatch({ type: TODO_ACTION.SET_TODOS, payload: data });
     }
   }, [data]);
-
   const createTodo = useCallback(async (title: string) => {
-    const id = useId();
     const response = await fetch(TODO_API_URL, {
       method: 'POST',
       ...TODO_HEADERS,
