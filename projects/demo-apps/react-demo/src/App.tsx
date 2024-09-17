@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import IndexPage from './pages/IndexPage';
 import HooksPage from './pages/hooks/HooksPage';
-import TodoPage from './pages/todotmp/TodoPage';
+import TodoPage from './pages/todo/TodoPage';
 import UseEffectDemo from './pages/hooks/UseEffectDemo';
 import UseStateDemo from './pages/hooks/UseStateDemo';
 import UseReducerDemo from './pages/hooks/UseReducerDemo';
