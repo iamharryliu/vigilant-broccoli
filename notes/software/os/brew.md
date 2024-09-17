@@ -8,7 +8,8 @@ brew bundle dump --file [filename]
 brew bundle --file [filename]
 ```
 
-- [Brew Autoupdate](https://github.com/DomT4/homebrew-autoupdate)
+- [Homebrew Autoupdate](https://github.com/DomT4/homebrew-autoupdate)
+- [Enabling Auto-updates in Homebrew](https://easyosx.net/2024/01/29/enabling-auto-updates-in-homebrew/)
 
 ## References
 
