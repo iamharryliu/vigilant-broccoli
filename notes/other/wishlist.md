@@ -21,6 +21,7 @@
 - Home
   - [Salux Wash Cloth](https://www.amazon.se/-/en/Salux-Nylon-Japanese-Beauty-Clothes/dp/B000CSDDDG?th=1)
   - Home sandals/slides.
+  - [Coffee Grinder](https://1zpresso.coffee/)
 - Clothes
   - Cap
     - [NEW ERA nos league ess 9forty neyyan](https://www.stadium.se/herr/herrklader/kepsar/397442101101/new-era.nos-league-ess-9forty-neyyan.brswhi)

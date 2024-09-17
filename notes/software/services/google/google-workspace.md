@@ -36,12 +36,13 @@ gam print admins
 gam print admins role _SEED_ADMIN_ROLE
 gam info user EMAIL
 gam delete user EMAIL
+gam undelete user EMAIL
 
 gam print transferapps
 gam create datatransfer FROM_EMAIL gdrive TO_EMAIL privacy_level shared,private
 
+gyb --email EMAIL --action estimate  --spam-trash --search QUERY --service-account
 gyb --email EMAIL --action backup --local-folder FOLDER  --spam-trash --search QUERY --service-account
-gyb --email EMAIL --action estimate --local-folder FOLDER  --spam-trash --search QUERY --service-account
 gyb --email EMAIL --action restore --local-folder FOLDER --service-account
 ```
 
