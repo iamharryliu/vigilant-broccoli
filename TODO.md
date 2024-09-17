@@ -7,7 +7,6 @@
 - Q2
 
   - docs:
-    - Look into better git workflows. ie commit > pull --rebase > push
     - Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
     - Browser media downloads for offline use (like YouTube downlaods)
     - Look into handling DDOS attacks.
