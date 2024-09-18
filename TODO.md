@@ -4,6 +4,7 @@
 
 - Q1
   - feat(harryliu.design): Migration to new domain..
+  - feat(secrets-manager): Setup Hashicorp Vault.
 - Q2
 
   - docs:
