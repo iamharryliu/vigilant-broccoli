@@ -22,7 +22,7 @@ killport() {
   fi
 }
 
-dir=~/shell-aliases/devops_aliases/
+dir=~/shell-aliases/devops/
 find "$dir" -name "*.sh" | while read -r script; do
   source "$script"
 done
