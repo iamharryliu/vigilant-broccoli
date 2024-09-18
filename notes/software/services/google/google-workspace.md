@@ -32,6 +32,7 @@ gam oauth info
 
 gam info user
 gam print users
+gam print users allfields
 gam print admins
 gam print admins role _SEED_ADMIN_ROLE
 gam info user EMAIL
