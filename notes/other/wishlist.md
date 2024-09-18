@@ -19,9 +19,19 @@
   - [Code: The Hidden Language of Computer Hardware and Software](https://www.amazon.se/-/en/Charles-Petzold/dp/0137909101/ref=sr_1_1?crid=2FK94MKXJ5DRB&dib=eyJ2IjoiMSJ9.sYNsr1sWoW2jq2-xmLSy7YCVjTlKqy0vmo1Ze6HzCN6FcN_jKZ7qOPI98CnolCtDGJgOX4HGH03FWADKkE94QS5VBJ6InkWLYr_3QCZ_FZWE0picKQYJs9Lo_aVxhV762EJbFLrDD1MCc9UXYH7WXw.TD_QJLY_NvtZPFRRfeO7NDeLJNO5WSt5ZhjNLrLgk-0&dib_tag=se&keywords=code+the+hidden+language+of+computer+hardware+and+software&qid=1725442673&sprefix=code+hi%2Caps%2C81&sr=8-1)
 
 - Home
-  - [Salux Wash Cloth](https://www.amazon.se/-/en/Salux-Nylon-Japanese-Beauty-Clothes/dp/B000CSDDDG?th=1)
+
   - Home sandals/slides.
-  - [Coffee Grinder](https://1zpresso.coffee/)
+  - Bath
+    - [Salux Wash Cloth](https://www.amazon.se/-/en/Salux-Nylon-Japanese-Beauty-Clothes/dp/B000CSDDDG?th=1)
+  - Kitchen
+
+    - [Coffee Grinder](https://1zpresso.coffee/)
+    - Ikea:
+
+      - [Zester](https://www.ikea.com/se/en/p/vardagen-zester-with-handle-stainless-steel-beech-60581487/)
+      - [Mandoline](https://www.ikea.com/se/en/p/ikea-365-mandoline-black-00422321/)
+      - Plant balls
+
 - Clothes
   - Cap
     - [NEW ERA nos league ess 9forty neyyan](https://www.stadium.se/herr/herrklader/kepsar/397442101101/new-era.nos-league-ess-9forty-neyyan.brswhi)
