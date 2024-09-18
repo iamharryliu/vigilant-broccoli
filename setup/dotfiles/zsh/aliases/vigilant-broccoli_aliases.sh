@@ -82,3 +82,6 @@ alias machinesetup="cdvb && ./setup/mac/install.sh"
 ## Obsidian
 alias openNotes="open 'obsidian://open?vault=notes'"
 alias openJournal="open 'obsidian://open?vault=journal'"
+
+# Billing
+alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'

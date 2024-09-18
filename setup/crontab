@@ -8,4 +8,4 @@
 * * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd vigilant-broccoli/scripts/python/scrape-ttc-lines && source venv/bin/activate && python scrape_ttc_lines.py
 # Other
 # Download DJ Music
-0 * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && ~/shell-scripts/download_music.sh
+*/10 * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && ~/shell-scripts/download_music.sh
