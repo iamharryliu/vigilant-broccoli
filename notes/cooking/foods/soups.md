@@ -2,7 +2,7 @@
 
 [Panera’s Broccoli Cheddar Soup Recipe](https://www.the-girl-who-ate-everything.com/panera-broccoli-cheese-soup/#recipe)
 
-Ingredients
+Ingredients:
 
 - 1/4 cup butter
 - 1/2 medium chopped onion
@@ -14,6 +14,8 @@ Ingredients
 - 1/4 teaspoon nutmeg, (optional but brings out the flavor)
 - 8 ounces grated sharp cheddar cheese, (2 cups)
 - salt and pepper
+
+Instructions:
 
 1. Melt the 1/4 cup butter and sautee the onions in the butter until soft. Sprinkle the flour over the mixture. Cook and stir over medium heat for 1-2 minutes.
 2. Whisk in the half & half and chicken stock. Bring to a boil then reduce heat to medium.
@@ -37,7 +39,7 @@ Ingredients
 - 1/2 tsp dried thyme
 - 1/4 cup of cream
 
-Steps
+Instructions:
 
 1. 1/2 inch chunk veggies
 2. Cook onion, carrots, celery in olive oil with salt and pepper flakes.
