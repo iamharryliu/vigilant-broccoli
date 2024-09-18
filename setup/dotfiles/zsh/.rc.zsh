@@ -1,10 +1,10 @@
 source ~/.zsh_aliases
 source ~/.env.sh
-setopt interactive_comments
 
 export PATH="/opt/homebrew/bin:$PATH"
 
 if [ "$IS_CRON" != "true" ]; then
+    setopt interactive_comments
     if [[ $(sysctl -n machdep.cpu.brand_string | grep -c "Apple") -gt 0 ]]; then
         # echo "Setting zsh-autosuggestions for Apple Silicon (M series)"
         source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
