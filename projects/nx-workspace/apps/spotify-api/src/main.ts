@@ -8,7 +8,7 @@ import { HOST, PORT, authorizeUrl } from './const';
 
 const app = express();
 
-app.get('/login', (_, res) => {
+app.get('/', (_, res) => {
   res.redirect(authorizeUrl);
 });
 
