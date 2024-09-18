@@ -2,7 +2,7 @@ alias pingtest='ping google.com'
 
 # Open Mail
 alias openmail="code /var/mail/$(whoami)"
-alias dropmail="echo '' > /var/mail/$(whoami)"
+alias clearmail="echo '' > /var/mail/$(whoami)"
 
 # Port
 killport() {
