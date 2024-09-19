@@ -62,3 +62,8 @@
 
 - [Kebab Sauce](https://schysstkak.se/het-kebabsas)
 - [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
+
+## Dog Friendly Spaces
+
+- [Malmö guide to dog friendly cafes, restaurants and pubs](https://sweden.bestin.com/malmo-guide-to-dog-friendly-cafes-restaurants-and-pubs/)
+- [Espresso House Stortorget](https://maps.app.goo.gl/u6F66qoSfJquodNC8)
