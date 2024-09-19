@@ -3,13 +3,13 @@
 | English                        | Swedish               | French               | Spanish          | Portugese         | Italian         |
 | :----------------------------- | :-------------------- | :------------------- | :--------------- | :---------------- | :-------------- |
 | **General**                    |                       |                      |                  |                   |                 |
-| yes                            | ja                    | oui                  | si               | si                | si              |
-| no                             | nej                   | non                  | no               | nao               | no              |
-| maybe                          | kanske                | peut être            | tal vez          |                   |                 |
+| yes                            | ja                    | oui                  | sí               | si                | si              |
+| no                             | nej                   | non                  | no               | não               | no              |
+| maybe                          | kanske                | peut-être            | tal vez          | talvez            |                 |
 | good                           | bra                   | bon/bonne            | bueno/buena      | bom/boa/bons/boas | buono           |
 | bad                            | dålig                 | mal                  | malo/mala        | mau               | cattivo/cattiva |
-| but                            | men                   | mais                 | pero             | mas(mash or mass) | ma              |
-| I think                        | jag tror              | pour moi             | para mi          | para mim          | per me          |
+| but                            | men                   | mais                 | pero             | mas               | ma              |
+| I think                        | jag tror              | je pense             | para mi          | para mim          | per me          |
 | for me                         | för mig               | pour moi             | para mi          | para mim          | per me          |
 | the                            | [noun]en/[noun]et     | le/la/les            | el/la/los/las    | o/a/os/as         |                 |
 | it                             |                       | le/la                | lo/la            |                   |                 |
@@ -33,7 +33,8 @@
 | you (plural)                   | ni                    | vous                 |                  |                   |                 |
 | they                           | de                    | ils/elles            |                  |                   |                 |
 | he/she/they                    | sin/sitt/sina         |                      |                  |                   |                 |
-|                                |                       | toi                  | usted            |                   |                 |
+| me                             | mig                   | moi                  | mi               |                   |                 |
+| you                            | dig                   | toi                  | usted            |                   |                 |
 | **social**                     |                       |                      |                  |                   |                 |
 | hello                          | hej                   | salut                | hola             | ola               | ciao            |
 | goodbye                        | hejdå                 | au revoir            | ciao             | tchau             | arrivederci     |
