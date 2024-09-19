@@ -15,3 +15,5 @@ export const HTTP_STATUS_CODES = {
   ...HTTP_SUCCESS_CODES,
   ...HTTP_ERROR_CODES,
 };
+
+export const LOCALHOST = 'localhost';

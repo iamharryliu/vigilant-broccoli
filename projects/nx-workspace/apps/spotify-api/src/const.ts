@@ -1,4 +1,6 @@
-export const HOST = process.env.HOST || 'localhost';
+import { LOCALHOST } from '@prettydamntired/common-lib';
+
+export const HOST = process.env.HOST || LOCALHOST;
 export const PORT = 8080;
 
 export const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;

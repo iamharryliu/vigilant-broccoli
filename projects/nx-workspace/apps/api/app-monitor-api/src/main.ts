@@ -1,7 +1,8 @@
 import Fastify from 'fastify';
 import { app } from './app/app';
+import { LOCALHOST } from '@prettydamntired/common-lib';
 
-const host = process.env.HOST ?? 'localhost';
+const host = process.env.HOST ?? LOCALHOST;
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 // Instantiate Fastify with some config

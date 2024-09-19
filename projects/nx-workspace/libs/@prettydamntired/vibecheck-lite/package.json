@@ -7,7 +7,7 @@
     "openai": "^4.26.0",
     "tslib": "^2.3.0",
     "@prettydamntired/test-node-tools": "*",
-    "mongodb": "6.3.0",
+    "mongodb": "6.8.0",
     "@prettydamntired/personal-website-api-lib": "*"
   }
 }

@@ -8,7 +8,7 @@
     "winston": "^3.11.0",
     "dotenv-defaults": "^5.0.2",
     "twilio": "^4.21.0",
-    "@prettydamntired/test-lib": "*",
+    "@prettydamntired/common-lib": "*",
     "@prettydamntired/personal-website-lib": "*"
   },
   "devDependencies": {
