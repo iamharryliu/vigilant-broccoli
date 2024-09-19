@@ -7,6 +7,9 @@ git checkout -b [branch_name]
 git add [files]
 git commit -m [message]
 git push
+
+# Fix filepath.
+git mv -f FILEPATH NEW_FILEPATH
 ```
 
 ## Subtrees
