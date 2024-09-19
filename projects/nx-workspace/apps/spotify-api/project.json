@@ -60,7 +60,10 @@
       "options": {
         "jestConfig": "apps/spotify-api/jest.config.ts"
       }
+    },
+    "deploy": {
+      "command": "flyctl deploy --dockerfile ./apps/spotify-api/Dockerfile --config ./deployment-configs/fly-configs/spotify-playlist-getter.toml",
+      "dependsOn": ["build", "test", "lint"]
     }
-  },
-  "tags": []
+  }
 }

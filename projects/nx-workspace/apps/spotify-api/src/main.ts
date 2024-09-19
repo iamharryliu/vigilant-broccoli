@@ -16,8 +16,14 @@ app.get('/callback', async (req, res) => {
   const code = (req.query.code as string) || null;
   const accessToken = await getAccessToken(code);
   const playlists = await fetchPlaylists(accessToken);
-  savePlaylistsDataToOutputFile(playlists);
-  res.json(playlists);
+  if (process.env.NODE_ENV === 'LOCAL') {
+    savePlaylistsDataToOutputFile(playlists);
+    res.json(playlists);
+    return;
+  }
+  res.setHeader('Content-Disposition', 'attachment; filename="playlists.json"');
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify(playlists, null, 2));
 });
 
 app.listen(PORT, HOST, () => {
