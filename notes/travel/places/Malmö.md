@@ -63,6 +63,10 @@
 - [Kebab Sauce](https://schysstkak.se/het-kebabsas)
 - [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
 
+## Activities
+
+- [Folkets Park](https://malmo.se/Folkets-Park)
+
 ## Dog Friendly Spaces
 
 - [Malmö guide to dog friendly cafes, restaurants and pubs](https://sweden.bestin.com/malmo-guide-to-dog-friendly-cafes-restaurants-and-pubs/)
