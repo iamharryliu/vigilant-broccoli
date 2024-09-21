@@ -26,13 +26,14 @@
 | to hate            | att hate      |               |              |           |         |
 | to remember        | att glömma    |               |              |           |         |
 | to wait            | att vänta     |               |              |           |         |
-| to call            |               | appeler       | llamar       |           |         |
+| to call            | att rings     | appeler       | llamar       |           |         |
+| to bring           | att ta med    | apporter      | traer        |           |         |
 | to become          | att bli       | devenir       |
 | to cost            | att kosta     |
 | I want             | jag vill      | je veux       | quiero       | quero     |         |
 | I have             | jag har       | j'ai          | tengo        |           |         |
-| I'm going          |               | je vais       | voy          |           |         |
-| You go             |               | tu vas        | va           |           |         |
+| I'm going          | jag går       | je vais       | voy          |           |         |
+| You go             | du går        | tu vas        | va           |           |         |
 | to have an opinion | att tycka     |               |              |           |         |
 | to believe         | att tro       |               |              |           |         |
 | I should           | jag borde     | je devrais    |              |           |         |

@@ -9,6 +9,7 @@
 | good                           | bra                   | bon/bonne            | bueno/buena      | bom/boa/bons/boas | buono           |
 | bad                            | dålig                 | mal                  | malo/mala        | mau               | cattivo/cattiva |
 | but                            | men                   | mais                 | pero             | mas               | ma              |
+| because                        |                       |                      | porque           |                   |                 |
 | I think                        | jag tror              | je pense             | para mi          | para mim          | per me          |
 | for me                         | för mig               | pour moi             | para mi          | para mim          | per me          |
 | the                            | [noun]en/[noun]et     | le/la/les            | el/la/los/las    | o/a/os/as         |                 |
