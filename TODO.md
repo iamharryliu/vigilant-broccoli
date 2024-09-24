@@ -5,6 +5,7 @@
 - Q1
   - feat(harryliu.design): Migration to new domain..
   - feat(secrets-manager): Setup Hashicorp Vault.
+  - feat(toronto-alerts): https://www.theweathernetwork.com/en/city/ca/ontario/toronto/current
 - Q2
 
   - docs:
