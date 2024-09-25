@@ -1,4 +1,8 @@
-# Software Lingo
+# Tech Lingo
+
+## Hardware
+
+- ARM (Advanced RISC Machine) is a family of energy-efficient processors based on a Reduced Instruction Set Computing (RISC) architecture.
 
 ## Technical Terms
 
