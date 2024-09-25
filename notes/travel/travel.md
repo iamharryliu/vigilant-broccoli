@@ -1,5 +1,10 @@
 # Travel
 
+## Useful Apps
+
+[Park4Night](https://park4night.com/en) - Find parking, useful for campervan travel.
+[Bounce](https://usebounce.com/) - Luggage storage
+
 ## Countries That I Have Traveled To
 
 🇨🇦 Canada
@@ -24,8 +29,8 @@
   - Paywalls
   - Stall gaps
 - Retail
-  - One way designed stores
-  - Preserved frontend store design allowed by one ways wrapping towards backend of building to allow space for frontend stores
+  - One-way designed stores.
+  - Preserved storefront design allowing more stores to be located along a sidewalk.
 
 ## Slovenia
 
@@ -44,4 +49,4 @@ Visited after one of the worst rainstorms they have had in years.
 
 ## Life in Sweden
 
-- Summer vacation.
+- Seems like the entire country goes on vacation during the summer.
