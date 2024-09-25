@@ -23,6 +23,10 @@ vault kv get secret/myapp
 vault kv delete secret/myapp
 ```
 
+## Persistant Storage
+
+By default, dev mode is in-memory only. For persistence, use a backup file.
+
 ```
 # vault.hcl
 storage "file" {
