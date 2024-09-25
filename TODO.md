@@ -4,12 +4,11 @@
 
 - Q1
   - feat(harryliu.design): Migration to new domain..
-  - feat(secrets-manager): Setup Hashicorp Vault.
-  - feat(toronto-alerts): https://www.theweathernetwork.com/en/city/ca/ontario/toronto/current
+  - feat(secrets-manager):
+    - Setup Hashicorp Vault.
+    - Github CLI manager
 - Q2
-
   - docs:
-    - Checkout github CLI manager, https://cli.github.com/manual/gh_secret_set
     - Browser media downloads for offline use (like YouTube downlaods)
     - Look into handling DDOS attacks.
     - How to build online payment form?
@@ -32,6 +31,7 @@
   - feat(malmo-alert):
     - Malmo weather alert such as rain alerts.
   - feat(toronto-alerts):
+    - https://www.theweathernetwork.com/en/city/ca/ontario/toronto/current
     - update email header to be more explicit
     - Select hours to get notified for weather subscription.
     - Select subway and bus lines to subscribe to.
