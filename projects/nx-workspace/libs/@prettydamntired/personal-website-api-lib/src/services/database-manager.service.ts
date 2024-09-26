@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { Db, MongoClient } from 'mongodb';
 import {
   DEFAULT_EMAIL_REQUEST,
   EmailService,
@@ -11,8 +11,8 @@ import {
 } from '../database/database.const';
 
 export class DatabaseManager {
-  private client;
-  private database;
+  private client: MongoClient;
+  private database: Db;
   constructor() {
     this.client = new MongoClient(MONGO_DB_SERVER);
     this.database = this.client.db(PERSONAL_WEBSITE_DB_NAME.PROD);
