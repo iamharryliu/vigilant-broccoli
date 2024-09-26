@@ -16,10 +16,22 @@
 - SSO -When the user signs in sucessfully they are granted an authentication token that is used to remember the user is verified.
 - OTP - One time password that is passed to the user usually via email or password.
 
-## Password Cracking
+## Types of Attacks
+
+### Password Cracking
 
 - Brute force
   - Works on short passwords or passwords that use limited amount of characters.
+
+### Distributed Denial of Service (DDoS)
+
+Ways to protect against DDoS:
+
+- Firewall
+- Rate Limiting
+- Content Delivery Network (CDN)
+- Traffic Monitoring
+- Blacklist/Whitelist
 
 ## Tools
 

@@ -10,17 +10,21 @@ curl -O https://releases.hashicorp.com/vault/1.14.0/vault_1.14.0_linux_amd64.zip
 unzip vault_1.14.0_linux_amd64.zip
 sudo mv vault /usr/local/bin/
 
-
 vault --version
 vault server -dev
 
 export VAULT_ADDR='http://127.0.0.1:8200'
-export VAULT_TOKEN='<your-root-token>'
+export VAULT_TOKEN='ROOT_TOKEN'
+
+vault operator unseal UNSEAL_KEY #Requires 3 unseal keys to unseal vault.
+vault operator seal
+vault login ROOT_TOKEN
 
 vault status
-vault kv put secret/myapp password=SuperSecret
-vault kv get secret/myapp
-vault kv delete secret/myapp
+vault secrets list
+vault kv put PATH KEY=VALUE
+vault kv get PATH
+vault kv delete PATH
 ```
 
 ## Persistant Storage

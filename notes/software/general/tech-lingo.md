@@ -10,6 +10,10 @@
 - Test Driven Development (TDD) - Onely useful if you know most of the requirements beforehand otherwise code is subject to change which means written tests are also subject to change.
 - ChatGPT - Just another tool like Google search engine. Raised the entry bar of becoming a software developer since it can perform what most junior engineers can do.
 
+## Network Lingo
+
+- Content Delivery Network (CDN) - A content delivery network or content distribution network is a geographically distributed network of proxy servers and their data centers. The goal is to provide high availability and performance by distributing the service spatially relative to end users.
+
 ## General
 
 - CPU bound and IO bound

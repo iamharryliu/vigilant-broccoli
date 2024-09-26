@@ -10,6 +10,11 @@
 
 ### Brewing Methods
 
+#### Cold Brew
+
+- 1:10 coffee to water. Adjust this to preference.
+- Leave course grind coffee in water for 24 hours+.
+
 #### Moka Pot
 
 - Beans - Medium to dark roast.
