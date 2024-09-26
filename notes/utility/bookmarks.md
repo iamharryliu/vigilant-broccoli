@@ -1,6 +1,7 @@
 # Bookmarks
 
-- [Painted Turtles Defrost Back to Life | Frozen Planet II | BBC Earth](https://www.youtube.com/watch?v=NwGHJTk3W3U)- - [Philosophy: A Guide to Happiness - Alain de Botton (2000) (The Consolations of Philosophy)](https://www.youtube.com/playlist?list=PLez3PPtnpncT7-pMCkOZaeiEWiM-jYU-E)
+- [Painted Turtles Defrost Back to Life | Frozen Planet II | BBC Earth](https://www.youtube.com/watch?v=NwGHJTk3W3U)
+- [Philosophy: A Guide to Happiness - Alain de Botton (2000) (The Consolations of Philosophy)](https://www.youtube.com/playlist?list=PLez3PPtnpncT7-pMCkOZaeiEWiM-jYU-E)
 - Skate
   - [AMALL Trick Tips: Carving Bowls](https://www.youtube.com/watch?v=jz8nMScAT-4)
   - [bruno loewe stunts](https://www.youtube.com/watch?v=p8CRjNLrres)
