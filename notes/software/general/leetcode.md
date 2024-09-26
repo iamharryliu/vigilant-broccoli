@@ -1,5 +1,22 @@
 # Leet Code
 
+## Language Mapping
+
+|      Operation       |              Python              |              Typescript               |
+| :------------------: | :------------------------------: | :-----------------------------------: |
+|       Infinity       |             math.inf             |               Infinity                |
+|       Min/Max        |      min(n1,n2), max(n1,n2)      |   Math.min(n1,n2), Math.max(n1,n2)    |
+|         Abs          |              abs(n)              |              Math.abs(n)              |
+|        Floor         |              int(n)              |      Math.floor(n)/Math.trunc(n)      |
+|       Sorting        |            arr.sort()            |              arr.sort()               |
+|       Hashmap        |            hmap = {}             | const hmap:{[key:string]:number} = {} |
+| Initialize Key Value | hmap[key] = hmap.get(key, 0) + 1 |  hmap[key] = (hmap[key] \|\| 0) + 1   |
+|   Hashmap Objects    |           hmap.items()           |         Object.entries(hmap)          |
+|     Hashmap Keys     |           hmap.keys()            |           Object.keys(hmap)           |
+|    Hashmap Values    |           hmap.items()           |          Object.values(hmap)          |
+
+## Notes
+
 - Iterative vs Recursive Solutions
 
   - Iterative solutions are more memory efficient as they do not build a call stack.
@@ -30,65 +47,4 @@ for r in range(len(grid)):
 				nc = c + y
 				visited.add(nr,nc)
 				do_something([nr,nc])
-```
-
-### Hashmap and dictionaries
-
-```
-dp[key] = dp.get(key, 0)
-```
-
-## Nuances Between Languages
-
-| Builtin Data Structure | Python | Typescript | Go  |
-| :--------------------: | :----: | :--------: | :-: |
-|   Default Dictionary   |   Y    |     N      |     |
-
-### Default Dictionary
-
-#### Python
-
-```
-hmap = {}
-for c in s:
-	hmap[c] = hmap.get(c, 0) + 1
-hmap.items()
-hmap.keys()
-hmap.values()
-```
-
-```
-math.inf
-min(n1,n2)
-max(n1,n2)
-abs(n)
-int(n)
-```
-
-```
-nums.sort()
-```
-
-#### Typescript
-
-```
-const hmap:{[key:string]:number} = {}
-for (const key of s){
-	hmap[key] = (hmap[key] || 0) + 1
-}
-Object.entries(hmap)
-Object.keys(hmap)
-Object.entires(hmap)
-```
-
-```
-Infinity
-Math.min(n1,n2)
-Math.max(n1,n2)
-Math.abs(n)
-Math.floor(n)/Math.trunc(n)
-```
-
-```
-nums.sort((a,b) => a - b)
 ```
