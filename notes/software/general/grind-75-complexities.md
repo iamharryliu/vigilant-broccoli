@@ -14,8 +14,8 @@
 | Lowest Common Ancestor of a Binary Search Tree |              O(h)               |                O(1)                 | Iterative Solution                   |
 | Balanced Binary Tree                           |              O(n)               |                O(n)                 | DFS                                  |
 | Linked List Cycle                              |              O(n)               |                O(1)                 | Slow and Fast Pointer                |
-| Implement Queue using Stacks                   |              O(n)               |                O(1)                 | Use two stacks.                      |
-| First Bad Version                              |             O(logn)             |                O(1)                 | Use binary search.                   |
+| Implement Queue using Stacks                   |              O(n)               |                O(1)                 | Two stacks.                          |
+| First Bad Version                              |             O(logn)             |                O(1)                 | Binary Search                        |
 | Ransom Note                                    |            O(m + n)             |              O(m + n)               |                                      |
 | Climbing Stairs                                |              O(n)               |                O(1)                 |                                      |
 | Longest Palindrome                             |              O(n)               |                O(n)                 |                                      |
