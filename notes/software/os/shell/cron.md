@@ -1,5 +1,7 @@
 # Cron
 
+- Aliases are disabled in noninteractive shells.
+
 ## Commands
 
 Access cron file.
@@ -16,4 +18,5 @@ Clear Mail
 
 ## References
 
-[Cron Guru](https://crontab.guru/)
+[crontab guru](https://crontab.guru/)
+[cron-job](https://console.cron-job.org/dashboard)
