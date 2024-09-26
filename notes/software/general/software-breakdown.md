@@ -15,13 +15,19 @@
         - Spacing
         - UI Libraries
       - Rendering
-        - Handling conditional rendering.
-        - Handling list rendering.
+        - Conditional rendering.
+        - List rendering.
       - Components
         - Handle passing values between components.
       - Event Handling
         - Handling button click.
         - Handling input change.
+      - Error Display Types
+        - Error Page
+        - Modal
+        - Alert/Banner
+        - Toasts/Notifications/Snackbar
+        - Inline Error/Tooltip/Animations
       - Accessibility(A11y)
       - Internationalization(i18n)
 
