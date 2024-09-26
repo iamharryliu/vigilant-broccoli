@@ -80,6 +80,9 @@
     - NoSQL
     - Backing up
   - Devops
+    - Deployment
+      - Manual Deployment
+      - Automated Deployment
     - IaC
     - CICD
     - Automation Scripting
