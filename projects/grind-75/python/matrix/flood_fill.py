@@ -8,26 +8,22 @@ class Solution:
         self, image: List[List[int]], sr: int, sc: int, color: int
     ) -> List[List[int]]:
         old_color = image[sr][sc]
-
-        if old_color == color:
-            return image
-
+        visited = set()
         directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
-        queue = deque([(sr, sc)])
 
-        while queue:
-            r, c = queue.popleft()
+        def dfs(r, c):
             image[r][c] = color
-
             for x, y in directions:
                 nr = r + x
                 nc = c + y
-
                 if (
                     0 <= nr < len(image)
                     and 0 <= nc < len(image[0])
+                    and (nr, nc) not in visited
                     and image[nr][nc] == old_color
                 ):
-                    queue.append((nr, nc))
+                    visited.add((nr, nc))
+                    dfs(nr, nc)
 
+        dfs(sr, sc)
         return image
