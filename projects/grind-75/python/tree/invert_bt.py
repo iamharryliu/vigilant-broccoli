@@ -1,16 +1,4 @@
-import collections
-
-
 class Solution:
-    @classmethod
-    def invertTreeRecursive(self, root):
-        if root:
-            root.left, root.right = (
-                self.invertTreeRecursive(root.right),
-                self.invertTreeRecursive(root.left),
-            )
-            return root
-
     @classmethod
     def invertTreeIterative(self, root):
         stack = [root]
@@ -21,3 +9,12 @@ class Solution:
                 stack.append(node.left)
                 stack.append(node.right)
         return root
+
+    @classmethod
+    def invertTreeRecursive(self, root):
+        if root:
+            root.left, root.right = (
+                self.invertTreeRecursive(root.right),
+                self.invertTreeRecursive(root.left),
+            )
+            return root
