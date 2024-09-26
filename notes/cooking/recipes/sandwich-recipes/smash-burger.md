@@ -1,14 +1,14 @@
-# Burgers
+# Smash Burger
 
-## [Smash Burger](https://youtu.be/Wwgn5k_TzKM?si=Rcinz-GFbeqjROBa)
+[Late Night Smashed Cheeseburger by Kenji](https://youtu.be/Wwgn5k_TzKM?si=Rcinz-GFbeqjROBa)
 
-### Ingredients
+## Ingredients
 
 - Brioche buns
 - Ground beef balls (at least 20% fat)
 - Thinly slices onions
 
-### Instructions
+## Instructions
 
 - Heat pan.
 - Spread butter on brioche buns and toast them.

@@ -7,3 +7,7 @@ React is an un-opinionated frontend library framework that generally requires us
 [React Render](https://harryliu.design/docs-md/react-render)
 [React Typescript](https://harryliu.design/docs-md/react-typescript)
 [React Nuances](https://harryliu.design/docs-md/react-nuances)
+
+## References
+
+- [ReactJS Tutorial for Beginners](https://www.youtube.com/playlist?list=PLC3y8-rFHvwgg3vaYJgHGnModB54rxOk3)

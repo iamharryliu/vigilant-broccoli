@@ -42,10 +42,8 @@ There are 3 view encapsulation modes for Angular, Emulate, None, and ShadowDOM.
 
 ## References
 
+[Angular Tutorial For Beginners](https://www.youtube.com/playlist?list=PLC3y8-rFHvwhBRAgFinJR8KHIrCdTkZcZ)
 [Recaptcha](https://dev.to/rodrigokamada/adding-the-google-recaptcha-v3-to-an-angular-application-kge)
-
 [ngx-translate](https://www.codeandweb.com/babeledit/tutorials/how-to-translate-your-angular-app-with-ngx-translate)
-
 [ngx-translate on startup](https://mcvendrell.medium.com/configuring-ngx-translate-to-load-at-startup-in-angular-1995e7dd6fcc)
-
 [exhaustMap to prevent additional user click](https://stackoverflow.com/questions/63780853/prevent-user-to-click-button-until-service-response-angular-7-rxjs)
