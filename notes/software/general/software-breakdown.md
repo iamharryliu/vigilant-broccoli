@@ -1,6 +1,16 @@
 # Software Breakdown
 
+- Architecture
+  - Microservices - Breaking applications into tiny remote services that run independently of each other.
+    - Pros: Developers/teams are able to work on independent services without affecting each other.
+    - Cons: Services that are dependent on other services require code changes on both services.
 - Web Development
+
+  - State Management
+
+    - Session
+    - Cookies
+    - JWT
 
   - Frontend
 
@@ -31,9 +41,11 @@
       - Accessibility(A11y)
       - Internationalization(i18n)
 
+    - State Management
     - Routes
 
-      - Handling route parameters
+      - Routing to different routes.
+      - Route parameters.
       - Handling nested routes.
       - Handling protected routes.
       - Handling invalid pages.
@@ -74,7 +86,6 @@
     - Containerization
     - Cloud
     - Networking
-    -
   - Version Control
     - Branching
     - Code Review Process
@@ -100,8 +111,8 @@
       - Performance Testing
       - Security Testing
 
-  - State Management
-  - SEO
+  - Content Management
+    - SEO
 
 - Application Monitoring
   - Distributed Tracing: Understanding the flow of requests across microservices.

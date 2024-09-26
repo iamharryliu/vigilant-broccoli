@@ -1,36 +1,19 @@
 # Leet Code
 
-## Top Coding Interview Concepts
+- Iterative vs Recursive Solutions
 
-### Heaps
+  - Iterative solutions are more memory efficient as they do not build a call stack.
+  - Recursive can look less complex.
 
-Efficient for priority queues and finding the k smallest or largest in a collection.
-
-- top O(n)
-
-- insert O(logn)
-
-- remove O(logn)
-
-- heapify O(n)
-
-# Sliding Window
-
-# Binary Search
-
-# BFS & DFS (for trees and graphs)
-
-# Recursion
-
-## Tips
-
-### Graphs
-
-- conditions: check range, visited, conditions
-
-### Intervals
-
-- pre-sort list
+- Heaps - Efficient for priority queues and finding the k smallest or largest in a collection.
+  - top O(n)
+  - insert O(logn)
+  - remove O(logn)
+  - heapify O(n)
+- Graphs
+  - conditions: check range, visited, conditions
+- Intervals
+  - Pre-sort list.
 
 ## Paste Bin
 
