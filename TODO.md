@@ -10,7 +10,6 @@
 - Q2
   - docs:
     - Browser media downloads for offline use (like YouTube downlaods)
-    - Look into handling DDOS attacks.
     - How to build online payment form?
     - Hpw to handle open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
   - fix(nx): publish -> build caching preventing new dist
