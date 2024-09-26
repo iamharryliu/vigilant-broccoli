@@ -15,6 +15,7 @@ alias cdgrind75ts="cdgrind75 && cd typescript"
 alias cdgrind75py="cdgrind75 && cd python"
 alias cdgrind75go="cdgrind75 && cd go"
 alias cddemoapps="cdprojects && cd demo-apps"
+alias pushleetcode="git add $GRIND75_DIR && gc feat leetcode 'Update leetcode.' && gpush"
 alias cdnx="cd $NX_DIR"
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
