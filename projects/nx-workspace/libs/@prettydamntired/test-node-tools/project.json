@@ -7,9 +7,9 @@
     "run-script": {
       "executor": "nx:run-commands",
       "configurations": {
-        "monitor-apps": {
+        "health-check": {
           "commands": [
-            "npx ts-node libs/@prettydamntired/test-node-tools/custom-scripts/app-monitor-script.ts"
+            "npx ts-node libs/@prettydamntired/test-node-tools/custom-scripts/health-check.ts"
           ]
         }
       }

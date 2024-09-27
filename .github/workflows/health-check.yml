@@ -1,4 +1,4 @@
-name: Monitor Apps
+name: Health Check
 on:
   push: { branches: ['main'] }
   schedule: [{ cron: '*/15 * * * *' }]
@@ -21,4 +21,4 @@ jobs:
         env:
           MY_EMAIL: ${{ secrets.MY_EMAIL }}
           MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
-        run: npx nx run @prettydamntired/test-node-tools:run-script:monitor-apps
+        run: npx nx run @prettydamntired/test-node-tools:run-script:health-check
