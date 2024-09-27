@@ -1,0 +1,43 @@
+{
+  "name": "@vigilant-broccoli/express",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/express/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "generatorOptions": {
+        "packageRoot": "dist/{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/express",
+        "tsConfig": "libs/@vigilant-broccoli/express/tsconfig.lib.json",
+        "packageJson": "libs/@vigilant-broccoli/express/package.json",
+        "main": "libs/@vigilant-broccoli/express/src/index.ts",
+        "assets": ["libs/@vigilant-broccoli/express/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/@vigilant-broccoli/express/jest.config.ts"
+      }
+    }
+  }
+}

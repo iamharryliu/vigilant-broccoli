@@ -36,6 +36,12 @@
       "@prettydamntired/vibecheck-lite": [
         "libs/@prettydamntired/vibecheck-lite/src/index.ts"
       ],
+      "@vigilant-broccoli/express": [
+        "libs/@vigilant-broccoli/express/src/index.ts"
+      ],
+      "@vigilant-broccoli/scripts": [
+        "libs/@vigilant-broccoli/scripts/src/index.ts"
+      ],
       "general-components": ["libs/angular/general-components/src/index.ts"]
     }
   },

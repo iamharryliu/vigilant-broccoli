@@ -51,6 +51,11 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
     }
   },
   "neverConnectToCloud": true,
@@ -69,5 +74,10 @@
       "style": "scss"
     }
   },
-  "useInferencePlugins": false
+  "useInferencePlugins": false,
+  "release": {
+    "version": {
+      "preVersionCommand": "npx nx run-many -t build"
+    }
+  }
 }

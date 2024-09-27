@@ -4,7 +4,7 @@ import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@prettydamntired/personal-we
 import {
   checkRecaptchaToken,
   requireJsonContent,
-} from '@prettydamntired/test-node-tools';
+} from '@vigilant-broccoli/express';
 import { IS_DEV_ENV } from './configs/app.const';
 import { DatabaseManager } from '@prettydamntired/personal-website-api-lib';
 

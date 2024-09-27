@@ -4,16 +4,6 @@
   "sourceRoot": "libs/@prettydamntired/test-node-tools/src",
   "projectType": "library",
   "targets": {
-    "run-script": {
-      "executor": "nx:run-commands",
-      "configurations": {
-        "health-check": {
-          "commands": [
-            "npx ts-node libs/@prettydamntired/test-node-tools/custom-scripts/health-check.ts"
-          ]
-        }
-      }
-    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],

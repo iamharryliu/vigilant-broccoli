@@ -1,19 +1,19 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import {
-  errorLogger,
-  errorResponder,
-  invalidPathHandler,
-  logger,
-  requestLogger,
-} from '@prettydamntired/test-node-tools';
+import { logger } from '@prettydamntired/test-node-tools';
 import { CORS_OPTIONS, PORT, HOST, IS_DEV_ENV } from './configs/app.const';
 import { router } from './routes';
 import {
   MONGO_DB_SERVER,
   PERSONAL_WEBSITE_DB_NAME,
 } from '@prettydamntired/personal-website-api-lib';
+import {
+  errorLogger,
+  errorResponder,
+  invalidPathHandler,
+  requestLogger,
+} from '@vigilant-broccoli/express';
 
 const app = express();
 

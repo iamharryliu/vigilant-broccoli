@@ -1,6 +1,5 @@
 import { HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
-import { RecaptchaService } from '../../services/recaptcha/recaptcha.service';
-import { logger } from '../../services/logging/logger.service';
+import { logger, RecaptchaService } from '@prettydamntired/test-node-tools';
 
 export const requestLogger = (request, response, next) => {
   logger.info('Request Logged');

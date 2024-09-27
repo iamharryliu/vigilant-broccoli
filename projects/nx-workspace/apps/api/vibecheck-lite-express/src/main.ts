@@ -2,18 +2,18 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { PORT, HOST, CORS_OPTIONS, IS_DEV_ENV } from './app.const';
-import {
-  errorLogger,
-  errorResponder,
-  invalidPathHandler,
-  logger,
-  requestLogger,
-} from '@prettydamntired/test-node-tools';
+import { logger } from '@prettydamntired/test-node-tools';
 import { Controller } from './controller';
 import {
   MONGO_DB_SERVER,
   VIBECHECK_LITE_DB_NAME,
 } from '@prettydamntired/personal-website-api-lib';
+import {
+  errorLogger,
+  errorResponder,
+  invalidPathHandler,
+  requestLogger,
+} from '@vigilant-broccoli/express';
 
 const app = express();
 
