@@ -1,5 +1,5 @@
-source ~/.zsh_aliases
 source ~/.env.sh
+source ~/.zsh_aliases
 
 export PATH="/opt/homebrew/bin:$PATH"
 
