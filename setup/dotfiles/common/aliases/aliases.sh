@@ -1,14 +1,13 @@
-dir=~/shell-common/aliases/os
-find "$dir" -name "*.sh" | while read -r script; do
-  source "$script"
-done
+alias initsh='echo "~Shell initialized.~" && source ~/.zshrc'
 
-dir=~/shell-common/aliases/devops
-find "$dir" -name "*.sh" | while read -r script; do
-  source "$script"
-done
+load_aliases() {
+  local dir="$1"
+  find "$dir" -name "*.sh" | while read -r script; do
+    source "$script"
+  done
+}
 
-dir=~/shell-common/aliases/network
-find "$dir" -name "*.sh" | while read -r script; do
-  source "$script"
+BASE_DIR=~/shell-common/aliases
+for SUB_DIR in os devops network; do
+  load_aliases "$BASE_DIR/$SUB_DIR"
 done
