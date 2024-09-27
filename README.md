@@ -27,6 +27,7 @@ ssh-keygen -b 4096 -t rsa
 Clone monorepo and run install script.
 
 ```
+cd ~ && git clone https://github.com/iamharryliu/vigilant-broccoli.git
 cd ~ && git clone git@github.com:iamharryliu/vigilant-broccoli.git
 chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 ~/vigilant-broccoli/setup/mac/install.sh
