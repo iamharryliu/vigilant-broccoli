@@ -1,3 +1,5 @@
+alias pingtest='ping google.com'
+
 check_network() {
     local verbose=0
     if [ "$1" = "-v" ]; then

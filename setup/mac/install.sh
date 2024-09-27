@@ -2,6 +2,7 @@ REPO_DIR="vigilant-broccoli"
 SETUP_DIR="$REPO_DIR/setup"
 MAC_SETUP_DIR="$SETUP_DIR/mac"
 DOTFILES_DIR="$SETUP_DIR/dotfiles"
+COMMON_DOTFILES_DIR="$DOTFILES_DIR/common"
 ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
 
 function ask() {
@@ -38,6 +39,7 @@ create_symlink() {
 # Setup dotfiles.
 if ask "Symlink dotfiles?"; then
     create_symlink "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
+    create_symlink "$COMMON_DOTFILES_DIR" "$HOME/shell-common"
     create_symlink "$ZSH_DOTFILES_DIR/.rc.zsh" "$HOME/.zshrc"
     create_symlink "$ZSH_DOTFILES_DIR/.aliases.zsh" "$HOME/.zsh_aliases"
     create_symlink "$ZSH_DOTFILES_DIR/aliases" "$HOME/shell-aliases"
