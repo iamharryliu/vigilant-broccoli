@@ -1,12 +1,5 @@
 [
   {
-    "name": "app-monitor-api",
-    "password_key_values": {
-      "MY_EMAIL": "email",
-      "MY_EMAIL_PASSWORD": "password"
-    }
-  },
-  {
     "name": "gta-update-alerts-flask",
     "password_key_values": {
       "DB_CONNECTION_STRING": "string",
