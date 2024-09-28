@@ -1,7 +1,6 @@
 /* eslint-disable @nx/enforce-module-boundaries */
-
-import { TODO_SITE } from '../../@prettydamntired/common-lib/src';
 import { SiteMonitor } from '../../@prettydamntired/test-node-tools/src';
+import { TODO_SITE } from '../../@prettydamntired/todo-lib/src';
 
 const sites = [
   'https://harryliu.design/',
