@@ -4,6 +4,8 @@
 
 - Q1
   - feat(harryliu.design): Migration to new domain..
+  - refactor(nx-libs):
+    - Refactor nx libs to be able to use @vigilant-broccoli/scripts
   - feat(secrets-manager):
     - Setup Hashicorp Vault.
     - Github CLI manager
