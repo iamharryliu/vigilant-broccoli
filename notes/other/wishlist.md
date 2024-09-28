@@ -4,7 +4,6 @@
 
 - [reMarkable Notebook](https://remarkable.com/)
 - Rollerblade Bag
-- Career Books
 - Licences
 
   - [Divvy Bundle License](https://mizage.onfastspring.com/) - 185,99 kr
@@ -20,17 +19,10 @@
 
 - Home
 
-  - Home sandals/slides.
   - Bath
     - [Salux Wash Cloth](https://www.amazon.se/-/en/Salux-Nylon-Japanese-Beauty-Clothes/dp/B000CSDDDG?th=1)
   - Kitchen
-
     - [Coffee Grinder](https://1zpresso.coffee/)
-    - Ikea:
-
-      - [Zester](https://www.ikea.com/se/en/p/vardagen-zester-with-handle-stainless-steel-beech-60581487/)
-      - [Mandoline](https://www.ikea.com/se/en/p/ikea-365-mandoline-black-00422321/)
-      - Plant balls
 
 - Clothes
   - Cap
