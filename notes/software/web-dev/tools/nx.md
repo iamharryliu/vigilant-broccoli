@@ -13,6 +13,8 @@ npm install -D @nx/angular
 nx run-many -t=[type]
 nx build [library] --with-deps
 --skip-nx-cache
+
+nx reset
 ```
 
 ### Storybook
