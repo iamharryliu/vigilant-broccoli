@@ -12,6 +12,9 @@
           "commands": [
             "npx ts-node libs/@vigilant-broccoli/scripts/health-check.ts"
           ]
+        },
+        "cleanup": {
+          "commands": ["npx ts-node libs/@vigilant-broccoli/scripts/cleanup.ts"]
         }
       }
     },

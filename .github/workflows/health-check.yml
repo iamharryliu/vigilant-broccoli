@@ -17,8 +17,13 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - name: run script
+      - name: Run health check.
         env:
           MY_EMAIL: ${{ secrets.MY_EMAIL }}
           MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
         run: npx nx run @vigilant-broccoli/scripts:run-script:health-check
+      - name: Run cleanup.
+        env:
+          MY_EMAIL: ${{ secrets.MONGO_DB_USERNAME }}
+          MY_EMAIL_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
+        run: npx nx run @vigilant-broccoli/scripts:run-script:cleanup

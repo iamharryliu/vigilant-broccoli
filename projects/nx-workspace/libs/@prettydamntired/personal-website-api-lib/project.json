@@ -7,8 +7,10 @@
     "run-script": {
       "executor": "nx:run-commands",
       "configurations": {
-        "health-check": {
-          "commands": ["npx ts-node libs/@prettydamntired//health-check.ts"]
+        "cleanup": {
+          "commands": [
+            "npx ts-node libs/@prettydamntired/personal-website-api-lib/cleanup.ts"
+          ]
         }
       }
     },
