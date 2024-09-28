@@ -1,12 +1,21 @@
-import { HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
+import { Request, Response, NextFunction } from 'express';
+import { HTTP_METHOD, HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
 import { logger, RecaptchaService } from '@prettydamntired/test-node-tools';
 
-export const requestLogger = (request, response, next) => {
+export const requestLogger = (
+  _request: Request,
+  _response: Response,
+  next: NextFunction,
+) => {
   logger.info('Request Logged');
   next();
 };
 
-export const requireJsonContent = (request, response, next) => {
+export const requireJsonContent = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
   if (request.headers['content-type'] !== 'application/json') {
     response
       .status(HTTP_STATUS_CODES.BAD_REQUEST)
@@ -16,8 +25,12 @@ export const requireJsonContent = (request, response, next) => {
   }
 };
 
-export const checkRecaptchaToken = async (request, response, next) => {
-  if (request.method !== 'GET') {
+export const checkRecaptchaToken = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  if (request.method !== HTTP_METHOD.GET) {
     const { recaptchaToken } = request.body;
     const recaptchaService = new RecaptchaService();
     if (await recaptchaService.isTrustedRequest(recaptchaToken)) {

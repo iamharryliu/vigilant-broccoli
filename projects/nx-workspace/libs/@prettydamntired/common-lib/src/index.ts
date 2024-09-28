@@ -16,6 +16,14 @@ export const HTTP_STATUS_CODES = {
   ...HTTP_ERROR_CODES,
 };
 
+export const HTTP_METHOD = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  PATCH: 'PATCH',
+  DELETE: 'DELETE',
+};
+
 export const LOCALHOST = 'localhost';
 
 export const TODO_SITE = {
