@@ -71,3 +71,7 @@
 
 - [Malmö guide to dog friendly cafes, restaurants and pubs](https://sweden.bestin.com/malmo-guide-to-dog-friendly-cafes-restaurants-and-pubs/)
 - [Espresso House Stortorget](https://maps.app.goo.gl/u6F66qoSfJquodNC8)
+
+## Fun Facts
+
+- [Bolmen Water Tunnel](https://en.wikipedia.org/wiki/Bolmen_Water_Tunnel)
