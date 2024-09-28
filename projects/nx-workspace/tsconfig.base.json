@@ -36,6 +36,9 @@
       "@prettydamntired/vibecheck-lite": [
         "libs/@prettydamntired/vibecheck-lite/src/index.ts"
       ],
+      "@vigilant-broccoli/email-handler": [
+        "libs/@vigilant-broccoli/email-handler/src/index.ts"
+      ],
       "@vigilant-broccoli/express": [
         "libs/@vigilant-broccoli/express/src/index.ts"
       ],

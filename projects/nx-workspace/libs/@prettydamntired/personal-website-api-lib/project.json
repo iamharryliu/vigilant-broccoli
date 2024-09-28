@@ -4,6 +4,14 @@
   "sourceRoot": "libs/@prettydamntired/personal-website-api-lib/src",
   "projectType": "library",
   "targets": {
+    "run-script": {
+      "executor": "nx:run-commands",
+      "configurations": {
+        "health-check": {
+          "commands": ["npx ts-node libs/@prettydamntired//health-check.ts"]
+        }
+      }
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],

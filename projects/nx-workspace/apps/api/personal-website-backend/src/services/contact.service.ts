@@ -5,7 +5,7 @@ import {
 } from '@prettydamntired/test-node-tools';
 import { IS_DEV_ENV } from '../configs/app.const';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
-import { DEFAULT_APP_EMAIL_CONFIG } from '@prettydamntired/personal-website-api-lib';
+import { DEFAULT_APP_EMAIL_CONFIG } from '@vigilant-broccoli/email-handler';
 
 export class ContactService {
   static async sendMessage(request: MessageRequest) {
