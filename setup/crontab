@@ -1,6 +1,6 @@
 # Career
 # Backup vb
-0 * * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd vigilant-broccoli/scripts/python/backup && source venv/bin/activate && python save_vigilant_broccoli.py
+0 0,4,8,12,16,24 * * * IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd ~/vigilant-broccoli/scripts/python/backup && source venv/bin/activate && python save_vigilant_broccoli.py
 # Update Resume
 * * * * * cp ~/My\ Drive/Career/Job\ Hunt/HarryLiu-Resume.pdf ~/vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf
 # Projects
