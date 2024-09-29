@@ -1,4 +1,5 @@
 alias initsh='echo "~Shell initialized.~" && source ~/.zshrc'
+alias reinstallsh='~/vigilant-broccoli/setup/mac/install.sh'
 
 load_aliases() {
   local dir="$1"
