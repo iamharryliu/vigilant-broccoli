@@ -1,29 +1,25 @@
-import requests
 import os
+import requests
 
+
+URL = "https://github.com/iamharryliu/vigilant-broccoli/archive/refs/heads/main.zip"
+DIRECTORY = os.path.expanduser("~/My Drive/Career/")
 FILENAME = "vigilant-broccoli.zip"
+FILEPATH = os.path.join(DIRECTORY, FILENAME)
 
 
-def download_file(url, directory):
-    # DEBUG LINE
-    # print("Backup started.")
+def main() -> None:
+    try:
+        download_file(URL, FILEPATH)
+    except (requests.exceptions.RequestException, OSError) as e:
+        print(f"Failed to download or save the file: {e}")
+
+
+def download_file(url: str, filepath: str) -> None:
     response = requests.get(url)
-    if response.status_code == 200:
-        file_path = os.path.join(directory, FILENAME)
-        with open(file_path, "wb") as f:
-            f.write(response.content)
-        # DEBUG LINE
-        # print(f"Backup successfully downloaded to {file_path}")
-    else:
-        print("Failed to backup.")
+    with open(filepath, "wb") as f:
+        f.write(response.content)
 
 
-url = "https://github.com/iamharryliu/vigilant-broccoli/archive/refs/heads/main.zip"
-directory = "~/My Drive/Career/"
-directory = os.path.expanduser(directory)
-
-if os.path.exists(FILENAME):
-    # Remove the existing file
-    os.remove(FILENAME)
-    print(f"Existing file removed: {FILENAME}")
-download_file(url, directory)
+if __name__ == "__main__":
+    main()
