@@ -17,7 +17,7 @@ alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\
 function gc() {
   if [ "$#" -lt 2 ]; then
     echo "Usage: $0 <git_type> [<project>] <message>"
-    exit 1
+    return 1
   fi
   git_type="$1"
   project=""
