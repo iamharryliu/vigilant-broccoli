@@ -66,6 +66,7 @@
 ## Activities
 
 - [Folkets Park](https://malmo.se/Folkets-Park)
+- [Goto 10](https://www.goto10.se/event/)
 
 ## Dog Friendly Spaces
 
