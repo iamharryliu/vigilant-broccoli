@@ -54,3 +54,5 @@ scheme    authority      path        query     hash
   - Babel (compiler)
   - SWC (sppedy web compiler)
   - Vite (build tool, uses Rollup to bundle)
+
+- cron - Operating system used to schedule automation script executions.

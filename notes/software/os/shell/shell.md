@@ -1,64 +1,46 @@
-# Command Line
+# Shell
 
-## cp
-
-Used to copy source or multiple sources to another location
+## Commands
 
 ```
+# cp(copy) - Used to copy source or multiple sources to another location
 cp [source] [destination]
 cp [source]/* [destination]
 cp [source]/*.json [destination]
 cp [source1] [source2] [destination]
-```
 
-## rsync
-
-Used to synchronize files or directories between two location
-
-```
+# rsync(remote sync) - Used to synchronize files or directories between two location
 rsync [source] [destination]
-```
 
-## find
-
-Used to find files and directories in a specified search
-
-```
+# find - Used to find files and directories in a specified search
 find [starting_directory] [options] [expression]
-```
 
-## grep
-
-Stand for global regular expression print. Used for searching plain-text files for line that match a regular expression
-
-```
+# grep(global regular expression print) - Used for searching plain-text files for line that match a regular expression
 grep [options] [regex] [file(s)]
-```
 
-### ARP (Address Resolution Protocol)
-
-```
+# ARP(Address Resolution Protocol)
 arp -a
+
+# du(disk usage)
+du -h DIRECTORY_PATH # Lists sizes for all files and subdirectories.
+du -sh DIRECTORY_PATH # Shows only the total size of the directory.
+
+# df(disk free) -  Displays the amount of available disk space for operating system.
+df -h
+
+# ps(process status) - Allows you to view information about the processes running on your system.
+ps aux
 ```
-
-## cron
-
-Scheduler used to automate script executions.
-
-## Text Editors
-
-- nano
-- vim
 
 ## Logging
 
 ```
-# Log to same file.
+# Log stdout and stderr to the same file.
 [command] > [output.log] 2>&1
-# Log to different files.
+
+# Log stdout and stderr to different files.
 [command] > [output.log] 2> [error.log]
+
 # Log only errors.
 [command] 2> [error.log]
-
-du -sh DIRECTORY
 ```
