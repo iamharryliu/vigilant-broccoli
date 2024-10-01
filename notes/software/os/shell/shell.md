@@ -32,6 +32,14 @@ df -h
 ps aux
 ```
 
+```
+# Count number of files.
+find DIR_NAME -type f | wc -l
+
+# grep for process number
+ps aux | grep WORDS
+```
+
 ## Logging
 
 ```

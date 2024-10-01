@@ -1,5 +1,7 @@
 # Stir Fry
 
+[Stir Fry Reel LifebyMikeG](https://www.youtube.com/shorts/un5GQ_Hc-Tg)
+
 ## Vegetable Stir Fry
 
 - Blanch vegetables in a such a timing that everything will be evenly crunchy when it hits the pan.
