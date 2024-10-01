@@ -4,12 +4,17 @@
 
 - Q1
   - feat(harryliu.design): Migration to new domain..
-  - refactor(nx-libs):
-    - Refactor nx libs to be able to use @vigilant-broccoli/scripts
+  - feat(new-tab):
+    - https://chatgpt.com/share/66fbad8d-c07c-800b-887f-0b94a05d6579
+    - https://chatgpt.com/share/66fbaf44-e4cc-800b-93d3-5d6f38071f00
+    - Calendar
+    - Weather
   - feat(secrets-manager):
     - Setup Hashicorp Vault.
     - Github CLI manager
 - Q2
+  - refactor(nx-libs):
+    - Refactor nx libs to be able to use @vigilant-broccoli/scripts
   - docs:
     - Browser media downloads for offline use (like YouTube downlaods)
     - How to build online payment form?
