@@ -3,6 +3,7 @@
 ## vigilant-broccoli
 
 - Q1
+  - feat(setup): Standardize sh paths.
   - feat(work): Implement work specific shortcuts.
   - feat(harryliu.design): Migration to new domain..
   - feat(new-tab):
