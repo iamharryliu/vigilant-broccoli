@@ -1,3 +1,4 @@
+alias openvb='code ~/Desktop/vb.code-workspace'
 # Directories
 export REPO_NAME="vigilant-broccoli"
 JOURNAL_DIR="~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/journal"

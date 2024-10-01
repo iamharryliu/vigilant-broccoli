@@ -1,7 +1,9 @@
 
-# Browsers
+# Browser
 alias chrome='open -a "Google Chrome"'
 alias firefox='open -a "Firefox"'
+alias chromeExtensions='chrome "chrome://extensions/"'
+
 
 # Utility
 alias google="~/shell-scripts/google_search.sh"
