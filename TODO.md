@@ -3,6 +3,7 @@
 ## vigilant-broccoli
 
 - Q1
+  - feat(work): Implement work specific shortcuts.
   - feat(harryliu.design): Migration to new domain..
   - feat(new-tab):
     - https://chatgpt.com/share/66fbad8d-c07c-800b-887f-0b94a05d6579
