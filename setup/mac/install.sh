@@ -1,9 +1,4 @@
-REPO_DIR="vigilant-broccoli"
-SETUP_DIR="$REPO_DIR/setup"
-MAC_SETUP_DIR="$SETUP_DIR/mac"
-DOTFILES_DIR="$SETUP_DIR/dotfiles"
-COMMON_DOTFILES_DIR="$DOTFILES_DIR/common"
-ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
+source $HOME/vigilant-broccoli/setup/dotfiles/common/aliases/aliases.sh
 
 function ask() {
     echo -n "$1 (Y/n): "
@@ -19,7 +14,7 @@ function ask() {
 
 # Install Brew dependencies.
 if ask "Install Brew dependencies?"; then
-    brew bundle --file ~/$REPO_DIR/setup/mac/Brewfile
+    brew bundle --file $MAC_SETUP_DIR/Brewfile
 fi
 
 create_symlink() {
@@ -50,14 +45,14 @@ if ask "Symlink dotfiles?"; then
 fi
 
 if ask "Use default .env.sh?"; then
-    cat ~/$ZSH_DOTFILES_DIR/.env.sh >> ~/.env.sh
+    cat $ZSH_DOTFILES_DIR/.env.sh >> ~/.env.sh
 fi
 
 if ask "Install Node dependencies?"; then
     brew link node@20
     npm install -g ts-node
     npm install -g @angular/cli
-    cd ~/$REPO_DIR
+    cd $REPO_DIR
     npm i -g recursive-install
     npm add --global nx@latest
     npm-recursive-install
@@ -65,7 +60,7 @@ fi
 
 
 if ask "Setup git hooks?"; then
-    cd ~/$REPO_DIR
+    cd $REPO_DIR
     pip3 install pre-commit && pre-commit install
     git config --unset-all core.hooksPath
 fi

@@ -15,7 +15,7 @@ alias pinterest="~/shell-scripts/pinterest_search.sh"
 alias amazon="~/shell-scripts/amazon_search.sh"
 alias karmanow='chrome "https://www.karmanow.com/my-items"'
 alias numi='open -a "Numi"'
-alias speedtest="chrome 'https://www.speedtest.net/'"
+alias openspeedtest="chrome 'https://www.speedtest.net/'"
 alias pwgen="chrome 'https://passwordsgenerator.net/'"
 alias obsidian="open -a 'Obsidian'"
 
@@ -44,7 +44,7 @@ alias memrise='chrome "https://app.memrise.com/dashboard"'
 alias communitymemrise='chrome "https://community-courses.memrise.com/dashboard"'
 alias udemyspanish='chrome "https://www.udemy.com/course/3-minute-spanish-course-5/learn"'
 alias udemyfrench='chrome "https://www.udemy.com/course/3-minute-french-course-8/learn"'
-alias languagepread='cdvb && code notes/language-learning/language-spread.md'
+alias languagespread="code $LANGUAGE_LEARNING_DIR/language-spread/language-spread.md"
 alias languagelearn="languagepread && gtranslate && communitymemrise && udemyspanish && udemyfrench && memrise"
 
 # Career

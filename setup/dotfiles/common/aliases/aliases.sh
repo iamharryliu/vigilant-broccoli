@@ -1,5 +1,10 @@
+source $HOME/vigilant-broccoli/setup/dotfiles/common/directory_variables.sh
+
 alias initsh='echo "~Shell initialized.~" && source ~/.zshrc'
-alias reinstallsh='~/vigilant-broccoli/setup/mac/install.sh'
+alias reinstallsh="$MAC_SETUP_DIR/install.sh"
+
+alias setupdock=". $MAC_SETUP_DIR/setup_dock.sh"
+alias setupmac=". $MAC_SETUP_DIR/setup_macos_preferences.sh"
 
 load_aliases() {
   local dir="$1"
