@@ -1,0 +1,76 @@
+{
+  "name": "new-tab-dashboard",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/new-tab-dashboard/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/ui/new-tab-dashboard"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "new-tab-dashboard:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "new-tab-dashboard:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "new-tab-dashboard:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "preview": {
+      "dependsOn": ["build"],
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "new-tab-dashboard:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "new-tab-dashboard:build:development"
+        },
+        "production": {
+          "buildTarget": "new-tab-dashboard:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../../coverage/apps/ui/new-tab-dashboard"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "new-tab-dashboard:build",
+        "spa": true
+      }
+    }
+  }
+}
