@@ -3,7 +3,6 @@
 ## vigilant-broccoli
 
 - Q1
-  - feat(setup): Standardize sh paths.
   - feat(work): Implement work specific shortcuts.
   - feat(harryliu.design): Migration to new domain..
   - feat(new-tab):
@@ -16,8 +15,6 @@
     - Github CLI manager
 - Q2
   - docs: Open source licensing.
-  - refactor(nx-libs):
-    - Refactor nx libs to be able to use @vigilant-broccoli/scripts
   - docs:
     - Browser media downloads for offline use (like YouTube downlaods)
     - How to build online payment form?
