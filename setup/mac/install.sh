@@ -14,7 +14,7 @@ function ask() {
 
 # Install Brew dependencies.
 if ask "Install Brew dependencies?"; then
-    brew bundle --file $MAC_SETUP_DIR/Brewfile
+    brewinit
 fi
 
 create_symlink() {
