@@ -15,6 +15,7 @@
     - Setup Hashicorp Vault.
     - Github CLI manager
 - Q2
+  - docs: Open source licensing.
   - refactor(nx-libs):
     - Refactor nx libs to be able to use @vigilant-broccoli/scripts
   - docs:
