@@ -3,6 +3,7 @@
 ## vigilant-broccoli
 
 - Q1
+  - fix(nx-workspace): check nx caching??
   - feat(work): Implement work specific shortcuts.
   - feat(harryliu.design): Migration to new domain..
   - feat(new-tab):
