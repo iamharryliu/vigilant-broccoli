@@ -6,7 +6,7 @@
 
 ## Cheatsheets
 
-- [Language Spread](https://harryliu.design/docs-md/language-spread)
-- [Verbs](https://harryliu.design/docs-md/language-spread-verbs)
-- [Numbers](https://harryliu.design/docs-md/language-spread-numbers)
-- [Rules](https://harryliu.design/docs-md/verb-rules)
+- [Language Spread](https://harryliu.dev/docs-md/language-spread)
+- [Verbs](https://harryliu.dev/docs-md/language-spread-verbs)
+- [Numbers](https://harryliu.dev/docs-md/language-spread-numbers)
+- [Rules](https://harryliu.dev/docs-md/verb-rules)

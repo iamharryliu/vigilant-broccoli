@@ -1,11 +1,11 @@
 # Paste Bin
 
-## harryliu.design
+## harryliu.dev
 
-- Index - https://harryliu.design/
-- Links - https://harryliu.design/links
-- Projects - https://harryliu.design/projects
-- Resume - https://harryliu.design/assets/HarryLiu-Resume.pdf
+- Index - https://harryliu.dev/
+- Links - https://harryliu.dev/links
+- Projects - https://harryliu.dev/projects
+- Resume - https://harryliu.dev/assets/HarryLiu-Resume.pdf
 
 ## Career
 

@@ -1,9 +1,9 @@
 # Ingredient Prepping
 
-- [Sauces](https://harryliu.design/docs-md/sauces)
-- [Bread](https://harryliu.design/docs-md/bread)
-- [Sprinkles](https://harryliu.design/docs-md/sprinkles)
-- [Pickling](https://harryliu.design/docs-md/pickling)
+- [Sauces](https://harryliu.dev/docs-md/sauces)
+- [Bread](https://harryliu.dev/docs-md/bread)
+- [Sprinkles](https://harryliu.dev/docs-md/sprinkles)
+- [Pickling](https://harryliu.dev/docs-md/pickling)
 - Cutting
   - Julienne Carrots
   - Diced Cucumbers
