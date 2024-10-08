@@ -8,7 +8,7 @@ import {
 import { IS_DEV_ENV } from './configs/app.const';
 
 export const router = express.Router();
-router.get('/', (_, res) => res.send('harryliu-design-express'));
+router.get('/', (_, res) => res.send('harryliu.dev api'));
 
 router.use(express.json({ limit: 5000 }));
 if (!IS_DEV_ENV) {

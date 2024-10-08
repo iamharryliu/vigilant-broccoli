@@ -25,9 +25,9 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - name: Build harryliu-design-ui
+      - name: Build harryliu.dev (Angular)
         run: npx nx build personal-website-frontend
-      - name: Deploy harryliu-design-ui
+      - name: Deploy harryliu.dev (Angular)
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
