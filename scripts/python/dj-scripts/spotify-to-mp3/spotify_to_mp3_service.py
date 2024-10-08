@@ -36,7 +36,8 @@ class SpotifyToMp3Service:
                 stderr=subprocess.DEVNULL,
             )
         except subprocess.CalledProcessError as e:
-            print(f"Failed to download playlist {playlist['name']}. Error: {e}")
+            pass
+            # print(f"Failed to download playlist {playlist['name']}. Error: {e}")
 
     @staticmethod
     def convert_to_slug_case(text):
