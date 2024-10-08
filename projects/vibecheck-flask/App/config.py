@@ -83,7 +83,7 @@ class PROD_CONFIG(SERVER_CONFIG):
     SECRET_KEY = "prod_key"
     BUCKET_NAME = "vibecheck-bucket"
     SQLALCHEMY_DATABASE_URI = os.environ.get("VIBECHECK_SQL_DB")
-    FRONTEND_APPLICATION_URL = "https://vibecheck-angular.harryliu.design"
+    FRONTEND_APPLICATION_URL = "https://vibecheck-angular.harryliu.dev"
     DEBUG = False
 
 
