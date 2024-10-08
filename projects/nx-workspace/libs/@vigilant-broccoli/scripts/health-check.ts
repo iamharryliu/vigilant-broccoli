@@ -3,11 +3,11 @@ import { SiteMonitor } from '../../@prettydamntired/test-node-tools/src';
 import { TODO_SITE } from '../../@prettydamntired/todo-lib/src';
 
 const sites = [
-  'https://harryliu.design/',
-  'https://api.harryliu.design/',
+  'https://harryliu.dev/',
+  'https://api.harryliu.dev/',
   'https://vibecheck-lite-express.fly.dev/',
-  'https://vibecheck-angular.harryliu.design/',
-  'https://vibecheck-flask.harryliu.design/',
+  'https://vibecheck-angular.harryliu.dev/',
+  'https://vibecheck-flask.harryliu.dev/',
   ...Object.values(TODO_SITE),
 ];
 

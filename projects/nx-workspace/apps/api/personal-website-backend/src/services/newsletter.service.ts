@@ -36,7 +36,7 @@ export class NewsletterService {
     const token = encryptionService.encryptData(email);
     const frontendUrl = IS_DEV_ENV
       ? 'http://localhost:4200'
-      : 'https://harryliu.design';
+      : 'https://harryliu.dev';
     const confirmLink = `${frontendUrl}/verify-email-subscription?token=${token}`;
     const subject = 'Email Verification';
     const template = {
@@ -51,7 +51,7 @@ export class NewsletterService {
     return mailService.sendEjsEmail(
       {
         ...DEFAULT_EMAIL_REQUEST,
-        from: `harryliu.design <${process.env.MY_EMAIL}>`,
+        from: `harryliu.dev <${process.env.MY_EMAIL}>`,
         to: email,
         subject,
       },

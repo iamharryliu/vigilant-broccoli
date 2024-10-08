@@ -34,7 +34,7 @@ const hmap = {
   styleUrl: '../code.scss',
 })
 export class LeetCodePageComponent implements OnInit {
-  indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
+  indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.dev' };
   fileContent$: Observable<FolderItem>;
 
   constructor(
@@ -81,7 +81,9 @@ export class LeetCodePageComponent implements OnInit {
   selectFile(file: any): void {
     this.pageService.selectFile(file.filepath);
     this.router.navigateByUrl(
-      `/grind-75/${this.getKeyFromExtension(file.name.split('.')[1])}/${file.name.split('.')[0]}`,
+      `/grind-75/${this.getKeyFromExtension(file.name.split('.')[1])}/${
+        file.name.split('.')[0]
+      }`,
     );
   }
 

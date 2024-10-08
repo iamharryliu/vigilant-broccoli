@@ -11,8 +11,8 @@ const DEFAULT_EMAIL_MESSAGE = {
 export const DEFAULT_APP_EMAIL_CONFIG = {
   [APP_NAME.HARRYLIU_DESIGN]: {
     ...DEFAULT_EMAIL_MESSAGE,
-    from: `'harryliu.design' <${process.env.MY_EMAIL}>`,
-    to: `'harryliu.design' <${process.env.MY_EMAIL}>`,
+    from: `'harryliu.dev' <${process.env.MY_EMAIL}>`,
+    to: `'harryliu.dev' <${process.env.MY_EMAIL}>`,
   } as EmailRequest,
   [APP_NAME.CLOUD_8_SKATE]: {
     ...DEFAULT_EMAIL_MESSAGE,

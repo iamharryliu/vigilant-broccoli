@@ -27,8 +27,9 @@ export class VibecheckLite {
 
   async getOutfitRecommendation(location: Location): Promise<string> {
     try {
-      const requestData =
-        await this.getWeatherDataForOutfitRecommendation(location);
+      const requestData = await this.getWeatherDataForOutfitRecommendation(
+        location,
+      );
       const requestString = `Can you recommend complete outfits to wear with the following json data for the 4 separate times. Please use the "dt_txt" parameter for the time, it is in GMT, please convert it to EST. Please use the "temp" parameter, it is in degrees Kelvin (K), please convert it to degrees Celsius (C).${JSON.stringify(
         requestData,
       )}. Convert the date and time from GMT to EST for the answer. Convert the temperature to celsius instead of Kelvin for the answer. Reply using the following template: \nTime {h:mm EST}:\n- Temperature: {temperature in celsius to nearest integer}\n- Weather: {weather}\n- Recommendation: {recommended outfit}.`;
@@ -94,7 +95,7 @@ export class VibecheckLite {
         path: `${__dirname}/assets/vibecheck-lite.ejs`,
         data: {
           recommendation: recommendation,
-          url: `https://harryliu.design/unsubscribe-vibecheck-lite?token=${email}`,
+          url: `https://harryliu.dev/unsubscribe-vibecheck-lite?token=${email}`,
         },
       };
       logger.info(`Sending email to ${email}`);

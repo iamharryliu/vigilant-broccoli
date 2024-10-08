@@ -9,10 +9,10 @@ import {
 
 const APP_MAPPER = {
   [APP_NAME.HARRYLIU_DESIGN]: {
-    endpoint: 'https://api.harryliu.design',
+    endpoint: 'https://api.harryliu.dev',
   },
   [APP_NAME.CLOUD_8_SKATE]: {
-    endpoint: 'https://api.harryliu.design',
+    endpoint: 'https://api.harryliu.dev',
   },
 };
 

@@ -1,6 +1,6 @@
-const url = 'https://harryliu.design/';
+const url = 'https://harryliu.dev/';
 
-describe('harryliu.design', () => {
+describe('harryliu.dev', () => {
   beforeEach(() => {
     cy.visit(url);
   });

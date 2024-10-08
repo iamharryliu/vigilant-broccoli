@@ -47,7 +47,7 @@ alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update 
 # Projects
 # Secrets Manager
 alias pushsecretsmanager="cdvb && git add $PROJECTS_DIR/secret-manager/ && gc build 'Update secrets manager.' && gpush"
-# harryliu.design
+# harryliu.dev
 alias servehld="cdnx && nx serve personal-website-frontend"
 alias serve-harryliu-design="cdnx && npm run serve:personal-website"
 alias deploy-harryliu-design="cdnx && nx manual-deploy personal-website-frontend"

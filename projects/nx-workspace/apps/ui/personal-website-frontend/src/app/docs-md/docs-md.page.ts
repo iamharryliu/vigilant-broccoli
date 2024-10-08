@@ -27,7 +27,7 @@ import {
   templateUrl: './docs-md.page.html',
 })
 export class DocsMdPageComponent implements OnInit {
-  indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.design' };
+  indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.dev' };
   fileContent$: Observable<FolderItem>;
 
   constructor(
