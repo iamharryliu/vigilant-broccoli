@@ -76,3 +76,7 @@
 ## Fun Facts
 
 - [Bolmen Water Tunnel](https://en.wikipedia.org/wiki/Bolmen_Water_Tunnel)
+
+## Leaning Swedish
+
+- [Swedish For Immigrant (SFI)](https://www.folkuniversitetet.se/vara-skolor/sfi-svenska-for-invandrare/malmo-sfi-skola-folkuniversitetet/)
