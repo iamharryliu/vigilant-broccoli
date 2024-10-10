@@ -18,6 +18,8 @@ alias numi='open -a "Numi"'
 alias openspeedtest="chrome 'https://www.speedtest.net/'"
 alias pwgen="chrome 'https://passwordsgenerator.net/'"
 alias obsidian="open -a 'Obsidian'"
+alias qrgen="chrome 'https://www.qr-code-generator.com/'"
+alias tinyurl="chrome 'https://tinyurl.com/'"
 
 # Services
 alias gmail='chrome "https://gmail.com/"'
