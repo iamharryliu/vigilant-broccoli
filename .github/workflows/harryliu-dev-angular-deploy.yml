@@ -33,4 +33,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: projects/nx-workspace
-          command: pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-design-angular
+          command: pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-dev-angular
