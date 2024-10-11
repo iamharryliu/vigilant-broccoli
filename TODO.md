@@ -5,7 +5,6 @@
 - Q1
   - fix(nx-workspace): check nx caching??
   - feat(work): Implement work specific shortcuts.
-  - feat(harryliu.design): Migration to new domain..
   - feat(new-tab):
     - https://chatgpt.com/share/66fbad8d-c07c-800b-887f-0b94a05d6579
     - https://chatgpt.com/share/66fbaf44-e4cc-800b-93d3-5d6f38071f00
