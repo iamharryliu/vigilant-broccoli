@@ -5,14 +5,6 @@
 - Q1
   - fix(nx-workspace): check nx caching??
   - feat(work): Implement work specific shortcuts.
-  - feat(new-tab):
-    - https://chatgpt.com/share/66fbad8d-c07c-800b-887f-0b94a05d6579
-    - https://chatgpt.com/share/66fbaf44-e4cc-800b-93d3-5d6f38071f00
-    - Calendar
-    - Weather
-  - feat(secrets-manager):
-    - Setup Hashicorp Vault.
-    - Github CLI manager
 - Q2
   - docs: Open source licensing.
   - docs:
@@ -24,26 +16,54 @@
   - feat(dj-scripts): spotify playlist scrape
     - Handle [Spotify rate limits](https://developer.spotify.com/documentation/web-api/concepts/rate-limits).
     - Fix playlists output.
-  - feat(cms-flask):
-    - Dynamic page contents.
-      - Blogs.
-      - Image galleries.
-    - Handle receiving emails for message requests.
-    - Virus scanning for uploads.
   - feat(app-monitor): Budget alerts for services.
   - feat(setup):
     - Setup macOS application privacy and security a11y.
     - Recursive makevenv.
-  - feat(malmo-alert):
-    - Malmo weather alert such as rain alerts.
-  - feat(toronto-alerts):
-    - https://www.theweathernetwork.com/en/city/ca/ontario/toronto/current
-    - update email header to be more explicit
-    - Select hours to get notified for weather subscription.
-    - Select subway and bus lines to subscribe to.
-    - Populate upcoming events.
-  - fix(toronto-alerts):
-    - Weird bug with manual deploy, venv/bin/python does not exist..
+
+## New Tab Dashboard
+
+- feat(new-tab):
+  - https://chatgpt.com/share/66fbad8d-c07c-800b-887f-0b94a05d6579
+  - https://chatgpt.com/share/66fbaf44-e4cc-800b-93d3-5d6f38071f00
+  - Calendar
+  - Weather
+
+## Secrets Manager
+
+- feat:
+  - Setup Hashicorp Vault.
+  - Github CLI manager
+
+## CMS
+
+- feat:
+  - Dynamic page contents.
+    - Blogs.
+    - Image galleries.
+  - Handle receiving emails for message requests.
+  - Virus scanning for uploads.
+
+## Malmo Alerts
+
+- feat:
+  - Malmo weather alert such as rain alerts.
+
+## Toronto Alerts
+
+- feat(toronto-alerts):
+  - https://www.theweathernetwork.com/en/city/ca/ontario/toronto/current
+  - update email header to be more explicit
+  - Select hours to get notified for weather subscription.
+  - Select subway and bus lines to subscribe to.
+  - Populate upcoming events.
+- fix(toronto-alerts):
+  - Weird bug with manual deploy, venv/bin/python does not exist..
+
+## Cloud8
+
+- feat:
+  - Implement Google iframe maps, [Map Embed](https://developers.google.com/maps/documentation/embed/get-started)
 
 # Vibecheck
 
