@@ -16,6 +16,8 @@
 #### JSDocs
 
 ```
+//@ts-check
+
 {Type}
 {Type1|Type2}
 {Object}
@@ -26,6 +28,28 @@
 @type {Type}
 @returns {Type}
 @throws {Error}
+
+/**
+*@whatever
+*/
+```
+
+### JS to TS Conversion
+
+```
+import { whatever } from 'whatever';
+const {} = require('whatever')
+
+module.exports = {...}
+export const whatever
+
+filename.js
+filename.ts
+
+node FILENAME
+npx tsx FILENAME
+
+tsconfig.json
 ```
 
 ## Console
