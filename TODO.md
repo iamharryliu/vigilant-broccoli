@@ -5,6 +5,7 @@
 - Q1
   - fix(nx-workspace): check nx caching??
   - feat(work): Implement work specific shortcuts.
+  - feat(crontab): Network call before running script, something like PING_GOOGLE && script
 - Q2
   - docs: Open source licensing.
   - docs:
