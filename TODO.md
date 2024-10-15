@@ -4,23 +4,21 @@
 
 - Q1
   - fix(nx-workspace): check nx caching??
-  - feat(work): Implement work specific shortcuts.
-  - feat(crontab): Network call before running script, something like PING_GOOGLE && script
+  - feat:
+    - new-implementations:
+      - [Implement Stripe Payment](https://chatgpt.com/share/670ea37b-e270-800b-a503-7751ec53c0a6)
+      - Deploy Hashicorp Vault.
+      - Utilize Github CLI manager?
+      - Recursive makevenv.
+    - setup:
+      - macOS application privacy and security a11y.
 - Q2
   - docs: Open source licensing.
   - docs:
     - Browser media downloads for offline use (like YouTube downlaods)
-    - How to build online payment form?
     - Hpw to handle open ssh port at home? https://www.reddit.com/r/hacking/comments/17qah4p/secure_ssh_to_home_computer/
   - fix(nx): publish -> build caching preventing new dist
-  - docs(monitor-apps): cleaner way to store apps that need to be monitored
-  - feat(dj-scripts): spotify playlist scrape
-    - Handle [Spotify rate limits](https://developer.spotify.com/documentation/web-api/concepts/rate-limits).
-    - Fix playlists output.
   - feat(app-monitor): Budget alerts for services.
-  - feat(setup):
-    - Setup macOS application privacy and security a11y.
-    - Recursive makevenv.
 
 ## New Tab Dashboard
 
@@ -29,12 +27,6 @@
   - https://chatgpt.com/share/66fbaf44-e4cc-800b-93d3-5d6f38071f00
   - Calendar
   - Weather
-
-## Secrets Manager
-
-- feat:
-  - Setup Hashicorp Vault.
-  - Github CLI manager
 
 ## CMS
 
