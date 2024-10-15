@@ -15,6 +15,11 @@
   - Always start by adding less. You can always add but can’t subtract.
   - Be mindful of:
     - Residual heat.
+- Use a wider base pot for pots that require evaporation such as rice.
+
+## Timing
+
+- When to add garlic? Add towards the end of cooking to avoid burning garlic.
 
 ## 5 Tastes
 
