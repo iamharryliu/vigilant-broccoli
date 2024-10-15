@@ -25,6 +25,9 @@ vault secrets list
 vault kv put PATH KEY=VALUE
 vault kv get PATH
 vault kv delete PATH
+
+curl --header "X-Vault-Token: $VAULT_TOKEN" --request POST --data '{"data": {"key":"value"}}' http://127.0.0.1:8200/v1/secret/data/my-secret
+curl --header "X-Vault-Token: $VAULT_TOKEN" http://127.0.0.1:8200/v1/secret/data/my-secret
 ```
 
 ## Persistant Storage
