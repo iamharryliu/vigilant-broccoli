@@ -8,7 +8,7 @@
 
 ### Github Action Status
 
-[![App Health Check Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/monitor-apps.yml)
+[![App Health Check Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/health-check.yml)
 [![CMS Flask - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cms-flask-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cms-flask-deploy.yml)
 [![Deploy Nx Apps - Deploy Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/nx-apps-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/nx-apps-deploy.yml)
 [![Deploy harryliu.dev Angular - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/harryliu-dev-angular-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/harryliu-dev-angular-deploy.yml)
