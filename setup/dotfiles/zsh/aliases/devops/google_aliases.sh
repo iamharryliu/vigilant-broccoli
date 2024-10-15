@@ -12,5 +12,3 @@ alias gcaptcha='chrome "https://www.google.com/recaptcha/admin/"'
 # Google Workspace APIs
 alias gam="~/bin/gam/gam"
 alias gyb="~/bin/gyb/gyb"
-alias advgam="~/bin/gamadv-xtd3/gam"
-export GAMCFGDIR="~/GAMConfig"
