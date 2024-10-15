@@ -13,7 +13,7 @@ export { TextMessageService } from './services/text-message/text-message.service
 
 import fs from 'fs';
 
-export interface HashmapCache<T> {
+export interface Hashmap<T> {
   [key: string]: T;
 }
 
@@ -31,8 +31,6 @@ export const getListFromFilepath = <T>(filepath: string): T[] => {
   return getFromFilepath(filepath, [] as T[]);
 };
 
-export const getHashmapFromFilepath = <T>(
-  filepath: string,
-): HashmapCache<T> => {
-  return getFromFilepath(filepath, {} as HashmapCache<T>);
+export const getObjectFromFilepath = <T>(filepath: string): Hashmap<T> => {
+  return getFromFilepath(filepath, {} as Hashmap<T>);
 };
