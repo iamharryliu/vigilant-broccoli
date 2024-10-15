@@ -63,7 +63,6 @@
 ## Cloud8
 
 - feat:
-  - Implement Google iframe maps, [Map Embed](https://developers.google.com/maps/documentation/embed/get-started)
   - Implement weather notifications.
   - Implement newsletter.
 

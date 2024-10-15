@@ -8,6 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { MarkdownService } from '../services/markdown.service';
 import { ScrollService } from '../services/scroll.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'lib-markdown-page',
@@ -19,16 +20,21 @@ import { ScrollService } from '../services/scroll.service';
 })
 export class MarkdownPageComponent {
   filepath = input('');
-  contentSignal = signal<string>('');
+  contentSignal = signal<string | SafeHtml>('');
+  isTrustedContent = input(false);
 
   constructor(
     private mdService: MarkdownService,
     private scrollService: ScrollService,
+    private sanitizer: DomSanitizer,
   ) {
     effect(() => {
       if (this.filepath) {
         this.mdService.getParsedMdFile(this.filepath()).subscribe(content => {
-          this.contentSignal.set(content);
+          const htmlContent = this.isTrustedContent()
+            ? this.sanitizer.bypassSecurityTrustHtml(content)
+            : content;
+          this.contentSignal.set(htmlContent);
           this.scrollService.scrollToAnchor();
         });
       }
