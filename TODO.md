@@ -64,7 +64,6 @@
 ## Cloud8
 
 - feat:
-  - Implement weather notifications.
   - Implement newsletter.
 
 # Vibecheck
