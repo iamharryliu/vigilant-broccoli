@@ -34,3 +34,6 @@ function gc() {
   git commit -m "$commit_message"
   echo "$commit_message"
 }
+
+alias pushignore="git add .gitignore && gc build 'Update .gitignore' && gpush"
+alias pushtodo="git add TODO.md && gc docs todo 'Update TODO.md file.' && gpush"
