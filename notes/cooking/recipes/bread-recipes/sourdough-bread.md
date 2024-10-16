@@ -18,6 +18,11 @@
 - Preshape by tucking the dough ball into itself and let rest for 10 minutes.
 - Do final shaping of the dough, lightly flour it and place onto floured banneton basket.
 - Rest for an hour and a half and continue fermenting in fridge until ready to bake.
+- Baking
+  - Preheat the oven to **230°C**.
+  - Lower to **220°C**.
+  - Bake for 20 minutes **with lid**.
+  - Bake for 15 minutes or until browned to preference **without lid**.
 
 ## Reference
 

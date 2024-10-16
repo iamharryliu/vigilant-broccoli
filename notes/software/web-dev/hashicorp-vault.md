@@ -26,8 +26,19 @@ vault kv put PATH KEY=VALUE
 vault kv get PATH
 vault kv delete PATH
 
-curl --header "X-Vault-Token: $VAULT_TOKEN" --request POST --data '{"data": {"key":"value"}}' http://127.0.0.1:8200/v1/secret/data/my-secret
-curl --header "X-Vault-Token: $VAULT_TOKEN" http://127.0.0.1:8200/v1/secret/data/my-secret
+curl --header "X-Vault-Token: VAULT_TOKEN" --request POST --data '{"data": {"key":"value"}}' http://127.0.0.1:8200/v1/secret/data/my-secret
+curl --header "X-Vault-Token: VAULT_TOKEN" http://127.0.0.1:8200/v1/secret/data/my-secret
+```
+
+## Auth
+
+```
+vault auth enable github
+vault write auth/github/config organization=ORGANIZATION_NAME
+vault login -method=github token=TOKEN
+
+
+curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/github/login
 ```
 
 ## Persistant Storage
