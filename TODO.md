@@ -9,6 +9,7 @@
       - [Implement Stripe Payment](https://chatgpt.com/share/670ea37b-e270-800b-a503-7751ec53c0a6)
       - Deploy Hashicorp Vault.
         - https://chatgpt.com/c/670ebe78-b264-800b-8e7a-fe132a9f59e4
+        - https://chatgpt.com/c/670f96b0-6868-800b-97bc-724cd4b461bf
       - Utilize Github CLI manager?
       - Recursive makevenv.
     - setup:
