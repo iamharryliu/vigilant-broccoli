@@ -13,13 +13,6 @@ sudo mv vault /usr/local/bin/
 vault --version
 vault server -dev
 
-export VAULT_ADDR='http://127.0.0.1:8200'
-export VAULT_TOKEN='ROOT_TOKEN'
-
-vault operator unseal UNSEAL_KEY #Requires 3 unseal keys to unseal vault.
-vault operator seal
-vault login ROOT_TOKEN
-
 vault status
 vault secrets list
 vault kv put PATH KEY=VALUE
@@ -30,6 +23,29 @@ curl --header "X-Vault-Token: VAULT_TOKEN" --request POST --data '{"data": {"key
 curl --header "X-Vault-Token: VAULT_TOKEN" http://127.0.0.1:8200/v1/secret/data/my-secret
 ```
 
+## Deploy in Production
+
+[Deploy Vault](https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy)
+
+```
+vim ~/config.hcl
+mkdir -p ./vault/data
+vault server -config=config.hcl
+
+export VAULT_ADDR='http://127.0.0.1:8200'
+vault operator init
+vault operator unseal
+vault operator unseal UNSEAL_KEY
+
+vault login
+vault login TOKEN
+vault operator seal
+
+// Teardown
+pgrep -f vault | xargs kill
+rm -r ./vault/data
+```
+
 ## Auth
 
 ```
@@ -37,28 +53,5 @@ vault auth enable github
 vault write auth/github/config organization=ORGANIZATION_NAME
 vault login -method=github token=TOKEN
 
-
 curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/github/login
-```
-
-## Persistant Storage
-
-By default, dev mode is in-memory only. For persistence, use a backup file.
-
-```
-# vault.hcl
-storage "file" {
-  path = "/path/to/your/data"
-}
-
-listener "tcp" {
-  address = "127.0.0.1:8200"
-  tls_disable = 1
-}
-
-disable_mlock = true
-```
-
-```
-vault server -config=vault.hcl
 ```
