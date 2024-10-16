@@ -27,13 +27,11 @@ def create_app(config=DIT_CONFIG):
     mail.init_app(app)
 
     # Import Blueprints
-    from App.main.routes import main_blueprint
     from App.users.routes import users_blueprint
     from App.cms_dashboard.routes import cms_dashboard_blueprint
     from App.errors.handlers import errors_blueprint
 
     # Add Blurprints
-    app.register_blueprint(main_blueprint)
     app.register_blueprint(users_blueprint)
     app.register_blueprint(cms_dashboard_blueprint)
     app.register_blueprint(errors_blueprint)

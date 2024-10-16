@@ -11,7 +11,7 @@ from flask import (
 from flask_login import login_required, current_user
 from App import db
 from App.models import User, Application, Group
-from App.main.forms import (
+from App.cms_dashboard.forms import (
     ContentForm,
     UploadForm,
     CreateUserForm,
