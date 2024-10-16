@@ -219,3 +219,5 @@ Brewfile.lock.json
 # Aliases
 work-aliases.sh
 personal-aliases.sh
+
+ignore/
