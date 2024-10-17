@@ -37,3 +37,4 @@ function gc() {
 
 alias pushignore="git add .gitignore && gc build 'Update .gitignore' && gpush"
 alias pushtodo="git add TODO.md && gc docs todo 'Update TODO.md file.' && gpush"
+alias pushcron="git add crontab && gc feat crontab 'Update crontab.' && gpush"
