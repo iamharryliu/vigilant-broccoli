@@ -37,6 +37,15 @@
 ### JS to TS Conversion
 
 ```
+.jsconfig
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": ["**/*.js"]
+}
+
 import { whatever } from 'whatever';
 const {} = require('whatever')
 

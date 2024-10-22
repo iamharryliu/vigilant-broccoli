@@ -82,3 +82,7 @@
 ## Leaning Swedish
 
 - [Swedish For Immigrant (SFI)](https://www.folkuniversitetet.se/vara-skolor/sfi-svenska-for-invandrare/malmo-sfi-skola-folkuniversitetet/)
+
+## Donation
+
+- [Erikshjalpen Second Hand](https://erikshjalpen.se/butiker/second-hand-malmo/)
