@@ -10,6 +10,8 @@ alias revenv='deactivate && initsh && venvon'
 pipreinstall() {
     pip uninstall "$1" -y && pip install "$1"
 }
+alias rmenv='deactivate && rm -rf venv'
+
 
 # Flask
 alias flaskrun='venvon && flask --app app.py --debug run'
