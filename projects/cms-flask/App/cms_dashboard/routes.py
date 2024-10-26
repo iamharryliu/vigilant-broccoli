@@ -345,9 +345,9 @@ def page_content(app_name):
     )
 
 
-@cms_dashboard_blueprint.route("/images", methods=["GET", "POST"])
+@cms_dashboard_blueprint.route("/<app_name>/dashboard/images", methods=["GET", "POST"])
 @login_required
-def images():
+def images(app_name):
     directories = [get_filename(path) for path in get_subdirectories("images/")]
     form = UploadForm()
     if form.validate_on_submit():
@@ -356,9 +356,14 @@ def images():
         for file in files:
             save_file(file, f"images/{directory_name}/{file.filename}")
         flash(f"You have successfully uploaded {directory_name}.", "success")
-        return redirect(url_for("cms.images"))
+        return redirect(url_for("cms.images", app_name=app_name))
     return render_template(
-        "pages/upload.html", title="Images", form=form, directories=directories
+        "pages/upload.html",
+        title="Images",
+        app_name=app_name,
+        active_tab="images",
+        form=form,
+        directories=directories,
     )
 
 
