@@ -4,7 +4,6 @@ from collections import deque
 class Solution:
     @classmethod
     def levelOrder(self, root):
-
         if not root:
             return []
 
