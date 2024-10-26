@@ -15,6 +15,8 @@ var variableName := value
 const CONST_NAME type
 const CONST_NAME type = value
 const CONST_NAME := value
+
+// The inferred declaration syntax := can only be used within a function.
 ```
 
 ## Printing / Logging
@@ -57,9 +59,10 @@ if val, ok := store[key]; ok {
 ### Arrays
 
 ```
-var arr [n]type
-var arr := [n]type{n1, n2..}
-var arr := [n]type{arr...}
+var arr [length]type
+var arr := [length]type{n1, n2..}
+var arr := [length]type{otherArr...}
+var arr := [...]type{otherArr...}
 ```
 
 ### Slices
@@ -80,27 +83,39 @@ var combinedSlice := append(list, otherSlice...)
 ## Iteration
 
 ```
-for i := 1; i < 5; i++ { }
-for [condition] { }
-```
-
-For Each
-
-```
-for i, val := range vals {
+// For Loop
+for i := 0; i < n; i++ {
     ...
 }
-```
+for condition{
+    ...
+}
 
-While Loop
+// For Each
+for i, val := range list {
+    ...
+}
+for key, value := range hmap {
+    ...
+}
+for i, c := range str {
+    ...
+}
 
-```
-for { ... }
+// While Loop
+for {
+    if condition {
+        break
+    }
+}
+
+continue
+break
 ```
 
 ## Hashmap
 
 ```
-var hmap map[key_type]value_type
-hmap = make(map[key_type]value_type)
+var hmap map[keyType]valueType
+hmap = make(map[keyType]valueType)
 ```
