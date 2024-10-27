@@ -367,8 +367,10 @@ def images(app_name):
     )
 
 
-@cms_dashboard_blueprint.route("/images/<album_name>/delete", methods=["POST"])
+@cms_dashboard_blueprint.route(
+    "/<app_name>/images/<album_name>/delete", methods=["POST"]
+)
 @login_required
-def delete_album(album_name):
+def delete_album(app_name, album_name):
     delete_directory("images/" + album_name)
-    return redirect(url_for("cms.images"))
+    return redirect(url_for("cms.images", app_name=app_name))

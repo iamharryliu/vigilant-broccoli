@@ -7,6 +7,7 @@ import { MorePageComponent } from '../../components/pages/more-page/more.page';
 import { CalendarPageComponent } from '../../components/pages/calendar-page/calendar-page.component';
 import { TerminologyPageComponent } from '../../components/pages/terminology-page/terminology.page';
 import { PlaylistsPageComponent } from '../../components/pages/playlists-page/playlists.page';
+import { AlbumsPageComponent } from '../../components/pages/albums-page/albums-page.component';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -56,6 +57,12 @@ export const CALENDAR_PAGE_ROUTE: Route = {
   component: CalendarPageComponent,
 };
 
+export const ALBUMS_ROUTE: Route = {
+  path: 'albums',
+  data: { title: 'Albums' },
+  component: AlbumsPageComponent,
+};
+
 const WILD_CARD_ROUTE: Route = {
   path: '**',
   redirectTo: '',
@@ -70,6 +77,7 @@ export const ROUTES: Route[] = [
   FAQ_PAGE_ROUTE,
   PLAYLISTS_PAGE_ROUTE,
   TERMINOLOGY_PAGE_ROUTE,
+  ALBUMS_ROUTE,
   WILD_CARD_ROUTE,
 ];
 

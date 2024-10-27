@@ -25,7 +25,7 @@
       {{ album_name }}
       <span>
         <form
-          action="{{ url_for('cms.delete_album', album_name=album_name) }}"
+          action="{{ url_for('cms.delete_album', app_name=app_name, album_name=album_name) }}"
           method="post"
         >
           <input class="btn btn-sm btn-danger" type="submit" value="Delete" />
