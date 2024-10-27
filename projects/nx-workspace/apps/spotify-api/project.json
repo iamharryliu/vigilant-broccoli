@@ -62,7 +62,7 @@
       }
     },
     "deploy": {
-      "command": "flyctl deploy --dockerfile ./apps/spotify-api/Dockerfile --config ./deployment-configs/fly-configs/spotify-playlist-getter.toml",
+      "command": "flyctl deploy --dockerfile ./apps/spotify-api/Dockerfile --config ./deployment-configs/fly-configs/spotify-playlist-getter.toml --ha=false",
       "dependsOn": ["build", "test", "lint"]
     }
   }

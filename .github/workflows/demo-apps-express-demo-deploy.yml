@@ -17,4 +17,4 @@ jobs:
         with:
           fetch-depth: 0
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --dockerfile Dockerfile --config fly.toml
+      - run: flyctl deploy --dockerfile Dockerfile --config fly.toml --ha=false
