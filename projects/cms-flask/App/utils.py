@@ -115,3 +115,9 @@ def generate_uuid():
 
 def generate_password(password):
     return bcrypt.generate_password_hash(password).decode("utf-8")
+
+
+def get_filename(path):
+    normalized_path = os.path.normpath(path)
+    folder_name = os.path.basename(normalized_path)
+    return folder_name

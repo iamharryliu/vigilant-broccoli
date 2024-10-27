@@ -1,1 +1,5 @@
-<app-image-gallery [images]="images"></app-image-gallery>
+<div class="lg:w-1/2 mx-auto">
+  <div class="pt-14 lg:pt-16 pl-4 pr-4">
+    <a *ngFor="let album of albums">{{ album }}</a>
+  </div>
+</div>

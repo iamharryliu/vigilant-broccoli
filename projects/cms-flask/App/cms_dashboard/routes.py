@@ -27,6 +27,7 @@ from App.utils import (
     save_file,
     delete_directory,
     generate_password,
+    get_filename,
 )
 from App.const import FLASH_CATEGORY, USER_TYPE
 from functools import wraps
@@ -49,12 +50,6 @@ def requires_privilege(fn):
         return redirect(url_for("cms.index"))
 
     return decorated_function
-
-
-def get_filename(path):
-    normalized_path = os.path.normpath(path)
-    folder_name = os.path.basename(normalized_path)
-    return folder_name
 
 
 cms_dashboard_blueprint = Blueprint(
