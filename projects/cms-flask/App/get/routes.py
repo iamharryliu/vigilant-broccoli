@@ -18,6 +18,6 @@ def helloWorld():
 @get_blueprint.route("/images")
 @cross_origin()
 def helloWorld2():
-    filenames = get_filenames("test")
+    filenames = get_filenames("images/test/")
     print(filenames)
     return filenames
