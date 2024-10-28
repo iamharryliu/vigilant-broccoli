@@ -1,4 +1,3 @@
-import os
 from flask import (
     Blueprint,
     redirect,
@@ -20,14 +19,10 @@ from App.cms_dashboard.forms import (
     UpdateAppForm,
     CreateGroupForm,
 )
-from App.utils import (
-    save_text,
-    get_text_from_filepath,
-    get_subdirectories,
-    save_file,
-    delete_directory,
-    generate_password,
-)
+from common.utils import get_filename
+from App.utils.auth_utils import generate_password
+from App.utils.file_utils import save_text, get_text_from_filepath, save_file
+from App.utils.file_utils.s3_utils import get_subdirectories, delete_directory
 from App.const import FLASH_CATEGORY, USER_TYPE
 from functools import wraps
 
@@ -49,12 +44,6 @@ def requires_privilege(fn):
         return redirect(url_for("cms.index"))
 
     return decorated_function
-
-
-def get_filename(path):
-    normalized_path = os.path.normpath(path)
-    folder_name = os.path.basename(normalized_path)
-    return folder_name
 
 
 cms_dashboard_blueprint = Blueprint(
@@ -345,10 +334,10 @@ def page_content(app_name):
     )
 
 
-@cms_dashboard_blueprint.route("/images", methods=["GET", "POST"])
+@cms_dashboard_blueprint.route("/<app_name>/dashboard/images", methods=["GET", "POST"])
 @login_required
-def images():
-    directories = [get_filename(path) for path in get_subdirectories("images/")]
+def images(app_name):
+    directories = [get_filename(path) for path in get_subdirectories("images")]
     form = UploadForm()
     if form.validate_on_submit():
         directory_name = form.directory_name.data.strip()
@@ -356,14 +345,21 @@ def images():
         for file in files:
             save_file(file, f"images/{directory_name}/{file.filename}")
         flash(f"You have successfully uploaded {directory_name}.", "success")
-        return redirect(url_for("cms.images"))
+        return redirect(url_for("cms.images", app_name=app_name))
     return render_template(
-        "pages/upload.html", title="Images", form=form, directories=directories
+        "pages/upload.html",
+        title="Images",
+        app_name=app_name,
+        active_tab="images",
+        form=form,
+        directories=directories,
     )
 
 
-@cms_dashboard_blueprint.route("/images/<album_name>/delete", methods=["POST"])
+@cms_dashboard_blueprint.route(
+    "/<app_name>/images/<album_name>/delete", methods=["POST"]
+)
 @login_required
-def delete_album(album_name):
-    delete_directory("images/" + album_name)
-    return redirect(url_for("cms.images"))
+def delete_album(app_name, album_name):
+    delete_directory(f"images/{album_name}")
+    return redirect(url_for("cms.images", app_name=app_name))

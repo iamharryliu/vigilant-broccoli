@@ -1,5 +1,6 @@
 alias gs='git status'
 alias gb='git branch'
+alias gbd='git branch -D'
 alias gco='git checkout'
 alias gbswitch='git checkout -'
 alias gcob='git checkout -b'

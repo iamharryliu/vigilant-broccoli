@@ -8,6 +8,13 @@
   </li>
   <li class="nav-item">
     <a
+      class="nav-link {{'active' if active_tab == 'images'}}"
+      href="{{url_for('cms.images', app_name=app_name)}}"
+      >Images</a
+    >
+  </li>
+  <li class="nav-item">
+    <a
       class="nav-link {{'active' if active_tab == 'settings'}}"
       href="{{url_for('cms.app_settings', app_name=app_name)}}"
       >Settings</a

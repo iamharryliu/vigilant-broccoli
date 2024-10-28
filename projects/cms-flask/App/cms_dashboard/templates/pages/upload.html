@@ -1,22 +1,5 @@
 {% extends 'layouts/dashboard_images_layout.html' %} {% block dashboard_content
-%} {% if directories %}
-<legend>Image Album Directory</legend>
-<ul class="list-group">
-  {% for album_name in directories %}
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    {{ album_name }}
-    <span>
-      <form
-        action="{{ url_for('cms.delete_album', album_name=album_name) }}"
-        method="post"
-      >
-        <input class="btn btn-sm btn-danger" type="submit" value="Delete" />
-      </form>
-    </span>
-  </li>
-  {% endfor %}
-</ul>
-{% endif %}
+%}
 
 <form method="POST" enctype="multipart/form-data">
   <legend class="mb-3">Add Album</legend>
@@ -30,4 +13,26 @@
   <div class="input-group mb-3">{{ form.images(class="form-control") }}</div>
   <div>{{ form.submit(class="btn btn-primary") }}</div>
 </form>
-{% endblock %}
+
+{% if directories %}
+<div class="my-3">
+  <legend>Image Album Directory</legend>
+  <ul class="list-group">
+    {% for album_name in directories %}
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center"
+    >
+      {{ album_name }}
+      <span>
+        <form
+          action="{{ url_for('cms.delete_album', app_name=app_name, album_name=album_name) }}"
+          method="post"
+        >
+          <input class="btn btn-sm btn-danger" type="submit" value="Delete" />
+        </form>
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %} {% endblock %}
