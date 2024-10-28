@@ -23,8 +23,8 @@ export class AlbumPageComponent implements OnInit {
     this.images$ = this.route.paramMap.pipe(
       switchMap(params => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const albumId = params.get('albumId')!;
-        return this.imageService.getImagesByAlbumId(albumId);
+        const albumName = params.get('albumName')!;
+        return this.imageService.getImagesByAlbumId(albumName);
       }),
     );
   }

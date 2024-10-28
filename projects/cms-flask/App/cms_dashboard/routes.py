@@ -361,5 +361,5 @@ def images(app_name):
 )
 @login_required
 def delete_album(app_name, album_name):
-    delete_directory("images/" + album_name)
+    delete_directory(f"images/${album_name}/")
     return redirect(url_for("cms.images", app_name=app_name))

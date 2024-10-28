@@ -11,14 +11,13 @@ get_blueprint = Blueprint(
 
 @get_blueprint.route("/albums")
 @cross_origin()
-def helloWorld():
+def get_albums():
     directories = [get_filename(path) for path in get_subdirectories("images/")]
     return directories
 
 
-@get_blueprint.route("/images")
+@get_blueprint.route("/albums/<albumId>")
 @cross_origin()
-def helloWorld2():
-    filenames = get_filenames("images/test/")
-    print(filenames)
+def get_album(albumId):
+    filenames = get_filenames(f"images/{albumId}/")
     return filenames

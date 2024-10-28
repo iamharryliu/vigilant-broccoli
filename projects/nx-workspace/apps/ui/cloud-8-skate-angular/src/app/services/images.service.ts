@@ -1,14 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
+import { ENVIRONMENT } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ImageService {
   constructor(private http: HttpClient) {}
 
-  // TODO: Implement selecting albumId
   getImagesByAlbumId(albumId: string): Observable<any> {
-    console.log(albumId);
-    return this.http.get<any>('http://127.0.0.1:5000/images');
+    return this.http
+      .get<any>(`${ENVIRONMENT.URLS.HEADLESS_CMS.IMAGE_ALBUMS}/${albumId}`)
+      .pipe(
+        map(response =>
+          response.map(
+            (filename: string) => `https://bucket.cloud8skate.com/${filename}`,
+          ),
+        ),
+      );
+    // ;
   }
 }
