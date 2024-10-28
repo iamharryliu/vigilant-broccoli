@@ -3,6 +3,10 @@ import boto3
 from io import BytesIO
 
 
+def ensure_trailing_slash(path: str) -> str:
+    return path if path.endswith("/") else path + "/"
+
+
 def get_s3_client():
     return boto3.client(
         service_name="s3",
@@ -21,7 +25,9 @@ def upload_s3_file(file, filepath):
 def get_subdirectories(prefix=None):
     s3_client = get_s3_client()
     s3_objects = s3_client.list_objects(
-        Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix, Delimiter="/"
+        Bucket=current_app.config["BUCKET_NAME"],
+        Prefix=ensure_trailing_slash(prefix),
+        Delimiter="/",
     ).get("CommonPrefixes")
     return [d["Prefix"] for d in s3_objects] if s3_objects else []
 
@@ -29,7 +35,9 @@ def get_subdirectories(prefix=None):
 def get_filenames(prefix=None):
     s3_client = get_s3_client()
     s3_objects = s3_client.list_objects(
-        Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix, Delimiter="/"
+        Bucket=current_app.config["BUCKET_NAME"],
+        Prefix=ensure_trailing_slash(prefix),
+        Delimiter="/",
     ).get("Contents")
     return [d["Key"] for d in s3_objects] if s3_objects else []
 
@@ -45,7 +53,7 @@ def get_s3_file(filepath):
 def delete_directory(prefix):
     s3_client = get_s3_client()
     response = s3_client.list_objects(
-        Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix
+        Bucket=current_app.config["BUCKET_NAME"], Prefix=ensure_trailing_slash(prefix)
     )
     if "Contents" not in response:
         flash(

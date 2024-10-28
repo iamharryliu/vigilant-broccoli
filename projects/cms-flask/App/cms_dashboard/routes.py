@@ -337,7 +337,7 @@ def page_content(app_name):
 @cms_dashboard_blueprint.route("/<app_name>/dashboard/images", methods=["GET", "POST"])
 @login_required
 def images(app_name):
-    directories = [get_filename(path) for path in get_subdirectories("images/")]
+    directories = [get_filename(path) for path in get_subdirectories("images")]
     form = UploadForm()
     if form.validate_on_submit():
         directory_name = form.directory_name.data.strip()
@@ -361,5 +361,5 @@ def images(app_name):
 )
 @login_required
 def delete_album(app_name, album_name):
-    delete_directory(f"images/${album_name}/")
+    delete_directory(f"images/{album_name}")
     return redirect(url_for("cms.images", app_name=app_name))
