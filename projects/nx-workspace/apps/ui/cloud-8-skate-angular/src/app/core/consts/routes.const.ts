@@ -1,4 +1,4 @@
-import { Route } from '@angular/router';
+import { Route, Routes } from '@angular/router';
 import { Link } from 'general-components';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact-page.component';
 import { FaqPageComponent } from '../../components/pages/faq-page/faq.page';
@@ -8,6 +8,7 @@ import { CalendarPageComponent } from '../../components/pages/calendar-page/cale
 import { TerminologyPageComponent } from '../../components/pages/terminology-page/terminology.page';
 import { PlaylistsPageComponent } from '../../components/pages/playlists-page/playlists.page';
 import { AlbumsPageComponent } from '../../components/pages/albums-page/albums-page.component';
+import { AlbumPageComponent } from '../../components/pages/album-page/album-page.component';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -57,10 +58,19 @@ export const CALENDAR_PAGE_ROUTE: Route = {
   component: CalendarPageComponent,
 };
 
+const ALBUM_ROUTE: Route = {
+  path: ':albumName',
+  data: { title: 'Album Details' },
+  component: AlbumPageComponent,
+};
+
 export const ALBUMS_ROUTE: Route = {
   path: 'albums',
-  data: { title: 'Albums' },
-  component: AlbumsPageComponent,
+  data: { title: 'Images' },
+  children: [
+    ALBUM_ROUTE,
+    { path: '', component: AlbumsPageComponent, pathMatch: 'full' },
+  ],
 };
 
 const WILD_CARD_ROUTE: Route = {
@@ -68,7 +78,7 @@ const WILD_CARD_ROUTE: Route = {
   redirectTo: '',
 };
 
-export const ROUTES: Route[] = [
+export const ROUTES: Routes = [
   HOME_PAGE_ROUTE,
   CONTACT_PAGE_ROUTE,
   MORE_PAGE_ROUTE,
@@ -123,6 +133,13 @@ const PLAYLISTS: Link = {
   text: 'Playlists',
 };
 
+const ALBUMS: Link = {
+  url: {
+    internal: `/${ALBUMS_ROUTE.path}`,
+  },
+  text: 'Photo Albums',
+};
+
 const CLOUD_8_SKATE_IG: Link = {
   url: {
     external: 'https://www.instagram.com/cloud8skate/',
@@ -144,6 +161,7 @@ export const INTERNAL_LINKS = {
   FAQ,
   MORE,
   PLAYLISTS,
+  ALBUMS,
 };
 
 export const EXTERNAL_LINKS = {

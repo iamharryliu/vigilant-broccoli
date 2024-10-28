@@ -78,12 +78,13 @@ def get_subdirectories(prefix=None):
     return [d["Prefix"] for d in s3_objects] if s3_objects else []
 
 
+# TODO: Get directory filenames
 def get_filenames(prefix=None):
     s3_client = get_s3_client()
-    s3_objects = [
-        s3_client.list_objects(Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix)
-    ]
-    return [f["Key"] for f in s3_objects[0]["Contents"]]
+    s3_objects = s3_client.list_objects(
+        Bucket=current_app.config["BUCKET_NAME"], Prefix=prefix, Delimiter="/"
+    )
+    return []
 
 
 def delete_directory(prefix):

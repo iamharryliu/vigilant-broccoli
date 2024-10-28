@@ -1,12 +1,31 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ImageGalleryComponent } from '../../features/image-gallery/image-gallery.component';
+import { Observable, switchMap } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { ImageService } from '../../../services/images.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'app-album-page',
   templateUrl: './album-page.component.html',
-  imports: [ImageGalleryComponent],
+  imports: [ImageGalleryComponent, CommonModule],
 })
-export class AlbumPageComponent {
-  @Input() images!: string[];
+export class AlbumPageComponent implements OnInit {
+  images$!: Observable<string[]>;
+
+  constructor(
+    private route: ActivatedRoute,
+    private imageService: ImageService,
+  ) {}
+
+  ngOnInit(): void {
+    this.images$ = this.route.paramMap.pipe(
+      switchMap(params => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const albumId = params.get('albumId')!;
+        return this.imageService.getImagesByAlbumId(albumId);
+      }),
+    );
+  }
 }
