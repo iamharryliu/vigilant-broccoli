@@ -31,6 +31,7 @@ alias gyb="~/bin/gyb/gyb"
 gam oauth info
 
 gam info user
+gam info user EMAIL
 gam print users
 gam print users allfields
 gam print admins
