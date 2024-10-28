@@ -1,7 +1,7 @@
 from flask import current_app, redirect, url_for
 from App import db, login_manager
 from App.const import USER_TYPE, USER_CONFIG, TOKEN_EXPIRE_TIME_IN_SECONDS
-from App.utils import generate_uuid
+from common.utils import generate_uuid
 from flask_login import UserMixin
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from datetime import datetime, UTC

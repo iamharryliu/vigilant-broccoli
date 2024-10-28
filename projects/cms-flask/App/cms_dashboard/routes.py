@@ -1,4 +1,3 @@
-import os
 from flask import (
     Blueprint,
     redirect,
@@ -20,15 +19,10 @@ from App.cms_dashboard.forms import (
     UpdateAppForm,
     CreateGroupForm,
 )
-from App.utils import (
-    save_text,
-    get_text_from_filepath,
-    get_subdirectories,
-    save_file,
-    delete_directory,
-    generate_password,
-    get_filename,
-)
+from common.utils import get_filename
+from App.utils.auth_utils import generate_password
+from App.utils.file_utils import save_text, get_text_from_filepath, save_file
+from App.utils.file_utils.s3_utils import get_subdirectories, delete_directory
 from App.const import FLASH_CATEGORY, USER_TYPE
 from functools import wraps
 
