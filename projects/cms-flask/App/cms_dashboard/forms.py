@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed
 from wtforms import (
     StringField,
     TextAreaField,
@@ -62,5 +63,7 @@ class ContentForm(FlaskForm):
 
 class UploadForm(FlaskForm):
     directory_name = StringField("Album Name", validators=[DataRequired()])
-    images = MultipleFileField("Images", validators=[DataRequired()])
+    images = MultipleFileField(
+        "Images", validators=[DataRequired(), FileAllowed(["jpg", "jpeg", "png"])]
+    )
     submit = SubmitField("Upload")

@@ -19,12 +19,14 @@ from App.cms_dashboard.forms import (
     UpdateAppForm,
     CreateGroupForm,
 )
-from common.utils import get_filename
 from App.utils.auth_utils import generate_password
 from App.utils.file_utils import save_text, get_text_from_filepath, save_file
 from App.utils.file_utils.s3_utils import get_subdirectories, delete_directory
 from App.const import FLASH_CATEGORY, USER_TYPE
 from functools import wraps
+from common.utils import get_filename
+from common.consts.consts import HTTP_METHOD
+from common.consts.bootstrap_consts import BOOTSTRAP_COLORS
 
 
 def requires_privilege(fn):
@@ -334,20 +336,35 @@ def page_content(app_name):
     )
 
 
-@cms_dashboard_blueprint.route("/<app_name>/dashboard/images", methods=["GET", "POST"])
+@cms_dashboard_blueprint.route(
+    "/<app_name>/dashboard/images", methods=[HTTP_METHOD.GET, HTTP_METHOD.POST]
+)
 @login_required
 def images(app_name):
     directories = [
         get_filename(path) for path in get_subdirectories(app_name, "images")
     ]
     form = UploadForm()
-    if form.validate_on_submit():
-        directory_name = form.directory_name.data.strip()
-        files = form.images.data
-        for file in files:
-            save_file(file, f"images/{directory_name}/{file.filename}", app_name)
-        flash(f"You have successfully uploaded {directory_name}.", "success")
-        return redirect(url_for("cms.images", app_name=app_name))
+    if request.method == HTTP_METHOD.POST:
+        if form.validate_on_submit():
+            directory_name = form.directory_name.data.strip()
+            files = form.images.data
+            if len(files) > 20:
+                return redirect(url_for("cms.images", app_name=app_name))
+            for file in files:
+                save_file(file, f"images/{directory_name}/{file.filename}", app_name)
+            flash(
+                f"You have successfully uploaded {directory_name}.",
+                BOOTSTRAP_COLORS.SUCCESS,
+            )
+            return redirect(url_for("cms.images", app_name=app_name))
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(
+                        f"Error in {getattr(form, field).label.text}: {error}",
+                        BOOTSTRAP_COLORS.DANGER,
+                    )
     return render_template(
         "pages/upload.html",
         title="Images",
