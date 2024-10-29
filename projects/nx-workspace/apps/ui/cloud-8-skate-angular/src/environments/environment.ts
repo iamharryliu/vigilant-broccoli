@@ -4,7 +4,7 @@ export const ENVIRONMENT = {
   ANALYTICS_ID: 'G-SJELMQXML9',
   URLS: {
     HEADLESS_CMS: {
-      IMAGE_ALBUMS: 'https://cms-system-flask.fly.dev/albums',
+      IMAGE_ALBUMS: 'https://cms-system-flask.fly.dev/cloud8/albums',
     },
   },
 };

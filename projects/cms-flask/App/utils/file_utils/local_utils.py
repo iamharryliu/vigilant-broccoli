@@ -2,10 +2,10 @@ import os
 from flask import current_app
 
 
-def get_local_path(filepath):
+def get_local_path(filepath, app_name):
     return os.path.join(
         current_app.root_path,
-        current_app.config["BUCKET_NAME"],
+        app_name,
         filepath,
     )
 

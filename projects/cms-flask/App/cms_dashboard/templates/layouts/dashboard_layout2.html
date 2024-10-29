@@ -1,0 +1,7 @@
+{% extends 'layouts/layout.html' %} {% block content %}
+<h1>{{app_name}}</h1>
+{% include 'components/navtabs.html' %}
+<div class="row">
+  <div class="col-12">{% block dashboard_content %} {% endblock %}</div>
+</div>
+{% endblock %}

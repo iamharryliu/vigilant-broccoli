@@ -25,7 +25,6 @@ class SERVER_CONFIG:
 
     BACKEND_APP_URL = f"http://localhost:{PORT_NUMBER}"
 
-    BUCKET_NAME = "static"
     CONTENT_DIRECTORY = "content"
 
     # Flask-SQLAlchemy
@@ -54,7 +53,6 @@ class SERVER_CONFIG:
 
 class TEST_CONFIG(SERVER_CONFIG):
     ENVIRONMENT = ENVIRONMENT_TYPE.TEST
-    BUCKET_NAME = "static/test"
 
 
 class DIT_CONFIG(SERVER_CONFIG):
@@ -64,10 +62,8 @@ class DIT_CONFIG(SERVER_CONFIG):
 class SIT_CONFIG(SERVER_CONFIG):
     ENVIRONMENT = ENVIRONMENT_TYPE.SIT
     SQLALCHEMY_DATABASE_URI = os.environ.get("CMS_DB")
-    BUCKET_NAME = "cloud8-bucket"
 
 
 class PROD_CONFIG(SERVER_CONFIG):
     ENVIRONMENT = ENVIRONMENT_TYPE.PROD
     SQLALCHEMY_DATABASE_URI = os.environ.get("CMS_DB")
-    BUCKET_NAME = "cloud8-bucket"

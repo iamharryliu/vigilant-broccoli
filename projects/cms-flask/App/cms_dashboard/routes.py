@@ -319,10 +319,10 @@ def page_content(app_name):
     form = ContentForm()
     filepath = f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md"
     if request.method == "GET":
-        form.content.data = get_text_from_filepath(filepath)
+        form.content.data = get_text_from_filepath(filepath, app_name)
     if form.validate_on_submit():
         content = form.content.data
-        save_text(content, filepath)
+        save_text(content, filepath, app_name)
         flash(f"You have successfully updated the content.", "success")
         return redirect(url_for("cms.page_content", app_name=app_name))
     return render_template(
@@ -337,13 +337,15 @@ def page_content(app_name):
 @cms_dashboard_blueprint.route("/<app_name>/dashboard/images", methods=["GET", "POST"])
 @login_required
 def images(app_name):
-    directories = [get_filename(path) for path in get_subdirectories("images")]
+    directories = [
+        get_filename(path) for path in get_subdirectories(app_name, "images")
+    ]
     form = UploadForm()
     if form.validate_on_submit():
         directory_name = form.directory_name.data.strip()
         files = form.images.data
         for file in files:
-            save_file(file, f"images/{directory_name}/{file.filename}")
+            save_file(file, f"images/{directory_name}/{file.filename}", app_name)
         flash(f"You have successfully uploaded {directory_name}.", "success")
         return redirect(url_for("cms.images", app_name=app_name))
     return render_template(
@@ -361,5 +363,5 @@ def images(app_name):
 )
 @login_required
 def delete_album(app_name, album_name):
-    delete_directory(f"images/{album_name}")
+    delete_directory(f"images/{album_name}", app_name)
     return redirect(url_for("cms.images", app_name=app_name))

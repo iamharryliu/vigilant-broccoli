@@ -9,15 +9,17 @@ get_blueprint = Blueprint(
 )
 
 
-@get_blueprint.route("/albums")
+@get_blueprint.route("/<app_name>/albums")
 @cross_origin()
-def get_albums():
-    directories = [get_filename(path) for path in get_subdirectories("images")]
+def get_albums(app_name):
+    directories = [
+        get_filename(path) for path in get_subdirectories(app_name, "images")
+    ]
     return directories
 
 
-@get_blueprint.route("/albums/<albumId>")
+@get_blueprint.route("/<app_name>/albums/<albumId>")
 @cross_origin()
-def get_album(albumId):
-    filenames = get_filenames(f"images/{albumId}")
+def get_album(app_name, albumId):
+    filenames = get_filenames(app_name, f"images/{albumId}")
     return filenames
