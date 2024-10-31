@@ -12,16 +12,15 @@
 
 ## Instructions
 
-- Combine yeast, sugar, 1/2 cup water, stir after 5 minutes.
+- Combine yeast, sugar, 1/2 cup water to activate yeast.
 - Mix flour and salt.
-- Make a well in the salted flour and pour in the yeast water and 1/3 cup warm water. Mix well and knead the dough.
-- Brush the bowl with oil and coat dough. Let the dough rise for 1 hour then punch it down and let it rest another 10 minutes.
+- Make a well in the salted flour and pour in the yeast water and 1/3 cup warm water. Mix well and knead.
+- Brush the bowl with oil and coat dough. Let the dough rise for 1 hour then punch it down, let rest another 10 minutes.
 - Divide the dough into 8 pieces. Round the pieces into balls. Make a hole into the center of the ball and stretch the bagel dough into shape.
 - Rest the dough on an oil coated tray..
-- Bring a pot of water to a boil and start preheating the oven to 425 with convection bake.
-- Boil both sides of the bagel dough in water for 2 minutes and return to tray.
+- Start preheating the oven to 425 with convection bake and bring a pot of water to a boil.
+- Boil both sides of the bagel dough in water for 1-2 minutes and return to tray.
 - Coat the boiled dough in egg wash and add any topping you'd like.
-
 - Bake the tray in the oven for 20-25 minutes.
 
 ## Notes
