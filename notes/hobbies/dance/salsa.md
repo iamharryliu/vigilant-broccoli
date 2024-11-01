@@ -15,9 +15,9 @@ Hard to lead moves
 
 ## Basics
 
-- forward/back basic
-- side basic
-- open break
+- Forward and back basic.
+- Side to side basic.
+- Open break.
 
 ## '123' Step Moves
 
