@@ -1,0 +1,57 @@
+# Xcode
+DerivedData/
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+!*.xcworkspace/contents.xcuserstate
+xcuserdata/
+*.xccheckout
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata
+!*.xcodeproj/xcshareddata/*
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+*.xcworkspace/xcuserdata
+
+# Swift Package Manager
+.build/
+Package.resolved
+
+# Swift Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Ignore temporary files and logs
+*.log
+*.tmp
+*.DS_Store
+
+# SwiftLint cache
+.swiftlint_cache/
+
+# Archives and Derived Data
+*.xcarchive
+*.dSYM
+
+# Unit test results
+*.xctest*
+
+# SwiftUI Previews cache
+*.databases
+*.sqlite*
+*.xsqlite
+*.history
