@@ -16,3 +16,8 @@ export interface VibecheckLiteSubscriptionRequest {
   latitude: number;
   longitude: number;
 }
+
+export interface ImageAlbum {
+  albumName: string;
+  firstImageUrl: string;
+}

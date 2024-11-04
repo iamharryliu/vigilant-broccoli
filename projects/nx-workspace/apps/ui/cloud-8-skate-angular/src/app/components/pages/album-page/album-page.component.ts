@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class AlbumPageComponent implements OnInit {
   images$!: Observable<string[]>;
+  albumName!: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,6 +25,7 @@ export class AlbumPageComponent implements OnInit {
       switchMap(params => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const albumName = params.get('albumName')!;
+        this.albumName = albumName;
         return this.imageService.getImagesByAlbumId(albumName);
       }),
     );

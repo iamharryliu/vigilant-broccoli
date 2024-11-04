@@ -6,6 +6,7 @@ import { ENVIRONMENT } from '../../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { INTERNAL_LINKS } from '../../../core/consts/routes.const';
+import { ImageAlbum } from '@prettydamntired/personal-website-lib';
 
 @Component({
   standalone: true,
@@ -14,7 +15,7 @@ import { INTERNAL_LINKS } from '../../../core/consts/routes.const';
   imports: [ImageGalleryComponent, CommonModule, RouterModule],
 })
 export class AlbumsPageComponent {
-  albums!: string[];
+  albums!: ImageAlbum[];
   LINKS = INTERNAL_LINKS;
   constructor(private http: HttpClient) {
     this.getPosts().subscribe(res => (this.albums = res));

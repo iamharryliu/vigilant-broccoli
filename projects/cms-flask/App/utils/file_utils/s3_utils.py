@@ -32,6 +32,27 @@ def get_subdirectories(app_name, prefix=None):
     return [d["Prefix"] for d in s3_objects] if s3_objects else []
 
 
+def get_subdirectories_and_first_image(app_name, prefix=None):
+    s3_client = get_s3_client()
+    subdirectories = get_subdirectories(app_name, prefix)
+    if not subdirectories:
+        return []
+    albums = []
+    for subdir in subdirectories:
+        album_name = subdir.rstrip("/").split("/")[-1]
+        images = s3_client.list_objects(Bucket=app_name, Prefix=subdir).get("Contents")
+        if not images:
+            continue
+        first_image_key = images[0]["Key"]
+        albums.append(
+            {
+                "albumName": album_name,
+                "firstImageUrl": f"https://bucket.cloud8skate.com/{first_image_key}",
+            }
+        )
+    return albums
+
+
 def get_filenames(app_name, prefix=None):
     s3_client = get_s3_client()
     s3_objects = s3_client.list_objects(
@@ -39,7 +60,11 @@ def get_filenames(app_name, prefix=None):
         Prefix=ensure_trailing_slash(prefix),
         Delimiter="/",
     ).get("Contents")
-    return [d["Key"] for d in s3_objects] if s3_objects else []
+    return (
+        [f"https://bucket.cloud8skate.com/{image['Key']}" for image in s3_objects]
+        if s3_objects
+        else []
+    )
 
 
 def get_s3_file(filepath, app_name):

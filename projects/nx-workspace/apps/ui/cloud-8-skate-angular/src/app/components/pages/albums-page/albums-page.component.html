@@ -1,9 +1,15 @@
 <div class="lg:w-1/2 mx-auto">
   <div class="pt-14 lg:pt-16 pl-4 pr-4">
-    <a
-      *ngFor="let album of albums"
-      [routerLink]="[LINKS.ALBUMS.url.internal, album]"
-      >{{ album }}</a
-    >
+    <div class="sm:columns-3 ps-4 pe-4">
+      <div class="album-item" *ngFor="let album of albums">
+        <a [routerLink]="[LINKS.ALBUMS.url.internal, album.albumName]">
+          <img
+            class="w-full mb-8"
+            [src]="album.firstImageUrl"
+            [alt]="album.albumName"
+          />
+        </a>
+      </div>
+    </div>
   </div>
 </div>
