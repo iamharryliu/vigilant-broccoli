@@ -36,6 +36,24 @@ function gc() {
   echo "$commit_message"
 }
 
-alias pushignore="git add .gitignore && gc build 'Update .gitignore' && gpush"
-alias pushtodo="git add TODO.md && gc docs todo 'Update TODO.md file.' && gpush"
-alias pushcron="git add crontab && gc feat crontab 'Update crontab.' && gpush"
+function pushfile() {
+    local filename=$1
+    local message=$2
+    find . -name "$filename" | while read -r filepath; do
+        git add $filepath
+        git commit -m "$message"
+        git push
+        cd - >/dev/null || exit
+    done
+}
+function pushignore() {
+    pushfile ".gitignore" "Update .gitignore"
+}
+
+function pushtodo() {
+    pushfile "TODO.md" "Update TODO.md file."
+}
+
+function pushcron() {
+    pushfile "crontab" "Update crontab."
+}
