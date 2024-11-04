@@ -45,3 +45,7 @@ wrangler r2 bucket delete [BUCKET_TO_DELETE]
 - [Python and R2](https://developers.cloudflare.com/r2/examples/aws/boto3/)
 - [R2 Bucket CLI](https://developers.cloudflare.com/r2/api/workers/workers-api-usage/#5-access-your-r2-bucket-from-your-worker)
 - [Subdomain Redirect Rules](https://www.youtube.com/watch?v=Bw5LUF0x7wo)
+- [R2 Pricing](https://developers.cloudflare.com/r2/pricing/)
+  - Storage 10 GB / month
+  - Class A Operations 1 million requests / month
+  - Class B Operations 10 million requests / month
