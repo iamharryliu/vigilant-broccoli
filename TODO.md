@@ -35,7 +35,6 @@
 - feat:
   - Dynamic page contents.
     - Blogs.
-    - Image galleries.
   - Handle receiving emails for message requests.
   - Virus scanning for uploads.
 
