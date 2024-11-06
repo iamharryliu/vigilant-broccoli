@@ -2,7 +2,7 @@ alias openvbws='code ~/Desktop/vb.code-workspace'
 alias openworkws='code ~/Desktop/work.code-workspace'
 alias openworkstuff='openworkws && openSlack'
 # Directories
-ICLOUD_JOURNAL_DIR="~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal"
+ICLOUD_JOURNAL_DIR="~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/journal"
 HOME_JOURNAL_DIR="~/journal"
 if [ -d "$ICLOUD_JOURNAL_DIR" ]; then
     JOURNAL_DIR="$ICLOUD_JOURNAL_DIR"
