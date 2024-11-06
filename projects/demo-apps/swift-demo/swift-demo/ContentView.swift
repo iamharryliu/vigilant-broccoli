@@ -1,35 +1,36 @@
-//
-//  ContentView.swift
-//  swift-demo
-//
-//  Created by Harry Liu on 2024-11-01.
-//
 
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @State private var todos: [Todo] = []
 
     var body: some View {
         NavigationSplitView {
             List {
-                ForEach(items) { item in
+                ForEach(todos) { todo in
                     NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                        Text(todo.title)
+                            .font(.headline)
+                        Text("Completed: \(todo.completed ? "Yes" : "No")")
+                            .font(.subheadline)
+                            .foregroundColor(todo.completed ? .green : .red)
                     } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+                        Text(todo.title)
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .onDelete(perform: deleteTodo)
+            }
+            .onAppear {
+                fetchAllTodos()
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
                 ToolbarItem {
-                    Button(action: addItem) {
+                    Button(action: addTodo) {
                         Label("Add Item", systemImage: "plus")
                     }
                 }
@@ -39,23 +40,49 @@ struct ContentView: View {
         }
     }
 
-    private func addItem() {
+    private func addTodo() {
         withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+            let newId = (todos.map { $0.id }.max() ?? 0) + 1
+            let newItem = Todo(
+                id: newId,
+                title: "New",
+                completed: false
+            )
+            todos.insert(newItem, at: 0)
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+    private func deleteTodo(at offsets: IndexSet) {
+            todos.remove(atOffsets: offsets)
+    }
+
+    private func fetchAllTodos() {
+        let urlString = Constants.TODO_URL
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("Error fetching todos:", error)
+                return
+            }
+
+            guard let data = data else {
+                print("No data returned")
+                return
+            }
+
+            do {
+                let todos = try JSONDecoder().decode([Todo].self, from: data)
+                DispatchQueue.main.async {
+                    self.todos = todos
+                }
+            } catch {
+                print("Error decoding JSON:", error)
             }
         }
+        task.resume()
     }
-}
-
-#Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }

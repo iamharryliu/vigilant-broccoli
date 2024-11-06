@@ -1,9 +1,3 @@
-//
-//  swift_demoApp.swift
-//  swift-demo
-//
-//  Created by Harry Liu on 2024-11-01.
-//
 
 import SwiftUI
 import SwiftData
@@ -11,9 +5,7 @@ import SwiftData
 @main
 struct swift_demoApp: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
+        let schema = Schema([])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
