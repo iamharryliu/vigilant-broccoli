@@ -1,14 +1,14 @@
-<div class="lg:w-1/2 mx-auto">
+<div class="lg:w-3/4 mx-auto">
   <div class="pt-14 lg:pt-16 pl-4 pr-4">
-    <div class="sm:columns-3 ps-4 pe-4">
-      <div class="album-item" *ngFor="let album of albums">
+    <div class="grid gap-4 sm:grid-cols-3">
+      <div *ngFor="let album of albums">
         <a [routerLink]="[LINKS.ALBUMS.url.internal, album.albumName]">
           <img
-            class="w-full mb-8"
             [src]="album.firstImageUrl"
             [alt]="album.albumName"
-          />
+            class="w-full" />
         </a>
+        <p class="text-center font-light mt-2">{{album.albumName}}</p>
       </div>
     </div>
   </div>
