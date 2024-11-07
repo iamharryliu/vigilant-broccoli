@@ -1,12 +1,9 @@
 # Bread
 
-## Hydration
-
-The ratio of water to flour in bread making, ie 80% hydration meants 80 grams of water to 100 grams water.
-
-### High Hydration
-
-A high ratio of water to flour, typically resulting in a dough that’s wetter and stickier(75+% hydration). This produces bread with an airy, open crumb and a crispy crust, though it can be more challenging to handle. High-hydration doughs often need longer fermentation to develop strength and flavor. They’re popular in artisan baking for the unique texture and taste they provide.
+- autolyse - Mixing flour and water before adding in any other ingredients to build gluten strength.
+- levain - Starter dough.
+- hydration - The ratio of water to flour in bread making, ie 80% hydration meants 80 grams of water to 100 grams water.
+- high hydration- A high ratio of water to flour, typically resulting in a dough that’s wetter and stickier(75+% hydration). This produces bread with an airy, open crumb and a crispy crust, though it can be more challenging to handle. High-hydration doughs often need longer fermentation to develop strength and flavor. They’re popular in artisan baking for the unique texture and taste they provide.
 
 ## Types of Flour
 
