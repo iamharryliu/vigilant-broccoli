@@ -12,4 +12,5 @@ module.exports = {
   },
   plugins: [],
   mode: 'jit',
+  purge: ['./src/**/*.{html,ts}'],
 };
