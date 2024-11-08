@@ -11,6 +11,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-  mode: 'jit',
-  purge: ['./src/**/*.{html,ts}'],
 };
