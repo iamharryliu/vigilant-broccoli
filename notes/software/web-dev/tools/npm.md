@@ -7,6 +7,15 @@
 - minor release - Backward compatible new features, increment the middle digit and reset last digit to zero, 1.1.0
 - major release - changes that break backward compatibility, 2.0.0
 
+## Scope
+
+NPM packages can be published under the scope of the the username or organization name.
+
+```
+npm publish @USERNAME/PACKAGE_NAME
+npm publish @ORGANISATION_NAME/PACKAGE_NAME
+```
+
 ## Commands
 
 ```
@@ -27,6 +36,5 @@ npm i --package-lock-only --workspaces=false
 
 ## References
 
-[Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik)
-
-[NPM Link and Unlink](https://dev.to/erinbush/npm-linking-and-unlinking-2h1g)
+- [Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik)
+- [NPM Link and Unlink](https://dev.to/erinbush/npm-linking-and-unlinking-2h1g)
