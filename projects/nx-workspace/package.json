@@ -11,6 +11,16 @@
     "format:commit": "npm run format",
     "test:commit": "nx affected -t test"
   },
+  "lint-staged": {
+    "*.ts": [
+      "npm run lint:commit",
+      "npm run format:commit",
+      "npm run test:commit"
+    ],
+    "*.{json,md}": [
+      "npm run format:commit"
+    ]
+  },
   "private": true,
   "devDependencies": {
     "@angular-devkit/build-angular": "18.2.2",
@@ -135,16 +145,6 @@
     "twilio": "^4.21.0",
     "winston": "^3.11.0",
     "zone.js": "0.14.10"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "npm run lint:commit",
-      "npm run format:commit",
-      "npm run test:commit"
-    ],
-    "*.{json,md}": [
-      "npm run format:commit"
-    ]
   },
   "nx": {}
 }
