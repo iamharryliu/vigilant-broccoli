@@ -44,6 +44,42 @@
 
 # Frontend
 
+## Rendering
+
+### **SSG vs SSR vs CSR** (Static Site Generation, Server-Side Rendering, Client-Side Rendering)
+
+|      Feature       | **SSG** (Static Site Generation)       | **SSR** (Server-Side Rendering)        | **CSR** (Client-Side Rendering)           |
+| :----------------: | -------------------------------------- | -------------------------------------- | ----------------------------------------- |
+| **Rendering Time** | Build time (pre-rendered)              | Request time (server-rendered)         | Browser renders after fetching JavaScript |
+|  **Performance**   | Very fast (static files served by CDN) | Slower (server processes each request) | Depends on device/browser capabilities    |
+| **Data Freshness** | Requires a rebuild for updates         | Always up-to-date                      | Updates dynamically via API calls         |
+|      **SEO**       | Excellent (HTML pre-generated)         | Excellent (HTML rendered server-side)  | Can be poor without server-side hydration |
+|    **Hosting**     | Simple (CDN, static hosting)           | Requires a server                      | Simple (static hosting + API)             |
+| **Best Use Cases** | Blogs, marketing sites, documentation  | E-commerce, dynamic dashboards         | SPAs (e.g., dashboards, interactive apps) |
+|   **Complexity**   | Low                                    | Medium                                 | High                                      |
+
+**Key Differences**
+
+1. **SSG**: Pre-rendered during build, best for static content.
+2. **SSR**: Rendered dynamically per request, ideal for real-time updates and SEO.
+3. **CSR**: Fully rendered in the browser, best for highly interactive applications.
+
 ## Javascript
 
-- Axios vs Fetch
+### Axios vs Fetch
+
+| Feature                  | **Axios**                                         | **Fetch**                                    |
+| ------------------------ | ------------------------------------------------- | -------------------------------------------- |
+| **Ease of Use**          | Easier syntax, more features                      | Requires more boilerplate for advanced tasks |
+| **JSON Handling**        | Automatic parsing of JSON                         | Manual parsing with `response.json()`        |
+| **Error Handling**       | Throws on non-2xx responses                       | Requires manual `response.ok` check          |
+| **Timeouts**             | Built-in                                          | Requires custom implementation               |
+| **Interceptors**         | Supported                                         | Not supported                                |
+| **Browser Support**      | Works with older browsers (needs polyfill for IE) | Modern browsers only                         |
+| **Request Cancellation** | Built-in (`CancelToken`)                          | Requires AbortController                     |
+| **Bundle Size**          | Additional weight to the project                  | Native to the browser                        |
+
+**When to Use What**
+
+- **Use Axios**: For complex applications where you need features like interceptors, timeouts, retries, or simplified syntax.
+- **Use Fetch**: For simple projects or when you want a lightweight solution without adding a dependency.
