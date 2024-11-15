@@ -38,3 +38,10 @@ git rebase --abort
 ```
 git push origin [COMMIT_HASH]:refs/heads/[BRANCH_NAME] --force
 ```
+
+## Tags
+
+```
+# Delete git tags.
+git tag -d $(git tag)
+```

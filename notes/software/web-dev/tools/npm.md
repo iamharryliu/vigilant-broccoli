@@ -7,7 +7,27 @@
 - minor release - Backward compatible new features, increment the middle digit and reset last digit to zero, 1.1.0
 - major release - changes that break backward compatibility, 2.0.0
 
-## Scope
+## Publishing
+
+### .npmrc
+
+```
+registry=https://YOUR_REGISTRY/
+//YOUR_REGISTRY/:_authToken=TOKEN
+```
+
+### package.json
+
+```
+{
+    ...
+    "publishConfig": {
+    "registry": "https://YOUR_REGISTRY/"
+    },
+}
+```
+
+### Scope
 
 NPM packages can be published under the scope of the the username or organization name.
 
@@ -16,14 +36,15 @@ npm publish @USERNAME/PACKAGE_NAME
 npm publish @ORGANISATION_NAME/PACKAGE_NAME
 ```
 
-## Commands
+### Commands
 
 ```
 npm run build && npm publish
 ```
 
+### Link and Unlink NPM Packages
+
 ```
-# Link and Unlink NPM Packages
 cd [package]
 npm link
 cd [project]
@@ -38,3 +59,4 @@ npm i --package-lock-only --workspaces=false
 
 - [Create NPM Package](https://www.youtube.com/watch?v=aUX-KXeQcik)
 - [NPM Link and Unlink](https://dev.to/erinbush/npm-linking-and-unlinking-2h1g)
+- [Publishing your private npm packages to Gitlab NPM Registry](https://shivamarora.medium.com/publishing-your-private-npm-packages-to-gitlab-npm-registry-39d30a791085)
