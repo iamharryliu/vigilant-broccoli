@@ -7,6 +7,7 @@
   - build:
     - Handle FlyIO scaling issue, `flyctl autoscale disable`
   - feat:
+    - Update pushreadme
     - new-implementations:
       - [Implement Stripe Payment](https://chatgpt.com/share/670ea37b-e270-800b-a503-7751ec53c0a6)
       - Deploy Hashicorp Vault.
