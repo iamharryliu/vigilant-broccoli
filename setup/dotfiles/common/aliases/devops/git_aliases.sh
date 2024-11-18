@@ -13,7 +13,8 @@ alias undocommit='greset --soft'
 alias deletecommit='greset --hard'
 alias removefromstaged='git restore --staged .'
 alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
-alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs git push origin --delete'
+alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs -I {} git push origin --delete {} && git fetch -p'
+
 # conventional commit
 function gc() {
   if [ "$#" -lt 2 ]; then
