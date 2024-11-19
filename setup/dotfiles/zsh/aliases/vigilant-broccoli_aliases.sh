@@ -48,7 +48,7 @@ alias pushsetup="cdvb && git add $SETUP_DIR && gc feat setup 'Update setup scrip
 alias pushdotfiles="cdvb && git add $DOTFILES_DIR && gc feat 'Update dotfiles.' && gpush"
 # Homebrew
 alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP_DIR/Brewfile"
-alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update Brew file.' && gpush"
+alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update Brewfile.' && gpush"
 # Projects
 # Secrets Manager
 alias pushsecretsmanager="cdvb && git add $PROJECTS_DIR/secret-manager/ && gc build 'Update secrets manager.' && gpush"
