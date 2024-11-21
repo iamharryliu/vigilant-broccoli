@@ -24,6 +24,8 @@ useEffect(() => {
 }, [...dependencies]);
 ```
 
+- [Custom Hooks for Objects(Deep Comparison)](https://stackoverflow.com/questions/54095994/react-useeffect-comparing-objects)
+
 ## useState
 
 ```
