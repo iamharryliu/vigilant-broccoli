@@ -15,27 +15,70 @@ alias removefromstaged='git restore --staged .'
 alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
 alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs -I {} git push origin --delete {} && git fetch -p'
 
-# conventional commit
+# TODO: Enhance later to handle the scope better
 function gc() {
   if [ "$#" -lt 2 ]; then
-    echo "Usage: $0 <git_type> [<project>] <message>"
+    echo "Usage: $0 <git_type> [<project>] <message> [<footer>] [<body>]"
     return 1
   fi
+
   git_type="$1"
   project=""
   message=""
-  if [ "$#" -eq 3 ]; then
-    project="$2"
-    message="$3"
-    commit_message="$git_type($project): $message"
-  else
-    project=""
+  ticket_footer=""
+  body=""
+  echo $2
+  if [[ "$2" =~ \  ]]; then
     message="$2"
+    if [ "$#" -ge 3 ]; then
+      ticket_footer="$3"
+    fi
+    if [ "$#" -ge 4 ]; then
+      body="$4"
+    fi
     commit_message="$git_type: $message"
+  else
+    # Treat it as the project if not quoted
+    if [ "$#" -ge 5 ]; then
+      project="$2"
+      message="$3"
+      ticket_footer="$4"
+      body="$5"
+      commit_message="$git_type($project): $message"
+    elif [ "$#" -eq 4 ]; then
+      project="$2"
+      message="$3"
+      ticket_footer="$4"
+      commit_message="$git_type($project): $message"
+    elif [ "$#" -eq 3 ]; then
+      project="$2"
+      message="$3"
+      commit_message="$git_type($project): $message"
+    else
+      message="$2"
+      commit_message="$git_type: $message"
+    fi
   fi
+
+  # Append the body if provided
+  if [ -n "$body" ]; then
+    commit_message="$commit_message
+
+$body"
+  fi
+
+  # Append the ticket footer if provided
+  if [ -n "$ticket_footer" ]; then
+    commit_message="$commit_message
+
+closes: $ticket_footer"
+  fi
+
   git commit -m "$commit_message"
   echo "$commit_message"
 }
+
+
 
 function pushfile() {
     local filename=$1

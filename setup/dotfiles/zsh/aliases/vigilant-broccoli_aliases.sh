@@ -45,7 +45,7 @@ alias pushactions="cdvb && git add $GIT_WORKFLOWS_DIR && gc build github-actions
 # Setup
 alias pushsetup="cdvb && git add $SETUP_DIR && gc feat setup 'Update setup scripts.' && gpush"
 # Dotfiles
-alias pushdotfiles="cdvb && git add $DOTFILES_DIR && gc feat 'Update dotfiles.' && gpush"
+alias pushdotfiles="cdvb && git add $DOTFILES_DIR && gc feat dotfiles 'Update dotfiles.' && gpush"
 # Homebrew
 alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP_DIR/Brewfile"
 alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update Brewfile.' && gpush"

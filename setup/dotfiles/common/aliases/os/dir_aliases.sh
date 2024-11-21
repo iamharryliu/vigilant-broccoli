@@ -1,6 +1,6 @@
 alias ..='cd ..'
-alias ..x2='cd ../..'
-alias ..x3='cd ../../..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
 newfile() {
     mkdir -p "$(dirname "$1")" && touch "$1" && code "$1"
 }
