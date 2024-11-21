@@ -2,6 +2,7 @@
 
 ## Keyboard Shortcuts
 
+- Mission Control - `ctrl + up`
 - Screen Capture
   - Screenshot
     - Save to Desktop - **shift + command + 3**
