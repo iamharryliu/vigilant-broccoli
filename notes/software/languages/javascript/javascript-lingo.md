@@ -1,0 +1,27 @@
+# Javascript
+
+- Runtime - A platform for running JavaScript code outside the browser.
+  - Node.js
+  - Deno
+  - Bun
+- Monorepo Tools
+  - Nx
+  - Turborepo
+  - Lerna
+- Frontend Frameworks
+  - Nuxt - Opinionated Vue.
+  - Next - Opinionated React.
+- Package Managers
+  - npm - Node Package Manager
+  - yarn - Installs packages simultaneously
+  - pnpm - Uses global store for dependencies.
+- Runtimes
+- Bundlers - Bundle and transpile for builds.
+  - Webpack
+  - Rollup - More optimized than Webpack.
+  - Vite (build tool, uses Rollup to bundle)
+  - esbuild
+- Compiler - Transforms Typescript to Javascript
+  - Babel
+  - SWC (Speedy Web Compiler)
+  - tsc - Does not bundle/optimize code.

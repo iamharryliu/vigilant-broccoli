@@ -27,24 +27,10 @@
     - Map, Reduce, Shuffle
   - Yet Another Resource Manager(YARN) - Resource management and scheduling
 
-- Javascript
-  - Monorepo Tools
-    - Nx
-    - Turborepo
-    - Lerna
-  - Frontend Frameworks
-    - Nuxt - Opinionated Vue.
-    - Next - Opinionated React.
-  - Package Managers
-    - npm - Node Package Manager
-    - yarn - Installs packages simultaneously
-    - pnpm - Uses global store for dependencies.
-  - Bundlers - Bundle and transpile for builds.
-    - Webpack
-    - Rollup - More optimized than Webpack.
-    - Vite (build tool, uses Rollup to bundle)
-    - esbuild
-  - Compiler - Transforms Typescript to Javascript
-    - Babel
-    - SWC (Speedy Web Compiler)
-    - tsc - Does not bundle/optimize code.
+- Runtime - Refers to the environment in which a program or application is executed.
+- Monorepo
+- Frontend
+- Backend
+- Package Manager
+- Bundler
+- Compiler
