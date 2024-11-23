@@ -14,6 +14,9 @@ alias deletecommit='greset --hard'
 alias removefromstaged='git restore --staged .'
 alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
 alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs -I {} git push origin --delete {} && git fetch -p'
+# Tags
+alias gtagls='git tag'
+alias rmgtag='git tag -d'
 
 # TODO: Enhance later to handle the scope better
 function gc() {
