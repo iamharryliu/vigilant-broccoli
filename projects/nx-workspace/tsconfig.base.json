@@ -18,6 +18,9 @@
       "@prettydamntired/common-lib": [
         "libs/@prettydamntired/common-lib/src/index.ts"
       ],
+      "@prettydamntired/common-node": [
+        "libs/@prettydamntired/common-node/src/index.ts"
+      ],
       "@prettydamntired/personal-website-api-lib": [
         "libs/@prettydamntired/personal-website-api-lib/src/index.ts"
       ],

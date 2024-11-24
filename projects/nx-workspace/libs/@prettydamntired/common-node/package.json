@@ -1,0 +1,11 @@
+{
+  "name": "@prettydamntired/common-node",
+  "version": "0.0.1",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.15",
+    "tslib": "^2.3.0",
+    "archiver": "^7.0.1",
+    "@prettydamntired/common-lib": "0.0.4"
+  }
+}
