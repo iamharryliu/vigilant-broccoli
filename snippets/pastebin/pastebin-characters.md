@@ -8,3 +8,5 @@
   - Farhenheit - °F
 - Currency
   - English Pound - £
+- Swedish Characters
+  - å ä ö
