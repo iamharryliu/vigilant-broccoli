@@ -36,7 +36,7 @@ alias pullall='pulljournal && pullvb'
 alias gitvb='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
 alias gitactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
 alias pushreadme="cdvb && git add README.md && gc docs readme 'Update root README.md file.' && gpush"
-alias pushnotes="cdvb && git add $NOTES_DIR && gc docs 'Update Markdown notes.' && gpush"
+alias pushnotes="cdvb && git add $NOTES_DIR && gc docs notes 'Update Markdown notes.' && gpush"
 alias pushvbtodo="cdvb && git add $TODO_FILEPATH && gc docs todo 'Update TODO.md file.' && gpush"
 alias pushsnippets="cdvb && git add $SNIPPETS_DIR && gc docs snippets 'Update snippets.' && gpush"
 alias pushprogress="git add $SNIPPETS_DIR/progress.md && gc docs progress 'Update progress.md file.' && gpush"
@@ -51,7 +51,7 @@ alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP
 alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update Brewfile.' && gpush"
 # Projects
 # Secrets Manager
-alias pushsecretsmanager="cdvb && git add $PROJECTS_DIR/secret-manager/ && gc build 'Update secrets manager.' && gpush"
+alias pushsecretsmanager="cdvb && git add $PROJECTS_DIR/secret-manager/ && gc build secrets-manager 'Update secrets manager.' && gpush"
 # harryliu.dev
 alias servehld="cdnx && nx serve personal-website-frontend"
 alias servepersonalfrontend="cdnx && npm run serve:personal-website"
