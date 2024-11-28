@@ -1,12 +1,10 @@
 # Character Pastebin
 
-- Box
-  - Empty Box - ☐
-  - Checkbox - ☑
-- Temperature
-  - Celsius - °C
-  - Farhenheit - °F
-- Currency
-  - English Pound - £
-- Swedish Characters
-  - å ä ö
+# Character Pastebin
+
+| Category        | Symbol |
+| --------------- | ------ |
+| **Currency**    | £      |
+| **Temperature** | °C °F  |
+| **Box**         | ☐ ☑   |
+| **Swedish**     | å ä ö  |
