@@ -24,6 +24,7 @@
 | another  | en till             |                    |             |                   |                 |
 | with     | med                 | avec               | con         |                   |                 |
 | without  |                     | sans               | sin         |                   |                 |
-| not      |                     | pas                |             |                   |                 |
 | hot      | varme               | chaud              | caliente    |                   |                 |
 | cold     | kall                | froid              | frío        |                   |                 |
+| strong   | stark               | fort               | fuerte      |                   |                 |
+| cold     | svag                | faible             | débil       |                   |                 |

@@ -30,3 +30,21 @@ git update-index --no-assume-unchanged <file>
 # List of files assumed unchanged
 git ls-files -v | grep '^h'
 ```
+
+## Passphrase
+
+```
+eval $(ssh-agent)
+ssh-add
+ssh-add -K # macOS
+ssh-add ~/.ssh/id_rsa # Ubuntu
+```
+
+_~/.ssh/config_
+
+```
+Host *
+    UseKeychain yes
+```
+
+[Git keeps asking me for my ssh key passphrase](https://stackoverflow.com/questions/10032461/git-keeps-asking-me-for-my-ssh-key-passphrase)

@@ -1,24 +1,46 @@
 # Time
 
-| English        | Swedish        | French            | Spanish        | Portugese | Italian |
-| :------------- | :------------- | :---------------- | :------------- | :-------- | :------ |
-| now            | nu             | maintenant        | ahora          |           |         |
-| today          | idag           | aujourdhui        | hoy            |           |         |
-| tonight        | ikväll         | ce soir           | esta noche     |           |         |
-| tomorrow       | imorgon        | demain            | mañana         |           |         |
-| yesterday      | igår           | hier              | ayer           |           |         |
-| never          | aldrig         | jamais            | nunca          |           |         |
-| Seldom         | Sällan         | Rarement          | Raramente      |
-| sometimes      | ibland         | quelquefois       | a veces        |           |         |
-| Often          | Ofta           | Souvent           | A menudo       |
-| always         | alltid         | toujours          | siempre        | sempre    | sempre  |
-| later          | senare         | plus tard         | mas tarde      |           |         |
-| afternoon      | eftermiddag    | après-midi        | tarde          |           |         |
-| evening        | kväll          | soir              | noche          |           |         |
-| night          | natt           | nuit              | noche          |           |         |
-| at _n_ o clock | klockan _n_    | a _n_ heures      | a las _n_      |           |         |
-| n year(s) ago  | för _n_ år sen | il y a _n_ an     | hace _n_ año   |
-| next year      | Nnsta år       | l'année prochaine | el próximo año |
+| English        | Swedish        | French               | Spanish        | Portugese | Italian |
+| :------------- | :------------- | :------------------- | :------------- | :-------- | :------ |
+| now            | nu             | maintenant           | ahora          |           |         |
+| today          | i dag          | aujourdhui           | hoy            |           |         |
+| tonight        | i kväll        | ce soir              | esta noche     |           |         |
+| tomorrow       | i morgon       | demain               | mañana         |           |         |
+| yesterday      | i går          | hier                 | ayer           |           |         |
+| this week      | här veckan     | cette semaine        |
+| next week      | nästa vecka    | la semaine prochaine |
+| last week      | förra veckan   | a semaine dernière   |
+| this year      | i år           | cette semaine        |
+| next year      | nästa vecka    | la semaine prochaine |
+| last year      | förra veckan   | a semaine dernière   |
+| in _n_ year(s) | om _n_ år      | dans n an(s)         |
+| _n_ years go   | _n_ år sedan   | il y a n an(s)       |
+| seldom         | sällan         | rarement             | raramente      |
+| sometimes      | ibland         | quelquefois          | a veces        |           |         |
+| often          | ofta           | souvent              | a menudo       |
+| before         | före           | avant                | antes          |           |         |
+| after          | efter          | après                | después        |           |         |
+| never          | aldrig         | jamais               | nunca          |           |         |
+| always         | alltid         | toujours             | siempre        | sempre    | sempre  |
+| later          | senare         | plus tard            | mas tarde      |           |         |
+| afternoon      | eftermiddag    | après-midi           | tarde          |           |         |
+| evening        | kväll          | soir                 | noche          |           |         |
+| night          | natt           | nuit                 | noche          |           |         |
+| at _n_ o clock | klockan _n_    | a _n_ heures         | a las _n_      |           |         |
+| n year(s) ago  | för _n_ år sen | il y a _n_ an        | hace _n_ año   |
+| next year      | nasta år       | l'année prochaine    | el próximo año |
+
+## Units of Time
+
+| English | Swedish | French  |
+| :------ | :------ | :------ |
+| second  | sekund  | seconde |
+| minute  | minut   | minute  |
+| hour    | timme   | heure   |
+| day     | dag     | jour    |
+| week    | vecka   | semaine |
+| month   | månad   | mois    |
+| year    | år      | année   |
 
 ## Days of the Week
 
