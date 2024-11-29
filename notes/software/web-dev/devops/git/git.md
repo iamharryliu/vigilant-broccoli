@@ -46,5 +46,3 @@ _~/.ssh/config_
 Host *
     UseKeychain yes
 ```
-
-[Git keeps asking me for my ssh key passphrase](https://stackoverflow.com/questions/10032461/git-keeps-asking-me-for-my-ssh-key-passphrase)
