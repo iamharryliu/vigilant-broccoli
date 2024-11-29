@@ -25,7 +25,7 @@ alias pushleetcode="git add $GRIND75_DIR && gc feat leetcode 'Update leetcode.' 
 alias cdnx="cd $NX_DIR"
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
-alias pushgitprofile="cd ~/iamharryliu && gpull && git add . && gc docs 'Update Github profile README.md' && gpush"
+alias pushghreadme="cd ~/iamharryliu && gpull && git add README.md && gc docs github-readme 'Update Github profile README.md' && gpush"
 # Demo Apps
 alias serveReactDemo="cddemoapps && cd react-demo && npm run start"
 alias serveExpressDemo="cddemoapps && cd express-demo && npm run serve"
