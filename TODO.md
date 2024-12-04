@@ -3,6 +3,10 @@
 ## vigilant-broccoli
 
 - Q1
+  - docs:
+    - NeoVim
+    - Tmux
+    - Prisma
   - fix(nx-workspace): check nx caching??
   - build:
     - Handle FlyIO scaling issue, `flyctl autoscale disable`
