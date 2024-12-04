@@ -10,18 +10,14 @@
 | this week      | här veckan     | cette semaine        |
 | next week      | nästa vecka    | la semaine prochaine |
 | last week      | förra veckan   | a semaine dernière   |
+| weekend        | helgen         | fin de semaine       |
 | this year      | i år           | cette semaine        |
 | next year      | nästa vecka    | la semaine prochaine |
 | last year      | förra veckan   | a semaine dernière   |
 | in _n_ year(s) | om _n_ år      | dans n an(s)         |
 | _n_ years go   | _n_ år sedan   | il y a n an(s)       |
-| seldom         | sällan         | rarement             | raramente      |
-| sometimes      | ibland         | quelquefois          | a veces        |           |         |
-| often          | ofta           | souvent              | a menudo       |
 | before         | före           | avant                | antes          |           |         |
 | after          | efter          | après                | después        |           |         |
-| never          | aldrig         | jamais               | nunca          |           |         |
-| always         | alltid         | toujours             | siempre        | sempre    | sempre  |
 | later          | senare         | plus tard            | mas tarde      |           |         |
 | afternoon      | eftermiddag    | après-midi           | tarde          |           |         |
 | evening        | kväll          | soir                 | noche          |           |         |

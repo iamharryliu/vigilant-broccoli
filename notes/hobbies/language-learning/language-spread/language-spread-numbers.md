@@ -1,5 +1,37 @@
 # Numbers
 
+| English     | Swedish    | French           |
+| :---------- | :--------- | :--------------- |
+| zero        | noll       | zéro             |
+| one         | ett        | un               |
+| two         | två        | deux             |
+| three       | tre        | trois            |
+| four        | fyra       | quatre           |
+| five        | fem        | cinq             |
+| six         | sex        | six              |
+| seven       | sju        | sept             |
+| eight       | åtta       | huit             |
+| nine        | nio        | neuf             |
+| ten         | tio        | dix              |
+| eleven      | elva       | onze             |
+| twelve      | tolv       | douze            |
+| thirteen    | tretton    | treize           |
+| fourteen    | fjorton    | quatorze         |
+| fifteen     | femton     | quinze           |
+| sixteen     | sexton     | seize            |
+| seventeen   | sjutton    | dix-sept         |
+| eighteen    | arton      | dix-huit         |
+| nineteen    | nitton     | dix-neuf         |
+| twenty      | tjugo      | vingt            |
+| thirty      | trettio    | trente           |
+| forty       | fyrtio     | quarante         |
+| fifty       | femtio     | cinquante        |
+| sixty       | sextio     | soixante         |
+| seventy     | sjuttio    | soixante-dix     |
+| eighty      | åttio      | quatre-vingts    |
+| ninety      | nittio     | quatre-vingt-dix |
+| one hundred | ett hundra | cent             |
+
 | English | Swedish | French           | Spanish         | Portuguese | Italian |
 | :------ | :------ | :--------------- | :-------------- | :--------- | :------ |
 | First   | första  | premier/première | primero/primera |
