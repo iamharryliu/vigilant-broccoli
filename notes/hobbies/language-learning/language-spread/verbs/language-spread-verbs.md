@@ -3,7 +3,7 @@
 | English            | Swedish          | French        | Spanish      | Portugese | Italian |
 | :----------------- | :--------------- | :------------ | :----------- | :-------- | :------ |
 | to want            | att villja       | voulir        | querer       |           |         |
-| to go              | att gå           | aller         | ir           |           |         |
+| to go              | att gå/åka       | aller         | ir           |           |         |
 | to have            | att ha           | avoir         | tener        |           |         |
 | to take            | att ta           | prendre       | tomar        |           |         |
 | to try             | att prova        | essayer       | probar       |           |         |
@@ -39,6 +39,8 @@
 | to begin           | att börja        |               |              |           |         |
 | to finish          | att sluta        |               |              |           |         |
 | to greet           | att hälsa        |               |              |           |         |
+| to visit           | att besöka       | visiter       |
+| to like            | att gilla        | aimer         | gustar       |           |         |
 | I want             | jag vill         | je veux       | quiero       | quero     |         |
 | I have             | jag har          | j'ai          | tengo        |           |         |
 | I'm going          | jag går          | je vais       | voy          |           |         |
