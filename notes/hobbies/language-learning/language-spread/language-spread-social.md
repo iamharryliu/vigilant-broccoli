@@ -15,6 +15,7 @@
 | excuse me      | ursäkta mig    |                  |               |           |                 |
 | you're welcome | varsågod       |                  |               |           |                 |
 | thank you      | tack           | merci            | gracias       |           |                 |
+| no problem     | det var inget  | ce n'était rien  |
 | get well soon  | krya på dig    |                  |               |           |                 |
 | take care      | tan hom om dig |                  |               |           |                 |
 | be careful     | var försiktig  |                  |               |           |                 |

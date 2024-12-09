@@ -11,7 +11,8 @@
 | where        | var        | ou             | donde      |           |         |
 | why          | varför     | pourquoi       | por que    |           |         |
 | how          | hur        | comment        | como       |           |         |
-| how much     | hur mycket | combien        | cuanto     |           |         |
+| how much     | hur mycket | combien        | cuánto     |           |         |
+| how many     | hur många  | combien        | cuánto     |           |         |
 | which        | vilken     | quel           | cual       |           |         |
 
 ## Questions

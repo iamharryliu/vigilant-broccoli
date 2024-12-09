@@ -14,7 +14,7 @@
 | between          | mellan    | entre        |
 | in the middle    | i mitten  | au milieu    |
 | in the middle of | mitt i/på | au milieu de |
-| mittemot         | opposite  | en face de   |
+| opposite         | mittemot  | en face de   |
 | next to          | bredvid   | à côté de    |
 | corner of        | i hörnet  | dans le coin |
 | straight ahead   | rakt fram | tout droit   |

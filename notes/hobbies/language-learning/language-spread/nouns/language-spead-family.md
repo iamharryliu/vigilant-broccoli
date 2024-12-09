@@ -16,3 +16,4 @@
 | son         | son             | fils          |
 | daughter    | dotter          | fille         |
 | grandchild  | barnbarn        | petit enfant  |
+| step-       | styv-           |               |
