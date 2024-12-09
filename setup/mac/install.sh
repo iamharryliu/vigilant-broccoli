@@ -48,6 +48,14 @@ if ask "Use default .env.sh?"; then
     cat $ZSH_DOTFILES_DIR/.env.sh >> ~/.env.sh
 fi
 
+if ask "Use default tmux.conf?"; then
+    cat $DOTFILES_DIR/.tmux.conf >> ~/tmux.conf
+fi
+
+if ask "Use default tmux.conf?"; then
+    cat $DOTFILES_DIR/.vimrc >> ~/.vimrc
+fi
+
 if ask "Install Node dependencies?"; then
     brew link node@20
     npm install -g ts-node
