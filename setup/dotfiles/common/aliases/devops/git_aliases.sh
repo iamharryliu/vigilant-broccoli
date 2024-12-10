@@ -22,6 +22,44 @@ alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\
 alias gtagls='git tag'
 alias rmgtag='git tag -d'
 
+get_branch_by_number() {
+  local branch_number=$1
+  if [[ -z $branch_number || $branch_number -le 0 ]]; then
+    echo "Please provide a valid branch number (starting from 1)."
+    return 1
+  fi
+
+  # Get the branch name based on the given number
+  local branch_name=$(git branch --list | sed 's/^[* ]*//' | sed -n "${branch_number}p")
+
+  if [[ -n $branch_name ]]; then
+    echo "$branch_name"
+  else
+    echo "Branch number $branch_number does not exist."
+    return 1
+  fi
+}
+
+gcobn() {
+  local branch_number=$1
+
+  if [[ -z $branch_number || $branch_number -le 0 ]]; then
+    echo "Please provide a valid branch number (starting from 1)."
+    return 1
+  fi
+
+  local branch_name
+  branch_name=$(get_branch_by_number "$branch_number")
+
+  if [[ $? -ne 0 || -z $branch_name ]]; then
+    echo "Failed to retrieve the branch name for number $branch_number."
+    return 1
+  fi
+
+  echo "Checking out branch: $branch_name"
+  git checkout "$branch_name"
+}
+
 # TODO: Enhance later to handle the scope better
 function gc() {
   if [ "$#" -lt 2 ]; then
@@ -84,8 +122,6 @@ closes: $ticket_footer"
   git commit -m "$commit_message"
   echo "$commit_message"
 }
-
-
 
 function pushfile() {
     local filename=$1

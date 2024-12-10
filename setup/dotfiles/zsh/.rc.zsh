@@ -13,3 +13,14 @@ if [ "$IS_CRON" != "true" ]; then
         source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
     fi
 fi
+
+# TODO: Move to appropriate places.
+autoload -U colors && colors
+PS1="%{$fg[red]%}%n%{$reset_color%}@%{$fg[blue]%}%m %{$fg[yellow]%}%~ %{$reset_color%}%% "
+
+explain_shell() {
+    local query="$1";
+    [ -z "$query" ] && echo "Usage: explain_shell '<command>'" && return 1;
+    local url="https://explainshell.com/explain?cmd=$(echo "$query" | jq -sRr @uri)";
+    command -v xdg-open > /dev/null && xdg-open "$url" || command -v open > /dev/null && open "$url" || echo "Open manually: $url";
+}
