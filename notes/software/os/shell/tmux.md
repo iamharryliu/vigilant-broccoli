@@ -13,44 +13,63 @@ tmux
 
 Manages sessions, windows, and panes. Started automatically when tmux is launched and persists in the background as long as at least one session exists.
 
-| Command             | Description                                       | Example Usage       |
-| ------------------- | ------------------------------------------------- | ------------------- |
-| `tmux start-server` | Start the tmux server explicitly (rarely needed). | `tmux start-server` |
-| `tmux kill-server`  | Stop the tmux server and terminate all sessions.  | `tmux kill-server`  |
+| Command             |
+| ------------------- |
+| `tmux start-server` |
+| `tmux kill-server`  |
 
 ### Client
 
 A client represents a terminal connected to a tmux session. A session can have multiple clients attached to it simultaneously.
 
-| Command               | Description                     | Example Usage              |
-| --------------------- | ------------------------------- | -------------------------- |
-| `tmux list-clients`   | List all connected clients.     | `tmux list-clients`        |
-| `tmux detach-client`  | Detach a client from a session. | `tmux detach-client`       |
-| `tmux attach-session` | Attach a client to a session.   | `tmux attach-session -t 0` |
+| Command              | Description                     |
+| -------------------- | ------------------------------- |
+| `tmux list-clients`  | List all connected clients.     |
+| `tmux detach-client` | Detach a client from a session. |
 
 ### Session
 
 A top-level entity. Contains one or more windows and allows users to persist terminal states.
 
-| Command               | Description                    | Example Usage                           |
-| --------------------- | ------------------------------ | --------------------------------------- |
-| `tmux new-session`    | Create a new session.          | `tmux new -s <session_name>`            |
-| `tmux list-sessions`  | List all available sessions.   | `tmux ls`                               |
-| `tmux attach-session` | Attach to an existing session. | `tmux attach-session -t <session_name>` |
-| `tmux rename-session` | Rename a session.              | `tmux rename-session <session_name>`    |
-| `tmux kill-session`   | Kill a specific session.       | `tmux kill-session -t <session_name>`   |
+| Command                                            | Description                    |
+| -------------------------------------------------- | ------------------------------ |
+| `tmux new-session` or `tmux new -s <session_name>` | Create a new session.          |
+| `tmux ls`                                          | List all available sessions.   |
+| `tmux attach-session -t <session_name>`            | Attach to an existing session. |
+| `tmux rename-session <session_name>`               | Rename a session.              |
+| `tmux kill-session -t <session_name>`              | Kill a specific session.       |
+
+_Keyboard Shortcuts_
+
+| **Shortcut** | **Action**                      |
+| ------------ | ------------------------------- |
+| `prefix + s` | List all sessions               |
+| `prefix + d` | Detach from the current session |
 
 ### Window
 
 Similar to a tab. It exists within a session and contains one or more panes.
 
-| Command              | Description                                   | Example Usage                  |
-| -------------------- | --------------------------------------------- | ------------------------------ |
-| `tmux new-window`    | Create a new window in the current session.   | `tmux new-window -n mywindow`  |
-| `tmux list-windows`  | List all windows in the current session.      | `tmux list-windows`            |
-| `tmux select-window` | Switch to a specific window by index or name. | `tmux select-window -t 2`      |
-| `tmux rename-window` | Rename a window.                              | `tmux rename-window editor`    |
-| `tmux kill-window`   | Kill a specific window.                       | `tmux kill-window -t mywindow` |
+| Command                          | Description                                   |
+| -------------------------------- | --------------------------------------------- |
+| `tmux new-window -n mywindow`    | Create a new window in the current session.   |
+| `tmux list-windows`              | List all windows in the current session.      |
+| `tmux select-window -t <window>` | Switch to a specific window by index or name. |
+| `tmux rename-window <name>`      | Rename a window.                              |
+| `tmux kill-window -t <window>`   | Kill a specific window.                       |
+
+_Keyboard Shortcuts_
+
+| **Shortcut**   | **Action**                  |
+| -------------- | --------------------------- |
+| `prefix + c`   | Create a new window         |
+| `prefix + w`   | List all windows            |
+| `prefix + n`   | Move to the next window     |
+| `prefix + p`   | Move to the previous window |
+| `prefix + _n_` | Move to the _n_ window      |
+| `prefix + f`   | Find a window by name       |
+| `prefix + ,`   | Rename the current window   |
+| `prefix + &`   | Kill the current window     |
 
 ### Pane
 
@@ -64,27 +83,23 @@ A pane is a subdivision of a window, essentially a split terminal within the win
 | `tmux kill-pane`    | Close a specific pane.                               | `tmux kill-pane`         |
 | `tmux list-panes`   | List all panes in the current window.                | `tmux list-panes`        |
 
-## Keyboard Shortcuts
+_Keyboard Shortcuts_
 
 | **Shortcut** | **Action**                          |
 | ------------ | ----------------------------------- |
-| `Ctrl-b ?`   | List all tmux shortcuts             |
-| `Ctrl-b d`   | Detach from the current session     |
-| `Ctrl-b c`   | Create a new window                 |
-| `Ctrl-b n`   | Move to the next window             |
-| `Ctrl-b p`   | Move to the previous window         |
-| `Ctrl-b w`   | List all windows                    |
-| `Ctrl-b ,`   | Rename the current window           |
-| `Ctrl-b %`   | Split the current pane vertically   |
-| `Ctrl-b "`   | Split the current pane horizontally |
-| `Ctrl-b o`   | Switch to the next pane             |
-| `Ctrl-b q`   | Show pane numbers                   |
-| `Ctrl-b x`   | Close the current pane              |
-| `Ctrl-b z`   | Toggle zoom for the current pane    |
-| `Ctrl-b t`   | Display a clock                     |
-| `Ctrl-b f`   | Find a window by name               |
-| `Ctrl-b [`   | Enter copy mode                     |
-| `Ctrl-b ]`   | Paste from the buffer               |
-| `Ctrl-b &`   | Kill the current window             |
-| `Ctrl-b s`   | List all sessions                   |
-| `Ctrl-b :`   | Enter tmux command mode             |
+| `prefix + %` | Split the current pane vertically   |
+| `prefix + "` | Split the current pane horizontally |
+| `prefix + o` | Switch to the next pane             |
+| `prefix + q` | Show pane numbers                   |
+| `prefix + x` | Close the current pane              |
+| `prefix + z` | Toggle zoom for the current pane    |
+
+## More Shortcuts
+
+| **Shortcut** | **Action**              |
+| ------------ | ----------------------- |
+| `prefix + ?` | List all tmux shortcuts |
+| `prefix + t` | Display a clock         |
+| `prefix + [` | Enter copy mode         |
+| `prefix + ]` | Paste from the buffer   |
+| `prefix + :` | Enter tmux command mode |
