@@ -1,5 +1,5 @@
 alias gs='git status'
-alias gb='git branch'
+alias gb='git branch | nl -w 2 -s ". "'
 alias gbd='git branch -D'
 alias gco='git checkout'
 alias gbswitch='git checkout -'
@@ -59,6 +59,38 @@ gcobn() {
   echo "Checking out branch: $branch_name"
   git checkout "$branch_name"
 }
+
+grmb() {
+  local branch_number=$1
+
+  # Validate input
+  if [[ -z $branch_number || $branch_number -le 0 ]]; then
+    echo "Please provide a valid branch number (starting from 1)."
+    return 1
+  fi
+
+  # Get the branch name using get_branch_by_number
+  local branch_name
+  branch_name=$(get_branch_by_number "$branch_number")
+
+  if [[ $? -ne 0 || -z $branch_name ]]; then
+    echo "Failed to retrieve the branch name for number $branch_number."
+    return 1
+  fi
+
+  # Confirm deletion with the user
+  echo "Are you sure you want to delete the branch: $branch_name? [y/N]"
+  read -r confirmation
+  if [[ $confirmation != "y" && $confirmation != "Y" ]]; then
+    echo "Branch deletion canceled."
+    return 0
+  fi
+
+  # Delete the branch
+  echo "Deleting branch: $branch_name"
+  git branch -D "$branch_name"
+}
+
 
 # TODO: Enhance later to handle the scope better
 function gc() {

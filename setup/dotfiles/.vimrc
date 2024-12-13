@@ -6,10 +6,3 @@ set shiftwidth=4
 set expandtab
 set mouse=a
 set undofile
-
-// set ignorecase
-// set smartcase
-// set incsearch
-// set hlsearch
-
-// let g:netrw_list_hide=netrw_gitignore#HideNetrwFiles()
