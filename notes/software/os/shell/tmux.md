@@ -92,7 +92,7 @@ _Keyboard Shortcuts_
 | `prefix + o` | Switch to the next pane             |
 | `prefix + q` | Show pane numbers                   |
 | `prefix + x` | Close the current pane              |
-| `prefix + z` | Toggle zoom for the current pane    |
+| `prefix + z` | Full screen pane.                   |
 
 ## More Shortcuts
 

@@ -10,3 +10,16 @@
 <!-- TODO -->
 
 Common irregular verb conjugations
+i början
+i mitten
+i slutet
+semester
+ny
+flygplan
+Skottland
+köra
+se slottet
+dyrt
+billigt
+att sola
+att laga
