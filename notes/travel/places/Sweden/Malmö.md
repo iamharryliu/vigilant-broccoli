@@ -69,6 +69,7 @@
 
 - [Folkets Park](https://malmo.se/Folkets-Park)
 - [Goto 10 Events](https://www.goto10.se/event/)
+- [Lund](https://lund.se/)
 
 ## Dog Friendly Spaces
 
