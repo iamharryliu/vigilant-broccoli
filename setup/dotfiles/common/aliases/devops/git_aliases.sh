@@ -11,6 +11,7 @@ alias gpop='gstash pop'
 alias gpush='git push'
 alias gpushf='gpush --force'
 alias gpull='git pull --autostash --rebase'
+alias gpo='gpull origin'
 alias grebase='git rebase'
 alias greset='git reset HEAD^'
 alias undocommit='greset --soft'
@@ -60,7 +61,7 @@ gcobn() {
   git checkout "$branch_name"
 }
 
-grmb() {
+gbrm() {
   local branch_number=$1
 
   # Validate input
@@ -90,6 +91,38 @@ grmb() {
   echo "Deleting branch: $branch_name"
   git branch -D "$branch_name"
 }
+
+gbcp() {
+  local branch_number=$1
+
+  if [[ -z $branch_number || $branch_number -le 0 ]]; then
+    echo "Please provide a valid branch number (starting from 1)."
+    return 1
+  fi
+
+  local branch_name
+  branch_name=$(get_branch_by_number "$branch_number")
+
+  if [[ $? -ne 0 || -z $branch_name ]]; then
+    echo "Failed to retrieve the branch name for number $branch_number."
+    return 1
+  fi
+
+  # Copy branch name to clipboard
+  if command -v pbcopy &> /dev/null; then
+    echo "$branch_name" | pbcopy
+    echo "Branch name '$branch_name' copied to clipboard (macOS)."
+  elif command -v xclip &> /dev/null; then
+    echo "$branch_name" | xclip -selection clipboard
+    echo "Branch name '$branch_name' copied to clipboard (Linux)."
+  elif command -v wl-copy &> /dev/null; then
+    echo "$branch_name" | wl-copy
+    echo "Branch name '$branch_name' copied to clipboard (Wayland)."
+  else
+    echo "Clipboard utility not found. Install 'pbcopy', 'xclip', or 'wl-copy' to enable copying to clipboard."
+  fi
+}
+
 
 
 # TODO: Enhance later to handle the scope better
