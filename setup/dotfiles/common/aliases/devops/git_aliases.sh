@@ -1,6 +1,95 @@
 alias gs='git status'
+
+# Branch Aliases
 alias gb='git branch | nl -w 2 -s ". "'
 alias gbd='git branch -D'
+
+# Validate branch number
+validate_branch_number() {
+  local branch_number=$1
+  if [[ -z $branch_number || $branch_number -le 0 ]]; then
+    echo "Please provide a valid branch number (starting from 1)."
+    return 1
+  fi
+}
+
+get_branch_by_number() {
+  local branch_number=$1
+  validate_branch_number "$branch_number" || return 1
+
+  local branch_name
+  branch_name=$(git branch --list | sed -E 's/^[* ]*//' | sed -n "${branch_number}p")
+
+  if [[ -n $branch_name ]]; then
+    echo "$branch_name"
+  else
+    echo "Branch number $branch_number does not exist."
+    return 1
+  fi
+}
+
+# Copy branch name to clipboard
+gbcp() {
+  local branch_number=$1
+  local branch_name
+  branch_name=$(get_branch_by_number "$branch_number") || return 1
+
+  if command -v pbcopy &>/dev/null; then
+    echo "$branch_name" | pbcopy
+    echo "Branch name '$branch_name' copied to clipboard (macOS)."
+  elif command -v xclip &>/dev/null; then
+    echo "$branch_name" | xclip -selection clipboard
+    echo "Branch name '$branch_name' copied to clipboard (Linux)."
+  elif command -v wl-copy &>/dev/null; then
+    echo "$branch_name" | wl-copy
+    echo "Branch name '$branch_name' copied to clipboard (Wayland)."
+  elif command -v powershell.exe &>/dev/null; then
+    echo "$branch_name" | powershell.exe Set-Clipboard
+    echo "Branch name '$branch_name' copied to clipboard (Windows PowerShell)."
+  else
+    echo "Clipboard utility not found. Install 'pbcopy', 'xclip', 'wl-copy', or use PowerShell."
+  fi
+}
+
+# Checkout branch by number
+gcon() {
+  local branch_number=$1
+  local branch_name
+  branch_name=$(get_branch_by_number "$branch_number") || return 1
+
+  echo "Checking out branch: $branch_name"
+  git checkout "$branch_name"
+}
+
+# Remove branch by number
+gbdn() {
+  local branch_number=$1
+  local branch_name
+  branch_name=$(get_branch_by_number "$branch_number") || return 1
+
+  # TODO: make reusable y/N confirmation
+  echo "Are you sure you want to delete the branch: $branch_name? [y/N]"
+  if [[ $SHELL == */zsh ]]; then
+    read -r -k1 confirmation
+  else
+    read -r -n1 confirmation
+  fi
+  echo
+
+  if [[ $confirmation != "y" && $confirmation != "Y" ]]; then
+    echo "Branch deletion canceled."
+    return 0
+  fi
+
+  echo "Deleting branch: $branch_name"
+  git branch -D "$branch_name"
+}
+
+
+
+alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
+alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs -I {} git push origin --delete {} && git fetch -p'
+
 alias gco='git checkout'
 alias gbswitch='git checkout -'
 alias gcob='git checkout -b'
@@ -17,113 +106,9 @@ alias greset='git reset HEAD^'
 alias undocommit='greset --soft'
 alias deletecommit='greset --hard'
 alias removefromstaged='git restore --staged .'
-alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
-alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs -I {} git push origin --delete {} && git fetch -p'
 # Tags
 alias gtagls='git tag'
 alias rmgtag='git tag -d'
-
-get_branch_by_number() {
-  local branch_number=$1
-  if [[ -z $branch_number || $branch_number -le 0 ]]; then
-    echo "Please provide a valid branch number (starting from 1)."
-    return 1
-  fi
-
-  # Get the branch name based on the given number
-  local branch_name=$(git branch --list | sed 's/^[* ]*//' | sed -n "${branch_number}p")
-
-  if [[ -n $branch_name ]]; then
-    echo "$branch_name"
-  else
-    echo "Branch number $branch_number does not exist."
-    return 1
-  fi
-}
-
-gcobn() {
-  local branch_number=$1
-
-  if [[ -z $branch_number || $branch_number -le 0 ]]; then
-    echo "Please provide a valid branch number (starting from 1)."
-    return 1
-  fi
-
-  local branch_name
-  branch_name=$(get_branch_by_number "$branch_number")
-
-  if [[ $? -ne 0 || -z $branch_name ]]; then
-    echo "Failed to retrieve the branch name for number $branch_number."
-    return 1
-  fi
-
-  echo "Checking out branch: $branch_name"
-  git checkout "$branch_name"
-}
-
-gbrm() {
-  local branch_number=$1
-
-  # Validate input
-  if [[ -z $branch_number || $branch_number -le 0 ]]; then
-    echo "Please provide a valid branch number (starting from 1)."
-    return 1
-  fi
-
-  # Get the branch name using get_branch_by_number
-  local branch_name
-  branch_name=$(get_branch_by_number "$branch_number")
-
-  if [[ $? -ne 0 || -z $branch_name ]]; then
-    echo "Failed to retrieve the branch name for number $branch_number."
-    return 1
-  fi
-
-  # Confirm deletion with the user
-  echo "Are you sure you want to delete the branch: $branch_name? [y/N]"
-  read -r confirmation
-  if [[ $confirmation != "y" && $confirmation != "Y" ]]; then
-    echo "Branch deletion canceled."
-    return 0
-  fi
-
-  # Delete the branch
-  echo "Deleting branch: $branch_name"
-  git branch -D "$branch_name"
-}
-
-gbcp() {
-  local branch_number=$1
-
-  if [[ -z $branch_number || $branch_number -le 0 ]]; then
-    echo "Please provide a valid branch number (starting from 1)."
-    return 1
-  fi
-
-  local branch_name
-  branch_name=$(get_branch_by_number "$branch_number")
-
-  if [[ $? -ne 0 || -z $branch_name ]]; then
-    echo "Failed to retrieve the branch name for number $branch_number."
-    return 1
-  fi
-
-  # Copy branch name to clipboard
-  if command -v pbcopy &> /dev/null; then
-    echo "$branch_name" | pbcopy
-    echo "Branch name '$branch_name' copied to clipboard (macOS)."
-  elif command -v xclip &> /dev/null; then
-    echo "$branch_name" | xclip -selection clipboard
-    echo "Branch name '$branch_name' copied to clipboard (Linux)."
-  elif command -v wl-copy &> /dev/null; then
-    echo "$branch_name" | wl-copy
-    echo "Branch name '$branch_name' copied to clipboard (Wayland)."
-  else
-    echo "Clipboard utility not found. Install 'pbcopy', 'xclip', or 'wl-copy' to enable copying to clipboard."
-  fi
-}
-
-
 
 # TODO: Enhance later to handle the scope better
 function gc() {
