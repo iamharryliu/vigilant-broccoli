@@ -4,7 +4,6 @@ alias gs='git status'
 alias gb='git branch | nl -w 2 -s ". "'
 alias gbd='git branch -D'
 
-# Validate branch number
 validate_branch_number() {
   local branch_number=$1
   if [[ -z $branch_number || $branch_number -le 0 ]]; then
@@ -51,16 +50,6 @@ gbcp() {
   fi
 }
 
-# Checkout branch by number
-gcon() {
-  local branch_number=$1
-  local branch_name
-  branch_name=$(get_branch_by_number "$branch_number") || return 1
-
-  echo "Checking out branch: $branch_name"
-  git checkout "$branch_name"
-}
-
 # Remove branch by number
 gbdn() {
   local branch_number=$1
@@ -86,30 +75,31 @@ gbdn() {
 }
 
 
-
 alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
 alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs -I {} git push origin --delete {} && git fetch -p'
 
+# Checkout Aliases
 alias gco='git checkout'
-alias gbswitch='git checkout -'
-alias gcob='git checkout -b'
+alias gcob='gco -b'
+alias gco-='gco -'
+gcon() {
+  local branch_number=$1
+  local branch_name
+  branch_name=$(get_branch_by_number "$branch_number") || return 1
+
+  echo "Checking out branch: $branch_name"
+  gco "$branch_name"
+}
+
+# Staging
 alias gstageall='git add .'
 alias gcm='git commit -m'
 alias gstash='git stash'
 alias gpop='gstash pop'
-alias gpush='git push'
-alias gpushf='gpush --force'
-alias gpull='git pull --autostash --rebase'
-alias gpo='gpull origin'
-alias grebase='git rebase'
 alias greset='git reset HEAD^'
 alias undocommit='greset --soft'
 alias deletecommit='greset --hard'
 alias removefromstaged='git restore --staged .'
-# Tags
-alias gtagls='git tag'
-alias rmgtag='git tag -d'
-
 # TODO: Enhance later to handle the scope better
 function gc() {
   if [ "$#" -lt 2 ]; then
@@ -173,6 +163,9 @@ closes: $ticket_footer"
   echo "$commit_message"
 }
 
+# Push / Pull
+alias gpush='git push'
+alias gpushf='gpush --force'
 function pushfile() {
     local filename=$1
     local message=$2
@@ -194,3 +187,10 @@ function pushtodo() {
 function pushcron() {
     pushfile "crontab" "Update crontab."
 }
+alias gpull='git pull --autostash --rebase'
+alias gpo='gpull origin'
+alias grebase='git rebase'
+
+# Tags
+alias gtagls='git tag'
+alias rmgtag='git tag -d'
