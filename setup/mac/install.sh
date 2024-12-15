@@ -39,6 +39,8 @@ if ask "Symlink dotfiles?"; then
     create_symlink "$ZSH_DOTFILES_DIR/.aliases.zsh" "$HOME/.zsh_aliases"
     create_symlink "$ZSH_DOTFILES_DIR/aliases" "$HOME/shell-aliases"
     create_symlink "$ZSH_DOTFILES_DIR/scripts" "$HOME/shell-scripts"
+    create_symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
+    create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc"
     chmod -R +x "$HOME/shell-aliases/"
     chmod -R +x "$HOME/shell-scripts/"
     source ~/.zshrc
@@ -46,14 +48,6 @@ fi
 
 if ask "Use default .env.sh?"; then
     cat $ZSH_DOTFILES_DIR/.env.sh >> ~/.env.sh
-fi
-
-if ask "Use default tmux.conf?"; then
-    cat $DOTFILES_DIR/.tmux.conf >> ~/tmux.conf
-fi
-
-if ask "Use default tmux.conf?"; then
-    cat $DOTFILES_DIR/.vimrc >> ~/.vimrc
 fi
 
 if ask "Install Node dependencies?"; then
