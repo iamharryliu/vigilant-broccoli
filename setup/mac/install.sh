@@ -1,17 +1,5 @@
 source $HOME/vigilant-broccoli/setup/dotfiles/common/aliases/aliases.sh
 
-function ask() {
-    echo -n "$1 (Y/n): "
-    read resp
-    if [ -z "$resp" ]; then
-        response_lc="y" # empty is Yes
-    else
-        response_lc=$(echo "$resp" | tr '[:upper:]' '[:lower:]') # case insensitive
-    fi
-
-    [ "$response_lc" = "y" ]
-}
-
 # Install Brew dependencies.
 if ask "Install Brew dependencies?"; then
     brewinit
@@ -43,7 +31,7 @@ if ask "Symlink dotfiles?"; then
     create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc"
     chmod -R +x "$HOME/shell-aliases/"
     chmod -R +x "$HOME/shell-scripts/"
-    source ~/.zshrc
+    source $HOME/.zshrc
 fi
 
 if ask "Use default .env.sh?"; then

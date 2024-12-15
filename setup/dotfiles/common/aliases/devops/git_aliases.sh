@@ -56,22 +56,13 @@ gbdn() {
   local branch_name
   branch_name=$(get_branch_by_number "$branch_number") || return 1
 
-  # TODO: make reusable y/N confirmation
-  echo "Are you sure you want to delete the branch: $branch_name? [y/N]"
-  if [[ $SHELL == */zsh ]]; then
-    read -r -k1 confirmation
+  if ask "Are you sure you want to delete the branch: $branch_name?"; then
+    echo "Deleting branch: $branch_name"
+    git branch -D "$branch_name"
   else
-    read -r -n1 confirmation
-  fi
-  echo
-
-  if [[ $confirmation != "y" && $confirmation != "Y" ]]; then
     echo "Branch deletion canceled."
     return 0
   fi
-
-  echo "Deleting branch: $branch_name"
-  git branch -D "$branch_name"
 }
 
 
