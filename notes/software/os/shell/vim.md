@@ -44,11 +44,13 @@ Vim has 3 different modes
 
 | Description                                     | Command     |
 | ----------------------------------------------- | ----------- |
-| Move **left**. ←                                | `h`         |
-| Move **down**. ↓                                | `j`         |
-| Move **up**. ↑                                  | `k`         |
-| Move **right**. →                               | `l`         |
+| Move **left ←**.                                | `h`         |
+| Move **down ↓**.                                | `j`         |
+| Move **up ↑**.                                  | `k`         |
+| Move **right →**.                               | `l`         |
 | Jump to **line number**.                        | `:[number]` |
+| Jump up **half the screen**.                    | `ctrl + u`  |
+| Jump down **half the screen**.                  | `ctrl + d`  |
 | Jump to the **start of the line**.              | `0`         |
 | Jump to the **end of the line**.                | `$`         |
 | Jump to the **beginning of the next word**.     | `w`         |
