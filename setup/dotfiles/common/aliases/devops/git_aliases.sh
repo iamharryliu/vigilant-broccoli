@@ -167,6 +167,11 @@ function pushfile() {
         cd - >/dev/null || exit
     done
 }
+
+function pushreadme() {
+    pushfile "README.md" "Update README.md"
+}
+
 function pushignore() {
     pushfile ".gitignore" "Update .gitignore"
 }
@@ -178,6 +183,7 @@ function pushtodo() {
 function pushcron() {
     pushfile "crontab" "Update crontab."
 }
+
 alias gpull='git pull --autostash --rebase'
 alias gpo='gpull origin'
 alias grebase='git rebase'

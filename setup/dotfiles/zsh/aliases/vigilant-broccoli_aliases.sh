@@ -35,7 +35,6 @@ alias pulljournal="cd $JOURNAL_DIR && gpull"
 alias pullall='pulljournal && pullvb'
 alias gitvb='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
 alias gitactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
-alias pushreadme="cdvb && git add README.md && gc docs readme 'Update root README.md file.' && gpush"
 alias pushnotes="cdvb && git add $NOTES_DIR && gc docs notes 'Update Markdown notes.' && gpush"
 alias pushvbtodo="cdvb && git add $TODO_FILEPATH && gc docs todo 'Update TODO.md file.' && gpush"
 alias pushsnippets="cdvb && git add $SNIPPETS_DIR && gc docs snippets 'Update snippets.' && gpush"
