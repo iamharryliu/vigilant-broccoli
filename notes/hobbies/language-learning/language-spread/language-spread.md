@@ -23,3 +23,27 @@ dyrt
 billigt
 att sola
 att laga
+det blåser
+det regnat
+vilade
+ett täcke
+erbjudandet
+utan
+bomull
+fina
+ihop
+billig
+billigare
+billigast
+dyrare
+dyrast
+ett lakan
+saljare
+oppet köp
+passar de bra
+inte i den fargen
+jag ville ha
+jag titta bara
+tillsammans
+ensam
+brukar

@@ -2,6 +2,9 @@
 
 ## General
 
+- CPU bound and IO bound
+- Token vs keys
+
 ## Paradigms
 
 - Functional Programming vs Object Oriented Programming (OOP)
