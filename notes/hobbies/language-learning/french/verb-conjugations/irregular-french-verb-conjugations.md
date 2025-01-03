@@ -1,15 +1,15 @@
-# Irregular Verbs
+# Irregular French Verb Conjugations
 
-## Irregular -er verbs
+## 3 Irregulars
 
-| Pronoun   | avoir | aller  | etre   |
+| Pronoun   | avoir | aller  | être   |
 | --------- | ----- | ------ | ------ |
 | je/j'     | ai    | vais   | suis   |
 | tu        | as    | vas    | es     |
 | il/elle   | a     | va     | est    |
 | nous      | avons | allons | sommes |
-| vous      | avez  | allez  | etes   |
-| ils/elles | ont   | ont    | sont   |
+| vous      | avez  | allez  | êtes   |
+| ils/elles | ont   | vont   | sont   |
 
 ## Irregular -ir Verbs
 
