@@ -28,7 +28,7 @@ get_branch_by_number() {
 }
 
 # Copy branch name to clipboard
-gbcp() {
+cpgbn() {
   local branch_number=$1
   local branch_name
   branch_name=$(get_branch_by_number "$branch_number") || return 1
@@ -51,7 +51,7 @@ gbcp() {
 }
 
 # Remove branch by number
-gbdn() {
+rmgbn() {
   local branch_number=$1
   local branch_name
   branch_name=$(get_branch_by_number "$branch_number") || return 1
@@ -87,6 +87,7 @@ alias gstageall='git add .'
 alias gcm='git commit -m'
 alias gstash='git stash'
 alias gpop='gstash pop'
+alias gamend='git commit --amend'
 alias greset='git reset HEAD^'
 alias undocommit='greset --soft'
 alias deletecommit='greset --hard'
@@ -138,20 +139,15 @@ function gc() {
 
   # Append the body if provided
   if [ -n "$body" ]; then
-    commit_message="$commit_message
-
-$body"
+    commit_message+="\n\n$body"
   fi
 
   # Append the ticket footer if provided
   if [ -n "$ticket_footer" ]; then
-    commit_message="$commit_message
-
-closes: $ticket_footer"
+    commit_message+="\n\ncloses: $ticket_footer"
   fi
 
-  git commit -m "$commit_message"
-  echo "$commit_message"
+  echo -e "$commit_message" | git commit -F -
 }
 
 # Push / Pull
