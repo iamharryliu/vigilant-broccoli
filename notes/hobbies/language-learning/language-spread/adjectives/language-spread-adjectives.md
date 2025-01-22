@@ -29,8 +29,12 @@
 | again     | igen                |                    |                 |                   |                 |
 | another   | en till             |                    |                 |                   |                 |
 | with      | med                 | avec               | con             |                   |                 |
-| without   |                     | sans               | sin             |                   |                 |
+| without   | utan                | sans               | sin             |                   |                 |
 | hot       | varme               | chaud              | caliente        |                   |                 |
 | cold      | kall                | froid              | frío            |                   |                 |
 | strong    | stark               | fort               | fuerte          |                   |                 |
 | cold      | svag                | faible             | débil           |                   |                 |
+| rich      | rik                 |
+| poor      | fattig              |
+| together  | tilsammans          |
+| alone     | ensam               |

@@ -2,8 +2,11 @@
 
 ## Rice
 
-- Water ratio 1:1.5(adjust based on rice)
 - Before cooking you can add a neutral oil to water to prevent sticking.
+
+### Rice Ratios
+
+- Basmatic rice - 1:1.5
 
 ## Granola Cereal
 

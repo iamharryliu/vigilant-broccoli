@@ -13,11 +13,6 @@ Common irregular verb conjugations
 i början
 i mitten
 i slutet
-semester
-ny
-flygplan
-Skottland
-köra
 se slottet
 dyrt
 billigt
@@ -28,15 +23,8 @@ det regnat
 vilade
 ett täcke
 erbjudandet
-utan
-bomull
 fina
 ihop
-billig
-billigare
-billigast
-dyrare
-dyrast
 ett lakan
 saljare
 oppet köp
@@ -44,6 +32,18 @@ passar de bra
 inte i den fargen
 jag ville ha
 jag titta bara
-tillsammans
-ensam
-brukar
+
+"Bestämd" (definite) and "obestämd" (indefinite) are grammatical terms used in Swedish to describe nouns, adjectives, and articles.
+
+Obestämd form (Indefinite)
+Used when talking about something in a general or non-specific way.
+
+En bok (a book)
+Ett hus (a house)
+Stora hundar (big dogs)
+Bestämd form (Definite)
+Used when talking about something specific that is known to the speaker and listener.
+
+Boken (the book)
+Huset (the house)
+De stora hundarna (the big dogs)

@@ -55,5 +55,5 @@
 | I ordered          | jag beställde      | j'ai commande | he pedido    |           |         |
 | I have ordered     | jag har beställt   | j'ai commande | he pedido    |           |         |
 | I have eaten       | jag har ätit       | j'ai mange    | he comido    |           |         |
-| I would            | jag skulle         | je voudrais   | quiero       |           |         |
+| I would like       | jag skulle vilja   | je voudrais   | quiero       |           |         |
 | it was             | var                | c'etait       | estuvo /fue? |           |         |

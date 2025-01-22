@@ -34,4 +34,4 @@
 | yes     | ja      | oui       | sí      | si        | si      |
 | no      | nej     | non       | no      | não       | no      |
 | maybe   | kanske  | peut-être | tal vez | talvez    |         |
-| because |         |           | porque  |           |         |
+| because | därför  |           | porque  |           |         |

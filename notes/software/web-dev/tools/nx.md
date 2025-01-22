@@ -5,6 +5,7 @@
 ```
 npx create-nx-workspace@latest [workspace-name]
 
+# https://nx.dev/features/automate-updating-dependencies
 nx migrate latest
 nx migrate --run-migrations
 

@@ -16,7 +16,7 @@
 | last year      | förra veckan   | a semaine dernière   |
 | in _n_ year(s) | om _n_ år      | dans n an(s)         |
 | _n_ years go   | _n_ år sedan   | il y a n an(s)       |
-| before         | före           | avant                | antes          |           |         |
+| before         | innan          | avant                | antes          |           |         |
 | after          | efter          | après                | después        |           |         |
 | later          | senare         | plus tard            | mas tarde      |           |         |
 | afternoon      | eftermiddag    | après-midi           | tarde          |           |         |

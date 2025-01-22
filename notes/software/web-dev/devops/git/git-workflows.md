@@ -5,15 +5,19 @@
 [Git Pull Rebase](https://www.youtube.com/watch?v=xN1-2p06Urc&list=WL&index=29)
 
 ```
-git pull --rebase
-git rebase --continue
-git rebase --abort
+# Rebase on main
+git fetch origin
+git rebase origin/main
 
 git rebase -i
 git rebase -i origin/master
 
-git branch backup-branch-name
+git pull --rebase
+git rebase --continue
+git rebase --abort
 
+
+git branch backup-branch-name
 ```
 
 ## Undoing a Commit
