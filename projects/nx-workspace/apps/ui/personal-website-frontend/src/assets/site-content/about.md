@@ -21,9 +21,4 @@
 [![Museums and Galleries](https://img.shields.io/badge/museums_and_galleries_🖼️-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/CKpbtVuNWe77PPNj7) [![Music Venues](https://img.shields.io/badge/music_venues_🎶-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/Mbzr4JsFmDF3NTj16) [![Shopping](https://img.shields.io/badge/shopping_🛍️-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/wy4hepNkFaocei2H7) [![Other Activities](https://img.shields.io/badge/other_activities-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/oadYKuGkHwH1DoQX7)
 [![Accomodations](https://img.shields.io/badge/accomodations_🏨-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/6ZkoBuAXcJTd2zdD7) [![Parking](https://img.shields.io/badge/parking_🅿️-20B2AA?style=for-the-badge)](https://maps.app.goo.gl/BiZ8yHGQvWCZi1MU9)
 
-#### Career
-
-#### Buy me a coffee? :)
-
-[![Ko-Fi Badge](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/prettydamntired)
-[![Amazon Wishlist](https://img.shields.io/badge/wishlist-20B2AA?style=for-the-badge)](https://www.amazon.ca/hz/wishlist/ls/3CK4DHDPYDDL7?ref_=wl_share)
+[![Ko-Fi Badge](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/prettydamntired) [![Amazon Wishlist](https://img.shields.io/badge/wishlist-20B2AA?style=for-the-badge)](https://www.amazon.ca/hz/wishlist/ls/3CK4DHDPYDDL7?ref_=wl_share)
