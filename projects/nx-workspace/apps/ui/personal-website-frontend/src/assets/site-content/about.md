@@ -1,7 +1,5 @@
 ### Hey, I'm Harry 👋
 
-Just a chill guy who likes doing chill things.
-
 #### Connect
 
 [![Gmail Badge](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:harryliu1995@gmail.com) [![Contact Badge](https://img.shields.io/badge/Send_A_Message-20B2AA?style=for-the-badge)](https://harryliu.dev/contact)
