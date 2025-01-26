@@ -3,14 +3,12 @@ import { CommonModule } from '@angular/common';
 import { LINKS } from '../core/consts/routes.const';
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
-import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { LeetCodePageService } from './leet-code.page.service';
 import {
   FolderItemComponent,
   FolderItem,
   LinkComponent,
   FileService,
-  MarkdownPageComponent,
 } from 'general-components';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -23,13 +21,7 @@ const hmap = {
 @Component({
   selector: 'app-leet-code-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    FolderItemComponent,
-    GeneralLayoutComponent,
-    LinkComponent,
-    MarkdownPageComponent,
-  ],
+  imports: [CommonModule, FolderItemComponent, LinkComponent],
   templateUrl: './leet-code.page.html',
   styleUrl: '../code.scss',
 })

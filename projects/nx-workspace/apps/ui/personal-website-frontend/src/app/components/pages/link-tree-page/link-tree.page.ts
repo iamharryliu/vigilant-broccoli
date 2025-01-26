@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { LINKS } from '../../../core/consts/routes.const';
-import { CardComponent } from '../../global/card/card.component';
 import { CenteredAppLayoutComponent } from '../../layouts/centered-app-layout/centered-app-layout.compoenent';
 import { ButtonLinkComponent, Link } from 'general-components';
 
@@ -9,12 +8,7 @@ import { ButtonLinkComponent, Link } from 'general-components';
   standalone: true,
   selector: 'app-link-tree-page',
   templateUrl: './link-tree.page.html',
-  imports: [
-    CenteredAppLayoutComponent,
-    ButtonLinkComponent,
-    CommonModule,
-    CardComponent,
-  ],
+  imports: [CenteredAppLayoutComponent, ButtonLinkComponent, CommonModule],
   styles: [
     '#profile-picture {width: 120px; height: 120px; border-radius: 50%;}',
   ],

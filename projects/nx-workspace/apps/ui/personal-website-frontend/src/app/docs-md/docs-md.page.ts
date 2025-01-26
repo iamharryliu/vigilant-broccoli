@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
 import { DOCS_MD_ROUTE, LINKS } from '../core/consts/routes.const';
@@ -20,7 +19,6 @@ import {
   imports: [
     CommonModule,
     FolderItemComponent,
-    GeneralLayoutComponent,
     LinkComponent,
     MarkdownPageComponent,
   ],
