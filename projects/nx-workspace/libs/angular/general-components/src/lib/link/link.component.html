@@ -2,7 +2,7 @@
   [routerLink]="type === 'internal' ? link.url.internal : null"
   [href]="type === 'internal' ? null : link.url.external"
   (click)="click()"
-  [attr.target]="type !== 'internal' ? '_blank': ''"
+  [attr.target]="type !== 'internal' ? '_blank' : ''"
   [class.text-sm]="textSize === 'sm'"
   [class.text-lg]="textSize === 'lg'"
   [ngClass]="textClasses"

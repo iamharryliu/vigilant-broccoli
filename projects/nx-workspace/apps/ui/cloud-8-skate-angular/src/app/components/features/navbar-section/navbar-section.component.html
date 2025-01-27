@@ -1,22 +1,25 @@
 <lib-navbar
   [links]="links"
-  [textClasses]="['text-white','hover:text-gray-200']"
+  [textClasses]="['text-white', 'hover:text-gray-200']"
   [isBold]="true"
   [bgColor]="'lg:bg-blue-500'"
   [isFixedForBrowser]="true"
-  [isFixedForMobile]="true">
+  [isFixedForMobile]="true"
+>
   <ng-container browserBrand>
     <a routerLink="/">
       <img
         src="assets/cloud8skate.png"
-        class="inline-block object-contain h-12 bg-white rounded-full p-1 border-4 border-pink-400" />
+        class="inline-block object-contain h-12 bg-white rounded-full p-1 border-4 border-pink-400"
+      />
     </a>
   </ng-container>
   <ng-container mobileBrand>
     <a routerLink="/">
       <img
         src="assets/cloud8skate.png"
-        class="inline-block object-contain h-10" />
+        class="inline-block object-contain h-10"
+      />
     </a>
   </ng-container>
 </lib-navbar>
