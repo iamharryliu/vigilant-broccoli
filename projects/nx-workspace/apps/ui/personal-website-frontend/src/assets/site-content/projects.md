@@ -1,6 +1,6 @@
 ## Technical Projects
 
-- [vigilant-broccoli](https://github.com/iamharryliu/vigilant-broccoli) - Monorepo that houses all(most of) my code and documentation.
+- [vigilant-broccoli](https://github.com/iamharryliu/vigilant-broccoli) - Personal monorepo for code and documentation.
 - [Toronto Alerts](https://torontoalerts.com/) - Toronto notification services.
 - [DocsMD](https://harryliu.dev/docs-md) - Personal collection of markdown files.
 - [Grind 75](https://harryliu.dev/grind-75) - LeetCode solutions for [the Grind 75 list](https://www.techinterviewhandbook.org/grind75).
