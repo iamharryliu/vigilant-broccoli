@@ -11,9 +11,9 @@ import { LINK_TYPE, Link, LinkType } from '../models';
 })
 export class LinkComponent {
   @Input() type?: LinkType = LINK_TYPE.EXTERNAL;
-  @Input() textClasses?: string[];
   @Input() link!: Link;
   @Output() clickEmitter = new EventEmitter<void>();
+  @Input() textClasses?: string[];
 
   click() {
     this.clickEmitter.emit();
