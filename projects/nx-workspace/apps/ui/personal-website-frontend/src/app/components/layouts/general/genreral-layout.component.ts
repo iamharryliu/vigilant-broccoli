@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { FooterComponent } from '../../features/footer/footer.component';
 import { NavbarSectionComponent } from '../../features/navbar-section/navbar-section.component';
 import { ENVIRONMENT } from '../../../../environments/environment';
+import { ToggleDarkThemeButtonComponent } from '../../features/toggle-dark-mode-button/toggle-dark-mode-button.component';
 
 @Component({
   standalone: true,
@@ -15,6 +16,7 @@ import { ENVIRONMENT } from '../../../../environments/environment';
     NavbarSectionComponent,
     FooterComponent,
     RouterModule,
+    ToggleDarkThemeButtonComponent,
   ],
   styles: [
     '#profile-picture {width: 120px; height: 120px; border-radius: 50%;}',

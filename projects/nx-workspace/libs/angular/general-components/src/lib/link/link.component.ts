@@ -12,8 +12,8 @@ import { LINK_TYPE, Link, LinkType, TEXT_SIZE, TextSize } from '../models';
 export class LinkComponent {
   @Input() type?: LinkType = LINK_TYPE.EXTERNAL;
   @Input() textSize?: TextSize = TEXT_SIZE.DEFAULT;
+  @Input() textClasses?: string[];
   @Input() link!: Link;
-  @Input() isLight = false;
   @Input() isBold = false;
   @Output() clickEmitter = new EventEmitter<void>();
 

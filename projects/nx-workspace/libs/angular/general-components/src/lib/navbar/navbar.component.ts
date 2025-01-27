@@ -12,10 +12,10 @@ import { Link, TextSize } from '../models';
   imports: [CommonModule, RouterModule, LinkComponent],
 })
 export class NavbarComponent implements OnInit {
-  @Input() bgColor = '';
+  @Input() bgColor = 'bg-inherit';
   @Input() links: Link[] = [];
   @Input() textSize?: TextSize;
-  @Input() isLight = false;
+  @Input() textClasses?: string[];
   @Input() isBold = false;
   @Input() isStickyForBrowser = false;
   @Input() isFixedForBrowser = false;

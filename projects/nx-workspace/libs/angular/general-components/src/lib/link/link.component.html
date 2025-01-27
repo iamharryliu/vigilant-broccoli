@@ -1,29 +1,12 @@
-<ng-container *ngIf="type === 'internal'; else externalLink">
-  <a
-    [routerLink]="link.url.internal"
-    (click)="click()"
-    [class.text-sm]="textSize === 'sm'"
-    [class.text-lg]="textSize === 'lg'"
-    [class.text-gray-800]="!isLight"
-    [class.hover:text-gray-400]="!isLight"
-    [class.text-white]="isLight"
-    [class.hover:text-gray-200]="isLight"
-    [class.font-medium]="isBold"
-  >
-    {{ link.text }}
-  </a>
-</ng-container>
-<ng-template #externalLink>
-  <a
-    [href]="link.url.external"
-    (click)="click()"
-    target="_blank"
-    [class.text-sm]="textSize === 'sm'"
-    [class.text-lg]="textSize === 'lg'"
-    [class.text-gray-800]="!isLight"
-    [class.hover:text-gray-400]="!isLight"
-    [class.font-medium]="isBold"
-  >
-    {{ link.text }}</a
-  >
-</ng-template>
+<a
+  [routerLink]="type === 'internal' ? link.url.internal : null"
+  [href]="type === 'internal' ? null : link.url.external"
+  (click)="click()"
+  [attr.target]="type !== 'internal' ? '_blank': ''"
+  [class.text-sm]="textSize === 'sm'"
+  [class.text-lg]="textSize === 'lg'"
+  [ngClass]="textClasses"
+  [class.font-medium]="isBold"
+>
+  {{ link.text }}
+</a>
