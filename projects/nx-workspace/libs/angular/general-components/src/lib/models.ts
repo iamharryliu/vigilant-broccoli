@@ -20,12 +20,3 @@ export interface FolderItem {
   filepath: string;
   children?: FolderItem[];
 }
-
-// Tailwind
-export const TEXT_SIZE = {
-  SMALL: 'sm',
-  DEFAULT: 'base',
-  LARGE: 'lg',
-} as const;
-type TEXT_SIZE_KEYS = keyof typeof TEXT_SIZE;
-export type TextSize = (typeof TEXT_SIZE)[TEXT_SIZE_KEYS];

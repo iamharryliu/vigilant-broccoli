@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { Event, RouterModule } from '@angular/router';
 import { LinkComponent } from '../link/link.component';
-import { Link, TextSize } from '../models';
+import { Link } from '../models';
 
 @Component({
   standalone: true,
@@ -14,7 +14,6 @@ import { Link, TextSize } from '../models';
 export class NavbarComponent implements OnInit {
   @Input() bgColor = 'bg-inherit';
   @Input() links: Link[] = [];
-  @Input() textSize?: TextSize;
   @Input() textClasses?: string[];
   @Input() isBold = false;
   @Input() isStickyForBrowser = false;

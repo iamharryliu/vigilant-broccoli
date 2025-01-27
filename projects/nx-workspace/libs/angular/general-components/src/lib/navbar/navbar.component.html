@@ -17,9 +17,7 @@
       <lib-link
         *ngFor="let link of links"
         [link]="link"
-        [textSize]="textSize"
         [textClasses]="textClasses"
-        [isBold]="isBold"
         [type]="link.type"
       ></lib-link>
     </div>
@@ -52,7 +50,6 @@
       <div class="flex justify-center" *ngFor="let link of links">
         <lib-link
           [link]="link"
-          [textSize]="textSize"
           type="internal"
           (clickEmitter)="collapseNavbar()"
         ></lib-link>

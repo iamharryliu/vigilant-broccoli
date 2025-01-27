@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { LINK_TYPE, Link, LinkType, TEXT_SIZE, TextSize } from '../models';
+import { LINK_TYPE, Link, LinkType } from '../models';
 
 @Component({
   standalone: true,
@@ -11,10 +11,8 @@ import { LINK_TYPE, Link, LinkType, TEXT_SIZE, TextSize } from '../models';
 })
 export class LinkComponent {
   @Input() type?: LinkType = LINK_TYPE.EXTERNAL;
-  @Input() textSize?: TextSize = TEXT_SIZE.DEFAULT;
   @Input() textClasses?: string[];
   @Input() link!: Link;
-  @Input() isBold = false;
   @Output() clickEmitter = new EventEmitter<void>();
 
   click() {
