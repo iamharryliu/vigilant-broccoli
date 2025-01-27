@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ThemeService } from './theme-service/theme.service';
+import { ThemeService } from 'general-components';
 
 @Component({
   standalone: true,
