@@ -2,38 +2,40 @@
 
 - Hooks - Provider > Context > Reducer > Data and Dispatch Functions
 
+## useState
+
+Manages local state within a component, triggers re-renders when updated.
+
+```
+const [state, setState] = useState(INITIAL_STATE);
+setState(_previousState => {
+    return newState;
+});
+```
+
 ## useEffect
+
+Runs side effects like data fetching, DOM updates, or subscriptions after render
 
 ```
 // Runs on every render
-useEffect(() => {
-    ...sideEffects
-    return () => cleanupCode()
-});
-
+useEffect(() => { ...SIDE_EFFECTS } );
 // Runs only on the first render
-useEffect(() => {
-    ...sideEffects
-    return () => cleanupCode()
-}, []);
-
-// Runs any time any dependency values change
-useEffect(() => {
-    ...sideEffects
-    return () => cleanupCode()
-}, [...dependencies]);
+useEffect(() => { ...SIDE_EFFECTS }, []);
+// Runs everytime a value in dependency array changes
+useEffect(() => { ...SIDE_EFFECTS }, [ ...DEPENDENCIES ] );
 ```
 
 - [Custom Hooks for Objects(Deep Comparison)](https://stackoverflow.com/questions/54095994/react-useeffect-comparing-objects)
 
-## useState
+## useMemo
+
+Memoizes expensive calculations, recalculates only when dependencies change
 
 ```
-const [state, setState] = useState(INITIAL_STATE);
-
-setState(previousState => {
-    return { ...previousState, stateChanges... };
-});
+const value = expensiveCalculation(...);
+// vs
+const value = useMemo(() => expensiveCalculation(...), [DEPENDENCIES]);
 ```
 
 ## useContext
@@ -136,26 +138,15 @@ onChange={(e) => setInputValue(e.target.value)}
 
 ## useCallback
 
-Prevents re-creation of functions on every render, which is useful when passing functions as props to child components. It helps avoid unnecessary re-renders in child components that rely on reference equality of props.
+Memoizes callback functions, preventing unnecessary re-renders in child components.
 
 ```
 // Will ALWAYS get hit on re-render.
 const fn = () => {
-setState((value) => [...value, newData]);
+    doSomething();
 };
-
 // Will only re-render when props have changed
 const fn = useCallback(() => {
-setState((value) => {...stateValue, newData});
-}, [props]);
-```
-
-## useMemo
-
-Prevents re-execution of expensive calculations, such as filtering a large array or performing complex computations.
-
-```
-const value = expensiveCalculation(state);
-// vs
-const value = useMemo(() => expensiveCalculation(state), [state]);
+    doSomething();
+}, [DEPENDENCIES]);
 ```

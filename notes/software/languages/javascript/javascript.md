@@ -2,37 +2,16 @@
 
 ## Types
 
-- string
-- number
-- boolean
-- null
-- undefined
+- `string`
+- `number`
+- `boolean`
+- `null`
+- `undefined`
 
 ### Type Annotation
 
 - [JSDocs](https://devhints.io/jsdoc)
 - [Typescript](https://www.typescriptlang.org/)
-
-#### JSDocs
-
-```
-//@ts-check
-
-{Type}
-{Type1|Type2}
-{Object}
-{Object.<key, value>}
-{Promise<Type>}
-
-@typedef {Type}
-@type {Type}
-@returns {Type}
-@throws {Error}
-
-/**
-*@whatever
-*/
-```
 
 ### JS to TS Conversion
 
@@ -61,42 +40,59 @@ npx tsx FILENAME
 tsconfig.json
 ```
 
-## Console
+#### JSDocs
 
 ```
-console.log(message)
-console.warn(message)
-console.error(message)
-console.dir(object)
-console.table(array_or_object  )
-console.assert(condition, message)
-console.time()
-console.timeEnd()
+//@ts-check
+
+{Type}
+{Type1|Type2}
+{Object}
+{Object.<key, value>}
+{Promise<Type>}
+
+@typedef {Type}
+@type {Type}
+@returns {Type}
+@throws {Error}
+
+/**
+*@whatever
+*/
 ```
 
-## Debug
-
-- [Freeze screen & inspect disappearing elements #DevToolsTips](https://www.youtube.com/watch?v=Qzmb9bdNzZ4&list=WL&index=18)
+## Debugging
 
 ```
-debugger
+console.warn(message);
+console.error(message);
+console.dir(object);
+console.table(array_or_object);
+console.assert(condition, message);
+console.time();
+console.timeEnd();
+
+// debugger keyword
+debugger;
+
+// throw error
 throw new Error("STOP");
 ```
 
-nx
+- [Freeze screen & inspect disappearing elements #DevToolsTips](https://www.youtube.com/watch?v=Qzmb9bdNzZ4&list=WL&index=18)c
 
-## Arrays
+## Array
 
-```
-arr.map((val) => val);
-arr.filter((val) => condition);
-arr.reduce((total, val) => val + total, total_start_value);
-arr.forEach((val) => do_something);
-arr.find((val) => value);
-arr.some((val) => condition);
-arr.every((val) => condition);
-arr.includes(value);
-```
+| Method                                                        | Example Input                       | Example Output |
+| ------------------------------------------------------------- | ----------------------------------- | -------------- |
+| `arr.map((val) => val);`                                      | `[1, 2, 3]`                         | `[1, 2, 3]`    |
+| `arr.filter((val) => condition);`                             | `[1, 2, 3, 4]` with `val > 2`       | `[3, 4]`       |
+| `arr.reduce((total, val) => val + total, total_start_value);` | `[1, 2, 3]` with `0` as start       | `6`            |
+| `arr.forEach((val) => do_something);`                         | `[1, 2, 3]` with `console.log(val)` | Logs `1 2 3`   |
+| `arr.find((val) => value);`                                   | `[1, 2, 3, 4]` with `val > 2`       | `3`            |
+| `arr.some((val) => condition);`                               | `[1, 2, 3]` with `val > 2`          | `true`         |
+| `arr.every((val) => condition);`                              | `[2, 4, 6]` with `val % 2 === 0`    | `true`         |
+| `arr.includes(value);`                                        | `[1, 2, 3]` with `2`                | `true`         |
 
 ## Objects
 
