@@ -1,9 +1,15 @@
 # Go
 
-Run script
+| Filename | Description                                    |
+| :------- | :--------------------------------------------- |
+| main.go  | Main file, entry to application.               |
+| mod.go   | Module file defining version and dependencies. |
 
 ```
-go run [filename]
+go mod init APP_NAME
+go run FILENAME
+go get PACKAGE_NAME
+go get -u PACKAGE_NAME
 ```
 
 ## Variables
