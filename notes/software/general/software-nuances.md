@@ -1,9 +1,8 @@
 # Developer Nuances
 
-## General
-
 - CPU bound and IO bound
-- Token vs keys
+- Token vs Keys
+- Event Driven Architecture vs Request Responese
 
 ## Paradigms
 
