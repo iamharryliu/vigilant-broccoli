@@ -3,23 +3,22 @@
 - CPU bound and IO bound
 - Token vs Keys
 - Event Driven Architecture vs Request Responese
-
-## Paradigms
-
-- Functional Programming vs Object Oriented Programming (OOP)
-  - Functional programming for simplicity and state immutability.
-  - OOP is clean when done correctly.
-- GoLang vs Python
-  - GoLang has more power under the hood. Compiled vs interpreted.
-
-### Database
-
-- SQL vs NoSQL
-  - SQL for relational storage
-  - NoSQL for non relational storage
-- ORM vs Raw SQL Queries
-  - ORM for straightforward CRUD and simple things.
-  - SQL for reporting and more complex things.
+- Static vs Dynamic Imports
+- Compiled vs Interpreted Code
+- **Languages**
+  - GoLang vs Python
+    - GoLang has more power under the hood. Compiled vs interpreted.
+- **Programming Paradigms**
+  - Functional Programming vs Object Oriented Programming (OOP)
+    - Functional programming for simplicity and state immutability.
+    - OOP can be clean if done correctly.
+- **Database**
+  - SQL vs NoSQL
+    - SQL for relational storage
+    - NoSQL for non relational storage
+  - ORM vs Raw SQL Queries
+    - ORM for straightforward CRUD and simple things.
+    - SQL for reporting and more complex things.
 
 ## Web Applications
 
