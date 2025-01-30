@@ -1,0 +1,6 @@
+{
+  "name": "socket-demo",
+  "dependencies": {
+    "tsx": "^4.19.2"
+  }
+}
