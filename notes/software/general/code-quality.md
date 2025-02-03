@@ -7,7 +7,8 @@
 ## Javascript/Typescript
 
 ```
-var as unknown as Type
+as unknown as
+eslint-disable
 ```
 
 ## CSS
