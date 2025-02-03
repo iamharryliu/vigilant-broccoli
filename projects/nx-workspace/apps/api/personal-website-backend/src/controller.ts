@@ -1,6 +1,6 @@
-import { HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
 import { NewsletterService } from './services/newsletter.service';
 import { ContactService } from './services/contact.service';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   GENERAL_ERROR_CODE,
   ResponseError,

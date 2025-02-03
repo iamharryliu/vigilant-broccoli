@@ -1,4 +1,4 @@
-import { HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export const requestLogger = (request, response, next) => {
   console.log('Request Logged');

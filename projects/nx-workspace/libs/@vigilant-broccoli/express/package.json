@@ -4,8 +4,8 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "express": "*",
-    "@prettydamntired/common-lib": "*",
     "@prettydamntired/test-node-tools": "*",
-    "@prettydamntired/personal-website-lib": "*"
+    "@prettydamntired/personal-website-lib": "*",
+    "@vigilant-broccoli/common-js": "0.0.2"
   }
 }

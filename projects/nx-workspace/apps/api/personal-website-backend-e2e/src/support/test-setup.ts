@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { LOCALHOST } from '@prettydamntired/common-lib';
+import { LOCALHOST } from '@vigilant-broccoli/common-js';
 import axios from 'axios';
 
 module.exports = async function () {

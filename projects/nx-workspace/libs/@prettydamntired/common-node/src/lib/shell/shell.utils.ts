@@ -1,5 +1,5 @@
+import { ENVIRONMENT_TYPE } from '@vigilant-broccoli/common-js';
 import { spawn } from 'child_process';
-import { ENVIRONMENT_TYPE } from '@prettydamntired/common-lib';
 
 const runShellCommand = (
   cmd: string,

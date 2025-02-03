@@ -1,4 +1,4 @@
-import { ENVIRONMENT_TYPE } from '@prettydamntired/common-lib';
+import { ENVIRONMENT_TYPE } from '@vigilant-broccoli/common-js';
 
 export const SHELL_COMMAND_FLAG = {
   DRY_RUN: '--dry-run',

@@ -1,8 +1,8 @@
 import request from 'supertest';
 import app, { db, server } from './main';
-import { HTTP_STATUS_CODES } from '@prettydamntired/common-lib';
 import { EmailSubscription } from '@prettydamntired/personal-website-api-lib';
 import { VibecheckLiteSubscribeRequest } from '@prettydamntired/personal-website-lib';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 describe.skip('Routes', () => {
   test('index', async () => {

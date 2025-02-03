@@ -1,0 +1,10 @@
+{
+  "name": "@vigilant-broccoli/common-js",
+  "version": "0.0.2",
+  "dependencies": {},
+  "type": "commonjs",
+  "main": "./index.cjs",
+  "publishConfig": {
+    "access": "public"
+  }
+}

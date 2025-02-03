@@ -1,4 +1,4 @@
-import { LOCALHOST } from '@prettydamntired/common-lib';
+import { LOCALHOST } from '@vigilant-broccoli/common-js';
 
 export const HOST = process.env.HOST || LOCALHOST;
 export const IS_DEV_ENV = HOST === LOCALHOST;
