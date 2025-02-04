@@ -15,9 +15,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@prettydamntired/common-node": [
-        "libs/@prettydamntired/common-node/src/index.ts"
-      ],
       "@prettydamntired/personal-website-api-lib": [
         "libs/@prettydamntired/personal-website-api-lib/src/index.ts"
       ],
@@ -38,6 +35,9 @@
       ],
       "@vigilant-broccoli/common-js": [
         "libs/@vigilant-broccoli/common-js/src/index.ts"
+      ],
+      "@vigilant-broccoli/common-node": [
+        "libs/@vigilant-broccoli/common-node/src/index.ts"
       ],
       "@vigilant-broccoli/email-handler": [
         "libs/@vigilant-broccoli/email-handler/src/index.ts"

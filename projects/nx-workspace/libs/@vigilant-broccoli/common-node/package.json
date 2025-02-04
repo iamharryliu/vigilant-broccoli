@@ -1,0 +1,14 @@
+{
+  "name": "@vigilant-broccoli/common-node",
+  "version": "0.0.1",
+  "dependencies": {
+    "@vigilant-broccoli/common-js": "0.0.2",
+    "archiver": "^7.0.1",
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.9",
+    "tslib": "^2.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
