@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { Location } from './location.model';
+import { Location } from '@vigilant-broccoli/common-js';
 
 export class LocationService {
   getLocation(): Observable<Location> {

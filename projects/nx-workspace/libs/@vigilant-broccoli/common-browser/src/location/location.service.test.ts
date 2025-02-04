@@ -1,7 +1,7 @@
 import { LocationService } from './location.service';
 
 const mockGeolocation = {
-  getCurrentPosition: jest.fn(),
+  getCurrentPosition: vi.fn(),
 };
 
 Object.defineProperty(global, 'window', {
@@ -10,7 +10,7 @@ Object.defineProperty(global, 'window', {
 
 describe('LocationService', () => {
   describe('getLocation', () => {
-    it('should return the correct location', done => {
+    it('should return the correct location', async () => {
       const mockPosition = {
         coords: {
           latitude: 40.7128,
@@ -24,12 +24,10 @@ describe('LocationService', () => {
       );
 
       const locationService = new LocationService();
-      locationService.getLocation().subscribe(location => {
-        expect(location).toEqual({
-          latitude: mockPosition.coords.latitude,
-          longitude: mockPosition.coords.longitude,
-        });
-        done();
+      const location = await locationService.getLocation().toPromise(); // assuming it's an observable
+      expect(location).toEqual({
+        latitude: mockPosition.coords.latitude,
+        longitude: mockPosition.coords.longitude,
       });
     });
   });

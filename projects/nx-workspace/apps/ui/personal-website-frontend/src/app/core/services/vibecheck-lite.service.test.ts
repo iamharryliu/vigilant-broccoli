@@ -3,10 +3,10 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Location } from '@prettydamntired/test-lib';
 import { VibecheckLiteSubscriptionRequest } from '@prettydamntired/personal-website-lib';
 import { ENVIRONMENT } from '../../../environments/environment';
 import { VibecheckLiteService } from './vibecheck-lite.service';
+import { Location } from '@vigilant-broccoli/common-js';
 
 describe('VibecheckLiteService', () => {
   let service: VibecheckLiteService;

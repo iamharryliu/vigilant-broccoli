@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Location } from '@prettydamntired/test-lib';
 import { VibecheckLiteSubscriptionRequest } from '@prettydamntired/personal-website-lib';
 import { ENVIRONMENT } from '../../../environments/environment';
+import { Location } from '@vigilant-broccoli/common-js';
 
 @Injectable({
   providedIn: 'root',

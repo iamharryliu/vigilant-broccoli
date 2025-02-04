@@ -21,9 +21,6 @@
       "@prettydamntired/personal-website-lib": [
         "libs/@prettydamntired/personal-website-lib/src/index.ts"
       ],
-      "@prettydamntired/test-lib": [
-        "libs/@prettydamntired/test-lib/src/index.ts"
-      ],
       "@prettydamntired/test-node-tools": [
         "libs/@prettydamntired/test-node-tools/src/index.ts"
       ],
@@ -32,6 +29,9 @@
       ],
       "@prettydamntired/vibecheck-lite": [
         "libs/@prettydamntired/vibecheck-lite/src/index.ts"
+      ],
+      "@vigilant-broccoli/common-browser": [
+        "libs/@vigilant-broccoli/common-browser/src/index.ts"
       ],
       "@vigilant-broccoli/common-js": [
         "libs/@vigilant-broccoli/common-js/src/index.ts"

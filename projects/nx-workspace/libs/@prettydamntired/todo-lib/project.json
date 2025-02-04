@@ -15,13 +15,6 @@
       "command": "cd libs/@prettydamntired/todo-lib && npm version patch && cd ../../../dist/libs/@prettydamntired/todo-lib && npm publish --access=public && cd ../../../",
       "dependsOn": ["build"]
     },
-    "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "reportsDirectory": "../../../coverage/libs/@prettydamntired/todo-lib"
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint"
     }

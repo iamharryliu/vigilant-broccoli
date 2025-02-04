@@ -2,12 +2,12 @@
   "name": "@prettydamntired/vibecheck-lite",
   "version": "1.0.23",
   "dependencies": {
-    "@prettydamntired/test-lib": "*",
     "dotenv-defaults": "^5.0.2",
     "openai": "^4.26.0",
     "tslib": "^2.3.0",
     "@prettydamntired/test-node-tools": "*",
     "mongodb": "6.8.0",
-    "@prettydamntired/personal-website-api-lib": "*"
+    "@prettydamntired/personal-website-api-lib": "*",
+    "@vigilant-broccoli/common-js": "0.0.2"
   }
 }

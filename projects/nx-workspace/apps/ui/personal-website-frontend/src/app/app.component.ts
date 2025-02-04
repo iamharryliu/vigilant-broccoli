@@ -7,8 +7,8 @@ import {
   Router,
 } from '@angular/router';
 import { AppService } from './core/services/app.service';
-import { TAILWIND_BREAKPOINTS } from '@prettydamntired/test-lib';
 import { BlogService } from './core/services/blog.service';
+import { TAILWIND_BREAKPOINTS } from '@vigilant-broccoli/common-browser';
 
 @Component({
   selector: 'app-root',
