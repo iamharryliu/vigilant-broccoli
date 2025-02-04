@@ -1,13 +1,20 @@
 # TODO
 
-## Implementations
-
+- DocsMD
+  - Split into separate app.
+  - Implement search bar.
 - dotenv
   - import 'dotenv-defaults/config';
-- Stripe
-- Hashicorp Vault
+- logging system
 - Google Free Tier Instance
-- Prisma
+- RabbitMQ mail service
+- Docs
+  - Stripe
+  - Hashicorp Vault
+  - Prisma
+  - microservices vs monoliths
+  - RabbitMQ vs Kafka
+  - Load balancing
 
 ## vigilant-broccoli
 
