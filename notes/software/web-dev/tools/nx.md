@@ -16,6 +16,9 @@ nx build [library] --with-deps
 --skip-nx-cache
 
 nx reset
+
+nx release
+nx run LIBRARY:nx-release-publish --otp=XXXXXX
 ```
 
 ### Storybook
