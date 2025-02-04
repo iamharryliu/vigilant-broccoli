@@ -1,6 +1,5 @@
-/* eslint-disable @nx/enforce-module-boundaries */
-import { SiteMonitor } from '../../@prettydamntired/test-node-tools/src';
-// import { TODO_SITE } from '../../@prettydamntired/todo-lib/src';
+/* eslint-disable-next-line @nx/enforce-module-boundaries */
+import { SiteMonitor } from '../common-node/src';
 
 const sites = [
   'https://harryliu.dev/',

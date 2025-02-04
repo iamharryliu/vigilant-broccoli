@@ -21,7 +21,10 @@
         "tsConfig": "libs/@vigilant-broccoli/common-node/tsconfig.lib.json",
         "packageJson": "libs/@vigilant-broccoli/common-node/package.json",
         "main": "libs/@vigilant-broccoli/common-node/src/index.ts",
-        "assets": ["libs/@vigilant-broccoli/common-node/*.md"]
+        "assets": [
+          "libs/@vigilant-broccoli/common-node/*.md",
+          "libs/@vigilant-broccoli/common-node/src/lib/email/assets/default.ejs"
+        ]
       }
     },
     "nx-release-publish": {

@@ -1,6 +1,6 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { DatabaseManager } from '../../@prettydamntired/personal-website-api-lib/src';
-import { logger } from '../../@prettydamntired/test-node-tools/src';
+import { logger } from '../common-node/src';
 
 main();
 

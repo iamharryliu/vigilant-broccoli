@@ -21,9 +21,6 @@
       "@prettydamntired/personal-website-lib": [
         "libs/@prettydamntired/personal-website-lib/src/index.ts"
       ],
-      "@prettydamntired/test-node-tools": [
-        "libs/@prettydamntired/test-node-tools/src/index.ts"
-      ],
       "@prettydamntired/todo-lib": [
         "libs/@prettydamntired/todo-lib/src/index.ts"
       ],

@@ -9,7 +9,7 @@ export const DEFAULT_EMAIL_REQUEST: Email = {
 };
 
 export const DEFAULT_EJS_TEMPLATE: EjsTemplate = {
-  path: path.resolve(__dirname, '../services/assets/default.ejs'),
+  path: path.resolve(__dirname, './assets/default.ejs'),
   data: {
     text: 'default text',
   },

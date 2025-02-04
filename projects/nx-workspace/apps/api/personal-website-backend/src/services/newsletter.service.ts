@@ -1,11 +1,11 @@
 import path from 'path';
-import {
-  EncryptionService,
-  EmailService,
-} from '@prettydamntired/test-node-tools';
 import { EmailSubscription } from '@prettydamntired/personal-website-api-lib';
 import { IS_DEV_ENV } from '../configs/app.const';
-import { DEFAULT_EMAIL_REQUEST } from '@vigilant-broccoli/common-node';
+import {
+  DEFAULT_EMAIL_REQUEST,
+  EmailService,
+  EncryptionService,
+} from '@vigilant-broccoli/common-node';
 
 export class NewsletterService {
   static async subscribeEmail(email: string) {

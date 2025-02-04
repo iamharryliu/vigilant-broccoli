@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import { logger } from '@prettydamntired/test-node-tools';
 import { CORS_OPTIONS, PORT, HOST, IS_DEV_ENV } from './configs/app.const';
 import { router } from './routes';
 import {
@@ -14,6 +13,7 @@ import {
   invalidPathHandler,
   requestLogger,
 } from '@vigilant-broccoli/express';
+import { logger } from '@vigilant-broccoli/common-node';
 
 const app = express();
 
