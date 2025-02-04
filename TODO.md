@@ -2,6 +2,8 @@
 
 ## Implementations
 
+- dotenv
+  - import 'dotenv-defaults/config';
 - Stripe
 - Hashicorp Vault
 - Google Free Tier Instance
