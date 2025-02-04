@@ -1,5 +1,5 @@
 import 'dotenv-defaults/config';
-import { logger } from '../logging/logger.service';
+import { logger } from '@vigilant-broccoli/common-node';
 export class RecaptchaService {
   secretKey: string;
 

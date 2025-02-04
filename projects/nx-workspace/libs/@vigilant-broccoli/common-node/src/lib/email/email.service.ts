@@ -1,9 +1,8 @@
 import 'dotenv-defaults/config';
 import nodemailer from 'nodemailer';
-import { DEFAULT_EJS_TEMPLATE } from '../../consts/email.const';
-import { DEFAULT_EMAIL_REQUEST } from '../../consts/email.const';
 import ejs from 'ejs';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { DEFAULT_EJS_TEMPLATE, DEFAULT_EMAIL_REQUEST } from './email.consts';
 import { logger } from '../logging/logger.service';
 
 export class EmailService {
@@ -41,7 +40,7 @@ export class EmailService {
     request = DEFAULT_EMAIL_REQUEST,
     template = DEFAULT_EJS_TEMPLATE,
   ): Promise<SMTPTransport.SentMessageInfo> {
-    return (ejs.renderFile(template.path, template.data) as any).then(html => {
+    return ejs.renderFile(template.path, template.data).then(html => {
       return this.sendEmail({
         ...request,
         html,

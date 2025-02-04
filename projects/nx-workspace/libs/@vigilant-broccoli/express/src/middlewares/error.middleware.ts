@@ -3,8 +3,8 @@ import {
   GENERAL_ERROR_CODE,
   ResponseError,
 } from '@prettydamntired/personal-website-lib';
-import { logger } from '@prettydamntired/test-node-tools';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { logger } from '@vigilant-broccoli/common-node';
 
 export const invalidPathHandler = (
   _request: Request,

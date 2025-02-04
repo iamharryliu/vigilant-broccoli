@@ -2,7 +2,7 @@ import 'dotenv-defaults/config';
 import { Twilio } from 'twilio';
 import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 import { DEFAULT_TEXT_MESSAGE } from '../../consts/text-message.const';
-import { logger } from '../logging/logger.service';
+import { logger } from '@vigilant-broccoli/common-node';
 
 export class TextMessageService {
   private client: Twilio;

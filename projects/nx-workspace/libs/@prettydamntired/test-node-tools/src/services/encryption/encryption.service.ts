@@ -1,5 +1,5 @@
 import crypto, { Cipher, Decipher } from 'crypto';
-import { logger } from '../logging/logger.service';
+import { logger } from '@vigilant-broccoli/common-node';
 
 export class EncryptionService {
   cipher: Cipher;

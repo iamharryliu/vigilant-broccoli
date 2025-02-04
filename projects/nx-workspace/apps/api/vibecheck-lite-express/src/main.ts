@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { PORT, HOST, CORS_OPTIONS, IS_DEV_ENV } from './app.const';
-import { logger } from '@prettydamntired/test-node-tools';
 import { Controller } from './controller';
 import {
   MONGO_DB_SERVER,
@@ -14,6 +13,7 @@ import {
   invalidPathHandler,
   requestLogger,
 } from '@vigilant-broccoli/express';
+import { logger } from '@vigilant-broccoli/common-node';
 
 const app = express();
 

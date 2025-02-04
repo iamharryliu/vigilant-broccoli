@@ -1,7 +1,7 @@
 import { RecaptchaService } from './recaptcha.service';
 
 global.fetch = jest.fn();
-jest.mock('../logging/logger.service', () => ({
+jest.mock('@vigilant-broccoli/common-node', () => ({
   logger: {
     error: jest.fn(),
   },

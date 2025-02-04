@@ -1,9 +1,6 @@
 import ejs from 'ejs';
-import {
-  DEFAULT_EJS_TEMPLATE,
-  DEFAULT_EMAIL_REQUEST,
-} from '../../consts/email.const';
 import { EmailService } from './email.service';
+import { DEFAULT_EJS_TEMPLATE, DEFAULT_EMAIL_REQUEST } from './email.consts';
 
 jest.mock('../logging/logger.service', () => ({
   logger: {

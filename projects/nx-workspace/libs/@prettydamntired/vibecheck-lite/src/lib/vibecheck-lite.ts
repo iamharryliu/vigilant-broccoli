@@ -2,15 +2,15 @@ import { MongoClient } from 'mongodb';
 import 'dotenv-defaults/config';
 import OpenAI from 'openai';
 import {
-  DEFAULT_EMAIL_REQUEST,
-  EmailService,
-  logger,
-} from '@prettydamntired/test-node-tools';
-import {
   MONGO_DB_SERVER,
   PERSONAL_WEBSITE_DB_COLLECTIONS,
 } from '@prettydamntired/personal-website-api-lib';
 import { Location } from '@vigilant-broccoli/common-js';
+import {
+  DEFAULT_EMAIL_REQUEST,
+  EmailService,
+  logger,
+} from '@vigilant-broccoli/common-node';
 
 export class VibecheckLite {
   private openai: OpenAI;

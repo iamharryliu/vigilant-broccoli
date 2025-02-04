@@ -2,12 +2,10 @@
   "name": "@prettydamntired/test-node-tools",
   "version": "0.0.93",
   "dependencies": {
-    "ejs": "3.1.10",
-    "nodemailer": "^6.9.9",
     "tslib": "^2.3.0",
-    "winston": "^3.11.0",
     "dotenv-defaults": "^5.0.2",
-    "twilio": "^4.21.0"
+    "twilio": "^4.21.0",
+    "@vigilant-broccoli/common-node": "0.0.1"
   },
   "devDependencies": {
     "@types/dotenv-defaults": "^2.0.4",

@@ -1,8 +1,7 @@
 import path from 'path';
-import { EjsTemplate } from '../models/email.model';
-import { EmailRequest } from '../models/email.model';
+import { EjsTemplate, Email } from './email.models';
 
-export const DEFAULT_EMAIL_REQUEST: EmailRequest = {
+export const DEFAULT_EMAIL_REQUEST: Email = {
   from: `Email Service <${process.env.MY_EMAIL}>`,
   to: process.env.MY_EMAIL,
   subject: 'Default subject',

@@ -1,5 +1,5 @@
 import { APP_NAME } from '@prettydamntired/personal-website-lib';
-import { EmailRequest } from '@prettydamntired/test-node-tools';
+import { Email } from '@vigilant-broccoli/common-node';
 
 const DEFAULT_EMAIL_MESSAGE = {
   from: `'[default_from]' <${process.env.MY_EMAIL}>`,
@@ -13,10 +13,10 @@ export const DEFAULT_APP_EMAIL_CONFIG = {
     ...DEFAULT_EMAIL_MESSAGE,
     from: `'harryliu.dev' <${process.env.MY_EMAIL}>`,
     to: `'harryliu.dev' <${process.env.MY_EMAIL}>`,
-  } as EmailRequest,
+  } as Email,
   [APP_NAME.CLOUD_8_SKATE]: {
     ...DEFAULT_EMAIL_MESSAGE,
     from: `'cloud8skate' <${process.env.MY_EMAIL}>`,
     to: `'cloud8skate' <${process.env.MY_EMAIL}>`,
-  } as EmailRequest,
+  } as Email,
 };

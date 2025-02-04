@@ -6,6 +6,7 @@
     "express": "*",
     "@prettydamntired/test-node-tools": "*",
     "@prettydamntired/personal-website-lib": "*",
-    "@vigilant-broccoli/common-js": "0.0.2"
+    "@vigilant-broccoli/common-js": "0.0.2",
+    "@vigilant-broccoli/common-node": "0.0.1"
   }
 }

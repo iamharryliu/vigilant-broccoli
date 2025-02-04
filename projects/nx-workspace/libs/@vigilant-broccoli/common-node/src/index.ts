@@ -14,10 +14,13 @@ export * from './lib/file-system/file-system.utils';
 // HTTP
 export * from './lib/http/http.utils';
 // Email
-export * from './lib/email/email.utils';
+export * from './lib/email/email.consts';
 export * from './lib/email/email.models';
+export * from './lib/email/email.service';
+export * from './lib/email/email.utils';
 // Logger
 export * from './lib/logger/logger';
 export * from './lib/logger/logger.model';
 export * from './lib/logger/logger.const';
 export * from './lib/logger/logger.transports';
+export * from './lib/logging/logger.service';
