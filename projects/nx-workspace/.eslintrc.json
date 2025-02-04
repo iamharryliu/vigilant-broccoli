@@ -26,7 +26,8 @@
             "varsIgnorePattern": "^_",
             "caughtErrorsIgnorePattern": "^_"
           }
-        ]
+        ],
+        "complexity": ["error", { "max": 10 }]
       }
     },
     {
