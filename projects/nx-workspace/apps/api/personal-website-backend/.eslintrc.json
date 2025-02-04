@@ -3,17 +3,7 @@
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          {
-            "argsIgnorePattern": "^_",
-            "varsIgnorePattern": "^_",
-            "caughtErrorsIgnorePattern": "^_"
-          }
-        ]
-      }
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"]
     },
     {
       "files": ["*.ts", "*.tsx"],

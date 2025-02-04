@@ -1,10 +1,8 @@
 import http from 'http';
 import https from 'https';
-import {
-  DEFAULT_EMAIL_REQUEST,
-  EmailService,
-  logger,
-} from '@vigilant-broccoli/common-node';
+import { DEFAULT_EMAIL_REQUEST } from '../email/email.consts';
+import { EmailService } from '../email/email.service';
+import { logger } from '../logging/logger.service';
 
 export class SiteMonitor {
   private emailService: EmailService;

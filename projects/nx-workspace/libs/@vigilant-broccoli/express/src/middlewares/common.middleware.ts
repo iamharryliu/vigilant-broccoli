@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { RecaptchaService } from '@prettydamntired/test-node-tools';
 import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { logger } from '@vigilant-broccoli/common-node';
+import { logger, RecaptchaService } from '@vigilant-broccoli/common-node';
 
 export const requestLogger = (
   _request: Request,
