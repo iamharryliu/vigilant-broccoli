@@ -1,0 +1,23 @@
+import path from 'path';
+import { GamCommand } from './gam.api';
+import { SIGNATURE_TMP_DIR } from './google.consts';
+import { ShellUtils, FileSystemUtils } from '@vigilant-broccoli/common-node';
+
+export const runGamReadCommand = async (cmd: string): Promise<string> => {
+  return (await ShellUtils.runShellCommand(`~/bin/gam/${cmd}`, true)) as string;
+};
+
+export const runBatchCommands = async (commands: string[]): Promise<void> => {
+  if (commands.length < 1) {
+    return;
+  }
+  const FILEPATH = FileSystemUtils.generateTmpFilepath();
+  await FileSystemUtils.writeFile(FILEPATH, commands.join('\n'));
+  const batchCommand = GamCommand.batchExecute(FILEPATH);
+  await ShellUtils.runUpdateShellCommand(batchCommand);
+  await FileSystemUtils.deletePath(FILEPATH);
+};
+
+export const getEmailSignatureFilepath = (email: string): string => {
+  return path.resolve(SIGNATURE_TMP_DIR, `${email}.html`);
+};

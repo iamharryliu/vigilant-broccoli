@@ -1,7 +1,7 @@
 {
-  "name": "@vigilant-broccoli/common-js",
+  "name": "@vigilant-broccoli/employee-handler",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/@vigilant-broccoli/common-js/src",
+  "sourceRoot": "libs/@vigilant-broccoli/employee-handler/src",
   "projectType": "library",
   "release": {
     "version": {
@@ -14,19 +14,14 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/vite:build",
+      "executor": "@nx/js:swc",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/libs/@vigilant-broccoli/common-js"
-      },
-      "configurations": {
-        "development": {
-          "mode": "development"
-        },
-        "production": {
-          "mode": "production"
-        }
+        "outputPath": "dist/libs/@vigilant-broccoli/employee-handler",
+        "tsConfig": "libs/@vigilant-broccoli/employee-handler/tsconfig.lib.json",
+        "packageJson": "libs/@vigilant-broccoli/employee-handler/package.json",
+        "main": "libs/@vigilant-broccoli/employee-handler/src/index.ts",
+        "assets": ["libs/@vigilant-broccoli/employee-handler/*.md"]
       }
     },
     "nx-release-publish": {
@@ -41,7 +36,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/@vigilant-broccoli/common-js/jest.config.ts"
+        "jestConfig": "libs/@vigilant-broccoli/employee-handler/jest.config.ts"
       }
     }
   }
