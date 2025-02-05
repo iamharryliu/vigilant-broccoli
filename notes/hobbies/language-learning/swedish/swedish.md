@@ -14,3 +14,4 @@ Lite
 Nej, jag talar inte engelska
 Mitt nummer ar
 Hur mycket kostar den
+Tror tycka tanka

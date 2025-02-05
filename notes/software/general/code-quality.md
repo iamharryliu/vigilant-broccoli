@@ -7,6 +7,7 @@
 ## Javascript/Typescript
 
 ```
+console.log
 as unknown as
 eslint-disable
 ```
