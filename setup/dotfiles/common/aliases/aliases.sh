@@ -5,6 +5,8 @@ alias reinstallsh="source $MAC_SETUP_DIR/install.sh"
 alias brewinit="brew bundle --file $MAC_SETUP_DIR/Brewfile"
 alias setupdock=". $MAC_SETUP_DIR/setup_dock.sh"
 alias setupmac=". $MAC_SETUP_DIR/setup_macos_preferences.sh"
+alias toggle-darkmode='osascript -e "tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode"'
+
 
 load_aliases() {
   local dir="$1"
