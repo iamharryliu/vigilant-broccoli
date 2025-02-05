@@ -6,7 +6,7 @@ const THEME_KEY = 'DARK_MODE';
   providedIn: 'root',
 })
 export class ThemeService {
-  constructor() {
+  initializeTheme(): void {
     this.loadTheme();
   }
 

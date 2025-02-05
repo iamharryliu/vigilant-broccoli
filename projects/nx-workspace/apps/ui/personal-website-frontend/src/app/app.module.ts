@@ -1,6 +1,5 @@
-// import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 // import { AppService } from './core/services/app.service';
-import { NgModule } from '@angular/core';
 import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
@@ -16,11 +15,16 @@ import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha-2';
 import {
   CredentialsInterceptorService,
   RecaptchaInterceptor,
+  ThemeService,
 } from 'general-components';
 import {
   NgxGoogleAnalyticsModule,
   NgxGoogleAnalyticsRouterModule,
 } from 'ngx-google-analytics';
+
+export function initTheme(themeService: ThemeService): () => void {
+  return () => themeService.initializeTheme();
+}
 
 @NgModule({
   declarations: [AppComponent],
@@ -33,6 +37,13 @@ import {
     NgxGoogleAnalyticsRouterModule,
   ],
   providers: [
+    ThemeService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initTheme,
+      deps: [ThemeService],
+      multi: true,
+    },
     {
       provide: RECAPTCHA_V3_SITE_KEY,
       useValue: ENVIRONMENT.RECAPTCHA_V3_SITE_KEY,
