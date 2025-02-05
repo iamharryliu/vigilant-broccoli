@@ -21,7 +21,6 @@
         "main": "libs/@vigilant-broccoli/common-js/src/index.ts",
         "tsConfig": "libs/@vigilant-broccoli/common-js/tsconfig.lib.json",
         "assets": [],
-        "generatePackageJson": true,
         "format": ["cjs"]
       }
     },

@@ -2,8 +2,9 @@
   "name": "@vigilant-broccoli/common-js",
   "version": "0.0.2",
   "dependencies": {},
-  "type": "commonjs",
-  "main": "./index.cjs",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "typings": "./index.d.ts",
   "publishConfig": {
     "access": "public"
   }
