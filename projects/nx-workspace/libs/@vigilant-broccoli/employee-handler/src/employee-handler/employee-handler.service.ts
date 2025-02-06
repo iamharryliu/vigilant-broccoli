@@ -9,7 +9,7 @@ import {
   generateLocalSignatures,
   manualRecoverUsers,
   syncData,
-  updateEmailSignatures,
+  applyEmailSignatureUpdates,
 } from './active-maintenance/active-maintenance.service';
 import { EmployeeHandlerConfig } from './employee-handler.models';
 
@@ -40,7 +40,7 @@ const OnboardHandler = {
 };
 
 const ActiveMaintenanceHandler = {
-  updateEmailSignatures,
+  applyEmailSignatureUpdates,
   generateLocalSignatures,
   emailZippedSignatures,
   manualRecoverUsers,

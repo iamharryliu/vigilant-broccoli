@@ -1,11 +1,19 @@
-# employee-handler
+# Employee Handler
 
-This library was generated with [Nx](https://nx.dev).
+```
+// demo.ts
+(async () => {
+    try {
+        await EmployeeHandlerService.handleInput(DEMO_CONFIG, 'ACTION');
+    } catch (err) {
+        console.error(err);
+    }
+})();
+```
 
-## Building
+**EmployeeHandler Actions**
 
-Run `nx build employee-handler` to build the library.
-
-## Running unit tests
-
-Run `nx test employee-handler` to execute the unit tests via [Jest](https://jestjs.io).
+- `onboardIncomingEmployees`
+- `applyEmailSignatureUpdates`
+- `offboardInactiveEmployees`
+- `handlePostRetention`
