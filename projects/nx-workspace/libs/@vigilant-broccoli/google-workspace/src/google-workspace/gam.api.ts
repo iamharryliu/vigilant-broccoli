@@ -1,4 +1,6 @@
-export const GamCommand = {
+import { FileSystemUtils, ShellUtils } from '@vigilant-broccoli/common-node';
+
+export const GAMCommand = {
   getListOfEmailsOfOrganizationalUnit: (organizationalUnit: string): string =>
     `gam info org ${organizationalUnit} | grep -E -o "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}" | sort`,
   setEmailSignature: (email: string, signaturePath: string): string =>
@@ -72,3 +74,20 @@ export const GamCommand = {
 export function getDateInISOFormat(date: Date): string {
   return date.toISOString().split('T')[0] + 'T00:00:00';
 }
+
+export const runGAMReadCommand = async (cmd: string): Promise<string> => {
+  return (await ShellUtils.runShellCommand(`~/bin/gam/${cmd}`, true)) as string;
+};
+
+export const runGAMBatchCommands = async (
+  commands: string[],
+): Promise<void> => {
+  if (commands.length < 1) {
+    return;
+  }
+  const FILEPATH = FileSystemUtils.generateTmpFilepath();
+  await FileSystemUtils.writeFile(FILEPATH, commands.join('\n'));
+  const batchCommand = GAMCommand.batchExecute(FILEPATH);
+  await ShellUtils.runUpdateShellCommand(batchCommand);
+  await FileSystemUtils.deletePath(FILEPATH);
+};

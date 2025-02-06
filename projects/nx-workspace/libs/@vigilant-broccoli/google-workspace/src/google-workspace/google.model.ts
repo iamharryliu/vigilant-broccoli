@@ -1,19 +1,19 @@
-export interface EmailSignature {
+export type EmailSignature = {
   email: string;
   signatureString: string;
-}
+};
 
-export interface IncomingUser {
+export type IncomingUser = {
   email: string;
   groups: string[];
   password: string;
   organizationalUnit: string;
-}
+};
 
-export interface GoogleUserOrganization {
+export type GoogleUserOrganization = {
   email: string;
   title: string;
   department: string;
   costCenter: string;
   description?: string;
-}
+};
