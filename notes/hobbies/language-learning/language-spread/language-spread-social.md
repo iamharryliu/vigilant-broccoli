@@ -20,3 +20,5 @@
 | be careful     | var försiktig               |                  |               |           |                 |
 | please         | snälla                      | s'il vous plait  |
 | no problem     | inga problem                |
+| to go          | ta med                      |
+| for here       | äta här                     |
