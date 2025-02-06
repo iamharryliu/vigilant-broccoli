@@ -27,5 +27,9 @@
     "hooks": {
       "pre-commit.legacy": "lint-staged"
     }
-  }
+  },
+  "dependencies": {
+    "@vigilant-broccoli/employee-handler": "file:projects/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
+  },
+  "license": "MIT"
 }
