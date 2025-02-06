@@ -16,7 +16,9 @@ const hmap = {
   go: { extension: 'go' },
   python: { extension: 'py' },
   typescript: { extension: 'ts' },
-};
+} as const;
+
+type Language = keyof typeof hmap;
 
 @Component({
   selector: 'app-leet-code-page',
@@ -42,12 +44,8 @@ export class LeetCodePageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // TODO: refactor typing
-    const language = this.route.snapshot.paramMap.get('language') as
-      | 'python'
-      | 'go'
-      | 'typescript';
-    const filename = this.route.snapshot.paramMap.get('filename') as string;
+    const language = this.route.snapshot.paramMap.get('language') as Language;
+    const filename = this.route.snapshot.paramMap.get('filename');
     if (filename) {
       const extension = hmap[language].extension;
       this.fileContent$.subscribe(data => {
@@ -60,11 +58,10 @@ export class LeetCodePageComponent implements OnInit {
     }
   }
 
-  // TODO: find a better way to do this
-  private getKeyFromExtension(ext: any) {
-    for (const key in hmap) {
-      if (hmap[key as 'python' | 'go' | 'typescript'].extension === ext) {
-        return key;
+  private getKeyFromExtension(ext: string): Language | null {
+    for (const [key, value] of Object.entries(hmap)) {
+      if (value.extension === ext) {
+        return key as Language;
       }
     }
     return null;
