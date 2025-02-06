@@ -1,9 +1,5 @@
 # Sourdough Bread
 
-## Resources
-
-- [How I Make Sourdough Bread Every Day In LESS Than 30 Minutes (hands-on time)](https://www.youtube.com/watch?v=ZxCf39G_7pY&t=384s)
-
 ## Hydration Table
 
 | **Flour(g)** | **60% Hydration (g)** | **65% Hydration (g)**   | **70% Hydration (g)** |
@@ -38,3 +34,7 @@
   - Lower to **220°C**.
   - Bake for 20 minutes **with lid**.
   - Bake for 15 minutes or until browned to preference **without lid**.
+
+## References
+
+- [How I Make Sourdough Bread Every Day In LESS Than 30 Minutes (hands-on time)](https://www.youtube.com/watch?v=ZxCf39G_7pY&t=384s)
