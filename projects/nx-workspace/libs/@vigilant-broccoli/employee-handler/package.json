@@ -6,5 +6,8 @@
     "@vigilant-broccoli/common-node": "0.0.1",
     "@vigilant-broccoli/google-workspace": "0.0.1",
     "nodemailer": "^6.9.9"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

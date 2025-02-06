@@ -2,14 +2,14 @@ import { EmployeeHandlerConfig } from '../employee-handler.models';
 
 export const MOCK_EMPLOYEE_HANDLER_CONFIG: EmployeeHandlerConfig = {
   onboardUtilities: {
-    getIncomingEmployees: async () => [],
-    onboardUsers: async users => {
+    fetchIncomingEmployees: async () => [],
+    processIncomingEmployees: async users => {
       console.log('Onboarding users:', users);
     },
   },
   activeMaintenanceUtilities: {
-    getEmployeeSignatures: async () => [],
-    updateEmailSignatures: async signatures => {
+    fetchEmailSignatures: async () => [],
+    processEmailSignatures: async signatures => {
       console.log('Updating email signatures:', signatures);
     },
     emailZippedSignatures: async attachments => {
@@ -21,11 +21,11 @@ export const MOCK_EMPLOYEE_HANDLER_CONFIG: EmployeeHandlerConfig = {
     useSignatureCaching: false,
   },
   offboardUtilities: {
-    getOffboardEmails: async () => [
+    fetchInactiveEmployees: async () => [
       'johndoe@example.com',
       'janesmith@example.com',
     ],
-    offboardEmployees: async emails => {
+    processInactiveEmployees: async emails => {
       console.log('Offboarding employees:', emails);
     },
   },

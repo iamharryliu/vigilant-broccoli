@@ -5,20 +5,20 @@ import {
 import { Attachment } from 'nodemailer/lib/mailer';
 
 interface OnboardUtilities {
-  getIncomingEmployees: () => Promise<IncomingUser[]>;
-  onboardUsers: (users: IncomingUser[]) => Promise<void>;
+  fetchIncomingEmployees: () => Promise<IncomingUser[]>;
+  processIncomingEmployees: (users: IncomingUser[]) => Promise<void>;
 }
 interface ActiveMaintenanceUtilities {
-  getEmployeeSignatures: () => Promise<EmailSignature[]>;
+  fetchEmailSignatures: () => Promise<EmailSignature[]>;
   useSignatureCaching: boolean;
-  updateEmailSignatures: (signatures: EmailSignature[]) => Promise<void>;
+  processEmailSignatures: (signatures: EmailSignature[]) => Promise<void>;
   emailZippedSignatures: (attachments: Attachment[]) => Promise<void>;
   recoverUsers: (emails: string[]) => Promise<void>;
   syncData?: () => Promise<void>;
 }
-interface OffboardUtilities {
-  getOffboardEmails: () => Promise<string[]>;
-  offboardEmployees: (emails: string[]) => Promise<void>;
+export interface OffboardUtilities {
+  fetchInactiveEmployees: () => Promise<string[]>;
+  processInactiveEmployees: (emails: string[]) => Promise<void>;
 }
 
 interface PostRetentionUtilities {

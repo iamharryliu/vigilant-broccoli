@@ -3,9 +3,9 @@ import { EmployeeHandlerConfig } from '../../employee-handler/employee-handler.m
 export async function offboardInactiveEmployees(
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> {
-  const emails = await handlerConfig.offboardUtilities.getOffboardEmails();
+  const emails = await handlerConfig.offboardUtilities.fetchInactiveEmployees();
   if (emails.length > 0) {
-    await handlerConfig.offboardUtilities.offboardEmployees(emails);
+    await handlerConfig.offboardUtilities.processInactiveEmployees(emails);
   }
 }
 
@@ -17,7 +17,7 @@ export const manualOffboardEmails = async (
     console.warn('No emails provided.');
     return;
   }
-  await handlerConfig.offboardUtilities.offboardEmployees(emails);
+  await handlerConfig.offboardUtilities.processInactiveEmployees(emails);
 };
 
 export const recoverUser = async (

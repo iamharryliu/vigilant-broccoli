@@ -22,7 +22,7 @@ export const updateEmailSignatures = async (
     SIGNATURE_CACHE_FILEPATH,
   );
   const signatures =
-    await handlerConfig.activeMaintenanceUtilities.getEmployeeSignatures();
+    await handlerConfig.activeMaintenanceUtilities.fetchEmailSignatures();
   const signaturesToUpdate = handlerConfig.activeMaintenanceUtilities
     .useSignatureCaching
     ? signatures.filter(
@@ -33,7 +33,7 @@ export const updateEmailSignatures = async (
     : signatures;
 
   if (signaturesToUpdate.length > 0) {
-    await handlerConfig.activeMaintenanceUtilities.updateEmailSignatures(
+    await handlerConfig.activeMaintenanceUtilities.processEmailSignatures(
       signatures,
     );
     if (handlerConfig.activeMaintenanceUtilities.useSignatureCaching) {
@@ -59,7 +59,7 @@ export const generateLocalSignatures = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
   const signatures =
-    await handlerConfig.activeMaintenanceUtilities.getEmployeeSignatures();
+    await handlerConfig.activeMaintenanceUtilities.fetchEmailSignatures();
   let combinedSignatures = '';
   for (const signature of signatures) {
     combinedSignatures += `${signature.signatureString}\n`;

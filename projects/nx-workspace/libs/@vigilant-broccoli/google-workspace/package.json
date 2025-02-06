@@ -4,5 +4,8 @@
   "dependencies": {
     "@swc/helpers": "0.5.13",
     "@vigilant-broccoli/common-node": "0.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

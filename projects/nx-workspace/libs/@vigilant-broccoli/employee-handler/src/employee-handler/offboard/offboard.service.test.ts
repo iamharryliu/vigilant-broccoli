@@ -1,11 +1,13 @@
 import { MOCK_EMPLOYEE_HANDLER_CONFIG } from '../mocks/mocks.const';
 import { manualOffboardEmails } from './offboard.service';
+import { OffboardUtilities } from '../employee-handler.models';
 
 jest.mock('../mocks/mocks.const', () => ({
   MOCK_EMPLOYEE_HANDLER_CONFIG: {
     offboardUtilities: {
-      offboardEmployees: jest.fn(),
-    },
+      fetchInactiveEmployees: jest.fn(),
+      processInactiveEmployees: jest.fn(),
+    } as OffboardUtilities,
   },
 }));
 
@@ -24,7 +26,7 @@ describe('manualOffboardEmails', () => {
     await manualOffboardEmails(MOCK_EMPLOYEE_HANDLER_CONFIG);
 
     expect(
-      MOCK_EMPLOYEE_HANDLER_CONFIG.offboardUtilities.offboardEmployees,
+      MOCK_EMPLOYEE_HANDLER_CONFIG.offboardUtilities.processInactiveEmployees,
     ).not.toHaveBeenCalled();
   });
 
@@ -33,13 +35,13 @@ describe('manualOffboardEmails', () => {
     mockProcessArgv(emails);
     (
       MOCK_EMPLOYEE_HANDLER_CONFIG.offboardUtilities
-        .offboardEmployees as jest.Mock
+        .fetchInactiveEmployees as jest.Mock
     ).mockResolvedValueOnce(true);
 
     await manualOffboardEmails(MOCK_EMPLOYEE_HANDLER_CONFIG);
 
     expect(
-      MOCK_EMPLOYEE_HANDLER_CONFIG.offboardUtilities.offboardEmployees,
+      MOCK_EMPLOYEE_HANDLER_CONFIG.offboardUtilities.processInactiveEmployees,
     ).toHaveBeenCalled();
   });
 
@@ -49,7 +51,7 @@ describe('manualOffboardEmails', () => {
     mockProcessArgv(emails);
     (
       MOCK_EMPLOYEE_HANDLER_CONFIG.offboardUtilities
-        .offboardEmployees as jest.Mock
+        .processInactiveEmployees as jest.Mock
     ).mockRejectedValueOnce(error);
 
     await expect(

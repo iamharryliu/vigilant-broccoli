@@ -4,8 +4,8 @@ export const onboardIncomingEmployees = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
   const incomingUsers =
-    await handlerConfig.onboardUtilities.getIncomingEmployees();
+    await handlerConfig.onboardUtilities.fetchIncomingEmployees();
   if (incomingUsers.length > 0) {
-    handlerConfig.onboardUtilities.onboardUsers(incomingUsers);
+    handlerConfig.onboardUtilities.processIncomingEmployees(incomingUsers);
   }
 };
