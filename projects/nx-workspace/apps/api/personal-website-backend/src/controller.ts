@@ -18,8 +18,6 @@ export class Controller {
         throw err;
       }
       const message = await NewsletterService.subscribeEmail(email);
-      // TODO: tmp
-      console.log('message');
       res.json({
         message: message,
       });

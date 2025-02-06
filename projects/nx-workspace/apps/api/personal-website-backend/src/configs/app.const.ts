@@ -11,9 +11,6 @@ export const ALLOWED_ORIGINS = [
 ];
 export const CORS_OPTIONS = {
   origin: function (origin, callback) {
-    // TODO: tmp
-    console.log('origin', origin);
-    // Check if the incoming origin is in the allowed origins list
     if (ALLOWED_ORIGINS.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
