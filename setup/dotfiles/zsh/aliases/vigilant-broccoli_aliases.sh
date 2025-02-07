@@ -89,3 +89,5 @@ alias openJournal="open 'obsidian://open?vault=journal'"
 
 # Billing
 alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
+
+alias npmpackages='open "https://www.npmjs.com/settings/prettydamntired/packages"'

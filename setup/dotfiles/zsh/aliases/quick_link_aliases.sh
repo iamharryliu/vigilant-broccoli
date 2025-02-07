@@ -24,7 +24,8 @@ alias tinyurl="chrome 'https://tinyurl.com/'"
 
 # Services
 alias gmail='chrome "https://gmail.com/"'
-alias gcalendar='chrome "https://calendar.google.com/calendar/u/0/r"'
+alias gcalendar='chrome "https://calendar.google.com/"'
+alias gmeet='chrome "https://meet.google.com/"'
 alias gdrive='chrome "https://drive.google.com/drive/u/0/my-drive"'
 alias gcontacts='chrome "https://contacts.google.com/"'
 alias findmy='chrome "https://www.icloud.com/find/"'
