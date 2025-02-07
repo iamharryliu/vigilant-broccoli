@@ -10,6 +10,7 @@ RabbitMQ is an open-source **_message broker_** that enables applications, servi
 
 ```
 npm i amqplib
+fly proxy -a rabbitmq-deploy 5672
 ```
 
 - Run a local docker container `docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management`
