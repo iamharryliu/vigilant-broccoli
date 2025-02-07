@@ -36,9 +36,6 @@
       "@vigilant-broccoli/common-node": [
         "libs/@vigilant-broccoli/common-node/src/index.ts"
       ],
-      "@vigilant-broccoli/email-handler": [
-        "libs/@vigilant-broccoli/email-handler/src/index.ts"
-      ],
       "@vigilant-broccoli/employee-handler": [
         "libs/@vigilant-broccoli/employee-handler/src/index.ts"
       ],

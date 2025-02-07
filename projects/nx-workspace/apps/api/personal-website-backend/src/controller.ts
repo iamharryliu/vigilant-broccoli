@@ -1,10 +1,11 @@
 import { NewsletterService } from './services/newsletter.service';
-import { ContactService } from './services/contact.service';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   GENERAL_ERROR_CODE,
+  MessageRequest,
   ResponseError,
 } from '@prettydamntired/personal-website-lib';
+import amqplib from 'amqplib';
 
 export class Controller {
   static async subscribeEmail(req, res, next) {
@@ -44,7 +45,20 @@ export class Controller {
 
   static async sendMessage(req, res, next) {
     try {
-      await ContactService.sendMessage(req.body);
+      const messageRequest = req.body as MessageRequest;
+      const QUEUE = process.env.RABBITMQ_QUEUE || '';
+      const RABBITMQ_CONNECTION_STRING =
+        process.env.RABBITMQ_CONNECTION_STRING || '';
+      const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
+      const channel = await connection.createChannel();
+      await channel.assertQueue(QUEUE, { durable: true });
+      channel.sendToQueue(QUEUE, Buffer.from(JSON.stringify(messageRequest)), {
+        persistent: true,
+      });
+      console.log(`📤 Queued Message from: ${messageRequest.email}`);
+      setTimeout(() => {
+        connection.close();
+      }, 500);
       res.json({ success: true });
     } catch (error) {
       next(error);

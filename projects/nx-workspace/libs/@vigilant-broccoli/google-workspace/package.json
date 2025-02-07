@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@swc/helpers": "0.5.13",
-    "@vigilant-broccoli/common-node": "0.0.1"
+    "@vigilant-broccoli/common-node": "0.0.2"
   },
   "publishConfig": {
     "access": "public"

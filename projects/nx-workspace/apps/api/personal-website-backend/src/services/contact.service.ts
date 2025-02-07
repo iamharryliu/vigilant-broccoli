@@ -1,6 +1,6 @@
+import { DEFAULT_APP_EMAIL_CONFIG } from '@prettydamntired/personal-website-api-lib';
 import { IS_DEV_ENV } from '../configs/app.const';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
-import { DEFAULT_APP_EMAIL_CONFIG } from '@vigilant-broccoli/email-handler';
 import {
   DEFAULT_EMAIL_REQUEST,
   Email,

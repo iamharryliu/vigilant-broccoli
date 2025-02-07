@@ -5,6 +5,9 @@ const QUEUE_NAME = 'hello';
 async function sendMessage() {
   try {
     const connection = await amqplib.connect('amqp://localhost');
+    // const connection = await amqplib.connect(
+    //   'amqp://admin:admin@localhost:5672',
+    // );
     const channel = await connection.createChannel();
 
     await channel.assertQueue(QUEUE_NAME, { durable: true });

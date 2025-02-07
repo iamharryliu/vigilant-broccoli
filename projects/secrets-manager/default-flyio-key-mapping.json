@@ -25,7 +25,9 @@
       "PERSONAL_WEBSITE_FRONTEND_URL": "frontend_url",
       "RECAPTCHA_V3_SECRET_KEY": "key",
       "SECRET_IV": "secret",
-      "SECRET_KEY": "key"
+      "SECRET_KEY": "key",
+      "RABBITMQ_CONNECTION_STRING": "connection_string",
+      "RABBITMQ_QUEUE": "queue"
     }
   },
   {
@@ -51,6 +53,15 @@
       "PERSONAL_WEBSITE_FRONTEND_URL": "frontend_url",
       "SECRET_IV": "secret",
       "SECRET_KEY": "key"
+    }
+  },
+  {
+    "name": "message-consumer",
+    "password_key_values": {
+      "MY_EMAIL": "email",
+      "MY_EMAIL_PASSWORD": "password",
+      "RABBITMQ_CONNECTION_STRING": "connection_string",
+      "RABBITMQ_QUEUE": "queue"
     }
   }
 ]
