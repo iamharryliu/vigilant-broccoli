@@ -64,18 +64,19 @@ tsconfig.json
 ## Debugging
 
 ```
-console.warn(message);
-console.error(message);
+console.log()
+console.log(JSON.stringify(obj, null, 2))
 console.dir(object);
 console.table(array_or_object);
-console.assert(condition, message);
 console.time();
 console.timeEnd();
 
-// debugger keyword
+console.warn(message);
+console.error(message);
+console.assert(condition, message);
+
 debugger;
 
-// throw error
 throw new Error("STOP");
 ```
 
