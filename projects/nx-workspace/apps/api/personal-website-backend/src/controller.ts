@@ -6,6 +6,7 @@ import {
   ResponseError,
 } from '@prettydamntired/personal-website-lib';
 import amqplib from 'amqplib';
+import { QUEUE } from '@vigilant-broccoli/common-node';
 
 export class Controller {
   static async subscribeEmail(req, res, next) {
@@ -46,15 +47,18 @@ export class Controller {
   static async sendMessage(req, res, next) {
     try {
       const messageRequest = req.body as MessageRequest;
-      const QUEUE = process.env.RABBITMQ_QUEUE || '';
       const RABBITMQ_CONNECTION_STRING =
         process.env.RABBITMQ_CONNECTION_STRING || '';
       const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
       const channel = await connection.createChannel();
-      await channel.assertQueue(QUEUE, { durable: true });
-      channel.sendToQueue(QUEUE, Buffer.from(JSON.stringify(messageRequest)), {
-        persistent: true,
-      });
+      await channel.assertQueue(QUEUE.EMAIL, { durable: true });
+      channel.sendToQueue(
+        QUEUE.EMAIL,
+        Buffer.from(JSON.stringify(messageRequest)),
+        {
+          persistent: true,
+        },
+      );
       console.log(`📤 Queued Message from: ${messageRequest.email}`);
       setTimeout(() => {
         connection.close();

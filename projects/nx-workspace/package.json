@@ -124,6 +124,7 @@
     "@fastify/cors": "^9.0.0",
     "@fastify/sensible": "~5.2.0",
     "@fortawesome/fontawesome-free": "^6.5.1",
+    "@types/amqplib": "^0.10.6",
     "amqplib": "^0.10.5",
     "archiver": "^7.0.1",
     "axios": "1.7.7",
