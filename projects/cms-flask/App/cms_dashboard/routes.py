@@ -335,6 +335,8 @@ def page_content(app_name):
 @requires_privilege
 def selected_page_content(app_name, content):
     form = ContentForm()
+    filenames = get_filenamess(app_name, prefix=current_app.config["CONTENT_DIRECTORY"])
+    choices = [os.path.splitext(os.path.basename(v))[0] for v in filenames]
     filepath = f"{current_app.config['CONTENT_DIRECTORY']}/{content}.md"
     if request.method == "GET":
         form.content.data = get_text_from_filepath(filepath, app_name)
@@ -348,6 +350,7 @@ def selected_page_content(app_name, content):
         title="Page Content",
         app_name=app_name,
         form=form,
+        choices=choices,
         active_tab="page_content",
     )
 

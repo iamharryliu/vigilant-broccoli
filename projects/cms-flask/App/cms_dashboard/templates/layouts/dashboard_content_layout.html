@@ -1,7 +1,9 @@
-{% extends 'layouts/dashboard_layout.html' %} {% block list_group_links %}
+{% extends 'layouts/dashboard_layout.html' %} {% block list_group_links %} {%
+for choice in choices %}
 <a
-  href="{{url_for('cms.page_content', app_name=app_name)}}"
+  href="{{ url_for('cms.selected_page_content', app_name=app_name, content=choice) }}"
   class="list-group-item list-group-item-action"
-  >Calendar</a
 >
-{% endblock %}
+  {{ choice | title }}
+</a>
+{% endfor %} {% endblock %}

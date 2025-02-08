@@ -44,3 +44,7 @@ file_that_uses_layout.html
 {% extends 'layout.html' %}
 {% block BLOCK_NAME %} ... {% endblock %}
 ```
+
+```
+{{ text | title }}
+```
