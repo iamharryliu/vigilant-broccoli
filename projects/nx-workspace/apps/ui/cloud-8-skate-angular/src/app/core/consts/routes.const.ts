@@ -9,6 +9,7 @@ import { TerminologyPageComponent } from '../../components/pages/terminology-pag
 import { PlaylistsPageComponent } from '../../components/pages/playlists-page/playlists.page';
 import { AlbumsPageComponent } from '../../components/pages/albums-page/albums-page.component';
 import { AlbumPageComponent } from '../../components/pages/album-page/album-page.component';
+import { RulesPageComponent } from '../../components/pages/rules-page/rules.page';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -32,6 +33,12 @@ export const MORE_PAGE_ROUTE: Route = {
   path: 'more',
   data: { title: 'More Info' },
   component: MorePageComponent,
+};
+
+export const RULES_PAGE_ROUTE: Route = {
+  path: 'rules',
+  data: { title: 'Rules' },
+  component: RulesPageComponent,
 };
 
 export const MORE_SUBPAGE_ROUTE: Route = {
@@ -88,6 +95,7 @@ export const ROUTES: Routes = [
   PLAYLISTS_PAGE_ROUTE,
   TERMINOLOGY_PAGE_ROUTE,
   ALBUMS_ROUTE,
+  RULES_PAGE_ROUTE,
   WILD_CARD_ROUTE,
 ];
 
