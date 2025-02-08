@@ -26,8 +26,7 @@
       "RECAPTCHA_V3_SECRET_KEY": "key",
       "SECRET_IV": "secret",
       "SECRET_KEY": "key",
-      "RABBITMQ_CONNECTION_STRING": "connection_string",
-      "RABBITMQ_QUEUE": "queue"
+      "RABBITMQ_CONNECTION_STRING": "connection_string"
     }
   },
   {
@@ -60,8 +59,7 @@
     "password_key_values": {
       "MY_EMAIL": "email",
       "MY_EMAIL_PASSWORD": "password",
-      "RABBITMQ_CONNECTION_STRING": "connection_string",
-      "RABBITMQ_QUEUE": "queue"
+      "RABBITMQ_CONNECTION_STRING": "connection_string"
     }
   }
 ]
