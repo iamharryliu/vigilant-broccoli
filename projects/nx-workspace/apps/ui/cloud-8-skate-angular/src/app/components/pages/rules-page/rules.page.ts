@@ -8,5 +8,5 @@ import { MarkdownPageComponent } from 'general-components';
   imports: [MarkdownPageComponent],
 })
 export class RulesPageComponent {
-  contentFilepath = 'https://bucket.cloud8skate.com/content/calendar.md';
+  contentFilepath = 'https://bucket.cloud8skate.com/content/rules.md';
 }
