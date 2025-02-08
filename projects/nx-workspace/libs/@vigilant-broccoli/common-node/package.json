@@ -1,6 +1,6 @@
 {
   "name": "@vigilant-broccoli/common-node",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "dependencies": {
     "@vigilant-broccoli/common-js": "0.0.2",
     "archiver": "^7.0.1",

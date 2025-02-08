@@ -18,6 +18,7 @@ nx build [library] --with-deps
 nx reset
 
 nx release
+nx run LIBRARY:nx-release-publish
 nx run LIBRARY:nx-release-publish --otp=XXXXXX
 ```
 

@@ -3,7 +3,7 @@
   "dependencies": {
     "@prettydamntired/personal-website-api-lib": "^0.0.12",
     "@prettydamntired/personal-website-lib": "^0.0.10",
-    "@vigilant-broccoli/common-node": "^0.0.2",
+    "@vigilant-broccoli/common-node": "^0.0.3",
     "amqplib": "^0.10.5"
   },
   "devDependencies": {
