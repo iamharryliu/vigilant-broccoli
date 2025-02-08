@@ -1,5 +1,13 @@
 # Flask
 
+## Routes
+
+```
+@app.route('/something/<data>')
+def fn_name(data):
+    ...
+```
+
 ## Jinja
 
 ### Conditional Statements

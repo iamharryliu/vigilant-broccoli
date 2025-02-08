@@ -53,6 +53,18 @@ def get_subdirectories_and_first_image(app_name, prefix=None):
     return albums
 
 
+# TODO: refactor
+def get_filenamess(app_name, prefix=None):
+    s3_client = get_s3_client()
+    s3_objects = s3_client.list_objects(
+        Bucket=app_name,
+        Prefix=ensure_trailing_slash(prefix),
+        Delimiter="/",
+    ).get("Contents")
+    return [image["Key"] for image in s3_objects] if s3_objects else []
+
+
+# TODO: refactor
 def get_filenames(app_name, prefix=None):
     s3_client = get_s3_client()
     s3_objects = s3_client.list_objects(

@@ -1,3 +1,4 @@
+import os
 from flask import (
     Blueprint,
     redirect,
@@ -27,6 +28,7 @@ from functools import wraps
 from common.utils import get_filename
 from common.consts.consts import HTTP_METHOD
 from common.consts.bootstrap_consts import BOOTSTRAP_COLORS
+from App.utils.file_utils.s3_utils import get_filenamess
 
 
 def requires_privilege(fn):
@@ -318,8 +320,22 @@ def delete_user_group(user_group_name):
 @login_required
 @requires_privilege
 def page_content(app_name):
+    filenames = get_filenamess(app_name, prefix=current_app.config["CONTENT_DIRECTORY"])
+    filename = filenames[0]
+    content = os.path.splitext(os.path.basename(filename))[0]
+    return redirect(
+        url_for("cms.selected_page_content", app_name=app_name, content=content)
+    )
+
+
+@cms_dashboard_blueprint.route(
+    "/<app_name>/dashboard/<content>/page_content", methods=["GET", "POST"]
+)
+@login_required
+@requires_privilege
+def selected_page_content(app_name, content):
     form = ContentForm()
-    filepath = f"{current_app.config['CONTENT_DIRECTORY']}/calendar.md"
+    filepath = f"{current_app.config['CONTENT_DIRECTORY']}/{content}.md"
     if request.method == "GET":
         form.content.data = get_text_from_filepath(filepath, app_name)
     if form.validate_on_submit():
