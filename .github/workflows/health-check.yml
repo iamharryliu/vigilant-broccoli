@@ -22,8 +22,9 @@ jobs:
           MY_EMAIL: ${{ secrets.MY_EMAIL }}
           MY_EMAIL_PASSWORD: ${{ secrets.MY_EMAIL_PASSWORD }}
         run: npm install @vigilant-broccoli/common-js && npx nx run @vigilant-broccoli/scripts:run-script:health-check
-      - name: Run cleanup.
-        env:
-          MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
-          MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
-        run: npx nx run @vigilant-broccoli/scripts:run-script:cleanup
+      # TODO: fix cleanup
+      # - name: Run cleanup.
+      #   env:
+      #     MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
+      #     MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
+      #   run: npx nx run @vigilant-broccoli/scripts:run-script:cleanup
