@@ -73,7 +73,7 @@ alias servetorontoalerts="cdtorontoalerts && venvon && flaskrun"
 alias pushlines="cdvb && git add scripts/python/scrape-ttc-lines/ttc_lines.json && gc chore toronto-alerts 'Add TTC lines.' && gpush"
 # Cloud8
 alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
-alias pushc8spagecontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'Update site content.' && gpush"
+alias pushc8scontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'Update site content.' && gpush"
 # DJ Stuff
 alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
 alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
@@ -90,4 +90,4 @@ alias openJournal="open 'obsidian://open?vault=journal'"
 # Billing
 alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
 
-alias npmpackages='open "https://www.npmjs.com/settings/prettydamntired/packages"'
+alias vbpackages='open "https://www.npmjs.com/settings/vigilant-broccoli/packages"'
