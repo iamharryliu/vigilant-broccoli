@@ -12,7 +12,7 @@ const sites = [
 
 async function main() {
   const siteMonitor = new SiteMonitor();
-  Promise.all(sites.map(site => siteMonitor.monitorSiteActivity(site)));
+  await Promise.all(sites.map(site => siteMonitor.monitorSiteActivity(site)));
 }
 
 main();
