@@ -1,3 +1,4 @@
+from typing import List, Optional
 from flask import flash, current_app
 import boto3
 from io import BytesIO
@@ -53,8 +54,7 @@ def get_subdirectories_and_first_image(app_name, prefix=None):
     return albums
 
 
-# TODO: refactor
-def get_filenamess(app_name, prefix=None):
+def get_filenames(app_name: str, prefix: Optional[str] = None) -> List[str]:
     s3_client = get_s3_client()
     s3_objects = s3_client.list_objects(
         Bucket=app_name,
@@ -62,21 +62,6 @@ def get_filenamess(app_name, prefix=None):
         Delimiter="/",
     ).get("Contents")
     return [image["Key"] for image in s3_objects] if s3_objects else []
-
-
-# TODO: refactor
-def get_filenames(app_name, prefix=None):
-    s3_client = get_s3_client()
-    s3_objects = s3_client.list_objects(
-        Bucket=app_name,
-        Prefix=ensure_trailing_slash(prefix),
-        Delimiter="/",
-    ).get("Contents")
-    return (
-        [f"https://bucket.cloud8skate.com/{image['Key']}" for image in s3_objects]
-        if s3_objects
-        else []
-    )
 
 
 def get_s3_file(filepath, app_name):

@@ -22,4 +22,6 @@ def get_albums(app_name):
 @get_blueprint.route("/<app_name>/albums/<albumId>")
 @cross_origin()
 def get_album(app_name, albumId):
-    return get_filenames(app_name, f"images/{albumId}")
+    filenames = get_filenames(app_name, f"images/{albumId}")
+    albums = [f"https://bucket.cloud8skate.com/{filename}" for filename in filenames]
+    return albums
