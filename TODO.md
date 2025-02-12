@@ -15,6 +15,7 @@
   - microservices vs monoliths
   - RabbitMQ vs Kafka
   - Load balancing
+  - Honeypot vs Recaptcha
 
 ## vigilant-broccoli
 
