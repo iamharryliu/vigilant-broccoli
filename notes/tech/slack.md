@@ -2,18 +2,17 @@
 
 ## Formatting Messages
 
-[Reference](https://slack.com/help/articles/202288908-Format-your-messages)
+[Reference](https://slack.com/help/articles/202288908-Format-your-messages)w
 
-### Text Formatting
-
-| **Format**        | **Description**                           | **Example**         |
-| ----------------- | ----------------------------------------- | ------------------- |
-| **Bold**          | Surround text with asterisks              | `*your text*`       |
-| _Italics_         | Surround text with underscores            | `_your text_`       |
-| ~~Strikethrough~~ | Surround text with tildes                 | `~your text~`       |
-| `Code`            | Surround text with backticks              | `` `your text` ``   |
-| > Blockquote      | Add an angled bracket in front of text    | `> your text`       |
-| `Code Block`      | Add three backticks before and after text | ` ```your text``` ` |
+| **Format**        | **Example**                |
+| ----------------- | -------------------------- |
+| **Bold**          | `*your text*`              |
+| _Italics_         | `_your text_`              |
+| ~~Strikethrough~~ | `~your text~`              |
+| `Code`            | `` `your text` ``          |
+| > Blockquote      | `> your text`              |
+| `Code Block`      | ` ```your text``` `        |
+| Link              | [Slack](https://slack.com) |
 
 ### Lists
 
