@@ -16,6 +16,7 @@
   - RabbitMQ vs Kafka
   - Load balancing
   - Honeypot vs Recaptcha
+  - [Employee Handler](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
 
 ## vigilant-broccoli
 
