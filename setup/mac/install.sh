@@ -48,16 +48,12 @@ if ask "Install Node dependencies?"; then
     # TODO: think about this
     # npm-recursive-install
     # npm i -g recursive-install
-    cd $REPO_DIR
 fi
 
-
 if ask "Setup git hooks?"; then
-    cd $REPO_DIR
     pip3 install pre-commit && pre-commit install
     git config --unset-all core.hooksPath
 fi
-
 
 if ask "Setup macOS preferences?"; then
     chmod +x "$HOME/$MAC_SETUP_DIR/setup_macos_preferences.sh"
