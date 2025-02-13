@@ -40,12 +40,15 @@ fi
 
 if ask "Install Node dependencies?"; then
     brew link node@20
+    npm install -g yarn
     npm install -g ts-node
+    npm install -g tsx
     npm install -g @angular/cli
-    cd $REPO_DIR
-    npm i -g recursive-install
     npm add --global nx@latest
-    npm-recursive-install
+    # TODO: think about this
+    # npm-recursive-install
+    # npm i -g recursive-install
+    cd $REPO_DIR
 fi
 
 
