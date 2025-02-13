@@ -3,6 +3,7 @@
 | English        | Swedish        | French               | Spanish        | Portugese | Italian |
 | :------------- | :------------- | :------------------- | :------------- | :-------- | :------ |
 | now            | nu             | maintenant           | ahora          |           |         |
+| soon           | snart          |
 | today          | i dag          | aujourdhui           | hoy            |           |         |
 | tonight        | i kväll        | ce soir              | esta noche     |           |         |
 | tomorrow       | i morgon       | demain               | mañana         |           |         |

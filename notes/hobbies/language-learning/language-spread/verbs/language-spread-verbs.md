@@ -5,6 +5,7 @@
 | to want            | att villja         | voulir        | querer       |           |         |
 | to go              | att gå/åka         | aller         | ir           |           |         |
 | to have            | att ha             | avoir         | tener        |           |         |
+| to give            | att ge             | donner        |              |           |         |
 | to take            | att ta             | prendre       | tomar        |           |         |
 | to try             | att prova          | essayer       | probar       |           |         |
 | to eat             | att äta            | manger        | comer        |           |         |
@@ -20,7 +21,6 @@
 | to sell            | att sälja          | vendre        | vender       |           |         |
 | to look            | att titta          | regarder      |              |           |         |
 | to come            | att komma          | venir         | venir        |           |         |
-| to give            | att ge             | donner        |              |           |         |
 | to drive           | att köra           | conduire      |              |           |         |
 | to love            | att älska          |               |              |           |         |
 | to hate            | att hate           |               |              |           |         |
@@ -34,7 +34,7 @@
 | to shower          | att bada           |               |              |           |         |
 | to ask             | att fråga          |               |              |           |         |
 | to answer          | att svara          |               |              |           |         |
-| to leave           | att lämna          |               |              |           |         |
+| to leave           | att lämna          | partir        |              |           |         |
 | to bring           | att hämta          |               |              |           |         |
 | to begin           | att börja          |               |              |           |         |
 | to finish          | att sluta          |               |              |           |         |
@@ -44,6 +44,10 @@
 | to get             | att få             | obtenir       |              |
 | to study           | att studera/plugga | étudier       |
 | to research        | att forska         | rechercher    |              |
+| to spend           | att spendara       |               |
+| to save            | att spara          |               |
+| to use             | att bruka/använda  |
+| to rain            | att regna          |
 | I want             | jag vill           | je veux       | quiero       | quero     |         |
 | I have             | jag har            | j'ai          | tengo        |           |         |
 | I'm going          | jag går            | je vais       | voy          |           |         |

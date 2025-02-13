@@ -38,3 +38,9 @@
 | poor      | fattig              |
 | together  | tilsammans          |
 | alone     | ensam               |
+| ledig     | free                |
+| nice      | trevlig             |
+| only      | bara                | seulement          |
+| full      | mätt                |
+| hungry    | hungrig             |
+| thirsty   | törstig             |
