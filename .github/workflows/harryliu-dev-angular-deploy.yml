@@ -2,7 +2,7 @@ name: Deploy harryliu.dev (Angular)
 on:
   push: { branches: ['main'] }
   # Handles CMS Updates
-  schedule: [{ cron: '*/1 * * * *' }]
+  schedule: [{ cron: '* */1 * * *' }]
 
 permissions:
   actions: read
