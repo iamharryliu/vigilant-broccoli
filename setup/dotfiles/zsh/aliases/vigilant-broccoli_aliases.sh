@@ -1,20 +1,25 @@
+# Code Workspaces
 alias openvbws='code ~/Desktop/vb.code-workspace'
 alias openworkws='code ~/Desktop/work.code-workspace'
-alias openworkstuff='openworkws && openSlack'
-# Directories
-ICLOUD_JOURNAL_DIR="~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/journal"
-HOME_JOURNAL_DIR="~/journal"
+
+# Journal
+ICLOUD_JOURNAL_DIR="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal"
+HOME_JOURNAL_DIR="$HOME/journal"
 if [ -d "$ICLOUD_JOURNAL_DIR" ]; then
     JOURNAL_DIR="$ICLOUD_JOURNAL_DIR"
 else
     JOURNAL_DIR="$HOME_JOURNAL_DIR"
 fi
+alias cdjournal="cd '$JOURNAL_DIR'"
+alias pushJournal="cdjournal && git add . && gc docs 'Update journal.' && gpush"
+alias pulljournal="cdjournal && gpull"
+
+# VB
 PROJECTS_DIR="$REPO_DIR/projects"
 GRIND75_DIR="$PROJECTS_DIR/grind-75"
 NX_DIR="$PROJECTS_DIR/nx-workspace"
 # Directory
 alias cdvb="cd $REPO_DIR"
-alias cdjournal="cd $JOURNAL_DIR"
 alias cdprojects="cd $PROJECTS_DIR"
 alias cdgrind75="cd $GRIND75_DIR"
 alias cdgrind75ts="cdgrind75 && cd typescript"
@@ -23,6 +28,7 @@ alias cdgrind75go="cdgrind75 && cd go"
 alias cddemoapps="cdprojects && cd demo-apps"
 alias pushleetcode="git add $GRIND75_DIR && gc feat leetcode 'Update leetcode.' && gpush"
 alias cdnx="cd $NX_DIR"
+
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
 alias pushghreadme="cd ~/iamharryliu && gpull && git add README.md && gc docs github-readme 'Update Github profile README.md' && gpush"
@@ -31,7 +37,6 @@ alias serveReactDemo="cddemoapps && cd react-demo && npm run start"
 alias serveExpressDemo="cddemoapps && cd express-demo && npm run serve"
 # vigilant-broccoli
 alias pullvb="cd $REPO_DIR && gpull"
-alias pulljournal="cd $JOURNAL_DIR && gpull"
 alias pullall='pulljournal && pullvb'
 alias vbgit='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
 alias vbactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
@@ -78,9 +83,6 @@ alias pushc8scontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/s
 alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
 alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
 
-# Journal
-alias pushJournal="cdjournal && git add . && gc docs 'Update journal.' && gpush"
-
 # Other
 alias sshpi="ssh hliu@192.168.1.104"
 ## Obsidian
@@ -91,3 +93,6 @@ alias openJournal="open 'obsidian://open?vault=journal'"
 alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
 
 alias vbpackages='open "https://www.npmjs.com/settings/vigilant-broccoli/packages"'
+
+# Work Aliases
+alias openworkstuff='openworkws && openSlack && gcalendar && gmeet'
