@@ -78,3 +78,31 @@ sund livsstil - healthy lifestyle
 snäll / taskig - nice / Xmean
 
 auxiliary / cluse main / clause / subordinate clause
+
+"Jag har en fråga" (I have a question).
+"Kan jag ställa en fråga?" (Can I ask a question?).
+
+Kan du repetera igen? (Correct)
+Kan vi använda? (Correct spelling for "använda")
+Kan du omförklara det igen? (This is a better version of "kan du om förklara det igen," where "omförklara" means "re-explain")
+
+Hur säger man... på svenska? (How do you say... in Swedish?)
+Varför det så? (Why is it like that?)
+Hur stavas...? (How is it spelled...?)
+Förstår ni? – "Do you understand?"
+Följer ni med? – "Are you coming along?" or "Are you following?"
+Är det otydligt? – "Is it unclear?"
+Nej, vi är emot, inte med. – "No, we are against it, not with it."
+Jag skojar, ett uttal. – "I'm joking, a pronunciation."
+Hur vågar du? – "How dare you?"
+
+In Swedish, "en lag" and "ett lag" have different meanings and uses, even though they sound similar.
+En lag – This means "a law" or "a regulation." The word "lag" in this case refers to a formal rule or legal framework.
+Example: "En lag om trafikregler" (A law about traffic regulations).
+Ett lag – This means "a team" or "a group" in the context of sports, competitions, or organizations. Here, "lag" refers to a collective group of people working together.
+Example: "Ett fotbollslag" (A soccer team).
+
+om - about/if/concerning
+
+hjut at livet - enjoy life
+att varka = att ha ont

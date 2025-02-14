@@ -48,6 +48,8 @@
 | to save            | att spara          |               |
 | to use             | att bruka/använda  |
 | to rain            | att regna          |
+| to send            | att skicka/slänga  | envoyer       |
+| to fix             | att fixa/ordna     |
 | I want             | jag vill           | je veux       | quiero       | quero     |         |
 | I have             | jag har            | j'ai          | tengo        |           |         |
 | I'm going          | jag går            | je vais       | voy          |           |         |
