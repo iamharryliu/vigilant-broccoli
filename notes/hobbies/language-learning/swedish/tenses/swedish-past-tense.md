@@ -1,8 +1,6 @@
-# Swedish Past Tense
+# Swedish Past Tense (Preteritum, Imperfekt or Dåtid)
 
-- Swedish past tense also called preteritum, imperfekt or dåtid.
-
-| Method                                    | Format                   | Example           |
-| :---------------------------------------- | :----------------------- | :---------------- |
-| **Preteritum (Imperfekt) - Simple Paste** | SUBJECT IMPERFEKT_VERB   | Jag studerade.    |
-| **Perfekt - Present Perfect**             | SUBJECT har SUPINUM_VERB | Jag har studerat. |
+| **Method**                                | **Usage**              | **Example**       |
+| :---------------------------------------- | :--------------------- | :---------------- |
+| **Preteritum (Imperfekt) - Simple Paste** | [subject] [imperfekt]  | Jag studerade.    |
+| **Perfekt - Present Perfect**             | [subject] har [supine] | Jag har studerat. |

@@ -1,17 +1,5 @@
 # Language Learning
 
-## Types of Words
-
-| Type of Word | Description                                                                   |                              |
-| :----------- | :---------------------------------------------------------------------------- | :--------------------------- |
-| Noun         | Represent people, places, things, or ideas.                                   | dog, house, freedom, Alex    |
-| Pronoun      | Substitute for nouns to avoid repetition.                                     | he, she, it, they, this, who |
-| Verb         | Indicate actions, states, or occurrences.                                     | run, think, is, become       |
-| Adjective    | Describe or modify nouns.                                                     | beautiful, tall, quick       |
-| Adverb       | Modify verbs, adjectives, or other adverbs                                    | quickly, very, silently      |
-| Preposition  | Show relationships between a noun (or pronoun) and other words in a sentence. | in, on, at, by, with         |
-| Conjunction  | Connect words, phrases, or clauses.                                           | and, but, because, although  |
-
 ## Online Learning Options
 
 - [Memrise](https://memrise.com/) for vocabulary.
