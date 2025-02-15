@@ -42,6 +42,8 @@
     - _Optional: Spray the dough generously with water to encourage blistering before baking._
   - Cover with the lid and bake for **15-20 minutes**.
   - Remove the lid and bake for an additional **15 minutes**, or until the crust reaches your desired color.
+- **Storage**
+  - Cut in half and store in dutch oven, leave lid slightly open for first few hours so that excess moisture can escape.
 
 ## References
 
