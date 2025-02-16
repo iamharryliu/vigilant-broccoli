@@ -1,5 +1,7 @@
 # Soups
 
+- Important to extract as much flavour at the beginning of making a soup (before adding in liquids) through sweating down vegetables and caremelization.
+
 [Panera’s Broccoli Cheddar Soup Recipe](https://www.the-girl-who-ate-everything.com/panera-broccoli-cheese-soup/#recipe)
 
 Ingredients:
