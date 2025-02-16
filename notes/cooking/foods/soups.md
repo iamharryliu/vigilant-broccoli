@@ -1,7 +1,13 @@
 # Soups
 
 - Important to extract as much flavour at the beginning of making a soup (before adding in liquids) through sweating down vegetables and caremelization.
+- Cut veggies to small pieces to cook properly.
+- Add oil to pan and sweat down onion plus other veggies like carrots or celery.
+- Add in other vegetables.
+- Add in broth and seasoning.
+- Semi-blend vegetables for a mixed consistency.
 
+cream
 [Panera’s Broccoli Cheddar Soup Recipe](https://www.the-girl-who-ate-everything.com/panera-broccoli-cheese-soup/#recipe)
 
 Ingredients:
