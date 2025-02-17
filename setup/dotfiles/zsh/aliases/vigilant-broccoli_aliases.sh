@@ -96,3 +96,7 @@ alias vbpackages='open "https://www.npmjs.com/settings/vigilant-broccoli/package
 
 # Work Aliases
 alias openworkstuff='openworkws && openSlack && gcalendar && gmeet'
+
+# Employee Handler
+alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
+alias buildEmployeeHandler="nnx build @vigilant-broccoli/employee-handler"

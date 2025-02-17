@@ -15,6 +15,9 @@ nx run-many -t=[type]
 nx build [library] --with-deps
 --skip-nx-cache
 
+nx run-many -t=build --skip-nx-cache
+
+
 nx reset
 
 nx release

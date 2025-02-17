@@ -26,7 +26,7 @@ const zipFolder = async (
   await makedirectory(path.dirname(zipFilePath));
   return new Promise((resolve, reject) => {
     if (!fs.existsSync(sourceFolder)) {
-      return reject(new Error('Source folder does not exist'));
+      return reject(new Error(`Source folder does not exist: ${sourceFolder}`));
     }
     const savePath = zipFilePath ? zipFilePath : `${sourceFolder}.zip`;
     const output = fs.createWriteStream(savePath);

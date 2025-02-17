@@ -4,8 +4,8 @@
   "dependencies": {
     "mongoose": "^8.1.0",
     "tslib": "^2.3.0",
-    "mongodb": "6.8.0",
+    "mongodb": "6.13.0",
     "@prettydamntired/personal-website-lib": "0.0.12",
-    "@vigilant-broccoli/common-node": "0.0.2"
+    "@vigilant-broccoli/common-node": "0.0.4"
   }
 }
