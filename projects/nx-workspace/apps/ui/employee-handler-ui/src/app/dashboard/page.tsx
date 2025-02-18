@@ -1,5 +1,8 @@
 'use client';
 
+import Navbar from '../../components/Navbar';
+import ProtectedRoute from '../ProtectedRoute';
+
 export default function Index() {
   const onboardEmployeesClickHandler = async () => {
     await fetch('/api/onboard');
@@ -29,7 +32,8 @@ export default function Index() {
   };
 
   return (
-    <>
+    <ProtectedRoute>
+      <Navbar />
       <button onClick={onboardEmployeesClickHandler}>
         Onboard Incoming Employees
       </button>
@@ -48,6 +52,6 @@ export default function Index() {
         Offboard Inactive Employees
       </button>
       <br />
-    </>
+    </ProtectedRoute>
   );
 }
