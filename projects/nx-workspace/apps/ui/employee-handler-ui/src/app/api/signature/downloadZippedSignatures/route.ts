@@ -2,7 +2,7 @@ import {
   EmployeeHandlerService,
   ZIPPED_GENERATED_SIGNATURES_FILEPATH,
 } from '@vigilant-broccoli/employee-handler';
-import { CONFIG, EMPLOYEE_HANDLER_ACTION } from '../../../../const';
+import { CONFIG, EMPLOYEE_HANDLER_ACTION } from '../../../../config';
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import { promisify } from 'util';
