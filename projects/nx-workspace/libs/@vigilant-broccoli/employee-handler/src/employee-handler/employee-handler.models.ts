@@ -5,7 +5,8 @@ import {
 import { Attachment } from 'nodemailer/lib/mailer';
 
 interface OnboardUtilities {
-  fetchIncomingEmployees: () => Promise<IncomingUser[]>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fetchIncomingEmployees: () => Promise<any[]>;
   processIncomingEmployees: (users: IncomingUser[]) => Promise<void>;
 }
 interface ActiveMaintenanceUtilities {

@@ -23,6 +23,8 @@ nx reset
 nx release
 nx run LIBRARY:nx-release-publish
 nx run LIBRARY:nx-release-publish --otp=XXXXXX
+
+npm add -D @nx/next
 ```
 
 ### Storybook
