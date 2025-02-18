@@ -1,7 +1,6 @@
-import {
-  EmployeeHandlerConfig,
-  EmployeeHandlerService,
-} from '@vigilant-broccoli/employee-handler';
+import { EmployeeHandlerConfig } from '@vigilant-broccoli/employee-handler';
+
+// TODO: Refactor
 
 const MOCK_ONBOARDING_USERS = ['onboard1@email.com', 'onboard2@email.com'];
 const MOCK_EMPLOYEES = [
@@ -69,7 +68,7 @@ export const CONFIG: EmployeeHandlerConfig = {
   },
 };
 
-const EMPLOYEE_HANDLER_ACTION = {
+export const EMPLOYEE_HANDLER_ACTION = {
   ONBOARD_INCOMING_EMPLOYEES: 'onboardIncomingEmployees',
   GENERATE_LOCAL_SIGNATURES: 'generateLocalSignatures',
   EMAIL_ZIPPED_SIGNATURES: 'emailZippedSignatures',
@@ -77,16 +76,3 @@ const EMPLOYEE_HANDLER_ACTION = {
   OFFBOARD_INACTIVE_EMPLOYEES: 'offboardInactiveEmployees',
   POST_RETENTION_CLEANUP: 'postRetentionCleanup',
 } as const;
-
-export async function GET(request: Request) {
-  await EmployeeHandlerService.handleInput(
-    CONFIG,
-    EMPLOYEE_HANDLER_ACTION.ONBOARD_INCOMING_EMPLOYEES,
-  );
-  // await EmployeeHandlerService.handleInput(CONFIG, EMPLOYEE_HANDLER_ACTION.GENERATE_LOCAL_SIGNATURES);
-  // await EmployeeHandlerService.handleInput(CONFIG, EMPLOYEE_HANDLER_ACTION.EMAIL_ZIPPED_SIGNATURES);
-  // await EmployeeHandlerService.handleInput(CONFIG, EMPLOYEE_HANDLER_ACTION.APPLY_EMAIL_SIGNATURE_UPDATES);
-  // await EmployeeHandlerService.handleInput(CONFIG, EMPLOYEE_HANDLER_ACTION.OFFBOARD_INACTIVE_EMPLOYEES);
-  // await EmployeeHandlerService.handleInput(CONFIG, EMPLOYEE_HANDLER_ACTION.POST_RETENTION_CLEANUP);
-  return new Response('Hello, from API!');
-}
