@@ -1,5 +1,12 @@
 # TODO
 
+- Employee Handler
+  - implement ui
+  - Refactor
+  - Specify receivers of zipped email signatures
+- Dotfiles
+  - Nx
+    - alias run lib:nx-release-publish
 - DocsMD
   - Split into separate app.
   - Implement search bar.
