@@ -2,10 +2,52 @@
 
 <!-- TODO: organize this later -->
 
-| **Term**      | **Description**                                                                                                                              | **Example**                            |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| **Huvudsats** | A main clause that can stand alone as a complete sentence. Contains a subject and a verb.                                                    | "Jag gillar att läsa."                 |
-| **Bisats**    | A subordinate clause that cannot stand alone and depends on the main clause. Often begins with a conjunction like "att," "om," or "för att." | "Jag gillar att läsa när jag har tid." |
+| **Term**          | **Description**                                                                                                                                                                           | **Example**                                                                                                                         |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Huvudsats**     | A main clause that can stand alone as a complete sentence. Contains a subject and a verb.                                                                                                 | "Jag gillar att läsa."                                                                                                              |
+| **Bisats**        | A subordinate clause that cannot stand alone and depends on the main clause. Often begins with a conjunction like "att," "om," or "för att."                                              | "Jag gillar att läsa när jag har tid."                                                                                              |
+| **Satsadverbial** | A word that modifies the entire sentence, often expressing negation, probability, or emphasis. It appears **before the verb in a bisats** and **after the first element in a huvudsats**. | "Jag gillar **inte** att läsa på kvällen." (Main clause) <br> "Jag gillar att läsa när jag **inte** är trött." (Subordinate clause) |
+
+| **English**               | **Swedish** |
+| ------------------------- | ----------- |
+| **Negation & Certainty**  |             |
+| not                       | inte        |
+| hardly                    | knappast    |
+| absolutely                | absolut     |
+| definitely                | definitivt  |
+| **Probability & Doubt**   |             |
+| maybe                     | kanske      |
+| probably                  | nog         |
+| likely                    | troligen    |
+| presumably                | förmodligen |
+| possibly                  | möjligen    |
+| possibly (alternative)    | eventuellt  |
+| certainly                 | säkert      |
+| **Emphasis & Modality**   |             |
+| as you know               | ju          |
+| surely                    | väl         |
+| actually                  | faktiskt    |
+| really                    | egentligen  |
+| possibly (alternative)    | möjligen    |
+| anyway                    | ändå        |
+| in any case               | i alla fall |
+| **Time & Frequency**      |             |
+| always                    | alltid      |
+| never                     | aldrig      |
+| often                     | ofta        |
+| rarely                    | sällan      |
+| sometimes                 | ibland      |
+| already                   | redan       |
+| soon                      | snart       |
+| still                     | fortfarande |
+| finally                   | till sist   |
+| **Attitude & Evaluation** |             |
+| unfortunately             | tyvärr      |
+| fortunately               | lyckligtvis |
+| moreover                  | dessutom    |
+| at least                  | åtminstone  |
+| only                      | bara        |
+| gladly / willingly        | gärna       |
 
 | Form                       | Explanation                              | Example               |
 | -------------------------- | ---------------------------------------- | --------------------- |

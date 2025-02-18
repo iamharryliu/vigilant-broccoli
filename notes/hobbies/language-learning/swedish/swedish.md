@@ -59,7 +59,11 @@ De stora hundarna (the big dogs)
 
 tror/tycka/tanka/fundera
 köper/handlar/shoppar
+**Nuances**
 i/for/pa/till
+
+- till example vs for example
+
 kan/kunna - can/be able
 
 det hander - it happens
@@ -106,3 +110,9 @@ om - about/if/concerning
 
 hjut at livet - enjoy life
 att varka = att ha ont
+lunchar jag = ata lunch
+kppla - connect
+koppla av - relax
+vila - rest
+nyttig - healthy
+sok - letaefter
