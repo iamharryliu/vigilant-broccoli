@@ -1,5 +1,12 @@
 # Potatoes
 
+# Crispy Potatoes
+
+- Peel and cut potatoes into chunks.
+- Boil potatoes for 10 minutes with baking soda and salt
+- Drain water. Add semolina, salt and oil to the pot and mix around. You can add grated parmesan at this point too.
+- Roast in airfryer or oven until evenly crispy.
+
 ## Crispy Roasted Potatoes
 
 ### Ingredients
