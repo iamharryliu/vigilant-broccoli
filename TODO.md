@@ -5,7 +5,7 @@
     - find alternative for recaptcha?
   - add alias for `alias run lib:nx-release-publish`
 - Employee Handler
-  - Refactor
+  - Handle CLI and web service usage.
   - Specify receivers of zipped email signatures
 - DocsMD
   - Split into separate app.
