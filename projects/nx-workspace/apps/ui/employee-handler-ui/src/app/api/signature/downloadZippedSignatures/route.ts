@@ -2,7 +2,7 @@ import {
   EmployeeHandlerService,
   ZIPPED_GENERATED_SIGNATURES_FILEPATH,
 } from '@vigilant-broccoli/employee-handler';
-import { CONFIG, EMPLOYEE_HANDLER_ACTION } from '../../../../config';
+import { CONFIG } from '../../../../config';
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import { promisify } from 'util';
@@ -10,10 +10,7 @@ import { promisify } from 'util';
 const access = promisify(fs.access);
 
 export async function GET() {
-  await EmployeeHandlerService.handleInput(
-    CONFIG,
-    EMPLOYEE_HANDLER_ACTION.GENERATE_LOCAL_SIGNATURES,
-  );
+  await EmployeeHandlerService.generateLocalSignatures(CONFIG);
   await access(ZIPPED_GENERATED_SIGNATURES_FILEPATH, fs.constants.F_OK);
 
   const fileStream = fs.createReadStream(ZIPPED_GENERATED_SIGNATURES_FILEPATH);

@@ -15,7 +15,7 @@ import {
 import { FileSystemUtils } from '@vigilant-broccoli/common-node';
 
 // TODO: kind of awkward with caching, refactor later.
-export const applyEmailSignatureUpdates = async (
+export const updateEmailSignatures = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
   let signaturesCache = FileSystemUtils.getObjectFromFilepath(

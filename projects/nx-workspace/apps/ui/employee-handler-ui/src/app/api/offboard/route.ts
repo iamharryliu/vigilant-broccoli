@@ -1,10 +1,7 @@
 import { EmployeeHandlerService } from '@vigilant-broccoli/employee-handler';
-import { CONFIG, EMPLOYEE_HANDLER_ACTION } from '../../../config';
+import { CONFIG } from '../../../config';
 
 export async function GET() {
-  await EmployeeHandlerService.handleInput(
-    CONFIG,
-    EMPLOYEE_HANDLER_ACTION.OFFBOARD_INACTIVE_EMPLOYEES,
-  );
+  await EmployeeHandlerService.offboardInactiveEmployees(CONFIG);
   return new Response();
 }
