@@ -1,12 +1,12 @@
 # TODO
 
+- Nx
+  - upgrade Nx
+    - find alternative for recaptcha?
+  - add alias for `alias run lib:nx-release-publish`
 - Employee Handler
-  - implement ui
   - Refactor
   - Specify receivers of zipped email signatures
-- Dotfiles
-  - Nx
-    - alias run lib:nx-release-publish
 - DocsMD
   - Split into separate app.
   - Implement search bar.
