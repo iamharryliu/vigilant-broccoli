@@ -1,4 +1,4 @@
-# Swedish Past Tense (Preteritum, Imperfekt or Dåtid)
+# Swedish Past Tense (Dåtid)
 
 | **Method**                                | **Usage**              | **Example**       |
 | :---------------------------------------- | :--------------------- | :---------------- |
