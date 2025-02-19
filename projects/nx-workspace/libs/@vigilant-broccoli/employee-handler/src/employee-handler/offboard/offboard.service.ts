@@ -11,8 +11,8 @@ export async function offboardInactiveEmployees(
 
 export const manualOffboardEmails = async (
   handlerConfig: EmployeeHandlerConfig,
+  emails = process.argv.slice(3),
 ): Promise<void> => {
-  const emails = process.argv.slice(3);
   if (emails.length === 0) {
     console.warn('No emails provided.');
     return;
