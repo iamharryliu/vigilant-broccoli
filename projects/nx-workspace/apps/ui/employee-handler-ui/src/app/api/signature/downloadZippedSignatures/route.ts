@@ -1,6 +1,6 @@
 import {
   EmployeeHandlerService,
-  MOCK_EMPLOYEE_HANDLER_CONFIG,
+  EMPLOYEE_HANDLER_CONFIG_MOCK,
   ZIPPED_GENERATED_SIGNATURES_FILEPATH,
 } from '@vigilant-broccoli/employee-handler';
 import { NextResponse } from 'next/server';
@@ -11,7 +11,7 @@ const access = promisify(fs.access);
 
 export async function GET() {
   await EmployeeHandlerService.generateLocalSignatures(
-    MOCK_EMPLOYEE_HANDLER_CONFIG,
+    EMPLOYEE_HANDLER_CONFIG_MOCK,
   );
   await access(ZIPPED_GENERATED_SIGNATURES_FILEPATH, fs.constants.F_OK);
 

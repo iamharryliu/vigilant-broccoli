@@ -24,7 +24,7 @@ const generateMockSignatures = (
   }));
 };
 
-export const MOCK_EMPLOYEE_HANDLER_CONFIG: EmployeeHandlerConfig = {
+export const EMPLOYEE_HANDLER_CONFIG_MOCK: EmployeeHandlerConfig = {
   onboardUtilities: {
     fetchIncomingEmployees: async () => MOCK_ONBOARDING_USERS,
     processIncomingEmployees: async users => {
