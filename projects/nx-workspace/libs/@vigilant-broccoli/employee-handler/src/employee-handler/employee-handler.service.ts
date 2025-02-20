@@ -1,22 +1,13 @@
-import {
-  offboardInactiveEmployees,
-  manualOffboardEmails,
-} from './offboard/offboard.service';
-import { onboardIncomingEmployees } from './onboard/onboard.service';
-import { postRetentionCleanup } from './post-retention/postRetention.service';
-import {
-  emailZippedSignatures,
-  generateLocalSignatures,
-  manualRecoverUsers,
-  syncData,
-  updateEmailSignatures,
-} from './active-maintenance/active-maintenance.service';
+import { ActiveMaintenanceHandler } from './active-maintenance/active-maintenance.service';
 import { EmployeeHandlerConfig } from './employee-handler.models';
+import { OffboardHandler } from './offboard/offboard.service';
+import { OnboardHandler } from './onboard/onboard.service';
+import { PostRetentionHandler } from './post-retention/postRetention.service';
 
 const handleInput = async (
   configuration: EmployeeHandlerConfig,
-  command: string,
 ): Promise<void> => {
+  const [, , command] = process.argv;
   const COMMAND =
     (EmployeeHandlerService[command]
       ? EmployeeHandlerService[command]
@@ -35,31 +26,10 @@ const handleInput = async (
   }
 };
 
-const OnboardHandler = {
-  onboardIncomingEmployees,
-};
-
-const ActiveMaintenanceHandler = {
-  updateEmailSignatures,
-  generateLocalSignatures,
-  emailZippedSignatures,
-  manualRecoverUsers,
-  syncData,
-};
-
-const OffboardHandler = {
-  offboardInactiveEmployees,
-  manualOffboardEmails,
-};
-
-const PostRetentionhandler = {
-  postRetentionCleanup,
-};
-
 export const EmployeeHandlerService = {
   handleInput,
   ...OnboardHandler,
   ...ActiveMaintenanceHandler,
   ...OffboardHandler,
-  ...PostRetentionhandler,
+  ...PostRetentionHandler,
 };

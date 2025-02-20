@@ -15,7 +15,7 @@ import {
 import { FileSystemUtils } from '@vigilant-broccoli/common-node';
 
 // TODO: kind of awkward with caching, refactor later.
-export const updateEmailSignatures = async (
+const updateEmailSignatures = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
   let signaturesCache = FileSystemUtils.getObjectFromFilepath(
@@ -55,7 +55,7 @@ export const updateEmailSignatures = async (
   }
 };
 
-export const generateLocalSignatures = async (
+const generateLocalSignatures = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
   const signatures =
@@ -79,7 +79,7 @@ export const generateLocalSignatures = async (
   );
 };
 
-export const emailZippedSignatures = async (
+const emailZippedSignatures = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
   await generateLocalSignatures(handlerConfig);
@@ -100,7 +100,7 @@ export const emailZippedSignatures = async (
   FileSystemUtils.deletePath(ZIPPED_GENERATED_SIGNATURES_FILEPATH);
 };
 
-export const manualRecoverUsers = async (
+const manualRecoverUsers = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
   const emails = process.argv.slice(3);
@@ -111,8 +111,16 @@ export const manualRecoverUsers = async (
   await handlerConfig.activeMaintenanceUtilities.recoverUsers(emails);
 };
 
-export const syncData = async (
+const syncData = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
   await handlerConfig.activeMaintenanceUtilities.syncData();
+};
+
+export const ActiveMaintenanceHandler = {
+  updateEmailSignatures,
+  generateLocalSignatures,
+  emailZippedSignatures,
+  manualRecoverUsers,
+  syncData,
 };

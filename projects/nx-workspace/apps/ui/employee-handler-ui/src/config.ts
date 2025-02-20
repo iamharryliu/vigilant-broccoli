@@ -67,12 +67,3 @@ export const CONFIG: EmployeeHandlerConfig = {
     },
   },
 };
-
-export const EMPLOYEE_HANDLER_ACTION = {
-  ONBOARD_INCOMING_EMPLOYEES: 'onboardIncomingEmployees',
-  GENERATE_LOCAL_SIGNATURES: 'generateLocalSignatures',
-  EMAIL_ZIPPED_SIGNATURES: 'emailZippedSignatures',
-  APPLY_EMAIL_SIGNATURE_UPDATES: 'applyEmailSignatureUpdates',
-  OFFBOARD_INACTIVE_EMPLOYEES: 'offboardInactiveEmployees',
-  POST_RETENTION_CLEANUP: 'postRetentionCleanup',
-} as const;

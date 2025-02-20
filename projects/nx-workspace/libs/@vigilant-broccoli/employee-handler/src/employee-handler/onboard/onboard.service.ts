@@ -1,6 +1,6 @@
 import { EmployeeHandlerConfig } from '../../employee-handler/employee-handler.models';
 
-export const onboardIncomingEmployees = async (
+const onboardIncomingEmployees = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
   const incomingUsers =
@@ -8,4 +8,8 @@ export const onboardIncomingEmployees = async (
   if (incomingUsers.length > 0) {
     handlerConfig.onboardUtilities.processIncomingEmployees(incomingUsers);
   }
+};
+
+export const OnboardHandler = {
+  onboardIncomingEmployees,
 };

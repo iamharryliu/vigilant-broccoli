@@ -1,5 +1,5 @@
 import { MOCK_EMPLOYEE_HANDLER_CONFIG } from '../mocks/mocks.const';
-import { manualOffboardEmails } from './offboard.service';
+import { OffboardHandler } from './offboard.service';
 import { OffboardUtilities } from '../employee-handler.models';
 
 jest.mock('../mocks/mocks.const', () => ({
@@ -23,7 +23,7 @@ describe('manualOffboardEmails', () => {
   it('should log a warning and return if no emails are provided', async () => {
     mockProcessArgv([]);
 
-    await manualOffboardEmails(MOCK_EMPLOYEE_HANDLER_CONFIG);
+    await OffboardHandler.manualOffboardEmails(MOCK_EMPLOYEE_HANDLER_CONFIG);
 
     expect(
       MOCK_EMPLOYEE_HANDLER_CONFIG.offboardUtilities.processInactiveEmployees,
@@ -38,7 +38,7 @@ describe('manualOffboardEmails', () => {
         .fetchInactiveEmployees as jest.Mock
     ).mockResolvedValueOnce(true);
 
-    await manualOffboardEmails(MOCK_EMPLOYEE_HANDLER_CONFIG);
+    await OffboardHandler.manualOffboardEmails(MOCK_EMPLOYEE_HANDLER_CONFIG);
 
     expect(
       MOCK_EMPLOYEE_HANDLER_CONFIG.offboardUtilities.processInactiveEmployees,
@@ -55,7 +55,7 @@ describe('manualOffboardEmails', () => {
     ).mockRejectedValueOnce(error);
 
     await expect(
-      manualOffboardEmails(MOCK_EMPLOYEE_HANDLER_CONFIG),
+      OffboardHandler.manualOffboardEmails(MOCK_EMPLOYEE_HANDLER_CONFIG),
     ).rejects.toThrow(error);
   });
 });
