@@ -1,6 +1,4 @@
-import { EmployeeHandlerConfig } from '@vigilant-broccoli/employee-handler';
-
-// TODO: Refactor
+import { EmployeeHandlerConfig } from '../employee-handler.models';
 
 const MOCK_ONBOARDING_USERS = ['onboard1@email.com', 'onboard2@email.com'];
 const MOCK_EMPLOYEES = [
@@ -26,7 +24,7 @@ const generateMockSignatures = (
   }));
 };
 
-export const CONFIG: EmployeeHandlerConfig = {
+export const MOCK_EMPLOYEE_HANDLER_CONFIG: EmployeeHandlerConfig = {
   onboardUtilities: {
     fetchIncomingEmployees: async () => MOCK_ONBOARDING_USERS,
     processIncomingEmployees: async users => {

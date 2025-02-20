@@ -1,7 +1,11 @@
-import { EmployeeHandlerService } from '@vigilant-broccoli/employee-handler';
-import { CONFIG } from '../../../config';
+import {
+  EmployeeHandlerService,
+  MOCK_EMPLOYEE_HANDLER_CONFIG,
+} from '@vigilant-broccoli/employee-handler';
 
 export async function GET() {
-  await EmployeeHandlerService.onboardIncomingEmployees(CONFIG);
+  await EmployeeHandlerService.onboardIncomingEmployees(
+    MOCK_EMPLOYEE_HANDLER_CONFIG,
+  );
   return new Response();
 }
