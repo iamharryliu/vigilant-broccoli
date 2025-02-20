@@ -1,19 +1,33 @@
 # Employee Handler
 
+## CLI Script Implementation
+
 ```
-// demo.ts
+// script.ts
 (async () => {
     try {
-        await EmployeeHandlerService.handleInput(DEMO_CONFIG, 'ACTION');
+        await EmployeeHandlerService.handleInput(YOUR_EMPLOYEE_HANDLER_CONFIG);
     } catch (err) {
         console.error(err);
+    } finally {
+        console.log('Finally.')
     }
 })();
 ```
 
-**EmployeeHandler Actions**
+```
+npx tsx script.ts ACTION
+```
 
-- `onboardIncomingEmployees`
-- `applyEmailSignatureUpdates`
-- `offboardInactiveEmployees`
-- `handlePostRetention`
+## Employee Handler Actions
+
+- **Onboard**
+  - `onboardIncomingEmployees`
+- **Active Maintenance**
+  - `generateLocalSignatures`
+  - `updateEmailSignatures`
+  - `emailZippedSignatures`
+- **Offboard**
+  - `offboardInactiveEmployees`
+- **Post Retention**
+  - `handlePostRetention`
