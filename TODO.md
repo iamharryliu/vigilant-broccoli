@@ -1,12 +1,19 @@
 # TODO
 
+- ProtectedRoute
+
+  - Autofocus
+  - change wrapping
+
 - Nx
   - upgrade Nx
     - find alternative for recaptcha?
   - add alias for `alias run lib:nx-release-publish`
 - Employee Handler
   - Handle CLI and web service usage.
-  - Specify receivers of zipped email signatures
+  - Finish demo script usage.
+    - Specify receivers of zipped email signatures
+  - Implement UI CTAs
 - DocsMD
   - Split into separate app.
   - Implement search bar.
