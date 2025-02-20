@@ -150,6 +150,8 @@ function gc() {
   echo -e "$commit_message" | git commit -F -
 }
 
+alias tmpcommit="gc tmp 'tmp commit'"
+
 # Push / Pull
 alias gpush='git push'
 alias gpushf='gpush --force'
