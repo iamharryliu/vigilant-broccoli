@@ -18,17 +18,17 @@
 ```
 npx tsx script.ts ACTION
 
-// Onboard
+# Onboard
 npx tsx script.ts onboardIncomingEmployees
 
-// Active Maintenance
+# Active Maintenance
 npx tsx script.ts generateLocalSignatures
 npx tsx script.ts updateEmailSignatures
 npx tsx script.ts emailZippedSignatures
 
-// Offboard
+# Offboard
 npx tsx script.ts offboardInactiveEmployees
 
-// Post Retention
+# Post Retention
 npx tsx script.ts postRetentionCleanup
 ```
