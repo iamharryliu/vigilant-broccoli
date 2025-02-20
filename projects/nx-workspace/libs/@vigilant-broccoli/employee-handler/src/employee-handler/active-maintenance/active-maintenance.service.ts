@@ -81,6 +81,7 @@ const generateLocalSignatures = async (
 
 const emailZippedSignatures = async (
   handlerConfig: EmployeeHandlerConfig,
+  receivers = process.argv.slice(3),
 ): Promise<void> => {
   await generateLocalSignatures(handlerConfig);
   const attachments = [
@@ -93,8 +94,9 @@ const emailZippedSignatures = async (
       path: ALL_GENERATED_SIGNATURES_FILEPATH,
     },
   ] as Attachment[];
-  await handlerConfig.activeMaintenanceUtilities.emailZippedSignatures(
+  await handlerConfig.activeMaintenanceUtilities.emailAttachments(
     attachments,
+    receivers,
   );
   FileSystemUtils.deletePath(ALL_GENERATED_SIGNATURES_FILEPATH);
   FileSystemUtils.deletePath(ZIPPED_GENERATED_SIGNATURES_FILEPATH);

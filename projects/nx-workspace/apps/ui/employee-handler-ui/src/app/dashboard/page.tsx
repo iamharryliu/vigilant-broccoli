@@ -32,6 +32,23 @@ export default function Index() {
     alert('success');
   };
 
+  const emailZippedSignatures = async () => {
+    const emails = emailInput
+      .split(',')
+      .map(email => email.trim())
+      .filter(email => email);
+    if (emails.length === 0) {
+      alert('Please enter valid email addresses');
+      return;
+    }
+    await fetch('/api/signature/emailZippedSignatures', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emails }),
+    });
+    alert('success');
+  };
+
   const offboardEmployeesClickHandler = async () => {
     await fetch('/api/offboard');
     alert('success');
@@ -66,6 +83,7 @@ export default function Index() {
       <button onClick={getZippedSignaturesClickHandler}>
         Download Zipped Signatures
       </button>
+      <button onClick={emailZippedSignatures}>Email Signatures</button>
       <br />
       <button onClick={updateEmailSignaturesClickHandler}>
         Update Email Signatures

@@ -13,7 +13,10 @@ interface ActiveMaintenanceUtilities {
   fetchEmailSignatures: () => Promise<EmailSignature[]>;
   useSignatureCaching: boolean;
   processEmailSignatures: (signatures: EmailSignature[]) => Promise<void>;
-  emailZippedSignatures: (attachments: Attachment[]) => Promise<void>;
+  emailAttachments: (
+    attachments: Attachment[],
+    receivers: string[],
+  ) => Promise<void>;
   recoverUsers: (emails: string[]) => Promise<void>;
   syncData?: () => Promise<void>;
 }

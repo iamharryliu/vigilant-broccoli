@@ -39,8 +39,12 @@ export const EMPLOYEE_HANDLER_CONFIG_MOCK: EmployeeHandlerConfig = {
         signatures.map(signature => signature.email),
       );
     },
-    emailZippedSignatures: async attachments => {
-      console.log('Sending zipped email signatures:', attachments);
+    emailAttachments: async (attachments, receivers) => {
+      console.log(
+        `Sending attachments to ${receivers.join(', ')}: \n${attachments
+          .map(attachment => attachment.filename)
+          .join('\n')}`,
+      );
     },
     recoverUsers: async emails => {
       console.log('Recovering users:', emails);
