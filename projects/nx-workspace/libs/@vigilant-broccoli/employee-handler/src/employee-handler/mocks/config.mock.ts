@@ -49,6 +49,9 @@ export const EMPLOYEE_HANDLER_CONFIG_MOCK: EmployeeHandlerConfig = {
     recoverUsers: async emails => {
       console.log('Recovering users:', emails);
     },
+    syncData: async () => {
+      console.log('Performing sync tasks.');
+    },
     useSignatureCaching: false,
   },
   offboardUtilities: {

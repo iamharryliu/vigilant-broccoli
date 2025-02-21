@@ -49,6 +49,11 @@ export default function Index() {
     alert('success');
   };
 
+  const sync = async () => {
+    await fetch('/api/sync');
+    alert('success');
+  };
+
   const offboardEmployeesClickHandler = async () => {
     await fetch('/api/offboard');
     alert('success');
@@ -83,11 +88,14 @@ export default function Index() {
       <button onClick={getZippedSignaturesClickHandler}>
         Download Zipped Signatures
       </button>
+      <br />
       <button onClick={emailZippedSignatures}>Email Signatures</button>
       <br />
       <button onClick={updateEmailSignaturesClickHandler}>
         Update Email Signatures
       </button>
+      <br />
+      <button onClick={sync}>Sync Data</button>
       <br />
       <button onClick={offboardEmployeesClickHandler}>
         Offboard Inactive Employees
