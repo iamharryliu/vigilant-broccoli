@@ -1,23 +1,27 @@
 # TODO
 
-- ProtectedRoute
-
-  - Autofocus
-  - change wrapping
-
-- Nx
-  - upgrade Nx
-    - find alternative for recaptcha?
+- **NewTab Extension**
+- **nx-workspace**
   - add alias for `alias run lib:nx-release-publish`
-- Employee Handler
-  - Handle CLI and web service usage.
-  - Finish demo script usage.
-    - Specify receivers of zipped email signatures
+- Reuse
+
+  - Back Button
+  - Select
+  - Transcript Reader
+  - ProtectedRoute
+
+    - Autofocus
+    - change wrapping
+
+- **Employee Handler**
+
+  - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
   - Implement UI CTAs
-- DocsMD
+
+- **DocsMD**
   - Split into separate app.
   - Implement search bar.
-- dotenv
+- **dotenv refactor**
   - import 'dotenv-defaults/config';
 - logging system
 - Google Free Tier Instance
@@ -30,7 +34,6 @@
   - RabbitMQ vs Kafka
   - Load balancing
   - Honeypot vs Recaptcha
-  - [Employee Handler](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
 
 ## vigilant-broccoli
 
