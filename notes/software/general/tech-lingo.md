@@ -21,6 +21,7 @@
 | Depenency Inversion            | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres) |
 | Event Driven Architecture      |                                                                                                                               |
 | Pub/Sub Model                  | Publisher -> Message Broker(routes topics) -> Subscriber                                                                      |
+| LTS                            | Long term support.                                                                                                            |
 
 ## Hot Takes
 

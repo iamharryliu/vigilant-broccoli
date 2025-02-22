@@ -1,5 +1,6 @@
 # Developer Nuances
 
+- Barrel files
 - CPU bound and IO bound
 - Token vs Keys
 - Event Driven Architecture vs Request Responese
