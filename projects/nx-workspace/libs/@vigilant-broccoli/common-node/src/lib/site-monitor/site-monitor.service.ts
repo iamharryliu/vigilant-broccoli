@@ -12,12 +12,12 @@ export class SiteMonitor {
   }
 
   async monitorSiteActivity(site: string): Promise<void> {
-    await SiteMonitor.getSiteStatus(site).then(status => {
+    await SiteMonitor.getSiteStatus(site).then(async status => {
       let message = `${site} is OK.`;
       if (!status) {
         message = `${site} is currently down.`;
         const subject = message;
-        this.emailService.sendEmail({
+        await this.emailService.sendEmail({
           ...DEFAULT_EMAIL_REQUEST,
           subject,
           text: message,
