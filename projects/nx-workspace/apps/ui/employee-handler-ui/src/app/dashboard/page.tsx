@@ -78,6 +78,11 @@ export default function Index() {
     setEmailInput('');
   };
 
+  const postRetentionCleanup = async () => {
+    await fetch('/api/postRetentionCleanup');
+    alert('success');
+  };
+
   return (
     <ProtectedRoute>
       <Navbar />
@@ -110,6 +115,8 @@ export default function Index() {
       <button onClick={manualOffboardClickHandler}>
         Manually Offboard Employees
       </button>
+      <br />
+      <button onClick={postRetentionCleanup}>Post Retention Cleanup</button>
     </ProtectedRoute>
   );
 }

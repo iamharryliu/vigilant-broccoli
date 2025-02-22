@@ -81,7 +81,9 @@ const generateLocalSignatures = async (
 
 const emailZippedSignatures = async (
   handlerConfig: EmployeeHandlerConfig,
-  receivers = process.argv.slice(3),
+  receivers = process.argv.slice(3).length > 0
+    ? process.argv.slice(3)
+    : [process.env.MY_EMAIL],
 ): Promise<void> => {
   await generateLocalSignatures(handlerConfig);
   const attachments = [

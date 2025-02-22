@@ -25,6 +25,7 @@ npx tsx script.ts onboardIncomingEmployees
 npx tsx script.ts generateLocalSignatures
 npx tsx script.ts updateEmailSignatures
 npx tsx script.ts emailZippedSignatures
+npx tsx script.ts syncData
 
 # Offboard
 npx tsx script.ts offboardInactiveEmployees
