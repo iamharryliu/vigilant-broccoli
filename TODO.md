@@ -16,7 +16,6 @@
 - **Employee Handler**
 
   - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
-  - Implement UI CTAs
 
 - **DocsMD**
   - Split into separate app.
