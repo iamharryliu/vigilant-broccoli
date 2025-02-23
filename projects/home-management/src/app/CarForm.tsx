@@ -20,6 +20,46 @@ import {
 } from '@/components/ui/select';
 import { DatePickerWithRange } from './DateRangePicker';
 import { DateRange } from 'react-day-picker';
+import { Calendar } from '@/components/ui/calendar';
+
+type Vehicle = {
+  id: number;
+  name: string;
+  description: string;
+};
+
+const vehicles: Vehicle[] = [
+  {
+    id: 1,
+    name: 'Tesla Model S',
+    description:
+      'A fully electric luxury sedan with cutting-edge technology and impressive range.',
+  },
+  {
+    id: 2,
+    name: 'Ford F-150',
+    description:
+      'A reliable and powerful pickup truck known for its towing capacity and rugged design.',
+  },
+  {
+    id: 3,
+    name: 'Honda Civic',
+    description:
+      'A compact car praised for its fuel efficiency, reliability, and affordability.',
+  },
+  {
+    id: 4,
+    name: 'BMW X5',
+    description:
+      'A luxury SUV combining performance, comfort, and advanced technology features.',
+  },
+  {
+    id: 5,
+    name: 'Ducati Panigale V4',
+    description:
+      'A high-performance superbike built for speed, agility, and precision on the track.',
+  },
+];
 
 type Booking = {
   vehicle: string;
@@ -53,7 +93,8 @@ export default function CarBookingForm() {
   >();
   const [note, setNote] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!selectedVehicle || !bookingDateRange || !note) {
       alert('Please fill in all fields.');
       return;
@@ -120,6 +161,29 @@ export default function CarBookingForm() {
           </form>
         </CardContent>
       </Card>
+      <VehicleDetailView vehicle={vehicles[0]}></VehicleDetailView>
     </div>
+  );
+}
+
+function VehicleDetailView({ vehicle }: { vehicle: Vehicle }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Vehicle</CardTitle>
+        <CardDescription>
+          {vehicle.name} - {vehicle.description}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button>Create New Booking</Button>
+        <Calendar
+          initialFocus
+          mode="range"
+          numberOfMonths={2}
+          disabled={getDisabledDates(bookings)}
+        />
+      </CardContent>
+    </Card>
   );
 }
