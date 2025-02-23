@@ -25,6 +25,9 @@
 ### Commands
 
 ```
+bash <(curl -s -S -L https://gam-shortn.appspot.com/gam-install)
+bash <(curl -s -S -L https://gyb-shortn.jaylee.us/gyb-install)
+
 alias gam="~/bin/gam/gam"
 alias gyb="~/bin/gyb/gyb"
 
