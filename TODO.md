@@ -1,5 +1,6 @@
 # TODO
 
+- **migrate to pnpm**
 - **NewTab Extension**
 - **nx-workspace**
   - add alias for `alias run lib:nx-release-publish`
