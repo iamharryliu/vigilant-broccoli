@@ -1,5 +1,30 @@
 # TODO
 
+- **Home Management**
+
+  - **Vehicle Calendar**
+    - Calendar for booking behicle.
+    - Create Booking
+      - Vehicle
+        - Name
+        - Model
+        - Notes
+    - View Bookings
+    - Edit Booking
+    - Rules
+  - Household Rules
+    - Create Rule
+      - name
+      - description
+      - position
+  - Item Finder
+    - Image library to remember where things are
+    - Keyword/tag searching
+    - Create Entry
+      - name
+      - description
+      - image[]
+
 - **migrate to pnpm**
 - **NewTab Extension**
 - **nx-workspace**
