@@ -8,7 +8,7 @@
 
 #### Personal Interests
 
-[![Spotify Badge](https://img.shields.io/badge/Spotify-1ED760?style=for-the-badge&logo=spotify&logoColor=white)](https://open.spotify.com/user/22z5agodra7fwhm2erdqn5bjq) [![Goodreads](https://img.shields.io/badge/Goodreads-F3F1EA?style=for-the-badge&logo=goodreads&logoColor=372213)](https://www.goodreads.com/user/show/74043883-harry) [MyAnimeList](https://img.shields.io/badge/Myanimelist-2E51A2?style=for-the-badge&logo=myanimelist&logoColor=white)
+[![Spotify Badge](https://img.shields.io/badge/Spotify-1ED760?style=for-the-badge&logo=spotify&logoColor=white)](https://open.spotify.com/user/22z5agodra7fwhm2erdqn5bjq) [![Goodreads](https://img.shields.io/badge/Goodreads-F3F1EA?style=for-the-badge&logo=goodreads&logoColor=372213)](https://www.goodreads.com/user/show/74043883-harry) [![MyAnimeList Badge](https://img.shields.io/badge/Myanimelist-2E51A2?style=for-the-badge&logo=myanimelist&logoColor=white)](https://myanimelist.net/profile/prettydamntired)
 [![Secondhand Store](https://img.shields.io/badge/Secondhand_Store-20B2AA?style=for-the-badge)](https://www.instagram.com/harrysellsshit/)
 [![TorontoCitySkate Badge](https://img.shields.io/badge/Toronto_City_Skate-20B2AA?style=for-the-badge)](https://www.instagram.com/torontocityskate/) [![Cloud8Skate Badge](https://img.shields.io/badge/Cloud8Skate_🛼-20B2AA?style=for-the-badge)](https://cloud8skate.com/)
 [![Instagram Badge](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com/prettydamntired/)
