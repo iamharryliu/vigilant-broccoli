@@ -4,31 +4,22 @@
 
 - Python
 
-## Setup and Run (for Mac)
-
-**Setup**
+## Commands
 
 ```
-cd ~
-git clone https://github.com/iamharryliu/spotify-to-mp3.git
-cd spotify-to-mp3
-
+# Setup
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 spotdl --download-ffmpeg
-```
 
-**Execute Script** - Output path can be set by environment variable MUSIC_LIBRARY but by default is it '~/Spotify_to_MP3_Downloads'
-
-```
+# Run script. Output path can be set by environment variable MUSIC_LIBRARY but by default is it '~/Spotify_to_MP3_Downloads'
 python download_music.py
-```
 
-**Cron automation** for keeping playlists in sync.
+# Upgrade spotdl
+pip install --upgrade spotdl
 
-```
-crontab -e
+# cronjob
 0 */1 * * * cd ~/spotify-to-mp3/ && source venv/bin/activate && python download_music.py
 ```
 
