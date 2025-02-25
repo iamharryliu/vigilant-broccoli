@@ -21,6 +21,14 @@ import {
 import { DatePickerWithRange } from './DateRangePicker';
 import { DateRange } from 'react-day-picker';
 import { Calendar } from '@/components/ui/calendar';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 type Vehicle = {
   id: number;
@@ -167,6 +175,9 @@ export default function CarBookingForm() {
 }
 
 function VehicleDetailView({ vehicle }: { vehicle: Vehicle }) {
+  function createNewBooking() {
+    console.log('create new booking for ');
+  }
   return (
     <Card>
       <CardHeader>
@@ -177,6 +188,18 @@ function VehicleDetailView({ vehicle }: { vehicle: Vehicle }) {
       </CardHeader>
       <CardContent>
         <Button>Create New Booking</Button>
+        <Dialog>
+          <DialogTrigger>Open</DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Are you absolutely sure?</DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
         <Calendar
           initialFocus
           mode="range"
