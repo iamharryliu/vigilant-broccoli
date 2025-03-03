@@ -1,5 +1,6 @@
 # TODO
 
+- eslint proseWrap: "preserve"
 - **Home Management**
 
   - **Vehicle Calendar**
