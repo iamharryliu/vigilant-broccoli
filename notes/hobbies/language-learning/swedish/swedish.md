@@ -111,8 +111,158 @@ om - about/if/concerning
 hjut at livet - enjoy life
 att varka = att ha ont
 lunchar jag = ata lunch
+
 kppla - connect
 koppla av - relax
+chilla slappna av
+
 vila - rest
 nyttig - healthy
 sok - letaefter
+
+flytta hemifran
+bo sjalv
+ta konkort
+
+man blir myndig
+vuxen
+ta konkort
+ta bankkort
+
+sjunger
+sangare
+sangerska
+
+startk
+
+man kan gora varnplikten
+sund
+sund livstil
+latt/tung
+fix sig sjalv
+
+hus
+lagenhet
+bosta
+
+arbetslivserfarenhet
+nar far lisa besked om
+skrattarr glatt
+
+kommer forbi
+
+utmaning
+
+trivs
+
+ansvar
+
+han kanner till skolans rutiner
+
+ungefar halften befolkning paverkas av arstiderna
+
+pa hosten
+deprimerad
+
+dat ar ett helt ar till nasta sommar
+
+helt
+
+vi staller fram klocken
+
+jobbig
+
+plotsligt mycket ljusare
+
+da kommer kroppen i obalans och man kan bli trott
+
+tidigt
+
+orkar
+
+vanligt
+
+manniskor
+
+forkylda
+
+inomhus
+
+lattare
+
+dessutom
+
+far man
+
+samre immunforvsvar
+
+viktigt
+
+vi ska halla oss friska och pigga
+
+tillrackligt
+
+ljus producerar kroppe mer av somnhormonet melatonin
+
+fa brist
+
+bildas nar solen nar huden
+
+fet fisk som lax
+och i mejeriprodukter
+
+mojlighet att resa till ett soligt land
+
+dar fick man gratis ljusterapi medan man vantade pa bussen
+
+man kan klara av den langa vintern|
+
+varfor blir vissa manniskor trotta pa varend
+
+energi
+ungefar
+en befolkning
+paverkar
+en arstid
+deprimerad
+jobbig
+plotsligt
+obalans
+dagsljus
+gaspar
+spenderar
+en kolhydrat
+gar upp i vikt
+inomhus
+en bakterie
+sprids
+
+dessutom
+samre
+ett immunforsvar
+tillracklig
+somn
+ett hormon
+brist pa
+bildar
+hud
+rekommenderar
+ett satt
+en mejeriprodukt
+en mojlighet
+en terapi
+liknar
+en busskur
+
+oense
+
+upp i vikt
+
+du kan välja
+
+vinna
+förlora
+många människor dör
+
+anslut - connect
+slut to end

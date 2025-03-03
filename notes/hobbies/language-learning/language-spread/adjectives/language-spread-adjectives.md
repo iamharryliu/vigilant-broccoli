@@ -44,3 +44,5 @@
 | full      | mätt                |
 | hungry    | hungrig             |
 | thirsty   | törstig             |
+| heavy     | tung                |
+| latt      | light               |
