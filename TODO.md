@@ -1,5 +1,7 @@
 # TODO
 
+https://chatgpt.com/c/67c6ba0c-863c-800b-a96b-edbb0eb83c7a
+
 - eslint proseWrap: "preserve"
 - **Home Management**
 
