@@ -59,3 +59,7 @@ if ask "Setup macOS preferences?"; then
     chmod +x "$HOME/$MAC_SETUP_DIR/setup_macos_preferences.sh"
     . $HOME/$MAC_SETUP_DIR/setup_macos_preferences.sh
 fi
+
+if ask "Add wallpaper?"; then
+    osascript -e 'tell application "System Events" to set picture of every desktop to "/Users/hliu/vigilant-broccoli/wallpapers/ducky.jpg"'
+fi
