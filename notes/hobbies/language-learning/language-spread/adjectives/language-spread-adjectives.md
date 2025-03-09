@@ -5,9 +5,9 @@
 | this      | den här             | ceci - ce/cette/c' | esto            |                   |                 |
 | that      | den där             | celà - ce/cette/c' | eso             |                   |                 |
 | never     | aldrig              | jamais             | nunca           |                   |                 |
-| seldom    | sällan              | rarement           | raramente       |
+| seldom    | sällan              | rarement           | raramente       |                   |                 |
 | sometimes | ibland              | quelquefois        | a veces         |                   |                 |
-| often     | ofta                | souvent            | a menudo        |
+| often     | ofta                | souvent            | a menudo        |                   |                 |
 | always    | alltid              | toujours           | siempre         | sempre            | sempre          |
 | both      | båda                |                    |                 |                   |                 |
 | there is  | det finns           | il y a             | hay             |                   |                 |
@@ -34,15 +34,25 @@
 | cold      | kall                | froid              | frío            |                   |                 |
 | strong    | stark               | fort               | fuerte          |                   |                 |
 | cold      | svag                | faible             | débil           |                   |                 |
-| rich      | rik                 |
-| poor      | fattig              |
-| together  | tilsammans          |
-| alone     | ensam               |
-| ledig     | free                |
-| nice      | trevlig             |
-| only      | bara                | seulement          |
-| full      | mätt                |
-| hungry    | hungrig             |
-| thirsty   | törstig             |
-| heavy     | tung                |
-| latt      | light               |
+| rich      | rik                 |                    |                 |                   |                 |
+| poor      | fattig              |                    |                 |                   |                 |
+| together  | tilsammans          |                    |                 |                   |                 |
+| alone     | ensam               |                    |                 |                   |                 |
+| ledig     | free                |                    |                 |                   |                 |
+| nice      | trevlig             |                    |                 |                   |                 |
+| only      | bara                | seulement          |                 |                   |                 |
+| full      | mätt                |                    |                 |                   |                 |
+| hungry    | hungrig             |                    |                 |                   |                 |
+| thirsty   | törstig             |                    |                 |                   |                 |
+| heavy     | tung                |                    |                 |                   |                 |
+| latt      | light               |                    |                 |                   |                 |
+| open      | öppen               |                    |                 |                   |                 |
+| closed    | stängd              |                    |                 |                   |                 |
+| first     | första              |                    |                 |                   |                 |
+| last      | sista               |                    |                 |                   |                 |
+| new       | nya                 |                    |                 |                   |                 |
+| old       | gamla               |                    |                 |                   |                 |
+| fördel    | advantage           |                    |                 |                   |                 |
+| nackdel   | disadvantage        |                    |                 |                   |                 |
+| right     | rätt                |                    |                 |                   |                 |
+| wrong     | fel                 |

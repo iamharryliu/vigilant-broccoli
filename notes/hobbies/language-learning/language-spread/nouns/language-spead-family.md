@@ -17,3 +17,5 @@
 | daughter    | dotter          | fille         |
 | grandchild  | barnbarn        | petit enfant  |
 | step-       | styv-           |               |
+| husband     | man             |               |
+| wife        | fru             |               |

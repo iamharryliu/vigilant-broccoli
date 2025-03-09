@@ -57,10 +57,28 @@ Boken (the book)
 Huset (the house)
 De stora hundarna (the big dogs)
 
-tror/tycka/tanka/fundera
-köper/handlar/shoppar
 **Nuances**
 i/for/pa/till
+tror/tycka/tanka/fundera
+köper/handlar/shoppar
+prova/försoka
+
+**Ticky/Similar Looking**
+anslut, connect _vs_ slut, to end
+tycker att vs tycker om
+gratis, free _vs_ grattis, congratulations
+stader / städer - cities / clean
+
+**Equivalents**
+att varka = att ha ont
+koppla - connect
+koppla av - relax
+chilla slappna av
+
+**Phrases**
+hjut at livet - enjoy life
+jag är frisk - I am healthy
+passa dig - take care of yourself
 
 - till example vs for example
 
@@ -69,15 +87,10 @@ kan/kunna - can/be able
 det hander - it happens
 pyte lite - very little
 
-p
 onödigt nödigt
 kräver
-jag är frisk - I am healthy
 hitta på något/saker - make up something
 man maste passa tiden - you must keep up with the times
-passa dig - take care of yourself
-gratis / grattis - free / congratulations
-stader / städer - cities / clean
 sund livsstil - healthy lifestyle
 snäll / taskig - nice / Xmean
 
@@ -108,13 +121,7 @@ Example: "Ett fotbollslag" (A soccer team).
 
 om - about/if/concerning
 
-hjut at livet - enjoy life
-att varka = att ha ont
 lunchar jag = ata lunch
-
-kppla - connect
-koppla av - relax
-chilla slappna av
 
 vila - rest
 nyttig - healthy
@@ -264,5 +271,81 @@ vinna
 förlora
 många människor dör
 
-anslut - connect
-slut to end
+fastar
+fastemanad
+bryta fasta
+vad behover du gora for att
+genom att - through
+lagga mer tid pa att - to spend more time on
+snål
+fatolj
+invanare
+larare
+bälte
+elev
+bro
+radergummi
+haftë
+meddelande
+område
+handske
+bulle
+dörr
+tak
+golv
+brev
+frimärke
+radergummi
+skadat
+tungt
+resa
+foto
+skulle du vilja bo i ett kollectiv
+de hyr en femma och startar ett kollectiv
+har du delat bostad nagon
+var delade ni bostad
+lagenhet
+var brukar de helst umgas
+regler
+de hoppas att fler bor i kollectiv i framtiden
+helst
+litar
+stör
+har du nagon granne som du ofta stor dig pa
+nyfikna - curious
+det behovs/det är det är nödvändigt
+hellre - rather
+undvika - avoid
+ett kollectiv
+en flickvan
+en kilometer
+var sin
+flyttar ihop
+istallet
+nyfiken
+en medlem
+kemi
+it
+en konsult
+en forskallare
+en kvadratmeter
+gör sig i ordning
+hellre
+snackar
+ett krav
+umgas
+ar for sig sjalv
+paktrisk
+en fordel gemensam
+undviker
+en konflick
+visar hansyn
+sager till
+i forvag
+rak och arlig
+en lapp
+aven om
+en barnpassing
+teven sallan ar pa
+ett eget rum
+arga lappar
