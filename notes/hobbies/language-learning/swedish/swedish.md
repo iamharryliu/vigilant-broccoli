@@ -349,3 +349,32 @@ en barnpassing
 teven sallan ar pa
 ett eget rum
 arga lappar
+
+trivs du i ditt område varfor - Do you feel comfortable in your area? Why?
+mysigt - Cozy
+darfor/for att/dar foratt/eftersom
+är ni taggage/du taggad? - are you excited
+
+trivs du i ditt område varfor
+mysigt
+hyr
+de far barn iframtiden
+de har nagra gemensamma regler
+de trivs
+arga lappar
+rak och arlig
+ett kollectiv passar
+nagra regler
+alla har ett eget rum
+jag gor mig i ordning
+jag vill vara for mig sjalv nar jag ar stressad
+granne
+viktig
+det finns nagra
+hellre
+tvång
+möjlig
+jag vann
+knapp
+läpp
+lapp
