@@ -18,11 +18,64 @@ Nej, jag talar inte engelska
 Mitt nummer ar
 Hur mycket kostar den
 
-Common irregular verb conjugations
-i början
-i mitten
-i slutet
-se slottet
+# Common Phrases
+
+jag ville ha - I will have
+
+Jag har en fråga - I have a question
+Kan jag ställa en fråga? - Can I ask a question?
+Kan du repetera igen?
+Kan vi använda?
+Kan du omförklara det igen? (This is a better version of "kan du om förklara det igen," where "omförklara" means "re-explain")
+Hur säger man... på svenska? - How do you say... in Swedish?
+Varför det så? - Why is it like that?
+Hur stavas...? - How is it spelled...?
+Förstår ni? – Do you understand?
+Följer ni med? – Are you coming along? or Are you following?
+Är det otydligt? – Is it unclear?
+Nej, vi är emot, inte med. – No, we are against it, not with it.
+Jag skojar, ett uttal. – I'm joking, a pronunciation.
+Hur vågar du? – How dare you?
+
+# Phrases
+
+pyte lite - very little
+hjut at livet - enjoy life
+jag är frisk - I am healthy
+passa dig - watch yourself
+hitta på något/saker - make up something
+man maste passa tiden - you must keep up with the times
+sund livsstil - healthy lifestyle
+
+# Samma Sak
+
+att varka = att ha ont
+koppla - connect
+koppla av - relax
+chilla slappna av
+
+# Nuances
+
+- i/for/pa/till
+- tror/tycka/tanka/fundera
+- köper/handlar/shoppar
+- prova/försoka
+- till example vs for example
+
+# Ticky/Similar Looking
+
+anslut, connect _vs_ slut, to end
+tycker att vs tycker om
+gratis, free _vs_ grattis, congratulations
+stader / städer - cities / clean
+en lag / ett lag - law / team
+
+# Vocabulary
+
+ihop - together
+erbjudandet - the offer
+kräver - requires
+
 dyrt
 billigt
 att sola
@@ -31,124 +84,40 @@ det blåser
 det regnat
 vilade
 ett täcke
-erbjudandet
 fina
-ihop
 ett lakan
 saljare
 oppet köp
 passar de bra
 inte i den fargen
-jag ville ha
 jag titta bara
-
-"Bestämd" (definite) and "obestämd" (indefinite) are grammatical terms used in Swedish to describe nouns, adjectives, and articles.
-
-Obestämd form (Indefinite)
-Used when talking about something in a general or non-specific way.
-
-En bok (a book)
-Ett hus (a house)
-Stora hundar (big dogs)
-Bestämd form (Definite)
-Used when talking about something specific that is known to the speaker and listener.
-
-Boken (the book)
-Huset (the house)
-De stora hundarna (the big dogs)
-
-**Nuances**
-i/for/pa/till
-tror/tycka/tanka/fundera
-köper/handlar/shoppar
-prova/försoka
-
-**Ticky/Similar Looking**
-anslut, connect _vs_ slut, to end
-tycker att vs tycker om
-gratis, free _vs_ grattis, congratulations
-stader / städer - cities / clean
-
-**Equivalents**
-att varka = att ha ont
-koppla - connect
-koppla av - relax
-chilla slappna av
-
-**Phrases**
-hjut at livet - enjoy life
-jag är frisk - I am healthy
-passa dig - take care of yourself
-
-- till example vs for example
 
 kan/kunna - can/be able
 
 det hander - it happens
-pyte lite - very little
 
 onödigt nödigt
-kräver
-hitta på något/saker - make up something
-man maste passa tiden - you must keep up with the times
-sund livsstil - healthy lifestyle
-snäll / taskig - nice / Xmean
+snäll / taskig - nice / mean
 
 auxiliary / cluse main / clause / subordinate clause
-
-"Jag har en fråga" (I have a question).
-"Kan jag ställa en fråga?" (Can I ask a question?).
-
-Kan du repetera igen? (Correct)
-Kan vi använda? (Correct spelling for "använda")
-Kan du omförklara det igen? (This is a better version of "kan du om förklara det igen," where "omförklara" means "re-explain")
-
-Hur säger man... på svenska? (How do you say... in Swedish?)
-Varför det så? (Why is it like that?)
-Hur stavas...? (How is it spelled...?)
-Förstår ni? – "Do you understand?"
-Följer ni med? – "Are you coming along?" or "Are you following?"
-Är det otydligt? – "Is it unclear?"
-Nej, vi är emot, inte med. – "No, we are against it, not with it."
-Jag skojar, ett uttal. – "I'm joking, a pronunciation."
-Hur vågar du? – "How dare you?"
-
-In Swedish, "en lag" and "ett lag" have different meanings and uses, even though they sound similar.
-En lag – This means "a law" or "a regulation." The word "lag" in this case refers to a formal rule or legal framework.
-Example: "En lag om trafikregler" (A law about traffic regulations).
-Ett lag – This means "a team" or "a group" in the context of sports, competitions, or organizations. Here, "lag" refers to a collective group of people working together.
-Example: "Ett fotbollslag" (A soccer team).
-
 om - about/if/concerning
-
 lunchar jag = ata lunch
-
 vila - rest
 nyttig - healthy
 sok - letaefter
-
 flytta hemifran
 bo sjalv
 ta konkort
-
 man blir myndig
 vuxen
 ta konkort
 ta bankkort
-
 sjunger
 sangare
 sangerska
-
-startk
-
 man kan gora varnplikten
-sund
-sund livstil
-latt/tung
 fix sig sjalv
 
-hus
 lagenhet
 bosta
 

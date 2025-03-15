@@ -12,8 +12,10 @@
 | over             | över      | sur          |
 | under            | under     | sous         |
 | between          | mellan    | entre        |
+| in the beginning | i början  |              |
 | in the middle    | i mitten  | au milieu    |
 | in the middle of | mitt i/på | au milieu de |
+| at the end       | i slutet  |              |
 | opposite         | mittemot  | en face de   |
 | next to          | bredvid   | à côté de    |
 | corner of        | i hörnet  | dans le coin |
