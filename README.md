@@ -22,6 +22,7 @@ Setup RSA key.
 
 ```
 ssh-keygen -b 4096 -t rsa
+cat .ssh/id_rsa.pub| pbcopy
 ```
 
 Clone monorepo and run install script.
