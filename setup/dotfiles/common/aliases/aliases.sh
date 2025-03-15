@@ -37,3 +37,10 @@ function ask() {
 
     [ "$response_lc" = "y" ]
 }
+
+explain_shell() {
+    local query="$1";
+    [ -z "$query" ] && echo "Usage: explain_shell '<command>'" && return 1;
+    local url="https://explainshell.com/explain?cmd=$(echo "$query" | jq -sRr @uri)";
+    command -v xdg-open > /dev/null && xdg-open "$url" || command -v open > /dev/null && open "$url" || echo "Open manually: $url";
+}

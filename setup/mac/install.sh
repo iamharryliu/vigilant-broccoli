@@ -63,3 +63,7 @@ fi
 if ask "Add wallpaper?"; then
     osascript -e 'tell application "System Events" to set picture of every desktop to "/Users/hliu/vigilant-broccoli/wallpapers/ducky.jpg"'
 fi
+
+if ask "Configure terminal theme?"; then
+    p10k configure
+fi
