@@ -159,12 +159,21 @@ function pushfile() {
     local filename=$1
     local message=$2
     local filepath
-    filepath=$(find . -name "$filename" -not -path "*/node_modules/*" -print -quit)
 
-    if [[ -n $filepath ]]; then
+    # First, check for the file in the current directory before doing a full search
+    if [[ -f $filename ]]; then
+        filepath=$filename
+    else
+        filepath=$(find . -name "$filename" -not -path "*/node_modules/*" -print -quit)
+    fi
+
+    if [[ -n "$filepath" ]]; then
         git add "$filepath"
-        git commit -m "$message"
-        git push
+        if git commit -m "$message"; then
+            git push
+        else
+            echo "Git commit failed."
+        fi
     else
         echo "File not found: $filename"
     fi
