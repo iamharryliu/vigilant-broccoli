@@ -158,12 +158,16 @@ alias gpushf='gpush --force'
 function pushfile() {
     local filename=$1
     local message=$2
-    find . -name "$filename" -not -path "*/node_modules/*" | while read -r filepath; do
+    local filepath
+    filepath=$(find . -name "$filename" -not -path "*/node_modules/*" -print -quit)
+
+    if [[ -n $filepath ]]; then
         git add "$filepath"
         git commit -m "$message"
         git push
-        cd - >/dev/null || exit
-    done
+    else
+        echo "File not found: $filename"
+    fi
 }
 
 function pushreadme() {
