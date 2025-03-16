@@ -180,19 +180,19 @@ function pushfile() {
 }
 
 function pushreadme() {
-    pushfile "README.md" "Update README.md"
+    pushfile "README.md" "docs(readme): update README.md"
 }
 
 function pushignore() {
-    pushfile ".gitignore" "Update .gitignore"
+    pushfile ".gitignore" "chore(gitignore): update .gitignore"
 }
 
 function pushtodo() {
-    pushfile "TODO.md" "Update TODO.md file."
+    pushfile "TODO.md" "docs(todo): update TODO.md file."
 }
 
 function pushcron() {
-    pushfile "crontab" "Update crontab."
+    pushfile "crontab" "docs(crontab): update crontab."
 }
 
 alias gpull='git pull --autostash --rebase'
