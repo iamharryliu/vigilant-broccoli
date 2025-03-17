@@ -9,26 +9,21 @@ vigilant-broccoli, my personal open source development kit.
 
 ### Macbook Pro (MBP)
 
-Install Brew and Git.
-
 ```
+# Install Brew and Git.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 export PATH="/opt/homebrew/bin:$PATH" >> ~/.zshrc
 brew install git
-```
 
-Setup RSA key.
+# Clone using HTTP.
+cd ~ && git clone https://github.com/iamharryliu/vigilant-broccoli.git
 
-```
+# Clone using SSH.
 ssh-keygen -b 4096 -t rsa
 cat .ssh/id_rsa.pub| pbcopy
-```
-
-Clone monorepo and run install script.
-
-```
-cd ~ && git clone https://github.com/iamharryliu/vigilant-broccoli.git
 cd ~ && git clone git@github.com:iamharryliu/vigilant-broccoli.git
+
+# Run install script.
 chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 ~/vigilant-broccoli/setup/mac/install.sh
 ```
