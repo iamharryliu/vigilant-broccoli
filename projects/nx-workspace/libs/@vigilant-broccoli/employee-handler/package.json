@@ -1,6 +1,6 @@
 {
   "name": "@vigilant-broccoli/employee-handler",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "dependencies": {
     "@swc/helpers": "0.5.13",
     "@vigilant-broccoli/common-node": "0.0.4",
