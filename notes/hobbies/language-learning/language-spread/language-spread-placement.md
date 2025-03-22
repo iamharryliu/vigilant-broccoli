@@ -3,7 +3,7 @@
 | English          | Swedish   | French       |
 | :--------------- | :-------- | :----------- |
 | left             | vänster   | gauche       |
-| right            | rätt      | droite       |
+| right            | höger     | droite       |
 | in front of      | framför   | devant       |
 | behind           | bakom     | derrière     |
 | in               | i         | dans         |
@@ -27,3 +27,6 @@
 | to place         | placera   | placer       |
 | to sit           | sitta     | s'asseoir    |
 | to set           | sätta     | mettre       |
+| from             | från      |              |
+| to               | mot       |              |
+| around           | runt      |              |

@@ -1,27 +1,20 @@
 # Swedish
 
-<!-- TODO: organize -->
+## Personal Introduction
 
-Hej!
 Jag heter Harry.
 Jag kommer från Kanada
 Jag är tjugoåtta år (gammal)
-Jag pratar Engelska, lite Kantonesiska, och jättelite Svenska
-Jag har bott i PLACE i AMOUNT_OF_TIME
+Jag pratar Engelska, lite Kantonesiska, och pytelite Svenska.
+Jag har bott i Mälmo i AMOUNT_OF_TIME
 Jag studerar just nu Svenska
-Trevligt att traffas
-forlat, jag ar jatteledsen for det
-Talar du engelska?
-Kan du tala engelska?
-Lite
-Nej, jag talar inte engelska
-Mitt nummer ar
-Hur mycket kostar den
 
 # Common Phrases
 
 jag ville ha - I will have
-
+Mitt nummer ar - my number is
+Hur mycket kostar den - hor much does it cost
+forlat, jag ar jatteledsen for det
 Jag har en fråga - I have a question
 Kan jag ställa en fråga? - Can I ask a question?
 Kan du repetera igen?
@@ -36,6 +29,10 @@ Följer ni med? – Are you coming along? or Are you following?
 Nej, vi är emot, inte med. – No, we are against it, not with it.
 Jag skojar, ett uttal. – I'm joking, a pronunciation.
 Hur vågar du? – How dare you?
+
+Talar du engelska?
+Kan du tala engelska?
+Nej, jag talar inte engelska
 
 # Phrases
 
@@ -347,3 +344,16 @@ jag vann
 knapp
 läpp
 lapp
+hos - with, at, by, among
+genom - through
+
+Mannen tar pengar ur plånboken.
+ur - out
+staket
+sjön
+hos
+genom
+åt höger
+åt vänster
+Vad är det för fel på Pascals dotter?
+Får de tid på hälsocentralen samma dag?
