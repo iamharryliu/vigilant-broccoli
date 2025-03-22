@@ -4,15 +4,14 @@
 
 ## Commands
 
-Access cron file.
-
 ```
 crontab -e
-```
 
-Clear Mail
+echo $PATH
+PATH='OUTPUT_FROM_PATH'
+* * * * *
 
-```
+# Clear mail
 > /var/mail/[username]
 ```
 
