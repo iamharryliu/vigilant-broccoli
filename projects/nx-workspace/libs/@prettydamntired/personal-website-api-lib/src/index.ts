@@ -21,6 +21,6 @@ export const DEFAULT_APP_EMAIL_CONFIG = {
   [APP_NAME.CLOUD_8_SKATE]: {
     ...DEFAULT_EMAIL_MESSAGE,
     from: `'cloud8skate' <${process.env.MY_EMAIL}>`,
-    to: `'cloud8skate' <${process.env.MY_EMAIL}>`,
+    to: `'cloud8skate' cloud8.ca@gmail.com`,
   } as Email,
 };
