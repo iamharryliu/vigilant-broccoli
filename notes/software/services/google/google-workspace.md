@@ -75,3 +75,5 @@ https://www.googleapis.com/auth/spreadsheets,
 https://www.googleapis.com/auth/tasks,
 https://www.googleapis.com/auth/userinfo.email
 ```
+
+- Workspace Contact - Google Admin Console > Search for contact sharing

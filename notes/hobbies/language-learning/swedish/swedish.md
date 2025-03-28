@@ -357,3 +357,112 @@ genom
 åt vänster
 Vad är det för fel på Pascals dotter?
 Får de tid på hälsocentralen samma dag?
+
+ett möte - vi har ett viktigt
+jag möter dig imorgon kl 18
+vi ses imorgon
+vi möts imorgen
+jag träggar dig
+vi träffas imorgon
+
+jag kramas dig
+vi kramas
+vilken värme
+jag gick en promenad
+trots att
+var trött
+
+Jag sticker nu / Jag gå nu
+Stick härifrån
+
+skäcka != tända
+torka != blöta / väta
+kämpar
+väldig
+torr
+en mark
+en eld
+sprider sig
+en brevlåda
+en fotbollsplan
+hjälper till
+en forskare
+global en uppvärmning
+en temperatur
+en jord
+ökar
+släpper ut
+koldioxid
+en atmosfär
+en gas
+en konsumtion
+värmer upp
+ett växthus
+
+leder till
+en naturkatastrof
+en fläkt
+ett klimat
+käll sorterar
+mot byn
+i markerna
+vi gör ju redan
+tyst
+i stan
+en bild
+ett tag
+en stund
+överallt
+varme
+han möts av en
+hon ville
+redan
+svår att släcka
+källsortering
+källsorterar
+trots
+en glass
+jag laser i tidningen att
+råd
+vilse
+hur kände
+längtar
+var ligger den
+hur ser skolan ut
+ändra
+bjuda
+fick
+3 kända personer
+jämförs
+soporna
+ropar
+kassarna
+det är inte klockt
+soprummet
+tömmer
+kassarna
+begagnade
+dessutom
+varor
+lösvikt
+
+hon har tagit det
+bränder
+klättrande
+att klättra
+cykling
+jag kan röra mig snabbt
+rädd
+rädd
+att använda
+använd google map
+
+tyst
+högt
+bullrig
+sjö
+kort
+biljett
+mobiltelefon
+samtal
+kortare
