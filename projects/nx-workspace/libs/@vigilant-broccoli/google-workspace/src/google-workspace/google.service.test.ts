@@ -1,12 +1,13 @@
 import { GoogleService } from './google.service';
-import { getDateInISOFormat, runGAMReadCommand } from './gam.api';
+import { getDateInISOFormat } from './gam.api';
 import { ShellUtils } from '@vigilant-broccoli/common-node';
+import { runGamReadCommand } from './google.utils';
 
 jest.mock('@vigilant-broccoli/common-node');
-jest.mock('./gam.api', () => {
+jest.mock('./google.utils', () => {
   return {
-    ...jest.requireActual('./gam.api'),
-    runGAMReadCommand: jest.fn(),
+    ...jest.requireActual('./google.utils'),
+    runGamReadCommand: jest.fn(),
   };
 });
 
@@ -36,17 +37,10 @@ describe('google.service', () => {
       MOCK.POST_RETENTION_EMAIL,
       MOCK.NUMBER_OF_MONTHS_OF_RETENTION,
     );
-    expect(runGAMReadCommand).toHaveBeenCalledWith(getDriveFilesCommand);
+    expect(runGamReadCommand).toHaveBeenCalledWith(getDriveFilesCommand);
   });
 
   test('deleteEmailsOlderThanNMonths', async () => {
-    console.log(
-      await GoogleService.deleteEmailsOlderThanNMonths(
-        MOCK.POST_RETENTION_EMAIL,
-        MOCK.NUMBER_OF_MONTHS_OF_RETENTION,
-      ),
-    );
-    expect('t').toEqual('t');
     await GoogleService.deleteEmailsOlderThanNMonths(
       MOCK.POST_RETENTION_EMAIL,
       MOCK.NUMBER_OF_MONTHS_OF_RETENTION,
