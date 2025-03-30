@@ -39,3 +39,29 @@ export interface EmployeeHandlerConfig {
     [key: string]: (...args: any[]) => Promise<void>;
   };
 }
+
+export interface Office {
+  name: string;
+  address: string;
+  groupEmail: string;
+  mapUrl: string;
+}
+
+export type CompanyOffice = {
+  [K in string]: Office;
+};
+
+export interface WorkspaceGroup {
+  EMAIL: string;
+  ROLES: string[];
+}
+
+export interface EmployeeEmailSignature {
+  displayName: string;
+  title: string;
+  office: string;
+  image: string;
+  phoneNumber: string;
+  email: string;
+  linkedInURL?: string;
+}
