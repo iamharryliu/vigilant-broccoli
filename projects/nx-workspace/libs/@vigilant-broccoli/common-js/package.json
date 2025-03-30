@@ -4,7 +4,7 @@
   "dependencies": {
     "vite": "^5.0.0",
     "vite-plugin-dts": "~3.8.1",
-    "@nx/vite": "19.6.5"
+    "@nx/vite": "19.8.9"
   },
   "main": "./index.js",
   "module": "./index.mjs",

@@ -1,7 +1,5 @@
 export * from './lib/utils';
 import './lib/node-env/env';
-// Consts
-export * from './lib/file-system/file-system.consts';
 // Date
 export * from './lib/date/date.consts';
 export * from './lib/date/date.utils';

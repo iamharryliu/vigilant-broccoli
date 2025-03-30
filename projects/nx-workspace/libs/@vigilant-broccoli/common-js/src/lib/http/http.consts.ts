@@ -25,3 +25,23 @@ export const HTTP_STATUS_CODES = {
   ...HTTP_SUCCESS_CODES,
   ...HTTP_ERROR_CODES,
 };
+
+export const HTTP_HEADERS = {
+  ACCEPT: {
+    JSON: { Accept: 'application/json' },
+    HTML: { Accept: 'text/html' },
+    XML: { Accept: 'application/xml' },
+    ANY: { Accept: '*/*' },
+  },
+
+  CONTENT_TYPE: {
+    JSON: { 'Content-Type': 'application/json' },
+    FORM: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    MULTIPART: { 'Content-Type': 'multipart/form-data' },
+    TEXT: { 'Content-Type': 'text/plain' },
+  },
+
+  AUTHORIZATION: (token: string) => ({
+    Authorization: `Bearer ${token}`,
+  }),
+};

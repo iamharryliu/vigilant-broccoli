@@ -1,5 +1,5 @@
-import { ENVIRONMENT_TYPE } from '@vigilant-broccoli/common-js';
 import { spawn } from 'child_process';
+import { isProdAndNotDryRun } from './shell.consts';
 
 const runShellCommand = (
   cmd: string,
@@ -33,10 +33,7 @@ const runShellCommand = (
 };
 
 const runUpdateShellCommand = async (cmd: string): Promise<void> => {
-  if (
-    process.env.NODE_ENV === ENVIRONMENT_TYPE.PRODUCTION &&
-    !process.argv.includes('--dry-run')
-  ) {
+  if (isProdAndNotDryRun) {
     return (await runShellCommand(cmd)) as void;
   }
 };
