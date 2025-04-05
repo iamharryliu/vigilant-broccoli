@@ -1,6 +1,6 @@
 {
   "name": "@vigilant-broccoli/google-workspace",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "dependencies": {
     "@swc/helpers": "0.5.13",
     "@vigilant-broccoli/common-node": "*"

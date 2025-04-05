@@ -2,7 +2,9 @@ import path from 'path';
 import { GamCommand } from './gam.api';
 import { EMAIL_BACKUP_DIRECTORY } from './google.consts';
 import {
+  Batch,
   EmailSignature,
+  GoogleManagerUpdate,
   GoogleUserOrganization,
   IncomingUser,
 } from './google.model';
@@ -12,7 +14,6 @@ import {
   ShellUtils,
   TMP_PATH,
 } from '@vigilant-broccoli/common-node';
-import { Batch } from './google.types';
 
 const getEmailBackupFilepath = (email: string): string => {
   return path.resolve(EMAIL_BACKUP_DIRECTORY, email);
@@ -74,6 +75,15 @@ const batchAddUserToAssociatedGroups = async (
     )
     .flat();
   return commands;
+};
+
+const batchUpdateManagers = async (
+  updates: GoogleManagerUpdate[],
+): Promise<Batch> => {
+  const commands = updates.map(update =>
+    GamCommand.updateManager(update.email, update.managerEmail),
+  );
+  return { commands };
 };
 
 const batchUpdateUserPasswords = async (
@@ -242,6 +252,7 @@ export const GoogleService = {
   batchAddUserToAssociatedGroups,
   batchUpdateUserPasswords,
   batchUpdatePhoneNumbers,
+  batchUpdateManagers,
   batchAddUsersToOrganizationalUnitCommand,
   batchSuspendEmails,
   batchTransferDrives,

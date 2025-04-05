@@ -2,7 +2,7 @@ import path from 'path';
 import { SIGNATURE_TMP_DIR } from './google.consts';
 import { FileSystemUtils, ShellUtils } from '@vigilant-broccoli/common-node';
 import { GamCommand } from './gam.api';
-import { Batch } from './google.types';
+import { Batch } from './google.model';
 
 export const runGamReadCommand = async (cmd: string): Promise<string> => {
   return (await ShellUtils.runShellCommand(
@@ -25,14 +25,38 @@ export const runBatchCommands = async (commands: string[]): Promise<void> => {
 export const getEmailSignatureFilepath = (email: string): string => {
   return path.resolve(SIGNATURE_TMP_DIR, `${email}.html`);
 };
-export const runBatchCommandsv2 = async (batch: Batch): Promise<void> => {
-  const { commands, assetsDirectory } = batch;
-  if (commands.length < 1) {
-    return;
-  }
+
+type BatchCommandAndArgs<T> = {
+  batchCommand: (args: T) => Promise<Batch>;
+  args: T;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const runBatchCommandsv2 = async (
+  listOfbatchCommandAndArgs: BatchCommandAndArgs<any>[],
+): Promise<void> => {
+  const operations = await Promise.all(
+    listOfbatchCommandAndArgs.map(batchCommandAndArgs =>
+      batchCommandAndArgs.batchCommand(batchCommandAndArgs.args),
+    ),
+  );
+  const commands = [] as string[];
+  const assetsDirectories = [] as string[];
+  operations.forEach(operation => {
+    commands.push(...operation.commands);
+    if (operation.assetsDirectory) {
+      assetsDirectories.push(operation.assetsDirectory);
+    }
+  });
+
+  if (commands.length < 1) return;
+
   const batchCommandFilepath = FileSystemUtils.generateTmpFilepath();
   await FileSystemUtils.writeFile(batchCommandFilepath, commands.join('\n'));
   const batchCommand = GamCommand.batchExecute(batchCommandFilepath);
   await ShellUtils.runUpdateShellCommand(batchCommand);
-  await FileSystemUtils.deletePath([batchCommandFilepath, assetsDirectory]);
+  await FileSystemUtils.deletePath([
+    batchCommandFilepath,
+    ...assetsDirectories,
+  ]);
 };

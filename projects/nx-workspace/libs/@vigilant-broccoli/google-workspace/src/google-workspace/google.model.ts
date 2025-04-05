@@ -17,3 +17,10 @@ export type GoogleUserOrganization = {
   costCenter: string;
   description?: string;
 };
+
+export type GoogleManagerUpdate = {
+  email: string;
+  managerEmail: string;
+};
+
+export type Batch = { commands: string[]; assetsDirectory?: string };
