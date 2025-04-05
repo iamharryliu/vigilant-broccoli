@@ -67,6 +67,12 @@ export const GamCommand = {
   batchExecute: (filepath: string): string => {
     return `~/bin/gam7/gam batch ${filepath}`;
   },
+  updatePhoneNumber: (
+    email: string,
+    phoneNumberJsonFilepath: string,
+  ): string => {
+    return `gam update user ${email} json file '${phoneNumberJsonFilepath}'`;
+  },
 };
 
 export function getDateInISOFormat(date: Date): string {

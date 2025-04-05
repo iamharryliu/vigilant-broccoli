@@ -5,7 +5,7 @@
     "tslib": "^2.3.0",
     "express": "*",
     "@prettydamntired/personal-website-lib": "*",
-    "@vigilant-broccoli/common-js": "0.0.2",
-    "@vigilant-broccoli/common-node": "0.0.4"
+    "@vigilant-broccoli/common-js": "*",
+    "@vigilant-broccoli/common-node": "*"
   }
 }

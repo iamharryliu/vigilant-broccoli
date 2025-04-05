@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "rxjs": "~7.8.0",
-    "@vigilant-broccoli/common-js": "0.0.2"
+    "@vigilant-broccoli/common-js": "*"
   },
   "main": "./index.js",
   "module": "./index.mjs",

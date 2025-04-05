@@ -1,10 +1,10 @@
 {
   "name": "@vigilant-broccoli/employee-handler",
-  "version": "0.0.7",
+  "version": "0.0.10",
   "dependencies": {
     "@swc/helpers": "0.5.13",
-    "@vigilant-broccoli/common-node": "0.0.4",
-    "@vigilant-broccoli/google-workspace": "0.0.1",
+    "@vigilant-broccoli/common-node": "*",
+    "@vigilant-broccoli/google-workspace": "*",
     "nodemailer": "^6.9.9"
   },
   "publishConfig": {

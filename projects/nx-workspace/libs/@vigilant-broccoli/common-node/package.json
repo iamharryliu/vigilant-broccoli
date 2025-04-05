@@ -1,8 +1,8 @@
 {
   "name": "@vigilant-broccoli/common-node",
-  "version": "0.0.4",
+  "version": "0.0.10",
   "dependencies": {
-    "@vigilant-broccoli/common-js": "0.0.2",
+    "@vigilant-broccoli/common-js": "*",
     "archiver": "^7.0.1",
     "dotenv": "^16.4.5",
     "nodemailer": "^6.9.9",

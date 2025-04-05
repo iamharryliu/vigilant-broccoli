@@ -6,8 +6,13 @@ import {
   GoogleUserOrganization,
   IncomingUser,
 } from './google.model';
-import { getEmailSignatureFilepath, runGamReadCommand } from './google.utils';
-import { FileSystemUtils, ShellUtils } from '@vigilant-broccoli/common-node';
+import { runGamReadCommand } from './google.utils';
+import {
+  FileSystemUtils,
+  ShellUtils,
+  TMP_PATH,
+} from '@vigilant-broccoli/common-node';
+import { Batch } from './google.types';
 
 const getEmailBackupFilepath = (email: string): string => {
   return path.resolve(EMAIL_BACKUP_DIRECTORY, email);
@@ -91,21 +96,41 @@ const batchAddUsersToOrganizationalUnitCommand = async (
 
 const batchUpdateSignatures = async (
   signatures: EmailSignature[],
-): Promise<string[]> => {
+): Promise<Batch> => {
+  const TMP_DIR = path.resolve(TMP_PATH, 'update-email-signatures');
   const commands = await Promise.all(
     signatures.map(async signature => {
-      const emailSignatureFilepath = getEmailSignatureFilepath(signature.email);
+      const updateFilename = `update-email-${signature.email}.html`;
+      const updateFilepath = path.resolve(TMP_DIR, updateFilename);
       await FileSystemUtils.writeFile(
-        emailSignatureFilepath,
+        updateFilepath,
         signature.signatureString,
       );
-      return GamCommand.setEmailSignature(
-        signature.email,
-        emailSignatureFilepath,
-      );
+      return GamCommand.setEmailSignature(signature.email, updateFilepath);
     }),
   );
-  return commands;
+  return { commands, assetsDirectory: TMP_DIR };
+};
+
+type PhoneUpdate = {
+  email: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+};
+
+const batchUpdatePhoneNumbers = async (
+  updates: PhoneUpdate[],
+): Promise<{ commands: string[]; assetsDirectory: string }> => {
+  const TMP_DIR = path.resolve(TMP_PATH, 'update-phone-numbers');
+  const commands = await Promise.all(
+    updates.map(async update => {
+      const updateFilename = `email-update-${update.email}.json`;
+      const updateFilepath = path.resolve(TMP_DIR, updateFilename);
+      await FileSystemUtils.writeJSON(updateFilepath, update.data);
+      return GamCommand.updatePhoneNumber(update.email, updateFilepath);
+    }),
+  );
+  return { commands, assetsDirectory: TMP_DIR };
 };
 
 const batchSuspendEmails = async (emails: string[]): Promise<string[]> => {
@@ -216,6 +241,7 @@ const getEmployeesOrganizationData = async (): Promise<
 export const GoogleService = {
   batchAddUserToAssociatedGroups,
   batchUpdateUserPasswords,
+  batchUpdatePhoneNumbers,
   batchAddUsersToOrganizationalUnitCommand,
   batchSuspendEmails,
   batchTransferDrives,

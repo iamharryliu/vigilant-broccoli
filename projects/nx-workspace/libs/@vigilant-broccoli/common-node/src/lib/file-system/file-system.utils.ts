@@ -48,8 +48,13 @@ const zipFolder = async (
   });
 };
 
-const deletePath = async (path: string): Promise<void> => {
-  await fs.promises.rm(path, { recursive: true, force: true });
+const deletePath = async (paths: string | string[]): Promise<void> => {
+  const pathArray = Array.isArray(paths) ? paths : [paths];
+  await Promise.all(
+    pathArray.map(path =>
+      fs.promises.rm(path, { recursive: true, force: true }),
+    ),
+  );
 };
 
 const getFromFilepath = <T>(filepath: string, structure: T): T => {
