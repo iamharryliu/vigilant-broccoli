@@ -2,7 +2,7 @@ import path from 'path';
 import { SIGNATURE_TMP_DIR } from './google.consts';
 import { FileSystemUtils, ShellUtils } from '@vigilant-broccoli/common-node';
 import { GamCommand } from './gam.api';
-import { Batch } from './google.model';
+import { GoogleBatchOperationArgs } from './google.model';
 
 export const runGamReadCommand = async (cmd: string): Promise<string> => {
   return (await ShellUtils.runShellCommand(
@@ -26,14 +26,9 @@ export const getEmailSignatureFilepath = (email: string): string => {
   return path.resolve(SIGNATURE_TMP_DIR, `${email}.html`);
 };
 
-type BatchCommandAndArgs<T> = {
-  batchCommand: (args: T) => Promise<Batch>;
-  args: T;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const runBatchCommandsv2 = async (
-  listOfbatchCommandAndArgs: BatchCommandAndArgs<any>[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  listOfbatchCommandAndArgs: GoogleBatchOperationArgs<any>[],
 ): Promise<void> => {
   const operations = await Promise.all(
     listOfbatchCommandAndArgs.map(batchCommandAndArgs =>

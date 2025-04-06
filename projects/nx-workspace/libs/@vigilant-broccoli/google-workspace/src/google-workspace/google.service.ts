@@ -2,9 +2,10 @@ import path from 'path';
 import { GamCommand } from './gam.api';
 import { EMAIL_BACKUP_DIRECTORY } from './google.consts';
 import {
-  Batch,
+  GoogleBatchOperation,
   EmailSignature,
   GoogleManagerUpdate,
+  GooglePhoneNumberUpdate,
   GoogleUserOrganization,
   IncomingUser,
 } from './google.model';
@@ -68,18 +69,18 @@ const backupMultipleEmailAccountEmailsToAnotherEmail = async (
 
 const batchAddUserToAssociatedGroups = async (
   users: IncomingUser[],
-): Promise<string[]> => {
+): Promise<GoogleBatchOperation> => {
   const commands = users
     .map(user =>
       user.groups.map(group => GamCommand.addEmailToGroup(user.email, group)),
     )
     .flat();
-  return commands;
+  return { commands };
 };
 
 const batchUpdateManagers = async (
   updates: GoogleManagerUpdate[],
-): Promise<Batch> => {
+): Promise<GoogleBatchOperation> => {
   const commands = updates.map(update =>
     GamCommand.updateManager(update.email, update.managerEmail),
   );
@@ -88,25 +89,25 @@ const batchUpdateManagers = async (
 
 const batchUpdateUserPasswords = async (
   users: IncomingUser[],
-): Promise<string[]> => {
+): Promise<GoogleBatchOperation> => {
   const commands = users.map(user =>
     GamCommand.updateEmailPassword(user.email, user.password),
   );
-  return commands;
+  return { commands };
 };
 
 const batchAddUsersToOrganizationalUnitCommand = async (
   users: IncomingUser[],
-): Promise<string[]> => {
+): Promise<GoogleBatchOperation> => {
   const commands = users.map(user =>
     GamCommand.addUserToOrganizationalUnit(user.email, user.organizationalUnit),
   );
-  return commands;
+  return { commands };
 };
 
 const batchUpdateSignatures = async (
   signatures: EmailSignature[],
-): Promise<Batch> => {
+): Promise<GoogleBatchOperation> => {
   const TMP_DIR = path.resolve(TMP_PATH, 'update-email-signatures');
   const commands = await Promise.all(
     signatures.map(async signature => {
@@ -122,15 +123,9 @@ const batchUpdateSignatures = async (
   return { commands, assetsDirectory: TMP_DIR };
 };
 
-type PhoneUpdate = {
-  email: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
-};
-
 const batchUpdatePhoneNumbers = async (
-  updates: PhoneUpdate[],
-): Promise<{ commands: string[]; assetsDirectory: string }> => {
+  updates: GooglePhoneNumberUpdate[],
+): Promise<GoogleBatchOperation> => {
   const TMP_DIR = path.resolve(TMP_PATH, 'update-phone-numbers');
   const commands = await Promise.all(
     updates.map(async update => {
@@ -143,33 +138,35 @@ const batchUpdatePhoneNumbers = async (
   return { commands, assetsDirectory: TMP_DIR };
 };
 
-const batchSuspendEmails = async (emails: string[]): Promise<string[]> => {
+const batchSuspendEmails = async (
+  emails: string[],
+): Promise<GoogleBatchOperation> => {
   const commands = emails.map(email => GamCommand.suspendEmail(email));
-  return commands;
+  return { commands };
 };
 
 const batchTransferDrives = async (
   emails: string[],
   restoreEmail: string,
-): Promise<string[]> => {
+): Promise<GoogleBatchOperation> => {
   const commands = emails.map(email =>
     GamCommand.transferEmailDriveFilesToAnotherEmail(email, restoreEmail),
   );
-  return commands;
+  return { commands };
 };
 
 const batchRecoverEmailAccounts = async (
   emails: string[],
-): Promise<string[]> => {
+): Promise<GoogleBatchOperation> => {
   const commands = emails.map(email => GamCommand.undeleteEmailAccount(email));
-  return commands;
+  return { commands };
 };
 
 const batchDeleteEmailAccounts = async (
   emails: string[],
-): Promise<string[]> => {
+): Promise<GoogleBatchOperation> => {
   const commands = emails.map(email => GamCommand.deleteEmailAccount(email));
-  return commands;
+  return { commands };
 };
 
 const deleteDriveFilesOlderThanNMonths = async (
