@@ -2,12 +2,13 @@ import path from 'path';
 import { GamCommand } from './gam.api';
 import { EMAIL_BACKUP_DIRECTORY } from './google.consts';
 import {
-  GoogleBatchOperation,
-  EmailSignature,
-  GoogleManagerUpdate,
-  GooglePhoneNumberUpdate,
+  GoogleBatchCommandPayload,
+  WorkspaceEmailSignatureUpdate,
+  WorkspaceManagerUpdate,
+  WorkspacePhoneNumberUpdate,
   GoogleUserOrganization,
   IncomingUser,
+  GoogleBatchCommandFactory,
 } from './google.model';
 import { runGamReadCommand } from './google.utils';
 import {
@@ -67,9 +68,9 @@ const backupMultipleEmailAccountEmailsToAnotherEmail = async (
   }
 };
 
-const batchAddUserToAssociatedGroups = async (
+const batchUpdateGroups = async (
   users: IncomingUser[],
-): Promise<GoogleBatchOperation> => {
+): Promise<GoogleBatchCommandPayload> => {
   const commands = users
     .map(user =>
       user.groups.map(group => GamCommand.addEmailToGroup(user.email, group)),
@@ -79,35 +80,35 @@ const batchAddUserToAssociatedGroups = async (
 };
 
 const batchUpdateManagers = async (
-  updates: GoogleManagerUpdate[],
-): Promise<GoogleBatchOperation> => {
+  updates: WorkspaceManagerUpdate[],
+): Promise<GoogleBatchCommandPayload> => {
   const commands = updates.map(update =>
     GamCommand.updateManager(update.email, update.managerEmail),
   );
   return { commands };
 };
 
-const batchUpdateUserPasswords = async (
+const batchUpdatePasswords = async (
   users: IncomingUser[],
-): Promise<GoogleBatchOperation> => {
+): Promise<GoogleBatchCommandPayload> => {
   const commands = users.map(user =>
     GamCommand.updateEmailPassword(user.email, user.password),
   );
   return { commands };
 };
 
-const batchAddUsersToOrganizationalUnitCommand = async (
+const batchUpdateOrganizationalUnitCommand = async (
   users: IncomingUser[],
-): Promise<GoogleBatchOperation> => {
+): Promise<GoogleBatchCommandPayload> => {
   const commands = users.map(user =>
     GamCommand.addUserToOrganizationalUnit(user.email, user.organizationalUnit),
   );
   return { commands };
 };
 
-const batchUpdateSignatures = async (
-  signatures: EmailSignature[],
-): Promise<GoogleBatchOperation> => {
+async function batchUpdateSignatures(
+  signatures: WorkspaceEmailSignatureUpdate[],
+): Promise<GoogleBatchCommandPayload> {
   const TMP_DIR = path.resolve(TMP_PATH, 'update-email-signatures');
   const commands = await Promise.all(
     signatures.map(async signature => {
@@ -121,11 +122,11 @@ const batchUpdateSignatures = async (
     }),
   );
   return { commands, assetsDirectory: TMP_DIR };
-};
+}
 
 const batchUpdatePhoneNumbers = async (
-  updates: GooglePhoneNumberUpdate[],
-): Promise<GoogleBatchOperation> => {
+  updates: WorkspacePhoneNumberUpdate[],
+): Promise<GoogleBatchCommandPayload> => {
   const TMP_DIR = path.resolve(TMP_PATH, 'update-phone-numbers');
   const commands = await Promise.all(
     updates.map(async update => {
@@ -140,7 +141,7 @@ const batchUpdatePhoneNumbers = async (
 
 const batchSuspendEmails = async (
   emails: string[],
-): Promise<GoogleBatchOperation> => {
+): Promise<GoogleBatchCommandPayload> => {
   const commands = emails.map(email => GamCommand.suspendEmail(email));
   return { commands };
 };
@@ -148,7 +149,7 @@ const batchSuspendEmails = async (
 const batchTransferDrives = async (
   emails: string[],
   restoreEmail: string,
-): Promise<GoogleBatchOperation> => {
+): Promise<GoogleBatchCommandPayload> => {
   const commands = emails.map(email =>
     GamCommand.transferEmailDriveFilesToAnotherEmail(email, restoreEmail),
   );
@@ -157,14 +158,14 @@ const batchTransferDrives = async (
 
 const batchRecoverEmailAccounts = async (
   emails: string[],
-): Promise<GoogleBatchOperation> => {
+): Promise<GoogleBatchCommandPayload> => {
   const commands = emails.map(email => GamCommand.undeleteEmailAccount(email));
   return { commands };
 };
 
 const batchDeleteEmailAccounts = async (
   emails: string[],
-): Promise<GoogleBatchOperation> => {
+): Promise<GoogleBatchCommandPayload> => {
   const commands = emails.map(email => GamCommand.deleteEmailAccount(email));
   return { commands };
 };
@@ -245,21 +246,75 @@ const getEmployeesOrganizationData = async (): Promise<
   });
 };
 
+function formatGoogleBatchOperation<T>(
+  batchCommand: (args: T) => Promise<GoogleBatchCommandPayload>,
+  args: T,
+): GoogleBatchCommandFactory<T> {
+  return {
+    batchCommand,
+    args,
+  };
+}
+
+function getBatchUpdateGroupCommands(
+  updates: IncomingUser[],
+): GoogleBatchCommandFactory<IncomingUser[]> {
+  return formatGoogleBatchOperation(batchUpdateGroups, updates);
+}
+
+function getBatchUpdatePasswordCommands(
+  updates: IncomingUser[],
+): GoogleBatchCommandFactory<IncomingUser[]> {
+  return formatGoogleBatchOperation(batchUpdatePasswords, updates);
+}
+
+function getBatchUpdateOrganizationalUnitCommands(
+  updates: IncomingUser[],
+): GoogleBatchCommandFactory<IncomingUser[]> {
+  return formatGoogleBatchOperation(
+    batchUpdateOrganizationalUnitCommand,
+    updates,
+  );
+}
+
+function getBatchUpdateManagerCommands(
+  updates: WorkspaceManagerUpdate[],
+): GoogleBatchCommandFactory<WorkspaceManagerUpdate[]> {
+  return formatGoogleBatchOperation(batchUpdateManagers, updates);
+}
+
+function getBatchUpdateEmailSignatureCommands(
+  updates: WorkspaceEmailSignatureUpdate[],
+): GoogleBatchCommandFactory<WorkspaceEmailSignatureUpdate[]> {
+  return formatGoogleBatchOperation(batchUpdateSignatures, updates);
+}
+
+function getBatchUpdatePhoneNumberCommands(
+  updates: WorkspacePhoneNumberUpdate[],
+): GoogleBatchCommandFactory<WorkspacePhoneNumberUpdate[]> {
+  return formatGoogleBatchOperation(batchUpdatePhoneNumbers, updates);
+}
+
 export const GoogleService = {
-  batchAddUserToAssociatedGroups,
-  batchUpdateUserPasswords,
-  batchUpdatePhoneNumbers,
-  batchUpdateManagers,
-  batchAddUsersToOrganizationalUnitCommand,
-  batchSuspendEmails,
-  batchTransferDrives,
-  backupMultipleEmailAccountEmailsToAnotherEmail,
-  batchDeleteEmailAccounts,
-  batchUpdateSignatures,
-  deleteDriveFilesOlderThanNMonths,
-  deleteEmailsOlderThanNMonths,
+  // Read
   getMembersOfOrganizationalUnit,
   getEmailsInWorkspace,
-  batchRecoverEmailAccounts,
   getEmployeesOrganizationData,
+  // User Updates
+  getBatchUpdateGroupCommands,
+  getBatchUpdatePasswordCommands,
+  getBatchUpdateOrganizationalUnitCommands,
+  getBatchUpdateManagerCommands,
+  getBatchUpdateEmailSignatureCommands,
+  getBatchUpdatePhoneNumberCommands,
+  // Offboard
+  batchSuspendEmails,
+  batchDeleteEmailAccounts,
+  // Retention
+  batchTransferDrives,
+  backupMultipleEmailAccountEmailsToAnotherEmail,
+  // Post-Retention
+  deleteEmailsOlderThanNMonths,
+  deleteDriveFilesOlderThanNMonths,
+  batchRecoverEmailAccounts,
 };

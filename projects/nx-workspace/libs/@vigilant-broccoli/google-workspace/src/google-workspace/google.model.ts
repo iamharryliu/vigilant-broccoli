@@ -1,8 +1,4 @@
-export type EmailSignature = {
-  email: string;
-  signatureString: string;
-};
-
+// TODO: Split this shit up into its own updates
 export type IncomingUser = {
   email: string;
   groups: string[];
@@ -18,23 +14,28 @@ export type GoogleUserOrganization = {
   description?: string;
 };
 
-export type GoogleManagerUpdate = {
+export type WorkspaceEmailSignatureUpdate = {
+  email: string;
+  signatureString: string;
+};
+
+export type WorkspaceManagerUpdate = {
   email: string;
   managerEmail: string;
 };
 
-export type GooglePhoneNumberUpdate = {
+export type WorkspacePhoneNumberUpdate = {
   email: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
 };
 
-export type GoogleBatchOperation = {
+export type GoogleBatchCommandPayload = {
   commands: string[];
   assetsDirectory?: string;
 };
 
-export type GoogleBatchOperationArgs<T> = {
-  batchCommand: (args: T) => Promise<GoogleBatchOperation>;
+export type GoogleBatchCommandFactory<T> = {
+  batchCommand: (args: T) => Promise<GoogleBatchCommandPayload>;
   args: T;
 };
