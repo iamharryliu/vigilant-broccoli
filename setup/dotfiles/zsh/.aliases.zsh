@@ -8,3 +8,5 @@ fi
 if [ -f ~/shell-aliases/work-aliases.sh ]; then
     source ~/shell-aliases/work-aliases.sh
 fi
+
+alias open-work-aliases="code ~/shell-aliases/work-aliases.sh"
