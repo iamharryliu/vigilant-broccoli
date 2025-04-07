@@ -466,3 +466,45 @@ biljett
 mobiltelefon
 samtal
 kortare
+diskmakinen
+avstår
+fyller
+tar upp
+miljovanligt
+interessant artikel som
+vi kan leva miljövnligy
+tar upp
+tar in
+tar ut
+badkaret
+minskar
+tömmer badkaret på vatten
+skapa
+avstå
+jobbar jämt
+heltidsjobb
+möjlig
+dessutom
+helst
+reagera
+avstå
+betalade för sina
+varor i kassan
+tygpåse
+för att minska stressen
+lever
+innebär
+forsoker
+sopor
+skapar
+förut
+soprummet
+begagnat
+sidor på nätet
+lösvikt
+oftlast
+ofta från att handla
+lever
+vilken rubrik passar till texten
+är
+ska is should and will
