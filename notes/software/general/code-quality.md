@@ -3,7 +3,7 @@
 ## Code Quality Smells
 
 - No type annotations.
-- Nullable values.
+- Unnecessary optional undefined values.
 
 ## Javascript/Typescript
 

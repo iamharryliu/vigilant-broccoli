@@ -1,5 +1,16 @@
 # Typescript
 
+## Falsy Values
+
+```
+""
+0
+NaN
+null
+undefined
+false
+```
+
 ## Utility Types
 
 | **Utility Type** | **Description**                                                                    | **Example**                                                                     |

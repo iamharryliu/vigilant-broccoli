@@ -508,3 +508,11 @@ lever
 vilken rubrik passar till texten
 är
 ska is should and will
+enklare/lätt
+forlora/tappa bort (loe something)
+fly(to flee) vs flytta(to move)
+jag minns inte dig
+jag kommer ihäg dig
+jag är på vag - I am coming
+jag är igång
+på grund av - because of
