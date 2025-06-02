@@ -10,6 +10,9 @@ git push
 
 # Fix filepath.
 git mv -f FILEPATH NEW_FILEPATH
+
+# Remove git history for specific file.
+git-filter-repo --sensitive-data-removal --invert-paths --path README.md
 ```
 
 ## Subtrees

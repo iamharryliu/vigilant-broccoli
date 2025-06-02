@@ -6,6 +6,9 @@ brew install mysql
 mysql -u username -p
 mysql -u username -p -h host  # Connect to a remote MySQL server
 
+mysql -h <HOST> -u <USERNAME> --password=<PASSWORD>
+mysqldump -h <HOST> -u <USERNAME> --no-data <DATABASE_NAME> > structure.sql --password=<PASSWORD>
+
 CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON dbname.* TO 'newuser'@'localhost';
 FLUSH PRIVILEGES;  -- Apply changes
