@@ -1,7 +1,5 @@
 # TODO
 
-https://chatgpt.com/c/67c6ba0c-863c-800b-a96b-edbb0eb83c7a
-
 - eslint proseWrap: "preserve"
 - **Home Management**
 
@@ -52,12 +50,9 @@ https://chatgpt.com/c/67c6ba0c-863c-800b-a96b-edbb0eb83c7a
 - **dotenv refactor**
   - import 'dotenv-defaults/config';
 - logging system
-- Google Free Tier Instance
 - RabbitMQ mail service
 - Docs
   - Stripe
-  - Hashicorp Vault
-  - Prisma
   - microservices vs monoliths
   - RabbitMQ vs Kafka
   - Load balancing
@@ -66,7 +61,6 @@ https://chatgpt.com/c/67c6ba0c-863c-800b-a96b-edbb0eb83c7a
 ## vigilant-broccoli
 
 - Q1
-  - docs: find Postman replacement.
   - fix(nx-workspace): check nx caching??
   - fix(nx): publish -> build caching preventing new dist
 
