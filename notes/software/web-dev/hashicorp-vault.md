@@ -1,23 +1,16 @@
 # Hashicorp Vault
 
 ```
-# MacOS
-brew tap hashicorp/tap
-brew install hashicorp/tap/vault
-
-# Linux
-curl -O https://releases.hashicorp.com/vault/1.14.0/vault_1.14.0_linux_amd64.zip
-unzip vault_1.14.0_linux_amd64.zip
-sudo mv vault /usr/local/bin/
 
 vault --version
 vault server -dev
 
 vault status
 vault secrets list
-vault kv put PATH KEY=VALUE
-vault kv get PATH
-vault kv delete PATH
+vault secrets enable -path=PATH_NAME kv
+vault kv put PATH_NAME KEY=VALUE
+vault kv get PATH_NAME
+vault kv delete PATH_NAME
 
 curl --header "X-Vault-Token: VAULT_TOKEN" --request POST --data '{"data": {"key":"value"}}' http://127.0.0.1:8200/v1/secret/data/my-secret
 curl --header "X-Vault-Token: VAULT_TOKEN" http://127.0.0.1:8200/v1/secret/data/my-secret
@@ -36,7 +29,6 @@ export VAULT_ADDR='http://127.0.0.1:8200'
 vault operator init
 vault operator unseal
 vault operator unseal UNSEAL_KEY
-
 vault login
 vault login TOKEN
 vault operator seal
@@ -51,7 +43,80 @@ rm -r ./vault/data
 ```
 vault auth enable github
 vault write auth/github/config organization=ORGANIZATION_NAME
+vault write auth/github/map/teams/TEAM_NAME value=POLICY_NAME
+vault write auth/github/map/users/USERNAME value=POLICY_NAME
+
+# https://github.com/settings/tokens
 vault login -method=github token=TOKEN
 
 curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/github/login
+```
+
+```
+sudo systemctl daemon-reexec
+sudo systemctl enable vault
+sudo systemctl start vault
+sudo systemctl status vault
+sudo systemctl restart vault
+```
+
+```
+sudo vim /etc/systemd/system/vault.service
+sudo vim /etc/vault/config.hcl
+
+sudo systemctl stop vault
+sudo rm -rf /opt/vault/data/*
+sudo systemctl start vault
+```
+
+```
+# /etc/vault/config.hcl
+
+disable_mlock = true
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+  tls_disable = true  # Use true only for testing; use TLS in production
+}
+
+storage "file" {
+  path = "/opt/vault/data"
+}
+
+ui            = true
+api_addr      = "http://IP_ADDRESS:8200"
+cluster_addr  = "http://IP_ADDRESS:8201"
+
+```
+
+```
+# /etc/systemd/system/vault.service
+[Unit]
+Description=Vault Server
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User=vault
+Group=vault
+ExecStart=/usr/local/bin/vault server -config=/etc/vault/config.hcl
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+LimitNOFILE=65536
+CapabilityBoundingSet=CAP_IPC_LOCK
+AmbientCapabilities=CAP_IPC_LOCK
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```
+vault policy write default - <<EOF
+path "sys/capabilities-self" {
+  capabilities = ["update"]
+}
+
+path "secret/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+EOF
 ```

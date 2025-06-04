@@ -516,3 +516,11 @@ jag kommer ihäg dig
 jag är på vag - I am coming
 jag är igång
 på grund av - because of
+
+2025/06/02
+klämdag - squeeze day
+tagit(pronounced tatt)
+har du tatt
+vardagssaker - everyday things
+avskedsfest - goodbye party
+träffats = träffat varandra
