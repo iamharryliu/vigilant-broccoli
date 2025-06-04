@@ -1,6 +1,6 @@
 import {
   IncomingUser,
-  EmailSignature,
+  WorkspaceEmailSignatureUpdate,
 } from '@vigilant-broccoli/google-workspace';
 import { Attachment } from 'nodemailer/lib/mailer';
 
@@ -10,9 +10,11 @@ interface OnboardUtilities {
   processIncomingEmployees: (users: IncomingUser[]) => Promise<void>;
 }
 interface ActiveMaintenanceUtilities {
-  fetchEmailSignatures: () => Promise<EmailSignature[]>;
+  fetchEmailSignatures: () => Promise<WorkspaceEmailSignatureUpdate[]>;
   useSignatureCaching: boolean;
-  processEmailSignatures: (signatures: EmailSignature[]) => Promise<void>;
+  processEmailSignatures: (
+    signatures: WorkspaceEmailSignatureUpdate[],
+  ) => Promise<void>;
   emailAttachments: (
     attachments: Attachment[],
     receivers: string[],

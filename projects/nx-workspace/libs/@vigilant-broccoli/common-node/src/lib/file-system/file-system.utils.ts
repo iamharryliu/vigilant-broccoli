@@ -71,8 +71,8 @@ const getListFromFilepath = <T>(filepath: string): T[] => {
   return getFromFilepath(filepath, [] as T[]);
 };
 
-const getObjectFromFilepath = <T>(filepath: string): Hashmap<T> => {
-  return getFromFilepath(filepath, {} as Hashmap<T>);
+const getObjectFromFilepath = <T>(filepath: string): T => {
+  return getFromFilepath(filepath, {} as T);
 };
 
 const writeJSON = async (

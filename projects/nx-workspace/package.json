@@ -9,7 +9,8 @@
     "test:all": "nx run-many -t test",
     "lint:commit": "nx affected -t lint",
     "format:commit": "npm run format",
-    "test:commit": "nx affected -t test"
+    "test:commit": "nx affected -t test",
+    "build:all": "nx run-many -t=build --skip-nx-cache"
   },
   "lint-staged": {
     "*.ts": [
