@@ -135,7 +135,7 @@ const EnvironmentVariablesToJSONForm = () => {
   const [text, setText] = useState('');
   const json = getJSONFromEnvironmentVariables(text);
   return (
-    <div className="flex space-x-2">
+    <div className="flex space-x-4">
       <TextArea
         className="w-1/2"
         value={text}
@@ -153,7 +153,7 @@ const JSONToEnvVarForm = () => {
   const [text, setText] = useState('');
   const environmentVariables = getEnvironmentVariablesFromJSON(text);
   return (
-    <div className="flex space-x-2">
+    <div className="flex space-x-4">
       <TextArea
         className="w-1/2"
         value={text}
