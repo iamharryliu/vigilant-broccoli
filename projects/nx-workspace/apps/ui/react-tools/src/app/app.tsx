@@ -1,4 +1,11 @@
-import { Button, Card, TabNav, TextArea, Theme } from '@radix-ui/themes';
+import {
+  Button,
+  Card,
+  Container,
+  TabNav,
+  TextArea,
+  Theme,
+} from '@radix-ui/themes';
 import { ReactNode, useState } from 'react';
 import {
   countWords,
@@ -54,13 +61,11 @@ export const CopyPastable = ({ text }: { text: string }) => {
   };
 
   return (
-    <Card className="bg-gray-100">
-      <div className="flex">
-        <div className="ml-auto">
-          <Button variant="ghost" onClick={handleCopy}>
-            <Copy />
-          </Button>
-        </div>
+    <Card className="bg-gray-100 h-full">
+      <div className="absolute top-2 right-2 ">
+        <Button variant="ghost" onClick={handleCopy}>
+          <Copy />
+        </Button>
       </div>
       <pre>{text}</pre>
     </Card>
@@ -69,10 +74,10 @@ export const CopyPastable = ({ text }: { text: string }) => {
 
 const PageWrapper = ({ children }: { children: ReactNode }) => {
   return (
-    <>
+    <Container size="4">
       <NavBar />
       <main className="space-y-4">{children}</main>
-    </>
+    </Container>
   );
 };
 
@@ -112,15 +117,17 @@ const EnvironmentVariablesToJSONPage = () => {
 const NavBar = () => {
   const location = useLocation();
   return (
-    <TabNav.Root>
-      {Object.values(APP_ROUTE).map(obj => {
-        return (
-          <TabNav.Link asChild active={location.pathname === obj.path}>
-            <Link to={obj.path}>{obj.title}</Link>
-          </TabNav.Link>
-        );
-      })}
-    </TabNav.Root>
+    <div className="mb-8">
+      <TabNav.Root>
+        {Object.values(APP_ROUTE).map(obj => {
+          return (
+            <TabNav.Link asChild active={location.pathname === obj.path}>
+              <Link to={obj.path}>{obj.title}</Link>
+            </TabNav.Link>
+          );
+        })}
+      </TabNav.Root>
+    </div>
   );
 };
 
@@ -128,7 +135,7 @@ const EnvironmentVariablesToJSONForm = () => {
   const [text, setText] = useState('');
   const json = getJSONFromEnvironmentVariables(text);
   return (
-    <div className="flex">
+    <div className="flex space-x-2">
       <TextArea
         className="w-1/2"
         value={text}
@@ -136,7 +143,7 @@ const EnvironmentVariablesToJSONForm = () => {
         placeholder="Your environment variables.."
       />
       <div className="w-1/2">
-        <CopyPastable text={JSON.stringify(json, null, 2)}/>
+        <CopyPastable text={JSON.stringify(json, null, 2)} />
       </div>
     </div>
   );
@@ -146,7 +153,7 @@ const JSONToEnvVarForm = () => {
   const [text, setText] = useState('');
   const environmentVariables = getEnvironmentVariablesFromJSON(text);
   return (
-    <div className="flex">
+    <div className="flex space-x-2">
       <TextArea
         className="w-1/2"
         value={text}
@@ -154,7 +161,7 @@ const JSONToEnvVarForm = () => {
         placeholder="Your JSON.."
       />
       <div className="w-1/2">
-        <CopyPastable text={environmentVariables}/>
+        <CopyPastable text={environmentVariables} />
       </div>
     </div>
   );
