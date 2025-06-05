@@ -98,6 +98,7 @@ const EnvironmentVariablesToJSONPage = () => {
         <div className="flex-auto space-y-4">
           <EnvironmentVariablesToJSONForm />
           <JSONToEnvVarForm />
+          <JSONPrettier />
         </div>
         <Card className="flex-none space-y-4">
           <div className="space-y-2">
@@ -142,47 +143,77 @@ const NavBar = () => {
 };
 
 const EnvironmentVariablesToJSONForm = () => {
-  const [text, setText] = useState('');
-  const json = getJSONFromEnvironmentVariables(text);
   return (
-    <Card>
-      <Heading size="4" mb="2">
-        Environment Variables to JSON
-      </Heading>
-      <div className="flex space-x-4">
-        <TextArea
-          className="w-1/2"
-          value={text}
-          onChange={e => setText(e.target.value)}
-          placeholder="Your environment variables.."
-          size="3"
-        />
-        <div className="w-1/2">
-          <CopyPastable text={JSON.stringify(json, null, 2)} />
-        </div>
-      </div>
-    </Card>
+    <ConversionForm
+      copy={{
+        header: 'Environment Variables to JSON',
+        placeholder: 'Your environment variables..',
+      }}
+      initialText={''}
+      conversionFn={text =>
+        JSON.stringify(getJSONFromEnvironmentVariables(text))
+      }
+    />
   );
 };
 
 const JSONToEnvVarForm = () => {
-  const [text, setText] = useState('');
-  const environmentVariables = getEnvironmentVariablesFromJSON(text);
+  return (
+    <ConversionForm
+      copy={{
+        header: 'JSON to Environment Variables',
+        placeholder: 'Your JSON..',
+      }}
+      initialText={'{}'}
+      conversionFn={getEnvironmentVariablesFromJSON}
+    />
+  );
+};
+
+const JSONPrettier = () => {
+  function prettyPrintJson(jsonText: string): string {
+    try {
+      const jsonObj = JSON.parse(jsonText);
+      return JSON.stringify(jsonObj, null, 2);
+    } catch {
+      return '';
+    }
+  }
+  return (
+    <ConversionForm
+      copy={{ header: 'JSON Prettier', placeholder: 'Your JSON..' }}
+      initialText={'{}'}
+      conversionFn={prettyPrintJson}
+    />
+  );
+};
+
+const ConversionForm = ({
+  copy,
+  initialText,
+  conversionFn,
+}: {
+  copy: Record<string, string>;
+  initialText: string;
+  conversionFn: (text: string) => string;
+}) => {
+  const [text, setText] = useState(initialText);
+
   return (
     <Card>
       <Heading size="4" mb="2">
-        JSON to Environment Variables
+        {copy.header}
       </Heading>
       <div className="flex space-x-4">
         <TextArea
           className="w-1/2"
           value={text}
           onChange={e => setText(e.target.value)}
-          placeholder="Your JSON.."
+          placeholder={copy.placeholder}
           size="3"
         />
         <div className="w-1/2">
-          <CopyPastable text={environmentVariables} />
+          <CopyPastable text={conversionFn(text)} />
         </div>
       </div>
     </Card>

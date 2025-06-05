@@ -22,20 +22,7 @@ export function getJSONFromEnvironmentVariables(text: string) {
 
 export function getEnvironmentVariablesFromJSON(text: string): string {
   try {
-    const parsed = JSON.parse(text?.trim());
-    if (
-      typeof parsed !== 'object' ||
-      parsed === null ||
-      Array.isArray(parsed)
-    ) {
-      return '';
-    }
-
-    const obj = parsed as Record<string, unknown>;
-    for (const [_, value] of Object.entries(obj)) {
-      if (typeof value !== 'string') return '';
-    }
-
+    const obj = JSON.parse(text?.trim());
     return Object.entries(obj as Record<string, string>)
       .map(([key, value]) => {
         // Quote value if it contains spaces or special characters
