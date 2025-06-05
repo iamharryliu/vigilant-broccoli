@@ -54,7 +54,7 @@ function getModelAPIKey(model: LLMModel) {
   return process.env[API_KEY_NAME.OPENAI];
 }
 
-function getLLMClient(model: LLMModel, apiKey: string) {
+function getLLMClient(model = LLM_MODEL.GPT_4O as LLMModel, apiKey?: string) {
   return new OpenAI({
     baseURL: getModelBaseUrl(model),
     apiKey: apiKey ? apiKey : getModelAPIKey(model),

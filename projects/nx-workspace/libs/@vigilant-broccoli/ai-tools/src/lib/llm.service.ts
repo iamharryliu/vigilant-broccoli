@@ -1,5 +1,8 @@
+import { toFile } from 'openai';
+import { LLM_MODEL } from './llm.consts';
 import { LLMPromptRequest, LLMPromptResult } from './llm.types';
 import { LLMUtils } from './llm.utils';
+import * as fs from 'fs';
 
 async function prompt<T>(
   request: LLMPromptRequest<T>,
@@ -24,6 +27,32 @@ async function prompt<T>(
   };
 }
 
+async function generateImage(prompt: string) {
+  const client = LLMUtils.getLLMClient(LLM_MODEL.IMAGE_1);
+  const response = await client.images.generate({
+    model: LLM_MODEL.IMAGE_1,
+    prompt,
+    n: 1,
+    size: '1024x1024',
+  });
+  return `data:image/png;base64,${response.data[0].b64_json}`;
+}
+
+async function editImage(filename: string, prompt: string) {
+  const image = await toFile(fs.createReadStream(filename), null, {
+    type: 'image/png',
+  });
+  const client = LLMUtils.getLLMClient(LLM_MODEL.IMAGE_1);
+  const response = await client.images.edit({
+    model: 'gpt-image-1',
+    image,
+    prompt,
+  });
+  return `data:image/png;base64,${response.data[0].b64_json}`;
+}
+
 export const LLMService = {
   prompt,
+  generateImage,
+  editImage,
 };

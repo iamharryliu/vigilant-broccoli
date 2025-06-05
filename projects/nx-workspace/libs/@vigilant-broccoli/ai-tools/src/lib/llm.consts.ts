@@ -5,6 +5,7 @@ export const OPENAI_MODEL = {
   GPT_4O_MINI: 'gpt-4o-mini',
   GPT_3_5_TURBO: 'gpt-3.5-turbo',
   O3_MINI: 'o3-mini',
+  IMAGE_1: 'gpt-image-1',
 } as const;
 export const OPEN_AI_MODELS = Object.values(OPENAI_MODEL);
 
