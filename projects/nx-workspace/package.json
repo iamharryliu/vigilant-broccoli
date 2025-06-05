@@ -146,7 +146,7 @@
     "ng-recaptcha-2": "^14.0.0",
     "ngx-google-analytics": "^14.0.1",
     "nodemailer": "^6.9.9",
-    "openai": "^4.26.0",
+    "openai": "^4.87.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "rxjs": "~7.8.0",

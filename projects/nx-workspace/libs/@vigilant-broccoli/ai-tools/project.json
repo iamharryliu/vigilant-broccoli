@@ -1,0 +1,36 @@
+{
+  "name": "@vigilant-broccoli/ai-tools",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/ai-tools/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "generatorOptions": {
+        "packageRoot": "dist/{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/ai-tools",
+        "tsConfig": "libs/@vigilant-broccoli/ai-tools/tsconfig.lib.json",
+        "packageJson": "libs/@vigilant-broccoli/ai-tools/package.json",
+        "main": "libs/@vigilant-broccoli/ai-tools/src/index.ts",
+        "assets": ["libs/@vigilant-broccoli/ai-tools/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

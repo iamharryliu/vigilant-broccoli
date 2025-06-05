@@ -1,0 +1,8 @@
+{
+  "name": "@vigilant-broccoli/ai-tools",
+  "version": "0.0.1",
+  "dependencies": {
+    "openai": "^4.26.0",
+    "tslib": "^2.3.0"
+  }
+}

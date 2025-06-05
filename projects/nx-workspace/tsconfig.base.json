@@ -27,6 +27,9 @@
       "@prettydamntired/vibecheck-lite": [
         "libs/@prettydamntired/vibecheck-lite/src/index.ts"
       ],
+      "@vigilant-broccoli/ai-tools": [
+        "libs/@vigilant-broccoli/ai-tools/src/index.ts"
+      ],
       "@vigilant-broccoli/common-browser": [
         "libs/@vigilant-broccoli/common-browser/src/index.ts"
       ],
