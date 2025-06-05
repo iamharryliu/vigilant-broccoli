@@ -1,4 +1,4 @@
-import { Heading, TabNav, TextArea, Theme } from '@radix-ui/themes';
+import { Button, Card, TabNav, TextArea, Theme } from '@radix-ui/themes';
 import { ReactNode, useState } from 'react';
 import {
   countWords,
@@ -12,6 +12,7 @@ import {
   Routes,
   useLocation,
 } from 'react-router-dom';
+import { Copy } from 'lucide-react';
 
 const APP_ROUTE = {
   INDEX: { title: 'Home', path: '/' },
@@ -45,11 +46,32 @@ export function App() {
   );
 }
 
+export const CopyPastable = ({ text }: { text: string }) => {
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  };
+
+  return (
+    <Card className="bg-gray-100">
+      <div className="flex">
+        <div className="ml-auto">
+          <Button variant="ghost" onClick={handleCopy}>
+            <Copy />
+          </Button>
+        </div>
+      </div>
+      <pre>{text}</pre>
+    </Card>
+  );
+};
+
 const PageWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <NavBar />
-      <main>{children}</main>
+      <main className="space-y-4">{children}</main>
     </>
   );
 };
@@ -70,17 +92,17 @@ const EnvironmentVariablesToJSONPage = () => {
       <div className="flex space-x-4">
         <div className="space-y-2">
           <h2>Sample JSON</h2>
-          <pre className="bg-gray-100">
-            {JSON.stringify(
+          <CopyPastable
+            text={JSON.stringify(
               { NODE_ENV: 'production', SECRET_KEY: 'abc 123' },
               null,
               2,
             )}
-          </pre>
+          />
         </div>
         <div className="space-y-2">
           <h2>Sample Environment Variables</h2>
-          <pre className="bg-gray-100">{`NODE_ENV=production\nSECRET_KEY="abc 123"`}</pre>
+          <CopyPastable text={`NODE_ENV=production\nSECRET_KEY="abc 123"`} />
         </div>
       </div>
     </PageWrapper>
@@ -114,7 +136,7 @@ const EnvironmentVariablesToJSONForm = () => {
         placeholder="Your environment variables.."
       />
       <div className="w-1/2">
-        <PrettyJson data={json} />
+        <CopyPastable text={JSON.stringify(json, null, 2)}/>
       </div>
     </div>
   );
@@ -132,7 +154,7 @@ const JSONToEnvVarForm = () => {
         placeholder="Your JSON.."
       />
       <div className="w-1/2">
-        <pre>{environmentVariables}</pre>
+        <CopyPastable text={environmentVariables}/>
       </div>
     </div>
   );

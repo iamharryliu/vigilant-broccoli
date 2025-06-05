@@ -141,6 +141,7 @@
     "fastify": "~4.13.0",
     "fastify-plugin": "~4.5.0",
     "gapi-script": "^1.2.0",
+    "lucide-react": "^0.513.0",
     "marked": "^12.0.0",
     "mongoose": "^8.1.0",
     "next": "~15.1.4",
