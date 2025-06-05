@@ -1,5 +1,13 @@
 # Typescript
 
+## Debugging
+
+```
+console.log(Date.now())
+console.time('something');
+console.timeEnd('something');
+```
+
 ## Falsy Values
 
 ```
