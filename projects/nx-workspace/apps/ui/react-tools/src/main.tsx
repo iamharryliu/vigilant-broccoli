@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import "@radix-ui/themes/styles.css";
+import '@radix-ui/themes/styles.css';
 
 import App from './app/app';
 

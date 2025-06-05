@@ -68,7 +68,7 @@ const EnvironmentVariablesToJSONPage = () => {
       <EnvironmentVariablesToJSONForm />
       <JSONToEnvVarForm />
       <div className="flex space-x-4">
-        <div className='space-y-2'>
+        <div className="space-y-2">
           <h2>Sample JSON</h2>
           <pre className="bg-gray-100">
             {JSON.stringify(
@@ -78,7 +78,7 @@ const EnvironmentVariablesToJSONPage = () => {
             )}
           </pre>
         </div>
-        <div className='space-y-2'>
+        <div className="space-y-2">
           <h2>Sample Environment Variables</h2>
           <pre className="bg-gray-100">{`NODE_ENV=production\nSECRET_KEY="abc 123"`}</pre>
         </div>
