@@ -7,7 +7,7 @@ export const Select = <T extends string | Record<string, any>>({
   options,
   placeholder = "Select",
   optionDisplayKey,
-  optionIdenfifier,
+  optionIdenfifier = "id",
   displayMapper,
   disabled = false,
 }: {

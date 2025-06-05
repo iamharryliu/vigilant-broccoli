@@ -33,6 +33,10 @@ const APP_ROUTE = {
     title: 'Character Counter',
     path: '/characterCounter',
   },
+  COMPONENT_LIBRARY: {
+    title: 'Component Library',
+    path: '/componentLibrary',
+  },
 };
 
 export function App() {
@@ -49,11 +53,56 @@ export function App() {
             path={APP_ROUTE.CHARACTER_COUNTER.path}
             element={<CharacterCounterPage />}
           />
+          <Route
+            path={APP_ROUTE.COMPONENT_LIBRARY.path}
+            element={<ComponentSandbox />}
+          />
         </Routes>
       </BrowserRouter>
     </Theme>
   );
 }
+
+const ComponentSandbox = () => {
+  const [selectedString, setSelectedString] = useState('');
+  const SELECT_STRING_OPTIONS = ['Option 1', 'Option 2', 'Option 3'];
+  const [selectedOption, setSelectedOption] = useState<{
+    id: number;
+    name: string;
+  }>();
+  const SELECT_OPTIONS = [
+    { id: 1, name: 'Option 1' },
+    { id: 2, name: 'Option 2' },
+    { id: 3, name: 'Option 3' },
+  ];
+  return (
+    <PageWrapper>
+      <Heading size="4">Select</Heading>
+      <div className="flex space-x-4">
+        <Card>
+          <Heading size="2">Select String</Heading>
+          <Select
+            selectedOption={selectedString}
+            setValue={setSelectedString}
+            options={SELECT_STRING_OPTIONS}
+          />
+          <p>Selected String: {selectedString}</p>
+        </Card>
+        <Card>
+          <Heading size="2">Select Object</Heading>
+          <Select
+            selectedOption={selectedOption}
+            setValue={setSelectedOption}
+            options={SELECT_OPTIONS}
+            optionDisplayKey="name"
+          />
+
+          <p>Selected Option: {JSON.stringify(selectedOption)}</p>
+        </Card>
+      </div>
+    </PageWrapper>
+  );
+};
 
 export const CopyPastable = ({ text }: { text: string }) => {
   const handleCopy = () => {
