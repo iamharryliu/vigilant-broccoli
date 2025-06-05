@@ -5,6 +5,7 @@ import {
   TabNav,
   TextArea,
   Theme,
+  Heading,
 } from '@radix-ui/themes';
 import { ReactNode, useState } from 'react';
 import {
@@ -20,6 +21,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { Copy } from 'lucide-react';
+import { Select } from './components/select';
 
 const APP_ROUTE = {
   INDEX: { title: 'Home', path: '/' },
@@ -92,23 +94,31 @@ const IndexPage = () => {
 const EnvironmentVariablesToJSONPage = () => {
   return (
     <PageWrapper>
-      <EnvironmentVariablesToJSONForm />
-      <JSONToEnvVarForm />
       <div className="flex space-x-4">
-        <div className="space-y-2">
-          <h2>Sample JSON</h2>
-          <CopyPastable
-            text={JSON.stringify(
-              { NODE_ENV: 'production', SECRET_KEY: 'abc 123' },
-              null,
-              2,
-            )}
-          />
+        <div className="flex-auto space-y-4">
+          <EnvironmentVariablesToJSONForm />
+          <JSONToEnvVarForm />
         </div>
-        <div className="space-y-2">
-          <h2>Sample Environment Variables</h2>
-          <CopyPastable text={`NODE_ENV=production\nSECRET_KEY="abc 123"`} />
-        </div>
+        <Card className="flex-none space-y-4">
+          <div className="space-y-2">
+            <Heading size="4" mb="2">
+              Sample Environment Variables
+            </Heading>
+            <CopyPastable text={`NODE_ENV=production\nSECRET_KEY="abc 123"`} />
+          </div>
+          <div className="space-y-2">
+            <Heading size="4" mb="2">
+              Sample JSON
+            </Heading>
+            <CopyPastable
+              text={JSON.stringify(
+                { NODE_ENV: 'production', SECRET_KEY: 'abc 123' },
+                null,
+                2,
+              )}
+            />
+          </div>
+        </Card>
       </div>
     </PageWrapper>
   );
@@ -135,17 +145,23 @@ const EnvironmentVariablesToJSONForm = () => {
   const [text, setText] = useState('');
   const json = getJSONFromEnvironmentVariables(text);
   return (
-    <div className="flex space-x-4">
-      <TextArea
-        className="w-1/2"
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="Your environment variables.."
-      />
-      <div className="w-1/2">
-        <CopyPastable text={JSON.stringify(json, null, 2)} />
+    <Card>
+      <Heading size="4" mb="2">
+        Environment Variables to JSON
+      </Heading>
+      <div className="flex space-x-4">
+        <TextArea
+          className="w-1/2"
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="Your environment variables.."
+          size="3"
+        />
+        <div className="w-1/2">
+          <CopyPastable text={JSON.stringify(json, null, 2)} />
+        </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
@@ -153,17 +169,23 @@ const JSONToEnvVarForm = () => {
   const [text, setText] = useState('');
   const environmentVariables = getEnvironmentVariablesFromJSON(text);
   return (
-    <div className="flex space-x-4">
-      <TextArea
-        className="w-1/2"
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="Your JSON.."
-      />
-      <div className="w-1/2">
-        <CopyPastable text={environmentVariables} />
+    <Card>
+      <Heading size="4" mb="2">
+        JSON to Environment Variables
+      </Heading>
+      <div className="flex space-x-4">
+        <TextArea
+          className="w-1/2"
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="Your JSON.."
+          size="3"
+        />
+        <div className="w-1/2">
+          <CopyPastable text={environmentVariables} />
+        </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
