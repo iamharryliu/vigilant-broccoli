@@ -68,7 +68,7 @@ export function App() {
 const ComponentLibraryDemo = () => {
   return (
     <PageWrapper>
-      <SelectDemo/>
+      <SelectDemo />
       <CRUDListManagementDemo />
       <ButtonDemo />
     </PageWrapper>
