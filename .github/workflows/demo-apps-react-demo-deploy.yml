@@ -27,4 +27,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: projects/demo-apps/react-demo
-          command: pages deploy dist dist/apps/ui/react-tools --project-name react-demo
+          command: pages deploy dist/apps/ui/react-tools --project-name react-demo
