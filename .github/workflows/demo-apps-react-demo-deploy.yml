@@ -9,7 +9,7 @@ jobs:
       name: production
     defaults:
       run:
-        working-directory: ./projects/demo-apps/react-demo
+        working-directory: ./projects/nx-workspace
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,10 +19,12 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - run: npm run build
-      - uses: cloudflare/wrangler-action@v3
+      - name: Build App
+        run: npx nx build react-tools
+      - name: Deploy App
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: projects/demo-apps/react-demo
-          command: pages deploy dist --project-name react-demo
+          command: pages deploy dist dist/apps/ui/react-tools --project-name react-demo
