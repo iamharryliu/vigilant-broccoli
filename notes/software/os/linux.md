@@ -22,4 +22,6 @@ sudo journalctl -u <service_name> -f
 # View logs since last boot
 sudo journalctl -u <service_name> -b
 sudo journalctl -u <service_name> -n <number_of_lines>
+
+sudo nano /etc/systemd/system/SERVICE_NAME.service
 ```

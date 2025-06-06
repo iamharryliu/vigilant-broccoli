@@ -1,10 +1,12 @@
 import { Card, Heading } from '@radix-ui/themes';
 import { useState } from 'react';
-import { Select } from '../../lib/components/select';
+import { Select } from '../../lib/components/Select';
 
 export const SelectDemo = () => {
   const [selectedString, setSelectedString] = useState('');
   const SELECT_STRING_OPTIONS = ['Option 1', 'Option 2', 'Option 3'];
+  const [selectedNumber, setSelectedNumber] = useState(1);
+  const SELECT_NUMBER_OPTIONS = [1, 2, 3];
   const [selectedOption, setSelectedOption] = useState<{
     id: number;
     name: string;
@@ -27,6 +29,15 @@ export const SelectDemo = () => {
             options={SELECT_STRING_OPTIONS}
           />
           <p>Selected String: {selectedString}</p>
+        </Card>
+        <Card>
+          <Heading size="2">Select Number</Heading>
+          <Select
+            selectedOption={selectedNumber}
+            setValue={setSelectedNumber}
+            options={SELECT_NUMBER_OPTIONS}
+          />
+          <p>Selected Number: {selectedNumber}</p>
         </Card>
         <Card>
           <Heading size="2">Select Object</Heading>

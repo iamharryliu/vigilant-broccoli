@@ -1,7 +1,7 @@
 import { Select as RadixSelect } from '@radix-ui/themes';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const Select = <T extends string | Record<string, any>>({
+export const Select = <T extends number | string | Record<string, any>>({
   selectedOption,
   setValue,
   options,
@@ -22,6 +22,9 @@ export const Select = <T extends string | Record<string, any>>({
   disabled?: boolean;
 }) => {
   const getOptionValue = (option: T): string => {
+    if (typeof option === 'number') {
+      return String(option);
+    }
     if (typeof option === 'string') {
       return option;
     }
@@ -29,6 +32,9 @@ export const Select = <T extends string | Record<string, any>>({
   };
 
   const getOptionDisplay = (option: T): string => {
+    if (typeof option === 'number') {
+      return String(option);
+    }
     if (typeof option === 'string') {
       return displayMapper ? displayMapper[option] : option;
     }
@@ -47,7 +53,7 @@ export const Select = <T extends string | Record<string, any>>({
       }}
     >
       <RadixSelect.Trigger placeholder={placeholder} />
-      <RadixSelect.Content>
+      <RadixSelect.Content className="w-full">
         {options.map(option => (
           <RadixSelect.Item
             key={getOptionValue(option)}
