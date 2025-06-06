@@ -18,12 +18,18 @@ setState(_previousState => {
 Runs side effects like data fetching, DOM updates, or subscriptions after render
 
 ```
-// Runs on every render
-useEffect(() => { ...SIDE_EFFECTS } );
-// Runs only on the first render
-useEffect(() => { ...SIDE_EFFECTS }, []);
-// Runs everytime a value in dependency array changes
-useEffect(() => { ...SIDE_EFFECTS }, [ ...DEPENDENCIES ] );
+  useEffect(() => {
+    console.log('This runs on every render.');
+  });
+  useEffect(() => {
+    console.log('This runs when the component is initalized.');
+  }, []);
+  useEffect(() => {
+    console.log('This runs when there is a change to the values in the dependency array, in this case state.');
+  }, [state]);
+  useEffect(() => {
+    return () => console.log('This runs when the component unmounts.');
+  }, []);
 ```
 
 - [Custom Hooks for Objects(Deep Comparison)](https://stackoverflow.com/questions/54095994/react-useeffect-comparing-objects)
@@ -71,6 +77,11 @@ const ChildComponent() => {
 ## useReducer
 
 ```
+const REDUCER_ACTION = {
+  ACTION: 'ACTION',
+} as const;
+type REDUCER_ACTION_KEYS = keyof typeof REDUCER_ACTION;
+export type ReducerAction = (typeof REDUCER_ACTION)[REDUCER_ACTION_KEYS];
 
 const reducer = (state: StateType, action: ActionType): StateType => {
     const { type, payload } = action;
@@ -84,9 +95,11 @@ const reducer = (state: StateType, action: ActionType): StateType => {
 
 const Component() = () => {
     const [data, dispatch] = useReducer(reducer, INITIAL_STATE);
-    dispatch({ type: "ACTION_TYPE", payload: data });
-};
 
+    function handler(){
+        dispatch({ type: "ACTION_TYPE", payload: data });
+    }
+};
 ```
 
 ## useRef
