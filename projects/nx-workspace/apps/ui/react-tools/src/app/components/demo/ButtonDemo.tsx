@@ -1,5 +1,4 @@
-import { Heading } from '@radix-ui/themes';
-import { Button } from '../../lib/components/Button';
+import { Button, Heading } from '@radix-ui/themes';
 import { useState } from 'react';
 
 export const ButtonDemo = () => {
@@ -16,9 +15,9 @@ export const ButtonDemo = () => {
     <>
       <Heading>Button Demo</Heading>
       <div className="space-x-4">
-        <Button isLoading={true}>Submit</Button>
+        <Button loading={true}>Submit</Button>
         <Button disabled={true}>Disabled Button</Button>
-        <Button onClick={handleClick} isLoading={isLoading}>
+        <Button onClick={handleClick} loading={isLoading}>
           Submit
         </Button>
       </div>
