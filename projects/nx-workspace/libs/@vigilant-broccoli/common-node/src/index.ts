@@ -1,3 +1,6 @@
+import { promises as fs } from 'fs';
+import * as path from 'path';
+
 export * from './lib/utils';
 import './lib/node-env/env';
 // Date
@@ -34,3 +37,45 @@ export * from './lib/recaptcha/recaptcha.service';
 export const QUEUE = {
   EMAIL: 'EMAIL',
 };
+
+export class LocalBucketService {
+  constructor(private bucketPath: string) {
+    this.bucketPath = bucketPath;
+  }
+
+  async init(): Promise<void> {
+    await fs.mkdir(this.bucketPath, { recursive: true });
+  }
+
+  async upload(filePath: string, destinationName: string): Promise<void> {
+    const destinationPath = path.join(this.bucketPath, destinationName);
+    await fs.copyFile(filePath, destinationPath);
+  }
+
+  async download(fileName: string, destinationPath: string): Promise<void> {
+    const sourcePath = path.join(this.bucketPath, fileName);
+    await fs.copyFile(sourcePath, destinationPath);
+  }
+
+  async delete(fileName: string): Promise<void> {
+    const filePath = path.join(this.bucketPath, fileName);
+    await fs.unlink(filePath);
+  }
+
+  async list(): Promise<string[]> {
+    return await fs.readdir(this.bucketPath);
+  }
+
+  async exists(fileName: string): Promise<boolean> {
+    try {
+      await fs.access(path.join(this.bucketPath, fileName));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async read(fileName: string): Promise<Buffer> {
+    return await fs.readFile(path.join(this.bucketPath, fileName));
+  }
+}
