@@ -2,13 +2,13 @@ import { toFile } from 'openai';
 import { LLM_MODEL } from './llm.consts';
 import { LLMPromptRequest, LLMPromptResult } from './llm.types';
 import { LLMUtils } from './llm.utils';
-import * as fs from 'fs';
+import { createReadStream } from 'fs';
 
 async function prompt<T>(
   request: LLMPromptRequest<T>,
 ): Promise<LLMPromptResult<T>> {
   const { modelConfig, responseFormat } = request;
-  const client = LLMUtils.getLLMClient(modelConfig.model, modelConfig.apiKey);
+  const client = LLMUtils.getLLMClient(modelConfig);
   const chatParams = LLMUtils.formatPromptParams(request);
   const response = await client.chat.completions.create(chatParams);
 
@@ -17,7 +17,7 @@ async function prompt<T>(
   const message = response.choices[0].message;
 
   return {
-    model: modelConfig.model,
+    model: modelConfig?.model || LLM_MODEL.GPT_4O,
     tokens: {
       prompt: prompt_tokens,
       completion: completion_tokens,
@@ -28,7 +28,7 @@ async function prompt<T>(
 }
 
 async function generateImage(prompt: string) {
-  const client = LLMUtils.getLLMClient(LLM_MODEL.IMAGE_1);
+  const client = LLMUtils.getLLMClient({ model: LLM_MODEL.IMAGE_1 });
   const response = await client.images.generate({
     model: LLM_MODEL.IMAGE_1,
     prompt,
@@ -39,10 +39,10 @@ async function generateImage(prompt: string) {
 }
 
 async function editImage(filename: string, prompt: string) {
-  const image = await toFile(fs.createReadStream(filename), null, {
+  const image = await toFile(createReadStream(filename), null, {
     type: 'image/png',
   });
-  const client = LLMUtils.getLLMClient(LLM_MODEL.IMAGE_1);
+  const client = LLMUtils.getLLMClient({ model: LLM_MODEL.IMAGE_1 });
   const response = await client.images.edit({
     model: 'gpt-image-1',
     image,

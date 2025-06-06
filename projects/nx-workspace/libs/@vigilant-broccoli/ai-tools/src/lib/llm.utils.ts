@@ -11,6 +11,7 @@ import {
   GrokModel,
   LLMModel,
   LLMPromptRequest,
+  LLMModelConfig,
 } from './llm.types';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
 
@@ -54,7 +55,10 @@ function getModelAPIKey(model: LLMModel) {
   return process.env[API_KEY_NAME.OPENAI];
 }
 
-function getLLMClient(model = LLM_MODEL.GPT_4O as LLMModel, apiKey?: string) {
+function getLLMClient({
+  model = LLM_MODEL.GPT_4O,
+  apiKey,
+}: Partial<LLMModelConfig> = {}) {
   return new OpenAI({
     baseURL: getModelBaseUrl(model),
     apiKey: apiKey ? apiKey : getModelAPIKey(model),

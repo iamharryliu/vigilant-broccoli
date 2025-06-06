@@ -3,7 +3,7 @@ import { Layout } from '../layout/Layout';
 import { TextArea } from '@radix-ui/themes';
 import { countWords } from '@vigilant-broccoli/common-js';
 
-export const CharacterCounterPage = () => {
+export const TextPage = () => {
   return (
     <Layout>
       <CharacterCounter />

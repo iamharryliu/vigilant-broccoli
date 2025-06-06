@@ -27,7 +27,7 @@ export type LLMPromptRequest<T> = {
     userPrompt: string;
     systemPrompt?: string;
   };
-  modelConfig: LLMModelConfig;
+  modelConfig?: LLMModelConfig;
   responseFormat?: {
     example?: string;
     zod: AutoParseableResponseFormat<T>;

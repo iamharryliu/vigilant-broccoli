@@ -3,7 +3,7 @@ import { ButtonDemo } from '../demo/ButtonDemo';
 import { CRUDListManagementDemo } from '../demo/CRUDListManagementDemo';
 import { SelectDemo } from '../demo/SelectDemo';
 
-export const ComponentLibraryDemo = () => {
+export const ComponentDemoPage = () => {
   return (
     <Layout>
       <ButtonDemo />
