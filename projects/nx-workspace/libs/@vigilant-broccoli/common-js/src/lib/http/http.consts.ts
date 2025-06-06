@@ -8,12 +8,12 @@ export const HTTP_METHOD = {
   DELETE: 'DELETE',
 };
 
-const HTTP_SUCCESS_CODES = {
+const HTTP_SUCCESS_CODE = {
   OK: 200,
   CREATED: 201,
 };
 
-const HTTP_ERROR_CODES = {
+const HTTP_ERROR_CODE = {
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
@@ -22,8 +22,8 @@ const HTTP_ERROR_CODES = {
 };
 
 export const HTTP_STATUS_CODES = {
-  ...HTTP_SUCCESS_CODES,
-  ...HTTP_ERROR_CODES,
+  ...HTTP_SUCCESS_CODE,
+  ...HTTP_ERROR_CODE,
 };
 
 export const HTTP_HEADERS = {
