@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../../lib/components/Button';
-import { Heading } from '@radix-ui/themes';
-import { CRUDItemList } from '../../lib/components/CRUDListManagement';
+import { Button, Heading } from '@radix-ui/themes';
+import { CRUDFormProps, CRUDItemList } from '../../lib/components/CRUDListManagement';
 
 type Item = {
   id: number;
@@ -103,7 +102,7 @@ const Form = ({
 
       <Button
         onClick={handleSubmit}
-        isLoading={isSubmitting}
+        loading={isSubmitting}
         className="w-full"
       >
         Skicka
