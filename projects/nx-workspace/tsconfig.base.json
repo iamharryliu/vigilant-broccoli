@@ -48,6 +48,12 @@
       "@vigilant-broccoli/google-workspace": [
         "libs/@vigilant-broccoli/google-workspace/src/index.ts"
       ],
+      "@vigilant-broccoli/next-lib": [
+        "libs/@vigilant-broccoli/next-lib/src/index.ts"
+      ],
+      "@vigilant-broccoli/next-lib/server": [
+        "libs/@vigilant-broccoli/next-lib/src/server.ts"
+      ],
       "@vigilant-broccoli/react-lib": [
         "libs/@vigilant-broccoli/react-lib/src/index.ts"
       ],

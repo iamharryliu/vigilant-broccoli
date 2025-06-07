@@ -1,9 +1,10 @@
-export const APP_ROUTE = {
+import { NextNavRoute } from '@vigilant-broccoli/next-lib';
+
+export const APP_ROUTE: Record<string, NextNavRoute> = {
   INDEX: {
     title: 'Home',
     path: '/',
   },
-
   JSON: {
     title: 'JSON',
     path: '/json-tools',
