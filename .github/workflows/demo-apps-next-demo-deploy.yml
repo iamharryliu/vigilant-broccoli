@@ -1,4 +1,4 @@
-name: Deploy App
+name: Deploy Next.js Demo
 on:
   push: { branches: ['main'] }
 
@@ -27,4 +27,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: projects/nx-workspace
-          command: pages deploy dist/apps/ui/next-demo --project-name next-demo
+          command: pages deploy dist/apps/next-demo --project-name next-demo
