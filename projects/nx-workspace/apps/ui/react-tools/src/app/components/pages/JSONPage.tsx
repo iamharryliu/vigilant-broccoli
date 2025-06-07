@@ -1,11 +1,10 @@
 import { Card, Heading } from '@radix-ui/themes';
 import { Layout } from '../layout/Layout';
-import { ConversionForm } from '../ConversionForm';
 import {
   getEnvironmentVariablesFromJSON,
   getJSONFromEnvironmentVariables,
 } from '@vigilant-broccoli/common-js';
-import { CopyPastable } from '@vigilant-broccoli/react-lib';
+import { ConversionForm, CopyPastable } from '@vigilant-broccoli/react-lib';
 
 export const JSONPage = () => {
   return (
