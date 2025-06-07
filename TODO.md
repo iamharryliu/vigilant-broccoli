@@ -8,6 +8,10 @@
   - Employee Handler
     - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
   - alias for `alias run lib:nx-release-publish`
+- fix:
+  - nx-workspace
+    - check nx caching??
+    - publish -> build caching preventing new dist
 - chore:
   - migrate to pnpm
 - docs:
@@ -45,8 +49,6 @@
       - image[]
 
 - **NewTab Extension**
-- **nx-workspace**
-
 - **DocsMD**
   - Split into separate app.
   - Implement search bar.
@@ -54,12 +56,6 @@
   - import 'dotenv-defaults/config';
 - logging system
 - RabbitMQ mail service
-
-## vigilant-broccoli
-
-- Q1
-  - fix(nx-workspace): check nx caching??
-  - fix(nx): publish -> build caching preventing new dist
 
 ## CMS
 
