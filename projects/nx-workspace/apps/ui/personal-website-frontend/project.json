@@ -7,7 +7,7 @@
   "tags": [],
   "targets": {
     "serve:mock": {
-      "command": "concurrently --kill-others \"nx serve personal-website-frontend\"  \"ts-node apps/ui/personal-website-frontend/mock-server/server.ts --ext js,ts,json,html\""
+      "command": "concurrently --kill-others \"nx serve personal-website-frontend\"  \"tsx apps/ui/personal-website-frontend/mock-server/server.ts --ext js,ts,json,html\""
     },
     "pre-build": {
       "executor": "nx:run-commands",
