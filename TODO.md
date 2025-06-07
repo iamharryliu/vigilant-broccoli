@@ -1,5 +1,23 @@
 # TODO
 
+- feat:
+  - file service ui
+  - bucket service
+  - Next.js
+    - Back button
+  - Employee Handler
+    - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
+  - alias for `alias run lib:nx-release-publish`
+- chore:
+  - migrate to pnpm
+- docs:
+
+  - Stripe
+  - microservices vs monoliths
+  - RabbitMQ vs Kafka
+  - Load balancing
+  - Honeypot vs Recaptcha
+
 - eslint proseWrap: "preserve"
 - **Home Management**
 
@@ -26,23 +44,8 @@
       - description
       - image[]
 
-- **migrate to pnpm**
 - **NewTab Extension**
 - **nx-workspace**
-  - add alias for `alias run lib:nx-release-publish`
-- Reuse
-
-  - Back Button
-  - Select
-  - Transcript Reader
-  - ProtectedRoute
-
-    - Autofocus
-    - change wrapping
-
-- **Employee Handler**
-
-  - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
 
 - **DocsMD**
   - Split into separate app.
@@ -51,12 +54,6 @@
   - import 'dotenv-defaults/config';
 - logging system
 - RabbitMQ mail service
-- Docs
-  - Stripe
-  - microservices vs monoliths
-  - RabbitMQ vs Kafka
-  - Load balancing
-  - Honeypot vs Recaptcha
 
 ## vigilant-broccoli
 
