@@ -1,5 +1,11 @@
 # Software Breakdown
 
+- Build Skills
+- Project Management
+
+  - Managing Expectations and Deadlines
+  - Cost Management
+
 - Architecture
   - Microservices - Breaking applications into tiny remote services that run independently of each other.
     - Pros: Developers/teams are able to work on independent services without affecting each other.
@@ -121,3 +127,6 @@
   - Distributed Tracing: Understanding the flow of requests across microservices.
   - Performance Monitoring: Monitoring application performance through metrics.
   - Logging: Contextualizing trace and metric data with relevant logs.
+- Error Handling
+- Auth Handling
+- Security
