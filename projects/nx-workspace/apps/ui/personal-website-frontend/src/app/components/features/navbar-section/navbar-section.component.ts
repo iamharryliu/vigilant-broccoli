@@ -3,7 +3,6 @@ import { NavbarComponent, LINK_TYPE } from 'general-components';
 import { LINKS } from '../../../core/consts/routes.const';
 
 @Component({
-  standalone: true,
   selector: 'app-navbar-section',
   templateUrl: './navbar-section.component.html',
   imports: [NavbarComponent],

@@ -6,7 +6,6 @@ import { ImageService } from '../../../services/images.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-album-page',
   templateUrl: './album-page.component.html',
   imports: [ImageGalleryComponent, CommonModule],

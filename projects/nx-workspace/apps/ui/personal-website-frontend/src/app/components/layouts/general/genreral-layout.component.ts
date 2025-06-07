@@ -8,7 +8,6 @@ import { ENVIRONMENT } from '../../../../environments/environment';
 import { ToggleDarkThemeButtonComponent } from '../../features/toggle-dark-mode-button/toggle-dark-mode-button.component';
 
 @Component({
-  standalone: true,
   selector: 'app-general-layout',
   templateUrl: './general-layout.component.html',
   imports: [

@@ -13,7 +13,6 @@ import { LINKS } from '../../../../core/consts/routes.const';
 import { VibecheckLiteService } from '../../../../core/services/vibecheck-lite.service';
 
 @Component({
-  standalone: true,
   selector: 'app-vibecheck-lite-subscribe-page',
   templateUrl: './vibecheck-lite-subscribe.page.html',
   imports: [ReactiveFormsModule, CommonModule],

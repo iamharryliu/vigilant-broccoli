@@ -12,7 +12,6 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'lib-markdown-page',
-  standalone: true,
   imports: [CommonModule],
   styleUrl: './md.scss',
   templateUrl: './markdown.page.component.html',

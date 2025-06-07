@@ -4,7 +4,6 @@ import { LINKS } from '../../../core/consts/routes.const';
 import { APP_NAME } from '@prettydamntired/personal-website-lib';
 
 @Component({
-  standalone: true,
   selector: 'app-contact-section',
   templateUrl: './contact-section.component.html',
   imports: [ContactComponent],

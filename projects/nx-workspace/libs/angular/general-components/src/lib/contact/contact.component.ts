@@ -14,7 +14,6 @@ import { Link } from '../models';
 import { LoadingButtonComponent } from '../loading-button/loading-button.component';
 
 @Component({
-  standalone: true,
   selector: 'lib-contact',
   templateUrl: './contact.component.html',
   imports: [

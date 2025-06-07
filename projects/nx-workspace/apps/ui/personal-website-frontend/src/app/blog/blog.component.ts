@@ -8,7 +8,6 @@ import { MarkdownPageComponent } from 'general-components';
 
 @Component({
   selector: 'app-blog-directory',
-  standalone: true,
   imports: [
     MarkdownPageComponent,
     GeneralLayoutComponent,

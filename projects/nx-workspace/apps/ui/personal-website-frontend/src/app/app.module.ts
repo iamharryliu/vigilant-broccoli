@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, inject, provideAppInitializer } from '@angular/core';
 // import { AppService } from './core/services/app.service';
 import {
   HTTP_INTERCEPTORS,
@@ -38,12 +38,10 @@ export function initTheme(themeService: ThemeService): () => void {
   ],
   providers: [
     ThemeService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initTheme,
-      deps: [ThemeService],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      const initializerFn = initTheme(inject(ThemeService));
+      return initializerFn();
+    }),
     {
       provide: RECAPTCHA_V3_SITE_KEY,
       useValue: ENVIRONMENT.RECAPTCHA_V3_SITE_KEY,

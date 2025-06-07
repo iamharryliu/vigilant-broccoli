@@ -5,7 +5,6 @@ import { LinkComponent } from '../link/link.component';
 import { Link } from '../models';
 
 @Component({
-  standalone: true,
   selector: 'lib-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],

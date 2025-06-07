@@ -9,7 +9,6 @@ import { INTERNAL_LINKS } from '../../../core/consts/routes.const';
 import { ImageAlbum } from '@prettydamntired/personal-website-lib';
 
 @Component({
-  standalone: true,
   selector: 'app-albums-page',
   templateUrl: './albums-page.component.html',
   imports: [ImageGalleryComponent, CommonModule, RouterModule],

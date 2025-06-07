@@ -15,7 +15,6 @@ import {
 
 @Component({
   selector: 'app-md-library',
-  standalone: true,
   imports: [
     CommonModule,
     FolderItemComponent,

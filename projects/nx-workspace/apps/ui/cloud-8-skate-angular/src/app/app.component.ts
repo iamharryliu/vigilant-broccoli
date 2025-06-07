@@ -10,7 +10,6 @@ import {
 import { GeneralLayoutComponent } from './components/layouts/general-layout.component';
 
 @Component({
-  standalone: true,
   imports: [RouterModule, GeneralLayoutComponent],
   selector: 'app-root',
   templateUrl: './app.component.html',

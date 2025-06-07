@@ -28,7 +28,8 @@
         "semi": ["error", "always"],
         "quotes": ["error", "single"],
         "@angular-eslint/no-empty-lifecycle-method": "off",
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+        "@angular-eslint/prefer-standalone": "off"
       }
     },
     {

@@ -4,7 +4,6 @@ import { GeneralLayoutComponent } from '../../layouts/general/genreral-layout.co
 import { MarkdownPageComponent } from 'general-components';
 
 @Component({
-  standalone: true,
   selector: 'app-about-page',
   templateUrl: './about.page.html',
   imports: [CommonModule, GeneralLayoutComponent, MarkdownPageComponent],

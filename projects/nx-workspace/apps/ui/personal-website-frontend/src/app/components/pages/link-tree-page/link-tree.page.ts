@@ -5,7 +5,6 @@ import { CenteredAppLayoutComponent } from '../../layouts/centered-app-layout/ce
 import { ButtonLinkComponent, Link } from 'general-components';
 
 @Component({
-  standalone: true,
   selector: 'app-link-tree-page',
   templateUrl: './link-tree.page.html',
   imports: [CenteredAppLayoutComponent, ButtonLinkComponent, CommonModule],

@@ -6,7 +6,6 @@ import { LINKS } from '../../../../core/consts/routes.const';
 import { VibecheckLiteService } from '../../../../core/services/vibecheck-lite.service';
 
 @Component({
-  standalone: true,
   selector: 'app-unsubscribe-page',
   templateUrl: './unsubscribe.page.html',
   imports: [CommonModule, RouterModule],

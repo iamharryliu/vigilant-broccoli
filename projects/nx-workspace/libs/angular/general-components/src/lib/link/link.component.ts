@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { LINK_TYPE, Link, LinkType } from '../models';
 
 @Component({
-  standalone: true,
   selector: 'lib-link',
   templateUrl: './link.component.html',
   imports: [CommonModule, RouterModule],

@@ -13,7 +13,6 @@ import { LoadingSpinnerComponent } from '../../global/loading-spinner/loading-sp
 import { GeneralLayoutComponent } from '../../layouts/general/genreral-layout.component';
 
 @Component({
-  standalone: true,
   selector: 'app-verify-email-subscription-page',
   templateUrl: './verify-email-subscription.page.html',
   imports: [

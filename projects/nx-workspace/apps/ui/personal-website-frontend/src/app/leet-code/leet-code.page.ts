@@ -22,7 +22,6 @@ type Language = keyof typeof hmap;
 
 @Component({
   selector: 'app-leet-code-page',
-  standalone: true,
   imports: [CommonModule, FolderItemComponent, LinkComponent],
   templateUrl: './leet-code.page.html',
   styleUrl: '../code.scss',

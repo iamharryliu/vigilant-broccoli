@@ -13,6 +13,7 @@ import { TAILWIND_BREAKPOINTS } from '@vigilant-broccoli/common-browser';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  standalone: false,
 })
 export class AppComponent {
   private navigatedSignal = signal<NavigationEnd | null>(null);

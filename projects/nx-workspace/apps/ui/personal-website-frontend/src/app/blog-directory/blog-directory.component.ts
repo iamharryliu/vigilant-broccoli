@@ -15,7 +15,6 @@ interface Blog {
 
 @Component({
   selector: 'app-blog-directory',
-  standalone: true,
   imports: [CommonModule, GeneralLayoutComponent, NewsLetterSubFormComponent],
   providers: [DatePipe],
   templateUrl: './blog-directory.component.html',

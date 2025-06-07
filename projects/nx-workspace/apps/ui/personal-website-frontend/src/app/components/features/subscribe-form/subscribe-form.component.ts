@@ -12,7 +12,6 @@ import { SubscribeRequest } from '@prettydamntired/personal-website-lib';
 import { CommonService } from '../../../core/services/common.service';
 
 @Component({
-  standalone: true,
   selector: 'app-newsletter-sub-form',
   templateUrl: './subscribe-form.component.html',
   imports: [CommonModule, ReactiveFormsModule],

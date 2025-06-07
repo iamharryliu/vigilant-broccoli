@@ -3,7 +3,6 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MarkdownPageComponent } from 'general-components';
 
 @Component({
-  standalone: true,
   selector: 'app-more-page',
   templateUrl: './more.page.html',
   imports: [MarkdownPageComponent],

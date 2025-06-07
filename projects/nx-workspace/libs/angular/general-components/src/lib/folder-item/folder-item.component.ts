@@ -5,7 +5,6 @@ import { HyphenatedToTitleCasePipe } from '../pipes/hyphenated-to-titlecase.pipe
 
 @Component({
   selector: 'lib-folder-item',
-  standalone: true,
   imports: [CommonModule, HyphenatedToTitleCasePipe],
   templateUrl: './folder-item.component.html',
   styleUrls: ['./folder-item.component.scss'],

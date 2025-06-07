@@ -4,7 +4,6 @@ import { LINKS } from '../../../core/consts/routes.const';
 import { ContactSectionComponent } from '../../features/contact-section/contact-section.component';
 
 @Component({
-  standalone: true,
   selector: 'app-contact-page',
   templateUrl: './contact.page.html',
   imports: [GeneralLayoutComponent, ContactSectionComponent],

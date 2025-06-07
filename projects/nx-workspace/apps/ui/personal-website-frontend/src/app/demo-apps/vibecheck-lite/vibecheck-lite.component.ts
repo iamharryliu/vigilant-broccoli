@@ -13,7 +13,6 @@ interface VibecheckLiteResponse {
 }
 
 @Component({
-  standalone: true,
   selector: 'app-vibecheck-lite',
   templateUrl: './vibecheck-lite.component.html',
   imports: [

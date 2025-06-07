@@ -5,7 +5,6 @@ import { GeneralLayoutComponent } from '../../layouts/general/genreral-layout.co
 
 @Component({
   selector: 'app-projects-page',
-  standalone: true,
   imports: [CommonModule, MarkdownPageComponent, GeneralLayoutComponent],
   templateUrl: './projects.page.html',
 })
