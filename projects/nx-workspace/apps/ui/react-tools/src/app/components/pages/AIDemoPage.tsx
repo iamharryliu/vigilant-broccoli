@@ -3,7 +3,6 @@ import { Layout } from '../layout/Layout';
 import { useRef, useState } from 'react';
 import { CopyPastable } from '@vigilant-broccoli/react-lib';
 
-
 export const AIDemoPage = () => {
   const [userPrompt, setUserPrompt] = useState(
     'Who is the Prime Minister of Canada?',

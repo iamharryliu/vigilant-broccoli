@@ -100,11 +100,7 @@ const Form = ({
         />
       </div>
 
-      <Button
-        onClick={handleSubmit}
-        loading={isSubmitting}
-        className="w-full"
-      >
+      <Button onClick={handleSubmit} loading={isSubmitting} className="w-full">
         Skicka
       </Button>
     </>

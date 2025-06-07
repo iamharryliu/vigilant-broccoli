@@ -20,7 +20,7 @@ export const ConversionForm = ({
 
     const mimeOk = supportedTypes.some(type => file.type.startsWith(type));
     const extOk = supportedExtensions.some(ext =>
-      file.name.toLowerCase().endsWith(ext)
+      file.name.toLowerCase().endsWith(ext),
     );
 
     return mimeOk || extOk;
@@ -35,9 +35,9 @@ export const ConversionForm = ({
       const reader = new FileReader();
       reader.onload = e => {
         const result = e.target?.result;
-        console.log(result)
+        console.log(result);
         if (typeof result === 'string') {
-          console.log('hit ')
+          console.log('hit ');
           setText(result);
         }
       };
