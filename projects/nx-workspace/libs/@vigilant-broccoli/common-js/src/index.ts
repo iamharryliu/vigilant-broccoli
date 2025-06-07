@@ -42,3 +42,10 @@ export function countWords(text: string): number {
   if (!text) return 0;
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
+
+export const FORM_TYPE = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+} as const;
+
+export type FormType = (typeof FORM_TYPE)[keyof typeof FORM_TYPE];

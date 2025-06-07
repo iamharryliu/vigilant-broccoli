@@ -1,7 +1,8 @@
 import { Button, TextArea } from '@radix-ui/themes';
 import { Layout } from '../layout/Layout';
 import { useRef, useState } from 'react';
-import { CopyPastable } from '../../lib/components/CopyPastable';
+import { CopyPastable } from '@vigilant-broccoli/react-lib';
+
 
 export const AIDemoPage = () => {
   const [userPrompt, setUserPrompt] = useState(

@@ -1,6 +1,6 @@
 import { Card, TextArea, Heading } from '@radix-ui/themes';
+import { CopyPastable } from '@vigilant-broccoli/react-lib';
 import { useCallback, useState } from 'react';
-import { CopyPastable } from '../lib/components/CopyPastable';
 
 export const ConversionForm = ({
   copy,

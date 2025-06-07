@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Heading } from '@radix-ui/themes';
-import { CRUDFormProps, CRUDItemList } from '../../lib/components/CRUDListManagement';
+import { CRUDFormProps, CRUDItemList } from '@vigilant-broccoli/react-lib';
 
 type Item = {
   id: number;

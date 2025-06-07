@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import { AlertDialog, Button, Popover } from '@radix-ui/themes';
-import { FORM_TYPE, FormType } from '../consts';
+import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 
 type CRUDItem = {
   id: number;

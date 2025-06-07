@@ -1,6 +1,6 @@
 import { Card, Heading } from '@radix-ui/themes';
+import { Select } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
-import { Select } from '../../lib/components/Select';
 
 export const SelectDemo = () => {
   const [selectedString, setSelectedString] = useState('');
