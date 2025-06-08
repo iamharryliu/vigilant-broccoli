@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import archiver from 'archiver';
-import { Hashmap } from './file-system.models';
 import { TMP_PATH } from './file-system.consts';
 
 const writeFile = async (filepath: string, content: string): Promise<void> => {
