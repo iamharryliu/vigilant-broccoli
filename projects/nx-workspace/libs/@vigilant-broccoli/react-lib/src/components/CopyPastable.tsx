@@ -15,7 +15,7 @@ export const CopyPastable = ({ text }: { text: string }) => {
           <Copy />
         </Button>
       </div>
-      <pre>{text}</pre>
+     <pre className="whitespace-pre-wrap break-words">{text}</pre>
     </Card>
   );
 };
