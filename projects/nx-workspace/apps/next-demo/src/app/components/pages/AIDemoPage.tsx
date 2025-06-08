@@ -6,7 +6,6 @@ import {
   DataList,
   Flex,
   Text,
-  TextArea,
   TextField,
 } from '@radix-ui/themes';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
@@ -17,6 +16,7 @@ import {
   Select,
 } from '@vigilant-broccoli/react-lib';
 import {
+  FORM_TYPE,
   HTTP_HEADERS,
   HTTP_METHOD,
   LLM_MODEL,
@@ -26,11 +26,6 @@ import {
 import { LLMPrompt } from '@vigilant-broccoli/common-js';
 
 export const AIDemoPage = () => {
-  const [userPrompt, setUserPrompt] = useState(
-    'Who is the Prime Minister of Canada?',
-  );
-  const [isLoading, setIsLoading] = useState(false);
-  const [userPromptResult, setUserPromptResult] = useState('');
   const [filesnames, setFilenames] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
 
@@ -48,24 +43,6 @@ export const AIDemoPage = () => {
     init();
   }, []);
 
-  async function prompt() {
-    setIsLoading(true);
-    try {
-      const response = await fetch('http://localhost:3000/prompt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userPrompt }),
-      });
-      const result = await response.json();
-      setUserPromptResult(result.data);
-    } catch (e) {
-      alert(`error ${e}`);
-    } finally {
-      setIsLoading(false);
-    }
-  }
   async function handleFiles(files: FileList) {
     const formData = new FormData();
     Array.from(files).forEach(file => {
@@ -81,27 +58,11 @@ export const AIDemoPage = () => {
 
   return (
     <>
-      <span>User Prompt</span>
-      <div className="flex w-full space-x-4">
-        <div className="w-1/2">
-          <TextArea
-            value={userPrompt}
-            onChange={e => setUserPrompt(e.target.value)}
-          ></TextArea>
-          <Button onClick={prompt} loading={isLoading}>
-            Submit
-          </Button>
-        </div>
-        <div className="w-1/2">
-          <CopyPastable text={userPromptResult} />
-        </div>
-      </div>
       <UploadArea
         onFilesSelected={handleFiles}
         accept="image/*,.pdf"
         multiple
       />
-      {JSON.stringify(filesnames)}
       <FileSelect
         files={filesnames}
         selectedFiles={selectedFiles}
@@ -229,6 +190,21 @@ type Prompt = {
   results: string[];
 };
 
+const COPY = {
+  LIST: {
+    TITLE: 'Prompt List',
+    EMPTY_MESSAGE: 'No items.',
+  },
+  [FORM_TYPE.CREATE]: {
+    TITLE: 'Create Prompt',
+    DESCRIPTION: 'Create item prompt.',
+  },
+  [FORM_TYPE.UPDATE]: {
+    TITLE: 'Update Item',
+    DESCRIPTION: 'Update item description.',
+  },
+};
+
 const LLMSimplePromptTester = () => {
   const [prompts, setPrompts] = useState<Prompt[]>(DEFAULT_PROMPTS);
 
@@ -242,6 +218,7 @@ const LLMSimplePromptTester = () => {
   return (
     <>
       <CRUDItemList
+        copy={COPY}
         items={prompts}
         setItems={setPrompts}
         ListItemComponent={ListItem}
@@ -254,6 +231,7 @@ const LLMSimplePromptTester = () => {
         }}
         createItem={createItem}
       />
+      <CopyPastable text={JSON.stringify(prompts, null, 2)}/>
     </>
   );
 };
