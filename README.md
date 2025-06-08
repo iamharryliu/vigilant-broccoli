@@ -31,7 +31,7 @@ cd ~ && git clone git@github.com:iamharryliu/vigilant-broccoli.git
 
 # Run install script.
 chmod +x ~/vigilant-broccoli/setup/mac/install.sh
-~/vigilant-broccoli/setup/mac/install.sh
+source ~/vigilant-broccoli/setup/mac/install.sh
 ```
 
 ## Folder Structure
