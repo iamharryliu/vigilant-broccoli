@@ -30,7 +30,7 @@ interface ListManagementCopy {
 
 const DEFAULT_COPY = {
   LIST: {
-    TITLE: 'Title',
+    TITLE: 'CRUD List Management Title',
     EMPTY_MESSAGE: 'No items.',
   },
   [FORM_TYPE.CREATE]: {
@@ -78,7 +78,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   items: T[];
   setItems: Dispatch<SetStateAction<T[]>>;
   ListItemComponent: ListItemComponentProps<T>;
-  FormComponent: CRUDFormComponent<T>;
+  FormComponent?: CRUDFormComponent<T>;
   createItem?: CreateItem<T>;
   createItemFormDefaultValues?: T;
   updateItem?: UpdateItem<T>;
@@ -105,7 +105,7 @@ export const CRUDItemList = <T extends CRUDItem>({
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2>{copy.LIST.TITLE}</h2>
-        {createItem && createItemFormDefaultValues && (
+        {createItem && createItemFormDefaultValues && FormComponent && (
           <CRUDItemFormDialog
             formType={FORM_TYPE.CREATE}
             initialFormValues={createItemFormDefaultValues}
@@ -124,13 +124,15 @@ export const CRUDItemList = <T extends CRUDItem>({
                 <div className="w-full">
                   <ListItemComponent item={item} items={items} />
                 </div>
-                <EllipsisOptions
-                  item={item}
-                  FormComponent={FormComponent}
-                  deleteItem={handleDelete}
-                  copy={copy}
-                  submitHandler={submitHandler}
-                />
+                {FormComponent && (
+                  <EllipsisOptions
+                    item={item}
+                    FormComponent={FormComponent}
+                    deleteItem={handleDelete}
+                    copy={copy}
+                    submitHandler={submitHandler}
+                  />
+                )}
               </div>
             );
           })}
