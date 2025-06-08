@@ -1,49 +1,33 @@
 import { useEffect, useState } from 'react';
 import { Button, Heading } from '@radix-ui/themes';
 import { CRUDFormProps, CRUDItemList } from '@vigilant-broccoli/react-lib';
-
-type Item = {
-  id: number;
-  title: string;
-};
-
-const apiUrl = 'https://jsonplaceholder.typicode.com/posts';
+import { JSONPlaceHolderPost, JSONPlaceholderPostService } from '@vigilant-broccoli/common-js';
 
 export const CRUDListManagementDemo = () => {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<JSONPlaceHolderPost[]>([]);
   const createItemFormDefaultValues = { id: 0, title: '' };
 
   useEffect(() => {
-    fetch(apiUrl + '?_limit=5')
-      .then(res => res.json())
+    JSONPlaceholderPostService.getTodos(5)
       .then(data => {
         setItems(data);
       });
   }, []);
 
-  async function createItem(item: Item) {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      body: JSON.stringify(item),
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
-    });
-    const data = await response.json();
+  async function createItem(item: JSONPlaceHolderPost) {
+    const data = await JSONPlaceholderPostService.createTodo(item, items)
     return {
       ...data,
       id: Math.max(...items.map(item => item.id)) + 1,
     };
   }
 
-  async function updateItem(item: Item) {
-    await fetch(`${apiUrl}/${item.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(item),
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
-    });
+  async function updateItem(item: JSONPlaceHolderPost) {
+    await JSONPlaceholderPostService.updateTodo(item)
   }
 
   async function deleteItem(id: number) {
-    await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
+    await JSONPlaceholderPostService.deleteTodo(id)
   }
 
   return (
@@ -63,7 +47,7 @@ export const CRUDListManagementDemo = () => {
   );
 };
 
-const ListItem = ({ item }: { item: Item }) => {
+const ListItem = ({ item }: { item: JSONPlaceHolderPost }) => {
   return (
     <span>
       {item.id} {item.title}
@@ -75,7 +59,7 @@ const Form = ({
   formType,
   initialFormValues,
   submitHandler,
-}: CRUDFormProps<Item>) => {
+}: CRUDFormProps<JSONPlaceHolderPost>) => {
   const [item, setItem] = useState(initialFormValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
