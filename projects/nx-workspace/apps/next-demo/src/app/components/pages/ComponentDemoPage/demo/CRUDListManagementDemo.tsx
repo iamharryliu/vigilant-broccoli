@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Button, Heading } from '@radix-ui/themes';
 import { CRUDFormProps, CRUDItemList } from '@vigilant-broccoli/react-lib';
-import { JSONPlaceHolderPost, JSONPlaceholderPostService } from '@vigilant-broccoli/common-js';
+import {
+  JSONPlaceHolderPost,
+  JSONPlaceholderPostService,
+} from '@vigilant-broccoli/common-js';
 
 export const CRUDListManagementDemo = () => {
   const [items, setItems] = useState<JSONPlaceHolderPost[]>([]);
   const createItemFormDefaultValues = { id: 0, title: '' };
 
   useEffect(() => {
-    JSONPlaceholderPostService.getTodos(5)
-      .then(data => {
-        setItems(data);
-      });
+    JSONPlaceholderPostService.getTodos(5).then(data => {
+      setItems(data);
+    });
   }, []);
 
   async function createItem(item: JSONPlaceHolderPost) {
-    const data = await JSONPlaceholderPostService.createTodo(item, items)
+    const data = await JSONPlaceholderPostService.createTodo(item, items);
     return {
       ...data,
       id: Math.max(...items.map(item => item.id)) + 1,
@@ -23,11 +25,11 @@ export const CRUDListManagementDemo = () => {
   }
 
   async function updateItem(item: JSONPlaceHolderPost) {
-    await JSONPlaceholderPostService.updateTodo(item)
+    await JSONPlaceholderPostService.updateTodo(item);
   }
 
   async function deleteItem(id: number) {
-    await JSONPlaceholderPostService.deleteTodo(id)
+    await JSONPlaceholderPostService.deleteTodo(id);
   }
 
   return (
