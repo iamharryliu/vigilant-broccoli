@@ -1,5 +1,12 @@
-import { Button, TextArea } from '@radix-ui/themes';
-import { useEffect, useRef, useState } from 'react';
+import {
+  Box,
+  Button,
+  CheckboxCards,
+  Flex,
+  Text,
+  TextArea,
+} from '@radix-ui/themes';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { CopyPastable } from '@vigilant-broccoli/react-lib';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 
@@ -10,6 +17,7 @@ export const AIDemoPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userPromptResult, setUserPromptResult] = useState('');
   const [filesnames, setFilenames] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
 
   useEffect(() => {
     async function init() {
@@ -79,6 +87,11 @@ export const AIDemoPage = () => {
         multiple
       />
       {JSON.stringify(filesnames)}
+      <FileSelect
+        files={filesnames}
+        selectedFiles={selectedFiles}
+        setSelectedFiles={setSelectedFiles}
+      />
     </>
   );
 };
@@ -87,6 +100,37 @@ type UploadAreaProps = {
   onFilesSelected: (files: FileList) => void;
   accept?: string;
   multiple?: boolean;
+};
+
+export const FileSelect = ({
+  files,
+  selectedFiles,
+  setSelectedFiles,
+}: {
+  files: string[];
+  selectedFiles: string[];
+  setSelectedFiles: Dispatch<SetStateAction<string[]>>;
+}) => {
+  return (
+    <Box maxWidth="600px">
+      <CheckboxCards.Root
+        defaultValue={selectedFiles}
+        columns={{ initial: '1', sm: '3' }}
+        onValueChange={setSelectedFiles}
+      >
+        {files.map(file => {
+          return (
+            <CheckboxCards.Item value={file} key={file}>
+              <Flex direction="column" width="100%">
+                <Text weight="bold">{file}</Text>
+                <Text>{file}</Text>
+              </Flex>
+            </CheckboxCards.Item>
+          );
+        })}
+      </CheckboxCards.Root>
+    </Box>
+  );
 };
 
 export function UploadArea({
