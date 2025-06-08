@@ -47,9 +47,9 @@ export class LocalBucketService {
     await fs.mkdir(this.bucketPath, { recursive: true });
   }
 
-  async upload(filePath: string, destinationName: string): Promise<void> {
+  async upload(destinationName: string, buffer: Buffer): Promise<void> {
     const destinationPath = path.join(this.bucketPath, destinationName);
-    await fs.copyFile(filePath, destinationPath);
+    await fs.writeFile(destinationPath, buffer);
   }
 
   async download(fileName: string, destinationPath: string): Promise<void> {
@@ -62,7 +62,7 @@ export class LocalBucketService {
     await fs.unlink(filePath);
   }
 
-  async list(): Promise<string[]> {
+  async getFiles(): Promise<string[]> {
     return await fs.readdir(this.bucketPath);
   }
 

@@ -1,6 +1,7 @@
 import { Button, TextArea } from '@radix-ui/themes';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CopyPastable } from '@vigilant-broccoli/react-lib';
+import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 
 export const AIDemoPage = () => {
   const [userPrompt, setUserPrompt] = useState(
@@ -8,6 +9,21 @@ export const AIDemoPage = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [userPromptResult, setUserPromptResult] = useState('');
+  const [filesnames, setFilenames] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function init() {
+      const response = await fetch('http://localhost:4200/api/files', {
+        method: HTTP_METHOD.GET,
+        headers: {
+          ...HTTP_HEADERS.CONTENT_TYPE.JSON,
+        },
+      });
+      const result = await response.json();
+      setFilenames(result);
+    }
+    init();
+  }, []);
 
   async function prompt() {
     setIsLoading(true);
@@ -27,10 +43,18 @@ export const AIDemoPage = () => {
       setIsLoading(false);
     }
   }
-  const handleFiles = (files: FileList) => {
-    console.log('Selected files:', Array.from(files));
-    // Upload logic here
-  };
+  async function handleFiles(files: FileList) {
+    const formData = new FormData();
+    Array.from(files).forEach(file => {
+      formData.append('file', file);
+    });
+
+    await fetch('/api/files', {
+      method: HTTP_METHOD.POST,
+      body: formData,
+    });
+    setFilenames(Array.from(files).map(file => file.name));
+  }
 
   return (
     <>
@@ -54,6 +78,7 @@ export const AIDemoPage = () => {
         accept="image/*,.pdf"
         multiple
       />
+      {JSON.stringify(filesnames)}
     </>
   );
 };
