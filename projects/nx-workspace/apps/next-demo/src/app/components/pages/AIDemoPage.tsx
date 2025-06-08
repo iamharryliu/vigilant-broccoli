@@ -215,6 +215,15 @@ const LLMSimplePromptTester = () => {
     };
   }
 
+  async function updateItem(item:Prompt){
+    console.log(`Update ${JSON.stringify(item)}`)
+    return
+  }
+
+  async function deleteItem(id:number){
+    console.log(`Delete ${id}`)
+  }
+
   return (
     <>
       <CRUDItemList
@@ -230,6 +239,8 @@ const LLMSimplePromptTester = () => {
           results: [],
         }}
         createItem={createItem}
+        updateItem={updateItem}
+        deleteItem={deleteItem}
       />
       <CopyPastable text={JSON.stringify(prompts, null, 2)}/>
     </>
