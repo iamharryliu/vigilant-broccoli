@@ -1,3 +1,4 @@
+export AWS_CLI_AUTO_PROMPT='on-partial'
 alias awsauto="aws --cli-auto-prompt"
 alias startec2="aws ec2 start-instances --instance-ids $ec2_instance"
 alias stopec2="aws ec2 stop-instances --instance-ids $ec2_instance"
