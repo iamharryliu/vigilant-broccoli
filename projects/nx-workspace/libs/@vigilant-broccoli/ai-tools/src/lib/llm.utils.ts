@@ -5,15 +5,15 @@ import {
   GROK_MODELS,
   LLM_MODEL,
 } from './llm.consts';
+import { zodResponseFormat } from 'openai/helpers/zod.mjs';
 import {
-  GeminiModel,
   DeepSeekModel,
+  GeminiModel,
   GrokModel,
   LLMModel,
-  LLMPromptRequest,
   LLMModelConfig,
-} from './llm.types';
-import { zodResponseFormat } from 'openai/helpers/zod.mjs';
+} from '@vigilant-broccoli/common-js';
+import { LLMPromptRequest } from './llm.types';
 
 const LLM_URL = {
   OPENAI: 'https://api.openai.com/v1',
