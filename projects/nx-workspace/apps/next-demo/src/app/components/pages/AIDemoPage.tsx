@@ -122,7 +122,6 @@ export const FileSelect = ({
           return (
             <CheckboxCards.Item value={file} key={file}>
               <Flex direction="column" width="100%">
-                <Text weight="bold">{file}</Text>
                 <Text>{file}</Text>
               </Flex>
             </CheckboxCards.Item>
