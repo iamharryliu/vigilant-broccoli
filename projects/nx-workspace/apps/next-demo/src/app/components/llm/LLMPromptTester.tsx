@@ -1,9 +1,4 @@
-import {
-  Button,
-  DataList,
-  Text,
-  TextField,
-} from '@radix-ui/themes';
+import { Button, DataList, Text, TextField } from '@radix-ui/themes';
 import { useState } from 'react';
 import {
   CopyPastable,
@@ -20,7 +15,6 @@ import {
   LLMModel,
 } from '@vigilant-broccoli/common-js';
 import { LLMPrompt } from '@vigilant-broccoli/common-js';
-
 
 const DEFAULT_USER_PROMPT = 'Who is the Prime Minister of Canada?';
 

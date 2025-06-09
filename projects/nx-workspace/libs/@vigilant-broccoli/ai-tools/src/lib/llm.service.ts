@@ -71,7 +71,7 @@ async function generateImage(prompt: string) {
     n: 1,
     size: '1024x1024',
   });
-  return `data:image/png;base64,${response.data[0].b64_json}`;
+  return `${response.data[0].b64_json}`;
 }
 
 async function editImage(filename: string, prompt: string) {

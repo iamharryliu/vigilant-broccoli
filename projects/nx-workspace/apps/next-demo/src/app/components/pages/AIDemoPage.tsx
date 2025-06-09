@@ -1,20 +1,21 @@
 import {
   Box,
+  Button,
   CheckboxCards,
   Flex,
   Text,
+  TextArea,
 } from '@radix-ui/themes';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import {
-  HTTP_HEADERS,
-  HTTP_METHOD,
-} from '@vigilant-broccoli/common-js';
+import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import Image from 'next/image';
 import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
 
 export const AIDemoPage = () => {
   const [filesnames, setFilenames] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const [imagePrompt, setImagePrompt] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -40,7 +41,18 @@ export const AIDemoPage = () => {
       method: HTTP_METHOD.POST,
       body: formData,
     });
-    setFilenames(prev=>[...prev,...Array.from(files).map(file => file.name)]);
+    setFilenames(prev => [
+      ...prev,
+      ...Array.from(files).map(file => file.name),
+    ]);
+  }
+  async function handleSubmit() {
+    setIsLoading(true);
+    await fetch('/api/image-generation', {
+      method: HTTP_METHOD.POST,
+      body: JSON.stringify({ prompt: imagePrompt }),
+    });
+    setIsLoading(false);
   }
 
   return (
@@ -55,6 +67,14 @@ export const AIDemoPage = () => {
         selectedFiles={selectedFiles}
         setSelectedFiles={setSelectedFiles}
       />
+      <TextArea
+        placeholder="Image prompt"
+        value={imagePrompt}
+        onChange={e => setImagePrompt(e.target.value)}
+      />
+      <Button onClick={handleSubmit} loading={isLoading}>
+        Image Generation
+      </Button>
       <LLMSimplePromptTester />
     </>
   );
@@ -86,7 +106,7 @@ export const FileSelect = ({
           return (
             <CheckboxCards.Item value={file} key={file}>
               <Flex direction="column" width="100%">
-                <Image src={`/bucket/${file}`} alt='image' fill={true} />
+                <Image src={`/bucket/${file}`} alt="image" fill={true} />
                 <Text>{file}</Text>
               </Flex>
             </CheckboxCards.Item>
