@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TextArea } from '@radix-ui/themes';
+import { Card, Heading, TextArea } from '@radix-ui/themes';
 import { countWords } from '@vigilant-broccoli/common-js';
 
 export const TextPage = () => {
@@ -9,17 +9,22 @@ export const TextPage = () => {
 const CharacterCounter = () => {
   const [text, setText] = useState('');
   return (
-    <div className="flex">
-      <TextArea
-        className="w-1/2"
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="Enter text.."
-      />
-      <div className="w-1/2">
-        <p>Length: {text.length}</p>
-        <p>Words: {countWords(text)}</p>
+    <Card>
+      <Heading size="4" mb="2">
+        Text
+      </Heading>
+      <div className="flex space-x-4">
+        <TextArea
+          className="w-1/2"
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="Enter text.."
+        />
+        <div className="w-1/2">
+          <p>Length: {text.length}</p>
+          <p>Words: {countWords(text)}</p>
+        </div>
       </div>
-    </div>
+    </Card>
   );
 };
