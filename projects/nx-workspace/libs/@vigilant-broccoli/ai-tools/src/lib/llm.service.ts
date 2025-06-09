@@ -3,6 +3,7 @@ import { LLM_MODEL } from './llm.consts';
 import { LLMPromptRequest, LLMPromptResult } from './llm.types';
 import { LLMUtils } from './llm.utils';
 import { createReadStream } from 'fs';
+import { CompletionUsage } from 'openai/resources/completions';
 
 async function prompt<T>(
   request: LLMPromptRequest<T>,
@@ -12,7 +13,7 @@ async function prompt<T>(
   const chatParams = LLMUtils.formatPromptParams(request);
   const response = await client.chat.completions.create(chatParams);
 
-  const usage = response.usage;
+  const usage = response.usage as CompletionUsage;
   const { total_tokens, prompt_tokens, completion_tokens } = usage;
   const message = response.choices[0].message;
 
