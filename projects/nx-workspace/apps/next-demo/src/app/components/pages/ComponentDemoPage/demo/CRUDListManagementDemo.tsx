@@ -8,7 +8,7 @@ import {
 
 export const CRUDListManagementDemo = () => {
   const [items, setItems] = useState<JSONPlaceHolderPost[]>([]);
-  const [isCards, setIsCards] = useState(false)
+  const [isCards, setIsCards] = useState(false);
   const createItemFormDefaultValues = { id: 0, title: '' };
 
   useEffect(() => {
@@ -36,10 +36,7 @@ export const CRUDListManagementDemo = () => {
   return (
     <>
       <Heading>CRUD List Management Demo</Heading>
-      <Switch
-        checked={isCards}
-        onCheckedChange={setIsCards}
-      />
+      <Switch checked={isCards} onCheckedChange={setIsCards} />
       <CRUDItemList
         createItemFormDefaultValues={createItemFormDefaultValues}
         items={items}
