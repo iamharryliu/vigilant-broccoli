@@ -15,6 +15,12 @@ export const GEMINI_MODEL = {
 } as const;
 export const GEMINI_MODELS = Object.values(GEMINI_MODEL);
 
+export const ANTHROPIC_MODEL = {
+  CLAUDE_4_SONNET: 'claude-sonnet-4-20250514',
+  CLAUDE_4_OPUS: 'claude-opus-4-20250514',
+} as const;
+export const ANTHROPIC_MODELS = Object.values(ANTHROPIC_MODEL);
+
 export const DEEPSEEK_MODEL = {
   DEEP_SEEK: 'deepseek-chat',
 } as const;
@@ -30,5 +36,6 @@ export const LLM_MODEL = {
   ...GEMINI_MODEL,
   ...DEEPSEEK_MODEL,
   ...GROK_MODEL,
+  ...ANTHROPIC_MODEL,
 } as const;
 export const LLM_MODELS = Object.values(LLM_MODEL);

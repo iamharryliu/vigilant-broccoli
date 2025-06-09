@@ -1,15 +1,15 @@
 import OpenAI from 'openai';
-import {
-  DEEPSEEK_MODELS,
-  GEMINI_MODELS,
-  GROK_MODELS,
-  LLM_MODEL,
-} from './llm.consts';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
 import {
+  ANTHROPIC_MODELS,
+  AnthropicModel,
+  DEEPSEEK_MODELS,
   DeepSeekModel,
+  GEMINI_MODELS,
   GeminiModel,
+  GROK_MODELS,
   GrokModel,
+  LLM_MODEL,
   LLMModel,
   LLMModelConfig,
 } from '@vigilant-broccoli/common-js';
@@ -20,6 +20,7 @@ const LLM_URL = {
   DEEPSEEK: 'https://api.deepseek.com',
   GROK: 'https://api.x.ai/v1',
   GEMINI: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+  ANTHROPIC_API_KEY: 'https://api.anthropic.com/v1/messages',
 };
 
 const API_KEY_NAME = {
@@ -27,6 +28,7 @@ const API_KEY_NAME = {
   DEEPSEEK: 'DEEPSEEK_API_KEY',
   GROK: 'GROK_API_KEY',
   GEMINI: 'GEMINI_API_KEY',
+  ANTHROPIC: 'ANTHROPIC_API_KEY',
 };
 
 function getModelBaseUrl(model: LLMModel) {
@@ -38,6 +40,9 @@ function getModelBaseUrl(model: LLMModel) {
   }
   if (GROK_MODELS.includes(model as GrokModel)) {
     return LLM_URL.GROK;
+  }
+  if (ANTHROPIC_MODELS.includes(model as AnthropicModel)) {
+    return LLM_URL.ANTHROPIC_API_KEY;
   }
   return LLM_URL.OPENAI;
 }
@@ -51,6 +56,9 @@ function getModelAPIKey(model: LLMModel) {
   }
   if (GROK_MODELS.includes(model as GrokModel)) {
     return process.env[API_KEY_NAME.GROK];
+  }
+  if (ANTHROPIC_MODELS.includes(model as AnthropicModel)) {
+    return LLM_URL.ANTHROPIC_API_KEY;
   }
   return process.env[API_KEY_NAME.OPENAI];
 }

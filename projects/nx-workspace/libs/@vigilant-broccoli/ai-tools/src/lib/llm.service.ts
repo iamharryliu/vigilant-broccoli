@@ -1,9 +1,9 @@
 import { toFile } from 'openai';
-import { LLM_MODEL } from './llm.consts';
 import { LLMPromptRequest, LLMPromptResult } from './llm.types';
 import { LLMUtils } from './llm.utils';
 import { createReadStream } from 'fs';
 import { CompletionUsage } from 'openai/resources/completions';
+import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 
 async function prompt<T>(
   request: LLMPromptRequest<T>,
