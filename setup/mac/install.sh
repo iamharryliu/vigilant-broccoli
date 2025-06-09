@@ -11,12 +11,15 @@ create_symlink() {
 
     if [ -L "$link_name" ]; then
         echo "Symbolic link $link_name already exists."
+        return 0
     elif [ -e "$link_name" ]; then
         echo "File $link_name already exists but is not a symbolic link."
-    else
-        ln -s "$target" "$link_name"
-        echo "Created symbolic link $link_name -> $target"
+        rm -rf "$target"
+        echo "Removed existing file or symlink at $target"
     fi
+
+    ln -s "$target" "$link_name"
+    echo "Created symbolic link $link_name -> $target"
 }
 
 # Setup dotfiles.
