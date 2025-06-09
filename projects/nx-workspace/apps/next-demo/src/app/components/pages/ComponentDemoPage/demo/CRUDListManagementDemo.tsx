@@ -87,7 +87,7 @@ const Form = ({
       </div>
 
       <Button onClick={handleSubmit} loading={isSubmitting} className="w-full">
-        Skicka
+        Submit
       </Button>
     </>
   );

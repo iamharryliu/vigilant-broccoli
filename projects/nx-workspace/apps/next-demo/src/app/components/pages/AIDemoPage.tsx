@@ -174,10 +174,15 @@ export function UploadArea({
   );
 }
 
+const DEFAULT_USER_PROMPT  =  'Who is the Prime Minister of Canada?'
+
 const DEFAULT_PROMPTS = [
   {
     id: 1,
-    prompt: { userPrompt: 'userprompt', systemPrompt: 'system prompts' },
+    prompt: {
+      userPrompt: DEFAULT_USER_PROMPT,
+      systemPrompt: '',
+    },
     model: LLM_MODEL.GPT_4O,
     results: [],
   },
@@ -206,6 +211,9 @@ const COPY = {
 };
 
 const LLMSimplePromptTester = () => {
+  const [defaultUserPrompt, setDefaultUserPrompt] = useState(
+    DEFAULT_USER_PROMPT,
+  );
   const [prompts, setPrompts] = useState<Prompt[]>(DEFAULT_PROMPTS);
 
   async function createItem(item: Prompt) {
@@ -215,17 +223,37 @@ const LLMSimplePromptTester = () => {
     };
   }
 
-  async function updateItem(item:Prompt){
-    console.log(`Update ${JSON.stringify(item)}`)
-    return
+  async function updateItem(item: Prompt) {
+    console.log(`Update ${JSON.stringify(item)}`);
+    return;
   }
 
-  async function deleteItem(id:number){
-    console.log(`Delete ${id}`)
+  async function deleteItem(id: number) {
+    console.log(`Delete ${id}`);
+  }
+
+  async function onSubmit() {
+    const response = await fetch('api', {
+      method: HTTP_METHOD.POST,
+      body: JSON.stringify(prompts),
+      headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
+    });
+    const data = await response.json();
+    setPrompts(data);
   }
 
   return (
     <>
+      <div className="flex items-center space-x-4">
+        <Text>Default User Prompt</Text>
+        <div className='w-96'>
+
+        <TextField.Root
+          value={defaultUserPrompt}
+          onChange={e => setDefaultUserPrompt(e.target.value)}
+          />
+          </div>
+      </div>
       <CRUDItemList
         copy={COPY}
         items={prompts}
@@ -234,7 +262,7 @@ const LLMSimplePromptTester = () => {
         FormComponent={Form}
         createItemFormDefaultValues={{
           id: 0,
-          prompt: { userPrompt: '', systemPrompt: '' },
+          prompt: { userPrompt: defaultUserPrompt, systemPrompt: '' },
           model: LLM_MODEL.GPT_4O,
           results: [],
         }}
@@ -242,7 +270,8 @@ const LLMSimplePromptTester = () => {
         updateItem={updateItem}
         deleteItem={deleteItem}
       />
-      <CopyPastable text={JSON.stringify(prompts, null, 2)}/>
+      <Button onClick={onSubmit}>Prompt</Button>
+      <CopyPastable text={JSON.stringify(prompts, null, 2)} />
     </>
   );
 };
@@ -310,7 +339,7 @@ const Form = ({
           loading={isSubmitting}
           className="w-full"
         >
-          Skicka
+          Submit
         </Button>
       </div>
     </div>

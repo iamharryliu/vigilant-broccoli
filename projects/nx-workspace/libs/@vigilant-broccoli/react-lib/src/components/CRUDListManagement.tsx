@@ -188,13 +188,13 @@ export const DeleteItemConfirmationDialog = ({
     <AlertDialog.Root>
       <AlertDialog.Trigger>
         <Button className="w-min text-red-500" variant="ghost">
-          Ta Bort
+          Delete
         </Button>
       </AlertDialog.Trigger>
       <AlertDialog.Content className="sm:max-w-[425px]">
-        <AlertDialog.Title>Ta Bort Samtalstagg</AlertDialog.Title>
-        <AlertDialog.Description>{`Är du säker på att du vill ta bort?`}</AlertDialog.Description>
-        <Button onClick={deleteItem}>Ja</Button>
+        <AlertDialog.Title>Delete Item</AlertDialog.Title>
+        <AlertDialog.Description>{`Are you sure you want to delete this item?`}</AlertDialog.Description>
+        <Button onClick={deleteItem}>Yes</Button>
       </AlertDialog.Content>
     </AlertDialog.Root>
   );
@@ -222,7 +222,7 @@ const CRUDItemFormDialog = <T,>({
     <AlertDialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialog.Trigger>
         <Button variant="ghost" onClick={() => setIsOpen(true)}>
-          {formType === FORM_TYPE.CREATE ? <Plus /> : 'Uppdatera'}
+          {formType === FORM_TYPE.CREATE ? <Plus /> : 'Update'}
         </Button>
       </AlertDialog.Trigger>
       <AlertDialog.Content>
