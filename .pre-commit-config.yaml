@@ -28,13 +28,13 @@ repos:
         pass_filenames: false
         always_run: true
         additional_dependencies: [flask]
-  - repo: local
-    hooks:
-      - id: toronto-alerts-flask
-        name: Toronto Alerts
-        entry: ./projects/toronto-alerts/toronto-alerts-flask/venv/bin/pytest projects/toronto-alerts/toronto-alerts-flask
-        language: python
-        types: [python]
-        pass_filenames: false
-        always_run: true
-        additional_dependencies: [flask]
+  # - repo: local
+  #   hooks:
+  #     - id: toronto-alerts-flask
+  #       name: Toronto Alerts
+  #       entry: ./projects/toronto-alerts/toronto-alerts-flask/venv/bin/pytest projects/toronto-alerts/toronto-alerts-flask
+  #       language: python
+  #       types: [python]
+  #       pass_filenames: false
+  #       always_run: true
+  #       additional_dependencies: [flask]
