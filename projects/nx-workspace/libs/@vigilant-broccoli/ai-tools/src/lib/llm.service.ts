@@ -1,9 +1,10 @@
-import OpenAI, { toFile } from 'openai';
+import { toFile } from 'openai';
 import { LLMPromptRequest, LLMPromptResult } from './llm.types';
 import { LLMUtils } from './llm.utils';
 import { createReadStream } from 'fs';
 import { CompletionUsage } from 'openai/resources/completions';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import Anthropic from '@anthropic-ai/sdk';
 
 async function prompt<T>(
   request: LLMPromptRequest<T>,
@@ -11,23 +12,55 @@ async function prompt<T>(
   const { modelConfig, responseFormat } = request;
   const client = LLMUtils.getLLMClient(modelConfig);
   const chatParams = LLMUtils.formatPromptParams(request);
-  if (client instanceof OpenAI) {
-    const response = await client.chat.completions.create(chatParams);
+  if (client instanceof Anthropic) {
+    const msg = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 20000,
+      temperature: 1,
+      stream: false,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: 'Who is the prime minister of Canada?',
+            },
+          ],
+        },
+      ],
+    });
 
-    const usage = response.usage as CompletionUsage;
-    const { total_tokens, prompt_tokens, completion_tokens } = usage;
-    const message = response.choices[0].message;
-
+    const usage = msg.usage;
+    const { input_tokens, output_tokens } = usage;
     return {
       model: modelConfig?.model || LLM_MODEL.GPT_4O,
       tokens: {
-        prompt: prompt_tokens,
-        completion: completion_tokens,
-        total: total_tokens,
+        prompt: input_tokens,
+        completion: output_tokens,
+        total: input_tokens + output_tokens,
       },
-      data: responseFormat ? JSON.parse(message.content) : message.content,
+      data: responseFormat
+        ? JSON.parse((msg.content[0] as { type: 'text'; text: string }).text)
+        : (msg.content[0] as { type: 'text'; text: string }).text,
     };
   }
+
+  const response = await client.chat.completions.create(chatParams);
+
+  const usage = response.usage as CompletionUsage;
+  const { total_tokens, prompt_tokens, completion_tokens } = usage;
+  const message = response.choices[0].message;
+
+  return {
+    model: modelConfig?.model || LLM_MODEL.GPT_4O,
+    tokens: {
+      prompt: prompt_tokens,
+      completion: completion_tokens,
+      total: total_tokens,
+    },
+    data: responseFormat ? JSON.parse(message.content) : message.content,
+  };
 }
 
 async function generateImage(prompt: string) {

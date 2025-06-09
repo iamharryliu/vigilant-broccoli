@@ -174,7 +174,7 @@ export function UploadArea({
   );
 }
 
-const DEFAULT_USER_PROMPT  =  'Who is the Prime Minister of Canada?'
+const DEFAULT_USER_PROMPT = 'Who is the Prime Minister of Canada?';
 
 const DEFAULT_PROMPTS = [
   {
@@ -211,11 +211,10 @@ const COPY = {
 };
 
 const LLMSimplePromptTester = () => {
-  const [defaultUserPrompt, setDefaultUserPrompt] = useState(
-    DEFAULT_USER_PROMPT,
-  );
+  const [defaultUserPrompt, setDefaultUserPrompt] =
+    useState(DEFAULT_USER_PROMPT);
   const [prompts, setPrompts] = useState<Prompt[]>(DEFAULT_PROMPTS);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   async function createItem(item: Prompt) {
     return {
@@ -234,7 +233,7 @@ const LLMSimplePromptTester = () => {
   }
 
   async function onSubmit() {
-    setIsLoading(true)
+    setIsLoading(true);
     const response = await fetch('api', {
       method: HTTP_METHOD.POST,
       body: JSON.stringify(prompts),
@@ -242,20 +241,19 @@ const LLMSimplePromptTester = () => {
     });
     const data = await response.json();
     setPrompts(data);
-    setIsLoading(false)
+    setIsLoading(false);
   }
 
   return (
     <>
       <div className="flex items-center space-x-4">
         <Text>Default User Prompt</Text>
-        <div className='w-96'>
-
-        <TextField.Root
-          value={defaultUserPrompt}
-          onChange={e => setDefaultUserPrompt(e.target.value)}
+        <div className="w-96">
+          <TextField.Root
+            value={defaultUserPrompt}
+            onChange={e => setDefaultUserPrompt(e.target.value)}
           />
-          </div>
+        </div>
       </div>
       <CRUDItemList
         copy={COPY}
@@ -273,7 +271,9 @@ const LLMSimplePromptTester = () => {
         updateItem={updateItem}
         deleteItem={deleteItem}
       />
-      <Button onClick={onSubmit} loading={isLoading}>Prompt</Button>
+      <Button onClick={onSubmit} loading={isLoading}>
+        Prompt
+      </Button>
       <CopyPastable text={JSON.stringify(prompts, null, 2)} />
     </>
   );
