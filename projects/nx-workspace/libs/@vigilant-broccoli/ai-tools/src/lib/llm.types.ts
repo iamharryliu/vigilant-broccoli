@@ -5,12 +5,12 @@ import {
   LLMPrompt,
 } from '@vigilant-broccoli/common-js';
 
-export type LLMPromptRequest<T> = {
+export type LLMPromptRequest = {
   prompt: LLMPrompt;
   modelConfig?: LLMModelConfig;
   responseFormat?: {
     example?: string;
-    zod: AutoParseableResponseFormat<T>;
+    zod?: AutoParseableResponseFormat;
   };
 };
 

@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
       }),
     ),
   );
-  console.log(results);
   return NextResponse.json(
     prompts.map((prompt, i) => {
       return { ...prompt, results: [...prompt.results, results[i].data] };

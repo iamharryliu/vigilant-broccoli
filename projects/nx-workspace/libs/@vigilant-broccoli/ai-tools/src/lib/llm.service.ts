@@ -7,7 +7,7 @@ import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 import Anthropic from '@anthropic-ai/sdk';
 
 async function prompt<T>(
-  request: LLMPromptRequest<T>,
+  request: LLMPromptRequest,
 ): Promise<LLMPromptResult<T>> {
   const { modelConfig, responseFormat } = request;
   const client = LLMUtils.getLLMClient(modelConfig);
