@@ -61,7 +61,8 @@ if ask "Setup macOS preferences?"; then
 fi
 
 if ask "Add wallpaper?"; then
-    osascript -e 'tell application "System Events" to set picture of every desktop to "/Users/hliu/vigilant-broccoli/wallpapers/ducky.jpg"'
+    WALLPAPER_PATH="$HOME/vigilant-broccoli/wallpapers/ducky.jpg"
+    osascript -e "tell application \"System Events\" to set picture of every desktop to \"$WALLPAPER_PATH\""
 fi
 
 if ask "Configure terminal theme?"; then
