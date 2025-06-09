@@ -15,6 +15,7 @@ export * from './lib/llm/llm.types';
 
 // JSON Placeholder
 export * from './lib/jsonplaceholder/jsonplaceholder.services';
+export * from './lib/jsonplaceholder/jsonplaceholder.types';
 
 // Utils
 export * from './lib/utils/json.utils';

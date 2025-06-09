@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Heading } from '@radix-ui/themes';
+import { Button, Heading, Switch } from '@radix-ui/themes';
 import { CRUDFormProps, CRUDItemList } from '@vigilant-broccoli/react-lib';
 import {
   JSONPlaceHolderPost,
@@ -8,6 +8,7 @@ import {
 
 export const CRUDListManagementDemo = () => {
   const [items, setItems] = useState<JSONPlaceHolderPost[]>([]);
+  const [isCards, setIsCards] = useState(false)
   const createItemFormDefaultValues = { id: 0, title: '' };
 
   useEffect(() => {
@@ -35,6 +36,10 @@ export const CRUDListManagementDemo = () => {
   return (
     <>
       <Heading>CRUD List Management Demo</Heading>
+      <Switch
+        checked={isCards}
+        onCheckedChange={setIsCards}
+      />
       <CRUDItemList
         createItemFormDefaultValues={createItemFormDefaultValues}
         items={items}
@@ -44,6 +49,7 @@ export const CRUDListManagementDemo = () => {
         createItem={createItem}
         updateItem={updateItem}
         deleteItem={deleteItem}
+        isCards={isCards}
       />
     </>
   );

@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Card,
   CheckboxCards,
   DataList,
   Flex,
@@ -270,6 +269,7 @@ const LLMSimplePromptTester = () => {
         createItem={createItem}
         updateItem={updateItem}
         deleteItem={deleteItem}
+        isCards={true}
       />
       <Button onClick={onSubmit} loading={isLoading}>
         Prompt
@@ -351,27 +351,23 @@ const Form = ({
 
 const ListItem = ({ item }: { item: Prompt }) => {
   return (
-    <Card>
-      <DataList.Root>
-        <DataList.Item>
-          <DataList.Label>System Prompt</DataList.Label>
-          <DataList.Value>{item.prompt.systemPrompt}</DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label>User Prompt</DataList.Label>
-          <DataList.Value>{item.prompt.userPrompt}</DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label>Model</DataList.Label>
-          <DataList.Value>{item.model}</DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label>Result</DataList.Label>
-          <DataList.Value>
-            {item.results[item.results.length - 1]}
-          </DataList.Value>
-        </DataList.Item>
-      </DataList.Root>
-    </Card>
+    <DataList.Root>
+      <DataList.Item>
+        <DataList.Label>System Prompt</DataList.Label>
+        <DataList.Value>{item.prompt.systemPrompt}</DataList.Value>
+      </DataList.Item>
+      <DataList.Item>
+        <DataList.Label>User Prompt</DataList.Label>
+        <DataList.Value>{item.prompt.userPrompt}</DataList.Value>
+      </DataList.Item>
+      <DataList.Item>
+        <DataList.Label>Model</DataList.Label>
+        <DataList.Value>{item.model}</DataList.Value>
+      </DataList.Item>
+      <DataList.Item>
+        <DataList.Label>Result</DataList.Label>
+        <DataList.Value>{item.results[item.results.length - 1]}</DataList.Value>
+      </DataList.Item>
+    </DataList.Root>
   );
 };

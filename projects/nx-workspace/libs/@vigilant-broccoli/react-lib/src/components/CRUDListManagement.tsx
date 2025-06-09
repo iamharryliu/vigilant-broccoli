@@ -6,7 +6,7 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import { AlertDialog, Button, Popover } from '@radix-ui/themes';
+import { AlertDialog, Button, Card, Popover } from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 
 type CRUDItem = {
@@ -72,6 +72,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   updateItem,
   deleteItem,
   copy = DEFAULT_COPY,
+  isCards,
 }: {
   HeaderComponent?: ReactNode;
   FooterComponent?: ReactNode;
@@ -84,6 +85,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   updateItem?: UpdateItem<T>;
   deleteItem?: DeleteItem;
   copy?: ListManagementCopy;
+  isCards?: boolean;
 }) => {
   async function submitHandler(item: T, formType: FormType) {
     if (formType === FORM_TYPE.CREATE && createItem) {
@@ -118,8 +120,25 @@ export const CRUDItemList = <T extends CRUDItem>({
       {items.length ? (
         <>
           {HeaderComponent}
-          {items.map(item => {
-            return (
+          {items.map(item =>
+            isCards ? (
+              <Card key={item.id}>
+                <div className="flex items-center justify-between">
+                  <div className="w-full">
+                    <ListItemComponent item={item} items={items} />
+                  </div>
+                  {FormComponent && (
+                    <EllipsisOptions
+                      item={item}
+                      FormComponent={FormComponent}
+                      deleteItem={handleDelete}
+                      copy={copy}
+                      submitHandler={submitHandler}
+                    />
+                  )}
+                </div>
+              </Card>
+            ) : (
               <div key={item.id} className="flex items-center justify-between">
                 <div className="w-full">
                   <ListItemComponent item={item} items={items} />
@@ -134,8 +153,8 @@ export const CRUDItemList = <T extends CRUDItem>({
                   />
                 )}
               </div>
-            );
-          })}
+            ),
+          )}
           {FooterComponent}
         </>
       ) : (
