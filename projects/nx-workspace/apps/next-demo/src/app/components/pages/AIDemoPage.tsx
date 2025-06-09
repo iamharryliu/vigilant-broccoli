@@ -215,6 +215,7 @@ const LLMSimplePromptTester = () => {
     DEFAULT_USER_PROMPT,
   );
   const [prompts, setPrompts] = useState<Prompt[]>(DEFAULT_PROMPTS);
+  const [isLoading, setIsLoading] = useState(false)
 
   async function createItem(item: Prompt) {
     return {
@@ -233,6 +234,7 @@ const LLMSimplePromptTester = () => {
   }
 
   async function onSubmit() {
+    setIsLoading(true)
     const response = await fetch('api', {
       method: HTTP_METHOD.POST,
       body: JSON.stringify(prompts),
@@ -240,6 +242,7 @@ const LLMSimplePromptTester = () => {
     });
     const data = await response.json();
     setPrompts(data);
+    setIsLoading(false)
   }
 
   return (
@@ -270,7 +273,7 @@ const LLMSimplePromptTester = () => {
         updateItem={updateItem}
         deleteItem={deleteItem}
       />
-      <Button onClick={onSubmit}>Prompt</Button>
+      <Button onClick={onSubmit} loading={isLoading}>Prompt</Button>
       <CopyPastable text={JSON.stringify(prompts, null, 2)} />
     </>
   );

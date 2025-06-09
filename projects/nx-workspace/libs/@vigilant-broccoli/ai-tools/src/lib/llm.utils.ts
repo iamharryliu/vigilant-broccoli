@@ -14,6 +14,7 @@ import {
   LLMModelConfig,
 } from '@vigilant-broccoli/common-js';
 import { LLMPromptRequest } from './llm.types';
+import Anthropic from '@anthropic-ai/sdk';
 
 const LLM_URL = {
   OPENAI: 'https://api.openai.com/v1',
@@ -58,12 +59,28 @@ function getModelAPIKey(model: LLMModel) {
     return process.env[API_KEY_NAME.GROK];
   }
   if (ANTHROPIC_MODELS.includes(model as AnthropicModel)) {
-    return LLM_URL.ANTHROPIC_API_KEY;
+    return process.env[API_KEY_NAME.ANTHROPIC];
   }
   return process.env[API_KEY_NAME.OPENAI];
 }
 
-function getLLMClient({
+function getLLMClient(modelConfig: Partial<LLMModelConfig> = {}) {
+  if (ANTHROPIC_MODELS.includes(modelConfig?.model as AnthropicModel)) {
+    return getAnthropicClient(modelConfig);
+  }
+  return getOpenAIClient(modelConfig);
+}
+
+function getAnthropicClient({
+  model = LLM_MODEL.CLAUDE_4_SONNET,
+  apiKey,
+}: Partial<LLMModelConfig> = {}) {
+  return new Anthropic({
+    apiKey: apiKey ? apiKey : getModelAPIKey(model),
+  });
+}
+
+function getOpenAIClient({
   model = LLM_MODEL.GPT_4O,
   apiKey,
 }: Partial<LLMModelConfig> = {}) {
@@ -101,5 +118,6 @@ function provideResponseExample(responseExample: string) {
 
 export const LLMUtils = {
   getLLMClient,
+  getOpenAIClient,
   formatPromptParams,
 };

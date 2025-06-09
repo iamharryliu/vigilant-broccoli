@@ -128,6 +128,7 @@
     "@angular/platform-browser": "19.2.9",
     "@angular/platform-browser-dynamic": "19.2.9",
     "@angular/router": "19.2.9",
+    "@anthropic-ai/sdk": "^0.53.0",
     "@fastify/autoload": "6.0.3",
     "@fastify/cors": "^9.0.0",
     "@fastify/sensible": "6.0.3",

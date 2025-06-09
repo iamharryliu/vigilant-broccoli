@@ -1,4 +1,4 @@
-import { toFile } from 'openai';
+import OpenAI, { toFile } from 'openai';
 import { LLMPromptRequest, LLMPromptResult } from './llm.types';
 import { LLMUtils } from './llm.utils';
 import { createReadStream } from 'fs';
@@ -11,25 +11,27 @@ async function prompt<T>(
   const { modelConfig, responseFormat } = request;
   const client = LLMUtils.getLLMClient(modelConfig);
   const chatParams = LLMUtils.formatPromptParams(request);
-  const response = await client.chat.completions.create(chatParams);
+  if (client instanceof OpenAI) {
+    const response = await client.chat.completions.create(chatParams);
 
-  const usage = response.usage as CompletionUsage;
-  const { total_tokens, prompt_tokens, completion_tokens } = usage;
-  const message = response.choices[0].message;
+    const usage = response.usage as CompletionUsage;
+    const { total_tokens, prompt_tokens, completion_tokens } = usage;
+    const message = response.choices[0].message;
 
-  return {
-    model: modelConfig?.model || LLM_MODEL.GPT_4O,
-    tokens: {
-      prompt: prompt_tokens,
-      completion: completion_tokens,
-      total: total_tokens,
-    },
-    data: responseFormat ? JSON.parse(message.content) : message.content,
-  };
+    return {
+      model: modelConfig?.model || LLM_MODEL.GPT_4O,
+      tokens: {
+        prompt: prompt_tokens,
+        completion: completion_tokens,
+        total: total_tokens,
+      },
+      data: responseFormat ? JSON.parse(message.content) : message.content,
+    };
+  }
 }
 
 async function generateImage(prompt: string) {
-  const client = LLMUtils.getLLMClient({ model: LLM_MODEL.IMAGE_1 });
+  const client = LLMUtils.getOpenAIClient({ model: LLM_MODEL.IMAGE_1 });
   const response = await client.images.generate({
     model: LLM_MODEL.IMAGE_1,
     prompt,
@@ -43,7 +45,7 @@ async function editImage(filename: string, prompt: string) {
   const image = await toFile(createReadStream(filename), null, {
     type: 'image/png',
   });
-  const client = LLMUtils.getLLMClient({ model: LLM_MODEL.IMAGE_1 });
+  const client = LLMUtils.getOpenAIClient({ model: LLM_MODEL.IMAGE_1 });
   const response = await client.images.edit({
     model: 'gpt-image-1',
     image,
