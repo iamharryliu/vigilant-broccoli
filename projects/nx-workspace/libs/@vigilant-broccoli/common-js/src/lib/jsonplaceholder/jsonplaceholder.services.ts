@@ -1,8 +1,5 @@
+import { JSON_PLACEHOLDER_URL } from './jsonplaceholder.consts';
 import { JSONPlaceHolderPost } from './jsonplaceholder.types';
-
-const JSON_PLACEHOLDER_URL = {
-  POST: 'https://jsonplaceholder.typicode.com/posts',
-};
 
 async function createTodo(
   item: JSONPlaceHolderPost,
