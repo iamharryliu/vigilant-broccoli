@@ -59,8 +59,8 @@ if ask "Setup git hooks?"; then
 fi
 
 if ask "Setup macOS preferences?"; then
-    chmod +x "$HOME/$MAC_SETUP_DIR/setup_macos_preferences.sh"
-    . $HOME/$MAC_SETUP_DIR/setup_macos_preferences.sh
+    chmod +x "$MAC_SETUP_DIR/setup_macos_preferences.sh"
+    . $MAC_SETUP_DIR/setup_macos_preferences.sh
 fi
 
 if ask "Add wallpaper?"; then
