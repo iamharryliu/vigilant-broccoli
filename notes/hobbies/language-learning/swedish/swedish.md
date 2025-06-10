@@ -524,3 +524,21 @@ har du tatt
 vardagssaker - everyday things
 avskedsfest - goodbye party
 träffats = träffat varandra
+
+2025/06/09
+På fredag skajobba jag gå Kopenhamn för ett inline skate evenemang med min vanner i kvallen .
+På Lorsdag ska jag studera Svenska på Cafe på morgenen. Eftermiddagen jag ska promenera med min hund och handla mat. På kvallen ska jag ska slappna av
+
+hemifrån - from home
+förbreda sig
+klä sig
+
+vad köper du för mat
+vad äter du till frukost/lunch/middag
+
+ett stöd = ett hjälp
+
+vända sig till = gå till
+vanda sig om = turn away
+vänd dig om = turn towards
+sömn = bestammed sömn
