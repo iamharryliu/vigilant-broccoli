@@ -90,7 +90,7 @@ function getOpenAIClient({
   });
 }
 
-function formatPromptParams<T>(request: LLMPromptRequest<T>) {
+function formatPromptParams(request: LLMPromptRequest) {
   const { prompt, modelConfig, responseFormat } = request;
   const { userPrompt, systemPrompt } = prompt;
   const result = {
