@@ -43,6 +43,7 @@ type ErrorAlert = {
 interface ContextType {
   alert: ErrorAlert | undefined;
   setAlert: Dispatch<SetStateAction<ErrorAlert | undefined>>;
+  setErrorModal: Dispatch<SetStateAction<ErrorModalDTO | undefined>>;
 }
 const Context = createContext<ContextType | null>(null);
 export const ErrorContextProvider = ({ children }: { children: ReactNode }) => {
@@ -54,7 +55,7 @@ export const ErrorContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <Context.Provider value={{ alert, setAlert }}>
+    <Context.Provider value={{ alert, setAlert, setErrorModal }}>
       {alert && <AlertBanner alert={alert} />}
       {errorModal && (
         <ErrorModal
