@@ -1,7 +1,7 @@
 import { toFile } from 'openai';
 import { LLMPromptRequest, LLMPromptResult } from './llm.types';
 import { LLMUtils } from './llm.utils';
-import { createReadStream } from 'fs';
+import * as fs from 'fs';
 import { CompletionUsage } from 'openai/resources/completions';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 import Anthropic from '@anthropic-ai/sdk';
@@ -63,25 +63,35 @@ async function prompt<T>(
   };
 }
 
-async function generateImage(prompt: string) {
+async function generateImages(prompt: string, n = 1) {
   const client = LLMUtils.getOpenAIClient({ model: LLM_MODEL.IMAGE_1 });
   const response = await client.images.generate({
     model: LLM_MODEL.IMAGE_1,
     prompt,
-    n: 1,
-    size: '1024x1024',
+    n,
+    size: 'auto',
   });
-  return `${response.data[0].b64_json}`;
+  return response.data.map(data => data.b64_json);
 }
 
-async function editImage(filename: string, prompt: string) {
-  const image = await toFile(createReadStream(filename), null, {
-    type: 'image/png',
-  });
+async function generateImage(prompt: string) {
+  const [image] = await generateImages(prompt, 1);
+  return image as string;
+}
+
+async function editImage(filenames: string[], prompt: string) {
+  const images = await Promise.all(
+    filenames.map(
+      async file =>
+        await toFile(fs.createReadStream(file), null, {
+          type: 'image/png',
+        }),
+    ),
+  );
   const client = LLMUtils.getOpenAIClient({ model: LLM_MODEL.IMAGE_1 });
   const response = await client.images.edit({
     model: 'gpt-image-1',
-    image,
+    image: images,
     prompt,
   });
   return `data:image/png;base64,${response.data[0].b64_json}`;
@@ -90,5 +100,6 @@ async function editImage(filename: string, prompt: string) {
 export const LLMService = {
   prompt,
   generateImage,
+  generateImages,
   editImage,
 };

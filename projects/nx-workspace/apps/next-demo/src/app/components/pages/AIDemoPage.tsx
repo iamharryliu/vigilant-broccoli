@@ -10,12 +10,14 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import Image from 'next/image';
 import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
+import { Select } from '@vigilant-broccoli/react-lib';
 
 export const AIDemoPage = () => {
   const [filesnames, setFilenames] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [imagePrompt, setImagePrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [numberOfImagesToGenerate, setNumberOfImagesToGenerate] = useState(1);
 
   useEffect(() => {
     async function init() {
@@ -50,7 +52,11 @@ export const AIDemoPage = () => {
     setIsLoading(true);
     await fetch('/api/image-generation', {
       method: HTTP_METHOD.POST,
-      body: JSON.stringify({ prompt: imagePrompt }),
+      body: JSON.stringify({
+        prompt: imagePrompt,
+        selectedFiles,
+        n: numberOfImagesToGenerate,
+      }),
     });
     setIsLoading(false);
   }
@@ -72,8 +78,14 @@ export const AIDemoPage = () => {
         value={imagePrompt}
         onChange={e => setImagePrompt(e.target.value)}
       />
+      <Select
+        selectedOption={numberOfImagesToGenerate}
+        setValue={setNumberOfImagesToGenerate}
+        options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+      />
+
       <Button onClick={handleSubmit} loading={isLoading}>
-        Image Generation
+        Generate Image(s)
       </Button>
       <LLMSimplePromptTester />
     </>

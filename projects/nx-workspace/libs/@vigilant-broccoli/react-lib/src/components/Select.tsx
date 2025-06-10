@@ -12,7 +12,7 @@ export const Select = <T extends number | string | Record<string, any>>({
   disabled = false,
 }: {
   selectedOption?: T;
-  setValue: (value: T) => void;
+  setValue?: (value: T) => void;
   options: T[];
   placeholder?: string;
   optionDisplayKey?: string;
@@ -47,7 +47,7 @@ export const Select = <T extends number | string | Record<string, any>>({
       disabled={disabled}
       onValueChange={val => {
         const selected = options.find(option => getOptionValue(option) === val);
-        if (selected) {
+        if (selected && setValue) {
           setValue(selected);
         }
       }}

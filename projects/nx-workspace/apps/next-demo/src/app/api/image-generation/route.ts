@@ -4,10 +4,18 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   const data = await req.json();
-  const { prompt } = data;
-  const base64Image = await LLMService.generateImage(prompt);
-  const bucket = new LocalBucketService('public/bucket');
-  const buffer = Buffer.from(base64Image, 'base64');
-  await bucket.upload('image.png', buffer);
+  const { prompt, n } = data;
+  const base64Images = await LLMService.generateImages(prompt, n);
+  await Promise.all(
+    base64Images.map(async (base64Image, i) => {
+      const bucket = new LocalBucketService('public/bucket');
+      const buffer = Buffer.from(base64Image as string, 'base64');
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      await bucket.upload(
+        `${timestamp}${base64Images.length > 0 ? `(${i})` : ''}.png`,
+        buffer,
+      );
+    }),
+  );
   return NextResponse.json({});
 }
