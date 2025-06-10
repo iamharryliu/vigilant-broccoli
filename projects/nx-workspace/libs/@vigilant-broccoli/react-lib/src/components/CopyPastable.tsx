@@ -1,7 +1,13 @@
-import { Button, Card } from '@radix-ui/themes';
+import { Button, Card, ScrollArea } from '@radix-ui/themes';
 import { Copy } from 'lucide-react';
 
-export const CopyPastable = ({ text }: { text: string }) => {
+export const CopyPastable = ({
+  text,
+  isScrollable,
+}: {
+  text: string;
+  isScrollable: boolean;
+}) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(text).catch(err => {
       console.error('Failed to copy text: ', err);
@@ -15,7 +21,14 @@ export const CopyPastable = ({ text }: { text: string }) => {
           <Copy />
         </Button>
       </div>
-     <pre className="whitespace-pre-wrap break-words">{text}</pre>
+
+      {isScrollable ? (
+        <ScrollArea type="always" scrollbars="vertical" style={{ height: 180 }}>
+          <pre className="whitespace-pre-wrap break-all">{text}</pre>
+        </ScrollArea>
+      ) : (
+        <pre className="whitespace-pre-wrap break-all">{text}</pre>
+      )}
     </Card>
   );
 };
