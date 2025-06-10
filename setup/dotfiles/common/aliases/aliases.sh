@@ -44,3 +44,5 @@ explain_shell() {
     local url="https://explainshell.com/explain?cmd=$(echo "$query" | jq -sRr @uri)";
     command -v xdg-open > /dev/null && xdg-open "$url" || command -v open > /dev/null && open "$url" || echo "Open manually: $url";
 }
+
+alias cpsshpubkey='cat ~/.ssh/id_rsa.pub| pbcopy'
