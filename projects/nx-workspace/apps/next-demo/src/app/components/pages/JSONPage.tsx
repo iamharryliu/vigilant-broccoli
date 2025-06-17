@@ -1,10 +1,8 @@
 import { Card, Heading } from '@radix-ui/themes';
 import {
-  getEnvironmentVariablesFromJSON,
-  getJSONFromEnvironmentVariables,
+  EnvUtils
 } from '@vigilant-broccoli/common-js';
 import { ConversionForm, CopyPastable } from '@vigilant-broccoli/react-lib';
-import { getPrettierJSON } from '../../lib/utils';
 
 export const JSONPage = () => {
   return (
@@ -12,6 +10,7 @@ export const JSONPage = () => {
       <EnvironmentVariablesToJSONForm />
       <JSONToEnvVarForm />
       <JSONPrettier />
+      <CleanEnvConversionForm/>
     </div>
   );
 };
@@ -27,8 +26,8 @@ const EnvironmentVariablesToJSONForm = () => {
           }}
           initialText={''}
           conversionFn={text =>
-            getPrettierJSON(
-              JSON.stringify(getJSONFromEnvironmentVariables(text)),
+            EnvUtils.getPrettierJSON(
+              JSON.stringify(EnvUtils.getJSONFromEnvironmentVariables(text)),
             )
           }
         />
@@ -72,7 +71,7 @@ const JSONToEnvVarForm = () => {
             placeholder: 'Your JSON..',
           }}
           initialText={'{}'}
-          conversionFn={getEnvironmentVariablesFromJSON}
+          conversionFn={EnvUtils.getEnvironmentVariablesFromJSON}
         />
       </div>
 
@@ -97,7 +96,7 @@ const JSONPrettier = () => {
         <ConversionForm
           copy={{ header: 'JSON Prettier', placeholder: 'Your JSON..' }}
           initialText={'{}'}
-          conversionFn={getPrettierJSON}
+          conversionFn={EnvUtils.getPrettierJSON}
         />
       </div>
 
@@ -113,3 +112,25 @@ const JSONPrettier = () => {
     </div>
   );
 };
+
+const CleanEnvConversionForm = () => { 
+  return (
+    <div className="flex space-x-4">
+      <div className="w-2/3">
+        <ConversionForm
+          copy={{ header: 'Clean Env Conversion', placeholder: 'Environment Variables' }}
+          initialText={''}
+          conversionFn={EnvUtils.getClearedEnvValues}
+        />
+      </div>
+
+      <div className="w-1/3">
+        <DemoExampleCard
+          heading={'Sample Environment Variables'}
+          exampleText={`NODE_ENV=production\nSECRET_KEY="abc 123"`}
+        />
+      </div>
+    </div>
+  );
+
+}

@@ -18,5 +18,5 @@ export * from './lib/jsonplaceholder/jsonplaceholder.services';
 export * from './lib/jsonplaceholder/jsonplaceholder.types';
 
 // Utils
-export * from './lib/utils/json.utils';
+export * from './lib/utils/env.utils';
 export * from './lib/utils/string.utils';
