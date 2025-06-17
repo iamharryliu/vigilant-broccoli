@@ -34,6 +34,11 @@ chmod +x ~/vigilant-broccoli/setup/mac/install.sh
 source ~/vigilant-broccoli/setup/mac/install.sh
 ```
 
+**Additional Preferences**
+- Divvy Shortcut `CMD + Shift + Spacebar`
+- Alfred Spotlight Shortcut `CMD + Spacebar`
+- Desktop Icons
+
 ## Folder Structure
 
 - notes - Collection of markdown notes.
