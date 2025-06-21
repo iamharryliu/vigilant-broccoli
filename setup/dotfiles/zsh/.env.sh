@@ -14,12 +14,6 @@ export AWS_SECRET_ACCESS_KEY='secretAccessKey'
 export MONGO_DB_USERNAME="username"
 export MONGO_DB_PASSWORD="password"
 
-# LLM Services
-export OPENAI_API_KEY="secretKey"
-export GEMINI_API_KEY="secretKey"
-export DEEPSEEK_API_KEY="secretKey"
-export GROK_API_KEY="secretKey"
-
 # APIs
 export OPENWEATHER_API_KEY="secretKey"
 export RECAPTCHA_V3_SECRET_KEY="secretKey"
