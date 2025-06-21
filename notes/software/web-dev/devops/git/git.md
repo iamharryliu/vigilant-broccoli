@@ -13,6 +13,15 @@ git mv -f FILEPATH NEW_FILEPATH
 
 # Remove git history for specific file.
 git-filter-repo --sensitive-data-removal --invert-paths --path README.md
+
+
+# Push to new repo
+git remote add NEW_REPO_URL
+git remote -v
+git push new-origin main      # Push main branch.
+git push new-origin --all     # Push all branches.
+git remote remove origin
+git remote rename new-origin origin
 ```
 
 ## Subtrees
