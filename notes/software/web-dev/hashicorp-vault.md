@@ -1,7 +1,6 @@
 # Hashicorp Vault
 
 ```
-
 vault --version
 vault server -dev
 
@@ -14,6 +13,20 @@ vault kv delete PATH_NAME
 
 curl --header "X-Vault-Token: VAULT_TOKEN" --request POST --data '{"data": {"key":"value"}}' http://127.0.0.1:8200/v1/secret/data/my-secret
 curl --header "X-Vault-Token: VAULT_TOKEN" http://127.0.0.1:8200/v1/secret/data/my-secret
+```
+
+## Policies
+
+```
+vault policy write default - <<EOF
+path "sys/capabilities-self" {
+  capabilities = ["update"]
+}
+
+path "secret/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+EOF
 ```
 
 ## Deploy in Production
@@ -36,20 +49,6 @@ vault operator seal
 // Teardown
 pgrep -f vault | xargs kill
 rm -r ./vault/data
-```
-
-## Auth
-
-```
-vault auth enable github
-vault write auth/github/config organization=ORGANIZATION_NAME
-vault write auth/github/map/teams/TEAM_NAME value=POLICY_NAME
-vault write auth/github/map/users/USERNAME value=POLICY_NAME
-
-# https://github.com/settings/tokens
-vault login -method=github token=TOKEN
-
-curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/github/login
 ```
 
 ```
@@ -85,7 +84,6 @@ storage "file" {
 ui            = true
 api_addr      = "http://IP_ADDRESS:8200"
 cluster_addr  = "http://IP_ADDRESS:8201"
-
 ```
 
 ```
@@ -109,14 +107,34 @@ AmbientCapabilities=CAP_IPC_LOCK
 WantedBy=multi-user.target
 ```
 
-```
-vault policy write default - <<EOF
-path "sys/capabilities-self" {
-  capabilities = ["update"]
-}
+## Access Production Vault
 
-path "secret/*" {
-  capabilities = ["create", "read", "update", "delete", "list"]
-}
-EOF
+```
+export VAULT_ADDR=https://127.0.0.1:8200
+export VAULT_SKIP_VERIFY=true
+```
+
+## Auth
+
+### Github
+
+```
+vault auth enable github
+vault write auth/github/config organization=ORGANIZATION_NAME
+
+vault list auth/github/map/users
+vault list auth/github/map/teams
+
+vault write auth/github/map/teams/TEAM_NAME value=POLICY_NAME
+vault read auth/github/map/teams/TEAM_NAME
+vault delete auth/github/map/users/TEAM_NAME
+
+vault write auth/github/map/users/USERNAME value=POLICY_NAME
+vault read auth/github/map/users/USERNAME
+vault delete auth/github/map/users/USERNAME
+
+# https://github.com/settings/tokens
+vault login -method=github token=TOKEN
+
+curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/github/login
 ```
