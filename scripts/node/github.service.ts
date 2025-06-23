@@ -2,8 +2,29 @@ import { ShellUtils } from '@vigilant-broccoli/common-node';
 import { GithubTeam, GithubTeamMember, GithubTeamsDTO } from './github.types';
 import { GithubCLICommand } from './github-commands';
 import { toSlug } from './script';
+import { GithubUtils } from './github.utils';
+
+async function getOrgStructure(org: string) {
+  const allTeams = await GithubService.getTeamsData(org);
+  const tree = await GithubUtils.buildTeamTree(org, allTeams);
+
+  return {
+    organizationName: org,
+    teams: tree,
+  };
+}
+
+async function getTeamMembers(organizationName: string, team: GithubTeam) {
+  const teamSlug = toSlug(team.name);
+  return await ShellUtils.runShellCommand(
+    GithubCLICommand.getTeamMembers(organizationName, teamSlug),
+    true,
+  );
+}
 
 export const GithubService = {
+  // READ
+  getOrgStructure,
   getTeamsData: async (organizationName: string): Promise<GithubTeamsDTO[]> => {
     const teamsData = (await ShellUtils.runShellCommand(
       GithubCLICommand.getTeamsData(organizationName),
@@ -11,6 +32,7 @@ export const GithubService = {
     )) as string;
     return JSON.parse(teamsData) as GithubTeamsDTO[];
   },
+  getTeamMembers,
   getTeamMemberMembership: async (
     organizationName: string,
     teamSlug: string,
@@ -40,6 +62,7 @@ export const GithubService = {
     );
     return team ? [team, ...descendants] : descendants;
   },
+  // UPDATE
   updateTeamRepositories: async (
     organizationName: string,
     team: GithubTeam,
@@ -93,16 +116,15 @@ export const GithubService = {
       }
     }
   },
+  // DELETE
   deleteAllTeams: async (organizationName: string) => {
     const teamsData = await GithubService.getTeamsData(organizationName);
     console.log('Deleting all teams for organization:', organizationName);
     for (const team of teamsData) {
       console.log(`Deleting team: ${team.name}`);
-      try {
-        await ShellUtils.runShellCommand(
-          GithubCLICommand.deleteTeam(organizationName, team.slug),
-        );
-      } catch {}
+      await ShellUtils.runShellCommand(
+        GithubCLICommand.deleteTeam(organizationName, team.slug),
+      );
     }
   },
 };
