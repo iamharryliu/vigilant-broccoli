@@ -77,7 +77,6 @@ const GithubService = {
   async function syncTeam(team: GithubTeam, parentTeamId?: number) {
     const teamSlug = StringUtils.toSlug(team.name);
     let existingTeamId = getTeamId(teamSlug, gitHubOrganizationTeams);
-    console.log(teamSlug);
     if (!existingTeamId) {
       console.log(`Creating team: ${team.name}`);
       await ShellUtils.runShellCommand(
@@ -86,8 +85,22 @@ const GithubService = {
       gitHubOrganizationTeams =
         await GithubService.getTeamsData(organizationName);
       existingTeamId = getTeamId(teamSlug, gitHubOrganizationTeams);
-    } else {
-      console.log(`Team already exists: ${team.name}`);
+    }
+
+    const data = (await ShellUtils.runShellCommand(
+      GithubCLICommand.getTeamMembers(organizationName, teamSlug),
+      true,
+    )) as string;
+    const existingMembers = JSON.parse(data).map((member: any) => member.login);
+    for (const member of existingMembers) {
+      if (!team.members.map(m => m.username).includes(member)) {
+        console.log(
+          `Removing member ${member} from team ${team.name} as they are not in the configuration`,
+        );
+        await ShellUtils.runShellCommand(
+          GithubCLICommand.updateTeamMember(organizationName, teamSlug, member),
+        );
+      }
     }
 
     for (const member of team.members) {
