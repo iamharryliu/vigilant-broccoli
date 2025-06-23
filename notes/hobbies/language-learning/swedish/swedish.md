@@ -542,3 +542,26 @@ vända sig till = gå till
 vanda sig om = turn away
 vänd dig om = turn towards
 sömn = bestammed sömn
+
+2025/07/23
+det regnar mychet
+det ösregnar
+det öser ner
+
+firade - celebrate
+åkt till vs gick till
+full(drunk) != nykter(sober)
+full(full) != tom(empty)
+ful != syngg/fin/vacket
+arbetskamrat
+man vänjer sig = you get used to it
+man vänjer sig **vid** kylan
+gissa = to guess
+rösta pö = to vote
+döljer = to hide(non-phyisical)
+gömmer = to hide(physical)
+jag hinner inte = I don't have time / I don't make it
+precis/klart/självklat
+lätt!=svår
+lätt!=tung
+jag kom till sverige för ett år sen
