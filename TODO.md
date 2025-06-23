@@ -13,6 +13,7 @@
     - check nx caching??
     - publish -> build caching preventing new dist
 - chore:
+  - dotfile clean up
   - migrate to pnpm
 - docs:
 
