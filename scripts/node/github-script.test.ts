@@ -14,7 +14,7 @@ import { configureGithubTeams } from './script';
 jest.setTimeout(30000);
 
 describe('GitHub Team Configuration', () => {
-  const ORGANIZATION_NAME = 'prettydamntired';
+  const ORGANIZATION_NAME = 'gh-managment-test-org';
   let organizationData: GithubOrganizationTeamStructure;
 
   beforeAll(async () => {
