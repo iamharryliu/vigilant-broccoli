@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/local-auth": "^2.1.0",
-    "googleapis": "^105.0.0"
+    "@vigilant-broccoli/common-node": "^0.0.17",
+    "googleapis": "^105.0.0",
+    "tsx": "^4.20.3"
   }
 }

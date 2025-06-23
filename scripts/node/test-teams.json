@@ -1,0 +1,39 @@
+{
+  "organizationName": "prettydamntired",
+  "teams": [
+    {
+      "name": "a",
+      "members": [{ "username": "iamharryliu", "role": "maintainer" }],
+      "teams": [
+        {
+          "name": "aa",
+          "members": [{ "username": "iamharryliu", "role": "maintainer" }],
+          "teams": [
+          ]
+        },
+        {
+          "name": "ab",
+          "members": [{ "username": "iamharryliu", "role": "maintainer" }],
+          "teams": []
+        }
+      ]
+    },
+
+    {
+      "name": "b",
+      "members": [{ "username": "iamharryliu", "role": "maintainer" }],
+      "teams": [
+        {
+          "name": "ba",
+          "members": [{ "username": "iamharryliu", "role": "maintainer" }],
+          "teams": []
+        },
+        {
+          "name": "bb",
+          "members": [{ "username": "iamharryliu", "role": "maintainer" }],
+          "teams": []
+        }
+      ]
+    }
+  ]
+}
