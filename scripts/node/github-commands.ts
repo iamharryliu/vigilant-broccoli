@@ -11,6 +11,12 @@ export const GithubCLICommand = {
     `gh api orgs/"${organizationName}"/teams${teamSlug ? `/${teamSlug}` : ''} --paginate`,
   getTeamMembers: (organizationName: string, teamSlug: string) =>
     `gh api orgs/"${organizationName}"/teams/${teamSlug}/members --paginate`,
+  getTeamMemberMembership: (
+    organizationName: string,
+    teamSlug: string,
+    member: string,
+  ) =>
+    `gh api orgs/"${organizationName}"/teams/${teamSlug}/memberships/${member}`,
   updateTeamMember: (
     organizationName: string,
     teamSlug: string,

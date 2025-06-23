@@ -2,28 +2,14 @@ import { FileSystemUtils, ShellUtils } from '@vigilant-broccoli/common-node';
 import {
   GithubOrganizationTeamStructure,
   GithubTeam,
+  GithubTeamMember,
   GithubTeamsDTO,
 } from './github.types';
 import { GithubCLICommand } from './github-commands';
+import { GithubService } from './github.service';
 
-function toSlug(input: string): string {
+export function toSlug(input: string): string {
   return input.toLowerCase().replace(/ /g, '-');
-}
-
-const StringUtils = {
-  toSlug,
-};
-
-function getTeamAndDescendants(
-  all: GithubTeamsDTO[],
-  slug: string,
-): GithubTeamsDTO[] {
-  const team = all.find(team => team.slug === slug);
-  const children = all.filter(team => team.parent && team.parent.slug === slug);
-  const descendants = children.flatMap(child =>
-    getTeamAndDescendants(all, child.slug),
-  );
-  return team ? [team, ...descendants] : descendants;
 }
 
 function findTeamBySlug(
@@ -46,99 +32,51 @@ function findTeamBySlug(
   return search(org.teams);
 }
 
-const GithubService = {
-  getTeamsData: async (organizationName: string): Promise<GithubTeamsDTO[]> => {
-    const teamsData = (await ShellUtils.runShellCommand(
-      GithubCLICommand.getTeamsData(organizationName),
-      true,
-    )) as string;
-    return JSON.parse(teamsData) as GithubTeamsDTO[];
-  },
-};
+function getTeamId(
+  teamSlug: string,
+  githubTeamsJson: GithubTeamsDTO[],
+): number | undefined {
+  const team = githubTeamsJson.find(t => t.slug === teamSlug)!;
+  return team?.id;
+}
 
-(async () => {
-  function getTeamId(
-    slug: string,
-    githubTeamsJson: GithubTeamsDTO[],
-  ): number | undefined {
-    const team = githubTeamsJson.find(t => t.slug === slug)!;
-    return team?.id;
-  }
+async function configureGithubTeams(
+  organizationData: GithubOrganizationTeamStructure,
+) {
+  const { organizationName, teams: teamsConfig } = organizationData;
 
-  const organizationData = FileSystemUtils.getObjectFromFilepath(
-    // TODO: change this
-    './test-teams.json',
-  ) as GithubOrganizationTeamStructure;
-  const { organizationName, teams: organizationTeamsJson } = organizationData;
-
-  let gitHubOrganizationTeams =
+  let githubOrganizationTeams =
     await GithubService.getTeamsData(organizationName);
 
   async function syncTeam(team: GithubTeam, parentTeamId?: number) {
-    const teamSlug = StringUtils.toSlug(team.name);
-    let existingTeamId = getTeamId(teamSlug, gitHubOrganizationTeams);
+    const teamSlug = toSlug(team.name);
+    let existingTeamId = getTeamId(teamSlug, githubOrganizationTeams);
     if (!existingTeamId) {
       console.log(`Creating team: ${team.name}`);
       await ShellUtils.runShellCommand(
         GithubCLICommand.createTeam(organizationName, teamSlug, parentTeamId),
       );
-      gitHubOrganizationTeams =
+      githubOrganizationTeams =
         await GithubService.getTeamsData(organizationName);
-      existingTeamId = getTeamId(teamSlug, gitHubOrganizationTeams);
+      existingTeamId = getTeamId(teamSlug, githubOrganizationTeams);
     }
 
-    const data = (await ShellUtils.runShellCommand(
-      GithubCLICommand.getTeamMembers(organizationName, teamSlug),
-      true,
-    )) as string;
-    const existingMembers = JSON.parse(data).map((member: any) => member.login);
-    for (const member of existingMembers) {
-      if (!team.members.map(m => m.username).includes(member)) {
-        console.log(
-          `Removing member ${member} from team ${team.name} as they are not in the configuration`,
-        );
-        await ShellUtils.runShellCommand(
-          GithubCLICommand.updateTeamMember(organizationName, teamSlug, member),
-        );
-      }
-    }
-
-    for (const member of team.members) {
-      console.log(
-        `Syncing member ${member.username} to team ${team.name} with role ${member.role}`,
-      );
-      await ShellUtils.runShellCommand(
-        GithubCLICommand.updateTeamMember(organizationName, teamSlug, member),
-      );
-    }
-    if (team.repositories && team.repositories.length > 0) {
-      for (const repo of team.repositories) {
-        console.log(
-          `Syncing repo ${repo.name} to team ${team.name} with permission ${repo.permission}`,
-        );
-        await ShellUtils.runShellCommand(
-          GithubCLICommand.updateTeamRepo(
-            organizationName,
-            teamSlug,
-            repo.name,
-            repo.permission,
-          ),
-        );
-      }
-    }
+    await GithubService.removeMembersNotInConfig(organizationName, team);
+    await GithubService.updateTeamMembers(organizationName, team);
+    await GithubService.updateTeamRepositories(organizationName, team);
 
     for (const subTeam of team.teams) {
       await syncTeam(subTeam, existingTeamId);
     }
   }
 
-  for (const team of organizationTeamsJson) {
+  for (const team of teamsConfig) {
     await syncTeam(team, undefined);
   }
 
   for (const team of organizationData.teams) {
-    const teamAndDescendants = getTeamAndDescendants(
-      gitHubOrganizationTeams,
+    const teamAndDescendants = GithubService.getTeamAndDescendants(
+      githubOrganizationTeams,
       toSlug(team.name),
     );
     const existingTeamNames = teamAndDescendants.map(t => t.name);
@@ -151,4 +89,75 @@ const GithubService = {
       }
     }
   }
+}
+
+async function getTeamMembers(
+  org: string,
+  slug: string,
+): Promise<GithubTeamMember[]> {
+  const data = await ShellUtils.runShellCommand(
+    `gh api orgs/${org}/teams/${slug}/members`,
+    true,
+  );
+  const members = JSON.parse(data as string) as any[];
+
+  return await Promise.all(
+    members.map(async (m: any) => {
+      return await GithubService.getTeamMemberMembership(org, slug, m.login);
+    }),
+  );
+}
+
+async function buildTeamTree(
+  org: string,
+  teams: GithubTeamsDTO[],
+): Promise<GithubTeam[]> {
+  const slugToTeam: Record<string, GithubTeam> = {};
+
+  // Initialize all teams
+  for (const team of teams) {
+    slugToTeam[toSlug(team.name)] = {
+      name: team.name,
+      members: await getTeamMembers(org, toSlug(team.name)),
+      teams: [],
+      repositories: [],
+    };
+  }
+
+  // Link children to parents
+  const roots: GithubTeam[] = [];
+  for (const team of teams) {
+    if (team.parent?.slug) {
+      slugToTeam[team.parent.slug].teams.push(slugToTeam[team.slug]);
+    } else {
+      roots.push(slugToTeam[team.slug]);
+    }
+  }
+
+  return roots;
+}
+
+async function buildOrgStructure(org: string) {
+  const allTeams = await GithubService.getTeamsData(org);
+  const tree = await buildTeamTree(org, allTeams);
+
+  return {
+    organizationName: org,
+    teams: tree,
+  };
+}
+
+(async () => {
+  const ORGANIZATION_NAME = 'prettydamntired';
+
+  const organizationData = FileSystemUtils.getObjectFromFilepath(
+    // TODO: change this
+    './test-teams.json',
+  ) as GithubOrganizationTeamStructure;
+  configureGithubTeams(organizationData);
+  const structure = await buildOrgStructure(ORGANIZATION_NAME);
+  if (JSON.stringify(structure) === JSON.stringify(organizationData)) {
+    console.log('Organization structure matches the configuration.');
+  }
+  await GithubService.deleteAllTeams(ORGANIZATION_NAME);
 })();

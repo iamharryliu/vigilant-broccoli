@@ -3,37 +3,71 @@
   "teams": [
     {
       "name": "a",
-      "members": [{ "username": "iamharryliu", "role": "maintainer" }],
+      "members": [
+        {
+          "username": "iamharryliu",
+          "role": "maintainer"
+        }
+      ],
       "teams": [
         {
           "name": "aa",
-          "members": [{ "username": "iamharryliu", "role": "maintainer" }],
-          "teams": [
-          ]
+          "members": [
+            {
+              "username": "iamharryliu",
+              "role": "maintainer"
+            }
+          ],
+          "teams": [],
+          "repositories": []
         },
         {
           "name": "ab",
-          "members": [{ "username": "iamharryliu", "role": "maintainer" }],
-          "teams": []
+          "members": [
+            {
+              "username": "iamharryliu",
+              "role": "maintainer"
+            }
+          ],
+          "teams": [],
+          "repositories": []
         }
-      ]
+      ],
+      "repositories": []
     },
-
     {
       "name": "b",
-      "members": [{ "username": "iamharryliu", "role": "maintainer" }],
+      "members": [
+        {
+          "username": "iamharryliu",
+          "role": "maintainer"
+        }
+      ],
       "teams": [
         {
           "name": "ba",
-          "members": [{ "username": "iamharryliu", "role": "maintainer" }],
-          "teams": []
+          "members": [
+            {
+              "username": "iamharryliu",
+              "role": "maintainer"
+            }
+          ],
+          "teams": [],
+          "repositories": []
         },
         {
           "name": "bb",
-          "members": [{ "username": "iamharryliu", "role": "maintainer" }],
-          "teams": []
+          "members": [
+            {
+              "username": "iamharryliu",
+              "role": "maintainer"
+            }
+          ],
+          "teams": [],
+          "repositories": []
         }
-      ]
+      ],
+      "repositories": []
     }
   ]
 }
