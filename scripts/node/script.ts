@@ -99,7 +99,7 @@ async function configureGithubTeams(
     // TODO: change this
     './test-teams.json',
   ) as GithubOrganizationTeamStructure;
-  configureGithubTeams(organizationData);
+  await configureGithubTeams(organizationData);
   const structure = await GithubService.getOrgStructure(ORGANIZATION_NAME);
   if (JSON.stringify(structure) === JSON.stringify(organizationData)) {
     console.log('Organization structure matches the configuration.');

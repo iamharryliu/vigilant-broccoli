@@ -121,10 +121,12 @@ export const GithubService = {
     const teamsData = await GithubService.getTeamsData(organizationName);
     console.log('Deleting all teams for organization:', organizationName);
     for (const team of teamsData) {
-      console.log(`Deleting team: ${team.name}`);
-      await ShellUtils.runShellCommand(
-        GithubCLICommand.deleteTeam(organizationName, team.slug),
-      );
+      if (!team.parent) {
+        console.log(`Deleting root team: ${team.name}`);
+        await ShellUtils.runShellCommand(
+          GithubCLICommand.deleteTeam(organizationName, team.slug),
+        );
+      }
     }
   },
 };
