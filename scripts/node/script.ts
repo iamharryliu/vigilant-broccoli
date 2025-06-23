@@ -1,4 +1,4 @@
-import { FileSystemUtils, ShellUtils } from '@vigilant-broccoli/common-node';
+import { ShellUtils } from '@vigilant-broccoli/common-node';
 import {
   GithubOrganizationTeamStructure,
   GithubTeam,
@@ -39,7 +39,7 @@ function getTeamId(
   return team?.id;
 }
 
-async function configureGithubTeams(
+export async function configureGithubTeams(
   organizationData: GithubOrganizationTeamStructure,
 ) {
   const { organizationName, teams: teamsConfig } = organizationData;
@@ -89,20 +89,3 @@ async function configureGithubTeams(
     }
   }
 }
-
-(async () => {
-  const ORGANIZATION_NAME = 'prettydamntired';
-
-  await GithubService.deleteAllTeams(ORGANIZATION_NAME);
-
-  const organizationData = FileSystemUtils.getObjectFromFilepath(
-    // TODO: change this
-    './test-teams.json',
-  ) as GithubOrganizationTeamStructure;
-  await configureGithubTeams(organizationData);
-  const structure = await GithubService.getOrgStructure(ORGANIZATION_NAME);
-  if (JSON.stringify(structure) === JSON.stringify(organizationData)) {
-    console.log('Organization structure matches the configuration.');
-  }
-  await GithubService.deleteAllTeams(ORGANIZATION_NAME);
-})();

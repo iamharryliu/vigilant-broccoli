@@ -120,13 +120,14 @@ export const GithubService = {
   deleteAllTeams: async (organizationName: string) => {
     const teamsData = await GithubService.getTeamsData(organizationName);
     console.log('Deleting all teams for organization:', organizationName);
-    for (const team of teamsData) {
-      if (!team.parent) {
+    const rootTeams = teamsData.filter(team => !team.parent);
+    await Promise.all(
+      rootTeams.map(team => {
         console.log(`Deleting root team: ${team.name}`);
-        await ShellUtils.runShellCommand(
+        return ShellUtils.runShellCommand(
           GithubCLICommand.deleteTeam(organizationName, team.slug),
         );
-      }
-    }
+      }),
+    );
   },
 };
