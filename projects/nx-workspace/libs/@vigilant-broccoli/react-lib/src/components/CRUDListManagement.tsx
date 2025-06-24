@@ -61,10 +61,10 @@ type ListItemComponentProps<T> = ComponentType<{
 }>;
 
 export const CRUDItemList = <T extends CRUDItem>({
-  HeaderComponent,
-  FooterComponent,
   items,
   setItems,
+  HeaderComponent,
+  FooterComponent,
   ListItemComponent,
   FormComponent,
   createItem,
@@ -74,11 +74,11 @@ export const CRUDItemList = <T extends CRUDItem>({
   copy = DEFAULT_COPY,
   isCards,
 }: {
-  HeaderComponent?: ReactNode;
-  FooterComponent?: ReactNode;
   items: T[];
   setItems: Dispatch<SetStateAction<T[]>>;
-  ListItemComponent: ListItemComponentProps<T>;
+  HeaderComponent?: ReactNode;
+  FooterComponent?: ReactNode;
+  ListItemComponent?: ListItemComponentProps<T>;
   FormComponent?: CRUDFormComponent<T>;
   createItem?: CreateItem<T>;
   createItemFormDefaultValues?: T;
@@ -125,7 +125,11 @@ export const CRUDItemList = <T extends CRUDItem>({
               <Card key={item.id}>
                 <div className="flex items-center justify-between">
                   <div className="w-full">
-                    <ListItemComponent item={item} items={items} />
+                    {ListItemComponent ? (
+                      <ListItemComponent item={item} items={items} />
+                    ) : (
+                      JSON.stringify(item)
+                    )}
                   </div>
                   {FormComponent && (
                     <EllipsisOptions
@@ -141,7 +145,11 @@ export const CRUDItemList = <T extends CRUDItem>({
             ) : (
               <div key={item.id} className="flex items-center justify-between">
                 <div className="w-full">
-                  <ListItemComponent item={item} items={items} />
+                  {ListItemComponent ? (
+                    <ListItemComponent item={item} items={items} />
+                  ) : (
+                    JSON.stringify(item)
+                  )}
                 </div>
                 {FormComponent && (
                   <EllipsisOptions
