@@ -9,6 +9,7 @@ import {
   GoogleUserOrganization,
   IncomingUser,
   GoogleBatchCommandFactory,
+  WorkspaceCalendarAdd,
 } from './google.model';
 import { runGamReadCommand } from './google.utils';
 import {
@@ -170,6 +171,13 @@ const batchDeleteEmailAccounts = async (
   return { commands };
 };
 
+const batchAddUserToCalendar = async (
+  updates: WorkspaceCalendarAdd[],
+): Promise<GoogleBatchCommandPayload> => {
+  const commands = updates.map(update => GamCommand.addCalendarToUser(update.email, update.calendarId));
+  return { commands };
+};
+
 const deleteDriveFilesOlderThanNMonths = async (
   retentionEmail: string,
   months: number,
@@ -295,6 +303,13 @@ function getBatchUpdatePhoneNumberCommands(
   return formatGoogleBatchOperation(batchUpdatePhoneNumbers, updates);
 }
 
+function getBatchAddUsersToCalendarCommands(
+  updates: WorkspaceCalendarAdd[],
+): GoogleBatchCommandFactory<WorkspaceCalendarAdd[]> {
+  return formatGoogleBatchOperation(batchAddUserToCalendar, updates);
+}
+
+
 export const GoogleService = {
   // Read
   getMembersOfOrganizationalUnit,
@@ -307,6 +322,7 @@ export const GoogleService = {
   getBatchUpdateManagerCommands,
   getBatchUpdateEmailSignatureCommands,
   getBatchUpdatePhoneNumberCommands,
+  getBatchAddUsersToCalendarCommands,
   // Offboard
   batchSuspendEmails,
   batchDeleteEmailAccounts,

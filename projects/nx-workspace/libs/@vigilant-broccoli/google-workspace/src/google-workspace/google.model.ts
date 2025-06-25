@@ -30,6 +30,11 @@ export type WorkspacePhoneNumberUpdate = {
   data: any;
 };
 
+export type WorkspaceCalendarAdd = {
+  email: string;
+  calendarId: string;
+}
+
 export type GoogleBatchCommandPayload = {
   commands: string[];
   assetsDirectory?: string;
