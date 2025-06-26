@@ -66,7 +66,7 @@ rmgbn() {
 }
 
 
-alias droplocalbranches='git branch | grep -v "main" | xargs git branch -D'
+alias droplocalbranches='git branch | grep -vE "^\*?\s*main$" | xargs git branch -D'
 alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs -I {} git push origin --delete {} && git fetch -p'
 
 # Checkout Aliases
