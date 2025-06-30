@@ -1,27 +1,18 @@
 # TODO
 
 - feat:
-  - file service ui
-  - bucket service
-  - Next.js
-    - Back button
-  - Employee Handler
+  - enhance employee handler
     - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
+  - bucket service
   - alias for `alias run lib:nx-release-publish`
 - fix:
   - nx-workspace
     - check nx caching??
     - publish -> build caching preventing new dist
 - chore:
+
   - dotfile clean up
   - migrate to pnpm
-- docs:
-
-  - Stripe
-  - microservices vs monoliths
-  - RabbitMQ vs Kafka
-  - Load balancing
-  - Honeypot vs Recaptcha
 
 - eslint proseWrap: "preserve"
 - **Home Management**
