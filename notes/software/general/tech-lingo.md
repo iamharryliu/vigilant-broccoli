@@ -22,6 +22,7 @@
 | Event Driven Architecture      |                                                                                                                               |
 | Pub/Sub Model                  | Publisher -> Message Broker(routes topics) -> Subscriber                                                                      |
 | LTS                            | Long term support.                                                                                                            |
+| Edge Requests                  | Requests served/handled at edge servers close to users.Benefits are lower latency, faster response, smarter request handling. |
 
 ## Hot Takes
 

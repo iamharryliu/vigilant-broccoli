@@ -33,6 +33,13 @@ Ways to protect against DDoS:
 - Traffic Monitoring
 - Blacklist/Whitelist
 
+### Timing Attacks
+
+- Attack based on how long something takes
+- Steal secrets via timing differences
+- Brute-forcing a password char by char
+- Prevent using constant-time operations
+
 ## Tools
 
 - [Network Tools]()
