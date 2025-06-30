@@ -1,7 +1,6 @@
 # Shell
 
 ## Commands
-
 ```
 # cp(copy) - Used to copy source or multiple sources to another location
 cp [source] [destination]
@@ -30,6 +29,9 @@ df -h
 
 # ps(process status) - Allows you to view information about the processes running on your system.
 ps aux
+
+echo "Hello, clipboard!" | pbcopy
+pbcopy < filename.txt
 ```
 
 ```

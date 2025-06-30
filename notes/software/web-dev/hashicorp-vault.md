@@ -55,8 +55,8 @@ rm -r ./vault/data
 sudo systemctl daemon-reexec
 sudo systemctl enable vault
 sudo systemctl start vault
-sudo systemctl status vault
 sudo systemctl restart vault
+sudo systemctl status vault
 ```
 
 ```
@@ -76,6 +76,13 @@ listener "tcp" {
   address     = "0.0.0.0:8200"
   tls_disable = true  # Use true only for testing; use TLS in production
 }
+
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+  tls_cert_file = "/etc/vault/tls/vault.crt"
+  tls_key_file  = "/etc/vault/tls/vault.key"
+}
+
 
 storage "file" {
   path = "/opt/vault/data"
@@ -138,3 +145,43 @@ vault login -method=github token=TOKEN
 
 curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/github/login
 ```
+
+
+```
+vault-openssl.cnf
+[ req ]
+default_bits       = 2048
+prompt             = no
+default_md         = sha256
+req_extensions     = req_ext
+distinguished_name = dn
+
+[ dn ]
+CN = 127.0.0.1
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+IP.1 = 127.0.0.1
+IP.2 = 51.20.122.133
+
+[ v3_ext ]
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:TRUE
+keyUsage = keyCertSign, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+
+```
+
+
+sudo openssl req -x509 -nodes -newkey rsa:2048   -keyout /etc/vault/tls/vault.key   -out /etc/vault/tls/vault.crt   -days 365   -config vault-openssl.cnf 
+
+sudo chown vault:vault /etc/vault/tls/vault.key
+sudo chmod 600 /etc/vault/tls/vault.key
+
+sudo journalctl -u vault -n 50 --no-pager
+
+
+
+https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/

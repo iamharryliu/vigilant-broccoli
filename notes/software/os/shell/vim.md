@@ -11,14 +11,6 @@ vim [filename]
 vimtutor
 ```
 
-## Vscode Extension
-
-[Look for installation section](https://github.com/VSCodeVim/Vim)
-
-```
-defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
-```
-
 ## Modes
 
 Vim has 3 different modes
@@ -27,18 +19,6 @@ Vim has 3 different modes
 - **Insert Mode** - Used for typing text, like a standard editor. Enter this mode by pressing **_i_**.
 - **Command Mode** - Used for running commands (e.g., saving, quitting). Enter this mode by typing **_:_** in Normal mode.
 - **Visual Mode** - For selecting text. Enter this mode by pressing **_v_**.
-
-## Save and Quit
-
-| Description         | Command |
-| ------------------- | ------- |
-| Quit.               | `:q`    |
-| Force quit.         | `:q!`   |
-| Save.               | `:w`    |
-| Force save.         | `:w!`   |
-| Save and quit.      | `:wq`   |
-| Save and quit.      | `:x`    |
-| Force save and quit | `:x!`   |
 
 ## Movement
 
@@ -63,6 +43,20 @@ Vim has 3 different modes
 | Jump to the **first non-whitespace character**. | `^`         |
 | Jump to the **top of the file**.                | `gg`        |
 | Jump to the **end of the file**.                | `G`         |
+
+P
+
+## Save and Quit
+
+| Description         | Command |
+| ------------------- | ------- |
+| Quit.               | `:q`    |
+| Force quit.         | `:q!`   |
+| Save.               | `:w`    |
+| Force save.         | `:w!`   |
+| Save and quit.      | `:wq`   |
+| Save and quit.      | `:x`    |
+| Force save and quit | `:x!`   |
 
 ### Insert Mode
 
@@ -120,3 +114,11 @@ Vim has 3 different modes
 | ------------------------------ | ----------- |
 | Help documentation.            | `:help`     |
 | Run shell command (ie `!pwd`). | `:!command` |
+
+## Vscode Extension
+
+[Look for installation section](https://github.com/VSCodeVim/Vim)
+
+```
+defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
+```
