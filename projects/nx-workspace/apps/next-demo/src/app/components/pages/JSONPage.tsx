@@ -11,6 +11,7 @@ export const JSONPage = () => {
       <JSONToEnvVarForm />
       <JSONPrettier />
       <CleanEnvConversionForm/>
+      <FormatBlockStringForm/>
     </div>
   );
 };
@@ -128,6 +129,27 @@ const CleanEnvConversionForm = () => {
         <DemoExampleCard
           heading={'Sample Environment Variables'}
           exampleText={`NODE_ENV=production\nSECRET_KEY="abc 123"`}
+        />
+      </div>
+    </div>
+  );
+}
+
+const FormatBlockStringForm = () => { 
+  return (
+    <div className="flex space-x-4">
+      <div className="w-2/3">
+        <ConversionForm
+          copy={{ header: 'Line Broken Form', placeholder: 'Text' }}
+          initialText={''}
+          conversionFn={EnvUtils.formatBlockStringToSingleString}
+        />
+      </div>
+
+      <div className="w-1/3">
+        <DemoExampleCard
+          heading={'Sample Environment Variables'}
+          exampleText={`-----BEGIN CERTIFICATE-----\nSomething\n-----END CERTIFICATE-----"`}
         />
       </div>
     </div>

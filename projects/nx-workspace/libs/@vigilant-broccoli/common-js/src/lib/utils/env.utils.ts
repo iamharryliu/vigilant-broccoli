@@ -70,6 +70,10 @@ function getClearedEnvValues(envContent: string): string {
     .join('\n');
 }
 
+function formatBlockStringToSingleString(block: string): string {
+  return block.split(/\r?\n/).join('\\n');
+}
+
 
 
 export const EnvUtils = {
@@ -77,4 +81,5 @@ export const EnvUtils = {
   getEnvironmentVariablesFromJSON,
   getJSONFromEnvironmentVariables,
   getClearedEnvValues,
+  formatBlockStringToSingleString,
 }
