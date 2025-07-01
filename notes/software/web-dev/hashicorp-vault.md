@@ -148,7 +148,7 @@ curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/gith
 
 
 ```
-vault-openssl.cnf
+# vault-openssl.cnf
 [ req ]
 default_bits       = 2048
 prompt             = no
@@ -165,23 +165,22 @@ subjectAltName = @alt_names
 [ alt_names ]
 IP.1 = 127.0.0.1
 IP.2 = 51.20.122.133
+DNS.1 = dns.name
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:TRUE
 keyUsage = keyCertSign, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
-
 ```
 
 
 sudo openssl req -x509 -nodes -newkey rsa:2048   -keyout /etc/vault/tls/vault.key   -out /etc/vault/tls/vault.crt   -days 365   -config vault-openssl.cnf 
-
 sudo chown vault:vault /etc/vault/tls/vault.key
 sudo chmod 600 /etc/vault/tls/vault.key
+sudo systemctl restart vault
+sudo systemctl status vault
 
 sudo journalctl -u vault -n 50 --no-pager
-
-
 
 https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/

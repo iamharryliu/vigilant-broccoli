@@ -565,3 +565,11 @@ precis/klart/självklat
 lätt!=svår
 lätt!=tung
 jag kom till sverige för ett år sen
+
+2025-06-30
+Arvid tanka på sig om klimaten för olicka saker.
+Arvid tänker på olika saker om kilmatet grader
+
+- Mobiltelefonen visar temperaturen är trettio grad idag
+- Arvid har läst tidningen från brevlådan. Branden är lika som 20 000 fotbollplaner
+- Arvid hörde på radion forskare (pratade) om den globala uppvärmingen och att temperaturen på jorden ökar. - (Mycket) människan släpper ut (mycket) koldixid i atmosfären till exempel från bilar.
