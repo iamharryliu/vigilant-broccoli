@@ -1,7 +1,11 @@
+import 'dotenv/config';
 import os from 'os';
 import fs from 'fs';
 import { google } from 'googleapis';
 import path from 'path';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+// import https from 'https';
+// import { NodeHttpHandler } from "@smithy/node-http-handler";
 
 async function main() {
   const auth = new google.auth.GoogleAuth({
@@ -16,30 +20,80 @@ async function main() {
     'vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/resume.pdf',
   );
 
-  downloadDocAsPdf(authClient, resumeDriveFileId, outputPath);
+  const buffer = await downloadDocAsPdf(
+    authClient,
+    resumeDriveFileId,
+    outputPath,
+  );
+  await uploadToR2(buffer, 'vigilant-broccoli', 'resume.pdf');
 }
 
-function downloadDocAsPdf(authClient: any, fileId: string, outputPath: string) {
-  const drive = google.drive({ version: 'v3', auth: authClient });
-  drive.files.export(
-    {
-      fileId,
-      mimeType: 'application/pdf',
-    },
-    { responseType: 'stream' },
-    (err, res) => {
-      if (err) return console.error('API error:', err);
-      const dest = fs.createWriteStream(outputPath);
-      res!.data
-        .on('end', () => {
-          console.log('PDF downloaded to', outputPath);
-        })
-        .on('error', (err: any) => {
-          console.error('Download error:', err);
-        })
-        .pipe(dest);
-    },
+async function downloadDocAsPdf(
+  auth: any,
+  fileId: string,
+  outputPath: string,
+): Promise<Buffer> {
+  const drive = google.drive({ version: 'v3', auth });
+
+  return new Promise((resolve, reject) => {
+    drive.files.export(
+      {
+        fileId,
+        mimeType: 'application/pdf',
+      },
+      { responseType: 'stream' },
+      async (err, res) => {
+        if (err) return reject(err);
+
+        const chunks: Buffer[] = [];
+        const dest = fs.createWriteStream(outputPath);
+
+        res!.data
+          .on('data', chunk => chunks.push(chunk))
+          .on('end', () => {
+            console.log('PDF downloaded to', outputPath);
+            resolve(Buffer.concat(chunks));
+          })
+          .on('error', err => reject(err))
+          .pipe(dest);
+      },
+    );
+  });
+}
+
+async function uploadToR2(buffer: Buffer, bucket: string, key: string) {
+  // const agent = new https.Agent({
+  //   minVersion: 'TLSv1.2',
+  //   maxVersion: 'TLSv1.3',
+  // });
+  console.log(
+    process.env.CLOUDFLARE_ID,
+    process.env.AWS_ACCESS_KEY_ID,
+    process.env.AWS_SECRET_ACCESS_KEY,
   );
+  const r2 = new S3Client({
+    region: process.env.AWS_REGION,
+    endpoint: `https://${process.env.CLOUDFLARE_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
+    // requestHandler: new NodeHttpHandler({ httpsAgent: agent }),
+  });
+
+  try {
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: buffer,
+      ContentType: 'application/pdf',
+    });
+
+    await r2.send(command);
+    console.log(`Uploaded to R2: ${key}`);
+  } catch (err) {
+    console.error('R2 upload error:', err);
+  }
 }
 
 main();
