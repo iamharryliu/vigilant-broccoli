@@ -30,4 +30,4 @@ jobs:
       - name: Create service-account.json
         run: echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" > service-account.json
       - name: Run upload script
-        run: node scripts/upload-resume.ts
+        run: npx tsx download-resume-pdf-sa.ts
