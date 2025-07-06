@@ -13,8 +13,8 @@ jobs:
     env:
       AWS_REGION: us-east-1
       CLOUDFLARE_ID: ${{ secrets.CLOUDFLARE_ID }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY }}
+      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+      CLOUDFLARE_R2_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY }}
     defaults:
       run:
         working-directory: ./scripts/node
@@ -27,8 +27,8 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: npm ci
-      - name: Write service account key
+      - name: Decode service account key
         run: |
-          echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT }}' > service-account.json
+          echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
       - name: Run upload script
         run: npx tsx download-resume-pdf-sa.ts
