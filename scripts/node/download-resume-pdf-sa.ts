@@ -61,16 +61,11 @@ async function downloadDocAsPdf(
   });
 }
 
-async function uploadToR2(buffer: Buffer, bucket: string, key: string) {
+async function uploadToR2(buffer: Buffer, bucket: string, filepath: string) {
   // const agent = new https.Agent({
   //   minVersion: 'TLSv1.2',
   //   maxVersion: 'TLSv1.3',
   // });
-  console.log(
-    process.env.CLOUDFLARE_ID,
-    process.env.AWS_ACCESS_KEY_ID,
-    process.env.AWS_SECRET_ACCESS_KEY,
-  );
   const r2 = new S3Client({
     region: process.env.AWS_REGION,
     endpoint: `https://${process.env.CLOUDFLARE_ID}.r2.cloudflarestorage.com`,
@@ -84,13 +79,13 @@ async function uploadToR2(buffer: Buffer, bucket: string, key: string) {
   try {
     const command = new PutObjectCommand({
       Bucket: bucket,
-      Key: key,
+      Key: filepath,
       Body: buffer,
       ContentType: 'application/pdf',
     });
 
     await r2.send(command);
-    console.log(`Uploaded to R2: ${key}`);
+    console.log(`Uploaded to R2: ${filepath}`);
   } catch (err) {
     console.error('R2 upload error:', err);
   }
