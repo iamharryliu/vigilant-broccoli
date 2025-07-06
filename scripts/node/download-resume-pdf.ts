@@ -1,7 +1,9 @@
+import os from 'os';
 import fs from 'fs';
 import { google } from 'googleapis';
 import readline from 'readline';
 import open from 'open';
+import path from 'path';
 
 const SCOPES = ['https://www.googleapis.com/auth/drive.readonly'];
 const TOKEN_PATH = 'token.json';
@@ -31,8 +33,10 @@ function getAccessToken(callback: (auth: any) => void) {
     output: process.stdout,
   });
 
-  rl.question('Enter the code from that page here: ', code => {
+  rl.question('Enter the url from that page here: ', url => {
     rl.close();
+    const parsedUrl = new URL(url);
+    const code = parsedUrl.searchParams.get('code') as string;
     oAuth2Client.getToken(code, (err, token) => {
       if (err) return console.error('Error retrieving token', err);
       oAuth2Client.setCredentials(token!);
@@ -76,10 +80,12 @@ function downloadDocAsPdf(auth: any, fileId: string, outputPath: string) {
   );
 }
 
-// Usage
-const fileId = '1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU'; // Replace with your Google Docs file ID
-const outputPath = 'resume.pdf';
+const resumeDriveFileId = '1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU';
+const outputPath = path.join(
+  os.homedir(),
+  'vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/resume.pdf',
+);
 
 authorize(auth => {
-  downloadDocAsPdf(auth, fileId, outputPath);
+  downloadDocAsPdf(auth, resumeDriveFileId, outputPath);
 });
