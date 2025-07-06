@@ -1,20 +1,37 @@
 # TODO
 
+## vigilant-broccoli
+
 - feat:
-  - enhance employee handler
-    - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
-  - bucket service
-  - alias for `alias run lib:nx-release-publish`
+  - deprecate crontab jobs in favor of Github Actions
+
+```
+# Backup vb
+0 0 * * * ping -c 1 8.8.8.8 > /dev/null 2>&1 && IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd ~/vigilant-broccoli/scripts/python/backup && source venv/bin/activate && python save_vigilant_broccoli.py
+# Update Resume
+0 0 * * * ping -c 1 8.8.8.8 > /dev/null 2>&1 && cp ~/My\ Drive/Career/Job\ Hunt/HarryLiu-Resume.pdf ~/vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf
+```
+
 - fix:
   - nx-workspace
     - check nx caching??
     - publish -> build caching preventing new dist
 - chore:
-
   - dotfile clean up
   - migrate to pnpm
+  - alias for `alias run lib:nx-release-publish`
+  - consider eslint proseWrap: "preserve"
 
-- eslint proseWrap: "preserve"
+## Employee Handler
+
+- feat:
+
+  - enhance employee handler
+
+    - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
+
+  - bucket service
+
 - **Home Management**
 
   - **Vehicle Calendar**
