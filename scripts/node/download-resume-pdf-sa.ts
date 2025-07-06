@@ -56,8 +56,8 @@ async function uploadToR2(buffer: Buffer, bucket: string, filepath: string) {
     region: process.env.AWS_REGION,
     endpoint: `https://${process.env.CLOUDFLARE_ID}.r2.cloudflarestorage.com`,
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.CLOUDFLARE_R2_ACCESS_KEY!,
     },
     // requestHandler: new NodeHttpHandler({ httpsAgent: agent }),
   });
