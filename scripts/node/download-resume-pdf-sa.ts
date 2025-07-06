@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import os from 'os';
-import fs from 'fs';
 import { google } from 'googleapis';
 import path from 'path';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
@@ -20,21 +19,12 @@ async function main() {
     'vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/resume.pdf',
   );
 
-  const buffer = await downloadDocAsPdf(
-    authClient,
-    resumeDriveFileId,
-    outputPath,
-  );
+  const buffer = await downloadDocAsPdf(authClient, resumeDriveFileId);
   await uploadToR2(buffer, 'vigilant-broccoli', 'resume.pdf');
 }
 
-async function downloadDocAsPdf(
-  auth: any,
-  fileId: string,
-  outputPath: string,
-): Promise<Buffer> {
+async function downloadDocAsPdf(auth: any, fileId: string): Promise<Buffer> {
   const drive = google.drive({ version: 'v3', auth });
-
   return new Promise((resolve, reject) => {
     drive.files.export(
       {
@@ -42,20 +32,16 @@ async function downloadDocAsPdf(
         mimeType: 'application/pdf',
       },
       { responseType: 'stream' },
-      async (err, res) => {
+      (err, res) => {
         if (err) return reject(err);
-
         const chunks: Buffer[] = [];
-        const dest = fs.createWriteStream(outputPath);
-
         res!.data
           .on('data', chunk => chunks.push(chunk))
           .on('end', () => {
-            console.log('PDF downloaded to', outputPath);
+            console.log('PDF downloaded as buffer');
             resolve(Buffer.concat(chunks));
           })
-          .on('error', err => reject(err))
-          .pipe(dest);
+          .on('error', err => reject(err));
       },
     );
   });

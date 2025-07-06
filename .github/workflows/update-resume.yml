@@ -8,29 +8,26 @@ on:
 jobs:
   upload-resume:
     runs-on: ubuntu-latest
-
+    environment:
+      name: production
     env:
       AWS_REGION: us-east-1
       CLOUDFLARE_ID: ${{ secrets.CLOUDFLARE_ID }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
+    defaults:
+      run:
+        working-directory: ./scripts/node
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Install dependencies
-        run: |
-          corepack enable
-          yarn install --frozen-lockfile # or `npm ci` if using npm
-
+        run: npm ci
       - name: Create service-account.json
         run: echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" > service-account.json
-
       - name: Run upload script
         run: node scripts/upload-resume.ts
