@@ -15,6 +15,7 @@ import { BlogDirectoryComponent } from '../../blog-directory/blog-directory.comp
 import { BlogComponent } from '../../blog/blog.component';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
 import { CareerPageComponent } from '../../components/pages/career-page/career.page';
+import { ResumeRedirectComponent } from '../../components/pages/resume.page';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -26,6 +27,12 @@ export const CAREER_ROUTE: Route = {
   path: 'career',
   data: { title: 'career' },
   component: CareerPageComponent,
+};
+
+export const RESUME_ROUTE: Route = {
+  path: 'resume',
+  data: { title: 'resume' },
+  component: ResumeRedirectComponent,
 };
 
 export const DOCS_MD_ROUTE: Route = {
@@ -126,6 +133,7 @@ export const ROUTES: Routes = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
   CAREER_ROUTE,
+  RESUME_ROUTE,
   CONTACT_ROUTE,
   PROJECTS_ROUTE,
   DOCS_MD_ROUTE,
@@ -244,7 +252,7 @@ const SKATE_IG: Link = {
 
 const RESUME: Link = {
   url: {
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/assets/HarryLiu-Resume.pdf`,
+    external: 'https://bucket.harryliu.dev/HarryLiu-Resume.pdf',
   },
   text: 'Resume',
 };

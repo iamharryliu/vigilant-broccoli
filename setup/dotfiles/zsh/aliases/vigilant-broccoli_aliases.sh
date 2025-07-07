@@ -62,7 +62,6 @@ alias servepersonalfrontend="cdnx && npm run serve:personal-website"
 alias deploypersonalfrontend="cdnx && nx manual-deploy personal-website-frontend"
 alias pushpagecontent="cdnx && git add apps/ui/personal-website-frontend/src/assets/site-content/ && gc feat personal-website 'Update site content.' && gpush"
 
-alias pushresume="cdnx && git add apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf && gc docs resume 'Update resume.' && gpush"
 alias pushblog="cdnx && git add apps/ui/personal-website-frontend/src/assets/blogs && gc feat blog 'Update blog.' && gpush"
 # Grind 75
 alias testgrind75py="python -m unittest discover -s $GRIND75_DIR/python"

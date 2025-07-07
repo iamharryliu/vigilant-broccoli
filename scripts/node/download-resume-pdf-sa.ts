@@ -12,7 +12,7 @@ async function main() {
   const authClient = await auth.getClient();
   const resumeDriveFileId = '1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU';
   const buffer = await downloadDocAsPdf(authClient, resumeDriveFileId);
-  await uploadToR2(buffer, 'vigilant-broccoli', 'resume.pdf');
+  await uploadToR2(buffer, 'vigilant-broccoli', 'HarryLiu-Resume.pdf');
 }
 
 async function downloadDocAsPdf(auth: any, fileId: string): Promise<Buffer> {
