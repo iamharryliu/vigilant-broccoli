@@ -1,7 +1,5 @@
 import 'dotenv/config';
-import os from 'os';
 import { google } from 'googleapis';
-import path from 'path';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 // import https from 'https';
 // import { NodeHttpHandler } from "@smithy/node-http-handler";
@@ -12,13 +10,7 @@ async function main() {
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
   });
   const authClient = await auth.getClient();
-
   const resumeDriveFileId = '1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU';
-  const outputPath = path.join(
-    os.homedir(),
-    'vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/resume.pdf',
-  );
-
   const buffer = await downloadDocAsPdf(authClient, resumeDriveFileId);
   await uploadToR2(buffer, 'vigilant-broccoli', 'resume.pdf');
 }

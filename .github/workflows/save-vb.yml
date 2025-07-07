@@ -1,4 +1,4 @@
-name: Upload Resume to R2
+name: Save vigilant-broccoli
 
 on:
   schedule:
@@ -10,11 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-    env:
-      AWS_REGION: us-east-1
-      CLOUDFLARE_ID: ${{ secrets.CLOUDFLARE_ID }}
-      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
-      CLOUDFLARE_R2_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY }}
     defaults:
       run:
         working-directory: ./scripts/node
@@ -31,4 +26,4 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
       - name: Run script.
-        run: npx tsx download-resume-pdf-sa.ts
+        run: npx tsx download-vb.ts

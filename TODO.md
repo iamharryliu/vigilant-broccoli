@@ -1,17 +1,13 @@
 # TODO
 
+cat service-account.json | jq -c .
+base64 -i service-account.json -o encoded.txt
+echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
+
 ## vigilant-broccoli
 
 - feat:
-  - deprecate crontab jobs in favor of Github Actions
-
-```
-# Backup vb
-0 0 * * * ping -c 1 8.8.8.8 > /dev/null 2>&1 && IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd ~/vigilant-broccoli/scripts/python/backup && source venv/bin/activate && python save_vigilant_broccoli.py
-# Update Resume
-0 0 * * * ping -c 1 8.8.8.8 > /dev/null 2>&1 && cp ~/My\ Drive/Career/Job\ Hunt/HarryLiu-Resume.pdf ~/vigilant-broccoli/projects/nx-workspace/apps/ui/personal-website-frontend/src/assets/HarryLiu-Resume.pdf
-```
-
+  - deprecate crontab jobs in favor
 - fix:
   - nx-workspace
     - check nx caching??
