@@ -7,15 +7,10 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
 ## vigilant-broccoli
 
 - feat:
-  - deprecate crontab jobs in favor
 - fix:
-  - nx-workspace
-    - check nx caching??
-    - publish -> build caching preventing new dist
 - chore:
   - dotfile clean up
-  - migrate to pnpm
-  - alias for `alias run lib:nx-release-publish`
+  - alias for `alias run lib:nx-release-publish`?
   - consider eslint proseWrap: "preserve"
 
 ## Employee Handler
