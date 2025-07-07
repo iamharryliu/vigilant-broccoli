@@ -11,6 +11,7 @@
   - Cloudflare
     - [Dashboard](https://dash.cloudflare.com/login)
     - R2
+      - [Buckets](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/overview)
       - [Pricing](https://developers.cloudflare.com/r2/pricing/)
   - OpenWeather
     - [API Details](https://openweathermap.org/api)

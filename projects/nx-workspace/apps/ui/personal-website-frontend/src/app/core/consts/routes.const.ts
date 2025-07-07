@@ -252,7 +252,7 @@ const SKATE_IG: Link = {
 
 const RESUME: Link = {
   url: {
-    external: 'https://bucket.harryliu.dev/HarryLiu-Resume.pdf',
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${RESUME_ROUTE.path}`,
   },
   text: 'Resume',
 };

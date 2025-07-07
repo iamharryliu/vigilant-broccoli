@@ -5,8 +5,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ResumeRedirectComponent implements OnInit {
   ngOnInit(): void {
-    const pdfUrl =
-      'https://pub-58ce4471f12945b18c85facfbd56367e.r2.dev/HarryLiu-Resume.pdf';
+    const pdfUrl = 'https://bucket.harryliu.dev/HarryLiu-Resume.pdf';
     window.location.href = pdfUrl;
   }
 }
