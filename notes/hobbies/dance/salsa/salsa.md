@@ -1,7 +1,46 @@
 # Salsa
 
+# Handhold Positions
+
+| Name       | Description |
+| :--------- | :---------- |
+| Hammerlock |             |
+
+# Entries
+
+| Name             | Description |
+| :--------------- | :---------- |
+| Crossbody push   |             |
+| Around the world |             |
+
+# Doubles
+
+| Name             | Description |
+| :--------------- | :---------- |
+| Crossbody push   |             |
+
+
+## '123' Step Moves
+
+| Move      | Entry                |
+| :-------- | :------------------- |
+| Crossbody |                      |
+| Breakback |                      |
+| Copa      | Cross Arm Break Back |
+
+## '567' Step Moves
+
+| Move         | Entry |
+| :----------- | :---- |
+| Reverse Turn |       |
+
+## Basics
+
+- Forward and back basic.
+- Side to side basic.
+- Open break.
+
 SOCIALS
-Hammerlocks
 cuban turns
 s turns
 right hand
@@ -13,22 +52,6 @@ Hard to lead moves
 -s-turns
 -body wave variations
 
-## Basics
-
-- Forward and back basic.
-- Side to side basic.
-- Open break.
-
-## '123' Step Moves
-
-- Crossbody
-- Breakback
-- \*inside or outside turns
-
-## '567' Step Moves
-
-- Reverse turn
-
 ### '567' Exits
 
 - Shoulder check
@@ -38,12 +61,6 @@ Hard to lead moves
 
 - Right over left, basic or breakback into spider turn
 
-## Entires
-
-### Power Entries
-
-- Crossbody push
-- Around the worlds
 
 #### Entries to Rainbow
 
@@ -84,11 +101,6 @@ On1 vs. On2
 |  On1  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |  S  |
 |  On2  |  S  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |
 
-Escalation
-
-- Double Turns
-- S - Turn
-
 Rainbows and wraps
 -vampire wrap
 -titanic
@@ -104,6 +116,7 @@ CROSS ARM EXITS TO OPEN HANDHOLD
 release arms
 shoulder combs
 crossbody turn comb
+
 
 LEVEL 3 SEQUENCES
 breakback walk around (breakback->walk around->open waist->step back->open waist->crossbody turn)
