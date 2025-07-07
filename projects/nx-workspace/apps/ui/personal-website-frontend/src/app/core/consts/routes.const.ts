@@ -15,7 +15,7 @@ import { BlogDirectoryComponent } from '../../blog-directory/blog-directory.comp
 import { BlogComponent } from '../../blog/blog.component';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
 import { CareerPageComponent } from '../../components/pages/career-page/career.page';
-import { ResumeRedirectComponent } from '../../components/pages/resume.page';
+import { ResumeRedirectComponent } from '../../components/redirects/resume.redirect';
 
 export const INDEX_ROUTE: Route = {
   path: '',
