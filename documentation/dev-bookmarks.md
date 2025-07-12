@@ -33,6 +33,7 @@
   - [Analytics](https://developers.google.com/analytics)
   - [Recaptcha](https://www.google.com/recaptcha/about/)
   - Google Cloud
+    - [GCP Billing](https://console.cloud.google.com/billing/017A09-73DEB3-7A8E42/reports?inv=1&invt=Ab2jMQ&project=vigilant-broccoli)
     - [GCE Instances](https://console.cloud.google.com/compute/instances?inv=1&invt=Ab2jIQ&project=vigilant-broccoli)
 - FlyIO
   - [Dashboard](https://fly.io/dashboard)

@@ -7,9 +7,12 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
 ## vigilant-broccoli
 
 - feat:
-  - notification alias
+  - alias for gcp instance `gcloud compute ssh --zone "us-east1-b" "vb-free-vm" --project "vigilant-broccoli"`
 - fix:
 - chore:
+  - hashicorp vault settings
+    - document vault access
+    - setup and understand SAN to be able to make local commands to vault
   - dotfile clean up
   - alias for `alias run lib:nx-release-publish`?
   - consider eslint proseWrap: "preserve"
