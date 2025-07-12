@@ -65,7 +65,7 @@ sudo vim /etc/vault/config.hcl
 sudo systemctl restart vault
 
 sudo systemctl stop vault
-sudo rm -rf /opt/vault/data/*
+sudo rm -rf /opt/vault/data/
 sudo systemctl start vault
 ```
 

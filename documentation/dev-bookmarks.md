@@ -32,6 +32,8 @@
   - [AdSense](https://adsense.google.com/start/)
   - [Analytics](https://developers.google.com/analytics)
   - [Recaptcha](https://www.google.com/recaptcha/about/)
+  - Google Cloud
+    - [GCE Instances](https://console.cloud.google.com/compute/instances?inv=1&invt=Ab2jIQ&project=vigilant-broccoli)
 - FlyIO
   - [Dashboard](https://fly.io/dashboard)
   - [Billing](https://fly.io/dashboard/personal/billing)
