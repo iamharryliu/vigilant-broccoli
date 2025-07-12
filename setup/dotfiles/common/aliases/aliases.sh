@@ -46,3 +46,7 @@ explain_shell() {
 }
 
 alias cpsshpubkey='cat ~/.ssh/id_rsa.pub| pbcopy'
+
+alarm() {
+  (sleep "$1" && say "${2:-Time's up!}") &
+}

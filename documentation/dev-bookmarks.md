@@ -1,9 +1,14 @@
 # My Stack
 
+- Google
+  - Gmail
+  - Keep
+  - Tasks
+  - Drive
 - Github
-- Github Actions
-  - [Pricing](https://docs.github.com/en/billing/managing-billing-for-your-products/about-billing-for-github-actions)
-  - [Billing](https://github.com/settings/billing)
+  - Github Actions
+    - [Pricing](https://docs.github.com/en/billing/managing-billing-for-your-products/about-billing-for-github-actions)
+    - [Billing](https://github.com/settings/billing)
 - NPM
   - [My NPM Packages](https://www.npmjs.com/settings/prettydamntired/packages)
 - FlyIO
