@@ -1,0 +1,58 @@
+{
+  "name": "express-demo",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/express-demo/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/api/express-demo",
+        "main": "apps/api/express-demo/src/main.ts",
+        "tsConfig": "apps/api/express-demo/tsconfig.app.json",
+        "webpackConfig": "apps/api/express-demo/webpack.config.js",
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "development": {
+          "outputHashing": "none"
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "express-demo:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "express-demo:build:development"
+        },
+        "production": {
+          "buildTarget": "express-demo:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "deploy": {
+      "command": "flyctl deploy --dockerfile ./apps/api/express-demo/Dockerfile --config ./deployment-configs/fly-configs/express-demo.toml",
+      "dependsOn": ["build", "lint"]
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/api/express-demo/Dockerfile . -t express-demo"
+    }
+  }
+}

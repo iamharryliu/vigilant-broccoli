@@ -1,5 +1,6 @@
 import crypto, { Cipher, Decipher } from 'crypto';
 import { logger } from '../logging/logger.service';
+import { getEnvironmentVariable } from '../../index';
 
 export class EncryptionService {
   cipher: Cipher;
@@ -10,22 +11,23 @@ export class EncryptionService {
     secretKey = 'key',
     secretIv = 'secret',
   ) {
-    secretKey = secretKey || process.env.SECRET_KEY;
-    secretIv = secretIv || process.env.SECRET_IV;
+    secretKey = secretKey || getEnvironmentVariable('SECRET_KEY');
+    secretIv = secretIv || getEnvironmentVariable('SECRET_IV');
     if (secretKey === 'key' || secretIv === 'secret') {
       logger.warn('EncryptionService using default properties.');
     }
 
-    encryptionMethod = encryptionMethod || process.env.ENCRYPTION_METHOD;
+    encryptionMethod =
+      encryptionMethod || getEnvironmentVariable('ENCRYPTION_METHOD');
     secretKey = crypto
       .createHash('sha512')
-      .update(secretKey || process.env.SECRET_KEY)
+      .update(secretKey || getEnvironmentVariable('SECRET_KEY'))
       .digest('hex')
       .substring(0, 32);
 
     secretIv = crypto
       .createHash('sha512')
-      .update(secretIv || process.env.SECRET_IV)
+      .update(secretIv || getEnvironmentVariable('SECRET_IV'))
       .digest('hex')
       .substring(0, 16);
 

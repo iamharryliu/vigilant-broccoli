@@ -1,10 +1,12 @@
 import 'dotenv-defaults/config';
 import { logger } from '../logging/logger.service';
+import { getEnvironmentVariable } from '../utils';
 export class RecaptchaService {
   secretKey: string;
 
   constructor(secretKey = undefined) {
-    this.secretKey = secretKey || process.env.RECAPTCHA_V3_SECRET_KEY;
+    this.secretKey =
+      secretKey || getEnvironmentVariable('RECAPTCHA_V3_SECRET_KEY');
     if (!this.secretKey) {
       logger.error('RecaptchaService is not configured properly.');
     }

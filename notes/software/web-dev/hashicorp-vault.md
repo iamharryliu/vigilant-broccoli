@@ -62,6 +62,7 @@ sudo systemctl status vault
 ```
 sudo vim /etc/systemd/system/vault.service
 sudo vim /etc/vault/config.hcl
+sudo systemctl restart vault
 
 sudo systemctl stop vault
 sudo rm -rf /opt/vault/data/*
@@ -146,7 +147,6 @@ vault login -method=github token=TOKEN
 curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/github/login
 ```
 
-
 ```
 # vault-openssl.cnf
 [ req ]
@@ -178,15 +178,15 @@ sudo openssl x509 -req -in csr.pem -signkey key.pem -out /etc/vault/tls/vault.cr
 
 openssl x509 -req -in vault.csr -signkey /etc/vault/tls/vault.key -out /etc/vault/tls/vault.crt -days 365 -extensions req_ext -extfile yourconfig.cnf
 
-sudo openssl req -new -key /etc/vault/tls/vault.key -out vault.csr -config ./vault-openssl.cnf 
+sudo openssl req -new -key /etc/vault/tls/vault.key -out vault.csr -config ./vault-openssl.cnf
 
 sudo openssl req -x50 -new -key key.pem -out req.csr -config your.cnf -reqexts req_ext
 
 openssl req -new -key /etc/vault/tls/vault.key -out /etc/vault/tls/vault.csr -config vault-openssl.cnf
 
-sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/vault/tls/vault.key -out /etc/vault/tls/vault.crt -days 365 -config vault-openssl.cnf  -extensions v3_ext
+sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/vault/tls/vault.key -out /etc/vault/tls/vault.crt -days 365 -config vault-openssl.cnf -extensions v3_ext
 
-sudo openssl req -x509 -nodes -newkey rsa:2048   -keyout /etc/vault/tls/vault.key   -out /etc/vault/tls/vault.crt   -days 365   -config vault-openssl.cnf 
+sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/vault/tls/vault.key -out /etc/vault/tls/vault.crt -days 365 -config vault-openssl.cnf
 sudo chown vault:vault /etc/vault/tls/vault.key
 sudo chmod 600 /etc/vault/tls/vault.key
 sudo systemctl restart vault

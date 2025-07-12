@@ -1,9 +1,10 @@
 import path from 'path';
 import { EjsTemplate, Email } from './email.models';
+import { getEnvironmentVariable } from '../utils';
 
 export const DEFAULT_EMAIL_REQUEST: Email = {
-  from: `Email Service <${process.env.MY_EMAIL}>`,
-  to: process.env.MY_EMAIL,
+  from: `Email Service <${getEnvironmentVariable('MY_EMAIL')}>`,
+  to: getEnvironmentVariable('MY_EMAIL'),
   subject: 'Default subject',
   text: 'Default message',
 };

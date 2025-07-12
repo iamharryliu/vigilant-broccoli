@@ -7,7 +7,7 @@ import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 import Anthropic from '@anthropic-ai/sdk';
 
 async function prompt<T>(
-  request: LLMPromptRequest,
+  request: LLMPromptRequest<T>,
 ): Promise<LLMPromptResult<T>> {
   const { modelConfig, responseFormat } = request;
   const client = LLMUtils.getLLMClient(modelConfig);
@@ -52,6 +52,9 @@ async function prompt<T>(
   const { total_tokens, prompt_tokens, completion_tokens } = usage;
   const message = response.choices[0].message;
 
+  if (!message.content || !message.content.length)
+    throw new Error('LLM returned no content.');
+
   return {
     model: modelConfig?.model || LLM_MODEL.GPT_4O,
     tokens: {
@@ -71,6 +74,8 @@ async function generateImages(prompt: string, n = 1) {
     n,
     size: 'auto',
   });
+  if (!response.data || !response.data.length)
+    throw new Error('LLM returned no data.');
   return response.data.map(data => data.b64_json);
 }
 
@@ -94,6 +99,8 @@ async function editImage(filenames: string[], prompt: string) {
     image: images,
     prompt,
   });
+  if (!response.data || !response.data.length)
+    throw new Error('LLM returned no data.');
   return `data:image/png;base64,${response.data[0].b64_json}`;
 }
 

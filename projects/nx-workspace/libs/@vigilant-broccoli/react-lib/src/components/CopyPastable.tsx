@@ -3,10 +3,11 @@ import { Copy } from 'lucide-react';
 
 export const CopyPastable = ({
   text,
+  // TODO: investigate wrapping
   isScrollable,
 }: {
   text: string;
-  isScrollable: boolean;
+  isScrollable?: boolean;
 }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(text).catch(err => {

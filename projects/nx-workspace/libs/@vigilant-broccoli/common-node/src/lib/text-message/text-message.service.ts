@@ -1,15 +1,19 @@
 import 'dotenv-defaults/config';
 import { Twilio } from 'twilio';
-import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
+import {
+  MessageInstance,
+  MessageListInstanceCreateOptions,
+} from 'twilio/lib/rest/api/v2010/account/message';
 import { DEFAULT_TEXT_MESSAGE } from './text-message.const';
 import { logger } from '../logging/logger.service';
+import { getEnvironmentVariable } from '../../index';
 
 export class TextMessageService {
   private client: Twilio;
 
-  constructor(accountSid = undefined, authToken = undefined) {
-    accountSid = accountSid || process.env.TWILIO_ACCOUNT_SID;
-    authToken = authToken || process.env.TWILIO_AUTH_TOKEN;
+  constructor(accountSid?: string, authToken?: string) {
+    accountSid = accountSid || getEnvironmentVariable('TWILIO_ACCOUNT_SID');
+    authToken = authToken || getEnvironmentVariable('TWILIO_AUTH_TOKEN');
     if (!accountSid || !authToken) {
       logger.error('TextService is not configured properly.');
     }
@@ -17,7 +21,7 @@ export class TextMessageService {
   }
 
   sendTextMessage(
-    textMessage = DEFAULT_TEXT_MESSAGE,
+    textMessage = DEFAULT_TEXT_MESSAGE as MessageListInstanceCreateOptions,
   ): Promise<MessageInstance> {
     return this.client.messages.create(textMessage);
   }

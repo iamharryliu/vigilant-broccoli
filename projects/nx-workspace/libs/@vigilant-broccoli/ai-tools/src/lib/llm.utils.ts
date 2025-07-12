@@ -90,7 +90,7 @@ function getOpenAIClient({
   });
 }
 
-function formatPromptParams(request: LLMPromptRequest) {
+function formatPromptParams<T>(request: LLMPromptRequest<T>) {
   const { prompt, modelConfig, responseFormat } = request;
   const { userPrompt, systemPrompt } = prompt;
   const result = {
@@ -105,7 +105,7 @@ function formatPromptParams(request: LLMPromptRequest) {
           : userPrompt,
       },
     ],
-    ...(responseFormat
+    ...(responseFormat && responseFormat.zod
       ? { response_format: zodResponseFormat(responseFormat.zod, 'answer') }
       : {}),
   } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming;

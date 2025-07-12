@@ -1,6 +1,6 @@
 const makeHttpRequest = async <T>(
   endpoint: string,
-  requestOptions,
+  requestOptions: RequestInit,
 ): Promise<T> => {
   const response = await fetch(endpoint, requestOptions);
   if (!response.ok) {
@@ -11,6 +11,7 @@ const makeHttpRequest = async <T>(
   return response.json();
 };
 
+// TODO: delete??
 export const HttpUtils = {
   makeHttpRequest,
 };

@@ -43,17 +43,13 @@ function getPrettierJSON(jsonText: string): string {
   }
 }
 
-function getClearedEnvValues(envContent: string): string {
+function getStubbedEnvironmentVariableKeys(envContent: string): string {
   return envContent
     .split('\n')
     .map(line => line.trim())
     .filter(line => {
       // Skip comments, blank lines, and anything without '='
-      if (
-        line === '' ||
-        line.startsWith('#') ||
-        !line.includes('=')
-      ) {
+      if (line === '' || line.startsWith('#') || !line.includes('=')) {
         return false;
       }
 
@@ -70,16 +66,14 @@ function getClearedEnvValues(envContent: string): string {
     .join('\n');
 }
 
-function formatBlockStringToSingleString(block: string): string {
+function formatBlockStringToSingleLineString(block: string): string {
   return block.split(/\r?\n/).join('\\n');
 }
-
-
 
 export const EnvUtils = {
   getPrettierJSON,
   getEnvironmentVariablesFromJSON,
   getJSONFromEnvironmentVariables,
-  getClearedEnvValues,
-  formatBlockStringToSingleString,
-}
+  getStubbedEnvironmentVariableKeys,
+  formatBlockStringToSingleLineString,
+};

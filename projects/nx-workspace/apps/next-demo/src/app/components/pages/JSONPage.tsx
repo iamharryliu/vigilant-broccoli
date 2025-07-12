@@ -1,7 +1,5 @@
 import { Card, Heading } from '@radix-ui/themes';
-import {
-  EnvUtils
-} from '@vigilant-broccoli/common-js';
+import { EnvUtils } from '@vigilant-broccoli/common-js';
 import { ConversionForm, CopyPastable } from '@vigilant-broccoli/react-lib';
 
 export const JSONPage = () => {
@@ -10,8 +8,8 @@ export const JSONPage = () => {
       <EnvironmentVariablesToJSONForm />
       <JSONToEnvVarForm />
       <JSONPrettier />
-      <CleanEnvConversionForm/>
-      <FormatBlockStringForm/>
+      <CleanEnvConversionForm />
+      <FormatBlockStringToSingleStringForm />
     </div>
   );
 };
@@ -114,14 +112,17 @@ const JSONPrettier = () => {
   );
 };
 
-const CleanEnvConversionForm = () => { 
+const CleanEnvConversionForm = () => {
   return (
     <div className="flex space-x-4">
       <div className="w-2/3">
         <ConversionForm
-          copy={{ header: 'Clean Env Conversion', placeholder: 'Environment Variables' }}
+          copy={{
+            header: 'Get Stubbed Environment Variable Keys',
+            placeholder: 'Environment Variables',
+          }}
           initialText={''}
-          conversionFn={EnvUtils.getClearedEnvValues}
+          conversionFn={EnvUtils.getStubbedEnvironmentVariableKeys}
         />
       </div>
 
@@ -133,16 +134,19 @@ const CleanEnvConversionForm = () => {
       </div>
     </div>
   );
-}
+};
 
-const FormatBlockStringForm = () => { 
+const FormatBlockStringToSingleStringForm = () => {
   return (
     <div className="flex space-x-4">
       <div className="w-2/3">
         <ConversionForm
-          copy={{ header: 'Line Broken Form', placeholder: 'Text' }}
+          copy={{
+            header: 'Block String to Single Line String',
+            placeholder: 'Text',
+          }}
           initialText={''}
-          conversionFn={EnvUtils.formatBlockStringToSingleString}
+          conversionFn={EnvUtils.formatBlockStringToSingleLineString}
         />
       </div>
 
@@ -154,5 +158,4 @@ const FormatBlockStringForm = () => {
       </div>
     </div>
   );
-
-}
+};

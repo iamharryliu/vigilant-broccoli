@@ -73,12 +73,15 @@ export const GamCommand = {
   ): string => {
     return `gam update user ${email} json file '${phoneNumberJsonFilepath}'`;
   },
-  addCalendarToUser: (email: string, calendar:string)=>{
-    return `gam user ${email} add calendar ${calendar}`
+  getUserCalendars: (email: string) => {
+    return `gam user ${email} show calendars`;
   },
-  removeCalendarFromUser: (email: string, calendar:string)=>{
-    return `gam user ${email} delete calendar ${calendar}`
-  }
+  addCalendarToUser: (email: string, calendar: string) => {
+    return `gam user ${email} add calendar ${calendar}`;
+  },
+  removeCalendarFromUser: (email: string, calendar: string) => {
+    return `gam user ${email} delete calendar ${calendar}`;
+  },
 };
 
 export function getDateInISOFormat(date: Date): string {

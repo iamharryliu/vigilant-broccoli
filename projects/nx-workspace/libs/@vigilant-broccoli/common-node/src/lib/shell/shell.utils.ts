@@ -33,7 +33,7 @@ const runShellCommand = (
 };
 
 const runUpdateShellCommand = async (cmd: string): Promise<void> => {
-  if (isProdAndNotDryRun) {
+  if (isProdAndNotDryRun()) {
     return (await runShellCommand(cmd)) as void;
   }
 };

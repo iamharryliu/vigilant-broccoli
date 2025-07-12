@@ -1,0 +1,73 @@
+{
+  "name": "react-demo",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/react-demo/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/ui/react-demo"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "react-demo:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "react-demo:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "react-demo:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "preview": {
+      "dependsOn": ["build"],
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "react-demo:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "react-demo:build:development"
+        },
+        "production": {
+          "buildTarget": "react-demo:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "react-demo:build",
+        "spa": true
+      }
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/react-demo --project-name react-demo",
+      "dependsOn": ["build"]
+    }
+  }
+}

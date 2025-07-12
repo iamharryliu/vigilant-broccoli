@@ -78,6 +78,10 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
+      "dependsOn": ["build"]
+    },
     "manual-deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
       "dependsOn": ["build"]

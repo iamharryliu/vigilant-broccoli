@@ -1,0 +1,37 @@
+# My Stack
+
+- Github
+- Github Actions
+  - [Pricing](https://docs.github.com/en/billing/managing-billing-for-your-products/about-billing-for-github-actions)
+  - [Billing](https://github.com/settings/billing)
+- NPM
+  - [My NPM Packages](https://www.npmjs.com/settings/prettydamntired/packages)
+- FlyIO
+  - [Dashboard](https://fly.io/dashboard)
+  - [Recaptcha](https://www.google.com/recaptcha/admin/site/682849728)
+- AWS
+  - [AWS Free Tier](https://aws.amazon.com/free/)
+- Cloudflare
+  - [Billing](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing)
+  - [Domains](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/registrar/domains)
+  - [Workers](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/workers-and-pages)
+  - R2
+    - [Pricing](https://developers.cloudflare.com/r2/pricing/)
+    - [Buckets](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/overview)
+- OpenWeather
+  - [API Details](https://openweathermap.org/api)
+  - [Pricing](https://openweathermap.org/price)
+  - [City Search](https://openweathermap.org/find)
+- [MongoDB](https://account.mongodb.com/account/login)
+- Google
+  - [AdSense](https://adsense.google.com/start/)
+  - [Analytics](https://developers.google.com/analytics)
+  - [Recaptcha](https://www.google.com/recaptcha/about/)
+- FlyIO
+  - [Dashboard](https://fly.io/dashboard)
+  - [Billing](https://fly.io/dashboard/personal/billing)
+- OpenAI
+  - [Billing](https://platform.openai.com/settings/organization/billing/overview)
+  - [Docs](https://platform.openai.com/docs/overview)
+- Twilio
+  - [Billing](https://console.twilio.com/us1/billing/manage-billing/billing-overview)

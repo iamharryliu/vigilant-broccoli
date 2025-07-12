@@ -7,6 +7,7 @@ const sites = [
   'https://vibecheck-lite-express.fly.dev/',
   'https://vibecheck-angular.harryliu.dev/',
   'https://vibecheck-flask.harryliu.dev/',
+  'https://vb-next-demo.vercel.app/',
   // ...Object.values(TODO_SITE),
 ];
 

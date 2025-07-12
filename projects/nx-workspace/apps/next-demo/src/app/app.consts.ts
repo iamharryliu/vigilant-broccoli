@@ -5,10 +5,6 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Home',
     path: '/',
   },
-  JSON: {
-    title: 'JSON',
-    path: '/json-tools',
-  },
   TEXT: {
     title: 'Text Tools',
     path: '/text-tools',

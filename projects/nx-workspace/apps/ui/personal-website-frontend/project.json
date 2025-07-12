@@ -105,6 +105,10 @@
         "staticFilePath": "dist/apps/ui/personal-website-frontend/browser"
       }
     },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-dev-angular",
+      "dependsOn": ["build"]
+    },
     "manual-deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-dev-angular",
       "dependsOn": ["build"]

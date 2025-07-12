@@ -11,7 +11,7 @@ const CharacterCounter = () => {
   return (
     <Card>
       <Heading size="4" mb="2">
-        Text
+        Text Analysis
       </Heading>
       <div className="flex space-x-4">
         <TextArea

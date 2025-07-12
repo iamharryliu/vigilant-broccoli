@@ -12,3 +12,11 @@ export const memoize = <T extends (...args: any[]) => any>(fn: T): T => {
 
 export const delay = (ms: number): Promise<void> =>
   new Promise(resolve => setTimeout(resolve, ms));
+
+export function getEnvironmentVariable(key: string) {
+  const value = process.env[key];
+  if (!value) {
+    return '';
+  }
+  return value;
+}
