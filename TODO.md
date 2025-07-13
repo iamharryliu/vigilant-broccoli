@@ -8,6 +8,7 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
 
 - feat:
   - alias for gcp instance `gcloud compute ssh --zone "us-east1-b" "vb-free-vm" --project "vigilant-broccoli"`
+  - asynchronous logging
 - fix:
 - chore:
   - hashicorp vault settings

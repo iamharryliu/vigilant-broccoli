@@ -1,10 +1,62 @@
 # Salsa
 
-# Handhold Positions
+## Socials
 
-| Name       | Description |
-| :--------- | :---------- |
-| Hammerlock |             |
+- Start off with shines to guage style/level.
+
+SOCIALS
+cuban turns
+s turns
+right hand
+body waves
+dips
+Hard to lead moves
+-tunnel
+-walk arounds
+-s-turns
+-body wave variations
+
+## Positions
+
+### Hand Holds
+
+| Name           | Variation                          | Entry | Exit |
+| :------------- | :--------------------------------- | :---- | :--- |
+| Open Hold      | left to right or right to left     |       |      |
+| Closed Hold    | half or full                       |       |      |
+| Handshake Hold | right to right or left to left     |       |      |
+| Crossed Hands  | left over right or right over left |       |      |
+| Cross Body     |                                    |       |      |
+
+#### Hand Hold Changes
+
+- drop hands
+- men's left/right turn hand change (1 count)
+- men's half turn left/right (2 counts)
+- position switch with server tray (1 count)
+- server turn (1 count)
+- throw partner's arm behind back (1 turn)
+- CROSS ARM EXITS TO OPEN HANDHOLD
+- release arms
+- Comb
+  - forward comb
+  - crossbody comb
+
+### Postions
+
+| Name                        | Variation | Entry                                 | Exit |
+| :-------------------------- | :-------- | :------------------------------------ | :--- |
+| Hammerlock                  |           |                                       |      |
+| Cuddle/Sweetheart Postition |           | crossbody, side by side, break back   |      |
+| Shadow                      |           |                                       |      |
+| Presentation                |           | right to left + copa -> presentation  |      |
+| Titanic                     |           | left oer right + crossbody -> titanic |      |
+
+## Basics
+
+- Forward and back basic.
+- Side to side basic.
+- Open break.
 
 # Entries
 
@@ -15,10 +67,9 @@
 
 # Doubles
 
-| Name             | Description |
-| :--------------- | :---------- |
-| Crossbody push   |             |
-
+| Name           | Description |
+| :------------- | :---------- |
+| Crossbody push |             |
 
 ## '123' Step Moves
 
@@ -34,24 +85,6 @@
 | :----------- | :---- |
 | Reverse Turn |       |
 
-## Basics
-
-- Forward and back basic.
-- Side to side basic.
-- Open break.
-
-SOCIALS
-cuban turns
-s turns
-right hand
-body waves
-dips
-Hard to lead moves
--tunnel
--walk arounds
--s-turns
--body wave variations
-
 ### '567' Exits
 
 - Shoulder check
@@ -61,17 +94,6 @@ Hard to lead moves
 
 - Right over left, basic or breakback into spider turn
 
-
-#### Entries to Rainbow
-
-- Left over right -> crossbody -> rainbow
-- Right to left -> breakback -> rainbow
-
-### Entries to Wraps
-
-crossbody -> wrap
-side to side -> wrap
-
 ### Entries to Side by Side
 
 - lasso entry - open handhold -> crossbody lead -> half turn
@@ -79,44 +101,20 @@ side to side -> wrap
 
 ## Shines
 
-### Exits to Shines
-
-breakback arm push turn
-
-- breakback hand toss
-- crossbody wrist pull spin
-- lvl 2 Suzi Q
-- lvl 3 Suzi Q
-- knee tap toe taps
-- around the world
-- forward suzi q
-- kicks
-
-## Timing
-
-On1 vs. On2
-
-| Count |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
-| :---: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-|  On1  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |  S  |
-|  On2  |  S  |  Q  |  Q  |  S  |  S  |  Q  |  Q  |  S  |
-
-Rainbows and wraps
--vampire wrap
--titanic
-
-HANDCHANGE
-drop hands
-men's left/right turn hand change (1 count)
-men's half turn left/right (2 counts)
-position switch with server tray (1 count)
-server turn (1 count)
-throw partner's arm behind back (1 turn)
-CROSS ARM EXITS TO OPEN HANDHOLD
-release arms
-shoulder combs
-crossbody turn comb
-
+- Exits to Shines
+  - breakback and push turn
+  - crossbody and wrist pull into spin
+  - right turn and wrist pull into spin
+  - throw arms down
+  - breakback hand toss???
+- Shines
+  - Suzi Qs
+    - lvl 2 Suzi Q
+    - lvl 3 Suzi Q
+    - forward suzi q
+  - around the world (box step +forward, back set + slide)
+  - knee tap toe taps
+  - kicks
 
 LEVEL 3 SEQUENCES
 breakback walk around (breakback->walk around->open waist->step back->open waist->crossbody turn)
