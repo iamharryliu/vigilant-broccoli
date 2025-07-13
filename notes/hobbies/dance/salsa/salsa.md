@@ -51,6 +51,8 @@ Hard to lead moves
 | Shadow                      |           |                                       |      |
 | Presentation                |           | right to left + copa -> presentation  |      |
 | Titanic                     |           | left oer right + crossbody -> titanic |      |
+| Breakback                   |           |                                       |      |
+| Copa                        |           |                                       |      |
 
 ## Basics
 
@@ -70,14 +72,6 @@ Hard to lead moves
 | Name           | Description |
 | :------------- | :---------- |
 | Crossbody push |             |
-
-## '123' Step Moves
-
-| Move      | Entry                |
-| :-------- | :------------------- |
-| Crossbody |                      |
-| Breakback |                      |
-| Copa      | Cross Arm Break Back |
 
 ## '567' Step Moves
 
@@ -108,6 +102,7 @@ Hard to lead moves
   - throw arms down
   - breakback hand toss???
 - Shines
+
   - Suzi Qs
     - lvl 2 Suzi Q
     - lvl 3 Suzi Q
@@ -116,17 +111,27 @@ Hard to lead moves
   - knee tap toe taps
   - kicks
 
+- Lasso/Yoyo Variations
+  - Lasso - cross body lead->half turn->pull behind->wrap->pull behind->wrap...->shoulder check->double->exits to open handhold
+  - Vampire Wrap
+  - crossbody + yoyo + left hand turn exit
+  - crossbody + yoyo + surprise hand
+  - hand flick + crossbody -> left to right -> wrap -> yoyo -> presentation -> right turn + comb exit
+  - hand flick + crossbody -> left to right with hand high -> shoulder check ->yoyo -> presentation -> right turn + comb exit
+  - [3 Levels of the Famous YoYo Salsa Combo](https://www.youtube.com/watch?v=1h4e7bN6jB4&t=366s)
+- Titanic Variations
+
+- Wraps
+  - Hand toss - toss right hand entering crossbody->catch left hand->wrap->double->exits to cross arm
+
 LEVEL 3 SEQUENCES
 breakback walk around (breakback->walk around->open waist->step back->open waist->crossbody turn)
 LEVEL 4 SEQUENCES
 S-turn (double turn wrap->grab other hand->crossbody turn)
-Lasso - cross body lead->half turn->pull behind->wrap->pull behind->wrap...->shoulder check->double->exits to open handhold
 Hand toss - toss right hand entering crossbody->catch left hand->wrap->double->exits to cross arm
 Hand behind back thing (breakback->hand behind back->spin->beakback->waist turn->hand toss->wrap)
 Basic spider turn - right over left -> double turn -> drop right -> double -> exit
 Breakback spider turn - beakback -> double turn -> drop right -> double -> exit
-Breakback
-Swing around - closed handhold -> breakback -> swing around -> breakback -> swing around -> beakback -> arm push turn
 tunnel spin - tunnel spin -> basic -> side basic with arms sweep -> basic away -> turn -> comb -> crossbody
 
 LEVEL 5 SEQUENCES
@@ -149,13 +154,6 @@ Coca Cola shadow
 Crossbody -> shoulder turn -> shoulder check -> wind -> spin -> Coca Cola -> shadow position -> crossbody -> titanic -> double turn -> hand switch -> cuddle position -> side dip -> 2 sin
 LEVEL 6
 Breakback -> server turn -> shadow double turn ->break back -> waist grab, prep, turn -> hook turn catch -> hook turn into men’s hammerlock -> reverse turn into shadow -> trailing back turn -> double -> comb and crossbody lead
-
-yoyo variations
-1 - crossbody -> yoyo -> repeat? -> left hand turn exit
-2 - crossbody -> yoyo -> repeat? -> surprise hand
-3 - throw hand -> crossbody -> yoyo -> presentation right turn
-3 - throw hand -> crossbody with hand up -> shoulder check ->yoyo -> presentation -> right turn
-3 - throw hand -> crossbody with hand up -> shoulder check ->yoyo -> presentation -> right turn
 
 ## Misc
 
