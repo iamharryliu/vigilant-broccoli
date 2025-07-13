@@ -51,11 +51,11 @@ alarm() {
   (sleep "$1" && say "${2:-Time's up!}") &
 }
 
-# alias timer='function _timer(){ sleep ${1:-600} && terminal-notifier -title "Alarm Timer" -message "${2:-Time is up!}"; }; _timer'
 timer() {
   (
     sleep "${1:-600}"
     afplay /System/Library/Sounds/Ping.aiff
     terminal-notifier -title "Alarm Timer" -message "${2:-Time is up!}"
+    say "${2:-Time's up!}"
   ) &
 }
