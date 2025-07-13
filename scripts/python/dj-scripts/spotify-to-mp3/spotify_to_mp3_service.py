@@ -32,8 +32,8 @@ class SpotifyToMp3Service:
             subprocess.run(
                 ["spotdl", "download", playlist["url"], "--output", f"{output}"],
                 check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                # stdout=subprocess.DEVNULL,
+                # stderr=subprocess.DEVNULL,
             )
         except:
             pass

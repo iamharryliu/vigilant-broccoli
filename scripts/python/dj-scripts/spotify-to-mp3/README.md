@@ -18,6 +18,7 @@ python download_music.py
 
 # Upgrade spotdl
 pip install --upgrade spotdl
+pip install --upgrade yt-dlp spotdl
 
 # cronjob
 0 */1 * * * cd ~/spotify-to-mp3/ && source venv/bin/activate && python download_music.py
