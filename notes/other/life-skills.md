@@ -3,3 +3,4 @@
 - Spreading (Speed Reading)
 - Touch Typing
 - Swipe Typing
+- Swimming

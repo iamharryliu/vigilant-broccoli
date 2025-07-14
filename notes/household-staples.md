@@ -1,4 +1,8 @@
-# Kitchen Organization
+# Household Stapes
+
+- [Plastic Tote Bags(IKEA FRUKTA)](https://www.ikea.com/ca/en/p/frakta-bag-large-blue-17228340/)
+
+## Kitchen
 
 - [Food Container (IKEA PRUTA)](https://www.pinterest.ca/search/pins/?q=ikea%20pruta&rs=typed)
 - [Knife Magnet Strip](https://www.pinterest.ca/search/pins/?q=knife%20magnet&rs=typed)
