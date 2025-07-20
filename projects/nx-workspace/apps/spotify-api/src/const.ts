@@ -1,6 +1,4 @@
-import { LOCALHOST } from '@vigilant-broccoli/common-js';
-
-export const HOST = process.env.HOST || LOCALHOST;
+export const HOST = '0.0.0.0';
 export const PORT = 8080;
 
 export const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
