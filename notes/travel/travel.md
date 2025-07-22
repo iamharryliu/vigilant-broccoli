@@ -4,6 +4,30 @@
 
 [Park4Night](https://park4night.com/en) - Find parking, useful for campervan travel.
 [Bounce](https://usebounce.com/) - Luggage storage
+[HappyCow]() - Find vegetarian/vegan options.
+[Airola]() - eSim Provider
+
+## Travel Packing
+
+- Passport if travelling between countries.
+- Toiletry
+- Footwear - at the very least a pair of good sneakers and comfy slides/sandals
+- Totebags
+- Water Bottle
+- Snacks
+- Sleep
+  - Ear Plugs
+  - Light Blanket
+  - Sleeping Mask
+  - Portable Pillow
+- Comfort
+  - Neck Pillow
+  - Back Buffer (can use a light blanket)
+  - Butt Padding (can use a light blanket)
+- Optional
+  - Shoehorn
+  - Swimwear
+  - Speakers
 
 ## Countries That I Have Traveled To
 
