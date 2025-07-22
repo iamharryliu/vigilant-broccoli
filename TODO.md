@@ -7,8 +7,8 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
 ## vigilant-broccoli
 
 - feat:
-  - alias for gcp instance `gcloud compute ssh --zone "us-east1-b" "vb-free-vm" --project "vigilant-broccoli"`
   - asynchronous logging
+  - move secret manager under DNS
 - fix:
   - fix toronto alerts
 - chore:
