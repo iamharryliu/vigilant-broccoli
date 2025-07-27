@@ -30,6 +30,8 @@
 | another     | en till             |                    |                 |                   |                 |
 | with        | med                 | avec               | con             |                   |                 |
 | without     | utan                | sans               | sin             |                   |                 |
+| neither     | varken              |                    |                 |                   |                 |
+| either      | antigen             |                    |                 |                   |                 |
 | hot         | varme               | chaud              | caliente        |                   |                 |
 | cold        | kall                | froid              | frío            |                   |                 |
 | strong      | stark               | fort               | fuerte          |                   |                 |

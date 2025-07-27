@@ -2,21 +2,38 @@
 
 - [Painted Turtles Defrost Back to Life | Frozen Planet II | BBC Earth](https://www.youtube.com/watch?v=NwGHJTk3W3U)
 - [Philosophy: A Guide to Happiness - Alain de Botton (2000) (The Consolations of Philosophy)](https://www.youtube.com/playlist?list=PLez3PPtnpncT7-pMCkOZaeiEWiM-jYU-E)
-- Skate
-  - [AMALL Trick Tips: Carving Bowls](https://www.youtube.com/watch?v=jz8nMScAT-4)
-  - [bruno loewe stunts](https://www.youtube.com/watch?v=p8CRjNLrres)
-- Fashion
+- **Fashion**
   - [The Unknown Vlogs(Kofi)](https://www.youtube.com/@unknownvlogs)
   - [Ken Ijima](https://www.youtube.com/@iwantvag69)
+  - [Ken Sakata](https://www.youtube.com/@FrontOfficeCo)
+  - [Ojadorf](https://www.youtube.com/@ojardorf)
+  - [Daniel Simmons](https://www.youtube.com/@imdanielsimmons/shorts)
+  - [Clothesnbits](https://www.youtube.com/@clothesnbits)
   - https://www.kaileemckenzie.co/homeshop
   - https://staatsballett.co/en-ca
   - https://www.kaileemckenzie.co/
-- Software
+- **Infrastructure**
+  - [Vox](https://www.youtube.com/@Vox)
+  - [About Here](https://www.youtube.com/@AboutHere)
+- **Engineering**
+  - [Practical Engineering](https://www.youtube.com/@PracticalEngineeringChannel)
+- **Software**
+  - [Computerphile](https://www.youtube.com/@Computerphile)
   - [A Philosophy of Software Design | John Ousterhout | Talks at Google](https://www.youtube.com/watch?v=bmSAYlu0NcY&t=3002s)
-  - [Daniel Michaels](https://danielms.site/)
   - [Corey Scafer](https://www.youtube.com/@coreyms)
+  - [Daniel Michaels](https://danielms.site/)
+  - [Fireship](https://www.youtube.com/@Fireship)
   - [Codevolution](https://www.youtube.com/@Codevolution)
   - [thenewboston](https://www.youtube.com/@thenewboston)
   - [Tech Lead](https://www.youtube.com/@TechLead)
   - [Design Joy](https://www.designjoy.co/#plans)
   - [Clever Programmer](https://www.youtube.com/@CleverProgrammer)
+- **Aquarium**
+  - [KaveMan Aquatics](https://www.youtube.com/@KaveManAquatics)
+- **Dance**
+  - [Baila Salsa](https://www.youtube.com/@SalsaBailaProductions)
+- **Skate**
+  - [AMALL Trick Tips: Carving Bowls](https://www.youtube.com/watch?v=jz8nMScAT-4)
+  - [bruno loewe stunts](https://www.youtube.com/watch?v=p8CRjNLrres)
+- **Camping**
+  - [Xander Budnick](https://www.youtube.com/@XanderBudnick)
