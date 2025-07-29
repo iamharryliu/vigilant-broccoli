@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 const API_ROUTES = {
   GET_CONFIGURATIONS: '/api/get-configurations',
   GET_FILE_OBJECT: '/api/get-file-object',
-}
+};
 
 export default function Index() {
   const [files, setFiles] = useState<string[]>([]);
@@ -26,7 +26,9 @@ export default function Index() {
   }, []);
 
   async function test(filename: string) {
-    const response = await fetch(`${API_ROUTES.GET_FILE_OBJECT}?filename=${filename}`);
+    const response = await fetch(
+      `${API_ROUTES.GET_FILE_OBJECT}?filename=${filename}`,
+    );
     const json = await response.json();
     setJsonConfig(JSON.stringify(await json, null, 2));
     setTeamNames(extractTeamLinks(json));
@@ -63,7 +65,9 @@ export default function Index() {
       />
       {teamNames.map(name => (
         <div key={name}>
-          <Link href={name} target='blank'>{name}</Link>
+          <Link href={name} target="blank">
+            {name}
+          </Link>
         </div>
       ))}
     </div>
