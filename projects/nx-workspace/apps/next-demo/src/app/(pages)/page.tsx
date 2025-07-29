@@ -15,9 +15,27 @@ const API_ROUTES = {
   GET_FILE_OBJECT: '/api/get-file-object',
 };
 
+const start = new Date();
+const end = new Date(start);
+end.setHours(end.getHours() + 2);
+
 const EVENTS = [
-  { title: 'event 1', date: new Date().toISOString().split('T')[0] },
-  { title: 'event 2', date: new Date().toISOString().split('T')[0] },
+  {
+    id: '1',
+    title: 'event 1',
+    start: start.toISOString(),
+    end: end.toISOString(),
+    date: start.toISOString().split('T')[0],
+    resourceId: 'a',
+  },
+  {
+    id: '2',
+    title: 'event 2',
+    start: start.toISOString(),
+    end: end.toISOString(),
+    date: start.toISOString().split('T')[0],
+    resourceId: 'd1',
+  },
 ];
 
 export default function Index() {
@@ -118,22 +136,7 @@ export default function Index() {
             ],
           },
         ]}
-        events={[
-          {
-            id: '1',
-            resourceId: 'a',
-            title: 'Meeting',
-            start: '2025-07-29T10:00:00',
-            end: '2025-07-29T12:00:00',
-          },
-          {
-            id: '2',
-            resourceId: 'd1',
-            title: 'Training',
-            start: '2025-07-29T13:00:00',
-            end: '2025-07-29T15:00:00',
-          },
-        ]}
+        events={events}
       />
       <Button onClick={addCalendarEvent}>Add Calendar Event</Button>
     </>
