@@ -10,6 +10,10 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
   - vigilant-broccoli ui manager tool
     - Github team manager
     - Spotify DL manager
+  - home management
+    - Calendar Implementation
+      - [fullcalendar](https://fullcalendar.io/docs/react)
+      - Google Calendar integration
   - asynchronous logging
   - move secret manager under DNS
   - Stripe implementation

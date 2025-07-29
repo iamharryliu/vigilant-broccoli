@@ -6,11 +6,18 @@ import {
   GithubTeam,
 } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
 
 const API_ROUTES = {
   GET_CONFIGURATIONS: '/api/get-configurations',
   GET_FILE_OBJECT: '/api/get-file-object',
 };
+
+const events = [
+  { title: 'event 1', date: '2025-07-01' },
+  { title: 'event 2', date: '2025-07-02' },
+];
 
 export default function Index() {
   const [files, setFiles] = useState<string[]>([]);
@@ -70,6 +77,12 @@ export default function Index() {
           </Link>
         </div>
       ))}
+      <FullCalendar
+        plugins={[dayGridPlugin]}
+        initialView="dayGridMonth"
+        events={events}
+      />
+      ;
     </div>
   );
 }
