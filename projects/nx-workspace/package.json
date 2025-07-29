@@ -144,6 +144,8 @@
     "@fullcalendar/core": "^6.1.18",
     "@fullcalendar/daygrid": "^6.1.18",
     "@fullcalendar/react": "^6.1.18",
+    "@fullcalendar/resource": "^6.1.18",
+    "@fullcalendar/resource-timeline": "^6.1.18",
     "@radix-ui/themes": "^3.2.1",
     "@types/amqplib": "^0.10.6",
     "amqplib": "^0.10.5",
