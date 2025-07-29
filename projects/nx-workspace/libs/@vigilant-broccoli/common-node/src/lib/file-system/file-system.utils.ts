@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs, { readdirSync, statSync } from 'fs';
+import path, { join } from 'path';
 import crypto from 'crypto';
 import archiver from 'archiver';
 import { TMP_PATH } from './file-system.consts';
@@ -103,16 +103,43 @@ const generateTmpFilepath = (): string => {
   return path.resolve(TMP_PATH, crypto.randomBytes(16).toString('hex'));
 };
 
+export function getFilenamesFromDir(
+  dirPath: string,
+  recursive = false,
+): string[] {
+  const files: string[] = [];
+
+  for (const entry of readdirSync(dirPath)) {
+    const fullPath = join(dirPath, entry);
+    const stat = statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      if (recursive) {
+        files.push(...getFilenamesFromDir(fullPath, true));
+      }
+    } else {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
+}
+
 export const FileSystemUtils = {
-  makedirectory,
+  // CREATE
   writeFile,
-  appendFile,
+  makedirectory,
   zipFolder,
-  deletePath,
+  writeJSON,
+  generateTmpFilepath,
+  // READ
+  getBasename,
+  checkFilePath,
+  getFilenamesFromDir,
   getListFromFilepath,
   getObjectFromFilepath,
-  writeJSON,
-  checkFilePath,
-  getBasename,
-  generateTmpFilepath,
+  // UPDATE
+  // DELETE
+  deletePath,
+  appendFile,
 };
