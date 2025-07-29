@@ -35,6 +35,7 @@ source ~/vigilant-broccoli/setup/mac/install.sh
 ```
 
 **Additional Preferences**
+
 - Divvy Shortcut `CMD + Shift + Spacebar`
 - Alfred Spotlight Shortcut `CMD + Spacebar`
 - Desktop Icons
@@ -50,3 +51,19 @@ source ~/vigilant-broccoli/setup/mac/install.sh
 - scripts - Software scripts.
 - setup - Setup scripts and configurations.
 - snippets - Text and code snippets for quick copy and paste.
+
+# Architecture
+
+- Nx - Typescript Applications
+- Github Actions
+  - Deployment
+  - Health Checks
+  - Cleanups
+- Cloudflare
+  - DNS Management
+  - Cloudflare Pages
+  - R2
+- CMS System
+  - Next.js
+  - Cloudflare R2 Storage
+  - Postgres
