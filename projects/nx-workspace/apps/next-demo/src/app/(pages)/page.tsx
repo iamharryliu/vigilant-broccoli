@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Link, TextArea } from '@radix-ui/themes';
+import { Button, Card, Link, TextArea } from '@radix-ui/themes';
 import {
   GithubOrganizationTeamStructure,
   GithubTeam,
@@ -14,15 +14,16 @@ const API_ROUTES = {
   GET_FILE_OBJECT: '/api/get-file-object',
 };
 
-const events = [
-  { title: 'event 1', date: '2025-07-01' },
-  { title: 'event 2', date: '2025-07-02' },
+const EVENTS = [
+  { title: 'event 1', date: new Date().toISOString().split('T')[0] },
+  { title: 'event 2', date: new Date().toISOString().split('T')[0]  },
 ];
 
 export default function Index() {
   const [files, setFiles] = useState<string[]>([]);
   const [teamNames, setTeamNames] = useState<string[]>([]);
   const [jsonConfig, setJsonConfig] = useState('');
+  const [events, setEvents] = useState(EVENTS);
 
   useEffect(() => {
     async function init() {
@@ -39,6 +40,10 @@ export default function Index() {
     const json = await response.json();
     setJsonConfig(JSON.stringify(await json, null, 2));
     setTeamNames(extractTeamLinks(json));
+  }
+
+  async function addCalendarEvent(){
+    setEvents(prev=>[...prev, { title: 'New Event', date: new Date().toISOString().split('T')[0] }]);
   }
 
   function extractTeamLinks(
@@ -82,7 +87,7 @@ export default function Index() {
         initialView="dayGridMonth"
         events={events}
       />
-      ;
+      <Button onClick={addCalendarEvent}>Add Calendar Event</Button>
     </div>
   );
 }
