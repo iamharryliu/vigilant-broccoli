@@ -3,9 +3,40 @@
 - [Skånetrafiken](https://harryliu.dev/docs-md/Skånetrafiken)
 - [Malmö](https://harryliu.dev/docs-md/Malmö)
 
+## Utility
+
+### Emergency Services
+
+- [Important phone numbers](https://www.krisinformation.se/en/finding-help-and-services/important-phone-numbers)
+
+### Communication
+
+- [Comviq Fastpris Mini Plan](https://www.comviq.se/kontantkort)
+- Telia
+  - Text _surfmängd_ to **4466** for remaining data usage.
+
+## Food & Drink
+
+- [Food Spots](https://maps.app.goo.gl/Vm1PmWbGbbV6ftD86)
+- [Drink Spots](https://maps.app.goo.gl/qWopvXmCnxn3WXxR8)
+- [Dessert Spots](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6)
+- [Work Cafes](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
+
+## Stores
+
+### Retail Pharmacy
+
+- [Apoteket](https://www.apoteket.se/apotek/)
+- [Normal](https://www.normal.eu/find-store/)
+- [Kicks](https://www.kicks.se/butiker)
+
+## Activity
+
+- [Fritidsbanken](https://www.fritidsbanken.se/en/) - At Fritidsbanken, you can borrow equipment for leisure activities for free.
+
 ## Swedish Migration
 
-- Migration Agency
+- [Migration Agency](https://www.migrationsverket.se/English.html)
   - Work Permit
     - [Extending a Work Permit](https://www.migrationsverket.se/English/Private-individuals/Working-in-Sweden/Extending-a-permit.html)
 - Skatteverket(Tax Agency)
@@ -14,8 +45,18 @@
 - BankID
   - [How to get a BankID](https://www.bankid.com/en/privat/skaffa-bankid)
 
-# Gifts From Sweden
+## Finance
 
+- [Tax Agency](https://www.skatteverket.se/)
+
+## Leaning Swedish
+
+- [Swedish For Immigrant (SFI)](https://www.folkuniversitetet.se/vara-skolor/sfi-svenska-for-invandrare/malmo-sfi-skola-folkuniversitetet/)
+
+# Souvenirs/Gifts
+
+- [Kebab Sauce](https://schysstkak.se/het-kebabsas)
+- [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
 - Max Sauce
 - Kebab Sauce
 - Swedish Candies

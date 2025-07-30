@@ -35,5 +35,6 @@
 - **Skate**
   - [AMALL Trick Tips: Carving Bowls](https://www.youtube.com/watch?v=jz8nMScAT-4)
   - [bruno loewe stunts](https://www.youtube.com/watch?v=p8CRjNLrres)
-- **Camping**
+- **Outdoor**
+  - [My Life Outdoors](https://www.youtube.com/@MyLifeOutdoors)
   - [Xander Budnick](https://www.youtube.com/@XanderBudnick)
