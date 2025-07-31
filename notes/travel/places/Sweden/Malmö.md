@@ -30,10 +30,14 @@
 
 ## Activities
 
-- [Folkets Park](https://malmo.se/Folkets-Park)
-- [Goto 10 Events](https://www.goto10.se/event/)
-- [Lund](https://lund.se/)
+- **Summer**
+  - [Kayakomat](https://www.kayakomat.com/en?country=se)
+  - [Malmö Wake Park](https://www.malmowakepark.se/)
 - [Latin Dance Events](https://www.facebook.com/groups/klubbkalenderlatin/events)
+- [Folkets Park](https://malmo.se/Folkets-Park)
+- [Lund](https://lund.se/)
+- [Goto 10 Events](https://www.goto10.se/event/)
+- [Malmö Live](https://malmolive.se/program)
 
 ## Dog Friendly Spaces
 

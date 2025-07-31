@@ -573,3 +573,8 @@ Arvid tänker på olika saker om kilmatet grader
 - Mobiltelefonen visar temperaturen är trettio grad idag
 - Arvid har läst tidningen från brevlådan. Branden är lika som 20 000 fotbollplaner
 - Arvid hörde på radion forskare (pratade) om den globala uppvärmingen och att temperaturen på jorden ökar. - (Mycket) människan släpper ut (mycket) koldixid i atmosfären till exempel från bilar.
+
+- **många vs mycket**
+  - många when you can count
+  - mycket when you cannot count and next to verbs ie regnar mycket
+  - pengar(money) is an exception to the counting rule
