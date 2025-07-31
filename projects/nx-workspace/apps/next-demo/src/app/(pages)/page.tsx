@@ -4,6 +4,8 @@ import { Button, Card, Heading, Link, TextArea } from '@radix-ui/themes';
 import {
   GithubOrganizationTeamStructure,
   GithubTeam,
+  HTTP_HEADERS,
+  HTTP_METHOD,
 } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
@@ -61,11 +63,25 @@ export default function Index() {
     setTeamNames(extractTeamLinks(json));
   }
 
-  async function addCalendarEvent() {
-    setEvents(prev => [
-      ...prev,
-      { title: 'New Event', date: new Date().toISOString().split('T')[0] },
-    ]);
+  async function doggoEvent(type: string) {
+    addCalendarEvent({
+      summary: type,
+      start: new Date(Date.now()).toISOString(),
+      end: new Date(Date.now()).toISOString(),
+    });
+  }
+
+  async function addCalendarEvent(event) {
+    await fetch('/api/calendar/event', {
+      method: HTTP_METHOD.POST,
+      headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+      body: JSON.stringify(event),
+    });
+
+    // setEvents(prev => [
+    //   ...prev,
+    //   { title: 'New Event', date: new Date().toISOString().split('T')[0] },
+    // ]);
   }
 
   function extractTeamLinks(
@@ -113,6 +129,15 @@ export default function Index() {
         </>
       ) : null}
       <Heading>Calendar Implementation</Heading>
+      <Button onClick={addCalendarEvent}>Add Calendar Event</Button>
+      <Button onClick={() => doggoEvent('poo')}>Poo!</Button>
+      <Button onClick={() => doggoEvent('pee')}>Pee!</Button>
+      <iframe
+        src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Europe%2FCopenhagen&showPrint=0&mode=AGENDA&showCalendars=0&title&src=ZGI3YzdhYzNlMjk3NDUyNTExOGY5MjQ5NmMwMzk0NjZlNmMzM2E5MjU5M2M3M2IyMGE1ZjY2N2YzMTI2NzI3N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23ef6c00"
+        style={{ border: 'solid 1px #777' }}
+        width="800"
+        height="600"
+      ></iframe>
       <Heading>Calendar Month View</Heading>
       <FullCalendar
         plugins={[dayGridPlugin]}
@@ -138,7 +163,6 @@ export default function Index() {
         ]}
         events={events}
       />
-      <Button onClick={addCalendarEvent}>Add Calendar Event</Button>
     </>
   );
 }
