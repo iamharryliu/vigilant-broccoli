@@ -28,40 +28,66 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
   - alias for `alias run lib:nx-release-publish`?
   - consider eslint proseWrap: "preserve"
 
+## AI Tools
+
+- Event Poster creater
+
+```
+Generate a promotional graphic for skating events group for events with the following data for SOCIAL_MEDIA_CHOICE
+event
+{
+  title
+  description
+  date
+    starttime
+    endtime
+}
+graphic
+{
+  events: event[]
+  style
+    modern
+    urban
+    grungy
+    colorful
+    minimalist
+    retro
+    vibrant party style?
+}
+```
+
 ## Employee Handler
 
 - feat:
-
   - enhance employee handler
-
     - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
-
   - bucket service
 
-- **Home Management**
+## Home Management
 
-  - **Vehicle Calendar**
-    - Calendar for booking behicle.
-    - Create Booking
-      - Vehicle
-        - Name
-        - Model
-        - Notes
-    - View Bookings
-    - Edit Booking
-    - Rules
-  - Household Rules
-    - Create Rule
-      - name
-      - description
-      - position
-  - Item Finder
-    - Image library to remember where things are
-    - Keyword/tag searching
-    - Create Entry
-      - name
-      - description
-      - image[]
+- Co-operative living tools.
+- **Vehicle Calendar**
+  - Calendar for booking behicle.
+  - Create Booking
+    - Vehicle
+      - Name
+      - Model
+      - Notes
+  - View Bookings
+  - Edit Booking
+  - Rules
+- Household Rules
+  - Create Rule
+    - name
+    - description
+    - position
+- **Remember It** - An item finder, search to image memory tool.
+- - Image library to remember where things are
+  - Keyword/tag searching
+  - Create Entry
+    - name
+    - description
+    - image[]
 
 - **NewTab Extension**
 - **DocsMD**
