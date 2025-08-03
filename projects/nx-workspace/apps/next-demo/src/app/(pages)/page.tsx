@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, Heading, Link, TextArea } from '@radix-ui/themes';
+import { Card, Heading, Link, TextArea } from '@radix-ui/themes';
 import {
   GithubOrganizationTeamStructure,
   GithubTeam,
@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
+import { Button } from '@vigilant-broccoli/react-lib';
 
 const API_ROUTES = {
   GET_CONFIGURATIONS: '/api/get-configurations',
@@ -40,11 +41,16 @@ const EVENTS = [
   },
 ];
 
+const CALENDAR_IFRAME_URL =
+  'https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Europe%2FCopenhagen&showPrint=0&mode=AGENDA&showCalendars=0&title&src=ZGI3YzdhYzNlMjk3NDUyNTExOGY5MjQ5NmMwMzk0NjZlNmMzM2E5MjU5M2M3M2IyMGE1ZjY2N2YzMTI2NzI3N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23ef6c00';
+
 export default function Index() {
   const [files, setFiles] = useState<string[]>([]);
   const [teamNames, setTeamNames] = useState<string[]>([]);
   const [jsonConfig, setJsonConfig] = useState('');
   const [events, setEvents] = useState(EVENTS);
+  const [calendarIframeUrl, setCalendarIframeUrl] =
+    useState(CALENDAR_IFRAME_URL);
 
   useEffect(() => {
     async function init() {
@@ -64,7 +70,7 @@ export default function Index() {
   }
 
   async function doggoEvent(type: string) {
-    addCalendarEvent({
+    await addCalendarEvent({
       summary: type,
       start: new Date(Date.now()).toISOString(),
       end: new Date(Date.now()).toISOString(),
@@ -77,6 +83,7 @@ export default function Index() {
       headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
       body: JSON.stringify(event),
     });
+    setCalendarIframeUrl(`${CALENDAR_IFRAME_URL}&refresh=${Date.now()}`);
 
     // setEvents(prev => [
     //   ...prev,
@@ -129,11 +136,11 @@ export default function Index() {
         </>
       ) : null}
       <Heading>Calendar Implementation</Heading>
-      <Button onClick={addCalendarEvent}>Add Calendar Event</Button>
-      <Button onClick={() => doggoEvent('poo')}>Poo!</Button>
-      <Button onClick={() => doggoEvent('pee')}>Pee!</Button>
+      {/* <Button onClick={addCalendarEvent}>Add Calendar Event</Button> */}
+      <Button onClick={() => doggoEvent('Pooed 💩')}>Pooed 💩</Button>
+      <Button onClick={() => doggoEvent('Peed 💦')}>Peed 💦</Button>
       <iframe
-        src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Europe%2FCopenhagen&showPrint=0&mode=AGENDA&showCalendars=0&title&src=ZGI3YzdhYzNlMjk3NDUyNTExOGY5MjQ5NmMwMzk0NjZlNmMzM2E5MjU5M2M3M2IyMGE1ZjY2N2YzMTI2NzI3N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23ef6c00"
+        src={calendarIframeUrl}
         style={{ border: 'solid 1px #777' }}
         width="800"
         height="600"
