@@ -52,18 +52,55 @@ source ~/vigilant-broccoli/setup/mac/install.sh
 - setup - Setup scripts and configurations.
 - snippets - Text and code snippets for quick copy and paste.
 
-# Architecture
+# Stack
 
-- Nx - Typescript Applications
-- Github Actions
-  - Deployment
-  - Health Checks
-  - Cleanups
-- Cloudflare
-  - DNS Management
-  - Cloudflare Pages
-  - R2
-- CMS System
-  - Next.js
-  - Cloudflare R2 Storage
-  - Postgres
+- **Applications**
+  - Monorepo Tooling - [Nx](https://nx.dev/)
+  - Message Broker - [RabbitMQ](https://www.rabbitmq.com/docs)
+  - Socket Service - [SocketIO](https://socket.io/docs/)
+  - Frameworks
+    - UI
+    - [Next.js](https://nextjs.org/docs/)
+    - [React](https://react.dev/)
+    - [Angular](https://angular.dev/)
+  - Backend Frameworks
+    - [Express](https://expressjs.com/)
+    - [Flask](https://flask.palletsprojects.com/en/stable/)
+- **Database**
+  - SQL
+    - [PostgreSQL](https://www.postgresql.org/docs/)
+    - [SQLite](https://www.sqlite.org/docs.html)
+- **Utility**
+  - [OpenAI](https://platform.openai.com/docs/overview)
+    - Basic prompting
+    - Image analysis
+    - Image generation
+  - [Twilio](https://www.twilio.com/docs)
+  - [OpenWeather](https://openweathermap.org/api)
+  - Productivity
+    - Email - [Gmail](https://mail.google.com/)
+    - Calendar - [Google Calendar](https://calendar.google.com/)
+- **Version Control** - [Git](https://github.com/)
+- **CICD**
+  - [Github Actions](https://github.com/features/actions)
+    - Deployments
+    - Health Checks
+    - Cleanups
+- **DNS Management** - [Cloudflare](https://www.cloudflare.com/application-services/products/dns/)
+- **Analytics** - [Google Analytics](https://analytics.google.com/analytics)
+- **Security**
+  - [Google Recaptcha](https://developers.google.com/recaptcha)
+  - [Cloudflare Turnstile](https://www.cloudflare.com/application-services/products/turnstile/)
+- **Cloud Services**
+  - [Google Cloud](https://cloud.google.com/docs)
+- **Storage**
+  - [Google Drive](https://drive.google.com/)
+  - [Cloudflare R2](https://www.cloudflare.com/developer-platform/products/r2/)
+- **Deployment**
+  - [Cloudflare Pages](https://pages.cloudflare.com/)
+  - [FlyIO](https://fly.io/docs/)
+  - [Vercel](https://vercel.com/templates/documentation)
+  - Secret Management - [Hashicorp Vault](https://developer.hashicorp.com/vault/docs)
+- **Serverless Functions**
+  - Edge Functions
+    - [Cloudflare Workers](https://workers.cloudflare.com/)
