@@ -50,6 +50,10 @@
 | to rain            | att regna          |
 | to send            | att skicka/slänga  | envoyer       |
 | to fix             | att fixa/ordna     |
+| to thaw            | att tina           |
+| to calculate       | att räkna          |
+| to advise          | att råda           |
+| to evacuate        | evakuera           |
 | I want             | jag vill           | je veux       | quiero       | quero     |         |
 | I have             | jag har            | j'ai          | tengo        |           |         |
 | I'm going          | jag går            | je vais       | voy          |           |         |

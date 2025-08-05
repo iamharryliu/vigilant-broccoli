@@ -58,3 +58,9 @@ _~/.ssh/config_
 Host *
     UseKeychain yes
 ```
+
+## Security
+
+```
+gitleaks detect --source=. --verbose
+```
