@@ -15,5 +15,7 @@ If you are looking for more info on _Cloud8Skate_ you can checkout our [FAQ page
 
 ## Skate Tutorials
 
+[Shorty's Skate Series](https://www.youtube.com/@ShortysSkateSeries)
+[AMall Trick Tips](https://www.youtube.com/playlist?list=PLDNzpTyOzLmqUKQwb4l-uJz894-m93u6E)
 [15 things to make you a better skate.](https://www.youtube.com/watch?v=L8Gs_eyIPFA&t=51s)
 [Easiest Five Grinds to Learn](https://www.youtube.com/watch?v=6ciZnbMA7Xo)
