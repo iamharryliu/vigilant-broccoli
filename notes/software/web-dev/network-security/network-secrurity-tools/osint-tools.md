@@ -2,10 +2,9 @@
 
 ## Sherlock
 
+[Sherlock](https://github.com/sherlock-project/sherlock)
+
 ```
-git clone https://github.com/sherlock-project/sherlock.git
-cd sherlock
-makevenv
-pip install -r requirements.txt
-python sherlock [username]
+pipx install sherlock-project
+sherlock [username]
 ```
