@@ -52,20 +52,24 @@ source ~/vigilant-broccoli/setup/mac/install.sh
 - setup - Setup scripts and configurations.
 - snippets - Text and code snippets for quick copy and paste.
 
-# Stack
+## Stack
 
+- **Languages**
+  - [Typescript](https://www.typescriptlang.org/)
+  - [Python](https://www.python.org/)
+  - [Go](https://go.dev/)
 - **Applications**
   - Monorepo Tooling - [Nx](https://nx.dev/)
+  - Web Frameworks
+    - UI
+      - [Next.js](https://nextjs.org/docs/)
+      - [React](https://react.dev/)
+      - [Angular](https://angular.dev/)
+    - Backend Frameworks
+      - [Express](https://expressjs.com/)
+      - [Flask](https://flask.palletsprojects.com/en/stable/)
   - Message Broker - [RabbitMQ](https://www.rabbitmq.com/docs)
   - Socket Service - [SocketIO](https://socket.io/docs/)
-  - Frameworks
-    - UI
-    - [Next.js](https://nextjs.org/docs/)
-    - [React](https://react.dev/)
-    - [Angular](https://angular.dev/)
-  - Backend Frameworks
-    - [Express](https://expressjs.com/)
-    - [Flask](https://flask.palletsprojects.com/en/stable/)
 - **Database**
   - SQL
     - [PostgreSQL](https://www.postgresql.org/docs/)
