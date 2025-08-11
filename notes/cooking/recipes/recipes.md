@@ -18,3 +18,7 @@
   - [Cheesy Chicken Broccoli Rice](https://www.jocooks.com/recipes/one-pot-cheesy-chicken-broccoli-rice-casserole/)
 - Curry Recipes
   - [Chickpea and Porato Curry](./curry-recipes/chickpea-potato-curry.md)
+- Tofu Recipes
+  - [Marry Me Tofu](./tofu-recipes/marry-me-tofu.mdP)
+- Sandwich Recipes
+  - [Smash Burger](./sandwich-recipes/smash-burger.md)

@@ -1,4 +1,4 @@
-# Words
+# Interesting Words
 
 Document used to keep note of interesting words or interesting facts about words.
 

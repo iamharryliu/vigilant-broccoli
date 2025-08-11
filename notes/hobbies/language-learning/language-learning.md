@@ -1,5 +1,10 @@
 # Language Learning
 
+- [Swedish](./swedish/swedish.md)
+- [French](./french/french.md)
+- [Spanish](./spanish/spanish.md)
+- [Interesting Words](./interesting-words.md)
+
 ## Online Learning Options
 
 - [Memrise](https://memrise.com/) for vocabulary.
@@ -8,7 +13,23 @@
 
 ## Cheatsheets
 
-- [Language Spread](https://harryliu.dev/docs-md/language-spread)
-- [Verbs](https://harryliu.dev/docs-md/language-spread-verbs)
-- [Numbers](https://harryliu.dev/docs-md/language-spread-numbers)
-- [Rules](https://harryliu.dev/docs-md/verb-rules)
+- General Language Spreadsheets
+  - [Language Spread](./language-spread/language-spread.md)
+  - Grammar
+    - [Plural](./language-spread/language-spreads-plurals.md)
+    - [Negation](./language-spread/language-spread-negation.md)
+  - [Adjectives](./language-spread/language-spread-adjectives.md)
+    - [Colors](./language-spread/language-spread-colors.md)
+    - [Emotions](./language-spread/language-spread-emotions.md)
+    - [Adverbs](./language-spread/language-spread-adverbs.md)
+    - [Numbers](./language-spread/language-spread-numbers.md)
+  - [Nouns](./language-spread/language-spread-nouns.md)
+    - [Family](./language-spread/language-spread-family.md)
+    - [Food](./language-spread/language-spread-food.md)
+    - [Pronouns](./language-spread/language-spread-pronouns.md)
+  - [Questions](./language-spread/language-spread-questions.md)
+  - [Verbs](./language-spread/language-spread-verbs.md)
+  - [Conjunctions](./language-spread/language-spread-conjunctions.md)
+  - [Location](./language-spread/language-spread-location.md)
+  - [Placement](./language-spread/language-spread-placement.md)
+  - [Time](./language-spread/language-spread-time.md)

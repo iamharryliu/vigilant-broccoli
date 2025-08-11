@@ -1,5 +1,11 @@
 # Swedish
 
+- [Swedish Pronounciation](./swedish-pronounciation.md)
+- [Swedish Subjects](./swedish-subjects.md)
+- [Swedish Possessives](./swedish-possessives.md)
+- [Swedish Grammar](./swedish-grammar.md)
+- [Keyboard Shortcuts for Swedish Characters](./swedish-keyboard-shortcuts.md)
+
 ## Personal Introduction
 
 Jag heter Harry.
