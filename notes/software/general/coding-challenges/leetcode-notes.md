@@ -1,4 +1,4 @@
-# Leet Code
+# Leet Code Notes
 
 ## Language Mapping
 

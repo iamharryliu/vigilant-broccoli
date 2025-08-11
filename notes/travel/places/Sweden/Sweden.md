@@ -2,6 +2,9 @@
 
 - [Skåne](./Skåne.md)
   - [Malmö](./Malmö.md)
+- [Immigration to Sweden](./immigration-to-sweden.md)
+- [Sweden Utility](./sweden-utility.md)
+- [Swedish](../../../hobbies/language-learning/swedish/swedish.md)
 
 ## Utility
 

@@ -1,4 +1,11 @@
 # Hobbies
 
+- [Language Learning](./language-learning/language-learning.md)
+- [Drawing](./art/drawing.md)
 - [Dance](./dance/dance.md)
-- [Skate]
+- Actions Sports
+  - [Skateboard](./skate/skateboard.md)
+  - [Snowboard](./skate/snowboard.md)
+  - [City Skate Planning](./skate/city-skate-planning.md)
+- [Self Defense](./self-defense.md)
+- [Bird Watching](./bird-watching.md)

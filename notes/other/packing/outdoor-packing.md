@@ -1,21 +1,23 @@
 # Outdoor Packing
 
-# Swim Packing
-
-- Swim shorts
-- Towel
-- Change of clothes and sweater
-- Water Bottle
-- Optional leisure activity.
+- Water
+- Food/Snacks
+- Clothing Laters ie Heattech
+- Sunscreen
+- **Health**
+  - First Aid Kit
+  - Wet Wipes
+  - Hand Sanitizer
+- Optional
+  - Bugspray
 
 ## Hiking
 
 - Hat
-- Layers
-  - Heattech
 - Footwear
 - Binoculars
 - Hiking Poles
+- Picnic Blanket
 - Night Time 🌝
   - Headlight
   - Flashlight
@@ -43,9 +45,6 @@
   - Water Bottle
   - Thermos
   - Cooler
-- **Health**
-  - First Aid Kit
-  - Wet wipes
 - **Utility**
   - Power Bank
   - Charger

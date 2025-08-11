@@ -23,3 +23,5 @@
   - [Marry Me Tofu](./tofu-recipes/marry-me-tofu.md)
 - Sandwich Recipes
   - [Smash Burger](./sandwich-recipes/smash-burger.md)
+- Pasta Recipes
+  - [Tomato Pasta](./pastas/tomato-pasta.md)

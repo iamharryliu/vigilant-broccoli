@@ -34,5 +34,4 @@ Wireshark captures and analyzes network traffic, allowing security professionals
 
 ## References
 
-- [nmap](./network-secrurity-tools/osint-tools.md)
 - [Wireshark](https://www.wireshark.org/)

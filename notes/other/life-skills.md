@@ -13,3 +13,7 @@
   - [Touch Typing](https://en.wikipedia.org/wiki/Touch_typing)
     - [typeracer](https://play.typeracer.com/)
   - Swipe Typing
+- [Driving](./driving.md)
+- [Learning](./learning.md)
+- [Productivity](./productivity.md)
+- [Product Care](./product-care.md)

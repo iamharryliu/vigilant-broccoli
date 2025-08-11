@@ -7,6 +7,10 @@
 [HappyCow]() - Find vegetarian/vegan options.
 [Airola]() - eSim Provider
 
+## Travel Styles
+
+- [Camper Van](./campervan.md)
+
 ## Travel Packing
 
 - Passport if travelling between countries.
@@ -28,20 +32,6 @@
   - Shoehorn
   - Swimwear
   - Speakers
-
-## Countries That I Have Traveled To
-
-🇨🇦 Canada
-🇺🇸 United States
-🇭🇰 Hong Kong
-🇨🇳 China
-🇲🇽 Mexico
-🇮🇹 Italy
-🇵🇹 Portugal
-🇸🇪 Sweden
-🇩🇰 Denmark
-🇸🇮 Slovenia
-🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland
 
 ## Nuances
 

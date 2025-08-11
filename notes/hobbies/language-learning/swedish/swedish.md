@@ -1,10 +1,20 @@
 # Swedish
 
-- [Swedish Pronounciation](./swedish-pronounciation.md)
-- [Swedish Subjects](./swedish-subjects.md)
-- [Swedish Possessives](./swedish-possessives.md)
-- [Swedish Grammar](./swedish-grammar.md)
-- [Keyboard Shortcuts for Swedish Characters](./swedish-keyboard-shortcuts.md)
+- [Pronounciation](./swedish-pronounciation.md)
+- [Subjects](./swedish-subjects.md)
+- [Possessives](./swedish-possessives.md)
+- [Prepositions](./swedish-prepositions.md)
+- [Grammar](./swedish-grammar.md)
+- [Nouns](./swedish-nouns.md)
+- [Keyboard Shortcuts for Characters](./swedish-keyboard-shortcuts.md)
+- [Verb Conjugations](./conjugations/swedish-verb-conjugations.md)
+- [Verb Forms](./swedish-verbs/swedish-verb-forms.md)
+- [Auxiliary Verbs](./swedish-verbs/swedish-auxiliary-verbs.md)
+- [Help Verbs](./swedish-verbs/swedish-help-verbs.md)
+- [Comparison](./adjectives/swedish-adjective-comparison.md)
+- Tenses
+  - [Past Tense](./grammar/tenses/swedish-past-tense.md)
+  - [Future Tense](./grammar/tenses/swedish-future-tense.md)
 
 ## Personal Introduction
 
@@ -585,14 +595,14 @@ Arvid tänker på olika saker om kilmatet grader
   - mycket when you cannot count and next to verbs ie regnar mycket
   - pengar(money) is an exception to the counting rule
 
-| English Expression         | Swedish Expression | Example (English)                                                                                             | Example (Swedish)                                                                                                 |
-| -------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| ... ago                    | För ... sedan      | Maritha came to Sweden 5 years ago.                                                                           | Maritha kom till Sverige för 5 år sedan.                                                                          |
-| Starting from / As of      | Från och med       | The rental contract is valid from September 15, 2017 to January 31, 2018.                                     | Hyreskontraktet gäller från och med 15 september 2017 till och med 31 januari 2018.                               |
-| In comparison with         | I jämförelse med   | In comparison to, for example, the USA, Sweden has a very small population.                                   | I jämförelse med exempelvis USA har Sverige en väldigt liten befolkning.                                          |
-| Instead of                 | Istället för       | I prefer soft ice cream instead of popsicles.                                                                 | Jag föredrar mjukglass istället för isglass.                                                                      |
-| Because of / Due to        | På grund av        | The company is forced to lay off several employees due to a sharply declining sales.                          | Företaget är tvunget att sparka flera av dess anställda på grund av en kraftigt sjunkande försäljning.            |
-| Alongside / In addition to | Vid sidan av       | Leo works as a bartender alongside his job as a carpenter because he's trying to save money for an apartment. | Leo jobbar som bartender vid sidan av sitt jobb som snickare eftersom han försöker spara pengar till en lägenhet. |
-| Thanks to                  | Tack vare          | The fishermen managed to save the stranded seal thanks to the help of the coast guard.                        | Fiskarna lyckades rädda den strandade sälen tack vare hjälp av kustbevakningen.                                   |
-| Considering                | Med tanke på       | She's incredibly good at basketball considering her height.                                                   | Hon är oerhört duktig på basket med tanke på hennes längd.                                                        |
-| In contrast to             | I motsats till     | I'm freezing, in contrast to Fredrik who walks around in a T-shirt.                                           | Jag fryser jättemycket, i motsats till Fredrik som går runt i T-shirt.                                            |
+| English Expression         | Expression       | Example (English)                                                                                             | Example (Swedish)                                                                                                 |
+| -------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| ... ago                    | För ... sedan    | Maritha came to Sweden 5 years ago.                                                                           | Maritha kom till Sverige för 5 år sedan.                                                                          |
+| Starting from / As of      | Från och med     | The rental contract is valid from September 15, 2017 to January 31, 2018.                                     | Hyreskontraktet gäller från och med 15 september 2017 till och med 31 januari 2018.                               |
+| In comparison with         | I jämförelse med | In comparison to, for example, the USA, Sweden has a very small population.                                   | I jämförelse med exempelvis USA har Sverige en väldigt liten befolkning.                                          |
+| Instead of                 | Istället för     | I prefer soft ice cream instead of popsicles.                                                                 | Jag föredrar mjukglass istället för isglass.                                                                      |
+| Because of / Due to        | På grund av      | The company is forced to lay off several employees due to a sharply declining sales.                          | Företaget är tvunget att sparka flera av dess anställda på grund av en kraftigt sjunkande försäljning.            |
+| Alongside / In addition to | Vid sidan av     | Leo works as a bartender alongside his job as a carpenter because he's trying to save money for an apartment. | Leo jobbar som bartender vid sidan av sitt jobb som snickare eftersom han försöker spara pengar till en lägenhet. |
+| Thanks to                  | Tack vare        | The fishermen managed to save the stranded seal thanks to the help of the coast guard.                        | Fiskarna lyckades rädda den strandade sälen tack vare hjälp av kustbevakningen.                                   |
+| Considering                | Med tanke på     | She's incredibly good at basketball considering her height.                                                   | Hon är oerhört duktig på basket med tanke på hennes längd.                                                        |
+| In contrast to             | I motsats till   | I'm freezing, in contrast to Fredrik who walks around in a T-shirt.                                           | Jag fryser jättemycket, i motsats till Fredrik som går runt i T-shirt.                                            |

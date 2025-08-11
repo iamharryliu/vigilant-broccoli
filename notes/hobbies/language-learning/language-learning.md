@@ -20,6 +20,7 @@
   - Grammar
     - [Plural](./language-spread/language-spreads-plurals.md)
     - [Negation](./language-spread/language-spread-negation.md)
+    - [Verb Syntax](./language-spread/language-spread-verb-rules.md)
   - [Adjectives](./language-spread/language-spread-adjectives.md)
     - [Colors](./language-spread/language-spread-colors.md)
     - [Emotions](./language-spread/language-spread-emotions.md)
