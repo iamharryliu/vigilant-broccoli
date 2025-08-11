@@ -1,4 +1,4 @@
-# Code Quality
+# Software Code Quality
 
 ## Code Quality Smells
 

@@ -1,7 +1,7 @@
 # Sweden
 
-- [Skånetrafiken](https://harryliu.dev/docs-md/Skånetrafiken)
-- [Malmö](https://harryliu.dev/docs-md/Malmö)
+- [Skåne](./Skåne.md)
+  - [Malmö](./Malmö.md)
 
 ## Utility
 

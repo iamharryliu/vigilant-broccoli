@@ -3,18 +3,19 @@
 ## Socials
 
 - Start off with shines to guage style/level.
-
-SOCIALS
-cuban turns
-s turns
-right hand
-body waves
-dips
-Hard to lead moves
--tunnel
--walk arounds
--s-turns
--body wave variations
+- Practicing
+  - breakback hammerlock
+  - reverse turn check
+  - right hand
+- Gauging Level
+  - Double Turns
+  - S - Turn
+  - walk arounds
+- Hard to lead moves
+  -tunnel
+  -body wave variations
+  - dips
+  - cuban turns
 
 ## Positions
 

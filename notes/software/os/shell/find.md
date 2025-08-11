@@ -30,4 +30,12 @@ find . -type f -name "*.jpg" -maxdepth 1 -exec rm {} +
 
 find . -type f -mtime +14 -exec rm {} +
 find .  -printf  '.'  | wc -c # count find results
+
+
+# Count number of files.
+find DIR_NAME -type f | wc -l
 ```
+
+# find - Used to find files and directories in a specified search
+
+find [starting_directory] [options] [expression]

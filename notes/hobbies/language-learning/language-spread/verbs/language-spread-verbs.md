@@ -2,7 +2,7 @@
 
 | English            | Swedish            | French        | Spanish      | Portugese | Italian |
 | :----------------- | :----------------- | :------------ | :----------- | :-------- | :------ |
-| to want            | att villja         | voulir        | querer       |           |         |
+| to want            | att vilja          | voulir        | querer       |           |         |
 | to go              | att gå/åka         | aller         | ir           |           |         |
 | to have            | att ha             | avoir         | tener        |           |         |
 | to give            | att ge             | donner        |              |           |         |
@@ -16,6 +16,8 @@
 | to order           | att beställa       | commander     | pedir        |           |         |
 | to know            | att veta           | savoir        | saber        |           |         |
 | to understand      | att förstå         | comprendre    | comprender   |           |         |
+| to choose          | att välja          | choisir       | elegido      |
+| to learn           | att lära           |               | apprendido   |
 | to see             | att se             | voir          | ver          |           |         |
 | to buy             | att köpa           | acheter       | comprar      |           |         |
 | to sell            | att sälja          | vendre        | vender       |           |         |
@@ -24,7 +26,8 @@
 | to drive           | att köra           | conduire      |              |           |         |
 | to love            | att älska          |               |              |           |         |
 | to hate            | att hate           |               |              |           |         |
-| to remember        | att glömma         |               |              |           |         |
+| to remember        | att komma ihåg     | souvenir      | recordar     |           |         |
+| to forget          | att glömma         | oublier       | olvidar      |
 | to wait            | att vänta          |               |              |           |         |
 | to call            | att rings          | appeler       | llamar       |           |         |
 | to bring           | att ta med         | apporter      | traer        |           |         |

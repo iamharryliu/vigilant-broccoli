@@ -44,6 +44,6 @@ Ways to protect against DDoS:
 
 - [Network Tools](./network-secrurity-tools/network-tools.md)
 - [OSINT Tools](./network-secrurity-tools/osint-tools.md)
-- [Password Cracking Tools]()
-- [Penetration Testing Tools]()
-- [Wireless Security Tools]()
+- [Password Cracking Tools](./network-secrurity-tools/password-cracking-tools.md)
+- [Penetration Testing Tools](./network-secrurity-tools/penetration-testing-tools.md)
+- [Wireless Security Tools](./network-secrurity-tools/wireless-security-tools.md)

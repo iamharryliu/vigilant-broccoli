@@ -1,4 +1,4 @@
-# Javascript
+# Javascript Lingo
 
 - Runtime - A platform for running JavaScript code outside the browser.
   - Node.js

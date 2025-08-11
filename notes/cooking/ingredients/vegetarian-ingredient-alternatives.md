@@ -1,6 +1,4 @@
-# Vege Ingredients
-
-## Recipes
+# Vegetarian Ingredient Alternatives
 
 - [Vegan "Chicken" Bouillon Powder](https://www.reddit.com/r/vegetarian/comments/sw9fyg/made_vegan_chicken_bouillon_powder_tastes_so/)
   - 1 cup nutritional yeast flakes

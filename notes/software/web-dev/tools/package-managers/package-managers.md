@@ -1,3 +1,11 @@
+# Package Manages
+
+## Javascript Package Managers
+
+- [npm](./npm.md)
+- [yarn](./yarn.md)
+- [pnpm](./pnpm.md)
+
 ### 📦 **npm vs Yarn vs pnpm: A Package Manager Comparison**
 
 | Feature                   | `npm`                                                | `Yarn`                                                 | `pnpm`                                                             |

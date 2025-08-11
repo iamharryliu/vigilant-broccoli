@@ -1,5 +1,10 @@
 # Python
 
+- Package Manager
+  - [pip](./pip.md)
+  - [Poetry](./poetry.md)
+- [Python Nuances](./python-nuances.md)
+
 ## Naming Conventions
 
 - module_name

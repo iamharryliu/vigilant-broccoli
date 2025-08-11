@@ -1,10 +1,8 @@
-# Skånetrafiken
+# Skåne
 
-## Ticket Borrowing
+## Transportation - Skånetrafiken
 
-[Share Group](https://www.facebook.com/share/g/GWMa1GmdY2HYTz8m/)
-
-### Rules
+### Ticket Borrowing
 
 - You can lend an active 30-day ticket.
 - Conditions:
@@ -13,3 +11,4 @@
   - You **CANNOT** lend group tickets, i.e. if you have bought tickets for several people.
   - You can only lend your ticket **ONCE** per day.
   - You can only have five tickets borrowed at the same time.
+- [Ticket Sharing Group](https://www.facebook.com/share/g/GWMa1GmdY2HYTz8m/)

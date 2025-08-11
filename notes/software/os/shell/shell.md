@@ -1,6 +1,17 @@
 # Shell
 
+- [vim](./vim.md)
+- Tools
+  - [tmux](./tmux.md)
+  - [fzf](./fzf.md)
+- Commands
+  - [find](./find.md)
+  - [grep](./grep.md)
+  - [tree](./tree.md)
+- [Cron](./cron.md)
+
 ## Commands
+
 ```
 # cp(copy) - Used to copy source or multiple sources to another location
 cp [source] [destination]
@@ -11,8 +22,7 @@ cp [source1] [source2] [destination]
 # rsync(remote sync) - Used to synchronize files or directories between two location
 rsync [source] [destination]
 
-# find - Used to find files and directories in a specified search
-find [starting_directory] [options] [expression]
+
 
 # grep(global regular expression print) - Used for searching plain-text files for line that match a regular expression
 grep [options] [regex] [file(s)]
@@ -35,8 +45,6 @@ pbcopy < filename.txt
 ```
 
 ```
-# Count number of files.
-find DIR_NAME -type f | wc -l
 
 # grep for process number
 ps aux | grep WORDS
