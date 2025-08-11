@@ -9,3 +9,4 @@
   - [City Skate Planning](./skate/city-skate-planning.md)
 - [Self Defense](./self-defense.md)
 - [Bird Watching](./bird-watching.md)
+- [Aquarium](./aquarium/aquarium.md)

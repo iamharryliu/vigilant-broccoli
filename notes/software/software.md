@@ -1,5 +1,7 @@
 # Software
 
+- [OS](./os/os.md)
+- [Software Languages](./languages/software-languages.md)
 - [Open Source](./open-source.md)
 - [Software Breakdown](./general/software-breakdown.md)
 - [Software Roadmap](./software-roadmap.md)
@@ -28,3 +30,4 @@
 - Testing
   - [Behavioral Driven Development](./testing/bdd.md)
 - [Software Nuances](./general/software-nuances.md)
+- [One-off Fixes](./general/one-off-fixes.md)
