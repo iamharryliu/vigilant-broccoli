@@ -1,6 +1,13 @@
 {
   "name": "socket-demo",
   "dependencies": {
-    "tsx": "^4.19.2"
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "ws": "^8.18.1"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
   }
 }
