@@ -4,6 +4,7 @@
 - [Drawing](./art/drawing.md)
 - [Dance](./dance/dance.md)
 - Actions Sports
+  - [Inline Skate](./skate/inline-skate.md)
   - [Skateboard](./skate/skateboard.md)
   - [Snowboard](./skate/snowboard.md)
   - [City Skate Planning](./skate/city-skate-planning.md)
