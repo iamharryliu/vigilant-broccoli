@@ -1,5 +1,6 @@
 # Recipes
 
+- [Goto Meals](goto-meals.md)
 - Bread Recipes
   - [Sourdough Bread](./bread-recipes/sourdough-bread.md)
   - [Flat Bread](./bread-recipes/flat-bread.md)
@@ -19,6 +20,6 @@
 - Curry Recipes
   - [Chickpea and Porato Curry](./curry-recipes/chickpea-potato-curry.md)
 - Tofu Recipes
-  - [Marry Me Tofu](./tofu-recipes/marry-me-tofu.mdP)
+  - [Marry Me Tofu](./tofu-recipes/marry-me-tofu.md)
 - Sandwich Recipes
   - [Smash Burger](./sandwich-recipes/smash-burger.md)

@@ -4,6 +4,8 @@
 - [French](./french/french.md)
 - [Spanish](./spanish/spanish.md)
 - [Interesting Words](./interesting-words.md)
+- [Language Lingo](./language-lingo.md)
+- [Grammatical Terms](./grammatical-terms.md)
 
 ## Online Learning Options
 
@@ -33,3 +35,4 @@
   - [Location](./language-spread/language-spread-location.md)
   - [Placement](./language-spread/language-spread-placement.md)
   - [Time](./language-spread/language-spread-time.md)
+  - [Social](./language-spread/language-spread-social.md)

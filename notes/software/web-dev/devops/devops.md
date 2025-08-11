@@ -6,10 +6,12 @@
 - [Github](./github.md)
 - [Google](./google.md)
 - [Google Cloud](./google-cloud.md)
+- [AWS](./aws/aws.md)
 - [Cloudflare](./cloudflare.md)
 
 ## Devops Tools
 
+- [Git](./git/git.md)
 - [Docker](./docker.md)
 - [Kubernetes](./kubernetes.md)
 - [Nx](./nx.md)

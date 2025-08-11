@@ -17,3 +17,6 @@
   - [Software Design Patterns](./general/software-design-patterns.md)
 - Tools
   - [VSCode](./tools/vscode.md)
+- Software Services
+  - [Browser](./browser.md)
+  - [Slack](./slack.md)

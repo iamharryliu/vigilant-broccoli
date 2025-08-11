@@ -5,6 +5,7 @@
 - [Dotnet](./dotnet.md)
 - [Express](./express.md)
 - [Spring Boot](./spring-boot.md)
+- [GraphQL](./graphql.md)
 
 ## What is a backend
 

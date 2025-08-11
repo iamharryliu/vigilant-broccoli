@@ -1,5 +1,9 @@
 # AWS
 
+- [EC2](./ec2.md)
+- [Lambda](./lambda.md)
+- [S3](./s3.md)
+
 ## CLI
 
 CLI requires AWS user access key, secrey access key, region.

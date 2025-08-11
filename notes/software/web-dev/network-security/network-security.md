@@ -1,5 +1,7 @@
 # Network Security
 
+- [jwt](./jwt.md)
+- [ssh](./ssh.md)
 - [Have I Been Pwned?](https://haveibeenpwned.com/)
 - [Password Generator](https://passwordsgenerator.net/)
 - [How to Choose a Password - Computerphile](https://www.youtube.com/watch?v=3NjQ9b3pgIg)

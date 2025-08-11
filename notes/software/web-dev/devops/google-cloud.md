@@ -1,6 +1,7 @@
 # Google Cloud
 
-[Free GCP VM](https://www.reddit.com/r/googlecloud/comments/s343al/can_i_run_a_vm_in_gcp_for_free/)
+- [Google Compute Engine](./google-cloud/google-computer-engine.md)
+- [Free GCP VM](https://www.reddit.com/r/googlecloud/comments/s343al/can_i_run_a_vm_in_gcp_for_free/)
 
 ```
 gcloud auth login
