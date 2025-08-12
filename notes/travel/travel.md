@@ -1,15 +1,14 @@
 # Travel
 
+- [Packing](./packing/packing.md)
+- [Camper Van](./campervan.md)
+
 ## Useful Apps
 
 [Park4Night](https://park4night.com/en) - Find parking, useful for campervan travel.
 [Bounce](https://usebounce.com/) - Luggage storage
-[HappyCow]() - Find vegetarian/vegan options.
-[Airola]() - eSim Provider
-
-## Travel Styles
-
-- [Camper Van](./campervan.md)
+[HappyCow](https://www.happycow.net/) - Find vegetarian/vegan options.
+[Airola](https://www.airalo.com/) - eSim Provider
 
 ## Travel Packing
 
