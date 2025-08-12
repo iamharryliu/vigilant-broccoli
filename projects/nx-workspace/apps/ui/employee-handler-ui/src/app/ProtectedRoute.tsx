@@ -1,19 +1,19 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useAuth } from './context/AuthContext';
+import { authClient } from '../../libs/auth-client';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
   const router = useRouter();
+  const { data: session, isPending: isLoading } = authClient.useSession();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isLoading && !session) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [isLoading, router, session]);
 
-  if (loading) return <p>Loading...</p>;
-  return user ? <>{children}</> : null;
+  if (isLoading) return <p>Loading...</p>;
+  return session ? <>{children}</> : null;
 };
 
 export default ProtectedRoute;

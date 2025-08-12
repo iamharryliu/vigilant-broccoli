@@ -1,12 +1,11 @@
 'use client';
 
-import { useAuth } from '../app/context/AuthContext';
+import { authClient } from '../../libs/auth-client';
 
 const Navbar = () => {
-  const { logout } = useAuth();
   return (
     <nav>
-      <button onClick={logout}>Logout</button>
+      <button onClick={() => authClient.signOut()}>Logout</button>
     </nav>
   );
 };
