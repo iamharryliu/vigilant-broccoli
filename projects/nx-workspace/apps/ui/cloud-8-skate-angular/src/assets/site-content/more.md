@@ -15,9 +15,9 @@ If you are looking for more info on _Cloud8Skate_ you can checkout our [FAQ page
 
 ## Skate Content Creators
 
-[Bill Stoppard](https://www.youtube.com/@BillStoppard)
-[SkatefreshAsha](https://www.youtube.com/@SkatefreshVideos)
-[Shorty's Skate Series](https://www.youtube.com/@ShortysSkateSeries)
+- [Bill Stoppard](https://www.youtube.com/@BillStoppard)
+- [SkatefreshAsha](https://www.youtube.com/@SkatefreshVideos)
+- [Shorty's Skate Series](https://www.youtube.com/@ShortysSkateSeries)
 
 ## Tutorials
 
