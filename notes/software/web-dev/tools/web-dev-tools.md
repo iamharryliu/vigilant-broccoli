@@ -5,3 +5,4 @@
 - [Socket Server](./socket-server.md)
 - [Language Learning Models](./language-learning-models.md)
 - [Web Services](./web-services/web-services.md)
+- [Auth Providers](./auth-providers.md)

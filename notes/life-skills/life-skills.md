@@ -1,19 +1,28 @@
 # Life Skills
 
-- Swimming
-  - Treading Water
-  - Swimming Strokes with head out of water
-  - Diving
-- Fashion/Clothing
+- **Essential**
+- [Home Management](../home/home-management.md)
+- [Cooking](../cooking/cooking.md)
+- **Accessibility**
+  - [Language Learning](../hobbies/language-learning/language-learning.md)
+  - [Software](../software/software.md)
+  - [Driving](./driving.md)
+  - Swimming
+    - Treading Water
+    - Swimming Strokes with head out of water
+    - Diving
+  - [Learning](./learning.md)
+- **Fashion/Clothing**
+  - [Product Care](./product-care.md)
   - [Layering Explained (The 3 Layer System)](https://www.youtube.com/watch?v=eXr2iPeMLfs)
   - [How to Roll Up Your Pants | GQ](https://www.youtube.com/watch?v=45IBKWJyJ1A)
-- Proficiency
+- **Proficiency**
+  - [Packing](../travel/packing/packing.md)
   - [Speed Reading](https://en.wikipedia.org/wiki/Speed_reading)
     - [Spreeder](https://www.spreeder.com/app.php)
   - [Touch Typing](https://en.wikipedia.org/wiki/Touch_typing)
     - [typeracer](https://play.typeracer.com/)
   - Swipe Typing
-- [Driving](./driving.md)
-- [Learning](./learning.md)
 - [Productivity](./productivity.md)
-- [Product Care](./product-care.md)
+- **Social**
+  - [Party Planning](../social/party-planning.md)
