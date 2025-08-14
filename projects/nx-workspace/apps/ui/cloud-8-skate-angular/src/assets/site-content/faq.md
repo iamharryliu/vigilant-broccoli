@@ -16,6 +16,10 @@ Yes, we do! Pay attention to our [calendar](https://cloud8skate.com/calendar) an
 
 It's simple! Just show up and skate with us!
 
+## Are there rules?
+
+Yes there are rules for the community that we ask everyone to please follow. You can find it [here](https://docs.google.com/document/d/1uSd7tTWcFiKoUa-FERtknOZR24hzQpfBLOSnPOI2ID0/edit?tab=t.0)!
+
 ## Where can I find the cool music you guys listen to? 🔥🔥
 
 You can find that heat on our [music playlists page](https://cloud8skate.com/playlists)! 👀
