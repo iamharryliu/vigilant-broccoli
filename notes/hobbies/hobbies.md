@@ -11,3 +11,4 @@
 - [Self Defense](./self-defense.md)
 - [Bird Watching](./bird-watching.md)
 - [Aquarium](./aquarium/aquarium.md)
+- [Swimming](./swimming/swimming.md)

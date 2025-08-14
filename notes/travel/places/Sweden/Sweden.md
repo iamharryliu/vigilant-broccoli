@@ -56,7 +56,7 @@
 
 - [Swedish For Immigrant (SFI)](https://www.folkuniversitetet.se/vara-skolor/sfi-svenska-for-invandrare/malmo-sfi-skola-folkuniversitetet/)
 
-# Souvenirs/Gifts
+## Souvenirs/Gifts
 
 - [Kebab Sauce](https://schysstkak.se/het-kebabsas)
 - [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
@@ -66,3 +66,7 @@
 - Lund Tea
 - Butter Knife
 - Cheese Slicer
+
+## Sustainability
+
+- [Loppis](https://www.reddit.com/r/stockholm/comments/12ahzt1/can_you_do_loppis_anywhere_or_where_can_you_how/)

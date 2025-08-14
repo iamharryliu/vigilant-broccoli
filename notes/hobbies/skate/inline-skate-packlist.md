@@ -1,7 +1,7 @@
-# Skate
+# Inline Skate Packlist
 
 - Skates
 - Skate Tool
-- Optional
+- **Optional**
   - Shoes
   - Speaker

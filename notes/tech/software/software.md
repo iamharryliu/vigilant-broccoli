@@ -1,5 +1,6 @@
 # Software
 
+- [Packlist](./software-work-packlist.md)
 - [OS](./os/os.md)
 - [Software Languages](./languages/software-languages.md)
 - [Open Source](./open-source.md)

@@ -1,4 +1,4 @@
-# Software Work Packing
+# Software Work Packlist
 
 - Laptop
 - Charger

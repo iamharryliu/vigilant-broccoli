@@ -24,5 +24,3 @@
     - [typeracer](https://play.typeracer.com/)
   - Swipe Typing
 - [Productivity](./productivity.md)
-- **Social**
-  - [Party Planning](../social/party-planning.md)

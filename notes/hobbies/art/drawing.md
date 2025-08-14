@@ -22,3 +22,13 @@
 - Highlight
 - Mid Tone
 - Core Shadow
+
+## Packlist
+
+- Pencil case
+  - Pens
+  - Pencil
+  - Eraser
+  - Ruler
+- Sketchbook
+- Water Bottle
