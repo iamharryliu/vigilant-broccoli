@@ -3,4 +3,4 @@
 [Events](./events.md)
 [Products](./products.md)
 [Bookmarks](./bookmarks.md)
-[Philosophy](./philosophy.md)
+[Book Reviews](./book-reviews/book-reviews.md)
