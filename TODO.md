@@ -22,6 +22,7 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
 - fix:
   - fix toronto alerts
 - chore:
+  - iCloud vb notes??
   - hashicorp vault settings
     - document vault access
     - setup and understand SAN to be able to make local commands to vault
