@@ -25,3 +25,4 @@
   - Swipe Typing
 - [Productivity](./productivity.md)
 - [Social](./social/social.md)
+- [Career](./career/career.md)
