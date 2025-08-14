@@ -1,16 +1,20 @@
 # Hobbies
 
-- [Language Learning](./language-learning/language-learning.md)
-- [Drawing](./art/drawing.md)
-- [Dance](./dance/dance.md)
-- Actions Sports
+- **Brain Activities**
+  - [Drawing](./art/drawing.md)
+  - [Reading](./reading/reading.md)
+  - [Language Learning](./language-learning/language-learning.md)
+  - [Philosophy](./philosophy.md)
+- **Movement**
+  - [Dance](./dance/dance.md)
   - [Inline Skate](./skate/inline-skate.md)
   - [Skateboard](./skate/skateboard.md)
   - [Snowboard](./skate/snowboard.md)
   - [City Skate Planning](./skate/city-skate-planning.md)
-- [Bird Watching](./bird-watching.md)
-- [Aquarium](./aquarium/aquarium.md)
-- [Swimming](./swimming/swimming.md)
-- [Self Defence](./self-defense/self-defense.md)
+  - [Self Defense](./self-defense/self-defense.md)
+  - [Swimming](./swimming/swimming.md)
+- **Calm**
+  - [Bird Watching](./bird-watching.md)
+  - [Aquarium](./aquarium/aquarium.md)
 - [Design](./design/design.md)
-- [Philosophy](./philosophy.md)
+- [Small Business](./small-business.md)
