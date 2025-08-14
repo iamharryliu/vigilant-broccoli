@@ -1,13 +1,13 @@
 # Software Practices
 
-- [Conventional Commits](./general/conventional-commits.md)
+- [Conventional Commits](./conventional-commits.md)
 - [Software Code Quality](./software-code-quality.md)
 - [Software Conventions](./software-conventions.md)
-- [Folder Structure](./general/folder-structure.md)
+- [Folder Structure](./folder-structure.md)
 - Coding Challenges (ie, LeetCode or Blind 75 type questions)
   - [Grind 75](https://www.techinterviewhandbook.org/grind75/)
-    - [Grind 75 Complexities](./general/coding-challenges/grind-75-complexities.md)
-    - [LeetCode Notes](./general/coding-challenges/leetcode-notes.md)
+    - [Grind 75 Complexities](./coding-challenges/grind-75-complexities.md)
+    - [LeetCode Notes](./coding-challenges/leetcode-notes.md)
   - [NeetCode 150](https://neetcode.io/practice?tab=neetcode150)
 
 ## Personal Habits
