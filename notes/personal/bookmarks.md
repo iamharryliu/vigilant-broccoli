@@ -1,7 +1,5 @@
 # Bookmarks
 
-- [Painted Turtles Defrost Back to Life | Frozen Planet II | BBC Earth](https://www.youtube.com/watch?v=NwGHJTk3W3U)
-- [Philosophy: A Guide to Happiness - Alain de Botton (2000) (The Consolations of Philosophy)](https://www.youtube.com/playlist?list=PLez3PPtnpncT7-pMCkOZaeiEWiM-jYU-E)
 - **Fashion**
   - [The Unknown Vlogs(Kofi)](https://www.youtube.com/@unknownvlogs)
   - [Ken Ijima](https://www.youtube.com/@iwantvag69)

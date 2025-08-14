@@ -16,3 +16,7 @@
 - Scaling issues
 - People > Gas > cars > co2 emissions > global climate change
 - Accessibility
+
+## Summer
+
+- Iced cold tea/coffee

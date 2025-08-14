@@ -2,6 +2,8 @@
 
 ## Alain de Botton’s The Consolations of Philosophy
 
+- [Philosophy: A Guide to Happiness - Alain de Botton (2000) (The Consolations of Philosophy)](https://www.youtube.com/playlist?list=PLez3PPtnpncT7-pMCkOZaeiEWiM-jYU-E)
+
 | Problem                     | Philosopher           | Core Idea                                                                                                                                                       |
 | --------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Unpopularity**            | **Socrates**          | Don’t be afraid of going against popular opinion if you are guided by reason and moral integrity. Live examined, principled lives rather than chasing approval. |

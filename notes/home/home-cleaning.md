@@ -1,4 +1,12 @@
-# Tidying
+# Home Cleaning
+
+## Tools
+
+- [Robot Vacuum](https://en.wikipedia.org/wiki/Roomba)
+- Steam Cleaner
+- Dyson Vacuum
+- Broom
+- Dustpan
 
 ## Marie Kondo Approach
 
