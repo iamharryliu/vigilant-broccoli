@@ -1,23 +1,21 @@
 # Software Breakdown
 
-- Build Skills
-- Project Management
-
+- **Project Management**
   - Managing Expectations and Deadlines
   - Cost Management
-
-- Architecture
+- **Architecture**
   - Microservices - Breaking applications into tiny remote services that run independently of each other.
     - Pros: Developers/teams are able to work on independent services without affecting each other.
     - Cons: Services that are dependent on other services require code changes on both services.
-- Web Development
+- **Web Development**
 
-  - State Management
-
+  - Communication
+    - Socket - Live communication, ie data hydration and live notifications/alerts.
+    - RabbitMQ - Asynchronous tasks, can implement rate limits and retry logic. Useful for microservices.
+  - \*\*State Management
     - Session
     - Cookies
     - JWT
-
   - Frontend
 
     - Templates
@@ -49,21 +47,17 @@
 
     - State Management
     - Routes
-
       - Routing to different routes.
       - Route parameters.
       - Handling nested routes.
       - Handling protected routes.
       - Handling invalid pages.
-
     - Requests
-
       - Race conditions.
       - Memory leaks.
       - Error handling.
       - Loading states.
       - Performance and optimization.
-
     - Asynchronous Stuff
       - Event listeners.
       - Timers.
@@ -107,11 +101,9 @@
   - Analytics
     - User Behavior Tracking
   - Security
-
+    - Authentication Handling
     - Data Encryption
-
   - Code Maintenance
-
     - Type Annotation
     - Testing
       - Unit Testing
@@ -119,14 +111,11 @@
       - Integration Testing
       - Performance Testing
       - Security Testing
-
   - Content Management
     - SEO
 
-- Application Monitoring
+- **Application Monitoring**
   - Distributed Tracing: Understanding the flow of requests across microservices.
   - Performance Monitoring: Monitoring application performance through metrics.
   - Logging: Contextualizing trace and metric data with relevant logs.
-- Error Handling
-- Auth Handling
-- Security
+- **Error Handling**
