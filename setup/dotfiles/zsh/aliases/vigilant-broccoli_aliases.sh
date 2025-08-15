@@ -40,15 +40,14 @@ alias pullvb="cd $REPO_DIR && gpull"
 alias pullall='pulljournal && pullvb'
 alias vbgit='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
 alias vbactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
+alias vbnpm='open "https://www.npmjs.com/settings/vigilant-broccoli/packages"'
+# vb push
 alias pushnotes="cdvb && git add $NOTES_DIR && gc docs notes 'Update Markdown notes.' && gpush"
 alias pushvbtodo="cdvb && git add $TODO_FILEPATH && gc docs todo 'Update TODO.md file.' && gpush"
 alias pushsnippets="cdvb && git add $SNIPPETS_DIR && gc docs snippets 'Update snippets.' && gpush"
 alias pushprogress="git add $SNIPPETS_DIR/progress.md && gc docs progress 'Update progress.md file.' && gpush"
-# Actions
 alias pushactions="cdvb && git add $GIT_WORKFLOWS_DIR && gc build github-actions 'Update Github actions.' && gpush"
-# Setup
 alias pushsetup="cdvb && git add $SETUP_DIR && gc feat setup 'Update setup scripts.' && gpush"
-# Dotfiles
 alias pushdotfiles="cdvb && git add $DOTFILES_DIR && gc feat dotfiles 'Update dotfiles.' && gpush"
 # Homebrew
 alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP_DIR/Brewfile"
@@ -90,8 +89,6 @@ alias openJournal="open 'obsidian://open?vault=journal'"
 
 # Billing
 alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
-
-alias vbpackages='open "https://www.npmjs.com/settings/vigilant-broccoli/packages"'
 
 # Work Aliases
 alias openworkstuff='openworkws && openSlack && gcalendar && gmeet'
