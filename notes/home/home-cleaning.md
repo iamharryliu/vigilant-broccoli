@@ -5,6 +5,8 @@
 - [Robot Vacuum](https://en.wikipedia.org/wiki/Roomba)
 - Steam Cleaner
 - Dyson Vacuum
+  - [How to wash the filters on your Dyson V11™ or V15™ cord-free vacuum](https://www.youtube.com/watch?v=445zcHO6QIw)
+  - [How To Remove and Replace The Bin On A Dyson V15 Submarine Vacuum](https://www.youtube.com/watch?v=nrPCQAUIb1M)
 - Broom
 - Dustpan
 

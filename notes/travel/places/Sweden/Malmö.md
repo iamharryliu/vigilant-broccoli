@@ -41,6 +41,7 @@
 
 ## Dog Friendly Spaces
 
+- [Hundar på stan](https://malmocity.se/hundar-pa-stan/)
 - [Malmö guide to dog friendly cafes, restaurants and pubs](https://sweden.bestin.com/malmo-guide-to-dog-friendly-cafes-restaurants-and-pubs/)
 
 ## Fun Facts

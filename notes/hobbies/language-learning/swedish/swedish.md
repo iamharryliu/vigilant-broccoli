@@ -12,6 +12,7 @@
 - [Auxiliary Verbs](./swedish-verbs/swedish-auxiliary-verbs.md)
 - [Help Verbs](./swedish-verbs/swedish-help-verbs.md)
 - [Comparison](./adjectives/swedish-adjective-comparison.md)
+- [Irregular Verbs](./swedish-verbs/swedish-irregular-verbs.md)
 - Tenses
   - [Past Tense](./grammar/tenses/swedish-past-tense.md)
   - [Future Tense](./grammar/tenses/swedish-future-tense.md)
