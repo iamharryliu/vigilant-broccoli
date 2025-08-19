@@ -49,6 +49,7 @@ apps/ui/personal-website-frontend/src/assets/grind-75/
 !apps/ui/personal-website-frontend/src/assets/grind-75/.gitkeep
 
 .env
+.env.local
 
 # Next.js
 .next

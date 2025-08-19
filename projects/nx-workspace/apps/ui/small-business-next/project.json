@@ -1,0 +1,44 @@
+{
+  "name": "small-business-next",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/small-business-next",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/ui/small-business-next"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "apps/ui/small-business-next"
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "small-business-next:build",
+        "dev": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "small-business-next:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "small-business-next:build:production",
+          "dev": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
