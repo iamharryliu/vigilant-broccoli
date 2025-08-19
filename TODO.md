@@ -11,6 +11,10 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
     - Authentication
     - Github team manager
     - Spotify DL manager
+  - **Email Service**
+    - Queue
+    - Can be called from separate apps
+    - Can send emails on behalf of apps to appropriate people/parties
   - **Home Hanagement**
     - Calendar Implementation
       - [fullcalendar](https://fullcalendar.io/docs/react)
