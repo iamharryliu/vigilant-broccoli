@@ -21,6 +21,8 @@
 ## Food & Drink
 
 - [Food Spots](https://maps.app.goo.gl/Vm1PmWbGbbV6ftD86)
+- Food Trucks
+  - [Papa Piada](https://papapiada.se/)
 - [Drink Spots](https://maps.app.goo.gl/qWopvXmCnxn3WXxR8)
 - [Dessert Spots](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6)
 - [Work Cafes](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
