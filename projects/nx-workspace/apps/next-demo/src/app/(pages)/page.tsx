@@ -18,6 +18,12 @@ const API_ROUTES = {
   GET_FILE_OBJECT: '/api/get-file-object',
 };
 
+type CalendarEvent = {
+  summary: string;
+  start: string;
+  end: string;
+};
+
 const start = new Date();
 const end = new Date(start);
 end.setHours(end.getHours() + 2);
@@ -77,7 +83,7 @@ export default function Index() {
     });
   }
 
-  async function addCalendarEvent(event) {
+  async function addCalendarEvent(event: CalendarEvent) {
     await fetch('/api/calendar/event', {
       method: HTTP_METHOD.POST,
       headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
