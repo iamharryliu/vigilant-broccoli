@@ -8,8 +8,8 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
 
 - **feat:**
   - **vigilant-broccoli ui manager tool**
-    - Authentication
-    - Github team manager
+    - Github
+      - organization/team manager
     - Spotify DL manager
   - **Email Service**
     - Queue

@@ -76,11 +76,12 @@ export default function Index() {
     <>
       <Heading>vigilant-broccoli Manager</Heading>
       <LinksTable />
+      <StatusBadges />
     </>
   );
 }
 
-function LinksTable() {
+const LinksTable = () => {
   return (
     <Table.Root>
       <Table.Header>
@@ -154,4 +155,56 @@ function LinksTable() {
       </Table.Body>
     </Table.Root>
   );
-}
+};
+
+type Badge = {
+  alt: string;
+  href: string;
+  src: string;
+};
+
+const BADGES: Badge[] = [
+  {
+    alt: 'App Health Check Status',
+    href: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml',
+    src: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml/badge.svg',
+  },
+  {
+    alt: 'CMS Flask - Deploy App',
+    href: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cms-flask.yml',
+    src: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cms-flask.yml/badge.svg',
+  },
+  {
+    alt: 'Deploy Nx Apps - Deploy Apps Status',
+    href: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml',
+    src: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml/badge.svg',
+  },
+  {
+    alt: 'Toronto Alerts Flask - Deploy App Status',
+    href: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts.yml',
+    src: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts.yml/badge.svg',
+  },
+];
+
+const StatusBadges = () => {
+  return (
+    <>
+      <Heading>Github Actions</Heading>
+      <div className="flex flex-wrap gap-2">
+        {BADGES.map(badge => (
+          <>
+            <a
+              key={badge.alt}
+              href={badge.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img src={badge.src} alt={badge.alt} />
+            </a>
+            <br />
+          </>
+        ))}
+      </div>
+    </>
+  );
+};

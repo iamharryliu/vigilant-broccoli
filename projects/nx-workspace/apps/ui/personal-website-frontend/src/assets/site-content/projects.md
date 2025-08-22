@@ -8,10 +8,10 @@
 
 ### Github Action Status
 
-[![App Health Check Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/health-check.yml)
-[![CMS Flask - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cms-flask-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cms-flask-deploy.yml)
-[![Deploy Nx Apps - Deploy Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/nx-apps-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/nx-apps-deploy.yml)
-[![Toronto Alerts Flask - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/toronto-alerts-deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/toronto-alerts-deploy.yml)
+[![App Health Check Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml)
+[![CMS Flask - Deploy App](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cms-flask.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-cms-flask.yml)
+[![Deploy Nx Apps - Deploy Apps Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-nx-apps.yml)
+[![Toronto Alerts Flask - Deploy App Status](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-toronto-alerts.yml)
 
 <hr/>
 
