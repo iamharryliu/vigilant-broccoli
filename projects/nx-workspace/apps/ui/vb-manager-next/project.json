@@ -1,0 +1,44 @@
+{
+  "name": "vb-manager-next",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/vb-manager-next",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/ui/vb-manager-next"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "apps/ui/vb-manager-next"
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "vb-manager-next:build",
+        "dev": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "vb-manager-next:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "vb-manager-next:build:production",
+          "dev": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
