@@ -1,6 +1,7 @@
 # Skateboard
 
 - [How to NO-COMPLY!!!](https://www.youtube.com/watch?v=FCtv-jQ0Qf8&t=26s)
+- [10 EASY Mini Ramp Tricks ANYONE Can Learn!](https://www.youtube.com/watch?v=raS64IDlGDM)
 
 ## Features
 
