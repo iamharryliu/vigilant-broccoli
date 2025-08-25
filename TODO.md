@@ -33,6 +33,7 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
   - dotfile clean up
   - alias for `alias run lib:nx-release-publish`?
   - consider eslint proseWrap: "preserve"
+- iPhone finder tool
 
 ## AI Tools
 
