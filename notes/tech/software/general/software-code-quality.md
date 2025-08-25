@@ -4,6 +4,7 @@
 
 - No type annotations.
 - Unnecessary optional undefined values.
+- Unnecessary 'console.log's
 
 ## Javascript/Typescript
 

@@ -1,5 +1,7 @@
 # Small Business
 
+- Subtle Rebranding, ie CP Company
+
 - Physical Store
   - Potential liability
   - Leave floor empty
@@ -9,3 +11,5 @@
   - Mobile
   - Digital
 - Online Presence
+- Restaurant
+  - Dietary Restriction Accomodations
