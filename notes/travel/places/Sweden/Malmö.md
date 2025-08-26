@@ -44,10 +44,13 @@
 - [Hundar på stan](https://malmocity.se/hundar-pa-stan/)
 - [Malmö guide to dog friendly cafes, restaurants and pubs](https://sweden.bestin.com/malmo-guide-to-dog-friendly-cafes-restaurants-and-pubs/)
 
+## Secondhand
+
+- Drottningtorget
+  - [Flea market at Drottningtorget](https://malmo.se/Uppleva-och-gora/Fritidsaktiviteter/Loppmarknader/Loppmarknad-pa-Drottningtorget.html)
+  - [Selling at the Drottningtorget flea market](https://malmo.se/Uppleva-och-gora/Fritidsaktiviteter/Loppmarknader/Salja-pa-Drottningtorgets-loppmarknad.html)
+- [Erikshjalpen Second Hand](https://erikshjalpen.se/butiker/second-hand-malmo/)
+
 ## Fun Facts
 
 - [Bolmen Water Tunnel](https://en.wikipedia.org/wiki/Bolmen_Water_Tunnel)
-
-## Donation
-
-- [Erikshjalpen Second Hand](https://erikshjalpen.se/butiker/second-hand-malmo/)
