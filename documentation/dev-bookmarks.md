@@ -1,10 +1,10 @@
 # My Stack
 
 - Google
-  - Gmail
-  - Keep
-  - Tasks
-  - Drive
+  - [Gmail](https://mail.google.com/mail/u/0/)
+  - [Google Keep](https://keep.google.com/)
+  - [Google Tasks](https://tasks.google.com/)
+  - [Google Drive](https://drive.google.com/)
 - Github
   - Github Actions
     - [Pricing](https://docs.github.com/en/billing/managing-billing-for-your-products/about-billing-for-github-actions)
