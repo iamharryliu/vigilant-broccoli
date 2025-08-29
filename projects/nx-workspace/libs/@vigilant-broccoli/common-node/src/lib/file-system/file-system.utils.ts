@@ -95,10 +95,6 @@ const checkFilePath = async <T>(filePath: string): Promise<T | false> => {
   }
 };
 
-const getBasename = (filepath: string): string => {
-  return path.basename(filepath);
-};
-
 const generateTmpFilepath = (): string => {
   return path.resolve(TMP_PATH, crypto.randomBytes(16).toString('hex'));
 };
@@ -133,7 +129,6 @@ export const FileSystemUtils = {
   writeJSON,
   generateTmpFilepath,
   // READ
-  getBasename,
   checkFilePath,
   getFilenamesFromDir,
   getListFromFilepath,

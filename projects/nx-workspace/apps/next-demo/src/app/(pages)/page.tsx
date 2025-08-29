@@ -1,22 +1,12 @@
 'use client';
 
-import { Card, Heading, Link, TextArea } from '@radix-ui/themes';
-import {
-  GithubOrganizationTeamStructure,
-  GithubTeam,
-  HTTP_HEADERS,
-  HTTP_METHOD,
-} from '@vigilant-broccoli/common-js';
-import { useEffect, useState } from 'react';
+import { Heading } from '@radix-ui/themes';
+import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import { Button } from '@vigilant-broccoli/react-lib';
-
-const API_ROUTES = {
-  GET_CONFIGURATIONS: '/api/get-configurations',
-  GET_FILE_OBJECT: '/api/get-file-object',
-};
 
 type CalendarEvent = {
   summary: string;
@@ -51,29 +41,9 @@ const CALENDAR_IFRAME_URL =
   'https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Europe%2FCopenhagen&showPrint=0&mode=AGENDA&showCalendars=0&title&src=ZGI3YzdhYzNlMjk3NDUyNTExOGY5MjQ5NmMwMzk0NjZlNmMzM2E5MjU5M2M3M2IyMGE1ZjY2N2YzMTI2NzI3N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23ef6c00';
 
 export default function Index() {
-  const [files, setFiles] = useState<string[]>([]);
-  const [teamNames, setTeamNames] = useState<string[]>([]);
-  const [jsonConfig, setJsonConfig] = useState('');
   const [events, setEvents] = useState(EVENTS);
   const [calendarIframeUrl, setCalendarIframeUrl] =
     useState(CALENDAR_IFRAME_URL);
-
-  useEffect(() => {
-    async function init() {
-      const res = await fetch(API_ROUTES.GET_CONFIGURATIONS);
-      setFiles(await res.json());
-    }
-    init();
-  }, []);
-
-  async function test(filename: string) {
-    const response = await fetch(
-      `${API_ROUTES.GET_FILE_OBJECT}?filename=${filename}`,
-    );
-    const json = await response.json();
-    setJsonConfig(JSON.stringify(await json, null, 2));
-    setTeamNames(extractTeamLinks(json));
-  }
 
   async function doggoEvent(type: string) {
     await addCalendarEvent({
@@ -97,50 +67,8 @@ export default function Index() {
     // ]);
   }
 
-  function extractTeamLinks(
-    orgData: GithubOrganizationTeamStructure,
-  ): string[] {
-    const links: string[] = [];
-
-    function recurse(teams: GithubTeam[]) {
-      for (const team of teams) {
-        links.push(
-          `https://github.com/orgs/${orgData.organizationName}/teams/${team.name}`,
-        );
-        recurse(team.teams);
-      }
-    }
-
-    recurse(orgData.teams);
-    return links;
-  }
-
   return (
     <>
-      <Heading>Github Manager</Heading>
-      <Heading>Configurations</Heading>
-      {files.map(file => (
-        <Card key="file" onClick={() => test(file)}>
-          {file}
-        </Card>
-      ))}
-      {jsonConfig ? (
-        <>
-          <Heading>Configuration</Heading>
-          <TextArea
-            value={jsonConfig}
-            onChange={e => setJsonConfig(e.target.value)}
-          />
-          <Heading size="3">Team Links </Heading>
-          {teamNames.map(name => (
-            <div key={name}>
-              <Link href={name} target="blank" key={name}>
-                {name}
-              </Link>
-            </div>
-          ))}
-        </>
-      ) : null}
       <Heading>Calendar Implementation</Heading>
       {/* <Button onClick={addCalendarEvent}>Add Calendar Event</Button> */}
       <Button onClick={() => doggoEvent('Pooed 💩')}>Pooed 💩</Button>
