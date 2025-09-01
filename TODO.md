@@ -7,6 +7,8 @@ echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
 ## vigilant-broccoli
 
 - **feat:**
+  - **LM**
+    - image identifier
   - **employee-handler**
     - inform user if gam or gyb needs to be setup
     - create missing folder/file structures
