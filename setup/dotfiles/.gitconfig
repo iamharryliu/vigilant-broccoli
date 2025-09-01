@@ -10,3 +10,6 @@
 
 [core]
     ignorecase = false
+
+[init]
+	defaultBranch = main
