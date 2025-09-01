@@ -2,6 +2,7 @@
 
 import { Button, Card, Code, Heading, Table } from '@radix-ui/themes';
 import {
+  FORM_TYPE,
   GithubOrganizationTeamStructure,
   GithubTeam,
 } from '@vigilant-broccoli/common-js';
@@ -88,6 +89,13 @@ const URLS = {
       'https://console.twilio.com/us1/billing/manage-billing/billing-overview?frameUrl=/console/usage',
     STATUS: 'https://status.twilio.com/',
   },
+  OPENWEATHER:{
+    NAME: 'OpenWeather',
+    BILLING_URL: 'https://home.openweathermap.org/subscriptions',
+    DASHBOARD: 'https://home.openweathermap.org/myservices',
+    PAYMENT_HISTORY: 'https://home.openweathermap.org/payments',
+    STATUS: 'https://openweathermap.org/',
+  }
 } as Record<string, ServiceUrl>;
 
 export default function Page() {
@@ -214,31 +222,47 @@ const BADGES: Badge[] = [
 
 const StatusBadges = () => {
   return (
-    <Card asChild>
-      <a
+    <Card>
+      <Heading>Github Actions</Heading>
+      <Link
         href="https://github.com/iamharryliu/vigilant-broccoli/actions"
         target="_blank"
       >
-        <Heading>Github Actions</Heading>
-        <div className="flex flex-wrap gap-2">
-          {BADGES.map(badge => (
-            <div key={badge.alt}>
-              {/* <a href={badge.href} target="_blank" rel="noopener noreferrer">
-                <img src={badge.src} alt={badge.alt} />
-              </a> */}
-            </div>
-          ))}
-        </div>
-      </a>
+        Go To Actions
+      </Link>
+      <div className="flex flex-wrap gap-2">
+        {BADGES.map(badge => (
+          <div key={badge.alt}>
+            <a href={badge.href} target="_blank" rel="noopener noreferrer">
+              <img src={badge.src} alt={badge.alt} />
+            </a>
+          </div>
+        ))}
+      </div>
     </Card>
   );
+};
+
+const GITHUB_TEAM_LIST_MANAGER_COPY = {
+  LIST: {
+    TITLE: 'Github Team Manager',
+    EMPTY_MESSAGE: 'No items.',
+  },
+  [FORM_TYPE.CREATE]: {
+    TITLE: 'Create Item',
+    DESCRIPTION: 'Create item description.',
+  },
+  [FORM_TYPE.UPDATE]: {
+    TITLE: 'Update Item',
+    DESCRIPTION: 'Update item description.',
+  },
 };
 
 const Form = ({
   formType,
   initialFormValues,
   submitHandler,
-}: CRUDFormProps<{ config: string }>) => {
+}: CRUDFormProps<{ id: number; config: string }>) => {
   const [item, setItem] = useState(initialFormValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -301,7 +325,7 @@ const ListItemComponent = ({ item }: { item: any }) => {
           </Link>
         </div>
       ))}
-      <CopyPastable text={JSON.stringify(item.config)}></CopyPastable>
+      <CopyPastable text={JSON.stringify(item.config)}/>
     </>
   );
 };
@@ -321,17 +345,21 @@ const GithubTeamManager = () => {
 
   return (
     <Card>
-      <Heading>Github Team Manager</Heading>
       <CRUDItemList
+        createItemFormDefaultValues={{ id: 0, config: '' }}
         items={teamSettings}
         setItems={setTeamSettings}
+        ListItemComponent={ListItemComponent}
+        FormComponent={Form}
         createItem={async () => {
           return { id: 2, config: '{}' };
         }}
-        createItemFormDefaultValues={{ id: 0, config: '' }}
-        FormComponent={Form}
-        ListItemComponent={ListItemComponent}
+        updateItem={async () => {
+          return;
+        }}
+        // deleteItem={deleteItem}
         isCards={true}
+        copy={GITHUB_TEAM_LIST_MANAGER_COPY}
       ></CRUDItemList>
     </Card>
   );

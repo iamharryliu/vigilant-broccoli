@@ -9,7 +9,7 @@ import {
 export const CRUDListManagementDemo = () => {
   const [items, setItems] = useState<JSONPlaceHolderPost[]>([]);
   const [isCards, setIsCards] = useState(false);
-  const createItemFormDefaultValues = { id: 0, title: '' };
+  const CREATE_ITEM_FORM_DEFAULT_VALUES = { id: 0, title: '' };
 
   useEffect(() => {
     JSONPlaceholderPostService.getTodos(5).then(data => {
@@ -38,11 +38,11 @@ export const CRUDListManagementDemo = () => {
       <Heading>CRUD List Management Demo</Heading>
       <Switch checked={isCards} onCheckedChange={setIsCards} />
       <CRUDItemList
-        createItemFormDefaultValues={createItemFormDefaultValues}
+        createItemFormDefaultValues={CREATE_ITEM_FORM_DEFAULT_VALUES}
         items={items}
         setItems={setItems}
-        ListItemComponent={ListItem}
-        FormComponent={Form}
+        ListItemComponent={ListItemComponent}
+        FormComponent={FormComponent}
         createItem={createItem}
         updateItem={updateItem}
         deleteItem={deleteItem}
@@ -52,7 +52,7 @@ export const CRUDListManagementDemo = () => {
   );
 };
 
-const ListItem = ({ item }: { item: JSONPlaceHolderPost }) => {
+const ListItemComponent = ({ item }: { item: JSONPlaceHolderPost }) => {
   return (
     <span>
       {item.id} {item.title}
@@ -60,7 +60,7 @@ const ListItem = ({ item }: { item: JSONPlaceHolderPost }) => {
   );
 };
 
-const Form = ({
+const FormComponent = ({
   formType,
   initialFormValues,
   submitHandler,

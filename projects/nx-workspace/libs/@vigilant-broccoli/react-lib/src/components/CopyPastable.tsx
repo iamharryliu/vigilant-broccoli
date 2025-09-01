@@ -16,7 +16,7 @@ export const CopyPastable = ({
   };
 
   return (
-    <Card className="bg-gray-100 h-full">
+    <Card className="bg-gray-100 dark:bg-gray-800 h-full">
       <div className="absolute top-2 right-2 ">
         <Button variant="ghost" onClick={handleCopy}>
           <Copy />

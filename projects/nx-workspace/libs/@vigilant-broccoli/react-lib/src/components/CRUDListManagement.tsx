@@ -6,7 +6,7 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import { AlertDialog, Button, Card, Popover } from '@radix-ui/themes';
+import { AlertDialog, Button, Card, Heading, Popover } from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 
 type CRUDItem = {
@@ -106,7 +106,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2>{copy.LIST.TITLE}</h2>
+        <Heading>{copy.LIST.TITLE}</Heading>
         {createItem && createItemFormDefaultValues && FormComponent && (
           <CRUDItemFormDialog
             formType={FORM_TYPE.CREATE}
@@ -123,7 +123,7 @@ export const CRUDItemList = <T extends CRUDItem>({
           {items.map(item =>
             isCards ? (
               <Card key={item.id}>
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between">
                   <div className="w-full">
                     {ListItemComponent ? (
                       <ListItemComponent item={item} items={items} />
@@ -143,7 +143,7 @@ export const CRUDItemList = <T extends CRUDItem>({
                 </div>
               </Card>
             ) : (
-              <div key={item.id} className="flex items-center justify-between">
+              <div key={item.id} className="flex justify-between">
                 <div className="w-full">
                   {ListItemComponent ? (
                     <ListItemComponent item={item} items={items} />
