@@ -607,3 +607,6 @@ Arvid tänker på olika saker om kilmatet grader
 | Thanks to                  | Tack vare        | The fishermen managed to save the stranded seal thanks to the help of the coast guard.                        | Fiskarna lyckades rädda den strandade sälen tack vare hjälp av kustbevakningen.                                   |
 | Considering                | Med tanke på     | She's incredibly good at basketball considering her height.                                                   | Hon är oerhört duktig på basket med tanke på hennes längd.                                                        |
 | In contrast to             | I motsats till   | I'm freezing, in contrast to Fredrik who walks around in a T-shirt.                                           | Jag fryser jättemycket, i motsats till Fredrik som går runt i T-shirt.                                            |
+
+till
+på 

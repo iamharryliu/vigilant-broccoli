@@ -10,3 +10,6 @@
 
 [subject] [verb] inte på mig/dig
 han trodde inte på mig
+
+# Possessive
+[subject]s [noun]
