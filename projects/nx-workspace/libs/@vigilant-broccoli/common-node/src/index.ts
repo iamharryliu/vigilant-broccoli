@@ -33,6 +33,7 @@ export * from './lib/site-monitor/site-monitor.service';
 export * from './lib/text-message/text-message.service';
 // Google Recaptcha
 export * from './lib/recaptcha/recaptcha.service';
+export * from './lib/github/github.service';
 
 export const QUEUE = {
   EMAIL: 'EMAIL',

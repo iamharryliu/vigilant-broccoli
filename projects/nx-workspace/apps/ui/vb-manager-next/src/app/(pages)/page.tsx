@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, Code, Heading, Table } from '@radix-ui/themes';
+import { Button, Card, Heading, Table, TextField } from '@radix-ui/themes';
 import {
   FORM_TYPE,
   GithubOrganizationTeamStructure,
@@ -16,8 +16,8 @@ import { getBasename } from '../../lib/utils';
 import Link from 'next/link';
 
 const API_ROUTES = {
-  GET_CONFIGURATIONS: '/api/get-configurations',
-  GET_FILE_OBJECT: '/api/get-file-object',
+  CONFIGURATIONS: '/api/github/configurations',
+  ORGANIZATION_STRUCTURE: '/api/github/organization-structure',
 };
 
 const FIELD_ICONS: Record<
@@ -89,13 +89,13 @@ const URLS = {
       'https://console.twilio.com/us1/billing/manage-billing/billing-overview?frameUrl=/console/usage',
     STATUS: 'https://status.twilio.com/',
   },
-  OPENWEATHER:{
+  OPENWEATHER: {
     NAME: 'OpenWeather',
     BILLING_URL: 'https://home.openweathermap.org/subscriptions',
     DASHBOARD: 'https://home.openweathermap.org/myservices',
     PAYMENT_HISTORY: 'https://home.openweathermap.org/payments',
     STATUS: 'https://openweathermap.org/',
-  }
+  },
 } as Record<string, ServiceUrl>;
 
 export default function Page() {
@@ -325,7 +325,7 @@ const ListItemComponent = ({ item }: { item: any }) => {
           </Link>
         </div>
       ))}
-      <CopyPastable text={JSON.stringify(item.config)}/>
+      <CopyPastable text={JSON.stringify(item.config)} />
     </>
   );
 };
@@ -334,17 +334,45 @@ const GithubTeamManager = () => {
   const [teamSettings, setTeamSettings] = useState<
     { id: number; config: string }[]
   >([]);
+  const [organizationName, setOrganizationName] = useState('');
 
   useEffect(() => {
     async function init() {
-      const res = await fetch(API_ROUTES.GET_CONFIGURATIONS);
+      const res = await fetch(API_ROUTES.CONFIGURATIONS);
       setTeamSettings(await res.json());
     }
     init();
   }, []);
 
+  async function getOrganizationStructure() {
+    const res = await fetch(
+      `${API_ROUTES.ORGANIZATION_STRUCTURE}?organization=${organizationName}`,
+    );
+    const data = await res.json();
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json',
+    });
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = `${organizationName}-team-structure.json`;
+    document.body.appendChild(a);
+    a.click();
+
+    a.remove();
+    URL.revokeObjectURL(blobUrl);
+  }
+
   return (
     <Card>
+      <TextField.Root
+        placeholder="Organization name"
+        value={organizationName}
+        onChange={e => setOrganizationName(e.target.value)}
+      />
+      <Button onClick={getOrganizationStructure}>
+        Fetch Organization Structure
+      </Button>
       <CRUDItemList
         createItemFormDefaultValues={{ id: 0, config: '' }}
         items={teamSettings}
