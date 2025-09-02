@@ -1,7 +1,9 @@
 # Linux
 
 ```
-sudo apt update
+sudo apt-get update
+sudo apt-get upgrade
+
 sudo apt install iputils-ping
 sudo apt install git
 
@@ -24,4 +26,6 @@ sudo journalctl -u <service_name> -b
 sudo journalctl -u <service_name> -n <number_of_lines>
 
 sudo nano /etc/systemd/system/SERVICE_NAME.service
+
+sudo apt-get clean
 ```
