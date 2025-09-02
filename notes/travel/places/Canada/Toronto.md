@@ -61,6 +61,7 @@
 
 - [CRA](https://www.canada.ca/en/revenue-agency.html)
 - [TFSA Room Calculator](https://www.moneysense.ca/save/investing/tfsa-contribution-room-calculator/)
+- [Consumer Proposal](https://www.reddit.com/r/povertyfinancecanada/comments/1isktcx/consumer_proposals_explained/)
 
 ## Cons
 
