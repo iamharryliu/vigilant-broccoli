@@ -1,0 +1,25 @@
+# Habits
+
+- **The 4 Laws of Behavior Change**
+  - Make it obvious (Cue)
+    - Design environment to make good habits visible.
+    - Hide cues for bad habits.
+  - Make it attractive (Craving)
+    - Pair habits with rewards or enjoyable activities.
+    - Use temptation bundling (combine habit with something you enjoy).
+  - Make it easy (Response)
+    - Reduce friction for good habits, increase friction for bad ones.
+    - Start small (“2-minute rule”).
+  - Make it satisfying (Reward)
+    - Reinforce habits with immediate positive feedback.
+    - Track progress visibly (streaks, habit trackers).
+- **Breaking Bad Habits(Inverted Laws of Behavior Change)**:
+  - Make it invisible
+  - Make it unattractive
+  - Make it difficult
+  - Make it unsatisfying
+- **Compound Effect:** Small habits accumulate like interest over time.
+- **Identity-Based Habits:** Focus on who you want to become, not just goals.
+- **Habit Stacking:** Link new habits to existing routines.
+- **Environment Design:** Shape surroundings to make habits easier or harder.
+- Systems are more important than goals.
