@@ -67,6 +67,8 @@ sudo systemctl restart vault
 sudo systemctl stop vault
 sudo rm -rf /opt/vault/data/
 sudo systemctl start vault
+
+sudo journalctl -u vault -n 50 --no-pager
 ```
 
 ```
@@ -84,14 +86,11 @@ listener "tcp" {
   tls_key_file  = "/etc/vault/tls/vault.key"
 }
 
-
 storage "file" {
   path = "/opt/vault/data"
 }
 
 ui            = true
-api_addr      = "http://IP_ADDRESS:8200"
-cluster_addr  = "http://IP_ADDRESS:8201"
 ```
 
 ```
@@ -146,52 +145,5 @@ vault login -method=github token=TOKEN
 
 curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/github/login
 ```
-
-```
-# vault-openssl.cnf
-[ req ]
-default_bits       = 2048
-prompt             = no
-default_md         = sha256
-req_extensions     = req_ext
-distinguished_name = dn
-
-[ dn ]
-CN = 127.0.0.1
-
-[ req_ext ]
-subjectAltName = @alt_names
-
-[ alt_names ]
-IP.1 = 127.0.0.1
-IP.2 = 51.20.122.133
-DNS.1 = dns.name
-
-[ v3_ext ]
-authorityKeyIdentifier=keyid,issuer
-basicConstraints=CA:TRUE
-keyUsage = keyCertSign, digitalSignature, keyEncipherment
-subjectAltName = @alt_names
-```
-
-sudo openssl x509 -req -in csr.pem -signkey key.pem -out /etc/vault/tls/vault.crt -days 365 -extfile config.cnf -extensions v3_ext
-
-openssl x509 -req -in vault.csr -signkey /etc/vault/tls/vault.key -out /etc/vault/tls/vault.crt -days 365 -extensions req_ext -extfile yourconfig.cnf
-
-sudo openssl req -new -key /etc/vault/tls/vault.key -out vault.csr -config ./vault-openssl.cnf
-
-sudo openssl req -x50 -new -key key.pem -out req.csr -config your.cnf -reqexts req_ext
-
-openssl req -new -key /etc/vault/tls/vault.key -out /etc/vault/tls/vault.csr -config vault-openssl.cnf
-
-sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/vault/tls/vault.key -out /etc/vault/tls/vault.crt -days 365 -config vault-openssl.cnf -extensions v3_ext
-
-sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/vault/tls/vault.key -out /etc/vault/tls/vault.crt -days 365 -config vault-openssl.cnf
-sudo chown vault:vault /etc/vault/tls/vault.key
-sudo chmod 600 /etc/vault/tls/vault.key
-sudo systemctl restart vault
-sudo systemctl status vault
-
-sudo journalctl -u vault -n 50 --no-pager
 
 https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/
