@@ -3,6 +3,7 @@
 - **Essential**
 - [Home Management](../home/home-management.md)
 - [Cooking](../cooking/cooking.md)
+- [Knots](https://www.youtube.com/watch?v=3X8drKsdf5E)
 - **Accessibility**
   - [Language Learning](../hobbies/language-learning/language-learning.md)
   - [Software](../software/software.md)
