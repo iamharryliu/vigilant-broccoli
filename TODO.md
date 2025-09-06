@@ -1,9 +1,5 @@
 # TODO
 
-cat service-account.json | jq -c .
-base64 -i service-account.json -o encoded.txt
-echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" | base64 -d > service-account.json
-
 ## vigilant-broccoli
 
 - **feat:**

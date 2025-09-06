@@ -62,3 +62,10 @@ ps aux | grep WORDS
 # Log only errors.
 [command] 2> [error.log]
 ```
+
+## Encode/Decode
+```
+base64 -i DECODED_FILENAME -o ENCODED_FILENAME
+echo ENCODED_FILENAME| base64 -d > DECODED_FILENAME
+
+```
