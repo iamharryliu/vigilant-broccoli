@@ -1,5 +1,10 @@
 # Slack
 
+## Commands
+```
+/invite @your-bot-name
+```
+
 ## Formatting Messages
 
 [Reference](https://slack.com/help/articles/202288908-Format-your-messages)w

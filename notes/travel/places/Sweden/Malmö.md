@@ -36,17 +36,23 @@
 - [Folkets Park](https://malmo.se/Folkets-Park)
 - [Lund](https://lund.se/)
 - [Malmö Live](https://malmolive.se/program)
-- Music
-  - [Malmö Festivalen](https://www.malmofestivalen.se/)
-  - [NGBG Festival](https://www.instagram.com/ngbgfestival/)
 - Physical Activity
   - [Art of Roll](https://www.artofroll.com/)
+  - [Friday Night Skate Copenhagen](https://www.instagram.com/fnscph/)
   - Social Dancing
     - [United Dance Studios](https://www.uniteddancestudios.se/)
     - [Malmö Latin Social](https://www.instagram.com/malmo_latin_social/)
     - [Latin Dance Events](https://www.facebook.com/groups/klubbkalenderlatin/events)
 - Tech
   - [Goto 10 Events](https://www.goto10.se/event/)
+
+## Events
+- [Copenhagen Open](https://www.instagram.com/copenhagenopen)
+- [LOVE Malmö](https://www.instagram.com/love.malmo/)
+- [Malmö Festivalen](https://www.malmofestivalen.se/)
+- [Copenhagen B-Roll](https://www.instagram.com/cph.b.roll/)
+- [Malmö Game Week](https://www.instagram.com/malmogameweek/)
+- [NGBG Festival](https://www.instagram.com/ngbgfestival/)
 
 ## Dog Friendly Spaces
 
