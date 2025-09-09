@@ -11,5 +11,9 @@
 [subject] [verb] inte på mig/dig
 han trodde inte på mig
 
+Questions
+[verb] [subject] [compliment] [place/time]
+
 # Possessive
 [subject]s [noun]
+

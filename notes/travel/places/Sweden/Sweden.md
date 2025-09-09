@@ -53,6 +53,14 @@
 ## Finance
 
 - [Tax Agency](https://www.skatteverket.se/)
+- Membership Programs
+  - ICA Stammis
+    - [Signup](https://www.ica.se/stammis)
+    - [About](https://www.ica.se/ansokan/)
+  - Willy's Plus
+    - [About](https://www.willys.se/artikel/om-oss/willys-plus)
+    - [Signup](https://www.willys.se/registrera/privat/identifiera)
+  - [COOP Medlem](https://www.coop.se/medlem/bli-medlem/)
 
 ## Leaning Swedish
 

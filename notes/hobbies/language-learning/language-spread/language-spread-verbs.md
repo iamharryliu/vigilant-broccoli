@@ -57,6 +57,7 @@
 | to calculate       | att räkna          |
 | to advise          | att råda           |
 | to evacuate        | evakuera           |
+| to wish            | att önska          | souhaiter     |
 | I want             | jag vill           | je veux       | quiero       | quero     |         |
 | I have             | jag har            | j'ai          | tengo        |           |         |
 | I'm going          | jag går            | je vais       | voy          |           |         |
