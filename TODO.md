@@ -7,6 +7,7 @@
     - vault
       - vault seal keys
       - root token
+    - secret rotation practice
   - **LM**
     - image identifier
   - **employee-handler**
