@@ -1,7 +1,8 @@
 {
   "name": "@vigilant-broccoli/common-node",
-  "version": "0.0.17",
+  "version": "0.0.20",
   "dependencies": {
+    "@slack/web-api": "^7.10.0",
     "@vigilant-broccoli/common-js": "*",
     "archiver": "^7.0.1",
     "dotenv": "^16.4.5",
