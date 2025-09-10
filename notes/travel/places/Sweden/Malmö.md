@@ -38,7 +38,9 @@
 - [Malmö Live](https://malmolive.se/program)
 - Physical Activity
   - [Art of Roll](https://www.artofroll.com/)
-  - [Friday Night Skate Copenhagen](https://www.instagram.com/fnscph/)
+  - Skating
+    - [Malmö Ice Flyers](https://malmoiceflyers.se/)
+    - [Friday Night Skate Copenhagen](https://www.instagram.com/fnscph/)
   - Social Dancing
     - [United Dance Studios](https://www.uniteddancestudios.se/)
     - [Malmö Latin Social](https://www.instagram.com/malmo_latin_social/)
@@ -47,6 +49,7 @@
   - [Goto 10 Events](https://www.goto10.se/event/)
 
 ## Events
+
 - [Copenhagen Open](https://www.instagram.com/copenhagenopen)
 - [LOVE Malmö](https://www.instagram.com/love.malmo/)
 - [Malmö Festivalen](https://www.malmofestivalen.se/)

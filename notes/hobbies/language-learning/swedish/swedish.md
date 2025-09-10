@@ -612,3 +612,5 @@ till
 på 
 
 @ - snabel-a
+. - pont
+- - streck
