@@ -1,5 +1,8 @@
 # Coffee
 
+Smaller grind size, more bitter.
+Larger grind size, sweeter.
+
 ## Brewing
 
 - Coffee Beans

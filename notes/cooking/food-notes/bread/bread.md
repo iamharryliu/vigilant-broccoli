@@ -29,3 +29,11 @@
   - Protein Content: 5-10% (lower gluten)
   - Characteristics: Low in gluten, rye flour yields a dense, earthy bread with a slightly sour flavor. Rye - flour often requires blending with other flours for a lighter texture.
   - Uses: Used in traditional rye or pumpernickel bread, ideal for dense, flavorful loaves.
+
+
+## Cooking
+
+- Pan fry
+  - Butter and oil
+  - Let bread sit until browned. 
+  - Flip and repeat on the other side. 
