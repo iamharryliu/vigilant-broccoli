@@ -19,6 +19,8 @@
     - Github
       - organization/team manager
     - Spotify DL manager
+    - LLM tools
+    - text tools
   - **Email Service**
     - Queue
     - Can be called from separate apps
@@ -42,6 +44,7 @@
   - alias for `alias run lib:nx-release-publish`?
   - consider eslint proseWrap: "preserve"
 - iPhone finder tool
+- reassess Spotify API
 
 ## AI Tools
 
