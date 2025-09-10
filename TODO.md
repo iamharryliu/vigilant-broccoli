@@ -3,6 +3,8 @@
 ## vigilant-broccoli
 
 - **feat:**
+  - Immich POC
+  - Dynamically change timer alert
   - **Secret Manager**
     - vault
       - vault seal keys
