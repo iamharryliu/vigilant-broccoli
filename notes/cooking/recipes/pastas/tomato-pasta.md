@@ -2,13 +2,13 @@
 
 ## Ingredients
 
-- Butter
-- Onion
-- Garlic
-- Tomato Sauce
-- Tomato Paste
-- Cream
-- Italian Seasoning
-- Top with parmesan cheese
+- butter
+- onion
+- garlic
+- tomato Sauce
+- tomato Paste
+- cream
+- Italian seasoning
+- top with parmesan cheese
 
 ## Instructions
