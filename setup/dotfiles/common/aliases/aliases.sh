@@ -59,3 +59,25 @@ timer() {
     say "${2:-Time's up!}"
   ) &
 }
+
+alertinterval() {
+  if [ -z "$1" ]; then
+    echo "Usage: alertinterval <cron-interval|off>"
+    echo "Example: alertinterval '*/15' (every 15 minutes)"
+    echo "         alertinterval '0' (every hour)"
+    echo "         alertinterval off (remove the alert)"
+    return 1
+  fi
+
+  if [ "$1" = "off" ]; then
+    crontab -l 2>/dev/null | grep -v 'say "the time is now' | crontab -
+    echo "🛑 Alert cron job removed"
+    return 0
+  fi
+
+  CRON_LINE="$1 * * * * /bin/bash -c 'say \"the time is now \$(date +\"\\%I:\\%M \\%p\")\"'"
+
+  # Replace existing say job
+  ( crontab -l 2>/dev/null | grep -v 'say "the time is now' ; echo "$CRON_LINE" ) | crontab -
+  echo "✅ Cron updated: $CRON_LINE"
+}

@@ -1,4 +1,2 @@
-# Utility
-*/30 * * * * /bin/bash -c 'say "the time is now $(date +"\%I:\%M \%p")"'
 # Download DJ Music
 0 * * * * ping -c 1 8.8.8.8 > /dev/null 2>&1 && IS_CRON=true && PATH=/usr/sbin:/usr/bin:/sbin:/bin && source ~/.zshrc && cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py
