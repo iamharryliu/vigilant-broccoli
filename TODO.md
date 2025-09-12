@@ -1,26 +1,31 @@
 # TODO
-
+Next parallel route delete cache and .next
 ## vigilant-broccoli
+- feat(immich): initial implementation
+- feat(common-node): llm image identification interface 
+- feat: secret-manager secret rotation practice
+- feat: recipe markdown blog
+- feat(vb-manager):
+  - Github
+    - organization/team manager
+  - Spotify DL manager
+  - LLM tools
+  - text tools
+  - Google TODO list
+  - Optional
+    - Weather
+    - World Clocks
+- feat(employee-handler):
+  - inform user if gam or gyb needs to be setup
+  - create missing folder/file structures
+- fix: fix Toronto alerts
+- fix: fix DocsMD
+- chore: iCloud vb notes
+- feat: iPhone finder implementation
+- chore: reassess Spotify API
+- chore: research identification implementations
 
 - **feat:**
-  - Immich POC
-  - Dynamically change timer alert
-  - **Secret Manager**
-    - vault
-      - vault seal keys
-      - root token
-    - secret rotation practice
-  - **LM**
-    - image identifier
-  - **employee-handler**
-    - inform user if gam or gyb needs to be setup
-    - create missing folder/file structures
-  - **vigilant-broccoli ui manager tool**
-    - Github
-      - organization/team manager
-    - Spotify DL manager
-    - LLM tools
-    - text tools
   - **Email Service**
     - Queue
     - Can be called from separate apps
@@ -30,21 +35,15 @@
       - [fullcalendar](https://fullcalendar.io/docs/react)
       - Google Calendar integration
   - asynchronous logging
-  - move secret manager under DNS
   - Stripe implementation
   - AI image analysis
-- fix:
-  - fix toronto alerts
 - chore:
-  - iCloud vb notes??
   - hashicorp vault settings
     - document vault access
     - setup and understand SAN to be able to make local commands to vault
   - dotfile clean up
   - alias for `alias run lib:nx-release-publish`?
   - consider eslint proseWrap: "preserve"
-- iPhone finder tool
-- reassess Spotify API
 
 ## AI Tools
 
