@@ -6,6 +6,16 @@
 - [Password Generator](https://passwordsgenerator.net/)
 - [How to Choose a Password - Computerphile](https://www.youtube.com/watch?v=3NjQ9b3pgIg)
 
+# Security Classification Mapping
+
+| Sensitivity Level | Business Term                        | Example Use Case                         |
+| ----------------- | ------------------------------------ | ---------------------------------------- |
+| Lowest            | **Public**                           | Public websites, press releases          |
+| Low               | **Internal / Restricted**            | Internal policies, internal emails       |
+| Medium            | **Confidential**                     | Employee records, customer data (PII)    |
+| High              | **Secret**                           | Trade secrets, defense logistics         |
+| Highest           | **Highly Confidential / Top Secret** | Encryption keys, national security plans |
+
 ## General Guidelines
 
 - Never trust user input.

@@ -12,6 +12,11 @@ Larger grind size, sweeter.
 - Water Quality
 
 ### Brewing Methods
+- Drip Coffee
+- Moka Pot
+- French Press
+- Espresso Maker
+
 
 #### Cold Brew
 
