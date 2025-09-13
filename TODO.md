@@ -1,10 +1,16 @@
 # TODO
+
 Next parallel route delete cache and .next
+
 ## vigilant-broccoli
+
+- feat(common-node): bucket service
+- feat(employee-handler): enhance employee handler [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
 - feat(immich): initial implementation
-- feat(common-node): llm image identification interface 
+- feat(common-node): llm image identification interface
 - feat: secret-manager secret rotation practice
 - feat: recipe markdown blog
+- feat: city alerts
 - feat(vb-manager):
   - Github
     - organization/team manager
@@ -24,7 +30,9 @@ Next parallel route delete cache and .next
 - feat: iPhone finder implementation
 - chore: reassess Spotify API
 - chore: research identification implementations
-
+- chore: dotfile cleanup
+- chore: consider eslint proseWrap: "preserve"
+  -chore: alias for `alias run lib:nx-release-publish`?
 - **feat:**
   - **Email Service**
     - Queue
@@ -37,13 +45,6 @@ Next parallel route delete cache and .next
   - asynchronous logging
   - Stripe implementation
   - AI image analysis
-- chore:
-  - hashicorp vault settings
-    - document vault access
-    - setup and understand SAN to be able to make local commands to vault
-  - dotfile clean up
-  - alias for `alias run lib:nx-release-publish`?
-  - consider eslint proseWrap: "preserve"
 
 ## AI Tools
 
@@ -72,13 +73,6 @@ graphic
     vibrant party style?
 }
 ```
-
-## Employee Handler
-
-- feat:
-  - enhance employee handler
-    - [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
-  - bucket service
 
 ## Home Management
 
@@ -122,11 +116,6 @@ graphic
     - Blogs.
   - Handle receiving emails for message requests.
   - Virus scanning for uploads.
-
-## Malmo Alerts
-
-- feat:
-  - Malmo weather alert such as rain alerts.
 
 ## Toronto Alerts
 
