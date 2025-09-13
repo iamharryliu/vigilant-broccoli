@@ -68,4 +68,6 @@ ps aux | grep WORDS
 base64 -i DECODED_FILENAME -o ENCODED_FILENAME
 echo ENCODED_FILENAME| base64 -d > DECODED_FILENAME
 
+echo -n "DECODED_STRING" | base64
+echo "ENCODED_STRING" | base64 --decode
 ```
