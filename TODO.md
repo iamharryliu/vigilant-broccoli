@@ -45,6 +45,7 @@ Next parallel route delete cache and .next
   - asynchronous logging
   - Stripe implementation
   - AI image analysis
+- chore: pihole reserach, pihole, pivpn, nordvpn integration
 
 ## AI Tools
 
