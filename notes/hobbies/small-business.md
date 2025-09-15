@@ -13,3 +13,5 @@
 - Online Presence
 - Restaurant
   - Dietary Restriction Accomodations
+- Seasonal business model
+  - Solo Botique Inline only in the city for the summer.
