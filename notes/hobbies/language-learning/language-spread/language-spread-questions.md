@@ -8,7 +8,7 @@
 | what         | vad        | que            | que        |           |         |
 | when         | när        | quand          | cuando     |           |         |
 | at what time | vilken tid | a quelle heure | a que hora |           |         |
-| where        | var        | ou             | donde      |           |         |
+| where        | vär        | ou             | donde      |           |         |
 | why          | varför     | pourquoi       | por qué    |           |         |
 | how          | hur        | comment        | como       |           |         |
 | how much     | hur mycket | combien        | cuánto     |           |         |

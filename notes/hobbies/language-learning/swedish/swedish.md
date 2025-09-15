@@ -591,11 +591,6 @@ Arvid tänker på olika saker om kilmatet grader
 - Arvid har läst tidningen från brevlådan. Branden är lika som 20 000 fotbollplaner
 - Arvid hörde på radion forskare (pratade) om den globala uppvärmingen och att temperaturen på jorden ökar. - (Mycket) människan släpper ut (mycket) koldixid i atmosfären till exempel från bilar.
 
-- **många vs mycket**
-  - många when you can count
-  - mycket when you cannot count and next to verbs ie regnar mycket
-  - pengar(money) is an exception to the counting rule
-
 | English Expression         | Expression       | Example (English)                                                                                             | Example (Swedish)                                                                                                 |
 | -------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | ... ago                    | För ... sedan    | Maritha came to Sweden 5 years ago.                                                                           | Maritha kom till Sverige för 5 år sedan.                                                                          |
@@ -608,9 +603,49 @@ Arvid tänker på olika saker om kilmatet grader
 | Considering                | Med tanke på     | She's incredibly good at basketball considering her height.                                                   | Hon är oerhört duktig på basket med tanke på hennes längd.                                                        |
 | In contrast to             | I motsats till   | I'm freezing, in contrast to Fredrik who walks around in a T-shirt.                                           | Jag fryser jättemycket, i motsats till Fredrik som går runt i T-shirt.                                            |
 
-till
-på 
-
 @ - snabel-a
 . - pont
+
 - - streck
+
+2025/09/15
+Innan jag har flyttat till Sverige
+
+**1 Hur bodde du? Och med vilka?**
+I mitt hemland bodde jag i en radhus 4a, på 150kv _tillsammans_ med min pappa och mamma.
+
+**2 Var låg din bostad?**
+Min bostad låg i Toronto, Kanada.
+
+**3 Fordelar och nackdelar?**
+Fordelar
+- Det finns mycket man kan göra 
+- Jag bodde nära skogen.
+- Det finns många jättegott restauranger man kan prova
+Nackdelar
+- Staden var för stor så allt var långt borta.
+- Hyran var mycket dyr så om man bo i Toronto du måste ha en välbetalt jobb.
+
+**4 Vad tyckte du om din bostad?**
+Jag tyckte min bostad var ok eftersom jag bodde med min familj så pengar var inget stort problem för mig och vi hade en bil så jag körde alltid. Nu tycka jag inte så bra eftersom allt var långt borta.
+
+**5 Hur trivdes du?**
+Jag trivdes mycket bra, men mitt liv i Sverige är bättre.
+
+
+## Common Types
+- **Villa** – Detached house, usually with a garden.  
+- **Radhus** – Terraced house (row house), attached to neighbors on one or both sides.  
+- **Parhus** – Semi-detached house, two houses sharing a wall.  
+- **Lägenhet** – Apartment, either rented (*hyresrätt*) or owned (*bostadsrätt*).  
+- **Bostadsrätt** – Tenant-owned apartment/townhouse (ownership of the right to live, not the building itself).  
+- **Hyresrätt** – Rental apartment.  
+- **Studentbostad** – Student housing, usually smaller apartments or dorm-style rooms.  
+- **Fritidshus** – Holiday home or summer house, often in the countryside or by the sea/lake.  
+- **Attefallshus** – Small house (up to 30 m²) built on a property, often used as guest house or rental.  
+- **Torpet** – Traditional small countryside cottage, often rustic and older.  
+
+## Everyday Words
+- **Bostad** – General word for “home” or “residence.”  
+- **Hus** – House (detached, semi-detached, or sometimes just “building”).  
+- **Lägenhet** – Apartment.  
