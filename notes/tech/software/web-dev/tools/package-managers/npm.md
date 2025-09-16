@@ -40,6 +40,7 @@ npm publish @ORGANISATION_NAME/PACKAGE_NAME
 
 ```
 npm run build && npm publish
+npm cache clean --force
 ```
 
 ### Link and Unlink NPM Packages
