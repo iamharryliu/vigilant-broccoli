@@ -6,7 +6,11 @@
 
 ### Rice Ratios
 
-- Basmatic rice - 1:1.5
+- **Basmati rice** – 1 : 1.5
+- **Jasmine rice** – 1 : 1.25
+- **Long-grain white rice** – 1 : 2
+- **Brown rice** – 1 : 2.5
+- **Wild rice** – 1 : 3
 
 ## Granola Cereal
 
