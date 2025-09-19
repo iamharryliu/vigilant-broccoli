@@ -4,11 +4,19 @@ import { FileSystemUtils, ShellUtils } from '@vigilant-broccoli/common-node';
 import { GamCommand } from './gam.api';
 import { GoogleBatchCommandFactory } from './google.model';
 
-export const runGamReadCommand = async (cmd: string): Promise<string> => {
+export const runGamCommand = async (
+  cmd: string,
+  hasOutput: boolean,
+): Promise<string> => {
+  console.log(`Running GAM command: ${cmd}`)
   return (await ShellUtils.runShellCommand(
     `~/bin/gam7/${cmd}`,
-    true,
+    hasOutput,
   )) as string;
+};
+
+export const runGamReadCommand = async (cmd: string): Promise<string> => {
+  return runGamCommand(cmd, true);
 };
 
 export const runBatchCommands = async (commands: string[]): Promise<void> => {

@@ -1,3 +1,69 @@
+function createCalendar(calendarOwnerEmail: string, calendarName: string) {
+  return `gam user ${calendarOwnerEmail} create calendar summary "${calendarName}"`;
+}
+
+// function createCalendarEvent(
+//   calendarId: string,
+//   name: string,
+//   startDate: string,
+//   endDate: string,
+//   attendees: string[],
+// ) {
+//   let cmd =
+//     `gam calendar ${calendarId} add event summary ` +
+//     `"${name}" ` +
+//     `start "${startDate}" ` +
+//     `end "${endDate}"`;
+
+//   if (attendees && attendees.length > 0) {
+//     cmd += ` selectattendees ${attendees.join(',')}`;
+//   }
+//   return cmd;
+// }
+function createCalendarEvent(
+  calendarId: string,
+  name: string,
+  startDate: string,
+  endDate: string,
+  attendees: string[],
+  allday?: boolean,
+) {
+  // helper to format yyyy-mm-dd
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const formattedStart = formatDate(startDate);
+  const formattedEnd = formatDate(endDate);
+
+  let cmd =
+    `gam calendar ${calendarId} add event summary "${name}" ` +
+    `start ${allday ? 'allday ' : ''}"${formattedStart}" ` +
+    `end ${allday ? 'allday ' : ''}"${formattedEnd}"`;
+
+  if (attendees && attendees.length > 0) {
+    cmd += ` selectattendees ${attendees.join(',')}`;
+  }
+
+  return cmd;
+}
+
+function updateCalendarEvent(
+  calendarId: string,
+  calendarEventId: string,
+  name: string,
+) {
+  return `gam calendar ${calendarId} update event id ${calendarEventId} summary "${name}"`;
+}
+
+function deleteCalendarEvent(calendarId: string, calendarEventId: string) {
+  return `gam calendar ${calendarId} delete events id ${calendarEventId} doit`;
+}
+
 export const GamCommand = {
   getListOfEmailsOfOrganizationalUnit: (organizationalUnit: string): string =>
     `gam info org ${organizationalUnit} | grep -E -o "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}" | sort`,
@@ -73,6 +139,10 @@ export const GamCommand = {
   ): string => {
     return `gam update user ${email} json file '${phoneNumberJsonFilepath}'`;
   },
+  createCalendar,
+  createCalendarEvent,
+  updateCalendarEvent,
+  deleteCalendarEvent,
   getUserCalendars: (email: string) => {
     return `gam user ${email} show calendars`;
   },

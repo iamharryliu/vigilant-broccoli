@@ -33,7 +33,20 @@ export type WorkspacePhoneNumberUpdate = {
 export type WorkspaceCalendarAdd = {
   email: string;
   calendarId: string;
+};
+
+export type WorkspaceCalendar = {
+  calendarOwnerEmail: string
+  name:string
 }
+
+export type WorkspaceCalendarEvent = {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  attendees: string[];
+};
 
 export type GoogleBatchCommandPayload = {
   commands: string[];

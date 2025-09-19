@@ -10,6 +10,8 @@ import {
   IncomingUser,
   GoogleBatchCommandFactory,
   WorkspaceCalendarAdd,
+  WorkspaceCalendarEvent,
+  WorkspaceCalendar,
 } from './google.model';
 import { runGamReadCommand } from './google.utils';
 import {
@@ -174,7 +176,9 @@ const batchDeleteEmailAccounts = async (
 const batchAddUserToCalendar = async (
   updates: WorkspaceCalendarAdd[],
 ): Promise<GoogleBatchCommandPayload> => {
-  const commands = updates.map(update => GamCommand.addCalendarToUser(update.email, update.calendarId));
+  const commands = updates.map(update =>
+    GamCommand.addCalendarToUser(update.email, update.calendarId),
+  );
   return { commands };
 };
 
@@ -309,13 +313,136 @@ function getBatchAddUsersToCalendarCommands(
   return formatGoogleBatchOperation(batchAddUserToCalendar, updates);
 }
 
+async function createCalendar(
+  calendarOwnerEmail: string,
+  calendarName: string,
+): Promise<string> {
+  const createCalendarCommand = GamCommand.createCalendar(
+    calendarOwnerEmail,
+    calendarName,
+  );
+  const res = await runGamReadCommand(createCalendarCommand);
+  const match = res.match(/Calendar:\s*([^,]+)/);
+  const calendarId = match[1].trim();
+  return calendarId;
+}
+
+async function createCalendarEvent(
+  calendarId: string,
+  name: string,
+  startDate: string,
+  endDate: string,
+  attendees: string[],
+  allday?: boolean,
+): Promise<string> {
+  function parseEventId(logLine: string): string | null {
+    const match = logLine.match(/Event:\s*([a-zA-Z0-9]+)/);
+    return match ? match[1] : null;
+  }
+  const createCalendarCommand = GamCommand.createCalendarEvent(
+    calendarId,
+    name,
+    startDate,
+    endDate,
+    attendees,
+    allday,
+  );
+  const res = await runGamReadCommand(createCalendarCommand);
+  const calendarEventId = parseEventId(res);
+  return calendarEventId;
+}
+
+async function batchCreateCalendarEvent(
+  events: WorkspaceCalendarEvent[],
+): Promise<GoogleBatchCommandPayload> {
+  const commands = events.map(event =>
+    GamCommand.createCalendarEvent(
+      event.id,
+      event.name,
+      event.startDate,
+      event.endDate,
+      event.attendees,
+    ),
+  );
+  return { commands };
+}
+
+const batchCreateCalendar = async (
+  items: WorkspaceCalendar[],
+): Promise<GoogleBatchCommandPayload> => {
+  const commands = items.map(item =>
+    GamCommand.createCalendar(item.calendarOwnerEmail, item.name),
+  );
+  return { commands };
+};
+
+const batchUpdateCalendarEvent = async (
+  items: {
+    calendarId: string;
+    calendarEventId: string;
+    name: string;
+  }[],
+): Promise<GoogleBatchCommandPayload> => {
+  const commands = items.map(item =>
+    GamCommand.updateCalendarEvent(
+      item.calendarId,
+      item.calendarEventId,
+      item.name,
+    ),
+  );
+  return { commands };
+};
+
+const batchDeleteCalendarEvent = async (
+  items: {
+    calendarId: string;
+    calendarEventId: string;
+  }[],
+): Promise<GoogleBatchCommandPayload> => {
+  const commands = items.map(item =>
+    GamCommand.deleteCalendarEvent(item.calendarId, item.calendarEventId),
+  );
+  return { commands };
+};
+
+function getBatchCreateCalendarCommands(calendars: WorkspaceCalendar[]) {
+  return formatGoogleBatchOperation(batchCreateCalendar, calendars);
+}
+
+function getBatchCreateCalendarEventCommands(events: WorkspaceCalendarEvent[]) {
+  return formatGoogleBatchOperation(batchCreateCalendarEvent, events);
+}
+
+function getBatchUpdateCalendarEventCommands(
+  events: {
+    calendarId: string;
+    calendarEventId: string;
+    name: string;
+  }[],
+) {
+  return formatGoogleBatchOperation(batchUpdateCalendarEvent, events);
+}
+
+function getBatchDeleteCalendarEventCommands(
+  events: {
+    calendarId: string;
+    calendarEventId: string;
+  }[],
+) {
+  return formatGoogleBatchOperation(batchDeleteCalendarEvent, events);
+}
 
 export const GoogleService = {
-  // Read
+  // CREATE
+  createCalendar,
+  createCalendarEvent,
+  getBatchCreateCalendarCommands,
+  getBatchCreateCalendarEventCommands,
+  // READ
   getMembersOfOrganizationalUnit,
   getEmailsInWorkspace,
   getEmployeesOrganizationData,
-  // User Updates
+  // UPDATE
   getBatchUpdateGroupCommands,
   getBatchUpdatePasswordCommands,
   getBatchUpdateOrganizationalUnitCommands,
@@ -323,6 +450,9 @@ export const GoogleService = {
   getBatchUpdateEmailSignatureCommands,
   getBatchUpdatePhoneNumberCommands,
   getBatchAddUsersToCalendarCommands,
+  getBatchUpdateCalendarEventCommands,
+  // DELETE
+  getBatchDeleteCalendarEventCommands,
   // Offboard
   batchSuspendEmails,
   batchDeleteEmailAccounts,
