@@ -33,6 +33,9 @@
 - **Summer**
   - [Kayakomat](https://www.kayakomat.com/en?country=se)
   - [Malmö Wake Park](https://www.malmowakepark.se/)
+  - [Beach Vibes Social](https://www.facebook.com/groups/2897144393858138/events)
+  - [Malmö Latin Social](https://www.instagram.com/malmo_latin_social/)
+  - [Salsa Thursdays at Vaganza Beachgarden](https://www.salsavida.com/event/sweden/malmo/salsa-thursdays-at-vaganza-beachgarden/)
 - [Folkets Park](https://malmo.se/Folkets-Park)
 - [Lund](https://lund.se/)
 - [Malmö Live](https://malmolive.se/program)
@@ -43,7 +46,9 @@
     - [Friday Night Skate Copenhagen](https://www.instagram.com/fnscph/)
   - Social Dancing
     - [United Dance Studios](https://www.uniteddancestudios.se/)
-    - [Malmö Latin Social](https://www.instagram.com/malmo_latin_social/)
+      - [Bachata United](https://fb.me/e/3SZKEydhc)
+      - [UNITED SOCIAL – Salsa & Bachata Sundays at United Dance Studios](https://fb.me/e/6X0FS5QUe)
+      - [Salsa & Bachata Fever](https://fb.me/e/1P2QypJZHm)
     - [Latin Dance Events](https://www.facebook.com/groups/klubbkalenderlatin/events)
 - Tech
   - [Goto 10 Events](https://www.goto10.se/event/)

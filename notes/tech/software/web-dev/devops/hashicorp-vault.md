@@ -18,6 +18,13 @@ curl --header "X-Vault-Token: VAULT_TOKEN" http://127.0.0.1:8200/v1/secret/data/
 ## Policies
 
 ```
+vault policy list
+vault policy read POLICY_NAME
+vault list auth/github/map/teams
+vault read auth/github/map/teams/TEAM_NAME
+vault list auth/github/map/users
+ault read auth/github/map/users/USERNAME
+
 vault policy write default - <<EOF
 path "sys/capabilities-self" {
   capabilities = ["update"]
@@ -119,6 +126,8 @@ WantedBy=multi-user.target
 ```
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_SKIP_VERIFY=true
+
+export VAULT_CACERT=/etc/vault/tls/vault.crt
 ```
 
 ## Auth
