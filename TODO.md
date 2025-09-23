@@ -1,5 +1,13 @@
 # TODO
 
+```
+nx build @vigilant-broccoli/LIBRARY_NAME && nx run @vigilant-broccoli/LIBRARY_NAME:nx-release-publish
+
+npm i && git add . && git commit -m "stash" --no-verify && gpush
+
+git pull && npm i && npx tsx test.ts
+```
+
 Next parallel route delete cache and .next
 
 ## vigilant-broccoli
