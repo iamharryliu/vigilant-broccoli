@@ -148,4 +148,13 @@ path "PATH" {
 EOF
 ```
 
+## Usage
+
+```
+curl --cacert vault.crt \
+  --header "X-Vault-Token: TOKEN" \
+  --request GET \
+https://ID_ADDRESS:8200/v1/SECRET_ENGINE_PATH/data/PATH_TO_SECRET
+```
+
 https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/
