@@ -44,6 +44,7 @@
   - Skating
     - [Malmö Ice Flyers](https://malmoiceflyers.se/)
     - [Friday Night Skate Copenhagen](https://www.instagram.com/fnscph/)
+    - [Dance Skate Malmö](https://www.instagram.com/danceskatemalmo?igsh=eGdkMWdyeWoxZHZj)
   - Social Dancing
     - [United Dance Studios](https://www.uniteddancestudios.se/)
       - [Bachata United](https://fb.me/e/3SZKEydhc)

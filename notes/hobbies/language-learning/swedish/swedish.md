@@ -603,11 +603,6 @@ Arvid tänker på olika saker om kilmatet grader
 | Considering                | Med tanke på     | She's incredibly good at basketball considering her height.                                                   | Hon är oerhört duktig på basket med tanke på hennes längd.                                                        |
 | In contrast to             | I motsats till   | I'm freezing, in contrast to Fredrik who walks around in a T-shirt.                                           | Jag fryser jättemycket, i motsats till Fredrik som går runt i T-shirt.                                            |
 
-@ - snabel-a
-. - pont
-
-- - streck
-
 2025/09/15
 Innan jag har flyttat till Sverige
 
@@ -619,10 +614,11 @@ Min bostad låg i Toronto, Kanada.
 
 **3 Fordelar och nackdelar?**
 Fordelar
-- Det finns mycket man kan göra 
+
+- Det finns mycket man kan göra
 - Jag bodde nära skogen.
 - Det finns många jättegott restauranger man kan prova
-Nackdelar
+  Nackdelar
 - Staden var för stor så allt var långt borta.
 - Hyran var mycket dyr så om man bo i Toronto du måste ha en välbetalt jobb.
 
@@ -632,20 +628,6 @@ Jag tyckte min bostad var ok eftersom jag bodde med min familj så pengar var in
 **5 Hur trivdes du?**
 Jag trivdes mycket bra, men mitt liv i Sverige är bättre.
 
-
-## Common Types
-- **Villa** – Detached house, usually with a garden.  
-- **Radhus** – Terraced house (row house), attached to neighbors on one or both sides.  
-- **Parhus** – Semi-detached house, two houses sharing a wall.  
-- **Lägenhet** – Apartment, either rented (*hyresrätt*) or owned (*bostadsrätt*).  
-- **Bostadsrätt** – Tenant-owned apartment/townhouse (ownership of the right to live, not the building itself).  
-- **Hyresrätt** – Rental apartment.  
-- **Studentbostad** – Student housing, usually smaller apartments or dorm-style rooms.  
-- **Fritidshus** – Holiday home or summer house, often in the countryside or by the sea/lake.  
-- **Attefallshus** – Small house (up to 30 m²) built on a property, often used as guest house or rental.  
-- **Torpet** – Traditional small countryside cottage, often rustic and older.  
-
-## Everyday Words
-- **Bostad** – General word for “home” or “residence.”  
-- **Hus** – House (detached, semi-detached, or sometimes just “building”).  
-- **Lägenhet** – Apartment.  
+GRAMMAR MISTAKES
+Hon har **alltid** varit snäll mot mig.
+På julen träffar jag alltid släkten

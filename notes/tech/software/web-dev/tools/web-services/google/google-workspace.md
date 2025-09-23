@@ -50,6 +50,15 @@ gam create datatransfer FROM_EMAIL gdrive TO_EMAIL privacy_level shared,private
 gyb --email EMAIL --action estimate --spam-trash --search QUERY --service-account
 gyb --email EMAIL --action backup --local-folder FOLDER  --spam-trash --search QUERY --service-account
 gyb --email EMAIL --action restore --local-folder FOLDER --service-account
+
+gam user USER_EMAIL create calendar summary "summary"
+gam user USER_EMAIL show calendars
+gam calendar CALENDAR_ID show settings
+gam calendar calendar_id show events
+gam calendar CALENDAR_ID update event EVENT_ID summary "new summary"
+gam user CALENDAR_ID delete calendar 
+
+
 ```
 
 ## Domain Wide Delegation

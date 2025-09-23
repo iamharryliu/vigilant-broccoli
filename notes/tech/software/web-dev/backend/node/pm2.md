@@ -2,8 +2,11 @@
 
 ```
 npm install -g pm2
+
 pm2 start "npm run start" --name APP_NAME
 pm2 start "npm run start" --name APP_NAME --cwd [dist]
+pm2 start FILENAME.ts --interpreter npx --interpreter-args "tsx" --name APP_NAME
+
 pm2 list
 
 pm2 save

@@ -15,27 +15,6 @@ curl --header "X-Vault-Token: VAULT_TOKEN" --request POST --data '{"data": {"key
 curl --header "X-Vault-Token: VAULT_TOKEN" http://127.0.0.1:8200/v1/secret/data/my-secret
 ```
 
-## Policies
-
-```
-vault policy list
-vault policy read POLICY_NAME
-vault list auth/github/map/teams
-vault read auth/github/map/teams/TEAM_NAME
-vault list auth/github/map/users
-ault read auth/github/map/users/USERNAME
-
-vault policy write default - <<EOF
-path "sys/capabilities-self" {
-  capabilities = ["update"]
-}
-
-path "secret/*" {
-  capabilities = ["create", "read", "update", "delete", "list"]
-}
-EOF
-```
-
 ## Deploy in Production
 
 [Deploy Vault](https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy)
@@ -135,24 +114,38 @@ export VAULT_CACERT=/etc/vault/tls/vault.crt
 ### Github
 
 ```
-vault auth enable github
-vault write auth/github/config organization=ORGANIZATION_NAME
-
-vault list auth/github/map/users
-vault list auth/github/map/teams
-
-vault write auth/github/map/teams/TEAM_NAME value=POLICY_NAME
-vault read auth/github/map/teams/TEAM_NAME
-vault delete auth/github/map/users/TEAM_NAME
-
-vault write auth/github/map/users/USERNAME value=POLICY_NAME
-vault read auth/github/map/users/USERNAME
-vault delete auth/github/map/users/USERNAME
-
 # https://github.com/settings/tokens and make a classic token `vault-token` with `read:org` permission
 vault login -method=github token=TOKEN
 
+vault auth enable github
+vault write auth/github/config organization=ORGANIZATION_NAME
+
+vault list auth/github/map/teams
+vault read auth/github/map/teams/TEAM_NAME
+vault write auth/github/map/teams/TEAM_NAME value=POLICY_NAME
+vault delete auth/github/map/users/TEAM_NAME
+
+vault list auth/github/map/users
+vault read auth/github/map/users/USERNAME
+vault write auth/github/map/users/USERNAME value=POLICY_NAME
+vault delete auth/github/map/users/USERNAME
+
 curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/github/login
+```
+
+## Policies
+
+```
+vault policy list
+vault policy read POLICY_NAME
+
+vault write auth/github/map/teams/TEAM_NAME value=POLICY_NAME
+
+vault policy write default - <<EOF
+path "PATH" {
+  capabilities = []
+}
+EOF
 ```
 
 https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/

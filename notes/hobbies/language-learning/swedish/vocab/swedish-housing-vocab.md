@@ -1,0 +1,15 @@
+# Swedish Housing Vocabulary
+- **Bostad** – General word for “home” or “residence.”
+- **Hus** – House (detached, semi-detached, or sometimes just “building”).
+- **Lägenhet** – Apartment.
+- **Villa** – Detached house, usually with a garden.
+- **Radhus** – Terraced house (row house), attached to neighbors on one or both sides.
+- **Parhus** – Semi-detached house, two houses sharing a wall.
+- **Lägenhet** – Apartment, either rented (_hyresrätt_) or owned (_bostadsrätt_).
+- **Bostadsrätt** – Tenant-owned apartment/townhouse (ownership of the right to live, not the building itself).
+- **Hyresrätt** – Rental apartment.
+- **Studentbostad** – Student housing, usually smaller apartments or dorm-style rooms.
+- **Fritidshus** – Holiday home or summer house, often in the countryside or by the sea/lake.
+- **Attefallshus** – Small house (up to 30 m²) built on a property, often used as guest house or rental.
+- **Torpet** – Traditional small countryside cottage, often rustic and older.
+- i stan vs på lander
