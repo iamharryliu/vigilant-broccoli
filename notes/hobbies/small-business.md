@@ -13,5 +13,11 @@
 - Online Presence
 - Restaurant
   - Dietary Restriction Accomodations
+  - Animal friendly
 - Seasonal business model
   - Solo Botique Inline only in the city for the summer.
+- Software Services
+  - Google Workspace
+  - Microsoft Teams
+  - Slack
+- OSS

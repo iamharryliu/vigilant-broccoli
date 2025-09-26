@@ -3,20 +3,24 @@
 - **Project Management**
   - Managing Expectations and Deadlines
   - Cost Management
+  - Team Manaagement
 - **Architecture**
   - Microservices - Breaking applications into tiny remote services that run independently of each other.
     - Pros: Developers/teams are able to work on independent services without affecting each other.
     - Cons: Services that are dependent on other services require code changes on both services.
+  - Systems Design
+    - Integrated system vs independent systems
 - **Web Development**
 
-  - Communication
+  - Data structures
+  - **Communication**
     - Socket - Live communication, ie data hydration and live notifications/alerts.
     - RabbitMQ - Asynchronous tasks, can implement rate limits and retry logic. Useful for microservices.
-  - \*\*State Management
+  - **State Management**
     - Session
     - Cookies
     - JWT
-  - Frontend
+  - **Frontend**
 
     - Templates
 

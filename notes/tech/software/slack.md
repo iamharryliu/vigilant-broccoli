@@ -1,5 +1,7 @@
 # Slack
 
+- [Block Kit Builder](https://app.slack.com/block-kit-builder/)
+
 ## Commands
 ```
 /invite @your-bot-name
@@ -7,7 +9,7 @@
 
 ## Formatting Messages
 
-[Reference](https://slack.com/help/articles/202288908-Format-your-messages)w
+[Reference](https://slack.com/help/articles/202288908-Format-your-messages)
 
 | **Format**        | **Example**                |
 | ----------------- | -------------------------- |
