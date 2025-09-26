@@ -43,6 +43,10 @@ Next parallel route delete cache and .next
   - chore: consider eslint proseWrap: "preserve"
   - chore: alias for `alias run lib:nx-release-publish`?
   - feat: Implement deadman switch.
+  - refactor(dotenv):
+    - **dotenv refactor**
+      - import 'dotenv-defaults/config';
+    - remove instances of `process.env`
 - **feat:**
   - **Email Service**
     - Queue
@@ -113,8 +117,6 @@ graphic
 - **DocsMD**
   - Split into separate app.
   - Implement search bar.
-- **dotenv refactor**
-  - import 'dotenv-defaults/config';
 - logging system
 - RabbitMQ mail service
 
