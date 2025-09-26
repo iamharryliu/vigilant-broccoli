@@ -16,6 +16,7 @@ export const delay = (ms: number): Promise<void> =>
 export function getEnvironmentVariable(key: string) {
   const value = process.env[key];
   if (!value) {
+    console.warn(`Environment variable ${key} is not set.`);
     return '';
   }
   return value;
