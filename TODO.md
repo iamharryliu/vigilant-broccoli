@@ -12,35 +12,37 @@ Next parallel route delete cache and .next
 
 ## vigilant-broccoli
 
-- feat(common-node): bucket service
-- feat(employee-handler): enhance employee handler [Google Workspace best practices](https://www.reddit.com/r/gsuite/comments/1ap8a9j/looking_for_google_workspace_best_practices_tips/)
-- feat(immich): initial implementation
-- feat(common-node): llm image identification interface
-- feat: secret-manager secret rotation practice
-- feat: recipe markdown blog
-- feat: city alerts
-- feat(vb-manager):
-  - Github
-    - organization/team manager
-  - Spotify DL manager
-  - LLM tools
-  - text tools
-  - Google TODO list
-  - Optional
-    - Weather
-    - World Clocks
-- feat(employee-handler):
-  - inform user if gam or gyb needs to be setup
-  - create missing folder/file structures
-- fix: fix Toronto alerts
-- fix: fix DocsMD
-- chore: iCloud vb notes
-- feat: iPhone finder implementation
-- chore: reassess Spotify API
-- chore: research identification implementations
-- chore: dotfile cleanup
-- chore: consider eslint proseWrap: "preserve"
-  -chore: alias for `alias run lib:nx-release-publish`?
+- **HIGH PRIORITY**
+  - feat: secret-manager secret rotation practice
+  - feat(vb-manager): Github organization/team manager
+  - chore: iCloud vb notes
+  - feat: AI image analysis interface implementation
+- **Smaller Projects**
+  - **Interfaces**
+    - feat(common-node): Stripe interface implementation
+    - feat(common-node): Bucket service implementation.
+    - LLM Interfaces
+    - feat(vb-manager): LLM tools
+    - feat(common-node): LLM image analysis
+    - feat(common-node): LLM image identification interface
+  - feat(immich): initial implementation
+  - feat(vb-manager): Spotify DL manager
+  - feat(vb-manager): text tools
+  - feat(vb-manager): Google TODO list
+  - feat(employee-handler):
+    - inform user if gam or gyb needs to be setup
+    - create missing folder/file structures
+  - fix: fix DocsMD
+  - feat: recipe markdown blog
+  - feat: city alerts
+  - fix: fix Toronto alerts
+  - feat: iPhone finder implementation
+  - chore: reassess Spotify API
+  - chore: research identification implementations
+  - chore: dotfile cleanup
+  - chore: consider eslint proseWrap: "preserve"
+  - chore: alias for `alias run lib:nx-release-publish`?
+  - feat: Implement deadman switch.
 - **feat:**
   - **Email Service**
     - Queue
@@ -51,8 +53,6 @@ Next parallel route delete cache and .next
       - [fullcalendar](https://fullcalendar.io/docs/react)
       - Google Calendar integration
   - asynchronous logging
-  - Stripe implementation
-  - AI image analysis
 - chore: pihole reserach, pihole, pivpn, nordvpn integration
 
 ## AI Tools
