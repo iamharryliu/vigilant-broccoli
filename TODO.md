@@ -17,6 +17,7 @@ Next parallel route delete cache and .next
   - feat(vb-manager): Github organization/team manager
   - chore: iCloud vb notes
   - feat: AI image analysis interface implementation
+  - feat: Setup linux vs mac setup scripts
 - **Smaller Projects**
   - **Interfaces**
     - feat(common-node): Stripe interface implementation
