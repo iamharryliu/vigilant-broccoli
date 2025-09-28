@@ -2,10 +2,15 @@ source $HOME/vigilant-broccoli/setup/dotfiles/common/directory_variables.sh
 
 alias initsh='echo "~Shell initialized.~" && source ~/.zshrc'
 alias reinstallsh="source $MAC_SETUP_DIR/install.sh"
-alias brewinit="brew bundle --file $MAC_SETUP_DIR/Brewfile"
-alias setupdock=". $MAC_SETUP_DIR/setup_dock.sh"
-alias setupmac=". $MAC_SETUP_DIR/setup_macos_preferences.sh"
-alias toggle-darkmode='osascript -e "tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode"'
+
+# Mac specific aliases
+if [[ "$(uname)" == "Darwin" ]]; then
+  echo "💻 Mac detected, loading Mac-specific aliases..."
+  alias brewinit="brew bundle --file $MAC_SETUP_DIR/Brewfile"
+  alias setupdock=". $MAC_SETUP_DIR/setup_dock.sh"
+  alias setupmac=". $MAC_SETUP_DIR/setup_macos_preferences.sh"
+  alias toggle-darkmode='osascript -e "tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode"'
+fi
 
 
 load_aliases() {
@@ -45,20 +50,26 @@ explain_shell() {
     command -v xdg-open > /dev/null && xdg-open "$url" || command -v open > /dev/null && open "$url" || echo "Open manually: $url";
 }
 
+# TODO: Enhance for Linux compatibility
 alias cpsshpubkey='cat ~/.ssh/id_rsa.pub| pbcopy'
 
 alarm() {
-  (sleep "$1" && say "${2:-Time's up!}") &
-}
+  if [ $# -lt 2 ]; then
+    echo "Usage: alarm <minutes> <message>"
+    return 1
+  fi
 
-timer() {
+  local minutes=$1
+  shift
+  local message="$*"
+
   (
-    sleep "${1:-600}"
-    afplay /System/Library/Sounds/Ping.aiff
-    terminal-notifier -title "Alarm Timer" -message "${2:-Time is up!}"
-    say "${2:-Time's up!}"
+    echo "Alarm set for $minutes minutes..."
+    sleep $((minutes * 60))
+    say "$message"
   ) &
 }
+
 
 alertinterval() {
   if [ -z "$1" ]; then
