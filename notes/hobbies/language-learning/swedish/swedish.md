@@ -631,3 +631,7 @@ Jag trivdes mycket bra, men mitt liv i Sverige är bättre.
 GRAMMAR MISTAKES
 Hon har **alltid** varit snäll mot mig.
 På julen träffar jag alltid släkten
+
+varje
+varannan/vartannat
+var/vart

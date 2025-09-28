@@ -1,7 +1,8 @@
 # Small Business
 
 - Subtle Rebranding, ie CP Company
-
+- Hybrid Businesses
+  - Cobbler/Coffee shop
 - Physical Store
   - Potential liability
   - Leave floor empty
