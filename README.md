@@ -1,22 +1,20 @@
 # vigilant-broccoli
 
-My personal software toolkit.
-
 <div>
 <img src="https://i.pinimg.com/564x/b7/62/38/b762386c0bbb20dec77c2632f73d28a8.jpg" alt="broccoli" width="200"/>
 </div>
 
 ## Folder Structure
 
-- notes - Collection of markdown notes.
-- projects - Software projects.
+- **notes** - Collection of markdown notes.
+- **projects** - Software projects.
   - Nx workspace for Typescript projects
   - Demo/Sandbox Applications
   - Leetcode Solutions
   - Other Projects
-- scripts - Software scripts.
-- setup - Setup scripts and configurations.
-- snippets - Text and code snippets for quick copy and paste.
+- **scripts** - Software scripts.
+- **setup** - Setup scripts and configurations.
+- **snippets** - Text and code snippets for quick copy and paste.
 
 ## Machine Setups
 
