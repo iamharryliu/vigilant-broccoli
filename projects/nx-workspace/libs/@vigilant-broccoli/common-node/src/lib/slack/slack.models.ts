@@ -4,6 +4,7 @@ export interface SlackMessage {
   body: string;
 }
 
+// TODO: deprecate?
 export type SlackMember = {
   id: string;
   team_id: string;

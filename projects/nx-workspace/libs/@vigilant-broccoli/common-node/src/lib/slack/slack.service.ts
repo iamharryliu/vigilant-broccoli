@@ -1,9 +1,10 @@
 import { WebClient } from '@slack/web-api';
 import { SLACK_API_URL } from './slack.consts';
-import { SlackMember, SlackMessage } from './slack.models';
+import { SlackMessage } from './slack.models';
 import { createSlackHeaders, stringifyQuery } from './slack.utils';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { HttpUtils } from '../http/http.utils';
+import { Member } from '@slack/web-api/dist/types/response/UsersListResponse';
 
 const sendSlackMessage = async (slackMessage: SlackMessage): Promise<void> => {
   const REQUEST_OPTIONS = {
@@ -19,7 +20,7 @@ const sendSlackMessage = async (slackMessage: SlackMessage): Promise<void> => {
 };
 
 const getSlackUsers = async (
-  filter: (user: SlackMember) => boolean,
+  filter: (user: Member) => boolean,
 ): Promise<string[]> => {
   const client = new WebClient(process.env.BOTYONCE_TOKEN);
   const result = await client.users.list({});
