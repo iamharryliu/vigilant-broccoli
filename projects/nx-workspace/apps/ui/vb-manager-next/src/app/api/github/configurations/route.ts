@@ -1,4 +1,4 @@
-import { FileSystemUtils, GithubService } from '@vigilant-broccoli/common-node';
+import { FileSystemUtils } from '@vigilant-broccoli/common-node';
 import { NextResponse } from 'next/server';
 
 async function parseFile(filename: string) {

@@ -2,6 +2,7 @@
 
 import { Button, Card, Heading, TextField } from '@radix-ui/themes';
 import {
+  downloadJson,
   FORM_TYPE,
   GithubOrganizationTeamStructure,
   GithubTeam,
@@ -158,6 +159,10 @@ export const GithubTeamManager = () => {
     { id: number; config: string }[]
   >([]);
   const [organizationName, setOrganizationName] = useState('');
+  const [organizationStructure, setOrganizationStructure] = useState<
+    GithubOrganizationTeamStructure | undefined
+  >(undefined);
+  const [isOrgStructureLoading, setIsOrgStructureLoading] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -168,34 +173,46 @@ export const GithubTeamManager = () => {
   }, []);
 
   async function getOrganizationStructure() {
+    setIsOrgStructureLoading(true);
     const res = await fetch(
       `${API_ROUTES.ORGANIZATION_STRUCTURE}?organization=${organizationName}`,
     );
+    setIsOrgStructureLoading(false);
     const data = await res.json();
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: 'application/json',
-    });
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = `${organizationName}-team-structure.json`;
-    document.body.appendChild(a);
-    a.click();
+    setOrganizationStructure(data);
+  }
 
-    a.remove();
-    URL.revokeObjectURL(blobUrl);
+  async function downloadOrganizationStructure() {
+    downloadJson(
+      organizationStructure,
+      `${organizationName}-team-structure.json`,
+    );
   }
 
   return (
     <Card>
-      <TextField.Root
-        placeholder="Organization name"
-        value={organizationName}
-        onChange={e => setOrganizationName(e.target.value)}
-      />
-      <Button onClick={getOrganizationStructure}>
-        Fetch Organization Structure
-      </Button>
+      <div>
+        <TextField.Root
+          placeholder="Organization name"
+          value={organizationName}
+          onChange={e => setOrganizationName(e.target.value)}
+        />
+        <Button
+          onClick={getOrganizationStructure}
+          loading={isOrgStructureLoading}
+        >
+          Fetch Organization Structure
+        </Button>
+      </div>
+      <div>{JSON.stringify(organizationStructure)}</div>
+      <div>
+        {organizationStructure ? (
+          <Button onClick={downloadOrganizationStructure}>
+            Download Structure
+          </Button>
+        ) : null}
+      </div>
+
       <CRUDItemList
         createItemFormDefaultValues={{ id: 0, config: '' }}
         items={teamSettings}
