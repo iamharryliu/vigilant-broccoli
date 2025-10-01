@@ -5,12 +5,8 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Home',
     path: '/',
   },
-  COMPONENT_LIBRARY: {
-    title: 'Component Library',
-    path: '/component-library',
-  },
-  AI_TOOL: {
-    title: 'AI Tool',
-    path: '/ai-tool',
+  TEXT_TOOLS: {
+    title: 'Text Tools',
+    path: '/text-tools',
   },
 };
