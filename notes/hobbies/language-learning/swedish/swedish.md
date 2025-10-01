@@ -635,3 +635,9 @@ På julen träffar jag alltid släkten
 varje
 varannan/vartannat
 var/vart
+
+gammal-äldere-äldst
+ung-yngre-yngst
+
+flytta -> frivilligt
+fly -> måste -> krig/hunger/problem

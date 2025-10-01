@@ -3,9 +3,20 @@
 - [Block Kit Builder](https://app.slack.com/block-kit-builder/)
 
 ## Commands
+
 ```
 /invite @your-bot-name
 ```
+
+## API
+
+| **Use case**                        | **Bot Token** | **App Token** | **Signing Secret** |
+| :---------------------------------- | :-----------: | :-----------: | :----------------: |
+| Post messages / use Web API         |      ✅       |      ❌       |         ❌         |
+| Events API / Slash commands (HTTP)  |      ✅       |      ❌       |         ✅         |
+| Interactivity (HTTP actions/modals) |      ✅       |      ❌       |         ✅         |
+| Socket Mode (events via WebSocket)  |      ✅       |      ✅       |         ❌         |
+| App-level management (rare)         |      ❌       |      ✅       |         ❌         |
 
 ## Formatting Messages
 

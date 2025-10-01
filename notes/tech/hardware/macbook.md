@@ -1,4 +1,22 @@
-# Mac
+# Macbook
+
+## Image Cropping
+
+```
+Method 1: Using Preview (built-in app)
+
+Open the image in Preview (double-click the file, or right-click → Open With → Preview).
+
+From the toolbar, choose the Rectangular Selection tool (under Tools → Rectangular Selection if you don’t see it).
+
+Hold Shift while dragging a selection box → this forces it to be a perfect square.
+
+Adjust the box by dragging corners/edges to get the area you want.
+
+Go to Tools → Crop (or press ⌘K).
+
+Save (⌘S) or File → Export to save a new copy.
+```
 
 ## Keyboard Shortcuts
 
@@ -28,3 +46,4 @@
 ## References
 
 [10 BEST Mac Apps for Productivity!](https://www.youtube.com/watch?v=-xXc7qeiC8I&t=215s)
+

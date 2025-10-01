@@ -1,5 +1,7 @@
 # Software Breakdown
 
+- **Data structures**
+- **Security**
 - **Project Management**
   - Managing Expectations and Deadlines
   - Cost Management
@@ -12,7 +14,6 @@
     - Integrated system vs independent systems
 - **Web Development**
 
-  - Data structures
   - **Communication**
     - Socket - Live communication, ie data hydration and live notifications/alerts.
     - RabbitMQ - Asynchronous tasks, can implement rate limits and retry logic. Useful for microservices.
