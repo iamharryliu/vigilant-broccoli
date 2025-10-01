@@ -6,6 +6,7 @@ import {
   FORM_TYPE,
   GithubOrganizationTeamStructure,
   GithubTeam,
+  GithubTeamMember,
 } from '@vigilant-broccoli/common-js';
 import {
   CopyPastable,
@@ -105,10 +106,10 @@ const GithubTeamLink = ({
   );
 };
 
-const GithubUserLink = ({ username }: { username: string }) => {
+const GithubUserLink = ({ member }: { member: GithubTeamMember }) => {
   return (
-    <Link href={`https://github.com/${username}`} target="_blank">
-      {username}
+    <Link href={`https://github.com/${member.username}`} target="_blank">
+      {member.username} ({member.role})
     </Link>
   );
 };
@@ -128,7 +129,7 @@ const ListItemComponent = ({
       {extractTeamLinks(item.config).map(name => (
         <div key={name}>
           <Link href={name} target="blank" key={name}>
-            {name}
+            {name.split('/').pop()}
           </Link>
         </div>
       ))}
@@ -143,7 +144,7 @@ const ListItemComponent = ({
             </Heading>
             {team.members.map(member => (
               <div key={`${item.id}-${team.name}-${member.username}`}>
-                <GithubUserLink username={member.username} /> ({member.role})
+                <GithubUserLink member={member} />
               </div>
             ))}
           </Card>

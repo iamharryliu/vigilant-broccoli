@@ -1,4 +1,4 @@
-import fs, { readdirSync, statSync } from 'fs';
+import fs, { existsSync, readdirSync, statSync } from 'fs';
 import path, { join } from 'path';
 import crypto from 'crypto';
 import archiver from 'archiver';
@@ -104,6 +104,11 @@ export function getFilenamesFromDir(
   recursive = false,
 ): string[] {
   const files: string[] = [];
+
+  if (!existsSync(dirPath)) {
+    FileSystemUtils.makedirectory(dirPath);
+    return files;
+  }
 
   for (const entry of readdirSync(dirPath)) {
     const fullPath = join(dirPath, entry);
