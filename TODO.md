@@ -19,6 +19,7 @@ Next parallel route delete cache and .next
   - feat: AI image analysis interface implementation
   - feat: Setup linux vs mac setup scripts
 - **Smaller Projects**
+  - feat: Github wiki workflow.
   - **Interfaces**
     - feat(common-node): Stripe interface implementation
     - feat(common-node): Bucket service implementation.
@@ -37,9 +38,7 @@ Next parallel route delete cache and .next
   - feat: recipe markdown blog
   - feat: city alerts
   - fix: fix Toronto alerts
-  - feat: iPhone finder implementation
   - chore: reassess Spotify API
-  - chore: research identification implementations
   - chore: dotfile cleanup
   - chore: consider eslint proseWrap: "preserve"
   - chore: alias for `alias run lib:nx-release-publish`?
@@ -48,6 +47,10 @@ Next parallel route delete cache and .next
     - **dotenv refactor**
       - import 'dotenv-defaults/config';
     - remove instances of `process.env`
+  - **chore: Product Research**
+    - research Eleventy vs Astro, RSS feed
+    - research identification implementations
+    - research iPhone finder implementation
 - **feat:**
   - **Email Service**
     - Queue
