@@ -1,7 +1,12 @@
 import { toSlug } from '@vigilant-broccoli/common-js';
 import { ShellUtils } from '../shell/shell.utils';
 import { GithubService } from './github.service';
-import { GithubTeamMember, GithubTeamsDTO, GithubTeam } from './github.types';
+import {
+  GithubTeamMember,
+  GithubTeamsDTO,
+  GithubTeam,
+  GithubTeamRepository,
+} from './github.types';
 
 async function getTeamMembers(
   org: string,
@@ -20,6 +25,24 @@ async function getTeamMembers(
   );
 }
 
+async function getTeamRepositories(
+  org: string,
+  slug: string,
+): Promise<GithubTeamRepository[]> {
+  const data = await ShellUtils.runShellCommand(
+    `gh api orgs/${org}/teams/${slug}/repos`,
+    true,
+  );
+
+  const repos = JSON.parse(data as string) as any[];
+
+  return await Promise.all(
+    repos.map(repo => {
+      return { name: repo.name, permission: repo.permissions };
+    }),
+  );
+}
+
 async function buildTeamTree(
   org: string,
   teams: GithubTeamsDTO[],
@@ -32,7 +55,7 @@ async function buildTeamTree(
       name: team.name,
       members: await getTeamMembers(org, toSlug(team.name)),
       teams: [],
-      repositories: [],
+      repositories: await getTeamRepositories(org, toSlug(team.name)),
     };
   }
 

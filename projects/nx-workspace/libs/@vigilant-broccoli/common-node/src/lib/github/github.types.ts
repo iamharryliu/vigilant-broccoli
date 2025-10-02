@@ -24,7 +24,7 @@ export const REPOSITORY_PERMISSION = {
 export type RepositoryPermission =
   (typeof REPOSITORY_PERMISSION)[keyof typeof REPOSITORY_PERMISSION];
 
-type GithubTeamRepository = {
+export type GithubTeamRepository = {
   name: string;
   permission: RepositoryPermission;
 };
