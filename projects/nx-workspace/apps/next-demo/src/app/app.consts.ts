@@ -9,8 +9,4 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Component Library',
     path: '/component-library',
   },
-  AI_TOOL: {
-    title: 'AI Tool',
-    path: '/ai-tool',
-  },
 };
