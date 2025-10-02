@@ -118,9 +118,7 @@ const ListItemComponent = ({
 }) => {
   return (
     <>
-      <Heading>
-        {item.config.organizationName}
-      </Heading>
+      <Heading>{item.config.organizationName}</Heading>
       {item.config.teams.map(team => {
         return (
           <Card key={`${item.id}-${team.name}`}>
