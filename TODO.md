@@ -1,67 +1,54 @@
 # TODO
 
-```
-nx build @vigilant-broccoli/LIBRARY_NAME && nx run @vigilant-broccoli/LIBRARY_NAME:nx-release-publish
-
-npm i && git add . && git commit -m "stash" --no-verify && gpush
-
-git pull && npm i && npx tsx test.ts
-```
-
-Next parallel route delete cache and .next
 
 ## vigilant-broccoli
 
-- **HIGH PRIORITY**
-  - feat: secret-manager secret rotation practice
-  - feat(vb-manager): Github organization/team manager
-  - chore: iCloud vb notes
-  - feat: AI image analysis interface implementation
-  - feat: Setup linux vs mac setup scripts
-- **Smaller Projects**
-  - feat: Github wiki workflow.
-  - **Interfaces**
-    - feat(common-node): Stripe interface implementation
-    - feat(common-node): Bucket service implementation.
-    - LLM Interfaces
-    - feat(vb-manager): LLM tools
-    - feat(common-node): LLM image analysis
-    - feat(common-node): LLM image identification interface
-  - feat(immich): initial implementation
-  - feat(vb-manager): Spotify DL manager
-  - feat(vb-manager): text tools
-  - feat(vb-manager): Google TODO list
-  - feat(employee-handler):
-    - inform user if gam or gyb needs to be setup
-    - create missing folder/file structures
-  - fix: fix DocsMD
-  - feat: recipe markdown blog
-  - feat: city alerts
-  - fix: fix Toronto alerts
-  - chore: reassess Spotify API
-  - chore: dotfile cleanup
-  - chore: consider eslint proseWrap: "preserve"
-  - chore: alias for `alias run lib:nx-release-publish`?
-  - feat: Implement deadman switch.
-  - refactor(dotenv):
-    - **dotenv refactor**
-      - import 'dotenv-defaults/config';
-    - remove instances of `process.env`
-  - **chore: Product Research**
-    - research Eleventy vs Astro, RSS feed
-    - research identification implementations
-    - research iPhone finder implementation
-- **feat:**
-  - **Email Service**
-    - Queue
-    - Can be called from separate apps
-    - Can send emails on behalf of apps to appropriate people/parties
-  - **Home Hanagement**
-    - Calendar Implementation
-      - [fullcalendar](https://fullcalendar.io/docs/react)
-      - Google Calendar integration
-  - asynchronous logging
+- feat: secret-manager secret rotation practice
+- chore: iCloud vb notes
+- feat: AI image analysis interface implementation
+- feat: Setup linux vs mac setup scripts
+- feat: Github wiki workflow.
+- feat(common-node): Stripe interface implementation
+- feat(common-node): Bucket service implementation.
+- LLM Interfaces
+- feat(vb-manager): Github organization/team manager
+- feat(vb-manager): LLM tools
+- feat(common-node): LLM image analysis
+- feat(common-node): LLM image identification interface
+- feat(immich): initial implementation
+- feat(vb-manager): Spotify DL manager
+- feat(vb-manager): text tools
+- feat(vb-manager): Google TODO list
+- feat(employee-handler):
+  - inform user if gam or gyb needs to be setup
+  - create missing folder/file structures
+- fix: fix DocsMD
+- feat: recipe markdown blog
+- feat: city alerts
+- fix: fix Toronto alerts
+- chore: reassess Spotify API
+- chore: dotfile cleanup
+- chore: consider eslint proseWrap: "preserve"
+- chore: alias for `alias run lib:nx-release-publish`?
+- feat: Implement deadman switch.
+- refactor(dotenv):
+  - **dotenv refactor**
+    - import 'dotenv-defaults/config';
+  - remove instances of `process.env`
+- **chore: Product Research**
+  - research Eleventy vs Astro, RSS feed
+  - research identification implementations
+  - research iPhone finder implementation
+- **feat: Email Service**
+  - Queue
+  - Can be called from separate apps
+  - Can send emails on behalf of apps to appropriate people/parties
+- **feat: Home Hanagement**
+- Calendar Implementation
+  - [fullcalendar](https://fullcalendar.io/docs/react)
+  - Google Calendar integration
 - chore: pihole reserach, pihole, pivpn, nordvpn integration
+- chore: Next parallel route delete cache and .next
 
 ## AI Tools
 
