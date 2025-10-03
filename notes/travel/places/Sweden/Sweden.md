@@ -80,3 +80,7 @@
 ## Sustainability
 
 - [Loppis](https://www.reddit.com/r/stockholm/comments/12ahzt1/can_you_do_loppis_anywhere_or_where_can_you_how/)
+
+## Fun Facts
+
+- [Gustav Badin, the first African man in Sweden](https://en.wikipedia.org/wiki/Gustav_Badin)

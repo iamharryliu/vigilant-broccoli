@@ -27,6 +27,14 @@ nx run LIBRARY:nx-release-publish --otp=XXXXXX
 npm add -D @nx/next
 ```
 
+## Workflows
+
+```
+nx build LIBRARY_NAME && nx run LIBRARY_NAME:nx-release-publish
+npm i && git add . && git commit -m "stash" --no-verify && gpush
+git pull && npm i && npx tsx script.ts
+```
+
 ### Storybook
 
 ```
