@@ -42,6 +42,7 @@ alias vbgit='chrome "https://github.com/iamharryliu/vigilant-broccoli"'
 alias vbactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
 alias vbnpm='open "https://www.npmjs.com/settings/vigilant-broccoli/packages"'
 # vb push
+alias pushdocs="cdvb && git add $DOCS_DIR && gc docs notes 'Update Markdown notes.' && gpush"
 alias pushnotes="cdvb && git add $NOTES_DIR && gc docs notes 'Update Markdown notes.' && gpush"
 alias pushvbtodo="cdvb && git add $TODO_FILEPATH && gc docs todo 'Update TODO.md file.' && gpush"
 alias pushsnippets="cdvb && git add $SNIPPETS_DIR && gc docs snippets 'Update snippets.' && gpush"
