@@ -109,6 +109,17 @@ export VAULT_SKIP_VERIFY=true
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 ```
 
+## App Role
+
+```
+vault auth enable approle
+vault auth disable approle
+
+vault list auth/approle/role
+vault read auth/approle/role/<role-name>
+vault delete auth/approle/role/<role-name>
+```
+
 ## Auth
 
 ### Github
@@ -138,6 +149,7 @@ curl --request POST --data '{"token":"TOKEN"}' http://127.0.0.1:8200/v1/sys/gith
 ```
 vault policy list
 vault policy read POLICY_NAME
+vault policy delete POLICY_NAME
 
 vault write auth/github/map/teams/TEAM_NAME value=POLICY_NAME
 
