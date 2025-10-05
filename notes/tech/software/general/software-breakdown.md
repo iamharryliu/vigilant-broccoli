@@ -1,8 +1,9 @@
 # Software Breakdown
 
+- **Software Languages**
+- **Data structures**
 - **POC**
   - Interfaces > utils > tests > implementation > scaling
-- **Data structures**
 - **Security**
 - **Project Management**
   - Managing Expectations and Deadlines
