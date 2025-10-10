@@ -3,6 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api/personal-website-backend/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
@@ -70,6 +71,5 @@
       "command": "flyctl deploy --dockerfile ./apps/api/personal-website-backend/Dockerfile --config ./deployment-configs/fly-configs/harryliu-design-express.toml",
       "dependsOn": ["build", "test", "lint"]
     }
-  },
-  "tags": []
+  }
 }

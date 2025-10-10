@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ThemeService } from 'general-components';
 
 @Component({
@@ -7,7 +7,7 @@ import { ThemeService } from 'general-components';
   templateUrl: './toggle-dark-mode-button.component.html',
 })
 export class ToggleDarkThemeButtonComponent {
-  constructor(private themeService: ThemeService) {}
+  private themeService = inject(ThemeService);
   toggleDarkMode(): void {
     this.themeService.toggleDarkMode();
   }

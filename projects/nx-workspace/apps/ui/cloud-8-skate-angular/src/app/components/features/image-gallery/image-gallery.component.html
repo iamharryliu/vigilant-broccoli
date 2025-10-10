@@ -1,3 +1,5 @@
 <div class="sm:columns-3 ps-4 pe-4">
-  <img class="w-full mb-4" *ngFor="let image of images" [src]="image" />
+  @for (image of images; track image) {
+    <img class="w-full mb-4" [src]="image" />
+  }
 </div>

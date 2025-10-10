@@ -3,6 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/@prettydamntired/vibecheck-lite/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
@@ -30,6 +31,5 @@
         "jestConfig": "libs/@prettydamntired/vibecheck-lite/jest.config.ts"
       }
     }
-  },
-  "tags": []
+  }
 }

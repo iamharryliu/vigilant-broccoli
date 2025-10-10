@@ -1,12 +1,11 @@
 <app-general-layout [hasContactForm]="false" [hasSubscribeForm]="false">
   <div
     class="newsletter-subscription max-w-xl mx-auto bg-white shadow-none rounded pt-8 pb-8"
-  >
-    <ng-container *ngIf="isLoading; else verifyEmailForm">
+    >
+    @if (isLoading) {
       <lib-loading-spinner></lib-loading-spinner>
       <p class="text-center">Verifying Request</p>
-    </ng-container>
-    <ng-template #verifyEmailForm>
+    } @else {
       <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="flex items-center">
           <label for="token" class="mr-2 text-sm"> Verification Key </label>
@@ -18,7 +17,7 @@
             required
             class="w-7/12 lg:w-min border rounded py-2 px-3 w-3/4 focus:outline-none focus:border-blue-400 mr-2"
             [placeholder]="'Verification Key'"
-          />
+            />
           <button
             type="submit"
             [disabled]="form.invalid"
@@ -28,11 +27,11 @@
               'bg-black': form.valid,
               'hover:bg-blue-600': form.valid
             }"
-          >
+            >
             Subscribe
           </button>
         </div>
       </form>
-    </ng-template>
+    }
   </div>
 </app-general-layout>

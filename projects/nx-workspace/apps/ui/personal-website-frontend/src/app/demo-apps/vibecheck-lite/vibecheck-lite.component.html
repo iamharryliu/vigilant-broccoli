@@ -2,19 +2,20 @@
   <h1 class="pt-4 mb-4 text-2xl font-bold text-center">Vibecheck Lite</h1>
   <hr />
   <lib-card>
-    <div class="text-sm" *ngIf="recommendation$ | async as data; else loading">
-      <p [innerText]="data"></p>
-    </div>
-  </lib-card>
-  <ng-template #loading>
-    <div class="text-sm pt-48 pb-48">
-      <lib-loading-spinner
-        [header]="'Loading...'"
+    @if (recommendation$ | async; as data) {
+      <div class="text-sm">
+        <p [innerText]="data"></p>
+      </div>
+    } @else {
+      <div class="text-sm pt-48 pb-48">
+        <lib-loading-spinner
+          [header]="'Loading...'"
         [message]="
           'Please enable location access. We will use your weather location to determine an appropriate outfit.'
         "
-      >
-      </lib-loading-spinner>
-    </div>
-  </ng-template>
+          >
+        </lib-loading-spinner>
+      </div>
+    }
+  </lib-card>
 </app-centered-app-layout>

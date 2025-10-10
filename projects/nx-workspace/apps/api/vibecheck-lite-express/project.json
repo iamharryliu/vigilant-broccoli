@@ -3,6 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api/vibecheck-lite-express/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
@@ -70,6 +71,5 @@
       "command": "flyctl deploy --dockerfile ./apps/api/vibecheck-lite-express/Dockerfile --config ./deployment-configs/fly-configs/vibecheck-lite-express.toml --ha=false",
       "dependsOn": ["build", "test", "lint"]
     }
-  },
-  "tags": []
+  }
 }

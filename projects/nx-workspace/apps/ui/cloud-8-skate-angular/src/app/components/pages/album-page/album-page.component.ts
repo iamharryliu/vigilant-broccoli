@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ImageGalleryComponent } from '../../features/image-gallery/image-gallery.component';
 import { Observable, switchMap } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -13,11 +13,9 @@ import { CommonModule } from '@angular/common';
 export class AlbumPageComponent implements OnInit {
   images$!: Observable<string[]>;
   albumName!: string;
-
-  constructor(
-    private route: ActivatedRoute,
-    private imageService: ImageService,
-  ) {}
+  
+  private route = inject(ActivatedRoute);
+  private imageService = inject(ImageService);
 
   ngOnInit(): void {
     this.images$ = this.route.paramMap.pipe(

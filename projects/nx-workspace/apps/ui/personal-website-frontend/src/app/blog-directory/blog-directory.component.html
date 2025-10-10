@@ -1,24 +1,26 @@
 <app-general-layout>
   <div class="w-11/12 mx-auto mt-6">
-    <div *ngFor="let year of getObjectKeys(blogsByYear)" class="mb-8">
-      <h2 class="text-lg mb-2">{{ year }}</h2>
-      <div
-        *ngFor="let blog of blogsByYear[year]"
-        class="flex justify-between cursor-pointer"
-        (click)="goToBlog(blog)"
-      >
-        <p class="mr-4">
-          {{ blog.title }}
-          <span
-            class="inline-block bg-slate-700 font-bold text-xs text-white px-2 rounded"
-            >{{ blog.type }}</span
-          >
-        </p>
-
-        <p>{{ blog.date | date: 'MMMM d' }}</p>
-      </div>
+    @for (year of getObjectKeys(blogsByYear); track year) {
+      <div class="mb-8">
+        <h2 class="text-lg mb-2">{{ year }}</h2>
+        @for (blog of blogsByYear[year]; track blog) {
+          <div
+            class="flex justify-between cursor-pointer"
+            (click)="goToBlog(blog)"
+            >
+            <p class="mr-4">
+              {{ blog.title }}
+              <span
+                class="inline-block bg-slate-700 font-bold text-xs text-white px-2 rounded"
+                >{{ blog.type }}</span
+                >
+              </p>
+              <p>{{ blog.date | date: 'MMMM d' }}</p>
+            </div>
+          }
+        </div>
+      }
+      <hr class="mb-8" />
+      <app-newsletter-sub-form></app-newsletter-sub-form>
     </div>
-    <hr class="mb-8" />
-    <app-newsletter-sub-form></app-newsletter-sub-form>
-  </div>
-</app-general-layout>
+  </app-general-layout>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpService } from 'general-components';
 import { Observable } from 'rxjs';
 
@@ -11,7 +11,7 @@ export class LeetCodePageService {
   selectedContent$!: Observable<string>;
   selectedFilepath = '';
 
-  constructor(private httpService: HttpService) {}
+  private httpService =  inject(HttpService);
 
   selectFile(filepath: string) {
     this.selectedFilepath = filepath;
