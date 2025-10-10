@@ -8,5 +8,21 @@ cp example.env .env
 open http://localhost:2283
 
 brew install immich-go
-immich-go upload from-google-photos --server=http://localhost:2283 --api-key=API_KEY --dry-run TAKEOUT_FILEPATH.zip
+
+immich-go upload from-google-photos \
+ --server="http://localhost:2283" \
+ --api-key="API_KEY" \
+ --dry-run \
+ TAKEOUT_FILEPATH.zip
+
+immich-go upload from-google-photos \
+ --server="http://localhost:2283" \
+ --api-key="API_KEY" \
+ --dry-run \
+ \*.zip
+
+immich-go upload from-google-photos \
+ --server="http://localhost:2283" \
+ --api-key="API_KEY" \
+ \*.zip
 ```
