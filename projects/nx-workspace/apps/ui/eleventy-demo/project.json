@@ -1,0 +1,17 @@
+{
+  "name": "eleventy-demo",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eleventy --input apps/eleventy-demo/src/input --output apps/eleventy-demo/dist"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eleventy --serve --input apps/ui/eleventy-demo/src/input --output apps/ui/eleventy-demo/dist"
+      }
+    }
+  }
+}
