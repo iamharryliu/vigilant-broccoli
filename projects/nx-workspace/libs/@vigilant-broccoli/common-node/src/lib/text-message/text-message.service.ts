@@ -2,9 +2,7 @@ import 'dotenv-defaults/config';
 import { Twilio } from 'twilio';
 import {
   MessageInstance,
-  MessageListInstanceCreateOptions,
 } from 'twilio/lib/rest/api/v2010/account/message';
-import { DEFAULT_TEXT_MESSAGE } from './text-message.const';
 import { logger } from '../logging/logger.service';
 import { getEnvironmentVariable } from '../../index';
 
@@ -21,7 +19,11 @@ export class TextMessageService {
   }
 
   sendTextMessage(
-    textMessage = DEFAULT_TEXT_MESSAGE as MessageListInstanceCreateOptions,
+    textMessage: {
+      body: string,
+      from: string,
+      to: string,
+    },
   ): Promise<MessageInstance> {
     return this.client.messages.create(textMessage);
   }

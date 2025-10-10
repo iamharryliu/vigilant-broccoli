@@ -1,3 +1,4 @@
+import { getEnvironmentVariable } from '../utils';
 import { RecaptchaService } from './recaptcha.service';
 
 global.fetch = jest.fn();
@@ -36,7 +37,7 @@ describe('RecaptchaService', () => {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `secret=${process.env.RECAPTCHA_V3_SECRET_KEY}&response=${token}`,
+          body: `secret=${getEnvironmentVariable('RECAPTCHA_V3_SECRET_KEY')}&response=${token}`,
         },
       );
       expect(result).toBe(true);
@@ -53,7 +54,7 @@ describe('RecaptchaService', () => {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `secret=${process.env.RECAPTCHA_V3_SECRET_KEY}&response=${token}`,
+          body: `secret=${getEnvironmentVariable('RECAPTCHA_V3_SECRET_KEY')}&response=${token}`,
         },
       );
       expect(result).toBe(false);
