@@ -36,7 +36,6 @@
     - import 'dotenv-defaults/config';
   - remove instances of `process.env`
 - **chore: Product Research**
-  - research Eleventy vs Astro, RSS feed
   - research identification implementations
   - research iPhone finder implementation
 - **feat: Email Service**
