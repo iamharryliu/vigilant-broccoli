@@ -100,14 +100,21 @@ AmbientCapabilities=CAP_IPC_LOCK
 WantedBy=multi-user.target
 ```
 
-## Access Production Vault
-
 ```
+## Accessing Production Vault Locally
+
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_SKIP_VERIFY=true
 
 export VAULT_CACERT=/etc/vault/tls/vault.crt
+
+# Accessing Production Vault Remotely
+curl --cacert vault.crt \
+  --header "X-Vault-Token: TOKEN" \
+  --request GET \
+https://ID_ADDRESS:8200/v1/SECRET_ENGINE_PATH/data/PATH_TO_SECRET
 ```
+
 
 ## App Role
 
@@ -160,13 +167,76 @@ path "PATH" {
 EOF
 ```
 
-## Usage
-
-```
-curl --cacert vault.crt \
-  --header "X-Vault-Token: TOKEN" \
-  --request GET \
-https://ID_ADDRESS:8200/v1/SECRET_ENGINE_PATH/data/PATH_TO_SECRET
-```
 
 https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/
+
+### Audit
+
+```
+vault audit list
+
+sudo mkdir -p /var/log
+sudo chown vault:vault /var/log
+sudo chmod 750 /var/log
+vault audit enable file file_path=./vault_audit.log
+
+cat /var/log/vault_audit.log | jq .
+cat /var/log/vault_audit.log | jq '{time: .time, path: .request.path, method: .request.method, client: .client_address}'
+```
+
+## jwt
+
+```
+vault auth enable jwt
+
+vault list auth/jwt/roles
+vault read auth/jwt/role/ROLE_NAME
+```
+
+### OIDC
+
+```
+vault write auth/jwt/config \
+  oidc_discovery_url="https://token.actions.githubusercontent.com" \
+  bound_issuer="https://token.actions.githubusercontent.com"
+
+vault write auth/jwt/role/github-actions \
+    role_type="jwt" \
+    user_claim="actor" \
+    bound_audiences="vault" \
+    bound_subject="actor" \
+    policies="github-actions" \
+    ttl="1h"
+
+vault write auth/jwt/role/github-actions \
+    role_type="jwt" \
+    user_claim="sub" \
+    bound_audiences="vault" \
+    bound_subject="sub" \
+    policies="github-actions" \
+    ttl="1h"
+
+vault write auth/jwt/role/github-actions -<<EOF
+{
+  "role_type": "jwt",
+  "user_claim": "sub",
+  "bound_audiences": "vault",
+  "bound_claims_type": "glob",
+  "bound_claims": {
+    "sub": "repo:ORGANIZATION_NAME/REPO_NAME:*"
+  },
+  "policies": "github-actions",
+  "ttl": "1h"
+}
+EOF
+```
+
+### Troubleshooting
+
+```
+      - name: Inspect GitHub OIDC token
+        run: |
+          TOKEN=$(curl -sSL -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=vault" | jq -r .value)
+          echo "OIDC token claims:"
+          echo "$TOKEN" | cut -d. -f2 | base64 --decode | jq
+```

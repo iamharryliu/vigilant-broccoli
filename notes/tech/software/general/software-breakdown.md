@@ -5,6 +5,8 @@
 - **POC**
   - Interfaces > utils > tests > implementation > scaling
 - **Security**
+  - Security Layers
+    - SSH Tunneling vs VPN vs Dynamic IP Whitelists
 - **Project Management**
   - Managing Expectations and Deadlines
   - Cost Management

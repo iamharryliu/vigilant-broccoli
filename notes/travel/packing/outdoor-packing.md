@@ -43,14 +43,14 @@
 - **Food and Water**
   - Food and Water
   - Water Bottle
-  - Thermos
-  - Cooler
+  - Optional:
+    - Thermos
+    - Cooler
 - **Utility**
-  - Power Bank
-  - Charger
+  - Power Bank and cables.
   - Flash Light
-  - Headlight
-  - Swedish Dish Clothes (Wettex)
+  - Headlamp
+  - Swedish Dish Cloths (Wettex)
   - Extra bags/totes
 - **Pest Handling**
   - Bug Net Masks
