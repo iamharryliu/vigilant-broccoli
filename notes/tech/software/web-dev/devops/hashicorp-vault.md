@@ -115,7 +115,6 @@ curl --cacert vault.crt \
 https://ID_ADDRESS:8200/v1/SECRET_ENGINE_PATH/data/PATH_TO_SECRET
 ```
 
-
 ## App Role
 
 ```
@@ -167,7 +166,6 @@ path "PATH" {
 EOF
 ```
 
-
 https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/
 
 ### Audit
@@ -182,6 +180,97 @@ vault audit enable file file_path=./vault_audit.log
 
 cat /var/log/vault_audit.log | jq .
 cat /var/log/vault_audit.log | jq '{time: .time, path: .request.path, method: .request.method, client: .client_address}'
+```
+
+## App Role
+
+```
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Args
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <app-name> <secret-path>"
+  echo "Example: $0 github-action secret/data/github"
+  exit 1
+fi
+
+APP_NAME="$1"
+SECRET_PATH="$2"
+
+# Derived config
+ROLE_NAME="${APP_NAME}-role"
+POLICY_NAME="${APP_NAME}-policy"
+
+echo "➡️ Creating policy: $POLICY_NAME"
+
+# Create a temporary policy file
+cat > ${POLICY_NAME}.hcl <<EOF
+path "$SECRET_PATH" {
+  capabilities = ["read"]
+}
+EOF
+
+# Write the policy
+vault policy write $POLICY_NAME ${POLICY_NAME}.hcl
+rm ${POLICY_NAME}.hcl
+
+echo "✅ Policy created."
+
+# Enable approle if not already enabled
+if ! vault auth list | grep -q "approle/"; then
+  echo "➡️ Enabling AppRole auth method"
+  vault auth enable approle
+fi
+
+echo "➡️ Creating role: $ROLE_NAME"
+
+# Create the role
+vault write auth/approle/role/$ROLE_NAME \
+    token_ttl=1h \
+    token_max_ttl=4h \
+    secret_id_ttl=24h \
+    policies=$POLICY_NAME
+
+# Get RoleID
+ROLE_ID=$(vault read -field=role_id auth/approle/role/$ROLE_NAME/role-id)
+
+# Generate SecretID
+SECRET_ID=$(vault write -f -field=secret_id auth/approle/role/$ROLE_NAME/secret-id)
+
+echo "✅ Role created successfully!"
+echo "----------------------------------"
+echo "App Name  : $APP_NAME"
+echo "Role Name : $ROLE_NAME"
+echo "Policy    : $POLICY_NAME"
+echo "SecretPath: $SECRET_PATH"
+echo "----------------------------------"
+echo "RoleID    : $ROLE_ID"
+echo "SecretID  : $SECRET_ID"
+echo "----------------------------------"
+echo "⚠️  Save RoleID and SecretID into GitHub Actions secrets:"
+echo "   VAULT_ROLE_ID=$ROLE_ID"
+echo "   VAULT_SECRET_ID=$SECRET_ID"
+```
+
+```
+# Authenticate with AppRole
+VAULT_TOKEN=$(curl --request POST \
+  --data "{\"role_id\": \"$VAULT_ROLE_ID\",\"secret_id\": \"$VAULT_SECRET_ID\"}" \
+  $VAULT_ADDR/v1/auth/approle/login | jq -r '.auth.client_token')
+
+echo "Vault token: $VAULT_TOKEN"
+
+
+# Authenticate and get a client token
+RESPONSE=$(curl -s --request POST \
+  --data "{\"role_id\": \"${VAULT_ROLE_ID}\", \"secret_id\": \"${VAULT_SECRET_ID}\"}" \
+  $VAULT_ADDR/v1/auth/approle/login)
+
+# Extract the client token
+CLIENT_TOKEN=$(echo "$RESPONSE" | jq -r '.auth.client_token')
+
+echo "Vault client token: $CLIENT_TOKEN"
 ```
 
 ## jwt
