@@ -2,17 +2,18 @@ import {
   Component,
   ViewEncapsulation,
   effect,
+  inject,
   input,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MarkdownService } from '../services/markdown.service';
 import { ScrollService } from '../services/scroll.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'lib-markdown-page',
-  imports: [CommonModule],
+  imports: [],
   styleUrl: './md.scss',
   templateUrl: './markdown.page.component.html',
   encapsulation: ViewEncapsulation.ShadowDom,
@@ -22,11 +23,11 @@ export class MarkdownPageComponent {
   contentSignal = signal<string | SafeHtml>('');
   isTrustedContent = input(false);
 
-  constructor(
-    private mdService: MarkdownService,
-    private scrollService: ScrollService,
-    private sanitizer: DomSanitizer,
-  ) {
+  private mdService = inject(MarkdownService);
+  private scrollService = inject(ScrollService);
+  private sanitizer = inject(DomSanitizer);
+
+  constructor() {
     effect(() => {
       if (this.filepath) {
         this.mdService.getParsedMdFile(this.filepath()).subscribe(content => {

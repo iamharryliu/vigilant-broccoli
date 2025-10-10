@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { EmployeeHandlerConfig } from '../../employee-handler/employee-handler.models';
+import { EmployeeHandlerConfig } from '../employee-handler.models';
 import {
   ALL_GENERATED_SIGNATURES_FILENAME,
   ALL_GENERATED_SIGNATURES_FILEPATH,
@@ -12,7 +12,7 @@ import {
   getEmailSignatureFilepath,
   SIGNATURE_TMP_DIR,
 } from '@vigilant-broccoli/google-workspace';
-import { FileSystemUtils } from '@vigilant-broccoli/common-node';
+import { FileSystemUtils, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 // TODO: kind of awkward with caching, refactor later.
 const updateEmailSignatures = async (
@@ -20,7 +20,7 @@ const updateEmailSignatures = async (
 ): Promise<void> => {
   let signaturesCache = FileSystemUtils.getObjectFromFilepath(
     SIGNATURE_CACHE_FILEPATH,
-  );
+  ) as Record<string, string>;
   const signatures =
     await handlerConfig.activeMaintenanceUtilities.fetchEmailSignatures();
   const signaturesToUpdate = handlerConfig.activeMaintenanceUtilities
@@ -45,7 +45,7 @@ const updateEmailSignatures = async (
             .update(signature.signatureString)
             .digest('hex');
           return cache;
-        }, {}),
+        }, {} as Record<string, string>),
       );
       await FileSystemUtils.writeJSON(
         SIGNATURE_CACHE_FILEPATH,
@@ -83,7 +83,7 @@ const emailZippedSignatures = async (
   handlerConfig: EmployeeHandlerConfig,
   receivers = process.argv.slice(3).length > 0
     ? process.argv.slice(3)
-    : [process.env.MY_EMAIL],
+    : [getEnvironmentVariable('MY_EMAIL')],
 ): Promise<void> => {
   await generateLocalSignatures(handlerConfig);
   const attachments = [
@@ -118,6 +118,7 @@ const manualRecoverUsers = async (
 const syncData = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
+  if(!handlerConfig.activeMaintenanceUtilities.syncData) return
   await handlerConfig.activeMaintenanceUtilities.syncData();
 };
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -24,10 +24,10 @@ import { GeneralLayoutComponent } from '../../layouts/general/genreral-layout.co
 })
 export class VerifyEmailSubscriptionPageComponent {
   isLoading!: boolean;
+    private commonService =inject(CommonService);
+    private router =inject(Router);
+    private route =inject(ActivatedRoute);
   constructor(
-    private commonService: CommonService,
-    private router: Router,
-    private route: ActivatedRoute,
   ) {
     this.route.queryParams.subscribe(params => {
       const token = params['token'];

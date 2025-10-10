@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   HttpInterceptor,
   HttpRequest,
@@ -10,7 +10,7 @@ import { ReCaptchaV3Service } from 'ng-recaptcha-2';
 
 @Injectable()
 export class RecaptchaInterceptor implements HttpInterceptor {
-  constructor(private recaptchaV3Service: ReCaptchaV3Service) {}
+  private recaptchaV3Service=inject(ReCaptchaV3Service)
 
   intercept(
     request: HttpRequest<any>,

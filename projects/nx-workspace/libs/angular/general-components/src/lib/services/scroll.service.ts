@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
@@ -6,10 +6,9 @@ import { ActivatedRoute } from '@angular/router';
   providedIn: 'root',
 })
 export class ScrollService {
-  constructor(
-    private viewportScroller: ViewportScroller,
-    private route: ActivatedRoute,
-  ) {}
+
+    private viewportScroller = inject(ViewportScroller)
+    private route = inject(ActivatedRoute)
 
   scrollToAnchor() {
     const anchor = this.route.snapshot.fragment;

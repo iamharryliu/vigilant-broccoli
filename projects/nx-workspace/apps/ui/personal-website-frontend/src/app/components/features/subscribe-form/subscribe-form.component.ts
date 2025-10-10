@@ -1,5 +1,5 @@
 import {} from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -19,8 +19,9 @@ import { CommonService } from '../../../core/services/common.service';
 export class NewsLetterSubFormComponent {
   submit$ = new Subject<boolean>();
   isLoading = false;
+  private commonService= inject(CommonService);
 
-  constructor(private commonService: CommonService) {
+  constructor() {
     this.submit$
       .pipe(
         exhaustMap(() =>

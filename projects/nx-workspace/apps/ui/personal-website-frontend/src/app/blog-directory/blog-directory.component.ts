@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { GeneralLayoutComponent } from '../components/layouts/general/genreral-layout.component';
 import { NewsLetterSubFormComponent } from '../components/features/subscribe-form/subscribe-form.component';
@@ -22,12 +22,11 @@ interface Blog {
 export class BlogDirectoryComponent implements OnInit {
   blogsByYear: Record<string, Blog[]> = {};
 
-  constructor(
-    private router: Router,
-    public datePipe: DatePipe,
-    private http: HttpClient,
-    private blogService: BlogService,
-  ) {}
+
+    private router = inject(Router);
+    public datePipe = inject(DatePipe);
+    private http = inject(HttpClient);
+    private blogService = inject(BlogService);
 
   ngOnInit(): void {
     this.http.get('assets/blogs.json').subscribe(data => {

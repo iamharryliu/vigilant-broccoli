@@ -12,39 +12,40 @@
         <div class="flex justify-center space-x-3">
           <!-- TODO: Handle different display modes -->
           <!-- <a href="https://www.instagram.com/prettydamntired/" target="_blank">
-            <i class="fa-brands fa-instagram fa-xl"></i>
-          </a> -->
-          <a href="https://github.com/iamharryliu" target="_blank">
-            <i class="fa-brands fa-github fa-xl"></i>
-          </a>
+          <i class="fa-brands fa-instagram fa-xl"></i>
+        </a> -->
+        <a href="https://github.com/iamharryliu" target="_blank">
+          <i class="fa-brands fa-github fa-xl"></i>
+        </a>
+        <a
+          href="https://open.spotify.com/user/22z5agodra7fwhm2erdqn5bjq?si=bafb35c0080244d4"
+          target="_blank">
+          <i class="fa-brands fa-spotify fa-xl"></i>
+        </a>
+        <a [routerLink]="LINKS.CONTACT_PAGE.url.internal">
+          <i class="fa-solid fa-envelope fa-xl"></i>
+        </a>
+        <a [routerLink]="LINKS.LINK_TREE.url.internal">
+          <i class="fa-solid fa-link fa-xl"></i>
+        </a>
+        @if (ENVIRONMENT.JOB_HUNT_MODE) {
           <a
-            href="https://open.spotify.com/user/22z5agodra7fwhm2erdqn5bjq?si=bafb35c0080244d4"
-            target="_blank">
-            <i class="fa-brands fa-spotify fa-xl"></i>
-          </a>
-          <a [routerLink]="LINKS.CONTACT_PAGE.url.internal">
-            <i class="fa-solid fa-envelope fa-xl"></i>
-          </a>
-          <a [routerLink]="LINKS.LINK_TREE.url.internal">
-            <i class="fa-solid fa-link fa-xl"></i>
-          </a>
-          <a
-            *ngIf="ENVIRONMENT.JOB_HUNT_MODE"
             href="https://www.linkedin.com/in/iamharryliu/"
             target="_blank">
             <i class="fa-brands fa-linkedin fa-xl"></i>
           </a>
-          <app-toggle-dark-mode-button></app-toggle-dark-mode-button>
-        </div>
+        }
+        <app-toggle-dark-mode-button></app-toggle-dark-mode-button>
       </div>
     </div>
-    <div class="absolute inset-x-0 bottom-0 h-min hidden lg:block">
-      <app-footer></app-footer>
-    </div>
   </div>
-  <div class="lg:h-screen lg:overflow-y-scroll w-full lg:w-3/5 relative">
-    <app-navbar-section class="invisible lg:visible"></app-navbar-section>
-    <div #ref><ng-content></ng-content></div>
-    <app-footer class="lg:hidden"></app-footer>
+  <div class="absolute inset-x-0 bottom-0 h-min hidden lg:block">
+    <app-footer></app-footer>
   </div>
+</div>
+<div class="lg:h-screen lg:overflow-y-scroll w-full lg:w-3/5 relative">
+  <app-navbar-section class="invisible lg:visible"></app-navbar-section>
+  <div #ref><ng-content></ng-content></div>
+  <app-footer class="lg:hidden"></app-footer>
+</div>
 </div>
