@@ -219,6 +219,7 @@ token.pickle
 Brewfile.lock.json
 
 # Aliases
+work-aliases/
 work-aliases.sh
 personal-aliases.sh
 
