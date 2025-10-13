@@ -49,17 +49,31 @@ async function buildTeamTree(
 ): Promise<GithubTeam[]> {
   const slugToTeam: Record<string, GithubTeam> = {};
 
-  // Initialize all teams
-  for (const team of teams) {
-    slugToTeam[toSlug(team.name)] = {
-      name: team.name,
-      members: await getTeamMembers(org, toSlug(team.name)),
-      teams: [],
-      repositories: await getTeamRepositories(org, toSlug(team.name)),
+  const teamPromises = teams.map(async team => {
+    const slug = toSlug(team.name);
+
+    const [members, repositories] = await Promise.all([
+      getTeamMembers(org, slug),
+      getTeamRepositories(org, slug),
+    ]);
+
+    return {
+      slug,
+      data: {
+        name: team.name,
+        members,
+        teams: [],
+        repositories,
+      },
     };
+  });
+
+  const results = await Promise.all(teamPromises);
+
+  for (const { slug, data } of results) {
+    slugToTeam[slug] = data;
   }
 
-  // Link children to parents
   const roots: GithubTeam[] = [];
   for (const team of teams) {
     if (team.parent?.slug) {
@@ -70,6 +84,7 @@ async function buildTeamTree(
   }
 
   return roots;
+  
 }
 
 export const GithubUtils = {

@@ -35,7 +35,6 @@ function mapRepoUrlToWorkflowsApi(url: string): string {
   const parsed = new URL(url);
   const parts = parsed.pathname.split('/').filter(Boolean);
   const [owner, repo] = parts;
-  console.log(`https://api.github.com/repos/${owner}/${repo}/actions/workflows`)
   return `https://api.github.com/repos/${owner}/${repo}/actions/workflows`;
 }
 
