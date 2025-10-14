@@ -2,7 +2,7 @@
 
 
 ## vigilant-broccoli
-
+- chore: secure vb GC instance.
 - feat: secret-manager secret rotation practice
 - chore: iCloud vb notes
 - feat: AI image analysis interface implementation
