@@ -20,7 +20,14 @@
   - ORM vs Raw SQL Queries
     - ORM for straightforward CRUD and simple things.
     - SQL for reporting and more complex things.
-
+- VPN vs IP/Port Whitelisting
+  - ✅ VPN (e.g., WireGuard) — better for secure, encrypted, flexible remote access; works with dynamic IPs and multiple services.
+  - ⚙️ IP/Port Whitelisting — simpler but limited; good only for single, low-risk services with fixed IPs.
+  - 💡 In general: use a VPN for modern, scalable setups; use whitelisting for small, static ones.
+- Socket vs REST Based Architecture
+  - Use sockets when you need real-time, push-style updates.
+  - Use APIs when you need on-demand data exchange or simple CRUD operations.
+  - Rest is easier to scale statelessly as sockets use persistent connections.
 ## Web Applications
 
 - CSR vs SSR
