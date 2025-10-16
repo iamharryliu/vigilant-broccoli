@@ -2,30 +2,35 @@
 
 
 ## vigilant-broccoli
+- **Light Tasks**
+  - docs: Replace Obsidian brackets
+- **New Features/Interfaces/Implementations**
+  - feat: secret-manager secret rotation implementation
+  - feat(vb-manager): Github organization/team manager
+  - feat(vb-manager): Spotify DL manager
+  - feat(vb-manager): text tools
+  - feat(vb-manager): Google TODO list
+  - feat(common-node): Bucket service implementation.
+  - LLM Interfaces
+    - feat(vb-manager): LLM tools
+    - feat(common-node): LLM image analysis
+    - feat(common-node): LLM image identification interface
+  - feat(common-node): Stripe interface implementation
+- **R&D**
+  - chore: pihole reserach, pihole, pivpn, nordvpn integration
+  - chore: iCloud vb notes
+  - chore: Github wiki workflow.
+- **Fix**
+  - fix: fix DocsMD
+  - fix: fix Toronto alerts
 - chore: secure vb GC instance.
-- feat: secret-manager secret rotation practice
-- chore: iCloud vb notes
-- feat: AI image analysis interface implementation
 - feat: Setup linux vs mac setup scripts
-- feat: Github wiki workflow.
-- feat(common-node): Stripe interface implementation
-- feat(common-node): Bucket service implementation.
-- LLM Interfaces
-- feat(vb-manager): Github organization/team manager
-- feat(vb-manager): LLM tools
-- feat(common-node): LLM image analysis
-- feat(common-node): LLM image identification interface
 - feat(immich): initial implementation
-- feat(vb-manager): Spotify DL manager
-- feat(vb-manager): text tools
-- feat(vb-manager): Google TODO list
 - feat(employee-handler):
   - inform user if gam or gyb needs to be setup
   - create missing folder/file structures
-- fix: fix DocsMD
 - feat: recipe markdown blog
 - feat: city alerts
-- fix: fix Toronto alerts
 - chore: reassess Spotify API
 - chore: dotfile cleanup
 - chore: consider eslint proseWrap: "preserve"
@@ -46,7 +51,6 @@
 - Calendar Implementation
   - [fullcalendar](https://fullcalendar.io/docs/react)
   - Google Calendar integration
-- chore: pihole reserach, pihole, pivpn, nordvpn integration
 - chore: Next parallel route delete cache and .next
 
 ## AI Tools
