@@ -5,7 +5,7 @@
 - 2 eggs, beaten
 - 1 cup milk
 - 1/2 cup sugar
-- 1/4 teaspoon vanilla extract (I add a bit extra)
+- 1/4 tsp vanilla extract (I add a bit extra)
 - 1/2 cup butter
 - slices of bread
 

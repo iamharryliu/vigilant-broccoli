@@ -10,3 +10,25 @@
   - 3a - 4 bedroom
 - **till** vs **på** vs **i**
 - det kommer
+
+
+
+# Ticky/Similar Looking
+
+anslut, connect _vs_ slut, to end
+tycker att vs tycker om
+gratis, free _vs_ grattis, congratulations
+stader / städer - cities / clean
+en lag / ett lag - law / team
+
+trots att(despite that) vs var trött (was tired)
+
+
+
+# Nuances
+
+- i/for/pa/till
+- tror/tycka/tanka/fundera
+- köper/handlar/shoppar
+- prova/försoka
+- till example vs for example

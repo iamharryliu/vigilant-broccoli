@@ -5,10 +5,10 @@
 - butter
 - onion
 - garlic
-- tomato Sauce
-- tomato Paste
+- tomato sauce
+- tomato paste
 - cream
-- Italian seasoning
+- italian seasoning
 - top with parmesan cheese
 
 ## Instructions

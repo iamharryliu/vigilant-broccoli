@@ -24,7 +24,6 @@ Jag kommer från Kanada
 Jag är tjugoåtta år (gammal)
 Jag pratar Engelska, lite Kantonesiska, och pytelite Svenska.
 Jag har bott i Mälmo i AMOUNT_OF_TIME
-Jag studerar just nu Svenska
 
 # Common Phrases
 
@@ -68,30 +67,11 @@ koppla - connect
 koppla av - relax
 chilla slappna av
 
-# Nuances
-
-- i/for/pa/till
-- tror/tycka/tanka/fundera
-- köper/handlar/shoppar
-- prova/försoka
-- till example vs for example
-
-# Ticky/Similar Looking
-
-anslut, connect _vs_ slut, to end
-tycker att vs tycker om
-gratis, free _vs_ grattis, congratulations
-stader / städer - cities / clean
-en lag / ett lag - law / team
-
 # Vocabulary
 
 ihop - together
 erbjudandet - the offer
 kräver - requires
-
-dyrt
-billigt
 att sola
 att laga
 det blåser
@@ -101,18 +81,13 @@ ett täcke
 fina
 ett lakan
 saljare
-oppet köp
 passar de bra
 inte i den fargen
 jag titta bara
-
 kan/kunna - can/be able
-
 det hander - it happens
-
 onödigt nödigt
 snäll / taskig - nice / mean
-
 auxiliary / cluse main / clause / subordinate clause
 om - about/if/concerning
 lunchar jag = ata lunch
@@ -123,7 +98,6 @@ flytta hemifran
 bo sjalv
 ta konkort
 man blir myndig
-vuxen
 ta konkort
 ta bankkort
 sjunger
@@ -131,84 +105,37 @@ sangare
 sangerska
 man kan gora varnplikten
 fix sig sjalv
-
-lagenhet
-bosta
-
-arbetslivserfarenhet
 nar far lisa besked om
 skrattarr glatt
-
 kommer forbi
-
 utmaning
-
-trivs
-
 ansvar
-
 han kanner till skolans rutiner
-
 ungefar halften befolkning paverkas av arstiderna
-
 pa hosten
 deprimerad
-
 dat ar ett helt ar till nasta sommar
-
 helt
-
 vi staller fram klocken
-
 jobbig
-
 plotsligt mycket ljusare
-
 da kommer kroppen i obalans och man kan bli trott
-
-tidigt
-
-orkar
-
-vanligt
-
-manniskor
-
 forkylda
-
 inomhus
-
 lattare
-
-dessutom
-
 far man
-
 samre immunforvsvar
-
-viktigt
-
 vi ska halla oss friska och pigga
-
 tillrackligt
-
 ljus producerar kroppe mer av somnhormonet melatonin
-
 fa brist
-
 bildas nar solen nar huden
-
 fet fisk som lax
 och i mejeriprodukter
-
 mojlighet att resa till ett soligt land
-
 dar fick man gratis ljusterapi medan man vantade pa bussen
-
 man kan klara av den langa vintern|
-
 varfor blir vissa manniskor trotta pa varend
-
 energi
 ungefar
 en befolkning
@@ -226,7 +153,6 @@ gar upp i vikt
 inomhus
 en bakterie
 sprids
-
 dessutom
 samre
 ett immunforsvar
@@ -243,17 +169,9 @@ en mojlighet
 en terapi
 liknar
 en busskur
-
 oense
-
 upp i vikt
-
-du kan välja
-
-vinna
-förlora
 många människor dör
-
 fastar
 fastemanad
 bryta fasta
@@ -268,19 +186,14 @@ bälte
 elev
 bro
 radergummi
-haftë
 meddelande
-område
 handske
-bulle
 dörr
 tak
 golv
-brev
 frimärke
 radergummi
 skadat
-tungt
 resa
 foto
 skulle du vilja bo i ett kollectiv
@@ -293,7 +206,6 @@ regler
 de hoppas att fler bor i kollectiv i framtiden
 helst
 litar
-stör
 har du nagon granne som du ofta stor dig pa
 nyfikna - curious
 det behovs/det är det är nödvändigt
@@ -307,11 +219,7 @@ flyttar ihop
 istallet
 nyfiken
 en medlem
-kemi
-it
-en konsult
 en forskallare
-en kvadratmeter
 gör sig i ordning
 hellre
 snackar
@@ -332,18 +240,8 @@ en barnpassing
 teven sallan ar pa
 ett eget rum
 arga lappar
-
-trivs du i ditt område varfor - Do you feel comfortable in your area? Why?
-mysigt - Cozy
 darfor/for att/dar foratt/eftersom
 är ni taggage/du taggad? - are you excited
-
-trivs du i ditt område varfor
-mysigt
-hyr
-de far barn iframtiden
-de har nagra gemensamma regler
-de trivs
 arga lappar
 rak och arlig
 ett kollectiv passar
@@ -351,21 +249,15 @@ nagra regler
 alla har ett eget rum
 jag gor mig i ordning
 jag vill vara for mig sjalv nar jag ar stressad
-granne
-viktig
 det finns nagra
 hellre
 tvång
 möjlig
-jag vann
 knapp
 läpp
 lapp
 hos - with, at, by, among
 genom - through
-
-Mannen tar pengar ur plånboken.
-ur - out
 staket
 sjön
 hos
@@ -374,24 +266,14 @@ genom
 åt vänster
 Vad är det för fel på Pascals dotter?
 Får de tid på hälsocentralen samma dag?
-
 ett möte - vi har ett viktigt
 jag möter dig imorgon kl 18
 vi ses imorgon
 vi möts imorgen
 jag träggar dig
 vi träffas imorgon
-
-jag kramas dig
-vi kramas
-vilken värme
-jag gick en promenad
-trots att
-var trött
-
 Jag sticker nu / Jag gå nu
 Stick härifrån
-
 skäcka != tända
 torka != blöta / väta
 kämpar
@@ -462,27 +344,17 @@ begagnade
 dessutom
 varor
 lösvikt
-
 hon har tagit det
 bränder
 klättrande
 att klättra
 cykling
 jag kan röra mig snabbt
-rädd
-rädd
 att använda
 använd google map
-
 tyst
 högt
 bullrig
-sjö
-kort
-biljett
-mobiltelefon
-samtal
-kortare
 diskmakinen
 avstår
 fyller
@@ -490,9 +362,6 @@ tar upp
 miljovanligt
 interessant artikel som
 vi kan leva miljövnligy
-tar upp
-tar in
-tar ut
 badkaret
 minskar
 tömmer badkaret på vatten
@@ -501,7 +370,6 @@ avstå
 jobbar jämt
 heltidsjobb
 möjlig
-dessutom
 helst
 reagera
 avstå
@@ -603,41 +471,16 @@ Arvid tänker på olika saker om kilmatet grader
 | Considering                | Med tanke på     | She's incredibly good at basketball considering her height.                                                   | Hon är oerhört duktig på basket med tanke på hennes längd.                                                        |
 | In contrast to             | I motsats till   | I'm freezing, in contrast to Fredrik who walks around in a T-shirt.                                           | Jag fryser jättemycket, i motsats till Fredrik som går runt i T-shirt.                                            |
 
-2025/09/15
-Innan jag har flyttat till Sverige
-
-**1 Hur bodde du? Och med vilka?**
-I mitt hemland bodde jag i en radhus 4a, på 150kv _tillsammans_ med min pappa och mamma.
-
-**2 Var låg din bostad?**
-Min bostad låg i Toronto, Kanada.
-
-**3 Fordelar och nackdelar?**
-Fordelar
-
-- Det finns mycket man kan göra
-- Jag bodde nära skogen.
-- Det finns många jättegott restauranger man kan prova
-  Nackdelar
-- Staden var för stor så allt var långt borta.
-- Hyran var mycket dyr så om man bo i Toronto du måste ha en välbetalt jobb.
-
-**4 Vad tyckte du om din bostad?**
-Jag tyckte min bostad var ok eftersom jag bodde med min familj så pengar var inget stort problem för mig och vi hade en bil så jag körde alltid. Nu tycka jag inte så bra eftersom allt var långt borta.
-
-**5 Hur trivdes du?**
-Jag trivdes mycket bra, men mitt liv i Sverige är bättre.
-
 GRAMMAR MISTAKES
 Hon har **alltid** varit snäll mot mig.
 På julen träffar jag alltid släkten
-
 varje
 varannan/vartannat
 var/vart
-
-gammal-äldere-äldst
-ung-yngre-yngst
-
 flytta -> frivilligt
 fly -> måste -> krig/hunger/problem
+
+upp
+in
+ut - out. If you’re emphasizing movement to the outside, use ut.
+ur - out. If you’re emphasizing where it comes from, use ur.

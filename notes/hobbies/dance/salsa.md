@@ -8,6 +8,8 @@
   - Hand tosses - toss right hand entering crossbody->catch left hand->wrap->double->exits to cross arm
   - Flicks
   - Dips
+  - Variations of wraps
+  - Walks
 - **Moves to practice:**
   - Lasso moves
   - Reverse crossbody lead
@@ -51,6 +53,7 @@
   - Reverse turn
   - Crossbody turn
 - **Exits to Shines**
+
   - breakback and push turn
   - crossbody and wrist pull into spin
   - right turn and wrist pull into spin

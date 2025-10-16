@@ -47,8 +47,8 @@
 | full        | mätt                     |                    |                 |                   |                 |
 | hungry      | hungrig                  |                    |                 |                   |                 |
 | thirsty     | törstig                  |                    |                 |                   |                 |
-| heavy       | tung                     |                    |                 |                   |                 |
-| latt        | light                    |                    |                 |                   |                 |
+| heavy       | tungt                    |                    |                 |                   |                 |
+| light       | lätt                     |                    |                 |                   |                 |
 | open        | öppen                    |                    |                 |                   |                 |
 | closed      | stängd                   |                    |                 |                   |                 |
 | first       | första                   |                    |                 |                   |                 |
@@ -63,3 +63,8 @@
 | unnecessary | onödigt                  |
 | popular     | populär / omtyckt        |
 | unpopular   | impopulär / illa omtyckt |
+| early       |
+| common      |
+| cozy        | mysigt                   |
+| cheap       | billigt                  |
+| expensive   | dyrt                     |

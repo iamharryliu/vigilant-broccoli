@@ -19,7 +19,7 @@ Ingredients:
 - 2 cups low-sodium chicken stock or broth
 - 1/2 lb broccoli, (about 3 cups), chopped into bite size pieces
 - 1 cup carrot, julienned (can buy matchstick carrots in produce section)
-- 1/4 teaspoon nutmeg, (optional but brings out the flavor)
+- 1/4 tsp nutmeg, (optional but brings out the flavor)
 - 8 ounces grated sharp cheddar cheese, (2 cups)
 - salt and pepper
 

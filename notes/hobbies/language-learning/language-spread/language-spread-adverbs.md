@@ -7,3 +7,4 @@
 | previous         | tidigare   |
 | at the same time | samtidigt  |
 | actually         | egentligen |
+| moreover         | dessutom   |

@@ -5,7 +5,7 @@
 - Pizza Dough (200-250g cold-fermented sourdough)
 - Semolina
 - Pizza Sauce
-  - 3 large tablespoons of tomato paste
+  - 3 tbsp of tomato paste
   - olive oil
   - salt
   - oregano

@@ -4,8 +4,8 @@
 
 ## Ingredients
 
-- Half a lemon
-- 1 tablespoon of honey
+- half a lemon
+- 1 tbsp of honey
 - 1 cup of water
-- Ice cubes
-- 1 bottle of Yakult
+- ice cubes
+- yakult

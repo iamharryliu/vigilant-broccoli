@@ -1,4 +1,4 @@
-# Language Spread
+# Language Spread People
 
 | English     | Swedish         | French        |
 | :---------- | :-------------- | :------------ |
@@ -19,3 +19,4 @@
 | step-       | styv-           |               |
 | husband     | man             |               |
 | wife        | fru             |               |
+| neighbor    | granne          |
