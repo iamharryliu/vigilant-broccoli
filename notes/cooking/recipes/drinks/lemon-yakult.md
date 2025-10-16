@@ -1,11 +1,11 @@
 # Lemon Yakult
 
-[Lemon Yakult](https://www.instagram.com/p/CiifYOXD5Td/)
+[Lemon Yakult](https://www.yummy.ph/lessons/prepping/how-to-make-lemon-yakult-a00260-20200624)
 
 ## Ingredients
 
-- 3 lemons (or depending on your taste)
-- 3 bottles of Yakult
-- 1/2 cup sugar
-- 600 ml water
-- 2 lemon slices if you're feeling fancy
+- Half a lemon
+- 1 tablespoon of honey
+- 1 cup of water
+- Ice cubes
+- 1 bottle of Yakult
