@@ -1,5 +1,8 @@
 # Productivity
 
-- Browser Tabs
-  - Multitabs, just don't. I think It's okay to have a few unorganized tabs open here and there but if you start having over 20 tabs open that seems kind of ridiculous to me. Most browsers have tab groups that you can use now to bucket tabs into groups. I would use groups labeled 'Entertainment', 'Cooking', 'Language Learning' etc..
-  - You can also take advantage of the bookmark manager if you want the tab but don't feel like categorizing it immediately. My flow goes something like Can I organize right now? Yes, put in correct bookmark. No or too lazy, save to bookmarks bar or 'For Later' bookmark folder.
+- **Tech**
+  - **Browser**
+    - Less tabs - Limit the amount of tabs you have open because you will just end up not being able to find a tab later. Instead use bookmarks or some other method to keep links organized like a list of some sort somewhere. The way I handle tabs is as follows:
+      - **Useless tabs**: Close tabs that are of no further use.
+      - **For Later**: Bookmark the ones of interest to me in the bookmarks tab but I don't intend to look at anytime soon. I organize these bookmarks later into folders or markdown notes.
+      - **For Soon**: Leave the ones that I intend to use sometime soon but otherwise review later and follow process again.
