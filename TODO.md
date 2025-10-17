@@ -1,15 +1,35 @@
 # TODO
 
-
 ## vigilant-broccoli
+
+- **Current Tasks**
 - **Light Tasks**
-  - docs: Replace Obsidian brackets
+  - chore: secure vb GC instance.
+  - docs: Replace Obsidian brackets.
+- **Implementations**
+  - feat(immich): Initial implementation.
+  - feat: Implement deadman switch.
+- **Intensive Audit/Refactor Tasks**
+  - refactor(dotenv):
+    - **dotenv refactor**
+      - import 'dotenv-defaults/config';
+    - remove instances of `process.env`
+  - feat: Setup linux vs mac setup scripts
+  - chore: dotfile cleanup
+  - chore: reassess Spotify API
 - **New Features/Interfaces/Implementations**
-  - feat: secret-manager secret rotation implementation
-  - feat(vb-manager): Github organization/team manager
-  - feat(vb-manager): Spotify DL manager
-  - feat(vb-manager): text tools
-  - feat(vb-manager): Google TODO list
+  - feat: Secret-manager secret rotation implementation.
+  - feat(vb-manager): Github organization/team manager.
+  - feat(email-service):
+    - Queue (RabbitMQ)
+    - Can be called from separate apps
+    - Can send emails on behalf of apps to appropriate people/parties
+  - feat(employee-handler):
+    - Inform user if gam or gyb needs to be setup.
+    - Create missing folder/file structures.
+  - feat(docs-md):
+    - Split into separate app.
+    - Implement search bar.
   - feat(common-node): Bucket service implementation.
   - LLM Interfaces
     - feat(vb-manager): LLM tools
@@ -17,42 +37,28 @@
     - feat(common-node): LLM image identification interface
   - feat(common-node): Stripe interface implementation
   - feat(cloud8skate): cloud8skate SSG, SEO, etc..
+  - feat(vb-manager): Spotify DL manager.
+  - feat(vb-manager): Text tools.
+  - feat(vb-manager): Google TODO list.
+- **New Features**
+  - feat: home management
+    - Calendar Implementation
+      - [fullcalendar](https://fullcalendar.io/docs/react)
+      - Google Calendar integration
+  - feat: recipe markdown blog
 - **R&D**
-  - chore: pihole reserach, pihole, pivpn, nordvpn integration
-  - chore: iCloud vb notes
   - chore: Github wiki workflow.
+  - chore: Pihole reserach, pihole, pivpn, nordvpn integration.
+  - chore: iCloud vb notes.
+  - chore: Research identification implementations
+  - chore: Research iPhone finder implementation
+  - chore: Next parallel route delete cache and .next
+  - chore: consider eslint proseWrap: "preserve"
+  - chore: alias for `alias run lib:nx-release-publish`?
+  - chore(storage-solution): RAID QNAP NAS
 - **Fix**
   - fix: fix DocsMD
   - fix: fix Toronto alerts
-- chore: secure vb GC instance.
-- feat: Setup linux vs mac setup scripts
-- feat(immich): initial implementation
-- feat(employee-handler):
-  - inform user if gam or gyb needs to be setup
-  - create missing folder/file structures
-- feat: recipe markdown blog
-- feat: city alerts
-- chore: reassess Spotify API
-- chore: dotfile cleanup
-- chore: consider eslint proseWrap: "preserve"
-- chore: alias for `alias run lib:nx-release-publish`?
-- feat: Implement deadman switch.
-- refactor(dotenv):
-  - **dotenv refactor**
-    - import 'dotenv-defaults/config';
-  - remove instances of `process.env`
-- **chore: Product Research**
-  - research identification implementations
-  - research iPhone finder implementation
-- **feat: Email Service**
-  - Queue
-  - Can be called from separate apps
-  - Can send emails on behalf of apps to appropriate people/parties
-- **feat: Home Hanagement**
-- Calendar Implementation
-  - [fullcalendar](https://fullcalendar.io/docs/react)
-  - Google Calendar integration
-- chore: Next parallel route delete cache and .next
 
 ## AI Tools
 
@@ -109,11 +115,6 @@ graphic
     - image[]
 
 - **NewTab Extension**
-- **DocsMD**
-  - Split into separate app.
-  - Implement search bar.
-- logging system
-- RabbitMQ mail service
 
 ## CMS
 
