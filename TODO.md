@@ -16,6 +16,7 @@
     - feat(common-node): LLM image analysis
     - feat(common-node): LLM image identification interface
   - feat(common-node): Stripe interface implementation
+  - feat(cloud8skate): cloud8skate SSG, SEO, etc..
 - **R&D**
   - chore: pihole reserach, pihole, pivpn, nordvpn integration
   - chore: iCloud vb notes
