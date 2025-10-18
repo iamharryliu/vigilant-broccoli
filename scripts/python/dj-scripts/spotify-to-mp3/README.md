@@ -22,6 +22,8 @@ pip install --upgrade yt-dlp spotdl
 
 # cronjob
 0 */1 * * * cd ~/spotify-to-mp3/ && source venv/bin/activate && python download_music.py
+
+pip install --upgrade spotdl ytmusicapi
 ```
 
 **NOTE:** I personally set my MUSIC_LIBRARY environment variable to my Google Drive DJ music library and sync that bad boy up to all my machines so I can have my DJ playlists on the go.
