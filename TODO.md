@@ -6,6 +6,9 @@
 - **Light Tasks**
   - chore: secure vb GC instance.
   - docs: Replace Obsidian brackets.
+  - chore: [GeForce Maplestory](https://support-maplestory.nexon.com/hc/en-us/articles/23609853001876-How-to-play-MapleStory-through-GeForce-NOW)
+  - chore: Managing git stashes.
+  - chore: Account scrubbing.
 - **Implementations**
   - feat(immich): Initial implementation.
   - feat: Implement deadman switch.
