@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MarkdownPageComponent } from 'general-components';
 
@@ -9,8 +9,9 @@ import { MarkdownPageComponent } from 'general-components';
 })
 export class MorePageComponent {
   contentFilepath = 'assets/site-content/more.md';
+  private route = inject(ActivatedRoute);
 
-  constructor(private route: ActivatedRoute) {
+  constructor() {
     this.route.paramMap.subscribe((params: ParamMap) => {
       const id = params.get('id');
       if (id) {

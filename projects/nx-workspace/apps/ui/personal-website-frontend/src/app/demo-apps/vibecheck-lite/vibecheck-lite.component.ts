@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Observable, map, switchMap } from 'rxjs';
 import { CardComponent } from '../../components/global/card/card.component';
 import { LoadingSpinnerComponent } from '../../components/global/loading-spinner/loading-spinner.component';
@@ -25,13 +25,14 @@ interface VibecheckLiteResponse {
 })
 export class VibecheckLiteComponent {
   recommendation$!: Observable<VibecheckLiteResponse>;
-  constructor(
-    public vibecheckLiteService: VibecheckLiteService,
-    private locationService: LocationService,
-  ) {
+
+  public vibecheckLiteService = inject(VibecheckLiteService);
+  private locationService = inject(LocationService);
+  
+  constructor() {
     this.recommendation$ = this.locationService.getLocation().pipe(
       switchMap(res => {
-        return vibecheckLiteService
+        return this.vibecheckLiteService
           .getOutfitRecommendation(res)
           .pipe(map(res => res.data));
       }),

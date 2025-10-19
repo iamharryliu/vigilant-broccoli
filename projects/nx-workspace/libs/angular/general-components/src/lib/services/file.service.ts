@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FolderItem } from '../models';
@@ -15,7 +15,7 @@ type FileStructureFilepath =
   providedIn: 'root',
 })
 export class FileService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getFolderStructure(
     fileStructureFilepath: FileStructureFilepath,

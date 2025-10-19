@@ -2,7 +2,7 @@
   <div
     class="h-screen overflow-y-scroll w-full md:w-1/4 pl-3 pt-2 border-r-2"
     [class.hidden]="appService.isMobile && pageService.isFileSelected"
-  >
+    >
     <div class="mb-2">
       <lib-link
         [link]="indexLink"
@@ -11,24 +11,26 @@
       ></lib-link>
     </div>
     <h1 class="text-xl font-bold mb-2">Grind 75</h1>
-    <ng-container *ngIf="fileContent$ | async as rootFolder">
-      <lib-folder-item
-        *ngFor="let folderItem of rootFolder.children"
-        [filepath]="pageService.selectedFilepath"
-        [item]="folderItem"
-        (fileEmitter)="selectFile($event)"
-      ></lib-folder-item>
-    </ng-container>
+    @if (fileContent$ | async; as rootFolder) {
+      @for (folderItem of rootFolder.children; track folderItem) {
+        <lib-folder-item
+          [filepath]="pageService.selectedFilepath"
+          [item]="folderItem"
+          (fileEmitter)="selectFile($event)"
+        ></lib-folder-item>
+      }
+    }
   </div>
-  <div
-    class="h-screen overflow-y-scroll w-full md:block md:w-3/4 pl-4 pr-4 pt-4"
-    [class.hidden]="appService.isMobile && !pageService.isFileSelected"
-    *ngIf="pageService.selectedContent$ | async as content"
-  >
-    <code>
-      <pre [innerHTML]="content"></pre>
-    </code>
-  </div>
+  @if (pageService.selectedContent$ | async; as content) {
+    <div
+      class="h-screen overflow-y-scroll w-full md:block md:w-3/4 pl-4 pr-4 pt-4"
+      [class.hidden]="appService.isMobile && !pageService.isFileSelected"
+      >
+      <code>
+        <pre [innerHTML]="content"></pre>
+      </code>
+    </div>
+  }
   <div
     class="absolute top-0 right-0 m-4 cursor-pointer"
     [class.hidden]="
@@ -36,7 +38,7 @@
       appService.isBrowser
     "
     (click)="close()"
-  >
+    >
     <div>X</div>
   </div>
 </div>

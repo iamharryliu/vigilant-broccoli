@@ -4,7 +4,7 @@
   "dependencies": {
     "mongoose": "^8.1.0",
     "tslib": "^2.3.0",
-    "mongodb": "6.16.0",
+    "mongodb": "*",
     "@prettydamntired/personal-website-lib": "*",
     "@vigilant-broccoli/common-node": "*"
   }
