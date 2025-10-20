@@ -29,7 +29,7 @@ export const GithubTeamManager = () => {
         return (
           <Card
             key={organization}
-            onClick={() => router.push(`github/organization/${organization}`)}
+            onClick={() => router.push(`github-manager/organization/${organization}`)}
           >
             {organization}
           </Card>

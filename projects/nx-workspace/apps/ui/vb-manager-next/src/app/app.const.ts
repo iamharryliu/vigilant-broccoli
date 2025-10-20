@@ -13,4 +13,8 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'AI Tool',
     path: '/ai-tool',
   },
+  GITHUB_MANAGER: {
+    title: 'Github Manager',
+    path: '/github-manager',
+  },
 };
