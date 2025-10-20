@@ -3,8 +3,8 @@
 ## vigilant-broccoli
 
 - **Current Tasks**
-- **Light Tasks**
   - chore: secure vb GC instance.
+- **Light Tasks**
   - docs: Replace Obsidian brackets.
   - chore: [GeForce Maplestory](https://support-maplestory.nexon.com/hc/en-us/articles/23609853001876-How-to-play-MapleStory-through-GeForce-NOW)
   - chore: Managing git stashes.
@@ -35,13 +35,11 @@
     - Implement search bar.
   - feat(common-node): Bucket service implementation.
   - LLM Interfaces
-    - feat(vb-manager): LLM tools
     - feat(common-node): LLM image analysis
     - feat(common-node): LLM image identification interface
   - feat(common-node): Stripe interface implementation
   - feat(cloud8skate): cloud8skate SSG, SEO, etc..
   - feat(vb-manager): Spotify DL manager.
-  - feat(vb-manager): Text tools.
   - feat(vb-manager): Google TODO list.
 - **New Features**
   - feat: home management
@@ -59,6 +57,9 @@
   - chore: consider eslint proseWrap: "preserve"
   - chore: alias for `alias run lib:nx-release-publish`?
   - chore(storage-solution): RAID QNAP NAS
+  - chore: Look into Zapier uses.
+  - chore: [Advanced typescript uses.](https://chatgpt.com/c/68f103dc-74c8-8328-8f2c-796bcd9b2037)
+  - chore: Node build term lingo, ie esbuild, webpack, swc, etc..
 - **Fix**
   - fix: fix DocsMD
   - fix: fix Toronto alerts
