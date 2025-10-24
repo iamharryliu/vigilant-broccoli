@@ -12,9 +12,11 @@ ping 10.0.0.2
 sudo wg-quick down wg0
 sudo wg-quick up wg0
 
+sudo sysctl -w net.ipv4.ip_forward=0
 sudo sysctl -w net.ipv4.ip_forward=1
 sudo sysctl -p
 
+ufw status
 sudo ufw allow in on wg0 to any port 8200
 sudo ufw deny in on eth0 to any port 8200
 ```
@@ -36,7 +38,6 @@ ListenPort = 51820
 PublicKey = <LOCAL_PUBLIC_KEY>
 AllowedIPs = 10.0.0.2/32
 
-
 # Client
 sudo nano /etc/wireguard/wg0.conf
 vim /opt/homebrew/etc/wireguard/wg0.conf
@@ -44,6 +45,7 @@ vim /opt/homebrew/etc/wireguard/wg0.conf
 [Interface]
 PrivateKey = <LOCAL_PRIVATE_KEY>
 Address = 10.0.0.2/24
+MTU=1280
 
 [Peer]
 PublicKey = <AWS_PUBLIC_KEY>

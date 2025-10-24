@@ -32,3 +32,6 @@ trots att(despite that) vs var trött (was tired)
 - köper/handlar/shoppar
 - prova/försoka
 - till example vs for example
+
+fly(to flee) vs flytta(to move)
+storsta vs storst

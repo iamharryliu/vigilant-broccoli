@@ -2,6 +2,8 @@
 
 - Barrel files
 - CPU bound and IO bound
+  - Web/backend apps → mostly I/O bound (APIs, DBs, caches).
+  - Systems, scientific, gaming, ML apps → much more CPU bound.
 - Token vs Keys
 - Event Driven Architecture vs Request Responese
 - Static vs Dynamic Imports

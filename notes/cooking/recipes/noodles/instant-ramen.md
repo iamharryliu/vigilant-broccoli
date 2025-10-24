@@ -10,6 +10,8 @@
 - 2 Eggs
 - Sliced green onions
 - Options to make creamier:
+    - Egg
+    - Mayo
     - Peanut butter
     - Butter
     - Coconut milk

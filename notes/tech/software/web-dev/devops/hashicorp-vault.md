@@ -32,15 +32,80 @@ vault login
 vault login TOKEN
 vault operator seal
 
-// Teardown
-pgrep -f vault | xargs kill
-rm -r ./vault/data
 ```
 
 ```
 sudo systemctl daemon-reexec
 sudo systemctl enable vault
 sudo systemctl start vault
+sudo systemctl restart vault
+sudo systemctl status vault
+```
+
+Teardown
+
+```
+pgrep -f vault | xargs kill
+rm -r ./vault/data
+```
+
+### SSL
+
+Single self-signed for quick local testing.
+
+```
+sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/vault/tls/vault.key -out /etc/vault/tls/vault.crt -days 365 -config vault-openssl.cnf -extensions v3_ext
+```
+
+CSR-based for production.
+
+```vim /etc/vault/tls/vault-openssl.cnf```
+
+```
+# vault-openssl.cnf
+
+[ req ]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+x509_extensions = v3_ext
+
+[ dn ]
+CN = 127.0.0.1
+
+[ alt_names ]
+IP.1 = 127.0.0.1
+IP.2 = 51.21.242.75
+IP.3 = 10.0.0.1
+
+[ v3_ext ]
+subjectAltName = @alt_names
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+```
+
+```
+# 1. Generate a private key (reusable)
+sudo openssl genrsa -out /etc/vault/tls/vault.key 2048
+
+# 2. Generate a CSR
+sudo openssl req -new -key /etc/vault/tls/vault.key \
+  -out /etc/vault/tls/vault.csr \
+  -config vault-openssl.cnf
+
+# 3. Self-sign the CSR for 1 year (or sign with CA)
+sudo openssl x509 -req -in /etc/vault/tls/vault.csr \
+  -signkey /etc/vault/tls/vault.key \
+  -out /etc/vault/tls/vault.crt \
+  -days 365 \
+  -extfile vault-openssl.cnf \
+  -extensions v3_ext
+
+# 4. Secure and restart Vault
+sudo chown vault:vault /etc/vault/tls/vault.key
+sudo chmod 600 /etc/vault/tls/vault.key
 sudo systemctl restart vault
 sudo systemctl status vault
 ```
@@ -53,8 +118,6 @@ sudo systemctl restart vault
 sudo systemctl stop vault
 sudo rm -rf /opt/vault/data/
 sudo systemctl start vault
-
-sudo journalctl -u vault -n 50 --no-pager
 ```
 
 ```
@@ -322,6 +385,12 @@ EOF
 
 ### Troubleshooting
 
+```
+
+curl -vk https://IP_ADDRESS:8200/v1/sys/health --cacert vault.crt
+openssl x509 -in /etc/vault/tls/vault.crt -text -noout | grep -A1 "Subject Alternative Name"
+sudo journalctl -u vault -n 50 --no-pager
+```
 ```
       - name: Inspect GitHub OIDC token
         run: |

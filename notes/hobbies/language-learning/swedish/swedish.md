@@ -17,15 +17,12 @@
   - [Past Tense](./grammar/tenses/swedish-past-tense.md)
   - [Future Tense](./grammar/tenses/swedish-future-tense.md)
 
-## Personal Introduction
-
-Jag heter Harry.
-Jag kommer från Kanada
-Jag är tjugoåtta år (gammal)
-Jag pratar Engelska, lite Kantonesiska, och pytelite Svenska.
-Jag har bott i Mälmo i AMOUNT_OF_TIME
 
 # Common Phrases
+My name is NAME
+I am from PLACE
+I am NUMBER years old
+I speak LANGUAGE
 
 jag ville ha - I will have
 Mitt nummer ar - my number is
@@ -69,13 +66,10 @@ chilla slappna av
 
 # Vocabulary
 
-ihop - together
 erbjudandet - the offer
 kräver - requires
 att sola
-att laga
 det blåser
-det regnat
 vilade
 ett täcke
 fina
@@ -96,10 +90,7 @@ nyttig - healthy
 sok - letaefter
 flytta hemifran
 bo sjalv
-ta konkort
 man blir myndig
-ta konkort
-ta bankkort
 sjunger
 sangare
 sangerska
@@ -111,7 +102,6 @@ kommer forbi
 utmaning
 ansvar
 han kanner till skolans rutiner
-ungefar halften befolkning paverkas av arstiderna
 pa hosten
 deprimerad
 dat ar ett helt ar till nasta sommar
@@ -136,18 +126,14 @@ mojlighet att resa till ett soligt land
 dar fick man gratis ljusterapi medan man vantade pa bussen
 man kan klara av den langa vintern|
 varfor blir vissa manniskor trotta pa varend
-energi
-ungefar
 en befolkning
 paverkar
 en arstid
-deprimerad
 jobbig
 plotsligt
 obalans
 dagsljus
 gaspar
-spenderar
 en kolhydrat
 gar upp i vikt
 inomhus
@@ -181,49 +167,31 @@ lagga mer tid pa att - to spend more time on
 snål
 fatolj
 invanare
-larare
-bälte
-elev
-bro
 radergummi
 meddelande
 handske
-dörr
-tak
 golv
 frimärke
 radergummi
 skadat
-resa
 foto
 skulle du vilja bo i ett kollectiv
 de hyr en femma och startar ett kollectiv
-har du delat bostad nagon
-var delade ni bostad
-lagenhet
 var brukar de helst umgas
 regler
 de hoppas att fler bor i kollectiv i framtiden
 helst
 litar
 har du nagon granne som du ofta stor dig pa
-nyfikna - curious
 det behovs/det är det är nödvändigt
-hellre - rather
 undvika - avoid
 ett kollectiv
 en flickvan
 en kilometer
 var sin
-flyttar ihop
-istallet
-nyfiken
-en medlem
 en forskallare
 gör sig i ordning
-hellre
 snackar
-ett krav
 umgas
 ar for sig sjalv
 paktrisk
@@ -250,7 +218,6 @@ alla har ett eget rum
 jag gor mig i ordning
 jag vill vara for mig sjalv nar jag ar stressad
 det finns nagra
-hellre
 tvång
 möjlig
 knapp
@@ -262,46 +229,24 @@ staket
 sjön
 hos
 genom
-åt höger
-åt vänster
 Vad är det för fel på Pascals dotter?
 Får de tid på hälsocentralen samma dag?
-ett möte - vi har ett viktigt
-jag möter dig imorgon kl 18
-vi ses imorgon
-vi möts imorgen
 jag träggar dig
-vi träffas imorgon
 Jag sticker nu / Jag gå nu
 Stick härifrån
 skäcka != tända
 torka != blöta / väta
 kämpar
 väldig
-torr
-en mark
 en eld
 sprider sig
-en brevlåda
-en fotbollsplan
 hjälper till
 en forskare
-global en uppvärmning
-en temperatur
-en jord
 ökar
-släpper ut
-koldioxid
-en atmosfär
-en gas
-en konsumtion
-värmer upp
 ett växthus
-
 leder till
 en naturkatastrof
 en fläkt
-ett klimat
 käll sorterar
 mot byn
 i markerna
@@ -312,7 +257,6 @@ en bild
 ett tag
 en stund
 överallt
-varme
 han möts av en
 hon ville
 redan
@@ -330,7 +274,6 @@ var ligger den
 hur ser skolan ut
 ändra
 bjuda
-fick
 3 kända personer
 jämförs
 soporna
@@ -350,10 +293,7 @@ klättrande
 att klättra
 cykling
 jag kan röra mig snabbt
-att använda
-använd google map
 tyst
-högt
 bullrig
 diskmakinen
 avstår
@@ -365,7 +305,6 @@ vi kan leva miljövnligy
 badkaret
 minskar
 tömmer badkaret på vatten
-skapa
 avstå
 jobbar jämt
 heltidsjobb
@@ -381,7 +320,6 @@ lever
 innebär
 forsoker
 sopor
-skapar
 förut
 soprummet
 begagnat
@@ -391,54 +329,35 @@ oftlast
 ofta från att handla
 lever
 vilken rubrik passar till texten
-är
 ska is should and will
 enklare/lätt
 forlora/tappa bort (loe something)
-fly(to flee) vs flytta(to move)
 jag minns inte dig
 jag kommer ihäg dig
 jag är på vag - I am coming
 jag är igång
-på grund av - because of
-
-2025/06/02
 klämdag - squeeze day
 tagit(pronounced tatt)
 har du tatt
 vardagssaker - everyday things
 avskedsfest - goodbye party
 träffats = träffat varandra
-
 2025/06/09
 På fredag skajobba jag gå Kopenhamn för ett inline skate evenemang med min vanner i kvallen .
 På Lorsdag ska jag studera Svenska på Cafe på morgenen. Eftermiddagen jag ska promenera med min hund och handla mat. På kvallen ska jag ska slappna av
-
 hemifrån - from home
 förbreda sig
-klä sig
-
-vad köper du för mat
 vad äter du till frukost/lunch/middag
-
 ett stöd = ett hjälp
-
 vända sig till = gå till
 vanda sig om = turn away
 vänd dig om = turn towards
 sömn = bestammed sömn
-
-2025/07/23
-det regnar mychet
-det ösregnar
-det öser ner
-
 firade - celebrate
 åkt till vs gick till
 full(drunk) != nykter(sober)
 full(full) != tom(empty)
 ful != syngg/fin/vacket
-arbetskamrat
 man vänjer sig = you get used to it
 man vänjer sig **vid** kylan
 gissa = to guess
@@ -447,17 +366,7 @@ döljer = to hide(non-phyisical)
 gömmer = to hide(physical)
 jag hinner inte = I don't have time / I don't make it
 precis/klart/självklat
-lätt!=svår
-lätt!=tung
-jag kom till sverige för ett år sen
 
-2025-06-30
-Arvid tanka på sig om klimaten för olicka saker.
-Arvid tänker på olika saker om kilmatet grader
-
-- Mobiltelefonen visar temperaturen är trettio grad idag
-- Arvid har läst tidningen från brevlådan. Branden är lika som 20 000 fotbollplaner
-- Arvid hörde på radion forskare (pratade) om den globala uppvärmingen och att temperaturen på jorden ökar. - (Mycket) människan släpper ut (mycket) koldixid i atmosfären till exempel från bilar.
 
 | English Expression         | Expression       | Example (English)                                                                                             | Example (Swedish)                                                                                                 |
 | -------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -470,7 +379,6 @@ Arvid tänker på olika saker om kilmatet grader
 | Thanks to                  | Tack vare        | The fishermen managed to save the stranded seal thanks to the help of the coast guard.                        | Fiskarna lyckades rädda den strandade sälen tack vare hjälp av kustbevakningen.                                   |
 | Considering                | Med tanke på     | She's incredibly good at basketball considering her height.                                                   | Hon är oerhört duktig på basket med tanke på hennes längd.                                                        |
 | In contrast to             | I motsats till   | I'm freezing, in contrast to Fredrik who walks around in a T-shirt.                                           | Jag fryser jättemycket, i motsats till Fredrik som går runt i T-shirt.                                            |
-
 GRAMMAR MISTAKES
 Hon har **alltid** varit snäll mot mig.
 På julen träffar jag alltid släkten
@@ -479,8 +387,20 @@ varannan/vartannat
 var/vart
 flytta -> frivilligt
 fly -> måste -> krig/hunger/problem
-
 upp
 in
 ut - out. If you’re emphasizing movement to the outside, use ut.
 ur - out. If you’re emphasizing where it comes from, use ur.
+istallet
+hellre
+ihop - together
+ungefär - about
+ungefär halften befolkning paverkas av arstiderna
+lätt!=svår
+lätt!=tung
+Adverb type	Typical position
+Frequency (ofta, aldrig)	After main verb / after auxiliary
+Uncertainty (kanske)	Start of sentence OR after verb
+Modal verbs (vill, kan)	Before main verb
+
+på grund av - because of

@@ -37,6 +37,13 @@
   - LLM Interfaces
     - feat(common-node): LLM image analysis
     - feat(common-node): LLM image identification interface
+    - docs(llm): LLLM deterministic values
+      - text/unstructures data to->
+        - boolean
+        - number
+        - string
+        - object
+        - array
   - feat(common-node): Stripe interface implementation
   - feat(cloud8skate): cloud8skate SSG, SEO, etc..
   - feat(vb-manager): Spotify DL manager.
