@@ -3,3 +3,7 @@ alias clearmail="echo '' > /var/mail/$(whoami)"
 load_aliases ~/shell-aliases/devops/
 
 alias cronguru="chrome 'https://crontab.guru/'"
+
+alias tfinit="terraform init"
+alias tfplan="terraform plan"
+alias tfapply="terraform apply"
