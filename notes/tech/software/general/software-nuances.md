@@ -94,3 +94,19 @@
 
 - **Use Axios**: For complex applications where you need features like interceptors, timeouts, retries, or simplified syntax.
 - **Use Fetch**: For simple projects or when you want a lightweight solution without adding a dependency.
+
+
+Declarative vs imperative code
+
+Declarative programming is when you say what you want, and imperative language is when you say how to get what you want.
+
+A simple example in Python:
+
+# Declarative
+small_nums = [x for x in range(20) if x < 5]
+
+# Imperative
+small_nums = []
+for i in range(20):
+    if i < 5:
+        small_nums.append(i)

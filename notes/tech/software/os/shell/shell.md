@@ -27,8 +27,6 @@ rsync [source] [destination]
 # grep(global regular expression print) - Used for searching plain-text files for line that match a regular expression
 grep [options] [regex] [file(s)]
 
-# ARP(Address Resolution Protocol)
-arp -a
 
 # du(disk usage)
 du -h DIRECTORY_PATH # Lists sizes for all files and subdirectories.
@@ -70,4 +68,14 @@ echo ENCODED_FILENAME| base64 -d > DECODED_FILENAME
 
 echo -n "DECODED_STRING" | base64
 echo "ENCODED_STRING" | base64 --decode
+```
+
+## Network Commands
+
+```
+ip link # Show all network interfaces
+ip addr # Show IP addresses
+ip route # Show routing table
+
+arp -a # ARP(Address Resolution Protocol)
 ```

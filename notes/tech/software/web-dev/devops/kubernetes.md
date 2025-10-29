@@ -6,8 +6,33 @@
 
 ```
 brew install kubectl minikube
+# kubectl - Kubernetes CLI client
+# minikube - cluster
+
 minikube start
+minikube stop
+minikube dashboard
+minikube ssh
+minikube delete
+
+kubectl apply -f minikube.yaml
+kubectl get all
 kubectl get nodes
+kubectl get pods
+kubectl get pods -A
+kubectl describe node
+kubectl get svc
+
+kubectl create deployment DEPLOYMENT_NAME --image=kicbase/echo-server:1.0
+kubectl expose deployment DEPLOYMENT_NAME --type=NodePort --port=8080
+minikube service SERVICE_NAME
+
+# Delete
+kubectl delete deployment DEPLOYMENT_NAME
+kubectl delete service SERVICE_NAME
+kubectl delete svc SERVICE_NAME
+kubectl delete pod POD_NAME
+kubectl delete -f minikube.yaml
 ```
 
 ## Components
