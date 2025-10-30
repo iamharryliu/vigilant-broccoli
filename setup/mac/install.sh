@@ -37,10 +37,6 @@ if ask "Symlink dotfiles?"; then
     source $HOME/.zshrc
 fi
 
-if ask "Use default .env.sh?"; then
-    cat $ZSH_DOTFILES_DIR/.env.sh >> ~/.env.sh
-fi
-
 if ask "Install Node dependencies?"; then
     brew link node@20
     npm install -g yarn
