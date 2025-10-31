@@ -323,6 +323,9 @@ async function createCalendar(
   );
   const res = await runGamReadCommand(createCalendarCommand);
   const match = res.match(/Calendar:\s*([^,]+)/);
+  if (!match) {
+    throw new Error('Failed to extract calendar ID from response');
+  }
   const calendarId = match[1].trim();
   return calendarId;
 }
@@ -349,6 +352,9 @@ async function createCalendarEvent(
   );
   const res = await runGamReadCommand(createCalendarCommand);
   const calendarEventId = parseEventId(res);
+  if (!calendarEventId) {
+    throw new Error('Failed to extract calendar event ID from response');
+  }
   return calendarEventId;
 }
 
