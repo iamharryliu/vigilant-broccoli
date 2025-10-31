@@ -1,9 +1,14 @@
 # TODO
+- Deal with cloud storage
+- Move parents iPhone photos to computer
+- Move phone images to computer
+- Build photo storage solution
 
 ## vigilant-broccoli
 
 - **Current Tasks**
   - chore: secure vb GC instance.
+  - text to calendar event/google task
 - **Light Tasks**
   - docs: Replace Obsidian brackets.
   - chore: [GeForce Maplestory](https://support-maplestory.nexon.com/hc/en-us/articles/23609853001876-How-to-play-MapleStory-through-GeForce-NOW)
@@ -12,11 +17,7 @@
 - **Implementations**
   - feat(immich): Initial implementation.
   - feat: Implement deadman switch.
-- **Intensive Audit/Refactor Tasks**
-  - refactor(dotenv):
-    - **dotenv refactor**
-      - import 'dotenv-defaults/config';
-    - remove instances of `process.env`
+- **Audit/Refactor Tasks**
   - feat: Setup linux vs mac setup scripts
   - chore: dotfile cleanup
   - chore: reassess Spotify API
