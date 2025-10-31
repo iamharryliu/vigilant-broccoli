@@ -13,4 +13,4 @@
 
 - Blend ingredients to coat bread and pan fry.
 - Serve with fresh fruit like sliced banana or berries.
-- Optonal toppings: maple syrup.
+- Optional toppings: maple syrup.

@@ -35,6 +35,6 @@ Garnish:
 - Cook on low with lid on until done.
 - Garnish.
 
-## Reference
+## References
 
 - [Mexican Inspired Rice and Beans Recipe 🪅 Healthy One Pot Black Bean Vegan Food (Super Easy)](https://www.youtube.com/watch?v=UNMrwudowfg&list=WL&index=16&t=3s)
