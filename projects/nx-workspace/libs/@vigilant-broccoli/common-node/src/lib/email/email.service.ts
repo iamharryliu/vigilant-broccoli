@@ -4,13 +4,14 @@ import ejs from 'ejs';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { DEFAULT_EJS_TEMPLATE, DEFAULT_EMAIL_REQUEST } from './email.consts';
 import { logger } from '../logging/logger.service';
+import { getEnvironmentVariable } from '../utils';
 
 export class EmailService {
   private transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
 
   constructor(email = undefined, emailPassword = undefined) {
-    const user = email || process.env.MY_EMAIL;
-    const pass = emailPassword || process.env.MY_EMAIL_PASSWORD;
+    const user = email || getEnvironmentVariable('MY_EMAIL');
+    const pass = emailPassword || getEnvironmentVariable('MY_EMAIL_PASSWORD');
     if (!user || !pass) {
       logger.error('EmailService is not configured properly.');
     }

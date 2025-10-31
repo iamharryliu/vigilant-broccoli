@@ -6,6 +6,7 @@ import {
   DeleteObjectsCommand,
 } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 function ensureTrailingSlash(path: string | undefined): string {
   if (!path) return '';
@@ -15,10 +16,10 @@ function ensureTrailingSlash(path: string | undefined): string {
 function getS3Client() {
   return new S3Client({
     region: 'auto',
-    endpoint: `https://${process.env.CLOUDFLARE_ID}.r2.cloudflarestorage.com`,
+    endpoint: `https://${getEnvironmentVariable('CLOUDFLARE_ID')}.r2.cloudflarestorage.com`,
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+      accessKeyId: getEnvironmentVariable('AWS_ACCESS_KEY_ID') as string,
+      secretAccessKey: getEnvironmentVariable('AWS_SECRET_ACCESS_KEY') as string,
     },
   });
 }

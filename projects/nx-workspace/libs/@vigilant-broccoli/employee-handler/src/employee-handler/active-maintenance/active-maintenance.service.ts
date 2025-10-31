@@ -12,7 +12,10 @@ import {
   getEmailSignatureFilepath,
   SIGNATURE_TMP_DIR,
 } from '@vigilant-broccoli/google-workspace';
-import { FileSystemUtils } from '@vigilant-broccoli/common-node';
+import {
+  FileSystemUtils,
+  getEnvironmentVariable,
+} from '@vigilant-broccoli/common-node';
 
 // TODO: kind of awkward with caching, refactor later.
 const updateEmailSignatures = async (
@@ -83,7 +86,7 @@ const emailZippedSignatures = async (
   handlerConfig: EmployeeHandlerConfig,
   receivers = process.argv.slice(3).length > 0
     ? process.argv.slice(3)
-    : [process.env.MY_EMAIL],
+    : [getEnvironmentVariable('MY_EMAIL')],
 ): Promise<void> => {
   await generateLocalSignatures(handlerConfig);
   const attachments = [

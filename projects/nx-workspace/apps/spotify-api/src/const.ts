@@ -1,10 +1,12 @@
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+
 export const HOST = '0.0.0.0';
 export const PORT = 8080;
 
-export const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-export const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+export const SPOTIFY_CLIENT_ID = getEnvironmentVariable('SPOTIFY_CLIENT_ID');
+export const SPOTIFY_CLIENT_SECRET = getEnvironmentVariable('SPOTIFY_CLIENT_SECRET');
 export const REDIRECT_URI =
-  process.env.NODE_ENV === 'LOCAL'
+  getEnvironmentVariable('NODE_ENV') === 'LOCAL'
     ? `http://${HOST}:${PORT}/callback`
     : 'https://spotify-playlist-getter.fly.dev/callback';
 

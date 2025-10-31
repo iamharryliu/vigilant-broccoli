@@ -5,6 +5,7 @@ import {
   SPOTIFY_CLIENT_ID,
   SPOTIFY_CLIENT_SECRET,
 } from './const';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 export async function getAccessToken(code: string) {
   const params = new URLSearchParams();
@@ -52,7 +53,7 @@ export async function fetchPlaylists(accessToken) {
 }
 
 export const savePlaylistsDataToOutputFile = playlists => {
-  const filePath = path.join(process.env.HOME, process.env.OUTPUT_DIRECTORY);
+  const filePath = path.join(getEnvironmentVariable('HOME'), getEnvironmentVariable('OUTPUT_DIRECTORY'));
   const directoryPath = path.dirname(filePath);
   if (!fs.existsSync(directoryPath)) {
     fs.mkdirSync(directoryPath, { recursive: true });

@@ -10,6 +10,7 @@ import {
   DEFAULT_EMAIL_REQUEST,
   EmailService,
   logger,
+  getEnvironmentVariable,
 } from '@vigilant-broccoli/common-node';
 
 export class VibecheckLite {
@@ -18,9 +19,9 @@ export class VibecheckLite {
 
   constructor(openAiApiKey = undefined, openWeatherApiKey = undefined) {
     this.openWeatherApiKey = (openWeatherApiKey ||
-      process.env.OPENWEATHER_API_KEY) as string;
+      getEnvironmentVariable('OPENWEATHER_API_KEY')) as string;
     this.openai = new OpenAI({
-      apiKey: openAiApiKey || process.env.OPENAI_API_KEY,
+      apiKey: openAiApiKey || getEnvironmentVariable('OPENAI_API_KEY'),
       dangerouslyAllowBrowser: true,
     });
   }
@@ -83,7 +84,7 @@ export class VibecheckLite {
       const subject = 'Vibecheck Lite Outfit Recommendation';
       const request = {
         ...DEFAULT_EMAIL_REQUEST,
-        from: `nickname <${process.env.MY_EMAIL}>`,
+        from: `nickname <${getEnvironmentVariable('MY_EMAIL')}>`,
         to: email,
         subject,
       };

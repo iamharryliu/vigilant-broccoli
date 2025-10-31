@@ -5,6 +5,7 @@ import {
   DEFAULT_EMAIL_REQUEST,
   EmailService,
   EncryptionService,
+  getEnvironmentVariable,
 } from '@vigilant-broccoli/common-node';
 
 export class NewsletterService {
@@ -51,7 +52,7 @@ export class NewsletterService {
     return mailService.sendEjsEmail(
       {
         ...DEFAULT_EMAIL_REQUEST,
-        from: `harryliu.dev <${process.env.MY_EMAIL}>`,
+        from: `harryliu.dev <${getEnvironmentVariable('MY_EMAIL')}>`,
         to: email,
         subject,
       },
