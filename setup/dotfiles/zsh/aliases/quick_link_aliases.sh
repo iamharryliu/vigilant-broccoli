@@ -9,7 +9,7 @@ alias chromeExtensions='chrome "chrome://extensions/"'
 alias google="~/shell-scripts/google_search.sh"
 alias gmaps='chrome "https://www.google.com/maps"'
 alias chatgpt='function _gptquery() { local query=$(echo "$*" | sed "s/ /%20/g"); open "https://chatgpt.com/?q=${query}"; }; _gptquery'
-alias claude='open https://claude.ai'
+alias claudeai='open https://claude.ai'
 alias youtube="~/shell-scripts/youtube_search.sh"
 alias gtranslate='chrome "https://translate.google.com/"'
 alias pinterest="~/shell-scripts/pinterest_search.sh"
