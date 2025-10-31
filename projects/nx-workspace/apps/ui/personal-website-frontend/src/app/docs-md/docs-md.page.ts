@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
@@ -27,12 +27,13 @@ export class DocsMdPageComponent implements OnInit {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.dev' };
   fileContent$: Observable<FolderItem>;
 
+    public appService= inject(AppService);
+    private fileService= inject(FileService);
+    public pageService= inject(DocsMdPageService);
+    private router= inject(Router);
+    private route= inject(ActivatedRoute);
+
   constructor(
-    public appService: AppService,
-    private fileService: FileService,
-    public pageService: DocsMdPageService,
-    private router: Router,
-    private route: ActivatedRoute,
   ) {
     this.fileContent$ = this.pageService.getFileContent();
   }

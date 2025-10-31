@@ -1,4 +1,4 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import {
   ActivatedRoute,
@@ -17,11 +17,12 @@ import { GeneralLayoutComponent } from './components/layouts/general-layout.comp
 export class AppComponent {
   private navigatedSignal = signal<NavigationEnd | null>(null);
 
+    private router =  inject(Router);
+    private titleService =  inject(Title);
+    private route =  inject(ActivatedRoute);
+    private meta =  inject(Meta);
+
   constructor(
-    private router: Router,
-    private titleService: Title,
-    private route: ActivatedRoute,
-    private meta: Meta,
   ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {

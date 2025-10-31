@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { FileService, FolderItem } from 'general-components';
 import { Observable } from 'rxjs';
 
@@ -11,7 +11,7 @@ export class DocsMdPageService {
   isFileSelected = true;
   selectedFilepath = '';
 
-  constructor(private fileService: FileService) {}
+  private fileService =  inject(FileService);
 
   getFileContent(): Observable<FolderItem> {
     return this.fileService.getFolderStructure(

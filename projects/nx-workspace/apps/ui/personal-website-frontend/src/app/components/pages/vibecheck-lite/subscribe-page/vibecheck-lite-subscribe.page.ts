@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, exhaustMap } from 'rxjs';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { LINKS } from '../../../../core/consts/routes.const';
 import { VibecheckLiteService } from '../../../../core/services/vibecheck-lite.service';
@@ -15,13 +15,14 @@ import { VibecheckLiteService } from '../../../../core/services/vibecheck-lite.s
 @Component({
   selector: 'app-vibecheck-lite-subscribe-page',
   templateUrl: './vibecheck-lite-subscribe.page.html',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule],
 })
 export class VibecheckLiteSubscribePageComponent {
+
+    private http= inject(HttpClient);
+    private vibecheckLiteService= inject(VibecheckLiteService);
+    private router= inject(Router);
   constructor(
-    private http: HttpClient,
-    private vibecheckLiteService: VibecheckLiteService,
-    private router: Router,
   ) {
     this.getCountries().subscribe(countries => {
       this.countries = countries;

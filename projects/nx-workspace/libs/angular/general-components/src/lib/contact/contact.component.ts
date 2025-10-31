@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import {
   FormGroup,
   FormControl,
@@ -8,7 +8,7 @@ import {
 import { AppName, MessageRequest } from '@prettydamntired/personal-website-lib';
 import { Subject, exhaustMap, tap } from 'rxjs';
 import { CommonService } from '../services/common.service';
-import { CommonModule } from '@angular/common';
+
 import { LinkComponent } from '../link/link.component';
 import { Link } from '../models';
 import { LoadingButtonComponent } from '../loading-button/loading-button.component';
@@ -17,11 +17,10 @@ import { LoadingButtonComponent } from '../loading-button/loading-button.compone
   selector: 'lib-contact',
   templateUrl: './contact.component.html',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     LinkComponent,
-    LoadingButtonComponent,
-  ],
+    LoadingButtonComponent
+],
 })
 export class ContactComponent {
   submit$ = new Subject<boolean>();
@@ -30,7 +29,9 @@ export class ContactComponent {
   @Input() headerText = 'Message Us!';
   loading = false;
 
-  constructor(private commonService: CommonService) {
+  private commonService= inject(CommonService);
+
+  constructor() {
     this.submit$
       .pipe(
         tap(() => {

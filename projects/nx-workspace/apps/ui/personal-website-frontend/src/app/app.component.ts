@@ -1,4 +1,4 @@
-import { Component, HostListener, effect, signal } from '@angular/core';
+import { Component, HostListener, effect, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import {
   ActivatedRoute,
@@ -18,12 +18,14 @@ import { TAILWIND_BREAKPOINTS } from '@vigilant-broccoli/common-browser';
 export class AppComponent {
   private navigatedSignal = signal<NavigationEnd | null>(null);
 
+
+    private router = inject(Router);
+    private titleService = inject(Title);
+    private appService = inject(AppService);
+    private route = inject(ActivatedRoute);
+    private blogService = inject(BlogService);
+
   constructor(
-    private router: Router,
-    private titleService: Title,
-    private appService: AppService,
-    private route: ActivatedRoute,
-    private blogService: BlogService,
   ) {
     this.checkWindowSize();
 

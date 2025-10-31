@@ -12,7 +12,7 @@
     required
     class="w-7/12 lg:w-min border rounded py-2 px-3 focus:outline-none focus:border-blue-400 mr-2"
     [placeholder]="'Your email address'"
-  />
+    />
   <button
     type="submit"
     id="subscribe-form-submit-button"
@@ -23,29 +23,33 @@
       'bg-black': form.valid,
       'hover:bg-blue-600': form.valid
     }"
-  >
-    <span *ngIf="!isLoading">Subscribe</span>
-    <span *ngIf="isLoading" class="flex justify-center items-center">
-      <svg
-        class="animate-spin h-5 w-5 text-white"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.004 8.004 0 014 12H0c0 6.627 5.373 12 12 12v-4a7.96 7.96 0 01-6-2.709z"
-        ></path>
-      </svg>
-    </span>
+    >
+    @if (!isLoading) {
+      <span>Subscribe</span>
+    }
+    @if (isLoading) {
+      <span class="flex justify-center items-center">
+        <svg
+          class="animate-spin h-5 w-5 text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.004 8.004 0 014 12H0c0 6.627 5.373 12 12 12v-4a7.96 7.96 0 01-6-2.709z"
+          ></path>
+        </svg>
+      </span>
+    }
   </button>
 </form>

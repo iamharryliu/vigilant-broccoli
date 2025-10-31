@@ -8,17 +8,16 @@
     'hover:bg-blue-600': !disabled && !loading,
     'cursor-not-allowed': loading
   }"
->
-  <ng-container *ngIf="!loading; else loadingTemplate">
+  >
+  @if (!loading) {
     {{ buttonText }}
-  </ng-container>
-  <ng-template #loadingTemplate>
+  } @else {
     <svg
       class="animate-spin h-5 w-5 text-white"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-    >
+      >
       <circle
         class="opacity-25"
         cx="12"
@@ -33,5 +32,5 @@
         d="M4 12a8 8 0 018-8V0C6.477 0 2 4.477 2 10h2zm2 5.292A7.952 7.952 0 014 12H2c0 3.866 2.239 7.155 5.292 8.708l1.416-1.416z"
       ></path>
     </svg>
-  </ng-template>
+  }
 </button>

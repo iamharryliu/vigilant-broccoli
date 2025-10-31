@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { EmployeeHandlerConfig } from '../../employee-handler/employee-handler.models';
+import { EmployeeHandlerConfig } from '../employee-handler.models';
 import {
   ALL_GENERATED_SIGNATURES_FILENAME,
   ALL_GENERATED_SIGNATURES_FILEPATH,
@@ -23,7 +23,7 @@ const updateEmailSignatures = async (
 ): Promise<void> => {
   let signaturesCache = FileSystemUtils.getObjectFromFilepath(
     SIGNATURE_CACHE_FILEPATH,
-  );
+  ) as Record<string, string>;
   const signatures =
     await handlerConfig.activeMaintenanceUtilities.fetchEmailSignatures();
   const signaturesToUpdate = handlerConfig.activeMaintenanceUtilities
@@ -48,7 +48,7 @@ const updateEmailSignatures = async (
             .update(signature.signatureString)
             .digest('hex');
           return cache;
-        }, {}),
+        }, {} as Record<string, string>),
       );
       await FileSystemUtils.writeJSON(
         SIGNATURE_CACHE_FILEPATH,
@@ -121,6 +121,7 @@ const manualRecoverUsers = async (
 const syncData = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
+  if(!handlerConfig.activeMaintenanceUtilities.syncData) return
   await handlerConfig.activeMaintenanceUtilities.syncData();
 };
 

@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MarkdownPageComponent } from 'general-components';
 
@@ -11,7 +11,9 @@ export class CalendarSectionComponent {
   iframeSrc: SafeResourceUrl = '';
   contentFilepath = 'https://bucket.cloud8skate.com/content/calendar.md';
 
-  constructor(private sanitizer: DomSanitizer) {
+  private sanitizer = inject(DomSanitizer);
+
+  constructor() {
     this.updateIframeMode(window.innerWidth);
   }
 

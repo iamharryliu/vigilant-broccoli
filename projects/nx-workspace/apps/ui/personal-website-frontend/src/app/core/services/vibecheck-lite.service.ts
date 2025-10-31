@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { VibecheckLiteSubscriptionRequest } from '@prettydamntired/personal-website-lib';
@@ -9,7 +9,7 @@ import { Location } from '@vigilant-broccoli/common-js';
   providedIn: 'root',
 })
 export class VibecheckLiteService {
-  constructor(private http: HttpClient) {}
+  private http =  inject(HttpClient);
 
   getOutfitRecommendation(location: Location): Observable<any> {
     return this.http.get<any>(

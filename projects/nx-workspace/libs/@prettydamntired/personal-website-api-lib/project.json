@@ -3,6 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/@prettydamntired/personal-website-api-lib/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
     "run-script": {
       "executor": "nx:run-commands",
@@ -40,6 +41,5 @@
         "jestConfig": "libs/@prettydamntired/personal-website-api-lib/jest.config.ts"
       }
     }
-  },
-  "tags": []
+  }
 }

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { LINKS } from '../../../core/consts/routes.const';
 import { CenteredAppLayoutComponent } from '../../layouts/centered-app-layout/centered-app-layout.compoenent';
@@ -7,7 +7,7 @@ import { ButtonLinkComponent, Link } from 'general-components';
 @Component({
   selector: 'app-link-tree-page',
   templateUrl: './link-tree.page.html',
-  imports: [CenteredAppLayoutComponent, ButtonLinkComponent, CommonModule],
+  imports: [CenteredAppLayoutComponent, ButtonLinkComponent],
   styles: [
     '#profile-picture {width: 120px; height: 120px; border-radius: 50%;}',
   ],

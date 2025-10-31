@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
@@ -20,7 +20,7 @@ const APP_MAPPER = {
   providedIn: 'root',
 })
 export class CommonService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   sendMessage(request: MessageRequest): Observable<any> {
     const { appName, email, name, message } = request;

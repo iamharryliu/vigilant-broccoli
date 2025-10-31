@@ -1,15 +1,17 @@
 <div class="lg:w-3/4 mx-auto">
   <div class="pt-14 lg:pt-16 pl-4 pr-4">
     <div class="grid gap-4 sm:grid-cols-3">
-      <div *ngFor="let album of albums">
-        <a [routerLink]="[LINKS.ALBUMS.url.internal, album.albumName]">
-          <img
-            [src]="album.firstImageUrl"
-            [alt]="album.albumName"
-            class="w-full" />
-        </a>
-        <p class="text-center font-light mt-2">{{album.albumName}}</p>
-      </div>
+      @for (album of albums; track album) {
+        <div>
+          <a [routerLink]="[LINKS.ALBUMS.url.internal, album.albumName]">
+            <img
+              [src]="album.firstImageUrl"
+              [alt]="album.albumName"
+              class="w-full" />
+          </a>
+          <p class="text-center font-light mt-2">{{album.albumName}}</p>
+        </div>
+      }
     </div>
   </div>
 </div>
