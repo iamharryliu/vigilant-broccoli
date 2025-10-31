@@ -1,6 +1,7 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { Email } from './email.models';
+import { getEnvironmentVariable } from '../utils';
 
 const getGmailTransportOptions = (
   user: string,
@@ -24,8 +25,8 @@ export const createGmailTransport = (
 
 export const sendEmail = async (email: Email): Promise<void> => {
   const transporter = createGmailTransport(
-    process.env.EMAIL_SENDER as string,
-    process.env.EMAIL_SENDER_PASSWORD as string,
+    getEnvironmentVariable('EMAIL_SENDER') as string,
+    getEnvironmentVariable('EMAIL_SENDER_PASSWORD') as string,
   );
   await transporter.sendMail(email);
 };

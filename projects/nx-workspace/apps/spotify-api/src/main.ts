@@ -5,6 +5,7 @@ import {
   savePlaylistsDataToOutputFile,
 } from './util';
 import { HOST, PORT, authorizeUrl } from './const';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.get('/callback', async (req, res) => {
   const code = (req.query.code as string) || null;
   const accessToken = await getAccessToken(code);
   const playlists = await fetchPlaylists(accessToken);
-  if (process.env.NODE_ENV === 'LOCAL') {
+  if (getEnvironmentVariable('NODE_ENV') === 'LOCAL') {
     savePlaylistsDataToOutputFile(playlists);
     res.json(playlists);
     return;

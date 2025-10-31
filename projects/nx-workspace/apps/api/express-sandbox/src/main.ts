@@ -1,6 +1,7 @@
 import express from 'express';
 import * as path from 'path';
 import cors from 'cors';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 const app = express();
 app.use(cors());
@@ -13,7 +14,7 @@ app.get('/', async (req, res) => {
   res.send({});
 });
 
-const port = process.env.PORT || 3333;
+const port = getEnvironmentVariable('PORT') || 3333;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);
 });
