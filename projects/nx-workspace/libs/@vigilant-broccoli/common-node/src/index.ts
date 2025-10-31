@@ -1,8 +1,8 @@
+import 'dotenv-defaults/config';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 
 export * from './lib/utils';
-import './lib/node-env/env';
 // Date
 export * from './lib/date/date.consts';
 export * from './lib/date/date.utils';

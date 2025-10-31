@@ -1,4 +1,3 @@
-import 'dotenv-defaults/config';
 import { Twilio } from 'twilio';
 import {
   MessageInstance,

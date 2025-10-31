@@ -1,4 +1,3 @@
-import 'dotenv-defaults/config';
 import { logger } from '../logging/logger.service';
 import { getEnvironmentVariable } from '../utils';
 export class RecaptchaService {

@@ -1,4 +1,3 @@
-import 'dotenv-defaults/config';
 import nodemailer from 'nodemailer';
 import ejs from 'ejs';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
