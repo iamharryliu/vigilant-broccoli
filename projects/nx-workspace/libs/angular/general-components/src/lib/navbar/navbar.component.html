@@ -10,16 +10,17 @@
     'fade-out': isFading
   }"
   [class]="bgColor"
->
+  >
   <div class="flex items-center justify-between h-16 ml-6">
     <div class="space-x-4">
       <ng-content select="[browserBrand]"></ng-content>
-      <lib-link
-        *ngFor="let link of links"
-        [link]="link"
-        [textClasses]="textClasses"
-        [type]="link.type"
-      ></lib-link>
+      @for (link of links; track link) {
+        <lib-link
+          [link]="link"
+          [textClasses]="textClasses"
+          [type]="link.type"
+        ></lib-link>
+      }
     </div>
   </div>
   <hr />
@@ -32,7 +33,7 @@
   [ngClass]="{
     'fade-out': isFading
   }"
->
+  >
   <div class="flex justify-between ml-4 mr-8 pt-3 pb-3">
     <div>
       <ng-content select="[mobileBrand]"></ng-content>
@@ -45,15 +46,17 @@
   <div
     class="absolute w-full bg-gray-300 pt-3 pb-3"
     [class.hidden]="!isMobileNavOpen"
-  >
+    >
     <div class="space-y-3">
-      <div class="flex justify-center" *ngFor="let link of links">
-        <lib-link
-          [link]="link"
-          type="internal"
-          (clickEmitter)="collapseNavbar()"
-        ></lib-link>
-      </div>
+      @for (link of links; track link) {
+        <div class="flex justify-center">
+          <lib-link
+            [link]="link"
+            type="internal"
+            (clickEmitter)="collapseNavbar()"
+          ></lib-link>
+        </div>
+      }
     </div>
   </div>
   <hr />

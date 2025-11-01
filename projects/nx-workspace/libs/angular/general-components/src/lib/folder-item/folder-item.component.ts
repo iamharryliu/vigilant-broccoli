@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FolderItem } from '../models';
 import { HyphenatedToTitleCasePipe } from '../pipes/hyphenated-to-titlecase.pipe';
 
 @Component({
   selector: 'lib-folder-item',
-  imports: [CommonModule, HyphenatedToTitleCasePipe],
+  imports: [HyphenatedToTitleCasePipe],
   templateUrl: './folder-item.component.html',
   styleUrls: ['./folder-item.component.scss'],
 })

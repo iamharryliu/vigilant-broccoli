@@ -2,8 +2,8 @@
   "name": "@vigilant-broccoli/common-js",
   "version": "0.0.17",
   "dependencies": {
-    "vite": "^6.3.5",
-    "vite-plugin-dts": "~4.5.4",
+    "vite": "*",
+    "vite-plugin-dts": "*",
     "@nx/vite": "*"
   },
   "main": "./index.js",

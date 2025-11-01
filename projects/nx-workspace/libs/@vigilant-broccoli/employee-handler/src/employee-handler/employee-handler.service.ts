@@ -4,13 +4,20 @@ import { OffboardHandler } from './offboard/offboard.service';
 import { OnboardHandler } from './onboard/onboard.service';
 import { PostRetentionHandler } from './post-retention/postRetention.service';
 
+const serviceHandlers = {
+  ...OnboardHandler,
+  ...ActiveMaintenanceHandler,
+  ...OffboardHandler,
+  ...PostRetentionHandler,
+};
+
 const handleInput = async (
   configuration: EmployeeHandlerConfig,
 ): Promise<void> => {
   const [, , command] = process.argv;
   const COMMAND =
-    (EmployeeHandlerService[command]
-      ? EmployeeHandlerService[command]
+    (command in serviceHandlers
+      ? serviceHandlers[command as keyof typeof serviceHandlers]
       : undefined) ||
     (configuration.customFunctions && configuration.customFunctions[command]
       ? configuration.customFunctions[command]
@@ -28,8 +35,5 @@ const handleInput = async (
 
 export const EmployeeHandlerService = {
   handleInput,
-  ...OnboardHandler,
-  ...ActiveMaintenanceHandler,
-  ...OffboardHandler,
-  ...PostRetentionHandler,
+  ...serviceHandlers,
 };

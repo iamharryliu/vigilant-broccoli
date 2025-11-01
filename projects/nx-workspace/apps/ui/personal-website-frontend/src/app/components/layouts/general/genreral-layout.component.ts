@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 import { LINKS } from '../../../core/consts/routes.const';
 import { RouterModule } from '@angular/router';
@@ -11,12 +11,11 @@ import { ToggleDarkThemeButtonComponent } from '../../features/toggle-dark-mode-
   selector: 'app-general-layout',
   templateUrl: './general-layout.component.html',
   imports: [
-    CommonModule,
     NavbarSectionComponent,
     FooterComponent,
     RouterModule,
-    ToggleDarkThemeButtonComponent,
-  ],
+    ToggleDarkThemeButtonComponent
+],
   styles: [
     '#profile-picture {width: 120px; height: 120px; border-radius: 50%;}',
   ],

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LINKS } from '../core/consts/routes.const';
 import { Observable } from 'rxjs';
@@ -30,12 +30,14 @@ export class LeetCodePageComponent implements OnInit {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.dev' };
   fileContent$: Observable<FolderItem>;
 
+
+    public fileService= inject(FileService);
+    public appService= inject(AppService);
+    public pageService= inject(LeetCodePageService);
+    private route= inject(ActivatedRoute);
+    private router= inject(Router);
+
   constructor(
-    public fileService: FileService,
-    public appService: AppService,
-    public pageService: LeetCodePageService,
-    private route: ActivatedRoute,
-    private router: Router,
   ) {
     this.fileContent$ = this.fileService.getFolderStructure(
       'assets/grind-75/grind-75.json',

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppService } from '../core/services/app.service';
 import { DocsMdPageService } from '../docs-md/docs-md.page.service';
@@ -18,11 +18,9 @@ import { MarkdownPageComponent } from 'general-components';
 export class BlogComponent implements OnInit {
   filename!: string;
 
-  constructor(
-    public appService: AppService,
-    public markdownLibraryService: DocsMdPageService,
-    private route: ActivatedRoute,
-  ) {}
+    public appService = inject(AppService);
+    public markdownLibraryService = inject(DocsMdPageService);
+    private route = inject(ActivatedRoute);
 
   ngOnInit(): void {
     const date = this.route.snapshot.paramMap.get('date') as string;

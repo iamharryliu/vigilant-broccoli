@@ -1,30 +1,48 @@
-<div *ngIf="item" class="item">
-  <div *ngIf="item.type === 'folder'">
-    <div (click)="toggle()" [class.font-bold]="expanded">
-      <span *ngIf="!expanded" class="folder mr-2">📁</span>
-      <span *ngIf="expanded" class="mr-2">📂</span>
-      <span *ngIf="isTitleCase; else noPipe">{{
-        item.name | hyphenatedToTitleCase
-      }}</span>
-    </div>
-    <div *ngIf="expanded" style="margin-left: 20px">
-      <lib-folder-item
-        *ngFor="let child of item.children"
-        [item]="child"
-        [isTitleCase]="isTitleCase"
-        [filepath]="subpath"
-        (fileEmitter)="selectFile($event)"
-      ></lib-folder-item>
-    </div>
+@if (item) {
+  <div class="item">
+    @if (item.type === 'folder') {
+      <div>
+        <div (click)="toggle()" [class.font-bold]="expanded">
+          @if (!expanded) {
+            <span class="folder mr-2">📁</span>
+          }
+          @if (expanded) {
+            <span class="mr-2">📂</span>
+          }
+          @if (isTitleCase) {
+            <span>{{
+              item.name | hyphenatedToTitleCase
+            }}</span>
+          } @else {
+            <span>{{ item.name }}</span>
+          }
+        </div>
+        @if (expanded) {
+          <div style="margin-left: 20px">
+            @for (child of item.children; track child) {
+              <lib-folder-item
+                [item]="child"
+                [isTitleCase]="isTitleCase"
+                [filepath]="subpath"
+                (fileEmitter)="selectFile($event)"
+              ></lib-folder-item>
+            }
+          </div>
+        }
+      </div>
+    }
+    @if (item.type === 'file') {
+      <div (click)="selectFile(item)">
+        <span class="mr-2">📄</span>
+        @if (isTitleCase) {
+          <span>{{
+            item.name | hyphenatedToTitleCase
+          }}</span>
+        } @else {
+          <span>{{ item.name }}</span>
+        }
+      </div>
+    }
   </div>
-  <div *ngIf="item.type === 'file'" (click)="selectFile(item)">
-    <span class="mr-2">📄</span>
-    <span *ngIf="isTitleCase; else noPipe">{{
-      item.name | hyphenatedToTitleCase
-    }}</span>
-  </div>
-</div>
+}
 
-<ng-template #noPipe>
-  <span>{{ item.name }}</span>
-</ng-template>
