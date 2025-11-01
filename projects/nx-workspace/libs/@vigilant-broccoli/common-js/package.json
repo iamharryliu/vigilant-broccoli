@@ -2,7 +2,7 @@
   "name": "@vigilant-broccoli/common-js",
   "version": "0.0.17",
   "dependencies": {
-    "vite": "*",
+    "vite": ">=5.4.20",
     "vite-plugin-dts": "*",
     "@nx/vite": "*"
   },
