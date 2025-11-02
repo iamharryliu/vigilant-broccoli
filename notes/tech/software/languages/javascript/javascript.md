@@ -85,7 +85,7 @@ debugger;
 throw new Error("STOP");
 ```
 
-- [Freeze screen & inspect disappearing elements #DevToolsTips](https://www.youtube.com/watch?v=Qzmb9bdNzZ4&list=WL&index=18)c
+- [Freeze screen & inspect disappearing elements #DevToolsTips](https://www.youtube.com/watch?v=Qzmb9bdNzZ4)
 
 ## Array
 

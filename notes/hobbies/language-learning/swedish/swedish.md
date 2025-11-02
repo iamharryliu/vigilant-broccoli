@@ -404,3 +404,5 @@ Uncertainty (kanske)	Start of sentence OR after verb
 Modal verbs (vill, kan)	Before main verb
 
 på grund av - because of
+
+fabrik som tillverkar möbler.

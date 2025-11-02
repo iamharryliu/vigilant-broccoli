@@ -13,7 +13,10 @@
 - **Pass/Guard**
   - **Pass**
     - Toreando Pass
-    - Knee Cut
+    - Knee Slice/Cut
+    - X Pass
+    - Stack Pass
+    - [Closed Guard Pass](https://www.youtube.com/watch?v=bp2Eez0oDrI)
     - **Sweep**
       - [The First 4 Sweeps You Need To Know | Jiu-Jitsu Basics](https://www.youtube.com/watch?v=qp5AXBHxQec)
       - Elevator sweep for smash

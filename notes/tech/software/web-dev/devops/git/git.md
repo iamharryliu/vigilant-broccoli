@@ -1,5 +1,8 @@
 # Git
 
+- Commits
+  - [Commit Conventions](https://www.conventionalcommits.org/en/v1.0.0/)
+  - [Commit Types](https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md#type)
 - [Git Workflows](./git-workflows.md)
 - Git Providers
   - [Gitlab](./gitlab/gitlab.md)
