@@ -6,17 +6,11 @@
 #
 FROM docker.io/node:lts-alpine
 
-ENV HOST=0.0.0.0
-ENV PORT=3000
-
-
 WORKDIR /app
 
-COPY dist .
+COPY dist/apps/consumers/email-consumer .
 
-# You can remove this install step if you build with `--bundle` option.
-# The bundled output will include external dependencies.
-
+# Install dependencies from generated package.json
 RUN npm --omit=dev -f install
 
 CMD [ "node", "main.js" ]

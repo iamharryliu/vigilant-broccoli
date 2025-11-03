@@ -88,6 +88,10 @@
     },
     "docker:build": {
       "dependsOn": ["build", "prune"]
+    },
+    "deploy": {
+      "command": "flyctl deploy --dockerfile ./apps/consumers/email-consumer/Dockerfile --config ./deployment-configs/fly-configs/email-consumer.toml",
+      "dependsOn": ["build"]
     }
   }
 }

@@ -1,5 +1,6 @@
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
+// TODO: Decouple const.
 export const MONGO_DB_SERVER = `mongodb+srv://${getEnvironmentVariable('MONGO_DB_USERNAME')}:${getEnvironmentVariable('MONGO_DB_PASSWORD')}@cluster0.txzecw2.mongodb.net`;
 
 export const PERSONAL_WEBSITE_DB_NAME = {
