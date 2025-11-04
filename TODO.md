@@ -8,7 +8,10 @@
 
 - **Current Tasks**
   - chore: secure vb GC instance.
-  - text to calendar event/google task
+  - feat(microservices):
+    - Email service.
+    - Text service.
+    - Payment service.
 - **Light Tasks**
   - docs: Replace Obsidian brackets.
   - chore: [GeForce Maplestory](https://support-maplestory.nexon.com/hc/en-us/articles/23609853001876-How-to-play-MapleStory-through-GeForce-NOW)
@@ -24,10 +27,6 @@
 - **New Features/Interfaces/Implementations**
   - feat: Secret-manager secret rotation implementation.
   - feat(vb-manager): Github organization/team manager.
-  - feat(email-service):
-    - Queue (RabbitMQ)
-    - Can be called from separate apps
-    - Can send emails on behalf of apps to appropriate people/parties
   - feat(employee-handler):
     - Inform user if gam or gyb needs to be setup.
     - Create missing folder/file structures.
@@ -54,7 +53,8 @@
     - Calendar Implementation
       - [fullcalendar](https://fullcalendar.io/docs/react)
       - Google Calendar integration
-  - feat: recipe markdown blog
+  - feat: Recipe markdown blog.
+  - feat: Text to calendar event/google task
 - **R&D**
   - chore: Github wiki workflow.
   - chore: Pihole reserach, pihole, pivpn, nordvpn integration.

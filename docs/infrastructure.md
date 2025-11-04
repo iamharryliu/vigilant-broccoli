@@ -4,20 +4,34 @@
 graph TD
 
   %% Define nodes
-  A[Cloud8Skate] <--> B[CMS]
-  C[Personal Website] --> D[RabbitMQ Queue]
-  A --> D
-  D --> E[Email Consumer]
+  A[Cloud8Skate]
+  B[CMS]
+  C[Personal Website UI]
+  F[Personal Website Backend]
+  D[RabbitMQ Queue]
+  E[Email Consumer]
+  G[Spotify Playlist Getter]
+
+  %% Connections
+  A <--> B
+  C --> F
+  F --> D
+  A --> F
+  D --> E
+  G 
 
   %% Styling
   style A fill:#3b82f6,stroke:#1e3a8a,stroke-width:2px,color:white
   style B fill:#8b5cf6,stroke:#5b21b6,stroke-width:2px,color:white
   style C fill:#10b981,stroke:#065f46,stroke-width:2px,color:white
+  style F fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:white
   style D fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:white
   style E fill:#ef4444,stroke:#7f1d1d,stroke-width:2px,color:white
+  style G fill:#1db954,stroke:#14833b,stroke-width:2px,color:white
 
   %% Labels
   classDef label font-weight:bold,font-size:14px
+
 ```
 
 ## RabbitMQ Email Consumer Architecture
