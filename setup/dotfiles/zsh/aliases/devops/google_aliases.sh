@@ -1,8 +1,8 @@
 # Google Cloud
 alias gconsole='chrome "https://console.cloud.google.com/"'
 alias gce='chrome "https://console.cloud.google.com/compute/"'
-sshgceec2() {
-    ssh -i ~/.ssh/google-ec2 "$GOOGLE_EC2_HOST_ADDRESS"
+sshvbinstance() {
+    gcloud compute ssh --zone "us-east1-b" "vb-free-vm" --project "vigilant-broccoli"
 }
 
 # Analytics
