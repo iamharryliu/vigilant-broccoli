@@ -15,3 +15,4 @@ export ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
 # Audit
 alias finddotenv='find . -type f -name ".env"'
 alias fuzzyfinddotenv='find . -type f -name ".env*"'
+alias gitleaksreport='gitleaks detect --report-path gitleaks-report.json'
