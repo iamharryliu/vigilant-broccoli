@@ -6,41 +6,39 @@
 fly version update
 fly settings autoupdate enable
 fly doctor
-flyctl logs --app [app_name]
-```
 
-```
+# Provision
 fly launch
 fly launch --no-deploy
 fly apps list
 fly apps destroy [app_name]
 fly apps open --app [app_name]
-```
 
-```
+# Deploy
+fly deploy --ha=false
+fly deploy --dockerfile DOCKER_FILE --config CONFIG_FILE
+
+# Secrets
 fly secrets set [KEY]=[VALUE]
 fly secrets set [KEY]=[VALUE] --stage
 fly secrets list
 fly secrets deploy
-fly deploy --ha=false
-fly deploy --dockerfile [docker-file] --config [config_file]
-```
 
-```
+# Debug
+flyctl logs --app APP_NAME
+
+# Scale
 flyctl status --app [app_name]
 flyctl machine status [machine_id]
 flyctl machine start --app [app_name]
 flyctl machine stop --app [app_name]
 flyctl scale count [n] --app [app_name]
-flyctl logs --app [app_name]
+
+# Token
+flyctl auth token # Authentication token
+flyctl tokens create deploy # Application token
 ```
 
-```
-# Authentication token
-flyctl auth token
-# Application token
-flyctl tokens create deploy
-```
 
 ### SSH
 
