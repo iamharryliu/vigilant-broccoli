@@ -1,3 +1,4 @@
+# Rename app to email-consumer
 app = 'consumer-holy-tree-7737'
 primary_region = 'arn'
 
