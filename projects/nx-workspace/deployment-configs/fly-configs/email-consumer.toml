@@ -1,8 +1,3 @@
-# fly.toml app configuration file generated for email-consumer
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'consumer-holy-tree-7737'
 primary_region = 'arn'
 

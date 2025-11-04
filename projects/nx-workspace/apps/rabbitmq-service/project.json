@@ -1,0 +1,45 @@
+{
+  "name": "rabbitmq-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/rabbitmq-service",
+  "projectType": "application",
+  "targets": {
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "fly deploy",
+        "cwd": "apps/rabbitmq-service"
+      }
+    },
+    "docker:build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build -t rabbitmq-service .",
+        "cwd": "apps/rabbitmq-service"
+      }
+    },
+    "docker:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker run -p 15672:15672 -p 5672:5672 rabbitmq-service",
+        "cwd": "apps/rabbitmq-service"
+      },
+      "dependsOn": ["docker:build"]
+    },
+    "proxy:rabbitmq": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "fly proxy -a rabbitmq-service 5672",
+        "cwd": "apps/rabbitmq-service"
+      }
+    },
+    "proxy:admin": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "fly proxy -a rabbitmq-service 15672",
+        "cwd": "apps/rabbitmq-service"
+      }
+    }
+  },
+  "tags": ["type:service", "platform:fly"]
+}

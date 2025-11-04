@@ -48,7 +48,7 @@ export class Controller {
     try {
       const messageRequest = req.body as MessageRequest;
       const RABBITMQ_CONNECTION_STRING =
-        getEnvironmentVariable('RABBITMQ_CONNECTION_STRING') || '';
+        getEnvironmentVariable('RABBITMQ_CONNECTION_STRING');
       const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
       const channel = await connection.createChannel();
       await channel.assertQueue(QUEUE.EMAIL, { durable: true });

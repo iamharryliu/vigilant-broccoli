@@ -1,7 +1,7 @@
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
 import { DEFAULT_APP_EMAIL_CONFIG } from '@prettydamntired/personal-website-api-lib';
 import amqplib from 'amqplib';
-import { Email, EmailService, QUEUE } from '@vigilant-broccoli/common-node';
+import { Email, EmailService, getEnvironmentVariable, QUEUE } from '@vigilant-broccoli/common-node';
 
 async function sendMessage(request: MessageRequest) {
   const email = {
@@ -22,7 +22,7 @@ async function sendMessage(request: MessageRequest) {
 async function receiveMessage() {
   try {
     const RABBITMQ_CONNECTION_STRING =
-      process.env.RABBITMQ_CONNECTION_STRING || '';
+      getEnvironmentVariable('RABBITMQ_CONNECTION_STRING');
     const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
     const channel = await connection.createChannel();
     await channel.assertQueue(QUEUE.EMAIL, { durable: true });
