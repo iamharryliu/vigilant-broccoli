@@ -11,4 +11,6 @@ fly launch
 fly proxy -a vb-rabbitmq-service 5672
 # Proxy RabbitMQ admin portal.
 fly proxy -a vb-rabbitmq-service 15672
+
+CONNECTION_STRING="amqp://USERNAME:PASSWORD@APP_NAME.internal:5672"
 ```
