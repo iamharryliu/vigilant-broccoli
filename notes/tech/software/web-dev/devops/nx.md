@@ -3,6 +3,11 @@
 ## Commands
 
 ```
+# Install Nx
+npm add --global nx
+npm list --global nx
+npm rm --global nx
+
 npx create-nx-workspace@latest [workspace-name]
 
 # https://nx.dev/features/automate-updating-dependencies

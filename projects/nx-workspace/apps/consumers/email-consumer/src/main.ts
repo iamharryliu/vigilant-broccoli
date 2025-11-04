@@ -1,7 +1,12 @@
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
 import { DEFAULT_APP_EMAIL_CONFIG } from '@prettydamntired/personal-website-api-lib';
 import amqplib from 'amqplib';
-import { Email, EmailService, getEnvironmentVariable, QUEUE } from '@vigilant-broccoli/common-node';
+import {
+  Email,
+  EmailService,
+  getEnvironmentVariable,
+  QUEUE,
+} from '@vigilant-broccoli/common-node';
 
 async function sendMessage(request: MessageRequest) {
   const email = {
@@ -21,19 +26,20 @@ async function sendMessage(request: MessageRequest) {
 
 async function receiveMessage() {
   try {
-    const RABBITMQ_CONNECTION_STRING =
-      getEnvironmentVariable('RABBITMQ_CONNECTION_STRING');
+    const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
+      'RABBITMQ_CONNECTION_STRING',
+    );
     const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
     const channel = await connection.createChannel();
     await channel.assertQueue(QUEUE.EMAIL, { durable: true });
     console.log(`📥 Waiting for messages in ${QUEUE.EMAIL}...`);
     channel.consume(
       QUEUE.EMAIL,
-      async (msg) => {
+      async msg => {
         if (msg) {
           console.log(`✅ Received message.`);
-          channel.ack(msg);
           await sendMessage(JSON.parse(msg.content.toString()));
+          channel.ack(msg);
           console.log('✅ Email sent and message acknowledged.');
         }
       },
