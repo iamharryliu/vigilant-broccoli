@@ -5,11 +5,7 @@
   "projectType": "application",
   "targets": {
     "deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "fly deploy",
-        "cwd": "apps/rabbitmq-service"
-      }
+      "command": "flyctl deploy --dockerfile ./apps/rabbitmq-service/Dockerfile --config ./deployment-configs/fly-configs/rabbitmq-service.toml"
     },
     "docker:build": {
       "executor": "nx:run-commands",
