@@ -11,3 +11,7 @@ export MAC_SETUP_DIR="$SETUP_DIR/mac"
 export DOTFILES_DIR="$SETUP_DIR/dotfiles"
 export COMMON_DOTFILES_DIR="$DOTFILES_DIR/common"
 export ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
+
+# Audit
+alias finddotenv='find . -type f -name ".env"'
+alias fuzzyfinddotenv='find . -type f -name ".env*"'
