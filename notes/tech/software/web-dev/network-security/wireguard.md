@@ -3,8 +3,8 @@
 ## Commands
 
 ```
-
 sudo wg
+sudo wg show
 
 ping 10.0.0.1
 ping 10.0.0.2
@@ -24,10 +24,12 @@ sudo ufw deny in on eth0 to any port 8200
 ## Setup
 
 ```
+sudo apt update
+sudo apt install wireguard -y
 wg genkey | tee privatekey | wg pubkey > publickey
 
 # VPN Server
-sudo nano /etc/wireguard/wg0.conf
+sudo vim /etc/wireguard/wg0.conf
 
 [Interface]
 PrivateKey = <AWS_PRIVATE_KEY>
@@ -39,7 +41,6 @@ PublicKey = <LOCAL_PUBLIC_KEY>
 AllowedIPs = 10.0.0.2/32
 
 # Client
-sudo nano /etc/wireguard/wg0.conf
 vim /opt/homebrew/etc/wireguard/wg0.conf
 
 [Interface]
@@ -54,4 +55,9 @@ AllowedIPs = 10.0.0.0/24
 PersistentKeepalive = 25
 
 sudo wg-quick up wg0
+
+# Automatic start on boot.
+sudo systemctl enable wg-quick@wg0
+sudo systemctl start wg-quick@wg0
+sudo systemctl status wg-quick@wg0
 ```
