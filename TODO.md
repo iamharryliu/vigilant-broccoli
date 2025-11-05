@@ -7,11 +7,11 @@
 ## vigilant-broccoli
 
 - **Current Tasks**
-  - chore: secure vb GC instance.
   - feat(microservices):
     - Email service.
     - Text service.
     - Payment service.
+  - refactor(cms): Refactor Flask CMS to nx-workspace..
 - **Light Tasks**
   - docs: Replace Obsidian brackets.
   - chore: [GeForce Maplestory](https://support-maplestory.nexon.com/hc/en-us/articles/23609853001876-How-to-play-MapleStory-through-GeForce-NOW)
