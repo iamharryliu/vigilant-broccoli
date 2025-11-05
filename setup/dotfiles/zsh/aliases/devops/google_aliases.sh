@@ -1,9 +1,6 @@
 # Google Cloud
 alias gconsole='chrome "https://console.cloud.google.com/"'
 alias gce='chrome "https://console.cloud.google.com/compute/"'
-sshvbinstance() {
-    gcloud compute ssh --zone "us-east1-b" "vb-free-vm" --project "vigilant-broccoli"
-}
 
 # Analytics
 alias ganalytics='chrome "https://analytics.google.com/analytics/"'
