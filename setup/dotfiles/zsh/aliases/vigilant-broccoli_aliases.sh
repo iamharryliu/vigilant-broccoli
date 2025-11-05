@@ -25,16 +25,12 @@ alias cdgrind75="cd $GRIND75_DIR"
 alias cdgrind75ts="cdgrind75 && cd typescript"
 alias cdgrind75py="cdgrind75 && cd python"
 alias cdgrind75go="cdgrind75 && cd go"
-alias cddemoapps="cdprojects && cd demo-apps"
 alias pushleetcode="git add $GRIND75_DIR && gc feat leetcode 'Update leetcode.' && gpush"
 alias cdnx="cd $NX_DIR"
 
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
 alias pushghreadme="cd ~/iamharryliu && gpull && git add README.md && gc docs github-readme 'Update Github profile README.md' && gpush"
-# Demo Apps
-alias serveReactDemo="cddemoapps && cd react-demo && npm run start"
-alias serveExpressDemo="cddemoapps && cd express-demo && npm run serve"
 # vigilant-broccoli
 alias pullvb="cd $REPO_DIR && gpull"
 alias pullall='pulljournal && pullvb'
@@ -82,17 +78,12 @@ alias pushc8scontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/s
 alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
 alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
 
-# Other
-alias sshpi="ssh hliu@192.168.1.104"
 ## Obsidian
 alias openNotes="open 'obsidian://open?vault=notes'"
 alias openJournal="open 'obsidian://open?vault=journal'"
 
 # Billing
 alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
-
-# Work Aliases
-alias openworkstuff='openworkws && openSlack && gcalendar && gmeet'
 
 # Employee Handler
 alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
