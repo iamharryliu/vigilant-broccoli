@@ -1,6 +1,6 @@
 # Code Workspaces
-alias openvbws='code ~/Desktop/vb.code-workspace'
-alias openworkws='code ~/Desktop/work.code-workspace'
+alias openvbws="code $HOME/Workspaces/vb.code-workspace"
+alias openworkws="code $HOME/Workspaces/work.code-workspace"
 
 # Journal
 ICLOUD_JOURNAL_DIR="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal"
@@ -30,7 +30,7 @@ alias cdnx="cd $NX_DIR"
 
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
-alias pushghreadme="cd ~/iamharryliu && gpull && git add README.md && gc docs github-readme 'Update Github profile README.md' && gpush"
+alias pushghreadme="cd $HOME/iamharryliu && gpull && git add README.md && gc docs github-readme 'Update Github profile README.md' && gpush"
 # vigilant-broccoli
 alias pullvb="cd $REPO_DIR && gpull"
 alias pullall='pulljournal && pullvb'
