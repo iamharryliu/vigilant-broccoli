@@ -32,3 +32,7 @@
 - Stir in cream and let sauce thicken.
 - Return tofu to the pan and coat with sauce.
 - Serve over pasta or rice.
+
+## Reference
+
+- [Recipe](https://sarahsvegankitchen.com/recipes/marry-me-tofu/)

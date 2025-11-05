@@ -35,3 +35,9 @@
 | **Massaman Curry**          | Mild, warm, and sweet with cinnamon, cardamom, and cloves; more Indian influence | Potatoes, onions, carrots, peanuts, butternut squash, cauliflower                 |
 | **Jungle Curry (Kaeng Pa)** | Very spicy, light (no coconut milk), herbal and peppery                          | Baby corn, green beans, eggplant, bamboo shoots, mushrooms, Thai basil            |
 | **Khao Soi**                | Creamy, rich, and mildly spicy; northern-style with coconut milk and curry paste | Pickled mustard greens, shallots, onions, bean sprouts, cilantro                  |
+
+# Reference
+- [Coconut Milk Oil Separation](https://www.youtube.com/shorts/qFH1lrKQbXI)
+- Thai Green Curry
+  - [Video](https://www.youtube.com/watch?v=LIbKVpBQKJI)
+  - [Recipe](https://hot-thai-kitchen.com/green-curry-new-2/#recipe)
