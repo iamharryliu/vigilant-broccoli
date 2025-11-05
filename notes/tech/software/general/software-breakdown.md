@@ -1,27 +1,37 @@
 # Software Breakdown
 
-- **Software Languages**
-- **Data structures**
-- **POC**
-  - Interfaces > utils > tests > implementation > scaling
-- **Security**
-  - Security Layers
-    - SSH Tunneling vs VPN vs Dynamic IP Whitelists
-- **Project Management**
-  - Managing Expectations and Deadlines
-  - Cost Management
-  - Team Manaagement
-- **Architecture**
-  - Microservices - Breaking applications into tiny remote services that run independently of each other.
-    - Pros: Developers/teams are able to work on independent services without affecting each other.
-    - Cons: Services that are dependent on other services require code changes on both services.
-  - Systems Design
-    - Integrated system vs independent systems
-- **Web Development**
+NPM Package Registry
+Docker Image Registry
+Cluster Management
 
-  - **Communication**
-    - Socket - Live communication, ie data hydration and live notifications/alerts.
-    - RabbitMQ - Asynchronous tasks, can implement rate limits and retry logic. Useful for microservices.
+dynamic, agnostic code
+Stateless, microservices, 
+Immutable
+
+Frustrations..
+Silent fail
+
+LLM Prompt Process
+Implementation, pros cons, alternatives, recommended,
+Scalability + security?
+
+
+Infrastructure Provisioning - Terraform
+Infrastructure Management - Kubernetes
+Infrastructure
+- Terraform State Manager
+- Resources
+  - Secret Manager
+  - Bootstrapping
+- Environments
+- CICD Pipeline
+
+- Software Languages
+  - Data structures
+- Network Security
+- Project Management
+- Architecture
+- **Web Development**
   - **State Management**
     - Session
     - Cookies
@@ -103,9 +113,6 @@
     - Branching
     - Code Review Process
   - User Authentication System
-    - OAuth
-    - JWT
-    - SSO
   - Content Management System (CMS)
     - Headless vs Traditional CMS
   - Analytics
@@ -129,3 +136,42 @@
   - Performance Monitoring: Monitoring application performance through metrics.
   - Logging: Contextualizing trace and metric data with relevant logs.
 - **Error Handling**
+
+
+- **Software**
+
+  - Stateless
+  - New products
+    - R&D Phase
+      - APIs
+      - Language
+    - Solution choices
+      - Long term support?
+      - Maintainability
+      - Accessibility
+      - Pricing
+      - Weight pros and cons
+    - Development
+      - Always start off overkill with base tooling
+      - App building SQLite database
+      - CI
+    - Final Product
+      - Documentation to reproduce
+  - IaC
+  - Personal dashboards
+  - Monorepo
+  - Library/OSS support
+  - Setup scripts
+  - Intellectual Property
+  - What is strong documentation?
+    - You are easily able to redeploy assets again.
+    - Common commands
+    - Setup commands
+    - References
+    - Useful links: Management settings, API docs, billing, etc
+  - Caveats
+    - Scaling
+      - Large automations susceptible to injection
+      - As interfaces grow there are more attack surfaces
+    - Security
+      - Can add friction to development.

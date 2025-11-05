@@ -68,3 +68,6 @@ terraform {
   }
 }
 ```
+
+## Production
+- Terraform State Manager
