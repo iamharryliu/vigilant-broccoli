@@ -8,3 +8,5 @@ alias tfinit="terraform init"
 alias tfplan="terraform plan"
 alias tfapply="terraform apply"
 alias tfdestroy="terraform destroy"
+
+alias openlocalvault="open 'https://127.0.0.1:8200'"
