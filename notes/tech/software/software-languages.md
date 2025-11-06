@@ -34,6 +34,7 @@
 | len(arr)                      | arr.length                             |
 | arr.pop()                     | arr.pop()                              |
 | arr.append(x)                 | arr.push(x)                            |
+| if, elif, else                | if, else if, else                      |
 | not                           | !                                      |
 | or                            | \|\|                                   |
 | ==                            | ===                                    |
