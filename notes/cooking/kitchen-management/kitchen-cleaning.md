@@ -4,6 +4,13 @@
 
 ## Dishwasher
 
+### Tips
+- Add prewash in addition to the pod, ie putting a dab of dish washer detergent directly into the machine.
+- Run hot water before starting machine.
+- Loading machine properly.
+- Running 2 loads a day? A full load and a half load. 
+- [You're dishwasher doesn't suck...you've just been using it all wrong 🤫](https://www.youtube.com/watch?v=ngQuIKpd064)
+
 | Material / Item Type                 | Dishwasher Safe?  | Notes                                                         |
 | ------------------------------------ | ----------------- | ------------------------------------------------------------- |
 | Ceramic (plates, mugs)               | ✅ Yes            | Most glazed ceramics are fine; avoid hand-painted or antique. |
