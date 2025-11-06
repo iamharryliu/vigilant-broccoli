@@ -25,3 +25,21 @@
 | **Haskell**          | Functional programming, research                             | Purely functional                                         | Compiled                      | Garbage-collected                  | Immutability, type inference                 |
 | **Elixir**           | Scalable, concurrent web services                            | Functional (Erlang VM)                                    | Compiled to BEAM bytecode     | Garbage-collected                  | Fault tolerance, concurrency                 |
 | **Lua**              | Game scripting, embedded systems                             | Lightweight, procedural                                   | Interpreted                   | Garbage-collected                  | Embeddable, fast                             |
+
+| Python                        | Typescript                             |
+| :---------------------------- | :------------------------------------- |
+| for i, num in enumerate(nums) | for (const [i, num] of nums.entries()) |
+| hmap.values()                 | hmap.values()                          |
+| hmap = {}                     | const hmap = {}                        |
+| len(arr)                      | arr.length                             |
+| arr.pop()                     | arr.pop()                              |
+| arr.append(x)                 | arr.push(x)                            |
+| not                           | !                                      |
+| or                            | \|\|                                   |
+| ==                            | ===                                    |
+| !=                            | !==                                    |
+| float("inf")                  | Infinity                               |
+| float("-inf")                 | -Infinity                              |
+| max(n1, n2..)                 | Math.max(n1, n2..)                     |
+| min(n1, n2..)                 | Math.min(n1, n2..)                     |
+| s.isalnum()                   | /^[A-Za-z0-9]+$/.test(s);              |

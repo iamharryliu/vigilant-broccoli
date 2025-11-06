@@ -10,6 +10,7 @@
 - peppers
 - basil
 - lime juice
+- chicken/veggie stock
 
 ## Instructions
 
