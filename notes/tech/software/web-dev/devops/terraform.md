@@ -4,9 +4,14 @@
 
 ```
 terraform init
+terraform init -upgrade
+
 terraform plan
 terraform apply
-terraform destroy
+terraform destroy 
+terraform ACTION -auto-approve
+
+terraform fmt
 
 terraform refresh
 terraform output
