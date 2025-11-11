@@ -1,5 +1,4 @@
 from typing import List
-from collections import deque
 
 
 class Solution:
@@ -8,22 +7,26 @@ class Solution:
         self, image: List[List[int]], sr: int, sc: int, color: int
     ) -> List[List[int]]:
         old_color = image[sr][sc]
-        visited = set()
+        if old_color == color:
+            return image
+
         directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+        number_of_rows, number_of_columns = len(image), len(image[0])
 
         def dfs(r, c):
+            if (
+                r < 0
+                or r >= number_of_rows
+                or c < 0
+                or c >= number_of_columns
+                or image[r][c] != old_color
+            ):
+                return
+
             image[r][c] = color
+
             for x, y in directions:
-                nr = r + x
-                nc = c + y
-                if (
-                    0 <= nr < len(image)
-                    and 0 <= nc < len(image[0])
-                    and (nr, nc) not in visited
-                    and image[nr][nc] == old_color
-                ):
-                    visited.add((nr, nc))
-                    dfs(nr, nc)
+                dfs(r + x, c + y)
 
         dfs(sr, sc)
         return image

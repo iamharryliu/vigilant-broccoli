@@ -1,13 +1,12 @@
 class Solution:
     @classmethod
     def isValid(self, s):
-        hmap = {"]": "[", "}": "{", ")": "("}
-        keys = hmap.keys()
+        hmap = {")": "(", "}": "{", "]": "["}
         stack = []
         for c in s:
-            if (c in keys and not stack) or (c in keys and hmap[c] != stack.pop()):
-                return False
-            if c in hmap.values():
+            if c in hmap:
+                if not stack or stack.pop() != hmap[c]:
+                    return False
+            else:
                 stack.append(c)
-
-        return False if stack else True
+        return not stack
