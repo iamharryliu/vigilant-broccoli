@@ -36,3 +36,8 @@ on:
 gh auth login
 gh secret set <secret-name> [flags]
 ```
+
+## Access Tokens
+
+- [Fine grained access token](https://github.com/settings/personal-access-tokens)
+- [Make a classic token](https://github.com/settings/tokens)
