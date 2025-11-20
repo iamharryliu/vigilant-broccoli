@@ -5,6 +5,7 @@
 ```
 terraform init
 terraform init -upgrade
+terraform init -migrate-state # Migrate to remote state handler.
 
 terraform plan
 terraform apply
@@ -76,3 +77,11 @@ terraform {
 
 ## Production
 - Terraform State Manager
+
+
+
+- Review:
+  - force_destroy
+  - deletion_protection
+  - lifecycle
+  - `ssl: { rejectUnauthorized: false }`
