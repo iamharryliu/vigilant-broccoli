@@ -26,7 +26,6 @@
   - chore: reassess Spotify API
 - **New Features/Interfaces/Implementations**
   - feat: Secret-manager secret rotation implementation.
-  - feat(vb-manager): Github organization/team manager.
   - feat(employee-handler):
     - Inform user if gam or gyb needs to be setup.
     - Create missing folder/file structures.
