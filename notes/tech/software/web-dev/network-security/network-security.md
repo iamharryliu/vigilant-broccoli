@@ -1,5 +1,6 @@
 # Network Security
 
+- [Lingo](./network-security-lingo.md)
 - [jwt](./jwt.md)
 - [ssh](./ssh.md)
 - [Have I Been Pwned?](https://haveibeenpwned.com/)
@@ -7,6 +8,7 @@
 - [How to Choose a Password - Computerphile](https://www.youtube.com/watch?v=3NjQ9b3pgIg)
 
 ## Accessing Resources
+
 - SSH Tunneling
 - Dynamic Whitelisting IP/Port Access
 - VPN Access

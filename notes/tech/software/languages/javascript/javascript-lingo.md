@@ -26,3 +26,4 @@
   - SWC (Speedy Web Compiler)
   - tsc - Does not bundle/optimize code.
 - esModuleInterop - a TypeScript compiler option that enables interoperability between CommonJS and ES modules. It helps resolve compatibility issues when importing CommonJS modules into an ES module-based TypeScript project.
+- `tslib` - Shared runtime helpers for TypeScript-generated JS, mainly for reducing bundle size and avoiding code duplication.

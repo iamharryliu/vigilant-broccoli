@@ -5,6 +5,9 @@
 - **Types vs Interfaces**
   - Interfaces can be merged.
   - Interfaces compile faster.
+- CJS vs ESM
+  - CJS(CommonJS) - Node.js old style
+  - ESM (ECMAScript Modules) - modern JavaScript everywhere.
 - **??(nullish coalescing) vs ||(logical OR)**
 
 | Expression                                | Output (`\|\|`) | Output (`??`) |
