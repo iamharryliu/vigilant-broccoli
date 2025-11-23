@@ -13,7 +13,7 @@
     - Payment service.
   - refactor(cms): Refactor Flask CMS to nx-workspace..
 - **Light Tasks**
-  - docs: Replace Obsidian brackets.
+  - docs: Replace Obsidian brackets. `[[something]]`
   - chore: [GeForce Maplestory](https://support-maplestory.nexon.com/hc/en-us/articles/23609853001876-How-to-play-MapleStory-through-GeForce-NOW)
   - chore: Managing git stashes.
   - chore: Account scrubbing.
@@ -23,7 +23,6 @@
 - **Audit/Refactor Tasks**
   - feat: Setup linux vs mac setup scripts
   - chore: dotfile cleanup
-  - chore: reassess Spotify API
 - **New Features/Interfaces/Implementations**
   - feat: Secret-manager secret rotation implementation.
   - feat(employee-handler):
