@@ -89,8 +89,10 @@ alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
 alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
 alias buildEmployeeHandler="nnx build @vigilant-broccoli/employee-handler"
 
+alias vbgcpconsole="open 'https://console.cloud.google.com/welcome?hl=en&project=vigilant-broccoli'"
+alias vbgcpfirewall="open 'https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/list?project=vigilant-broccoli'"
 alias sshvbvm="ssh harryliu@10.0.1.1"
-alias openvbvault="open https://10.0.1.1:8200"
+alias openvbvault="open 'https://10.0.1.1:8200'"
 # alias sshvbvm="gcloud compute ssh --zone 'us-east1-b' 'vb-free-vm' --project 'vigilant-broccoli'"
 # alias sshtunnelvault="sshvbvm -- -f -L8200:127.0.0.1:8200 -N"
 # alias openvbvault="sshtunnelvault; openlocalvault"
