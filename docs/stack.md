@@ -1,6 +1,11 @@
-
 # Stack
 
+- **Personal**
+  - Google
+    - [Gmail](https://mail.google.com/)
+    - [Google Calendar](https://calendar.google.com/)
+    - [Google Drive](https://drive.google.com/)
+  - [Obsidian](https://obsidian.md/)
 - **Languages**
   - [Typescript](https://www.typescriptlang.org/)
   - [Python](https://www.python.org/)
@@ -21,7 +26,8 @@
   - [PostgreSQL](https://www.postgresql.org/docs/)
   - [SQLite](https://www.sqlite.org/docs.html)
 - **Utility**
-  - [OpenAI](https://platform.openai.com/docs/overview) - Basic prompting, image analysis, image generation.
+  - [Claude Code](https://www.claude.com/product/claude-code)
+  - [OpenAI](https://platform.openai.com/docs/overview)
   - [Twilio](https://www.twilio.com/docs)
   - [OpenWeather](https://openweathermap.org/api)
 - **Services**
@@ -35,8 +41,3 @@
   - [Google Analytics](https://analytics.google.com/analytics)
   - [FlyIO](https://fly.io/docs/)
   - [Vercel](https://vercel.com/templates/documentation)
-- **Productivity**
-  - [Gmail](https://mail.google.com/) - Email.
-  - [Google Calendar](https://calendar.google.com/) - Calendar.
-  - [Google Drive](https://drive.google.com/)
-  - [Obsidian](https://obsidian.md/) - Markdown notetaking.
