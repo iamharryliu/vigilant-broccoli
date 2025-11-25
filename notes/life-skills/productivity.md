@@ -32,11 +32,15 @@ quadrantChart
 ```mermaid
 flowchart TD
 
-
-
-C[Capacity]
 Q1[Q1 Activities]
 Q3[Q3 Activities]
+
+subgraph C[Capacity]
+  Time[Time]
+  Energy[Energy]
+  Motivation[Motivation]
+  Resources[Available Resources]
+end 
 
 subgraph E[Capacity Consumers]
   Q1[Q1 Activities]
