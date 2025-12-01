@@ -1,5 +1,6 @@
 # Small Business
 
+- Neutral cost win-win- $2 burgers, makes 5 cents per burger
 - Subtle Rebranding, ie CP Company
 - Hybrid Businesses
   - Cobbler/Coffee shop

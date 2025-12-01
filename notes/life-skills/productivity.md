@@ -27,8 +27,9 @@ quadrantChart
 - Q2 negative vs Q2 positive
 - Rest and recovery exists in Q2
   - Q4 activities that are actually Q2 activities
-  - Ideally avoid Q4 activities or turn Q4 activities into Q2 activities. 
+  - Ideally avoid Q4 activities or turn Q4 activities into Q2 activities.
 - Learning also lives in Q2
+
 ```mermaid
 flowchart TD
 
@@ -40,20 +41,26 @@ subgraph C[Capacity]
   Energy[Energy]
   Motivation[Motivation]
   Resources[Available Resources]
-end 
+end
 
 subgraph E[Capacity Consumers]
-  Q1[Q1 Activities]
+  subgraph U[Urgent]
+    Q1[Q1 Activities]
+    Q3[Q3 Activities]
+  end
   Q2N[Q2 Negative Activities]
-  Q3[Q3 Activities]
   Q4[Q4 Activities]
 end
 
 subgraph Q2P[Q2 Positive Activities ]
   Q21[Rest]
+  Q22[Recovery]
+  Q23[Leisure]
+  Q24[Hobbies]
+  Q25[Learning]
 end
 
-SC[Surplus Capacity]
+SC[Surplus Capacity]-->C
 
 
 C --> E

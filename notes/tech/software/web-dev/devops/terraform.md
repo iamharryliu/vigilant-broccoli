@@ -9,7 +9,7 @@ terraform init -migrate-state # Migrate to remote state handler.
 
 terraform plan
 terraform apply
-terraform destroy 
+terraform destroy
 terraform ACTION -auto-approve
 
 terraform fmt
@@ -17,8 +17,8 @@ terraform fmt
 terraform refresh
 terraform output
 
-ssh ubuntu@$(terraform output -raw instance_public_ip)    
-ssh ec2-user@$(terraform output -raw instance_public_ip)   
+ssh ubuntu@$(terraform output -raw instance_public_ip)
+ssh ec2-user@$(terraform output -raw instance_public_ip)
 
 # Comments
 # This is a single-line comment using a hash
@@ -59,10 +59,33 @@ cd envs/dev
 terraform init
 ```
 
-
 ## State Management
 
+- Terraform State Manager
+
 ```
+
+terraform {
+  cloud {
+    organization = "ORGANIZATION"
+
+    workspaces {
+      name = "NAME"
+    }
+  }
+}
+
+terraform {
+  cloud {
+    organization = "ORGANIZATION"
+
+    workspaces {
+      tags = ["TAG"]
+    }
+  }
+}
+
+
 terraform {
   backend "s3" {
     profile        = "PROFILE_NAME"
@@ -74,10 +97,6 @@ terraform {
   }
 }
 ```
-
-## Production
-- Terraform State Manager
-
 
 
 - Review:
