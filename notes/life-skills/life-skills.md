@@ -27,3 +27,5 @@
 - [Productivity](./productivity.md)
 - [Social](./social/social.md)
 - [Career](./career/career.md)
+- [Design](./design/design.md)
+- [Small Business](./small-business.md)
