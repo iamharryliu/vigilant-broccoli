@@ -2,7 +2,7 @@
 
 import { LinksTable } from '../links-table.component';
 
-export const HomePage = () => {
+export const ServicesPage = () => {
   return (
     <>
       <LinksTable />

@@ -17,4 +17,8 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Github Manager',
     path: '/github-manager',
   },
+  SERVICES: {
+    title: 'Services',
+    path: '/services',
+  },
 };
