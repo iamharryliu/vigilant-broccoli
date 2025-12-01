@@ -1,6 +1,7 @@
 # Cooking
 
 - [Cooking Theory](./theory/cooking-theory.md)
+- [Cooking Nuances](./cooking-nuances)
 - [Groceries](./groceries.md)
 - [Cooking Tips](./cooking-tips.md)
 - [Ingredients](./ingredients/ingredients.md)
