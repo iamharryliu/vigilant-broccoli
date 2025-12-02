@@ -85,3 +85,22 @@ export class LocalBucketService {
     return await fs.readFile(path.join(this.bucketPath, fileName));
   }
 }
+
+import { execSync } from "child_process";
+
+export class GitHubSecretProvider {
+  constructor(private repo: string) {}
+
+  setSecret(key: string, value: string): void {
+    execSync(`gh secret set ${key} --repo ${this.repo} --body "${value}"`, {
+      stdio: "inherit",
+    });
+    console.log(`✅ GitHub: Set secret ${key}`);
+  }
+
+  async setSecrets(secrets: Record<string, string>, prefix = ""): Promise<void> {
+    for (const [key, value] of Object.entries(secrets)) {
+      this.setSecret(`${prefix}${key}`, value);
+    }
+  }
+}

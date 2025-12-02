@@ -85,9 +85,46 @@ alias tfoutput="terraform output"
 
 ## WIREGUARD
 wgls() {
-  command ls -1 /opt/homebrew/etc/wireguard/*.conf 2>/dev/null \
-    | xargs -n1 basename \
-    | nl -w 2 -s ". "
+  local conf_files=(/opt/homebrew/etc/wireguard/*.conf(N))
+
+  if [[ ${#conf_files[@]} -eq 0 ]]; then
+    echo "No WireGuard configurations found"
+    return 0
+  fi
+
+  local num=1
+  for conf_path in "${conf_files[@]}"; do
+    local conf_name=$(basename "$conf_path")
+
+    # Extract the Address from the config file
+    local address=$(grep "^Address" "$conf_path" 2>/dev/null | sed 's/.*=[ ]*//' | cut -d'/' -f1)
+
+    # Find matching interface by IP address
+    local wg_status="DOWN"
+    local iface=""
+
+    if [[ -n "$address" ]]; then
+      # Check all utun interfaces for matching IP
+      local matching_iface=$(ifconfig | grep -B1 "inet $address " | grep "^utun" | awk '{print $1}' | tr -d ':')
+
+      if [[ -n "$matching_iface" ]]; then
+        # Check if interface is UP and RUNNING
+        if ifconfig "$matching_iface" | grep -q "flags=.*<.*UP.*RUNNING"; then
+          wg_status="UP"
+          iface="$matching_iface"
+        fi
+      fi
+    fi
+
+    # Format output with color and status
+    if [[ "$wg_status" == "UP" ]]; then
+      printf "%2d. %-20s \033[32m[%s]\033[0m %s (%s)\n" "$num" "$conf_name" "$wg_status" "$iface" "$address"
+    else
+      printf "%2d. %-20s \033[90m[%s]\033[0m\n" "$num" "$conf_name" "$wg_status"
+    fi
+
+    num=$((num + 1))
+  done
 }
 
 validate_wg_number() {

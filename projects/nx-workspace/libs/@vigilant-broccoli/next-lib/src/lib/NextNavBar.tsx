@@ -1,16 +1,23 @@
 import { usePathname } from 'next/navigation';
 import { TabNav } from '@radix-ui/themes';
 import Link from 'next/link';
+import { ReactNode } from 'react';
 
 export type NextNavRoute = {
   path: string;
   title: string;
 };
 
-export const NextNavBar = ({ routes }: { routes: NextNavRoute[] }) => {
+export const NextNavBar = ({
+  routes,
+  rightContent,
+}: {
+  routes: NextNavRoute[];
+  rightContent?: ReactNode;
+}) => {
   const pathname = usePathname();
   return (
-    <div className="mb-8">
+    <div className="mb-8 relative">
       <TabNav.Root>
         {routes.map(obj => {
           return (
@@ -20,6 +27,11 @@ export const NextNavBar = ({ routes }: { routes: NextNavRoute[] }) => {
           );
         })}
       </TabNav.Root>
+      {rightContent && (
+        <div className="absolute right-0 top-0 flex items-center h-full">
+          {rightContent}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, Heading } from '@radix-ui/themes';
+import { Card, Flex, Text } from '@radix-ui/themes';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { CardSkeleton } from './skeleton.component';
 
 type Badge = {
   alt: string;
@@ -57,28 +58,69 @@ export const GithubRepoActionStatusBadges = ({
   repoUrl: string;
 }) => {
   const [badges, setBadges] = useState<Badge[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function init() {
-      const badges = await getBadges(repoUrl);
-      setBadges(badges);
+      try {
+        const badges = await getBadges(repoUrl);
+        setBadges(badges);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch GitHub Actions status');
+        setLoading(false);
+        console.error('GitHub Actions fetch error:', err);
+      }
     }
     init();
-  }, []);
+  }, [repoUrl]);
+
+  if (loading) {
+    return <CardSkeleton title="GitHub Actions" rows={4} />;
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full">
+        <Flex direction="column" gap="4" p="4">
+          <Text size="5" weight="bold">GitHub Actions</Text>
+          <Text color="red">{error}</Text>
+        </Flex>
+      </Card>
+    );
+  }
 
   return (
-    <Card>
-      <Heading>Github Actions</Heading>
-      <Link href={`${repoUrl}/actions`} target="_blank">
-        Go To Actions
-      </Link>
-      {badges.map(badge => (
-        <div key={badge.alt} className="mb-1">
-          <a href={badge.href} target="_blank" rel="noopener noreferrer">
-            <img src={badge.src} alt={badge.alt} />
-          </a>
-        </div>
-      ))}
+    <Card className="w-full">
+      <Flex direction="column" gap="4" p="4">
+        <Flex justify="between" align="center">
+          <Text size="5" weight="bold">GitHub Actions</Text>
+          <Link href={`${repoUrl}/actions`} target="_blank">
+            <Text size="2" className="text-blue-600 hover:text-blue-800">
+              View All →
+            </Text>
+          </Link>
+        </Flex>
+
+        <Flex direction="column" gap="2">
+          {badges.length > 0 ? (
+            badges.map(badge => (
+              <a
+                key={badge.alt}
+                href={badge.href || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img src={badge.src} alt={badge.alt} className="max-w-full h-auto" />
+              </a>
+            ))
+          ) : (
+            <Text className="text-gray-500">No workflows found</Text>
+          )}
+        </Flex>
+      </Flex>
     </Card>
   );
 };

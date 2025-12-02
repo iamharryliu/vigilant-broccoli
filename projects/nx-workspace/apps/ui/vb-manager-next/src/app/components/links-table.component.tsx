@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Table } from '@radix-ui/themes';
+import { Card, Table, Flex, Text } from '@radix-ui/themes';
 
 const FIELD_ICONS: Record<
   string,
@@ -30,6 +30,12 @@ const URLS = {
     PAYMENT_HISTORY: 'https://github.com/account/billing/history',
     USAGE_URL: 'https://github.com/settings/billing/usage',
     STATUS: 'https://www.githubstatus.com/',
+  },
+  GCP: {
+    NAME: 'Google Cloud Platform',
+    DASHBOARD: 'https://console.cloud.google.com/home/dashboard?project=vigilant-broccoli',
+    BILLING_URL: 'https://console.cloud.google.com/billing',
+    STATUS: 'https://status.cloud.google.com/',
   },
   OPENAI: {
     NAME: 'OpenAI',
@@ -78,86 +84,94 @@ const URLS = {
     PAYMENT_HISTORY: 'https://home.openweathermap.org/payments',
     STATUS: 'https://openweathermap.org/',
   },
+  TERRAFORM: {
+    NAME: 'Terraform Cloud',
+    DASHBOARD: 'https://app.terraform.io/app/vigilant-broccoli/workspaces',
+    BILLING_URL:
+      'https://app.terraform.io/app/vigilant-broccoli/settings/billing',
+    USAGE_URL: 'https://app.terraform.io/app/vigilant-broccoli/usage',
+    STATUS: 'https://status.hashicorp.com/',
+  },
 } as Record<string, ServiceUrl>;
+
+// Helper component for table cells with links
+const TableLinkCell = ({ url, label }: { url?: string; label: string }) => {
+  if (!url) {
+    return (
+      <Table.Cell>
+        <Text size="2" color="gray">
+          -
+        </Text>
+      </Table.Cell>
+    );
+  }
+
+  return (
+    <Table.Cell>
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors"
+      >
+        <Text size="2">{label}</Text>
+      </a>
+    </Table.Cell>
+  );
+};
 
 export const LinksTable = () => {
   return (
-    <Card>
-      <Table.Root>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeaderCell>Service</Table.ColumnHeaderCell>
-            {Object.values(FIELD_ICONS).map(({ label, icon }) => (
-              <Table.ColumnHeaderCell key={label}>
-                <span className="flex items-center gap-1">
-                  {icon} {label}
-                </span>
-              </Table.ColumnHeaderCell>
-            ))}
-          </Table.Row>
-        </Table.Header>
+    <Card className="w-full">
+      <Flex direction="column" gap="4" p="4">
+        <Text size="5" weight="bold">
+          Service Links
+        </Text>
 
-        <Table.Body>
-          {Object.values(URLS).map(service => (
-            <Table.Row key={service.NAME}>
-              <Table.RowHeaderCell>{service.NAME}</Table.RowHeaderCell>
-              <Table.Cell>
-                {service.DASHBOARD ? (
-                  <a href={service.DASHBOARD} target="_blank" rel="noreferrer">
-                    Dashboard
-                  </a>
-                ) : (
-                  '-'
-                )}
-              </Table.Cell>
-              <Table.Cell>
-                {service.BILLING_URL ? (
-                  <a
-                    href={service.BILLING_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Billing
-                  </a>
-                ) : (
-                  '-'
-                )}
-              </Table.Cell>
-              <Table.Cell>
-                {service.PAYMENT_HISTORY ? (
-                  <a
-                    href={service.PAYMENT_HISTORY}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Payment History
-                  </a>
-                ) : (
-                  '-'
-                )}
-              </Table.Cell>
-              <Table.Cell>
-                {service.USAGE_URL ? (
-                  <a href={service.USAGE_URL} target="_blank" rel="noreferrer">
-                    Usage
-                  </a>
-                ) : (
-                  '-'
-                )}
-              </Table.Cell>
-              <Table.Cell>
-                {service.STATUS ? (
-                  <a href={service.STATUS} target="_blank" rel="noreferrer">
-                    Status
-                  </a>
-                ) : (
-                  '-'
-                )}
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
+        <div className="overflow-x-auto">
+          <Table.Root variant="surface">
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeaderCell>
+                  <Text size="2" weight="bold">
+                    Service
+                  </Text>
+                </Table.ColumnHeaderCell>
+                {Object.values(FIELD_ICONS).map(({ label, icon }) => (
+                  <Table.ColumnHeaderCell key={label}>
+                    <Flex align="center" gap="1">
+                      <span className="text-base">{icon}</span>
+                      <Text size="2" weight="bold">
+                        {label}
+                      </Text>
+                    </Flex>
+                  </Table.ColumnHeaderCell>
+                ))}
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
+              {Object.values(URLS).map(service => (
+                <Table.Row
+                  key={service.NAME}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <Table.RowHeaderCell>
+                    <Text size="2" weight="medium">
+                      {service.NAME}
+                    </Text>
+                  </Table.RowHeaderCell>
+                  <TableLinkCell url={service.DASHBOARD} label="View" />
+                  <TableLinkCell url={service.BILLING_URL} label="View" />
+                  <TableLinkCell url={service.PAYMENT_HISTORY} label="View" />
+                  <TableLinkCell url={service.USAGE_URL} label="View" />
+                  <TableLinkCell url={service.STATUS} label="Check" />
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
+        </div>
+      </Flex>
     </Card>
   );
 };
