@@ -33,7 +33,8 @@ const URLS = {
   },
   GCP: {
     NAME: 'Google Cloud Platform',
-    DASHBOARD: 'https://console.cloud.google.com/home/dashboard?project=vigilant-broccoli',
+    DASHBOARD:
+      'https://console.cloud.google.com/home/dashboard?project=vigilant-broccoli',
     BILLING_URL: 'https://console.cloud.google.com/billing',
     STATUS: 'https://status.cloud.google.com/',
   },
@@ -122,56 +123,48 @@ const TableLinkCell = ({ url, label }: { url?: string; label: string }) => {
 
 export const LinksTable = () => {
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="4" p="4">
-        <Text size="5" weight="bold">
-          Service Links
-        </Text>
-
-        <div className="overflow-x-auto">
-          <Table.Root variant="surface">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeaderCell>
+    <div className="overflow-x-auto">
+      <Table.Root variant="surface">
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeaderCell>
+              <Text size="2" weight="bold">
+                Service
+              </Text>
+            </Table.ColumnHeaderCell>
+            {Object.values(FIELD_ICONS).map(({ label, icon }) => (
+              <Table.ColumnHeaderCell key={label}>
+                <Flex align="center" gap="1">
+                  <span className="text-base">{icon}</span>
                   <Text size="2" weight="bold">
-                    Service
+                    {label}
                   </Text>
-                </Table.ColumnHeaderCell>
-                {Object.values(FIELD_ICONS).map(({ label, icon }) => (
-                  <Table.ColumnHeaderCell key={label}>
-                    <Flex align="center" gap="1">
-                      <span className="text-base">{icon}</span>
-                      <Text size="2" weight="bold">
-                        {label}
-                      </Text>
-                    </Flex>
-                  </Table.ColumnHeaderCell>
-                ))}
-              </Table.Row>
-            </Table.Header>
+                </Flex>
+              </Table.ColumnHeaderCell>
+            ))}
+          </Table.Row>
+        </Table.Header>
 
-            <Table.Body>
-              {Object.values(URLS).map(service => (
-                <Table.Row
-                  key={service.NAME}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <Table.RowHeaderCell>
-                    <Text size="2" weight="medium">
-                      {service.NAME}
-                    </Text>
-                  </Table.RowHeaderCell>
-                  <TableLinkCell url={service.DASHBOARD} label="View" />
-                  <TableLinkCell url={service.BILLING_URL} label="View" />
-                  <TableLinkCell url={service.PAYMENT_HISTORY} label="View" />
-                  <TableLinkCell url={service.USAGE_URL} label="View" />
-                  <TableLinkCell url={service.STATUS} label="Check" />
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-        </div>
-      </Flex>
-    </Card>
+        <Table.Body>
+          {Object.values(URLS).map(service => (
+            <Table.Row
+              key={service.NAME}
+              className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              <Table.RowHeaderCell>
+                <Text size="2" weight="medium">
+                  {service.NAME}
+                </Text>
+              </Table.RowHeaderCell>
+              <TableLinkCell url={service.DASHBOARD} label="View" />
+              <TableLinkCell url={service.BILLING_URL} label="View" />
+              <TableLinkCell url={service.PAYMENT_HISTORY} label="View" />
+              <TableLinkCell url={service.USAGE_URL} label="View" />
+              <TableLinkCell url={service.STATUS} label="Check" />
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+    </div>
   );
 };
