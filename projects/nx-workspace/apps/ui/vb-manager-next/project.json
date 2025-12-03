@@ -39,6 +39,46 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "pm2:start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx build vb-manager-next --configuration=production",
+          "pm2 start apps/ui/vb-manager-next/ecosystem.config.js"
+        ],
+        "parallel": false
+      }
+    },
+    "pm2:stop": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 stop vb-manager-next"
+      }
+    },
+    "pm2:restart": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 restart vb-manager-next"
+      }
+    },
+    "pm2:delete": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 delete vb-manager-next"
+      }
+    },
+    "pm2:logs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 logs vb-manager-next"
+      }
+    },
+    "pm2:status": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 status"
+      }
     }
   }
 }
