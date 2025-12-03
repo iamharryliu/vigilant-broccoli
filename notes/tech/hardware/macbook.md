@@ -1,5 +1,20 @@
 # Macbook
 
+## Keyboard Shortcuts
+
+- Copy file path - `option` + right click
+- Mission Control - `ctrl + up`
+- Screen Capture
+  - Screenshot
+    - Save to Desktop - **shift + command + 3**
+    - Copy to Clipboard - **control + shift + command + 3**
+  - Crop
+    - Save to Desktop - **shift + command + 4**
+    - Copy to Clipboard - **control + shift + command + 4**
+  - Window
+    - Save to Desktop - **shift + command + 4 + space**
+- Lock Screen - **command + control + Q**
+
 ## Image Cropping
 
 ```
@@ -17,20 +32,6 @@ Go to Tools → Crop (or press ⌘K).
 
 Save (⌘S) or File → Export to save a new copy.
 ```
-
-## Keyboard Shortcuts
-
-- Mission Control - `ctrl + up`
-- Screen Capture
-  - Screenshot
-    - Save to Desktop - **shift + command + 3**
-    - Copy to Clipboard - **control + shift + command + 3**
-  - Crop
-    - Save to Desktop - **shift + command + 4**
-    - Copy to Clipboard - **control + shift + command + 4**
-  - Window
-    - Save to Desktop - **shift + command + 4 + space**
-- Lock Screen - **command + control + Q**
 
 ## Tools
 
