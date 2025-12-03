@@ -1,12 +1,47 @@
 'use client';
 
-import { Card, Flex, Text, Button } from '@radix-ui/themes';
-import { useState } from 'react';
+import { Card, Flex, Text, Button, Badge } from '@radix-ui/themes';
+import { useState, useEffect } from 'react';
+import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 
+interface PlaylistInfo {
+  name: string;
+  songCount: number;
+  totalSize: number;
+  formattedSize: string;
+}
+
+// eslint-disable-next-line complexity
 export const DjDownloadComponent = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [playlists, setPlaylists] = useState<PlaylistInfo[]>([]);
+  const [loadingPlaylists, setLoadingPlaylists] = useState(false);
+
+  useEffect(() => {
+    fetchPlaylists();
+  }, []);
+
+  const fetchPlaylists = async () => {
+    setLoadingPlaylists(true);
+    try {
+      const response = await fetch('/api/dj/playlists');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch playlists');
+      }
+
+      setPlaylists(data.playlists || []);
+    } catch (err) {
+      console.error('Error fetching playlists:', err);
+      setPlaylists([]);
+    } finally {
+      setLoadingPlaylists(false);
+    }
+  };
 
   const handleDownload = async () => {
     setLoading(true);
@@ -25,6 +60,9 @@ export const DjDownloadComponent = () => {
       }
 
       setMessage(data.message);
+      if (expanded) {
+        setTimeout(() => fetchPlaylists(), 2000);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start download');
     } finally {
@@ -32,10 +70,37 @@ export const DjDownloadComponent = () => {
     }
   };
 
+  const handleOpenRekordBox = async () => {
+    try {
+      const response = await fetch('/api/dj/open-rekordbox', {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to open RekordBox');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to open RekordBox');
+    }
+  };
+
+  const totalSongs = playlists.reduce((sum, p) => sum + p.songCount, 0);
+
   return (
     <Card className="w-full">
       <Flex direction="column" gap="3" p="4">
-        <Text size="5" weight="bold">DJ Music</Text>
+        <Flex justify="between" align="center">
+          <Text size="5" weight="bold">DJ Music</Text>
+          <Button
+            onClick={handleOpenRekordBox}
+            size="2"
+            variant="outline"
+          >
+            Open RekordBox
+          </Button>
+        </Flex>
 
         <Button
           onClick={handleDownload}
@@ -52,6 +117,53 @@ export const DjDownloadComponent = () => {
 
         {error && (
           <Text size="2" color="red">{error}</Text>
+        )}
+        <Button
+          onClick={() => setExpanded(!expanded)}
+          variant="soft"
+          size="2"
+          style={{ justifyContent: 'space-between' }}
+        >
+          <Flex align="center" gap="2">
+            <Text>Downloaded Playlists</Text>
+            {playlists.length > 0 && (
+              <Badge color="blue" variant="solid">
+                {playlists.length} {playlists.length === 1 ? 'Playlist' : 'Playlists'}, {totalSongs} {totalSongs === 1 ? 'song' : 'songs'}
+              </Badge>
+            )}
+          </Flex>
+          {expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        </Button>
+
+        {expanded && (
+          <Flex direction="column" gap="2">
+            {loadingPlaylists ? (
+              <Text size="2" color="gray">Loading playlists...</Text>
+            ) : playlists.length === 0 ? (
+              <Text size="2" color="gray">No playlists found</Text>
+            ) : (
+              playlists.map((playlist) => (
+                <Flex
+                  key={playlist.name}
+                  align="center"
+                  justify="between"
+                  p="2"
+                  style={{
+                    backgroundColor: 'var(--gray-a2)',
+                    borderRadius: 'var(--radius-2)',
+                  }}
+                >
+                  <Flex direction="column" gap="1">
+                    <Text size="2" weight="medium">{playlist.name}</Text>
+                    <Text size="1" color="gray">{playlist.formattedSize}</Text>
+                  </Flex>
+                  <Badge color="green" variant="soft">
+                    {playlist.songCount} {playlist.songCount === 1 ? 'song' : 'songs'}
+                  </Badge>
+                </Flex>
+              ))
+            )}
+          </Flex>
         )}
       </Flex>
     </Card>

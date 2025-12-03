@@ -43,11 +43,7 @@
     "pm2:start": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "nx build vb-manager-next --configuration=production",
-          "pm2 start apps/ui/vb-manager-next/ecosystem.config.js"
-        ],
-        "parallel": false
+        "command": "pm2 start apps/ui/vb-manager-next/ecosystem.config.js"
       }
     },
     "pm2:stop": {
