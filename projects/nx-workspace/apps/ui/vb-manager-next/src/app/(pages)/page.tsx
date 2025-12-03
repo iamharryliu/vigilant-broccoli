@@ -4,6 +4,7 @@ import { GcloudAuthStatusComponent } from '../components/gcloud-auth-status.comp
 import { WireguardStatusComponent } from '../components/wireguard-status.component';
 import { GithubRepoActionStatusBadges } from '../components/github-actions-status.component';
 import { TaskListDebugComponent } from '../components/task-list-debug.component';
+import { DjDownloadComponent } from '../components/dj-download.component';
 
 export default function Page() {
   return (
@@ -15,8 +16,9 @@ export default function Page() {
       <div className="flex flex-col gap-4">
         <GoogleTasksComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-4">
         <WeatherComponent />
+        <DjDownloadComponent />
       </div>
       <div className="flex flex-col gap-4">
         <GcloudAuthStatusComponent />

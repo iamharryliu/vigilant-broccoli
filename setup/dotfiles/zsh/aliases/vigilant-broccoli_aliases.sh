@@ -76,7 +76,7 @@ alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
 alias pushc8scontent="cdnx && git add apps/ui/cloud-8-skate-angular/src/assets/site-content/ && gc feat cloud8skate 'Update site content.' && gpush"
 # DJ Stuff
 alias pushdj='cdvb && git subtree push --prefix=scripts/python/dj-scripts/spotify-to-mp3 git@github.com:iamharryliu/spotify-to-mp3.git main'
-alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py"
+alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py --output '/Users/harryliu/My Drive/DJ Music Library' --filter 'mix'"
 
 ## Obsidian
 alias openNotes="open 'obsidian://open?vault=notes'"
