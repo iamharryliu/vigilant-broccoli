@@ -24,12 +24,10 @@ const SORT_MODE = {
 
 type SortMode = typeof SORT_MODE[keyof typeof SORT_MODE];
 
-// LocalStorage key factory
 const getStorageKey = {
   sortMode: (taskListId: string) => `google-tasks-sort-mode-${taskListId}`,
 } as const;
 
-// Extract Eisenhower quadrant from task title (e.g., "Q1 chore(home): Fix sink")
 const getEisenhowerQuadrant = (title: string): EisenhowerQuadrant => {
   const match = title.match(/^(Q[1-4])\s/i);
   if (match) {
@@ -38,12 +36,8 @@ const getEisenhowerQuadrant = (title: string): EisenhowerQuadrant => {
   return 'none';
 };
 
-// Extract commit type from task title (e.g., "Q1 chore(home): Fix sink" -> "chore", "Q2 chore: task" -> "chore")
 const getCommitType = (title: string): string => {
-  // Remove quadrant prefix if present (e.g., "Q1 ", "Q2 ")
   const withoutQuadrant = title.replace(/^Q[1-4]\s+/i, '');
-
-  // Match any word followed by ":" or "(" (e.g., "chore:", "chore(home):", "docs:(R&D)")
   const match = withoutQuadrant.match(/^([a-z&]+)[(:]/i);
   if (match) {
     return match[1].toLowerCase();
@@ -51,13 +45,12 @@ const getCommitType = (title: string): string => {
   return 'other';
 };
 
-// Sort tasks by Eisenhower matrix priority (Q1 > Q2 > Q3 > Q4 > none)
 const sortByEisenhower = (tasks: Task[]): Task[] => {
   const priorityMap: Record<EisenhowerQuadrant, number> = {
-    'Q1': 1, // Urgent & Important
-    'Q2': 2, // Not Urgent & Important
-    'Q3': 3, // Urgent & Not Important
-    'Q4': 4, // Not Urgent & Not Important
+    'Q1': 1,
+    'Q2': 2,
+    'Q3': 3,
+    'Q4': 4,
     'none': 5,
   };
 
@@ -68,7 +61,6 @@ const sortByEisenhower = (tasks: Task[]): Task[] => {
   });
 };
 
-// Sort tasks by commit type alphabetically
 const sortByCommitType = (tasks: Task[]): Task[] => {
   return [...tasks].sort((a, b) => {
     const typeA = getCommitType(a.title);
@@ -77,14 +69,12 @@ const sortByCommitType = (tasks: Task[]): Task[] => {
   });
 };
 
-// Helper to handle API errors consistently
 const handleApiError = (err: unknown, fallbackMsg: string): string => {
   const message = err instanceof Error ? err.message : fallbackMsg;
   console.error(fallbackMsg, err);
   return message;
 };
 
-// Custom hook to manage task operations
 const useTasks = (taskListId: string) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
@@ -169,7 +159,6 @@ const useTasks = (taskListId: string) => {
   return { tasks, loading, error, fetchTasks, createTask, toggleTaskComplete, deleteTask, updateTask };
 };
 
-// Custom hook to manage task list metadata
 const useTaskListName = (taskListId: string, status: string) => {
   const [taskListName, setTaskListName] = useState<string | null>(null);
   const [authError, setAuthError] = useState(false);
@@ -186,7 +175,6 @@ const useTaskListName = (taskListId: string, status: string) => {
         const response = await fetch('/api/tasks/lists');
         const data = await response.json();
 
-        // Handle authentication errors
         if (response.status === 401) {
           setAuthError(true);
           setTaskListName('Tasks');
@@ -215,7 +203,37 @@ const useTaskListName = (taskListId: string, status: string) => {
   return { taskListName, authError };
 };
 
-// Memoized task item component to prevent re-renders
+const useSortModeStorage = (taskListId: string) => {
+  const [sortMode, setSortMode] = useState<SortMode>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
+      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DEFAULT) {
+        return saved as SortMode;
+      }
+    }
+    return SORT_MODE.DEFAULT;
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
+      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DEFAULT) {
+        setSortMode(saved as SortMode);
+      } else {
+        setSortMode(SORT_MODE.DEFAULT);
+      }
+    }
+  }, [taskListId]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(getStorageKey.sortMode(taskListId), sortMode);
+    }
+  }, [sortMode, taskListId]);
+
+  return [sortMode, setSortMode] as const;
+};
+
 interface TaskItemProps {
   task: Task;
   isEditing: boolean;
@@ -302,50 +320,188 @@ const TaskItem = memo(({
 
 TaskItem.displayName = 'TaskItem';
 
+const TaskHeader = memo(({ taskListName, userEmail, onSignOut }: {
+  taskListName: string | null;
+  userEmail?: string;
+  onSignOut: () => void;
+}) => (
+  <Flex justify="between" align="center">
+    {taskListName ? (
+      <Text size="5" weight="bold">{taskListName}</Text>
+    ) : (
+      <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-32 rounded" />
+    )}
+    <Flex gap="2" align="center">
+      {userEmail && <Text size="1" color="gray">{userEmail}</Text>}
+      <Button onClick={onSignOut} size="1" variant="soft">Sign out</Button>
+    </Flex>
+  </Flex>
+));
+
+TaskHeader.displayName = 'TaskHeader';
+
+const SortControls = memo(({ sortMode, onSortChange }: {
+  sortMode: SortMode;
+  onSortChange: (value: SortMode) => void;
+}) => (
+  <Flex gap="2" align="center">
+    <Text size="2" color="gray">Sort:</Text>
+    <Select.Root value={sortMode} onValueChange={onSortChange}>
+      <Select.Trigger placeholder="Sort by..." />
+      <Select.Content>
+        <Select.Item value={SORT_MODE.DEFAULT}>Default</Select.Item>
+        <Select.Item value={SORT_MODE.EISENHOWER}>Eisenhower Matrix</Select.Item>
+        <Select.Item value={SORT_MODE.COMMIT_TYPE}>Commit Type</Select.Item>
+      </Select.Content>
+    </Select.Root>
+  </Flex>
+));
+
+SortControls.displayName = 'SortControls';
+
+const AuthErrorBanner = memo(({ onSignOut }: { onSignOut: () => void }) => (
+  <Flex direction="column" gap="2" p="3" className="bg-red-50 dark:bg-red-900/20 rounded">
+    <Text size="2" weight="bold" color="red">Session Expired</Text>
+    <Text size="2" color="red">Your Google authentication has expired. Please sign out and sign in again.</Text>
+    <Button onClick={onSignOut} size="2" variant="solid" color="red">Sign Out & Re-authenticate</Button>
+  </Flex>
+));
+
+AuthErrorBanner.displayName = 'AuthErrorBanner';
+
+const AddTaskForm = memo(({
+  showAddTask,
+  newTaskTitle,
+  onTitleChange,
+  onSubmit,
+  onCancel,
+  onShowForm
+}: {
+  showAddTask: boolean;
+  newTaskTitle: string;
+  onTitleChange: (value: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  onShowForm: () => void;
+}) => {
+  if (!showAddTask) {
+    return <Button onClick={onShowForm} size="2" variant="soft">+ Add Task</Button>;
+  }
+
+  return (
+    <Flex gap="2" align="end">
+      <TextField.Root
+        placeholder="Add a new task..."
+        value={newTaskTitle}
+        onChange={(e) => onTitleChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') onSubmit();
+          else if (e.key === 'Escape') onCancel();
+        }}
+        className="flex-1"
+      />
+      <Button onClick={onSubmit} size="2">Add</Button>
+      <Button onClick={onCancel} size="2" variant="soft">Cancel</Button>
+    </Flex>
+  );
+});
+
+AddTaskForm.displayName = 'AddTaskForm';
+
+const TaskList = memo(({
+  loading,
+  error,
+  tasks,
+  editingTaskId,
+  editingTaskTitle,
+  onToggleComplete,
+  onDelete,
+  onStartEdit,
+  onEditChange,
+  onSaveEdit,
+  onCancelEdit,
+}: {
+  loading: boolean;
+  error: string | null;
+  tasks: Task[];
+  editingTaskId: string | null;
+  editingTaskTitle: string;
+  onToggleComplete: (task: Task) => void;
+  onDelete: (taskId: string) => void;
+  onStartEdit: (task: Task) => void;
+  onEditChange: (title: string) => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+}) => {
+  if (loading) {
+    return (
+      <Flex direction="column" gap="2">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 rounded" />
+        ))}
+      </Flex>
+    );
+  }
+
+  if (error) {
+    return <Text size="2" color="red">{error}</Text>;
+  }
+
+  if (tasks.length === 0) {
+    return <Text size="2" color="gray">No tasks to display</Text>;
+  }
+
+  return (
+    <Flex direction="column" gap="2">
+      {tasks.map((task) => (
+        <TaskItem
+          key={task.id}
+          task={task}
+          isEditing={editingTaskId === task.id}
+          editingTitle={editingTaskTitle}
+          onToggleComplete={onToggleComplete}
+          onDelete={onDelete}
+          onStartEdit={onStartEdit}
+          onEditChange={onEditChange}
+          onSaveEdit={onSaveEdit}
+          onCancelEdit={onCancelEdit}
+        />
+      ))}
+    </Flex>
+  );
+});
+
+TaskList.displayName = 'TaskList';
+
+const UnauthenticatedView = memo(() => (
+  <Card className="w-full">
+    <Flex direction="column" gap="3" p="4">
+      <Flex justify="between" align="center">
+        <Text size="5" weight="bold">Tasks</Text>
+        <Button onClick={() => signIn('google')} size="2">Sign in with Google</Button>
+      </Flex>
+      <Text size="2" color="gray">Sign in to view your Google Tasks</Text>
+    </Flex>
+  </Card>
+));
+
+UnauthenticatedView.displayName = 'UnauthenticatedView';
+
+// eslint-disable-next-line complexity
 export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListId?: string } = {}) => {
   const { data: session, status } = useSession();
   const taskListId = propTaskListId || process.env.NEXT_PUBLIC_GOOGLE_TASK_LIST_ID || '@default';
   const { taskListName, authError: titleAuthError } = useTaskListName(taskListId, status);
   const { tasks, loading, error, fetchTasks, createTask, toggleTaskComplete, deleteTask, updateTask } = useTasks(taskListId);
+  const [sortMode, setSortMode] = useSortModeStorage(taskListId);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [showAddTask, setShowAddTask] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingTaskTitle, setEditingTaskTitle] = useState('');
 
-  // Initialize sort mode from localStorage or default to 'default'
-  const [sortMode, setSortMode] = useState<SortMode>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
-      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DEFAULT) {
-        return saved as SortMode;
-      }
-    }
-    return SORT_MODE.DEFAULT;
-  });
-
   useEffect(() => {
     if (status === 'authenticated') fetchTasks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, taskListId]);
-
-  // Load sort mode when taskListId changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
-      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DEFAULT) {
-        setSortMode(saved as SortMode);
-      } else {
-        setSortMode(SORT_MODE.DEFAULT);
-      }
-    }
-  }, [taskListId]);
-
-  // Save sort mode to localStorage whenever it changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(getStorageKey.sortMode(taskListId), sortMode);
-    }
-  }, [sortMode, taskListId]);
 
   const handleCreateTask = useCallback(async () => {
     await createTask(newTaskTitle);
@@ -369,7 +525,6 @@ export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListI
 
   const handleSaveEdit = useCallback(async () => {
     if (editingTaskId && editingTaskTitle.trim()) {
-      // Only update if the title actually changed
       const originalTask = tasks.find(t => t.id === editingTaskId);
       if (originalTask && originalTask.title !== editingTaskTitle) {
         await updateTask(editingTaskId, editingTaskTitle);
@@ -384,118 +539,58 @@ export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListI
     setEditingTaskTitle('');
   }, []);
 
-  // Apply sorting based on selected mode
+  const handleSortChange = useCallback((value: SortMode) => {
+    setSortMode(value);
+  }, []);
+
   const sortedTasks =
     sortMode === SORT_MODE.EISENHOWER ? sortByEisenhower(tasks) :
     sortMode === SORT_MODE.COMMIT_TYPE ? sortByCommitType(tasks) :
     tasks;
 
   if (status === 'loading') return <CardSkeleton showTitleSkeleton rows={5} />;
+  if (status === 'unauthenticated') return <UnauthenticatedView />;
 
-  if (status === 'unauthenticated') {
-    return (
-      <Card className="w-full">
-        <Flex direction="column" gap="3" p="4">
-          <Flex justify="between" align="center">
-            <Text size="5" weight="bold">Tasks</Text>
-            <Button onClick={() => signIn('google')} size="2">Sign in with Google</Button>
-          </Flex>
-          <Text size="2" color="gray">Sign in to view your Google Tasks</Text>
-        </Flex>
-      </Card>
-    );
-  }
-
-  // Show authentication error banner if token expired or refresh failed
   const hasAuthError = titleAuthError || error?.includes('Unauthorized') || error?.includes('authentication') || session?.error === 'RefreshAccessTokenError';
 
   return (
     <Card className="w-full">
       <Flex direction="column" gap="3" p="4">
-        {/* Header */}
-        <Flex justify="between" align="center">
-          {taskListName ? (
-            <Text size="5" weight="bold">{taskListName}</Text>
-          ) : (
-            <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-32 rounded" />
-          )}
-          <Flex gap="2" align="center">
-            {session?.user?.email && <Text size="1" color="gray">{session.user.email}</Text>}
-            <Button onClick={() => signOut()} size="1" variant="soft">Sign out</Button>
-          </Flex>
-        </Flex>
+        <TaskHeader
+          taskListName={taskListName}
+          userEmail={session?.user?.email}
+          onSignOut={() => signOut()}
+        />
 
-        {/* Sort Controls */}
-        <Flex gap="2" align="center">
-          <Text size="2" color="gray">Sort:</Text>
-          <Select.Root value={sortMode} onValueChange={(value) => setSortMode(value as SortMode)}>
-            <Select.Trigger placeholder="Sort by..." />
-            <Select.Content>
-              <Select.Item value={SORT_MODE.DEFAULT}>Default</Select.Item>
-              <Select.Item value={SORT_MODE.EISENHOWER}>Eisenhower Matrix</Select.Item>
-              <Select.Item value={SORT_MODE.COMMIT_TYPE}>Commit Type</Select.Item>
-            </Select.Content>
-          </Select.Root>
-        </Flex>
+        <SortControls
+          sortMode={sortMode}
+          onSortChange={handleSortChange}
+        />
 
-        {/* Auth Error Banner */}
-        {hasAuthError && (
-          <Flex direction="column" gap="2" p="3" className="bg-red-50 dark:bg-red-900/20 rounded">
-            <Text size="2" weight="bold" color="red">Session Expired</Text>
-            <Text size="2" color="red">Your Google authentication has expired. Please sign out and sign in again.</Text>
-            <Button onClick={() => signOut()} size="2" variant="solid" color="red">Sign Out & Re-authenticate</Button>
-          </Flex>
-        )}
+        {hasAuthError && <AuthErrorBanner onSignOut={() => signOut()} />}
 
-        {/* Add Task Form */}
-        {showAddTask ? (
-          <Flex gap="2" align="end">
-            <TextField.Root
-              placeholder="Add a new task..."
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleCreateTask();
-                else if (e.key === 'Escape') handleCancelAddTask();
-              }}
-              className="flex-1"
-            />
-            <Button onClick={handleCreateTask} size="2">Add</Button>
-            <Button onClick={handleCancelAddTask} size="2" variant="soft">Cancel</Button>
-          </Flex>
-        ) : (
-          <Button onClick={() => setShowAddTask(true)} size="2" variant="soft">+ Add Task</Button>
-        )}
+        <AddTaskForm
+          showAddTask={showAddTask}
+          newTaskTitle={newTaskTitle}
+          onTitleChange={setNewTaskTitle}
+          onSubmit={handleCreateTask}
+          onCancel={handleCancelAddTask}
+          onShowForm={() => setShowAddTask(true)}
+        />
 
-        {/* Tasks List */}
-        {loading ? (
-          <Flex direction="column" gap="2">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 rounded" />
-            ))}
-          </Flex>
-        ) : error ? (
-          <Text size="2" color="red">{error}</Text>
-        ) : sortedTasks.length === 0 ? (
-          <Text size="2" color="gray">No tasks to display</Text>
-        ) : (
-          <Flex direction="column" gap="2">
-            {sortedTasks.map((task) => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                isEditing={editingTaskId === task.id}
-                editingTitle={editingTaskTitle}
-                onToggleComplete={toggleTaskComplete}
-                onDelete={deleteTask}
-                onStartEdit={handleStartEdit}
-                onEditChange={handleEditChange}
-                onSaveEdit={handleSaveEdit}
-                onCancelEdit={handleCancelEdit}
-              />
-            ))}
-          </Flex>
-        )}
+        <TaskList
+          loading={loading}
+          error={error}
+          tasks={sortedTasks}
+          editingTaskId={editingTaskId}
+          editingTaskTitle={editingTaskTitle}
+          onToggleComplete={toggleTaskComplete}
+          onDelete={deleteTask}
+          onStartEdit={handleStartEdit}
+          onEditChange={handleEditChange}
+          onSaveEdit={handleSaveEdit}
+          onCancelEdit={handleCancelEdit}
+        />
       </Flex>
     </Card>
   );
