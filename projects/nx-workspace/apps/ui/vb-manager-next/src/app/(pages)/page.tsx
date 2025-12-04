@@ -5,6 +5,8 @@ import { WireguardStatusComponent } from '../components/wireguard-status.compone
 import { GithubRepoActionStatusBadges } from '../components/github-actions-status.component';
 import { TaskListDebugComponent } from '../components/task-list-debug.component';
 import { DjDownloadComponent } from '../components/dj-download.component';
+import { PublicIpComponent } from '../components/public-ip.component';
+import { FlyIoAppsComponent } from '../components/flyio-apps.component';
 
 export default function Page() {
   return (
@@ -21,9 +23,11 @@ export default function Page() {
         <DjDownloadComponent />
       </div>
       <div className="flex flex-col gap-4">
+        <PublicIpComponent />
         <GcloudAuthStatusComponent />
         <WireguardStatusComponent />
         <GithubRepoActionStatusBadges repoUrl="https://github.com/iamharryliu/vigilant-broccoli" />
+        <FlyIoAppsComponent />
       </div>
     </div>
   );

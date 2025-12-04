@@ -21,4 +21,8 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Services',
     path: '/services',
   },
+  PASTE_BIN: {
+    title: 'Paste Bin',
+    path: '/paste-bin',
+  },
 };
