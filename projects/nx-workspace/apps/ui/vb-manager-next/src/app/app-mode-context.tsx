@@ -4,6 +4,12 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 type AppMode = 'personal' | 'work';
 
+// App mode constants
+export const APP_MODE = {
+  PERSONAL: 'personal' as const,
+  WORK: 'work' as const,
+};
+
 interface AppModeContextType {
   appMode: AppMode;
   setAppMode: (mode: AppMode) => void;
@@ -17,7 +23,7 @@ export function AppModeProvider({ children }: { children: ReactNode }) {
   // Load app mode from sessionStorage on mount
   useEffect(() => {
     const saved = sessionStorage.getItem('appMode') as AppMode | null;
-    if (saved === 'personal' || saved === 'work') {
+    if (saved === APP_MODE.PERSONAL || saved === APP_MODE.WORK) {
       setAppModeState(saved);
     }
   }, []);

@@ -10,7 +10,7 @@ import { DjDownloadComponent } from '../components/dj-download.component';
 import { PublicIpComponent } from '../components/public-ip.component';
 import { FlyIoAppsComponent } from '../components/flyio-apps.component';
 import { LinkGroupComponent } from '../components/link-group.component';
-import { useAppMode } from '../app-mode-context';
+import { useAppMode, APP_MODE } from '../app-mode-context';
 
 const LINKS = [
   { label: 'Amazon', href: 'https://www.amazon.com' },
@@ -72,7 +72,7 @@ export default function Page() {
       <div className="grid grid-cols-4 gap-4 h-full mb-4">
         <>
           <div className="flex flex-col gap-4">
-            {appMode === 'personal' ? (
+            {appMode === APP_MODE.PERSONAL ? (
               <GoogleTasksComponent />
             ) : (
               <GoogleTasksComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
@@ -85,12 +85,12 @@ export default function Page() {
         </div>
         <div className="flex flex-col gap-4">
           <LinkGroupComponent title="Personal" links={LINKS} />
-          <DjDownloadComponent />
+          {appMode === APP_MODE.PERSONAL && <DjDownloadComponent />}
         </div>
 
         <div className="flex flex-col gap-4">
           <div className="border border-gray-300 rounded-lg overflow-hidden">
-            {appMode === 'personal' ? (
+            {appMode === APP_MODE.PERSONAL ? (
               <iframe
                 src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FCopenhagen&showPrint=0&mode=AGENDA&title=Personal%20Calendar&src=aGFycnlsaXUxOTk1QGdtYWlsLmNvbQ&src=aGFycnkubGl1QGVsdmExMS5zZQ&color=%237cb342&color=%23ad1457"
                 className="w-full h-[600px]"
@@ -104,9 +104,6 @@ export default function Page() {
               />
             )}
           </div>
-          <PublicIpComponent />
-          <GcloudAuthStatusComponent />
-          <WireguardStatusComponent />
         </div>
       </div>
 
@@ -118,7 +115,9 @@ export default function Page() {
           <LinkGroupComponent title="Dev Links" links={DEV_LINKS} />
         </div>
         <div className="flex flex-col gap-4">
-          <></>
+          <PublicIpComponent />
+          <GcloudAuthStatusComponent />
+          <WireguardStatusComponent />
         </div>
       </div>
     </>
