@@ -4,13 +4,8 @@ alias openmail="code /var/mail/$(whoami)"
 alias clearmail="echo '' > /var/mail/$(whoami)"
 load_aliases ~/shell-aliases/devops/
 
-## CRON
-
-alias cronguru="chrome 'https://crontab.guru/'"
-
-
 ## UTILITY
-
+alias cronguru="chrome 'https://crontab.guru/'"
 alias ghtokens="open 'https://github.com/settings/personal-access-tokens'"
 
 ## TERRAFORM

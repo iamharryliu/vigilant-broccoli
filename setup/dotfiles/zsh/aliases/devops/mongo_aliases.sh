@@ -1,1 +1,1 @@
-alias mongoconsole='chrome "https://cloud.mongodb.com/v2/"'
+alias mongodashboard='chrome "https://cloud.mongodb.com/v2/"'

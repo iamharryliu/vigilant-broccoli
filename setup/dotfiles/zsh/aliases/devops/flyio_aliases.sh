@@ -1,4 +1,6 @@
-alias flydash='chrome "https://fly.io/dashboard"'
+alias flydashboard='chrome "https://fly.io/dashboard"'
+alias flyBilling='chrome "https://fly.io/dashboard/personal/billing"'
+
 # Apps
 alias flyls='fly apps list'
 # Create and Destroy
@@ -58,5 +60,3 @@ alias connectsql='flyctl postgres connect --app testsql'
 alias servesql='flyctl proxy 5432 --app testsql'
 # Token
 alias flycreatetoken='flyctl tokens create deploy --app'
-# Billing
-alias openFlyBilling='chrome "https://fly.io/dashboard/personal/billing"'
