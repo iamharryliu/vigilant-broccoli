@@ -5,6 +5,7 @@ import { Theme } from '@radix-ui/themes';
 import './global.css';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider, useTheme } from './theme-context';
+import { AppModeProvider } from './app-mode-context';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const { appearance } = useTheme();
@@ -20,9 +21,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <SessionProvider>
-          <ThemeProvider>
-            <ThemeWrapper>{children}</ThemeWrapper>
-          </ThemeProvider>
+          <AppModeProvider>
+            <ThemeProvider>
+              <ThemeWrapper>{children}</ThemeWrapper>
+            </ThemeProvider>
+          </AppModeProvider>
         </SessionProvider>
       </body>
     </html>
