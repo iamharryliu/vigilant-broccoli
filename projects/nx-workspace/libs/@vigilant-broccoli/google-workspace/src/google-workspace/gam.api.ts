@@ -1,25 +1,54 @@
+// helper to format yyyy-mm-dd
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function addOneDay(dateStr: string) {
+  const date = new Date(dateStr);
+  date.setDate(date.getDate() + 1);
+  return date.toISOString();
+}
+
+function buildCalendarEventParams(
+  name?: string,
+  startDate?: string,
+  endDate?: string,
+  attendees?: string[],
+  allday?: boolean,
+) {
+  let params = '';
+
+  if (name) {
+    params += ` summary "${name}"`;
+  }
+
+  if (startDate) {
+    const formattedStart = formatDate(startDate);
+    params += ` start ${allday ? 'allday ' : ''}"${formattedStart}"`;
+  }
+
+  if (endDate) {
+    const formattedEnd = allday
+      ? formatDate(addOneDay(endDate))
+      : formatDate(endDate);
+    params += ` end ${allday ? 'allday ' : ''}"${formattedEnd}"`;
+  }
+
+  if (attendees && attendees.length > 0) {
+    params += ` selectattendees ${attendees.join(',')}`;
+  }
+
+  return params;
+}
+
 function createCalendar(calendarOwnerEmail: string, calendarName: string) {
   return `gam user ${calendarOwnerEmail} create calendar summary "${calendarName}"`;
 }
 
-// function createCalendarEvent(
-//   calendarId: string,
-//   name: string,
-//   startDate: string,
-//   endDate: string,
-//   attendees: string[],
-// ) {
-//   let cmd =
-//     `gam calendar ${calendarId} add event summary ` +
-//     `"${name}" ` +
-//     `start "${startDate}" ` +
-//     `end "${endDate}"`;
-
-//   if (attendees && attendees.length > 0) {
-//     cmd += ` selectattendees ${attendees.join(',')}`;
-//   }
-//   return cmd;
-// }
 function createCalendarEvent(
   calendarId: string,
   name: string,
@@ -28,36 +57,19 @@ function createCalendarEvent(
   attendees: string[],
   allday?: boolean,
 ) {
-  // helper to format yyyy-mm-dd
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
-  const formattedStart = formatDate(startDate);
-  const formattedEnd = formatDate(endDate);
-
-  let cmd =
-    `gam calendar ${calendarId} add event summary "${name}" ` +
-    `start ${allday ? 'allday ' : ''}"${formattedStart}" ` +
-    `end ${allday ? 'allday ' : ''}"${formattedEnd}"`;
-
-  if (attendees && attendees.length > 0) {
-    cmd += ` selectattendees ${attendees.join(',')}`;
-  }
-
-  return cmd;
+  return `gam calendar ${calendarId} add event${buildCalendarEventParams(name, startDate, endDate, attendees, allday)}`;
 }
 
 function updateCalendarEvent(
   calendarId: string,
   calendarEventId: string,
-  name: string,
+  name?: string,
+  startDate?: string,
+  endDate?: string,
+  attendees?: string[],
+  allday?: boolean,
 ) {
-  return `gam calendar ${calendarId} update event id ${calendarEventId} summary "${name}"`;
+  return `gam calendar ${calendarId} update event id ${calendarEventId}${buildCalendarEventParams(name, startDate, endDate, attendees, allday)}`;
 }
 
 function deleteCalendarEvent(calendarId: string, calendarEventId: string) {
