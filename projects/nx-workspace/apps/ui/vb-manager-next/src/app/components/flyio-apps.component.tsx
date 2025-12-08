@@ -7,9 +7,7 @@ import { ExternalLinkIcon } from '@radix-ui/react-icons';
 
 interface FlyApp {
   name: string;
-  owner: string;
   status: string;
-  latestDeploy: string | null;
 }
 
 interface FlyAppsResponse {
@@ -18,28 +16,13 @@ interface FlyAppsResponse {
   error?: string;
 }
 
-// Helper function to format relative time
-const formatRelativeTime = (isoString: string | null): string => {
-  if (!isoString) return '-';
-
-  const now = new Date();
-  const deployTime = new Date(isoString);
-  const diffMs = now.getTime() - deployTime.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h${diffMins % 60}m ago`;
-  if (diffDays < 7) return `${diffDays}d${diffHours % 24}h ago`;
-
-  return deployTime.toLocaleDateString();
-};
-
 // Helper function to get status badge color
-const getStatusColor = (status: string): 'green' | 'yellow' | 'red' | 'gray' => {
+const getStatusColor = (
+  status: string,
+): 'green' | 'yellow' | 'red' | 'gray' => {
   const normalizedStatus = status.toLowerCase();
-  if (normalizedStatus === 'deployed' || normalizedStatus === 'running') return 'green';
+  if (normalizedStatus === 'deployed' || normalizedStatus === 'running')
+    return 'green';
   if (normalizedStatus === 'suspended') return 'yellow';
   if (normalizedStatus === 'pending') return 'gray';
   return 'red';
@@ -63,7 +46,9 @@ export const FlyIoAppsComponent = () => {
         setAppsData(data.apps);
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch Fly.io apps');
+        setError(
+          err instanceof Error ? err.message : 'Failed to fetch Fly.io apps',
+        );
         setLoading(false);
         console.error('Fly.io apps fetch error:', err);
       }
@@ -84,7 +69,9 @@ export const FlyIoAppsComponent = () => {
       <Card className="w-full">
         <Flex direction="column" gap="4" p="4">
           <Flex justify="between" align="center">
-            <Text size="5" weight="bold">Fly.io Apps</Text>
+            <Text size="5" weight="bold">
+              Fly.io Apps
+            </Text>
             <Link
               href="https://fly.io/dashboard"
               target="_blank"
@@ -107,7 +94,9 @@ export const FlyIoAppsComponent = () => {
     <Card className="w-full">
       <Flex direction="column" gap="3" p="4">
         <Flex justify="between" align="center">
-          <Text size="5" weight="bold">Fly.io Apps</Text>
+          <Text size="5" weight="bold">
+            Fly.io Apps
+          </Text>
           <Link
             href="https://fly.io/dashboard"
             target="_blank"
@@ -122,10 +111,12 @@ export const FlyIoAppsComponent = () => {
         </Flex>
 
         {appsData.length === 0 ? (
-          <Text size="2" color="gray">No apps found</Text>
+          <Text size="2" color="gray">
+            No apps found
+          </Text>
         ) : (
           <Flex direction="column" gap="2">
-            {appsData.map((app) => (
+            {appsData.map(app => (
               <Flex
                 key={app.name}
                 direction="column"
@@ -152,17 +143,6 @@ export const FlyIoAppsComponent = () => {
                   <Badge color={getStatusColor(app.status)} size="1">
                     {app.status}
                   </Badge>
-                </Flex>
-
-                <Flex justify="between" align="center">
-                  <Text size="1" color="gray">
-                    {app.owner}
-                  </Text>
-                  {app.latestDeploy && (
-                    <Text size="1" color="gray">
-                      {formatRelativeTime(app.latestDeploy)}
-                    </Text>
-                  )}
                 </Flex>
               </Flex>
             ))}

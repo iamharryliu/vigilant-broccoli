@@ -1,8 +1,12 @@
 'use client';
 
+type LinkType = 'browser' | 'shell';
+
 interface LinkItem {
   label: string;
-  href: string;
+  href?: string; 
+  command?: string; 
+  type: LinkType;
 }
 
 interface LinkGroupProps {
@@ -30,21 +34,56 @@ export function LinkGroupComponent({ title, links }: LinkGroupProps) {
   // Sort links alphabetically by label
   const sortedLinks = [...links].sort((a, b) => a.label.localeCompare(b.label));
 
+  const handleShellCommand = async (command: string) => {
+    try {
+      const response = await fetch('/api/shell/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ command }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to execute shell command');
+      }
+    } catch (error) {
+      console.error('Error executing shell command:', error);
+    }
+  };
+
   return (
     <div className="border rounded-lg p-4 bg-white shadow-sm">
       <h3 className="font-semibold mb-3">{title}</h3>
       <div className="flex flex-wrap gap-2">
-        {sortedLinks.map((link, index) => (
-          <a
-            key={link.href}
-            href={link.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`inline-flex justify-center px-4 py-1.5 ${COLOR_PALETTE[index % COLOR_PALETTE.length]} text-white rounded-full text-sm font-medium w-fit transition-colors`}
-          >
-            {link.label}
-          </a>
-        ))}
+        {sortedLinks.map((link, index) => {
+          const colorClass = COLOR_PALETTE[index % COLOR_PALETTE.length];
+          const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-sm font-medium w-fit transition-colors`;
+
+          if (link.type === 'shell' && link.command) {
+            return (
+              <button
+                key={link.command}
+                onClick={() => handleShellCommand(link.command!)}
+                className={`${baseClass} cursor-pointer`}
+              >
+                {link.label}
+              </button>
+            );
+          }
+
+          return (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={baseClass}
+            >
+              {link.label}
+            </a>
+          );
+        })}
       </div>
     </div>
   );

@@ -13,54 +13,64 @@ import { LinkGroupComponent } from '../components/link-group.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 
 const LINKS = [
-  { label: 'Amazon', href: 'https://www.amazon.com' },
-  { label: 'Gmail', href: 'https://mail.google.com' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com' },
-  { label: 'YouTube', href: 'https://www.youtube.com' },
-  { label: 'ChatGPT', href: 'https://chat.openai.com' },
-  { label: 'Claude', href: 'https://claude.ai' },
-  { label: 'Google Maps', href: 'https://www.google.com/maps' },
-  { label: 'Google Translate', href: 'https://translate.google.com/' },
-  { label: 'Google Calendar', href: 'https://calendar.google.com/' },
-  { label: 'Google Meet', href: 'https://meet.google.com/' },
+  { label: 'Amazon', href: 'https://www.amazon.com', type: 'browser' as const },
+  { label: 'Gmail', href: 'https://mail.google.com', type: 'browser' as const },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com', type: 'browser' as const },
+  { label: 'YouTube', href: 'https://www.youtube.com', type: 'browser' as const },
+  { label: 'ChatGPT', href: 'https://chat.openai.com', type: 'browser' as const },
+  { label: 'Claude', href: 'https://claude.ai', type: 'browser' as const },
+  { label: 'Google Maps', href: 'https://www.google.com/maps', type: 'browser' as const },
+  { label: 'Google Translate', href: 'https://translate.google.com/', type: 'browser' as const },
+  { label: 'Google Calendar', href: 'https://calendar.google.com/', type: 'browser' as const },
+  { label: 'Google Meet', href: 'https://meet.google.com/', type: 'browser' as const },
   {
     label: 'Google Drive',
     href: 'https://drive.google.com/drive/u/0/my-drive',
+    type: 'browser' as const,
   },
-  { label: 'Google Contacts', href: 'https://contacts.google.com/' },
-  { label: 'Find My', href: 'https://www.icloud.com/find/' },
-  { label: 'Google Photos', href: 'https://photos.google.com/?pli=1' },
-  { label: 'Pinterest', href: 'https://www.pinterest.com' },
+  { label: 'Google Contacts', href: 'https://contacts.google.com/', type: 'browser' as const },
+  { label: 'Find My', href: 'https://www.icloud.com/find/', type: 'browser' as const },
+  { label: 'Google Photos', href: 'https://photos.google.com/?pli=1', type: 'browser' as const },
+  { label: 'Pinterest', href: 'https://www.pinterest.com', type: 'browser' as const },
 ];
 
 const DEV_LINKS = [
-  { label: 'GCP', href: 'https://console.cloud.google.com' },
-  { label: 'Cron Guru', href: 'https://crontab.guru/' },
-  { label: 'GitHub', href: 'https://github.com' },
+  { label: 'GCP', href: 'https://console.cloud.google.com', type: 'browser' as const },
+  { label: 'Cron Guru', href: 'https://crontab.guru/', type: 'browser' as const },
+  { label: 'GitHub', href: 'https://github.com', type: 'browser' as const },
   {
     label: 'GitHub Tokens',
     href: 'https://github.com/settings/personal-access-tokens',
+    type: 'browser' as const,
   },
-  { label: 'MongoDB Console', href: 'https://cloud.mongodb.com/v2/' },
+  { label: 'MongoDB Console', href: 'https://cloud.mongodb.com/v2/', type: 'browser' as const },
   {
     label: 'Google Analytics',
     href: 'https://analytics.google.com/analytics/',
+    type: 'browser' as const,
   },
-  { label: 'reCAPTCHA Admin', href: 'https://www.google.com/recaptcha/admin/' },
+  { label: 'reCAPTCHA Admin', href: 'https://www.google.com/recaptcha/admin/', type: 'browser' as const },
+];
+
+const WORK_LINKS = [
+  { label: 'Slack', command: 'openSlack', type: 'shell' as const },
 ];
 
 const VB_LINKS = [
   {
     label: 'NPM Packages',
     href: 'https://www.npmjs.com/settings/vigilant-broccoli/packages',
+    type: 'browser' as const,
   },
   {
     label: 'GitHub Repo',
     href: 'https://github.com/iamharryliu/vigilant-broccoli',
+    type: 'browser' as const,
   },
   {
     label: 'GitHub Actions',
     href: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
+    type: 'browser' as const,
   },
 ];
 
@@ -85,6 +95,7 @@ export default function Page() {
         </div>
         <div className="flex flex-col gap-4">
           <LinkGroupComponent title="Personal" links={LINKS} />
+          <LinkGroupComponent title="Work" links={WORK_LINKS} />
           {appMode === APP_MODE.PERSONAL && <DjDownloadComponent />}
         </div>
 
