@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, Flex, Text, Table, Code, Button } from '@radix-ui/themes';
+import { Card, Flex, Text, Table, Code, Button, IconButton } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { CopyIcon } from '@radix-ui/react-icons';
 
 interface TaskList {
   id: string;
@@ -47,6 +48,14 @@ export const TaskListDebugComponent = () => {
     }
   };
 
+  const copyToClipboard = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
     <Card className="w-full">
       <Flex direction="column" gap="3" p="4">
@@ -73,6 +82,7 @@ export const TaskListDebugComponent = () => {
                     <Table.ColumnHeaderCell>
                       <Text size="1" weight="bold">ID</Text>
                     </Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell />
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -83,6 +93,16 @@ export const TaskListDebugComponent = () => {
                       </Table.Cell>
                       <Table.Cell>
                         <Code size="1">{list.id}</Code>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <IconButton
+                          size="1"
+                          variant="ghost"
+                          onClick={() => copyToClipboard(list.id)}
+                          aria-label="Copy task list ID"
+                        >
+                          <CopyIcon />
+                        </IconButton>
                       </Table.Cell>
                     </Table.Row>
                   ))}

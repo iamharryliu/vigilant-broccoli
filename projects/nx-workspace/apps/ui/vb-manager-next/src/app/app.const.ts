@@ -5,24 +5,24 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Home',
     path: '/',
   },
+  DEV_DASHBOARD: {
+    title: 'Dev Dashboard',
+    path: '/dev-dashboard',
+  },
   TEXT_TOOLS: {
     title: 'Text Tools',
     path: '/text-tools',
   },
-  AI_TOOL: {
-    title: 'AI Tool',
-    path: '/ai-tool',
-  },
-  GITHUB_MANAGER: {
-    title: 'Github Manager',
-    path: '/github-manager',
-  },
   SERVICES: {
-    title: 'Services',
-    path: '/services',
+    title: 'Service Management',
+    path: '/service-management',
   },
   PASTE_BIN: {
     title: 'Paste Bin',
     path: '/paste-bin',
+  },
+  AI_TOOL: {
+    title: 'LLM Tools',
+    path: '/llm-tools',
   },
 };
