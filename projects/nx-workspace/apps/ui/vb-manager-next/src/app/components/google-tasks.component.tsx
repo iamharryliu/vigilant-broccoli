@@ -29,7 +29,7 @@ const getStorageKey = {
 } as const;
 
 const getEisenhowerQuadrant = (title: string): EisenhowerQuadrant => {
-  const match = title.match(/^(Q[1-4])\s/i);
+  const match = title.match(/^(Q[1-4])[\s:]/i);
   if (match) {
     return match[1].toUpperCase() as EisenhowerQuadrant;
   }
@@ -37,7 +37,7 @@ const getEisenhowerQuadrant = (title: string): EisenhowerQuadrant => {
 };
 
 const getCommitType = (title: string): string => {
-  const withoutQuadrant = title.replace(/^Q[1-4]\s+/i, '');
+  const withoutQuadrant = title.replace(/^Q[1-4][\s:]+/i, '');
   const match = withoutQuadrant.match(/^([a-z&]+)[(:]/i);
   if (match) {
     return match[1].toLowerCase();

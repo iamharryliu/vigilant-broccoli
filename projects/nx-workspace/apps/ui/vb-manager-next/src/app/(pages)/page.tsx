@@ -75,6 +75,11 @@ const LINKS = [
 
 const LEISURE_LINKS = [
   {
+    label: 'Manga',
+    href: ' https://ww2.mangafreak.me/',
+    type: 'browser' as const,
+  },
+  {
     label: 'Draw',
     href: 'https://ca.pinterest.com/prettydamntired/to-draw/',
     type: 'browser' as const,
