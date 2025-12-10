@@ -73,8 +73,31 @@ const LINKS = [
   },
 ];
 
+const LEISURE_LINKS = [
+  {
+    label: 'Draw',
+    href: 'https://ca.pinterest.com/prettydamntired/to-draw/',
+    type: 'browser' as const,
+  },
+  {
+    label: 'Read',
+    href: 'https://www.goodreads.com/review/list/74043883-harry?ref=nav_mybooks&shelf=to-read',
+    type: 'browser' as const,
+  },
+  {
+    label: 'Anime',
+    href: 'https://myanimelist.net/animelist/prettydamntired?status=6',
+    type: 'browser' as const,
+  },
+  {
+    label: 'Movies/Shows',
+    href: 'https://www.imdb.com/user/ur45097057/watchlist',
+    type: 'browser' as const,
+  },
+];
+
 const WORK_LINKS = [
-  { label: 'Slack', command: 'openSlack', type: 'shell' as const },
+  { label: 'Slack', command: "open -a 'Slack'", type: 'shell' as const },
 ];
 
 export default function Page() {
@@ -98,8 +121,15 @@ export default function Page() {
       </div>
       <div className="flex flex-col gap-4">
         <LinkGroupComponent title="Personal" links={LINKS} />
-        <LinkGroupComponent title="Work" links={WORK_LINKS} />
-        {appMode === APP_MODE.PERSONAL && <DjDownloadComponent />}
+        {appMode === APP_MODE.PERSONAL && (
+          <>
+            <LinkGroupComponent title="Leisure" links={LEISURE_LINKS} />
+            <DjDownloadComponent />
+          </>
+        )}
+        {appMode === APP_MODE.WORK && (
+          <LinkGroupComponent title="Work" links={WORK_LINKS} />
+        )}
       </div>
 
       <div className="flex flex-col gap-4">
