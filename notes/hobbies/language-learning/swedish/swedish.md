@@ -391,18 +391,21 @@ upp
 in
 ut - out. If you’re emphasizing movement to the outside, use ut.
 ur - out. If you’re emphasizing where it comes from, use ur.
-istallet
+
 hellre
 ihop - together
-ungefär - about
 ungefär halften befolkning paverkas av arstiderna
-lätt!=svår
-lätt!=tung
+
 Adverb type	Typical position
 Frequency (ofta, aldrig)	After main verb / after auxiliary
 Uncertainty (kanske)	Start of sentence OR after verb
 Modal verbs (vill, kan)	Before main verb
 
-på grund av - because of
-
 fabrik som tillverkar möbler.
+
+istallet
+på grund av - because of
+ungefär - about
+
+lätt!=svår
+lätt!=tung

@@ -1,28 +1,42 @@
 # Coffee
 
-| Parameter               | Higher Value Effect                                 | Lower Value Effect                             |
-| ----------------------- | --------------------------------------------------- | ---------------------------------------------- |
-| **Grind Size**          | Finer grind → stronger, more bitter, over-extracted | Coarser grind → weaker, sour, under-extracted  |
-| **Brew Time**           | Longer time → bitter, heavy body, over-extracted    | Shorter time → sour, thin, under-extracted     |
-| **Water Temp**          | Hotter (>96°C / 205°F) → bitter, burnt taste        | Cooler (<90°C / 195°F) → sour, under-extracted |
-| **Coffee Dose**         | More coffee → stronger, heavier, bolder taste       | Less coffee → weaker, thinner body             |
-| **Water Ratio**         | Less water → concentrated, intense                  | More water → diluted, weak                     |
-| **Pressure (Espresso)** | Higher pressure → more body, bitterness             | Lower pressure → sour, weak shot               |
-| **Roast Level**         | Dark roast → bold, bitter, smoky                    | Light roast → acidic, fruity, floral           |
-| **Brew Method**         | Immersion (French press) → fuller body, oils        | Filter (pour-over) → clean, bright, lighter    |
+```mermaid
+flowchart LR
+Bean-->RM[Roast Method]-->BM[Brew Method]-->Coffee
+```
 
-## Brewing
 
-- Coffee Beans
+| Parameter               | **Lower Value Effect**                         | **Higher Value Effect**                             |
+| ----------------------- | ---------------------------------------------- | --------------------------------------------------- |
+| **Grind Size**          | Coarser grind → weaker, sour, under-extracted  | Finer grind → stronger, more bitter, over-extracted |
+| **Brew Time**           | Shorter time → sour, thin, under-extracted     | Longer time → bitter, heavy body, over-extracted    |
+| **Water Temp**          | Cooler (<90°C / 195°F) → sour, under-extracted | Hotter (>96°C / 205°F) → bitter, burnt taste        |
+| **Coffee Dose**         | Less coffee → weaker, thinner body             | More coffee → stronger, heavier, bolder taste       |
+| **Water Ratio**         | More water → diluted, weak                     | Less water → concentrated, intense                  |
+| **Pressure (Espresso)** | Lower pressure → sour, weak shot               | Higher pressure → more body, bitterness             |
+| **Roast Level**         | Light roast → acidic, fruity, floral           | Dark roast → bold, bitter, smoky                    |
+| **Brew Method**         | Filter (pour-over) → clean, bright, lighter    | Immersion (French press) → fuller body, oils        |
+
+## Parameters
+
+- Bean Specs
   - Origin
   - Roast
 - Grind size.
 - Water Quality
 
-### Brewing Methods
+## Brewing Methods
 
-- Drip Coffee
-- Moka Pot
+- Drip/Pourover Coffee
+  - Drip Coffee Maker
+  - Chemex
+  - Pourover Dripper
+  - Vietnamese Drip
+- Immersion
+  - French Press
+  - Cold Brew
+- Pressure Brewed Coffee
+  - Moka Pot
 - French Press
 - Espresso Maker
 
@@ -40,11 +54,31 @@
   - Low heat.
   - Kill heat before the coffee starts to come out sputtery.
 
-#### Espresso
+<div style="display: flex; gap: 20px;">
+  <div style="flex: 1;">
+
+#### Common Drinks
+
+- Espresso
+- Double Espresso (Doppio) - Espresso x2
+- Americano - Espresso + hot water
+- Milk based drinks
+  - Latte - Espresso + lots of steamed milk + a little foam.
+  - Cappuccino - Espresso + equal parts steamed milk and foam.
+  - Flat white - Similar to a latte but smaller with thinner microfoam.
+  - Macchiato - Espresso + a small dollop of milk or foam.
+  - Cortado - Equal parts espresso and steamed milk.
+  - Mocha - Latte + chocolate syrup + whip (optional).
+- Drip Coffee
+
+### Barista Notes
 
 - Add sweetener before pulling expresso shot.
 - Light amount of water to clean steam wand.
 
-#### French Press
+    </div>
 
-#### Vietnamese Drip
+    <div style="flex: 1;">
+      <img src="https://i.pinimg.com/736x/01/7d/6f/017d6f8bf36f7c32ff38384e5a33f903.jpg" style="width: 100%; border-radius: 8px;" />
+    </div>
+  </div>
