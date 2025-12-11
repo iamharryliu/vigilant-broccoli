@@ -7,7 +7,7 @@
 - Garlic
 - Smoked paprika
 - Chili powder
-Oregano
+- Oregano
 - Cayenne pepper
 - Chili flakes
 - Tomato paste
