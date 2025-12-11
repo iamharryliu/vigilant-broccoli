@@ -17,7 +17,7 @@ export const NextNavBar = ({
 }) => {
   const pathname = usePathname();
   return (
-    <div className="mb-8 relative">
+    <div className="mb-8 relative sticky top-0 z-50">
       <TabNav.Root>
         {routes.map(obj => {
           return (
