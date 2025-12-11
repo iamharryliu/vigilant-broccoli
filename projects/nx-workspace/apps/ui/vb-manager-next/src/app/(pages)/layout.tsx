@@ -15,6 +15,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div className="w-full min-h-screen">
       <NextNavBar
         routes={Object.values(APP_ROUTE)}
+        isDark={appearance === 'dark'}
         rightContent={
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <Select.Root value={appMode} onValueChange={setAppMode}>

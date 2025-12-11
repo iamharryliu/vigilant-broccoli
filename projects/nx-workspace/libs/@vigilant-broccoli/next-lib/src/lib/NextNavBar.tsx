@@ -11,13 +11,21 @@ export type NextNavRoute = {
 export const NextNavBar = ({
   routes,
   rightContent,
+  isDark,
 }: {
   routes: NextNavRoute[];
   rightContent?: ReactNode;
+  isDark?: boolean;
 }) => {
   const pathname = usePathname();
+  // Background colors that follow dark mode
+  const bgColor = isDark ? 'var(--gray-2)' : 'var(--gray-1)';
+
   return (
-    <div className="mb-8 relative sticky top-0 z-50">
+    <div
+      className="mb-8 relative sticky top-0 z-50"
+      style={{ backgroundColor: bgColor }}
+    >
       <TabNav.Root>
         {routes.map(obj => {
           return (

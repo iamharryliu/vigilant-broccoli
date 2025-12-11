@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Card, Flex, TextField, Text } from '@radix-ui/themes';
 
 export default function Calculator() {
   const [input, setInput] = useState('');
@@ -65,21 +66,20 @@ export default function Calculator() {
   };
 
   return (
-    <div className="border border-gray-300 rounded-lg p-4 bg-white">
-      <div className="flex flex-col gap-2">
-        <input
-          type="text"
+    <Card className="w-full">
+      <Flex direction="column" gap="2" p="4">
+        <TextField.Root
           value={input}
           onChange={handleInputChange}
           placeholder="Enter calculation"
-          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          size="2"
         />
         {result && (
-          <div className="text-right text-xl font-semibold text-gray-800">
+          <Text size="5" weight="bold" align="right">
             = {result}
-          </div>
+          </Text>
         )}
-      </div>
-    </div>
+      </Flex>
+    </Card>
   );
 }

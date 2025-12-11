@@ -1,11 +1,13 @@
 'use client';
 
+import { Card, Flex, Text } from '@radix-ui/themes';
+
 type LinkType = 'browser' | 'shell';
 
 interface LinkItem {
   label: string;
-  href?: string; 
-  command?: string; 
+  href?: string;
+  command?: string;
   type: LinkType;
 }
 
@@ -53,9 +55,10 @@ export function LinkGroupComponent({ title, links }: LinkGroupProps) {
   };
 
   return (
-    <div className="border rounded-lg p-4 bg-white shadow-sm">
-      <h3 className="font-semibold mb-3">{title}</h3>
-      <div className="flex flex-wrap gap-2">
+    <Card className="w-full">
+      <Flex direction="column" gap="3" p="4">
+        <Text size="5" weight="bold">{title}</Text>
+        <div className="flex flex-wrap gap-2">
         {sortedLinks.map((link, index) => {
           const colorClass = COLOR_PALETTE[index % COLOR_PALETTE.length];
           const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-sm font-medium w-fit transition-colors`;
@@ -84,7 +87,8 @@ export function LinkGroupComponent({ title, links }: LinkGroupProps) {
             </a>
           );
         })}
-      </div>
-    </div>
+        </div>
+      </Flex>
+    </Card>
   );
 }

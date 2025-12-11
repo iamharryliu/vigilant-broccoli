@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import * as Collapsible from '@radix-ui/react-collapsible';
+import { Card, Flex, Text, TextField } from '@radix-ui/themes';
 
 export default function CookingCalculatorCard() {
   const [input, setInput] = useState('');
@@ -244,172 +245,172 @@ export default function CookingCalculatorCard() {
   };
 
   return (
-    <div className="border border-gray-300 rounded-lg p-4 bg-white">
-      {/* Calculator Section */}
-      <div className="flex flex-col gap-2 mb-6">
-        <h3 className="text-sm font-semibold text-gray-700">Calculator</h3>
-        <input
-          type="text"
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Enter calculation"
-          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-        />
-        {result && (
-          <div className="text-right text-xl font-semibold text-gray-800">
-            = {result}
-          </div>
-        )}
-      </div>
+    <Card className="w-full">
+      <Flex direction="column" gap="3" p="4">
+        {/* Calculator Section */}
+        <Flex direction="column" gap="2">
+          <Text size="3" weight="bold">Calculator</Text>
+          <TextField.Root
+            value={input}
+            onChange={handleInputChange}
+            placeholder="Enter calculation"
+            size="2"
+          />
+          {result && (
+            <Text size="5" weight="bold" align="right">
+              = {result}
+            </Text>
+          )}
+        </Flex>
 
-      {/* Cooking Conversions Section */}
-      <Collapsible.Root
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        className="border-t pt-4"
-      >
-        <Collapsible.Trigger asChild>
-          <button
-            className="flex items-center justify-between w-full mb-4 group cursor-pointer"
-            aria-label={isOpen ? 'Collapse' : 'Expand'}
-          >
-            <h3 className="text-sm font-semibold text-gray-700">
-              Cooking Conversions
-            </h3>
-            <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
-              {isOpen ? '▲' : '▼'}
-            </span>
-          </button>
-        </Collapsible.Trigger>
+        <Collapsible.Root
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          className="border-t border-gray-300 dark:border-gray-700 pt-4"
+        >
+          <Collapsible.Trigger asChild>
+            <button
+              className="flex items-center justify-between w-full mb-4 group cursor-pointer"
+              aria-label={isOpen ? 'Collapse' : 'Expand'}
+            >
+              <Text size="3" weight="bold">
+                Cooking Conversions
+              </Text>
+              <Text size="1" color="gray" className="group-hover:opacity-70 transition-opacity">
+                {isOpen ? '▲' : '▼'}
+              </Text>
+            </button>
+          </Collapsible.Trigger>
 
-        <Collapsible.Content className="flex flex-col gap-4">
-          {/* Weight: kg, lb */}
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className="block text-xs text-gray-600 mb-1">kg</label>
-              <input
-                type="number"
-                value={kg}
-                onChange={(e) => handleKgChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-xs text-gray-600 mb-1">lb</label>
-              <input
-                type="number"
-                value={lb}
-                onChange={(e) => handleLbChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-          </div>
+          <Collapsible.Content className="flex flex-col gap-4">
+            {/* Weight: kg, lb */}
+            <Flex gap="2">
+              <Flex direction="column" gap="1" className="flex-1">
+                <Text size="1" color="gray">kg</Text>
+                <TextField.Root
+                  type="number"
+                  value={kg}
+                  onChange={(e) => handleKgChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+              <Flex direction="column" gap="1" className="flex-1">
+                <Text size="1" color="gray">lb</Text>
+                <TextField.Root
+                  type="number"
+                  value={lb}
+                  onChange={(e) => handleLbChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+            </Flex>
 
-          {/* Weight: g, ounce */}
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className="block text-xs text-gray-600 mb-1">g</label>
-              <input
-                type="number"
-                value={g}
-                onChange={(e) => handleGChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-xs text-gray-600 mb-1">oz</label>
-              <input
-                type="number"
-                value={oz}
-                onChange={(e) => handleOzChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-          </div>
+            {/* Weight: g, ounce */}
+            <Flex gap="2">
+              <Flex direction="column" gap="1" className="flex-1">
+                <Text size="1" color="gray">g</Text>
+                <TextField.Root
+                  type="number"
+                  value={g}
+                  onChange={(e) => handleGChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+              <Flex direction="column" gap="1" className="flex-1">
+                <Text size="1" color="gray">oz</Text>
+                <TextField.Root
+                  type="number"
+                  value={oz}
+                  onChange={(e) => handleOzChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+            </Flex>
 
-          {/* Volume: ml, tsp, tbsp, cup */}
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">ml</label>
-              <input
-                type="number"
-                value={ml}
-                onChange={(e) => handleMlChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
+            {/* Volume: ml, tsp, tbsp, cup */}
+            <div className="grid grid-cols-2 gap-2">
+              <Flex direction="column" gap="1">
+                <Text size="1" color="gray">ml</Text>
+                <TextField.Root
+                  type="number"
+                  value={ml}
+                  onChange={(e) => handleMlChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+              <Flex direction="column" gap="1">
+                <Text size="1" color="gray">tsp</Text>
+                <TextField.Root
+                  type="number"
+                  value={tsp}
+                  onChange={(e) => handleTspChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+              <Flex direction="column" gap="1">
+                <Text size="1" color="gray">tbsp</Text>
+                <TextField.Root
+                  type="number"
+                  value={tbsp}
+                  onChange={(e) => handleTbspChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+              <Flex direction="column" gap="1">
+                <Text size="1" color="gray">cup</Text>
+                <TextField.Root
+                  type="number"
+                  value={cup}
+                  onChange={(e) => handleCupChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
             </div>
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">tsp</label>
-              <input
-                type="number"
-                value={tsp}
-                onChange={(e) => handleTspChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">tbsp</label>
-              <input
-                type="number"
-                value={tbsp}
-                onChange={(e) => handleTbspChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">cup</label>
-              <input
-                type="number"
-                value={cup}
-                onChange={(e) => handleCupChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-          </div>
 
-          {/* Length: mm, cm, inch */}
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className="block text-xs text-gray-600 mb-1">mm</label>
-              <input
-                type="number"
-                value={mm}
-                onChange={(e) => handleMmChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-xs text-gray-600 mb-1">cm</label>
-              <input
-                type="number"
-                value={cm}
-                onChange={(e) => handleCmChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-xs text-gray-600 mb-1">inch</label>
-              <input
-                type="number"
-                value={inch}
-                onChange={(e) => handleInchChange(e.target.value)}
-                placeholder="0"
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-              />
-            </div>
-          </div>
-        </Collapsible.Content>
-      </Collapsible.Root>
-    </div>
+            {/* Length: mm, cm, inch */}
+            <Flex gap="2">
+              <Flex direction="column" gap="1" className="flex-1">
+                <Text size="1" color="gray">mm</Text>
+                <TextField.Root
+                  type="number"
+                  value={mm}
+                  onChange={(e) => handleMmChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+              <Flex direction="column" gap="1" className="flex-1">
+                <Text size="1" color="gray">cm</Text>
+                <TextField.Root
+                  type="number"
+                  value={cm}
+                  onChange={(e) => handleCmChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+              <Flex direction="column" gap="1" className="flex-1">
+                <Text size="1" color="gray">inch</Text>
+                <TextField.Root
+                  type="number"
+                  value={inch}
+                  onChange={(e) => handleInchChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+            </Flex>
+          </Collapsible.Content>
+        </Collapsible.Root>
+      </Flex>
+    </Card>
   );
 }

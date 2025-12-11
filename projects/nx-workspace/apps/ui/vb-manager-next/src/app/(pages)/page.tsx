@@ -140,11 +140,11 @@ export default function Page() {
 
       <div className="flex flex-col gap-4">
         <CookingCalculatorCard />
-        <div className="border border-gray-300 rounded-lg overflow-hidden">
+        <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
           {appMode === APP_MODE.PERSONAL ? (
             <iframe
               src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FCopenhagen&showPrint=0&mode=AGENDA&title=Personal%20Calendar&src=aGFycnlsaXUxOTk1QGdtYWlsLmNvbQ&src=aGFycnkubGl1QGVsdmExMS5zZQ&color=%237cb342&color=%23ad1457"
-              className="w-full h-[600px]"
+              className="w-full h-[600px] dark:invert dark:hue-rotate-180"
               style={{ minHeight: '400px' }}
             ></iframe>
           ) : (
