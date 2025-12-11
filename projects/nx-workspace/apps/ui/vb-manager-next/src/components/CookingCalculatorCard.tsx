@@ -156,8 +156,10 @@ export default function CookingCalculatorCard() {
     if (!isNaN(num)) {
       const mlValue = num * 4.92892;
       setMl(mlValue.toFixed(4));
-      setTbsp((mlValue / 14.7868).toFixed(4));
-      setCup((mlValue / 236.588).toFixed(4));
+      // 1 tbsp = 3 tsp (exact conversion)
+      setTbsp((num / 3).toFixed(4));
+      // 1 cup = 48 tsp (exact conversion)
+      setCup((num / 48).toFixed(4));
     }
   };
 
@@ -173,8 +175,10 @@ export default function CookingCalculatorCard() {
     if (!isNaN(num)) {
       const mlValue = num * 14.7868;
       setMl(mlValue.toFixed(4));
-      setTsp((mlValue / 4.92892).toFixed(4));
-      setCup((mlValue / 236.588).toFixed(4));
+      // 1 tbsp = 3 tsp (exact conversion)
+      setTsp((num * 3).toFixed(4));
+      // 1 cup = 16 tbsp (exact conversion)
+      setCup((num / 16).toFixed(4));
     }
   };
 
@@ -190,8 +194,10 @@ export default function CookingCalculatorCard() {
     if (!isNaN(num)) {
       const mlValue = num * 236.588;
       setMl(mlValue.toFixed(4));
-      setTsp((mlValue / 4.92892).toFixed(4));
-      setTbsp((mlValue / 14.7868).toFixed(4));
+      // 1 cup = 48 tsp (exact conversion)
+      setTsp((num * 48).toFixed(4));
+      // 1 cup = 16 tbsp (exact conversion)
+      setTbsp((num * 16).toFixed(4));
     }
   };
 
