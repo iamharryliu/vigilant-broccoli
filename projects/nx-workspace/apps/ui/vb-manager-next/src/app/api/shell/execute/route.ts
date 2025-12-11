@@ -6,17 +6,20 @@ const execAsync = promisify(exec);
 
 export async function POST(request: NextRequest) {
   try {
-    const { command } = await request.json();
+    const { command, appName } = await request.json();
 
-    if (!command || typeof command !== 'string') {
+    const shellCommand = appName
+      ? `open -a '${appName}'`
+      : command;
+
+    if (!shellCommand || typeof shellCommand !== 'string') {
       return NextResponse.json(
-        { error: 'Invalid command provided' },
+        { error: 'Invalid command or appName provided' },
         { status: 400 }
       );
     }
 
-    // Execute the shell command
-    const { stdout, stderr } = await execAsync(command);
+    const { stdout, stderr } = await execAsync(shellCommand);
 
     return NextResponse.json({
       message: 'Command executed successfully',

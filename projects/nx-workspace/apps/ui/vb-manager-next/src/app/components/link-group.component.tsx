@@ -2,12 +2,11 @@
 
 import { Card, Flex, Text } from '@radix-ui/themes';
 
-type LinkType = 'browser' | 'shell';
+type LinkType = 'browser' | 'mac_application';
 
 interface LinkItem {
   label: string;
-  href?: string;
-  command?: string;
+  target: string;
   type: LinkType;
 }
 
@@ -16,7 +15,6 @@ interface LinkGroupProps {
   links: LinkItem[];
 }
 
-// Predefined color palette that cycles based on index
 const COLOR_PALETTE = [
   'bg-blue-600 hover:bg-blue-700',
   'bg-purple-600 hover:bg-purple-700',
@@ -33,24 +31,23 @@ const COLOR_PALETTE = [
 ];
 
 export function LinkGroupComponent({ title, links }: LinkGroupProps) {
-  // Sort links alphabetically by label
   const sortedLinks = [...links].sort((a, b) => a.label.localeCompare(b.label));
 
-  const handleShellCommand = async (command: string) => {
+  const handleOpenMacApp = async (target: string) => {
     try {
       const response = await fetch('/api/shell/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ command }),
+        body: JSON.stringify({ appName: target }),
       });
 
       if (!response.ok) {
-        console.error('Failed to execute shell command');
+        console.error('Failed to open Mac application');
       }
     } catch (error) {
-      console.error('Error executing shell command:', error);
+      console.error('Error opening Mac application:', error);
     }
   };
 
@@ -63,11 +60,11 @@ export function LinkGroupComponent({ title, links }: LinkGroupProps) {
           const colorClass = COLOR_PALETTE[index % COLOR_PALETTE.length];
           const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-sm font-medium w-fit transition-colors`;
 
-          if (link.type === 'shell' && link.command) {
+          if (link.type === 'mac_application') {
             return (
               <button
-                key={link.command}
-                onClick={() => handleShellCommand(link.command!)}
+                key={link.target}
+                onClick={() => handleOpenMacApp(link.target)}
                 className={`${baseClass} cursor-pointer`}
               >
                 {link.label}
@@ -77,8 +74,8 @@ export function LinkGroupComponent({ title, links }: LinkGroupProps) {
 
           return (
             <a
-              key={link.href}
-              href={link.href}
+              key={link.target}
+              href={link.target}
               target="_blank"
               rel="noopener noreferrer"
               className={baseClass}

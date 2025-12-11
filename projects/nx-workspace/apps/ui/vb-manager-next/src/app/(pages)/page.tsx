@@ -8,102 +8,112 @@ import { LinkGroupComponent } from '../components/link-group.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import CookingCalculatorCard from '../../components/CookingCalculatorCard';
 
+const LINK_TYPE = {
+  BROWSER: 'browser',
+  MAC_APPLICATION: 'mac_application',
+} as const;
+
 const LINKS = [
-  { label: 'Amazon', href: 'https://www.amazon.com', type: 'browser' as const },
-  { label: 'Gmail', href: 'https://mail.google.com', type: 'browser' as const },
+  { label: 'Amazon', target: 'https://www.amazon.com', type: LINK_TYPE.BROWSER },
+  { label: 'Gmail', target: 'https://mail.google.com', type: LINK_TYPE.BROWSER },
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com',
-    type: 'browser' as const,
+    target: 'https://www.linkedin.com',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'YouTube',
-    href: 'https://www.youtube.com',
-    type: 'browser' as const,
+    target: 'https://www.youtube.com',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'ChatGPT',
-    href: 'https://chat.openai.com',
-    type: 'browser' as const,
+    target: 'https://chat.openai.com',
+    type: LINK_TYPE.BROWSER,
   },
-  { label: 'Claude', href: 'https://claude.ai', type: 'browser' as const },
+  { label: 'Claude', target: 'https://claude.ai', type: LINK_TYPE.BROWSER },
   {
     label: 'Google Maps',
-    href: 'https://www.google.com/maps',
-    type: 'browser' as const,
+    target: 'https://www.google.com/maps',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Google Translate',
-    href: 'https://translate.google.com/',
-    type: 'browser' as const,
+    target: 'https://translate.google.com/',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Google Calendar',
-    href: 'https://calendar.google.com/',
-    type: 'browser' as const,
+    target: 'https://calendar.google.com/',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Google Meet',
-    href: 'https://meet.google.com/',
-    type: 'browser' as const,
+    target: 'https://meet.google.com/',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Google Drive',
-    href: 'https://drive.google.com/drive/u/0/my-drive',
-    type: 'browser' as const,
+    target: 'https://drive.google.com/drive/u/0/my-drive',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Google Contacts',
-    href: 'https://contacts.google.com/',
-    type: 'browser' as const,
+    target: 'https://contacts.google.com/',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Find My',
-    href: 'https://www.icloud.com/find/',
-    type: 'browser' as const,
+    target: 'https://www.icloud.com/find/',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Google Photos',
-    href: 'https://photos.google.com/?pli=1',
-    type: 'browser' as const,
+    target: 'https://photos.google.com/?pli=1',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Pinterest',
-    href: 'https://www.pinterest.com',
-    type: 'browser' as const,
+    target: 'https://www.pinterest.com',
+    type: LINK_TYPE.BROWSER,
   },
 ];
 
 const LEISURE_LINKS = [
   {
+    label: 'Spotify',
+    target: 'Spotify',
+    type: LINK_TYPE.MAC_APPLICATION,
+  },
+  {
     label: 'Manga',
-    href: ' https://ww2.mangafreak.me/',
-    type: 'browser' as const,
+    target: ' https://ww2.mangafreak.me/',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Draw',
-    href: 'https://ca.pinterest.com/prettydamntired/to-draw/',
-    type: 'browser' as const,
+    target: 'https://ca.pinterest.com/prettydamntired/to-draw/',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Read',
-    href: 'https://www.goodreads.com/review/list/74043883-harry?ref=nav_mybooks&shelf=to-read',
-    type: 'browser' as const,
+    target: 'https://www.goodreads.com/review/list/74043883-harry?ref=nav_mybooks&shelf=to-read',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Anime',
-    href: 'https://myanimelist.net/animelist/prettydamntired?status=6',
-    type: 'browser' as const,
+    target: 'https://myanimelist.net/animelist/prettydamntired?status=6',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Movies/Shows',
-    href: 'https://www.imdb.com/user/ur45097057/watchlist',
-    type: 'browser' as const,
+    target: 'https://www.imdb.com/user/ur45097057/watchlist',
+    type: LINK_TYPE.BROWSER,
   },
 ];
 
 const WORK_LINKS = [
-  { label: 'Slack', command: "open -a 'Slack'", type: 'shell' as const },
+  { label: 'Slack', target: 'Slack', type: LINK_TYPE.MAC_APPLICATION },
 ];
 
 export default function Page() {
