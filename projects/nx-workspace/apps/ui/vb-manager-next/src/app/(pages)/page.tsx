@@ -6,6 +6,7 @@ import { TaskListDebugComponent } from '../components/task-list-debug.component'
 import { DjDownloadComponent } from '../components/dj-download.component';
 import { LinkGroupComponent } from '../components/link-group.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
+import Calculator from '../../components/Calculator';
 
 const LINKS = [
   { label: 'Amazon', href: 'https://www.amazon.com', type: 'browser' as const },
@@ -138,6 +139,7 @@ export default function Page() {
       </div>
 
       <div className="flex flex-col gap-4">
+        <Calculator />
         <div className="border border-gray-300 rounded-lg overflow-hidden">
           {appMode === APP_MODE.PERSONAL ? (
             <iframe

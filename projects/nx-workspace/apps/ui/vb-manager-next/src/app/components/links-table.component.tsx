@@ -16,9 +16,9 @@ const FIELD_ICONS: Record<
 type ServiceUrl = {
   NAME: string;
   DASHBOARD?: string;
-  BILLING_URL?: string;
+  BILLING?: string;
   PAYMENT_HISTORY?: string;
-  USAGE_URL?: string;
+  USAGE?: string;
   STATUS?: string;
 };
 
@@ -26,61 +26,61 @@ const URLS = {
   GITHUB: {
     NAME: 'Github',
     DASHBOARD: 'https://github.com/dashboard',
-    BILLING_URL: 'https://github.com/settings/billing',
+    BILLING: 'https://github.com/settings/billing',
     PAYMENT_HISTORY: 'https://github.com/account/billing/history',
-    USAGE_URL: 'https://github.com/settings/billing/usage',
+    USAGE: 'https://github.com/settings/billing/usage',
     STATUS: 'https://www.githubstatus.com/',
   },
   GCP: {
     NAME: 'Google Cloud Platform',
     DASHBOARD:
       'https://console.cloud.google.com/home/dashboard?project=vigilant-broccoli',
-    BILLING_URL: 'https://console.cloud.google.com/billing',
+    BILLING: 'https://console.cloud.google.com/billing',
     STATUS: 'https://status.cloud.google.com/',
   },
   OPENAI: {
     NAME: 'OpenAI',
     DASHBOARD: 'https://platform.openai.com/chat',
-    BILLING_URL:
+    BILLING:
       'https://platform.openai.com/settings/organization/billing/overview',
     PAYMENT_HISTORY:
       'https://platform.openai.com/settings/organization/billing/history',
-    USAGE_URL: 'https://platform.openai.com/settings/organization/usage',
+    USAGE: 'https://platform.openai.com/settings/organization/usage',
     STATUS: 'https://status.openai.com/',
   },
   FLYIO: {
     NAME: 'Fly.io',
     DASHBOARD: 'https://fly.io/dashboard',
-    BILLING_URL: 'https://fly.io/dashboard/personal/billing',
+    BILLING: 'https://fly.io/dashboard/personal/billing',
     // Requires clicking manage billing
     PAYMENT_HISTORY: 'https://fly.io/dashboard/harry-560/billing',
-    USAGE_URL: 'https://fly.io/dashboard/harry-560/usage',
+    USAGE: 'https://fly.io/dashboard/harry-560/usage',
     STATUS: 'https://fly.io/dashboard/harry-560/status',
   },
   CLOUDFLARE: {
     NAME: 'Cloudflare',
     DASHBOARD:
       'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/home/domains',
-    BILLING_URL:
+    BILLING:
       'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing',
     PAYMENT_HISTORY:
       'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing',
-    USAGE_URL:
+    USAGE:
       'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing/billable-usage',
     STATUS: 'https://www.cloudflarestatus.com/',
   },
   TWILIO: {
     NAME: 'Twilio',
-    BILLING_URL:
+    BILLING:
       'https://console.twilio.com/us1/billing/manage-billing/billing-overview',
     PAYMENT_HISTORY: '',
-    USAGE_URL:
+    USAGE:
       'https://console.twilio.com/us1/billing/manage-billing/billing-overview?frameUrl=/console/usage',
     STATUS: 'https://status.twilio.com/',
   },
   OPENWEATHER: {
     NAME: 'OpenWeather',
-    BILLING_URL: 'https://home.openweathermap.org/subscriptions',
+    BILLING: 'https://home.openweathermap.org/subscriptions',
     DASHBOARD: 'https://home.openweathermap.org/myservices',
     PAYMENT_HISTORY: 'https://home.openweathermap.org/payments',
     STATUS: 'https://openweathermap.org/',
@@ -88,10 +88,16 @@ const URLS = {
   TERRAFORM: {
     NAME: 'Terraform Cloud',
     DASHBOARD: 'https://app.terraform.io/app/vigilant-broccoli/workspaces',
-    BILLING_URL:
-      'https://app.terraform.io/app/vigilant-broccoli/settings/billing',
-    USAGE_URL: 'https://app.terraform.io/app/vigilant-broccoli/usage',
+    BILLING: 'https://app.terraform.io/app/vigilant-broccoli/settings/billing',
+    USAGE: 'https://app.terraform.io/app/vigilant-broccoli/usage',
     STATUS: 'https://status.hashicorp.com/',
+  },
+  CLAUDE: {
+    NAME: 'Claude',
+    BILLING: 'https://claude.ai/settings/billing',
+    PAYMENT_HISTORY: 'https://claude.ai/settings/billing',
+    USAGE: 'https://claude.ai/settings/usage',
+    STATUS: 'https://status.claude.com/',
   },
 } as Record<string, ServiceUrl>;
 
@@ -157,9 +163,9 @@ export const LinksTable = () => {
                 </Text>
               </Table.RowHeaderCell>
               <TableLinkCell url={service.DASHBOARD} label="View" />
-              <TableLinkCell url={service.BILLING_URL} label="View" />
+              <TableLinkCell url={service.BILLING} label="View" />
               <TableLinkCell url={service.PAYMENT_HISTORY} label="View" />
-              <TableLinkCell url={service.USAGE_URL} label="View" />
+              <TableLinkCell url={service.USAGE} label="View" />
               <TableLinkCell url={service.STATUS} label="Check" />
             </Table.Row>
           ))}
