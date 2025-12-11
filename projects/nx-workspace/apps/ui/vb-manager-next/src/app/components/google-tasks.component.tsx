@@ -490,7 +490,7 @@ UnauthenticatedView.displayName = 'UnauthenticatedView';
 // eslint-disable-next-line complexity
 export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListId?: string } = {}) => {
   const { data: session, status } = useSession();
-  const taskListId = propTaskListId || process.env.NEXT_PUBLIC_GOOGLE_TASK_LIST_ID || '@default';
+  const taskListId = propTaskListId || '@default';
   const { taskListName, authError: titleAuthError } = useTaskListName(taskListId, status);
   const { tasks, loading, error, fetchTasks, createTask, toggleTaskComplete, deleteTask, updateTask } = useTasks(taskListId);
   const [sortMode, setSortMode] = useSortModeStorage(taskListId);

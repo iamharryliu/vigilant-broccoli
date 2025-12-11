@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Table, Flex, Text } from '@radix-ui/themes';
+import { Table, Flex, Text } from '@radix-ui/themes';
 
 const FIELD_ICONS: Record<
   string,
@@ -52,8 +52,7 @@ const URLS = {
     NAME: 'Fly.io',
     DASHBOARD: 'https://fly.io/dashboard',
     BILLING: 'https://fly.io/dashboard/personal/billing',
-    // Requires clicking manage billing
-    PAYMENT_HISTORY: 'https://fly.io/dashboard/harry-560/billing',
+    PAYMENT_HISTORY: 'https://fly.io/dashboard/personal/billing',
     USAGE: 'https://fly.io/dashboard/harry-560/usage',
     STATUS: 'https://fly.io/dashboard/harry-560/status',
   },
@@ -98,6 +97,12 @@ const URLS = {
     PAYMENT_HISTORY: 'https://claude.ai/settings/billing',
     USAGE: 'https://claude.ai/settings/usage',
     STATUS: 'https://status.claude.com/',
+  },
+  ROBOFLOW: {
+    NAME: 'Roboflow',
+    BILLING: 'https://app.roboflow.com/vigilantbroccoli/settings/plan',
+    PAYMENT_HISTORY: 'https://app.roboflow.com/vigilantbroccoli/settings/plan',
+    USAGE: 'https://app.roboflow.com/vigilantbroccoli/settings/usage',
   },
 } as Record<string, ServiceUrl>;
 

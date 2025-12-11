@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import * as Collapsible from '@radix-ui/react-collapsible';
 
 export default function CookingCalculatorCard() {
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   // Conversion states
   const [kg, setKg] = useState('');
@@ -255,137 +257,153 @@ export default function CookingCalculatorCard() {
       </div>
 
       {/* Cooking Conversions Section */}
-      <div className="flex flex-col gap-4">
-        <h3 className="text-sm font-semibold text-gray-700 border-t pt-4">
-          Cooking Conversions
-        </h3>
+      <Collapsible.Root
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        className="border-t pt-4"
+      >
+        <Collapsible.Trigger asChild>
+          <button
+            className="flex items-center justify-between w-full mb-4 group cursor-pointer"
+            aria-label={isOpen ? 'Collapse' : 'Expand'}
+          >
+            <h3 className="text-sm font-semibold text-gray-700">
+              Cooking Conversions
+            </h3>
+            <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
+              {isOpen ? '▲' : '▼'}
+            </span>
+          </button>
+        </Collapsible.Trigger>
 
-        {/* Weight: kg, lb */}
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <label className="block text-xs text-gray-600 mb-1">kg</label>
-            <input
-              type="number"
-              value={kg}
-              onChange={(e) => handleKgChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
+        <Collapsible.Content className="flex flex-col gap-4">
+          {/* Weight: kg, lb */}
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className="block text-xs text-gray-600 mb-1">kg</label>
+              <input
+                type="number"
+                value={kg}
+                onChange={(e) => handleKgChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs text-gray-600 mb-1">lb</label>
+              <input
+                type="number"
+                value={lb}
+                onChange={(e) => handleLbChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
           </div>
-          <div className="flex-1">
-            <label className="block text-xs text-gray-600 mb-1">lb</label>
-            <input
-              type="number"
-              value={lb}
-              onChange={(e) => handleLbChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
-          </div>
-        </div>
 
-        {/* Weight: g, ounce */}
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <label className="block text-xs text-gray-600 mb-1">g</label>
-            <input
-              type="number"
-              value={g}
-              onChange={(e) => handleGChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
+          {/* Weight: g, ounce */}
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className="block text-xs text-gray-600 mb-1">g</label>
+              <input
+                type="number"
+                value={g}
+                onChange={(e) => handleGChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs text-gray-600 mb-1">oz</label>
+              <input
+                type="number"
+                value={oz}
+                onChange={(e) => handleOzChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
           </div>
-          <div className="flex-1">
-            <label className="block text-xs text-gray-600 mb-1">oz</label>
-            <input
-              type="number"
-              value={oz}
-              onChange={(e) => handleOzChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
-          </div>
-        </div>
 
-        {/* Volume: ml, tsp, tbsp, cup */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">ml</label>
-            <input
-              type="number"
-              value={ml}
-              onChange={(e) => handleMlChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
+          {/* Volume: ml, tsp, tbsp, cup */}
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">ml</label>
+              <input
+                type="number"
+                value={ml}
+                onChange={(e) => handleMlChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">tsp</label>
+              <input
+                type="number"
+                value={tsp}
+                onChange={(e) => handleTspChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">tbsp</label>
+              <input
+                type="number"
+                value={tbsp}
+                onChange={(e) => handleTbspChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">cup</label>
+              <input
+                type="number"
+                value={cup}
+                onChange={(e) => handleCupChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">tsp</label>
-            <input
-              type="number"
-              value={tsp}
-              onChange={(e) => handleTspChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">tbsp</label>
-            <input
-              type="number"
-              value={tbsp}
-              onChange={(e) => handleTbspChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">cup</label>
-            <input
-              type="number"
-              value={cup}
-              onChange={(e) => handleCupChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
-          </div>
-        </div>
 
-        {/* Length: mm, cm, inch */}
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <label className="block text-xs text-gray-600 mb-1">mm</label>
-            <input
-              type="number"
-              value={mm}
-              onChange={(e) => handleMmChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
+          {/* Length: mm, cm, inch */}
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className="block text-xs text-gray-600 mb-1">mm</label>
+              <input
+                type="number"
+                value={mm}
+                onChange={(e) => handleMmChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs text-gray-600 mb-1">cm</label>
+              <input
+                type="number"
+                value={cm}
+                onChange={(e) => handleCmChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs text-gray-600 mb-1">inch</label>
+              <input
+                type="number"
+                value={inch}
+                onChange={(e) => handleInchChange(e.target.value)}
+                placeholder="0"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
           </div>
-          <div className="flex-1">
-            <label className="block text-xs text-gray-600 mb-1">cm</label>
-            <input
-              type="number"
-              value={cm}
-              onChange={(e) => handleCmChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-xs text-gray-600 mb-1">inch</label>
-            <input
-              type="number"
-              value={inch}
-              onChange={(e) => handleInchChange(e.target.value)}
-              placeholder="0"
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-            />
-          </div>
-        </div>
-      </div>
+        </Collapsible.Content>
+      </Collapsible.Root>
     </div>
   );
 }
