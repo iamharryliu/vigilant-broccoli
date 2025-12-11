@@ -8,7 +8,7 @@ import { LinkGroupComponent } from '../components/link-group.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import CookingCalculatorCard from '../../components/CookingCalculatorCard';
 
-const LINK_TYPE = {
+export const LINK_TYPE = {
   BROWSER: 'browser',
   MAC_APPLICATION: 'mac_application',
 } as const;

@@ -1,8 +1,9 @@
 'use client';
 
 import { Card, Flex, Text } from '@radix-ui/themes';
+import { LINK_TYPE } from '../(pages)/page';
 
-type LinkType = 'browser' | 'mac_application';
+type LinkType = typeof LINK_TYPE[keyof typeof LINK_TYPE];
 
 interface LinkItem {
   label: string;
@@ -60,7 +61,7 @@ export function LinkGroupComponent({ title, links }: LinkGroupProps) {
           const colorClass = COLOR_PALETTE[index % COLOR_PALETTE.length];
           const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-sm font-medium w-fit transition-colors`;
 
-          if (link.type === 'mac_application') {
+          if (link.type === LINK_TYPE.MAC_APPLICATION) {
             return (
               <button
                 key={link.target}
