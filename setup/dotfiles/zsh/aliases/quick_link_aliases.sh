@@ -6,14 +6,15 @@ alias chromeExtensions='chrome "chrome://extensions/"'
 
 
 # Utility
-alias google="~/shell-scripts/google_search.sh"
+alias google="~/shell-scripts/web_search.sh google"
 alias gmaps='chrome "https://www.google.com/maps"'
 alias chatgpt='function _gptquery() { local query=$(echo "$*" | sed "s/ /%20/g"); open "https://chatgpt.com/?q=${query}"; }; _gptquery'
 alias claudeai='open https://claude.ai'
-alias youtube="~/shell-scripts/youtube_search.sh"
+alias youtube="~/shell-scripts/web_search.sh youtube"
+alias reddit="~/shell-scripts/web_search.sh reddit"
 alias gtranslate='chrome "https://translate.google.com/"'
-alias pinterest="~/shell-scripts/pinterest_search.sh"
-alias amazon="~/shell-scripts/amazon_search.sh"
+alias pinterest="~/shell-scripts/web_search.sh pinterest"
+alias amazon="~/shell-scripts/web_search.sh amazon"
 alias karmanow='chrome "https://www.karmanow.com/my-items"'
 alias numi='open -a "Numi"'
 alias openspeedtest="chrome 'https://www.speedtest.net/'"
