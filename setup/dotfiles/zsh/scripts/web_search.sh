@@ -27,6 +27,10 @@ case "$site" in
         base_url="https://www.pinterest.com/"
         search_url="https://www.pinterest.com/search/pins/?q="
         ;;
+    chatgpt)
+        base_url="https://chatgpt.com/"
+        search_url="https://chatgpt.com/?q="
+        ;;
     *)
         echo "Unknown site: $site"
         exit 1
@@ -36,6 +40,11 @@ esac
 if [ -z "$1" ]; then
     open "$base_url"
 else
-    search_query=$(echo "$*" | sed 's/ /+/g')
+    # Use %20 for chatgpt, + for others
+    if [ "$site" = "chatgpt" ]; then
+        search_query=$(echo "$*" | sed 's/ /%20/g')
+    else
+        search_query=$(echo "$*" | sed 's/ /+/g')
+    fi
     open "${search_url}${search_query}"
 fi
