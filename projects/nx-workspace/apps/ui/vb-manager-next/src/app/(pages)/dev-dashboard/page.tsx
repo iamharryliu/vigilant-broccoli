@@ -7,56 +7,57 @@ import { GithubTeamManager } from '../../components/github-manager.component';
 import { LinkGroupComponent } from '../../components/link-group.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
+import { LINK_TYPE } from '../page';
 
 const DEV_LINKS = [
   {
     label: 'GCP',
-    href: 'https://console.cloud.google.com',
-    type: 'browser' as const,
+    target: 'https://console.cloud.google.com',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Cron Guru',
-    href: 'https://crontab.guru/',
-    type: 'browser' as const,
+    target: 'https://crontab.guru/',
+    type: LINK_TYPE.BROWSER,
   },
-  { label: 'GitHub', href: 'https://github.com', type: 'browser' as const },
+  { label: 'GitHub', target: 'https://github.com', type: LINK_TYPE.BROWSER },
   {
     label: 'GitHub Tokens',
-    href: 'https://github.com/settings/personal-access-tokens',
-    type: 'browser' as const,
+    target: 'https://github.com/settings/personal-access-tokens',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'MongoDB Console',
-    href: 'https://cloud.mongodb.com/v2/',
-    type: 'browser' as const,
+    target: 'https://cloud.mongodb.com/v2/',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'Google Analytics',
-    href: 'https://analytics.google.com/analytics/',
-    type: 'browser' as const,
+    target: 'https://analytics.google.com/analytics/',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'reCAPTCHA Admin',
-    href: 'https://www.google.com/recaptcha/admin/',
-    type: 'browser' as const,
+    target: 'https://www.google.com/recaptcha/admin/',
+    type: LINK_TYPE.BROWSER,
   },
 ];
 
 const VB_LINKS = [
   {
     label: 'NPM Packages',
-    href: 'https://www.npmjs.com/settings/vigilant-broccoli/packages',
-    type: 'browser' as const,
+    target: 'https://www.npmjs.com/settings/vigilant-broccoli/packages',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'GitHub Repo',
-    href: 'https://github.com/iamharryliu/vigilant-broccoli',
-    type: 'browser' as const,
+    target: 'https://github.com/iamharryliu/vigilant-broccoli',
+    type: LINK_TYPE.BROWSER,
   },
   {
     label: 'GitHub Actions',
-    href: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
-    type: 'browser' as const,
+    target: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
+    type: LINK_TYPE.BROWSER,
   },
 ];
 
