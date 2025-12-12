@@ -14,6 +14,7 @@ interface LinkItem {
 interface LinkGroupProps {
   title: string;
   links: LinkItem[];
+  alphabetical?: boolean;
 }
 
 const COLOR_PALETTE = [
@@ -31,8 +32,10 @@ const COLOR_PALETTE = [
   'bg-rose-600 hover:bg-rose-700',
 ];
 
-export function LinkGroupComponent({ title, links }: LinkGroupProps) {
-  const sortedLinks = [...links].sort((a, b) => a.label.localeCompare(b.label));
+export function LinkGroupComponent({ title, links, alphabetical = true }: LinkGroupProps) {
+  const sortedLinks = alphabetical
+    ? [...links].sort((a, b) => a.label.localeCompare(b.label))
+    : links;
 
   const handleOpenMacApp = async (target: string) => {
     try {

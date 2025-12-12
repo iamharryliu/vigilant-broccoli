@@ -50,9 +50,17 @@ const TableLinkCell = ({ url, label }: { url?: string; label: string }) => {
 
 type ServiceLinksTableProps = {
   services: Record<string, ServiceUrl>;
+  alphabetical?: boolean; 
 };
 
-export const ServiceLinksTable = ({ services }: ServiceLinksTableProps) => {
+export const ServiceLinksTable = ({
+  services,
+  alphabetical = true
+}: ServiceLinksTableProps) => {
+  const sortedServices = alphabetical
+    ? Object.values(services).sort((a, b) => a.NAME.localeCompare(b.NAME))
+    : Object.values(services);
+
   return (
     <div className="overflow-x-auto">
       <Table.Root variant="surface">
@@ -77,7 +85,7 @@ export const ServiceLinksTable = ({ services }: ServiceLinksTableProps) => {
         </Table.Header>
 
         <Table.Body>
-          {Object.values(services).map(service => (
+          {sortedServices.map(service => (
             <Table.Row
               key={service.NAME}
               className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
