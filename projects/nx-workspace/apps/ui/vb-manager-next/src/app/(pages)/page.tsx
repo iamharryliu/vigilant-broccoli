@@ -14,32 +14,9 @@ export const LINK_TYPE = {
 } as const;
 
 const LINKS = [
-  { label: 'Amazon', target: 'https://www.amazon.com', type: LINK_TYPE.BROWSER },
-  { label: 'Gmail', target: 'https://mail.google.com', type: LINK_TYPE.BROWSER },
   {
-    label: 'LinkedIn',
-    target: 'https://www.linkedin.com',
-    type: LINK_TYPE.BROWSER,
-  },
-  {
-    label: 'YouTube',
-    target: 'https://www.youtube.com',
-    type: LINK_TYPE.BROWSER,
-  },
-  {
-    label: 'ChatGPT',
-    target: 'https://chat.openai.com',
-    type: LINK_TYPE.BROWSER,
-  },
-  { label: 'Claude', target: 'https://claude.ai', type: LINK_TYPE.BROWSER },
-  {
-    label: 'Google Maps',
-    target: 'https://www.google.com/maps',
-    type: LINK_TYPE.BROWSER,
-  },
-  {
-    label: 'Google Translate',
-    target: 'https://translate.google.com/',
+    label: 'Gmail',
+    target: 'https://mail.google.com',
     type: LINK_TYPE.BROWSER,
   },
   {
@@ -52,9 +29,35 @@ const LINKS = [
     target: 'https://meet.google.com/',
     type: LINK_TYPE.BROWSER,
   },
+];
+
+const CONTENT_LINKS = [
   {
-    label: 'Google Drive',
-    target: 'https://drive.google.com/drive/u/0/my-drive',
+    label: 'Amazon',
+    target: 'https://www.amazon.com',
+    type: LINK_TYPE.BROWSER,
+  },
+  {
+    label: 'YouTube',
+    target: 'https://www.youtube.com',
+    type: LINK_TYPE.BROWSER,
+  },
+  {
+    label: 'Pinterest',
+    target: 'https://www.pinterest.com',
+    type: LINK_TYPE.BROWSER,
+  },
+  {
+    label: 'LinkedIn',
+    target: 'https://www.linkedin.com',
+    type: LINK_TYPE.BROWSER,
+  },
+];
+
+const UTILITY_LINKS = [
+  {
+    label: 'Google Photos',
+    target: 'https://photos.google.com/?pli=1',
     type: LINK_TYPE.BROWSER,
   },
   {
@@ -63,18 +66,29 @@ const LINKS = [
     type: LINK_TYPE.BROWSER,
   },
   {
+    label: 'Google Drive',
+    target: 'https://drive.google.com/drive/u/0/my-drive',
+    type: LINK_TYPE.BROWSER,
+  },
+  {
+    label: 'Google Maps',
+    target: 'https://www.google.com/maps',
+    type: LINK_TYPE.BROWSER,
+  },
+  {
+    label: 'Google Translate',
+    target: 'https://translate.google.com/',
+    type: LINK_TYPE.BROWSER,
+  },
+  {
+    label: 'ChatGPT',
+    target: 'https://chat.openai.com',
+    type: LINK_TYPE.BROWSER,
+  },
+  { label: 'Claude', target: 'https://claude.ai', type: LINK_TYPE.BROWSER },
+  {
     label: 'Find My',
     target: 'https://www.icloud.com/find/',
-    type: LINK_TYPE.BROWSER,
-  },
-  {
-    label: 'Google Photos',
-    target: 'https://photos.google.com/?pli=1',
-    type: LINK_TYPE.BROWSER,
-  },
-  {
-    label: 'Pinterest',
-    target: 'https://www.pinterest.com',
     type: LINK_TYPE.BROWSER,
   },
 ];
@@ -97,7 +111,8 @@ const LEISURE_LINKS = [
   },
   {
     label: 'Read',
-    target: 'https://www.goodreads.com/review/list/74043883-harry?ref=nav_mybooks&shelf=to-read',
+    target:
+      'https://www.goodreads.com/review/list/74043883-harry?ref=nav_mybooks&shelf=to-read',
     type: LINK_TYPE.BROWSER,
   },
   {
@@ -136,7 +151,9 @@ export default function Page() {
         <WeatherComponent />
       </div>
       <div className="flex flex-col gap-4">
-        <LinkGroupComponent title="Personal" links={LINKS} />
+        <LinkGroupComponent title="Services" links={LINKS} />
+        <LinkGroupComponent title="Content" links={CONTENT_LINKS} />
+        <LinkGroupComponent title="Utility" links={UTILITY_LINKS} />
         {appMode === APP_MODE.PERSONAL && (
           <>
             <LinkGroupComponent title="Leisure" links={LEISURE_LINKS} />
