@@ -3,7 +3,7 @@
 import { Card, Flex, Text } from '@radix-ui/themes';
 import { LINK_TYPE } from '../(pages)/page';
 
-type LinkType = typeof LINK_TYPE[keyof typeof LINK_TYPE];
+type LinkType = (typeof LINK_TYPE)[keyof typeof LINK_TYPE];
 
 interface LinkItem {
   label: string;
@@ -34,7 +34,12 @@ const COLOR_PALETTE = [
   'bg-rose-600 hover:bg-rose-700',
 ];
 
-export function LinkGroupComponent({ title, links, alphabetical = true, alphabeticalSubgroups = true }: LinkGroupProps) {
+export function LinkGroupComponent({
+  title,
+  links,
+  alphabetical = true,
+  alphabeticalSubgroups = true,
+}: LinkGroupProps) {
   const subgroupOrder: string[] = [];
   links.forEach(link => {
     if (link.subgroup && !subgroupOrder.includes(link.subgroup)) {
@@ -82,7 +87,7 @@ export function LinkGroupComponent({ title, links, alphabetical = true, alphabet
 
   const renderLink = (link: LinkItem, index: number) => {
     const colorClass = COLOR_PALETTE[index % COLOR_PALETTE.length];
-    const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-sm font-medium w-fit transition-colors`;
+    const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-xs font-medium w-fit transition-colors`;
 
     if (link.type === LINK_TYPE.MAC_APPLICATION) {
       return (
@@ -112,7 +117,9 @@ export function LinkGroupComponent({ title, links, alphabetical = true, alphabet
   return (
     <Card className="w-full">
       <Flex direction="column" gap="3" p="4">
-        <Text size="5" weight="bold">{title}</Text>
+        <Text size="5" weight="bold">
+          {title}
+        </Text>
 
         {itemsWithoutSubgroup.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -122,7 +129,9 @@ export function LinkGroupComponent({ title, links, alphabetical = true, alphabet
 
         {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
           <div key={subgroupName}>
-            <Text size="3" weight="medium" className="mb-2">{subgroupName}</Text>
+            <Text size="3" weight="medium" className="mb-2">
+              {subgroupName}
+            </Text>
             <div className="flex flex-wrap gap-2">
               {subgroupLinks.map((link, index) => renderLink(link, index))}
             </div>

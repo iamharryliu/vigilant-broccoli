@@ -9,7 +9,7 @@ import { AppModeProvider } from './app-mode-context';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const { appearance } = useTheme();
-  return <Theme appearance={appearance}>{children}</Theme>;
+  return <Theme appearance={appearance} scaling="90%">{children}</Theme>;
 }
 
 export default function RootLayout({

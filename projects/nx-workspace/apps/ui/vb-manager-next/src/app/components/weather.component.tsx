@@ -107,7 +107,7 @@ export const WeatherComponent = () => {
           });
 
           const forecastDays = Object.entries(dailyForecasts)
-            .slice(0, 4)
+            .slice(0, 2)
             .map(([date, data]) => ({
               day: getDayName(date),
               tempHigh: Math.round(Math.max(...data.temps)),
@@ -161,9 +161,9 @@ export const WeatherComponent = () => {
 
         {weatherData.map((cityWeather) => (
           <Box key={cityWeather.city}>
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-4 gap-4">
               <div className="flex flex-col justify-start pt-6">
-                <Text size="2" weight="bold" className="text-gray-700">
+                <Text size="1" weight="bold" className="text-gray-700">
                   {cityWeather.city}
                 </Text>
                 <Text size="1" className="text-gray-500">
@@ -177,7 +177,7 @@ export const WeatherComponent = () => {
                 <Text size="3" weight="bold">{cityWeather.now.temp}°C</Text>
               </div>
 
-              {cityWeather.forecast.slice(0, 3).map((day, idx) => (
+              {cityWeather.forecast.map((day, idx) => (
                 <div key={idx} className="flex flex-col items-center">
                   <Text size="1" className="mb-2 text-gray-600">{day.day}</Text>
                   <div className="text-3xl mb-2">{getWeatherIcon(day.icon)}</div>
