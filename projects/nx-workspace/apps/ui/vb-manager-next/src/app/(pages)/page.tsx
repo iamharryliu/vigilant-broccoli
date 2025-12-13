@@ -177,7 +177,7 @@ export default function Page() {
           ) : (
             <iframe
               src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FStockholm&showPrint=0&mode=AGENDA&src=aGFycnkubGl1QGVsdmExMS5zZQ&src=Y182M2M5YjM0YmIyYzczNzFkZjA0YmU4ZTRlNDIyZmQ5NWJkM2E0MzkwMzc3NzFjZWE3M2I2NzRiMmUxNmE1YjBjQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZW4tZ2Iuc3dlZGlzaCNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039be5&color=%23d81b60&color=%230b8043"
-              className="w-full h-[600px]"
+              className="w-full h-[600px] dark:invert dark:hue-rotate-180"
               style={{ minHeight: '400px' }}
             />
           )}
