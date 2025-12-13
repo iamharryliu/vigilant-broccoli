@@ -21,6 +21,8 @@ export default function CookingCalculatorCard() {
   const [mm, setMm] = useState('');
   const [cm, setCm] = useState('');
   const [inch, setInch] = useState('');
+  const [fahrenheit, setFahrenheit] = useState('');
+  const [celsius, setCelsius] = useState('');
 
   // eslint-disable-next-line complexity
   const evaluateExpression = (expression: string) => {
@@ -244,6 +246,32 @@ export default function CookingCalculatorCard() {
     }
   };
 
+  const handleFahrenheitChange = (value: string) => {
+    setFahrenheit(value);
+    if (value === '') {
+      setCelsius('');
+      return;
+    }
+    const num = parseFloat(value);
+    if (!isNaN(num)) {
+      // °C = (°F - 32) × 5/9
+      setCelsius(((num - 32) * 5 / 9).toFixed(2));
+    }
+  };
+
+  const handleCelsiusChange = (value: string) => {
+    setCelsius(value);
+    if (value === '') {
+      setFahrenheit('');
+      return;
+    }
+    const num = parseFloat(value);
+    if (!isNaN(num)) {
+      // °F = °C × 9/5 + 32
+      setFahrenheit((num * 9 / 5 + 32).toFixed(2));
+    }
+  };
+
   return (
     <Card className="w-full">
       <Flex direction="column" gap="3" p="4">
@@ -403,6 +431,30 @@ export default function CookingCalculatorCard() {
                   type="number"
                   value={inch}
                   onChange={(e) => handleInchChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+            </Flex>
+
+            {/* Temperature: Fahrenheit, Celsius */}
+            <Flex gap="2">
+              <Flex direction="column" gap="1" className="flex-1">
+                <Text size="1" color="gray">°F</Text>
+                <TextField.Root
+                  type="number"
+                  value={fahrenheit}
+                  onChange={(e) => handleFahrenheitChange(e.target.value)}
+                  placeholder="0"
+                  size="1"
+                />
+              </Flex>
+              <Flex direction="column" gap="1" className="flex-1">
+                <Text size="1" color="gray">°C</Text>
+                <TextField.Root
+                  type="number"
+                  value={celsius}
+                  onChange={(e) => handleCelsiusChange(e.target.value)}
                   placeholder="0"
                   size="1"
                 />

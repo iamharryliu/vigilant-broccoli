@@ -59,6 +59,12 @@ const VB_LINKS = [
     target: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
     type: LINK_TYPE.BROWSER,
   },
+  {
+    label: 'GCP API Credentials',
+    target:
+      'https://console.cloud.google.com/apis/credentials?project=vigilant-broccoli',
+    type: LINK_TYPE.BROWSER,
+  },
 ];
 
 const LINKS = [
@@ -70,14 +76,18 @@ export default function Page() {
   return (
     <div className="grid grid-cols-4 gap-4 h-full">
       <div className="flex flex-col gap-4">
-         <GithubTeamManager />
+        <GithubTeamManager />
       </div>
       <div className="flex flex-col gap-4">
         <GithubRepoActionStatusBadges repoUrl="https://github.com/iamharryliu/vigilant-broccoli" />
         <FlyIoAppsComponent />
       </div>
       <div className="flex flex-col gap-4">
-        <LinkGroupComponent title="Links" links={LINKS} alphabeticalSubgroups={false} />
+        <LinkGroupComponent
+          title="Links"
+          links={LINKS}
+          alphabeticalSubgroups={false}
+        />
       </div>
       <div className="flex flex-col gap-4">
         <PublicIpComponent />
