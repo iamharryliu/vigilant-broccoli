@@ -13,7 +13,9 @@ npx expo run:ios # simulator/device
 npx expo run:android # simulator/device
 # Scan QR code with phone to access mobile application.
 
-
+# Debug
+sudo pkill usbmuxd
 ```
+
 
 - EAS (Expo Application Services)

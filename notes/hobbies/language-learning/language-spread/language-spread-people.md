@@ -1,7 +1,7 @@
 # Language Spread People
 
-| English     | Swedish         | French        |
-| :---------- | :-------------- | :------------ |
+| English     | Swedish         | French        | Spanish |
+| :---------- | :-------------- | :------------ | :------ |
 | grandfather | farfar/morfar   | grand-père    |
 | grandmother | farmor/mormor   | grand-mère    |
 | parents     | förälder        | parente       |
@@ -17,6 +17,6 @@
 | daughter    | dotter          | fille         |
 | grandchild  | barnbarn        | petit enfant  |
 | step-       | styv-           |               |
-| husband     | man             |               |
-| wife        | fru             |               |
-| neighbor    | granne          |
+| husband     | man             | mari          |
+| wife        | fru             | femme         | mujer   |
+| neighbor    | granne          | voisin(e)     |

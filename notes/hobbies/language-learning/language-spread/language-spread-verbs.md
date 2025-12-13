@@ -10,7 +10,7 @@
 | to try             | att prova          | essayer       | probar       |           |         |
 | to eat             | att äta            | manger        | comer        |           |         |
 | to drink           | att dricka         | boire         | beber        |           |         |
-| to make            | att göra           | faire         | hacer        |           |         |
+| to make/do         | att göra           | faire         | hacer        |           |         |
 | to change          | att ändra          | changer       | cambiar      |           |         |
 | to need            | att behova         |               |              |           |         |
 | to order           | att beställa       | commander     | pedir        |           |         |
@@ -75,3 +75,8 @@
 | it was             | var                | c'etait       | estuvo /fue? |           |         |
 | to win             | att vinna          |
 | to lose            | att förlora        |
+| to return          | att återvända      | revenir       |
+| to write           | att skriva         | écrire        |
+| to put             | att sätta          | mettre        |
+| to tell            | att berätta        | dire          |
+
