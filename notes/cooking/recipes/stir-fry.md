@@ -1,5 +1,27 @@
 # Stir Fry Recipes
 
+## Vegetable Choices
+
+- Firm / longer-cooking vegetables
+  Carrots
+  Bok choy
+  Red and green bell peppers
+  Zucchini
+  Broccoli
+  Baby corn
+  Onions
+- Soft / moisture-heavy vegetables
+  Yellow squash
+  Cabbage
+  Mushrooms
+- Tender but crisp vegetables
+  - Green Beans
+  - Snap peas
+- Topping
+  - Scallions
+  - Garlic
+  - Ginger
+
 ## Recipe 1
 
 ### Ingredients
