@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Flex, Text, Badge } from '@radix-ui/themes';
+import { Card, Flex, Text, Badge, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 
@@ -19,6 +19,22 @@ export const WireguardStatusComponent = () => {
   const [wgStatus, setWgStatus] = useState<WireguardStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  const handleCopyCommand = async (connection: WireguardConnection, index: number) => {
+    const configName = connection.name.replace('.conf', '');
+    const command = connection.status === 'active'
+      ? `sudo wg-quick down ${configName}`
+      : `sudo wg-quick up ${configName}`;
+
+    try {
+      await navigator.clipboard.writeText(command);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy command:', err);
+    }
+  };
 
   useEffect(() => {
     const fetchWireguardStatus = async () => {
@@ -67,13 +83,22 @@ export const WireguardStatusComponent = () => {
           <Flex direction="column" gap="3">
             {wgStatus.connections.map((conn, idx) => (
               <Flex key={idx} direction="column" gap="2" className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
-                <Flex align="center" gap="2">
-                  <Badge color={conn.status === 'active' ? 'green' : 'gray'} size="2">
-                    {conn.status === 'active' ? 'Active' : 'Inactive'}
-                  </Badge>
-                  <Text size="3" weight="bold" className="text-gray-700">
-                    {conn.name.replace('.conf', '')}
-                  </Text>
+                <Flex align="center" gap="2" justify="between">
+                  <Flex align="center" gap="2">
+                    <Badge color={conn.status === 'active' ? 'green' : 'gray'} size="2">
+                      {conn.status === 'active' ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <Text size="3" weight="bold" className="text-gray-700">
+                      {conn.name.replace('.conf', '')}
+                    </Text>
+                  </Flex>
+                  <Button
+                    size="1"
+                    variant="soft"
+                    onClick={() => handleCopyCommand(conn, idx)}
+                  >
+                    {copiedIndex === idx ? 'Copied!' : `Copy ${conn.status === 'active' ? 'Down' : 'Up'} Command`}
+                  </Button>
                 </Flex>
 
                 {conn.status === 'active' && (
