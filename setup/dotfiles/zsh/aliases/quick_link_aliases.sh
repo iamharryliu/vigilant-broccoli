@@ -44,20 +44,6 @@ alias openWhatsApp="open -a 'WhatsApp'"
 alias openSlack="open -a 'Slack'"
 alias openSlackBrowser="chrome 'https://app.slack.com/client/'"
 
-# Learning
-alias udemy='chrome "https://www.udemy.com/"'
-alias memrise='chrome "https://app.memrise.com/dashboard"'
-alias communitymemrise='chrome "https://community-courses.memrise.com/dashboard"'
-alias udemyspanish='chrome "https://www.udemy.com/course/3-minute-spanish-course-5/learn"'
-alias udemyfrench='chrome "https://www.udemy.com/course/3-minute-french-course-8/learn"'
-alias languagespread="code $LANGUAGE_LEARNING_DIR/language-spread/language-spread.md"
-alias languagelearn="languagepread && gtranslate && communitymemrise && udemyspanish && udemyfrench && memrise"
-
-# Career
-alias openresume='chrome "https://docs.google.com/document/d/1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU/edit#heading=h.uzt44hq0695d"'
-alias openlinkedin='chrome "https://www.linkedin.com/jobs/"'
-alias jobhunt='openresume && openlinkedin'
-
 # Toronto
 # Toronto Alerts
 alias torontoalerts='chrome "https://torontoalerts.com/"'

@@ -61,6 +61,11 @@ const VB_LINKS = [
   },
 ];
 
+const LINKS = [
+  ...VB_LINKS.map(link => ({ ...link, subgroup: 'vigilant-broccoli' })),
+  ...DEV_LINKS.map(link => ({ ...link, subgroup: 'Dev' })),
+];
+
 export default function Page() {
   return (
     <div className="grid grid-cols-4 gap-4 h-full">
@@ -72,8 +77,7 @@ export default function Page() {
         <FlyIoAppsComponent />
       </div>
       <div className="flex flex-col gap-4">
-        <LinkGroupComponent title="VB Links" links={VB_LINKS} />
-        <LinkGroupComponent title="Dev Links" links={DEV_LINKS} />
+        <LinkGroupComponent title="Links" links={LINKS} alphabeticalSubgroups={false} />
       </div>
       <div className="flex flex-col gap-4">
         <PublicIpComponent />

@@ -13,7 +13,7 @@ export const LINK_TYPE = {
   MAC_APPLICATION: 'mac_application',
 } as const;
 
-const LINKS = [
+const QUICK_LINKS = [
   {
     label: 'Gmail',
     target: 'https://mail.google.com',
@@ -29,9 +29,6 @@ const LINKS = [
     target: 'https://meet.google.com/',
     type: LINK_TYPE.BROWSER,
   },
-];
-
-const CONTENT_LINKS = [
   {
     label: 'Amazon',
     target: 'https://www.amazon.com',
@@ -45,6 +42,15 @@ const CONTENT_LINKS = [
   {
     label: 'Pinterest',
     target: 'https://www.pinterest.com',
+    type: LINK_TYPE.BROWSER,
+  },
+];
+
+const CAREER_LINKS = [
+  {
+    label: 'Resume',
+    target:
+      'https://docs.google.com/document/d/1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU/edit#heading=h.uzt44hq0695d',
     type: LINK_TYPE.BROWSER,
   },
   {
@@ -105,26 +111,50 @@ const LEISURE_LINKS = [
     type: LINK_TYPE.BROWSER,
   },
   {
-    label: 'Draw',
+    label: 'To Draw',
     target: 'https://ca.pinterest.com/prettydamntired/to-draw/',
     type: LINK_TYPE.BROWSER,
   },
   {
-    label: 'Read',
+    label: 'To Read',
     target:
       'https://www.goodreads.com/review/list/74043883-harry?ref=nav_mybooks&shelf=to-read',
     type: LINK_TYPE.BROWSER,
   },
   {
-    label: 'Anime',
+    label: 'To Watch(Anime)',
     target: 'https://myanimelist.net/animelist/prettydamntired?status=6',
     type: LINK_TYPE.BROWSER,
   },
   {
-    label: 'Movies/Shows',
+    label: 'To Watch(Movies/Shows)',
     target: 'https://www.imdb.com/user/ur45097057/watchlist',
     type: LINK_TYPE.BROWSER,
   },
+];
+
+const LEARN_LINKS = [
+  {
+    label: 'Udemy',
+    target: 'https://www.udemy.com/',
+    type: LINK_TYPE.BROWSER,
+  },
+  {
+    label: 'Memrise',
+    target: 'https://app.memrise.com/dashboard',
+    type: LINK_TYPE.BROWSER,
+  },
+  {
+    label: 'Memrise (Community Version)',
+    target: 'https://community-courses.memrise.com/dashboard',
+    type: LINK_TYPE.BROWSER,
+  },
+];
+
+const PERSONAL_LINKS = [
+  ...LEISURE_LINKS.map(link => ({ ...link, subgroup: 'Leisure' })),
+  ...LEARN_LINKS.map(link => ({ ...link, subgroup: 'Learn' })),
+  ...CAREER_LINKS.map(link => ({ ...link, subgroup: 'Career' })),
 ];
 
 const WORK_LINKS = [
@@ -151,12 +181,11 @@ export default function Page() {
         <WeatherComponent />
       </div>
       <div className="flex flex-col gap-4">
-        <LinkGroupComponent title="Services" links={LINKS} />
-        <LinkGroupComponent title="Content" links={CONTENT_LINKS} />
+        <LinkGroupComponent title="Quick Links" links={QUICK_LINKS} />
         <LinkGroupComponent title="Utility" links={UTILITY_LINKS} />
         {appMode === APP_MODE.PERSONAL && (
           <>
-            <LinkGroupComponent title="Leisure" links={LEISURE_LINKS} />
+            <LinkGroupComponent title="Personal" links={PERSONAL_LINKS} />
             <DjDownloadComponent />
           </>
         )}

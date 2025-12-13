@@ -9,12 +9,14 @@ interface LinkItem {
   label: string;
   target: string;
   type: LinkType;
+  subgroup?: string;
 }
 
 interface LinkGroupProps {
   title: string;
   links: LinkItem[];
   alphabetical?: boolean;
+  alphabeticalSubgroups?: boolean;
 }
 
 const COLOR_PALETTE = [
@@ -32,10 +34,33 @@ const COLOR_PALETTE = [
   'bg-rose-600 hover:bg-rose-700',
 ];
 
-export function LinkGroupComponent({ title, links, alphabetical = true }: LinkGroupProps) {
+export function LinkGroupComponent({ title, links, alphabetical = true, alphabeticalSubgroups = true }: LinkGroupProps) {
+  const subgroupOrder: string[] = [];
+  links.forEach(link => {
+    if (link.subgroup && !subgroupOrder.includes(link.subgroup)) {
+      subgroupOrder.push(link.subgroup);
+    }
+  });
+
   const sortedLinks = alphabetical
     ? [...links].sort((a, b) => a.label.localeCompare(b.label))
     : links;
+
+  const itemsWithoutSubgroup = sortedLinks.filter(link => !link.subgroup);
+  const itemsWithSubgroup = sortedLinks.filter(link => link.subgroup);
+
+  const subgroups = itemsWithSubgroup.reduce((acc, link) => {
+    const group = link.subgroup!;
+    if (!acc[group]) {
+      acc[group] = [];
+    }
+    acc[group].push(link);
+    return acc;
+  }, {} as Record<string, LinkItem[]>);
+
+  const subgroupEntries = alphabeticalSubgroups
+    ? Object.entries(subgroups).sort(([a], [b]) => a.localeCompare(b))
+    : subgroupOrder.map(key => [key, subgroups[key]] as [string, LinkItem[]]);
 
   const handleOpenMacApp = async (target: string) => {
     try {
@@ -55,40 +80,54 @@ export function LinkGroupComponent({ title, links, alphabetical = true }: LinkGr
     }
   };
 
+  const renderLink = (link: LinkItem, index: number) => {
+    const colorClass = COLOR_PALETTE[index % COLOR_PALETTE.length];
+    const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-sm font-medium w-fit transition-colors`;
+
+    if (link.type === LINK_TYPE.MAC_APPLICATION) {
+      return (
+        <button
+          key={link.target}
+          onClick={() => handleOpenMacApp(link.target)}
+          className={`${baseClass} cursor-pointer`}
+        >
+          {link.label}
+        </button>
+      );
+    }
+
+    return (
+      <a
+        key={link.target}
+        href={link.target}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={baseClass}
+      >
+        {link.label}
+      </a>
+    );
+  };
+
   return (
     <Card className="w-full">
       <Flex direction="column" gap="3" p="4">
         <Text size="5" weight="bold">{title}</Text>
-        <div className="flex flex-wrap gap-2">
-        {sortedLinks.map((link, index) => {
-          const colorClass = COLOR_PALETTE[index % COLOR_PALETTE.length];
-          const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-sm font-medium w-fit transition-colors`;
 
-          if (link.type === LINK_TYPE.MAC_APPLICATION) {
-            return (
-              <button
-                key={link.target}
-                onClick={() => handleOpenMacApp(link.target)}
-                className={`${baseClass} cursor-pointer`}
-              >
-                {link.label}
-              </button>
-            );
-          }
+        {itemsWithoutSubgroup.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {itemsWithoutSubgroup.map((link, index) => renderLink(link, index))}
+          </div>
+        )}
 
-          return (
-            <a
-              key={link.target}
-              href={link.target}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={baseClass}
-            >
-              {link.label}
-            </a>
-          );
-        })}
-        </div>
+        {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
+          <div key={subgroupName}>
+            <Text size="3" weight="medium" className="mb-2">{subgroupName}</Text>
+            <div className="flex flex-wrap gap-2">
+              {subgroupLinks.map((link, index) => renderLink(link, index))}
+            </div>
+          </div>
+        ))}
       </Flex>
     </Card>
   );
