@@ -1,20 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { homedir } from 'os';
+import { LINK_TYPE } from '../../../constants/link-types';
 
 const execAsync = promisify(exec);
 
+const expandPath = (path: string): string => {
+  if (path.startsWith('~/')) {
+    return path.replace('~', homedir());
+  }
+  return path;
+};
+
 export async function POST(request: NextRequest) {
   try {
-    const { command, appName } = await request.json();
+    const { type, target } = await request.json();
 
-    const shellCommand = appName
-      ? `open -a '${appName}'`
-      : command;
+    if (!type || !target) {
+      return NextResponse.json(
+        { error: 'Both type and target must be provided' },
+        { status: 400 }
+      );
+    }
+
+    let shellCommand: string;
+
+    switch (type) {
+      case LINK_TYPE.VSCODE: {
+        const expandedPath = expandPath(target);
+        shellCommand = `code "${expandedPath}"`;
+        break;
+      }
+      case LINK_TYPE.FILE_SYSTEM: {
+        const expandedPath = expandPath(target);
+        shellCommand = `open "${expandedPath}"`;
+        break;
+      }
+      case LINK_TYPE.MAC_APPLICATION: {
+        shellCommand = `open -a '${target}'`;
+        break;
+      }
+      default:
+        return NextResponse.json(
+          { error: `Unsupported link type: ${type}` },
+          { status: 400 }
+        );
+    }
 
     if (!shellCommand || typeof shellCommand !== 'string') {
       return NextResponse.json(
-        { error: 'Invalid command or appName provided' },
+        { error: 'Failed to generate shell command' },
         { status: 400 }
       );
     }

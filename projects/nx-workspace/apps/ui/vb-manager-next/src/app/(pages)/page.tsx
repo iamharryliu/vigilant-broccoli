@@ -7,11 +7,7 @@ import { DjDownloadComponent } from '../components/dj-download.component';
 import { LinkGroupComponent } from '../components/link-group.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import CookingCalculatorCard from '../../components/CookingCalculatorCard';
-
-export const LINK_TYPE = {
-  BROWSER: 'browser',
-  MAC_APPLICATION: 'mac_application',
-} as const;
+import { LINK_TYPE } from '../constants/link-types';
 
 const QUICK_LINKS = [
   {
@@ -152,6 +148,26 @@ const LEARN_LINKS = [
 ];
 
 const PERSONAL_LINKS = [
+  ...[
+    {
+      label: 'Food',
+      target:
+        '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal/Food.md',
+      type: LINK_TYPE.VSCODE,
+    },
+    {
+      label: 'Groceries',
+      target:
+        'https://outlook.live.com/host/0/0d5c91ee-5be2-4b79-81ed-23e6c4580427/ToDoId',
+      type: LINK_TYPE.BROWSER,
+    },
+    {
+      label: 'Home Management',
+      target:
+        'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?usp=sharing',
+      type: LINK_TYPE.BROWSER,
+    },
+  ],
   ...LEISURE_LINKS.map(link => ({ ...link, subgroup: 'Leisure' })),
   ...LEARN_LINKS.map(link => ({ ...link, subgroup: 'Learn' })),
   ...CAREER_LINKS.map(link => ({ ...link, subgroup: 'Career' })),

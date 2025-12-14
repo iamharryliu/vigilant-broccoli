@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, Flex, Text } from '@radix-ui/themes';
-import { LINK_TYPE } from '../(pages)/page';
+import { LINK_TYPE } from '../constants/link-types';
 
 type LinkType = (typeof LINK_TYPE)[keyof typeof LINK_TYPE];
 
@@ -67,21 +67,21 @@ export function LinkGroupComponent({
     ? Object.entries(subgroups).sort(([a], [b]) => a.localeCompare(b))
     : subgroupOrder.map(key => [key, subgroups[key]] as [string, LinkItem[]]);
 
-  const handleOpenMacApp = async (target: string) => {
+  const handleShellExecute = async (type: LinkType, target: string) => {
     try {
       const response = await fetch('/api/shell/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ appName: target }),
+        body: JSON.stringify({ type, target }),
       });
 
       if (!response.ok) {
-        console.error('Failed to open Mac application');
+        console.error('Failed to execute shell command');
       }
     } catch (error) {
-      console.error('Error opening Mac application:', error);
+      console.error('Error executing shell command:', error);
     }
   };
 
@@ -89,11 +89,15 @@ export function LinkGroupComponent({
     const colorClass = COLOR_PALETTE[index % COLOR_PALETTE.length];
     const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-xs font-medium w-fit transition-colors`;
 
-    if (link.type === LINK_TYPE.MAC_APPLICATION) {
+    if (
+      link.type === LINK_TYPE.MAC_APPLICATION ||
+      link.type === LINK_TYPE.VSCODE ||
+      link.type === LINK_TYPE.FILE_SYSTEM
+    ) {
       return (
         <button
           key={link.target}
-          onClick={() => handleOpenMacApp(link.target)}
+          onClick={() => handleShellExecute(link.type, link.target)}
           className={`${baseClass} cursor-pointer`}
         >
           {link.label}
@@ -101,6 +105,7 @@ export function LinkGroupComponent({
       );
     }
 
+    // Browser links
     return (
       <a
         key={link.target}
