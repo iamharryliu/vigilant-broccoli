@@ -77,9 +77,9 @@ export default function Page() {
     <div className="grid grid-cols-4 gap-4 h-full">
       <div className="flex flex-col gap-4">
         <GithubTeamManager />
+        <GithubRepoActionStatusBadges repoUrl="https://github.com/iamharryliu/vigilant-broccoli" />
       </div>
       <div className="flex flex-col gap-4">
-        <GithubRepoActionStatusBadges repoUrl="https://github.com/iamharryliu/vigilant-broccoli" />
         <FlyIoAppsComponent />
       </div>
       <div className="flex flex-col gap-4">

@@ -121,7 +121,6 @@ export const FlyIoAppsComponent = () => {
                 key={app.name}
                 direction="column"
                 gap="1"
-                p="3"
                 style={{
                   backgroundColor: 'var(--gray-2)',
                   borderRadius: '6px',
