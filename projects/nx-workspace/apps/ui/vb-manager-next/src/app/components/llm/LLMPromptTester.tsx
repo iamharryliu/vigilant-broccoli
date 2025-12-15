@@ -1,14 +1,17 @@
-import { Badge, Box, Button, Flex, Text, TextArea } from '@radix-ui/themes';
+import { Badge, Box, Button, Flex, Text, TextArea, Select as RadixSelect } from '@radix-ui/themes';
 import { useState, useRef } from 'react';
-import { CopyPastable } from '@vigilant-broccoli/react-lib';
+import { CopyPastable, Select } from '@vigilant-broccoli/react-lib';
 import {
   HTTP_HEADERS,
   HTTP_METHOD,
   LLM_MODELS,
   LLMModel,
-  OPENAI_MODEL,
+  modelSupportsImageOutput,
+  modelSupportsImageInput,
 } from '@vigilant-broccoli/common-js';
 import Image from 'next/image';
+
+type OutputType = 'text' | 'image';
 
 type TestResults = {
   userPrompt: string;
@@ -29,6 +32,8 @@ export const LLMSimplePromptTester = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [testResults, setTestResults] = useState<TestResults | null>(null);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [outputType, setOutputType] = useState<OutputType>('text');
+  const [numOutputs, setNumOutputs] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addModel = (model: LLMModel) => {
@@ -41,10 +46,31 @@ export const LLMSimplePromptTester = () => {
     setSelectedModels(selectedModels.filter(m => m !== model));
   };
 
-  // Filter out image models from the available models
-  const availableModels = LLM_MODELS.filter(
-    m => !selectedModels.includes(m) && m !== OPENAI_MODEL.IMAGE_1
-  );
+  const handleOutputTypeChange = (newOutputType: OutputType) => {
+    setOutputType(newOutputType);
+    // Clear selected models when switching output type
+    setSelectedModels([]);
+  };
+
+  // Filter models based on output type and image input
+  const availableModels = LLM_MODELS.filter(m => {
+    if (selectedModels.includes(m)) return false;
+
+    // Filter by output type
+    if (outputType === 'image') {
+      if (!modelSupportsImageOutput(m)) return false;
+    } else {
+      // For text output, exclude image generation models
+      if (modelSupportsImageOutput(m)) return false;
+    }
+
+    // If images are uploaded, only show models that support image input
+    if (uploadedImages.length > 0 && !modelSupportsImageInput(m)) {
+      return false;
+    }
+
+    return true;
+  });
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -73,7 +99,13 @@ export const LLMSimplePromptTester = () => {
       newImages.push(await imagePromise);
     }
 
-    setUploadedImages([...uploadedImages, ...newImages]);
+    const updatedImages = [...uploadedImages, ...newImages];
+    setUploadedImages(updatedImages);
+
+    // Remove selected models that don't support image input
+    if (updatedImages.length > 0) {
+      setSelectedModels(selectedModels.filter(m => modelSupportsImageInput(m)));
+    }
   };
 
   const removeImage = (index: number) => {
@@ -95,6 +127,7 @@ export const LLMSimplePromptTester = () => {
           systemPrompt,
           models: selectedModels,
           images: uploadedImages.length > 0 ? uploadedImages : undefined,
+          numOutputs,
         }),
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
       });
@@ -132,6 +165,32 @@ export const LLMSimplePromptTester = () => {
           className="w-full"
         />
       </Box>
+
+      <Flex gap="3">
+        <Box className="flex-1">
+          <Text size="2" weight="medium" mb="2" className="block">
+            Expected Output Type
+          </Text>
+          <RadixSelect.Root value={outputType} onValueChange={(value) => handleOutputTypeChange(value as OutputType)}>
+            <RadixSelect.Trigger />
+            <RadixSelect.Content>
+              <RadixSelect.Item value="text">Text</RadixSelect.Item>
+              <RadixSelect.Item value="image">Image</RadixSelect.Item>
+            </RadixSelect.Content>
+          </RadixSelect.Root>
+        </Box>
+
+        <Box className="flex-1">
+          <Text size="2" weight="medium" mb="2" className="block">
+            Number of Outputs
+          </Text>
+          <Select
+            selectedOption={numOutputs}
+            setValue={setNumOutputs}
+            options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+          />
+        </Box>
+      </Flex>
 
       <Box>
         <Text size="2" weight="medium" mb="2" className="block">

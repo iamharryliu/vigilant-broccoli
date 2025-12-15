@@ -11,11 +11,12 @@ type UploadedImage = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userPrompt, systemPrompt, models, images } = body as {
+    const { userPrompt, systemPrompt, models, images, numOutputs = 1 } = body as {
       userPrompt: string;
       systemPrompt?: string;
       models: LLMModel[];
       images?: UploadedImage[];
+      numOutputs?: number;
     };
 
     if (!userPrompt || !models || models.length === 0) {
@@ -34,18 +35,23 @@ export async function POST(request: NextRequest) {
     await Promise.all(
       models.map(async model => {
         try {
-          const result = await LLMService.prompt({
-            prompt: {
-              userPrompt,
-              systemPrompt,
-              images,
-            },
-            modelConfig: {
-              model,
-            },
-          });
+          const outputs = await Promise.all(
+            Array.from({ length: numOutputs }, async () => {
+              const result = await LLMService.prompt({
+                prompt: {
+                  userPrompt,
+                  systemPrompt,
+                  images,
+                },
+                modelConfig: {
+                  model,
+                },
+              });
+              return result.data as string;
+            })
+          );
 
-          results[model] = [result.data as string];
+          results[model] = outputs;
         } catch (error) {
           console.error(`Error testing model ${model}:`, error);
           results[model] = [
