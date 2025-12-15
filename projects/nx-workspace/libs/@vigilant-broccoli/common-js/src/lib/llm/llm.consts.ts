@@ -10,8 +10,8 @@ export const OPENAI_MODEL = {
 export const OPEN_AI_MODELS = Object.values(OPENAI_MODEL);
 
 export const GEMINI_MODEL = {
-  FLASH_2: 'gemini-2.0-flash',
-  FLASH_2_LITE: 'gemini-2.0-flash-lite',
+  FLASH_2_5: 'gemini-2.5-flash',
+  FLASH_2_5_LITE: 'gemini-2.5-flash-lite',
 } as const;
 export const GEMINI_MODELS = Object.values(GEMINI_MODEL);
 
@@ -23,11 +23,14 @@ export const ANTHROPIC_MODELS = Object.values(ANTHROPIC_MODEL);
 
 export const DEEPSEEK_MODEL = {
   DEEP_SEEK: 'deepseek-chat',
+  DEEP_SEEK_REASONER: 'deepseek-reasoner',
 } as const;
 export const DEEPSEEK_MODELS = Object.values(DEEPSEEK_MODEL);
 
 export const GROK_MODEL = {
-  GROK_2_LATEST: 'grok-2-latest',
+  GROK_3: 'grok-3',
+  GROK_3_MINI: 'grok-3-mini',
+  GROK_VISION_LATEST: 'grok-2-vision',
 } as const;
 export const GROK_MODELS = Object.values(GROK_MODEL);
 

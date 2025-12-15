@@ -7,7 +7,7 @@ import { GithubTeamManager } from '../../components/github-manager.component';
 import { LinkGroupComponent } from '../../components/link-group.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
-import { LINK_TYPE } from '../page';
+import { LINK_TYPE } from '../../constants/link-types';
 
 const DEV_LINKS = [
   {

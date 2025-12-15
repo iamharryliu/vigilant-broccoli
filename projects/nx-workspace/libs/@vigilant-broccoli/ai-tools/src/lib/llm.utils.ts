@@ -92,7 +92,31 @@ function getOpenAIClient({
 
 function formatPromptParams<T>(request: LLMPromptRequest<T>) {
   const { prompt, modelConfig, responseFormat } = request;
-  const { userPrompt, systemPrompt } = prompt;
+  const { userPrompt, systemPrompt, images } = prompt;
+
+  let userContent: string | Array<{ type: string; text?: string; image_url?: { url: string } }>;
+
+  if (images && images.length > 0) {
+    userContent = [
+      {
+        type: 'text',
+        text: responseFormat?.example
+          ? `${userPrompt} ${provideResponseExample(responseFormat.example)}`
+          : userPrompt,
+      },
+      ...images.map(img => ({
+        type: 'image_url',
+        image_url: {
+          url: `data:${img.mimeType};base64,${img.base64}`,
+        },
+      })),
+    ];
+  } else {
+    userContent = responseFormat?.example
+      ? `${userPrompt} ${provideResponseExample(responseFormat.example)}`
+      : userPrompt;
+  }
+
   const result = {
     model: LLM_MODEL.GPT_4O,
     ...modelConfig,
@@ -100,9 +124,7 @@ function formatPromptParams<T>(request: LLMPromptRequest<T>) {
       { role: 'system', content: systemPrompt || '' },
       {
         role: 'user',
-        content: responseFormat?.example
-          ? `${userPrompt} ${provideResponseExample(responseFormat.example)}`
-          : userPrompt,
+        content: userContent,
       },
     ],
     ...(responseFormat && responseFormat.zod

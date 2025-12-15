@@ -24,7 +24,14 @@ export type LLMModelConfig = {
   temperature?: number;
 };
 
+export type LLMImage = {
+  name: string;
+  base64: string;
+  mimeType: string;
+};
+
 export type LLMPrompt = {
   userPrompt: string;
   systemPrompt?: string;
+  images?: LLMImage[];
 };

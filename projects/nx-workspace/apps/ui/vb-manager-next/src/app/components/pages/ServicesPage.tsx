@@ -88,12 +88,34 @@ const URLS = {
     PAYMENT_HISTORY: 'https://app.roboflow.com/vigilantbroccoli/settings/plan',
     USAGE: 'https://app.roboflow.com/vigilantbroccoli/settings/usage',
   },
+  DEEPSEEK: {
+    DASHBOARD: 'https://platform.deepseek.com/sign_in',
+    NAME: 'DeepSeek',
+    BILLING: 'https://platform.deepseek.com/transactions',
+    PAYMENT_HISTORY: 'https://platform.deepseek.com/transactions',
+    USAGE: 'https://platform.deepseek.com/usage',
+  },
+  GROK: {
+    DASHBOARD: 'https://console.x.ai/',
+    NAME: 'Grok',
+  },
+  GEMINI: {
+    DASHBOARD: 'https://aistudio.google.com/',
+    NAME: 'Google AI Studio',
+    BILLING:
+      'https://aistudio.google.com/usage?timeRange=last-28-days&tab=billing',
+    PAYMENT_HISTORY: '',
+    USAGE: 'https://aistudio.google.com/usage?timeRange=last-28-days',
+  },
+  ANTHROPIC: {
+    DASHBOARD: 'https://platform.claude.com/dashboard',
+    NAME: 'Anthropic',
+    BILLING: 'https://platform.claude.com/workspaces/default/cost',
+    PAYMENT_HISTORY: 'https://platform.claude.com/settings/billing',
+    USAGE: 'https://platform.claude.com/usage',
+  },
 } as Record<string, ServiceUrl>;
 
 export const ServicesPage = () => {
-  return (
-    <>
-      <ServiceLinksTable services={URLS} />
-    </>
-  );
+  return <ServiceLinksTable services={URLS} />;
 };

@@ -1,216 +1,256 @@
-import { Button, DataList, Text, TextField } from '@radix-ui/themes';
-import { useState } from 'react';
+import { Badge, Box, Button, Flex, Text, TextArea } from '@radix-ui/themes';
+import { useState, useRef } from 'react';
+import { CopyPastable } from '@vigilant-broccoli/react-lib';
 import {
-  CopyPastable,
-  CRUDFormProps,
-  CRUDItemList,
-  Select,
-} from '@vigilant-broccoli/react-lib';
-import {
-  FORM_TYPE,
   HTTP_HEADERS,
   HTTP_METHOD,
-  LLM_MODEL,
   LLM_MODELS,
   LLMModel,
+  OPENAI_MODEL,
 } from '@vigilant-broccoli/common-js';
-import { LLMPrompt } from '@vigilant-broccoli/common-js';
+import Image from 'next/image';
 
-const DEFAULT_USER_PROMPT = 'Who is the Prime Minister of Canada?';
-
-const DEFAULT_PROMPTS = [
-  {
-    id: 1,
-    prompt: {
-      userPrompt: DEFAULT_USER_PROMPT,
-      systemPrompt: '',
-    },
-    model: LLM_MODEL.GPT_4O,
-    results: [],
-  },
-];
-
-type Prompt = {
-  id: number;
-  prompt: LLMPrompt;
-  model: LLMModel;
-  results: string[];
+type TestResults = {
+  userPrompt: string;
+  systemPrompt: string;
+  results: Record<LLMModel, string[]>;
 };
 
-const COPY = {
-  LIST: {
-    TITLE: 'Prompt List',
-    EMPTY_MESSAGE: 'No items.',
-  },
-  [FORM_TYPE.CREATE]: {
-    TITLE: 'Create Prompt',
-    DESCRIPTION: 'Create item prompt.',
-  },
-  [FORM_TYPE.UPDATE]: {
-    TITLE: 'Update Item',
-    DESCRIPTION: 'Update item description.',
-  },
+type UploadedImage = {
+  name: string;
+  base64: string;
+  mimeType: string;
 };
 
 export const LLMSimplePromptTester = () => {
-  const [defaultUserPrompt, setDefaultUserPrompt] =
-    useState(DEFAULT_USER_PROMPT);
-  const [prompts, setPrompts] = useState<Prompt[]>(DEFAULT_PROMPTS);
+  const [userPrompt, setUserPrompt] = useState('Who is the Prime Minister of Canada?');
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [selectedModels, setSelectedModels] = useState<LLMModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [testResults, setTestResults] = useState<TestResults | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  async function createItem(item: Prompt) {
-    return {
-      ...item,
-      id: Math.max(...prompts.map(item => item.id)) + 1,
-    };
-  }
+  const addModel = (model: LLMModel) => {
+    if (!selectedModels.includes(model)) {
+      setSelectedModels([...selectedModels, model]);
+    }
+  };
 
-  async function updateItem(item: Prompt) {
-    console.log(`Update ${JSON.stringify(item)}`);
-    return;
-  }
+  const removeModel = (model: LLMModel) => {
+    setSelectedModels(selectedModels.filter(m => m !== model));
+  };
 
-  async function deleteItem(id: number) {
-    console.log(`Delete ${id}`);
-  }
-
-  async function onSubmit() {
-    setIsLoading(true);
-    const response = await fetch('api', {
-      method: HTTP_METHOD.POST,
-      body: JSON.stringify(prompts),
-      headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
-    });
-    const data = await response.json();
-    setPrompts(data);
-    setIsLoading(false);
-  }
-
-  return (
-    <>
-      <div className="flex items-center space-x-4">
-        <Text>Default User Prompt</Text>
-        <div className="w-96">
-          <TextField.Root
-            value={defaultUserPrompt}
-            onChange={e => setDefaultUserPrompt(e.target.value)}
-          />
-        </div>
-      </div>
-      <CRUDItemList
-        copy={COPY}
-        items={prompts}
-        setItems={setPrompts}
-        ListItemComponent={ListItem}
-        FormComponent={Form}
-        createItemFormDefaultValues={{
-          id: 0,
-          prompt: { userPrompt: defaultUserPrompt, systemPrompt: '' },
-          model: LLM_MODEL.GPT_4O,
-          results: [],
-        }}
-        createItem={createItem}
-        updateItem={updateItem}
-        deleteItem={deleteItem}
-        isCards={true}
-      />
-      <Button onClick={onSubmit} loading={isLoading}>
-        Prompt
-      </Button>
-      <CopyPastable text={JSON.stringify(prompts, null, 2)} />
-    </>
+  // Filter out image models from the available models
+  const availableModels = LLM_MODELS.filter(
+    m => !selectedModels.includes(m) && m !== OPENAI_MODEL.IMAGE_1
   );
-};
 
-const Form = ({
-  formType,
-  initialFormValues,
-  submitHandler,
-}: CRUDFormProps<Prompt>) => {
-  const [item, setItem] = useState(initialFormValues);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newImages: UploadedImage[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith('image/')) continue;
+
+      const reader = new FileReader();
+      const imagePromise = new Promise<UploadedImage>((resolve) => {
+        reader.onload = (e) => {
+          const base64 = e.target?.result as string;
+          // Remove the data URL prefix to get just the base64 string
+          const base64Data = base64.split(',')[1];
+          resolve({
+            name: file.name,
+            base64: base64Data,
+            mimeType: file.type,
+          });
+        };
+      });
+      reader.readAsDataURL(file);
+      newImages.push(await imagePromise);
+    }
+
+    setUploadedImages([...uploadedImages, ...newImages]);
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+  };
 
   async function handleSubmit() {
-    setIsSubmitting(true);
-    await submitHandler(item, formType);
-    setIsSubmitting(false);
+    if (selectedModels.length === 0) {
+      alert('Please select at least one model');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/llm-test', {
+        method: HTTP_METHOD.POST,
+        body: JSON.stringify({
+          userPrompt,
+          systemPrompt,
+          models: selectedModels,
+          images: uploadedImages.length > 0 ? uploadedImages : undefined,
+        }),
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
+      });
+      const data = await response.json();
+
+      setTestResults({
+        userPrompt,
+        systemPrompt,
+        results: data.results,
+      });
+    } catch (error) {
+      console.error('Error testing prompts:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  return (
-    <div className="space-y-4">
-      <div>
-        <TextField.Root
-          placeholder="System Prompt"
-          value={item.prompt.systemPrompt}
-          onChange={e =>
-            setItem(prev => {
-              return {
-                ...prev,
-                prompt: { ...prev.prompt, systemPrompt: e.target.value },
-              };
-            })
-          }
-        />
-      </div>
+  const outputJson = testResults ? JSON.stringify(testResults, null, 2) : '';
 
-      <div>
-        <TextField.Root
-          placeholder="User Prompt"
-          value={item.prompt.userPrompt}
-          onChange={e =>
-            setItem(prev => {
-              return {
-                ...prev,
-                prompt: { ...prev.prompt, userPrompt: e.target.value },
-              };
-            })
-          }
-        />
-      </div>
-      <div className="flex items-center space-x-2">
-        <label>Model</label>
-        <Select
-          options={LLM_MODELS}
-          selectedOption={item.model}
-          setValue={value =>
-            setItem(prev => {
-              return { ...prev, model: value };
-            })
-          }
-        />
-      </div>
-      <div>
-        <Button
-          onClick={handleSubmit}
-          loading={isSubmitting}
+  return (
+    <Flex direction="column" gap="4">
+      <Text size="5" weight="bold">
+        LLM Prompt Tester
+      </Text>
+
+      <Box>
+        <Text size="2" weight="medium" mb="2" className="block">
+          System Prompt
+        </Text>
+        <TextArea
+          placeholder="Enter system prompt (optional)..."
+          value={systemPrompt}
+          onChange={e => setSystemPrompt(e.target.value)}
+          rows={3}
           className="w-full"
-        >
-          Submit
-        </Button>
-      </div>
-    </div>
-  );
-};
+        />
+      </Box>
 
-const ListItem = ({ item }: { item: Prompt }) => {
-  return (
-    <DataList.Root>
-      <DataList.Item>
-        <DataList.Label>System Prompt</DataList.Label>
-        <DataList.Value>{item.prompt.systemPrompt}</DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>User Prompt</DataList.Label>
-        <DataList.Value>{item.prompt.userPrompt}</DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>Model</DataList.Label>
-        <DataList.Value>{item.model}</DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>Result</DataList.Label>
-        <DataList.Value>{item.results[item.results.length - 1]}</DataList.Value>
-      </DataList.Item>
-    </DataList.Root>
+      <Box>
+        <Text size="2" weight="medium" mb="2" className="block">
+          User Prompt
+        </Text>
+        <TextArea
+          placeholder="Enter user prompt..."
+          value={userPrompt}
+          onChange={e => setUserPrompt(e.target.value)}
+          rows={4}
+          className="w-full"
+        />
+      </Box>
+
+      <Box>
+        <Text size="2" weight="medium" mb="2" className="block">
+          Images (Optional)
+        </Text>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={handleFileSelect}
+        />
+        <Button
+          variant="outline"
+          onClick={() => fileInputRef.current?.click()}
+          size="2"
+        >
+          Upload Images
+        </Button>
+        {uploadedImages.length > 0 && (
+          <Flex gap="2" wrap="wrap" mt="3">
+            {uploadedImages.map((img, idx) => (
+              <Box key={idx} className="relative group">
+                <div className="relative w-24 h-24 border rounded overflow-hidden">
+                  <Image
+                    src={`data:${img.mimeType};base64,${img.base64}`}
+                    alt={img.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <Badge
+                  size="1"
+                  color="red"
+                  className="absolute -top-2 -right-2 cursor-pointer"
+                  onClick={() => removeImage(idx)}
+                >
+                  ✕
+                </Badge>
+              </Box>
+            ))}
+          </Flex>
+        )}
+      </Box>
+
+      <Box>
+        <Text size="2" weight="medium" mb="2" className="block">
+          Selected Models ({selectedModels.length})
+        </Text>
+        <Flex gap="2" wrap="wrap" mb="3">
+          {selectedModels.length === 0 ? (
+            <Text size="2" color="gray">
+              Click models below to add them
+            </Text>
+          ) : (
+            selectedModels.map(model => (
+              <Badge
+                key={model}
+                size="2"
+                color="green"
+                className="cursor-pointer"
+                onClick={() => removeModel(model)}
+              >
+                {model} ✕
+              </Badge>
+            ))
+          )}
+        </Flex>
+
+        {availableModels.length > 0 && (
+          <Box>
+            <Text size="2" weight="medium" mb="2" className="block">
+              Available Models
+            </Text>
+            <Flex gap="2" wrap="wrap">
+              {availableModels.map(model => (
+                <Badge
+                  key={model}
+                  size="2"
+                  color="gray"
+                  className="cursor-pointer hover:opacity-80"
+                  onClick={() => addModel(model)}
+                >
+                  {model} +
+                </Badge>
+              ))}
+            </Flex>
+          </Box>
+        )}
+      </Box>
+
+      <Button onClick={handleSubmit} loading={isLoading} size="3">
+        Test Prompts
+      </Button>
+
+      {testResults && (
+        <Box>
+          <Flex justify="between" align="center" mb="2">
+            <Text size="2" weight="medium">
+              Results
+            </Text>
+          </Flex>
+          <CopyPastable text={outputJson} />
+        </Box>
+      )}
+    </Flex>
   );
 };

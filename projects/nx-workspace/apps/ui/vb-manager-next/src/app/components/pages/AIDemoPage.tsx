@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Card,
   CheckboxCards,
   Flex,
   Text,
@@ -62,33 +63,80 @@ export const AIDemoPage = () => {
   }
 
   return (
-    <>
-      <UploadArea
-        onFilesSelected={handleFiles}
-        accept="image/*,.pdf"
-        multiple
-      />
-      <FileSelect
-        files={filesnames}
-        selectedFiles={selectedFiles}
-        setSelectedFiles={setSelectedFiles}
-      />
-      <TextArea
-        placeholder="Image prompt"
-        value={imagePrompt}
-        onChange={e => setImagePrompt(e.target.value)}
-      />
-      <Select
-        selectedOption={numberOfImagesToGenerate}
-        setValue={setNumberOfImagesToGenerate}
-        options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-      />
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <Card>
+        <Flex direction="column" gap="4" p="4">
+          <Text size="5" weight="bold">
+            Image Generation
+          </Text>
 
-      <Button onClick={handleSubmit} loading={isLoading}>
-        Generate Image(s)
-      </Button>
-      <LLMSimplePromptTester />
-    </>
+          <Box>
+            <Text size="2" weight="medium" mb="2" className="block">
+              Upload Files
+            </Text>
+            <UploadArea
+              onFilesSelected={handleFiles}
+              accept="image/*,.pdf"
+              multiple
+            />
+          </Box>
+
+          {filesnames.length > 0 && (
+            <Box>
+              <Text size="2" weight="medium" mb="2" className="block">
+                Select Files
+              </Text>
+              <FileSelect
+                files={filesnames}
+                selectedFiles={selectedFiles}
+                setSelectedFiles={setSelectedFiles}
+              />
+            </Box>
+          )}
+
+          <Box>
+            <Text size="2" weight="medium" mb="2" className="block">
+              Prompt
+            </Text>
+            <TextArea
+              placeholder="Describe the image you want to generate..."
+              value={imagePrompt}
+              onChange={e => setImagePrompt(e.target.value)}
+              rows={4}
+              className="w-full"
+            />
+          </Box>
+
+          <Flex gap="3" align="center">
+            <Box className="flex-1">
+              <Text size="2" weight="medium" mb="2" className="block">
+                Number of Images
+              </Text>
+              <Select
+                selectedOption={numberOfImagesToGenerate}
+                setValue={setNumberOfImagesToGenerate}
+                options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+              />
+            </Box>
+
+            <Button
+              onClick={handleSubmit}
+              loading={isLoading}
+              size="3"
+              className="mt-6"
+            >
+              Generate Image(s)
+            </Button>
+          </Flex>
+        </Flex>
+      </Card>
+
+      <Card>
+        <Box p="4">
+          <LLMSimplePromptTester />
+        </Box>
+      </Card>
+    </div>
   );
 };
 
@@ -111,15 +159,25 @@ export const FileSelect = ({
     <Box>
       <CheckboxCards.Root
         defaultValue={selectedFiles}
-        columns={{ initial: '1', sm: '3' }}
+        columns={{ initial: '1', sm: '2', md: '3', lg: '4' }}
         onValueChange={setSelectedFiles}
+        gap="3"
       >
         {files.map(file => {
           return (
-            <CheckboxCards.Item value={file} key={file}>
-              <Flex direction="column" width="100%">
-                <Image src={`/bucket/${file}`} alt="image" fill={true} />
-                <Text>{file}</Text>
+            <CheckboxCards.Item value={file} key={file} className="group">
+              <Flex direction="column" width="100%" gap="2">
+                <div className="relative w-full h-32 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
+                  <Image
+                    src={`/bucket/${file}`}
+                    alt={file}
+                    fill={true}
+                    className="object-cover group-hover:scale-105 transition-transform duration-200"
+                  />
+                </div>
+                <Text size="2" className="truncate" title={file}>
+                  {file}
+                </Text>
               </Flex>
             </CheckboxCards.Item>
           );
@@ -174,13 +232,45 @@ export function UploadArea({
       onDragOver={handleDrag}
       onDragLeave={handleDrag}
       onDrop={handleDrop}
-      className={`cursor-pointer w-full p-8 border-2 border-dashed rounded-lg transition text-center ${
-        dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+      className={`cursor-pointer w-full p-10 border-2 border-dashed rounded-lg transition-all duration-200 text-center ${
+        dragActive
+          ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 dark:border-blue-400 scale-[1.02]'
+          : 'border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600'
       }`}
     >
-      <p className="text-gray-700">
-        {dragActive ? 'Drop files here...' : 'Click or drag files to upload'}
-      </p>
+      <div className="flex flex-col items-center gap-2">
+        <svg
+          className={`w-12 h-12 transition-colors ${
+            dragActive
+              ? 'text-blue-500 dark:text-blue-400'
+              : 'text-gray-400 dark:text-gray-600'
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+          />
+        </svg>
+        <p
+          className={`text-sm font-medium ${
+            dragActive
+              ? 'text-blue-600 dark:text-blue-400'
+              : 'text-gray-700 dark:text-gray-300'
+          }`}
+        >
+          {dragActive ? 'Drop files here...' : 'Click or drag files to upload'}
+        </p>
+        {!dragActive && (
+          <p className="text-xs text-gray-500 dark:text-gray-500">
+            {accept || 'All file types accepted'}
+          </p>
+        )}
+      </div>
 
       <input
         ref={inputRef}
