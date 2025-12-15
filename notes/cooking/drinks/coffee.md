@@ -5,7 +5,6 @@ flowchart LR
 Bean-->RM[Roast Method]-->BM[Brew Method]-->Coffee
 ```
 
-
 | Parameter               | **Lower Value Effect**                         | **Higher Value Effect**                             |
 | ----------------------- | ---------------------------------------------- | --------------------------------------------------- |
 | **Grind Size**          | Coarser grind → weaker, sour, under-extracted  | Finer grind → stronger, more bitter, over-extracted |
@@ -33,11 +32,11 @@ Bean-->RM[Roast Method]-->BM[Brew Method]-->Coffee
   - Pourover Dripper
   - Vietnamese Drip
 - Immersion
-  - French Press
+  - [French Press](https://www.youtube.com/watch?v=st571DYYTR8)
+  - [Clever Dripper](https://www.youtube.com/watch?v=RpOdennxP24)
   - Cold Brew
 - Pressure Brewed Coffee
   - Moka Pot
-- French Press
 - Espresso Maker
 
 #### Cold Brew
