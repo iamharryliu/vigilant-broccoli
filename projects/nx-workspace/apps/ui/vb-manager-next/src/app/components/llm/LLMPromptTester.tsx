@@ -302,12 +302,86 @@ export const LLMSimplePromptTester = () => {
 
       {testResults && (
         <Box>
-          <Flex justify="between" align="center" mb="2">
-            <Text size="2" weight="medium">
+          <Flex justify="between" align="center" mb="4">
+            <Text size="4" weight="bold">
               Results
             </Text>
           </Flex>
-          <CopyPastable text={outputJson} />
+
+          <Flex direction="column" gap="6">
+            {Object.entries(testResults.results).map(([model, outputs]) => {
+              const isImageOutput = modelSupportsImageOutput(model as LLMModel);
+
+              return (
+                <Box key={model} className="border rounded-lg p-4">
+                  <Text size="3" weight="bold" mb="3" className="block">
+                    {model}
+                  </Text>
+
+                  {testResults.systemPrompt && (
+                    <Box mb="3">
+                      <Text size="2" weight="medium" className="block mb-1">
+                        System Prompt:
+                      </Text>
+                      <Text size="2" color="gray" className="block">
+                        {testResults.systemPrompt}
+                      </Text>
+                    </Box>
+                  )}
+
+                  <Box mb="3">
+                    <Text size="2" weight="medium" className="block mb-1">
+                      User Prompt:
+                    </Text>
+                    <Text size="2" color="gray" className="block">
+                      {testResults.userPrompt}
+                    </Text>
+                  </Box>
+
+                  {isImageOutput ? (
+                    <Box>
+                      <Text size="2" weight="medium" className="block mb-2">
+                        Generated Images:
+                      </Text>
+                      <Flex gap="3" wrap="wrap">
+                        {outputs.map((imageUrl, index) => (
+                          <Box key={index} className="border rounded overflow-hidden">
+                            <img
+                              src={imageUrl}
+                              alt={`${model} output ${index + 1}`}
+                              className="w-64 h-64 object-contain"
+                            />
+                          </Box>
+                        ))}
+                      </Flex>
+                    </Box>
+                  ) : (
+                    <Box>
+                      <Text size="2" weight="medium" className="block mb-2">
+                        Output{outputs.length > 1 ? 's' : ''}:
+                      </Text>
+                      <Flex direction="column" gap="2">
+                        {outputs.map((output, index) => (
+                          <Box key={index} className="p-3 rounded">
+                            <Text size="2" className="whitespace-pre-wrap">
+                              {output}
+                            </Text>
+                          </Box>
+                        ))}
+                      </Flex>
+                    </Box>
+                  )}
+                </Box>
+              );
+            })}
+          </Flex>
+
+          <Box mt="4">
+            <Text size="2" weight="medium" mb="2" className="block">
+              Raw JSON Output
+            </Text>
+            <CopyPastable text={outputJson} />
+          </Box>
         </Box>
       )}
     </Flex>

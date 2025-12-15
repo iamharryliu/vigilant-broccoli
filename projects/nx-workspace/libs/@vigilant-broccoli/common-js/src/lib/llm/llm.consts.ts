@@ -31,6 +31,7 @@ export const GROK_MODEL = {
   GROK_3: 'grok-3',
   GROK_3_MINI: 'grok-3-mini',
   GROK_VISION_LATEST: 'grok-2-vision',
+  GROK_2_IMAGE: 'grok-2-image',
 } as const;
 export const GROK_MODELS = Object.values(GROK_MODEL);
 
@@ -75,6 +76,7 @@ export const LLM_MODEL_METADATA: Record<string, LLMModelMetadata> = {
   [GROK_MODEL.GROK_3]: { hasImageInputSupport: false, hasImageOutputSupport: false },
   [GROK_MODEL.GROK_3_MINI]: { hasImageInputSupport: false, hasImageOutputSupport: false },
   [GROK_MODEL.GROK_VISION_LATEST]: { hasImageInputSupport: true, hasImageOutputSupport: false },
+  [GROK_MODEL.GROK_2_IMAGE]: { hasImageInputSupport: false, hasImageOutputSupport: true },
 };
 
 export function modelSupportsImageInput(model: string): boolean {

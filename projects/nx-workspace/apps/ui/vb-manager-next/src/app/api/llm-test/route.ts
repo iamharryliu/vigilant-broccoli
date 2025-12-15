@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LLMService } from '@vigilant-broccoli/ai-tools';
-import { LLMModel } from '@vigilant-broccoli/common-js';
+import {
+  LLMModel,
+  modelSupportsImageOutput,
+} from '@vigilant-broccoli/common-js';
+import * as fs from 'fs';
+import * as path from 'path';
 
 type UploadedImage = {
   name: string;
@@ -11,7 +16,13 @@ type UploadedImage = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userPrompt, systemPrompt, models, images, numOutputs = 1 } = body as {
+    const {
+      userPrompt,
+      systemPrompt,
+      models,
+      images,
+      numOutputs = 1,
+    } = body as {
       userPrompt: string;
       systemPrompt?: string;
       models: LLMModel[];
@@ -22,11 +33,15 @@ export async function POST(request: NextRequest) {
     if (!userPrompt || !models || models.length === 0) {
       return NextResponse.json(
         { error: 'Missing required fields: userPrompt and models' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Run all model prompts in parallel
+    const publicDir = path.join(process.cwd(), 'public', 'generated-images');
+    if (!fs.existsSync(publicDir)) {
+      fs.mkdirSync(publicDir, { recursive: true });
+    }
+
     const results: Record<LLMModel, string[]> = {} as Record<
       LLMModel,
       string[]
@@ -35,30 +50,44 @@ export async function POST(request: NextRequest) {
     await Promise.all(
       models.map(async model => {
         try {
-          const outputs = await Promise.all(
-            Array.from({ length: numOutputs }, async () => {
-              const result = await LLMService.prompt({
-                prompt: {
-                  userPrompt,
-                  systemPrompt,
-                  images,
-                },
-                modelConfig: {
-                  model,
-                },
-              });
-              return result.data as string;
-            })
+          const outputs = await LLMService.generateMultipleOutputs(
+            {
+              prompt: {
+                userPrompt,
+                systemPrompt,
+                images,
+              },
+              modelConfig: {
+                model,
+              },
+            },
+            numOutputs,
+            modelSupportsImageOutput(model),
           );
 
-          results[model] = outputs;
+          if (modelSupportsImageOutput(model)) {
+            const imageUrls = outputs.map((base64Data, index) => {
+              const timestamp = Date.now();
+              const filename = `${model}-${timestamp}-${index}.png`;
+              const filepath = path.join(publicDir, filename);
+
+              fs.writeFileSync(filepath, base64Data, 'base64');
+
+              return `/generated-images/${filename}`;
+            });
+            results[model] = imageUrls;
+          } else {
+            results[model] = outputs;
+          }
         } catch (error) {
           console.error(`Error testing model ${model}:`, error);
           results[model] = [
-            `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            `Error: ${
+              error instanceof Error ? error.message : 'Unknown error'
+            }`,
           ];
         }
-      })
+      }),
     );
 
     return NextResponse.json({ results });
@@ -66,7 +95,7 @@ export async function POST(request: NextRequest) {
     console.error('Error in llm-test API:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

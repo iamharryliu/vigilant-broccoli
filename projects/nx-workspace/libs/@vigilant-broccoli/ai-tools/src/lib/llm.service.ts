@@ -148,9 +148,29 @@ async function editImage(filenames: string[], prompt: string) {
   return `data:image/png;base64,${response.data[0].b64_json}`;
 }
 
+async function generateMultipleOutputs<T>(
+  request: LLMPromptRequest<T>,
+  numOutputs: number,
+  isImageModel: boolean,
+): Promise<string[]> {
+  if (isImageModel) {
+    const imageResults = await generateImages(request.prompt.userPrompt, numOutputs);
+    return imageResults.filter((img): img is string => img !== undefined);
+  }
+
+  const outputs = await Promise.all(
+    Array.from({ length: numOutputs }, async () => {
+      const result = await prompt(request);
+      return result.data as string;
+    })
+  );
+  return outputs;
+}
+
 export const LLMService = {
   prompt,
   generateImage,
   generateImages,
   editImage,
+  generateMultipleOutputs,
 };
