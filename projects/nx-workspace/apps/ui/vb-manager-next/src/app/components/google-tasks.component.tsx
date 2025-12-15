@@ -558,7 +558,7 @@ export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListI
       <Flex direction="column" gap="3" p="4">
         <TaskHeader
           taskListName={taskListName}
-          userEmail={session?.user?.email}
+          userEmail={session?.user?.email ?? undefined}
           onSignOut={() => signOut()}
         />
 
