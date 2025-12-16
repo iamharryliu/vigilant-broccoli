@@ -5,8 +5,8 @@ import { z } from 'zod';
 export async function getTextPromptResults(userPrompt: string) {
   const promptRequests = [
     { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.GPT_4O_MINI } },
-    { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.FLASH_2_LITE } },
-    { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.GROK_2_LATEST } },
+    { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.FLASH_2_5_LITE } },
+    { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.GROK_3 } },
     { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.DEEP_SEEK } },
   ];
 
@@ -28,12 +28,12 @@ export async function getZodFormattedPromptResults(userPrompt: string) {
     },
     {
       prompt: { userPrompt },
-      modelConfig: { model: LLM_MODEL.FLASH_2_LITE },
+      modelConfig: { model: LLM_MODEL.FLASH_2_5_LITE },
       responseFormat: { zod: responseFormat },
     },
     {
       prompt: { userPrompt },
-      modelConfig: { model: LLM_MODEL.GROK_2_LATEST },
+      modelConfig: { model: LLM_MODEL.GROK_3 },
       responseFormat: { zod: responseFormat },
     },
   ];
