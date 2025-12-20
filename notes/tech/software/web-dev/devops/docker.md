@@ -23,7 +23,11 @@ docker run -it --rm IMAGE_NAME sh # Container shell.
 # Docker Compose
 
 ```
-docker-compose -f DOCKER_COMPOSE_FILE up -d # Start
-docker-compose -f DOCKER_COMPOSE_FILE logs -f # View logs
-docker-compose -f DOCKER_COMPOSE_FILE down # Sop
+docker compose DOCKER_COMMAND
+docker compose up -d # Start
+docker compose logs -f # View logs
+docker compose down # Stop
+
+docker compose -p APP_NAME DOCKER_COMMAND
+docker compose -p APP_NAME -f DOCKER_COMPOSE_FILE DOCKER_COMMAND
 ```

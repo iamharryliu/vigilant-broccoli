@@ -1,4 +1,4 @@
-# Easy Meals
+# Goto Meals
 
 ## Breakfast
 

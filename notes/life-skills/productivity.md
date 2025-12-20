@@ -60,7 +60,7 @@ subgraph Q2P[Q2 Positive Activities ]
   Q25[Learning]
 end
 
-SC[Surplus Capacity]-->C
+SC[Surplus Capacity]
 
 
 C --> E
