@@ -26,6 +26,8 @@
   - Snacks
   - Swimwear
   - Speakers
+  - Games
+  - Art supplies
   - **Comfort**
     - Ear Plugs
     - Neck Pillow

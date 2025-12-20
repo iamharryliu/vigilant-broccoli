@@ -10,3 +10,4 @@
 - Razor
 - Towel
 - Laundry Bag
+- Night guard
