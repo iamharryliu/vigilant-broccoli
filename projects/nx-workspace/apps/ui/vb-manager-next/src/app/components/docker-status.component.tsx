@@ -157,7 +157,7 @@ export const DockerStatusComponent = () => {
                     </Text>
                   </Flex>
                   <Badge color="gray" size="1">
-                    {project.containerCount} {project.containerCount === 1 ? 'container' : 'containers'}
+                    {project.containerCount} {project.containerCount === 1 ? 'image' : 'images'} active
                   </Badge>
                 </Flex>
 
