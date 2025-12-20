@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Flex, Text, Badge, IconButton } from '@radix-ui/themes';
+import { Card, Flex, Text, Badge, IconButton, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { ExternalLinkIcon } from '@radix-ui/react-icons';
@@ -31,9 +31,30 @@ export const DockerStatusComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDockerRunning, setIsDockerRunning] = useState(false);
+  const [isStartingDocker, setIsStartingDocker] = useState(false);
 
-  // Open Docker.app on Mac
+  const fetchDockerStatus = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.DOCKER_CONTAINERS);
+      if (!response.ok) {
+        throw new Error('Failed to fetch Docker container status');
+      }
+      const data = await response.json();
+      setDockerStatus(data);
+      setIsDockerRunning(true);
+      setError(null);
+      setLoading(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch Docker container status');
+      setIsDockerRunning(false);
+      setLoading(false);
+      console.error('Docker status error:', err);
+    }
+  };
+
+  // Open Docker.app on Mac with loading state
   const handleOpenDocker = async () => {
+    setIsStartingDocker(true);
     try {
       await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
         method: 'POST',
@@ -43,8 +64,12 @@ export const DockerStatusComponent = () => {
           target: 'Docker',
         }),
       });
+      // Backend waits 2s, now refresh the UI
+      await fetchDockerStatus();
     } catch (err) {
       console.error('Failed to open Docker app:', err);
+    } finally {
+      setIsStartingDocker(false);
     }
   };
 
@@ -74,25 +99,6 @@ export const DockerStatusComponent = () => {
   const totalCount = (dockerStatus?.projects.length || 0) + (dockerStatus?.standaloneContainers.length || 0);
 
   useEffect(() => {
-    const fetchDockerStatus = async () => {
-      try {
-        const response = await fetch(API_ENDPOINTS.DOCKER_CONTAINERS);
-        if (!response.ok) {
-          throw new Error('Failed to fetch Docker container status');
-        }
-        const data = await response.json();
-        setDockerStatus(data);
-        setIsDockerRunning(true);
-        setError(null);
-        setLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch Docker container status');
-        setIsDockerRunning(false);
-        setLoading(false);
-        console.error('Docker status error:', err);
-      }
-    };
-
     fetchDockerStatus();
     // Refresh every 10 seconds
     const interval = setInterval(fetchDockerStatus, 10000);
@@ -108,15 +114,17 @@ export const DockerStatusComponent = () => {
       <Card className="w-full">
         <Flex direction="column" gap="4" p="4">
           <Text size="5" weight="bold">Docker Containers</Text>
-          <Text size="2" color="red">
-            {error}.{' '}
-            <button
+          <Flex direction="column" gap="3">
+            <Text size="2" color="red">{error}</Text>
+            <Button
               onClick={handleOpenDocker}
-              className="text-blue-500 hover:text-blue-700 underline cursor-pointer bg-transparent border-none p-0"
+              loading={isStartingDocker}
+              size="2"
+              variant="soft"
             >
-              Open Docker Desktop
-            </button>
-          </Text>
+              {isStartingDocker ? 'Starting Docker...' : 'Open Docker Desktop'}
+            </Button>
+          </Flex>
         </Flex>
       </Card>
     );

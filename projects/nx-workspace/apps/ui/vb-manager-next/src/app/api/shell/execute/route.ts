@@ -13,6 +13,7 @@ const expandPath = (path: string): string => {
   return path;
 };
 
+// eslint-disable-next-line complexity
 export async function POST(request: NextRequest) {
   try {
     const { type, target } = await request.json();
@@ -56,6 +57,11 @@ export async function POST(request: NextRequest) {
     }
 
     const { stdout, stderr } = await execAsync(shellCommand);
+
+    // Wait 2 seconds for Docker to start booting up
+    if (type === LINK_TYPE.MAC_APPLICATION && target === 'Docker') {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
 
     return NextResponse.json({
       message: 'Command executed successfully',
