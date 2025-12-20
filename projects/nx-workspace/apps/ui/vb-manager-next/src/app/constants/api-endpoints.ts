@@ -1,6 +1,8 @@
 export const API_ENDPOINTS = {
   // Docker
   DOCKER_CONTAINERS: '/api/docker/containers',
+  DOCKER_START: '/api/docker/start',
+  DOCKER_STOP: '/api/docker/stop',
 
   // Shell
   SHELL_EXECUTE: '/api/shell/execute',

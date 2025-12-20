@@ -3,7 +3,7 @@
 import { Card, Flex, Text, Badge, IconButton, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
-import { ExternalLinkIcon } from '@radix-ui/react-icons';
+import { ExternalLinkIcon, PlayIcon, StopIcon } from '@radix-ui/react-icons';
 import { LINK_TYPE } from '../constants/link-types';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -18,7 +18,14 @@ interface StandaloneContainer {
   id: string;
   name: string;
   status: string;
-  state: 'running' | 'paused' | 'exited' | 'created' | 'restarting' | 'removing' | 'dead';
+  state:
+    | 'running'
+    | 'paused'
+    | 'exited'
+    | 'created'
+    | 'restarting'
+    | 'removing'
+    | 'dead';
 }
 
 interface DockerStatus {
@@ -32,6 +39,9 @@ export const DockerStatusComponent = () => {
   const [error, setError] = useState<string | null>(null);
   const [isDockerRunning, setIsDockerRunning] = useState(false);
   const [isStartingDocker, setIsStartingDocker] = useState(false);
+  const [actionInProgress, setActionInProgress] = useState<Set<string>>(
+    new Set(),
+  );
 
   const fetchDockerStatus = async () => {
     try {
@@ -45,7 +55,11 @@ export const DockerStatusComponent = () => {
       setError(null);
       setLoading(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch Docker container status');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to fetch Docker container status',
+      );
       setIsDockerRunning(false);
       setLoading(false);
       console.error('Docker status error:', err);
@@ -73,8 +87,68 @@ export const DockerStatusComponent = () => {
     }
   };
 
+  // Start a container or project
+  const handleStart = async (identifier: string, isProject: boolean) => {
+    setActionInProgress(prev => new Set(prev).add(identifier));
+    try {
+      const response = await fetch(API_ENDPOINTS.DOCKER_START, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(
+          isProject ? { projectName: identifier } : { containerId: identifier },
+        ),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to start container');
+      }
+
+      // Refresh the status after a short delay
+      setTimeout(() => fetchDockerStatus(), 1000);
+    } catch (err) {
+      console.error('Failed to start container:', err);
+    } finally {
+      setActionInProgress(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(identifier);
+        return newSet;
+      });
+    }
+  };
+
+  // Stop a container or project
+  const handleStop = async (identifier: string, isProject: boolean) => {
+    setActionInProgress(prev => new Set(prev).add(identifier));
+    try {
+      const response = await fetch(API_ENDPOINTS.DOCKER_STOP, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(
+          isProject ? { projectName: identifier } : { containerId: identifier },
+        ),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to stop container');
+      }
+
+      // Refresh the status after a short delay
+      setTimeout(() => fetchDockerStatus(), 1000);
+    } catch (err) {
+      console.error('Failed to stop container:', err);
+    } finally {
+      setActionInProgress(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(identifier);
+        return newSet;
+      });
+    }
+  };
+
   // Determine badge color based on state
-  const getBadgeColor = (state: string): 'green' | 'yellow' | 'red' | 'gray' | 'blue' | 'orange' => {
+  const getBadgeColor = (
+    state: string,
+  ): 'green' | 'yellow' | 'red' | 'gray' | 'blue' | 'orange' => {
     switch (state) {
       case 'running':
         return 'green';
@@ -96,7 +170,9 @@ export const DockerStatusComponent = () => {
     }
   };
 
-  const totalCount = (dockerStatus?.projects.length || 0) + (dockerStatus?.standaloneContainers.length || 0);
+  const totalCount =
+    (dockerStatus?.projects.length || 0) +
+    (dockerStatus?.standaloneContainers.length || 0);
 
   useEffect(() => {
     fetchDockerStatus();
@@ -113,9 +189,13 @@ export const DockerStatusComponent = () => {
     return (
       <Card className="w-full">
         <Flex direction="column" gap="4" p="4">
-          <Text size="5" weight="bold">Docker Containers</Text>
+          <Text size="5" weight="bold">
+            Docker Containers
+          </Text>
           <Flex direction="column" gap="3">
-            <Text size="2" color="red">{error}</Text>
+            <Text size="2" color="red">
+              {error}
+            </Text>
             <Button
               onClick={handleOpenDocker}
               loading={isStartingDocker}
@@ -151,25 +231,54 @@ export const DockerStatusComponent = () => {
 
         {dockerStatus && totalCount > 0 ? (
           <Flex direction="column" gap="3">
-            {dockerStatus.projects.map((project) => (
-              <Flex key={project.name} direction="column" gap="2" className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
+            {dockerStatus.projects.map(project => (
+              <Flex
+                key={project.name}
+                direction="column"
+                gap="2"
+                className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0"
+              >
                 <Flex align="center" gap="2" justify="between">
                   <Flex align="center" gap="2">
                     <Badge color={getBadgeColor(project.state)} size="2">
-                      {project.state.charAt(0).toUpperCase() + project.state.slice(1)}
+                      {project.state.charAt(0).toUpperCase() +
+                        project.state.slice(1)}
                     </Badge>
                     <Text size="3" weight="bold" className="text-gray-700">
                       {project.name}
                     </Text>
                   </Flex>
-                  <Badge color="gray" size="1">
-                    {project.containerCount} {project.containerCount === 1 ? 'image' : 'images'}
-                  </Badge>
+                  <Flex align="center" gap="2">
+                    {project.state !== 'running' && (
+                      <IconButton
+                        size="1"
+                        variant="soft"
+                        color="green"
+                        onClick={() => handleStart(project.name, true)}
+                        disabled={actionInProgress.has(project.name)}
+                        title="Start project"
+                      >
+                        <PlayIcon />
+                      </IconButton>
+                    )}
+                    {project.state === 'running' && (
+                      <IconButton
+                        size="1"
+                        variant="soft"
+                        color="red"
+                        onClick={() => handleStop(project.name, true)}
+                        disabled={actionInProgress.has(project.name)}
+                        title="Stop project"
+                      >
+                        <StopIcon />
+                      </IconButton>
+                    )}
+                  </Flex>
                 </Flex>
 
                 {project.services.length > 0 && (
                   <Flex gap="1" className="ml-2" wrap="wrap">
-                    {project.services.map((service) => (
+                    {project.services.map(service => (
                       <Badge key={service} color="blue" variant="soft" size="1">
                         {service}
                       </Badge>
@@ -179,25 +288,61 @@ export const DockerStatusComponent = () => {
               </Flex>
             ))}
 
-            {dockerStatus.standaloneContainers.map((container) => (
-              <Flex key={container.id} direction="column" gap="2" className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
+            {dockerStatus.standaloneContainers.map(container => (
+              <Flex
+                key={container.id}
+                direction="column"
+                gap="2"
+                className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0"
+              >
                 <Flex align="center" gap="2" justify="between">
                   <Flex align="center" gap="2">
                     <Badge color={getBadgeColor(container.state)} size="2">
-                      {container.state.charAt(0).toUpperCase() + container.state.slice(1)}
+                      {container.state.charAt(0).toUpperCase() +
+                        container.state.slice(1)}
                     </Badge>
                     <Text size="3" weight="bold" className="text-gray-700">
                       {container.name}
                     </Text>
                   </Flex>
+                  <Flex align="center" gap="2">
+                    {container.state !== 'running' && (
+                      <IconButton
+                        size="1"
+                        variant="soft"
+                        color="green"
+                        onClick={() => handleStart(container.id, false)}
+                        disabled={actionInProgress.has(container.id)}
+                        title="Start container"
+                      >
+                        <PlayIcon />
+                      </IconButton>
+                    )}
+                    {container.state === 'running' && (
+                      <IconButton
+                        size="1"
+                        variant="soft"
+                        color="red"
+                        onClick={() => handleStop(container.id, false)}
+                        disabled={actionInProgress.has(container.id)}
+                        title="Stop container"
+                      >
+                        <StopIcon />
+                      </IconButton>
+                    )}
+                  </Flex>
                 </Flex>
 
                 <Flex direction="column" gap="1" className="ml-2">
                   <Text size="1" className="text-gray-600">
-                    ID: <Text className="text-gray-700 font-mono">{container.id.substring(0, 12)}</Text>
+                    ID:{' '}
+                    <Text className="text-gray-700 font-mono">
+                      {container.id.substring(0, 12)}
+                    </Text>
                   </Text>
                   <Text size="1" className="text-gray-600">
-                    Status: <Text className="text-gray-700">{container.status}</Text>
+                    Status:{' '}
+                    <Text className="text-gray-700">{container.status}</Text>
                   </Text>
                 </Flex>
               </Flex>
