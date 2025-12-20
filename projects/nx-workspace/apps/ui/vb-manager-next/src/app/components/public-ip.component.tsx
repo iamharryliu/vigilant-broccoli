@@ -3,6 +3,7 @@
 import { Card, Flex, Text, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CopyIcon, CheckIcon } from '@radix-ui/react-icons';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 export const PublicIpComponent = () => {
   const [publicIp, setPublicIp] = useState<string>('');
@@ -18,8 +19,8 @@ export const PublicIpComponent = () => {
         setLoading(true);
 
         const [publicIpResponse, localIpResponse] = await Promise.all([
-          fetch('/api/public-ip').then(res => res.json()).catch(() => ({ success: false, error: 'Failed to fetch public IP' })),
-          fetch('/api/local-ip').then(res => res.json()).catch(() => ({ success: false, error: 'Failed to fetch local IP' }))
+          fetch(API_ENDPOINTS.PUBLIC_IP).then(res => res.json()).catch(() => ({ success: false, error: 'Failed to fetch public IP' })),
+          fetch(API_ENDPOINTS.LOCAL_IP).then(res => res.json()).catch(() => ({ success: false, error: 'Failed to fetch local IP' }))
         ]);
 
         if (publicIpResponse.success) {

@@ -6,6 +6,7 @@ import {
   EyeOpenIcon,
   EyeClosedIcon,
 } from '@radix-ui/react-icons';
+import { API_ENDPOINTS } from '../../constants/api-endpoints';
 
 const LLM_PREFERENCES = `# LLM Code Preferences
 
@@ -29,7 +30,7 @@ export const PasteBinPage = () => {
     async function fetchData() {
       setIsLoading(true);
 
-      const sshKeyResponse = await fetch('/api/ssh-key')
+      const sshKeyResponse = await fetch(API_ENDPOINTS.SSH_KEY)
         .then(res => res.json())
         .catch(() => ({ success: false, error: 'Failed to load SSH key' }));
 

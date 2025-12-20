@@ -1,5 +1,6 @@
 'use client';
 
+import { DockerStatusComponent } from '../../components/docker-status.component';
 import { FlyIoAppsComponent } from '../../components/flyio-apps.component';
 import { GcloudAuthStatusComponent } from '../../components/gcloud-auth-status.component';
 import { GithubRepoActionStatusBadges } from '../../components/github-actions-status.component';
@@ -81,6 +82,7 @@ export default function Page() {
       </div>
       <div className="flex flex-col gap-4">
         <FlyIoAppsComponent />
+        <DockerStatusComponent />
       </div>
       <div className="flex flex-col gap-4">
         <LinkGroupComponent

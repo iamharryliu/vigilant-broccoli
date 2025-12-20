@@ -4,6 +4,7 @@ import { Card, Flex, Text, Table, Code, Button, IconButton } from '@radix-ui/the
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { CopyIcon } from '@radix-ui/react-icons';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface TaskList {
   id: string;
@@ -25,7 +26,7 @@ export const TaskListDebugComponent = () => {
 
   const fetchTaskLists = async () => {
     try {
-      const response = await fetch('/api/tasks/lists');
+      const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
       const data = await response.json();
 
       if (!response.ok) {

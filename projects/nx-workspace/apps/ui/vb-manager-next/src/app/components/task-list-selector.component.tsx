@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { GoogleTasksComponent } from './google-tasks.component';
 import { CardSkeleton } from './skeleton.component';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface TaskList {
   id: string;
@@ -28,7 +29,7 @@ export const TaskListSelectorComponent = () => {
 
   const fetchTaskLists = async () => {
     try {
-      const response = await fetch('/api/tasks/lists');
+      const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
       const data = await response.json();
 
       if (!response.ok) {

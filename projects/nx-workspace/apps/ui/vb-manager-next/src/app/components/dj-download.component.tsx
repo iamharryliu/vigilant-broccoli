@@ -3,6 +3,7 @@
 import { Card, Flex, Text, Button, Badge } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface PlaylistInfo {
   name: string;
@@ -27,7 +28,7 @@ export const DjDownloadComponent = () => {
   const fetchPlaylists = async () => {
     setLoadingPlaylists(true);
     try {
-      const response = await fetch('/api/dj/playlists');
+      const response = await fetch(API_ENDPOINTS.DJ_PLAYLISTS);
       const data = await response.json();
 
       if (!response.ok) {
@@ -49,7 +50,7 @@ export const DjDownloadComponent = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/dj/download', {
+      const response = await fetch(API_ENDPOINTS.DJ_DOWNLOAD, {
         method: 'POST',
       });
 
@@ -72,7 +73,7 @@ export const DjDownloadComponent = () => {
 
   const handleOpenRekordBox = async () => {
     try {
-      const response = await fetch('/api/dj/open-rekordbox', {
+      const response = await fetch(API_ENDPOINTS.DJ_OPEN_REKORDBOX, {
         method: 'POST',
       });
 

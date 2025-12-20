@@ -2,6 +2,7 @@
 
 import { Card, Flex, Text } from '@radix-ui/themes';
 import { LINK_TYPE } from '../constants/link-types';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 type LinkType = (typeof LINK_TYPE)[keyof typeof LINK_TYPE];
 
@@ -69,7 +70,7 @@ export function LinkGroupComponent({
 
   const handleShellExecute = async (type: LinkType, target: string) => {
     try {
-      const response = await fetch('/api/shell/execute', {
+      const response = await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

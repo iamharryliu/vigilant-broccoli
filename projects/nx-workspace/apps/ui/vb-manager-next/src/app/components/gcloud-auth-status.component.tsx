@@ -3,6 +3,7 @@
 import { Card, Flex, Text, Badge } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface GcloudAccount {
   account: string;
@@ -23,7 +24,7 @@ export const GcloudAuthStatusComponent = () => {
   useEffect(() => {
     const fetchGcloudStatus = async () => {
       try {
-        const response = await fetch('/api/gcloud/auth-status');
+        const response = await fetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS);
         if (!response.ok) {
           throw new Error('Failed to fetch gcloud auth status');
         }

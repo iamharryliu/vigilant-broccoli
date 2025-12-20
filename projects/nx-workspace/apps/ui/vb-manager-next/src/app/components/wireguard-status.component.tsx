@@ -3,6 +3,7 @@
 import { Card, Flex, Text, Badge, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface WireguardConnection {
   name: string;
@@ -39,7 +40,7 @@ export const WireguardStatusComponent = () => {
   useEffect(() => {
     const fetchWireguardStatus = async () => {
       try {
-        const response = await fetch('/api/wireguard/status');
+        const response = await fetch(API_ENDPOINTS.WIREGUARD_STATUS);
         if (!response.ok) {
           throw new Error('Failed to fetch WireGuard status');
         }

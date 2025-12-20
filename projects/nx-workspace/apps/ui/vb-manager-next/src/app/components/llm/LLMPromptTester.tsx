@@ -10,6 +10,7 @@ import {
   modelSupportsImageInput,
 } from '@vigilant-broccoli/common-js';
 import Image from 'next/image';
+import { API_ENDPOINTS } from '../../constants/api-endpoints';
 
 type OutputType = 'text' | 'image';
 
@@ -120,7 +121,7 @@ export const LLMSimplePromptTester = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/llm-test', {
+      const response = await fetch(API_ENDPOINTS.LLM_TEST, {
         method: HTTP_METHOD.POST,
         body: JSON.stringify({
           userPrompt,

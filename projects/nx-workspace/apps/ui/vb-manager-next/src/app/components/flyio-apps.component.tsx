@@ -4,6 +4,7 @@ import { Card, Flex, Text, Badge, Link } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { ExternalLinkIcon } from '@radix-ui/react-icons';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface FlyApp {
   name: string;
@@ -36,7 +37,7 @@ export const FlyIoAppsComponent = () => {
   useEffect(() => {
     const fetchFlyApps = async () => {
       try {
-        const response = await fetch('/api/flyio/apps');
+        const response = await fetch(API_ENDPOINTS.FLYIO_APPS);
         const data: FlyAppsResponse = await response.json();
 
         if (!data.success || !data.apps) {

@@ -76,6 +76,7 @@ const URLS = {
   },
   CLAUDE: {
     NAME: 'Claude',
+    DASHBOARD: 'https://claude.ai/',
     BILLING: 'https://claude.ai/settings/billing',
     PAYMENT_HISTORY: 'https://claude.ai/settings/billing',
     USAGE: 'https://claude.ai/settings/usage',

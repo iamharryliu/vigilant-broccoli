@@ -4,6 +4,7 @@ import { Card, Flex, Text, Checkbox, Button, TextField, Select } from '@radix-ui
 import { useEffect, useState, useCallback, memo } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { CardSkeleton } from './skeleton.component';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface Task {
   id: string;
@@ -84,7 +85,7 @@ const useTasks = (taskListId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/tasks?taskListId=${taskListId}`);
+      const response = await fetch(`${API_ENDPOINTS.TASKS}?taskListId=${taskListId}`);
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to fetch tasks');
       setTasks(data.tasks);
@@ -98,7 +99,7 @@ const useTasks = (taskListId: string) => {
   const createTask = async (title: string) => {
     if (!title.trim()) return;
     try {
-      const response = await fetch('/api/tasks', {
+      const response = await fetch(API_ENDPOINTS.TASKS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ taskListId, title }),
@@ -114,7 +115,7 @@ const useTasks = (taskListId: string) => {
   const toggleTaskComplete = async (task: Task) => {
     try {
       const newStatus = task.status === 'completed' ? 'needsAction' : 'completed';
-      const response = await fetch('/api/tasks', {
+      const response = await fetch(API_ENDPOINTS.TASKS, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ taskListId, taskId: task.id, status: newStatus }),
@@ -143,7 +144,7 @@ const useTasks = (taskListId: string) => {
   const updateTask = async (taskId: string, title: string) => {
     if (!title.trim()) return;
     try {
-      const response = await fetch('/api/tasks', {
+      const response = await fetch(API_ENDPOINTS.TASKS, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ taskListId, taskId, title }),
@@ -172,7 +173,7 @@ const useTaskListName = (taskListId: string, status: string) => {
 
     const fetchTaskListName = async () => {
       try {
-        const response = await fetch('/api/tasks/lists');
+        const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
         const data = await response.json();
 
         if (response.status === 401) {
