@@ -7,7 +7,7 @@
 | [Language Learning](./language-learning/language-learning.md) | ✅             |          |      |
 | [Philosophy](./philosophy.md)                                 | ✅             |          |      |
 | [DJing](./djing/djing)                                        | ✅             |          |      |
-| [Dance](./dance/dance.md)                                     |                | ✅       |      |
+| [Dance](./dance/social-dancing.md)                            |                | ✅       |      |
 | [Inline Skate](./skate/inline-skate.md)                       |                | ✅       |      |
 | [Skateboard](./skate/skateboard.md)                           |                | ✅       |      |
 | [Snowboard](./skate/snowboard.md)                             |                | ✅       |      |

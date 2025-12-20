@@ -39,8 +39,6 @@
 - **Toiletry**
   - [Toiletry Packlist](./toiletry-packlist)
   - Toilet Paper
-  - Towels
-  - Laundry Bag
 - **Food and Water**
   - Food and Water
   - Water Bottle

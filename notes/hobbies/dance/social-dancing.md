@@ -1,5 +1,8 @@
 # Social Dancing
 
+- [Salsa](./salsa.md)
+- [Bachata](./bachata.md)
+
 ## Good Dancing
 
 - Being on time.

@@ -8,3 +8,5 @@
   - Glasses
 - Nail Clippers
 - Razor
+- Towel
+- Laundry Bag

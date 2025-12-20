@@ -1,39 +1,34 @@
 # Travel Packlist
 
-## Everyday Carry
-
 - **Essentials**
   - Phone
   - Wallet
   - Keys
-  - Chapstick
   - [Digital Packlist](./digital-packlist.md)
 - **Outing**
   - Wet Wipes
   - Sunglasses
   - Sunscreen
+  - Chapstick
   - Hat
   - Light Jacket/Sweater
-- Totebags
-- Water Bottle
-- Footwear
+- [Toiletry](./toiletry-packlist)
+- **Utility**
+  - Totebags
+  - Water Bottle
+  - Headlamp
+  - Shoehorn
+- **Footwear**
   - sneakers
   - boots
   - sandals
-- [Toiletry](./toiletry-packlist)
-- Snacks
-- Comfort
-  - Ear Plugs
-  - Neck Pillow
-  - Light Blanket
-  - Sleeping Mask
-  - Portable Pillow
-- Utility
-  - Headlamp
-  - Flashlight
-- Nice to have
-  - Shoehorn
+- **Nice to have**
+  - Snacks
   - Swimwear
   - Speakers
-- Cross country
-  - Passport if travelling between countries.
+  - **Comfort**
+    - Ear Plugs
+    - Neck Pillow
+    - Light Blanket
+    - Sleeping Mask
+    - Portable Pillow

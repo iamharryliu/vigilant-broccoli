@@ -1,6 +1,4 @@
-# Productivity
-
-## Eisenhower Decision Matrix
+# Eisenhower Decision Matrix
 
 - Q1 - Important and urgent.
 - Q2 - Important and not urgent.
@@ -18,10 +16,9 @@ quadrantChart
     quadrant-1 Q2 - Important & Not Urgent
     quadrant-3 Q3 - Not Important & Urgent
     quadrant-4 Q4 - Not Important & Not Urgent
-
 ```
 
-### Q2 Deep Dive
+## Q2 Deep Dive
 
 - What we can't afford not to do Q2 tasks!
 - Q2 negative vs Q2 positive

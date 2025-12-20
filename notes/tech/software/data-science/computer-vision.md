@@ -1,5 +1,3 @@
-# Data Science
-
 | Concept                     | Purpose                                                | Why It Matters                                              |
 | --------------------------- | ------------------------------------------------------ | ----------------------------------------------------------- |
 | **Infinite Straight Lines** | Perfect, infinite geometric lines from Hough transform | Great for detecting the true edge even when noisy or broken |

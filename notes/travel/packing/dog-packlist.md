@@ -1,8 +1,9 @@
 # Dog Travel
 
-- Food Bowl
-- Water Bowl
-- Doggy Towel
+- **Walking**
+  - Headlamp
+  - Harness
+  - Lead
 - **Consumables**
   - Food(enough dog food for travel duration)
   - Chew toys
@@ -13,7 +14,10 @@
 - **Portable**
   - Food Pouch
   - Dog Water Bottle
-  - Portable Dog Bowl
+  - Portable Food Bowl
+  - Portable Water Bowl
+- **Utility**
+  - Doggy Towel
 - **Vehicle**
   - Car Harness
   - Carrier

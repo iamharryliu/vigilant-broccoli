@@ -1,5 +1,6 @@
 # Network Security
 
+- [Security Hardening](./security-hardening.md)
 - [Lingo](./network-security-lingo.md)
 - [jwt](./jwt.md)
 - [ssh](./ssh.md)
@@ -62,6 +63,7 @@ Ways to protect against DDoS:
 ## Tools
 
 - [Network Tools](./network-secrurity-tools/network-tools.md)
+- [GitLeaks](./network-secrurity-tools/gitleaks.md)
 - [OSINT Tools](./network-secrurity-tools/osint-tools.md)
 - [Password Cracking Tools](./network-secrurity-tools/password-cracking-tools.md)
 - [Penetration Testing Tools](./network-secrurity-tools/penetration-testing-tools.md)
