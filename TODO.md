@@ -1,8 +1,11 @@
 # TODO
-- Deal with cloud storage
-- Move parents iPhone photos to computer
-- Move phone images to computer
-- Build photo storage solution
+
+## Image Storage Solution
+
+- Cloud storage
+- Physical storage
+- Backups
+- Accessibility
 
 ## vigilant-broccoli
 
@@ -32,20 +35,8 @@
     - Split into separate app.
     - Implement search bar.
   - feat(common-node): Bucket service implementation.
-  - LLM Interfaces
-    - feat(common-node): LLM image analysis
-    - feat(common-node): LLM image identification interface
-    - docs(llm): LLLM deterministic values
-      - text/unstructures data to->
-        - boolean
-        - number
-        - string
-        - object
-        - array
   - feat(common-node): Stripe interface implementation
   - feat(cloud8skate): cloud8skate SSG, SEO, etc..
-  - feat(vb-manager): Spotify DL manager.
-  - feat(vb-manager): Google TODO list.
 - **New Features**
   - feat: home management
     - Calendar Implementation
