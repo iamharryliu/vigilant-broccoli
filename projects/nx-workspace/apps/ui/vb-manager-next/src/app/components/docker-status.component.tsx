@@ -108,17 +108,15 @@ export const DockerStatusComponent = () => {
       <Card className="w-full">
         <Flex direction="column" gap="4" p="4">
           <Text size="5" weight="bold">Docker Containers</Text>
-          <Flex direction="column" gap="2">
-            <Text color="red">{error}</Text>
-            <Text size="2">
-              <button
-                onClick={handleOpenDocker}
-                className="text-blue-500 hover:text-blue-700 underline cursor-pointer bg-transparent border-none p-0"
-              >
-                Open Docker Desktop
-              </button>
-            </Text>
-          </Flex>
+          <Text size="2" color="red">
+            {error}.{' '}
+            <button
+              onClick={handleOpenDocker}
+              className="text-blue-500 hover:text-blue-700 underline cursor-pointer bg-transparent border-none p-0"
+            >
+              Open Docker Desktop
+            </button>
+          </Text>
         </Flex>
       </Card>
     );
