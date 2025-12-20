@@ -31,9 +31,7 @@ export class VibecheckLite {
       const requestData = await this.getWeatherDataForOutfitRecommendation(
         location,
       );
-      const requestString = `Can you recommend complete outfits to wear with the following json data for the 4 separate times. Please use the "dt_txt" parameter for the time, it is in GMT, please convert it to EST. Please use the "temp" parameter, it is in degrees Kelvin (K), please convert it to degrees Celsius (C).${JSON.stringify(
-        requestData,
-      )}. Convert the date and time from GMT to EST for the answer. Convert the temperature to celsius instead of Kelvin for the answer. Reply using the following template: \nTime {h:mm EST}:\n- Temperature: {temperature in celsius to nearest integer}\n- Weather: {weather}\n- Recommendation: {recommended outfit}.`;
+      const requestString = this.buildRequestString(requestData);
       const completion = await this.openai.chat.completions.create({
         messages: [{ role: 'system', content: requestString }],
         model: 'gpt-3.5-turbo',
@@ -44,6 +42,24 @@ export class VibecheckLite {
       logger.error(err);
       return 'Something went wrong.';
     }
+  }
+
+  async getOutfitRecommendationStream(location: Location) {
+    const requestData = await this.getWeatherDataForOutfitRecommendation(
+      location,
+    );
+    const requestString = this.buildRequestString(requestData);
+    return this.openai.chat.completions.create({
+      messages: [{ role: 'system', content: requestString }],
+      model: 'gpt-3.5-turbo',
+      stream: true,
+    });
+  }
+
+  private buildRequestString(requestData: any): string {
+    return `Can you recommend complete outfits to wear with the following json data for the 4 separate times. Please use the "dt_txt" parameter for the time, it is in GMT, please convert it to EST. Please use the "temp" parameter, it is in degrees Kelvin (K), please convert it to degrees Celsius (C).${JSON.stringify(
+      requestData,
+    )}. Convert the date and time from GMT to EST for the answer. Convert the temperature to celsius instead of Kelvin for the answer. Reply using the following template: \nTime {h:mm EST}:\n- Temperature: {temperature in celsius to nearest integer}\n- Weather: {weather}\n- Recommendation: {recommended outfit}.`;
   }
 
   private async getWeatherDataForOutfitRecommendation(

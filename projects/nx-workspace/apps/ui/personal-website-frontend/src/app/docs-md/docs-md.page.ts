@@ -5,8 +5,8 @@ import { AppService } from '../core/services/app.service';
 import { DOCS_MD_ROUTE, LINKS } from '../core/consts/routes.const';
 import { DocsMdPageService } from './docs-md.page.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FileSearchComponent } from '../components/features/file-search/file-search.component';
 import {
-  FolderItemComponent,
   FolderItem,
   LinkComponent,
   MarkdownPageComponent,
@@ -17,9 +17,9 @@ import {
   selector: 'app-md-library',
   imports: [
     CommonModule,
-    FolderItemComponent,
     LinkComponent,
     MarkdownPageComponent,
+    FileSearchComponent,
   ],
   templateUrl: './docs-md.page.html',
 })
@@ -37,6 +37,11 @@ export class DocsMdPageComponent implements OnInit {
   ) {
     this.fileContent$ = this.pageService.getFileContent();
   }
+
+  // Filter function to only show .md files
+  markdownFileFilter = (filename: string): boolean => {
+    return filename.endsWith('.md');
+  };
 
   ngOnInit(): void {
     const filename = this.route.snapshot.paramMap.get(

@@ -4,8 +4,8 @@ import { LINKS } from '../core/consts/routes.const';
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
 import { LeetCodePageService } from './leet-code.page.service';
+import { FileSearchComponent } from '../components/features/file-search/file-search.component';
 import {
-  FolderItemComponent,
   FolderItem,
   LinkComponent,
   FileService,
@@ -22,7 +22,7 @@ type Language = keyof typeof hmap;
 
 @Component({
   selector: 'app-leet-code-page',
-  imports: [CommonModule, FolderItemComponent, LinkComponent],
+  imports: [CommonModule, LinkComponent, FileSearchComponent],
   templateUrl: './leet-code.page.html',
   styleUrl: '../code.scss',
 })
@@ -43,6 +43,13 @@ export class LeetCodePageComponent implements OnInit {
       'assets/grind-75/grind-75.json',
     );
   }
+
+  // Filter function to only show code files (.go, .py, .ts)
+  codeFileFilter = (filename: string): boolean => {
+    const validExtensions = ['go', 'py', 'ts'];
+    const extension = filename.split('.').pop()?.toLowerCase();
+    return extension ? validExtensions.includes(extension) : false;
+  };
 
   ngOnInit(): void {
     const language = this.route.snapshot.paramMap.get('language') as Language;

@@ -6,6 +6,40 @@ html {
   scroll-behavior: smooth;
 }
 
+// Global subtle UI enhancements
+* {
+  // Improve font rendering
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Enhanced focus states for accessibility
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+// Smooth transitions for interactive elements
+a, button, input, textarea, select {
+  transition: all 0.2s ease-in-out;
+}
+
+// Better link styling in markdown content
+a {
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+// Profile picture styling
+#profile-picture {
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
 .grecaptcha-badge {
   visibility: hidden;
 }

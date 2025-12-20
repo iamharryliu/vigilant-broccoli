@@ -1,5 +1,5 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="text-center">
-  <label for="subscribe-form-email-input" class="mr-2 text-mb">
+<form [formGroup]="form" (ngSubmit)="submit()" class="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+  <label for="subscribe-form-email-input" class="mr-2 text-lg font-medium mb-3 block lg:inline">
     Subscribe to my Blogs:
   </label>
   <br class="lg:hidden" />
@@ -10,18 +10,18 @@
     formControlName="email"
     autocomplete="email"
     required
-    class="w-7/12 lg:w-min border rounded py-2 px-3 focus:outline-none focus:border-blue-400 mr-2"
+    class="w-7/12 lg:w-min border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 mr-2 transition-all duration-200 bg-white dark:bg-gray-700"
     [placeholder]="'Your email address'"
     />
   <button
     type="submit"
     id="subscribe-form-submit-button"
     [disabled]="form.invalid"
-    class="text-white font-semibold px-4 py-2 rounded-lg w-32 h-12"
+    class="text-white font-semibold px-4 py-2 rounded-lg w-32 h-12 transition-all duration-200 transform hover:scale-105"
     [ngClass]="{
-      'bg-gray-300': form.invalid,
-      'bg-black': form.valid,
-      'hover:bg-blue-600': form.valid
+      'bg-gray-300 dark:bg-gray-600 cursor-not-allowed': form.invalid,
+      'bg-black dark:bg-blue-600': form.valid,
+      'hover:bg-blue-600 dark:hover:bg-blue-500': form.valid
     }"
     >
     @if (!isLoading) {

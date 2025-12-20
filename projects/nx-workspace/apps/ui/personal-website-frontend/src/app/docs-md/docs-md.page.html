@@ -13,16 +13,16 @@
       ></lib-link>
     </div>
     <h1 class="text-xl font-bold mb-2" (click)="selectFile()">DocsMD</h1>
-    @if (fileContent$ | async; as rootFolder) {
-      @for (folderItem of rootFolder.children; track folderItem) {
-        <lib-folder-item
-          [filepath]="pageService.selectedFilepath"
-          [item]="folderItem"
-          (fileEmitter)="selectFile($event)"
-          [isTitleCase]="true"
-        ></lib-folder-item>
-      }
-    }
+
+    <!-- Reusable file search component -->
+    <app-file-search
+      [fileContent$]="fileContent$"
+      [selectedFilepath]="pageService.selectedFilepath"
+      [placeholder]="'Search .md files...'"
+      [isTitleCase]="true"
+      [fileFilter]="markdownFileFilter"
+      (fileSelected)="selectFile($event)"
+    ></app-file-search>
   </div>
   <div
     class="h-screen overflow-y-scroll md:block md:w-4/5 pl-4 pr-4"

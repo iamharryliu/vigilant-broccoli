@@ -1,26 +1,28 @@
 <app-general-layout>
   <div class="w-11/12 mx-auto mt-6">
     @for (year of getObjectKeys(blogsByYear); track year) {
-      <div class="mb-8">
-        <h2 class="text-lg mb-2">{{ year }}</h2>
-        @for (blog of blogsByYear[year]; track blog) {
-          <div
-            class="flex justify-between cursor-pointer"
-            (click)="goToBlog(blog)"
-            >
-            <p class="mr-4">
-              {{ blog.title }}
-              <span
-                class="inline-block bg-slate-700 font-bold text-xs text-white px-2 rounded"
-                >{{ blog.type }}</span
-                >
-              </p>
-              <p>{{ blog.date | date: 'MMMM d' }}</p>
-            </div>
-          }
+      <div class="mb-10">
+        <h2 class="text-2xl font-semibold mb-4 border-b-2 border-gray-200 dark:border-gray-700 pb-2">{{ year }}</h2>
+        <div class="space-y-2">
+          @for (blog of blogsByYear[year]; track blog) {
+            <div
+              class="flex justify-between items-center cursor-pointer px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-sm group"
+              (click)="goToBlog(blog)"
+              >
+              <p class="mr-4 flex items-center gap-2">
+                <span class="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">{{ blog.title }}</span>
+                <span
+                  class="inline-block bg-slate-700 dark:bg-slate-600 font-medium text-xs text-white px-2.5 py-0.5 rounded-full transition-transform duration-200 group-hover:scale-105"
+                  >{{ blog.type }}</span
+                  >
+                </p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm whitespace-nowrap">{{ blog.date | date: 'MMMM d' }}</p>
+              </div>
+            }
+          </div>
         </div>
       }
-      <hr class="mb-8" />
+      <hr class="mb-8 border-gray-300 dark:border-gray-600" />
       <app-newsletter-sub-form></app-newsletter-sub-form>
     </div>
   </app-general-layout>

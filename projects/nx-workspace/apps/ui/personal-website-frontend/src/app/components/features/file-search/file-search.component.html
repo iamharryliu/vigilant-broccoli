@@ -1,0 +1,55 @@
+<!-- Search input for filtering files -->
+<div class="mb-3 relative">
+  <input
+    type="text"
+    [(ngModel)]="searchQuery"
+    (ngModelChange)="onSearchChange()"
+    [placeholder]="placeholder"
+    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  @if (searchQuery) {
+    <button
+      (click)="clearSearch()"
+      class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+      aria-label="Clear search"
+    >
+      ✕
+    </button>
+  }
+</div>
+
+<!-- Show flat list of matching files when searching -->
+@if (searchQuery && searchResults.length > 0) {
+  <div class="mb-2 text-sm text-gray-600 dark:text-gray-400">
+    Found {{ searchResults.length }} file{{ searchResults.length === 1 ? '' : 's' }}
+  </div>
+  <div class="space-y-1">
+    @for (file of searchResults; track file.filepath) {
+      <div
+        (click)="selectFile(file)"
+        class="cursor-pointer px-2 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        [class.bg-blue-50]="selectedFilepath === file.filepath"
+        [class.dark:bg-blue-900]="selectedFilepath === file.filepath"
+      >
+        <div class="font-medium text-sm">
+          {{ isTitleCase ? (file.name.replace('.md', '').replace('.go', '').replace('.py', '').replace('.ts', '')) : file.name }}
+        </div>
+        <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ file.filepath }}</div>
+      </div>
+    }
+  </div>
+} @else if (searchQuery && searchResults.length === 0) {
+  <div class="text-sm text-gray-500 dark:text-gray-400 italic">No matching files found</div>
+} @else {
+  <!-- Show folder tree when not searching -->
+  @if (filteredFileContent$ | async; as rootFolder) {
+    @for (folderItem of rootFolder.children; track folderItem) {
+      <lib-folder-item
+        [filepath]="selectedFilepath"
+        [item]="folderItem"
+        (fileEmitter)="selectFile($event)"
+        [isTitleCase]="isTitleCase"
+      ></lib-folder-item>
+    }
+  }
+}
