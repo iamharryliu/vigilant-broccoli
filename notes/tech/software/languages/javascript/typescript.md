@@ -6,6 +6,7 @@
 console.log(Date.now())
 console.time('something');
 console.timeEnd('something');
+throw new Error("Stop");
 ```
 
 ## Falsy Values

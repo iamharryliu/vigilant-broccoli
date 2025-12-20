@@ -10,28 +10,6 @@
 [HappyCow](https://www.happycow.net/) - Find vegetarian/vegan options.
 [Airola](https://www.airalo.com/) - eSim Provider
 
-## Travel Packing
-
-- Passport if travelling between countries.
-- Toiletry
-- Footwear - at the very least a pair of good sneakers and comfy slides/sandals
-- Totebags
-- Water Bottle
-- Snacks
-- Sleep
-  - Ear Plugs
-  - Light Blanket
-  - Sleeping Mask
-  - Portable Pillow
-- Comfort
-  - Neck Pillow
-  - Back Buffer (can use a light blanket)
-  - Butt Padding (can use a light blanket)
-- Optional
-  - Shoehorn
-  - Swimwear
-  - Speakers
-
 ## Nuances
 
 - Driving

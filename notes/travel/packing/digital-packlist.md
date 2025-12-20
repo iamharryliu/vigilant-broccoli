@@ -1,0 +1,28 @@
+# Digital Packlist
+
+- Documentation
+  - Social Insurance Number
+  - Driver's License
+  - Passport
+  - Birth Certificate
+- Credit Cards
+- Offline Map
+- Leisure Content
+  - Music
+    - Spotify
+    - YouTube Music
+  - Reading Material
+    - eBooks
+    - Blogs
+    - articles
+    - forums
+  - Listening Material
+    - podcasts
+    - ebooks
+  - Video Material
+    - YouTube
+    - Netflix
+    - Crunchyroll
+- Learning
+  - Udemy
+  - Memrise

@@ -1,0 +1,22 @@
+# Dog Travel
+
+- Food Bowl
+- Water Bowl
+- Doggy Towel
+- **Consumables**
+  - Food(enough dog food for travel duration)
+  - Chew toys
+  - Wipes
+  - Treats
+  - Bones
+  - Poo Bag Rolls
+- **Portable**
+  - Food Pouch
+  - Dog Water Bottle
+  - Portable Dog Bowl
+- **Vehicle**
+  - Car Harness
+  - Carrier
+  - Car cover
+- **Camping**
+  - Dog Leash Stake

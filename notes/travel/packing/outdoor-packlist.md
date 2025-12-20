@@ -1,4 +1,4 @@
-# Outdoor Packing
+# Outdoor Packlist
 
 - Water
 - Food/Snacks
@@ -37,6 +37,7 @@
   - Pillow
   - Sleeping Bag/Blanket
 - **Toiletry**
+  - [Toiletry Packlist](./toiletry-packlist)
   - Toilet Paper
   - Towels
   - Laundry Bag
@@ -63,3 +64,8 @@
 - Tarp
 - Large Sitting Blanket
 - Clothing Pins
+
+- Book Bag
+  - Book(s)
+  - Bookmark
+  - Reading Light

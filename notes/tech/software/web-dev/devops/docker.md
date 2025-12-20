@@ -19,3 +19,11 @@ docker logs CONTAINER_NAME
 docker logs -f CONTAINER_NAME  # Follow logs
 docker run -it --rm IMAGE_NAME sh # Container shell.
 ```
+
+# Docker Compose
+
+```
+docker-compose -f DOCKER_COMPOSE_FILE up -d # Start
+docker-compose -f DOCKER_COMPOSE_FILE logs -f # View logs
+docker-compose -f DOCKER_COMPOSE_FILE down # Sop
+```
