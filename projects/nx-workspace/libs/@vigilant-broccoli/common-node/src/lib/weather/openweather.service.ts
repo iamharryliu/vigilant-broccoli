@@ -58,16 +58,17 @@ export const OpenWeatherService = {
    * Get weather forecast for a location
    * @param location - Location with latitude and longitude
    * @param count - Number of forecast items to return (default: 4)
+   * @param units - Units for temperature (standard, metric, imperial)
    * @returns Weather forecast data with timezone offset
    */
   async getForecast(
     location: Location,
     count = 4,
+    units: 'standard' | 'metric' | 'imperial' = 'standard',
   ): Promise<WeatherForecastData> {
     try {
       const apiKey = getEnvironmentVariable('OPENWEATHER_API_KEY');
-      console.log('apikey', apiKey)
-      const url = `${BASE_URL}/forecast?lat=${location.latitude}&lon=${location.longitude}&appid=${apiKey}`;
+      const url = `${BASE_URL}/forecast?lat=${location.latitude}&lon=${location.longitude}&units=${units}&appid=${apiKey}`;
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -88,12 +89,16 @@ export const OpenWeatherService = {
   /**
    * Get current weather for a location
    * @param location - Location with latitude and longitude
+   * @param units - Units for temperature (standard, metric, imperial)
    * @returns Current weather data
    */
-  async getCurrentWeather(location: Location): Promise<unknown> {
+  async getCurrentWeather(
+    location: Location,
+    units: 'standard' | 'metric' | 'imperial' = 'standard',
+  ): Promise<unknown> {
     try {
       const apiKey = getEnvironmentVariable('OPENWEATHER_API_KEY');
-      const url = `${BASE_URL}/weather?lat=${location.latitude}&lon=${location.longitude}&appid=${apiKey}`;
+      const url = `${BASE_URL}/weather?lat=${location.latitude}&lon=${location.longitude}&units=${units}&appid=${apiKey}`;
       const response = await fetch(url);
 
       if (!response.ok) {

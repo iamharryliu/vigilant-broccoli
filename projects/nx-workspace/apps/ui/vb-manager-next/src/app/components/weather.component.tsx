@@ -20,15 +20,15 @@ interface WeatherData {
 }
 
 const CITIES = [
-  { name: 'MALMÖ', lat: 55.6050, lon: 13.0038 },
+  { name: 'MALMÖ', lat: 55.605, lon: 13.0038 },
   { name: 'COPENHAGEN', lat: 55.6761, lon: 12.5683 },
   { name: 'TORONTO', lat: 43.6532, lon: -79.3832 },
 ];
 
 const getCurrentTime = (timezoneOffset: number): string => {
   const now = new Date();
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-  const cityTime = new Date(utc + (timezoneOffset * 1000));
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  const cityTime = new Date(utc + timezoneOffset * 1000);
 
   const hours = cityTime.getHours().toString().padStart(2, '0');
   const minutes = cityTime.getMinutes().toString().padStart(2, '0');
@@ -62,7 +62,15 @@ const getWeatherIcon = (iconCode: string): string => {
 
 const getDayName = (dateStr: string): string => {
   const date = new Date(dateStr);
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
   return days[date.getDay()];
 };
 
@@ -70,36 +78,34 @@ export const WeatherComponent = () => {
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [outfitRecommendation, setOutfitRecommendation] = useState<Record<string, string>>({});
-  const [loadingOutfit, setLoadingOutfit] = useState<Record<string, boolean>>({});
+  const [outfitRecommendation, setOutfitRecommendation] = useState<
+    Record<string, string>
+  >({});
+  const [loadingOutfit, setLoadingOutfit] = useState<Record<string, boolean>>(
+    {},
+  );
 
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-        if (!apiKey) {
-          setError('OpenWeather API key not configured');
-          setLoading(false);
-          return;
-        }
+        const weatherPromises = CITIES.map(async city => {
+          const response = await fetch(
+            `/api/weather?lat=${city.lat}&lon=${city.lon}`,
+          );
 
-        const weatherPromises = CITIES.map(async (city) => {
-          const [currentRes, forecastRes] = await Promise.all([
-            fetch(
-              `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metric&appid=${apiKey}`
-            ),
-            fetch(
-              `https://api.openweathermap.org/data/2.5/forecast?lat=${city.lat}&lon=${city.lon}&units=metric&appid=${apiKey}`
-            ),
-          ]);
+          if (!response.ok) {
+            throw new Error('Failed to fetch weather data');
+          }
 
-          const current = await currentRes.json();
-          const forecast = await forecastRes.json();
+          const { current, forecast } = await response.json();
 
-          const dailyForecasts: Record<string, { temps: number[]; icons: string[] }> = {};
+          const dailyForecasts: Record<
+            string,
+            { temps: number[]; icons: string[] }
+          > = {};
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          forecast.list.forEach((item: any) => {
+          forecast.forEach((item: any) => {
             const date = item.dt_txt.split(' ')[0];
             if (!dailyForecasts[date]) {
               dailyForecasts[date] = { temps: [], icons: [] };
@@ -141,13 +147,17 @@ export const WeatherComponent = () => {
     fetchWeather();
   }, []);
 
-  const getOutfitRecommendation = async (city: { name: string; lat: number; lon: number }) => {
+  const getOutfitRecommendation = async (city: {
+    name: string;
+    lat: number;
+    lon: number;
+  }) => {
     setLoadingOutfit(prev => ({ ...prev, [city.name]: true }));
     setOutfitRecommendation(prev => ({ ...prev, [city.name]: '' }));
 
     try {
       const response = await fetch(
-        `/api/outfit-recommendation?lat=${city.lat}&lon=${city.lon}`
+        `/api/outfit-recommendation?lat=${city.lat}&lon=${city.lon}`,
       );
 
       if (!response.ok || !response.body) {
@@ -164,14 +174,14 @@ export const WeatherComponent = () => {
         const chunk = decoder.decode(value, { stream: true });
         setOutfitRecommendation(prev => ({
           ...prev,
-          [city.name]: (prev[city.name] || '') + chunk
+          [city.name]: (prev[city.name] || '') + chunk,
         }));
       }
     } catch (err) {
       console.error('Error fetching outfit recommendation:', err);
       setOutfitRecommendation(prev => ({
         ...prev,
-        [city.name]: 'Failed to get recommendation'
+        [city.name]: 'Failed to get recommendation',
       }));
     } finally {
       setLoadingOutfit(prev => ({ ...prev, [city.name]: false }));
@@ -186,7 +196,9 @@ export const WeatherComponent = () => {
     return (
       <Card className="w-full">
         <Flex direction="column" gap="4" p="4">
-          <Text size="5" weight="bold">Weather</Text>
+          <Text size="5" weight="bold">
+            Weather
+          </Text>
           <Text color="red">{error}</Text>
         </Flex>
       </Card>
@@ -196,7 +208,9 @@ export const WeatherComponent = () => {
   return (
     <Card className="w-full">
       <Flex direction="column" gap="4" p="4">
-        <Text size="5" weight="bold">Weather</Text>
+        <Text size="5" weight="bold">
+          Weather
+        </Text>
 
         {weatherData.map((cityWeather, cityIndex) => {
           const city = CITIES[cityIndex];
@@ -213,18 +227,30 @@ export const WeatherComponent = () => {
                 </div>
 
                 <div className="flex flex-col items-center">
-                  <Text size="1" className="mb-2 text-gray-600">Now</Text>
-                  <div className="text-3xl mb-2">{getWeatherIcon(cityWeather.now.icon)}</div>
-                  <Text size="3" weight="bold">{cityWeather.now.temp}°C</Text>
+                  <Text size="1" className="mb-2 text-gray-600">
+                    Now
+                  </Text>
+                  <div className="text-3xl mb-2">
+                    {getWeatherIcon(cityWeather.now.icon)}
+                  </div>
+                  <Text size="3" weight="bold">
+                    {cityWeather.now.temp}°C
+                  </Text>
                 </div>
 
                 {cityWeather.forecast.map((day, idx) => (
                   <div key={idx} className="flex flex-col items-center">
-                    <Text size="1" className="mb-2 text-gray-600">{day.day}</Text>
-                    <div className="text-3xl mb-2">{getWeatherIcon(day.icon)}</div>
+                    <Text size="1" className="mb-2 text-gray-600">
+                      {day.day}
+                    </Text>
+                    <div className="text-3xl mb-2">
+                      {getWeatherIcon(day.icon)}
+                    </div>
                     <Text size="3" weight="bold">
                       {day.tempHigh}°C{' '}
-                      <Text size="2" color="gray">| {day.tempLow}°C</Text>
+                      <Text size="2" color="gray">
+                        | {day.tempLow}°C
+                      </Text>
                     </Text>
                   </div>
                 ))}
@@ -238,7 +264,9 @@ export const WeatherComponent = () => {
                   disabled={loadingOutfit[city.name]}
                   className="mb-2"
                 >
-                  {loadingOutfit[city.name] ? 'Getting recommendation...' : 'Get Outfit Recommendation'}
+                  {loadingOutfit[city.name]
+                    ? 'Getting recommendation...'
+                    : 'Get Outfit Recommendation'}
                 </Button>
 
                 {outfitRecommendation[city.name] && (
