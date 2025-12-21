@@ -76,9 +76,9 @@ async function promptOpenAI<T>(
 ): Promise<LLMPromptResult<T>> {
   const { modelConfig, responseFormat } = request;
   const client = LLMUtils.getLLMClient(modelConfig) as OpenAI;
-  const chatParams = LLMUtils.formatPromptParams(request);
+  const chatParams = LLMUtils.formatPromptParams(request, false);
 
-  const response = await client.chat.completions.create(chatParams);
+  const response = await client.chat.completions.create(chatParams) as OpenAI.Chat.Completions.ChatCompletion;
   const usage = response.usage as CompletionUsage;
   const message = response.choices[0].message;
 
@@ -97,6 +97,17 @@ async function promptOpenAI<T>(
   };
 }
 
+async function promptOpenAIStream<T>(
+  request: LLMPromptRequest<T>,
+): Promise<AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>> {
+  const { modelConfig } = request;
+  const client = LLMUtils.getLLMClient(modelConfig) as OpenAI;
+  const chatParams = LLMUtils.formatPromptParams(request, true);
+
+  const streamResponse = await client.chat.completions.create(chatParams);
+  return streamResponse as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;
+}
+
 async function prompt<T>(
   request: LLMPromptRequest<T>,
 ): Promise<LLMPromptResult<T>> {
@@ -108,6 +119,19 @@ async function prompt<T>(
   }
 
   return promptOpenAI(request);
+}
+
+async function promptStream<T>(
+  request: LLMPromptRequest<T>,
+): Promise<AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>> {
+  const { modelConfig } = request;
+  const client = LLMUtils.getLLMClient(modelConfig);
+
+  if (client instanceof Anthropic) {
+    throw new Error('Streaming is not yet supported for Anthropic models');
+  }
+
+  return promptOpenAIStream(request);
 }
 
 async function generateImages(prompt: string, n = 1) {
@@ -160,7 +184,7 @@ async function generateMultipleOutputs<T>(
 
   const outputs = await Promise.all(
     Array.from({ length: numOutputs }, async () => {
-      const result = await prompt(request);
+      const result = await prompt(request) as LLMPromptResult<T>;
       return result.data as string;
     })
   );
@@ -169,6 +193,7 @@ async function generateMultipleOutputs<T>(
 
 export const LLMService = {
   prompt,
+  promptStream,
   generateImage,
   generateImages,
   editImage,

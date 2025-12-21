@@ -1,126 +1,101 @@
-import { MongoClient } from 'mongodb';
 import 'dotenv-defaults/config';
-import OpenAI from 'openai';
+import { Location, LLM_MODEL } from '@vigilant-broccoli/common-js';
 import {
-  MONGO_DB_SERVER,
-  PERSONAL_WEBSITE_DB_COLLECTIONS,
-} from '@prettydamntired/personal-website-api-lib';
-import { Location } from '@vigilant-broccoli/common-js';
-import {
-  DEFAULT_EMAIL_REQUEST,
-  EmailService,
   logger,
   getEnvironmentVariable,
 } from '@vigilant-broccoli/common-node';
+import { LLMService } from '@vigilant-broccoli/ai-tools';
+import OpenAI from 'openai';
 
 export class VibecheckLite {
-  private openai: OpenAI;
   private openWeatherApiKey: string;
 
-  constructor(openAiApiKey = undefined, openWeatherApiKey = undefined) {
+  constructor(_openAiApiKey = undefined, openWeatherApiKey = undefined) {
     this.openWeatherApiKey = (openWeatherApiKey ||
       getEnvironmentVariable('OPENWEATHER_API_KEY')) as string;
-    this.openai = new OpenAI({
-      apiKey: openAiApiKey || getEnvironmentVariable('OPENAI_API_KEY'),
-      dangerouslyAllowBrowser: true,
-    });
   }
 
   async getOutfitRecommendation(location: Location): Promise<string> {
     try {
-      const requestData = await this.getWeatherDataForOutfitRecommendation(
+      const { weatherData, timezoneOffset } = await this.getWeatherDataForOutfitRecommendation(
         location,
       );
-      const requestString = this.buildRequestString(requestData);
-      const completion = await this.openai.chat.completions.create({
-        messages: [{ role: 'system', content: requestString }],
-        model: 'gpt-3.5-turbo',
+      const { systemPrompt, userPrompt } = this.buildPrompt(weatherData, timezoneOffset);
+      const result = await LLMService.prompt<string>({
+        prompt: {
+          systemPrompt,
+          userPrompt,
+        },
+        modelConfig: {
+          model: LLM_MODEL.GPT_3_5_TURBO,
+        },
       });
-      const res = completion.choices[0].message.content as string;
-      return res;
+      return result.data;
     } catch (err) {
       logger.error(err);
       return 'Something went wrong.';
     }
   }
 
-  async getOutfitRecommendationStream(location: Location) {
-    const requestData = await this.getWeatherDataForOutfitRecommendation(
+  async getOutfitRecommendationStream(
+    location: Location,
+  ): Promise<AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>> {
+    const { weatherData, timezoneOffset } = await this.getWeatherDataForOutfitRecommendation(
       location,
     );
-    const requestString = this.buildRequestString(requestData);
-    return this.openai.chat.completions.create({
-      messages: [{ role: 'system', content: requestString }],
-      model: 'gpt-3.5-turbo',
-      stream: true,
+    const { systemPrompt, userPrompt } = this.buildPrompt(weatherData, timezoneOffset);
+    return LLMService.promptStream<string>({
+      prompt: {
+        systemPrompt,
+        userPrompt,
+      },
+      modelConfig: {
+        model: LLM_MODEL.GPT_3_5_TURBO,
+      },
     });
   }
 
-  private buildRequestString(requestData: any): string {
-    return `Can you recommend complete outfits to wear with the following json data for the 4 separate times. Please use the "dt_txt" parameter for the time, it is in GMT, please convert it to EST. Please use the "temp" parameter, it is in degrees Kelvin (K), please convert it to degrees Celsius (C).${JSON.stringify(
-      requestData,
-    )}. Convert the date and time from GMT to EST for the answer. Convert the temperature to celsius instead of Kelvin for the answer. Reply using the following template: \nTime {h:mm EST}:\n- Temperature: {temperature in celsius to nearest integer}\n- Weather: {weather}\n- Recommendation: {recommended outfit}.`;
+  private buildPrompt(requestData: any, timezoneOffset: number): { systemPrompt: string; userPrompt: string } {
+    const timezoneOffsetHours = timezoneOffset / 3600;
+    const timezoneString = timezoneOffsetHours >= 0 ? `UTC+${timezoneOffsetHours}` : `UTC${timezoneOffsetHours}`;
+
+    const systemPrompt = `You are a fashion assistant that recommends complete outfits based on weather data.
+The user will provide weather forecast data in JSON format for 4 different times.
+Each forecast includes:
+- "dt_txt": timestamp in UTC format
+- "temp": temperature in Kelvin (K)
+- "weather": weather conditions
+
+Your task:
+1. Convert timestamps from UTC to local time (timezone offset: ${timezoneOffsetHours} hours from UTC, displayed as ${timezoneString})
+2. Convert temperature from Kelvin to Celsius
+3. Recommend a complete outfit for each time period
+
+Reply using this exact template for each time:
+Time {h:mm ${timezoneString}}:
+- Temperature: {temperature in celsius to nearest integer}°C
+- Weather: {weather description}
+- Recommendation: {recommended complete outfit with specific clothing items}`;
+
+    const userPrompt = `Here is the weather forecast data:\n\n${JSON.stringify(requestData, null, 2)}`;
+
+    return { systemPrompt, userPrompt };
   }
 
   private async getWeatherDataForOutfitRecommendation(
     location: Location,
-  ): Promise<any> {
+  ): Promise<{ weatherData: any; timezoneOffset: number }> {
     try {
       const res = await fetch(
         `https://api.openweathermap.org/data/2.5/forecast?lat=${location.latitude}&lon=${location.longitude}&appid=${this.openWeatherApiKey}`,
       );
       const data = await res.json();
-      const requestData = data.list.slice(0, 4);
-      return requestData;
+      const weatherData = data.list.slice(0, 4);
+      const timezoneOffset = data.city.timezone;
+      return { weatherData, timezoneOffset };
     } catch (err) {
       logger.error(err);
+      throw err;
     }
-  }
-
-  async emailSubscribedUsers() {
-    logger.info('Vibecheck lite recommendation script start.');
-    const MONGO_DB_CLIENT = new MongoClient(MONGO_DB_SERVER);
-    const database = MONGO_DB_CLIENT.db('vibecheck-lite');
-    const emailSubscriptionsCollection = database.collection(
-      PERSONAL_WEBSITE_DB_COLLECTIONS.EMAIL_SUBSCRIPTIONS,
-    );
-    const emailSubscriptions = (
-      await emailSubscriptionsCollection.find({}).toArray()
-    ).map(data => {
-      return {
-        email: data.email,
-        latitude: data.latitude,
-        longitude: data.longitude,
-      };
-    });
-
-    const emailPromises = emailSubscriptions.map(async emailSubscription => {
-      const { email, latitude, longitude } = emailSubscription;
-      logger.info(`Getting outfit recommendation for ${email}`);
-      const subject = 'Vibecheck Lite Outfit Recommendation';
-      const request = {
-        ...DEFAULT_EMAIL_REQUEST,
-        from: `nickname <${getEnvironmentVariable('MY_EMAIL')}>`,
-        to: email,
-        subject,
-      };
-      const recommendation = (await this.getOutfitRecommendation({
-        latitude: latitude as number,
-        longitude: longitude as number,
-      })) as string;
-      const template = {
-        path: `${__dirname}/assets/vibecheck-lite.ejs`,
-        data: {
-          recommendation: recommendation,
-          url: `https://harryliu.dev/unsubscribe-vibecheck-lite?token=${email}`,
-        },
-      };
-      logger.info(`Sending email to ${email}`);
-      const mailService = new EmailService();
-      return mailService.sendEjsEmail(request, template);
-    });
-
-    await Promise.all(emailPromises);
-    await MONGO_DB_CLIENT.close();
   }
 }

@@ -90,7 +90,7 @@ function getOpenAIClient({
   });
 }
 
-function formatPromptParams<T>(request: LLMPromptRequest<T>) {
+function formatPromptParams<T>(request: LLMPromptRequest<T>, stream = false) {
   const { prompt, modelConfig, responseFormat } = request;
   const { userPrompt, systemPrompt, images } = prompt;
 
@@ -117,7 +117,7 @@ function formatPromptParams<T>(request: LLMPromptRequest<T>) {
       : userPrompt;
   }
 
-  const result = {
+  return {
     model: LLM_MODEL.GPT_4O,
     ...modelConfig,
     messages: [
@@ -130,8 +130,8 @@ function formatPromptParams<T>(request: LLMPromptRequest<T>) {
     ...(responseFormat && responseFormat.zod
       ? { response_format: zodResponseFormat(responseFormat.zod, 'answer') }
       : {}),
-  } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming;
-  return result;
+    stream,
+  } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming | OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming;
 }
 
 function provideResponseExample(responseExample: string) {
