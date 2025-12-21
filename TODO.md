@@ -31,9 +31,6 @@
   - feat(employee-handler):
     - Inform user if gam or gyb needs to be setup.
     - Create missing folder/file structures.
-  - feat(docs-md):
-    - Split into separate app.
-    - Implement search bar.
   - feat(common-node): Bucket service implementation.
   - feat(common-node): Stripe interface implementation
   - feat(cloud8skate): cloud8skate SSG, SEO, etc..
@@ -57,37 +54,6 @@
   - chore: Look into Zapier uses.
   - chore: [Advanced typescript uses.](https://chatgpt.com/c/68f103dc-74c8-8328-8f2c-796bcd9b2037)
   - chore: Node build term lingo, ie esbuild, webpack, swc, etc..
-- **Fix**
-  - fix: fix DocsMD
-  - fix: fix Toronto alerts
-
-## AI Tools
-
-- Event Poster creater
-
-```
-Generate a promotional graphic for skating events group for events with the following data for SOCIAL_MEDIA_CHOICE
-event
-{
-  title
-  description
-  date
-    starttime
-    endtime
-}
-graphic
-{
-  events: event[]
-  style
-    modern
-    urban
-    grungy
-    colorful
-    minimalist
-    retro
-    vibrant party style?
-}
-```
 
 ## Home Management
 
@@ -114,8 +80,6 @@ graphic
     - name
     - description
     - image[]
-
-- **NewTab Extension**
 
 ## CMS
 
