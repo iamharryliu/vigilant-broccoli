@@ -240,7 +240,6 @@ interface TaskItemProps {
   isEditing: boolean;
   editingTitle: string;
   onToggleComplete: (task: Task) => void;
-  onDelete: (taskId: string) => void;
   onStartEdit: (task: Task) => void;
   onEditChange: (title: string) => void;
   onSaveEdit: () => void;
@@ -252,7 +251,6 @@ const TaskItem = memo(({
   isEditing,
   editingTitle,
   onToggleComplete,
-  onDelete,
   onStartEdit,
   onEditChange,
   onSaveEdit,
@@ -270,7 +268,7 @@ const TaskItem = memo(({
   };
 
   return (
-    <div className={`flex items-start gap-3 py-2 hover:bg-gray-50 rounded px-2 -mx-2 group ${quadrantColors[quadrant]}`}>
+    <div className={`flex items-start gap-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${quadrantColors[quadrant]}`}>
       <Checkbox
         checked={task.status === 'completed'}
         onCheckedChange={() => onToggleComplete(task)}
@@ -306,15 +304,6 @@ const TaskItem = memo(({
           {commitType}
         </span>
       )}
-      <Button
-        onClick={() => onDelete(task.id)}
-        size="1"
-        variant="ghost"
-        color="red"
-        className="opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        Delete
-      </Button>
     </div>
   );
 });
@@ -416,7 +405,6 @@ const TaskList = memo(({
   editingTaskId,
   editingTaskTitle,
   onToggleComplete,
-  onDelete,
   onStartEdit,
   onEditChange,
   onSaveEdit,
@@ -428,7 +416,6 @@ const TaskList = memo(({
   editingTaskId: string | null;
   editingTaskTitle: string;
   onToggleComplete: (task: Task) => void;
-  onDelete: (taskId: string) => void;
   onStartEdit: (task: Task) => void;
   onEditChange: (title: string) => void;
   onSaveEdit: () => void;
@@ -461,7 +448,6 @@ const TaskList = memo(({
           isEditing={editingTaskId === task.id}
           editingTitle={editingTaskTitle}
           onToggleComplete={onToggleComplete}
-          onDelete={onDelete}
           onStartEdit={onStartEdit}
           onEditChange={onEditChange}
           onSaveEdit={onSaveEdit}
@@ -586,7 +572,6 @@ export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListI
           editingTaskId={editingTaskId}
           editingTaskTitle={editingTaskTitle}
           onToggleComplete={toggleTaskComplete}
-          onDelete={deleteTask}
           onStartEdit={handleStartEdit}
           onEditChange={handleEditChange}
           onSaveEdit={handleSaveEdit}
