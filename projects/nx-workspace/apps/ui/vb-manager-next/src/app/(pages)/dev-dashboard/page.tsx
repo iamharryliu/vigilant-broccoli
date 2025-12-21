@@ -6,6 +6,7 @@ import { GcloudAuthStatusComponent } from '../../components/gcloud-auth-status.c
 import { GithubRepoActionStatusBadges } from '../../components/github-actions-status.component';
 import { GithubTeamManager } from '../../components/github-manager.component';
 import { LinkGroupComponent } from '../../components/link-group.component';
+import { PasteBinComponent } from '../../components/pastebin.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
 import { LINK_TYPE } from '../../constants/link-types';
@@ -90,6 +91,7 @@ export default function Page() {
           links={LINKS}
           alphabeticalSubgroups={false}
         />
+        <PasteBinComponent />
       </div>
       <div className="flex flex-col gap-4">
         <PublicIpComponent />

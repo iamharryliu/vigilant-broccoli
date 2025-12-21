@@ -17,10 +17,6 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Service Management',
     path: '/service-management',
   },
-  PASTE_BIN: {
-    title: 'Paste Bin',
-    path: '/paste-bin',
-  },
   AI_TOOL: {
     title: 'LLM Tools',
     path: '/llm-tools',
