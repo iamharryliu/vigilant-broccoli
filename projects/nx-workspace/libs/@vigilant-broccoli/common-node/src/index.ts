@@ -39,6 +39,8 @@ export * from './lib/github/github.service';
 export * from './lib/slack/slack.models';
 export * from './lib/slack/slack.service';
 export * from './lib/slack/slack.utils';
+// Weather
+export * from './lib/weather/openweather.service';
 
 export const QUEUE = {
   EMAIL: 'EMAIL',

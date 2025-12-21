@@ -1,10 +1,6 @@
 import { APP_NAME } from '@prettydamntired/personal-website-lib';
 import { Email, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
-export * from './database/database.const';
-export * from './database/database.model';
-export * from './services/database-manager.service';
-
 const DEFAULT_EMAIL_MESSAGE = {
   from: `'[default_from]' <${getEnvironmentVariable('MY_EMAIL')}>`,
   to: `'[default_to]' <${getEnvironmentVariable('MY_EMAIL')}>`,

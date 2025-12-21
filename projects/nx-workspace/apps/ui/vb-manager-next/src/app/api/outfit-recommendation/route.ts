@@ -14,12 +14,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const vibecheckLite = new VibecheckLite(
-      process.env.OPENAI_API_KEY,
-      process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY,
-    );
-
-    const stream = await vibecheckLite.getOutfitRecommendationStream({
+    const stream = await VibecheckLite.getOutfitRecommendationStream({
       latitude: lat,
       longitude: lon,
     });
@@ -28,8 +23,7 @@ export async function GET(request: NextRequest) {
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content || '';
+          for await (const content of stream) {
             if (content) {
               controller.enqueue(encoder.encode(content));
             }

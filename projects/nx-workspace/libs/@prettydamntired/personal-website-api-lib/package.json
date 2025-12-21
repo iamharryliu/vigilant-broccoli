@@ -2,9 +2,7 @@
   "name": "@prettydamntired/personal-website-api-lib",
   "version": "0.0.14",
   "dependencies": {
-    "mongoose": "^8.1.0",
     "tslib": "^2.3.0",
-    "mongodb": "*",
     "@prettydamntired/personal-website-lib": "*",
     "@vigilant-broccoli/common-node": "*"
   }

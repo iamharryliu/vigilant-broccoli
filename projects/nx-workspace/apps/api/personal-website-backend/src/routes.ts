@@ -15,17 +15,6 @@ if (!IS_DEV_ENV) {
   router.use(checkRecaptchaToken);
 }
 
-// Email Subscription
-router.post(
-  PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE,
-  requireJsonContent,
-  Controller.subscribeEmail,
-);
-router.put(
-  PERSONAL_WEBSITE_BACKEND_ENDPOINTS.VERIFY_SUBSCRIPTION,
-  Controller.verifySubscription,
-);
-
 // Send Message
 router.post(
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE,
