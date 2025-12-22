@@ -2,10 +2,11 @@
 
 ## Databases
 
-- [MongoDB](./mongodb.md)
-- [MySQL](./mysql.md)
-- [Postgres](./postgres.md)
-- [SQLite3](./sqlite3.md)
+- [SQL](./sql.md)
+  - [Postgres](./postgres.md)
+  - [SQLite3](./sqlite3.md)
+- NoSQL
+  - [MongoDB](./mongodb.md)
 
 ## References
 
