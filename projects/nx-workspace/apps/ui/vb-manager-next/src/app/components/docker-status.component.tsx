@@ -4,7 +4,7 @@ import { Card, Flex, Text, Badge, IconButton, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { ExternalLinkIcon, PlayIcon, StopIcon } from '@radix-ui/react-icons';
-import { LINK_TYPE } from '../constants/link-types';
+import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface DockerProject {
@@ -74,7 +74,7 @@ export const DockerStatusComponent = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: LINK_TYPE.MAC_APPLICATION,
+          type: OPEN_TYPE.MAC_APPLICATION,
           target: 'Docker',
         }),
       });

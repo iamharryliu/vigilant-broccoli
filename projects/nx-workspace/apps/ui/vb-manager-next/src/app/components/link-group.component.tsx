@@ -1,15 +1,13 @@
 'use client';
 
 import { Card, Flex, Text } from '@radix-ui/themes';
-import { LINK_TYPE } from '../constants/link-types';
+import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-
-type LinkType = (typeof LINK_TYPE)[keyof typeof LINK_TYPE];
 
 interface LinkItem {
   label: string;
   target: string;
-  type: LinkType;
+  type: OpenType;
   subgroup?: string;
 }
 
@@ -68,7 +66,7 @@ export function LinkGroupComponent({
     ? Object.entries(subgroups).sort(([a], [b]) => a.localeCompare(b))
     : subgroupOrder.map(key => [key, subgroups[key]] as [string, LinkItem[]]);
 
-  const handleShellExecute = async (type: LinkType, target: string) => {
+  const handleShellExecute = async (type: OpenType, target: string) => {
     try {
       const response = await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
         method: 'POST',
@@ -91,9 +89,9 @@ export function LinkGroupComponent({
     const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-xs font-medium w-fit transition-colors`;
 
     if (
-      link.type === LINK_TYPE.MAC_APPLICATION ||
-      link.type === LINK_TYPE.VSCODE ||
-      link.type === LINK_TYPE.FILE_SYSTEM
+      link.type === OPEN_TYPE.MAC_APPLICATION ||
+      link.type === OPEN_TYPE.VSCODE ||
+      link.type === OPEN_TYPE.FILE_SYSTEM
     ) {
       return (
         <button

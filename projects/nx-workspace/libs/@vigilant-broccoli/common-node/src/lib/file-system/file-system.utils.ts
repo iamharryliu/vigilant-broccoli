@@ -2,6 +2,7 @@ import fs, { existsSync, readdirSync, statSync } from 'fs';
 import path, { join } from 'path';
 import crypto from 'crypto';
 import archiver from 'archiver';
+import { homedir } from 'os';
 import { TMP_PATH } from './file-system.consts';
 
 const writeFile = async (filepath: string, content: string): Promise<void> => {
@@ -99,6 +100,13 @@ const generateTmpFilepath = (): string => {
   return path.resolve(TMP_PATH, crypto.randomBytes(16).toString('hex'));
 };
 
+const expandHomePath = (filepath: string): string => {
+  if (filepath.startsWith('~/')) {
+    return filepath.replace('~', homedir());
+  }
+  return filepath;
+};
+
 export function getFilenamesFromDir(
   dirPath: string,
   recursive = false,
@@ -142,4 +150,6 @@ export const FileSystemUtils = {
   // DELETE
   deletePath,
   appendFile,
+  // PATH
+  expandHomePath,
 };

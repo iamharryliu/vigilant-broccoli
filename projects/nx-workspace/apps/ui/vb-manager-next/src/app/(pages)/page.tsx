@@ -7,38 +7,38 @@ import { DjDownloadComponent } from '../components/dj-download.component';
 import { LinkGroupComponent } from '../components/link-group.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import CookingCalculatorCard from '../../components/CookingCalculatorCard';
-import { LINK_TYPE } from '../constants/link-types';
+import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 
 const QUICK_LINKS = [
   {
     label: 'Gmail',
     target: 'https://mail.google.com',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Google Calendar',
     target: 'https://calendar.google.com/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Google Meet',
     target: 'https://meet.google.com/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Amazon',
     target: 'https://www.amazon.com',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'YouTube',
     target: 'https://www.youtube.com',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Pinterest',
     target: 'https://www.pinterest.com',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
 ];
 
@@ -47,12 +47,12 @@ const CAREER_LINKS = [
     label: 'Resume',
     target:
       'https://docs.google.com/document/d/1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU/edit#heading=h.uzt44hq0695d',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'LinkedIn',
     target: 'https://www.linkedin.com',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
 ];
 
@@ -60,38 +60,38 @@ const UTILITY_LINKS = [
   {
     label: 'Google Photos',
     target: 'https://photos.google.com/?pli=1',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Google Contacts',
     target: 'https://contacts.google.com/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Google Drive',
     target: 'https://drive.google.com/drive/u/0/my-drive',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Google Maps',
     target: 'https://www.google.com/maps',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Google Translate',
     target: 'https://translate.google.com/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'ChatGPT',
     target: 'https://chat.openai.com',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   { label: 'Claude', target: 'https://claude.ai', type: LINK_TYPE.BROWSER },
   {
     label: 'Find My',
     target: 'https://www.icloud.com/find/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
 ];
 
@@ -99,33 +99,33 @@ const LEISURE_LINKS = [
   {
     label: 'Spotify',
     target: 'Spotify',
-    type: LINK_TYPE.MAC_APPLICATION,
+    type: OPEN_TYPE.MAC_APPLICATION,
   },
   {
     label: 'Manga',
     target: ' https://ww2.mangafreak.me/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'To Draw',
     target: 'https://ca.pinterest.com/prettydamntired/to-draw/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'To Read',
     target:
       'https://www.goodreads.com/review/list/74043883-harry?ref=nav_mybooks&shelf=to-read',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'To Watch(Anime)',
     target: 'https://myanimelist.net/animelist/prettydamntired?status=6',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'To Watch(Movies/Shows)',
     target: 'https://www.imdb.com/user/ur45097057/watchlist',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
 ];
 
@@ -133,17 +133,17 @@ const LEARN_LINKS = [
   {
     label: 'Udemy',
     target: 'https://www.udemy.com/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Memrise',
     target: 'https://app.memrise.com/dashboard',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Memrise (Community Version)',
     target: 'https://community-courses.memrise.com/dashboard',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
 ];
 
@@ -153,19 +153,19 @@ const PERSONAL_LINKS = [
       label: 'Food',
       target:
         '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal/Food.md',
-      type: LINK_TYPE.VSCODE,
+      type: OPEN_TYPE.VSCODE,
     },
     {
       label: 'Groceries',
       target:
         'https://outlook.live.com/host/0/0d5c91ee-5be2-4b79-81ed-23e6c4580427/ToDoId',
-      type: LINK_TYPE.BROWSER,
+      type: OPEN_TYPE.BROWSER,
     },
     {
       label: 'Home Management',
       target:
         'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?usp=sharing',
-      type: LINK_TYPE.BROWSER,
+      type: OPEN_TYPE.BROWSER,
     },
   ],
   ...LEISURE_LINKS.map(link => ({ ...link, subgroup: 'Leisure' })),
@@ -173,8 +173,33 @@ const PERSONAL_LINKS = [
   ...CAREER_LINKS.map(link => ({ ...link, subgroup: 'Career' })),
 ];
 
+const FOR_LATER_LINKS = [
+  {
+    label: 'Reddit Saved',
+    target: 'https://www.reddit.com/user/itzliu/saved/',
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: 'Instagram Saved',
+    target: 'https://www.instagram.com/prettydamntired/saved/all-posts/',
+    type: OPEN_TYPE.BROWSER,
+  },
+
+  {
+    label: 'TODO(Journal)',
+    target:
+      '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal/productivity/TODO.md',
+    type: OPEN_TYPE.VSCODE,
+  },
+  {
+    label: 'TODO(vigilant-broccoli)',
+    target: '~/vigilant-broccoli/TODO.md',
+    type: OPEN_TYPE.VSCODE,
+  },
+];
+
 const WORK_LINKS = [
-  { label: 'Slack', target: 'Slack', type: LINK_TYPE.MAC_APPLICATION },
+  { label: 'Slack', target: 'Slack', type: OPEN_TYPE.MAC_APPLICATION },
 ];
 
 export default function Page() {
@@ -199,6 +224,7 @@ export default function Page() {
       <div className="flex flex-col gap-4">
         <LinkGroupComponent title="Quick Links" links={QUICK_LINKS} />
         <LinkGroupComponent title="Utility" links={UTILITY_LINKS} />
+        <LinkGroupComponent title="For Later" links={FOR_LATER_LINKS} />
         {appMode === APP_MODE.PERSONAL && (
           <>
             <LinkGroupComponent title="Personal" links={PERSONAL_LINKS} />

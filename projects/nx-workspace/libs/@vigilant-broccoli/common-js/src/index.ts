@@ -9,6 +9,15 @@ export const FORM_TYPE = {
 
 export type FormType = (typeof FORM_TYPE)[keyof typeof FORM_TYPE];
 
+export const OPEN_TYPE = {
+  BROWSER: 'browser',
+  MAC_APPLICATION: 'mac_application',
+  FILE_SYSTEM: 'file_system',
+  VSCODE: 'vscode',
+} as const;
+
+export type OpenType = (typeof OPEN_TYPE)[keyof typeof OPEN_TYPE];
+
 // LLM
 export * from './lib/llm/llm.consts';
 export * from './lib/llm/llm.types';

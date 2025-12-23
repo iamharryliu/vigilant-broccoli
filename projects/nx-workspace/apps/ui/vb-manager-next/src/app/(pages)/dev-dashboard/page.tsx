@@ -9,39 +9,39 @@ import { LinkGroupComponent } from '../../components/link-group.component';
 import { PasteBinComponent } from '../../components/pastebin.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
-import { LINK_TYPE } from '../../constants/link-types';
+import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 
 const DEV_LINKS = [
   {
     label: 'GCP',
     target: 'https://console.cloud.google.com',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Cron Guru',
     target: 'https://crontab.guru/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
-  { label: 'GitHub', target: 'https://github.com', type: LINK_TYPE.BROWSER },
+  { label: 'GitHub', target: 'https://github.com', type: OPEN_TYPE.BROWSER },
   {
     label: 'GitHub Tokens',
     target: 'https://github.com/settings/personal-access-tokens',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'MongoDB Console',
     target: 'https://cloud.mongodb.com/v2/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Google Analytics',
     target: 'https://analytics.google.com/analytics/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'reCAPTCHA Admin',
     target: 'https://www.google.com/recaptcha/admin/',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
 ];
 
@@ -49,23 +49,23 @@ const VB_LINKS = [
   {
     label: 'NPM Packages',
     target: 'https://www.npmjs.com/settings/vigilant-broccoli/packages',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'GitHub Repo',
     target: 'https://github.com/iamharryliu/vigilant-broccoli',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'GitHub Actions',
     target: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'GCP API Credentials',
     target:
       'https://console.cloud.google.com/apis/credentials?project=vigilant-broccoli',
-    type: LINK_TYPE.BROWSER,
+    type: OPEN_TYPE.BROWSER,
   },
 ];
 

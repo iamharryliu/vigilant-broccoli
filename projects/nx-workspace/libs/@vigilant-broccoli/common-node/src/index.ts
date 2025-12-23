@@ -9,6 +9,7 @@ export * from './lib/date/date.utils';
 // Shell
 export * from './lib/shell/shell.consts';
 export * from './lib/shell/shell.utils';
+export * from './lib/shell/open.service';
 // File System
 export * from './lib/file-system/file-system.consts';
 export * from './lib/file-system/file-system.utils';
