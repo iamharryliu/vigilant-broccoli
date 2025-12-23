@@ -174,6 +174,7 @@
     "next-auth": "^4.24.11",
     "ng-recaptcha-2": "^16.0.1",
     "ngx-google-analytics": "^14.0.1",
+    "node-vault": "^0.10.9",
     "nodemailer": "^7.0.10",
     "openai": "^4.87.4",
     "pinia": "^3.0.3",

@@ -1,10 +1,3 @@
-const path = require('path');
-const dotenv = require('dotenv');
-
-// Load .env.local from the app directory
-const envPath = path.resolve(__dirname, '.env.local');
-const envConfig = dotenv.config({ path: envPath });
-
 module.exports = {
   apps: [
     {
@@ -15,8 +8,7 @@ module.exports = {
       env: {
         NODE_ENV: 'development',
         PORT: 1337,
-        // Merge .env.local variables
-        ...(envConfig.parsed || {}),
+        ...process.env,
       },
       instances: 1,
       autorestart: true,
