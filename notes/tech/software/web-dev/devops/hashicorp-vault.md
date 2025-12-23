@@ -28,6 +28,7 @@ export VAULT_ADDR='http://127.0.0.1:8200'
 vault operator init
 vault operator unseal
 vault operator unseal UNSEAL_KEY
+vault operator unseal -tls-skip-verify UNSEAL_KEY
 vault login
 vault login TOKEN
 vault operator seal
@@ -59,7 +60,7 @@ sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/vault/tls/vault.key 
 
 CSR-based for production.
 
-```vim /etc/vault/tls/vault-openssl.cnf```
+`vim /etc/vault/tls/vault-openssl.cnf`
 
 ```
 # vault-openssl.cnf
@@ -391,6 +392,7 @@ curl -vk https://IP_ADDRESS:8200/v1/sys/health --cacert vault.crt
 openssl x509 -in /etc/vault/tls/vault.crt -text -noout | grep -A1 "Subject Alternative Name"
 sudo journalctl -u vault -n 50 --no-pager
 ```
+
 ```
       - name: Inspect GitHub OIDC token
         run: |
