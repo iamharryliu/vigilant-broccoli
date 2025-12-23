@@ -5,6 +5,7 @@ import { GoogleTasksComponent } from '../components/google-tasks.component';
 import { TaskListDebugComponent } from '../components/task-list-debug.component';
 import { DjDownloadComponent } from '../components/dj-download.component';
 import { LinkGroupComponent } from '../components/link-group.component';
+import { RecipeScraperComponent } from '../components/recipe-scraper.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import CookingCalculatorCard from '../../components/CookingCalculatorCard';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
@@ -87,7 +88,7 @@ const UTILITY_LINKS = [
     target: 'https://chat.openai.com',
     type: OPEN_TYPE.BROWSER,
   },
-  { label: 'Claude', target: 'https://claude.ai', type: LINK_TYPE.BROWSER },
+  { label: 'Claude', target: 'https://claude.ai', type: OPEN_TYPE.BROWSER },
   {
     label: 'Find My',
     target: 'https://www.icloud.com/find/',
@@ -238,6 +239,7 @@ export default function Page() {
 
       <div className="flex flex-col gap-4">
         <CookingCalculatorCard />
+        {appMode === APP_MODE.PERSONAL && <RecipeScraperComponent />}
         <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
           {appMode === APP_MODE.PERSONAL ? (
             <iframe

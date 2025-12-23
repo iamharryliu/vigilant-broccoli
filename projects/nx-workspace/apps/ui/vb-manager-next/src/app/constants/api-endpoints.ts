@@ -34,4 +34,7 @@ export const API_ENDPOINTS = {
 
   // SSH
   SSH_KEY: '/api/ssh-key',
+
+  // Recipe
+  RECIPE_SCRAPE: '/api/recipe/scrape',
 } as const;
