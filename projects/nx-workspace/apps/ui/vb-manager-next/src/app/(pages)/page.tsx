@@ -148,32 +148,6 @@ const LEARN_LINKS = [
   },
 ];
 
-const PERSONAL_LINKS = [
-  ...[
-    {
-      label: 'Food',
-      target:
-        '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal/Food.md',
-      type: OPEN_TYPE.VSCODE,
-    },
-    {
-      label: 'Groceries',
-      target:
-        'https://outlook.live.com/host/0/0d5c91ee-5be2-4b79-81ed-23e6c4580427/ToDoId',
-      type: OPEN_TYPE.BROWSER,
-    },
-    {
-      label: 'Home Management',
-      target:
-        'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?usp=sharing',
-      type: OPEN_TYPE.BROWSER,
-    },
-  ],
-  ...LEISURE_LINKS.map(link => ({ ...link, subgroup: 'Leisure' })),
-  ...LEARN_LINKS.map(link => ({ ...link, subgroup: 'Learn' })),
-  ...CAREER_LINKS.map(link => ({ ...link, subgroup: 'Career' })),
-];
-
 const FOR_LATER_LINKS = [
   {
     label: 'Reddit Saved',
@@ -197,6 +171,33 @@ const FOR_LATER_LINKS = [
     target: '~/vigilant-broccoli/TODO.md',
     type: OPEN_TYPE.VSCODE,
   },
+];
+
+const PERSONAL_LINKS = [
+  ...[
+    {
+      label: 'Food',
+      target:
+        '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal/Food.md',
+      type: OPEN_TYPE.VSCODE,
+    },
+    {
+      label: 'Groceries',
+      target:
+        'https://outlook.live.com/host/0/0d5c91ee-5be2-4b79-81ed-23e6c4580427/ToDoId',
+      type: OPEN_TYPE.BROWSER,
+    },
+    {
+      label: 'Home Management',
+      target:
+        'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?usp=sharing',
+      type: OPEN_TYPE.BROWSER,
+    },
+  ],
+  ...FOR_LATER_LINKS.map(link => ({ ...link, subgroup: 'For Later' })),
+  ...LEISURE_LINKS.map(link => ({ ...link, subgroup: 'Leisure' })),
+  ...LEARN_LINKS.map(link => ({ ...link, subgroup: 'Learn' })),
+  ...CAREER_LINKS.map(link => ({ ...link, subgroup: 'Career' })),
 ];
 
 const WORK_LINKS = [
@@ -225,7 +226,6 @@ export default function Page() {
       <div className="flex flex-col gap-4">
         <LinkGroupComponent title="Quick Links" links={QUICK_LINKS} />
         <LinkGroupComponent title="Utility" links={UTILITY_LINKS} />
-        <LinkGroupComponent title="For Later" links={FOR_LATER_LINKS} />
         {appMode === APP_MODE.PERSONAL && (
           <>
             <LinkGroupComponent title="Personal" links={PERSONAL_LINKS} />
