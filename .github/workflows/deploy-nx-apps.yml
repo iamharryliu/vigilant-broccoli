@@ -13,10 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FLY_API_TOKEN: ${{ secrets.FLYIO_AUTH_TOKEN }}
-      MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
-      MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
       TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_TWILIO_AUTH_TOKEN }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     environment:
