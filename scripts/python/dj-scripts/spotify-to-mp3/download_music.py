@@ -1,5 +1,6 @@
 import os
 import argparse
+import json
 from spotify_to_mp3_service import SpotifyToMp3Service
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -60,6 +61,11 @@ def main() -> None:
         help="Filter playlists by description.",
     )
     parser.add_argument(
+        "--playlists",
+        type=str,
+        help="JSON string of playlists to download (overrides --filter)",
+    )
+    parser.add_argument(
         "--output",
         "-o",
         type=str,
@@ -75,7 +81,12 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    playlists = get_spotify_playlists(description_filter=args.filter)
+    # Use provided playlists JSON if available, otherwise fetch from Spotify
+    if args.playlists:
+        playlists = json.loads(args.playlists)
+    else:
+        playlists = get_spotify_playlists(description_filter=args.filter)
+
     service = SpotifyToMp3Service(output=args.output, parallel_downloads=args.parallel)
     service.download_playlists(playlists)
 

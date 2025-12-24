@@ -106,10 +106,11 @@ export const DjDownloadComponent = () => {
         <Button
           onClick={handleDownload}
           disabled={loading}
+          loading={loading}
           size="3"
           variant="solid"
         >
-          {loading ? 'Starting Download...' : 'Download DJ Music'}
+          Download DJ Music
         </Button>
 
         {message && (
