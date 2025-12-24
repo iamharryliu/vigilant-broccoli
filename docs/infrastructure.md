@@ -3,34 +3,44 @@
 ```mermaid
 graph TD
 
-  %% Define nodes
-  A[Cloud8Skate]
-  B[CMS]
-  C[Personal Website UI]
-  F[Personal Website Backend]
-  D[RabbitMQ Queue]
-  E[Email Consumer]
-  G[Spotify Playlist Getter]
+%% Define nodes
 
-  %% Connections
-  A <--> B
-  C --> F
-  F --> D
-  A --> F
-  D --> E
-  G 
+TERRAFORM[Terraform]
 
-  %% Styling
-  style A fill:#3b82f6,stroke:#1e3a8a,stroke-width:2px,color:white
-  style B fill:#8b5cf6,stroke:#5b21b6,stroke-width:2px,color:white
-  style C fill:#10b981,stroke:#065f46,stroke-width:2px,color:white
-  style F fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:white
-  style D fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:white
-  style E fill:#ef4444,stroke:#7f1d1d,stroke-width:2px,color:white
-  style G fill:#1db954,stroke:#14833b,stroke-width:2px,color:white
+subgraph INFRASTRUCTURE[Infrastructure]
+  subgraph GCP_VM[GCP VM]
+    SECRETS_MANAGER[Secrets Manager]
+    VPN[VPN]
+  end
+end
 
-  %% Labels
-  classDef label font-weight:bold,font-size:14px
+subgraph GITHUB_ACTIONS[Github Actions]
+  DEPLOY_NX_APPS[Deploy Nx Apps]
+  subgraph AUTOMATIONS[Automations]
+    UPDATE_RESUME[Update Resume]
+    CLOUD_BACKUP_VB[Cloud Backup VB]
+    CLOUD_BACKUP_SECRETS[Cloud Backup Secrets]
+    HEALTH_CHECK[Health Checks]
+  end
+end
+
+subgraph CLOUDFLARE_UI_APPS[Cloudflare UI Applications]
+  CLOUD_8_SKATE[Cloud8Skate]
+  PERSONAL_WEBSITE_UI[Personal Website UI]
+end
+
+subgraph FLYIO_SERVICE_APPS[Fly.io Service Applications]
+  VB_BACKEND[vigilant-broccoli Backend]
+  QUEUE[RabbitMQ Queue]
+  EMAIL_CONSUMER[Email Consumer]
+  CMS[CMS - Content Management System]
+end
+
+
+%% Connections
+TERRAFORM-->INFRASTRUCTURE
+DEPLOY_NX_APPS-->FLYIO_SERVICE_APPS
+DEPLOY_NX_APPS-->CLOUDFLARE_UI_APPS
 
 ```
 
