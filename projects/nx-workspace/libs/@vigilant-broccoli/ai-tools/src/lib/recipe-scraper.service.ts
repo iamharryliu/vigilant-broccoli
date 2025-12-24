@@ -1,4 +1,4 @@
-import { LLMService } from '@vigilant-broccoli/ai-tools';
+import { LLMService } from './llm.service';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 import axios from 'axios';
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { RecipeScraperService } from '@vigilant-broccoli/common-node';
+import { RecipeScraperService } from '@vigilant-broccoli/ai-tools';
 
 export async function POST(request: NextRequest) {
   const { url } = await request.json();
