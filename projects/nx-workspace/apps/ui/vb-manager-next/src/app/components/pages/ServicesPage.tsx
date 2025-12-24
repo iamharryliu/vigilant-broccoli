@@ -115,6 +115,15 @@ const URLS = {
     PAYMENT_HISTORY: 'https://platform.claude.com/settings/billing',
     USAGE: 'https://platform.claude.com/usage',
   },
+  STRIPE: {
+    NAME: 'Stripe',
+    DASHBOARD: 'https://dashboard.stripe.com/',
+    BILLING: 'https://dashboard.stripe.com/billing',
+    PAYMENT_HISTORY: 'https://dashboard.stripe.com/invoices',
+    USAGE: 'https://dashboard.stripe.com/meters',
+    API_MANAGEMENT: 'https://dashboard.stripe.com/apikeys',
+    STATUS: 'https://status.stripe.com/'
+  }
 } as Record<string, ServiceUrl>;
 
 export const ServicesPage = () => {

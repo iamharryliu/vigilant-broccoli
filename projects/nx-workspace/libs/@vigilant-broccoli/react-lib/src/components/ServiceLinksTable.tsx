@@ -11,6 +11,7 @@ const FIELD_ICONS: Record<
   PAYMENT_HISTORY: { label: 'Payments', icon: '🕓' },
   USAGE_URL: { label: 'Usage', icon: '📊' },
   STATUS: { label: 'Status', icon: '🚦' },
+  API_MANAGEMENT: { label: 'API Management', icon: '🔑' },
 };
 
 export type ServiceUrl = {
@@ -20,6 +21,7 @@ export type ServiceUrl = {
   PAYMENT_HISTORY?: string;
   USAGE?: string;
   STATUS?: string;
+  API_MANAGEMENT?: string;
 };
 
 // Helper component for table cells with links
@@ -100,6 +102,7 @@ export const ServiceLinksTable = ({
               <TableLinkCell url={service.PAYMENT_HISTORY} label="View" />
               <TableLinkCell url={service.USAGE} label="View" />
               <TableLinkCell url={service.STATUS} label="Check" />
+              <TableLinkCell url={service.API_MANAGEMENT} label="Manage" />
             </Table.Row>
           ))}
         </Table.Body>
