@@ -12,7 +12,8 @@
     "dotenv-defaults": "^5.0.2",
     "winston": "^3.11.0",
     "twilio": "^4.21.0",
-    "node-vault": "^0.10.2"
+    "node-vault": "^0.10.2",
+    "stripe": "^17.6.0"
   },
   "publishConfig": {
     "access": "public"

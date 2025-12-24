@@ -19,6 +19,13 @@
         "production": {}
       }
     },
+    "serve:vault": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "command": "ts-node scripts/fetch-secrets.ts 'nx serve next-demo'"
+      }
+    },
     "serve": {
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",

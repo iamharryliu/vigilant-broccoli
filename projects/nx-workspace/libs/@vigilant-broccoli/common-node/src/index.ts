@@ -42,6 +42,8 @@ export * from './lib/slack/slack.service';
 export * from './lib/slack/slack.utils';
 // Weather
 export * from './lib/weather/openweather.service';
+// Stripe
+export * from './lib/stripe/stripe.service';
 
 export const QUEUE = {
   EMAIL: 'EMAIL',
