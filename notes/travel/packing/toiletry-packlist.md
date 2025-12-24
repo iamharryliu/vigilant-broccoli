@@ -3,6 +3,7 @@
 - Dental
   - Toothbrush
   - Floss wands
+  - Water cup
 - Optical
   - Contact lenses
   - Glasses
