@@ -15,7 +15,6 @@
     - Bootstrapping Vault and WireGuard
 - **common-node**
   - Bucket service implementation.
-  - Stripe interface implementation
 - **Microservices**
   - Email service.
   - Text service.
