@@ -13,7 +13,7 @@ export COMMON_DOTFILES_DIR="$DOTFILES_DIR/common"
 export ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
 
 # Audit
-alias finddotenv='find . -type f -name ".env"'
-alias findclaude='find ~ -type d -name ".claude" -ls 2>/dev/null'
-alias fuzzyfinddotenv='find . -type f -name ".env*"'
+alias finddotenv='find . -type f -name ".env" -exec realpath {} \;'
+alias findclaude='find ~ -type d -name ".claude" -exec realpath {} \; 2>/dev/null'
+alias fuzzyfinddotenv='find . -type f -name ".env*" -exec realpath {} \;'
 alias gitleaksreport='gitleaks detect --report-path gitleaks-report.json'
