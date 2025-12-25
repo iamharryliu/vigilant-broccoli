@@ -1,6 +1,8 @@
 import { LLMService } from './llm.service';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 import axios from 'axios';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 export interface RecipeMarkdown {
   title: string;
@@ -52,40 +54,34 @@ const scrapeRecipeFromUrl = async (url: string): Promise<RecipeMarkdown> => {
   // Extract clean text content
   const cleanContent = extractCleanContent(htmlContent);
 
+  // Load the recipe template from the markdown file
+  const templatePath = join(__dirname, '../../../../../../notes/cooking/recipe-template.md');
+  const recipeTemplate = readFileSync(templatePath, 'utf-8');
+
   // Use LLM to extract and format the recipe
   const result = await LLMService.prompt<string>({
     prompt: {
       systemPrompt: `You are a recipe extraction assistant. Your job is to extract recipe information from text content and format it into clean, structured markdown.
 
-The markdown should follow this exact format:
+The markdown should follow this exact template format:
 
-# [Recipe Title]
-
-## Ingredients
-
-- [Ingredient category/section] (if applicable)
-  - [Ingredient with quantity]
-  - [Ingredient with quantity]
-- [Another category] (if applicable)
-  - [Ingredient with quantity]
-
-## Instructions
-
-- [Step 1]
-- [Step 2]
-- [Step 3]
-
-## Reference
-
-- [Recipe]([original URL])
+${recipeTemplate}
 
 Important guidelines:
 1. Extract ALL ingredients with their exact quantities
 2. Group ingredients by section if the recipe has them (e.g., "Tofu", "Sauce", "Marinade")
-3. Format instructions as clear, actionable bullet points
-4. Keep the original recipe's level of detail
-5. If there are cooking times, temperatures, or special notes, include them in the instructions
-6. Return ONLY the markdown content, no additional commentary`,
+3. Include a separate garnish/finishing section if the recipe has garnishes or finishing touches
+4. Format instructions as clear, actionable bullet points
+5. Keep the original recipe's level of detail
+6. If there are cooking times, temperatures, or special notes, include them in the instructions
+7. In the References section, include the original URL
+8. Use common cooking shortform conventions:
+   - Measurements: "tsp" (teaspoon), "tbsp" (tablespoon), "cup", "oz"
+   - Temperatures: Use °C (Celsius) with numeric values (e.g., "230°C")
+   - Ingredient flexibility: Use "your choice" for flexible ingredients, omit quantities when ingredient is flexible
+   - Lowercase for common ingredients unless they are proper nouns
+   - Concise action verbs: "Saute", "Pan fry", "Blend", "Simmer"
+9. Return ONLY the markdown content, no additional commentary`,
       userPrompt: `Extract the recipe from this text content and format it as markdown. The original URL is: ${url}
 
 Text Content:
