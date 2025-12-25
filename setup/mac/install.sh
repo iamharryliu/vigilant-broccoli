@@ -1,6 +1,5 @@
 source $HOME/vigilant-broccoli/setup/dotfiles/common/aliases/aliases.sh
 
-# Install Brew dependencies.
 if ask "Install Brew dependencies?"; then
     brewinit
 fi
@@ -22,7 +21,6 @@ create_symlink() {
     echo "Created symbolic link $link_name -> $target"
 }
 
-# Setup dotfiles.
 if ask "Symlink dotfiles?"; then
     create_symlink "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
     create_symlink "$COMMON_DOTFILES_DIR" "$HOME/shell-common"
@@ -32,6 +30,7 @@ if ask "Symlink dotfiles?"; then
     create_symlink "$ZSH_DOTFILES_DIR/scripts" "$HOME/shell-scripts"
     create_symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
     create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc"
+    create_symlink "$CLAUDE_COMMANDS_DIR" "$HOME/.claude/commands"
     chmod -R +x "$HOME/shell-aliases/"
     chmod -R +x "$HOME/shell-scripts/"
     source $HOME/.zshrc
@@ -44,10 +43,6 @@ if ask "Install Node dependencies?"; then
     npm install -g tsx
     npm install -g @angular/cli
     npm add --global nx@latest
-    # TODO: think about this
-    # npm-recursive-install
-    # npm i -g recursive-install
-fi
 
 if ask "Setup git hooks?"; then
     pip3 install pre-commit && pre-commit install
