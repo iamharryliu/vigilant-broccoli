@@ -3,10 +3,10 @@
 ## Ingredients
 
 - 2 eggs, beaten
-- 1 cup milk
-- 1/2 cup sugar
+- 240ml milk
+- 120ml sugar
 - 1/4 tsp vanilla extract (I add a bit extra)
-- 1/2 cup butter
+- 120ml butter
 - slices of bread
 
 ## Instructions

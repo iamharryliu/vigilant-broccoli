@@ -6,15 +6,15 @@
 
 - 2 tsp yeast
 - 4 tsp sugar
-- 1 1/4 cup warm water
-- 3 1/2 cups flour
+- 300ml warm water
+- 840ml flour
 - 1 1/2 tsp salt
 
 ## Instructions
 
-- Combine yeast, sugar, 1/2 cup water to activate yeast.
+- Combine yeast, sugar, 120ml water to activate yeast.
 - Mix flour and salt.
-- Make a well in the salted flour and pour in the yeast water and 1/3 cup warm water. Mix well and knead.
+- Make a well in the salted flour and pour in the yeast water and 80ml warm water. Mix well and knead.
 - Brush the bowl with oil and coat dough. Let the dough rise for 1 hour then punch it down, let rest another 10 minutes.
 - Divide the dough into 8 pieces. Round the pieces into balls. Make a hole into the center of the ball and stretch the bagel dough into shape.
 - Rest the dough on an oil coated tray..

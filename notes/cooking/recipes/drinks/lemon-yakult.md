@@ -4,7 +4,7 @@
 
 - Half a lemon
 - 1 tbsp of honey
-- 1 cup of water
+- 240ml water
 - Ice cubes
 - Yakult
 

@@ -7,7 +7,7 @@
 - Zest and juice of 1/2 a lime
 - 1 tbsp red wine vinegar
 - 1 tsp maple syrup (optional)
-- 1/4 cup cilantro, minced
+- 60ml cilantro, minced
 - Kosher salt
 
 ## Instructions

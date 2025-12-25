@@ -3,15 +3,15 @@
 ## Ingredients
 
 - Cheese
-  - 3 ounces finely grated Gruyère or comté cheese
-  - 2 ounces finely grated Parmigiano-Reggiano
+  - 85g finely grated Gruyère or comté cheese
+  - 55g finely grated Parmigiano-Reggiano
 - Cream Mixture
-  - 2 cups heavy cream
+  - 480ml heavy cream
   - 2 medium cloves garlic, minced
   - 1 tbsp fresh thyme leaves, roughly chopped
   - Kosher salt and black pepper (to taste)
 - Potatoes
-  - 4 to 4½ pounds russet potatoes, peeled and sliced ⅛-inch thick on a mandoline slicer (7 to 8 medium)
+  - 1.8 to 2kg russet potatoes, peeled and sliced ⅛-inch thick on a mandoline slicer (7 to 8 medium)
 - Other
   - 2 tbsp unsalted butter
 

@@ -44,7 +44,7 @@
 - Aromatics & Vegetables
   - 2 inch piece ginger finely chopped
   - 4 garlic cloves, chopped
-  - 14 to 16 oz vegetables of choice
+  - 400 to 450g vegetables of choice
 - Finishing
   - Cornstarch slurry - 1 tsp cornstarch + 1 tbsp cold water
   - 2 tbsp black sesame seeds or toasted white sesame seeds

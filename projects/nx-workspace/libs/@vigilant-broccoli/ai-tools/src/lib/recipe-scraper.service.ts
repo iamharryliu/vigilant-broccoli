@@ -54,9 +54,11 @@ const scrapeRecipeFromUrl = async (url: string): Promise<RecipeMarkdown> => {
   // Extract clean text content
   const cleanContent = extractCleanContent(htmlContent);
 
-  // Load the recipe template from the markdown file
+  // Load the recipe template and measurement conventions from markdown files
   const templatePath = join(__dirname, '../../../../../../notes/cooking/recipe-template.md');
+  const conventionsPath = join(__dirname, '../../../../../../notes/cooking/measurement-conventions.md');
   const recipeTemplate = readFileSync(templatePath, 'utf-8');
+  const measurementConventions = readFileSync(conventionsPath, 'utf-8');
 
   // Use LLM to extract and format the recipe
   const result = await LLMService.prompt<string>({
@@ -67,6 +69,10 @@ The markdown should follow this exact template format:
 
 ${recipeTemplate}
 
+Follow these measurement and formatting conventions:
+
+${measurementConventions}
+
 Important guidelines:
 1. Extract ALL ingredients with their exact quantities
 2. Group ingredients by section if the recipe has them (e.g., "Tofu", "Sauce", "Marinade")
@@ -75,13 +81,7 @@ Important guidelines:
 5. Keep the original recipe's level of detail
 6. If there are cooking times, temperatures, or special notes, include them in the instructions
 7. In the References section, include the original URL
-8. Use common cooking shortform conventions:
-   - Measurements: "tsp" (teaspoon), "tbsp" (tablespoon), "cup", "oz"
-   - Temperatures: Use °C (Celsius) with numeric values (e.g., "230°C")
-   - Ingredient flexibility: Use "your choice" for flexible ingredients, omit quantities when ingredient is flexible
-   - Lowercase for common ingredients unless they are proper nouns
-   - Concise action verbs: "Saute", "Pan fry", "Blend", "Simmer"
-9. Return ONLY the markdown content, no additional commentary`,
+8. Return ONLY the markdown content, no additional commentary`,
       userPrompt: `Extract the recipe from this text content and format it as markdown. The original URL is: ${url}
 
 Text Content:
