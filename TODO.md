@@ -13,8 +13,6 @@
   - GCP VM
     - Terraform for GCP VM
     - Bootstrapping Vault and WireGuard
-- **common-node**
-  - Bucket service implementation.
 - **Microservices**
   - Email service.
   - Text service.
