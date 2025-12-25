@@ -8,16 +8,16 @@
 - Cream Mixture
   - 2 cups heavy cream
   - 2 medium cloves garlic, minced
-  - 1 tablespoon fresh thyme leaves, roughly chopped
+  - 1 tbsp fresh thyme leaves, roughly chopped
   - Kosher salt and black pepper (to taste)
 - Potatoes
   - 4 to 4½ pounds russet potatoes, peeled and sliced ⅛-inch thick on a mandoline slicer (7 to 8 medium)
 - Other
-  - 2 tablespoons unsalted butter
+  - 2 tbsp unsalted butter
 
 ## Instructions
 
-- Adjust oven rack to middle position and heat oven to 400 degrees.
+- Adjust oven rack to middle position and heat oven to 200°C.
 - Combine cheeses in a large bowl. Transfer ⅓ of the cheese mixture to a separate bowl and set aside.
 - Add cream, garlic, and thyme to the remaining cheese mixture. Season generously with salt and pepper.
 - Add potato slices to the cream mixture and toss with your hands until every slice is coated, ensuring to separate any slices that are sticking together.

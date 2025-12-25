@@ -18,6 +18,6 @@
 - Prep proofing bowl:
   - Spray with water, coat with flour, and let bowl dry.
 - Let dough proof in bowl.
-- Preheat oven to 400°F.
+- Preheat oven to 200°C.
 - Transfer dough onto parchment paper and score the dough.
 - Transfer the parchment paper and dough to a dutch oven and bake for 30 minutes with lid on. Bake for additional 10-15 minutes to get more browning on the bread surface.
