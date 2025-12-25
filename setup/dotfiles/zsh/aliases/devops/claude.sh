@@ -1,0 +1,1 @@
+alias claudeplan='claude --permission-mode plan'
