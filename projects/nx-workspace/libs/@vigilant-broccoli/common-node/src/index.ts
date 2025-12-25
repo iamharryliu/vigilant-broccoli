@@ -1,6 +1,4 @@
 import 'dotenv-defaults/config';
-import { promises as fs } from 'fs';
-import * as path from 'path';
 
 export * from './lib/utils';
 // Date
@@ -44,52 +42,17 @@ export * from './lib/slack/slack.utils';
 export * from './lib/weather/openweather.service';
 // Stripe
 export * from './lib/stripe/stripe.service';
+// Bucket
+export * from './lib/bucket/bucket.models';
+export * from './lib/bucket/bucket.service';
+export * from './lib/bucket/providers/local.provider';
+export * from './lib/bucket/providers/cloudflare.provider';
+export * from './lib/bucket/providers/aws.provider';
+export * from './lib/bucket/providers/gcs.provider';
 
 export const QUEUE = {
   EMAIL: 'EMAIL',
 };
-
-export class LocalBucketService {
-  constructor(private bucketPath: string) {
-    this.bucketPath = bucketPath;
-  }
-
-  async init(): Promise<void> {
-    await fs.mkdir(this.bucketPath, { recursive: true });
-  }
-
-  async upload(destinationName: string, buffer: Buffer): Promise<void> {
-    const destinationPath = path.join(this.bucketPath, destinationName);
-    await fs.writeFile(destinationPath, buffer);
-  }
-
-  async download(fileName: string, destinationPath: string): Promise<void> {
-    const sourcePath = path.join(this.bucketPath, fileName);
-    await fs.copyFile(sourcePath, destinationPath);
-  }
-
-  async delete(fileName: string): Promise<void> {
-    const filePath = path.join(this.bucketPath, fileName);
-    await fs.unlink(filePath);
-  }
-
-  async getFiles(): Promise<string[]> {
-    return await fs.readdir(this.bucketPath);
-  }
-
-  async exists(fileName: string): Promise<boolean> {
-    try {
-      await fs.access(path.join(this.bucketPath, fileName));
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  async read(fileName: string): Promise<Buffer> {
-    return await fs.readFile(path.join(this.bucketPath, fileName));
-  }
-}
 
 import { execSync } from "child_process";
 
