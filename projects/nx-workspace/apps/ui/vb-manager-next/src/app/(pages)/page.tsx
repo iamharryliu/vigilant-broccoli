@@ -10,53 +10,6 @@ import { useAppMode, APP_MODE } from '../app-mode-context';
 import CookingCalculatorCard from '../../components/CookingCalculatorCard';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 
-const QUICK_LINKS = [
-  {
-    label: 'Gmail',
-    target: 'https://mail.google.com',
-    type: OPEN_TYPE.BROWSER,
-  },
-  {
-    label: 'Google Calendar',
-    target: 'https://calendar.google.com/',
-    type: OPEN_TYPE.BROWSER,
-  },
-  {
-    label: 'Google Meet',
-    target: 'https://meet.google.com/',
-    type: OPEN_TYPE.BROWSER,
-  },
-  {
-    label: 'Amazon',
-    target: 'https://www.amazon.com',
-    type: OPEN_TYPE.BROWSER,
-  },
-  {
-    label: 'YouTube',
-    target: 'https://www.youtube.com',
-    type: OPEN_TYPE.BROWSER,
-  },
-  {
-    label: 'Pinterest',
-    target: 'https://www.pinterest.com',
-    type: OPEN_TYPE.BROWSER,
-  },
-];
-
-const CAREER_LINKS = [
-  {
-    label: 'Resume',
-    target:
-      'https://docs.google.com/document/d/1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU/edit#heading=h.uzt44hq0695d',
-    type: OPEN_TYPE.BROWSER,
-  },
-  {
-    label: 'LinkedIn',
-    target: 'https://www.linkedin.com',
-    type: OPEN_TYPE.BROWSER,
-  },
-];
-
 const UTILITY_LINKS = [
   {
     label: 'Google Photos',
@@ -92,6 +45,55 @@ const UTILITY_LINKS = [
   {
     label: 'Find My',
     target: 'https://www.icloud.com/find/',
+    type: OPEN_TYPE.BROWSER,
+  },
+];
+
+const QUICK_LINKS = [
+  {
+    label: 'Gmail',
+    target: 'https://mail.google.com',
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: 'Google Calendar',
+    target: 'https://calendar.google.com/',
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: 'Google Meet',
+    target: 'https://meet.google.com/',
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: 'Amazon',
+    target: 'https://www.amazon.com',
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: 'YouTube',
+    target: 'https://www.youtube.com',
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: 'Pinterest',
+    target: 'https://www.pinterest.com',
+    type: OPEN_TYPE.BROWSER,
+  },
+
+  ...UTILITY_LINKS.map(link => ({ ...link, subgroup: 'Utility' })),
+];
+
+const CAREER_LINKS = [
+  {
+    label: 'Resume',
+    target:
+      'https://docs.google.com/document/d/1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU/edit#heading=h.uzt44hq0695d',
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: 'LinkedIn',
+    target: 'https://www.linkedin.com',
     type: OPEN_TYPE.BROWSER,
   },
 ];
@@ -225,7 +227,6 @@ export default function Page() {
       </div>
       <div className="flex flex-col gap-4">
         <LinkGroupComponent title="Quick Links" links={QUICK_LINKS} />
-        <LinkGroupComponent title="Utility" links={UTILITY_LINKS} />
         {appMode === APP_MODE.PERSONAL && (
           <>
             <LinkGroupComponent title="Personal" links={PERSONAL_LINKS} />
