@@ -9,8 +9,4 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Component Library',
     path: '/component-library',
   },
-  BUCKET_DEMO: {
-    title: 'Bucket Demo',
-    path: '/bucket-demo',
-  },
 };

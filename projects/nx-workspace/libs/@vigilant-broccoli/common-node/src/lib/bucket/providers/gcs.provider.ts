@@ -48,7 +48,7 @@ export class GcsBucketProvider implements IBucketProvider {
     const [files] = await this.bucket.getFiles();
     return files.map((file) => ({
       name: file.name,
-      size: file.metadata.size ? parseInt(file.metadata.size, 10) : undefined,
+      size: file.metadata.size ? parseInt(file.metadata.size as string, 10) : undefined,
       updatedAt: file.metadata.updated ? new Date(file.metadata.updated) : undefined,
     }));
   }

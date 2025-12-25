@@ -21,4 +21,8 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'LLM Tools',
     path: '/llm-tools',
   },
+  BUCKET_DEMO: {
+    title: 'Bucket Demo',
+    path: '/bucket-demo',
+  },
 };

@@ -1,21 +1,27 @@
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { createBucketService, BucketProvider } from '@vigilant-broccoli/common-node';
+import { createBucketService, BucketProvider, IBucketProvider } from '@vigilant-broccoli/common-node';
 import { NextRequest, NextResponse } from 'next/server';
-import * as path from 'path';
 
-const BUCKET_PATH = path.join(process.cwd(), 'storage-buckets');
-
-const bucket = createBucketService(BucketProvider.LOCAL, { path: BUCKET_PATH });
+// Helper function to get bucket service based on provider type
+function getBucketService(provider?: string): IBucketProvider {
+  const bucketProvider = provider === BucketProvider.CLOUDFLARE_R2
+    ? BucketProvider.CLOUDFLARE_R2
+    : BucketProvider.LOCAL;
+  return createBucketService(bucketProvider);
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const fileName = searchParams.get('fileName');
+  const provider = searchParams.get('provider') || undefined;
+  const bucket = getBucketService(provider);
 
   // Download specific file
   if (fileName) {
     try {
       const fileBuffer = await bucket.read(fileName);
-      return new NextResponse(fileBuffer, {
+      // Convert Buffer to Uint8Array for NextResponse
+      return new NextResponse(new Uint8Array(fileBuffer), {
         headers: {
           'Content-Disposition': `attachment; filename="${fileName}"`,
           'Content-Type': 'application/octet-stream',
@@ -24,7 +30,7 @@ export async function GET(req: NextRequest) {
     } catch (error) {
       return NextResponse.json(
         { error: 'File not found' },
-        { status: HTTP_STATUS_CODES.NOT_FOUND }
+        { status: HTTP_STATUS_CODES.INVALID_PATH }
       );
     }
   }
@@ -45,6 +51,8 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const files = formData.getAll('files');
+    const provider = formData.get('provider') as string | null;
+    const bucket = getBucketService(provider || undefined);
 
     if (files.length === 0 || !files.every(f => f instanceof Blob)) {
       return NextResponse.json(
@@ -78,6 +86,8 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const fileName = searchParams.get('fileName');
+  const provider = searchParams.get('provider') || undefined;
+  const bucket = getBucketService(provider);
 
   if (!fileName) {
     return NextResponse.json(

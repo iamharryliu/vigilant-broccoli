@@ -6,7 +6,7 @@ export enum BucketProvider {
 }
 
 export interface LocalBucketConfig {
-  path?: string;
+  bucketName?: string;
 }
 
 export interface CloudflareBucketConfig {

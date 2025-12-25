@@ -3,14 +3,16 @@ import * as path from 'path';
 import { IBucketProvider, LocalBucketConfig, BucketFile } from '../bucket.models';
 import { getEnvironmentVariable } from '../../utils';
 
+const DEFAULT_BUCKET_PATH = 'storage-buckets';
+
 export class LocalBucketProvider implements IBucketProvider {
   private bucketPath: string;
 
   constructor(config?: LocalBucketConfig) {
     this.bucketPath =
-      config?.path ||
+      config?.bucketName ||
       getEnvironmentVariable('BUCKET_PATH') ||
-      path.join(process.cwd(), 'storage-buckets');
+      path.join(process.cwd(), DEFAULT_BUCKET_PATH);
 
     if (!this.bucketPath) {
       console.error('LocalBucketProvider: No bucket path configured.');
