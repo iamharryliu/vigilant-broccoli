@@ -46,6 +46,7 @@ const scrapeRecipeFromUrl = async (
   url: string,
   recipeTemplate: string,
   measurementConventions: string,
+  languageCode = 'en-US',
 ): Promise<RecipeMarkdown> => {
   const response = await axios.get(url);
   const htmlContent = response.data;
@@ -71,7 +72,8 @@ Important guidelines:
 5. Keep the original recipe's level of detail
 6. If there are cooking times, temperatures, or special notes, include them in the instructions
 7. In the References section, include the original URL
-8. Return ONLY the markdown content, no additional commentary`,
+8. Output the recipe in the language specified by the language code: ${languageCode}
+9. Return ONLY the markdown content, no additional commentary`,
       userPrompt: `Extract the recipe from this text content and format it as markdown. The original URL is: ${url}
 
 Text Content:
