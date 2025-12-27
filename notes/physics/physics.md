@@ -1,30 +1,36 @@
 # Physics
 
-- Classical vs Modern Physics
-  - `Classical physics` is the study of matter and energy on an everyday scale of observation. It is concerned with the works of physicists such as Isaac Newton and James Clerk Maxwell, as well as others.
-  - `Modern physics` deals with the study of matter and energy at very high speeds or on very large or small scales.
-  - Issues:
-    - Gravity's immediate act on a mass
-  - Difference between Newtonian and Eistein physics differs negligibly under regular circumstances.
-- General Relativity
-  - Curved space time that creates gravity as objects follow the bends of spacetime.
-  - The more mass an object has the more spacetime is warped.
-  - Light
-- Special Relativity
-  - Space and time are proportional to one another, ie the faster an object moves the slower time passes for that object.
+- [Waves](./waves/)
+
+# Classical (Newtonian) Physics vs Modern Physics
+
+- `Classical physics` is the study of matter and energy on an everyday scale of observation. It is concerned with the works of physicists such as Isaac Newton and James Clerk Maxwell, as well as others.
+- `Modern physics` deals with the study of matter and energy at very high speeds or on very large or small scales.
+- **Issues**:
+  - The instantaneous transmission of gravity defies the speed of light.
+- Difference between Newtonian and Eistein physics differs negligibly under regular circumstances.
+
+# Modern Classical Physics
+
+- Modern physics defines light travels at a constant speed and nothing can travel faster than the speed of light.
+
+## Special Relativity (1905)
+
+- Space and time are proportional to one another, ie the faster an object moves the slower time passes for that object.
+
+## General Relativity (1915)
+
+- Curved space time that creates gravity as objects follow the bends of spacetime.
+- The more mass an object has the more spacetime is warped.
+
+# Modern Classical Physics vs Quantum Physics
+
+- `Quantum physics` (developed in the early 1900s) describes the behavior of matter and energy at atomic and subatomic scales - electrons, photons, quarks, and so on.
+- **Issues**:
+  - Blackbody Radiation - Classical physics predicted that hot objects would radiate infinite amounts of energy at high frequencies(an infinite amount of electromagnetic energy)
+- String theory emerged as attempt to reconcile modern classical physics and quantum physics into a single framework.
+
+# Loose Notes
+
 - Blackholes
   - Event horizon
-- Waves
-  - [Constructive and Destructive Interference](https://www.google.com/search?q=constructive+and+destructive+interference&oq=constructive+and+d&gs_lcrp=EgZjaHJvbWUqBwgAEAAYgAQyBwgAEAAYgAQyBggBEEUYOTIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIHCAUQABiABDIHCAYQABiABDIHCAcQABiABDIHCAgQABiABDIHCAkQABiABNIBCDM1MTdqMGo0qAIAsAIB&sourceid=chrome&ie=UTF-8)
-  - Light Waves
-    - Wave Lengths
-      - Wave Length Spectrum
-        - Red light: longest wavelengths (~620-750 nm)
-        - Orange: ~590-620 nm
-        - Yellow: ~570-590 nm
-        - Green: ~495-570 nm
-        - Blue: ~450-495 nm
-        - Violet: shortest wavelengths (~380-450 nm)
-      - Shorter wavelengths (violet/blue) carry more energy per photon than longer wavelengths (red). This is why UV light (even shorter than violet) can damage skin, while infrared (longer than red) we primarily feel as heat.
-    - Wave Particle Duality
-      - [Young's Double Slit Experiment](https://www.google.com/search?q=young%27s+double+slit+experiment&sca_esv=89bbb5f22cb469d0&sxsrf=AE3TifOf8xQxFZGEQ6U4WjS4fUzdGXc39A%3A1766857771671&ei=KxxQafDYKODdwN4Pl8ybWQ&oq=young%27s+do&gs_lp=Egxnd3Mtd2l6LXNlcnAiCnlvdW5nJ3MgZG8qAggAMgoQABiABBhDGIoFMgUQABiABDIFEAAYgAQyChAAGIAEGEMYigUyBRAAGIAEMgUQABiABDIFEAAYgAQyBRAAGIAEMgoQABiABBhDGIoFMgUQABiABEj0FFDcBliUEHABeACQAQCYAcwBoAHGEKoBBTAuOC4zuAEDyAEA-AEBmAILoALGD8ICChAAGLADGNYEGEfCAg0QABiABBiwAxhDGIoFwgIEECMYJ8ICChAuGIAEGCcYigXCAgUQLhiABJgDAIgGAZAGCpIHBTEuNS41oAeymAGyBwUwLjUuNbgHvw_CBwUwLjUuNsgHIoAIAA&sclient=gws-wiz-serp)
