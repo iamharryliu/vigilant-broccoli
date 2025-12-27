@@ -1,4 +1,6 @@
-# Hydration Table
+# Bread Hydration
+
+## Hydration Table
 
 | **Flour(g)** | **60% Hydration (g)** | **65% Hydration (g)**   | **70% Hydration (g)** |
 | ------------ | --------------------- | ----------------------- | --------------------- |
@@ -8,3 +10,13 @@
 | 400          | 400 + 240 = **640**   | 400 + 260 = **660**     | 400 + 280 = **680**   |
 | 450          | 450 + 270 = **720**   | 450 + 292.5 = **742.5** | 450 + 315 = **765**   |
 | 500          | 500 + 300 = **800**   | 500 + 325 = **825**     | 500 + 350 = **850**   |
+
+## Bread Types by Hydration
+
+| **Hydration Range** | **Type of Bread**                                       |
+| ------------------- | ------------------------------------------------------- |
+| 50-57%              | Bagels, Pretzels, Stiff doughs                          |
+| 58-65%              | Sandwich bread, Dinner rolls, Brioche                   |
+| 65-70%              | Baguettes, French bread, Italian bread, Basic sourdough |
+| 70-75%              | Artisan sourdough, Country loaves, Rustic breads        |
+| 75-80%              | Ciabatta, Focaccia, High-hydration sourdough            |
