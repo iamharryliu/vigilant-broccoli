@@ -27,12 +27,14 @@
 
 ## Camping
 
-- **Tent**
+- **Campsite**
   - Tent
   - Stakes
   - Mallet
   - Duct Tape
-  - Hanging Light
+  - Hanging Lights
+  - Clothing Pins
+  - Tarp
 - **Sleeping**
   - Pillow
   - Sleeping Bag/Blanket
@@ -46,24 +48,12 @@
     - Thermos
     - Cooler
 - **Utility**
-  - Power Bank and cables.
-  - Flash Light
-  - Headlamp
+  - [Travel Packlist Utility](./travel-packlist.md#utility)
   - Swedish Dish Cloths (Wettex)
   - Extra bags/totes
+  - Large Sitting Blanket
 - **Pest Handling**
   - Bug Net Masks
   - Bug Repellent
-- **Leisure**
-  - Leisure Packing
-  - Games
-  - Speaker
-- Dog Travel Pack if with Dog
-- Tarp
-- Large Sitting Blanket
-- Clothing Pins
-
-- Book Bag
-  - Book(s)
-  - Bookmark
-  - Reading Light
+- [Travel Packlist Leisure](./travel-packlist.md#leisure)
+- [Dog Packlist](./dog-packlist.md)
