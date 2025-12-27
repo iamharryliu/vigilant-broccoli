@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Vigilant Broccoli Linux-Compatible Shell Configuration
+# This file sources only the aliases that work on Linux
+
+# Export repository paths
+export REPO_DIR=$HOME/vigilant-broccoli
+export GIT_WORKFLOWS_DIR="$REPO_DIR/.github/workflows"
+export DOCS_DIR="$REPO_DIR/docs"
+export SETUP_DIR="$REPO_DIR/setup"
+export NOTES_DIR="$REPO_DIR/notes"
+export LANGUAGE_LEARNING_DIR="$NOTES_DIR/hobbies/language-learning"
+export SNIPPETS_DIR="$REPO_DIR/snippets"
+export PROJECTS_DIR="$REPO_DIR/projects"
+export TODO_FILEPATH="$REPO_DIR/TODO.md"
+export LINUX_SETUP_DIR="$SETUP_DIR/linux"
+export DOTFILES_DIR="$SETUP_DIR/dotfiles"
+export COMMON_DOTFILES_DIR="$DOTFILES_DIR/common"
+
+# Source Linux-compatible common aliases
+if [ -f ~/shell-common/aliases/aliases.sh ]; then
+    source ~/shell-common/aliases/aliases.sh
+fi
+
+# Load all common alias subdirectories (os, devops, network)
+load_aliases() {
+  local dir="$1"
+  if [ -d "$dir" ]; then
+    find "$dir" -name "*.sh" -type f | while read -r script; do
+      source "$script"
+    done
+  fi
+}
+
+BASE_DIR=~/shell-common/aliases
+for SUB_DIR in os devops network; do
+  load_aliases "$BASE_DIR/$SUB_DIR"
+done
+
+# Shell customization
+alias initsh='echo "~Shell reinitialized~" && source ~/.bashrc'
+
+# Convenience message
+echo "✅ Vigilant Broccoli Linux aliases loaded"

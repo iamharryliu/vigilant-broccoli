@@ -1,6 +1,13 @@
 source $HOME/vigilant-broccoli/setup/dotfiles/common/directory_variables.sh
 
-alias initsh='echo "~Shell initialized.~" && source ~/.zshrc'
+initsh() {
+  if [[ $SHELL == */zsh ]]; then
+      source ~/.zshrc
+  else
+      source ~/.bashrc
+  fi
+  echo "~Shell initialized.~"
+}
 alias reinstallsh="source $MAC_SETUP_DIR/install.sh"
 
 # Mac specific aliases
@@ -50,45 +57,69 @@ explain_shell() {
     command -v xdg-open > /dev/null && xdg-open "$url" || command -v open > /dev/null && open "$url" || echo "Open manually: $url";
 }
 
-# TODO: Enhance for Linux compatibility
-alias cpsshpubkey='cat ~/.ssh/id_rsa.pub| pbcopy'
+# Cross-platform SSH public key copy
+cpsshpubkey() {
+  local ssh_key="$HOME/.ssh/id_rsa.pub"
 
-alarm() {
-  if [ $# -lt 2 ]; then
-    echo "Usage: alarm <minutes> <message>"
+  if [[ ! -f "$ssh_key" ]]; then
+    echo "SSH public key not found at $ssh_key"
     return 1
   fi
 
-  local minutes=$1
-  shift
-  local message="$*"
-
-  (
-    echo "Alarm set for $minutes minutes..."
-    sleep $((minutes * 60))
-    say "$message"
-  ) &
+  if command -v pbcopy &>/dev/null; then
+    cat "$ssh_key" | pbcopy
+    echo "SSH public key copied to clipboard (macOS)."
+  elif command -v xclip &>/dev/null; then
+    cat "$ssh_key" | xclip -selection clipboard
+    echo "SSH public key copied to clipboard (Linux)."
+  elif command -v wl-copy &>/dev/null; then
+    cat "$ssh_key" | wl-copy
+    echo "SSH public key copied to clipboard (Wayland)."
+  else
+    echo "Clipboard utility not found. Install 'pbcopy', 'xclip', or 'wl-copy'."
+    echo "Your SSH public key:"
+    cat "$ssh_key"
+  fi
 }
 
+# TODO: Enhance alarm() and alertinterval() for Linux compatibility (use espeak/spd-say instead of say)
+if [[ "$(uname)" == "Darwin" ]]; then
+  alarm() {
+    if [ $# -lt 2 ]; then
+      echo "Usage: alarm <minutes> <message>"
+      return 1
+    fi
 
-alertinterval() {
-  if [ -z "$1" ]; then
-    echo "Usage: alertinterval <cron-interval|off>"
-    echo "Example: alertinterval '*/15' (every 15 minutes)"
-    echo "         alertinterval '0' (every hour)"
-    echo "         alertinterval off (remove the alert)"
-    return 1
-  fi
+    local minutes=$1
+    shift
+    local message="$*"
 
-  if [ "$1" = "off" ]; then
-    crontab -l 2>/dev/null | grep -v 'say "the time is now' | crontab -
-    echo "🛑 Alert cron job removed"
-    return 0
-  fi
+    (
+      echo "Alarm set for $minutes minutes..."
+      sleep $((minutes * 60))
+      say "$message"
+    ) &
+  }
 
-  CRON_LINE="$1 * * * * /bin/bash -c 'say \"the time is now \$(date +\"\\%I:\\%M \\%p\")\"'"
+  alertinterval() {
+    if [ -z "$1" ]; then
+      echo "Usage: alertinterval <cron-interval|off>"
+      echo "Example: alertinterval '*/15' (every 15 minutes)"
+      echo "         alertinterval '0' (every hour)"
+      echo "         alertinterval off (remove the alert)"
+      return 1
+    fi
 
-  # Replace existing say job
-  ( crontab -l 2>/dev/null | grep -v 'say "the time is now' ; echo "$CRON_LINE" ) | crontab -
-  echo "✅ Cron updated: $CRON_LINE"
-}
+    if [ "$1" = "off" ]; then
+      crontab -l 2>/dev/null | grep -v 'say "the time is now' | crontab -
+      echo "🛑 Alert cron job removed"
+      return 0
+    fi
+
+    CRON_LINE="$1 * * * * /bin/bash -c 'say \"the time is now \$(date +\"\\%I:\\%M \\%p\")\"'"
+
+    # Replace existing say job
+    ( crontab -l 2>/dev/null | grep -v 'say "the time is now' ; echo "$CRON_LINE" ) | crontab -
+    echo "✅ Cron updated: $CRON_LINE"
+  }
+fi

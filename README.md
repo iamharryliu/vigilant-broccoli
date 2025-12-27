@@ -21,3 +21,4 @@
 ## Machine Setups
 
 - [Macbook Pro Setup](./docs/machine-setups/mbp-setup.md)
+- [Linux Setup](./docs/machine-setups/linux-setup.md)
