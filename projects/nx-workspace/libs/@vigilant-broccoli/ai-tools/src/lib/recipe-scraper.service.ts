@@ -53,10 +53,10 @@ const scrapeRecipeFromUrl = async (
   const cleanContent = extractCleanContent(htmlContent);
   const result = await LLMService.prompt<string>({
     prompt: {
-      userPrompt: `You are a recipe extraction assistant. Your job is to extract recipe information from text content and format it into clean, structured markdown.
+      userPrompt: `
+You are a recipe extraction assistant. Your job is to extract recipe information from text content and format it into clean, structured markdown.
 
 The markdown should follow this exact template format:
-
 ${recipeTemplate}
 
 Important guidelines:
@@ -75,7 +75,6 @@ Important guidelines:
   - Example: **at room temperature or in the fridge**
 - Group ingredients by section if the recipe has them (e.g., "Tofu", "Sauce", "Marinade")
 - Include a separate garnish/finishing section if the recipe has garnishes or finishing touches
-- Format instructions as clear, actionable bullet points
 - Output the recipe in the language specified by the language code: ${languageCode}
 - Return ONLY the markdown content, no additional commentary
 
