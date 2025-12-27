@@ -152,17 +152,6 @@ const LEARN_LINKS = [
 
 const FOR_LATER_LINKS = [
   {
-    label: 'Reddit Saved',
-    target: 'https://www.reddit.com/user/itzliu/saved/',
-    type: OPEN_TYPE.BROWSER,
-  },
-  {
-    label: 'Instagram Saved',
-    target: 'https://www.instagram.com/prettydamntired/saved/all-posts/',
-    type: OPEN_TYPE.BROWSER,
-  },
-
-  {
     label: 'TODO(Journal)',
     target:
       '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal/productivity/TODO.md',
@@ -172,6 +161,21 @@ const FOR_LATER_LINKS = [
     label: 'TODO(vigilant-broccoli)',
     target: '~/vigilant-broccoli/TODO.md',
     type: OPEN_TYPE.VSCODE,
+  },
+  {
+    label: 'YouTube Watch Later',
+    target: 'https://www.youtube.com/playlist?list=WL',
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: 'Instagram Saved',
+    target: 'https://www.instagram.com/prettydamntired/saved/all-posts/',
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: 'Reddit Saved',
+    target: 'https://www.reddit.com/user/itzliu/saved/',
+    type: OPEN_TYPE.BROWSER,
   },
 ];
 

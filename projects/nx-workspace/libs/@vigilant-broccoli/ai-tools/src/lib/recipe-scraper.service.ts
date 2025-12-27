@@ -71,6 +71,7 @@ Important guidelines:
   - **kg** - kilogram
 - Please convert all temperature measurements to the following:
   - **°C** - Celsius
+- Please write units together with number, ie 25g, 30ml, etc..
 - Use **bold text** for important steps or ingredients
   - Example: **at room temperature or in the fridge**
 - Group ingredients by section if the recipe has them (e.g., "Tofu", "Sauce", "Marinade")
