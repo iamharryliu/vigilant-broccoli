@@ -1,11 +1,13 @@
 # TODO
 
-## Image Storage Solution
+## Storage Handling Practices
 
-- Cloud storage
-- Physical storage
-- Backups
-- Accessibility - Immich implementation?
+- Image Storage Solution
+  - Cloud storage
+  - Physical storage
+  - Backups
+  - Accessibility - Immich implementation?
+- Machine storage handling
 
 ## vigilant-broccoli
 
