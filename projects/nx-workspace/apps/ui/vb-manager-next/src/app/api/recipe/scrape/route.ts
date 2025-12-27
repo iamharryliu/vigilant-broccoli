@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { RecipeScraperService } from '@vigilant-broccoli/ai-tools';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 
 export async function POST(request: NextRequest) {
@@ -9,18 +9,10 @@ export async function POST(request: NextRequest) {
     resolve(process.cwd(), '../../../../../notes/cooking/recipe-template.md'),
     'utf-8',
   );
-  const measurementConventions = readFileSync(
-    resolve(
-      process.cwd(),
-      '../../../../../notes/cooking/measurement-conventions.md',
-    ),
-    'utf-8',
-  );
 
   const recipe = await RecipeScraperService.scrapeRecipeFromUrl(
     url,
     recipeTemplate,
-    measurementConventions,
   );
 
   const safeFilename =
@@ -29,11 +21,19 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '') + '.md';
 
-  return new NextResponse(recipe.markdown, {
-    status: 200,
-    headers: {
-      'Content-Type': 'text/markdown',
-      'Content-Disposition': `attachment; filename="${safeFilename}"`,
-    },
-  });
+  // Ensure the sort-later directory exists
+  const sortLaterDir = resolve(
+    process.cwd(),
+    '../../../../../notes/cooking/recipes/sort-later',
+  );
+  mkdirSync(sortLaterDir, { recursive: true });
+
+  // Write the recipe to the sort-later directory
+  const filePath = resolve(sortLaterDir, safeFilename);
+  writeFileSync(filePath, recipe.markdown, 'utf-8');
+
+  return NextResponse.json(
+    { message: 'Recipe saved successfully', filename: safeFilename },
+    { status: 200 },
+  );
 }

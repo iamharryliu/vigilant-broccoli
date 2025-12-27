@@ -45,7 +45,6 @@ const extractCleanContent = (html: string): string => {
 const scrapeRecipeFromUrl = async (
   url: string,
   recipeTemplate: string,
-  measurementConventions: string,
   languageCode = 'en-US',
 ): Promise<RecipeMarkdown> => {
   const response = await axios.get(url);
@@ -54,27 +53,33 @@ const scrapeRecipeFromUrl = async (
   const cleanContent = extractCleanContent(htmlContent);
   const result = await LLMService.prompt<string>({
     prompt: {
-      systemPrompt: `You are a recipe extraction assistant. Your job is to extract recipe information from text content and format it into clean, structured markdown.
+      userPrompt: `You are a recipe extraction assistant. Your job is to extract recipe information from text content and format it into clean, structured markdown.
 
 The markdown should follow this exact template format:
 
 ${recipeTemplate}
 
-Follow these measurement and formatting conventions:
-
-${measurementConventions}
-
 Important guidelines:
-1. Extract ALL ingredients with their exact quantities
-2. Group ingredients by section if the recipe has them (e.g., "Tofu", "Sauce", "Marinade")
-3. Include a separate garnish/finishing section if the recipe has garnishes or finishing touches
-4. Format instructions as clear, actionable bullet points
-5. Keep the original recipe's level of detail
-6. If there are cooking times, temperatures, or special notes, include them in the instructions
-7. In the References section, include the original URL
-8. Output the recipe in the language specified by the language code: ${languageCode}
-9. Return ONLY the markdown content, no additional commentary`,
-      userPrompt: `Extract the recipe from this text content and format it as markdown. The original URL is: ${url}
+- Prefer metric units over imperial units
+- Please convert all volume measurements to the following:
+  - **tsp** - teaspoon
+  - **tbsp** - tablespoon
+  - **ml** - milliliter
+  - **mg** - milligram
+- Please convert all weight measurements to the following:
+  - **g** - gram
+  - **kg** - kilogram
+- Please convert all temperature measurements to the following:
+  - **°C** - Celsius
+- Use **bold text** for important steps or ingredients
+  - Example: **at room temperature or in the fridge**
+- Group ingredients by section if the recipe has them (e.g., "Tofu", "Sauce", "Marinade")
+- Include a separate garnish/finishing section if the recipe has garnishes or finishing touches
+- Format instructions as clear, actionable bullet points
+- Output the recipe in the language specified by the language code: ${languageCode}
+- Return ONLY the markdown content, no additional commentary
+
+Extract the recipe from this text content and format it as markdown. The original URL is: ${url}
 
 Text Content:
 ${cleanContent}`,

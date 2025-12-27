@@ -2,7 +2,6 @@
 
 import { Card, Flex, Text, TextField, Button } from '@radix-ui/themes';
 import { useState } from 'react';
-import { downloadBlob } from '@vigilant-broccoli/react-lib';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 export const RecipeScraperComponent = () => {
@@ -39,17 +38,6 @@ export const RecipeScraperComponent = () => {
       setLoading(false);
       return;
     }
-    
-    const contentDisposition = response.headers.get('Content-Disposition');
-    const filenameMatch = contentDisposition?.match(/filename="([^"]+)"|filename=([^;\s]+)/);
-    const filename = filenameMatch ? (filenameMatch[1] || filenameMatch[2]) : 'recipe.md';
-    const blob = await response.blob();
-    downloadBlob(blob, filename);
-
-    setMessage({
-      type: 'success',
-      text: `Recipe downloaded as ${filename}`,
-    });
     setUrl('');
     setLoading(false);
   };
@@ -71,7 +59,7 @@ export const RecipeScraperComponent = () => {
           <TextField.Root
             placeholder="Enter recipe URL..."
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={e => setUrl(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={loading}
             size="3"
@@ -86,18 +74,11 @@ export const RecipeScraperComponent = () => {
           </Button>
 
           {message && (
-            <Text
-              size="2"
-              color={message.type === 'success' ? 'green' : 'red'}
-            >
+            <Text size="2" color={message.type === 'success' ? 'green' : 'red'}>
               {message.text}
             </Text>
           )}
         </Flex>
-
-        <Text size="1" color="gray">
-          Enter a recipe URL to extract and save it as markdown to ~/Downloads
-        </Text>
       </Flex>
     </Card>
   );
