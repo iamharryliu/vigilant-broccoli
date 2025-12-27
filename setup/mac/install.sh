@@ -43,6 +43,7 @@ if ask "Install Node dependencies?"; then
     npm install -g tsx
     npm install -g @angular/cli
     npm add --global nx@latest
+fi
 
 if ask "Setup git hooks?"; then
     pip3 install pre-commit && pre-commit install
