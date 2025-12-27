@@ -26,4 +26,4 @@
 ## References
 
 - [Link text](RECIPE_URL)
-- [Media Provider, ie YouTube](VIDEO_URL)
+- [Another reference, ie YouTube if applicable](VIDEO_URL)

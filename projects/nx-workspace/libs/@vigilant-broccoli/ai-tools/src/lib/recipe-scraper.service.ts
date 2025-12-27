@@ -77,6 +77,7 @@ Important guidelines:
 - Include a separate garnish/finishing section if the recipe has garnishes or finishing touches
 - Output the recipe in the language specified by the language code: ${languageCode}
 - Return ONLY the markdown content, no additional commentary
+- Make the instructions list concise and not verbose.
 
 Extract the recipe from this text content and format it as markdown. The original URL is: ${url}
 
