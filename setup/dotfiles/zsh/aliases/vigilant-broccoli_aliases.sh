@@ -98,4 +98,4 @@ alias vbvault="open 'https://10.0.1.1:8200'"
 # alias openvbvault="sshtunnelvault; openlocalvault"
 
 # Backup
-alias vbbackupsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
+alias backupvbsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
