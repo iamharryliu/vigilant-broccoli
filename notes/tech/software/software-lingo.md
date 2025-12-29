@@ -6,4 +6,5 @@
 | first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                          |
 | ephemeral           | Short lived or temporary.                                                                                                                           |
 | hardening           | Process of making a system, application, or network more secure by reducing its vulnerabilities and attack surface.                                 |
-| microservices | Breaking applications into tiny remote services that run independently of each other.
+| microservices       | Breaking applications into tiny remote services that run independently of each other.                                                               |
+| immutable           | Cannot be changed after it’s created.                                                                                                               |
