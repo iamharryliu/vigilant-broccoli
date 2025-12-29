@@ -20,6 +20,7 @@
   - [Utility Packlist](#utility)
 - Overnight
   - [Toiletry](./toiletry-packlist)
+  - Slides
 - [Dog Packlist](./dog-packlist.md)
 - [Car Packlist](./car-packlist.md)
 - [Outdoor Packlist](./outdoor-packlist.md)

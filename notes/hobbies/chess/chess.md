@@ -42,11 +42,17 @@
 ## Opening
 
 - Control center
-- Pawn duos
-  - Create/challenge
-- Develop minor pieces early
-- Castle early
-- move queen in later ph
+- Pawns
+  - Create/challenge Pawn duos
+  - Avoid blocking your pawns.
+- Develop
+  - Develop minor pieces early.
+  - Avoid blocking your own pieces:
+    - Central pawns
+    - Queenside Bishop - Ideally develop queenside bishop first before playing king's pawn to avoid blocking it in.
+  - Castle early.
+  - Develop queen in later stages.
+  - Avoid moving the same piece multiple times.
 
 ## Middle Game
 
@@ -64,3 +70,7 @@
 
 - Check for checks > captures > threats.
 - Each move should develop a piece or create/prevent a threat.
+
+## References
+
+- [Begineer to Chess Master](https://www.youtube.com/playlist?list=PLQsLDm9Rq9bHKEBnElquF8GuWkI1EJ8Zp)
