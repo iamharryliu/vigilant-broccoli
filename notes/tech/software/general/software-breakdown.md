@@ -48,6 +48,7 @@ Alternatives
 - Agnostic
 - Stateless
 - Avoiding silent fail
+- Performance and optimization.
 
 # Refactor
 
@@ -60,17 +61,6 @@ Alternatives
 - Project Management
 - Architecture
 - **Web Development**
-  - **Frontend**
-    - Requests
-      - Race conditions.
-      - Memory leaks.
-      - Error handling.
-      - Loading states.
-      - Performance and optimization.
-    - Asynchronous Stuff
-      - Event listeners.
-      - Timers.
-      - Subscriptions.
   - Database
     - Schema
     - SQL
@@ -162,7 +152,10 @@ subgraph HTML_PAGE[HTML Page]
   JS
 end
 
+BUILD_CHOICES[Build Choices]
+
 subgraph UI_FRAMEWORK[UI Framework]
+  direction TB
   COMPONENT_RENDERING[Component Rendering]
   subgraph ROUTE_HANDLING[Route Handling]
     INDEX_ROUTE["/"]
@@ -172,7 +165,6 @@ subgraph UI_FRAMEWORK[UI Framework]
     INVALID_ROUTE[Invalid Routes]
     PROTECTED_ROUTES[Error Handling]
   end
-  FRAMEWORK_STATE_MANAGEMENT[State Management]
 end
 
 subgraph UI_LIBRARY[UI Library]
@@ -181,13 +173,17 @@ subgraph UI_LIBRARY[UI Library]
 end
 
 subgraph ENHANCEMENTS[Enhancements]
-  ACCESSIBILITY[Accessibility - A11y]
-  INTERNATIONALIZATION[Internationalization- i18n]
+  direction TB
+  subgraph UX[UX]
+    ACCESSIBILITY[Accessibility - A11y]
+    INTERNATIONALIZATION[Internationalization- i18n]
+  end
   subgraph ERROR_HANDLING[Error Handling]
     direction TB
     subgraph EVENT_HANDLING[Event Handling]
       BUTTON_CLICK_RESPONSE[Button Click Response]
       INPUT_CHANGE[Input Change]
+      LOADING_STATES[Loading State]
     end
 
     subgraph ERROR_DISPLAY_TYPES[Error Display Types]
@@ -207,6 +203,7 @@ subgraph ENHANCEMENTS[Enhancements]
   end
 
   subgraph AUTHENTICATION[Authentication]
+    direction TB
     subgraph COOKIES[Cookies]
       JWT[jwt]
       SESSION_ID[Session ID]
@@ -215,7 +212,18 @@ subgraph ENHANCEMENTS[Enhancements]
   end
 end
 
+subgraph REQUESTS[Requests]
+  REQUEST_ERROR_HANDLING[Error Handling]
+end
+
+subgraph ASYNCHRONOUS_HANDLING[Asynchronous Handling]
+  EVENT_LISTENER[Event Listener]
+  SUBSCRIPTIONS[Subscriptions]
+  TIMERS[Timers]
+end
+
 subgraph STATE_MANAGEMENT[State Management]
+  direction TB
   subgraph APP_STATE_MANAGEMENT[App State Management]
     GLOBAL_APP_STATE[Global App State]
     COMPONENT_STATE[Component State]
@@ -226,15 +234,18 @@ subgraph STATE_MANAGEMENT[State Management]
   end
 end
 
+HTML_PAGE --> BUILD_CHOICES
+BUILD_CHOICES --> UI_LIBRARY
+BUILD_CHOICES --> UI_FRAMEWORK
+BUILD_CHOICES --> ENHANCEMENTS
 
-HTML_PAGE --> UI_LIBRARY
-HTML_PAGE --> UI_FRAMEWORK
 UI_FRAMEWORK --> UI_LIBRARY
-CSS-->STYLING
+REQUESTS --> ASYNCHRONOUS_HANDLING
 
 EVENT_HANDLING --> ERROR_DISPLAY_TYPES
 
-FRAMEWORK_STATE_MANAGEMENT-->APP_STATE_MANAGEMENT
+JS --> REQUESTS
+JS --> STATE_MANAGEMENT
 ```
 
 ## Backend
