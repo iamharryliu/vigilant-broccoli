@@ -8,7 +8,12 @@ interface DockerProject {
   name: string;
   state: 'running' | 'paused' | 'exited' | 'mixed';
   containerCount: number;
-  services: string[];
+  services: ServiceInfo[];
+}
+
+interface ServiceInfo {
+  name: string;
+  ports: string;
 }
 
 interface DockerStatus {
@@ -21,6 +26,7 @@ interface StandaloneContainer {
   name: string;
   status: string;
   state: 'running' | 'paused' | 'exited' | 'created' | 'restarting' | 'removing' | 'dead';
+  ports: string;
 }
 
 // Parse Docker status string to determine container state
@@ -36,17 +42,35 @@ function parseContainerState(status: string): 'running' | 'paused' | 'exited' | 
   return 'exited';
 }
 
+// Extract only local port numbers from Docker ports string
+// Example input: "0.0.0.0:8080->80/tcp, :::8080->80/tcp"
+// Example output: "8080"
+function extractLocalPorts(portsString: string): string {
+  if (!portsString) return '';
+
+  const portMatches = portsString.match(/0\.0\.0\.0:(\d+)->/g);
+  if (!portMatches) return '';
+
+  const ports = portMatches.map(match => {
+    const portMatch = match.match(/0\.0\.0\.0:(\d+)->/);
+    return portMatch ? portMatch[1] : '';
+  }).filter(port => port);
+
+  // Remove duplicates and join with comma
+  return [...new Set(ports)].join(', ');
+}
+
 export async function GET() {
   try {
     // Check if Docker is running first - this will throw if Docker is down
     await execAsync('docker info');
 
-    // Get list of all Docker containers with compose labels
+    // Get list of all Docker containers with compose labels and ports
     const { stdout: containersOutput } = await execAsync(
-      'docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Label \\"com.docker.compose.project\\"}}\t{{.Label \\"com.docker.compose.service\\"}}"'
+      'docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Label \\"com.docker.compose.project\\"}}\t{{.Label \\"com.docker.compose.service\\"}}\t{{.Ports}}"'
     );
 
-    const projectMap = new Map<string, { states: Set<string>; services: Set<string>; count: number }>();
+    const projectMap = new Map<string, { states: Set<string>; services: Map<string, string>; count: number }>();
     const standaloneContainers: StandaloneContainer[] = [];
 
     containersOutput
@@ -60,16 +84,18 @@ export async function GET() {
         const status = parts[2]?.trim() || '';
         const project = parts[3]?.trim() || '';
         const service = parts[4]?.trim() || '';
+        const portsRaw = parts[5]?.trim() || '';
         const state = parseContainerState(status);
+        const ports = extractLocalPorts(portsRaw);
 
         // Group by compose project if it exists
         if (project) {
           if (!projectMap.has(project)) {
-            projectMap.set(project, { states: new Set(), services: new Set(), count: 0 });
+            projectMap.set(project, { states: new Set(), services: new Map(), count: 0 });
           }
           const projectData = projectMap.get(project)!;
           projectData.states.add(state);
-          if (service) projectData.services.add(service);
+          if (service) projectData.services.set(service, ports);
           projectData.count++;
         } else {
           // Standalone container (not part of compose)
@@ -78,6 +104,7 @@ export async function GET() {
             name,
             status,
             state,
+            ports,
           });
         }
       });
@@ -100,7 +127,9 @@ export async function GET() {
         name,
         state: projectState,
         containerCount: data.count,
-        services: Array.from(data.services).sort(),
+        services: Array.from(data.services.entries())
+          .map(([name, ports]) => ({ name, ports }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
       };
     });
 

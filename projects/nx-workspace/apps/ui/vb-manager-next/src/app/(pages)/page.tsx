@@ -177,6 +177,11 @@ const FOR_LATER_LINKS = [
     target: 'https://www.reddit.com/user/itzliu/saved/',
     type: OPEN_TYPE.BROWSER,
   },
+  {
+    label: 'Expiration',
+    target: '~/journal/management/expiration.md',
+    type: OPEN_TYPE.VSCODE,
+  }
 ];
 
 const PERSONAL_LINKS = [

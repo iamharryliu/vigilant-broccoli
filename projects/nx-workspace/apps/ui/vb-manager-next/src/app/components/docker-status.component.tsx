@@ -3,15 +3,25 @@
 import { Card, Flex, Text, Badge, IconButton, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
-import { ExternalLinkIcon, PlayIcon, StopIcon } from '@radix-ui/react-icons';
+import {
+  ExternalLinkIcon,
+  PlayIcon,
+  StopIcon,
+  PauseIcon,
+} from '@radix-ui/react-icons';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+
+interface ServiceInfo {
+  name: string;
+  ports: string;
+}
 
 interface DockerProject {
   name: string;
   state: 'running' | 'paused' | 'exited' | 'mixed';
   containerCount: number;
-  services: string[];
+  services: ServiceInfo[];
 }
 
 interface StandaloneContainer {
@@ -26,6 +36,7 @@ interface StandaloneContainer {
     | 'restarting'
     | 'removing'
     | 'dead';
+  ports: string;
 }
 
 interface DockerStatus {
@@ -240,10 +251,6 @@ export const DockerStatusComponent = () => {
               >
                 <Flex align="center" gap="2" justify="between">
                   <Flex align="center" gap="2">
-                    <Badge color={getBadgeColor(project.state)} size="2">
-                      {project.state.charAt(0).toUpperCase() +
-                        project.state.slice(1)}
-                    </Badge>
                     <Text size="3" weight="bold" className="text-gray-700">
                       {project.name}
                     </Text>
@@ -253,7 +260,6 @@ export const DockerStatusComponent = () => {
                       <IconButton
                         size="1"
                         variant="soft"
-                        color="green"
                         onClick={() => handleStart(project.name, true)}
                         disabled={actionInProgress.has(project.name)}
                         title="Start project"
@@ -265,23 +271,29 @@ export const DockerStatusComponent = () => {
                       <IconButton
                         size="1"
                         variant="soft"
-                        color="red"
                         onClick={() => handleStop(project.name, true)}
                         disabled={actionInProgress.has(project.name)}
                         title="Stop project"
                       >
-                        <StopIcon />
+                        <PauseIcon />
                       </IconButton>
                     )}
                   </Flex>
                 </Flex>
 
                 {project.services.length > 0 && (
-                  <Flex gap="1" className="ml-2" wrap="wrap">
+                  <Flex direction="column" gap="1">
                     {project.services.map(service => (
-                      <Badge key={service} color="blue" variant="soft" size="1">
-                        {service}
-                      </Badge>
+                      <Flex key={service.name} align="center" gap="2">
+                        <Badge color="blue" variant="soft" size="1">
+                          {service.name}
+                        </Badge>
+                        {service.ports && (
+                          <Text size="1" className="text-gray-600 font-mono">
+                            {service.ports}
+                          </Text>
+                        )}
+                      </Flex>
                     ))}
                   </Flex>
                 )}
@@ -297,7 +309,7 @@ export const DockerStatusComponent = () => {
               >
                 <Flex align="center" gap="2" justify="between">
                   <Flex align="center" gap="2">
-                    <Badge color={getBadgeColor(container.state)} size="2">
+                    <Badge size="2">
                       {container.state.charAt(0).toUpperCase() +
                         container.state.slice(1)}
                     </Badge>
@@ -310,7 +322,6 @@ export const DockerStatusComponent = () => {
                       <IconButton
                         size="1"
                         variant="soft"
-                        color="green"
                         onClick={() => handleStart(container.id, false)}
                         disabled={actionInProgress.has(container.id)}
                         title="Start container"
@@ -322,7 +333,6 @@ export const DockerStatusComponent = () => {
                       <IconButton
                         size="1"
                         variant="soft"
-                        color="red"
                         onClick={() => handleStop(container.id, false)}
                         disabled={actionInProgress.has(container.id)}
                         title="Stop container"
@@ -344,6 +354,14 @@ export const DockerStatusComponent = () => {
                     Status:{' '}
                     <Text className="text-gray-700">{container.status}</Text>
                   </Text>
+                  {container.ports && (
+                    <Text size="1" className="text-gray-600">
+                      Ports:{' '}
+                      <Text className="text-gray-700 font-mono">
+                        {container.ports}
+                      </Text>
+                    </Text>
+                  )}
                 </Flex>
               </Flex>
             ))}
