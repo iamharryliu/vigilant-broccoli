@@ -18,7 +18,7 @@
   - [Layering Explained (The 3 Layer System)](https://www.youtube.com/watch?v=eXr2iPeMLfs)
   - [How to Roll Up Your Pants | GQ](https://www.youtube.com/watch?v=45IBKWJyJ1A)
 - **Proficiency**
-  - [Packing](../travel/packing/packing.md)
+  - [Packing](../travel/packing/packlist.md)
   - [Speed Reading](https://en.wikipedia.org/wiki/Speed_reading)
     - [Spreeder](https://www.spreeder.com/app.php)
   - [Touch Typing](https://en.wikipedia.org/wiki/Touch_typing)

@@ -1,6 +1,6 @@
 # Travel
 
-- [Packing](./packing/packing.md)
+- [Packlist](./packing/packlist.md)
 - [Camper Van](./campervan.md)
 
 ## Useful Apps

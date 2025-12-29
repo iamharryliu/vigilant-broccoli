@@ -1,7 +1,7 @@
 # Cooking Nuances
 
 - White vs dark miso - White miso is mildly sweet and lightly fermented, while dark miso is stronger, saltier, and aged much longer for deeper umami.
-- MSG(Monosodium Glutamate ) -  A flavor enhancer that boosts savory umami taste in foods;
+- MSG(Monosodium Glutamate) - A flavor enhancer that boosts savory umami taste in foods;
 use: added to soups, stir-fries, snacks, and seasonings to make them taste richer.
 - Dashi is a Japanese broth made from kombu (kelp), bonito flakes, or other ingredients;
 use: forms the umami-rich base for soups, sauces, and many Japanese dishes.

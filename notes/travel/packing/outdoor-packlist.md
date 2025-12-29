@@ -1,7 +1,7 @@
 # Outdoor Packlist
 
 - Water
-- Food/Snacks
+- [Food Packlist](./food-packlist.md)
 - Clothing Laters ie Heattech
 - Sunscreen
 - **Health**
@@ -48,12 +48,12 @@
     - Thermos
     - Cooler
 - **Utility**
-  - [Travel Packlist Utility](./travel-packlist.md#utility)
+  - [Travel Packlist Utility](./packlist.md#utility)
   - Swedish Dish Cloths (Wettex)
   - Extra bags/totes
   - Large Sitting Blanket
 - **Pest Handling**
   - Bug Net Masks
   - Bug Repellent
-- [Travel Packlist Leisure](./travel-packlist.md#leisure)
+- [Travel Packlist Leisure](./packlist.md#leisure)
 - [Dog Packlist](./dog-packlist.md)

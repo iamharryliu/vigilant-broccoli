@@ -9,13 +9,22 @@
 
 ## Outing
 
-- Wet Wipes
-- Sunglasses
-- Sunscreen
-- Chapstick
-- Hat
-- Light Jacket/Sweater
-- [Toiletry](./toiletry-packlist)
+- Day Trip
+  - Small bag
+  - Wet Wipes
+  - Sunglasses
+  - Sunscreen
+  - Chapstick
+  - Hat
+  - Light Jacket/Sweater
+  - [Utility Packlist](#utility)
+- Overnight
+  - [Toiletry](./toiletry-packlist)
+- [Dog Packlist](./dog-packlist.md)
+- [Car Packlist](./car-packlist.md)
+- [Outdoor Packlist](./outdoor-packlist.md)
+- [Air Travel Packlist](./flight-packlist.md)
+- [Food Packlist](./food-packlist.md)
 
 ## Utility
 
@@ -38,9 +47,7 @@
 
 ## Nice to have
 
-- Snacks
 - Swimwear
-- Art supplies
 - **Comfort**
   - Ear Plugs
   - Neck Pillow
@@ -56,3 +63,4 @@
   - Book(s)
   - Bookmark
   - Reading Light
+- Art supplies
