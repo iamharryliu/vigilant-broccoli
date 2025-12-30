@@ -9,6 +9,7 @@ import { RecipeScraperComponent } from '../components/recipe-scraper.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import CookingCalculatorCard from '../../components/CookingCalculatorCard';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
+import { buildCalendarUrl, CalendarConfig } from '@vigilant-broccoli/common-browser';
 
 const UTILITY_LINKS = [
   {
@@ -181,7 +182,7 @@ const FOR_LATER_LINKS = [
     label: 'Expiration',
     target: '~/journal/management/expiration.md',
     type: OPEN_TYPE.VSCODE,
-  }
+  },
 ];
 
 const PERSONAL_LINKS = [
@@ -214,6 +215,42 @@ const PERSONAL_LINKS = [
 const WORK_LINKS = [
   { label: 'Slack', target: 'Slack', type: OPEN_TYPE.MAC_APPLICATION },
 ];
+
+// Calendar configuration
+const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
+  personal: {
+    height: 600,
+    wkst: 2,
+    ctz: 'Europe/Copenhagen',
+    showPrint: 0,
+    mode: 'AGENDA',
+    title: 'Personal Calendar',
+    ownerCalendars: [
+      { email: 'harryliu1995@gmail.com', color: '%237cb342' },
+      { email: 'harry.liu@elva11.se', color: '%23e67c73' },
+    ],
+    sharedCalendars: [
+      { id: 'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com', color: '%23d81b60' },
+      { id: 'en.swedish#holiday@group.v.calendar.google.com', color: '%23b39ddb' },
+      { id: 'ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com', color: '%23ad1457' },
+    ],
+  },
+  work: {
+    height: 600,
+    wkst: 2,
+    ctz: 'Europe/Stockholm',
+    showPrint: 0,
+    mode: 'AGENDA',
+    ownerCalendars: [
+      { email: 'harry.liu@elva11.se', color: '%23039be5' },
+    ],
+    sharedCalendars: [
+      { id: 'c_63c9b34bb2b7371df04be8e4e422fd95bd3a43903777cea73b674b2e16a5b0c@group.calendar.google.com', color: '%23d81b60' },
+      { id: 'en-gb.swedish#holiday@group.v.calendar.google.com', color: '%230b8043' },
+    ],
+  },
+};
+
 
 export default function Page() {
   const { appMode } = useAppMode();
@@ -253,13 +290,13 @@ export default function Page() {
         <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
           {appMode === APP_MODE.PERSONAL ? (
             <iframe
-              src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FCopenhagen&showPrint=0&mode=AGENDA&title=Personal%20Calendar&src=aGFycnlsaXUxOTk1QGdtYWlsLmNvbQ&src=aGFycnkubGl1QGVsdmExMS5zZQ&color=%237cb342&color=%23ad1457"
+              src={buildCalendarUrl(CALENDAR_CONFIG.personal)}
               className="w-full h-[600px] dark:invert dark:hue-rotate-180"
               style={{ minHeight: '400px' }}
             ></iframe>
           ) : (
             <iframe
-              src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FStockholm&showPrint=0&mode=AGENDA&src=aGFycnkubGl1QGVsdmExMS5zZQ&src=Y182M2M5YjM0YmIyYzczNzFkZjA0YmU4ZTRlNDIyZmQ5NWJkM2E0MzkwMzc3NzFjZWE3M2I2NzRiMmUxNmE1YjBjQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZW4tZ2Iuc3dlZGlzaCNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039be5&color=%23d81b60&color=%230b8043"
+              src={buildCalendarUrl(CALENDAR_CONFIG.work)}
               className="w-full h-[600px] dark:invert dark:hue-rotate-180"
               style={{ minHeight: '400px' }}
             />
