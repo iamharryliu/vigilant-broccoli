@@ -100,3 +100,5 @@ alias vbvault="open 'https://10.0.1.1:8200'"
 
 # Backup
 alias backupvbsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
+
+alias vbgcloudlogin="gcloud auth login && gcloud config set project vigilant-brocoli && gcloud auth application-default login"
