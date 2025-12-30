@@ -181,6 +181,36 @@ export const DockerStatusComponent = () => {
     }
   };
 
+  // Get badge label for project state
+  const getProjectBadgeLabel = (state: string): string => {
+    return state === 'running' ? 'Up' : 'Down';
+  };
+
+  // Render control button based on state
+  const renderControlButton = (
+    state: string,
+    identifier: string,
+    isProject: boolean,
+    title: string,
+  ) => {
+    const isRunning = state === 'running';
+    const Icon = isRunning ? (isProject ? PauseIcon : StopIcon) : PlayIcon;
+    const handler = isRunning ? handleStop : handleStart;
+    const buttonTitle = isRunning ? `Stop ${title}` : `Start ${title}`;
+
+    return (
+      <IconButton
+        size="1"
+        variant="soft"
+        onClick={() => handler(identifier, isProject)}
+        disabled={actionInProgress.has(identifier)}
+        title={buttonTitle}
+      >
+        <Icon />
+      </IconButton>
+    );
+  };
+
   const totalCount =
     (dockerStatus?.projects.length || 0) +
     (dockerStatus?.standaloneContainers.length || 0);
@@ -254,31 +284,11 @@ export const DockerStatusComponent = () => {
                     <Text size="3" weight="bold" className="text-gray-700">
                       {project.name}
                     </Text>
+                    <Badge color={getBadgeColor(project.state)}>
+                      {getProjectBadgeLabel(project.state)}
+                    </Badge>
                   </Flex>
-                  <Flex align="center" gap="2">
-                    {project.state !== 'running' && (
-                      <IconButton
-                        size="1"
-                        variant="soft"
-                        onClick={() => handleStart(project.name, true)}
-                        disabled={actionInProgress.has(project.name)}
-                        title="Start project"
-                      >
-                        <PlayIcon />
-                      </IconButton>
-                    )}
-                    {project.state === 'running' && (
-                      <IconButton
-                        size="1"
-                        variant="soft"
-                        onClick={() => handleStop(project.name, true)}
-                        disabled={actionInProgress.has(project.name)}
-                        title="Stop project"
-                      >
-                        <PauseIcon />
-                      </IconButton>
-                    )}
-                  </Flex>
+                  {renderControlButton(project.state, project.name, true, 'project')}
                 </Flex>
 
                 {project.services.length > 0 && (
@@ -309,7 +319,7 @@ export const DockerStatusComponent = () => {
               >
                 <Flex align="center" gap="2" justify="between">
                   <Flex align="center" gap="2">
-                    <Badge size="2">
+                    <Badge size="2" color={getBadgeColor(container.state)}>
                       {container.state.charAt(0).toUpperCase() +
                         container.state.slice(1)}
                     </Badge>
@@ -317,30 +327,7 @@ export const DockerStatusComponent = () => {
                       {container.name}
                     </Text>
                   </Flex>
-                  <Flex align="center" gap="2">
-                    {container.state !== 'running' && (
-                      <IconButton
-                        size="1"
-                        variant="soft"
-                        onClick={() => handleStart(container.id, false)}
-                        disabled={actionInProgress.has(container.id)}
-                        title="Start container"
-                      >
-                        <PlayIcon />
-                      </IconButton>
-                    )}
-                    {container.state === 'running' && (
-                      <IconButton
-                        size="1"
-                        variant="soft"
-                        onClick={() => handleStop(container.id, false)}
-                        disabled={actionInProgress.has(container.id)}
-                        title="Stop container"
-                      >
-                        <StopIcon />
-                      </IconButton>
-                    )}
-                  </Flex>
+                  {renderControlButton(container.state, container.id, false, 'container')}
                 </Flex>
 
                 <Flex direction="column" gap="1" className="ml-2">

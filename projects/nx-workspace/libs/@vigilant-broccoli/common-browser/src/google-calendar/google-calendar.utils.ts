@@ -28,8 +28,7 @@ export function buildCalendarUrl(config: CalendarConfig): string {
     `mode=${config.mode}`,
   ];
 
-  const hasTitle = config.title !== undefined;
-  if (hasTitle) {
+  if (config.title !== undefined) {
     baseParams.push(`title=${encodeURIComponent(config.title)}`);
     baseParams.push(''); // Add extra empty param to create && in URL (matches Google's format)
   }
@@ -52,12 +51,7 @@ export function buildCalendarUrl(config: CalendarConfig): string {
     .filter((color): color is string => color !== undefined)
     .map(color => `color=${color}`);
 
-  // Different parameter order based on whether there's a title
-  // With title: owner src → colors → shared src
-  // Without title: all src → colors
-  const allParams = hasTitle
-    ? [...baseParams, ...ownerSrcParams, ...colorParams, ...sharedSrcParams]
-    : [...baseParams, ...ownerSrcParams, ...sharedSrcParams, ...colorParams];
+  const allParams = [...baseParams, ...ownerSrcParams, ...colorParams, ...sharedSrcParams]
 
   return `https://calendar.google.com/calendar/embed?${allParams.join('&')}`;
 }
