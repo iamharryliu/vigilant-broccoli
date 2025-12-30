@@ -44,8 +44,24 @@
 
 ## Home Management
 
+- Chores
+  - Track chores.
+  - Reminders.
+  - Indicator for how long overdue a chore has been.
+  - Set priority levels of chores (urgency/importance)
+- Food Planning
+  - Recipes
+    - Recipe scraper
+    - Recipe reviews
+  - Recipe Suggester
+    - Fridge Inventory + Saved Recipes -> LLM -> Suggested Recipes -> Grocery List
+- Leisure
+  - Shows
+  - Movies
+  - Crafts
+- Home Projects
 - Co-operative living tools.
-- **Vehicle Calendar**
+- Vehicle Calendar
   - Calendar for booking behicle.
   - Create Booking
     - Vehicle
@@ -60,13 +76,14 @@
     - name
     - description
     - position
-- **Remember It** - An item finder, search to image memory tool.
-- - Image library to remember where things are
-  - Keyword/tag searching
-  - Create Entry
-    - name
-    - description
-    - image[]
+- Remember It
+  - An item finder, search to image memory tool.
+  - Image library to remember where things are
+    - Keyword/tag searching
+    - Create Entry
+      - name
+      - description
+      - image[]
 
 ## CMS
 
@@ -75,3 +92,13 @@
     - Blogs.
   - Handle receiving emails for message requests.
   - Virus scanning for uploads.
+
+## Personal Planning Application
+
+- Consume
+  - Google Tasks
+  - Journal TODO
+  - vb TODO
+  - Google Calendar
+- Output Suggestion
+- Implement with Claude Workflow - `/vb-plan-day`, `/vb-plan-week`
