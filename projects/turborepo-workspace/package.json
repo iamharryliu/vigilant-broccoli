@@ -1,0 +1,24 @@
+{
+  "name": "turborepo-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:secrets": "ts-node scripts/fetch-secrets.ts 'turbo run dev'",
+    "dev:cms": "turbo run dev --filter=cms-next",
+    "dev:cms:secrets": "ts-node scripts/fetch-secrets.ts 'turbo run dev --filter=cms-next'",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.10",
+    "dotenv": "^16.4.7",
+    "node-vault": "^0.10.2",
+    "ts-node": "^10.9.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
