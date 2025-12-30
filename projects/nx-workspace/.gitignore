@@ -63,3 +63,5 @@ vitest.config.*.timestamp*
 migrations.json
 vault-secrets.json
 storage-buckets/
+
+logs/

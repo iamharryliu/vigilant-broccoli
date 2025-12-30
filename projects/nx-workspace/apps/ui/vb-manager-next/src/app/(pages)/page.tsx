@@ -9,7 +9,11 @@ import { RecipeScraperComponent } from '../components/recipe-scraper.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import CookingCalculatorCard from '../../components/CookingCalculatorCard';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
-import { buildCalendarUrl, CalendarConfig } from '@vigilant-broccoli/common-browser';
+import {
+  buildCalendarUrl,
+  CalendarConfig,
+  GOOGLE_CALENDAR,
+} from '@vigilant-broccoli/common-browser';
 
 const UTILITY_LINKS = [
   {
@@ -216,41 +220,41 @@ const WORK_LINKS = [
   { label: 'Slack', target: 'Slack', type: OPEN_TYPE.MAC_APPLICATION },
 ];
 
-// Calendar configuration
+
 const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
   personal: {
     height: 600,
     wkst: 2,
-    ctz: 'Europe/Copenhagen',
+    ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
     showPrint: 0,
     mode: 'AGENDA',
     title: 'Personal Calendar',
     ownerCalendars: [
-      { email: 'harryliu1995@gmail.com', color: '%237cb342' },
-      { email: 'harry.liu@elva11.se', color: '%23e67c73' },
+      { email: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL, color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN },
+      { email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK, color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED },
     ],
     sharedCalendars: [
-      { id: 'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com', color: '%23d81b60' },
-      { id: 'en.swedish#holiday@group.v.calendar.google.com', color: '%23b39ddb' },
-      { id: 'ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com', color: '%23ad1457' },
+      { id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN, color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE },
+      { id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON, color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK },
     ],
   },
   work: {
     height: 600,
     wkst: 2,
-    ctz: 'Europe/Stockholm',
+    ctz: GOOGLE_CALENDAR.TIMEZONE.STOCKHOLM,
     showPrint: 0,
     mode: 'AGENDA',
     ownerCalendars: [
-      { email: 'harry.liu@elva11.se', color: '%23039be5' },
+      { email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK, color: GOOGLE_CALENDAR.CALENDAR_COLOR.LIGHT_BLUE },
     ],
     sharedCalendars: [
-      { id: 'c_63c9b34bb2b7371df04be8e4e422fd95bd3a43903777cea73b674b2e16a5b0c@group.calendar.google.com', color: '%23d81b60' },
-      { id: 'en-gb.swedish#holiday@group.v.calendar.google.com', color: '%230b8043' },
+      {
+        id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_GREEN,
+      },
     ],
   },
 };
-
 
 export default function Page() {
   const { appMode } = useAppMode();
