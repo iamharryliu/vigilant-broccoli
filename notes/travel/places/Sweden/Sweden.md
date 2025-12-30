@@ -27,6 +27,10 @@
 - [Dessert Spots](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6)
 - [Work Cafes](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
 
+### Services
+
+- [hygglo](https://hygglo.com/sw) - Borrowing instead of buying.
+
 ## Stores
 
 ### Retail Pharmacy
@@ -38,6 +42,10 @@
 ## Activity
 
 - [Fritidsbanken](https://www.fritidsbanken.se/en/) - At Fritidsbanken, you can borrow equipment for leisure activities for free.
+
+## Accomodation
+
+- [Hotels](https://sv.hotels.com/)
 
 ## Swedish Migration
 

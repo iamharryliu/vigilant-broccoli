@@ -36,3 +36,9 @@
 
 - Dietary restriction accomodations, ie vegetarian and vegan options.
 - Animal friendly
+
+## Hotel
+
+### Utility
+
+- Television Arm
