@@ -31,6 +31,7 @@
 - QR table payment
 - online menu
 - coat hangers
+- Papa Piada sandwich wraps have a pocket to hold napkins.
 
 ### Accomodation
 

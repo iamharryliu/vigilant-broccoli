@@ -4,5 +4,5 @@
   - Minimal design with max utility.
 - [Material](material.md)
 - Cool designs
-  - Papa Piada sandwich wraps have a pocket to hold napkins.
   - Backpack hip belts.
+  - [Lappish Hut](https://hiisiresort.fi/en/lappish-hut/#:~:text=The%20Lappish%20Hut%20is%20well,Copyright%202025%20Hiisi%20Resort)
