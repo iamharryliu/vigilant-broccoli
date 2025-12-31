@@ -6,8 +6,9 @@
 
 ## Productivity Frameworks
 
-- [Eisenhower Decision Matrix](./eisenhower-decision-matrix.md)
-- [3/3/3 Rule](./3-3-3-rule.md)
+- [7 Effective Habits](./productivity-frameworks/7-effective-habits.md)
+- [Eisenhower Decision Matrix](./productivity-frameworks/eisenhower-decision-matrix.md)
+- [3/3/3 Rule](./productivity-frameworks/3-3-3-rule.md)
 
 ## Tech
 
