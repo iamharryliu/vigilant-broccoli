@@ -43,7 +43,7 @@
 
 - [Fritidsbanken](https://www.fritidsbanken.se/en/) - At Fritidsbanken, you can borrow equipment for leisure activities for free.
 
-## Accomodation
+## Accommodation
 
 - [Hotels](https://sv.hotels.com/)
 

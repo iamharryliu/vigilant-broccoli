@@ -22,7 +22,7 @@ The basic interactions that govern how everything in the universe behaves, from 
 ## Weak Nuclear Force
 
 - Much stronger than gravity at subatomic levels.
-- Responsible for radiactive decay
+- Responsible for radioactive decay
 - Allows protons to fuse together by converting one into a neutron
 - Acts over extremely short distances.
 

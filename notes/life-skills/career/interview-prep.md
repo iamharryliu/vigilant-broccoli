@@ -57,7 +57,7 @@
       - What's the most interesting thing that they have worked on or learned on the project?
   - **Technical Questions**
     - Current stack and why it was chosen?
-    - What are the biggest challenges you are facing on the techical side?
+    - What are the biggest challenges you are facing on the technical side?
     - What's the balance between firefighting and project work in an average week?
     - Every company is carrying some amount of _technical debt_, what's the tech debt situation here?
       - How much they think there is?

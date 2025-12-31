@@ -50,7 +50,7 @@ function reduxAction = () => {
 
 const initialState = {...}
 cosnt reducer (state = initialState, action) => {
-	swtich(action.type){
+	switch(action.type){
 		case ACTION_NAME: return {
 			...state,
 			state changes...

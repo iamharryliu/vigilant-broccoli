@@ -64,7 +64,7 @@
 
 ## Positions
 
-- **Positons**
+- **Positions**
   - Open Position
   - Closed Position
   - Handshake hold

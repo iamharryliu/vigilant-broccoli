@@ -23,7 +23,7 @@
 
 ## Organization
 
-Guest intake - Responsibilites include performing formalities such as asking how was their commute and their day and thanking them for showing up, taking their coat, quick tour of the house (washroom, fridge, Dexter, charging ports), show house rules and FAQ and any special events that may be happening, minor introductions of people's roles and responsibilites.
+Guest intake - Responsibilities include performing formalities such as asking how was their commute and their day and thanking them for showing up, taking their coat, quick tour of the house (washroom, fridge, Dexter, charging ports), show house rules and FAQ and any special events that may be happening, minor introductions of people's roles and responsibilities.
 
 ## Activities
 

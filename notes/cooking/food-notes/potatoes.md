@@ -13,7 +13,7 @@
 
 - 3 pounds russet potatoes, peeled and cut into 1½- to 2-inch chunks.
 
-### Instuctions
+### Instructions
 
 - Boil potatoes
   - ½ tsp baking soda.

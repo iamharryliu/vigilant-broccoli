@@ -72,7 +72,7 @@ Bean-->RM[Roast Method]-->BM[Brew Method]-->Coffee
 
 ### Barista Notes
 
-- Add sweetener before pulling expresso shot.
+- Add sweetener before pulling espresso shot.
 - Light amount of water to clean steam wand.
 
     </div>

@@ -1,6 +1,6 @@
 # Swedish
 
-- [Pronounciation](./swedish-pronounciation.md)
+- [Pronunciation](./swedish-pronounciation.md)
 - [Subjects](./swedish-subjects.md)
 - [Possessives](./swedish-possessives.md)
 - [Prepositions](./swedish-prepositions.md)

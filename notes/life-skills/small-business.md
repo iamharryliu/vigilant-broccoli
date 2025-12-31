@@ -33,9 +33,9 @@
 - coat hangers
 - Papa Piada sandwich wraps have a pocket to hold napkins.
 
-### Accomodation
+### Accommodation
 
-- Dietary restriction accomodations, ie vegetarian and vegan options.
+- Dietary restriction accommodations, ie vegetarian and vegan options.
 - Animal friendly
 
 ## Hotel

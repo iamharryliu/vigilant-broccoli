@@ -27,7 +27,7 @@ How objects communicate with each other.
 - Iterator - pull based system, traverse collection of objects
 - Observer - push based system, one to many relationship where many objects subscribe to events from another object
 - Mediator - middleman/broker class that helps with communication
-- State - solves issue of handling state using large switch statements that check state by passing in objects tha (class with function that checks multiple conditions vs class that takes in value with the appropriate values), less API change
+- State - solves issue of handling state using large switch statements that check state by passing in objects (class with function that checks multiple conditions vs class that takes in value with the appropriate values), less API change
 
 ## Reference
 

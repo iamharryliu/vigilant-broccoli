@@ -1,3 +1,3 @@
-# Swedish Pronounciation
+# Swedish Pronunciation
 
 - Double constanant short sound

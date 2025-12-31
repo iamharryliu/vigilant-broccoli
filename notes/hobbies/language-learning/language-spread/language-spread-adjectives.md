@@ -59,7 +59,7 @@
 | nackdel     | disadvantage             |                    |                 |
 | right       | rätt                     |                    |                 |
 | wrong       | fel                      |                    |                 |
-| necesary    | nödigt                   |                    |                 |
+| necessary   | nödigt                   |                    |                 |
 | unnecessary | onödigt                  |                    |                 |
 | popular     | populär / omtyckt        |                    |                 |
 | unpopular   | impopulär / illa omtyckt |                    |                 |

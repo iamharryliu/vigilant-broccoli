@@ -5,7 +5,7 @@
   - Web/backend apps → mostly I/O bound (APIs, DBs, caches).
   - Systems, scientific, gaming, ML apps → much more CPU bound.
 - Token vs Keys
-- Event Driven Architecture vs Request Responese
+- Event Driven Architecture vs Request Response
 - Static vs Dynamic Imports
 - Compiled vs Interpreted Code
 - **Languages**

@@ -38,7 +38,7 @@ Ingredients
 - 1 large onion
 - 1 pound carrots, peeled (4 to 5 medium)
 - 4 celery sticks
-- 3 medium or 6 small potatos
+- 3 medium or 6 small potatoes
 - olive oil
 - 1/4 tsp pepper flakes
 - 3 garlic cloves halved

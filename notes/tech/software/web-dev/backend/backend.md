@@ -68,7 +68,7 @@
 #### Types of HTTP Methods
 
 - **GET**:
-  - Generally used to **retreive** a resource.
+  - Generally used to **retrieve** a resource.
   - Commonly used with **query** parameters.
   - Example: **Get a user**
 - **POST:**
@@ -76,7 +76,7 @@
   - Commonly used with **request** parameters.
   - Example: **Create or update a user.**
 - **PATCH**:
-  - Generally used to **partically modifiy an existing** resource.
+  - Generally used to **partially modify an existing** resource.
   - Commonly used with **request** parameters.
   - Example: **Create or update a user.**
 - **PUT**:
@@ -115,7 +115,7 @@ HTTP methods return different response status codes depending on the outcome of 
 
 - **403 - Forbidden**: Authenticated user has attempted to make a request to an endpoint that requires credentials but **does not have permission** to access the requested endpoint.
 
-- **404 - Not Found**: User has attempted to make a request to a non-existant endpoint.
+- **404 - Not Found**: User has attempted to make a request to a non-existent endpoint.
 
 - **500 - Internal Server Error**
 

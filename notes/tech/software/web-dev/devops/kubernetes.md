@@ -44,9 +44,9 @@ kubectl delete -f minikube.yaml
 - Responsible for managing the state of the cluster.
 - **Core Components**
   - **API server** - Allows clients to interact with control plane to manage the cluster.
-  - **etcd** - Distributed key, value store that stores the cluster's persistant state.
+  - **etcd** - Distributed key, value store that stores the cluster's persistent state.
   - **Scheduler** - Schedules pods onto the worker nodes and makes placement decisions based on available resources
-  - **Controller Manager** - Manages conrollers that manage the stage of the cluster, ie ReplicationController, DeploymentController
+  - **Controller Manager** - Manages controllers that manage the stage of the cluster, ie ReplicationController, DeploymentController
 
 ### Worker Node
 

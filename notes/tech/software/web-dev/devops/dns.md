@@ -9,7 +9,7 @@
 
 ## Subdomain
 
-- Propogation may take time.
+- Propagation may take time.
 - Make sure to setup connection on both ends, the DNS registrar and the server end.
 
 ## References

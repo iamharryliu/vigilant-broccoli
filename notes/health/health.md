@@ -4,7 +4,7 @@
 
 ## Physical Health
 
-- [Stetches](./stretches.md)
+- [Stretches](./stretches.md)
 - [Massages](./massages.md)
 
 ## Non-Physical Health

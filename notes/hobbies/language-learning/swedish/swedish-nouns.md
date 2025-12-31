@@ -11,7 +11,7 @@
 | **Obestämd form** (Indefinite form) | Used for non-specific nouns (like "a" or "an" in English). | _en bok_ (a book)                | _böcker_ (books)                    |
 |                                     |                                                            | _en hund_ (a dog)                | _hundar_ (dogs)                     |
 
-| Obestämd (Singlular) | Bestämd (Singlular) | Obestämd (Plural) | Bestämd (Plural) |
+| Obestämd (Singular) | Bestämd (Singular) | Obestämd (Plural) | Bestämd (Plural) |
 | -------------------- | ------------------- | ----------------- | ---------------- |
 | en bok               | boken               | böcker            | böckerna         |
 | en glass             | en                  | ar                | na               |

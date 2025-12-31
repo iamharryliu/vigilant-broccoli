@@ -22,7 +22,7 @@ Runs side effects like data fetching, DOM updates, or subscriptions after render
     console.log('This runs on every render.');
   });
   useEffect(() => {
-    console.log('This runs when the component is initalized.');
+    console.log('This runs when the component is initialized.');
   }, []);
   useEffect(() => {
     console.log('This runs when there is a change to the values in the dependency array, in this case state.');
