@@ -65,5 +65,5 @@ if ask "Configure terminal theme?"; then
 fi
 
 if ask "Setup vigilant-broccoli VSCode themes?"; then
-    ln -s /Users/harryliu/vigilant-broccoli/vscode-themes ~/.vscode/extensions/vigilant-broccoli-vscode-themes
+    ln -s $HOME/vigilant-broccoli/vscode-themes ~/.vscode/extensions/vigilant-broccoli-vscode-themes
 fi
