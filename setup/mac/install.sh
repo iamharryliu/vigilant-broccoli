@@ -63,3 +63,7 @@ fi
 if ask "Configure terminal theme?"; then
     p10k configure
 fi
+
+if ask "Setup vigilant-broccoli VSCode themes?"; then
+    ln -s /Users/harryliu/vigilant-broccoli/vscode-themes ~/.vscode/extensions/vigilant-broccoli-vscode-themes
+fi
