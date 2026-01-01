@@ -1,0 +1,29 @@
+{
+  "name": "paperwhite-theme",
+  "displayName": "Paperwhite Theme",
+  "description": "A warm, paper-like theme designed for comfortable reading and coding",
+  "version": "1.0.0",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "Paperwhite",
+        "uiTheme": "vs",
+        "path": "./themes/paperwhite-color-theme.json"
+      }
+    ]
+  },
+  "keywords": [
+    "theme",
+    "light theme",
+    "paperwhite",
+    "warm",
+    "comfortable"
+  ]
+}
