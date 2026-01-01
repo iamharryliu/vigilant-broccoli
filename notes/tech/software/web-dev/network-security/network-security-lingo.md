@@ -20,3 +20,4 @@
 | 127.0.0.1:                                 | Loopback IP address for the local machine.                                                                                                                                |
 | 192.168.1.x.x                              | Addresses are part of a special group of IP addresses reserved for private networks.                                                                                      |
 | DHCP (Dynamic Host Configuration Protocol) | It’s a network service that automatically assigns IP settings to devices so you don’t have to configure them manually.                                                    |
+| IP(Internet Protocol)                      | The Internet Protocol is the network layer communications protocol in the Internet protocol suite for relaying datagrams across network boundaries.                       |
