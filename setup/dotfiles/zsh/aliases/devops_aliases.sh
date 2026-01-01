@@ -160,3 +160,6 @@ wgupn() {
 
 # Hashicorp Vault
 alias openlocalvault="open 'https://127.0.0.1:8200'"
+
+# AWS
+alias awsprofiles="code ~/.aws/credentials"
