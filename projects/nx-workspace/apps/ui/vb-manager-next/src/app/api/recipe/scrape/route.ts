@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { RecipeScraperService } from '@vigilant-broccoli/ai-tools';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
+import { open } from '@vigilant-broccoli/common-node';
+import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 
 export async function POST(request: NextRequest) {
   const { url } = await request.json();
@@ -32,8 +34,13 @@ export async function POST(request: NextRequest) {
   const filePath = resolve(sortLaterDir, safeFilename);
   writeFileSync(filePath, recipe.markdown, 'utf-8');
 
+  await open(OPEN_TYPE.VSCODE, filePath);
+
   return NextResponse.json(
-    { message: 'Recipe saved successfully', filename: safeFilename },
+    {
+      message: 'Recipe saved successfully',
+      filename: safeFilename,
+    },
     { status: 200 },
   );
 }

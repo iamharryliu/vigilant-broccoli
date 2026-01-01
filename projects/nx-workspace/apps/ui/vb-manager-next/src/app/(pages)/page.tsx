@@ -1,6 +1,7 @@
 'use client';
 
 import { WeatherComponent } from '../components/weather.component';
+import { ClockComponent } from '../components/clock.component';
 import { GoogleTasksComponent } from '../components/google-tasks.component';
 import { TaskListDebugComponent } from '../components/task-list-debug.component';
 import { DjDownloadComponent } from '../components/dj-download.component';
@@ -273,6 +274,7 @@ export default function Page() {
         </div>
       </>
       <div className="flex flex-col gap-4">
+        <ClockComponent />
         <WeatherComponent />
       </div>
       <div className="flex flex-col gap-4">
