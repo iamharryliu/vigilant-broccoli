@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { readdir, stat } from 'fs/promises';
 import { join } from 'path';
+import { homedir } from 'os';
 
 interface PlaylistInfo {
   name: string;
@@ -19,7 +20,7 @@ function formatBytes(bytes: number): string {
 
 export async function GET() {
   try {
-    const djMusicPath = '/Users/harryliu/My Drive/DJ Music Library';
+    const djMusicPath = join(homedir(), 'My Drive/DJ Music Library');
 
     const entries = await readdir(djMusicPath, { withFileTypes: true });
     const playlists: PlaylistInfo[] = [];
