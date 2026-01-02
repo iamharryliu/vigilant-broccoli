@@ -26,31 +26,31 @@ sudo ufw deny in on eth0 to any port 8200
 ```
 sudo apt update
 sudo apt install wireguard -y
-wg genkey | tee privatekey | wg pubkey > publickey
+priv=$(wg genkey); echo "privatekey: $priv"; echo "publickey: $(echo $priv | wg pubkey)"
 
 # VPN Server
 sudo vim /etc/wireguard/wg0.conf
 
 [Interface]
-PrivateKey = <AWS_PRIVATE_KEY>
+PrivateKey = <SERVER_PRIVATE_KEY>
 Address = 10.0.0.1/24
 ListenPort = 51820
 
 [Peer]
-PublicKey = <LOCAL_PUBLIC_KEY>
-AllowedIPs = 10.0.0.2/32
+PublicKey = <CLIENT_PUBLIC_KEY>
+AllowedIPs = 10.0.0.X/32
 
 # Client
 vim /opt/homebrew/etc/wireguard/wg0.conf
 
 [Interface]
-PrivateKey = <LOCAL_PRIVATE_KEY>
-Address = 10.0.0.2/24
+PrivateKey = <CLIENT_PRIVATE_KEY>
+Address = 10.0.0.X/24
 MTU=1280
 
 [Peer]
-PublicKey = <AWS_PUBLIC_KEY>
-Endpoint = <AWS_PUBLIC_IP>:51820
+PublicKey = <SERVER_PUBLIC_KEY>
+Endpoint = <SERVER_IP_ADDRESS>:51820
 AllowedIPs = 10.0.0.0/24
 PersistentKeepalive = 25
 

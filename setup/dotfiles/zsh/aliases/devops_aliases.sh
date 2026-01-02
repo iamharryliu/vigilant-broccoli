@@ -163,3 +163,10 @@ alias openlocalvault="open 'https://127.0.0.1:8200'"
 
 # AWS
 alias awsprofiles="code ~/.aws/credentials"
+
+# WireGuard
+wgkeygen() {
+  local priv=$(wg genkey)
+  echo "privatekey: $priv"
+  echo "publickey: $(echo $priv | wg pubkey)"
+}
