@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, Flex, Text, Badge, IconButton, Button } from '@radix-ui/themes';
+import { Flex, Text, Badge, IconButton, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
+import { CardContainer } from './card-container.component';
 import {
   ExternalLinkIcon,
   PlayIcon,
@@ -228,49 +229,41 @@ export const DockerStatusComponent = () => {
 
   if (error) {
     return (
-      <Card className="w-full">
-        <Flex direction="column" gap="4" p="4">
-          <Text size="5" weight="bold">
-            Docker Containers
+      <CardContainer title="Docker Containers">
+        <Flex direction="column" gap="3">
+          <Text size="2" color="red">
+            {error}
           </Text>
-          <Flex direction="column" gap="3">
-            <Text size="2" color="red">
-              {error}
-            </Text>
-            <Button
-              onClick={handleOpenDocker}
-              loading={isStartingDocker}
-              size="2"
-              variant="soft"
-            >
-              {isStartingDocker ? 'Starting Docker...' : 'Open Docker Desktop'}
-            </Button>
-          </Flex>
+          <Button
+            onClick={handleOpenDocker}
+            loading={isStartingDocker}
+            size="2"
+            variant="soft"
+          >
+            {isStartingDocker ? 'Starting Docker...' : 'Open Docker Desktop'}
+          </Button>
         </Flex>
-      </Card>
+      </CardContainer>
     );
   }
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="4" p="4">
-        <Flex align="center" justify="between">
-          <Text size="5" weight="bold">
-            Docker Containers {dockerStatus && `(${totalCount})`}
-          </Text>
-          {!isDockerRunning && (
-            <IconButton
-              size="1"
-              variant="ghost"
-              onClick={handleOpenDocker}
-              title="Open Docker.app"
-            >
-              <ExternalLinkIcon />
-            </IconButton>
-          )}
-        </Flex>
-
-        {dockerStatus && totalCount > 0 ? (
+    <CardContainer
+      title={`Docker Containers${dockerStatus ? ` (${totalCount})` : ''}`}
+      headerAction={
+        !isDockerRunning ? (
+          <IconButton
+            size="1"
+            variant="ghost"
+            onClick={handleOpenDocker}
+            title="Open Docker.app"
+          >
+            <ExternalLinkIcon />
+          </IconButton>
+        ) : undefined
+      }
+    >
+      {dockerStatus && totalCount > 0 ? (
           <Flex direction="column" gap="3">
             {dockerStatus.projects.map(project => (
               <Flex
@@ -356,7 +349,6 @@ export const DockerStatusComponent = () => {
         ) : (
           <Text className="text-gray-500">No Docker containers found</Text>
         )}
-      </Flex>
-    </Card>
+    </CardContainer>
   );
 };

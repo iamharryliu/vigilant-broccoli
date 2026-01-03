@@ -1,9 +1,10 @@
 'use client';
 
-import { Card, Flex, Text } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
+import { CardContainer } from './card-container.component';
 
 type Badge = {
   alt: string;
@@ -82,28 +83,24 @@ export const GithubRepoActionStatusBadges = ({
 
   if (error) {
     return (
-      <Card className="w-full">
-        <Flex direction="column" gap="4" p="4">
-          <Text size="5" weight="bold">GitHub Actions</Text>
-          <Text color="red">{error}</Text>
-        </Flex>
-      </Card>
+      <CardContainer title="GitHub Actions">
+        <Text color="red">{error}</Text>
+      </CardContainer>
     );
   }
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="4" p="4">
-        <Flex justify="between" align="center">
-          <Text size="5" weight="bold">GitHub Actions</Text>
-          <Link href={`${repoUrl}/actions`} target="_blank">
-            <Text size="2" className="text-blue-600 hover:text-blue-800">
-              View All →
-            </Text>
-          </Link>
-        </Flex>
-
-        <Flex direction="column" gap="2">
+    <CardContainer
+      title="GitHub Actions"
+      headerAction={
+        <Link href={`${repoUrl}/actions`} target="_blank">
+          <Text size="2" className="text-blue-600 hover:text-blue-800">
+            View All →
+          </Text>
+        </Link>
+      }
+    >
+      <Flex direction="column" gap="2">
           {badges.length > 0 ? (
             badges.map(badge => (
               <a
@@ -119,8 +116,7 @@ export const GithubRepoActionStatusBadges = ({
           ) : (
             <Text className="text-gray-500">No workflows found</Text>
           )}
-        </Flex>
       </Flex>
-    </Card>
+    </CardContainer>
   );
 };

@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, Flex, Box, Text, Button } from '@radix-ui/themes';
+import { Box, Text, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
+import { CardContainer } from './card-container.component';
 import { DATE_CONST } from '@vigilant-broccoli/common-js';
 
 interface WeatherData {
@@ -22,8 +23,8 @@ interface WeatherData {
 
 const CITIES = [
   { name: 'MALMÖ', lat: 55.605, lon: 13.0038 },
-  { name: 'COPENHAGEN', lat: 55.6761, lon: 12.5683 },
-  { name: 'TORONTO', lat: 43.6532, lon: -79.3832 },
+  // { name: 'COPENHAGEN', lat: 55.6761, lon: 12.5683 },
+  // { name: 'TORONTO', lat: 43.6532, lon: -79.3832 },
 ];
 
 const getCurrentTime = (timezoneOffset: number): string => {
@@ -187,25 +188,15 @@ export const WeatherComponent = () => {
 
   if (error) {
     return (
-      <Card className="w-full">
-        <Flex direction="column" gap="4" p="4">
-          <Text size="5" weight="bold">
-            Weather
-          </Text>
-          <Text color="red">{error}</Text>
-        </Flex>
-      </Card>
+      <CardContainer title="Weather">
+        <Text color="red">{error}</Text>
+      </CardContainer>
     );
   }
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="4" p="4">
-        <Text size="5" weight="bold">
-          Weather
-        </Text>
-
-        {weatherData.map((cityWeather, cityIndex) => {
+    <CardContainer title="Weather">
+      {weatherData.map((cityWeather, cityIndex) => {
           const city = CITIES[cityIndex];
           return (
             <Box key={cityWeather.city}>
@@ -273,7 +264,6 @@ export const WeatherComponent = () => {
             </Box>
           );
         })}
-      </Flex>
-    </Card>
+    </CardContainer>
   );
 };

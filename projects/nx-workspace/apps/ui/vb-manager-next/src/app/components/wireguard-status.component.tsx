@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, Flex, Text, Badge, Button } from '@radix-ui/themes';
+import { Flex, Text, Badge, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
+import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface WireguardConnection {
@@ -66,21 +67,15 @@ export const WireguardStatusComponent = () => {
 
   if (error) {
     return (
-      <Card className="w-full">
-        <Flex direction="column" gap="4" p="4">
-          <Text size="5" weight="bold">WireGuard Connections</Text>
-          <Text color="red">{error}</Text>
-        </Flex>
-      </Card>
+      <CardContainer title="WireGuard Connections">
+        <Text color="red">{error}</Text>
+      </CardContainer>
     );
   }
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="4" p="4">
-        <Text size="5" weight="bold">WireGuard Connections</Text>
-
-        {wgStatus && wgStatus.connections.length > 0 ? (
+    <CardContainer title="WireGuard Connections">
+      {wgStatus && wgStatus.connections.length > 0 ? (
           <Flex direction="column" gap="3">
             {wgStatus.connections.map((conn, idx) => (
               <Flex key={idx} direction="column" gap="2" className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
@@ -118,7 +113,6 @@ export const WireguardStatusComponent = () => {
         ) : (
           <Text className="text-gray-500">No WireGuard configurations found</Text>
         )}
-      </Flex>
-    </Card>
+    </CardContainer>
   );
 };

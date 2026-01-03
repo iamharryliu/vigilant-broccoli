@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, Flex, Heading, Text, TextArea } from '@radix-ui/themes';
+import { Button, Flex, Text, TextArea } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
 import {
   CopyIcon,
@@ -9,6 +9,7 @@ import {
   EyeClosedIcon,
 } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { CardContainer } from './card-container.component';
 
 const LLM_PREFERENCES = `# LLM Code Preferences
 
@@ -69,45 +70,44 @@ export const PasteBinComponent = () => {
   const isDisabled = selectedType === 'ssh' && (isLoading || !!error);
 
   return (
-    <Card>
-      <Flex direction="column" gap="4">
-        <Flex justify="between" align="center">
-          <Heading size="4">Paste Bin</Heading>
-          <Flex gap="2">
-            <Button
-              onClick={() => setIsVisible(!isVisible)}
-              disabled={isDisabled}
-              variant="soft"
-            >
-              {isVisible ? (
-                <>
-                  <EyeClosedIcon /> Hide
-                </>
-              ) : (
-                <>
-                  <EyeOpenIcon /> Show
-                </>
-              )}
-            </Button>
-            <Button
-              onClick={handleCopy}
-              disabled={isDisabled}
-              variant="soft"
-            >
-              {isCopied ? (
-                <>
-                  <CheckIcon /> Copied!
-                </>
-              ) : (
-                <>
-                  <CopyIcon /> Copy
-                </>
-              )}
-            </Button>
-          </Flex>
-        </Flex>
-
+    <CardContainer
+      title="Paste Bin"
+      headerAction={
         <Flex gap="2">
+          <Button
+            onClick={() => setIsVisible(!isVisible)}
+            disabled={isDisabled}
+            variant="soft"
+          >
+            {isVisible ? (
+              <>
+                <EyeClosedIcon /> Hide
+              </>
+            ) : (
+              <>
+                <EyeOpenIcon /> Show
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={handleCopy}
+            disabled={isDisabled}
+            variant="soft"
+          >
+            {isCopied ? (
+              <>
+                <CheckIcon /> Copied!
+              </>
+            ) : (
+              <>
+                <CopyIcon /> Copy
+              </>
+            )}
+          </Button>
+        </Flex>
+      }
+    >
+      <Flex gap="2">
           <Button
             variant={selectedType === 'ssh' ? 'solid' : 'outline'}
             onClick={() => handleTypeChange('ssh')}
@@ -142,7 +142,6 @@ export const PasteBinComponent = () => {
             }}
           />
         )}
-      </Flex>
-    </Card>
+    </CardContainer>
   );
 };

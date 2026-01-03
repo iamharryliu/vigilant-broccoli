@@ -1,9 +1,10 @@
 'use client';
 
-import { Card, Heading, Box, Text, Skeleton, Callout } from '@radix-ui/themes';
+import { Box, Text, Skeleton, Callout } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Building2, AlertCircle } from 'lucide-react';
+import { CardContainer } from './card-container.component';
 
 export const API_ROUTES = {
   ORGANIZATION_STRUCTURE: '/api/github/organization-structure',
@@ -41,14 +42,9 @@ export const GithubTeamManager = () => {
   }, []);
 
   return (
-    <Card>
-      <Box mb="4">
-        <Heading size="6" mb="2">
-          Github Organizations{' '}
-          {organizations.length ? `(${organizations.length})` : ''}
-        </Heading>
-      </Box>
-
+    <CardContainer
+      title={`Github Organizations${organizations.length ? ` (${organizations.length})` : ''}`}
+    >
       {/* Error State */}
       {error && (
         <Callout.Root color="red" mb="3">
@@ -63,9 +59,9 @@ export const GithubTeamManager = () => {
       {loading && (
         <Box>
           {[1, 2, 3].map(i => (
-            <Card key={i} mb="2">
+            <Box key={i} mb="2" style={{ padding: '1rem', backgroundColor: 'var(--gray-2)', borderRadius: '6px' }}>
               <Skeleton height="40px" />
-            </Card>
+            </Box>
           ))}
         </Box>
       )}
@@ -88,7 +84,7 @@ export const GithubTeamManager = () => {
         !error &&
         organizations.map(organization => {
           return (
-            <Card
+            <Box
               key={organization}
               onClick={() =>
                 router.push(`github-manager/organization/${organization}`)
@@ -97,6 +93,9 @@ export const GithubTeamManager = () => {
                 cursor: 'pointer',
                 marginBottom: '0.5rem',
                 transition: 'all 0.2s ease',
+                padding: '1rem',
+                backgroundColor: 'var(--gray-2)',
+                borderRadius: '6px',
               }}
               className="hover:shadow-md"
             >
@@ -112,9 +111,9 @@ export const GithubTeamManager = () => {
                   {organization}
                 </Text>
               </Box>
-            </Card>
+            </Box>
           );
         })}
-    </Card>
+    </CardContainer>
   );
 };

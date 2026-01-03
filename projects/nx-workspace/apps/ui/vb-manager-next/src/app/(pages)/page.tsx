@@ -290,50 +290,50 @@ export default function Page() {
     <div className="grid grid-cols-4 gap-4 h-full mb-4">
       <>
         <div className="flex flex-col gap-4">
-          {appMode === APP_MODE.PERSONAL ? (
-            <GoogleTasksComponent />
-          ) : (
-            <GoogleTasksComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
-          )}
-          <GoogleTasksComponent taskListId="cDQ5WEpUb0s1RjkySjEyMQ" />
-          <TaskListDebugComponent />
+          <ClockComponent />
+          <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
+            {appMode === APP_MODE.PERSONAL ? (
+              <iframe
+                src={buildCalendarUrl(CALENDAR_CONFIG.personal)}
+                className="w-full h-[600px] dark:invert dark:hue-rotate-180"
+                style={{ minHeight: '400px' }}
+              ></iframe>
+            ) : (
+              <iframe
+                src={buildCalendarUrl(CALENDAR_CONFIG.work)}
+                className="w-full h-[600px] dark:invert dark:hue-rotate-180"
+                style={{ minHeight: '400px' }}
+              />
+            )}
+          </div>
         </div>
       </>
       <div className="flex flex-col gap-4">
-        <ClockComponent />
+        {appMode === APP_MODE.PERSONAL ? (
+          <GoogleTasksComponent />
+        ) : (
+          <GoogleTasksComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
+        )}
+        <GoogleTasksComponent taskListId="cDQ5WEpUb0s1RjkySjEyMQ" />
+        <TaskListDebugComponent />
         <WeatherComponent />
       </div>
+      <div className="flex flex-col gap-4">
+        <CookingCalculatorCard />
+        {appMode === APP_MODE.PERSONAL && <RecipeScraperComponent />}
+        {appMode === APP_MODE.PERSONAL && <DjDownloadComponent />}
+      </div>
+
       <div className="flex flex-col gap-4">
         <LinkGroupComponent title="Quick Links" links={QUICK_LINKS} />
         {appMode === APP_MODE.PERSONAL && (
           <>
             <LinkGroupComponent title="Personal" links={PERSONAL_LINKS} />
-            <DjDownloadComponent />
           </>
         )}
         {appMode === APP_MODE.WORK && (
           <LinkGroupComponent title="Work" links={WORK_LINKS} />
         )}
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <CookingCalculatorCard />
-        {appMode === APP_MODE.PERSONAL && <RecipeScraperComponent />}
-        <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-          {appMode === APP_MODE.PERSONAL ? (
-            <iframe
-              src={buildCalendarUrl(CALENDAR_CONFIG.personal)}
-              className="w-full h-[600px] dark:invert dark:hue-rotate-180"
-              style={{ minHeight: '400px' }}
-            ></iframe>
-          ) : (
-            <iframe
-              src={buildCalendarUrl(CALENDAR_CONFIG.work)}
-              className="w-full h-[600px] dark:invert dark:hue-rotate-180"
-              style={{ minHeight: '400px' }}
-            />
-          )}
-        </div>
       </div>
     </div>
   );

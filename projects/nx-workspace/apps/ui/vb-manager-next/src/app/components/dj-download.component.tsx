@@ -1,9 +1,10 @@
 'use client';
 
-import { Card, Flex, Text, Button, Badge } from '@radix-ui/themes';
+import { Flex, Text, Button, Badge } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { CardContainer } from './card-container.component';
 
 interface PlaylistInfo {
   name: string;
@@ -90,20 +91,20 @@ export const DjDownloadComponent = () => {
   const totalSongs = playlists.reduce((sum, p) => sum + p.songCount, 0);
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="3" p="4">
-        <Flex justify="between" align="center">
-          <Text size="5" weight="bold">DJ Music</Text>
-          <Button
-            onClick={handleOpenRekordBox}
-            size="2"
-            variant="outline"
-          >
-            Open RekordBox
-          </Button>
-        </Flex>
-
+    <CardContainer
+      title="DJ Music"
+      gap="3"
+      headerAction={
         <Button
+          onClick={handleOpenRekordBox}
+          size="2"
+          variant="outline"
+        >
+          Open RekordBox
+        </Button>
+      }
+    >
+      <Button
           onClick={handleDownload}
           disabled={loading}
           loading={loading}
@@ -167,7 +168,6 @@ export const DjDownloadComponent = () => {
             )}
           </Flex>
         )}
-      </Flex>
-    </Card>
+    </CardContainer>
   );
 };

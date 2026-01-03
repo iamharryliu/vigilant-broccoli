@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, Flex, Text, Badge } from '@radix-ui/themes';
+import { Flex, Text, Badge } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
+import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface GcloudAccount {
@@ -50,21 +51,15 @@ export const GcloudAuthStatusComponent = () => {
 
   if (error) {
     return (
-      <Card className="w-full">
-        <Flex direction="column" gap="4" p="4">
-          <Text size="5" weight="bold">GCloud Auth Status</Text>
-          <Text color="red">{error}</Text>
-        </Flex>
-      </Card>
+      <CardContainer title="GCloud Auth Status">
+        <Text color="red">{error}</Text>
+      </CardContainer>
     );
   }
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="4" p="4">
-        <Text size="5" weight="bold">GCloud Auth Status</Text>
-
-        {authStatus?.activeAccount ? (
+    <CardContainer title="GCloud Auth Status">
+      {authStatus?.activeAccount ? (
           <Flex direction="column" gap="3">
             <Flex align="center" gap="2">
               <Badge color="green" size="2">Active</Badge>
@@ -98,7 +93,6 @@ export const GcloudAuthStatusComponent = () => {
             <Text size="2" className="text-gray-500">No active gcloud account</Text>
           </Flex>
         )}
-      </Flex>
-    </Card>
+    </CardContainer>
   );
 };

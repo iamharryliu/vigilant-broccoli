@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import * as Collapsible from '@radix-ui/react-collapsible';
-import { Card, Flex, Text, TextField } from '@radix-ui/themes';
+import { Flex, Text, TextField } from '@radix-ui/themes';
+import { CardContainer } from '../app/components/card-container.component';
 
 export default function CookingCalculatorCard() {
   const [input, setInput] = useState('');
@@ -273,23 +274,21 @@ export default function CookingCalculatorCard() {
   };
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="3" p="4">
-        {/* Calculator Section */}
-        <Flex direction="column" gap="2">
-          <Text size="3" weight="bold">Calculator</Text>
-          <TextField.Root
-            value={input}
-            onChange={handleInputChange}
-            placeholder="Enter calculation"
-            size="2"
-          />
-          {result && (
-            <Text size="5" weight="bold" align="right">
-              = {result}
-            </Text>
-          )}
-        </Flex>
+    <CardContainer title="Calculator" gap="3">
+      {/* Calculator Section */}
+      <Flex direction="column" gap="2">
+        <TextField.Root
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Enter calculation"
+          size="2"
+        />
+        {result && (
+          <Text size="5" weight="bold" align="right">
+            = {result}
+          </Text>
+        )}
+      </Flex>
 
         <Collapsible.Root
           open={isOpen}
@@ -462,7 +461,6 @@ export default function CookingCalculatorCard() {
             </Flex>
           </Collapsible.Content>
         </Collapsible.Root>
-      </Flex>
-    </Card>
+    </CardContainer>
   );
 }

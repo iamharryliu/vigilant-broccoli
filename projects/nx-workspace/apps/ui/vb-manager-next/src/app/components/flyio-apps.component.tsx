@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, Flex, Text, Badge, Link } from '@radix-ui/themes';
+import { Flex, Text, Badge, Link } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
+import { CardContainer } from './card-container.component';
 import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -67,37 +68,10 @@ export const FlyIoAppsComponent = () => {
 
   if (error) {
     return (
-      <Card className="w-full">
-        <Flex direction="column" gap="4" p="4">
-          <Flex justify="between" align="center">
-            <Text size="5" weight="bold">
-              Fly.io Apps
-            </Text>
-            <Link
-              href="https://fly.io/dashboard"
-              target="_blank"
-              rel="noopener noreferrer"
-              size="2"
-            >
-              <Flex align="center" gap="1">
-                Dashboard
-                <ExternalLinkIcon width="12" height="12" />
-              </Flex>
-            </Link>
-          </Flex>
-          <Text color="red">{error}</Text>
-        </Flex>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="w-full">
-      <Flex direction="column" gap="3" p="4">
-        <Flex justify="between" align="center">
-          <Text size="5" weight="bold">
-            Fly.io Apps
-          </Text>
+      <CardContainer
+        title="Fly.io Apps"
+        gap="3"
+        headerAction={
           <Link
             href="https://fly.io/dashboard"
             target="_blank"
@@ -109,9 +83,32 @@ export const FlyIoAppsComponent = () => {
               <ExternalLinkIcon width="12" height="12" />
             </Flex>
           </Link>
-        </Flex>
+        }
+      >
+        <Text color="red">{error}</Text>
+      </CardContainer>
+    );
+  }
 
-        {appsData.length === 0 ? (
+  return (
+    <CardContainer
+      title="Fly.io Apps"
+      gap="3"
+      headerAction={
+        <Link
+          href="https://fly.io/dashboard"
+          target="_blank"
+          rel="noopener noreferrer"
+          size="2"
+        >
+          <Flex align="center" gap="1">
+            Dashboard
+            <ExternalLinkIcon width="12" height="12" />
+          </Flex>
+        </Link>
+      }
+    >
+      {appsData.length === 0 ? (
           <Text size="2" color="gray">
             No apps found
           </Text>
@@ -148,7 +145,6 @@ export const FlyIoAppsComponent = () => {
             ))}
           </Flex>
         )}
-      </Flex>
-    </Card>
+    </CardContainer>
   );
 };

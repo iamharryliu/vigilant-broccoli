@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { CardContainer } from './card-container.component';
 
 interface LinkItem {
   label: string;
@@ -119,29 +120,23 @@ export function LinkGroupComponent({
   };
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="3" p="4">
-        <Text size="5" weight="bold">
-          {title}
-        </Text>
+    <CardContainer title={title} gap="3">
+      {itemsWithoutSubgroup.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {itemsWithoutSubgroup.map((link, index) => renderLink(link, index))}
+        </div>
+      )}
 
-        {itemsWithoutSubgroup.length > 0 && (
+      {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
+        <div key={subgroupName}>
+          <Text size="3" weight="medium" className="mb-2">
+            {subgroupName}
+          </Text>
           <div className="flex flex-wrap gap-2">
-            {itemsWithoutSubgroup.map((link, index) => renderLink(link, index))}
+            {subgroupLinks.map((link, index) => renderLink(link, index))}
           </div>
-        )}
-
-        {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
-          <div key={subgroupName}>
-            <Text size="3" weight="medium" className="mb-2">
-              {subgroupName}
-            </Text>
-            <div className="flex flex-wrap gap-2">
-              {subgroupLinks.map((link, index) => renderLink(link, index))}
-            </div>
-          </div>
-        ))}
-      </Flex>
-    </Card>
+        </div>
+      ))}
+    </CardContainer>
   );
 }
