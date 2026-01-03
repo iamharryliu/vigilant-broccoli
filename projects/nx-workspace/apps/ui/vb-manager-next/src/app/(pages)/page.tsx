@@ -4,11 +4,9 @@ import { WeatherComponent } from '../components/weather.component';
 import { ClockComponent } from '../components/clock.component';
 import { GoogleTasksComponent } from '../components/google-tasks.component';
 import { TaskListDebugComponent } from '../components/task-list-debug.component';
-import { DjDownloadComponent } from '../components/dj-download.component';
 import { LinkGroupComponent } from '../components/link-group.component';
-import { RecipeScraperComponent } from '../components/recipe-scraper.component';
+import { UtilitiesComponent } from '../components/utilities.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
-import CookingCalculatorCard from '../../components/CookingCalculatorCard';
 import {
   GOOGLE_SERVICES,
   OPEN_TYPE,
@@ -319,9 +317,7 @@ export default function Page() {
         <WeatherComponent />
       </div>
       <div className="flex flex-col gap-4">
-        <CookingCalculatorCard />
-        {appMode === APP_MODE.PERSONAL && <RecipeScraperComponent />}
-        {appMode === APP_MODE.PERSONAL && <DjDownloadComponent />}
+        <UtilitiesComponent />
       </div>
 
       <div className="flex flex-col gap-4">
