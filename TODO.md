@@ -44,11 +44,6 @@
 
 ## Home Management
 
-- Chores
-  - Track chores.
-  - Reminders.
-  - Indicator for how long overdue a chore has been.
-  - Set priority levels of chores (urgency/importance)
 - Food Planning
   - Recipes
     - Recipe scraper

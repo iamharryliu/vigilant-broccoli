@@ -25,4 +25,8 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Bucket Demo',
     path: '/bucket-demo',
   },
+  CHORES_DEMO: {
+    title: 'Chores Demo',
+    path: '/chores-demo',
+  },
 };
