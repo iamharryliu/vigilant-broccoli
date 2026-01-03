@@ -46,7 +46,7 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
-    "deploy": {
+    "archived-deploy": {
       "command": "flyctl deploy --dockerfile ./apps/api/express-demo/Dockerfile --config ./deployment-configs/fly-configs/express-demo.toml",
       "dependsOn": ["build", "lint"]
     },
