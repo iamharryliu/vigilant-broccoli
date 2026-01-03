@@ -5,7 +5,6 @@ alias reinstallsh="source $MAC_SETUP_DIR/install.sh"
 
 # Mac specific aliases
 if [[ "$(uname)" == "Darwin" ]]; then
-  echo "💻 Mac detected, loading Mac-specific aliases..."
   alias brewinit="brew bundle --file $MAC_SETUP_DIR/Brewfile"
   alias setupdock=". $MAC_SETUP_DIR/setup_dock.sh"
   alias setupmac=". $MAC_SETUP_DIR/setup_macos_preferences.sh"
