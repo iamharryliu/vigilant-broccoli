@@ -83,3 +83,65 @@ export function downloadJson(data: unknown, filename: string) {
   a.remove();
   URL.revokeObjectURL(blobUrl);
 }
+
+export const GOOGLE_SERVICES = {
+  PHOTOS: {
+    NAME: 'Google Photos',
+    URL: 'https://photos.google.com/?pli=1',
+  },
+  CONTACTS: {
+    NAME: 'Google Contacts',
+    URL: 'https://contacts.google.com/',
+  },
+  DRIVE: {
+    NAME: 'Google Drive',
+    URL: 'https://drive.google.com/drive/u/0/my-drive',
+  },
+  MAPS: {
+    NAME: 'Google Maps',
+    URL: 'https://www.google.com/maps',
+  },
+  TRANSLATE: {
+    NAME: 'Google Translate',
+    URL: 'https://translate.google.com/',
+  },
+  GMAIL: {
+    NAME: 'Gmail',
+    URL: 'https://mail.google.com',
+  },
+  CALENDAR: {
+    NAME: 'Google Calendar',
+    URL: 'https://calendar.google.com/',
+  },
+  MEET: {
+    NAME: 'Google Meet',
+    URL: 'https://meet.google.com/',
+  },
+  YOUTUBE: {
+    NAME: 'YouTube',
+    URL: 'https://www.youtube.com',
+  },
+} as const;
+
+export const UTILITY_URL = {
+  CHATGPT: {
+    NAME: 'ChatGPT',
+    URL: 'https://chat.openai.com',
+  },
+  CLAUDE: {
+    NAME: 'Claude',
+    URL: 'https://claude.ai',
+  },
+  FIND_MY: {
+    NAME: 'Find My',
+    URL: 'https://www.icloud.com/find/',
+  },
+  AMAZON: {
+    NAME: 'Amazon',
+    URL: 'https://www.amazon.com',
+  },
+  PINTEREST: {
+    NAME: 'Pinterest',
+    URL: 'https://www.pinterest.com',
+  },
+} as const;

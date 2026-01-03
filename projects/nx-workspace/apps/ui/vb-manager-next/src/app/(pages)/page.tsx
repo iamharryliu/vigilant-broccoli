@@ -9,81 +9,95 @@ import { LinkGroupComponent } from '../components/link-group.component';
 import { RecipeScraperComponent } from '../components/recipe-scraper.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import CookingCalculatorCard from '../../components/CookingCalculatorCard';
-import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
+import {
+  GOOGLE_SERVICES,
+  OPEN_TYPE,
+  UTILITY_URL,
+} from '@vigilant-broccoli/common-js';
 import {
   buildCalendarUrl,
   CalendarConfig,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
+import {
+  JOURNAL_PATH,
+  MAC_OS_APP,
+  PERSONAL_URL,
+  VB_REPO_PATH,
+} from '@vigilant-broccoli/personal-common-js';
 
 const UTILITY_LINKS = [
   {
-    label: 'Google Photos',
-    target: 'https://photos.google.com/?pli=1',
+    label: GOOGLE_SERVICES.PHOTOS.NAME,
+    target: GOOGLE_SERVICES.PHOTOS.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Google Contacts',
-    target: 'https://contacts.google.com/',
+    label: GOOGLE_SERVICES.CONTACTS.NAME,
+    target: GOOGLE_SERVICES.CONTACTS.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Google Drive',
-    target: 'https://drive.google.com/drive/u/0/my-drive',
+    label: GOOGLE_SERVICES.DRIVE.NAME,
+    target: GOOGLE_SERVICES.DRIVE.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Google Maps',
-    target: 'https://www.google.com/maps',
+    label: GOOGLE_SERVICES.MAPS.NAME,
+    target: GOOGLE_SERVICES.MAPS.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Google Translate',
-    target: 'https://translate.google.com/',
+    label: GOOGLE_SERVICES.TRANSLATE.NAME,
+    target: GOOGLE_SERVICES.TRANSLATE.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'ChatGPT',
-    target: 'https://chat.openai.com',
+    label: UTILITY_URL.CHATGPT.NAME,
+    target: UTILITY_URL.CHATGPT.URL,
     type: OPEN_TYPE.BROWSER,
   },
-  { label: 'Claude', target: 'https://claude.ai', type: OPEN_TYPE.BROWSER },
   {
-    label: 'Find My',
-    target: 'https://www.icloud.com/find/',
+    label: UTILITY_URL.CLAUDE.NAME,
+    target: UTILITY_URL.CLAUDE.URL,
+    type: OPEN_TYPE.BROWSER,
+  },
+  {
+    label: UTILITY_URL.FIND_MY.NAME,
+    target: UTILITY_URL.FIND_MY.URL,
     type: OPEN_TYPE.BROWSER,
   },
 ];
 
 const QUICK_LINKS = [
   {
-    label: 'Gmail',
-    target: 'https://mail.google.com',
+    label: GOOGLE_SERVICES.GMAIL.NAME,
+    target: GOOGLE_SERVICES.GMAIL.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Google Calendar',
-    target: 'https://calendar.google.com/',
+    label: GOOGLE_SERVICES.CALENDAR.NAME,
+    target: GOOGLE_SERVICES.CALENDAR.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Google Meet',
-    target: 'https://meet.google.com/',
+    label: GOOGLE_SERVICES.MEET.NAME,
+    target: GOOGLE_SERVICES.MEET.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Amazon',
-    target: 'https://www.amazon.com',
+    label: UTILITY_URL.AMAZON.NAME,
+    target: UTILITY_URL.AMAZON.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'YouTube',
-    target: 'https://www.youtube.com',
+    label: GOOGLE_SERVICES.YOUTUBE.NAME,
+    target: GOOGLE_SERVICES.YOUTUBE.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Pinterest',
-    target: 'https://www.pinterest.com',
+    label: UTILITY_URL.PINTEREST.NAME,
+    target: UTILITY_URL.PINTEREST.URL,
     type: OPEN_TYPE.BROWSER,
   },
 
@@ -92,9 +106,8 @@ const QUICK_LINKS = [
 
 const CAREER_LINKS = [
   {
-    label: 'Resume',
-    target:
-      'https://docs.google.com/document/d/1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU/edit#heading=h.uzt44hq0695d',
+    label: PERSONAL_URL.RESUME.NAME,
+    target: PERSONAL_URL.RESUME.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
@@ -106,8 +119,8 @@ const CAREER_LINKS = [
 
 const LEISURE_LINKS = [
   {
-    label: 'Spotify',
-    target: 'Spotify',
+    label: MAC_OS_APP.SPOTIFY.NAME,
+    target: MAC_OS_APP.SPOTIFY.NAME,
     type: OPEN_TYPE.MAC_APPLICATION,
   },
   {
@@ -116,24 +129,23 @@ const LEISURE_LINKS = [
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'To Draw',
-    target: 'https://ca.pinterest.com/prettydamntired/to-draw/',
+    label: PERSONAL_URL.TO_DRAW.NAME,
+    target: PERSONAL_URL.TO_DRAW.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'To Read',
-    target:
-      'https://www.goodreads.com/review/list/74043883-harry?ref=nav_mybooks&shelf=to-read',
+    label: PERSONAL_URL.TO_READ.NAME,
+    target: PERSONAL_URL.TO_READ.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'To Watch(Anime)',
-    target: 'https://myanimelist.net/animelist/prettydamntired?status=6',
+    label: PERSONAL_URL.TO_WATCH_ANIME.NAME,
+    target: PERSONAL_URL.TO_WATCH_ANIME.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'To Watch(Movies/Shows)',
-    target: 'https://www.imdb.com/user/ur45097057/watchlist',
+    label: PERSONAL_URL.TO_WATCH_MOVIES_SHOWS.NAME,
+    target: PERSONAL_URL.TO_WATCH_MOVIES_SHOWS.URL,
     type: OPEN_TYPE.BROWSER,
   },
 ];
@@ -159,13 +171,12 @@ const LEARN_LINKS = [
 const FOR_LATER_LINKS = [
   {
     label: 'TODO(Journal)',
-    target:
-      '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal/productivity/TODO.md',
+    target: JOURNAL_PATH.TODO,
     type: OPEN_TYPE.VSCODE,
   },
   {
     label: 'TODO(vigilant-broccoli)',
-    target: '~/vigilant-broccoli/TODO.md',
+    target: VB_REPO_PATH.TODO,
     type: OPEN_TYPE.VSCODE,
   },
   {
@@ -174,18 +185,18 @@ const FOR_LATER_LINKS = [
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Instagram Saved',
-    target: 'https://www.instagram.com/prettydamntired/saved/all-posts/',
+    label: PERSONAL_URL.INSTAGRAM_SAVED.NAME,
+    target: PERSONAL_URL.INSTAGRAM_SAVED.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
-    label: 'Reddit Saved',
-    target: 'https://www.reddit.com/user/itzliu/saved/',
+    label: PERSONAL_URL.REDDIT_SAVED.NAME,
+    target: PERSONAL_URL.REDDIT_SAVED.URL,
     type: OPEN_TYPE.BROWSER,
   },
   {
     label: 'Expiration',
-    target: '~/journal/management/expiration.md',
+    target: JOURNAL_PATH.EXPIRATION,
     type: OPEN_TYPE.VSCODE,
   },
 ];
@@ -194,20 +205,17 @@ const PERSONAL_LINKS = [
   ...[
     {
       label: 'Food',
-      target:
-        '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal/Food.md',
+      target: JOURNAL_PATH.FOOD,
       type: OPEN_TYPE.VSCODE,
     },
     {
-      label: 'Groceries',
-      target:
-        'https://outlook.live.com/host/0/0d5c91ee-5be2-4b79-81ed-23e6c4580427/ToDoId',
+      label: PERSONAL_URL.GROCERIES.NAME,
+      target: PERSONAL_URL.GROCERIES.URL,
       type: OPEN_TYPE.BROWSER,
     },
     {
-      label: 'Home Management',
-      target:
-        'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?usp=sharing',
+      label: PERSONAL_URL.HOME_MANAGEMENT.NAME,
+      target: PERSONAL_URL.HOME_MANAGEMENT.URL,
       type: OPEN_TYPE.BROWSER,
     },
   ],
@@ -218,9 +226,12 @@ const PERSONAL_LINKS = [
 ];
 
 const WORK_LINKS = [
-  { label: 'Slack', target: 'Slack', type: OPEN_TYPE.MAC_APPLICATION },
+  {
+    label: MAC_OS_APP.SLACK.NAME,
+    target: MAC_OS_APP.SLACK.NAME,
+    type: OPEN_TYPE.MAC_APPLICATION,
+  },
 ];
-
 
 const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
   personal: {
@@ -231,12 +242,24 @@ const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
     mode: 'AGENDA',
     title: 'Personal Calendar',
     ownerCalendars: [
-      { email: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL, color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN },
-      { email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK, color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED },
+      {
+        email: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
+      },
+      {
+        email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED,
+      },
     ],
     sharedCalendars: [
-      { id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN, color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE },
-      { id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON, color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK },
+      {
+        id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE,
+      },
+      {
+        id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK,
+      },
     ],
   },
   work: {
@@ -246,7 +269,10 @@ const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
     showPrint: 0,
     mode: 'AGENDA',
     ownerCalendars: [
-      { email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK, color: GOOGLE_CALENDAR.CALENDAR_COLOR.LIGHT_BLUE },
+      {
+        email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.LIGHT_BLUE,
+      },
     ],
     sharedCalendars: [
       {

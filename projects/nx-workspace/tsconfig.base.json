@@ -60,7 +60,10 @@
       "@vigilant-broccoli/scripts": [
         "libs/@vigilant-broccoli/scripts/src/index.ts"
       ],
-      "general-components": ["libs/angular/general-components/src/index.ts"]
+      "general-components": ["libs/angular/general-components/src/index.ts"],
+      "@vigilant-broccoli/personal-common-js": [
+        "libs/@vigilant-broccoli/personal-common-js/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -159,14 +159,22 @@ function generateTodos(chores: Chore[]): Todo[] {
   return todos;
 }
 
-// Default chores
-const DEFAULT_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
+const DAILY_CHORES = [
   {
     name: 'Walk dog',
     description: 'Take the dog for a walk around the block',
     recurrence: 'daily',
     multiplier: 3,
-    isUrgent: false,
+    isUrgent: true,
+    isImportant: true,
+    completions: [],
+  },
+  {
+    name: 'Feed Niko',
+    description: '',
+    recurrence: 'daily',
+    multiplier: 2,
+    isUrgent: true,
     isImportant: true,
     completions: [],
   },
@@ -180,24 +188,6 @@ const DEFAULT_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
     completions: [],
   },
   {
-    name: 'Clean kitchen surfaces',
-    description: '',
-    recurrence: 'monthly',
-    multiplier: 1,
-    isUrgent: false,
-    isImportant: false,
-    completions: [],
-  },
-  {
-    name: 'Run robot vacuum',
-    description: '',
-    recurrence: 'weekly',
-    multiplier: 3,
-    isUrgent: false,
-    isImportant: false,
-    completions: [],
-  },
-  {
     name: 'Social Media Catchup',
     description: '',
     recurrence: 'daily',
@@ -206,6 +196,37 @@ const DEFAULT_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
     isImportant: true,
     completions: [],
   },
+];
+
+const WEEKLY_CHORES = [
+  {
+    name: 'Run robot vacuum',
+    description: '',
+    recurrence: 'weekly',
+    multiplier: 1,
+    isUrgent: false,
+    isImportant: false,
+    completions: [],
+  },
+];
+
+const MONTHLY_CHORES = [
+  {
+    name: 'Clean kitchen surfaces',
+    description: '',
+    recurrence: 'monthly',
+    multiplier: 1,
+    isUrgent: false,
+    isImportant: false,
+    completions: [],
+  },
+];
+
+// Default chores
+const DEFAULT_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
+  ...DAILY_CHORES,
+  ...WEEKLY_CHORES,
+  ...MONTHLY_CHORES,
 ];
 
 export default function ChoresDemoPage() {
@@ -362,8 +383,20 @@ export default function ChoresDemoPage() {
             ) : (
               <Flex direction="column" gap="2">
                 {(() => {
-                  // Group todos by choreId
-                  const grouped = todos.reduce((acc, todo) => {
+                  // Sort todos by Eisenhower matrix
+                  const sortedTodos = [...todos].sort((a, b) => {
+                    // Priority order: Important+Urgent, Important, Urgent, Other
+                    const getPriority = (todo: Todo) => {
+                      if (todo.isImportant && todo.isUrgent) return 0;
+                      if (todo.isImportant) return 1;
+                      if (todo.isUrgent) return 2;
+                      return 3;
+                    };
+                    return getPriority(a) - getPriority(b);
+                  });
+
+                  // Group by choreId while maintaining sort order
+                  const grouped = sortedTodos.reduce((acc, todo) => {
                     if (!acc[todo.choreId]) {
                       acc[todo.choreId] = [];
                     }

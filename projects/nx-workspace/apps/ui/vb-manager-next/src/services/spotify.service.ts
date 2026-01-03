@@ -2,14 +2,14 @@ import {
   getEnvironmentVariable,
   ShellUtils,
 } from '@vigilant-broccoli/common-node';
+import { VB_REPO_PATH } from '@vigilant-broccoli/personal-common-js';
 
 export interface SpotifyPlaylist {
   name: string;
   url: string;
 }
 
-const SCRIPT_PATH =
-  '~/vigilant-broccoli/scripts/python/dj-scripts/spotify-to-mp3';
+
 const OUTPUT_PATH = '~/My Drive/DJ Music Library';
 
 function runPythonScript(
@@ -17,7 +17,7 @@ function runPythonScript(
   args: string[],
   timeout = 30000,
 ): Promise<string> {
-  const command = `cd ${SCRIPT_PATH} && source venv/bin/activate && python ${scriptName} ${args.join(' ')}`;
+  const command = `cd ${VB_REPO_PATH.SPOTIFY_TO_MP3_SCRIPT} && source venv/bin/activate && python ${scriptName} ${args.join(' ')}`;
 
   return ShellUtils.runShellCommand(
     command,
