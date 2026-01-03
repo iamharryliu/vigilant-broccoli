@@ -197,6 +197,15 @@ const DEFAULT_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
     isImportant: false,
     completions: [],
   },
+  {
+    name: 'Social Media Catchup',
+    description: '',
+    recurrence: 'daily',
+    multiplier: 1,
+    isUrgent: false,
+    isImportant: true,
+    completions: [],
+  },
 ];
 
 export default function ChoresDemoPage() {
@@ -301,6 +310,36 @@ export default function ChoresDemoPage() {
     );
   };
 
+  // Mark todo as incomplete (remove most recent completion)
+  const handleUncompleteTodo = (choreId: string) => {
+    setChores(prev =>
+      prev.map(chore => {
+        if (chore.id !== choreId) return chore;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Find completions in the current period
+        const completionsInPeriod = chore.completions.filter(dateStr =>
+          isInCurrentPeriod(new Date(dateStr), chore.recurrence, today),
+        );
+
+        // Remove the most recent completion in the current period
+        if (completionsInPeriod.length > 0) {
+          const mostRecentCompletion =
+            completionsInPeriod[completionsInPeriod.length - 1];
+          const newCompletions = [...chore.completions];
+          const indexToRemove =
+            newCompletions.lastIndexOf(mostRecentCompletion);
+          newCompletions.splice(indexToRemove, 1);
+          return { ...chore, completions: newCompletions };
+        }
+
+        return chore;
+      }),
+    );
+  };
+
   return (
     <Box p="6" style={{ maxWidth: '1280px', margin: '0 auto' }}>
       <Flex direction="column" gap="4">
@@ -332,54 +371,55 @@ export default function ChoresDemoPage() {
                     return acc;
                   }, {} as Record<string, typeof todos>);
 
-                  return Object.entries(grouped).map(([choreId, choreTodos]) => {
-                    const firstTodo = choreTodos[0];
-                    return (
-                      <Card key={choreId} variant="surface">
-                        <Flex justify="between" align="center" gap="4">
-                          <Flex gap="2" align="center" flexGrow="1">
-                            <Text size="3" weight="medium">
-                              {firstTodo.choreName}
-                            </Text>
-                            {firstTodo.isUrgent && (
-                              <Badge color="red" size="1">
-                                Urgent
-                              </Badge>
-                            )}
-                            {firstTodo.isImportant && (
-                              <Badge color="amber" size="1">
-                                Important
-                              </Badge>
-                            )}
-                            <Text size="2" color="gray">
-                              {firstTodo.daysOverdue === 0
-                                ? '• Due today'
-                                : `• ${firstTodo.daysOverdue}d overdue`}
-                            </Text>
-                          </Flex>
+                  return Object.entries(grouped).map(
+                    ([choreId, choreTodos]) => {
+                      const firstTodo = choreTodos[0];
+                      return (
+                        <Card key={choreId} variant="surface">
+                          <Flex justify="between" align="center" gap="4">
+                            <Flex gap="2" align="center" flexGrow="1">
+                              <Text size="3" weight="medium">
+                                {firstTodo.choreName}
+                              </Text>
+                              {firstTodo.isUrgent && (
+                                <Badge color="red" size="1">
+                                  Urgent
+                                </Badge>
+                              )}
+                              {firstTodo.isImportant && (
+                                <Badge color="amber" size="1">
+                                  Important
+                                </Badge>
+                              )}
+                              <Text size="2" color="gray">
+                                {firstTodo.daysOverdue === 0
+                                  ? '• Due today'
+                                  : `• ${firstTodo.daysOverdue}d overdue`}
+                              </Text>
+                            </Flex>
 
-                          {/* Inline checkboxes */}
-                          <Flex gap="3" align="center">
-                            {choreTodos.map((todo) => (
-                              <Checkbox
-                                key={todo.instanceNumber}
-                                size="3"
-                                variant="soft"
-                                color="green"
-                                checked={todo.isCompleted}
-                                disabled={todo.isCompleted}
-                                onCheckedChange={(checked) => {
-                                  if (checked && !todo.isCompleted) {
-                                    handleCompleteTodo(todo.choreId);
-                                  }
-                                }}
-                              />
-                            ))}
+                            {/* Inline checkboxes */}
+                            <Flex gap="3" align="center">
+                              {choreTodos.map(todo => (
+                                <Checkbox
+                                  key={todo.instanceNumber}
+                                  size="3"
+                                  checked={todo.isCompleted}
+                                  onCheckedChange={checked => {
+                                    if (checked && !todo.isCompleted) {
+                                      handleCompleteTodo(todo.choreId);
+                                    } else if (!checked && todo.isCompleted) {
+                                      handleUncompleteTodo(todo.choreId);
+                                    }
+                                  }}
+                                />
+                              ))}
+                            </Flex>
                           </Flex>
-                        </Flex>
-                      </Card>
-                    );
-                  });
+                        </Card>
+                      );
+                    },
+                  );
                 })()}
               </Flex>
             )}

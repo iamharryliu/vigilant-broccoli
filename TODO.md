@@ -11,6 +11,12 @@
 
 ## vigilant-broccoli
 
+- **vb-api**
+  - Message Service - Email, text
+- **vb-cms**
+  - Dynamic page contents ie blogs, image gallery
+  - Handle receiving emails for message requests.
+  - Virus scanning for uploads.
 - **Infrastructure**
   - GCP VM
     - Terraform for GCP VM
@@ -79,14 +85,6 @@
       - name
       - description
       - image[]
-
-## CMS
-
-- feat:
-  - Dynamic page contents.
-    - Blogs.
-  - Handle receiving emails for message requests.
-  - Virus scanning for uploads.
 
 ## Personal Planning Application
 
