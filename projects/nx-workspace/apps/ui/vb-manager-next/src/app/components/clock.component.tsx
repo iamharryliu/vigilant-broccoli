@@ -3,11 +3,13 @@
 import { Card, Flex, Text, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import * as Collapsible from '@radix-ui/react-collapsible';
+import { DATE_CONST, getISOWeekNumber } from '@vigilant-broccoli/common-js';
 
 export const ClockComponent = () => {
   const [currentTime, setCurrentTime] = useState('');
   const [currentDate, setCurrentDate] = useState('');
   const [dayOfWeek, setDayOfWeek] = useState('');
+  const [weekNumber, setWeekNumber] = useState('');
   const [timezone, setTimezone] = useState('');
   const [isStopwatchOpen, setIsStopwatchOpen] = useState(false);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
@@ -41,8 +43,12 @@ export const ClockComponent = () => {
       setCurrentDate(`${year}-${month}-${day}`);
 
       // Get day of week
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const days = DATE_CONST.DAY
       setDayOfWeek(days[now.getDay()]);
+
+      // Calculate ISO week number
+      const weekNo = getISOWeekNumber(now);
+      setWeekNumber(weekNo.toString());
 
       // Get timezone information
       const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -185,7 +191,7 @@ export const ClockComponent = () => {
             {currentTime}
           </Text>
           <Text size="2" color="gray" className="font-mono">
-            {dayOfWeek}, {currentDate}
+            Week {weekNumber}, {dayOfWeek}, {currentDate}
           </Text>
           <Text size="1" color="gray">
             {timezone}

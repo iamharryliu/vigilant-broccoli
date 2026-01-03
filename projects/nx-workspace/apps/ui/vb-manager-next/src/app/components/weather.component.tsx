@@ -3,6 +3,7 @@
 import { Card, Flex, Box, Text, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
+import { DATE_CONST } from '@vigilant-broccoli/common-js';
 
 interface WeatherData {
   city: string;
@@ -62,15 +63,7 @@ const getWeatherIcon = (iconCode: string): string => {
 
 const getDayName = (dateStr: string): string => {
   const date = new Date(dateStr);
-  const days = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
+  const days = DATE_CONST.DAY;
   return days[date.getDay()];
 };
 

@@ -19,6 +19,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>vb-manager-next</title>
+      </head>
       <body>
         <SessionProvider>
           <AppModeProvider>
