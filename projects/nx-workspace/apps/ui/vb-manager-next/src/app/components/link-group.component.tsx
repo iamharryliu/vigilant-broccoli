@@ -1,6 +1,7 @@
 'use client';
 
-import { Text } from '@radix-ui/themes';
+import { Text, TextField } from '@radix-ui/themes';
+import { useState } from 'react';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { CardContainer } from './card-container.component';
@@ -19,20 +20,20 @@ interface LinkGroupProps {
   alphabeticalSubgroups?: boolean;
 }
 
-const COLOR_PALETTE = [
-  'bg-blue-600 hover:bg-blue-700',
-  'bg-purple-600 hover:bg-purple-700',
-  'bg-green-600 hover:bg-green-700',
-  'bg-red-600 hover:bg-red-700',
-  'bg-orange-600 hover:bg-orange-700',
-  'bg-pink-600 hover:bg-pink-700',
-  'bg-indigo-600 hover:bg-indigo-700',
-  'bg-teal-600 hover:bg-teal-700',
-  'bg-cyan-600 hover:bg-cyan-700',
-  'bg-emerald-600 hover:bg-emerald-700',
-  'bg-violet-600 hover:bg-violet-700',
-  'bg-rose-600 hover:bg-rose-700',
-];
+// Fuzzy search: checks if all characters from query appear in target string in order
+const fuzzyMatch = (query: string, target: string): boolean => {
+  const queryLower = query.toLowerCase();
+  const targetLower = target.toLowerCase();
+
+  let queryIndex = 0;
+  for (let i = 0; i < targetLower.length && queryIndex < queryLower.length; i++) {
+    if (targetLower[i] === queryLower[queryIndex]) {
+      queryIndex++;
+    }
+  }
+
+  return queryIndex === queryLower.length;
+};
 
 export function LinkGroupComponent({
   title,
@@ -40,16 +41,23 @@ export function LinkGroupComponent({
   alphabetical = true,
   alphabeticalSubgroups = true,
 }: LinkGroupProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter links based on fuzzy search
+  const filteredLinks = searchQuery
+    ? links.filter(link => fuzzyMatch(searchQuery, link.label))
+    : links;
+
   const subgroupOrder: string[] = [];
-  links.forEach(link => {
+  filteredLinks.forEach(link => {
     if (link.subgroup && !subgroupOrder.includes(link.subgroup)) {
       subgroupOrder.push(link.subgroup);
     }
   });
 
   const sortedLinks = alphabetical
-    ? [...links].sort((a, b) => a.label.localeCompare(b.label))
-    : links;
+    ? [...filteredLinks].sort((a, b) => a.label.localeCompare(b.label))
+    : filteredLinks;
 
   const itemsWithoutSubgroup = sortedLinks.filter(link => !link.subgroup);
   const itemsWithSubgroup = sortedLinks.filter(link => link.subgroup);
@@ -85,9 +93,8 @@ export function LinkGroupComponent({
     }
   };
 
-  const renderLink = (link: LinkItem, index: number) => {
-    const colorClass = COLOR_PALETTE[index % COLOR_PALETTE.length];
-    const baseClass = `inline-flex justify-center px-4 py-1.5 ${colorClass} text-white rounded-full text-xs font-medium w-fit transition-colors`;
+  const renderLink = (link: LinkItem) => {
+    const baseClass = 'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-colors';
 
     if (
       link.type === OPEN_TYPE.MAC_APPLICATION ||
@@ -120,10 +127,22 @@ export function LinkGroupComponent({
   };
 
   return (
-    <CardContainer title={title} gap="3">
+    <CardContainer
+      title={title}
+      gap="3"
+      headerAction={
+        <TextField.Root
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          size="1"
+          style={{ width: '150px' }}
+        />
+      }
+    >
       {itemsWithoutSubgroup.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {itemsWithoutSubgroup.map((link, index) => renderLink(link, index))}
+          {itemsWithoutSubgroup.map((link) => renderLink(link))}
         </div>
       )}
 
@@ -133,10 +152,16 @@ export function LinkGroupComponent({
             {subgroupName}
           </Text>
           <div className="flex flex-wrap gap-2">
-            {subgroupLinks.map((link, index) => renderLink(link, index))}
+            {subgroupLinks.map((link) => renderLink(link))}
           </div>
         </div>
       ))}
+
+      {filteredLinks.length === 0 && searchQuery && (
+        <Text size="2" color="gray">
+          No links found matching &quot;{searchQuery}&quot;
+        </Text>
+      )}
     </CardContainer>
   );
 }

@@ -2,9 +2,9 @@
 
 import { Flex, Text, Button, Badge } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
+import * as Collapsible from '@radix-ui/react-collapsible';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
-import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { CardContainer } from './card-container.component';
+import { API_ENDPOINTS } from '../../constants/api-endpoints';
 
 interface PlaylistInfo {
   name: string;
@@ -13,12 +13,16 @@ interface PlaylistInfo {
   formattedSize: string;
 }
 
-// eslint-disable-next-line complexity
-export const DjDownloadComponent = () => {
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState(false);
+interface DjMusicUtilityProps {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}
+
+export const DjMusicUtility = ({ isOpen, setIsOpen }: DjMusicUtilityProps) => {
+  const [djLoading, setDjLoading] = useState(false);
+  const [djMessage, setDjMessage] = useState<string | null>(null);
+  const [djError, setDjError] = useState<string | null>(null);
+  const [playlistsExpanded, setPlaylistsExpanded] = useState(false);
   const [playlists, setPlaylists] = useState<PlaylistInfo[]>([]);
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
 
@@ -45,10 +49,10 @@ export const DjDownloadComponent = () => {
     }
   };
 
-  const handleDownload = async () => {
-    setLoading(true);
-    setMessage(null);
-    setError(null);
+  const handleDjDownload = async () => {
+    setDjLoading(true);
+    setDjMessage(null);
+    setDjError(null);
 
     try {
       const response = await fetch(API_ENDPOINTS.DJ_DOWNLOAD, {
@@ -61,14 +65,14 @@ export const DjDownloadComponent = () => {
         throw new Error(data.error || 'Failed to start download');
       }
 
-      setMessage(data.message);
-      if (expanded) {
+      setDjMessage(data.message);
+      if (playlistsExpanded) {
         setTimeout(() => fetchPlaylists(), 2000);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start download');
+      setDjError(err instanceof Error ? err.message : 'Failed to start download');
     } finally {
-      setLoading(false);
+      setDjLoading(false);
     }
   };
 
@@ -84,45 +88,63 @@ export const DjDownloadComponent = () => {
         throw new Error(data.error || 'Failed to open RekordBox');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to open RekordBox');
+      setDjError(err instanceof Error ? err.message : 'Failed to open RekordBox');
     }
   };
 
   const totalSongs = playlists.reduce((sum, p) => sum + p.songCount, 0);
 
   return (
-    <CardContainer
-      title="DJ Music"
-      gap="3"
-      headerAction={
-        <Button
-          onClick={handleOpenRekordBox}
-          size="2"
-          variant="outline"
-        >
-          Open RekordBox
-        </Button>
-      }
+    <Collapsible.Root
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="border-t border-gray-300 dark:border-gray-700 pt-3"
     >
-      <Button
-          onClick={handleDownload}
-          disabled={loading}
-          loading={loading}
-          size="3"
-          variant="solid"
+      <Collapsible.Trigger asChild>
+        <button
+          className="flex items-center justify-between w-full mb-3 group cursor-pointer"
+          aria-label={isOpen ? 'Collapse' : 'Expand'}
         >
-          Download DJ Music
-        </Button>
+          <Text size="3" weight="bold">
+            DJ Music
+          </Text>
+          <Text size="1" color="gray" className="group-hover:opacity-70 transition-opacity">
+            {isOpen ? '▲' : '▼'}
+          </Text>
+        </button>
+      </Collapsible.Trigger>
 
-        {message && (
-          <Text size="2" color="green">{message}</Text>
+      <Collapsible.Content className="flex flex-col gap-3">
+        <Flex gap="2" justify="between">
+          <Button
+            onClick={handleDjDownload}
+            disabled={djLoading}
+            loading={djLoading}
+            size="2"
+            variant="solid"
+            style={{ flex: 1 }}
+          >
+            Download DJ Music
+          </Button>
+          <Button
+            onClick={handleOpenRekordBox}
+            size="2"
+            variant="outline"
+          >
+            Open RekordBox
+          </Button>
+        </Flex>
+
+        {djMessage && (
+          <Text size="2" color="green">{djMessage}</Text>
         )}
 
-        {error && (
-          <Text size="2" color="red">{error}</Text>
+        {djError && (
+          <Text size="2" color="red">{djError}</Text>
         )}
+
         <Button
-          onClick={() => setExpanded(!expanded)}
+          onClick={() => setPlaylistsExpanded(!playlistsExpanded)}
           variant="soft"
           size="2"
           style={{ justifyContent: 'space-between' }}
@@ -135,10 +157,10 @@ export const DjDownloadComponent = () => {
               </Badge>
             )}
           </Flex>
-          {expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          {playlistsExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
         </Button>
 
-        {expanded && (
+        {playlistsExpanded && (
           <Flex direction="column" gap="2">
             {loadingPlaylists ? (
               <Text size="2" color="gray">Loading playlists...</Text>
@@ -168,6 +190,7 @@ export const DjDownloadComponent = () => {
             )}
           </Flex>
         )}
-    </CardContainer>
+      </Collapsible.Content>
+    </Collapsible.Root>
   );
 };

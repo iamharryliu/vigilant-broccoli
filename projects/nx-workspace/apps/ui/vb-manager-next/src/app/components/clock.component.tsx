@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Flex, Text } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { DATE_CONST, getISOWeekNumber } from '@vigilant-broccoli/common-js';
 
@@ -51,21 +51,16 @@ export const ClockComponent = () => {
   }, []);
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="3" p="4">
-        {/* Clock Display */}
-        <Flex direction="column" align="center" gap="1">
-          <Text size="8" weight="bold" className="font-mono">
-            {currentTime}
-          </Text>
-          <Text size="2" color="gray" className="font-mono">
-            Week {weekNumber}, {dayOfWeek}, {currentDate}
-          </Text>
-          <Text size="1" color="gray">
-            {timezone}
-          </Text>
-        </Flex>
-      </Flex>
-    </Card>
+    <Flex direction="column" align="center" gap="1">
+      <Text size="8" weight="bold" className="font-mono">
+        {currentTime}
+      </Text>
+      <Text size="2" color="gray" className="font-mono">
+        Week {weekNumber}, {dayOfWeek}, {currentDate}
+      </Text>
+      <Text size="1" color="gray">
+        {timezone}
+      </Text>
+    </Flex>
   );
 };

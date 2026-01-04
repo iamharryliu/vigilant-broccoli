@@ -1,9 +1,7 @@
 'use client';
 
-import { Box, Text, Button } from '@radix-ui/themes';
+import { Box, Text, Button, Flex, Spinner } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
-import { CardSkeleton } from './skeleton.component';
-import { CardContainer } from './card-container.component';
 import { DATE_CONST } from '@vigilant-broccoli/common-js';
 
 interface WeatherData {
@@ -183,87 +181,87 @@ export const WeatherComponent = () => {
   };
 
   if (loading) {
-    return <CardSkeleton title="Weather" rows={6} />;
-  }
-
-  if (error) {
     return (
-      <CardContainer title="Weather">
-        <Text color="red">{error}</Text>
-      </CardContainer>
+      <Flex justify="center" align="center" p="4">
+        <Spinner size="3" />
+      </Flex>
     );
   }
 
-  return (
-    <CardContainer title="Weather">
-      {weatherData.map((cityWeather, cityIndex) => {
-          const city = CITIES[cityIndex];
-          return (
-            <Box key={cityWeather.city}>
-              <div className="grid grid-cols-4 gap-4 mb-3">
-                <div className="flex flex-col justify-start pt-6">
-                  <Text size="1" weight="bold" className="text-gray-700">
-                    {cityWeather.city}
-                  </Text>
-                  <Text size="1" className="text-gray-500">
-                    {getCurrentTime(cityWeather.timezone)}
-                  </Text>
-                </div>
+  if (error) {
+    return <Text color="red">{error}</Text>;
+  }
 
-                <div className="flex flex-col items-center">
+  return (
+    <Box>
+      {weatherData.map((cityWeather, cityIndex) => {
+        const city = CITIES[cityIndex];
+        return (
+          <Box key={cityWeather.city}>
+            <div className="grid grid-cols-4 gap-4 mb-3">
+              <div className="flex flex-col justify-start pt-6">
+                <Text size="1" weight="bold" className="text-gray-700">
+                  {cityWeather.city}
+                </Text>
+                <Text size="1" className="text-gray-500">
+                  {getCurrentTime(cityWeather.timezone)}
+                </Text>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <Text size="1" className="mb-2 text-gray-600">
+                  Now
+                </Text>
+                <div className="text-3xl mb-2">
+                  {getWeatherIcon(cityWeather.now.icon)}
+                </div>
+                <Text size="3" weight="bold">
+                  {cityWeather.now.temp}°C
+                </Text>
+              </div>
+
+              {cityWeather.forecast.map((day, idx) => (
+                <div key={idx} className="flex flex-col items-center">
                   <Text size="1" className="mb-2 text-gray-600">
-                    Now
+                    {day.day}
                   </Text>
                   <div className="text-3xl mb-2">
-                    {getWeatherIcon(cityWeather.now.icon)}
+                    {getWeatherIcon(day.icon)}
                   </div>
                   <Text size="3" weight="bold">
-                    {cityWeather.now.temp}°C
+                    {day.tempHigh}°C{' '}
+                    <Text size="2" color="gray">
+                      | {day.tempLow}°C
+                    </Text>
                   </Text>
                 </div>
+              ))}
+            </div>
 
-                {cityWeather.forecast.map((day, idx) => (
-                  <div key={idx} className="flex flex-col items-center">
-                    <Text size="1" className="mb-2 text-gray-600">
-                      {day.day}
-                    </Text>
-                    <div className="text-3xl mb-2">
-                      {getWeatherIcon(day.icon)}
-                    </div>
-                    <Text size="3" weight="bold">
-                      {day.tempHigh}°C{' '}
-                      <Text size="2" color="gray">
-                        | {day.tempLow}°C
-                      </Text>
-                    </Text>
-                  </div>
-                ))}
-              </div>
+            <div className="mt-2">
+              <Button
+                size="1"
+                variant="soft"
+                onClick={() => getOutfitRecommendation(city)}
+                disabled={loadingOutfit[city.name]}
+                className="mb-2"
+              >
+                {loadingOutfit[city.name]
+                  ? 'Getting recommendation...'
+                  : 'Get Outfit Recommendation'}
+              </Button>
 
-              <div className="mt-2">
-                <Button
-                  size="1"
-                  variant="soft"
-                  onClick={() => getOutfitRecommendation(city)}
-                  disabled={loadingOutfit[city.name]}
-                  className="mb-2"
-                >
-                  {loadingOutfit[city.name]
-                    ? 'Getting recommendation...'
-                    : 'Get Outfit Recommendation'}
-                </Button>
-
-                {outfitRecommendation[city.name] && (
-                  <Box className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
-                    <Text size="2" className="whitespace-pre-wrap">
-                      {outfitRecommendation[city.name]}
-                    </Text>
-                  </Box>
-                )}
-              </div>
-            </Box>
-          );
-        })}
-    </CardContainer>
+              {outfitRecommendation[city.name] && (
+                <Box className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                  <Text size="2" className="whitespace-pre-wrap">
+                    {outfitRecommendation[city.name]}
+                  </Text>
+                </Box>
+              )}
+            </div>
+          </Box>
+        );
+      })}
+    </Box>
   );
 };
