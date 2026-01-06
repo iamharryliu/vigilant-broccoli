@@ -91,3 +91,5 @@ alertinterval() {
   ( crontab -l 2>/dev/null | grep -v 'say "the time is now' ; echo "$CRON_LINE" ) | crontab -
   echo "✅ Cron updated: $CRON_LINE"
 }
+
+alias spellcheck='codespell'
