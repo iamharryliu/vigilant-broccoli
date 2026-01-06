@@ -29,4 +29,9 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Chores Demo',
     path: '/chores-demo',
   },
+
+  DOCS_MD: {
+    title: 'DocsMD',
+    path: '/docs-md',
+  },
 };

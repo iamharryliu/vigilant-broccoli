@@ -184,7 +184,7 @@ export const DockerStatusComponent = () => {
 
   // Get badge label for project state
   const getProjectBadgeLabel = (state: string): string => {
-    return state === 'running' ? 'Up' : 'Down';
+    return state === 'running' ? 'Active' : 'Inactive';
   };
 
   // Render control button based on state
@@ -274,12 +274,12 @@ export const DockerStatusComponent = () => {
               >
                 <Flex align="center" gap="2" justify="between">
                   <Flex align="center" gap="2">
-                    <Text size="3" weight="bold" className="text-gray-700">
-                      {project.name}
-                    </Text>
                     <Badge color={getBadgeColor(project.state)}>
                       {getProjectBadgeLabel(project.state)}
                     </Badge>
+                    <Text size="3" weight="bold" className="text-gray-700">
+                      {project.name}
+                    </Text>
                   </Flex>
                   {renderControlButton(project.state, project.name, true, 'project')}
                 </Flex>

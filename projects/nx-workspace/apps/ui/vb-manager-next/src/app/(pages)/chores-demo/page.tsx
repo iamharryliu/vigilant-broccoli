@@ -159,7 +159,7 @@ function generateTodos(chores: Chore[]): Todo[] {
   return todos;
 }
 
-const DAILY_CHORES = [
+const DAILY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   {
     name: 'Walk dog',
     description: 'Take the dog for a walk around the block',
@@ -198,7 +198,7 @@ const DAILY_CHORES = [
   },
 ];
 
-const WEEKLY_CHORES = [
+const WEEKLY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   {
     name: 'Run robot vacuum',
     description: '',
@@ -210,7 +210,7 @@ const WEEKLY_CHORES = [
   },
 ];
 
-const MONTHLY_CHORES = [
+const MONTHLY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   {
     name: 'Clean kitchen surfaces',
     description: '',
