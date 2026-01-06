@@ -11,26 +11,25 @@
 
 ## vigilant-broccoli
 
+- **machine**
+  - audit default pip list
 - **vb-api**
   - Message Service - Email, text
+  - Payment Service
 - **vb-cms**
   - Dynamic page contents ie blogs, image gallery
   - Handle receiving emails for message requests.
   - Virus scanning for uploads.
+  - refactor(cms): Refactor Flask CMS to nx-workspace..
 - **Infrastructure**
   - GCP VM
-    - Terraform for GCP VM
     - Bootstrapping Vault and WireGuard
-- **Microservices**
-  - Email service.
-  - Text service.
-  - Payment service.
-  - refactor(cms): Refactor Flask CMS to nx-workspace..
 - **employee-handler**
   - Inform user if gam or gyb needs to be setup.
   - Create missing folder/file structures.
-- **Chore**
-  - Replace Obsidian brackets. `[[something]]`
+- **Fix/`Chore`**
+  - Fix MY_EMAIL
+  - chore: Replace Obsidian brackets. `[[something]]`
 - **Audit/Refactor Tasks**
   - feat: Setup linux vs mac setup scripts
   - chore: dotfile cleanup
