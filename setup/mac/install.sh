@@ -67,3 +67,7 @@ fi
 if ask "Setup vigilant-broccoli VSCode themes?"; then
     ln -s $HOME/vigilant-broccoli/vscode-themes ~/.vscode/extensions/vigilant-broccoli-vscode-themes
 fi
+
+if ask "Setup git hooks?"; then
+    pip3 install codespell
+fi
