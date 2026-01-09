@@ -208,11 +208,47 @@ const WEEKLY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
     isImportant: false,
     completions: [],
   },
+  {
+    name: 'Takeout Trash',
+    description: '',
+    recurrence: 'weekly',
+    multiplier: 1,
+    isUrgent: false,
+    isImportant: false,
+    completions: [],
+  },
+  {
+    name: 'Laundry',
+    description: '',
+    recurrence: 'weekly',
+    multiplier: 1,
+    isUrgent: false,
+    isImportant: false,
+    completions: [],
+  },
+  {
+    name: 'Common Area Cleanup',
+    description: '',
+    recurrence: 'weekly',
+    multiplier: 1,
+    isUrgent: false,
+    isImportant: false,
+    completions: [],
+  },
 ];
 
 const MONTHLY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   {
     name: 'Clean kitchen surfaces',
+    description: '',
+    recurrence: 'monthly',
+    multiplier: 1,
+    isUrgent: false,
+    isImportant: false,
+    completions: [],
+  },
+  {
+    name: 'Clean bathroom',
     description: '',
     recurrence: 'monthly',
     multiplier: 1,

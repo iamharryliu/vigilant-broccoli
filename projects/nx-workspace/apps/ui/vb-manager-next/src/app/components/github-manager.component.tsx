@@ -3,7 +3,7 @@
 import { Box, Text, Skeleton, Callout } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, AlertCircle } from 'lucide-react';
+import { Building2, AlertCircle, ChevronRight } from 'lucide-react';
 import { CardContainer } from './card-container.component';
 
 export const API_ROUTES = {
@@ -59,8 +59,8 @@ export const GithubTeamManager = () => {
       {loading && (
         <Box>
           {[1, 2, 3].map(i => (
-            <Box key={i} mb="2" style={{ padding: '1rem', backgroundColor: 'var(--gray-2)', borderRadius: '6px' }}>
-              <Skeleton height="40px" />
+            <Box key={i} mb="1" style={{ padding: '0.5rem 0' }}>
+              <Skeleton height="24px" />
             </Box>
           ))}
         </Box>
@@ -80,10 +80,15 @@ export const GithubTeamManager = () => {
       )}
 
       {/* Organizations List */}
-      {!loading &&
-        !error &&
-        organizations.map(organization => {
-          return (
+      {!loading && !error && organizations.length > 0 && (
+        <Box
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.25rem',
+          }}
+        >
+          {organizations.map(organization => (
             <Box
               key={organization}
               onClick={() =>
@@ -91,29 +96,32 @@ export const GithubTeamManager = () => {
               }
               style={{
                 cursor: 'pointer',
-                marginBottom: '0.5rem',
-                transition: 'all 0.2s ease',
-                padding: '1rem',
-                backgroundColor: 'var(--gray-2)',
-                borderRadius: '6px',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'background-color 0.15s ease',
               }}
-              className="hover:shadow-md"
+              className="hover:bg-[var(--gray-3)]"
             >
               <Box
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.75rem',
+                  gap: '0.5rem',
                 }}
               >
-                <Building2 size={20} style={{ opacity: 0.6 }} />
-                <Text size="3" weight="medium">
+                <Building2 size={16} style={{ opacity: 0.5 }} />
+                <Text size="2">
                   {organization}
                 </Text>
               </Box>
+              <ChevronRight size={14} style={{ opacity: 0.3 }} />
             </Box>
-          );
-        })}
+          ))}
+        </Box>
+      )}
     </CardContainer>
   );
 };

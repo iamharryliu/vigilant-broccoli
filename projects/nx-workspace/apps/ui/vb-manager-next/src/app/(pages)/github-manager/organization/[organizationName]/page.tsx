@@ -69,12 +69,12 @@ export default function Page({
   if (loading) {
     return (
       <Box>
-        <Skeleton height="60px" mb="4" />
-        <Grid columns="3" gap="3" mb="4">
-          <Skeleton height="100px" />
-          <Skeleton height="100px" />
-          <Skeleton height="100px" />
+        <Skeleton height="50px" mb="3" />
+        <Grid columns="2" gap="2" mb="3">
+          <Skeleton height="60px" />
+          <Skeleton height="60px" />
         </Grid>
+        <Skeleton height="32px" mb="3" />
         <Skeleton height="400px" />
       </Box>
     );
@@ -116,7 +116,7 @@ const GithubTeamLink = ({
 const GithubUserLink = ({ member }: { member: GithubTeamMember }) => {
   return (
     <Link href={`https://github.com/${member.username}`} target="_blank">
-      {member.username} ({member.role})
+      {member.username}
     </Link>
   );
 };
@@ -132,10 +132,6 @@ const Structure = ({
 }) => {
   // Calculate statistics
   const totalTeams = item.config.teams.length;
-  const totalMembers = item.config.teams.reduce(
-    (sum, team) => sum + team.members.length,
-    0
-  );
   const uniqueMembers = new Set(
     item.config.teams.flatMap(team => team.members.map(m => m.username))
   ).size;
@@ -143,43 +139,22 @@ const Structure = ({
   return (
     <>
       {/* Header */}
-      <Box mb="4">
-        <Heading size="8" mb="2">
-          <Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Building2 size={32} />
+      <Box mb="3">
+        <Heading size="7" mb="1">
+          <Box style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Building2 size={24} />
             {item.config.organizationName}
           </Box>
         </Heading>
-        <Text size="2" color="gray">Organization structure and team members</Text>
+        <Box style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <Text size="1" color="gray">
+            {totalTeams} team{totalTeams !== 1 ? 's' : ''} · {uniqueMembers} member{uniqueMembers !== 1 ? 's' : ''}
+          </Text>
+        </Box>
       </Box>
 
-      {/* Statistics Cards */}
-      <Grid columns="3" gap="3" mb="4">
-        <Card>
-          <Box style={{ textAlign: 'center' }}>
-            <Users size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.6 }} />
-            <Text size="6" weight="bold" as="div">{totalTeams}</Text>
-            <Text size="2" color="gray">Teams</Text>
-          </Box>
-        </Card>
-        <Card>
-          <Box style={{ textAlign: 'center' }}>
-            <UserCircle size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.6 }} />
-            <Text size="6" weight="bold" as="div">{uniqueMembers}</Text>
-            <Text size="2" color="gray">Unique Members</Text>
-          </Box>
-        </Card>
-        <Card>
-          <Box style={{ textAlign: 'center' }}>
-            <Users size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.6 }} />
-            <Text size="6" weight="bold" as="div">{totalMembers}</Text>
-            <Text size="2" color="gray">Total Memberships</Text>
-          </Box>
-        </Card>
-      </Grid>
-
       {/* Search Bar */}
-      <Box mb="4">
+      <Box mb="3">
         <TextField.Root
           placeholder="Search teams or members..."
           value={searchQuery}
@@ -196,27 +171,38 @@ const Structure = ({
       {item.config.teams.length === 0 && searchQuery && (
         <Box style={{ textAlign: 'center', padding: '2rem' }}>
           <Search size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-          <Text size="3" color="gray">No teams or members match "{searchQuery}"</Text>
+          <Text size="3" color="gray">No teams or members match &ldquo;{searchQuery}&rdquo;</Text>
+        </Box>
+      )}
+
+      {/* Empty State - No Teams */}
+      {item.config.teams.length === 0 && !searchQuery && (
+        <Box style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+          <Users size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+          <Text size="3" color="gray" as="div" mb="1">No teams found</Text>
+          <Text size="2" color="gray">This organization doesn&apos;t have any teams yet.</Text>
         </Box>
       )}
 
       {/* Teams List */}
       {item.config.teams.map(team => {
         return (
-          <Card key={`${item.id}-${team.name}`} mb="3">
-            <Box mb="3">
-              <Heading size="5" mb="1">
-                <Box style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Users size={20} />
-                  <GithubTeamLink
-                    organization={item.config.organizationName}
-                    team={team.name}
-                  />
-                </Box>
-              </Heading>
-              <Badge color="gray" size="1">{team.members.length} member{team.members.length !== 1 ? 's' : ''}</Badge>
+          <Card key={`${item.id}-${team.name}`} mb="2">
+            <Box mb="2">
+              <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <Heading size="4">
+                  <Box style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Users size={18} />
+                    <GithubTeamLink
+                      organization={item.config.organizationName}
+                      team={team.name}
+                    />
+                  </Box>
+                </Heading>
+                <Badge color="gray" size="1">{team.members.length} member{team.members.length !== 1 ? 's' : ''}</Badge>
+              </Box>
             </Box>
-            <Box style={{ display: 'grid', gap: '0.5rem' }}>
+            <Box style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
               {team.members.map(member => (
                 <Box
                   key={`${item.id}-${team.name}-${member.username}`}
@@ -224,17 +210,18 @@ const Structure = ({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    padding: '0.5rem',
+                    padding: '0.375rem 0.5rem',
                     borderRadius: '0.25rem',
                     backgroundColor: 'var(--gray-a2)',
                   }}
                 >
-                  <UserCircle size={16} style={{ opacity: 0.6 }} />
-                  <GithubUserLink member={member} />
+                  <UserCircle size={14} style={{ opacity: 0.5, flexShrink: 0 }} />
+                  <Box style={{ flex: 1, minWidth: 0 }}>
+                    <GithubUserLink member={member} />
+                  </Box>
                   <Badge
                     color={member.role === 'admin' ? 'red' : member.role === 'maintainer' ? 'blue' : 'gray'}
                     size="1"
-                    style={{ marginLeft: 'auto' }}
                   >
                     {member.role}
                   </Badge>
@@ -244,7 +231,7 @@ const Structure = ({
           </Card>
         );
       })}
-      <Box mt="4">
+      <Box mt="3">
         <CopyPastable text={JSON.stringify(item.config, null, 2)} />
       </Box>
     </>

@@ -47,9 +47,13 @@ export const PERSONAL_URL = {
     NAME: 'Groceries',
     URL: 'https://outlook.live.com/host/0/0d5c91ee-5be2-4b79-81ed-23e6c4580427/ToDoId',
   },
-  HOME_MANAGEMENT: {
-    NAME: 'Home Management',
-    URL: 'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?usp=sharing',
+  HOME_PROJECTS: {
+    NAME: 'Home Projects',
+    URL: 'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?tab=t.m0i0tbacqfkh',
+  },
+  HOME_KITCHEN_INVENTORY: {
+    NAME: 'Home Kitchen Inventory',
+    URL: 'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?tab=t.bb5o1okznd99',
   },
 } as const;
 
