@@ -24,10 +24,18 @@ docker run -it --rm IMAGE_NAME sh # Container shell.
 
 ```
 docker compose DOCKER_COMMAND
+
+docker compose up
 docker compose up -d # Start
 docker compose logs -f # View logs
 docker compose down # Stop
 
 docker compose -p APP_NAME DOCKER_COMMAND
 docker compose -p APP_NAME -f DOCKER_COMPOSE_FILE DOCKER_COMMAND
+
+# Restart
+docker compose up -d --force-recreate APP_NAME
+
+# Debug
+docker compose logs -f APP_NAME
 ```
