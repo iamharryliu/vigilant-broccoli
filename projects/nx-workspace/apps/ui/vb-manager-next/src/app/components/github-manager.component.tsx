@@ -3,8 +3,9 @@
 import { Box, Text, Skeleton, Callout } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, AlertCircle, ChevronRight } from 'lucide-react';
+import { AlertCircle, ChevronRight, Users } from 'lucide-react';
 import { CardContainer } from './card-container.component';
+import { GithubOrgBasic } from '@vigilant-broccoli/common-js';
 
 export const API_ROUTES = {
   ORGANIZATION_STRUCTURE: '/api/github/organization-structure',
@@ -13,7 +14,7 @@ export const API_ROUTES = {
 
 export const GithubTeamManager = () => {
   const router = useRouter();
-  const [organizations, setOrganizations] = useState<string[]>([]);
+  const [organizations, setOrganizations] = useState<GithubOrgBasic[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,7 +70,7 @@ export const GithubTeamManager = () => {
       {/* Empty State */}
       {!loading && !error && organizations.length === 0 && (
         <Box style={{ textAlign: 'center', padding: '2rem' }}>
-          <Building2
+          <Users
             size={48}
             style={{ margin: '0 auto 1rem', opacity: 0.3 }}
           />
@@ -90,9 +91,9 @@ export const GithubTeamManager = () => {
         >
           {organizations.map(organization => (
             <Box
-              key={organization}
+              key={organization.login}
               onClick={() =>
-                router.push(`github-manager/organization/${organization}`)
+                router.push(`github-manager/organization/${organization.login}`)
               }
               style={{
                 cursor: 'pointer',
@@ -109,15 +110,19 @@ export const GithubTeamManager = () => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
+                  gap: '0.75rem',
                 }}
               >
-                <Building2 size={16} style={{ opacity: 0.5 }} />
-                <Text size="2">
-                  {organization}
+                <img
+                  src={organization.avatar_url}
+                  alt={organization.login}
+                  style={{ width: '20px', height: '20px', borderRadius: '4px' }}
+                />
+                <Text size="3">
+                  {organization.login}
                 </Text>
               </Box>
-              <ChevronRight size={14} style={{ opacity: 0.3 }} />
+              <ChevronRight size={16} style={{ opacity: 0.3 }} />
             </Box>
           ))}
         </Box>

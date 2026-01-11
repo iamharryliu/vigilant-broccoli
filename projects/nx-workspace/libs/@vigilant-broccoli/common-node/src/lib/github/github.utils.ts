@@ -1,12 +1,12 @@
-import { toSlug } from '@vigilant-broccoli/common-js';
 import { ShellUtils } from '../shell/shell.utils';
 import { GithubService } from './github.service';
 import {
+  toSlug,
   GithubTeamMember,
   GithubTeamsDTO,
   GithubTeam,
   GithubTeamRepository,
-} from './github.types';
+} from '@vigilant-broccoli/common-js';
 
 async function getTeamMembers(
   org: string,
@@ -16,11 +16,15 @@ async function getTeamMembers(
     `gh api orgs/${org}/teams/${slug}/members`,
     true,
   );
-  const members = JSON.parse(data as string) as any[];
+  const members = JSON.parse(data as string) as { login: string; avatar_url: string }[];
 
   return await Promise.all(
-    members.map(async (m: any) => {
-      return await GithubService.getTeamMemberMembership(org, slug, m.login);
+    members.map(async (m) => {
+      const membership = await GithubService.getTeamMemberMembership(org, slug, m.login);
+      return {
+        ...membership,
+        avatar_url: m.avatar_url,
+      };
     }),
   );
 }

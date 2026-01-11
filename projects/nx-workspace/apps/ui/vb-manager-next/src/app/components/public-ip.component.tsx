@@ -8,19 +8,22 @@ import { API_ENDPOINTS } from '../constants/api-endpoints';
 export const PublicIpComponent = () => {
   const [publicIp, setPublicIp] = useState<string>('');
   const [localIp, setLocalIp] = useState<string>('');
+  const [sshKey, setSshKey] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [publicCopied, setPublicCopied] = useState(false);
   const [localCopied, setLocalCopied] = useState(false);
+  const [sshCopied, setSshCopied] = useState(false);
 
   useEffect(() => {
     const fetchIpAddresses = async () => {
       try {
         setLoading(true);
 
-        const [publicIpResponse, localIpResponse] = await Promise.all([
+        const [publicIpResponse, localIpResponse, sshKeyResponse] = await Promise.all([
           fetch(API_ENDPOINTS.PUBLIC_IP).then(res => res.json()).catch(() => ({ success: false, error: 'Failed to fetch public IP' })),
-          fetch(API_ENDPOINTS.LOCAL_IP).then(res => res.json()).catch(() => ({ success: false, error: 'Failed to fetch local IP' }))
+          fetch(API_ENDPOINTS.LOCAL_IP).then(res => res.json()).catch(() => ({ success: false, error: 'Failed to fetch local IP' })),
+          fetch(API_ENDPOINTS.SSH_KEY).then(res => res.json()).catch(() => ({ success: false, error: 'Failed to fetch SSH key' }))
         ]);
 
         if (publicIpResponse.success) {
@@ -31,15 +34,19 @@ export const PublicIpComponent = () => {
           setLocalIp(localIpResponse.ip);
         }
 
-        if (!publicIpResponse.success && !localIpResponse.success) {
-          setError('Failed to fetch IP addresses');
+        if (sshKeyResponse.success) {
+          setSshKey(sshKeyResponse.key);
+        }
+
+        if (!publicIpResponse.success && !localIpResponse.success && !sshKeyResponse.success) {
+          setError('Failed to fetch data');
         }
 
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch IP addresses');
+        setError(err instanceof Error ? err.message : 'Failed to fetch data');
         setLoading(false);
-        console.error('IP fetch error:', err);
+        console.error('Fetch error:', err);
       }
     };
 
@@ -61,6 +68,16 @@ export const PublicIpComponent = () => {
       await navigator.clipboard.writeText(localIp);
       setLocalCopied(true);
       setTimeout(() => setLocalCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleSshCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(sshKey);
+      setSshCopied(true);
+      setTimeout(() => setSshCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
@@ -106,6 +123,15 @@ export const PublicIpComponent = () => {
                 }}
               >
               </Text>
+            </Flex>
+            <Button variant="soft" size="2" disabled>
+              <CopyIcon /> Copy
+            </Button>
+          </Flex>
+
+          <Flex justify="between" align="center" gap="3">
+            <Flex align="center" gap="2">
+              <Text size="5" weight="bold">SSH Key:</Text>
             </Flex>
             <Button variant="soft" size="2" disabled>
               <CopyIcon /> Copy
@@ -175,6 +201,23 @@ export const PublicIpComponent = () => {
           </Flex>
           <Button onClick={handleLocalCopy} variant="soft" size="2">
             {localCopied ? (
+              <>
+                <CheckIcon /> Copied!
+              </>
+            ) : (
+              <>
+                <CopyIcon /> Copy
+              </>
+            )}
+          </Button>
+        </Flex>
+
+        <Flex justify="between" align="center" gap="3">
+          <Flex align="center" gap="2">
+            <Text size="5" weight="bold">SSH Key:</Text>
+          </Flex>
+          <Button onClick={handleSshCopy} variant="soft" size="2" disabled={!sshKey}>
+            {sshCopied ? (
               <>
                 <CheckIcon /> Copied!
               </>

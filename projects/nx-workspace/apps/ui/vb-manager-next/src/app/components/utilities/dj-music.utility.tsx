@@ -2,7 +2,6 @@
 
 import { Flex, Text, Button, Badge } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
-import * as Collapsible from '@radix-ui/react-collapsible';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 
@@ -13,12 +12,7 @@ interface PlaylistInfo {
   formattedSize: string;
 }
 
-interface DjMusicUtilityProps {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-}
-
-export const DjMusicUtility = ({ isOpen, setIsOpen }: DjMusicUtilityProps) => {
+export const DjMusicUtilityContent = () => {
   const [djLoading, setDjLoading] = useState(false);
   const [djMessage, setDjMessage] = useState<string | null>(null);
   const [djError, setDjError] = useState<string | null>(null);
@@ -95,26 +89,7 @@ export const DjMusicUtility = ({ isOpen, setIsOpen }: DjMusicUtilityProps) => {
   const totalSongs = playlists.reduce((sum, p) => sum + p.songCount, 0);
 
   return (
-    <Collapsible.Root
-      open={isOpen}
-      onOpenChange={setIsOpen}
-      className="border-t border-gray-300 dark:border-gray-700 pt-3"
-    >
-      <Collapsible.Trigger asChild>
-        <button
-          className="flex items-center justify-between w-full mb-3 group cursor-pointer"
-          aria-label={isOpen ? 'Collapse' : 'Expand'}
-        >
-          <Text size="3" weight="bold">
-            DJ Music
-          </Text>
-          <Text size="1" color="gray" className="group-hover:opacity-70 transition-opacity">
-            {isOpen ? '▲' : '▼'}
-          </Text>
-        </button>
-      </Collapsible.Trigger>
-
-      <Collapsible.Content className="flex flex-col gap-3">
+    <>
         <Flex gap="2" justify="between">
           <Button
             onClick={handleDjDownload}
@@ -190,7 +165,6 @@ export const DjMusicUtility = ({ isOpen, setIsOpen }: DjMusicUtilityProps) => {
             )}
           </Flex>
         )}
-      </Collapsible.Content>
-    </Collapsible.Root>
+    </>
   );
 };

@@ -1,9 +1,11 @@
 'use client';
 
-import { Flex, Text, Badge, Link } from '@radix-ui/themes';
-import { useEffect, useState } from 'react';
+import { Flex, Link, Text } from '@radix-ui/themes';
+import { useEffect, useState, useMemo } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
+import { LinkList } from './link-list.component';
+import { LinkListItemConfig } from './link-list-item.component';
 import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -34,6 +36,17 @@ export const FlyIoAppsComponent = () => {
   const [appsData, setAppsData] = useState<FlyApp[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const linkItems = useMemo<LinkListItemConfig[]>(() => {
+    return appsData.map(app => ({
+      text: app.name,
+      url: `https://fly.io/apps/${app.name}`,
+      badge: {
+        text: app.status,
+        color: getStatusColor(app.status),
+      },
+    }));
+  }, [appsData]);
 
   useEffect(() => {
     const fetchFlyApps = async () => {
@@ -108,43 +121,7 @@ export const FlyIoAppsComponent = () => {
         </Link>
       }
     >
-      {appsData.length === 0 ? (
-          <Text size="2" color="gray">
-            No apps found
-          </Text>
-        ) : (
-          <Flex direction="column" gap="2">
-            {appsData.map(app => (
-              <Flex
-                key={app.name}
-                direction="column"
-                gap="1"
-                style={{
-                  backgroundColor: 'var(--gray-2)',
-                  borderRadius: '6px',
-                }}
-              >
-                <Flex justify="between" align="center">
-                  <Link
-                    href={`https://fly.io/apps/${app.name}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    size="3"
-                    weight="bold"
-                  >
-                    <Flex align="center" gap="1">
-                      {app.name}
-                      <ExternalLinkIcon width="12" height="12" />
-                    </Flex>
-                  </Link>
-                  <Badge color={getStatusColor(app.status)} size="1">
-                    {app.status}
-                  </Badge>
-                </Flex>
-              </Flex>
-            ))}
-          </Flex>
-        )}
+      <LinkList items={linkItems} emptyMessage="No apps found" />
     </CardContainer>
   );
 };

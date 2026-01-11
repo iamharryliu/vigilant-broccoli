@@ -1,5 +1,34 @@
+export type GithubOrgBasic = {
+  login: string;
+  avatar_url: string;
+};
+
+export type GithubOrgMember = {
+  login: string;
+  id: number;
+  html_url: string;
+  avatar_url: string;
+  repos_url: string;
+};
+
+export type GithubOrgRepository = {
+  name: string;
+  html_url: string;
+  description: string | null;
+  private: boolean;
+  fork: boolean;
+  archived: boolean;
+  stargazers_count: number;
+  language: string | null;
+  updated_at: string;
+};
+
 export type GithubOrganizationTeamStructure = {
   organizationName: string;
+  avatar_url: string;
+  memberCount: number;
+  members: GithubOrgMember[];
+  repositories: GithubOrgRepository[];
   teams: GithubTeam[];
 };
 
@@ -14,7 +43,9 @@ export type TeamRole = (typeof TEAM_ROLE)[keyof typeof TEAM_ROLE];
 export type GithubTeamMember = {
   username: string;
   role: TeamRole;
+  avatar_url: string;
 };
+
 export const REPOSITORY_PERMISSION = {
   READ: 'read',
   WRITE: 'write',

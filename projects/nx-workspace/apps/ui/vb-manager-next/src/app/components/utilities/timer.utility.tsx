@@ -2,14 +2,8 @@
 
 import { Flex, Text, Button } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
-import * as Collapsible from '@radix-ui/react-collapsible';
 
-interface TimerUtilityProps {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-}
-
-export const TimerUtility = ({ isOpen, setIsOpen }: TimerUtilityProps) => {
+export const TimerUtilityContent = () => {
   const [timerMinutes, setTimerMinutes] = useState('');
   const [timerSeconds, setTimerSeconds] = useState('');
   const [timerRepeat, setTimerRepeat] = useState('');
@@ -100,26 +94,7 @@ export const TimerUtility = ({ isOpen, setIsOpen }: TimerUtilityProps) => {
   };
 
   return (
-    <Collapsible.Root
-      open={isOpen}
-      onOpenChange={setIsOpen}
-      className="border-t border-gray-300 dark:border-gray-700 pt-3"
-    >
-      <Collapsible.Trigger asChild>
-        <button
-          className="flex items-center justify-between w-full mb-3 group cursor-pointer"
-          aria-label={isOpen ? 'Collapse' : 'Expand'}
-        >
-          <Text size="3" weight="bold">
-            Timer
-          </Text>
-          <Text size="1" color="gray" className="group-hover:opacity-70 transition-opacity">
-            {isOpen ? '▲' : '▼'}
-          </Text>
-        </button>
-      </Collapsible.Trigger>
-
-      <Collapsible.Content className="flex flex-col gap-3">
+    <>
         {timerRemaining > 0 || currentRepetition > 0 ? (
           <Flex direction="column" align="center" gap="2">
             <Text size="6" weight="bold" className="font-mono">
@@ -195,7 +170,6 @@ export const TimerUtility = ({ isOpen, setIsOpen }: TimerUtilityProps) => {
             </Button>
           </Flex>
         )}
-      </Collapsible.Content>
-    </Collapsible.Root>
+    </>
   );
 };

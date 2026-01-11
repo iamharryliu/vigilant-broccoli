@@ -6,7 +6,6 @@ import { GcloudAuthStatusComponent } from '../../components/gcloud-auth-status.c
 import { GithubRepoActionStatusBadges } from '../../components/github-actions-status.component';
 import { GithubTeamManager } from '../../components/github-manager.component';
 import { LinkGroupComponent } from '../../components/link-group.component';
-import { PasteBinComponent } from '../../components/pastebin.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
@@ -78,12 +77,17 @@ export default function Page() {
   return (
     <div className="grid grid-cols-4 gap-4 h-full">
       <div className="flex flex-col gap-4">
-        <GithubTeamManager />
-        <GithubRepoActionStatusBadges repoUrl="https://github.com/iamharryliu/vigilant-broccoli" />
+        <PublicIpComponent />
+        <WireguardStatusComponent />
+        <DockerStatusComponent />
       </div>
       <div className="flex flex-col gap-4">
+        <GcloudAuthStatusComponent />
         <FlyIoAppsComponent />
-        <DockerStatusComponent />
+      </div>
+      <div className="flex flex-col gap-4">
+        <GithubTeamManager />
+        <GithubRepoActionStatusBadges repoUrl="https://github.com/iamharryliu/vigilant-broccoli" />
       </div>
       <div className="flex flex-col gap-4">
         <LinkGroupComponent
@@ -91,12 +95,6 @@ export default function Page() {
           links={LINKS}
           alphabeticalSubgroups={false}
         />
-        <PasteBinComponent />
-      </div>
-      <div className="flex flex-col gap-4">
-        <PublicIpComponent />
-        <GcloudAuthStatusComponent />
-        <WireguardStatusComponent />
       </div>
     </div>
   );

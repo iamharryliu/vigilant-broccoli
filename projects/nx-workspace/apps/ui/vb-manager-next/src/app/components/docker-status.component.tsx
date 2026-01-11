@@ -218,8 +218,7 @@ export const DockerStatusComponent = () => {
 
   useEffect(() => {
     fetchDockerStatus();
-    // Refresh every 10 seconds
-    const interval = setInterval(fetchDockerStatus, 10000);
+    const interval = setInterval(fetchDockerStatus, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -231,9 +230,6 @@ export const DockerStatusComponent = () => {
     return (
       <CardContainer title="Docker Containers">
         <Flex direction="column" gap="3">
-          <Text size="2" color="red">
-            {error}
-          </Text>
           <Button
             onClick={handleOpenDocker}
             loading={isStartingDocker}

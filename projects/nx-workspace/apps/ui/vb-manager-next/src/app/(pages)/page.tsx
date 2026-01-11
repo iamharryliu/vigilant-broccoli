@@ -114,8 +114,20 @@ const UTILITY_LINK_GROUP_ITEMS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: 'ChatGPT Incognito',
+    target: 'https://chatgpt.com/?temporary-chat=true',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: UTILITY_URL.CLAUDE.NAME,
     target: UTILITY_URL.CLAUDE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Claude Incognito',
+    target: 'https://claude.ai/new?incognito',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
