@@ -114,7 +114,11 @@ async function getTeamMemberMembership(
     true,
   )) as string;
   const membershipData = JSON.parse(data);
-  return { username: memberUsername, role: membershipData.role };
+  return {
+    username: memberUsername,
+    role: membershipData.role,
+    avatar_url: membershipData.member?.avatar_url || '',
+  };
 }
 function getTeamAndDescendants(
   all: GithubTeamsDTO[],
