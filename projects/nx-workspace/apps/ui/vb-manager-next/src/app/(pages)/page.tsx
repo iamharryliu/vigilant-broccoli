@@ -374,7 +374,6 @@ export default function Page() {
         ) : (
           <GoogleTasksComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
         )}
-        <GoogleTasksComponent taskListId="cDQ5WEpUb0s1RjkySjEyMQ" />
         <TaskListDebugComponent />
       </div>
       <div className="flex flex-col gap-4">
