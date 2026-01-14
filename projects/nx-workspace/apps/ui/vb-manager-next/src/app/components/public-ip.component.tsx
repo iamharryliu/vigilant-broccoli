@@ -14,6 +14,7 @@ export const PublicIpComponent = () => {
   const [publicCopied, setPublicCopied] = useState(false);
   const [localCopied, setLocalCopied] = useState(false);
   const [sshCopied, setSshCopied] = useState(false);
+  const [secretCopied, setSecretCopied] = useState(false);
 
   useEffect(() => {
     const fetchIpAddresses = async () => {
@@ -80,6 +81,20 @@ export const PublicIpComponent = () => {
       setTimeout(() => setSshCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleGenerateSecret = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.GENERATE_SECRET);
+      const data = await response.json();
+      if (data.success) {
+        await navigator.clipboard.writeText(data.secret);
+        setSecretCopied(true);
+        setTimeout(() => setSecretCopied(false), 2000);
+      }
+    } catch (err) {
+      console.error('Failed to generate secret:', err);
     }
   };
 
@@ -224,6 +239,21 @@ export const PublicIpComponent = () => {
             ) : (
               <>
                 <CopyIcon /> Copy
+              </>
+            )}
+          </Button>
+        </Flex>
+
+        <Flex justify="between" align="center" gap="3">
+          <Text size="5" weight="bold">Generate Secret:</Text>
+          <Button onClick={handleGenerateSecret} variant="soft" size="2">
+            {secretCopied ? (
+              <>
+                <CheckIcon /> Copied!
+              </>
+            ) : (
+              <>
+                <CopyIcon /> Generate & Copy
               </>
             )}
           </Button>
