@@ -8,6 +8,7 @@ import { GithubTeamManager } from '../../components/github-manager.component';
 import { LinkGroupComponent } from '../../components/link-group.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
+import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 
 const DEV_LINKS = [
@@ -84,6 +85,7 @@ export default function Page() {
       <div className="flex flex-col gap-4">
         <GcloudAuthStatusComponent />
         <FlyIoAppsComponent />
+        <WranglerPagesComponent />
       </div>
       <div className="flex flex-col gap-4">
         <GithubTeamManager />

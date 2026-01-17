@@ -13,6 +13,9 @@ export const API_ENDPOINTS = {
   // Fly.io
   FLYIO_APPS: '/api/flyio/apps',
 
+  // Wrangler
+  WRANGLER_PAGES: '/api/wrangler/pages',
+
   // WireGuard
   WIREGUARD_STATUS: '/api/wireguard/status',
 
