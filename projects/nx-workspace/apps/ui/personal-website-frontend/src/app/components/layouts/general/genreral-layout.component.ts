@@ -2,7 +2,6 @@
 import { Component, Input } from '@angular/core';
 import { LINKS } from '../../../core/consts/routes.const';
 import { RouterModule } from '@angular/router';
-import { FooterComponent } from '../../features/footer/footer.component';
 import { NavbarSectionComponent } from '../../features/navbar-section/navbar-section.component';
 import { ENVIRONMENT } from '../../../../environments/environment';
 import { ToggleDarkThemeButtonComponent } from '../../features/toggle-dark-mode-button/toggle-dark-mode-button.component';
@@ -12,7 +11,6 @@ import { ToggleDarkThemeButtonComponent } from '../../features/toggle-dark-mode-
   templateUrl: './general-layout.component.html',
   imports: [
     NavbarSectionComponent,
-    FooterComponent,
     RouterModule,
     ToggleDarkThemeButtonComponent
 ],
