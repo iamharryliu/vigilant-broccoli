@@ -4,7 +4,7 @@
 
 # Four Fundamental Forces
 
-The basic interactions that govern how everything in the universe behwaves, from subatomic particles to galaxies
+The basic interactions that govern how everything in the universe behaves, from subatomic particles to galaxies
 
 ## Gravity
 
