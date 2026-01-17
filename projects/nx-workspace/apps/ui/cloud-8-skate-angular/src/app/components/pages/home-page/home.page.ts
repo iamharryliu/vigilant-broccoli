@@ -22,4 +22,11 @@ export class HomePageComponent {
   scrollTo(section: string) {
     document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
   }
+
+  scrollToNext(event: Event) {
+    const button = event.target as HTMLElement;
+    const currentSection = button.closest('.section-container');
+    const nextSection = currentSection?.nextElementSibling;
+    nextSection?.scrollIntoView({ behavior: 'smooth' });
+  }
 }
