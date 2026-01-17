@@ -20,3 +20,15 @@ variable "zone" {
   # default = "us-west1-b"
   # default = "us-west1-c"
 }
+
+variable "github_owner" {
+  description = "GitHub repository owner"
+  type        = string
+  default     = "iamharryliu"
+}
+
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+  default     = "vigilant-broccoli"
+}

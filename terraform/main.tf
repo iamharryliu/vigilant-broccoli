@@ -15,6 +15,10 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 5.0"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
   }
 }
 
@@ -22,6 +26,10 @@ provider "google" {
   project = "vigilant-broccoli"
   region  = var.region
   zone    = var.zone
+}
+
+provider "github" {
+  owner = var.github_owner
 }
 
 resource "google_compute_instance" "vb_free_vm" {
