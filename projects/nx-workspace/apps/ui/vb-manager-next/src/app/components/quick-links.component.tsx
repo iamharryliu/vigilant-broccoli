@@ -7,22 +7,22 @@ import { QUICK_LINKS } from '../constants/quick-links';
 const LOCAL_STORAGE_KEY = 'quick-links-grouped-state';
 
 export function QuickLinksComponent() {
-  const [isGrouped, setIsGrouped] = useState(true);
-  const [isClient, setIsClient] = useState(false);
+  const [isGrouped, setIsGrouped] = useState<boolean | null>(null);
 
   useEffect(() => {
-    setIsClient(true);
     const savedState = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedState !== null) {
-      setIsGrouped(savedState === 'true');
-    }
+    setIsGrouped(savedState === null ? true : savedState === 'true');
   }, []);
 
   useEffect(() => {
-    if (isClient) {
+    if (isGrouped !== null) {
       localStorage.setItem(LOCAL_STORAGE_KEY, String(isGrouped));
     }
-  }, [isGrouped, isClient]);
+  }, [isGrouped]);
+
+  if (isGrouped === null) {
+    return null;
+  }
 
   return (
     <LinkGroupComponent
