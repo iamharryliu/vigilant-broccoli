@@ -1,10 +1,11 @@
 'use client';
 
-import { Text, TextField } from '@radix-ui/themes';
+import { Text, TextField, IconButton, Flex } from '@radix-ui/themes';
 import { useState } from 'react';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { CardContainer } from './card-container.component';
+import { DashboardIcon, ListBulletIcon } from '@radix-ui/react-icons';
 
 interface LinkItem {
   label: string;
@@ -18,6 +19,8 @@ interface LinkGroupProps {
   links: LinkItem[];
   alphabetical?: boolean;
   alphabeticalSubgroups?: boolean;
+  grouped?: boolean;
+  onGroupedChange?: (grouped: boolean) => void;
 }
 
 // Fuzzy search: checks if all characters from query appear in target string in order
@@ -40,8 +43,17 @@ export function LinkGroupComponent({
   links,
   alphabetical = true,
   alphabeticalSubgroups = true,
+  grouped = true,
+  onGroupedChange,
 }: LinkGroupProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isGrouped, setIsGrouped] = useState(grouped);
+
+  const handleGroupedToggle = () => {
+    const newValue = !isGrouped;
+    setIsGrouped(newValue);
+    onGroupedChange?.(newValue);
+  };
 
   // Filter links based on fuzzy search
   const filteredLinks = searchQuery
@@ -131,31 +143,49 @@ export function LinkGroupComponent({
       title={title}
       gap="3"
       headerAction={
-        <TextField.Root
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          size="1"
-          style={{ width: '150px' }}
-        />
+        <Flex gap="2" align="center">
+          <IconButton
+            size="1"
+            variant="soft"
+            onClick={handleGroupedToggle}
+            title={isGrouped ? 'Show ungrouped' : 'Show grouped'}
+          >
+            {isGrouped ? <ListBulletIcon /> : <DashboardIcon />}
+          </IconButton>
+          <TextField.Root
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            size="1"
+            style={{ width: '150px' }}
+          />
+        </Flex>
       }
     >
-      {itemsWithoutSubgroup.length > 0 && (
+      {isGrouped ? (
+        <>
+          {itemsWithoutSubgroup.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {itemsWithoutSubgroup.map((link) => renderLink(link))}
+            </div>
+          )}
+
+          {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
+            <div key={subgroupName}>
+              <Text size="3" weight="medium" className="mb-2">
+                {subgroupName}
+              </Text>
+              <div className="flex flex-wrap gap-2">
+                {subgroupLinks.map((link) => renderLink(link))}
+              </div>
+            </div>
+          ))}
+        </>
+      ) : (
         <div className="flex flex-wrap gap-2">
-          {itemsWithoutSubgroup.map((link) => renderLink(link))}
+          {sortedLinks.map((link) => renderLink(link))}
         </div>
       )}
-
-      {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
-        <div key={subgroupName}>
-          <Text size="3" weight="medium" className="mb-2">
-            {subgroupName}
-          </Text>
-          <div className="flex flex-wrap gap-2">
-            {subgroupLinks.map((link) => renderLink(link))}
-          </div>
-        </div>
-      ))}
 
       {filteredLinks.length === 0 && searchQuery && (
         <Text size="2" color="gray">
