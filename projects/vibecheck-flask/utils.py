@@ -62,7 +62,7 @@ def clear_buckets():
         create_directories()
     else:
         endpoint_url = (
-            f"https://{current_app.config['CLOUDFLARE_ID']}.r2.cloudflarestorage.com"
+            f"https://{current_app.config['CLOUDFLARE_ACCOUNT_ID']}.r2.cloudflarestorage.com"
         )
         command = [
             "aws",

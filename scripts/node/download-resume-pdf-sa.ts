@@ -6,7 +6,6 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 async function main() {
   const auth = new google.auth.GoogleAuth({
-    keyFile: 'service-account.json',
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
   });
   const authClient = await auth.getClient();
@@ -46,10 +45,10 @@ async function uploadToR2(buffer: Buffer, bucket: string, filepath: string) {
   // });
   const r2 = new S3Client({
     region: process.env.AWS_REGION,
-    endpoint: `https://${process.env.CLOUDFLARE_ID}.r2.cloudflarestorage.com`,
+    endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
     credentials: {
       accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.CLOUDFLARE_R2_ACCESS_KEY!,
+      secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY!,
     },
     // requestHandler: new NodeHttpHandler({ httpsAgent: agent }),
   });
@@ -66,7 +65,11 @@ async function uploadToR2(buffer: Buffer, bucket: string, filepath: string) {
     console.log(`Uploaded to R2: ${filepath}`);
   } catch (err) {
     console.error('R2 upload error:', err);
+    throw err;
   }
 }
 
-main();
+main().catch(err => {
+  console.error('Error:', err);
+  process.exit(1);
+});

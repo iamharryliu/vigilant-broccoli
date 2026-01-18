@@ -1,4 +1,7 @@
 import { spawn } from 'child_process';
+import { readFileSync } from 'fs';
+
+const VAULT_CA_CERT_PATH = './scripts/vault-ca.crt';
 
 async function fetchSecretsAndServe() {
   try {
@@ -10,21 +13,15 @@ async function fetchSecretsAndServe() {
       process.exit(1);
     }
 
-    // Allow self-signed certificates
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    const ca = readFileSync(VAULT_CA_CERT_PATH);
 
-    // Dynamically import node-vault
     const nodeVault = await import('node-vault');
     const vault = nodeVault.default({
       apiVersion: 'v1',
       endpoint: vaultAddr,
       token: vaultToken,
       requestOptions: {
-        strictSSL: false,
-        rejectUnauthorized: false,
-        agentOptions: {
-          rejectUnauthorized: false,
-        },
+        ca,
       },
     });
 

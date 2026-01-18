@@ -35,7 +35,16 @@ resource "github_branch_protection" "main" {
   repository_id = github_repository.vigilant_broccoli.node_id
   pattern       = "main"
 
-  enforce_admins = false
+  enforce_admins                  = false
+  allows_force_pushes             = false
+  allows_deletions                = false
+  require_signed_commits          = false
+  required_linear_history         = false
+  require_conversation_resolution = false
+
+  force_push_bypassers = [
+    "/iamharryliu"
+  ]
 
   required_pull_request_reviews {
     dismiss_stale_reviews           = true

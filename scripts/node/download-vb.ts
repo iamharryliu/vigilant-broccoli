@@ -12,7 +12,6 @@ async function uploadStreamToDrive(
   filename: string,
 ): Promise<void> {
   const auth = new google.auth.GoogleAuth({
-    keyFile: 'service-account.json',
     scopes: ['https://www.googleapis.com/auth/drive.file'],
   });
 
@@ -62,13 +61,12 @@ async function uploadStreamToDrive(
 }
 
 async function main() {
-  try {
-    console.log('Streaming upload to Google Drive...');
-    await uploadStreamToDrive(FILE_URL, FILENAME);
-    console.log('Upload complete.');
-  } catch (err) {
-    console.error('Error:', err);
-  }
+  console.log('Streaming upload to Google Drive...');
+  await uploadStreamToDrive(FILE_URL, FILENAME);
+  console.log('Upload complete.');
 }
 
-main();
+main().catch(err => {
+  console.error('Error:', err);
+  process.exit(1);
+});

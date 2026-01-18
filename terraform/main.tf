@@ -120,3 +120,118 @@ resource "google_compute_firewall" "wireguard" {
   target_tags   = ["wireguard"]
 }
 
+resource "google_compute_firewall" "allow_iap_ssh" {
+  name    = "allow-iap-ssh"
+  network = "default"
+
+  direction = "INGRESS"
+  priority  = 1000
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = ["35.235.240.0/20"]
+  target_tags   = ["wireguard"]
+}
+
+data "google_project" "project" {
+}
+
+resource "google_project_service" "iamcredentials" {
+  service            = "iamcredentials.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "iap" {
+  service            = "iap.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_iam_workload_identity_pool" "github_actions" {
+  workload_identity_pool_id = "github-actions"
+  display_name              = "GitHub Actions Pool"
+  description               = "Workload Identity Pool for GitHub Actions"
+}
+
+resource "google_iam_workload_identity_pool_provider" "github" {
+  workload_identity_pool_id          = google_iam_workload_identity_pool.github_actions.workload_identity_pool_id
+  workload_identity_pool_provider_id = "github"
+  display_name                       = "GitHub provider"
+  description                        = "OIDC identity pool provider for GitHub Actions"
+
+  attribute_mapping = {
+    "google.subject"       = "assertion.sub"
+    "attribute.actor"      = "assertion.actor"
+    "attribute.repository" = "assertion.repository"
+    "attribute.aud"        = "assertion.aud"
+  }
+
+  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}'"
+
+  oidc {
+    issuer_uri = "https://token.actions.githubusercontent.com"
+  }
+}
+
+resource "google_service_account" "github_actions" {
+  account_id   = "github-actions"
+  display_name = "GitHub Actions"
+  description  = "Service account for GitHub Actions workflows"
+}
+
+resource "google_project_iam_member" "github_actions_compute" {
+  project = data.google_project.project.project_id
+  role    = "roles/compute.instanceAdmin.v1"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_project_iam_member" "github_actions_iap" {
+  project = data.google_project.project.project_id
+  role    = "roles/iap.tunnelResourceAccessor"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_service_account_iam_member" "github_actions_workload_identity" {
+  service_account_id = google_service_account.github_actions.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.github_actions.workload_identity_pool_id}/attribute.repository/${var.github_owner}/${var.github_repo}"
+}
+
+resource "google_service_account_iam_member" "github_actions_compute_service_account" {
+  service_account_id = "projects/vigilant-broccoli/serviceAccounts/${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_project_iam_member" "github_actions_oslogin" {
+  project = data.google_project.project.project_id
+  role    = "roles/compute.osLogin"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_project_service" "drive" {
+  service            = "drive.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_iam_custom_role" "drive_access" {
+  role_id     = "driveAccess"
+  title       = "Drive Access for GitHub Actions"
+  description = "Custom role for GitHub Actions to access specific Drive files"
+  permissions = [
+    "drive.files.get",
+    "drive.files.list",
+    "drive.files.create",
+    "drive.files.update",
+    "drive.files.export"
+  ]
+}
+
+resource "google_project_iam_member" "github_actions_drive" {
+  project = data.google_project.project.project_id
+  role    = google_project_iam_custom_role.drive_access.id
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+

@@ -192,6 +192,12 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: 'Gemini',
+    target: 'https://gemini.google.com/app',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: UTILITY_URL.FIND_MY.NAME,
     target: UTILITY_URL.FIND_MY.URL,
     type: OPEN_TYPE.BROWSER,

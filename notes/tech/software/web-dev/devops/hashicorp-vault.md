@@ -168,9 +168,9 @@ WantedBy=multi-user.target
 ## Accessing Production Vault Locally
 
 export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_SKIP_VERIFY=true
+export VAULT_SKIP_VERIFY=true                 # For development
+export VAULT_CACERT=/etc/vault/tls/vault.crt  # For production.
 
-export VAULT_CACERT=/etc/vault/tls/vault.crt
 
 # Accessing Production Vault Remotely
 curl --cacert vault.crt \

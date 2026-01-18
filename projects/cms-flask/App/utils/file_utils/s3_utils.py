@@ -11,7 +11,7 @@ def ensure_trailing_slash(path: str) -> str:
 def get_s3_client():
     return boto3.client(
         service_name="s3",
-        endpoint_url=f"https://{current_app.config['CLOUDFLARE_ID']}.r2.cloudflarestorage.com",
+        endpoint_url=f"https://{current_app.config['CLOUDFLARE_ACCOUNT_ID']}.r2.cloudflarestorage.com",
         aws_access_key_id=current_app.config["AWS_ACCESS_KEY_ID"],
         aws_secret_access_key=current_app.config["AWS_SECRET_ACCESS_KEY"],
         region_name="eeur",

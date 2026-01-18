@@ -1,25 +1,20 @@
-name: deploy-nx-apps
+name: Test IAP Tunnel Vault Access
+
 on:
-  push: { branches: ['main'] }
   workflow_dispatch:
 
 permissions:
-  actions: read
-  contents: read
   id-token: write
+  contents: read
 
 jobs:
-  main:
-    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
+  test-iap-tunnel-vault-access:
     runs-on: ubuntu-latest
-    env:
-      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
     environment:
       name: production
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -67,23 +62,14 @@ jobs:
           method: jwt
           role: github-actions-role
           secrets: |
-            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
-            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ID ;
-            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
-            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+            kv/data/test test | TEST_SECRET ;
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: ./projects/nx-workspace/package-lock.json
-
-      - name: Install dependencies
-        working-directory: ./projects/nx-workspace
-        run: npm ci
-
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy Nx apps
-        working-directory: ./projects/nx-workspace
-        run: npx nx run-many -t deploy --all
+      - name: Verify Secret Retrieved
+        run: |
+          echo "Secret retrieved successfully"
+          if [ -n "$TEST_SECRET" ]; then
+            echo "TEST_SECRET is set (length: ${#TEST_SECRET})"
+          else
+            echo "ERROR: TEST_SECRET is empty or not set"
+            exit 1
+          fi

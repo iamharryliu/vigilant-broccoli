@@ -54,7 +54,7 @@ class SERVER_CONFIG:
 
     FILTER_INTERACTED_CARDS = True
 
-    CLOUDFLARE_ID = os.environ.get("CLOUDFLARE_ID")
+    CLOUDFLARE_ACCOUNT_ID = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 

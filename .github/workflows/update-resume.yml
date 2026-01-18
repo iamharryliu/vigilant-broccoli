@@ -1,25 +1,24 @@
-name: deploy-nx-apps
+name: update-resume
+
 on:
-  push: { branches: ['main'] }
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 permissions:
-  actions: read
-  contents: read
   id-token: write
+  contents: read
 
 jobs:
-  main:
-    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
+  upload-resume:
     runs-on: ubuntu-latest
-    env:
-      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
     environment:
       name: production
+    env:
+      AWS_REGION: us-east-1
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -68,22 +67,17 @@ jobs:
           role: github-actions-role
           secrets: |
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
-            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ID ;
-            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
-            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
-
-      - uses: actions/setup-node@v4
+            kv/data/secrets CLOUDFLARE_R2_ACCESS_KEY_ID | CLOUDFLARE_R2_ACCESS_KEY_ID ;
+            kv/data/secrets CLOUDFLARE_R2_SECRET_ACCESS_KEY | CLOUDFLARE_R2_SECRET_ACCESS_KEY ;
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: ./projects/nx-workspace/package-lock.json
+          node-version: '20'
 
       - name: Install dependencies
-        working-directory: ./projects/nx-workspace
+        working-directory: ./scripts/node
         run: npm ci
 
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy Nx apps
-        working-directory: ./projects/nx-workspace
-        run: npx nx run-many -t deploy --all
+      - name: Run script
+        working-directory: ./scripts/node
+        run: npx tsx download-resume-pdf-sa.ts

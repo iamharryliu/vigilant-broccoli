@@ -26,10 +26,10 @@ export class CloudflareBucketProvider implements IBucketProvider {
     const accountId =
       config?.accountId || getEnvironmentVariable('CLOUDFLARE_ACCOUNT_ID');
     const accessKeyId =
-      config?.accessKeyId || getEnvironmentVariable('CLOUDFLARE_ACCESS_KEY_ID');
+      config?.accessKeyId || getEnvironmentVariable('CLOUDFLARE_R2_ACCESS_KEY_ID');
     const secretAccessKey =
       config?.secretAccessKey ||
-      getEnvironmentVariable('CLOUDFLARE_SECRET_ACCESS_KEY');
+      getEnvironmentVariable('CLOUDFLARE_R2_SECRET_ACCESS_KEY');
     this.bucketName =
       config?.bucketName || getEnvironmentVariable('CLOUDFLARE_BUCKET_NAME');
     if (!accountId || !accessKeyId || !secretAccessKey || !this.bucketName) {

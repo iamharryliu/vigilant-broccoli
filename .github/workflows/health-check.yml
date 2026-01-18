@@ -1,7 +1,7 @@
-name: deploy-nx-apps
+name: health-check
 on:
-  push: { branches: ['main'] }
   workflow_dispatch:
+  schedule: [{ cron: '0 0,12 * * *' }]
 
 permissions:
   actions: read
@@ -10,16 +10,11 @@ permissions:
 
 jobs:
   main:
-    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
     runs-on: ubuntu-latest
-    env:
-      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
     environment:
       name: production
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -67,10 +62,8 @@ jobs:
           method: jwt
           role: github-actions-role
           secrets: |
-            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
-            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ID ;
-            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
-            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+            kv/data/secrets MY_EMAIL | MY_EMAIL ;
+            kv/data/secrets MY_EMAIL_PASSWORD | MY_EMAIL_PASSWORD ;
 
       - uses: actions/setup-node@v4
         with:
@@ -82,8 +75,12 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: npm ci
 
-      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Install nx globally
+        run: npm install -g nx
 
-      - name: Deploy Nx apps
+      - name: Run health check
         working-directory: ./projects/nx-workspace
-        run: npx nx run-many -t deploy --all
+        env:
+          MY_EMAIL: ${{ env.MY_EMAIL }}
+          MY_EMAIL_PASSWORD: ${{ env.MY_EMAIL_PASSWORD }}
+        run: npm install @vigilant-broccoli/common-js && npx nx run @vigilant-broccoli/scripts:run-script:health-check

@@ -46,7 +46,7 @@ class SERVER_CONFIG:
     RECAPTCHA_OPTIONS = os.environ.get("RECAPTCHA_OPTIONS")
 
     # Cloudflare
-    CLOUDFLARE_ID = os.environ.get("CLOUDFLARE_ID")
+    CLOUDFLARE_ACCOUNT_ID = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 
