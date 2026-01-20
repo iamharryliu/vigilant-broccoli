@@ -11,6 +11,8 @@
 
 ## vigilant-broccoli
 
+- **Secret Management**
+  - Handle [Flyio secrets](https://fly.io/dashboard/harry-560) via CI
 - **machine**
   - audit default pip list
 - **vb-api**
