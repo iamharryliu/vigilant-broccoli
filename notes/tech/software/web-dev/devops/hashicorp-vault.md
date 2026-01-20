@@ -2,9 +2,12 @@
 
 ```
 vault --version
+
 vault server -dev
 
 vault status
+vault token lookup
+
 vault secrets list
 vault secrets enable -path=PATH_NAME kv
 vault kv put PATH_NAME KEY=VALUE
@@ -170,6 +173,8 @@ WantedBy=multi-user.target
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_SKIP_VERIFY=true                 # For development
 export VAULT_CACERT=/etc/vault/tls/vault.crt  # For production.
+export VAULT_TOKEN=your-root-token.           # Root token login.
+vault login                                   # Interactive login.
 
 
 # Accessing Production Vault Remotely
