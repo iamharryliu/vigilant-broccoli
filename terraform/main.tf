@@ -88,22 +88,6 @@ resource "google_compute_instance" "vb_free_vm" {
   deletion_protection = false
 }
 
-resource "google_compute_firewall" "wireguard_ssh" {
-  name    = "allow-wireguard-access-ssh"
-  network = "default"
-
-  direction = "INGRESS"
-  priority  = 1000
-
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-
-  source_ranges = ["10.0.1.0/24"]
-  target_tags   = ["wireguard"]
-}
-
 resource "google_compute_firewall" "wireguard" {
   name    = "allow-wireguard-access"
   network = "default"
@@ -211,27 +195,4 @@ resource "google_project_iam_member" "github_actions_oslogin" {
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-resource "google_project_service" "drive" {
-  service            = "drive.googleapis.com"
-  disable_on_destroy = false
-}
-
-resource "google_project_iam_custom_role" "drive_access" {
-  role_id     = "driveAccess"
-  title       = "Drive Access for GitHub Actions"
-  description = "Custom role for GitHub Actions to access specific Drive files"
-  permissions = [
-    "drive.files.get",
-    "drive.files.list",
-    "drive.files.create",
-    "drive.files.update",
-    "drive.files.export"
-  ]
-}
-
-resource "google_project_iam_member" "github_actions_drive" {
-  project = data.google_project.project.project_id
-  role    = google_project_iam_custom_role.drive_access.id
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
-}
 
