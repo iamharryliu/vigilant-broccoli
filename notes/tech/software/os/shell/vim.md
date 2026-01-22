@@ -44,7 +44,6 @@ Vim has 3 different modes
 | Jump to the **top of the file**.                | `gg`        |
 | Jump to the **end of the file**.                | `G`         |
 
-P
 
 ## Save and Quit
 
