@@ -389,6 +389,33 @@ vault write auth/jwt/role/github-actions -<<EOF
 EOF
 ```
 
+## Configure Github Actions OIDC
+
+```bash
+vault auth enable jwt
+
+vault write auth/jwt/config \
+  bound_issuer="https://token.actions.githubusercontent.com" \
+  oidc_discovery_url="https://token.actions.githubusercontent.com"
+
+vault policy write github-actions - <<EOF
+path "kv/data/secrets" {
+  capabilities = ["read"]
+}
+
+path "kv/data/secrets/*" {
+  capabilities = ["read", "list"]
+}
+EOF
+
+vault write auth/jwt/role/github-actions-role \
+  role_type="jwt" \
+  bound_audiences="https://github.com/GITHUB_USERNAME" \
+  user_claim="actor" \
+  policies="github-actions" \
+  ttl="1h"
+```
+
 ### Troubleshooting
 
 ```
