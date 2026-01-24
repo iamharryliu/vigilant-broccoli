@@ -1,6 +1,10 @@
 # Vim
 
-## Quickstart
+- Vim has 3 different modes
+- **Normal Mode** - Used for navigation and operations (e.g., copying, pasting, deleting). This is the default mode when Vim starts.
+- **Insert Mode** - Used for typing text, like a standard editor. Enter this mode by pressing **_i_**.
+- **Command Mode** - Used for running commands (e.g., saving, quitting). Enter this mode by typing **_:_** in Normal mode.
+- **Visual Mode** - For selecting text. Enter this mode by pressing **_v_**.
 
 ```
 brew install vim
@@ -9,62 +13,48 @@ sudo apt install vim
 vim
 vim [filename]
 vimtutor
+
+# INSERT MODE
+i                                           # Insert mode before cursor
+a                                           # Insert mode after cursor
+I                                           # Insert mode at the start of the line
+A                                           # Insert mode at the end of the line
+
+# NAVIGATION
+# PAGE NAVIGATION
+hjkl                                        # Left, down, up, right
+:LINE_NUMBER                                # Jump to line number
+ctrl + u                                    # Jump up half the screen
+ctrl + d                                    # Jump down half the screen
+gg                                          # Jump to top of file
+G                                           # Jump to end of file
+# LINE NAVIGATION
+0                                           # Jump to start of line
+$                                           # Jump to end of line
+w                                           # Jump to beginning of next word
+e                                           # Jump to end of current/next word
+b                                           # Jump to previous word
+
+
+# EXIT
+:q                                          # Quit
+:q!                                         # Force quit
+:w                                          # Save
+:w!                                         # Force save
+:wq!                                        # Save and quit
+:x                                          # Save and quit
+:x!                                         # Force save and quit
 ```
-
-## Modes
-
-Vim has 3 different modes
-
-- **Normal Mode** - Used for navigation and operations (e.g., copying, pasting, deleting). This is the default mode when Vim starts.
-- **Insert Mode** - Used for typing text, like a standard editor. Enter this mode by pressing **_i_**.
-- **Command Mode** - Used for running commands (e.g., saving, quitting). Enter this mode by typing **_:_** in Normal mode.
-- **Visual Mode** - For selecting text. Enter this mode by pressing **_v_**.
 
 ## Movement
 
-| Description                                     | Command     |
-| ----------------------------------------------- | ----------- |
-| Move **left ←**.                                | `h`         |
-| Move **down ↓**.                                | `j`         |
-| Move **up ↑**.                                  | `k`         |
-| Move **right →**.                               | `l`         |
-| Jump to **line number**.                        | `:[number]` |
-| Jump up **half the screen**.                    | `ctrl + u`  |
-| Jump down **half the screen**.                  | `ctrl + d`  |
-| Jump to the **start of the line**.              | `0`         |
-| Jump to the **end of the line**.                | `$`         |
-| Jump to the **beginning of the next word**.     | `w`         |
-| Jump to the **end of the current/next word**.   | `e`         |
-| Jump to the **previous word**.                  | `b`         |
-| **Search forward** for _text_.                  | `/text`     |
-| **Search backward** for _text_.                 | `?text`     |
-| Jump to the **next match**.                     | `n`         |
-| Jump to the **previous match**.                 | `N`         |
-| Jump to the **first non-whitespace character**. | `^`         |
-| Jump to the **top of the file**.                | `gg`        |
-| Jump to the **end of the file**.                | `G`         |
-
-
-## Save and Quit
-
-| Description         | Command |
-| ------------------- | ------- |
-| Quit.               | `:q`    |
-| Force quit.         | `:q!`   |
-| Save.               | `:w`    |
-| Force save.         | `:w!`   |
-| Save and quit.      | `:wq`   |
-| Save and quit.      | `:x`    |
-| Force save and quit | `:x!`   |
-
-### Insert Mode
-
-| Description                               | Command |
-| ----------------------------------------- | ------- |
-| Insert mode **before cursor**.            | `i`     |
-| Insert mode **after cursor**.             | `a`     |
-| Insert mode at the **start of the line**. | `I`     |
-| Insert mode at the **end of the line**.   | `A`     |
+| Description                                     | Command |
+| ----------------------------------------------- | ------- |
+| **Search forward** for _text_.                  | `/text` |
+| **Search backward** for _text_.                 | `?text` |
+| Jump to the **next match**.                     | `n`     |
+| Jump to the **previous match**.                 | `N`     |
+| Jump to the **first non-whitespace character**. | `^`     |
 
 ## Delete / Undo
 
@@ -121,3 +111,4 @@ Vim has 3 different modes
 ```
 defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
 ```
+

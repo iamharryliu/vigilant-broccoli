@@ -3,12 +3,17 @@
 ```
 claude
 
-# Commands
 /status
 /login
 /logout
 /usage
+
+# CONTEXT HANDLING
+/compact
+/clear
+
+# SETTINGS
 /config
 
-code ~/.claude/CLAUDE.md
+CLAUDE.md
 ```

@@ -3,7 +3,9 @@
 ```
 # SETUP
 npm install -g pm2
+pm2 startup
 pm2 startup launchd
+pm2 unstartup
 pm2 unstartup launchd
 
 # CREATE

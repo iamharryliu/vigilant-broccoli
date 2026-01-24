@@ -113,7 +113,3 @@ KEY_BIND + t                                        # Display a clock
 KEY_BIND + ?                                        # List all tmux shortcuts
 KEY_BIND + :                                        # Enter tmux command mode
 ```
-
-| Command            | Description                                      | Example Usage            |
-| ------------------ | ------------------------------------------------ | ------------------------ |
-| ``       |                           |
