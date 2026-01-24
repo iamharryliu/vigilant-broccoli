@@ -85,9 +85,9 @@ alias vbgcpfirewall="open 'https://console.cloud.google.com/net-security/firewal
 # vigilant-broccoli vm
 alias vbvmwg=" sudo wg-quick up vb"
 alias sshvbvm="gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap"
-alias vbvault="open 'https://10.0.1.1:8200'"
 
-# Backup
+# Vault
+alias vbvault="open 'https://10.0.1.1:8200'"
 alias backupvbsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
 
 # Hobby Code

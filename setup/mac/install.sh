@@ -30,25 +30,14 @@ if ask "Symlink dotfiles?"; then
     create_symlink "$ZSH_DOTFILES_DIR/scripts" "$HOME/shell-scripts"
     create_symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
     create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc"
+    mkdir -p "$HOME/.config"
+    create_symlink "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
     create_symlink "$CLAUDE_COMMANDS_DIR" "$HOME/.claude/commands"
     chmod -R +x "$HOME/shell-aliases/"
     chmod -R +x "$HOME/shell-scripts/"
     source $HOME/.zshrc
 fi
 
-if ask "Install Node dependencies?"; then
-    brew link node@20
-    npm install -g yarn
-    npm install -g ts-node
-    npm install -g tsx
-    npm install -g @angular/cli
-    npm add --global nx@latest
-fi
-
-if ask "Setup git hooks?"; then
-    pip3 install pre-commit && pre-commit install
-    git config --unset-all core.hooksPath
-fi
 
 if ask "Setup macOS preferences?"; then
     chmod +x "$MAC_SETUP_DIR/setup_macos_preferences.sh"
@@ -69,5 +58,19 @@ if ask "Setup vigilant-broccoli VSCode themes?"; then
 fi
 
 if ask "Setup git hooks?"; then
+    pip3 install pre-commit && pre-commit install
+    git config --unset-all core.hooksPath
+fi
+
+if ask "Install Node Packages?"; then
+    brew link node@20
+    npm install -g yarn
+    npm install -g ts-node
+    npm install -g tsx
+    npm install -g @angular/cli
+    npm add --global nx@latest
+fi
+
+if ask "Install Python packages?"; then
     pip3 install codespell
 fi
