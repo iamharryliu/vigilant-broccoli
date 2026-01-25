@@ -44,3 +44,7 @@
 | Eighth  | åttonde | huitième         | octavo/octava   |
 | Ninth   | nionde  | neuvième         | noveno/novena   |
 | Tenth   | tionde  | dixième          | décimo/décima   |
+
+| English | Swedish | French | Spanish | Portuguese | Italian |
+| :------ | :------ | :----- | :------ | :--------- | :------ |
+| kilo    | kilo    | kilo   | kilo    |            |         |

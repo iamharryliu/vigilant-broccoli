@@ -19,6 +19,7 @@
 | more        | mer/fler(numerical)      | plus               | mas             |
 | less        | mindre                   | moins              | menos           |
 | very        | mycket                   | tres               | muy             |
+| furthermore | dessutom                 | de plus            | además          |
 | a lot       | mycket                   | beaucoup           | mucho           |
 | too much    | för mycket               | trop               | demasiado       |
 | a bit       | lite                     |                    | un poco         |

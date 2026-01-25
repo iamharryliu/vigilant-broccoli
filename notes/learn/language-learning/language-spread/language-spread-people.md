@@ -19,4 +19,6 @@
 | step-       | styv-           |               |
 | husband     | man             | mari          |
 | wife        | fru             | femme         | mujer   |
-| neighbor    | granne          | voisin(e)     |
+| neighbor    | granne          | voisin(e)     |         |
+| girlfriend  | flickvan        | petite amie   | novia   |
+| boyfriend   | pojkvän         | petit ami     | novio   |

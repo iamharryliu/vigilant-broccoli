@@ -84,7 +84,6 @@ onödigt nödigt
 snäll / taskig - nice / mean
 auxiliary / cluse main / clause / subordinate clause
 om - about/if/concerning
-lunchar jag = ata lunch
 vila - rest
 nyttig - healthy
 sok - letaefter
@@ -100,7 +99,6 @@ nar far lisa besked om
 skrattarr glatt
 kommer forbi
 utmaning
-ansvar
 han kanner till skolans rutiner
 pa hosten
 deprimerad
@@ -111,7 +109,6 @@ jobbig
 plotsligt mycket ljusare
 da kommer kroppen i obalans och man kan bli trott
 forkylda
-inomhus
 lattare
 far man
 samre immunforvsvar
@@ -136,10 +133,9 @@ dagsljus
 gaspar
 en kolhydrat
 gar upp i vikt
-inomhus
 en bakterie
 sprids
-dessutom
+
 samre
 ett immunforsvar
 tillracklig
@@ -186,8 +182,6 @@ har du nagon granne som du ofta stor dig pa
 det behovs/det är det är nödvändigt
 undvika - avoid
 ett kollectiv
-en flickvan
-en kilometer
 var sin
 en forskallare
 gör sig i ordning
@@ -266,8 +260,6 @@ källsorterar
 trots
 en glass
 jag laser i tidningen att
-råd
-vilse
 hur kände
 längtar
 var ligger den
@@ -284,7 +276,6 @@ soprummet
 tömmer
 kassarna
 begagnade
-dessutom
 varor
 lösvikt
 hon har tagit det

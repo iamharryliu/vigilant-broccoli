@@ -11,3 +11,5 @@
 | next to                        | brevid      | à côté de             |               |            |         |
 | my house                       | mitt hus    | chez moi              |               |            |         |
 | I am going to [person's] house |             | je vais chez [person] |               |            |         |
+| indoor                         | inomhus     | intérieur             | interior      |            |         |
+| lost                           | vilse       | perdu(e)              | perdido/perdida |          |         |

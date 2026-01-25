@@ -68,11 +68,7 @@
 | to believe         | att tro            |               |              |
 | I should           | jag borde          | je devrais    |              |
 | I am               | jag är             | je suis       | estoy        |
-| I ordered          | jag beställde      | j'ai commande | he pedido    |
-| I have ordered     | jag har beställt   | j'ai commande | he pedido    |
-| I have eaten       | jag har ätit       | j'ai mange    | he comido    |
 | I would like       | jag skulle vilja   | je voudrais   | quiero       |
-| it was             | var                | c'etait       | estuvo /fue? |
 | to win             | att vinna          |               |              |
 | to lose            | att förlora        |               |              |
 | to return          | att återvända      | revenir       |              |
