@@ -3,7 +3,6 @@
 import '@radix-ui/themes/styles.css';
 import { Theme } from '@radix-ui/themes';
 import './global.css';
-import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider, useTheme } from './theme-context';
 import { AppModeProvider } from './app-mode-context';
 
@@ -23,13 +22,11 @@ export default function RootLayout({
         <title>vb-manager-next</title>
       </head>
       <body>
-        <SessionProvider>
-          <AppModeProvider>
-            <ThemeProvider>
-              <ThemeWrapper>{children}</ThemeWrapper>
-            </ThemeProvider>
-          </AppModeProvider>
-        </SessionProvider>
+        <AppModeProvider>
+          <ThemeProvider>
+            <ThemeWrapper>{children}</ThemeWrapper>
+          </ThemeProvider>
+        </AppModeProvider>
       </body>
     </html>
   );

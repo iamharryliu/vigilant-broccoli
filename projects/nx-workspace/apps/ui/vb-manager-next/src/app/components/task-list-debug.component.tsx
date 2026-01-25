@@ -2,9 +2,8 @@
 
 import { Card, Flex, Text, Table, Code, Button, IconButton } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '../../lib/auth-client';
 import { CopyIcon } from '@radix-ui/react-icons';
-import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface TaskList {
   id: string;
@@ -12,21 +11,24 @@ interface TaskList {
 }
 
 export const TaskListDebugComponent = () => {
-  const { status } = useSession();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    if (status === 'authenticated' && isExpanded) {
+    if (isAuthenticated && isExpanded) {
       fetchTaskLists();
     }
-  }, [status, isExpanded]);
+  }, [isAuthenticated, isExpanded]);
 
   const fetchTaskLists = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
+      const response = await fetch('/api/tasks/lists', {
+        credentials: 'include',
+      });
       const data = await response.json();
 
       if (!response.ok) {

@@ -23,10 +23,6 @@ export const API_ENDPOINTS = {
   PUBLIC_IP: '/api/public-ip',
   LOCAL_IP: '/api/local-ip',
 
-  // Tasks
-  TASKS: '/api/tasks',
-  TASKS_LISTS: '/api/tasks/lists',
-
   // DJ
   DJ_PLAYLISTS: '/api/dj/playlists',
   DJ_DOWNLOAD: '/api/dj/download',
@@ -43,4 +39,12 @@ export const API_ENDPOINTS = {
 
   // Recipe
   RECIPE_SCRAPE: '/api/recipe/scrape',
+} as const;
+
+import { VB_EXPRESS_BASE_URL } from '../../lib/vb-express-config';
+
+export const VB_EXPRESS_ENDPOINTS = {
+  TASKS: `${VB_EXPRESS_BASE_URL}/api/tasks`,
+  TASKS_LISTS: `${VB_EXPRESS_BASE_URL}/api/tasks/lists`,
+  LLM: `${VB_EXPRESS_BASE_URL}/api/llm`,
 } as const;

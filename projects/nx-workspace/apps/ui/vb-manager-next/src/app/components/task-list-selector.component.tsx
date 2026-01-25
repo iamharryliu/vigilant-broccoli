@@ -2,10 +2,9 @@
 
 import { Card, Flex, Text, Select, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { useSession, signIn } from '../../lib/auth-client';
 import { GoogleTasksComponent } from './google-tasks.component';
 import { CardSkeleton } from './skeleton.component';
-import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface TaskList {
   id: string;
@@ -13,23 +12,26 @@ interface TaskList {
 }
 
 export const TaskListSelectorComponent = () => {
-  const { status } = useSession();
+  const { data: session, isPending } = useSession();
+  const isAuthenticated = !!session?.user;
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const [selectedListId, setSelectedListId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (isAuthenticated) {
       fetchTaskLists();
-    } else if (status === 'unauthenticated') {
+    } else if (!isPending) {
       setLoading(false);
     }
-  }, [status]);
+  }, [isAuthenticated, isPending]);
 
   const fetchTaskLists = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
+      const response = await fetch('/api/tasks/lists', {
+        credentials: 'include',
+      });
       const data = await response.json();
 
       if (!response.ok) {
@@ -37,7 +39,6 @@ export const TaskListSelectorComponent = () => {
       }
 
       setTaskLists(data.taskLists);
-      // Set first non-default list as selected
       const nonDefaultList = data.taskLists.find((list: TaskList) => list.id !== '@default');
       if (nonDefaultList) {
         setSelectedListId(nonDefaultList.id);
@@ -50,17 +51,17 @@ export const TaskListSelectorComponent = () => {
     }
   };
 
-  if (status === 'loading' || (status === 'authenticated' && loading)) {
+  if (isPending || (isAuthenticated && loading)) {
     return <CardSkeleton title="Task List" rows={3} />;
   }
 
-  if (status === 'unauthenticated') {
+  if (!isAuthenticated) {
     return (
       <Card className="w-full">
         <Flex direction="column" gap="3" p="4">
           <Flex justify="between" align="center">
             <Text size="5" weight="bold">Task List</Text>
-            <Button onClick={() => signIn('google')} size="2">
+            <Button onClick={() => signIn.social({ provider: 'google' })} size="2">
               Sign in with Google
             </Button>
           </Flex>

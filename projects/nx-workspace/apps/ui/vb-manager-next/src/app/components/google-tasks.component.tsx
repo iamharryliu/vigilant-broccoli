@@ -1,10 +1,17 @@
 'use client';
 
-import { Card, Flex, Text, Checkbox, Button, TextField, Select } from '@radix-ui/themes';
+import {
+  Card,
+  Flex,
+  Text,
+  Checkbox,
+  Button,
+  TextField,
+  Select,
+} from '@radix-ui/themes';
 import { useEffect, useState, useCallback, memo } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signIn, signOut } from '../../lib/auth-client';
 import { CardSkeleton } from './skeleton.component';
-import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface Task {
   id: string;
@@ -23,7 +30,7 @@ const SORT_MODE = {
   COMMIT_TYPE: 'commitType',
 } as const;
 
-type SortMode = typeof SORT_MODE[keyof typeof SORT_MODE];
+type SortMode = (typeof SORT_MODE)[keyof typeof SORT_MODE];
 
 const getStorageKey = {
   sortMode: (taskListId: string) => `google-tasks-sort-mode-${taskListId}`,
@@ -48,11 +55,11 @@ const getCommitType = (title: string): string => {
 
 const sortByEisenhower = (tasks: Task[]): Task[] => {
   const priorityMap: Record<EisenhowerQuadrant, number> = {
-    'Q1': 1,
-    'Q2': 2,
-    'Q3': 3,
-    'Q4': 4,
-    'none': 5,
+    Q1: 1,
+    Q2: 2,
+    Q3: 3,
+    Q4: 4,
+    none: 5,
   };
 
   return [...tasks].sort((a, b) => {
@@ -85,7 +92,10 @@ const useTasks = (taskListId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_ENDPOINTS.TASKS}?taskListId=${taskListId}`);
+      const response = await fetch(
+        `/api/tasks?taskListId=${taskListId}`,
+        { credentials: 'include' },
+      );
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to fetch tasks');
       setTasks(data.tasks);
@@ -99,10 +109,11 @@ const useTasks = (taskListId: string) => {
   const createTask = async (title: string) => {
     if (!title.trim()) return;
     try {
-      const response = await fetch(API_ENDPOINTS.TASKS, {
+      const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ taskListId, title }),
+        credentials: 'include',
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to create task');
@@ -114,11 +125,17 @@ const useTasks = (taskListId: string) => {
 
   const toggleTaskComplete = async (task: Task) => {
     try {
-      const newStatus = task.status === 'completed' ? 'needsAction' : 'completed';
-      const response = await fetch(API_ENDPOINTS.TASKS, {
+      const newStatus =
+        task.status === 'completed' ? 'needsAction' : 'completed';
+      const response = await fetch('/api/tasks', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ taskListId, taskId: task.id, status: newStatus }),
+        body: JSON.stringify({
+          taskListId,
+          taskId: task.id,
+          status: newStatus,
+        }),
+        credentials: 'include',
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to update task');
@@ -130,9 +147,13 @@ const useTasks = (taskListId: string) => {
 
   const deleteTask = async (taskId: string) => {
     try {
-      const response = await fetch(`/api/tasks?taskListId=${taskListId}&taskId=${taskId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/tasks?taskListId=${taskListId}&taskId=${taskId}`,
+        {
+          method: 'DELETE',
+          credentials: 'include',
+        },
+      );
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to delete task');
       await fetchTasks();
@@ -144,10 +165,11 @@ const useTasks = (taskListId: string) => {
   const updateTask = async (taskId: string, title: string) => {
     if (!title.trim()) return;
     try {
-      const response = await fetch(API_ENDPOINTS.TASKS, {
+      const response = await fetch('/api/tasks', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ taskListId, taskId, title }),
+        credentials: 'include',
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to update task');
@@ -157,15 +179,24 @@ const useTasks = (taskListId: string) => {
     }
   };
 
-  return { tasks, loading, error, fetchTasks, createTask, toggleTaskComplete, deleteTask, updateTask };
+  return {
+    tasks,
+    loading,
+    error,
+    fetchTasks,
+    createTask,
+    toggleTaskComplete,
+    deleteTask,
+    updateTask,
+  };
 };
 
-const useTaskListName = (taskListId: string, status: string) => {
+const useTaskListName = (taskListId: string, isAuthenticated: boolean) => {
   const [taskListName, setTaskListName] = useState<string | null>(null);
   const [authError, setAuthError] = useState(false);
 
   useEffect(() => {
-    if (status !== 'authenticated') {
+    if (!isAuthenticated) {
       setTaskListName(null);
       setAuthError(false);
       return;
@@ -173,7 +204,9 @@ const useTaskListName = (taskListId: string, status: string) => {
 
     const fetchTaskListName = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
+        const response = await fetch('/api/tasks/lists', {
+          credentials: 'include',
+        });
         const data = await response.json();
 
         if (response.status === 401) {
@@ -183,11 +216,15 @@ const useTaskListName = (taskListId: string, status: string) => {
         }
 
         if (response.ok && data.taskLists) {
-          const list = data.taskLists.find((l: { id: string; title: string }) => l.id === taskListId);
+          const list = data.taskLists.find(
+            (l: { id: string; title: string }) => l.id === taskListId,
+          );
           if (list) {
             setTaskListName(list.title);
           } else {
-            console.warn(`Task list with ID ${taskListId} not found, using fallback`);
+            console.warn(
+              `Task list with ID ${taskListId} not found, using fallback`,
+            );
             setTaskListName('Tasks');
           }
         } else {
@@ -199,7 +236,7 @@ const useTaskListName = (taskListId: string, status: string) => {
       }
     };
     fetchTaskListName();
-  }, [taskListId, status]);
+  }, [taskListId, isAuthenticated]);
 
   return { taskListName, authError };
 };
@@ -208,7 +245,11 @@ const useSortModeStorage = (taskListId: string) => {
   const [sortMode, setSortMode] = useState<SortMode>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
-      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DEFAULT) {
+      if (
+        saved === SORT_MODE.EISENHOWER ||
+        saved === SORT_MODE.COMMIT_TYPE ||
+        saved === SORT_MODE.DEFAULT
+      ) {
         return saved as SortMode;
       }
     }
@@ -218,7 +259,11 @@ const useSortModeStorage = (taskListId: string) => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
-      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DEFAULT) {
+      if (
+        saved === SORT_MODE.EISENHOWER ||
+        saved === SORT_MODE.COMMIT_TYPE ||
+        saved === SORT_MODE.DEFAULT
+      ) {
         setSortMode(saved as SortMode);
       } else {
         setSortMode(SORT_MODE.DEFAULT);
@@ -246,217 +291,290 @@ interface TaskItemProps {
   onCancelEdit: () => void;
 }
 
-const TaskItem = memo(({
-  task,
-  isEditing,
-  editingTitle,
-  onToggleComplete,
-  onStartEdit,
-  onEditChange,
-  onSaveEdit,
-  onCancelEdit,
-}: TaskItemProps) => {
-  const quadrant = getEisenhowerQuadrant(task.title);
-  const commitType = getCommitType(task.title);
+const TaskItem = memo(
+  ({
+    task,
+    isEditing,
+    editingTitle,
+    onToggleComplete,
+    onStartEdit,
+    onEditChange,
+    onSaveEdit,
+    onCancelEdit,
+  }: TaskItemProps) => {
+    const quadrant = getEisenhowerQuadrant(task.title);
+    const commitType = getCommitType(task.title);
 
-  const quadrantColors: Record<EisenhowerQuadrant, string> = {
-    'Q1': 'bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500',
-    'Q2': 'bg-blue-100 dark:bg-blue-900/20 border-l-4 border-blue-500',
-    'Q3': 'bg-yellow-100 dark:bg-yellow-900/20 border-l-4 border-yellow-500',
-    'Q4': 'bg-green-100 dark:bg-green-900/20 border-l-4 border-green-500',
-    'none': '',
-  };
+    const quadrantColors: Record<EisenhowerQuadrant, string> = {
+      Q1: 'bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500',
+      Q2: 'bg-blue-100 dark:bg-blue-900/20 border-l-4 border-blue-500',
+      Q3: 'bg-yellow-100 dark:bg-yellow-900/20 border-l-4 border-yellow-500',
+      Q4: 'bg-green-100 dark:bg-green-900/20 border-l-4 border-green-500',
+      none: '',
+    };
 
-  return (
-    <div className={`flex items-start gap-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${quadrantColors[quadrant]}`}>
-      <Checkbox
-        checked={task.status === 'completed'}
-        onCheckedChange={() => onToggleComplete(task)}
-        className="mt-0.5"
-      />
-      <Flex direction="column" gap="1" className="flex-1">
-        {isEditing ? (
-          <TextField.Root
-            value={editingTitle}
-            onChange={(e) => onEditChange(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') onSaveEdit();
-              else if (e.key === 'Escape') onCancelEdit();
-            }}
-            onBlur={onSaveEdit}
-            autoFocus
-            size="2"
-          />
-        ) : (
-          <Text
-            size="2"
-            className={task.status === 'completed' ? 'line-through text-gray-400 cursor-pointer' : 'cursor-pointer'}
-            onClick={() => onStartEdit(task)}
-          >
-            {task.title}
-          </Text>
+    return (
+      <div
+        className={`flex items-start gap-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${quadrantColors[quadrant]}`}
+      >
+        <Checkbox
+          checked={task.status === 'completed'}
+          onCheckedChange={() => onToggleComplete(task)}
+          className="mt-0.5"
+        />
+        <Flex direction="column" gap="1" className="flex-1">
+          {isEditing ? (
+            <TextField.Root
+              value={editingTitle}
+              onChange={e => onEditChange(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') onSaveEdit();
+                else if (e.key === 'Escape') onCancelEdit();
+              }}
+              onBlur={onSaveEdit}
+              autoFocus
+              size="2"
+            />
+          ) : (
+            <Text
+              size="2"
+              className={
+                task.status === 'completed'
+                  ? 'line-through text-gray-400 cursor-pointer'
+                  : 'cursor-pointer'
+              }
+              onClick={() => onStartEdit(task)}
+            >
+              {task.title}
+            </Text>
+          )}
+          {task.notes && (
+            <Text size="1" color="gray">
+              {task.notes}
+            </Text>
+          )}
+          {task.due && (
+            <Text size="1" color="blue">
+              Due: {new Date(task.due).toLocaleDateString()}
+            </Text>
+          )}
+        </Flex>
+        {commitType !== 'other' && (
+          <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
+            {commitType}
+          </span>
         )}
-        {task.notes && <Text size="1" color="gray">{task.notes}</Text>}
-        {task.due && <Text size="1" color="blue">Due: {new Date(task.due).toLocaleDateString()}</Text>}
-      </Flex>
-      {commitType !== 'other' && (
-        <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
-          {commitType}
-        </span>
-      )}
-    </div>
-  );
-});
+      </div>
+    );
+  },
+);
 
 TaskItem.displayName = 'TaskItem';
 
-const TaskHeader = memo(({ taskListName, userEmail, onSignOut }: {
-  taskListName: string | null;
-  userEmail?: string;
-  onSignOut: () => void;
-}) => (
-  <Flex justify="between" align="center">
-    {taskListName ? (
-      <Text size="5" weight="bold">{taskListName}</Text>
-    ) : (
-      <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-32 rounded" />
-    )}
-    <Flex gap="2" align="center">
-      {userEmail && <Text size="1" color="gray">{userEmail}</Text>}
-      <Button onClick={onSignOut} size="1" variant="soft">Sign out</Button>
+const TaskHeader = memo(
+  ({
+    taskListName,
+    userEmail,
+    onSignOut,
+  }: {
+    taskListName: string | null;
+    userEmail?: string;
+    onSignOut: () => void;
+  }) => (
+    <Flex justify="between" align="center">
+      {taskListName ? (
+        <Text size="5" weight="bold">
+          {taskListName}
+        </Text>
+      ) : (
+        <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-32 rounded" />
+      )}
+      <Flex gap="2" align="center">
+        {userEmail && (
+          <Text size="1" color="gray">
+            {userEmail}
+          </Text>
+        )}
+        <Button onClick={onSignOut} size="1" variant="soft">
+          Sign out
+        </Button>
+      </Flex>
     </Flex>
-  </Flex>
-));
+  ),
+);
 
 TaskHeader.displayName = 'TaskHeader';
 
-const SortControls = memo(({ sortMode, onSortChange }: {
-  sortMode: SortMode;
-  onSortChange: (value: SortMode) => void;
-}) => (
-  <Flex gap="2" align="center">
-    <Text size="2" color="gray">Sort:</Text>
-    <Select.Root value={sortMode} onValueChange={onSortChange}>
-      <Select.Trigger placeholder="Sort by..." />
-      <Select.Content>
-        <Select.Item value={SORT_MODE.DEFAULT}>Default</Select.Item>
-        <Select.Item value={SORT_MODE.EISENHOWER}>Eisenhower Matrix</Select.Item>
-        <Select.Item value={SORT_MODE.COMMIT_TYPE}>Commit Type</Select.Item>
-      </Select.Content>
-    </Select.Root>
-  </Flex>
-));
+const SortControls = memo(
+  ({
+    sortMode,
+    onSortChange,
+  }: {
+    sortMode: SortMode;
+    onSortChange: (value: SortMode) => void;
+  }) => (
+    <Flex gap="2" align="center">
+      <Text size="2" color="gray">
+        Sort:
+      </Text>
+      <Select.Root value={sortMode} onValueChange={onSortChange}>
+        <Select.Trigger placeholder="Sort by..." />
+        <Select.Content>
+          <Select.Item value={SORT_MODE.DEFAULT}>Default</Select.Item>
+          <Select.Item value={SORT_MODE.EISENHOWER}>
+            Eisenhower Matrix
+          </Select.Item>
+          <Select.Item value={SORT_MODE.COMMIT_TYPE}>Commit Type</Select.Item>
+        </Select.Content>
+      </Select.Root>
+    </Flex>
+  ),
+);
 
 SortControls.displayName = 'SortControls';
 
 const AuthErrorBanner = memo(({ onSignOut }: { onSignOut: () => void }) => (
-  <Flex direction="column" gap="2" p="3" className="bg-red-50 dark:bg-red-900/20 rounded">
-    <Text size="2" weight="bold" color="red">Session Expired</Text>
-    <Text size="2" color="red">Your Google authentication has expired. Please sign out and sign in again.</Text>
-    <Button onClick={onSignOut} size="2" variant="solid" color="red">Sign Out & Re-authenticate</Button>
+  <Flex
+    direction="column"
+    gap="2"
+    p="3"
+    className="bg-red-50 dark:bg-red-900/20 rounded"
+  >
+    <Text size="2" weight="bold" color="red">
+      Session Expired
+    </Text>
+    <Text size="2" color="red">
+      Your Google authentication has expired. Please sign out and sign in again.
+    </Text>
+    <Button onClick={onSignOut} size="2" variant="solid" color="red">
+      Sign Out & Re-authenticate
+    </Button>
   </Flex>
 ));
 
 AuthErrorBanner.displayName = 'AuthErrorBanner';
 
-const AddTaskForm = memo(({
-  showAddTask,
-  newTaskTitle,
-  onTitleChange,
-  onSubmit,
-  onCancel,
-  onShowForm
-}: {
-  showAddTask: boolean;
-  newTaskTitle: string;
-  onTitleChange: (value: string) => void;
-  onSubmit: () => void;
-  onCancel: () => void;
-  onShowForm: () => void;
-}) => {
-  if (!showAddTask) {
-    return <Button onClick={onShowForm} size="2" variant="soft">+ Add Task</Button>;
-  }
+const AddTaskForm = memo(
+  ({
+    showAddTask,
+    newTaskTitle,
+    onTitleChange,
+    onSubmit,
+    onCancel,
+    onShowForm,
+  }: {
+    showAddTask: boolean;
+    newTaskTitle: string;
+    onTitleChange: (value: string) => void;
+    onSubmit: () => void;
+    onCancel: () => void;
+    onShowForm: () => void;
+  }) => {
+    if (!showAddTask) {
+      return (
+        <Button onClick={onShowForm} size="2" variant="soft">
+          + Add Task
+        </Button>
+      );
+    }
 
-  return (
-    <Flex gap="2" align="end">
-      <TextField.Root
-        placeholder="Add a new task..."
-        value={newTaskTitle}
-        onChange={(e) => onTitleChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') onSubmit();
-          else if (e.key === 'Escape') onCancel();
-        }}
-        className="flex-1"
-      />
-      <Button onClick={onSubmit} size="2">Add</Button>
-      <Button onClick={onCancel} size="2" variant="soft">Cancel</Button>
-    </Flex>
-  );
-});
+    return (
+      <Flex gap="2" align="end">
+        <TextField.Root
+          placeholder="Add a new task..."
+          value={newTaskTitle}
+          onChange={e => onTitleChange(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') onSubmit();
+            else if (e.key === 'Escape') onCancel();
+          }}
+          className="flex-1"
+        />
+        <Button onClick={onSubmit} size="2">
+          Add
+        </Button>
+        <Button onClick={onCancel} size="2" variant="soft">
+          Cancel
+        </Button>
+      </Flex>
+    );
+  },
+);
 
 AddTaskForm.displayName = 'AddTaskForm';
 
-const TaskList = memo(({
-  loading,
-  error,
-  tasks,
-  editingTaskId,
-  editingTaskTitle,
-  onToggleComplete,
-  onStartEdit,
-  onEditChange,
-  onSaveEdit,
-  onCancelEdit,
-}: {
-  loading: boolean;
-  error: string | null;
-  tasks: Task[];
-  editingTaskId: string | null;
-  editingTaskTitle: string;
-  onToggleComplete: (task: Task) => void;
-  onStartEdit: (task: Task) => void;
-  onEditChange: (title: string) => void;
-  onSaveEdit: () => void;
-  onCancelEdit: () => void;
-}) => {
-  if (loading) {
+const TaskList = memo(
+  ({
+    loading,
+    error,
+    tasks,
+    editingTaskId,
+    editingTaskTitle,
+    onToggleComplete,
+    onStartEdit,
+    onEditChange,
+    onSaveEdit,
+    onCancelEdit,
+  }: {
+    loading: boolean;
+    error: string | null;
+    tasks: Task[];
+    editingTaskId: string | null;
+    editingTaskTitle: string;
+    onToggleComplete: (task: Task) => void;
+    onStartEdit: (task: Task) => void;
+    onEditChange: (title: string) => void;
+    onSaveEdit: () => void;
+    onCancelEdit: () => void;
+  }) => {
+    if (loading) {
+      return (
+        <Flex direction="column" gap="2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 rounded"
+            />
+          ))}
+        </Flex>
+      );
+    }
+
+    if (error) {
+      return (
+        <Text size="2" color="red">
+          {error}
+        </Text>
+      );
+    }
+
+    if (tasks.length === 0) {
+      return (
+        <Text size="2" color="gray">
+          No tasks to display
+        </Text>
+      );
+    }
+
     return (
       <Flex direction="column" gap="2">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 rounded" />
+        {tasks.map(task => (
+          <TaskItem
+            key={task.id}
+            task={task}
+            isEditing={editingTaskId === task.id}
+            editingTitle={editingTaskTitle}
+            onToggleComplete={onToggleComplete}
+            onStartEdit={onStartEdit}
+            onEditChange={onEditChange}
+            onSaveEdit={onSaveEdit}
+            onCancelEdit={onCancelEdit}
+          />
         ))}
       </Flex>
     );
-  }
-
-  if (error) {
-    return <Text size="2" color="red">{error}</Text>;
-  }
-
-  if (tasks.length === 0) {
-    return <Text size="2" color="gray">No tasks to display</Text>;
-  }
-
-  return (
-    <Flex direction="column" gap="2">
-      {tasks.map((task) => (
-        <TaskItem
-          key={task.id}
-          task={task}
-          isEditing={editingTaskId === task.id}
-          editingTitle={editingTaskTitle}
-          onToggleComplete={onToggleComplete}
-          onStartEdit={onStartEdit}
-          onEditChange={onEditChange}
-          onSaveEdit={onSaveEdit}
-          onCancelEdit={onCancelEdit}
-        />
-      ))}
-    </Flex>
-  );
-});
+  },
+);
 
 TaskList.displayName = 'TaskList';
 
@@ -464,10 +582,24 @@ const UnauthenticatedView = memo(() => (
   <Card className="w-full">
     <Flex direction="column" gap="3" p="4">
       <Flex justify="between" align="center">
-        <Text size="5" weight="bold">Tasks</Text>
-        <Button onClick={() => signIn('google')} size="2">Sign in with Google</Button>
+        <Text size="5" weight="bold">
+          Tasks
+        </Text>
+        <Button
+          onClick={() =>
+            signIn.social({
+              provider: 'google',
+              callbackURL: window.location.href,
+            })
+          }
+          size="2"
+        >
+          Sign in with Google
+        </Button>
       </Flex>
-      <Text size="2" color="gray">Sign in to view your Google Tasks</Text>
+      <Text size="2" color="gray">
+        Sign in to view your Google Tasks
+      </Text>
     </Flex>
   </Card>
 ));
@@ -475,11 +607,27 @@ const UnauthenticatedView = memo(() => (
 UnauthenticatedView.displayName = 'UnauthenticatedView';
 
 // eslint-disable-next-line complexity
-export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListId?: string } = {}) => {
-  const { data: session, status } = useSession();
+export const GoogleTasksComponent = ({
+  taskListId: propTaskListId,
+}: { taskListId?: string } = {}) => {
+  const { data: session, isPending } = useSession();
+  console.log(session)
+  const isAuthenticated = !!session?.user;
   const taskListId = propTaskListId || '@default';
-  const { taskListName, authError: titleAuthError } = useTaskListName(taskListId, status);
-  const { tasks, loading, error, fetchTasks, createTask, toggleTaskComplete, deleteTask, updateTask } = useTasks(taskListId);
+  const { taskListName, authError: titleAuthError } = useTaskListName(
+    taskListId,
+    isAuthenticated,
+  );
+  const {
+    tasks,
+    loading,
+    error,
+    fetchTasks,
+    createTask,
+    toggleTaskComplete,
+    deleteTask,
+    updateTask,
+  } = useTasks(taskListId);
   const [sortMode, setSortMode] = useSortModeStorage(taskListId);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [showAddTask, setShowAddTask] = useState(false);
@@ -487,8 +635,8 @@ export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListI
   const [editingTaskTitle, setEditingTaskTitle] = useState('');
 
   useEffect(() => {
-    if (status === 'authenticated') fetchTasks();
-  }, [status, taskListId]);
+    if (isAuthenticated) fetchTasks();
+  }, [isAuthenticated, taskListId]);
 
   const handleCreateTask = useCallback(async () => {
     await createTask(newTaskTitle);
@@ -531,14 +679,19 @@ export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListI
   }, []);
 
   const sortedTasks =
-    sortMode === SORT_MODE.EISENHOWER ? sortByEisenhower(tasks) :
-    sortMode === SORT_MODE.COMMIT_TYPE ? sortByCommitType(tasks) :
-    tasks;
+    sortMode === SORT_MODE.EISENHOWER
+      ? sortByEisenhower(tasks)
+      : sortMode === SORT_MODE.COMMIT_TYPE
+      ? sortByCommitType(tasks)
+      : tasks;
 
-  if (status === 'loading') return <CardSkeleton showTitleSkeleton rows={5} />;
-  if (status === 'unauthenticated') return <UnauthenticatedView />;
+  if (isPending) return <CardSkeleton showTitleSkeleton rows={5} />;
+  if (!isAuthenticated) return <UnauthenticatedView />;
 
-  const hasAuthError = titleAuthError || error?.includes('Unauthorized') || error?.includes('authentication') || session?.error === 'RefreshAccessTokenError';
+  const hasAuthError =
+    titleAuthError ||
+    error?.includes('Unauthorized') ||
+    error?.includes('authentication');
 
   return (
     <Card className="w-full">
@@ -549,10 +702,7 @@ export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListI
           onSignOut={() => signOut()}
         />
 
-        <SortControls
-          sortMode={sortMode}
-          onSortChange={handleSortChange}
-        />
+        <SortControls sortMode={sortMode} onSortChange={handleSortChange} />
 
         {hasAuthError && <AuthErrorBanner onSignOut={() => signOut()} />}
 
