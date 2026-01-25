@@ -38,9 +38,6 @@ async function fetchSecretsAndServe() {
     for (const [key, value] of Object.entries(secrets)) {
       if (typeof value === 'string') {
         process.env[key] = value;
-        if (key !== 'OPENWEATHER_API_KEY') {
-          console.log(`✓ ${key} loaded into environment`);
-        }
       }
     }
 
