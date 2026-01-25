@@ -3,7 +3,7 @@
 set -e
 
 VB_EXPRESS_URL="https://vb-express.fly.dev"
-ENDPOINT="/llm"
+ENDPOINT="/api/llm"
 FULL_URL="${VB_EXPRESS_URL}${ENDPOINT}"
 
 echo "Testing vb-express security: ${FULL_URL}"
