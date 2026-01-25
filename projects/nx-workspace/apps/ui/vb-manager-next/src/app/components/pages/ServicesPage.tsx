@@ -36,7 +36,7 @@ const URLS = {
     DASHBOARD: 'https://fly.io/dashboard',
     BILLING: 'https://fly.io/dashboard/personal/billing',
     PAYMENT_HISTORY: 'https://fly.io/dashboard/personal/billing',
-    USAGE: 'https://fly.io/dashboard/harry-560/usage',
+    USAGE: 'https://fly.io/dashboard/harry-560/billing/cost-explorer',
     STATUS: 'https://fly.io/dashboard/harry-560/status',
   },
   CLOUDFLARE: {
