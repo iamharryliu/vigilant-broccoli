@@ -20,8 +20,8 @@ jobs:
 
       - name: Run security check
         run: |
-          chmod +x ../../scripts/shell/test-vb-express-security.sh
-          ../../scripts/shell/test-vb-express-security.sh
+          chmod +x scripts/shell/test-vb-express-security.sh
+          scripts/shell/test-vb-express-security.sh
 
       - name: Notify on failure
         if: failure()
