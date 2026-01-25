@@ -53,6 +53,7 @@
     },
     "pm2:start": {
       "executor": "nx:run-commands",
+      "dependsOn": ["build"],
       "options": {
         "command": "tsx scripts/fetch-secrets.ts 'pm2 start apps/ui/vb-manager-next/ecosystem.config.js'",
         "env": {

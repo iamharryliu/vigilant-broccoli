@@ -10,6 +10,7 @@ import { RecipeScraperUtilityContent } from './utilities/recipe-scraper.utility'
 import { DjMusicUtilityContent } from './utilities/dj-music.utility';
 import { StopwatchUtilityContent } from './utilities/stopwatch.utility';
 import { TimerUtilityContent } from './utilities/timer.utility';
+import { AlarmUtilityContent } from './utilities/alarm.utility';
 
 export const UtilitiesComponent = () => {
   const { appMode } = useAppMode();
@@ -51,6 +52,11 @@ export const UtilitiesComponent = () => {
         id: 'timer',
         title: 'Timer',
         content: <TimerUtilityContent />,
+      },
+      {
+        id: 'alarm',
+        title: 'Alarm',
+        content: <AlarmUtilityContent />,
       }
     );
 

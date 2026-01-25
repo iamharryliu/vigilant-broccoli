@@ -234,6 +234,12 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: 'Gmail Filters',
+    target: 'https://mail.google.com/mail/u/0/#settings/filters',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: GOOGLE_SERVICES.CALENDAR.NAME,
     target: GOOGLE_SERVICES.CALENDAR.URL,
     type: OPEN_TYPE.BROWSER,

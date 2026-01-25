@@ -3,10 +3,10 @@ module.exports = {
     {
       name: 'vb-manager-next',
       script: './node_modules/.bin/next',
-      args: 'dev --port 1337',
-      cwd: './apps/ui/vb-manager-next',
+      args: 'start --port 1337',
+      cwd: './dist/apps/ui/vb-manager-next',
       env: {
-        NODE_ENV: 'development',
+        NODE_ENV: 'production',
         PORT: 1337,
         ...process.env,
       },

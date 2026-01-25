@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, TextField } from '@radix-ui/themes';
 import { Search } from 'lucide-react';
@@ -8,7 +8,7 @@ import { FileTree, FileNode } from '../../components/docs/file-tree.component';
 import { MarkdownViewer } from '../../components/docs/markdown-viewer.component';
 import { SearchResults, SearchResult } from '../../components/docs/search-results.component';
 
-export default function DocsPage() {
+function DocsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [fileTree, setFileTree] = useState<FileNode[]>([]);
@@ -195,5 +195,13 @@ export default function DocsPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+export default function DocsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-[calc(100vh-120px)] text-gray-500">Loading...</div>}>
+      <DocsPageContent />
+    </Suspense>
   );
 }

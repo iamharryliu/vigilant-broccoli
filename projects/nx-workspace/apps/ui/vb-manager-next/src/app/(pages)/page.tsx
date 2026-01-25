@@ -5,7 +5,6 @@ import { WeatherComponent } from '../components/weather.component';
 import { ClockComponent } from '../components/clock.component';
 import { GoogleTasksComponent } from '../components/google-tasks.component';
 import { TaskListDebugComponent } from '../components/task-list-debug.component';
-import { QuickLinksComponent } from '../components/quick-links.component';
 import { UtilitiesComponent } from '../components/utilities.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import {
@@ -68,7 +67,7 @@ export default function Page() {
   const { appMode } = useAppMode();
 
   return (
-    <div className="grid grid-cols-4 gap-4 h-full mb-4">
+    <div className="grid grid-cols-3 gap-4 h-full mb-4">
       <>
         <div className="flex flex-col gap-4">
           <Card className="w-full">
@@ -104,10 +103,6 @@ export default function Page() {
       </div>
       <div className="flex flex-col gap-4">
         <UtilitiesComponent />
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <QuickLinksComponent />
       </div>
     </div>
   );
