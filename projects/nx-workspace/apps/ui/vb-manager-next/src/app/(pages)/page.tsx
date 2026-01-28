@@ -3,8 +3,7 @@
 import { Card, Flex } from '@radix-ui/themes';
 import { WeatherComponent } from '../components/weather.component';
 import { ClockComponent } from '../components/clock.component';
-import { GoogleTasksComponent } from '../components/google-tasks.component';
-import { TaskListDebugComponent } from '../components/task-list-debug.component';
+import { TaskListSelectorComponent } from '../components/task-list-selector.component';
 import { UtilitiesComponent } from '../components/utilities.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import {
@@ -95,11 +94,10 @@ export default function Page() {
       </>
       <div className="flex flex-col gap-4">
         {appMode === APP_MODE.PERSONAL ? (
-          <GoogleTasksComponent />
+          <TaskListSelectorComponent />
         ) : (
-          <GoogleTasksComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
+          <TaskListSelectorComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
         )}
-        <TaskListDebugComponent />
       </div>
       <div className="flex flex-col gap-4">
         <UtilitiesComponent />

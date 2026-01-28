@@ -23,7 +23,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "ts-node scripts/fetch-secrets.ts 'cd apps/ui/vb-manager-next && next dev'",
+        "command": "tsx scripts/fetch-secrets.ts 'cd apps/ui/vb-manager-next && next dev'",
         "env": {
           "NEXTAUTH_SECRET": "NEXTAUTH_SECRET",
           "NEXTAUTH_URL": "http://localhost:3000"
@@ -72,6 +72,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "pm2 restart vb-manager-next"
+      }
+    },
+    "pm2:reload": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 reload vb-manager-next"
       }
     },
     "pm2:delete": {

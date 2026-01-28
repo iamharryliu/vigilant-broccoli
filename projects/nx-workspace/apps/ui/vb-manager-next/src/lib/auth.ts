@@ -49,6 +49,9 @@ export const authOptions: AuthOptions = {
           prompt: 'consent',
         },
       },
+      httpOptions: {
+        timeout: 10000,
+      },
     }),
   ],
   callbacks: {
@@ -57,7 +60,9 @@ export const authOptions: AuthOptions = {
       if (account) {
         return {
           accessToken: account.access_token,
-          accessTokenExpires: account.expires_at ? account.expires_at * 1000 : Date.now() + 3600 * 1000,
+          accessTokenExpires: account.expires_at
+            ? account.expires_at * 1000
+            : Date.now() + 3600 * 1000,
           refreshToken: account.refresh_token,
           user: token.user,
         };

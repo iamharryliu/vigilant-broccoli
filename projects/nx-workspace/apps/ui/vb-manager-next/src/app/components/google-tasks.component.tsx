@@ -14,6 +14,11 @@ interface Task {
   status: 'needsAction' | 'completed';
 }
 
+interface TaskList {
+  id: string;
+  title: string;
+}
+
 type EisenhowerQuadrant = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'none';
 
 // Sort mode constants
@@ -24,6 +29,8 @@ const SORT_MODE = {
 } as const;
 
 type SortMode = typeof SORT_MODE[keyof typeof SORT_MODE];
+
+const STORAGE_KEY_SELECTED_TASK_LIST = 'google-tasks-selected-list-id';
 
 const getStorageKey = {
   sortMode: (taskListId: string) => `google-tasks-sort-mode-${taskListId}`,
@@ -160,48 +167,43 @@ const useTasks = (taskListId: string) => {
   return { tasks, loading, error, fetchTasks, createTask, toggleTaskComplete, deleteTask, updateTask };
 };
 
-const useTaskListName = (taskListId: string, status: string) => {
-  const [taskListName, setTaskListName] = useState<string | null>(null);
+const useTaskLists = (status: string) => {
+  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const [authError, setAuthError] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status !== 'authenticated') {
-      setTaskListName(null);
+      setTaskLists([]);
       setAuthError(false);
+      setLoading(false);
       return;
     }
 
-    const fetchTaskListName = async () => {
+    const fetchTaskLists = async () => {
       try {
         const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
         const data = await response.json();
 
         if (response.status === 401) {
           setAuthError(true);
-          setTaskListName('Tasks');
+          setLoading(false);
           return;
         }
 
         if (response.ok && data.taskLists) {
-          const list = data.taskLists.find((l: { id: string; title: string }) => l.id === taskListId);
-          if (list) {
-            setTaskListName(list.title);
-          } else {
-            console.warn(`Task list with ID ${taskListId} not found, using fallback`);
-            setTaskListName('Tasks');
-          }
-        } else {
-          setTaskListName('Tasks');
+          setTaskLists(data.taskLists);
         }
+        setLoading(false);
       } catch (err) {
-        console.error('Error fetching task list name:', err);
-        setTaskListName('Tasks');
+        console.error('Error fetching task lists:', err);
+        setLoading(false);
       }
     };
-    fetchTaskListName();
-  }, [taskListId, status]);
+    fetchTaskLists();
+  }, [status]);
 
-  return { taskListName, authError };
+  return { taskLists, authError, loading };
 };
 
 const useSortModeStorage = (taskListId: string) => {
@@ -310,23 +312,71 @@ const TaskItem = memo(({
 
 TaskItem.displayName = 'TaskItem';
 
-const TaskHeader = memo(({ taskListName, userEmail, onSignOut }: {
-  taskListName: string | null;
+const TaskHeader = memo(({
+  taskLists,
+  selectedTaskListId,
+  onTaskListChange,
+  sortMode,
+  onSortChange,
+  userEmail,
+  onSignOut,
+  showSelector
+}: {
+  taskLists: TaskList[];
+  selectedTaskListId: string;
+  onTaskListChange: (taskListId: string) => void;
+  sortMode: SortMode;
+  onSortChange: (value: SortMode) => void;
   userEmail?: string;
   onSignOut: () => void;
-}) => (
-  <Flex justify="between" align="center">
-    {taskListName ? (
-      <Text size="5" weight="bold">{taskListName}</Text>
-    ) : (
-      <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-32 rounded" />
-    )}
-    <Flex gap="2" align="center">
-      {userEmail && <Text size="1" color="gray">{userEmail}</Text>}
-      <Button onClick={onSignOut} size="1" variant="soft">Sign out</Button>
+  showSelector: boolean;
+}) => {
+  const selectedTaskList = taskLists.find(list => list.id === selectedTaskListId);
+
+  return (
+    <Flex direction="column" gap="3">
+      <Flex justify="between" align="center">
+        {selectedTaskList ? (
+          <Text size="5" weight="bold">{selectedTaskList.title}</Text>
+        ) : (
+          <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-32 rounded" />
+        )}
+        <Flex gap="2" align="center">
+          {userEmail && <Text size="1" color="gray">{userEmail}</Text>}
+          <Button onClick={onSignOut} size="1" variant="soft">Sign out</Button>
+        </Flex>
+      </Flex>
+      <Flex gap="4" align="center">
+        {showSelector && taskLists.length > 0 && (
+          <Flex gap="2" align="center" className="flex-1">
+            <Text size="2" color="gray">List:</Text>
+            <Select.Root value={selectedTaskListId} onValueChange={onTaskListChange}>
+              <Select.Trigger placeholder="Select task list..." />
+              <Select.Content>
+                {taskLists.map((list) => (
+                  <Select.Item key={list.id} value={list.id}>
+                    {list.title}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Root>
+          </Flex>
+        )}
+        <Flex gap="2" align="center">
+          <Text size="2" color="gray">Sort:</Text>
+          <Select.Root value={sortMode} onValueChange={onSortChange}>
+            <Select.Trigger placeholder="Sort by..." />
+            <Select.Content>
+              <Select.Item value={SORT_MODE.DEFAULT}>Default</Select.Item>
+              <Select.Item value={SORT_MODE.EISENHOWER}>Eisenhower Matrix</Select.Item>
+              <Select.Item value={SORT_MODE.COMMIT_TYPE}>Commit Type</Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </Flex>
+      </Flex>
     </Flex>
-  </Flex>
-));
+  );
+});
 
 TaskHeader.displayName = 'TaskHeader';
 
@@ -475,16 +525,49 @@ const UnauthenticatedView = memo(() => (
 UnauthenticatedView.displayName = 'UnauthenticatedView';
 
 // eslint-disable-next-line complexity
-export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListId?: string } = {}) => {
+export const GoogleTasksComponent = ({
+  taskListId: propTaskListId,
+  showSelector = true
+}: {
+  taskListId?: string;
+  showSelector?: boolean;
+} = {}) => {
   const { data: session, status } = useSession();
-  const taskListId = propTaskListId || '@default';
-  const { taskListName, authError: titleAuthError } = useTaskListName(taskListId, status);
+  const { taskLists, authError: titleAuthError } = useTaskLists(status);
+
+  const [selectedTaskListId, setSelectedTaskListId] = useState<string>(() => {
+    if (propTaskListId) return propTaskListId;
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(STORAGE_KEY_SELECTED_TASK_LIST) || '@default';
+    }
+    return '@default';
+  });
+
+  const taskListId = propTaskListId || selectedTaskListId;
+
   const { tasks, loading, error, fetchTasks, createTask, toggleTaskComplete, deleteTask, updateTask } = useTasks(taskListId);
   const [sortMode, setSortMode] = useSortModeStorage(taskListId);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [showAddTask, setShowAddTask] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingTaskTitle, setEditingTaskTitle] = useState('');
+
+  useEffect(() => {
+    if (propTaskListId) {
+      setSelectedTaskListId(propTaskListId);
+    } else if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEY_SELECTED_TASK_LIST);
+      if (stored) {
+        setSelectedTaskListId(stored);
+      }
+    }
+  }, [propTaskListId]);
+
+  useEffect(() => {
+    if (!propTaskListId && typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY_SELECTED_TASK_LIST, selectedTaskListId);
+    }
+  }, [selectedTaskListId, propTaskListId]);
 
   useEffect(() => {
     if (status === 'authenticated') fetchTasks();
@@ -530,6 +613,10 @@ export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListI
     setSortMode(value);
   }, []);
 
+  const handleTaskListChange = useCallback((newTaskListId: string) => {
+    setSelectedTaskListId(newTaskListId);
+  }, []);
+
   const sortedTasks =
     sortMode === SORT_MODE.EISENHOWER ? sortByEisenhower(tasks) :
     sortMode === SORT_MODE.COMMIT_TYPE ? sortByCommitType(tasks) :
@@ -544,14 +631,14 @@ export const GoogleTasksComponent = ({ taskListId: propTaskListId }: { taskListI
     <Card className="w-full">
       <Flex direction="column" gap="3" p="4">
         <TaskHeader
-          taskListName={taskListName}
-          userEmail={session?.user?.email ?? undefined}
-          onSignOut={() => signOut()}
-        />
-
-        <SortControls
+          taskLists={taskLists}
+          selectedTaskListId={taskListId}
+          onTaskListChange={handleTaskListChange}
           sortMode={sortMode}
           onSortChange={handleSortChange}
+          userEmail={session?.user?.email ?? undefined}
+          onSignOut={() => signOut()}
+          showSelector={showSelector && !propTaskListId}
         />
 
         {hasAuthError && <AuthErrorBanner onSignOut={() => signOut()} />}

@@ -5,7 +5,7 @@ import GoogleProvider from 'next-auth/providers/google';
 const NEXT_AUTH_OPTIONS: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: getEnvironmentVariable('NEXTAUTH_GOOGLE_CLIENT_ID'),
+      clientId: getEnvironmentVariable('NEXTGOOGLE_AUTH_PROVIDER_CLIENT_ID'),
       clientSecret: getEnvironmentVariable('NEXTAUTH_GOOGLE_CLIENT_SECRET'),
       authorization: {
         params: {

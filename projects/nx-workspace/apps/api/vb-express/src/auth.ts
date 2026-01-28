@@ -8,7 +8,7 @@ export const auth = betterAuth({
   // baseURL: 'https://vb-express.fly.dev',
   socialProviders: {
     google: {
-      clientId: getEnvironmentVariable('AUTH_GOOGLE_CLIENT_ID') as string,
+      clientId: getEnvironmentVariable('GOOGLE_AUTH_PROVIDER_CLIENT_ID') as string,
       clientSecret: getEnvironmentVariable(
         'AUTH_GOOGLE_CLIENT_SECRET',
       ) as string,
