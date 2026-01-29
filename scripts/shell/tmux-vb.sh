@@ -1,38 +1,49 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 SESSION="vb"
-PROJECT_DIR="$HOME/vigilant-broccoli"
+PROJECT="$HOME/vigilant-broccoli"
 
-# Attach if already exists
-tmux has-session -t "$SESSION" 2>/dev/null && {
-  tmux attach -t "$SESSION"
-  exit 0
-}
+tmux has-session -t "$SESSION" 2>/dev/null && tmux attach -t "$SESSION"
 
-# Create session
-tmux new-session -d -s "$SESSION" -n main -c "$PROJECT_DIR"
+tmux new-session -d -s "$SESSION"
 
-# Capture initial pane (left pane)
-LEFT_PANE=$(tmux list-panes -t "$SESSION":main -F "#{pane_id}" | head -1)
+#################################
+# Window 1: tools (4 panes)
+#################################
+tmux rename-window -t "$SESSION:1" tools
 
-# Split RIGHT pane (btop) — capture pane ID
-BTOP_PANE=$(tmux split-window -h -P -F "#{pane_id}" -t "$SESSION":main -c "$PROJECT_DIR")
+# Split into 2x2 grid
+tmux split-window -h  -t "$SESSION:1"
+tmux split-window -v  -t "$SESSION:1.1"
+tmux split-window -v  -t "$SESSION:1.2"
 
-# Split LEFT pane vertically — capture pane ID
-NVIM_PANE=$(tmux split-window -v -P -F "#{pane_id}" -t "$LEFT_PANE" -c "$PROJECT_DIR")
+tmux select-layout -t "$SESSION:1" tiled
 
-# Remaining pane is top-left (yazi)
-YAZI_PANE=$(tmux list-panes -t "$SESSION":main -F "#{pane_id}" | grep -v "$BTOP_PANE" | grep -v "$NVIM_PANE" | head -1)
+# Pane commands
+tmux send-keys -t "$SESSION:1.1" "yazi" C-m
+tmux send-keys -t "$SESSION:1.2" "btop" C-m
+tmux send-keys -t "$SESSION:1.3" "clear" C-m
+tmux send-keys -t "$SESSION:1.4" "lazydocker" C-m
 
-# Start programs (now guaranteed correct)
-tmux send-keys -t "$BTOP_PANE" 'btop' C-m
-tmux send-keys -t "$YAZI_PANE" 'yazi' C-m
-tmux send-keys -t "$NVIM_PANE" 'nvim ~/vigilant-broccoli' C-m
+#################################
+# Window 2: dev (2 panes)
+#################################
+tmux new-window -t "$SESSION" -n dev
 
-# Resize right pane (optional)
-tmux resize-pane -t "$BTOP_PANE" -R 20
+tmux split-window -h -t "$SESSION:2"
+tmux select-layout -t "$SESSION:2" even-horizontal
 
-# Focus nvim
-tmux select-pane -t "$NVIM_PANE"
+tmux send-keys -t "$SESSION:2.1" "cd $PROJECT && nvim ." C-m
+tmux send-keys -t "$SESSION:2.2" "cd $PROJECT && lazygit" C-m
 
+#################################
+# Window 3: scratch
+#################################
+tmux new-window -t "$SESSION" -n bg
+tmux send-keys -t "$SESSION:3.1" "neovideterminal" C-m
+
+#################################
+# Focus
+#################################
+tmux select-window -t "$SESSION:1"
 tmux attach -t "$SESSION"
