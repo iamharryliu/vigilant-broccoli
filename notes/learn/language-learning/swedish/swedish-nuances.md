@@ -11,8 +11,6 @@
 - **till** vs **på** vs **i**
 - det kommer
 
-
-
 # Ticky/Similar Looking
 
 anslut, connect _vs_ slut, to end
@@ -22,8 +20,6 @@ stader / städer - cities / clean
 en lag / ett lag - law / team
 
 trots att(despite that) vs var trött (was tired)
-
-
 
 # Nuances
 
@@ -35,3 +31,6 @@ trots att(despite that) vs var trött (was tired)
 
 fly(to flee) vs flytta(to move)
 storsta vs storst
+
+- `en` vs `ett`
+  - `tråkig` and `tråkigt`

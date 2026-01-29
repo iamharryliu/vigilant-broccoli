@@ -2,8 +2,8 @@
 
 ## Ways to Express Questions
 
-- Inversion - Germanic feature (Swedish, English, partly French)
-- Romance languages mostly rely on intonation instead.
+- **Inversion** - Germanic feature (Swedish, English, partly French)
+- **Intonation** - Romance languages mostly rely on intonation instead.
 
 ## Question Words
 

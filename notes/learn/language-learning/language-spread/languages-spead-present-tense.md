@@ -6,6 +6,6 @@
 
 ## Inversion
 
-| English | Swedish          | French           | Spanish            |
-| :------ | :--------------- | :--------------- | :----------------- |
-| n/a     | [verb] [pronoun] | [verb]-[pronoun] | ¿[verb] [pronoun]? |
+| English | Swedish          | French               | Spanish            |
+| :------ | :--------------- | :------------------- | :----------------- |
+| n/a     | [verb] [pronoun] | [verb]-(t)-[pronoun] | ¿[verb] [pronoun]? |

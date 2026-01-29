@@ -38,8 +38,8 @@
 | strong      | stark                    | fort               | fuerte          |
 | weak        | svag                     |                    |                 |
 | cold        | svag                     | faible             | débil           |
-| rich        | rik                      |                    |                 |
-| poor        | fattig                   |                    |                 |
+| rich        | rik                      | riche              | rico            |
+| poor        | fattig                   | pauvre             | pobre           |
 | together    | tilsammans               |                    |                 |
 | alone       | ensam                    |                    |                 |
 | ledig       | free                     |                    |                 |
@@ -69,3 +69,6 @@
 | cozy        | mysigt                   |                    |                 |
 | cheap       | billigt                  |                    |                 |
 | expensive   | dyrt                     |                    |                 |
+| possible    | möjligt                  | possible           | posible         |
+| impossible  | omöjlig                  | impossible         | imposible       |
+| secret      | hemlig                   | secret             | secreto         |

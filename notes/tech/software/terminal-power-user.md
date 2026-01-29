@@ -1,0 +1,9 @@
+# CLI 
+- tmux
+- vim
+  - nvim
+  - neovide
+- [yazi](https://yazi-rs.github.io/)
+- lazydocker
+- lazygit
+- btop
