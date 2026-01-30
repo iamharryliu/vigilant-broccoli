@@ -8,6 +8,8 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 1337,
+        NEXTAUTH_URL: 'http://localhost:1337',
+        NEXTAUTH_SECRET: 'your-secret-key-here-change-this-in-production',
         ...process.env,
       },
       instances: 1,
