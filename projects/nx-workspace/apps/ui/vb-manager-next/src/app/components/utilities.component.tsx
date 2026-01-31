@@ -11,6 +11,7 @@ import { DjMusicUtilityContent } from './utilities/dj-music.utility';
 import { StopwatchUtilityContent } from './utilities/stopwatch.utility';
 import { TimerUtilityContent } from './utilities/timer.utility';
 import { AlarmUtilityContent } from './utilities/alarm.utility';
+import { CurrencyConverterUtilityContent } from './utilities/currency-converter.utility';
 
 export const UtilitiesComponent = () => {
   const { appMode } = useAppMode();
@@ -21,6 +22,11 @@ export const UtilitiesComponent = () => {
         id: 'calculator',
         title: 'Calculator',
         content: <CalculatorUtilityContent />,
+      },
+      {
+        id: 'currency-converter',
+        title: 'Currency Converter',
+        content: <CurrencyConverterUtilityContent />,
       },
       {
         id: 'cooking-conversions',
