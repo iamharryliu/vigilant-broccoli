@@ -208,3 +208,5 @@ alias gtagls='git tag'
 alias rmgtag='git tag -d'
 
 alias openrepo='open "$(git config --get remote.origin.url | sed -E "s/git@github.com:/https:\/\/github.com\//; s/\.git$//")"'
+
+alias gitstats='git log --pretty="%aN" --numstat | awk '\'' /^[^0-9-]/ {author=$0; next} NF==3 && $1 ~ /^[0-9]+$/ && $2 ~ /^[0-9]+$/ {added[author]+=$1; removed[author]+=$2} END {for (a in added) printf "%s: +%d -%d\n", a, added[a], removed[a]}'\'''
