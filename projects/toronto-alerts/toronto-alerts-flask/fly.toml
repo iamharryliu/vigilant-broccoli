@@ -1,9 +1,4 @@
-# fly.toml app configuration file generated for gta-update-alerts-flask on 2024-03-19T08:51:01-04:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
-app = 'gta-update-alerts-flask'
+app = 'toronto-alerts-flask'
 primary_region = 'yyz'
 
 [build]

@@ -1,18 +1,5 @@
 [
   {
-    "name": "gta-update-alerts-flask",
-    "password_key_values": {
-      "DB_CONNECTION_STRING": "string",
-      "TORONTO_ALERTS_EMAIL": "email",
-      "TORONTO_ALERTS_EMAIL_PASSWORD": "password",
-      "TORONTO_ALERTS_DB": "database",
-      "TORONTO_ALERTS_RECAPTCHA_SECRET_KEY": "key",
-      "TORONTO_ALERTS_RECAPTCHA_SITE_KEY": "key",
-      "OPENWEATHER_API_KEY": "key",
-      "SECRET_KEY": "key"
-    }
-  },
-  {
     "name": "harryliu-design-express",
     "password_key_values": {
       "ENCRYPTION_METHOD": "method",
@@ -34,24 +21,8 @@
     "password_key_values": {
       "AWS_ACCESS_KEY_ID": "key_id",
       "AWS_SECRET_ACCESS_KEY": "key",
-      "CLOUDFLARE_ID": "id",
+      "CLOUDFLARE_ACCOUNT_ID": "id",
       "VIBECHECK_SQL_DB": "connection_string"
-    }
-  },
-  {
-    "name": "vibecheck-lite-express",
-    "password_key_values": {
-      "ENCRYPTION_METHOD": "method",
-      "MONGO_DB_PASSWORD": "password",
-      "MONGO_DB_USERNAME": "username",
-      "MY_EMAIL": "email",
-      "MY_EMAIL_PASSWORD": "password",
-      "OPENAI_API_KEY": "key",
-      "OPENWEATHER_API_KEY": "key",
-      "PERSONAL_WEBSITE_DB": "db_string",
-      "PERSONAL_WEBSITE_FRONTEND_URL": "frontend_url",
-      "SECRET_IV": "secret",
-      "SECRET_KEY": "key"
     }
   },
   {
