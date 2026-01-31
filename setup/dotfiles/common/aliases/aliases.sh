@@ -93,3 +93,5 @@ alertinterval() {
 }
 
 alias spellcheck='codespell'
+
+alias neovideterminal='neovide -- -c "terminal" -c "startinsert"'

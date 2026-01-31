@@ -18,7 +18,16 @@ if vim.g.neovide then
   vim.g.neovide_padding_bottom = 0
   vim.g.neovide_padding_right = 0
   vim.g.neovide_padding_left = 0
+
+  -- Copy
+  vim.keymap.set({ "n", "v" }, "<D-c>", '"+y', { silent = true })
+
+  -- Paste
+  vim.keymap.set({ "n", "i" }, "<D-v>", '"+p', { silent = true })
+  vim.keymap.set("c", "<D-v>", "<C-r>+", { silent = true })
 end
+
+vim.opt.clipboard = "unnamedplus"
 
 vim.api.nvim_create_autocmd("TermOpen", {
   callback = function()

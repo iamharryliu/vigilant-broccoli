@@ -82,11 +82,15 @@ gcon() {
   gco "$branch_name"
 }
 
+# Stashing
+alias gstash='git stash'
+alias gpop='gstash pop'
+alias gstashls='git stash list'
+alias gstashclear='git stash clear'
+
 # Staging
 alias gstageall='git add .'
 alias gcm='git commit -m'
-alias gstash='git stash'
-alias gpop='gstash pop'
 alias gamend='git commit --amend'
 alias greset='git reset HEAD^'
 alias undocommit='greset --soft'
