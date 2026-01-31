@@ -77,3 +77,4 @@
 | to write           | att skriva         | écrire      |            |
 | to put             | att sätta          | mettre      |            |
 | to tell            | att berätta        | dire        |            |
+| to hire            | att anställa       |

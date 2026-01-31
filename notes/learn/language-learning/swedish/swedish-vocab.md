@@ -12,3 +12,29 @@
 - upplever
 - gruvarbetare
 - förhållande
+- tillbaka på ruta ett
+- en fast anställning
+- ett lån
+- en hyresrätt
+- en bostadskö
+- i andra hand
+- har råd med
+- hyr ut
+- charmig
+- ett förskott
+- en säkerhet
+- rimlig
+- en inflyttning
+- hjälper till 
+- en släpvagn
+- upptäcker
+- ensam
+- en flyykartong
+- dyker upp
+- lurad
+- visar sig
+- förlorar
+- besviken
+- har tur i oturen
+- en packning 
+- tar vägen

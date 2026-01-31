@@ -1,5 +1,7 @@
 # nvim
 
+- Default `<leader>` is `\`
+
 ```
 u                                           # Undo
 ctrl + r                                    # Redo
@@ -73,7 +75,7 @@ gs                                          # Change sort order
 <C-t>                                       # Open in new tab
 ```
 
-
+# Neovide
 
 ```
 neovide -- -c "terminal" -c "startinsert"   # Start Neovide as a dedicated terminal
@@ -92,4 +94,48 @@ i                                           # Enter Terminal-Insert mode (to typ
 <C-\><C-n>                                  # Exit Terminal-Insert mode (back to Normal mode)
 exit                                        # Close the shell and the buffer
 :bd!                                        # Force kill terminal buffer from Normal mode
+```
+
+# Git Diff
+
+```
+# Diffview & Vim Pane Commands
+
+# --- Diffview commands ---
+:GitDiff                 # Open Git diff view for the repo
+:GitDiff <file/branch>   # Open diff for a specific file or branch
+:GitDiffFile             # Show Git file history of current file
+:GitDiffClose            # Close the diffview
+
+# --- Pane / Window navigation ---
+Ctrl-w h                 # Move to the window to the left
+Ctrl-w j                 # Move to the window below
+Ctrl-w k                 # Move to the window above
+Ctrl-w l                 # Move to the window to the right
+Ctrl-w w                 # Cycle to the next window
+
+# --- Pane resizing ---
+Ctrl-w >                 # Increase pane width
+Ctrl-w <                 # Decrease pane width
+Ctrl-w +                 # Increase pane height
+Ctrl-w -                 # Decrease pane height
+
+# --- Making panes editable (if needed) ---
+:setlocal modifiable      # Make current pane editable
+vim.api.nvim_buf_set_option(0, "modifiable", true)  # Lua equivalent
+
+# --- Gitsigns commands (on current buffer) ---
+]c                       # Jump to next hunk
+[c                       # Jump to previous hunk
+<leader>hs               # Stage current hunk
+<leader>hr               # Reset current hunk
+<leader>hp               # Preview current hunk
+<leader>hb               # Show full blame for current line
+
+# --- Leader key ---
+<leader>                 # Prefix key for custom shortcuts (default \, commonly set to Space)
+<leader>gd               # Open Git diff (maps to :GitDiff)
+<leader>gf               # Show file history (maps to :GitDiffFile)
+<leader>gc               # Close Git diff (maps to :GitDiffClose)
+
 ```
