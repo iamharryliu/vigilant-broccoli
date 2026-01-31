@@ -4,6 +4,12 @@ export const API_ENDPOINTS = {
   DOCKER_START: '/api/docker/start',
   DOCKER_STOP: '/api/docker/stop',
 
+  // PM2
+  PM2_PROCESSES: '/api/pm2/processes',
+  PM2_START: '/api/pm2/start',
+  PM2_STOP: '/api/pm2/stop',
+  PM2_RESTART: '/api/pm2/restart',
+
   // Shell
   SHELL_EXECUTE: '/api/shell/execute',
 

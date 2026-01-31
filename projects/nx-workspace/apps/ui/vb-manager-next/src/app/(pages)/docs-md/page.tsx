@@ -190,7 +190,6 @@ function DocsPageContent() {
         ) : (
           <MarkdownViewer
             content={fileContent}
-            fileName={selectedFilePath.split('/').pop()}
           />
         )}
       </Card>
