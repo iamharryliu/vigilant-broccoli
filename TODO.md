@@ -16,7 +16,6 @@
 - **machine**
   - audit default pip list
 - **vb-api**
-  - Message Service - Email, text
   - Payment Service
 - **vb-cms**
   - Dynamic page contents ie blogs, image gallery
@@ -30,7 +29,6 @@
   - Inform user if gam or gyb needs to be setup.
   - Create missing folder/file structures.
 - **Fix/`Chore`**
-  - Fix MY_EMAIL
   - chore: Replace Obsidian brackets. `[[something]]`
 - **Audit/Refactor Tasks**
   - feat: Setup linux vs mac setup scripts
