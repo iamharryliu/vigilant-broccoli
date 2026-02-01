@@ -9,8 +9,8 @@ async function refreshAccessToken(token: any) {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        client_id: process.env.GOOGLE_CLIENT_ID || '',
-        client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+        client_id: process.env.GOOGLE_AUTH_PROVIDER_CLIENT_ID || '',
+        client_secret: process.env.GOOGLE_AUTH_PROVIDER_CLIENT_SECRET || '',
         grant_type: 'refresh_token',
         refresh_token: token.refreshToken,
       }),
@@ -40,8 +40,8 @@ async function refreshAccessToken(token: any) {
 export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      clientId: process.env.GOOGLE_AUTH_PROVIDER_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_AUTH_PROVIDER_CLIENT_SECRET || '',
       authorization: {
         params: {
           scope: 'openid email profile https://www.googleapis.com/auth/tasks',
