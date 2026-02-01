@@ -73,7 +73,7 @@
     "pm2:reload": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pm2 reload vb-manager-next"
+        "command": "nx build vb-express && pm2 reload vb-manager-next"
       }
     },
     "pm2:delete": {
