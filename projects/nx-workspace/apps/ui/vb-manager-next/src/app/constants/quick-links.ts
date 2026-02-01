@@ -1,5 +1,7 @@
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 import {
+  FLYIO_LINK,
+  GITHUB_LINK,
   GOOGLE_SERVICES,
   UTILITY_URL,
 } from '@vigilant-broccoli/common-js';
@@ -23,8 +25,8 @@ const LINK_GROUP_SUBGROUP = {
 
 const DEV_LINKS = [
   {
-    label: 'GCP',
-    target: 'https://console.cloud.google.com',
+    label: GOOGLE_SERVICES.GCP.NAME,
+    target: GOOGLE_SERVICES.GCP.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -47,26 +49,26 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'GitHub',
-    target: 'https://github.com',
+    label: GITHUB_LINK.GITHUB.NAME,
+    target: GITHUB_LINK.GITHUB.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'GitHub Tokens',
-    target: 'https://github.com/settings/personal-access-tokens',
+    label: GITHUB_LINK.TOKENS.NAME,
+    target: GITHUB_LINK.TOKENS.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'GitHub Actions Pricing',
-    target: 'https://docs.github.com/en/billing/managing-billing-for-your-products/about-billing-for-github-actions',
+    label: GITHUB_LINK.ACTIONS_PRICING.NAME,
+    target: GITHUB_LINK.ACTIONS_PRICING.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'GitHub Billing',
-    target: 'https://github.com/settings/billing',
+    label: GITHUB_LINK.BILLING.NAME,
+    target: GITHUB_LINK.BILLING.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -77,20 +79,14 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'FlyIO Dashboard',
-    target: 'https://fly.io/dashboard',
+    label: FLYIO_LINK.DASHBOARD.NAME,
+    target: FLYIO_LINK.DASHBOARD.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'FlyIO Billing',
-    target: 'https://fly.io/dashboard/personal/billing',
-    type: OPEN_TYPE.BROWSER,
-    subgroup: LINK_GROUP_SUBGROUP.DEV,
-  },
-  {
-    label: 'VB - FlyIO reCAPTCHA',
-    target: 'https://www.google.com/recaptcha/admin/site/682849728',
+    label: FLYIO_LINK.BILLING.NAME,
+    target: FLYIO_LINK.BILLING.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -155,20 +151,14 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'Google AdSense',
-    target: 'https://adsense.google.com/start/',
+    label: GOOGLE_SERVICES.ADSENSE.NAME,
+    target: GOOGLE_SERVICES.ADSENSE.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'Google Analytics',
-    target: 'https://analytics.google.com/analytics/',
-    type: OPEN_TYPE.BROWSER,
-    subgroup: LINK_GROUP_SUBGROUP.DEV,
-  },
-  {
-    label: 'reCAPTCHA Admin',
-    target: 'https://www.google.com/recaptcha/admin/',
+    label: GOOGLE_SERVICES.ANALYTICS.NAME,
+    target: GOOGLE_SERVICES.ANALYTICS.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -187,6 +177,12 @@ const DEV_LINKS = [
   {
     label: 'Twilio Billing',
     target: 'https://console.twilio.com/us1/billing/manage-billing/billing-overview',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: 'Twilio Phone Numbers',
+    target: 'https://console.twilio.com/us1/develop/phone-numbers/manage/verified',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -234,8 +230,8 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
-    label: 'Gmail Filters',
-    target: 'https://mail.google.com/mail/u/0/#settings/filters',
+    label: GOOGLE_SERVICES.GMAIL.FILTERS.NAME,
+    target: GOOGLE_SERVICES.GMAIL.FILTERS.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
@@ -288,14 +284,14 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
-    label: 'Google Keep',
-    target: 'https://keep.google.com/',
+    label: GOOGLE_SERVICES.KEEP.NAME,
+    target: GOOGLE_SERVICES.KEEP.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
-    label: 'Google Tasks',
-    target: 'https://tasks.google.com/',
+    label: GOOGLE_SERVICES.TASKS.NAME,
+    target: GOOGLE_SERVICES.TASKS.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
@@ -308,6 +304,12 @@ const UTILITY_LINKS = [
   {
     label: GOOGLE_SERVICES.TRANSLATE.NAME,
     target: GOOGLE_SERVICES.TRANSLATE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'OpenL Bulk Translator',
+    target: 'https://openl.io/bulk-translator',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
@@ -336,8 +338,8 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
-    label: 'Gemini',
-    target: 'https://gemini.google.com/app',
+    label: GOOGLE_SERVICES.GEMINI.NAME,
+    target: GOOGLE_SERVICES.GEMINI.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
@@ -438,8 +440,8 @@ const FOR_LATER_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.FOR_LATER,
   },
   {
-    label: 'YouTube Watch Later',
-    target: 'https://www.youtube.com/playlist?list=WL',
+    label: GOOGLE_SERVICES.YOUTUBE.WATCH_LATER.NAME,
+    target: GOOGLE_SERVICES.YOUTUBE.WATCH_LATER.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.FOR_LATER,
   },

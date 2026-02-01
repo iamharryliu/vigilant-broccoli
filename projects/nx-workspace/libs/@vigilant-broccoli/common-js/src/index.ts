@@ -73,6 +73,10 @@ export const GOOGLE_SERVICES = {
   GMAIL: {
     NAME: 'Gmail',
     URL: 'https://mail.google.com',
+    FILTERS: {
+      NAME: 'Gmail Filters',
+      URL: 'https://mail.google.com/mail/u/0/#settings/filters',
+    },
   },
   CALENDAR: {
     NAME: 'Google Calendar',
@@ -85,6 +89,34 @@ export const GOOGLE_SERVICES = {
   YOUTUBE: {
     NAME: 'YouTube',
     URL: 'https://www.youtube.com',
+    WATCH_LATER: {
+      NAME: 'YouTube Watch Later',
+      URL: 'https://www.youtube.com/playlist?list=WL',
+    },
+  },
+  KEEP: {
+    NAME: 'Google Keep',
+    URL: 'https://keep.google.com/',
+  },
+  TASKS: {
+    NAME: 'Google Tasks',
+    URL: 'https://tasks.google.com/tasks/',
+  },
+  GCP: {
+    NAME: 'GCP',
+    URL: 'https://console.cloud.google.com',
+  },
+  ADSENSE: {
+    NAME: 'Google AdSense',
+    URL: 'https://adsense.google.com/start/',
+  },
+  ANALYTICS: {
+    NAME: 'Google Analytics',
+    URL: 'https://analytics.google.com/analytics/',
+  },
+  GEMINI: {
+    NAME: 'Gemini',
+    URL: 'https://gemini.google.com/app',
   },
 } as const;
 
@@ -108,6 +140,36 @@ export const UTILITY_URL = {
   PINTEREST: {
     NAME: 'Pinterest',
     URL: 'https://www.pinterest.com',
+  },
+} as const;
+
+export const GITHUB_LINK = {
+  GITHUB: {
+    NAME: 'GitHub',
+    URL: 'https://github.com',
+  },
+  TOKENS: {
+    NAME: 'GitHub Tokens',
+    URL: 'https://github.com/settings/personal-access-tokens',
+  },
+  ACTIONS_PRICING: {
+    NAME: 'GitHub Actions Pricing',
+    URL: 'https://docs.github.com/en/billing/managing-billing-for-your-products/about-billing-for-github-actions',
+  },
+  BILLING: {
+    NAME: 'GitHub Billing',
+    URL: 'https://github.com/settings/billing',
+  },
+} as const;
+
+export const FLYIO_LINK = {
+  DASHBOARD: {
+    NAME: 'FlyIO Dashboard',
+    URL: 'https://fly.io/dashboard',
+  },
+  BILLING: {
+    NAME: 'FlyIO Billing',
+    URL: 'https://fly.io/dashboard/personal/billing',
   },
 } as const;
 
