@@ -2,7 +2,6 @@ import { DEFAULT_APP_EMAIL_CONFIG } from '@prettydamntired/personal-website-api-
 import { IS_DEV_ENV } from '../configs/app.const';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
 import {
-  DEFAULT_EMAIL_REQUEST,
   Email,
   EmailService,
 } from '@vigilant-broccoli/common-node';
@@ -17,7 +16,6 @@ export class ContactService {
     if (!IS_DEV_ENV) {
       const mailService = new EmailService();
       await mailService.sendEmail({
-        ...DEFAULT_EMAIL_REQUEST,
         from,
         to,
         subject,

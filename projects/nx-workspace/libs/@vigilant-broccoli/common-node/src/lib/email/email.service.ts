@@ -1,9 +1,10 @@
 import nodemailer from 'nodemailer';
 import ejs from 'ejs';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { DEFAULT_EJS_TEMPLATE, DEFAULT_EMAIL_REQUEST } from './email.consts';
+import { DEFAULT_EJS_TEMPLATE, getDefaultEmailRequest } from './email.consts';
 import { logger } from '../logging/logger.service';
 import { getEnvironmentVariable } from '../utils';
+import { Email } from './email.models';
 
 export class EmailService {
   private transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
@@ -24,7 +25,7 @@ export class EmailService {
   }
 
   sendEmail(
-    request = DEFAULT_EMAIL_REQUEST,
+    request: Email = getDefaultEmailRequest(),
   ): Promise<SMTPTransport.SentMessageInfo> {
     const mailOption = {
       from: request.from,
@@ -37,7 +38,7 @@ export class EmailService {
   }
 
   async sendEjsEmail(
-    request = DEFAULT_EMAIL_REQUEST,
+    request: Email = getDefaultEmailRequest(),
     template = DEFAULT_EJS_TEMPLATE,
   ): Promise<SMTPTransport.SentMessageInfo> {
     return ejs.renderFile(template.path, template.data).then(html => {

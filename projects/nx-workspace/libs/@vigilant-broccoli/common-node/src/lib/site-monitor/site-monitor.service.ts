@@ -1,6 +1,6 @@
 import http from 'http';
 import https from 'https';
-import { DEFAULT_EMAIL_REQUEST } from '../email/email.consts';
+import { getDefaultEmailRequest } from '../email/email.consts';
 import { EmailService } from '../email/email.service';
 import { logger } from '../logging/logger.service';
 
@@ -18,7 +18,7 @@ export class SiteMonitor {
         message = `${site} is currently down.`;
         const subject = message;
         await this.emailService.sendEmail({
-          ...DEFAULT_EMAIL_REQUEST,
+          ...getDefaultEmailRequest(),
           subject,
           text: message,
         });
