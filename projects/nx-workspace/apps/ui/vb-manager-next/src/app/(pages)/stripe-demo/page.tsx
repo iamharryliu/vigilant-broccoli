@@ -1,4 +1,4 @@
-export default function CheckoutPage() {
+export default function StripeCheckoutPage() {
   return (
     <section className="flex flex-col items-center justify-center min-h-screen p-8">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">

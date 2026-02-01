@@ -5,8 +5,8 @@ export async function POST(req: NextRequest) {
   const session = await StripeService.createCheckoutSession({
     priceId: 'price_1SEp4fGcwAVW94pPZYxh8Zdx',
     quantity: 1,
-    successUrl: `${req.nextUrl.origin}/stripe/success`,
-    cancelUrl: `${req.nextUrl.origin}/stripe/cancel`,
+    successUrl: `${req.nextUrl.origin}/stripe-demo/success`,
+    cancelUrl: `${req.nextUrl.origin}/stripe-demo/cancel`,
   });
 
   if (!session.url) {

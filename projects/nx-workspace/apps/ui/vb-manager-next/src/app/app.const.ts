@@ -38,4 +38,8 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'Messaging',
     path: '/messaging',
   },
+  STRIPE_DEMO: {
+    title: 'Stripe Demo',
+    path: '/stripe-demo',
+  },
 };
