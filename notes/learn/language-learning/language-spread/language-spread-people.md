@@ -23,6 +23,7 @@
 | girlfriend   | flickvan        | petite amie   | novia        |
 | boyfriend    | pojkvän         | petit ami     | novio        |
 | relationship | förhållande     |               |              |
+| a couple     | ett par         |               |              |
 | married      | gift            | marié(e)      | casado/a     |
 | divorced     | skild           | divorcé(e)    | divorciado/a |
 | wedding      | bröllop         |               |              |
