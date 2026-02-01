@@ -141,7 +141,7 @@ export const AlarmUtilityContent = () => {
     const now = Date.now();
     const [hours, minutes] = alarm.time.split(':').map(Number);
 
-    let alarmDateTime = new Date();
+    const alarmDateTime = new Date();
     alarmDateTime.setHours(hours, minutes, 0, 0);
 
     if (alarmDateTime.getTime() < alarm.createdAt) {
@@ -213,6 +213,7 @@ export const AlarmUtilityContent = () => {
               Time
             </Text>
             <TextField.Root
+              size="3"
               type="time"
               value={newTime}
               onChange={(e) => setNewTime(e.target.value)}
@@ -226,6 +227,7 @@ export const AlarmUtilityContent = () => {
               Label
             </Text>
             <TextField.Root
+              size="3"
               placeholder="Alarm label"
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
@@ -234,7 +236,7 @@ export const AlarmUtilityContent = () => {
               }}
             />
           </Flex>
-          <Button size="2" onClick={handleAddAlarm} disabled={!newTime}>
+          <Button size="3" onClick={handleAddAlarm} disabled={!newTime}>
             Add
           </Button>
         </Flex>
