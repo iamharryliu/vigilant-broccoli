@@ -38,3 +38,19 @@
 - har tur i oturen
 - en packning 
 - tar vägen
+- hög hyresrätt förskott var ligger lägenheten
+- vad säger killen som marcus pratar med
+- ensamma
+- vera har inte fått betalt tidigare
+- dyker upp
+- ett tag till får bo de hos sina föräldrar
+- ställde 
+- står
+- arton 
+- ganska
+- runt knuten
+- inte fått betalt
+- Hon har hyrt ut lägenheten tidigare men inte fått betalt. Därför ville han ha pengerna som en säkerhet
+- den är myket charmig och ligger i ett mysigt område med många
+- some de har råd med
+- en trevlig
