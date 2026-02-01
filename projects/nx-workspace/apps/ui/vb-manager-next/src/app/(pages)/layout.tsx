@@ -7,6 +7,7 @@ import { APP_ROUTE } from '../app.const';
 import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 import { SearchDialogComponent } from '../components/search-dialog.component';
+import { EmailModalComponent } from '../components/email-modal.component';
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { appearance, toggleTheme } = useTheme();
@@ -20,6 +21,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         rightContent={
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <SearchDialogComponent />
+            <EmailModalComponent />
             <Select.Root value={appMode} onValueChange={setAppMode}>
               <Select.Trigger placeholder="Select mode" />
               <Select.Content>
