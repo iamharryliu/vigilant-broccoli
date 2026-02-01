@@ -54,7 +54,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "ts-node scripts/fetch-secrets.ts 'nx serve:no-vault vb-express'"
+        "command": "npx tsx scripts/fetch-secrets.ts 'nx serve:no-vault vb-express'"
       }
     },
     "serve:no-vault": {

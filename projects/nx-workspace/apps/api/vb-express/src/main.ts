@@ -5,6 +5,7 @@ import { auth } from './auth';
 import { toNodeHandler } from 'better-auth/node';
 import tasksRouter from './routes/tasks';
 import llmRouter from './routes/llm';
+import messagingRouter from './routes/messaging';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { createApiKeyMiddleware } from './libs/middlewares/api-key.middleware';
 
@@ -50,6 +51,7 @@ const createApp = () => {
   app.use(createApiKeyMiddleware(API_KEY));
   app.use('/api/tasks', tasksRouter);
   app.use('/api/llm', llmRouter);
+  app.use('/api', messagingRouter);
   return app;
 };
 

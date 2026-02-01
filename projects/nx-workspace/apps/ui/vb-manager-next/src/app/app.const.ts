@@ -34,4 +34,8 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'DocsMD',
     path: '/docs-md',
   },
+  MESSAGING: {
+    title: 'Messaging',
+    path: '/messaging',
+  },
 };

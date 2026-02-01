@@ -10,7 +10,7 @@ export const auth = betterAuth({
     google: {
       clientId: getEnvironmentVariable('GOOGLE_AUTH_PROVIDER_CLIENT_ID') as string,
       clientSecret: getEnvironmentVariable(
-        'AUTH_GOOGLE_CLIENT_SECRET',
+        'GOOGLE_AUTH_PROVIDER_CLIENT_SECRET',
       ) as string,
       scope: [
         'openid',
