@@ -10,6 +10,7 @@ module.exports = {
         PORT: 1337,
         NEXTAUTH_URL: 'http://localhost:1337',
         NEXTAUTH_SECRET: 'your-secret-key-here-change-this-in-production',
+        VB_EXPRESS_URL: 'https://vb-express.fly.dev',
         ...process.env,
       },
       instances: 1,
