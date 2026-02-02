@@ -6,7 +6,7 @@ import { toNodeHandler } from 'better-auth/node';
 import tasksRouter from './routes/tasks';
 import llmRouter from './routes/llm';
 import messagingRouter from './routes/messaging';
-import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { getEnvironmentVariable, createCorsOptions } from '@vigilant-broccoli/common-node';
 import { createApiKeyMiddleware } from './libs/middlewares/api-key.middleware';
 
 const APP_PORT = getEnvironmentVariable('PORT') || 3333;
@@ -31,18 +31,7 @@ const ALLOWED_ORIGINS = [
 const createApp = () => {
   const app = express();
   app.use(express.static('public'));
-  app.use(
-    cors({
-      origin: (origin, cb) => {
-        if (!origin) return cb(null, true);
-        if (ALLOWED_ORIGINS.includes(origin)) {
-          return cb(null, true);
-        }
-        return cb(new Error(`CORS blocked for origin: ${origin}`));
-      },
-      credentials: true,
-    }),
-  );
+  app.use(cors(createCorsOptions(ALLOWED_ORIGINS)));
   app.use(express.json());
   app.get('/', (_, response) => {
     response.send('vb-express');
