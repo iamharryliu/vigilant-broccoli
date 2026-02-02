@@ -1,6 +1,31 @@
 import { NextNavRoute } from '@vigilant-broccoli/next-lib';
 
-export const APP_ROUTE: Record<string, NextNavRoute> = {
+type ExtendedNavRoute = {
+  title: string;
+  path?: string;
+  children?: NextNavRoute[];
+};
+
+const DEMO_ROUTES = {
+  BUCKET_DEMO: {
+    title: 'Bucket Demo',
+    path: '/bucket-demo',
+  },
+  CHORES_DEMO: {
+    title: 'Chores Demo',
+    path: '/chores-demo',
+  },
+  STRIPE_DEMO: {
+    title: 'Stripe Demo',
+    path: '/stripe-demo',
+  },
+  MESSAGING: {
+    title: 'Messaging Demo',
+    path: '/messaging',
+  },
+};
+
+export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
   INDEX: {
     title: 'Home',
     path: '/',
@@ -21,25 +46,12 @@ export const APP_ROUTE: Record<string, NextNavRoute> = {
     title: 'LLM Tools',
     path: '/llm-tools',
   },
-  BUCKET_DEMO: {
-    title: 'Bucket Demo',
-    path: '/bucket-demo',
-  },
-  CHORES_DEMO: {
-    title: 'Chores Demo',
-    path: '/chores-demo',
-  },
-
   DOCS_MD: {
     title: 'DocsMD',
     path: '/docs-md',
   },
-  MESSAGING: {
-    title: 'Messaging',
-    path: '/messaging',
-  },
-  STRIPE_DEMO: {
-    title: 'Stripe Demo',
-    path: '/stripe-demo',
+  DEMOS: {
+    title: 'Demos',
+    children: Object.values(DEMO_ROUTES),
   },
 };

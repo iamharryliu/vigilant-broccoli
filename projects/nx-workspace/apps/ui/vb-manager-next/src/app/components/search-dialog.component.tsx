@@ -82,6 +82,33 @@ export function SearchDialogComponent() {
     }
   };
 
+  const handleFirstLinkAction = () => {
+    if (filteredLinks.length === 0) return;
+
+    const firstLink = sortedLinks[0];
+    const nonBrowserTypes = [
+      OPEN_TYPE.MAC_APPLICATION,
+      OPEN_TYPE.VSCODE,
+      OPEN_TYPE.FILE_SYSTEM,
+    ] as const;
+
+    if (nonBrowserTypes.includes(firstLink.type as typeof nonBrowserTypes[number])) {
+      handleShellExecute(firstLink.type, firstLink.target);
+    } else {
+      window.open(firstLink.target, '_blank', 'noopener,noreferrer');
+    }
+
+    setOpen(false);
+    setSearchQuery('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleFirstLinkAction();
+    }
+  };
+
   const renderLink = (link: typeof QUICK_LINKS[0]) => {
     const baseClass = 'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-colors';
 
@@ -133,6 +160,7 @@ export function SearchDialogComponent() {
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
             size="2"
             style={{ flex: 1 }}
           />

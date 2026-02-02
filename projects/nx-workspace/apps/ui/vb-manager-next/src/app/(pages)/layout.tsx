@@ -1,27 +1,70 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { NextNavBar } from '@vigilant-broccoli/next-lib';
-import { IconButton, Select } from '@radix-ui/themes';
+import { NextNavBar, NextNavRoute } from '@vigilant-broccoli/next-lib';
+import { IconButton, Select, DropdownMenu, Button } from '@radix-ui/themes';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { APP_ROUTE } from '../app.const';
 import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 import { SearchDialogComponent } from '../components/search-dialog.component';
 import { EmailModalComponent } from '../components/email-modal.component';
 
+type ExtendedNavRoute = {
+  title: string;
+  path?: string;
+  children?: NextNavRoute[];
+};
+
 export default function Layout({ children }: { children: ReactNode }) {
   const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
+  const pathname = usePathname();
+
+  const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
+  const dropdownRoutes = allRoutes.filter(r => r.children && r.children.length > 0);
+  const tabRoutes = allRoutes.filter((r): r is NextNavRoute => !!r.path);
+
+  const isActiveDropdown = (children?: NextNavRoute[]) => {
+    return children?.some(child => child.path === pathname) ?? false;
+  };
 
   return (
     <div className="w-full min-h-screen">
       <NextNavBar
-        routes={Object.values(APP_ROUTE)}
+        routes={tabRoutes}
         isDark={appearance === 'dark'}
         rightContent={
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <SearchDialogComponent />
             <EmailModalComponent />
+            {dropdownRoutes.map(obj => (
+              <DropdownMenu.Root key={obj.title}>
+                <DropdownMenu.Trigger>
+                  <Button
+                    variant="ghost"
+                    style={{
+                      cursor: 'pointer',
+                      color: isActiveDropdown(obj.children)
+                        ? 'var(--accent-9)'
+                        : 'inherit',
+                      fontWeight: isActiveDropdown(obj.children) ? 500 : 400,
+                    }}
+                  >
+                    {obj.title}
+                    <DropdownMenu.TriggerIcon />
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  {obj.children?.map(child => (
+                    <DropdownMenu.Item key={child.path} asChild>
+                      <Link href={child.path ?? '#'}>{child.title}</Link>
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            ))}
             <Select.Root value={appMode} onValueChange={setAppMode}>
               <Select.Trigger placeholder="Select mode" />
               <Select.Content>
