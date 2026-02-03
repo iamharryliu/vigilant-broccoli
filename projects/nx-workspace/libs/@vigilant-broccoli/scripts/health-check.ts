@@ -3,7 +3,7 @@ import { SiteMonitor } from '../common-node/src';
 
 const sites = [
   'https://harryliu.dev/',
-  'https://api.harryliu.dev/',
+  'https://vb-express.fly.dev',
   'https://vibecheck-angular.harryliu.dev/',
   'https://vibecheck-flask.harryliu.dev/',
   'https://vb-next-demo.vercel.app/',
