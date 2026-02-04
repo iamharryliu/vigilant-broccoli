@@ -35,7 +35,11 @@ jobs:
         id: check
         working-directory: ./projects/nx-workspace
         run: |
-          AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=${{ github.event.before }} --head=${{ github.sha }})
+          BASE="${{ github.event.before }}"
+          if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]]; then
+            BASE="origin/main"
+          fi
+          AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
           echo "affected_apps=$AFFECTED"
           echo "has_deployments=$([[ -n "$AFFECTED" ]] && echo true || echo false)" >> $GITHUB_OUTPUT
 
@@ -105,7 +109,12 @@ jobs:
         env:
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://127.0.0.1:8200
-        run: npx nx affected -t deploy --base=${{ github.event.before }} --head=${{ github.sha }}
+        run: |
+          BASE="${{ github.event.before }}"
+          if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]]; then
+            BASE="origin/main"
+          fi
+          npx nx affected -t deploy --base=$BASE --head=${{ github.sha }}
 
       - name: Deploy CMS Flask
         working-directory: ./projects/cms-flask
