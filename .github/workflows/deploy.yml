@@ -40,8 +40,15 @@ jobs:
             BASE="origin/main"
           fi
           AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
+          AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
+          AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
           echo "affected_apps=$AFFECTED"
-          echo "has_deployments=$([[ -n "$AFFECTED" ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "affected_apps=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
+          if [[ -n "$AFFECTED_NORMALIZED" ]]; then
+            echo "has_deployments=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_deployments=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Authenticate to Google Cloud
         if: steps.check.outputs.has_deployments == 'true'
@@ -109,12 +116,7 @@ jobs:
         env:
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://127.0.0.1:8200
-        run: |
-          BASE="${{ github.event.before }}"
-          if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]]; then
-            BASE="origin/main"
-          fi
-          npx nx affected -t deploy --base=$BASE --head=${{ github.sha }}
+        run: npx nx run-many -t deploy --projects="${{ steps.check.outputs.affected_apps }}"
 
       - name: Deploy CMS Flask
         working-directory: ./projects/cms-flask
