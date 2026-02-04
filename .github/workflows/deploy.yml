@@ -66,6 +66,7 @@ jobs:
           caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
           method: jwt
           role: github-actions-role
+          exportToken: true
           secrets: |
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ID ;
@@ -86,6 +87,9 @@ jobs:
 
       - name: Deploy Nx apps
         working-directory: ./projects/nx-workspace
+        env:
+          VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
+          VAULT_ADDR: https://127.0.0.1:8200
         run: npx nx run-many -t deploy --all
 
       - name: Deploy CMS Flask

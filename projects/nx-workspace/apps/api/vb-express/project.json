@@ -78,9 +78,15 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "deploy:secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsx scripts/deploy-flyio-secrets.ts vb-express"
+      }
+    },
     "deploy": {
       "command": "flyctl deploy --dockerfile ./apps/api/vb-express/Dockerfile --config ./deployment-configs/fly-configs/vb-express.toml",
-      "dependsOn": ["build", "lint"]
+      "dependsOn": ["build", "lint", "deploy:secrets"]
     }
   }
 }
