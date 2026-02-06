@@ -11,12 +11,15 @@
 
 ## vigilant-broccoli
 
+- **Jarvis**
+  - Consume
+    - Journal TODO
+    - vb TODO
+  - Implement with Claude Workflow - `/vb-plan-day`, `/vb-plan-week`
 - **Secret Management**
   - Handle [Flyio secrets](https://fly.io/dashboard/harry-560) via CI
 - **machine**
   - audit default pip list
-- **vb-api**
-  - Payment Service
 - **vb-cms**
   - Dynamic page contents ie blogs, image gallery
   - Handle receiving emails for message requests.
@@ -84,13 +87,3 @@
       - name
       - description
       - image[]
-
-## Personal Planning Application
-
-- Consume
-  - Google Tasks
-  - Journal TODO
-  - vb TODO
-  - Google Calendar
-- Output Suggestion
-- Implement with Claude Workflow - `/vb-plan-day`, `/vb-plan-week`
