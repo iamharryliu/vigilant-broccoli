@@ -4,7 +4,10 @@ import { Card, Flex, Text, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { categorizeTasksByQuadrant, cleanCalendarEvents } from '../utils/day-analysis.utils';
+import {
+  categorizeTasksByQuadrant,
+  cleanCalendarEvents,
+} from '../utils/day-analysis.utils';
 import { ChatbotDialog } from './chatbot-dialog.component';
 
 interface CleanTask {
@@ -56,6 +59,105 @@ interface DayAnalysisData {
   };
 }
 
+const PERSONAL_TASK_LIST_ID = '@default';
+const WORK_TASK_LIST_ID = 'cXJUTkpUQzZ6bTBpQjNybA';
+const PERSONAL_CALENDAR_ID = 'harryliu1995@gmail.com';
+const WORK_CALENDAR_ID = 'harry.liu@elva11.se';
+const MALMO_COORDINATES = { lat: 55.605, lon: 13.0038 };
+const LOCATION_NAME = 'Malmö';
+
+const fetchAllDataSources = async () => {
+  const [
+    personalTasksResponse,
+    workTasksResponse,
+    personalCalendarResponse,
+    workCalendarResponse,
+    weatherResponse,
+  ] = await Promise.all([
+    fetch(`${API_ENDPOINTS.TASKS}?taskListId=${PERSONAL_TASK_LIST_ID}`),
+    fetch(`${API_ENDPOINTS.TASKS}?taskListId=${WORK_TASK_LIST_ID}`),
+    fetch(`${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${PERSONAL_CALENDAR_ID}`),
+    fetch(`${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${WORK_CALENDAR_ID}`),
+    fetch(
+      `${API_ENDPOINTS.WEATHER}?lat=${MALMO_COORDINATES.lat}&lon=${MALMO_COORDINATES.lon}`,
+    ),
+  ]);
+
+  const [
+    personalTasksData,
+    workTasksData,
+    personalCalendarData,
+    workCalendarData,
+    weatherData,
+  ] = await Promise.all([
+    personalTasksResponse.json(),
+    workTasksResponse.json(),
+    personalCalendarResponse.json(),
+    workCalendarResponse.json(),
+    weatherResponse.json(),
+  ]);
+
+  return {
+    personalTasks: { response: personalTasksResponse, data: personalTasksData },
+    workTasks: { response: workTasksResponse, data: workTasksData },
+    personalCalendar: {
+      response: personalCalendarResponse,
+      data: personalCalendarData,
+    },
+    workCalendar: { response: workCalendarResponse, data: workCalendarData },
+    weather: weatherData,
+  };
+};
+
+const mergeCalendarEvents = (personalData: any, workData: any) => {
+  const allTodayEvents = [
+    ...(personalData.todayEvents || []),
+    ...(workData.todayEvents || []),
+  ];
+
+  const allUpcomingEvents = [
+    ...(personalData.upcomingEvents || []),
+    ...(workData.upcomingEvents || []),
+  ];
+
+  return {
+    todayEvents: cleanCalendarEvents(allTodayEvents),
+    upcomingEvents: cleanCalendarEvents(allUpcomingEvents),
+  };
+};
+
+const buildAnalysisData = (
+  personalTasksData: any,
+  workTasksData: any,
+  calendarEvents: { todayEvents: any[]; upcomingEvents: any[] },
+  weatherData: any,
+): DayAnalysisData => ({
+  context: {
+    datetime: new Date().toISOString(),
+    temperature: Math.round(weatherData.current?.main?.temp || 0),
+    weatherDescription:
+      weatherData.current?.weather?.[0]?.description || 'Unknown',
+    location: LOCATION_NAME,
+  },
+  tasks: {
+    personal: categorizeTasksByQuadrant(personalTasksData.tasks || []),
+    work: categorizeTasksByQuadrant(workTasksData.tasks || []),
+  },
+  calendar: calendarEvents,
+});
+
+const generatePlanningPrompt = (data: DayAnalysisData): string =>
+  `Please help me plan my day based on the following information:
+
+${JSON.stringify(data, null, 2)}
+
+Please analyze:
+1. My calendar events and suggest how to prepare for them
+2. My tasks organized by priority (urgent/important/delegate/eliminate) for both personal and work
+3. Any overdue tasks that need immediate attention
+4. The current weather and how it might affect my plans
+5. Give me a structured plan with time blocks and priorities`;
+
 export const DayAnalysisDataPreviewComponent = () => {
   const { status } = useSession();
   const [data, setData] = useState<DayAnalysisData | null>(null);
@@ -69,83 +171,48 @@ export const DayAnalysisDataPreviewComponent = () => {
     setLoading(true);
     setError(null);
 
-    const personalTaskListId = '@default';
-    const workTaskListId = 'cXJUTkpUQzZ6bTBpQjNybA';
-    const malmoLat = 55.605;
-    const malmoLon = 13.0038;
+    const sources = await fetchAllDataSources();
 
-    const [
-      personalTasksResponse,
-      workTasksResponse,
-      personalCalendarResponse,
-      workCalendarResponse,
-      weatherResponse
-    ] = await Promise.all([
-      fetch(`${API_ENDPOINTS.TASKS}?taskListId=${personalTaskListId}`),
-      fetch(`${API_ENDPOINTS.TASKS}?taskListId=${workTaskListId}`),
-      fetch(`${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=harryliu1995@gmail.com`),
-      fetch(`${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=harry.liu@elva11.se`),
-      fetch(`${API_ENDPOINTS.WEATHER}?lat=${malmoLat}&lon=${malmoLon}`),
-    ]);
-
-    const personalTasksData = await personalTasksResponse.json();
-    const workTasksData = await workTasksResponse.json();
-    const personalCalendarData = await personalCalendarResponse.json();
-    const workCalendarData = await workCalendarResponse.json();
-    const weatherData = await weatherResponse.json();
-
-    if (!personalTasksResponse.ok && !workTasksResponse.ok) {
+    if (
+      !sources.personalTasks.response.ok &&
+      !sources.workTasks.response.ok
+    ) {
       setError('Failed to fetch tasks from both task lists');
       setLoading(false);
       return;
     }
 
-    if (!personalCalendarResponse.ok && !workCalendarResponse.ok) {
-      console.error('Calendar fetch error:', { personalCalendarData, workCalendarData });
+    if (
+      !sources.personalCalendar.response.ok &&
+      !sources.workCalendar.response.ok
+    ) {
+      console.error('Calendar fetch error:', {
+        personalCalendar: sources.personalCalendar.data,
+        workCalendar: sources.workCalendar.data,
+      });
       setError('Failed to fetch calendar events from both calendars');
       setLoading(false);
       return;
     }
 
-    const allTodayEvents = [
-      ...(personalCalendarData.todayEvents || []),
-      ...(workCalendarData.todayEvents || []),
-    ];
-
-    const allUpcomingEvents = [
-      ...(personalCalendarData.upcomingEvents || []),
-      ...(workCalendarData.upcomingEvents || []),
-    ];
-
-    const cleanedTodayEvents = cleanCalendarEvents(allTodayEvents);
-    const cleanedUpcomingEvents = cleanCalendarEvents(allUpcomingEvents);
+    const calendarEvents = mergeCalendarEvents(
+      sources.personalCalendar.data,
+      sources.workCalendar.data,
+    );
 
     console.log('Calendar data received:', {
-      personal: personalCalendarData,
-      work: workCalendarData,
-      totalToday: cleanedTodayEvents.length,
-      totalUpcoming: cleanedUpcomingEvents.length,
+      personal: sources.personalCalendar.data,
+      work: sources.workCalendar.data,
+      totalToday: calendarEvents.todayEvents.length,
+      totalUpcoming: calendarEvents.upcomingEvents.length,
     });
 
-    const personalCategorizedTasks = categorizeTasksByQuadrant(personalTasksData.tasks || []);
-    const workCategorizedTasks = categorizeTasksByQuadrant(workTasksData.tasks || []);
-
-    const analysisData: DayAnalysisData = {
-      context: {
-        datetime: new Date().toISOString(),
-        temperature: Math.round(weatherData.current?.main?.temp || 0),
-        weatherDescription: weatherData.current?.weather?.[0]?.description || 'Unknown',
-        location: 'Malmö',
-      },
-      tasks: {
-        personal: personalCategorizedTasks,
-        work: workCategorizedTasks,
-      },
-      calendar: {
-        todayEvents: cleanedTodayEvents,
-        upcomingEvents: cleanedUpcomingEvents,
-      },
-    };
+    const analysisData = buildAnalysisData(
+      sources.personalTasks.data,
+      sources.workTasks.data,
+      calendarEvents,
+      sources.weather,
+    );
 
     setData(analysisData);
     setLoading(false);
@@ -161,19 +228,7 @@ export const DayAnalysisDataPreviewComponent = () => {
 
   const handlePlanDay = () => {
     if (!data) return;
-
-    const prompt = `Please help me plan my day based on the following information:
-
-${JSON.stringify(data, null, 2)}
-
-Please analyze:
-1. My calendar events and suggest how to prepare for them
-2. My tasks organized by priority (urgent/important/delegate/eliminate) for both personal and work
-3. Any overdue tasks that need immediate attention
-4. The current weather and how it might affect my plans
-5. Give me a structured plan with time blocks and priorities`;
-
-    setPlanningPrompt(prompt);
+    setPlanningPrompt(generatePlanningPrompt(data));
     setChatbotOpen(true);
   };
 
@@ -192,36 +247,28 @@ Please analyze:
       <Card className="w-full">
         <Flex direction="column" gap="3" p="4">
           <Flex justify="between" align="center">
-            <Text size="5" weight="bold">Day Analysis Data Preview</Text>
-            <Flex gap="2">
-              {data && (
-                <>
-                  <Button onClick={handlePlanDay} size="2" variant="solid">
-                    Plan My Day
-                  </Button>
-                  <Button onClick={handleCopy} size="2" variant="soft">
-                    {copied ? 'Copied!' : 'Copy'}
-                  </Button>
-                </>
-              )}
-              <Button onClick={fetchData} size="2" variant="soft" disabled={loading}>
-                {loading ? 'Loading...' : 'Refresh'}
-              </Button>
-            </Flex>
+            {data && (
+              <>
+                <Button onClick={handlePlanDay} size="2" variant="solid">
+                  Plan My Day
+                </Button>
+                <Button onClick={handleCopy} size="2" variant="soft">
+                  {copied ? 'Copied!' : 'Copy'}
+                </Button>
+              </>
+            )}
           </Flex>
 
-          {error && <Text size="2" color="red">{error}</Text>}
-
-          {data && (
-            <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded overflow-auto max-h-96 text-xs">
-              {JSON.stringify(data, null, 2)}
-            </pre>
+          {error && (
+            <Text size="2" color="red">
+              {error}
+            </Text>
           )}
         </Flex>
       </Card>
       <ChatbotDialog
         open={chatbotOpen}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           setChatbotOpen(open);
           if (!open) setPlanningPrompt('');
         }}

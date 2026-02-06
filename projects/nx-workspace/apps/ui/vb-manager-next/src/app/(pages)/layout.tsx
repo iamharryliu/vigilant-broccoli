@@ -41,13 +41,13 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <SearchDialogComponent />
             <EmailModalComponent />
-            <IconButton
+            <Button
               variant="soft"
               onClick={() => setChatbotOpen(true)}
               aria-label="Open chatbot"
             >
-              💬
-            </IconButton>
+              Jarvis
+            </Button>
             {dropdownRoutes.map(obj => (
               <DropdownMenu.Root key={obj.title}>
                 <DropdownMenu.Trigger>

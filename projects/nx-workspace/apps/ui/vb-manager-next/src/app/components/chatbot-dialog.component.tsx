@@ -140,7 +140,7 @@ export const ChatbotDialog = ({ open, onOpenChange, initialPrompt, systemPrompt 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content style={{ maxWidth: 700, maxHeight: '80vh' }}>
-        <Dialog.Title>AI Assistant</Dialog.Title>
+        <Dialog.Title>Jarvis</Dialog.Title>
 
         <Flex direction="column" gap="3" style={{ height: '60vh' }}>
           <ScrollArea ref={scrollRef} style={{ flex: 1, padding: '1rem' }}>
