@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Dialog, IconButton, Heading } from '@radix-ui/themes';
+import { Dialog, IconButton } from '@radix-ui/themes';
 import { EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { EmailMessageForm } from './EmailMessageForm';
 
@@ -19,9 +19,7 @@ export const EmailModalComponent = () => {
       </Dialog.Trigger>
 
       <Dialog.Content maxWidth="600px">
-        <Dialog.Title>
-          <Heading size="5">Send Email Message</Heading>
-        </Dialog.Title>
+        <Dialog.Title>Send Email Message</Dialog.Title>
 
         <EmailMessageForm
           defaultFrom={DEFAULT_FROM}

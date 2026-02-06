@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { NextNavBar, NextNavRoute } from '@vigilant-broccoli/next-lib';
 import { IconButton, Select, DropdownMenu, Button } from '@radix-ui/themes';
 import { usePathname } from 'next/navigation';
@@ -10,6 +10,7 @@ import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 import { SearchDialogComponent } from '../components/search-dialog.component';
 import { EmailModalComponent } from '../components/email-modal.component';
+import { ChatbotDialog } from '../components/chatbot-dialog.component';
 
 type ExtendedNavRoute = {
   title: string;
@@ -21,6 +22,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
   const pathname = usePathname();
+  const [chatbotOpen, setChatbotOpen] = useState(false);
 
   const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
   const dropdownRoutes = allRoutes.filter(r => r.children && r.children.length > 0);
@@ -39,6 +41,13 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <SearchDialogComponent />
             <EmailModalComponent />
+            <Button
+              variant="soft"
+              onClick={() => setChatbotOpen(true)}
+              aria-label="Open chatbot"
+            >
+              Jarvis
+            </Button>
             {dropdownRoutes.map(obj => (
               <DropdownMenu.Root key={obj.title}>
                 <DropdownMenu.Trigger>
@@ -83,6 +92,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         }
       />
       <main className="p-4">{children}</main>
+      <ChatbotDialog open={chatbotOpen} onOpenChange={setChatbotOpen} />
     </div>
   );
 }
