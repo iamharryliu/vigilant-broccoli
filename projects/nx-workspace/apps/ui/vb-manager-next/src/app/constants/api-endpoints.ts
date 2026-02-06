@@ -33,6 +33,12 @@ export const API_ENDPOINTS = {
   TASKS: '/api/tasks',
   TASKS_LISTS: '/api/tasks/lists',
 
+  // Calendar
+  CALENDAR_EVENTS: '/api/calendar/events',
+
+  // Weather
+  WEATHER: '/api/weather',
+
   // DJ
   DJ_PLAYLISTS: '/api/dj/playlists',
   DJ_DOWNLOAD: '/api/dj/download',
