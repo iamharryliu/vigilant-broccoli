@@ -21,21 +21,54 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: ./projects/nx-workspace/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./projects/nx-workspace
+        run: npm ci
+
+      - name: Check if deployment needed
+        id: check
+        working-directory: ./projects/nx-workspace
+        run: |
+          BASE="${{ github.event.before }}"
+          if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]]; then
+            BASE="origin/main"
+          fi
+          AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
+          AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
+          AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
+          echo "affected_apps=$AFFECTED"
+          echo "affected_apps=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
+          if [[ -n "$AFFECTED_NORMALIZED" ]]; then
+            echo "has_deployments=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_deployments=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Authenticate to Google Cloud
+        if: steps.check.outputs.has_deployments == 'true'
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Setup Cloud SDK
+        if: steps.check.outputs.has_deployments == 'true'
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Setup Vault CA Certificate
+        if: steps.check.outputs.has_deployments == 'true'
         run: |
           CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
           echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
 
       - name: Open IAP Tunnel to Vault
+        if: steps.check.outputs.has_deployments == 'true'
         run: |
           gcloud compute ssh vb-free-vm \
             --zone=us-east1-b \
@@ -60,33 +93,30 @@ jobs:
           done
 
       - name: Import Secrets from Vault
+        if: steps.check.outputs.has_deployments == 'true'
         uses: hashicorp/vault-action@v3
         with:
           url: https://127.0.0.1:8200
           caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
           method: jwt
           role: github-actions-role
+          exportToken: true
           secrets: |
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ID ;
             kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: ./projects/nx-workspace/package-lock.json
-
-      - name: Install dependencies
-        working-directory: ./projects/nx-workspace
-        run: npm ci
-
       - uses: superfly/flyctl-actions/setup-flyctl@master
+        if: steps.check.outputs.has_deployments == 'true'
 
-      - name: Deploy Nx apps
+      - name: Deploy affected apps
+        if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
-        run: npx nx run-many -t deploy --all
+        env:
+          VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
+          VAULT_ADDR: https://127.0.0.1:8200
+        run: npx nx run-many -t deploy --projects="${{ steps.check.outputs.affected_apps }}"
 
       - name: Deploy CMS Flask
         working-directory: ./projects/cms-flask
