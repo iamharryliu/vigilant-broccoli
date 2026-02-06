@@ -585,6 +585,12 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: GROK_LINK.GROK.NAME,
+    target: GROK_LINK.GROK.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: UTILITY_URL.FIND_MY.NAME,
     target: UTILITY_URL.FIND_MY.URL,
     type: OPEN_TYPE.BROWSER,
