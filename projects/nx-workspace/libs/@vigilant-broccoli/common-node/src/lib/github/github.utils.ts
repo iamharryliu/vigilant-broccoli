@@ -88,7 +88,7 @@ async function buildTeamTree(
   }
 
   return roots;
-  
+
 }
 
 export const GithubUtils = {

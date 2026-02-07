@@ -31,4 +31,3 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 source ~/.bash_profile
-

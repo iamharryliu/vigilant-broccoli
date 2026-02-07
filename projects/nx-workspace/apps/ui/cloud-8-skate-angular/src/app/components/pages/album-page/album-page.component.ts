@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 export class AlbumPageComponent implements OnInit {
   images$!: Observable<string[]>;
   albumName!: string;
-  
+
   private route = inject(ActivatedRoute);
   private imageService = inject(ImageService);
 

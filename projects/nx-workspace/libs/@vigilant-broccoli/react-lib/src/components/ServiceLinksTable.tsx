@@ -52,7 +52,7 @@ const TableLinkCell = ({ url, label }: { url?: string; label: string }) => {
 
 type ServiceLinksTableProps = {
   services: Record<string, ServiceUrl>;
-  alphabetical?: boolean; 
+  alphabetical?: boolean;
 };
 
 export const ServiceLinksTable = ({
