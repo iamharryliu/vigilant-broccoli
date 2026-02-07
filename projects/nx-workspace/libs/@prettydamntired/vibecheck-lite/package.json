@@ -2,11 +2,10 @@
   "name": "@prettydamntired/vibecheck-lite",
   "version": "1.0.23",
   "dependencies": {
-    "dotenv-defaults": "^5.0.2",
-    "openai": "^4.26.0",
     "tslib": "^2.3.0",
-    "@prettydamntired/personal-website-api-lib": "*",
     "@vigilant-broccoli/common-js": "*",
-    "@vigilant-broccoli/common-node": "*"
+    "@vigilant-broccoli/common-node": "*",
+    "@vigilant-broccoli/ai-tools": "0.0.1",
+    "zod": "^3.25.56"
   }
 }

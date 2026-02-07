@@ -6,6 +6,7 @@
     "tslib": "^2.3.0",
     "@vigilant-broccoli/common-js": "*",
     "@anthropic-ai/sdk": "^0.53.0",
-    "zod": "*"
+    "zod": "*",
+    "axios": "^1.13.1"
   }
 }

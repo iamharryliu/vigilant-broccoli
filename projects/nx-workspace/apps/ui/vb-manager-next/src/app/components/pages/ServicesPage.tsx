@@ -22,30 +22,26 @@ import {
   STRIPE_LINK,
 } from '@vigilant-broccoli/common-js';
 
+const DASHBOARD_KEYS = ['DASHBOARD', 'CLAUDE', 'CHATGPT', 'GITHUB'];
+const KEY_MAPPING: Record<string, keyof ServiceUrl> = {
+  BILLING: 'BILLING',
+  PAYMENT_HISTORY: 'PAYMENT_HISTORY',
+  USAGE: 'USAGE',
+  STATUS: 'STATUS',
+  API_MANAGEMENT: 'API_MANAGEMENT',
+};
+
 const convertToServiceUrl = (
-  links: Record<string, { NAME: string; URL: string }>
+  links: Record<string, { NAME: string; URL: string }>,
 ): ServiceUrl => {
   const result: ServiceUrl = { NAME: '' };
 
   for (const [key, value] of Object.entries(links)) {
-    if (
-      key === 'DASHBOARD' ||
-      key === 'CLAUDE' ||
-      key === 'CHATGPT' ||
-      key === 'GITHUB'
-    ) {
+    if (DASHBOARD_KEYS.includes(key)) {
       result.DASHBOARD = value.URL;
       if (!result.NAME) result.NAME = value.NAME;
-    } else if (key === 'BILLING') {
-      result.BILLING = value.URL;
-    } else if (key === 'PAYMENT_HISTORY') {
-      result.PAYMENT_HISTORY = value.URL;
-    } else if (key === 'USAGE') {
-      result.USAGE = value.URL;
-    } else if (key === 'STATUS') {
-      result.STATUS = value.URL;
-    } else if (key === 'API_MANAGEMENT') {
-      result.API_MANAGEMENT = value.URL;
+    } else if (KEY_MAPPING[key]) {
+      result[KEY_MAPPING[key]] = value.URL;
     }
 
     if (key.includes('Dashboard') && !result.NAME) {

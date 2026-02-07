@@ -10,6 +10,7 @@ interface WranglerProject {
 }
 
 const stripAnsi = (str: string) => {
+  // eslint-disable-next-line no-control-regex
   return str.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '');
 };
 
@@ -22,8 +23,15 @@ export async function GET() {
     const projects: WranglerProject[] = [];
 
     for (const line of lines) {
-      if (line.includes('│') && !line.includes('Project Name') && !line.includes('─')) {
-        const parts = line.split('│').map(part => part.trim()).filter(Boolean);
+      if (
+        line.includes('│') &&
+        !line.includes('Project Name') &&
+        !line.includes('─')
+      ) {
+        const parts = line
+          .split('│')
+          .map(part => part.trim())
+          .filter(Boolean);
         if (parts.length >= 2) {
           const name = parts[0];
           const domains = parts[1].split(',').map(d => d.trim());

@@ -1,6 +1,13 @@
 'use client';
 
-import { Dialog, Flex, Text, Button, TextField, ScrollArea } from '@radix-ui/themes';
+import {
+  Dialog,
+  Flex,
+  Text,
+  Button,
+  TextField,
+  ScrollArea,
+} from '@radix-ui/themes';
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -24,13 +31,20 @@ const compactConversation = (messages: Message[]): Message[] => {
 
   const summary: Message = {
     role: 'assistant',
-    content: `[Previous conversation summarized: ${Math.floor(messages.length / 2)} exchanges]`,
+    content: `[Previous conversation summarized: ${Math.floor(
+      messages.length / 2,
+    )} exchanges]`,
   };
 
   return [summary, ...messages.slice(-MAX_MESSAGES + 1)];
 };
 
-export const ChatbotDialog = ({ open, onOpenChange, initialPrompt, systemPrompt }: ChatbotDialogProps) => {
+export const ChatbotDialog = ({
+  open,
+  onOpenChange,
+  initialPrompt,
+  systemPrompt,
+}: ChatbotDialogProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
@@ -63,7 +77,11 @@ export const ChatbotDialog = ({ open, onOpenChange, initialPrompt, systemPrompt 
 
     abortControllerRef.current = new AbortController();
 
-    const assistantMessage: Message = { role: 'assistant', content: '', isStreaming: true };
+    const assistantMessage: Message = {
+      role: 'assistant',
+      content: '',
+      isStreaming: true,
+    };
     setMessages([...compactedMessages, assistantMessage]);
 
     const response = await fetch('/api/chat', {
@@ -92,6 +110,7 @@ export const ChatbotDialog = ({ open, onOpenChange, initialPrompt, systemPrompt 
     let accumulatedContent = '';
     let lastUpdate = Date.now();
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -181,15 +200,22 @@ export const ChatbotDialog = ({ open, onOpenChange, initialPrompt, systemPrompt 
             <TextField.Root
               placeholder="Type your message..."
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={e => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               disabled={isStreaming}
             />
             <Flex gap="2" justify="end">
-              <Button onClick={handleClear} variant="soft" disabled={isStreaming}>
+              <Button
+                onClick={handleClear}
+                variant="soft"
+                disabled={isStreaming}
+              >
                 Clear
               </Button>
-              <Button onClick={() => handleSend()} disabled={isStreaming || !input.trim()}>
+              <Button
+                onClick={() => handleSend()}
+                disabled={isStreaming || !input.trim()}
+              >
                 {isStreaming ? 'Sending...' : 'Send'}
               </Button>
             </Flex>

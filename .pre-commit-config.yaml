@@ -38,3 +38,11 @@ repos:
   #       pass_filenames: false
   #       always_run: true
   #       additional_dependencies: [flask]
+  - repo: local
+    hooks:
+      - id: lint-staged
+        name: Run lint-staged
+        entry: npx lint-staged
+        language: system
+        pass_filenames: false
+        always_run: true

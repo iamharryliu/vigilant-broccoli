@@ -6,8 +6,12 @@ import { Card, TextField } from '@radix-ui/themes';
 import { Search } from 'lucide-react';
 import { FileTree, FileNode } from '../../components/docs/file-tree.component';
 import { MarkdownViewer } from '../../components/docs/markdown-viewer.component';
-import { SearchResults, SearchResult } from '../../components/docs/search-results.component';
+import {
+  SearchResults,
+  SearchResult,
+} from '../../components/docs/search-results.component';
 
+// eslint-disable-next-line complexity
 function DocsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -48,34 +52,39 @@ function DocsPageContent() {
   }, []);
 
   // Fetch file content when a file is selected
-  const handleFileSelect = useCallback(async (path: string) => {
-    setSelectedFilePath(path);
-    setIsLoadingContent(true);
-    setError(null);
+  const handleFileSelect = useCallback(
+    async (path: string) => {
+      setSelectedFilePath(path);
+      setIsLoadingContent(true);
+      setError(null);
 
-    // Update URL with selected file
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('file', path);
-    router.push(`?${params.toString()}`, { scroll: false });
+      // Update URL with selected file
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('file', path);
+      router.push(`?${params.toString()}`, { scroll: false });
 
-    try {
-      const response = await fetch(`/api/docs/content?path=${encodeURIComponent(path)}`);
-      const data = await response.json();
+      try {
+        const response = await fetch(
+          `/api/docs/content?path=${encodeURIComponent(path)}`,
+        );
+        const data = await response.json();
 
-      if (data.success) {
-        setFileContent(data.content);
-      } else {
-        setError(data.error || 'Failed to load file content');
+        if (data.success) {
+          setFileContent(data.content);
+        } else {
+          setError(data.error || 'Failed to load file content');
+          setFileContent('');
+        }
+      } catch (err) {
+        setError('Failed to fetch file content');
         setFileContent('');
+        console.error(err);
+      } finally {
+        setIsLoadingContent(false);
       }
-    } catch (err) {
-      setError('Failed to fetch file content');
-      setFileContent('');
-      console.error(err);
-    } finally {
-      setIsLoadingContent(false);
-    }
-  }, [searchParams, router]);
+    },
+    [searchParams, router],
+  );
 
   // Load file from URL parameter on mount
   useEffect(() => {
@@ -95,7 +104,9 @@ function DocsPageContent() {
 
     setIsSearching(true);
     try {
-      const response = await fetch(`/api/docs/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(
+        `/api/docs/search?q=${encodeURIComponent(query)}`,
+      );
       const data = await response.json();
 
       if (data.success) {
@@ -133,7 +144,7 @@ function DocsPageContent() {
           <TextField.Root
             placeholder="Search files..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           >
             <TextField.Slot>
               <Search className="w-4 h-4" />
@@ -145,7 +156,9 @@ function DocsPageContent() {
             // Search Results
             <div className="p-2">
               {isSearching ? (
-                <div className="text-gray-500 text-center py-4">Searching...</div>
+                <div className="text-gray-500 text-center py-4">
+                  Searching...
+                </div>
               ) : (
                 <SearchResults
                   results={searchResults}
@@ -188,9 +201,7 @@ function DocsPageContent() {
             {error}
           </div>
         ) : (
-          <MarkdownViewer
-            content={fileContent}
-          />
+          <MarkdownViewer content={fileContent} />
         )}
       </Card>
     </div>
@@ -199,7 +210,13 @@ function DocsPageContent() {
 
 export default function DocsPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-[calc(100vh-120px)] text-gray-500">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-[calc(100vh-120px)] text-gray-500">
+          Loading...
+        </div>
+      }
+    >
       <DocsPageContent />
     </Suspense>
   );
