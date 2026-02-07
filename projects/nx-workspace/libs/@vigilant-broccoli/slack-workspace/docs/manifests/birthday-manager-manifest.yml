@@ -1,0 +1,26 @@
+{
+    "display_information": {
+        "name": "Birthday Manager",
+        "description": "Update user birthday fields via the Slack API."
+    },
+    "features": {
+        "bot_user": {
+            "display_name": "BirthdayBot"
+        }
+    },
+    "oauth_config": {
+        "scopes": {
+            "bot": [
+                "chat:write"
+            ],
+            "user": [
+                "users.profile:read",
+                "users.profile:write"
+            ]
+        }
+    },
+    "settings": {
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false
+    }
+}
