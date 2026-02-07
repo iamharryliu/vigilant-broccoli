@@ -108,7 +108,7 @@ jobs:
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
-        if: steps.check.outputs.has_deployments == 'true'
+        # if: steps.check.outputs.has_deployments == 'true'
 
       - name: Deploy affected apps
         if: steps.check.outputs.has_deployments == 'true'
