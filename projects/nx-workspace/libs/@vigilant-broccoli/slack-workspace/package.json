@@ -9,5 +9,8 @@
     "@slack/web-api": "^7.10.0",
     "@vigilant-broccoli/common-node": "*",
     "@vigilant-broccoli/common-js": "*"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
