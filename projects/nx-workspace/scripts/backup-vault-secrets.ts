@@ -1,4 +1,4 @@
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import dotenv from "dotenv";
 
@@ -14,21 +14,15 @@ async function backupVaultSecrets() {
       process.exit(1);
     }
 
-    // Allow self-signed certificates
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    const ca = readFileSync(resolve(__dirname, 'vault-ca.crt'), 'utf-8');
 
-    // Dynamically import node-vault
     const nodeVault = await import('node-vault');
     const vault = nodeVault.default({
       apiVersion: 'v1',
       endpoint: vaultAddr,
       token: vaultToken,
       requestOptions: {
-        strictSSL: false,
-        rejectUnauthorized: false,
-        agentOptions: {
-          rejectUnauthorized: false,
-        },
+        ca,
       },
     });
 
