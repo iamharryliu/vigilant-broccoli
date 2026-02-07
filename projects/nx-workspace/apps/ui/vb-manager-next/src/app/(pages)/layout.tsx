@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { NextNavBar, NextNavRoute } from '@vigilant-broccoli/next-lib';
 import { IconButton, Select, DropdownMenu, Button } from '@radix-ui/themes';
 import { usePathname } from 'next/navigation';
@@ -18,11 +18,14 @@ type ExtendedNavRoute = {
   children?: NextNavRoute[];
 };
 
+const IGNORED_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
+
 export default function Layout({ children }: { children: ReactNode }) {
   const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
   const pathname = usePathname();
   const [chatbotOpen, setChatbotOpen] = useState(false);
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
 
   const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
   const dropdownRoutes = allRoutes.filter(r => r.children && r.children.length > 0);
@@ -32,6 +35,18 @@ export default function Layout({ children }: { children: ReactNode }) {
     return children?.some(child => child.path === pathname) ?? false;
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && e.target instanceof Element && !IGNORED_TAGS.includes(e.target.tagName)) {
+        e.preventDefault();
+        setSearchDialogOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="w-full min-h-screen">
       <NextNavBar
@@ -39,7 +54,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         isDark={appearance === 'dark'}
         rightContent={
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <SearchDialogComponent />
+            <SearchDialogComponent open={searchDialogOpen} onOpenChange={setSearchDialogOpen} />
             <EmailModalComponent />
             <Button
               variant="soft"

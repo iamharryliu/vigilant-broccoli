@@ -23,9 +23,17 @@ const fuzzyMatch = (query: string, target: string): boolean => {
   return queryIndex === queryLower.length;
 };
 
-export function SearchDialogComponent() {
-  const [open, setOpen] = useState(false);
+type SearchDialogComponentProps = {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+};
+
+export function SearchDialogComponent({ open: externalOpen, onOpenChange: externalOnOpenChange }: SearchDialogComponentProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const open = externalOpen ?? internalOpen;
+  const setOpen = externalOnOpenChange ?? setInternalOpen;
   const [isGrouped, setIsGrouped] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,6 +51,8 @@ export function SearchDialogComponent() {
   useEffect(() => {
     if (open && searchInputRef.current) {
       setTimeout(() => searchInputRef.current?.focus(), 0);
+    } else if (!open) {
+      setSearchQuery('');
     }
   }, [open]);
 
