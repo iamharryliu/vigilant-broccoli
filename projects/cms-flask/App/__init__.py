@@ -1,10 +1,12 @@
-from flask import Flask
+from flask import Flask, request, abort
 from App.config import DIT_CONFIG
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
 
+
+ALLOWED_HOSTS = ["localhost:5000", "admin.cloud8skate.com"]
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -25,6 +27,12 @@ def create_app(config=DIT_CONFIG):
     bcrypt.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
+
+    @app.before_request
+    def validate_host():
+        host = request.headers.get("Host")
+        if host not in ALLOWED_HOSTS:
+            abort(403)
 
     # Import Blueprints
     from App.get.routes import get_blueprint
