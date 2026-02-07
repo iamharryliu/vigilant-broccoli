@@ -14,6 +14,7 @@ export const OPEN_TYPE = {
   MAC_APPLICATION: 'mac_application',
   FILE_SYSTEM: 'file_system',
   VSCODE: 'vscode',
+  INTERNAL: 'internal',
 } as const;
 
 export type OpenType = (typeof OPEN_TYPE)[keyof typeof OPEN_TYPE];
