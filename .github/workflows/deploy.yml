@@ -51,24 +51,24 @@ jobs:
           fi
 
       - name: Authenticate to Google Cloud
-        if: steps.check.outputs.has_deployments == 'true'
+        # if: steps.check.outputs.has_deployments == 'true'
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Setup Cloud SDK
-        if: steps.check.outputs.has_deployments == 'true'
+        # if: steps.check.outputs.has_deployments == 'true'
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Setup Vault CA Certificate
-        if: steps.check.outputs.has_deployments == 'true'
+        # if: steps.check.outputs.has_deployments == 'true'
         run: |
           CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
           echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
 
       - name: Open IAP Tunnel to Vault
-        if: steps.check.outputs.has_deployments == 'true'
+        # if: steps.check.outputs.has_deployments == 'true'
         run: |
           gcloud compute ssh vb-free-vm \
             --zone=us-east1-b \
@@ -93,7 +93,7 @@ jobs:
           done
 
       - name: Import Secrets from Vault
-        if: steps.check.outputs.has_deployments == 'true'
+        # if: steps.check.outputs.has_deployments == 'true'
         uses: hashicorp/vault-action@v3
         with:
           url: https://127.0.0.1:8200
