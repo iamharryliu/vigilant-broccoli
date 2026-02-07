@@ -441,6 +441,10 @@ export const DEEPSEEK_LINK = {
 } as const;
 
 export const GROK_LINK = {
+  GROK: {
+    NAME: 'Grok',
+    URL: 'https://grok.com/',
+  },
   DASHBOARD: {
     NAME: 'Grok Dashboard',
     URL: 'https://console.x.ai/',
