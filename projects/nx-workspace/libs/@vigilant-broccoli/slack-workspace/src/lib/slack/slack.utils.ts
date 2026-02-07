@@ -1,4 +1,4 @@
-import qs from 'querystring';
+import * as qs from 'querystring';
 import { WebClient } from '@slack/web-api';
 import { Member } from '@slack/web-api/dist/types/response/UsersListResponse';
 import { SlackMessage } from './slack.models';

@@ -3,9 +3,8 @@ import { SLACK_API_URL } from './slack.consts';
 import { SlackMessage } from './slack.models';
 import { createSlackHeaders, stringifyQuery } from './slack.utils';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
-import { HttpUtils } from '../http/http.utils';
+import { HttpUtils, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { Member } from '@slack/web-api/dist/types/response/UsersListResponse';
-import { getEnvironmentVariable } from '../utils';
 
 const sendSlackMessage = async (slackMessage: SlackMessage): Promise<void> => {
   const REQUEST_OPTIONS = {

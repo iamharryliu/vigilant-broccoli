@@ -1,0 +1,13 @@
+{
+  "name": "@vigilant-broccoli/slack-workspace",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "@slack/web-api": "^7.10.0",
+    "@vigilant-broccoli/common-node": "*",
+    "@vigilant-broccoli/common-js": "*"
+  }
+}

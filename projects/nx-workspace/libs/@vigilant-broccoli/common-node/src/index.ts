@@ -34,10 +34,6 @@ export * from './lib/text-message/text-message.service';
 export * from './lib/recaptcha/recaptcha.service';
 // Github
 export * from './lib/github/github.service';
-// Slack
-export * from './lib/slack/slack.models';
-export * from './lib/slack/slack.service';
-export * from './lib/slack/slack.utils';
 // Weather
 export * from './lib/weather/openweather.service';
 // Stripe

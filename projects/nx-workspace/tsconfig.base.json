@@ -63,6 +63,9 @@
       "general-components": ["libs/angular/general-components/src/index.ts"],
       "@vigilant-broccoli/personal-common-js": [
         "libs/@vigilant-broccoli/personal-common-js/src/index.ts"
+      ],
+      "@vigilant-broccoli/slack-workspace": [
+        "libs/@vigilant-broccoli/slack-workspace/src/index.ts"
       ]
     }
   },
