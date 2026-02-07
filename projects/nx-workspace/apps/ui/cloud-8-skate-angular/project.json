@@ -18,7 +18,9 @@
         "inlineStyleLanguage": "scss",
         "assets": [
           "apps/ui/cloud-8-skate-angular/src/favicon.ico",
-          "apps/ui/cloud-8-skate-angular/src/assets"
+          "apps/ui/cloud-8-skate-angular/src/assets",
+          "apps/ui/cloud-8-skate-angular/src/robots.txt",
+          "apps/ui/cloud-8-skate-angular/src/sitemap.xml"
         ],
         "styles": [
           "apps/ui/cloud-8-skate-angular/src/styles.scss",
