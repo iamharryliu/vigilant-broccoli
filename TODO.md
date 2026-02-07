@@ -36,8 +36,6 @@
 - **Audit/Refactor Tasks**
   - feat: Setup linux vs mac setup scripts
   - chore: dotfile cleanup
-- **New Features/Interfaces/Implementations**
-  - feat(cloud8skate): cloud8skate SSG, SEO, etc..
 - **New Features**
   - feat: home management
     - Calendar Implementation
