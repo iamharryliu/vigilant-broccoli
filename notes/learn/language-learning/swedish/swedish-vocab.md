@@ -25,7 +25,7 @@
 - en säkerhet
 - rimlig
 - en inflyttning
-- hjälper till 
+- hjälper till
 - en släpvagn
 - upptäcker
 - ensam
@@ -36,7 +36,7 @@
 - förlorar
 - besviken
 - har tur i oturen
-- en packning 
+- en packning
 - tar vägen
 - hög hyresrätt förskott var ligger lägenheten
 - vad säger killen som marcus pratar med
@@ -44,9 +44,9 @@
 - vera har inte fått betalt tidigare
 - dyker upp
 - ett tag till får bo de hos sina föräldrar
-- ställde 
+- ställde
 - står
-- arton 
+- arton
 - ganska
 - runt knuten
 - inte fått betalt
@@ -54,3 +54,21 @@
 - den är myket charmig och ligger i ett mysigt område med många
 - some de har råd med
 - en trevlig
+- fortforande
+- angående
+- ja det är den men kommer ett par i efermiddag för att titta på den
+- ett par
+- kan jag höra av mig till dig
+- gör gärna det
+- kanske vi hörs
+- vad snällt
+- undrar
+- då ingår bredband
+- din lapp
+- anslagstavlan
+- stämmer
+- komma förbi
+- när passar
+- gärna
+- boende
+- inneboende

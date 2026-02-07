@@ -1,5 +1,15 @@
 # NPM
 
+```
+npm login
+npm whoami
+npm logout
+
+npm org ls
+npm org ls @ORG_NAME
+npm org create PACKAgE_NAME
+```
+
 ## Semantic Versioning
 
 - new-product - First release 1.0.0
