@@ -13,7 +13,7 @@
   - 25g fresh ginger, finely chopped
   - 4 garlic cloves, finely chopped
   - 120g thinly sliced red bell peppers
-  
+
 - Braising liquid
   - 45ml Chinese “light soy sauce” (or regular soy sauce)
   - 30g organic brown sugar

@@ -1,4 +1,4 @@
-# CLI 
+# CLI
 - tmux
 - vim
   - nvim

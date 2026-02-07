@@ -1,14 +1,14 @@
 # Github
 
 ```
-gh auth login  
+gh auth login
 gh auth refresh -h github.com -s admin:org
 
 # CREATE
 gh api -X PUT /orgs/ORG_NAME/memberships/USERNAME
 # READ
 gh api /orgs/ORG_NAME/invitations
-gh api /orgs/ORG_NAME/members --paginate  
+gh api /orgs/ORG_NAME/members --paginate
 gh api /orgs/ORG_NAME/outside_collaborators
 # UPDATE
 gh api -X PUT /orgs/ORG_NAME/memberships/USERNAME -f role=member

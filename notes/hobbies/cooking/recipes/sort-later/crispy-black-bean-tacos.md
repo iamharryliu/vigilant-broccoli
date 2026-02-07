@@ -28,8 +28,8 @@
 ## Instructions
 
 - **Prepare Lime Pickled Onions** (if using) beforehand for maceration.
-- Preheat the oven to 218°C. 
-- In a frying pan, toast walnuts over medium-low heat until golden brown, about 5 minutes. 
+- Preheat the oven to 218°C.
+- In a frying pan, toast walnuts over medium-low heat until golden brown, about 5 minutes.
 - Drain and rinse black beans; pat dry with a towel.
 - Blend toasted walnuts in a food processor until finely crumbed. Add mushrooms, nutritional yeast, and mushroom powder, blending until finely chopped.
 - Add black beans to the mixture and pulse 10 times to break up but leave some beans intact.

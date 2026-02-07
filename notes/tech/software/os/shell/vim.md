@@ -111,4 +111,3 @@ b                                           # Jump to previous word
 ```
 defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
 ```
-

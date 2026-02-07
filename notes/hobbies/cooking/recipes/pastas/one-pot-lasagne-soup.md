@@ -17,7 +17,7 @@
 - Cream
 - Chopped basil
 - Lasagne sheets
-- Mozarella 
+- Mozarella
 - Parmesan
 
 ## Instructions

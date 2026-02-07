@@ -47,4 +47,3 @@ Save (⌘S) or File → Export to save a new copy.
 ## References
 
 [10 BEST Mac Apps for Productivity!](https://www.youtube.com/watch?v=-xXc7qeiC8I&t=215s)
-

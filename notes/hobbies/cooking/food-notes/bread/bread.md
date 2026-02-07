@@ -35,8 +35,8 @@
 
 - Pan fry
   - Butter and oil
-  - Let bread sit until browned. 
-  - Flip and repeat on the other side. 
+  - Let bread sit until browned.
+  - Flip and repeat on the other side.
 
 ## Tips
 - Revive stale bread - Wrap around wet cloth and microwave.

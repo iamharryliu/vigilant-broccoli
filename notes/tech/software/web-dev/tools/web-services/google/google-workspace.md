@@ -56,7 +56,7 @@ gam user USER_EMAIL show calendars
 gam calendar CALENDAR_ID show settings
 gam calendar calendar_id show events
 gam calendar CALENDAR_ID update event EVENT_ID summary "new summary"
-gam user CALENDAR_ID delete calendar 
+gam user CALENDAR_ID delete calendar
 
 
 ```

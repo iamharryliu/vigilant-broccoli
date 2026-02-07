@@ -8,7 +8,7 @@
 brew install awscli
 aws configure
 
-vim ~/.aws/credentials   
+vim ~/.aws/credentials
 
 [default]
 aws_access_key_id = aws_access_key_id

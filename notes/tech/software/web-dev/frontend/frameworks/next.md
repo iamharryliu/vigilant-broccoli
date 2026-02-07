@@ -9,5 +9,5 @@ export default function Page(){
 
 # Telemetry
 npx next telemetry disable
-npx next telemetry status 
+npx next telemetry status
 ```

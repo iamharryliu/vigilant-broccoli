@@ -52,7 +52,7 @@ kubectl delete -f minikube.yaml
 
 - runs containerized work loads
 - core components
-  - container runtime - Responsible for running containers on the worker nodes. Pulls containers from registry, start/stopping containiners, managing container resources.  
+  - container runtime - Responsible for running containers on the worker nodes. Pulls containers from registry, start/stopping containiners, managing container resources.
   - **Kublet** - Used to communicate with _control plane_, ie receive instructions and ensure desired state of pods is maintained.
   - **Kube Proxy** - routes traffic to correct paths, load balances
   - **Pods** - The smallest deployable units of a k8s cluster. Pods host 1 or more containers and provides storage and network for the containers.
