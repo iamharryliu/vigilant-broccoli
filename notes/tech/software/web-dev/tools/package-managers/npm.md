@@ -5,9 +5,8 @@ npm login
 npm whoami
 npm logout
 
-npm org ls
 npm org ls @ORG_NAME
-npm org create PACKAgE_NAME
+npm org create PACKAGE_NAME
 ```
 
 ## Semantic Versioning
