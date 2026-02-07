@@ -1,4 +1,5 @@
 import { NextNavRoute } from '@vigilant-broccoli/next-lib';
+import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 
 type ExtendedNavRoute = {
   title: string;
@@ -55,3 +56,26 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     children: Object.values(DEMO_ROUTES),
   },
 };
+
+const APP_ROUTE_SUBGROUP = 'vb-manager-next';
+
+export const APP_ROUTE_QUICK_LINKS = Object.values(APP_ROUTE)
+  .flatMap(route => {
+    if (route.children) {
+      return route.children.map(child => ({
+        label: child.title,
+        target: child.path,
+        type: OPEN_TYPE.INTERNAL,
+        subgroup: APP_ROUTE_SUBGROUP,
+      }));
+    }
+    if (route.path) {
+      return [{
+        label: route.title,
+        target: route.path,
+        type: OPEN_TYPE.INTERNAL,
+        subgroup: APP_ROUTE_SUBGROUP,
+      }];
+    }
+    return [];
+  });

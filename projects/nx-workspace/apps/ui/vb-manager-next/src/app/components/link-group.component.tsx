@@ -124,7 +124,18 @@ export function LinkGroupComponent({
       );
     }
 
-    // Browser links
+    if (link.type === OPEN_TYPE.INTERNAL) {
+      return (
+        <a
+          key={link.target}
+          href={link.target}
+          className={baseClass}
+        >
+          {link.label}
+        </a>
+      );
+    }
+
     return (
       <a
         key={link.target}

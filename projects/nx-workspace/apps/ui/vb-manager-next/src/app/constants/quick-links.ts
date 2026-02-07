@@ -24,6 +24,7 @@ import {
   PERSONAL_URL,
   VB_REPO_PATH,
 } from '@vigilant-broccoli/personal-common-js';
+import { APP_ROUTE_QUICK_LINKS } from '../app.const';
 
 const LINK_GROUP_SUBGROUP = {
   UTILITY: 'Utility',
@@ -740,6 +741,7 @@ const HOME_LINKS = [
 ];
 
 export const QUICK_LINKS = [
+  ...APP_ROUTE_QUICK_LINKS,
   ...VB_LINKS,
   ...DEV_LINKS,
   ...UTILITY_LINKS,
