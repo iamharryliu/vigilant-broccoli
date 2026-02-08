@@ -1,5 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { EmailService, QUEUE, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import {
+  EmailService,
+  QUEUE,
+  getEnvironmentVariable,
+} from '@vigilant-broccoli/common-node';
 import { TextMessageService } from '@vigilant-broccoli/common-node';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
 import amqplib from 'amqplib';
@@ -50,24 +54,30 @@ router.post('/send-text-message', async (req: Request, res: Response) => {
   });
 });
 
-router.post('/contact/send-message', requireJsonContent, async (req: Request, res: Response, next) => {
-  const messageRequest = req.body as MessageRequest;
-  const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable('RABBITMQ_CONNECTION_STRING');
-  const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
-  const channel = await connection.createChannel();
-  await channel.assertQueue(QUEUE.EMAIL, { durable: true });
-  channel.sendToQueue(
-    QUEUE.EMAIL,
-    Buffer.from(JSON.stringify(messageRequest)),
-    {
-      persistent: true,
-    },
-  );
-  console.log(`📤 Queued Message from: ${messageRequest.email}`);
-  setTimeout(() => {
-    connection.close();
-  }, 500);
-  res.json({ success: true });
-});
+router.post(
+  '/contact/send-message',
+  requireJsonContent,
+  async (req: Request, res: Response, _next) => {
+    const messageRequest = req.body as MessageRequest;
+    const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
+      'RABBITMQ_CONNECTION_STRING',
+    );
+    const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
+    const channel = await connection.createChannel();
+    await channel.assertQueue(QUEUE.EMAIL, { durable: true });
+    channel.sendToQueue(
+      QUEUE.EMAIL,
+      Buffer.from(JSON.stringify(messageRequest)),
+      {
+        persistent: true,
+      },
+    );
+    console.log(`📤 Queued Message from: ${messageRequest.email}`);
+    setTimeout(() => {
+      connection.close();
+    }, 500);
+    res.json({ success: true });
+  },
+);
 
 export default router;

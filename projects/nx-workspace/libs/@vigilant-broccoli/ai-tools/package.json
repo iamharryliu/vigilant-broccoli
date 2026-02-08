@@ -8,5 +8,8 @@
     "@anthropic-ai/sdk": "^0.53.0",
     "zod": "*",
     "axios": "^1.13.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
