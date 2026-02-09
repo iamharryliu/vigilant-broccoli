@@ -3,11 +3,11 @@ import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { logger, RecaptchaService } from '@vigilant-broccoli/common-node';
 
 export const requestLogger = (
-  _request: Request,
+  request: Request,
   _response: Response,
   next: NextFunction,
 ) => {
-  logger.info('Request Logged');
+  console.log(`${request.method} ${request.path}`);
   next();
 };
 
