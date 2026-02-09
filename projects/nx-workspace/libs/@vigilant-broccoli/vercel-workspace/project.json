@@ -1,0 +1,35 @@
+{
+  "name": "@vigilant-broccoli/vercel-workspace",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "/libs/@vigilant-broccoli/vercel-workspace/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": ["dist/{projectRoot}"],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/vercel-workspace",
+        "tsConfig": "/libs/@vigilant-broccoli/vercel-workspace/tsconfig.lib.json",
+        "packageJson": "/libs/@vigilant-broccoli/vercel-workspace/package.json",
+        "main": "/libs/@vigilant-broccoli/vercel-workspace/src/index.ts",
+        "assets": ["/libs/@vigilant-broccoli/vercel-workspace/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

@@ -66,6 +66,9 @@
       ],
       "@vigilant-broccoli/slack-workspace": [
         "libs/@vigilant-broccoli/slack-workspace/src/index.ts"
+      ],
+      "@vigilant-broccoli/vercel-workspace": [
+        "/libs/@vigilant-broccoli/vercel-workspace/src/index.ts"
       ]
     }
   },
