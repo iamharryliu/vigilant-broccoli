@@ -46,13 +46,15 @@ const DEV_LINKS = [
   },
   {
     label: 'VB - GCP Billing',
-    target: 'https://console.cloud.google.com/billing/017A09-73DEB3-7A8E42/reports?inv=1&invt=Ab2jMQ&project=vigilant-broccoli',
+    target:
+      'https://console.cloud.google.com/billing/017A09-73DEB3-7A8E42/reports?inv=1&invt=Ab2jMQ&project=vigilant-broccoli',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
     label: 'VB - GCE Instances',
-    target: 'https://console.cloud.google.com/compute/instances?inv=1&invt=Ab2jIQ&project=vigilant-broccoli',
+    target:
+      'https://console.cloud.google.com/compute/instances?inv=1&invt=Ab2jIQ&project=vigilant-broccoli',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -124,19 +126,22 @@ const DEV_LINKS = [
   },
   {
     label: 'VB - Cloudflare Billing',
-    target: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing',
+    target:
+      'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
     label: 'VB - Cloudflare Domains',
-    target: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/registrar/domains',
+    target:
+      'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/registrar/domains',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
     label: 'VB - Cloudflare Workers',
-    target: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/workers-and-pages',
+    target:
+      'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/workers-and-pages',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -148,7 +153,8 @@ const DEV_LINKS = [
   },
   {
     label: 'VB - Cloudflare R2 Buckets',
-    target: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/overview',
+    target:
+      'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/overview',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -215,6 +221,12 @@ const DEV_LINKS = [
   {
     label: GOOGLE_SERVICES.ANALYTICS.NAME,
     target: GOOGLE_SERVICES.ANALYTICS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: 'Search Console',
+    target: 'https://search.google.com/search-console',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
