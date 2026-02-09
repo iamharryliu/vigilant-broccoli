@@ -29,27 +29,27 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: npm ci
 
-      # - name: Check if deployment needed
-      #   id: check
-      #   working-directory: ./projects/nx-workspace
-      #   run: |
-      #     BASE="${{ github.event.before }}"
+      - name: Check if deployment needed
+        id: check
+        working-directory: ./projects/nx-workspace
+        run: |
+          BASE="${{ github.event.before }}"
 
-      #     # fallback if empty, zero hash, or missing commit
-      #     if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
-      #       echo "BASE commit $BASE not found, falling back to origin/main"
-      #       BASE="origin/main"
-      #     fi
-      #     AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
-      #     AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
-      #     AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
-      #     echo "affected_apps=$AFFECTED"
-      #     echo "affected_apps=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
-      #     if [[ -n "$AFFECTED_NORMALIZED" ]]; then
-      #       echo "has_deployments=true" >> $GITHUB_OUTPUT
-      #     else
-      #       echo "has_deployments=false" >> $GITHUB_OUTPUT
-      #     fi
+          # fallback if empty, zero hash, or missing commit
+          if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            echo "BASE commit $BASE not found, falling back to origin/main"
+            BASE="origin/main"
+          fi
+          AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
+          AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
+          AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
+          echo "affected_apps=$AFFECTED"
+          echo "affected_apps=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
+          if [[ -n "$AFFECTED_NORMALIZED" ]]; then
+            echo "has_deployments=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_deployments=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Authenticate to Google Cloud
         # if: steps.check.outputs.has_deployments == 'true'
@@ -112,7 +112,7 @@ jobs:
         # if: steps.check.outputs.has_deployments == 'true'
 
       - name: Deploy affected apps
-        # if: steps.check.outputs.has_deployments == 'true'
+        if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
