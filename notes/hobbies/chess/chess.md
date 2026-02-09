@@ -64,7 +64,20 @@
 ## Checkmates
 
 - **Back Rank Mate**
-  - Opposition King stuck in back row
+  - Composition: rook
+  - Opposition king stuck in back rank > rook moves to back rank and checkmates
+- **Hook Mate**
+  - Composition: pawn + knight + rook
+  - Pawn defending knight, knight defends checking square
+- **Anastasia's Mate**
+  - Composition: knight + rook/queen(sacrifice) + rook
+  - Knight forces king into corner square > sacrifice attack on king in end file > rook checkmates on file
+- **Blind Swine Mate**
+  - Composition: 2 rooks
+  - Rooks on 2nd last rank > eats pieces in 2nd rank > pushes king into checkmate
+- **Smothered Mate**
+  - Composition: knight
+  - King has no available moves > knight checkmates king
 
 ## Turn
 

@@ -3,10 +3,12 @@
 ```
 npm login
 npm whoami
-npm logout
+npm config set //registry.npmjs.org/:_authToken NPM_TOKEN
 
 npm org ls @ORG_NAME
 npm org create PACKAGE_NAME
+
+npm logout
 ```
 
 ## Semantic Versioning

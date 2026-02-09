@@ -11,8 +11,9 @@ fly doctor
 fly launch
 fly launch --no-deploy
 fly apps list
-fly apps destroy [app_name]
-fly apps open --app [app_name]
+fly apps create APP_NAME
+fly apps destroy APP_NAME
+fly apps open --app APP_NAME
 
 # Deploy
 fly deploy --ha=false
@@ -38,7 +39,6 @@ flyctl scale count [n] --app [app_name]
 flyctl auth token # Authentication token
 flyctl tokens create deploy # Application token
 ```
-
 
 ### SSH
 
