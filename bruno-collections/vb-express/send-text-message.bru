@@ -1,0 +1,23 @@
+meta {
+  name: Send Text Message
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/send-text-message
+  body: json
+  auth: none
+}
+
+headers {
+  x-api-key: {{apiKey}}
+}
+
+body:json {
+  {
+    "body": "This is a test text message",
+    "from": "{{phoneFrom}}",
+    "to": "{{phoneTo}}"
+  }
+}

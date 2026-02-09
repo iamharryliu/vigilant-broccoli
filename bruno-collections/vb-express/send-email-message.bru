@@ -1,0 +1,25 @@
+meta {
+  name: Send Email Message
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/send-email-message
+  body: json
+  auth: none
+}
+
+headers {
+  x-api-key: {{apiKey}}
+}
+
+body:json {
+  {
+    "from": "{{from}}",
+    "to": "{{to}}",
+    "subject": "Test Email",
+    "text": "This is a test email",
+    "html": "<p>This is a test email</p>"
+  }
+}
