@@ -58,8 +58,8 @@ if ask "Setup vigilant-broccoli VSCode themes?"; then
 fi
 
 if ask "Setup git hooks?"; then
-    pip3 install pre-commit && pre-commit install
     git config --unset-all core.hooksPath
+    pip3 install pre-commit && pre-commit install
 fi
 
 if ask "Install Node Packages?"; then
