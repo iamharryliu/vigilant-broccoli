@@ -1,4 +1,4 @@
-import { GithubService } from '@vigilant-broccoli/common-node';
+import { GithubService } from '@vigilant-broccoli/github-workspace';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
