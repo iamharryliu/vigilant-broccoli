@@ -1,0 +1,12 @@
+{
+  "name": "@vigilant-broccoli/github-workspace",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "@vigilant-broccoli/common-js": "*",
+    "@vigilant-broccoli/common-node": "*",
+    "tslib": "^2.3.0"
+  }
+}

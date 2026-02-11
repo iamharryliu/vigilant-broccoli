@@ -1,4 +1,4 @@
-import { ShellUtils } from '../shell/shell.utils';
+import { ShellUtils } from '@vigilant-broccoli/common-node';
 import { GithubCLICommand } from './github-commands';
 import { GithubUtils } from './github.utils';
 import {
@@ -175,7 +175,9 @@ async function removeMembersNotInConfig(
     GithubCLICommand.getTeamMembers(organizationName, teamSlug),
     true,
   )) as string;
-  const existingMembers = JSON.parse(data).map((member: { login: string }) => member.login);
+  const existingMembers = JSON.parse(data).map(
+    (member: { login: string }) => member.login,
+  );
   for (const member of existingMembers) {
     if (!team.members.map(m => m.username).includes(member)) {
       console.log(

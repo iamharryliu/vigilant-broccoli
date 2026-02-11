@@ -72,6 +72,9 @@
       ],
       "@vigilant-broccoli/slack-bots": [
         "libs/@vigilant-broccoli/slack-bots/src/index.ts"
+      ],
+      "@vigilant-broccoli/github-workspace": [
+        "libs/@vigilant-broccoli/github-workspace/src/index.ts"
       ]
     }
   },

@@ -1,0 +1,35 @@
+{
+  "name": "@vigilant-broccoli/github-workspace",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/github-workspace/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": ["dist/{projectRoot}"],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/github-workspace",
+        "tsConfig": "libs/@vigilant-broccoli/github-workspace/tsconfig.lib.json",
+        "packageJson": "libs/@vigilant-broccoli/github-workspace/package.json",
+        "main": "libs/@vigilant-broccoli/github-workspace/src/index.ts",
+        "assets": ["libs/@vigilant-broccoli/github-workspace/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

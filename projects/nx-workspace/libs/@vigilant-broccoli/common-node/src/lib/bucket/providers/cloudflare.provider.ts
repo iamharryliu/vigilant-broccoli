@@ -26,7 +26,8 @@ export class CloudflareBucketProvider implements IBucketProvider {
     const accountId =
       config?.accountId || getEnvironmentVariable('CLOUDFLARE_ACCOUNT_ID');
     const accessKeyId =
-      config?.accessKeyId || getEnvironmentVariable('CLOUDFLARE_R2_ACCESS_KEY_ID');
+      config?.accessKeyId ||
+      getEnvironmentVariable('CLOUDFLARE_R2_ACCESS_KEY_ID');
     const secretAccessKey =
       config?.secretAccessKey ||
       getEnvironmentVariable('CLOUDFLARE_R2_SECRET_ACCESS_KEY');
@@ -62,8 +63,9 @@ export class CloudflareBucketProvider implements IBucketProvider {
         }),
       );
       this.bucketInitialized = true;
-    } catch (error: any) {
-      if (error.name === 'NotFound' || error.Code === 'NoSuchBucket') {
+    } catch (error) {
+      const err = error as { name?: string; Code?: string };
+      if (err.name === 'NotFound' || err.Code === 'NoSuchBucket') {
         // Bucket doesn't exist, create it
         await this.client.send(
           new CreateBucketCommand({

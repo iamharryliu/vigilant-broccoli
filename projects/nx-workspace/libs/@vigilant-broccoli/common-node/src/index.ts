@@ -32,11 +32,6 @@ export * from './lib/site-monitor/site-monitor.service';
 export * from './lib/text-message/text-message.service';
 // Google Recaptcha
 export * from './lib/recaptcha/recaptcha.service';
-// Github
-export * from './lib/github/github.consts';
-export * from './lib/github/github.models';
-export * from './lib/github/github.service';
-export * from './lib/github/github.utils';
 // Weather
 export * from './lib/weather/openweather.service';
 // Stripe

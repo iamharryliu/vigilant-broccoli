@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { ShellUtils } from '../shell/shell.utils';
+import { ShellUtils } from '@vigilant-broccoli/common-node';
 import { GithubService } from './github.service';
 import {
   toSlug,
@@ -10,6 +10,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { GithubUser } from './github.models';
 import { GithubUserRole } from './github.consts';
+import { REPOSITORY_PERMISSION } from '@vigilant-broccoli/common-js';
 
 async function getTeamMembers(
   org: string,
@@ -48,13 +49,26 @@ async function getTeamRepositories(
     true,
   );
 
-  const repos = JSON.parse(data as string) as any[];
+  const repos = JSON.parse(data as string) as {
+    name: string;
+    permissions: {
+      admin: boolean;
+      maintain: boolean;
+      push: boolean;
+      triage: boolean;
+      pull: boolean;
+    };
+  }[];
 
-  return await Promise.all(
-    repos.map(repo => {
-      return { name: repo.name, permission: repo.permissions };
-    }),
-  );
+  return repos.map(repo => {
+    const permission: (typeof REPOSITORY_PERMISSION)[keyof typeof REPOSITORY_PERMISSION] =
+      repo.permissions.admin
+        ? REPOSITORY_PERMISSION.ADMIN
+        : repo.permissions.push || repo.permissions.maintain
+        ? REPOSITORY_PERMISSION.WRITE
+        : REPOSITORY_PERMISSION.READ;
+    return { name: repo.name, permission };
+  });
 }
 
 async function buildTeamTree(

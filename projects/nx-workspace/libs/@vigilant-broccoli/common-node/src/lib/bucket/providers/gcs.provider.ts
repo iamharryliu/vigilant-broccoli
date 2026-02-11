@@ -8,8 +8,10 @@ export class GcsBucketProvider implements IBucketProvider {
   private bucketName: string;
 
   constructor(config?: GcsBucketConfig) {
-    const projectId = config?.projectId || getEnvironmentVariable('GCS_PROJECT_ID');
-    this.bucketName = config?.bucketName || getEnvironmentVariable('GCS_BUCKET_NAME');
+    const projectId =
+      config?.projectId || getEnvironmentVariable('GCS_PROJECT_ID');
+    this.bucketName =
+      config?.bucketName || getEnvironmentVariable('GCS_BUCKET_NAME');
     const keyFilePath =
       config?.keyFilePath ||
       getEnvironmentVariable('GCS_KEY_FILE_PATH') ||
@@ -20,7 +22,9 @@ export class GcsBucketProvider implements IBucketProvider {
       throw new Error('Missing Google Cloud Storage configuration');
     }
 
-    const storageOptions: any = { projectId };
+    const storageOptions: { projectId: string; keyFilename?: string } = {
+      projectId,
+    };
     if (keyFilePath) {
       storageOptions.keyFilename = keyFilePath;
     }
@@ -46,10 +50,14 @@ export class GcsBucketProvider implements IBucketProvider {
 
   async list(): Promise<BucketFile[]> {
     const [files] = await this.bucket.getFiles();
-    return files.map((file) => ({
+    return files.map(file => ({
       name: file.name,
-      size: file.metadata.size ? parseInt(file.metadata.size as string, 10) : undefined,
-      updatedAt: file.metadata.updated ? new Date(file.metadata.updated) : undefined,
+      size: file.metadata.size
+        ? parseInt(file.metadata.size as string, 10)
+        : undefined,
+      updatedAt: file.metadata.updated
+        ? new Date(file.metadata.updated)
+        : undefined,
     }));
   }
 
