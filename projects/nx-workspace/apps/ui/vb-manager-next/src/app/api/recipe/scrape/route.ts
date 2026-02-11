@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { RecipeScraperService } from '@vigilant-broccoli/ai-tools';
+import { RecipeScraperService } from '@vigilant-broccoli/llm-tools';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 import { open } from '@vigilant-broccoli/common-node';

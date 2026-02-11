@@ -1,11 +1,14 @@
-import { LLMService } from '@vigilant-broccoli/ai-tools';
+import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 import { z } from 'zod';
 
 export async function getTextPromptResults(userPrompt: string) {
   const promptRequests = [
     { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.GPT_4O_MINI } },
-    { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.FLASH_2_5_LITE } },
+    {
+      prompt: { userPrompt },
+      modelConfig: { model: LLM_MODEL.FLASH_2_5_LITE },
+    },
     { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.GROK_3 } },
     { prompt: { userPrompt }, modelConfig: { model: LLM_MODEL.DEEP_SEEK } },
   ];

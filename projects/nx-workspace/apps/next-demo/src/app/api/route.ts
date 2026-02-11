@@ -1,6 +1,6 @@
 import { LLMModel, LLMPrompt } from '@vigilant-broccoli/common-js';
 import { NextRequest, NextResponse } from 'next/server';
-import { LLMService } from '@vigilant-broccoli/ai-tools';
+import { LLMService } from '@vigilant-broccoli/llm-tools';
 
 type Prompt = {
   id: number;

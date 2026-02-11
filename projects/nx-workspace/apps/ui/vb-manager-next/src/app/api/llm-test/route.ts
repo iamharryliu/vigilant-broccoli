@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LLMService } from '@vigilant-broccoli/ai-tools';
+import { LLMService } from '@vigilant-broccoli/llm-tools';
 import {
   LLMModel,
   modelSupportsImageOutput,

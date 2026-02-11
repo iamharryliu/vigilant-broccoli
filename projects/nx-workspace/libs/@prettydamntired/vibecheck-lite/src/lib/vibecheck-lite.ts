@@ -1,8 +1,6 @@
 import { Location, LLM_MODEL } from '@vigilant-broccoli/common-js';
-import {
-  OpenWeatherService,
-} from '@vigilant-broccoli/common-node';
-import { LLMService } from '@vigilant-broccoli/ai-tools';
+import { OpenWeatherService } from '@vigilant-broccoli/common-node';
+import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { z } from 'zod';
 
 // Zod schema for outfit recommendation
@@ -12,8 +10,12 @@ const OutfitRecommendationSchema = z.object({
       localTime: z.string().describe('Time in format HH:mm with timezone'),
       temperature: z.number().describe('Temperature in Celsius'),
       weather: z.string().describe('Weather description'),
-      recommendation: z.string().describe('Complete outfit recommendation with specific clothing items'),
-    })
+      recommendation: z
+        .string()
+        .describe(
+          'Complete outfit recommendation with specific clothing items',
+        ),
+    }),
   ),
 });
 
@@ -27,9 +29,15 @@ async function getWeatherDataForOutfitRecommendation(
 }
 
 // Helper function to build prompt structure
-function buildPromptStructured(requestData: any, timezoneOffset: number): { systemPrompt: string; userPrompt: string } {
+function buildPromptStructured(
+  requestData: any,
+  timezoneOffset: number,
+): { systemPrompt: string; userPrompt: string } {
   const timezoneOffsetHours = timezoneOffset / 3600;
-  const timezoneString = timezoneOffsetHours >= 0 ? `UTC+${timezoneOffsetHours}` : `UTC${timezoneOffsetHours}`;
+  const timezoneString =
+    timezoneOffsetHours >= 0
+      ? `UTC+${timezoneOffsetHours}`
+      : `UTC${timezoneOffsetHours}`;
 
   const systemPrompt = `You are a fashion assistant that recommends complete outfits based on weather data.
 The user will provide weather forecast data in JSON format for 4 different times.
@@ -49,7 +57,11 @@ Return a JSON object with an array of recommendations, each containing:
 - weather: weather description
 - recommendation: detailed outfit recommendation with specific clothing items`;
 
-  const userPrompt = `Please analyze this weather forecast data and provide outfit recommendations:\n\n${JSON.stringify(requestData, null, 2)}`;
+  const userPrompt = `Please analyze this weather forecast data and provide outfit recommendations:\n\n${JSON.stringify(
+    requestData,
+    null,
+    2,
+  )}`;
 
   return { systemPrompt, userPrompt };
 }
@@ -76,10 +88,12 @@ async function* streamFormattedText(text: string): AsyncIterable<string> {
 
 // Main function to get outfit recommendation
 async function getOutfitRecommendation(location: Location): Promise<string> {
-  const { weatherData, timezoneOffset } = await getWeatherDataForOutfitRecommendation(
-    location,
+  const { weatherData, timezoneOffset } =
+    await getWeatherDataForOutfitRecommendation(location);
+  const { systemPrompt, userPrompt } = buildPromptStructured(
+    weatherData,
+    timezoneOffset,
   );
-  const { systemPrompt, userPrompt } = buildPromptStructured(weatherData, timezoneOffset);
   const result = await LLMService.prompt<OutfitRecommendation>({
     prompt: {
       systemPrompt,
@@ -100,10 +114,12 @@ async function getOutfitRecommendation(location: Location): Promise<string> {
 async function getOutfitRecommendationStream(
   location: Location,
 ): Promise<AsyncIterable<string>> {
-  const { weatherData, timezoneOffset } = await getWeatherDataForOutfitRecommendation(
-    location,
+  const { weatherData, timezoneOffset } =
+    await getWeatherDataForOutfitRecommendation(location);
+  const { systemPrompt, userPrompt } = buildPromptStructured(
+    weatherData,
+    timezoneOffset,
   );
-  const { systemPrompt, userPrompt } = buildPromptStructured(weatherData, timezoneOffset);
 
   // Get structured data first
   const result = await LLMService.prompt<OutfitRecommendation>({

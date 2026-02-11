@@ -1,5 +1,5 @@
 {
-  "name": "@vigilant-broccoli/ai-tools",
+  "name": "@vigilant-broccoli/llm-tools",
   "version": "0.0.1",
   "dependencies": {
     "openai": "^4.26.0",

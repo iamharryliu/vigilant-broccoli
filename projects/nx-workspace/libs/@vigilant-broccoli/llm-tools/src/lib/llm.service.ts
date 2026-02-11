@@ -21,7 +21,11 @@ function buildAnthropicContent(request: LLMPromptRequest<unknown>) {
         type: 'image',
         source: {
           type: 'base64',
-          media_type: img.mimeType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+          media_type: img.mimeType as
+            | 'image/jpeg'
+            | 'image/png'
+            | 'image/gif'
+            | 'image/webp',
           data: img.base64,
         },
       });
@@ -78,7 +82,9 @@ async function promptOpenAI<T>(
   const client = LLMUtils.getLLMClient(modelConfig) as OpenAI;
   const chatParams = LLMUtils.formatPromptParams(request, false);
 
-  const response = await client.chat.completions.create(chatParams) as OpenAI.Chat.Completions.ChatCompletion;
+  const response = (await client.chat.completions.create(
+    chatParams,
+  )) as OpenAI.Chat.Completions.ChatCompletion;
   const usage = response.usage as CompletionUsage;
   const message = response.choices[0].message;
 
@@ -178,15 +184,18 @@ async function generateMultipleOutputs<T>(
   isImageModel: boolean,
 ): Promise<string[]> {
   if (isImageModel) {
-    const imageResults = await generateImages(request.prompt.userPrompt, numOutputs);
+    const imageResults = await generateImages(
+      request.prompt.userPrompt,
+      numOutputs,
+    );
     return imageResults.filter((img): img is string => img !== undefined);
   }
 
   const outputs = await Promise.all(
     Array.from({ length: numOutputs }, async () => {
-      const result = await prompt(request) as LLMPromptResult<T>;
+      const result = (await prompt(request)) as LLMPromptResult<T>;
       return result.data as string;
-    })
+    }),
   );
   return outputs;
 }

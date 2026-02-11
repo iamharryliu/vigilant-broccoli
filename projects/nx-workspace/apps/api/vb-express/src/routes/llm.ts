@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { LLMService } from '@vigilant-broccoli/ai-tools';
+import { LLMService } from '@vigilant-broccoli/llm-tools';
 import {
   LLMModel,
   modelSupportsImageOutput,
@@ -34,10 +34,7 @@ router.post('/', async (req: Request, res: Response) => {
     });
   }
 
-  const results: Record<LLMModel, string[]> = {} as Record<
-    LLMModel,
-    string[]
-  >;
+  const results: Record<LLMModel, string[]> = {} as Record<LLMModel, string[]>;
 
   await Promise.all(
     models.map(async model => {

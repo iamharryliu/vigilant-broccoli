@@ -1,7 +1,7 @@
 {
-  "name": "@vigilant-broccoli/ai-tools",
+  "name": "@vigilant-broccoli/llm-tools",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/@vigilant-broccoli/ai-tools/src",
+  "sourceRoot": "libs/@vigilant-broccoli/llm-tools/src",
   "projectType": "library",
   "release": {
     "version": {
@@ -16,11 +16,11 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/@vigilant-broccoli/ai-tools",
-        "tsConfig": "libs/@vigilant-broccoli/ai-tools/tsconfig.lib.json",
-        "packageJson": "libs/@vigilant-broccoli/ai-tools/package.json",
-        "main": "libs/@vigilant-broccoli/ai-tools/src/index.ts",
-        "assets": ["libs/@vigilant-broccoli/ai-tools/*.md"]
+        "outputPath": "dist/libs/@vigilant-broccoli/llm-tools",
+        "tsConfig": "libs/@vigilant-broccoli/llm-tools/tsconfig.lib.json",
+        "packageJson": "libs/@vigilant-broccoli/llm-tools/package.json",
+        "main": "libs/@vigilant-broccoli/llm-tools/src/index.ts",
+        "assets": ["libs/@vigilant-broccoli/llm-tools/*.md"]
       }
     },
     "nx-release-publish": {

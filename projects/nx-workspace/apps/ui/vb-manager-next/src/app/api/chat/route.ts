@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { LLMService } from '@vigilant-broccoli/ai-tools';
+import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
+      Connection: 'keep-alive',
     },
   });
 }

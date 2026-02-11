@@ -94,7 +94,9 @@ function formatPromptParams<T>(request: LLMPromptRequest<T>, stream = false) {
   const { prompt, modelConfig, responseFormat } = request;
   const { userPrompt, systemPrompt, images } = prompt;
 
-  let userContent: string | Array<{ type: string; text?: string; image_url?: { url: string } }>;
+  let userContent:
+    | string
+    | Array<{ type: string; text?: string; image_url?: { url: string } }>;
 
   if (images && images.length > 0) {
     userContent = [
@@ -131,7 +133,9 @@ function formatPromptParams<T>(request: LLMPromptRequest<T>, stream = false) {
       ? { response_format: zodResponseFormat(responseFormat.zod, 'answer') }
       : {}),
     stream,
-  } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming | OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming;
+  } as
+    | OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
+    | OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming;
 }
 
 function provideResponseExample(responseExample: string) {
