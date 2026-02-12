@@ -1,5 +1,9 @@
 # TODO
 
+## NPM CI
+
+- chore: alias for `alias run lib:nx-release-publish`?
+
 ## Storage Handling Practices
 
 - Image Storage Solution
@@ -16,8 +20,6 @@
     - Journal TODO
     - vb TODO
   - Implement with Claude Workflow - `/vb-plan-day`, `/vb-plan-week`
-- **Secret Management**
-  - Handle [Flyio secrets](https://fly.io/dashboard/harry-560) via CI
 - **machine**
   - audit default pip list
 - **vb-cms**
@@ -46,7 +48,6 @@
   - chore: iCloud vb notes.
   - chore: Research identification implementations
   - chore: Research iPhone finder implementation
-  - chore: alias for `alias run lib:nx-release-publish`?
 
 ## Home Management
 
