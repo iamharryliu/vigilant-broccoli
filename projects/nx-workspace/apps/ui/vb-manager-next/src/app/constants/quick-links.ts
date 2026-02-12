@@ -132,6 +132,19 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: 'Supabase Organization (vigilant-broccoli)',
+    target: 'https://supabase.com/dashboard/org/jqyyytkbstihvvbalofm',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+
+  {
+    label: 'Supabase Project (vigilant-broccoli',
+    target: 'https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: 'VB - Cloudflare Domains',
     target:
       'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/registrar/domains',
