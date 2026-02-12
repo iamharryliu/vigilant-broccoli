@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "serve:personal-website": "concurrently \"nx serve personal-website-frontend\" \"nx serve personal-website-backend\"",
     "lint:all": "nx run-many -t lint --fix",
     "format": "nx format:write",
     "test:all": "nx run-many -t test",
