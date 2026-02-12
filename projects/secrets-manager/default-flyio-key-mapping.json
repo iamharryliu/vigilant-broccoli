@@ -1,22 +1,5 @@
 [
   {
-    "name": "harryliu-design-express",
-    "password_key_values": {
-      "ENCRYPTION_METHOD": "method",
-      "MONGO_DB_PASSWORD": "password",
-      "MONGO_DB_USERNAME": "username",
-      "MY_EMAIL": "email",
-      "MY_EMAIL_PASSWORD": "password",
-      "NODE_ENV": "env",
-      "PERSONAL_WEBSITE_DB": "db_string",
-      "PERSONAL_WEBSITE_FRONTEND_URL": "frontend_url",
-      "RECAPTCHA_V3_SECRET_KEY": "key",
-      "SECRET_IV": "secret",
-      "SECRET_KEY": "key",
-      "RABBITMQ_CONNECTION_STRING": "connection_string"
-    }
-  },
-  {
     "name": "vibecheck-flask",
     "password_key_values": {
       "AWS_ACCESS_KEY_ID": "key_id",
