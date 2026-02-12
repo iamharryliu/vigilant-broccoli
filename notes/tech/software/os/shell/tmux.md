@@ -35,6 +35,7 @@ tmux new -c /PATH                                   # Create new session with wo
 tmux list-sessions                                  # List all sessions
 tmux ls                                             # List all sessions (short form)
 # CONNECT
+tmux new -As SESSION_NAME                           # Attach session if exists
 tmux attach-session                                 # Attach to last session
 tmux attach-session -t SESSION_NAME                 # Attach to specific session
 tmux a                                              # Attach to last session (short form)
