@@ -2,13 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { RecipeScraperService } from '@vigilant-broccoli/llm-tools';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
+import { homedir } from 'os';
 import { open } from '@vigilant-broccoli/common-node';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
+import { VIGILANT_BROCCOLI_ROOT_PATH } from '../../../app.const';
 
 export async function POST(request: NextRequest) {
   const { url } = await request.json();
+  const vbRootPath = VIGILANT_BROCCOLI_ROOT_PATH.replace(
+    /^~(?=$|\/|\\)/,
+    homedir(),
+  );
   const recipeTemplate = readFileSync(
-    resolve(process.cwd(), '../../../../../notes/cooking/recipe-template.md'),
+    resolve(vbRootPath, 'notes/hobbies/cooking/recipe-template.md'),
     'utf-8',
   );
 
@@ -25,8 +31,8 @@ export async function POST(request: NextRequest) {
 
   // Ensure the sort-later directory exists
   const sortLaterDir = resolve(
-    process.cwd(),
-    '../../../../../notes/cooking/recipes/sort-later',
+    vbRootPath,
+    'notes/hobbies/cooking/recipes/sort-later',
   );
   mkdirSync(sortLaterDir, { recursive: true });
 

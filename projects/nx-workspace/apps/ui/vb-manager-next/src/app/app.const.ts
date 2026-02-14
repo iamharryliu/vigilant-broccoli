@@ -59,23 +59,26 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
 
 const APP_ROUTE_SUBGROUP = 'vb-manager-next';
 
-export const APP_ROUTE_QUICK_LINKS = Object.values(APP_ROUTE)
-  .flatMap(route => {
-    if (route.children) {
-      return route.children.map(child => ({
-        label: child.title,
-        target: child.path,
-        type: OPEN_TYPE.INTERNAL,
-        subgroup: APP_ROUTE_SUBGROUP,
-      }));
-    }
-    if (route.path) {
-      return [{
+export const VIGILANT_BROCCOLI_ROOT_PATH = '~/vigilant-broccoli';
+
+export const APP_ROUTE_QUICK_LINKS = Object.values(APP_ROUTE).flatMap(route => {
+  if (route.children) {
+    return route.children.map(child => ({
+      label: child.title,
+      target: child.path,
+      type: OPEN_TYPE.INTERNAL,
+      subgroup: APP_ROUTE_SUBGROUP,
+    }));
+  }
+  if (route.path) {
+    return [
+      {
         label: route.title,
         target: route.path,
         type: OPEN_TYPE.INTERNAL,
         subgroup: APP_ROUTE_SUBGROUP,
-      }];
-    }
-    return [];
-  });
+      },
+    ];
+  }
+  return [];
+});
