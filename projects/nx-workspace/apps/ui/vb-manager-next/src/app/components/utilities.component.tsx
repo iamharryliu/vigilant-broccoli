@@ -2,7 +2,10 @@
 
 import { useMemo } from 'react';
 import { CardContainer } from './card-container.component';
-import { CollapsibleList, CollapsibleListItemConfig } from './collapsible-list.component';
+import {
+  CollapsibleList,
+  CollapsibleListItemConfig,
+} from './collapsible-list.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import { CalculatorUtilityContent } from './utilities/calculator.utility';
 import { CookingConversionsUtilityContent } from './utilities/cooking-conversions.utility';
@@ -12,6 +15,7 @@ import { StopwatchUtilityContent } from './utilities/stopwatch.utility';
 import { TimerUtilityContent } from './utilities/timer.utility';
 import { AlarmUtilityContent } from './utilities/alarm.utility';
 import { CurrencyConverterUtilityContent } from './utilities/currency-converter.utility';
+import { Metronome } from '@vigilant-broccoli/react-music-lib';
 
 export const UtilitiesComponent = () => {
   const { appMode } = useAppMode();
@@ -63,7 +67,12 @@ export const UtilitiesComponent = () => {
         id: 'alarm',
         title: 'Alarm',
         content: <AlarmUtilityContent />,
-      }
+      },
+      {
+        id: 'metronome',
+        title: 'Metronome',
+        content: <Metronome />,
+      },
     );
 
     return items;

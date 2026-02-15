@@ -1,0 +1,44 @@
+{
+  "name": "@vigilant-broccoli/react-music-lib",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/react-music-lib/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "executor": "@nx/rollup:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/react-music-lib",
+        "tsConfig": "libs/@vigilant-broccoli/react-music-lib/tsconfig.lib.json",
+        "project": "libs/@vigilant-broccoli/react-music-lib/package.json",
+        "entryFile": "libs/@vigilant-broccoli/react-music-lib/src/index.ts",
+        "external": ["react", "react-dom", "react/jsx-runtime"],
+        "rollupConfig": "@nx/react/plugins/bundle-rollup",
+        "compiler": "swc",
+        "assets": [
+          {
+            "glob": "libs/@vigilant-broccoli/react-music-lib/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    }
+  },
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": ["dist/{projectRoot}"],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  }
+}

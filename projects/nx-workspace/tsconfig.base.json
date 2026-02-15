@@ -72,6 +72,9 @@
       ],
       "@vigilant-broccoli/llm-tools": [
         "libs/@vigilant-broccoli/llm-tools/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-music-lib": [
+        "libs/@vigilant-broccoli/react-music-lib/src/index.ts"
       ]
     }
   },
