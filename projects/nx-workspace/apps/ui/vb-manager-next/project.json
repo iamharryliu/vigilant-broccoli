@@ -27,7 +27,7 @@
         "env": {
           "NEXTAUTH_SECRET": "NEXTAUTH_SECRET",
           "NEXTAUTH_URL": "http://localhost:3000",
-          "VB_EXPRESS_URL":"https://vb-express.fly.dev"
+          "VB_EXPRESS_URL": "https://vb-express.fly.dev"
         }
       }
     },
@@ -59,20 +59,9 @@
         "command": "tsx scripts/fetch-secrets.ts 'pm2 start apps/ui/vb-manager-next/ecosystem.config.js'"
       }
     },
-    "pm2:stop": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pm2 stop vb-manager-next"
-      }
-    },
-    "pm2:restart": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pm2 restart vb-manager-next"
-      }
-    },
     "pm2:reload": {
       "executor": "nx:run-commands",
+      "dependsOn": ["build"],
       "options": {
         "command": "tsx scripts/fetch-secrets.ts 'pm2 reload apps/ui/vb-manager-next/ecosystem.config.js'"
       }
