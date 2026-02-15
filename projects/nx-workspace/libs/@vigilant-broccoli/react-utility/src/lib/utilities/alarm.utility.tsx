@@ -1,6 +1,13 @@
 'use client';
 
-import { Badge, Button, Flex, ScrollArea, Text, TextField } from '@radix-ui/themes';
+import {
+  Badge,
+  Button,
+  Flex,
+  ScrollArea,
+  Text,
+  TextField,
+} from '@radix-ui/themes';
 import { useEffect, useRef, useState } from 'react';
 
 const STORAGE_KEY = 'vb-manager-alarms';
@@ -21,7 +28,8 @@ export const AlarmUtilityContent = () => {
   const [alarms, setAlarms] = useState<Alarm[]>([]);
   const [newTime, setNewTime] = useState('');
   const [newLabel, setNewLabel] = useState('');
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+  const [notificationPermission, setNotificationPermission] =
+    useState<NotificationPermission>('default');
   const [, setTick] = useState(0);
   const ringingIntervalsRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
@@ -51,12 +59,14 @@ export const AlarmUtilityContent = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
-      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(
+        now.getMinutes(),
+      ).padStart(2, '0')}`;
 
-      setTick((prev) => prev + 1);
+      setTick(prev => prev + 1);
 
-      setAlarms((prevAlarms) =>
-        prevAlarms.map((alarm) => {
+      setAlarms(prevAlarms =>
+        prevAlarms.map(alarm => {
           if (alarm.enabled && alarm.time === currentTime && !alarm.triggered) {
             startAlarmRinging(alarm.id);
             showNotification(alarm);
@@ -67,13 +77,15 @@ export const AlarmUtilityContent = () => {
             return { ...alarm, triggered: false };
           }
           return alarm;
-        })
+        }),
       );
     }, CHECK_INTERVAL_MS);
 
     return () => {
       clearInterval(interval);
-      ringingIntervalsRef.current.forEach((intervalId) => clearInterval(intervalId));
+      ringingIntervalsRef.current.forEach(intervalId =>
+        clearInterval(intervalId),
+      );
       ringingIntervalsRef.current.clear();
     };
   }, []);
@@ -97,7 +109,10 @@ export const AlarmUtilityContent = () => {
     oscillator.type = 'sine';
 
     gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + BEEP_DURATION_MS / 1000);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + BEEP_DURATION_MS / 1000,
+    );
 
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + BEEP_DURATION_MS / 1000);
@@ -121,10 +136,10 @@ export const AlarmUtilityContent = () => {
       ringingIntervalsRef.current.delete(alarmId);
     }
 
-    setAlarms((prev) =>
-      prev.map((alarm) =>
-        alarm.id === alarmId ? { ...alarm, triggered: false } : alarm
-      )
+    setAlarms(prev =>
+      prev.map(alarm =>
+        alarm.id === alarmId ? { ...alarm, triggered: false } : alarm,
+      ),
     );
   };
 
@@ -169,25 +184,29 @@ export const AlarmUtilityContent = () => {
       createdAt: Date.now(),
     };
 
-    setAlarms((prev) => [...prev, alarm]);
+    setAlarms(prev => [...prev, alarm]);
     setNewTime('');
     setNewLabel('');
   };
 
   const handleToggleAlarm = (id: string) => {
-    const alarm = alarms.find((a) => a.id === id);
+    const alarm = alarms.find(a => a.id === id);
     if (alarm?.triggered) {
       stopAlarmRinging(id);
     }
-    setAlarms((prev) => prev.map((alarm) => (alarm.id === id ? { ...alarm, enabled: !alarm.enabled } : alarm)));
+    setAlarms(prev =>
+      prev.map(alarm =>
+        alarm.id === id ? { ...alarm, enabled: !alarm.enabled } : alarm,
+      ),
+    );
   };
 
   const handleDeleteAlarm = (id: string) => {
-    const alarm = alarms.find((a) => a.id === id);
+    const alarm = alarms.find(a => a.id === id);
     if (alarm?.triggered) {
       stopAlarmRinging(id);
     }
-    setAlarms((prev) => prev.filter((alarm) => alarm.id !== id));
+    setAlarms(prev => prev.filter(alarm => alarm.id !== id));
     if (alarms.length === 1) {
       localStorage.removeItem(STORAGE_KEY);
     }
@@ -216,8 +235,8 @@ export const AlarmUtilityContent = () => {
               size="3"
               type="time"
               value={newTime}
-              onChange={(e) => setNewTime(e.target.value)}
-              onKeyDown={(e) => {
+              onChange={e => setNewTime(e.target.value)}
+              onKeyDown={e => {
                 if (e.key === 'Enter') handleAddAlarm();
               }}
             />
@@ -230,8 +249,8 @@ export const AlarmUtilityContent = () => {
               size="3"
               placeholder="Alarm label"
               value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              onKeyDown={(e) => {
+              onChange={e => setNewLabel(e.target.value)}
+              onKeyDown={e => {
                 if (e.key === 'Enter') handleAddAlarm();
               }}
             />
@@ -245,10 +264,19 @@ export const AlarmUtilityContent = () => {
       {alarms.length > 0 && (
         <ScrollArea style={{ maxHeight: '300px' }}>
           <Flex direction="column" gap="2">
-            {alarms.map((alarm) => {
+            {alarms.map(alarm => {
               const progress = calculateProgress(alarm);
               return (
-                <Flex key={alarm.id} direction="column" gap="2" p="2" style={{ border: '1px solid var(--gray-6)', borderRadius: '4px' }}>
+                <Flex
+                  key={alarm.id}
+                  direction="column"
+                  gap="2"
+                  p="2"
+                  style={{
+                    border: '1px solid var(--gray-6)',
+                    borderRadius: '4px',
+                  }}
+                >
                   <Flex align="center" justify="between">
                     <Flex direction="column" gap="1">
                       <Flex align="center" gap="2">
@@ -266,15 +294,28 @@ export const AlarmUtilityContent = () => {
                     </Flex>
                     <Flex gap="2">
                       {alarm.triggered ? (
-                        <Button size="1" color="red" onClick={() => handleDeleteAlarm(alarm.id)}>
+                        <Button
+                          size="1"
+                          color="red"
+                          onClick={() => handleDeleteAlarm(alarm.id)}
+                        >
                           Stop Alarm
                         </Button>
                       ) : (
                         <>
-                          <Button size="1" variant={alarm.enabled ? 'soft' : 'outline'} onClick={() => handleToggleAlarm(alarm.id)}>
+                          <Button
+                            size="1"
+                            variant={alarm.enabled ? 'soft' : 'outline'}
+                            onClick={() => handleToggleAlarm(alarm.id)}
+                          >
                             {alarm.enabled ? 'Disable' : 'Enable'}
                           </Button>
-                          <Button size="1" color="red" variant="soft" onClick={() => handleDeleteAlarm(alarm.id)}>
+                          <Button
+                            size="1"
+                            color="red"
+                            variant="soft"
+                            onClick={() => handleDeleteAlarm(alarm.id)}
+                          >
                             Delete
                           </Button>
                         </>

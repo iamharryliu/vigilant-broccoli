@@ -7,15 +7,17 @@ import {
   CollapsibleListItemConfig,
 } from './collapsible-list.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
-import { CalculatorUtilityContent } from './utilities/calculator.utility';
 import { CookingConversionsUtilityContent } from './utilities/cooking-conversions.utility';
 import { RecipeScraperUtilityContent } from './utilities/recipe-scraper.utility';
 import { DjMusicUtilityContent } from './utilities/dj-music.utility';
-import { StopwatchUtilityContent } from './utilities/stopwatch.utility';
-import { TimerUtilityContent } from './utilities/timer.utility';
-import { AlarmUtilityContent } from './utilities/alarm.utility';
-import { CurrencyConverterUtilityContent } from './utilities/currency-converter.utility';
 import { Metronome } from '@vigilant-broccoli/react-music-lib';
+import {
+  AlarmUtilityContent,
+  CalculatorUtilityContent,
+  StopwatchUtilityContent,
+  TimerUtilityContent,
+} from '@vigilant-broccoli/react-utility';
+import { CurrencyConverterUtilityContent } from './utilities/currency-converter.utility';
 
 export const UtilitiesComponent = () => {
   const { appMode } = useAppMode();

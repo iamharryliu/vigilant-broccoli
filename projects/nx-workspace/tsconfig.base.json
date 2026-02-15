@@ -75,6 +75,9 @@
       ],
       "@vigilant-broccoli/react-music-lib": [
         "libs/@vigilant-broccoli/react-music-lib/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-utility": [
+        "libs/@vigilant-broccoli/react-utility/src/index.ts"
       ]
     }
   },

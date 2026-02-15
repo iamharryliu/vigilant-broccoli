@@ -24,7 +24,8 @@ export const TimerUtilityContent = () => {
   const [totalRepetitions, setTotalRepetitions] = useState(0);
   const [endTime, setEndTime] = useState(0);
   const notificationShownRef = useRef(false);
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+  const [notificationPermission, setNotificationPermission] =
+    useState<NotificationPermission>('default');
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
@@ -48,11 +49,16 @@ export const TimerUtilityContent = () => {
   }, []);
 
   const showNotification = () => {
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+    if (
+      typeof window !== 'undefined' &&
+      'Notification' in window &&
+      Notification.permission === 'granted'
+    ) {
       new Notification('Timer Complete', {
-        body: currentRepetition < totalRepetitions
-          ? `Repetition ${currentRepetition} of ${totalRepetitions} complete!`
-          : 'All repetitions complete!',
+        body:
+          currentRepetition < totalRepetitions
+            ? `Repetition ${currentRepetition} of ${totalRepetitions} complete!`
+            : 'All repetitions complete!',
         icon: '/favicon.ico',
         tag: 'timer-notification',
         requireInteraction: true,
@@ -99,14 +105,24 @@ export const TimerUtilityContent = () => {
       }, 100);
     }
     return () => clearInterval(interval);
-  }, [timerRunning, endTime, currentRepetition, totalRepetitions, timerDuration, showNotification]);
+  }, [
+    timerRunning,
+    endTime,
+    currentRepetition,
+    totalRepetitions,
+    timerDuration,
+    showNotification,
+  ]);
 
   const saveTimerState = (state: TimerState) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   };
 
   const playNotificationSound = () => {
-    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as typeof window & { webkitAudioContext: typeof AudioContext })
+        .webkitAudioContext;
     const audioContext = new AudioContextClass();
 
     const oscillator = audioContext.createOscillator();
@@ -120,14 +136,21 @@ export const TimerUtilityContent = () => {
 
     gainNode.gain.setValueAtTime(0, audioContext.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 0.5,
+    );
 
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 0.5);
   };
 
   const requestNotificationPermission = async () => {
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+    if (
+      typeof window !== 'undefined' &&
+      'Notification' in window &&
+      Notification.permission === 'default'
+    ) {
       const permission = await Notification.requestPermission();
       setNotificationPermission(permission);
     }
@@ -136,7 +159,9 @@ export const TimerUtilityContent = () => {
   const formatTimerTime = (time: number) => {
     const minutes = Math.floor(time / 60000);
     const seconds = Math.floor((time % 60000) / 1000);
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
   };
 
   const handleTimerStart = () => {
@@ -188,81 +213,91 @@ export const TimerUtilityContent = () => {
 
   return (
     <>
-        {timerRemaining > 0 || currentRepetition > 0 ? (
-          <Flex direction="column" align="center" gap="2">
-            <Text size="6" weight="bold" className="font-mono">
-              {formatTimerTime(timerRemaining)}
+      {timerRemaining > 0 || currentRepetition > 0 ? (
+        <Flex direction="column" align="center" gap="2">
+          <Text size="6" weight="bold" className="font-mono">
+            {formatTimerTime(timerRemaining)}
+          </Text>
+          {totalRepetitions > 1 && (
+            <Text size="2" color="gray">
+              Repetition {currentRepetition} of {totalRepetitions}
             </Text>
-            {totalRepetitions > 1 && (
-              <Text size="2" color="gray">
-                Repetition {currentRepetition} of {totalRepetitions}
-              </Text>
-            )}
-            <Flex gap="2">
-              <Button
-                size="2"
-                variant="soft"
-                onClick={handleTimerStop}
-                disabled={!timerRunning}
-              >
-                Stop
-              </Button>
-              <Button
-                size="2"
-                variant="outline"
-                onClick={handleTimerReset}
-              >
-                Reset
-              </Button>
-            </Flex>
-          </Flex>
-        ) : (
-          <Flex direction="column" gap="2">
-            <Flex gap="2" align="end">
-              <Flex direction="column" gap="1" style={{ flex: '1 1 0', minWidth: 0 }}>
-                <Text size="1" color="gray">Minutes</Text>
-                <input
-                  type="number"
-                  min="0"
-                  value={timerMinutes}
-                  onChange={(e) => setTimerMinutes(e.target.value)}
-                  placeholder="0"
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
-                />
-              </Flex>
-              <Flex direction="column" gap="1" style={{ flex: '1 1 0', minWidth: 0 }}>
-                <Text size="1" color="gray">Seconds</Text>
-                <input
-                  type="number"
-                  min="0"
-                  max="59"
-                  value={timerSeconds}
-                  onChange={(e) => setTimerSeconds(e.target.value)}
-                  placeholder="0"
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
-                />
-              </Flex>
-              <Flex direction="column" gap="1" style={{ flex: '1 1 0', minWidth: 0 }}>
-                <Text size="1" color="gray">Repeat</Text>
-                <input
-                  type="number"
-                  min="1"
-                  value={timerRepeat}
-                  onChange={(e) => setTimerRepeat(e.target.value)}
-                  placeholder="1"
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
-                />
-              </Flex>
-            </Flex>
+          )}
+          <Flex gap="2">
             <Button
               size="2"
               variant="soft"
-              onClick={handleTimerStart}
+              onClick={handleTimerStop}
+              disabled={!timerRunning}
             >
-              Start Timer
+              Stop
+            </Button>
+            <Button size="2" variant="outline" onClick={handleTimerReset}>
+              Reset
             </Button>
           </Flex>
-        )}
+        </Flex>
+      ) : (
+        <Flex direction="column" gap="2">
+          <Flex gap="2" align="end">
+            <Flex
+              direction="column"
+              gap="1"
+              style={{ flex: '1 1 0', minWidth: 0 }}
+            >
+              <Text size="1" color="gray">
+                Minutes
+              </Text>
+              <input
+                type="number"
+                min="0"
+                value={timerMinutes}
+                onChange={e => setTimerMinutes(e.target.value)}
+                placeholder="0"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
+              />
+            </Flex>
+            <Flex
+              direction="column"
+              gap="1"
+              style={{ flex: '1 1 0', minWidth: 0 }}
+            >
+              <Text size="1" color="gray">
+                Seconds
+              </Text>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                value={timerSeconds}
+                onChange={e => setTimerSeconds(e.target.value)}
+                placeholder="0"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
+              />
+            </Flex>
+            <Flex
+              direction="column"
+              gap="1"
+              style={{ flex: '1 1 0', minWidth: 0 }}
+            >
+              <Text size="1" color="gray">
+                Repeat
+              </Text>
+              <input
+                type="number"
+                min="1"
+                value={timerRepeat}
+                onChange={e => setTimerRepeat(e.target.value)}
+                placeholder="1"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
+              />
+            </Flex>
+          </Flex>
+          <Button size="2" variant="soft" onClick={handleTimerStart}>
+            Start Timer
+          </Button>
+        </Flex>
+      )}
     </>
   );
 };

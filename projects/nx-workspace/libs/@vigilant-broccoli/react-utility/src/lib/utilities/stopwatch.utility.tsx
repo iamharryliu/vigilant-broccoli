@@ -19,7 +19,7 @@ export const StopwatchUtilityContent = () => {
     let interval: NodeJS.Timeout;
     if (stopwatchRunning) {
       interval = setInterval(() => {
-        setStopwatchTime((prev) => prev + 10);
+        setStopwatchTime(prev => prev + 10);
       }, 10);
     }
     return () => clearInterval(interval);
@@ -29,7 +29,9 @@ export const StopwatchUtilityContent = () => {
     const minutes = Math.floor(time / 60000);
     const seconds = Math.floor((time % 60000) / 1000);
     const milliseconds = Math.floor((time % 1000) / 10);
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
   };
 
   const handleStopwatchToggle = () => {
@@ -58,11 +60,7 @@ export const StopwatchUtilityContent = () => {
     <Flex direction="column" gap="4">
       <Flex align="center" justify="between" gap="3">
         <Flex gap="2">
-          <Button
-            size="2"
-            variant="soft"
-            onClick={handleStopwatchToggle}
-          >
+          <Button size="2" variant="soft" onClick={handleStopwatchToggle}>
             {stopwatchRunning ? 'Pause' : 'Start'}
           </Button>
           <Button
@@ -73,11 +71,7 @@ export const StopwatchUtilityContent = () => {
           >
             Lap
           </Button>
-          <Button
-            size="2"
-            variant="outline"
-            onClick={handleStopwatchReset}
-          >
+          <Button size="2" variant="outline" onClick={handleStopwatchReset}>
             Reset
           </Button>
         </Flex>
@@ -93,7 +87,7 @@ export const StopwatchUtilityContent = () => {
           </Text>
           <ScrollArea style={{ maxHeight: '200px' }}>
             <Flex direction="column" gap="1">
-              {laps.map((lap) => (
+              {laps.map(lap => (
                 <Flex
                   key={lap.lapNumber}
                   justify="between"

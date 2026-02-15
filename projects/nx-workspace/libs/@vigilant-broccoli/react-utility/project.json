@@ -1,0 +1,12 @@
+{
+  "name": "@vigilant-broccoli/react-utility",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/react-utility/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
