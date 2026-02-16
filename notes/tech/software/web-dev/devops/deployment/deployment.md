@@ -1,6 +1,11 @@
 # Deployment
 
 - [PM2](./pm2.md)
+- Deployment options
+  - VM Instance
+    - Manual
+    - Bootstrap scripts
+    - Managed instances
 
 ```
 pm2 list
