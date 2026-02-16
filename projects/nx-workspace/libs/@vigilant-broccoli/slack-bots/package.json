@@ -8,7 +8,9 @@
     "tslib": "^2.3.0",
     "@slack/bolt": "*",
     "@slack/types": "*",
-    "@slack/web-api": "*"
+    "@slack/web-api": "*",
+    "node-cron": "^4.2.1",
+    "better-sqlite3": "^12.4.1"
   },
   "publishConfig": {
     "access": "public"

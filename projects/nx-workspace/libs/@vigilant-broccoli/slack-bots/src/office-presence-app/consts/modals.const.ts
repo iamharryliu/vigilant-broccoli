@@ -1,6 +1,6 @@
 import { KnownBlock, ModalView, View } from '@slack/types';
 import { AppConfig, PRESENCE_TIME } from '../types';
-import { SlackViewBuilder } from '@vigilant-broccoli/slack-bots';
+import { SlackViewBuilder } from '../../lib/utils/view-builder.utils';
 import { APP_ACTION } from './app.consts';
 import { APP_COPY } from './app-copy.const';
 import { loadAllPresences } from '../utils/db.utils';
@@ -173,6 +173,14 @@ export function getSettingModal(): View {
 }
 
 export function getAskLunchModal(userId: string) {
+  const chunkArray = <T>(arr: T[], size: number): T[][] => {
+    const chunks: T[][] = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+  };
+
   const userPresences = loadAllPresences();
   const today = new Date().toISOString().split('T')[0];
 
@@ -202,14 +210,6 @@ export function getAskLunchModal(userId: string) {
       },
     ];
   } else {
-    function chunkArray<T>(arr: T[], size: number): T[][] {
-      const chunks: T[][] = [];
-      for (let i = 0; i < arr.length; i += size) {
-        chunks.push(arr.slice(i, i + size));
-      }
-      return chunks;
-    }
-
     const userChunks = chunkArray(usersInOffice, 10);
 
     blocks = userChunks.map((chunk, index) => ({

@@ -3,12 +3,10 @@ import {
   BlockAction,
   SlackActionMiddlewareArgs,
 } from '@slack/bolt';
-import {
-  SLACK_EVENT,
-  SlackModalUtils,
-  SlackUtils,
-} from '@vigilant-broccoli/slack-bots';
 import * as cron from 'node-cron';
+import { SLACK_EVENT } from '../lib/consts';
+import { SlackModalUtils } from '../lib/utils/modal.utils';
+import { SlackUtils } from '../lib/utils/utils';
 import {
   getAskLunchModal,
   createInputScheduleModal,
@@ -39,7 +37,7 @@ export type OfficePresenceAppRunConfig = {
 const DEFAULT_PORT = 3000;
 const DEFAULT_REMINDER_CRON = '0 8 * * 1';
 const DEFAULT_REMINDER_TIMEZONE = 'Europe/Stockholm';
-const DEFAULT_APP_NAME = 'Office Presence';
+const DEFAULT_APP_NAME = 'OK-IN';
 const DEFAULT_OFFICES: string[] = [];
 
 // eslint-disable-next-line complexity

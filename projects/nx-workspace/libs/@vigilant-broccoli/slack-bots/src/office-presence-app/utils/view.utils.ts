@@ -8,7 +8,8 @@ import {
 } from '../types';
 import { WebClient } from '@slack/web-api';
 import { BlockAction, SlackViewAction } from '@slack/bolt';
-import { SlackUtils, SlackViewBuilder } from '@vigilant-broccoli/slack-bots';
+import { SlackUtils } from '../../lib/utils/utils';
+import { SlackViewBuilder } from '../../lib/utils/view-builder.utils';
 import { APP_COPY } from '../consts/app-copy.const';
 import {
   formatDateLong,

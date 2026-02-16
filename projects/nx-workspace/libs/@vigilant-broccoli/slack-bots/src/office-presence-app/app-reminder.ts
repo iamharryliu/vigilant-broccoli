@@ -1,5 +1,5 @@
 import { WebClient } from '@slack/web-api';
-import { SlackUtils } from '@vigilant-broccoli/slack-bots';
+import { SlackUtils } from '../lib/utils/utils';
 import { AppConfig } from './types';
 import { APP_COPY } from './consts/app-copy.const';
 
