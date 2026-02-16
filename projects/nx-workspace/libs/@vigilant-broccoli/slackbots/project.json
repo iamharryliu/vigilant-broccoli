@@ -1,7 +1,7 @@
 {
-  "name": "@vigilant-broccoli/slack-bots",
+  "name": "@vigilant-broccoli/slackbots",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/@vigilant-broccoli/slack-bots/src",
+  "sourceRoot": "libs/@vigilant-broccoli/slackbots/src",
   "projectType": "library",
   "release": {
     "version": {
@@ -16,11 +16,11 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/@vigilant-broccoli/slack-bots",
-        "tsConfig": "libs/@vigilant-broccoli/slack-bots/tsconfig.lib.json",
-        "packageJson": "libs/@vigilant-broccoli/slack-bots/package.json",
-        "main": "libs/@vigilant-broccoli/slack-bots/src/index.ts",
-        "assets": ["libs/@vigilant-broccoli/slack-bots/*.md"]
+        "outputPath": "dist/libs/@vigilant-broccoli/slackbots",
+        "tsConfig": "libs/@vigilant-broccoli/slackbots/tsconfig.lib.json",
+        "packageJson": "libs/@vigilant-broccoli/slackbots/package.json",
+        "main": "libs/@vigilant-broccoli/slackbots/src/index.ts",
+        "assets": ["libs/@vigilant-broccoli/slackbots/*.md"]
       }
     },
     "nx-release-publish": {
