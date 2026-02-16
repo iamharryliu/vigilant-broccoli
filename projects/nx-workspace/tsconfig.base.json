@@ -64,9 +64,6 @@
       "@vigilant-broccoli/vercel-workspace": [
         "/libs/@vigilant-broccoli/vercel-workspace/src/index.ts"
       ],
-      "@vigilant-broccoli/slack-bots": [
-        "libs/@vigilant-broccoli/slack-bots/src/index.ts"
-      ],
       "@vigilant-broccoli/github-workspace": [
         "libs/@vigilant-broccoli/github-workspace/src/index.ts"
       ],
@@ -81,6 +78,9 @@
       ],
       "@vigilant-broccoli/office-presence": [
         "libs/@vigilant-broccoli/office-presence/src/index.ts"
+      ],
+      "@vigilant-broccoli/slackbots": [
+        "libs/@vigilant-broccoli/slackbots/src/index.ts"
       ]
     }
   },

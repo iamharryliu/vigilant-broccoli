@@ -1,0 +1,31 @@
+display_information:
+  name: OK-IN
+  background_color: '#000000'
+features:
+  app_home:
+    home_tab_enabled: true
+    messages_tab_enabled: true
+    messages_tab_read_only_enabled: true
+  bot_user:
+    display_name: OK-IN
+    always_online: false
+oauth_config:
+  scopes:
+    bot:
+      - channels:read
+      - channels:write.invites
+      - chat:write
+      - users:read
+      - im:write
+      - groups:write
+      - mpim:write
+      - channels:write.topic
+settings:
+  event_subscriptions:
+    bot_events:
+      - app_home_opened
+  interactivity:
+    is_enabled: true
+  org_deploy_enabled: true
+  socket_mode_enabled: true
+  token_rotation_enabled: false
