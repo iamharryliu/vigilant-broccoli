@@ -41,7 +41,7 @@ const createApp = () => {
   app.get('/', (_, response) => {
     response.send('vb-express');
   });
-  app.all('/api/auth/*', toNodeHandler(auth));
+  app.all('/api/auth/{*path}', toNodeHandler(auth));
   app.use(createApiKeyMiddleware(API_KEY));
   app.use('/api/tasks', tasksRouter);
   app.use('/api/llm', llmRouter);

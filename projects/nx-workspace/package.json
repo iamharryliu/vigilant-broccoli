@@ -42,7 +42,6 @@
     "@nx/esbuild": "22.0.2",
     "@nx/eslint": "22.0.2",
     "@nx/eslint-plugin": "22.0.2",
-    "@nx/express": "22.0.2",
     "@nx/jest": "22.0.2",
     "@nx/js": "22.0.2",
     "@nx/next": "22.0.2",
