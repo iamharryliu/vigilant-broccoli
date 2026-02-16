@@ -1,5 +1,5 @@
 import { UserPresence, UserPresenceRow, UserPresences } from '../types';
-import Database from 'better-sqlite3';
+import * as Database from 'better-sqlite3';
 import { formatISODateLocal } from './date.utils';
 
 const db = new Database('state.db');
