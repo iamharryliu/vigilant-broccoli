@@ -7,13 +7,13 @@ import {
   CollapsibleListItemConfig,
 } from './collapsible-list.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
-import { CookingConversionsUtilityContent } from './utilities/cooking-conversions.utility';
 import { RecipeScraperUtilityContent } from './utilities/recipe-scraper.utility';
 import { DjMusicUtilityContent } from './utilities/dj-music.utility';
 import { Metronome } from '@vigilant-broccoli/react-music-lib';
 import {
   AlarmUtilityContent,
   CalculatorUtilityContent,
+  CookingConversionsUtilityContent,
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';

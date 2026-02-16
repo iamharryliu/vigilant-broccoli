@@ -78,6 +78,9 @@
       ],
       "@vigilant-broccoli/react-utility": [
         "libs/@vigilant-broccoli/react-utility/src/index.ts"
+      ],
+      "@vigilant-broccoli/office-presence": [
+        "libs/@vigilant-broccoli/office-presence/src/index.ts"
       ]
     }
   },
