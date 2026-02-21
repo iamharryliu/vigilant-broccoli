@@ -31,3 +31,5 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 source ~/.bash_profile
+
+tmux source-file ~/.tmux.conf 2>/dev/null
