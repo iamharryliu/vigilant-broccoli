@@ -235,10 +235,10 @@ export const PublicIpComponent = () => {
     <Card className="w-full">
       <Flex direction="column" gap="3" p="4">
         <Flex justify="between" align="center" gap="3">
-          <Flex align="center" gap="2">
-            <Text size="5" weight="bold">
-              Public IP:
-            </Text>
+          <Text size="5" weight="bold">
+            Public IP:
+          </Text>
+          <Flex align="center" gap="3">
             <Text
               size="3"
               style={{
@@ -250,25 +250,17 @@ export const PublicIpComponent = () => {
             >
               {publicIp}
             </Text>
+            <Button onClick={handlePublicCopy} variant="soft" size="2">
+              {publicCopied ? <CheckIcon /> : <CopyIcon />}
+            </Button>
           </Flex>
-          <Button onClick={handlePublicCopy} variant="soft" size="2">
-            {publicCopied ? (
-              <>
-                <CheckIcon /> Copied!
-              </>
-            ) : (
-              <>
-                <CopyIcon /> Copy
-              </>
-            )}
-          </Button>
         </Flex>
 
         <Flex justify="between" align="center" gap="3">
-          <Flex align="center" gap="2">
-            <Text size="5" weight="bold">
-              Local IP:
-            </Text>
+          <Text size="5" weight="bold">
+            Local IP:
+          </Text>
+          <Flex align="center" gap="3">
             <Text
               size="3"
               style={{
@@ -280,41 +272,23 @@ export const PublicIpComponent = () => {
             >
               {localIp}
             </Text>
+            <Button onClick={handleLocalCopy} variant="soft" size="2">
+              {localCopied ? <CheckIcon /> : <CopyIcon />}
+            </Button>
           </Flex>
-          <Button onClick={handleLocalCopy} variant="soft" size="2">
-            {localCopied ? (
-              <>
-                <CheckIcon /> Copied!
-              </>
-            ) : (
-              <>
-                <CopyIcon /> Copy
-              </>
-            )}
-          </Button>
         </Flex>
 
         <Flex justify="between" align="center" gap="3">
-          <Flex align="center" gap="2">
-            <Text size="5" weight="bold">
-              SSH Key:
-            </Text>
-          </Flex>
+          <Text size="5" weight="bold">
+            SSH Key:
+          </Text>
           <Button
             onClick={handleSshCopy}
             variant="soft"
             size="2"
             disabled={!sshKey}
           >
-            {sshCopied ? (
-              <>
-                <CheckIcon /> Copied!
-              </>
-            ) : (
-              <>
-                <CopyIcon /> Copy
-              </>
-            )}
+            {sshCopied ? <CheckIcon /> : <CopyIcon />}
           </Button>
         </Flex>
 
@@ -349,15 +323,7 @@ export const PublicIpComponent = () => {
             </Tooltip>
           </Flex>
           <Button onClick={handleGenerateSecret} variant="soft" size="2">
-            {secretCopied ? (
-              <>
-                <CheckIcon /> Copied!
-              </>
-            ) : (
-              <>
-                <CopyIcon /> Copy
-              </>
-            )}
+            {secretCopied ? <CheckIcon /> : <CopyIcon />}
           </Button>
         </Flex>
       </Flex>

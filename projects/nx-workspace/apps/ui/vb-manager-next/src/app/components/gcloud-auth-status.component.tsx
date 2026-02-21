@@ -1,10 +1,31 @@
 'use client';
 
-import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Flex, Text, Badge, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
+import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+
+const GCP_CONSOLE_BASE = 'https://console.cloud.google.com';
+
+const BUTTON_LABELS: Record<string, string> = {
+  dashboard: 'Dashboard',
+  secrets: 'Secrets',
+  buckets: 'Buckets',
+  gce: 'GCE',
+  'cloud sql': 'Cloud SQL',
+  credentials: 'Credentials',
+};
+
+const getProjectUrls = (projectId: string) => ({
+  dashboard: `${GCP_CONSOLE_BASE}/home/dashboard?project=${projectId}`,
+  secrets: `${GCP_CONSOLE_BASE}/security/secret-manager?project=${projectId}`,
+  buckets: `${GCP_CONSOLE_BASE}/storage/browser?project=${projectId}`,
+  gce: `${GCP_CONSOLE_BASE}/compute/overview?project=${projectId}`,
+  'cloud sql': `${GCP_CONSOLE_BASE}/sql/instances?project=${projectId}`,
+  credentials: `${GCP_CONSOLE_BASE}/apis/credentials?referrer=search&project=${projectId}`,
+});
 
 interface GcloudAccount {
   account: string;
@@ -46,19 +67,19 @@ export const GcloudAuthStatusComponent = () => {
   }, []);
 
   if (loading) {
-    return <CardSkeleton title="GCloud Auth Status" rows={3} />;
+    return <CardSkeleton title="GCP Management" rows={3} />;
   }
 
   if (error) {
     return (
-      <CardContainer title="GCloud Auth Status">
+      <CardContainer title="GCP Management">
         <Text color="red">{error}</Text>
       </CardContainer>
     );
   }
 
   return (
-    <CardContainer title="GCloud Auth Status">
+    <CardContainer title="GCP Management">
       {authStatus?.activeAccount ? (
           <Flex direction="column" gap="3">
             <Flex align="center" gap="2">
@@ -67,9 +88,26 @@ export const GcloudAuthStatusComponent = () => {
             </Flex>
 
             {authStatus.currentProject && (
-              <Flex direction="column" gap="1">
-                <Text size="1" weight="bold" className="text-gray-600">Current Project:</Text>
-                <Text size="2" className="text-gray-700">{authStatus.currentProject}</Text>
+              <Flex direction="column" gap="2">
+                <Flex align="center" gap="2">
+                  <Text size="1" weight="bold" className="text-gray-600">Current Project:</Text>
+                  <Text size="2" className="text-gray-700">{authStatus.currentProject}</Text>
+                </Flex>
+                <Flex gap="2" wrap="wrap">
+                  {Object.entries(getProjectUrls(authStatus.currentProject)).map(([key, url]) => (
+                    <Button
+                      key={key}
+                      asChild
+                      variant="soft"
+                      size="1"
+                    >
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        {BUTTON_LABELS[key]}
+                        <ExternalLinkIcon width="12" height="12" />
+                      </a>
+                    </Button>
+                  ))}
+                </Flex>
               </Flex>
             )}
 
