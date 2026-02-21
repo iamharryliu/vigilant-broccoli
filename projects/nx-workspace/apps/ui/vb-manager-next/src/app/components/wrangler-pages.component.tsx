@@ -35,14 +35,11 @@ export const WranglerPagesComponent = () => {
       return {
         text: project.name,
         url,
-        badge:
-          project.domains.length > 1
-            ? {
-                text: `${project.domains.length} domains`,
-                color: 'blue' as const,
-              }
-            : undefined,
-        details: project.domains.length > 1 ? project.domains : undefined,
+        badge: {
+          text: `Domains(${project.domains.length})`,
+          color: 'blue' as const,
+        },
+        details: project.domains,
       };
     });
   }, [projectsData]);
