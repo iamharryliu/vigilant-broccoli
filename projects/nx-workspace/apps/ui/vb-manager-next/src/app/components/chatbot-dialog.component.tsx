@@ -17,11 +17,17 @@ interface Message {
   isStreaming?: boolean;
 }
 
+interface ChatSuggestion {
+  title: string;
+  prompt: string;
+}
+
 interface ChatbotDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialPrompt?: string;
   systemPrompt?: string;
+  suggestions?: ChatSuggestion[];
 }
 
 const MAX_MESSAGES = 20;
@@ -44,6 +50,7 @@ export const ChatbotDialog = ({
   onOpenChange,
   initialPrompt,
   systemPrompt,
+  suggestions = [],
 }: ChatbotDialogProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -197,6 +204,20 @@ export const ChatbotDialog = ({
           </ScrollArea>
 
           <Flex direction="column" gap="2">
+            {messages.length === 0 && suggestions.length > 0 && (
+              <Flex direction="row" gap="2" wrap="wrap" align="center">
+                {suggestions.map((suggestion, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => handleSend(suggestion.prompt)}
+                    variant="soft"
+                    size="1"
+                  >
+                    {suggestion.title}
+                  </Button>
+                ))}
+              </Flex>
+            )}
             <TextField.Root
               placeholder="Type your message..."
               value={input}

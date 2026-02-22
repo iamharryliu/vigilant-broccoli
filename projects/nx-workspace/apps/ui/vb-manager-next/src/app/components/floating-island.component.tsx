@@ -8,6 +8,7 @@ import { EmailModalComponent } from './email-modal.component';
 import { SearchDialogComponent } from './search-dialog.component';
 import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
+import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 
 interface FloatingIslandProps {
   searchDialogOpen?: boolean;
@@ -17,6 +18,36 @@ interface FloatingIslandProps {
   emailDialogOpen?: boolean;
   setEmailDialogOpen?: (open: boolean) => void;
 }
+
+const isWeekPlanningVisible = (): boolean => {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  return dayOfWeek >= 0 && dayOfWeek <= 3;
+};
+
+const generatePlanningPrompt = (data: any): string =>
+  `Please help me plan my day based on the following information:
+
+${JSON.stringify(data, null, 2)}
+
+Please analyze:
+1. My calendar events and suggest how to prepare for them
+2. My tasks organized by priority (urgent/important/delegate/eliminate) for both personal and work
+3. Any overdue tasks that need immediate attention
+4. The current weather and how it might affect my plans
+5. Give me a structured plan with time blocks and priorities`;
+
+const generateWeekPlanningPrompt = (data: any): string =>
+  `Please help me plan my work week based on the following information:
+
+${JSON.stringify(data, null, 2)}
+
+Please analyze:
+1. My calendar events for this week and suggest how to prepare for major meetings
+2. My priority tasks for the week - what needs to be done by Friday
+3. Any overdue tasks that need immediate attention this week
+4. Realistic time blocks for deep work and focus sessions
+5. Give me a strategic plan for Monday-Friday with daily focus areas`;
 
 export const FloatingIslandComponent = ({
   searchDialogOpen: externalSearchOpen,
@@ -31,6 +62,24 @@ export const FloatingIslandComponent = ({
   const [internalChatbotDialogOpen, setInternalChatbotDialogOpen] = useState(false);
   const [internalEmailDialogOpen, setInternalEmailDialogOpen] = useState(false);
   const [internalSearchDialogOpen, setInternalSearchDialogOpen] = useState(false);
+  const dayData = useDayAnalysisSuggestions();
+
+  const getSuggestions = () => {
+    if (!dayData) return [];
+    const suggestions = [
+      {
+        title: '📅 Plan My Day',
+        prompt: generatePlanningPrompt(dayData),
+      },
+    ];
+    if (isWeekPlanningVisible()) {
+      suggestions.push({
+        title: '📊 Plan My Work Week',
+        prompt: generateWeekPlanningPrompt(dayData),
+      });
+    }
+    return suggestions;
+  };
 
   const searchDialogOpen = externalSearchOpen ?? internalSearchDialogOpen;
   const setSearchDialogOpen = externalSetSearchOpen ?? setInternalSearchDialogOpen;
@@ -151,7 +200,11 @@ export const FloatingIslandComponent = ({
       </div>
 
       {/* Dialogs */}
-      <ChatbotDialog open={chatbotDialogOpen} onOpenChange={setChatbotDialogOpen} />
+      <ChatbotDialog
+        open={chatbotDialogOpen}
+        onOpenChange={setChatbotDialogOpen}
+        suggestions={getSuggestions()}
+      />
       <EmailModalComponent open={emailDialogOpen} onOpenChange={setEmailDialogOpen} />
       <SearchDialogComponent open={searchDialogOpen} onOpenChange={setSearchDialogOpen} />
     </>

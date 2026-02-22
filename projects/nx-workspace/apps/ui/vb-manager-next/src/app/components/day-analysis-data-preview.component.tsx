@@ -1,6 +1,5 @@
 'use client';
 
-import { Card, Flex, Text, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -8,7 +7,6 @@ import {
   categorizeTasksByQuadrant,
   cleanCalendarEvents,
 } from '../utils/day-analysis.utils';
-import { ChatbotDialog } from './chatbot-dialog.component';
 
 interface CleanTask {
   id: string;
@@ -158,27 +156,36 @@ Please analyze:
 4. The current weather and how it might affect my plans
 5. Give me a structured plan with time blocks and priorities`;
 
+const generateWeekPlanningPrompt = (data: DayAnalysisData): string =>
+  `Please help me plan my work week based on the following information:
+
+${JSON.stringify(data, null, 2)}
+
+Please analyze:
+1. My calendar events for this week and suggest how to prepare for major meetings
+2. My priority tasks for the week - what needs to be done by Friday
+3. Any overdue tasks that need immediate attention this week
+4. Realistic time blocks for deep work and focus sessions
+5. Give me a strategic plan for Monday-Friday with daily focus areas`;
+
+const isWeekPlanningVisible = (): boolean => {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  return dayOfWeek >= 1 && dayOfWeek <= 3;
+};
+
 export const DayAnalysisDataPreviewComponent = () => {
   const { status } = useSession();
   const [data, setData] = useState<DayAnalysisData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
   const [chatbotOpen, setChatbotOpen] = useState(false);
-  const [planningPrompt, setPlanningPrompt] = useState('');
 
   const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-
     const sources = await fetchAllDataSources();
 
     if (
       !sources.personalTasks.response.ok &&
       !sources.workTasks.response.ok
     ) {
-      setError('Failed to fetch tasks from both task lists');
-      setLoading(false);
       return;
     }
 
@@ -190,8 +197,6 @@ export const DayAnalysisDataPreviewComponent = () => {
         personalCalendar: sources.personalCalendar.data,
         workCalendar: sources.workCalendar.data,
       });
-      setError('Failed to fetch calendar events from both calendars');
-      setLoading(false);
       return;
     }
 
@@ -199,13 +204,6 @@ export const DayAnalysisDataPreviewComponent = () => {
       sources.personalCalendar.data,
       sources.workCalendar.data,
     );
-
-    console.log('Calendar data received:', {
-      personal: sources.personalCalendar.data,
-      work: sources.workCalendar.data,
-      totalToday: calendarEvents.todayEvents.length,
-      totalUpcoming: calendarEvents.upcomingEvents.length,
-    });
 
     const analysisData = buildAnalysisData(
       sources.personalTasks.data,
@@ -215,21 +213,23 @@ export const DayAnalysisDataPreviewComponent = () => {
     );
 
     setData(analysisData);
-    setLoading(false);
   };
 
-  const handleCopy = async () => {
-    if (!data) return;
-
-    await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handlePlanDay = () => {
-    if (!data) return;
-    setPlanningPrompt(generatePlanningPrompt(data));
-    setChatbotOpen(true);
+  const getSuggestions = () => {
+    if (!data) return [];
+    const suggestions = [
+      {
+        title: '📅 Plan My Day',
+        prompt: generatePlanningPrompt(data),
+      },
+    ];
+    if (isWeekPlanningVisible()) {
+      suggestions.push({
+        title: '📊 Plan My Work Week',
+        prompt: generateWeekPlanningPrompt(data),
+      });
+    }
+    return suggestions;
   };
 
   useEffect(() => {
@@ -242,39 +242,50 @@ export const DayAnalysisDataPreviewComponent = () => {
     return null;
   }
 
-  return (
-    <>
-      <Card className="w-full">
-        <Flex direction="column" gap="3" p="4">
-          <Flex justify="between" align="center">
-            {data && (
-              <>
-                <Button onClick={handlePlanDay} size="2" variant="solid">
-                  Plan My Day
-                </Button>
-                <Button onClick={handleCopy} size="2" variant="soft">
-                  {copied ? 'Copied!' : 'Copy'}
-                </Button>
-              </>
-            )}
-          </Flex>
+  return null;
+}
 
-          {error && (
-            <Text size="2" color="red">
-              {error}
-            </Text>
-          )}
-        </Flex>
-      </Card>
-      <ChatbotDialog
-        open={chatbotOpen}
-        onOpenChange={open => {
-          setChatbotOpen(open);
-          if (!open) setPlanningPrompt('');
-        }}
-        initialPrompt={planningPrompt}
-        systemPrompt="You are a personal assistant helping with day planning and productivity. Be concise, actionable, and prioritize what matters most."
-      />
-    </>
-  );
+export const useDayAnalysisSuggestions = () => {
+  const { status } = useSession();
+  const [data, setData] = useState<any>(null);
+
+  const fetchData = async () => {
+    const sources = await fetchAllDataSources();
+
+    if (
+      !sources.personalTasks.response.ok &&
+      !sources.workTasks.response.ok
+    ) {
+      return;
+    }
+
+    if (
+      !sources.personalCalendar.response.ok &&
+      !sources.workCalendar.response.ok
+    ) {
+      return;
+    }
+
+    const calendarEvents = mergeCalendarEvents(
+      sources.personalCalendar.data,
+      sources.workCalendar.data,
+    );
+
+    const analysisData = buildAnalysisData(
+      sources.personalTasks.data,
+      sources.workTasks.data,
+      calendarEvents,
+      sources.weather,
+    );
+
+    setData(analysisData);
+  };
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchData();
+    }
+  }, [status]);
+
+  return data;
 };
