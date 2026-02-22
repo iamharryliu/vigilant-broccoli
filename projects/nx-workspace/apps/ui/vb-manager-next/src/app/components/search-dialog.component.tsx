@@ -155,11 +155,13 @@ export function SearchDialogComponent({ open: externalOpen, onOpenChange: extern
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
-        <IconButton variant="soft" size="2" aria-label="Search Quick Links">
-          <MagnifyingGlassIcon />
-        </IconButton>
-      </Dialog.Trigger>
+      {externalOpen === undefined && (
+        <Dialog.Trigger>
+          <IconButton variant="soft" size="2" aria-label="Search Quick Links">
+            <MagnifyingGlassIcon />
+          </IconButton>
+        </Dialog.Trigger>
+      )}
 
       <Dialog.Content style={{ maxWidth: 800, maxHeight: '80vh', overflow: 'auto' }}>
         <Dialog.Title>Quick Links</Dialog.Title>

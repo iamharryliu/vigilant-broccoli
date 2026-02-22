@@ -8,14 +8,11 @@ import {
   GithubOrgRepository,
 } from '@vigilant-broccoli/common-js';
 import { Heading, Link, Box, Text, TextField, Callout, Badge, Grid, Button, Dialog } from '@radix-ui/themes';
-import { CopyPastable } from '@vigilant-broccoli/react-lib';
 import { Users, Search, AlertCircle, FileCode, Trash2, UserPlus } from 'lucide-react';
-import { LinkGroupComponent } from '../../../../components/link-group.component';
 import { CardContainer } from '../../../../components/card-container.component';
 import { CollapsibleListItem } from '../../../../components/collapsible-list-item.component';
 import { LinkList } from '../../../../components/link-list.component';
 import { LinkListItemConfig } from '../../../../components/link-list-item.component';
-import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 
 export default function Page({
   params,
@@ -120,16 +117,11 @@ export default function Page({
         </TextField.Root>
       </Box>
 
-      <Grid columns="4" gap="3">
+      <Grid columns="3" gap="3">
         <RepositoriesList repositories={organizationStructure.repositories} searchQuery={searchQuery} organizationName={organizationStructure.organizationName} />
         <MembersList members={organizationStructure.members} searchQuery={searchQuery} organizationName={organizationStructure.organizationName} />
         <TeamsList structure={filteredStructure || organizationStructure} searchQuery={searchQuery} />
-        <OrganizationLinks organizationName={organizationStructure.organizationName} />
       </Grid>
-
-      <Box mt="3">
-        <CopyPastable text={JSON.stringify(organizationStructure, null, 2)} />
-      </Box>
     </>
   );
 }
@@ -432,41 +424,4 @@ const TeamsList = ({ structure, searchQuery }: { structure: GithubOrganizationTe
       })}
     </CardContainer>
   );
-};
-
-const OrganizationLinks = ({ organizationName }: { organizationName: string }) => {
-  const links = [
-    {
-      label: 'Organization Home',
-      target: `https://github.com/${organizationName}`,
-      type: OPEN_TYPE.BROWSER,
-    },
-    {
-      label: 'Members',
-      target: `https://github.com/orgs/${organizationName}/people`,
-      type: OPEN_TYPE.BROWSER,
-    },
-    {
-      label: 'Teams',
-      target: `https://github.com/orgs/${organizationName}/teams`,
-      type: OPEN_TYPE.BROWSER,
-    },
-    {
-      label: 'Repositories',
-      target: `https://github.com/orgs/${organizationName}/repositories`,
-      type: OPEN_TYPE.BROWSER,
-    },
-    {
-      label: 'Organization Settings',
-      target: `https://github.com/organizations/${organizationName}/settings/profile`,
-      type: OPEN_TYPE.BROWSER,
-    },
-    {
-      label: 'Billing Settings',
-      target: `https://github.com/organizations/${organizationName}/settings/billing`,
-      type: OPEN_TYPE.BROWSER,
-    },
-  ];
-
-  return <LinkGroupComponent title="Quick Links" links={links} alphabetical={false} />;
 };
