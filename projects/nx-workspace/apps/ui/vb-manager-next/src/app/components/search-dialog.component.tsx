@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Dialog, IconButton, TextField, Text, Flex } from '@radix-ui/themes';
-import { MagnifyingGlassIcon, DashboardIcon, ListBulletIcon } from '@radix-ui/react-icons';
+import {
+  MagnifyingGlassIcon,
+  DashboardIcon,
+  ListBulletIcon,
+} from '@radix-ui/react-icons';
 import { QUICK_LINKS } from '../constants/quick-links';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -14,7 +18,11 @@ const fuzzyMatch = (query: string, target: string): boolean => {
   const targetLower = target.toLowerCase();
 
   let queryIndex = 0;
-  for (let i = 0; i < targetLower.length && queryIndex < queryLower.length; i++) {
+  for (
+    let i = 0;
+    i < targetLower.length && queryIndex < queryLower.length;
+    i++
+  ) {
     if (targetLower[i] === queryLower[queryIndex]) {
       queryIndex++;
     }
@@ -28,7 +36,10 @@ type SearchDialogComponentProps = {
   onOpenChange?: (open: boolean) => void;
 };
 
-export function SearchDialogComponent({ open: externalOpen, onOpenChange: externalOnOpenChange }: SearchDialogComponentProps = {}) {
+export function SearchDialogComponent({
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
+}: SearchDialogComponentProps = {}) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -60,7 +71,9 @@ export function SearchDialogComponent({ open: externalOpen, onOpenChange: extern
     ? QUICK_LINKS.filter(link => fuzzyMatch(searchQuery, link.label))
     : QUICK_LINKS;
 
-  const sortedLinks = [...filteredLinks].sort((a, b) => a.label.localeCompare(b.label));
+  const sortedLinks = [...filteredLinks].sort((a, b) =>
+    a.label.localeCompare(b.label),
+  );
 
   const itemsWithoutSubgroup = sortedLinks.filter(link => !link.subgroup);
   const itemsWithSubgroup = sortedLinks.filter(link => link.subgroup);
@@ -76,7 +89,9 @@ export function SearchDialogComponent({ open: externalOpen, onOpenChange: extern
     return acc;
   }, {} as Record<string, typeof QUICK_LINKS>);
 
-  const subgroupEntries = Object.entries(subgroups).sort(([a], [b]) => a.localeCompare(b));
+  const subgroupEntries = Object.entries(subgroups).sort(([a], [b]) =>
+    a.localeCompare(b),
+  );
 
   const handleShellExecute = async (type: OpenType, target: string) => {
     const response = await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
@@ -102,7 +117,11 @@ export function SearchDialogComponent({ open: externalOpen, onOpenChange: extern
       OPEN_TYPE.FILE_SYSTEM,
     ] as const;
 
-    if (nonBrowserTypes.includes(firstLink.type as typeof nonBrowserTypes[number])) {
+    if (
+      nonBrowserTypes.includes(
+        firstLink.type as (typeof nonBrowserTypes)[number],
+      )
+    ) {
       handleShellExecute(firstLink.type, firstLink.target);
     } else {
       window.open(firstLink.target, '_blank', 'noopener,noreferrer');
@@ -119,16 +138,19 @@ export function SearchDialogComponent({ open: externalOpen, onOpenChange: extern
     }
   };
 
-  const renderLink = (link: typeof QUICK_LINKS[0]) => {
-    const baseClass = 'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-colors';
+  const nonBrowserTypes = [
+    OPEN_TYPE.MAC_APPLICATION,
+    OPEN_TYPE.VSCODE,
+    OPEN_TYPE.FILE_SYSTEM,
+  ] as const;
 
-    const nonBrowserTypes = [
-      OPEN_TYPE.MAC_APPLICATION,
-      OPEN_TYPE.VSCODE,
-      OPEN_TYPE.FILE_SYSTEM,
-    ] as const;
+  const renderLink = (link: (typeof QUICK_LINKS)[0]) => {
+    const baseClass =
+      'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-colors';
 
-    if (nonBrowserTypes.includes(link.type as typeof nonBrowserTypes[number])) {
+    if (
+      nonBrowserTypes.includes(link.type as (typeof nonBrowserTypes)[number])
+    ) {
       return (
         <button
           key={link.target}
@@ -153,6 +175,27 @@ export function SearchDialogComponent({ open: externalOpen, onOpenChange: extern
     );
   };
 
+  const renderGroupedLinks = () => (
+    <>
+      {itemsWithoutSubgroup.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {itemsWithoutSubgroup.map(link => renderLink(link))}
+        </div>
+      )}
+
+      {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
+        <div key={subgroupName}>
+          <Text size="3" weight="medium" className="mb-2">
+            {subgroupName}
+          </Text>
+          <div className="flex flex-wrap gap-2">
+            {subgroupLinks.map(link => renderLink(link))}
+          </div>
+        </div>
+      ))}
+    </>
+  );
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       {externalOpen === undefined && (
@@ -163,7 +206,9 @@ export function SearchDialogComponent({ open: externalOpen, onOpenChange: extern
         </Dialog.Trigger>
       )}
 
-      <Dialog.Content style={{ maxWidth: 800, maxHeight: '80vh', overflow: 'auto' }}>
+      <Dialog.Content
+        style={{ maxWidth: 800, maxHeight: '80vh', overflow: 'auto' }}
+      >
         <Dialog.Title>Quick Links</Dialog.Title>
 
         <Flex gap="2" align="center" mb="4">
@@ -171,7 +216,7 @@ export function SearchDialogComponent({ open: externalOpen, onOpenChange: extern
             ref={searchInputRef}
             placeholder="Search..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             size="2"
             style={{ flex: 1 }}
@@ -188,27 +233,10 @@ export function SearchDialogComponent({ open: externalOpen, onOpenChange: extern
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {isGrouped ? (
-            <>
-              {itemsWithoutSubgroup.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {itemsWithoutSubgroup.map((link) => renderLink(link))}
-                </div>
-              )}
-
-              {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
-                <div key={subgroupName}>
-                  <Text size="3" weight="medium" className="mb-2">
-                    {subgroupName}
-                  </Text>
-                  <div className="flex flex-wrap gap-2">
-                    {subgroupLinks.map((link) => renderLink(link))}
-                  </div>
-                </div>
-              ))}
-            </>
+            renderGroupedLinks()
           ) : (
             <div className="flex flex-wrap gap-2">
-              {sortedLinks.map((link) => renderLink(link))}
+              {sortedLinks.map(link => renderLink(link))}
             </div>
           )}
 

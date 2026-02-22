@@ -71,11 +71,135 @@ export const API_ROUTES = {
   USER_ORGANIZATIONS: '/api/github/user/organizations',
 };
 
-export const GithubTeamManager = () => {
-  const router = useRouter();
-  const [organizations, setOrganizations] = useState<GithubOrgBasic[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const ErrorState = ({ error }: { error: string }) => (
+  <Callout.Root color="red" mb="3">
+    <Callout.Icon>
+      <AlertCircle size={16} />
+    </Callout.Icon>
+    <Callout.Text>{error}</Callout.Text>
+  </Callout.Root>
+);
+
+const LoadingState = () => (
+  <Box>
+    {[1, 2, 3].map(i => (
+      <Box key={i} mb="1" style={{ padding: '0.5rem 0' }}>
+        <Skeleton className="h-6 w-full" />
+      </Box>
+    ))}
+  </Box>
+);
+
+const EmptyState = () => (
+  <Box style={{ textAlign: 'center', padding: '2rem' }}>
+    <Users size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+    <Text size="3" color="gray">
+      No organizations found
+    </Text>
+  </Box>
+);
+
+const OrganizationItem = ({
+  organization,
+  detailedView,
+  onOrgClick,
+}: {
+  organization: GithubOrgBasic;
+  detailedView: boolean;
+  onOrgClick: (orgLogin: string) => void;
+}) => (
+  <Box
+    key={organization.login}
+    style={{
+      cursor: 'pointer',
+      padding: '0.5rem 0.75rem',
+      borderRadius: '4px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: detailedView ? '0.75rem' : '0',
+    }}
+    className="org-item-container hover:bg-[var(--gray-3)]"
+  >
+    <Box
+      onClick={() => onOrgClick(organization.login)}
+      style={{
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Box
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+        }}
+      >
+        <img
+          src={organization.avatar_url}
+          alt={organization.login}
+          style={{
+            width: '20px',
+            height: '20px',
+            borderRadius: '4px',
+          }}
+        />
+        <Text size="3">{organization.login}</Text>
+      </Box>
+      <ChevronRight size={16} style={{ opacity: 0.3 }} />
+    </Box>
+    <Flex
+      gap="2"
+      wrap="wrap"
+      className={`quick-links ${detailedView ? 'expanded' : ''}`}
+    >
+      {Object.entries(getOrgUrls(organization.login)).map(([key, url]) => (
+        <Button
+          key={key}
+          asChild
+          variant="soft"
+          size="1"
+          onClick={e => e.stopPropagation()}
+        >
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            {BUTTON_LABELS[key]}
+            <ExternalLink size={12} />
+          </a>
+        </Button>
+      ))}
+    </Flex>
+  </Box>
+);
+
+const OrganizationsList = ({
+  organizations,
+  detailedView,
+  onOrgClick,
+}: {
+  organizations: GithubOrgBasic[];
+  detailedView: boolean;
+  onOrgClick: (orgLogin: string) => void;
+}) => (
+  <Box
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: detailedView ? '1rem' : '0.25rem',
+    }}
+  >
+    {organizations.map(organization => (
+      <OrganizationItem
+        key={organization.login}
+        organization={organization}
+        detailedView={detailedView}
+        onOrgClick={onOrgClick}
+      />
+    ))}
+  </Box>
+);
+
+const useDetailedViewState = () => {
   const [detailedView, setDetailedView] = useState(false);
 
   useEffect(() => {
@@ -93,8 +217,16 @@ export const GithubTeamManager = () => {
     );
   };
 
+  return { detailedView, handleViewToggle };
+};
+
+const useOrganizations = () => {
+  const [organizations, setOrganizations] = useState<GithubOrgBasic[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    async function init() {
+    const fetchOrganizations = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -113,9 +245,73 @@ export const GithubTeamManager = () => {
       } finally {
         setLoading(false);
       }
-    }
-    init();
+    };
+    fetchOrganizations();
   }, []);
+
+  return { organizations, loading, error };
+};
+
+const ViewToggleButtons = ({
+  detailedView,
+  onViewToggle,
+}: {
+  detailedView: boolean;
+  onViewToggle: (isDetailed: boolean) => void;
+}) => (
+  <Flex gap="1">
+    <Button
+      variant={detailedView ? 'soft' : 'solid'}
+      size="2"
+      onClick={() => onViewToggle(false)}
+      style={{ opacity: detailedView ? 0.6 : 1 }}
+    >
+      <List size={16} />
+    </Button>
+    <Button
+      variant={detailedView ? 'solid' : 'soft'}
+      size="2"
+      onClick={() => onViewToggle(true)}
+      style={{ opacity: detailedView ? 1 : 0.6 }}
+    >
+      <Rows3 size={16} />
+    </Button>
+  </Flex>
+);
+
+const ContentRenderer = ({
+  error,
+  loading,
+  organizations,
+  detailedView,
+  onOrgClick,
+}: {
+  error: string | null;
+  loading: boolean;
+  organizations: GithubOrgBasic[];
+  detailedView: boolean;
+  onOrgClick: (orgLogin: string) => void;
+}) => {
+  if (error) return <ErrorState error={error} />;
+  if (loading) return <LoadingState />;
+  if (!loading && !error && organizations.length === 0) return <EmptyState />;
+  return (
+    <OrganizationsList
+      organizations={organizations}
+      detailedView={detailedView}
+      onOrgClick={onOrgClick}
+    />
+  );
+};
+
+export const GithubTeamManager = () => {
+  const router = useRouter();
+  const { organizations, loading, error } = useOrganizations();
+  const { detailedView, handleViewToggle } = useDetailedViewState();
+
+  const handleOrgClick = (orgLogin: string) => {
+    router.push(`github-manager/organization/${orgLogin}`);
+  };
 
   return (
     <CardContainer
@@ -123,138 +319,19 @@ export const GithubTeamManager = () => {
         organizations.length ? ` (${organizations.length})` : ''
       }`}
       headerAction={
-        <Flex gap="1">
-          <Button
-            variant={detailedView ? 'soft' : 'solid'}
-            size="2"
-            onClick={() => handleViewToggle(false)}
-            style={{ opacity: detailedView ? 0.6 : 1 }}
-          >
-            <List size={16} />
-          </Button>
-          <Button
-            variant={detailedView ? 'solid' : 'soft'}
-            size="2"
-            onClick={() => handleViewToggle(true)}
-            style={{ opacity: detailedView ? 1 : 0.6 }}
-          >
-            <Rows3 size={16} />
-          </Button>
-        </Flex>
+        <ViewToggleButtons
+          detailedView={detailedView}
+          onViewToggle={handleViewToggle}
+        />
       }
     >
-      {/* Error State */}
-      {error && (
-        <Callout.Root color="red" mb="3">
-          <Callout.Icon>
-            <AlertCircle size={16} />
-          </Callout.Icon>
-          <Callout.Text>{error}</Callout.Text>
-        </Callout.Root>
-      )}
-
-      {/* Loading State */}
-      {loading && (
-        <Box>
-          {[1, 2, 3].map(i => (
-            <Box key={i} mb="1" style={{ padding: '0.5rem 0' }}>
-              <Skeleton className="h-6 w-full" />
-            </Box>
-          ))}
-        </Box>
-      )}
-
-      {/* Empty State */}
-      {!loading && !error && organizations.length === 0 && (
-        <Box style={{ textAlign: 'center', padding: '2rem' }}>
-          <Users size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-          <Text size="3" color="gray">
-            No organizations found
-          </Text>
-        </Box>
-      )}
-
-      {/* Organizations List */}
-      {!loading && !error && organizations.length > 0 && (
-        <Box
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: detailedView ? '1rem' : '0.25rem',
-          }}
-        >
-          {organizations.map(organization => (
-            <Box
-              key={organization.login}
-              style={{
-                cursor: 'pointer',
-                padding: '0.5rem 0.75rem',
-                borderRadius: '4px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: detailedView ? '0.75rem' : '0',
-              }}
-              className="org-item-container hover:bg-[var(--gray-3)]"
-            >
-              <Box
-                onClick={() =>
-                  router.push(
-                    `github-manager/organization/${organization.login}`,
-                  )
-                }
-                style={{
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Box
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                  }}
-                >
-                  <img
-                    src={organization.avatar_url}
-                    alt={organization.login}
-                    style={{
-                      width: '20px',
-                      height: '20px',
-                      borderRadius: '4px',
-                    }}
-                  />
-                  <Text size="3">{organization.login}</Text>
-                </Box>
-                <ChevronRight size={16} style={{ opacity: 0.3 }} />
-              </Box>
-              <Flex
-                gap="2"
-                wrap="wrap"
-                className={`quick-links ${detailedView ? 'expanded' : ''}`}
-              >
-                {Object.entries(getOrgUrls(organization.login)).map(
-                  ([key, url]) => (
-                    <Button
-                      key={key}
-                      asChild
-                      variant="soft"
-                      size="1"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <a href={url} target="_blank" rel="noopener noreferrer">
-                        {BUTTON_LABELS[key]}
-                        <ExternalLink size={12} />
-                      </a>
-                    </Button>
-                  ),
-                )}
-              </Flex>
-            </Box>
-          ))}
-        </Box>
-      )}
+      <ContentRenderer
+        error={error}
+        loading={loading}
+        organizations={organizations}
+        detailedView={detailedView}
+        onOrgClick={handleOrgClick}
+      />
     </CardContainer>
   );
 };

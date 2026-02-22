@@ -8,7 +8,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 1337,
-        NEXTAUTH_URL: 'http://localhost:1337',
+        NEXTAUTH_URL: 'https://manager.vigilant-broccoli.app',
         NEXTAUTH_SECRET: 'your-secret-key-here-change-this-in-production',
         VB_EXPRESS_URL: 'https://vb-express.fly.dev',
         ...process.env,

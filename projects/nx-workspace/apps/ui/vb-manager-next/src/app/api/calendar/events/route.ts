@@ -41,20 +41,19 @@ export async function GET(req: NextRequest) {
 
     const events = response.data.items || [];
 
-    console.log('Calendar API - Total events fetched:', events.length);
-    console.log('Calendar API - Time range:', { now: now.toISOString(), endOfWeek: endOfWeek.toISOString() });
-
     const todayEvents = events.filter(event => {
-      const eventStart = new Date(event.start?.dateTime || event.start?.date || '');
+      const eventStart = new Date(
+        event.start?.dateTime || event.start?.date || '',
+      );
       return eventStart <= endOfDay;
     });
 
     const upcomingEvents = events.filter(event => {
-      const eventStart = new Date(event.start?.dateTime || event.start?.date || '');
+      const eventStart = new Date(
+        event.start?.dateTime || event.start?.date || '',
+      );
       return eventStart > endOfDay;
     });
-
-    console.log('Calendar API - Today events:', todayEvents.length, 'Upcoming:', upcomingEvents.length);
 
     return NextResponse.json({
       success: true,
@@ -62,10 +61,12 @@ export async function GET(req: NextRequest) {
       upcomingEvents,
     });
   } catch (error) {
-    console.error('Error fetching calendar events:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch events' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error ? error.message : 'Failed to fetch events',
+      },
+      { status: 500 },
     );
   }
 }
