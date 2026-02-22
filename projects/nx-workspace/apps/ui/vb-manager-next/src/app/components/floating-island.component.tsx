@@ -9,12 +9,35 @@ import { SearchDialogComponent } from './search-dialog.component';
 import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 
-export const FloatingIslandComponent = () => {
+interface FloatingIslandProps {
+  searchDialogOpen?: boolean;
+  setSearchDialogOpen?: (open: boolean) => void;
+  chatbotDialogOpen?: boolean;
+  setChatbotDialogOpen?: (open: boolean) => void;
+  emailDialogOpen?: boolean;
+  setEmailDialogOpen?: (open: boolean) => void;
+}
+
+export const FloatingIslandComponent = ({
+  searchDialogOpen: externalSearchOpen,
+  setSearchDialogOpen: externalSetSearchOpen,
+  chatbotDialogOpen: externalChatbotOpen,
+  setChatbotDialogOpen: externalSetChatbotOpen,
+  emailDialogOpen: externalEmailOpen,
+  setEmailDialogOpen: externalSetEmailOpen,
+}: FloatingIslandProps = {}) => {
   const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
-  const [chatbotDialogOpen, setChatbotDialogOpen] = useState(false);
-  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [internalChatbotDialogOpen, setInternalChatbotDialogOpen] = useState(false);
+  const [internalEmailDialogOpen, setInternalEmailDialogOpen] = useState(false);
+  const [internalSearchDialogOpen, setInternalSearchDialogOpen] = useState(false);
+
+  const searchDialogOpen = externalSearchOpen ?? internalSearchDialogOpen;
+  const setSearchDialogOpen = externalSetSearchOpen ?? setInternalSearchDialogOpen;
+  const chatbotDialogOpen = externalChatbotOpen ?? internalChatbotDialogOpen;
+  const setChatbotDialogOpen = externalSetChatbotOpen ?? setInternalChatbotDialogOpen;
+  const emailDialogOpen = externalEmailOpen ?? internalEmailDialogOpen;
+  const setEmailDialogOpen = externalSetEmailOpen ?? setInternalEmailDialogOpen;
 
   return (
     <>

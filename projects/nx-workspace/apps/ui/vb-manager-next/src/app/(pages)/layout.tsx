@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { NextNavBar, NextNavRoute } from '@vigilant-broccoli/next-lib';
 import { DropdownMenu, Button } from '@radix-ui/themes';
 import { usePathname } from 'next/navigation';
@@ -15,9 +15,14 @@ type ExtendedNavRoute = {
   children?: NextNavRoute[];
 };
 
+const IGNORED_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
+
 export default function Layout({ children }: { children: ReactNode }) {
-  const { appearance } = useTheme();
+  const { appearance, toggleTheme } = useTheme();
   const pathname = usePathname();
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [chatbotDialogOpen, setChatbotDialogOpen] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
   const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
   const dropdownRoutes = allRoutes.filter(
@@ -28,6 +33,31 @@ export default function Layout({ children }: { children: ReactNode }) {
   const isActiveDropdown = (children?: NextNavRoute[]) => {
     return children?.some(child => child.path === pathname) ?? false;
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isIgnoredInput = e.target instanceof Element && IGNORED_TAGS.includes(e.target.tagName);
+
+      if (isIgnoredInput) return;
+
+      if (e.key === '/') {
+        e.preventDefault();
+        setSearchDialogOpen(true);
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        setEmailDialogOpen(true);
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        setChatbotDialogOpen(true);
+      } else if (e.key === 'd' || e.key === 'D') {
+        e.preventDefault();
+        toggleTheme();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [toggleTheme]);
 
   return (
     <div className="w-full min-h-screen">
@@ -66,7 +96,14 @@ export default function Layout({ children }: { children: ReactNode }) {
         }
       />
       <main className="p-4">{children}</main>
-      <FloatingIslandComponent />
+      <FloatingIslandComponent
+        searchDialogOpen={searchDialogOpen}
+        setSearchDialogOpen={setSearchDialogOpen}
+        chatbotDialogOpen={chatbotDialogOpen}
+        setChatbotDialogOpen={setChatbotDialogOpen}
+        emailDialogOpen={emailDialogOpen}
+        setEmailDialogOpen={setEmailDialogOpen}
+      />
     </div>
   );
 }
