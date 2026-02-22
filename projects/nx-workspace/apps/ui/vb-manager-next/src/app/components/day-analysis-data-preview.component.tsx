@@ -74,7 +74,9 @@ const fetchAllDataSources = async () => {
   ] = await Promise.all([
     fetch(`${API_ENDPOINTS.TASKS}?taskListId=${PERSONAL_TASK_LIST_ID}`),
     fetch(`${API_ENDPOINTS.TASKS}?taskListId=${WORK_TASK_LIST_ID}`),
-    fetch(`${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${PERSONAL_CALENDAR_ID}`),
+    fetch(
+      `${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${PERSONAL_CALENDAR_ID}`,
+    ),
     fetch(`${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${WORK_CALENDAR_ID}`),
     fetch(
       `${API_ENDPOINTS.WEATHER}?lat=${MALMO_COORDINATES.lat}&lon=${MALMO_COORDINATES.lon}`,
@@ -144,107 +146,6 @@ const buildAnalysisData = (
   calendar: calendarEvents,
 });
 
-const generatePlanningPrompt = (data: DayAnalysisData): string =>
-  `Please help me plan my day based on the following information:
-
-${JSON.stringify(data, null, 2)}
-
-Please analyze:
-1. My calendar events and suggest how to prepare for them
-2. My tasks organized by priority (urgent/important/delegate/eliminate) for both personal and work
-3. Any overdue tasks that need immediate attention
-4. The current weather and how it might affect my plans
-5. Give me a structured plan with time blocks and priorities`;
-
-const generateWeekPlanningPrompt = (data: DayAnalysisData): string =>
-  `Please help me plan my work week based on the following information:
-
-${JSON.stringify(data, null, 2)}
-
-Please analyze:
-1. My calendar events for this week and suggest how to prepare for major meetings
-2. My priority tasks for the week - what needs to be done by Friday
-3. Any overdue tasks that need immediate attention this week
-4. Realistic time blocks for deep work and focus sessions
-5. Give me a strategic plan for Monday-Friday with daily focus areas`;
-
-const isWeekPlanningVisible = (): boolean => {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-  return dayOfWeek >= 1 && dayOfWeek <= 3;
-};
-
-export const DayAnalysisDataPreviewComponent = () => {
-  const { status } = useSession();
-  const [data, setData] = useState<DayAnalysisData | null>(null);
-  const [chatbotOpen, setChatbotOpen] = useState(false);
-
-  const fetchData = async () => {
-    const sources = await fetchAllDataSources();
-
-    if (
-      !sources.personalTasks.response.ok &&
-      !sources.workTasks.response.ok
-    ) {
-      return;
-    }
-
-    if (
-      !sources.personalCalendar.response.ok &&
-      !sources.workCalendar.response.ok
-    ) {
-      console.error('Calendar fetch error:', {
-        personalCalendar: sources.personalCalendar.data,
-        workCalendar: sources.workCalendar.data,
-      });
-      return;
-    }
-
-    const calendarEvents = mergeCalendarEvents(
-      sources.personalCalendar.data,
-      sources.workCalendar.data,
-    );
-
-    const analysisData = buildAnalysisData(
-      sources.personalTasks.data,
-      sources.workTasks.data,
-      calendarEvents,
-      sources.weather,
-    );
-
-    setData(analysisData);
-  };
-
-  const getSuggestions = () => {
-    if (!data) return [];
-    const suggestions = [
-      {
-        title: '📅 Plan My Day',
-        prompt: generatePlanningPrompt(data),
-      },
-    ];
-    if (isWeekPlanningVisible()) {
-      suggestions.push({
-        title: '📊 Plan My Work Week',
-        prompt: generateWeekPlanningPrompt(data),
-      });
-    }
-    return suggestions;
-  };
-
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchData();
-    }
-  }, [status]);
-
-  if (status !== 'authenticated') {
-    return null;
-  }
-
-  return null;
-}
-
 export const useDayAnalysisSuggestions = () => {
   const { status } = useSession();
   const [data, setData] = useState<any>(null);
@@ -252,10 +153,7 @@ export const useDayAnalysisSuggestions = () => {
   const fetchData = async () => {
     const sources = await fetchAllDataSources();
 
-    if (
-      !sources.personalTasks.response.ok &&
-      !sources.workTasks.response.ok
-    ) {
+    if (!sources.personalTasks.response.ok && !sources.workTasks.response.ok) {
       return;
     }
 

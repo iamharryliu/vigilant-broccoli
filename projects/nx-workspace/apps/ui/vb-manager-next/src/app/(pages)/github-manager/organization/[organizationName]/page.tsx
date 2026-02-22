@@ -7,8 +7,26 @@ import {
   GithubOrgMember,
   GithubOrgRepository,
 } from '@vigilant-broccoli/common-js';
-import { Heading, Link, Box, Text, TextField, Callout, Badge, Grid, Button, Dialog } from '@radix-ui/themes';
-import { Users, Search, AlertCircle, FileCode, Trash2, UserPlus } from 'lucide-react';
+import {
+  Heading,
+  Link,
+  Box,
+  Text,
+  TextField,
+  Callout,
+  Badge,
+  Grid,
+  Button,
+  Dialog,
+} from '@radix-ui/themes';
+import {
+  Users,
+  Search,
+  AlertCircle,
+  FileCode,
+  Trash2,
+  UserPlus,
+} from 'lucide-react';
 import { CardContainer } from '../../../../components/card-container.component';
 import { CollapsibleListItem } from '../../../../components/collapsible-list-item.component';
 import { LinkList } from '../../../../components/link-list.component';
@@ -22,29 +40,31 @@ export default function Page({
   const { organizationName } = use(params);
   const [organizationStructure, setOrganizationStructure] =
     useState<GithubOrganizationTeamStructure>();
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     async function init() {
       try {
-        setLoading(true);
         setError(null);
         const res = await fetch(
           `${API_ROUTES.ORGANIZATION_STRUCTURE}?organization=${organizationName}`,
         );
 
         if (!res.ok) {
-          throw new Error(`Failed to fetch organization structure: ${res.statusText}`);
+          throw new Error(
+            `Failed to fetch organization structure: ${res.statusText}`,
+          );
         }
 
         const structure = await res.json();
         setOrganizationStructure(structure);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load organization structure');
-      } finally {
-        setLoading(false);
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to load organization structure',
+        );
       }
     }
     init();
@@ -52,7 +72,8 @@ export default function Page({
 
   // Filter teams based on search query
   const filteredStructure = useMemo(() => {
-    if (!organizationStructure || !searchQuery.trim()) return organizationStructure;
+    if (!organizationStructure || !searchQuery.trim())
+      return organizationStructure;
 
     const query = searchQuery.toLowerCase();
     const filteredTeams = organizationStructure.teams.filter(team => {
@@ -61,7 +82,7 @@ export default function Page({
 
       // Search in member usernames
       return team.members.some(member =>
-        member.username.toLowerCase().includes(query)
+        member.username.toLowerCase().includes(query),
       );
     });
 
@@ -97,9 +118,19 @@ export default function Page({
             {organizationStructure.organizationName}
           </Box>
         </Heading>
-        <Box style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        <Box
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
           <Text size="1" color="gray">
-            {organizationStructure.memberCount} member{organizationStructure.memberCount !== 1 ? 's' : ''} · {organizationStructure.teams.length} team{organizationStructure.teams.length !== 1 ? 's' : ''}
+            {organizationStructure.memberCount} member
+            {organizationStructure.memberCount !== 1 ? 's' : ''} ·{' '}
+            {organizationStructure.teams.length} team
+            {organizationStructure.teams.length !== 1 ? 's' : ''}
           </Text>
         </Box>
       </Box>
@@ -108,7 +139,7 @@ export default function Page({
         <TextField.Root
           placeholder="Search teams or members..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           size="2"
         >
           <TextField.Slot>
@@ -118,9 +149,20 @@ export default function Page({
       </Box>
 
       <Grid columns="3" gap="3">
-        <RepositoriesList repositories={organizationStructure.repositories} searchQuery={searchQuery} organizationName={organizationStructure.organizationName} />
-        <MembersList members={organizationStructure.members} searchQuery={searchQuery} organizationName={organizationStructure.organizationName} />
-        <TeamsList structure={filteredStructure || organizationStructure} searchQuery={searchQuery} />
+        <RepositoriesList
+          repositories={organizationStructure.repositories}
+          searchQuery={searchQuery}
+          organizationName={organizationStructure.organizationName}
+        />
+        <MembersList
+          members={organizationStructure.members}
+          searchQuery={searchQuery}
+          organizationName={organizationStructure.organizationName}
+        />
+        <TeamsList
+          structure={filteredStructure || organizationStructure}
+          searchQuery={searchQuery}
+        />
       </Grid>
     </>
   );
@@ -151,13 +193,22 @@ const GithubUserLink = ({ member }: { member: GithubTeamMember }) => {
   );
 };
 
-const RepositoriesList = ({ repositories, searchQuery, organizationName }: { repositories: GithubOrgRepository[]; searchQuery: string; organizationName: string }) => {
+const RepositoriesList = ({
+  repositories,
+  searchQuery,
+  organizationName,
+}: {
+  repositories: GithubOrgRepository[];
+  searchQuery: string;
+  organizationName: string;
+}) => {
   const filteredRepositories = useMemo(() => {
     if (!searchQuery.trim()) return repositories;
     const query = searchQuery.toLowerCase();
-    return repositories.filter(repo =>
-      repo.name.toLowerCase().includes(query) ||
-      repo.description?.toLowerCase().includes(query)
+    return repositories.filter(
+      repo =>
+        repo.name.toLowerCase().includes(query) ||
+        repo.description?.toLowerCase().includes(query),
     );
   }, [repositories, searchQuery]);
 
@@ -175,15 +226,22 @@ const RepositoriesList = ({ repositories, searchQuery, organizationName }: { rep
     <CardContainer
       title={`Repositories (${filteredRepositories.length})`}
       headerAction={
-        <Link href={`https://github.com/orgs/${organizationName}/repositories`} target="_blank">
-          <Text size="2" color="gray" style={{ cursor: 'pointer' }}>View on GitHub →</Text>
+        <Link
+          href={`https://github.com/orgs/${organizationName}/repositories`}
+          target="_blank"
+        >
+          <Text size="2" color="gray" style={{ cursor: 'pointer' }}>
+            View on GitHub →
+          </Text>
         </Link>
       }
     >
       {filteredRepositories.length === 0 && searchQuery ? (
         <Box style={{ textAlign: 'center', padding: '2rem' }}>
           <Search size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-          <Text size="3" color="gray">No repositories match &ldquo;{searchQuery}&rdquo;</Text>
+          <Text size="3" color="gray">
+            No repositories match &ldquo;{searchQuery}&rdquo;
+          </Text>
         </Box>
       ) : (
         <LinkList items={linkItems} emptyMessage="No repositories found" />
@@ -192,7 +250,15 @@ const RepositoriesList = ({ repositories, searchQuery, organizationName }: { rep
   );
 };
 
-const MembersList = ({ members, searchQuery, organizationName }: { members: GithubOrgMember[]; searchQuery: string; organizationName: string }) => {
+const MembersList = ({
+  members,
+  searchQuery,
+  organizationName,
+}: {
+  members: GithubOrgMember[];
+  searchQuery: string;
+  organizationName: string;
+}) => {
   const [filteredMembers, setFilteredMembers] = useState<GithubOrgMember[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
@@ -204,7 +270,9 @@ const MembersList = ({ members, searchQuery, organizationName }: { members: Gith
   useEffect(() => {
     const filtered = !searchQuery.trim()
       ? members
-      : members.filter(member => member.login.toLowerCase().includes(searchQuery.toLowerCase()));
+      : members.filter(member =>
+          member.login.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
     setFilteredMembers(filtered);
   }, [members, searchQuery]);
 
@@ -219,7 +287,7 @@ const MembersList = ({ members, searchQuery, organizationName }: { members: Gith
     setIsDeleting(true);
     const response = await fetch(
       `/api/github/organization-members?organization=${organizationName}&username=${memberToDelete}`,
-      { method: 'DELETE' }
+      { method: 'DELETE' },
     );
 
     if (response.ok) {
@@ -237,7 +305,10 @@ const MembersList = ({ members, searchQuery, organizationName }: { members: Gith
     const response = await fetch('/api/github/organization-members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ organization: organizationName, username: newUsername.trim() }),
+      body: JSON.stringify({
+        organization: organizationName,
+        username: newUsername.trim(),
+      }),
     });
 
     if (response.ok) {
@@ -252,12 +323,21 @@ const MembersList = ({ members, searchQuery, organizationName }: { members: Gith
         title={`Members (${filteredMembers.length})`}
         headerAction={
           <Box style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Button size="1" variant="soft" onClick={() => setAddDialogOpen(true)}>
+            <Button
+              size="1"
+              variant="soft"
+              onClick={() => setAddDialogOpen(true)}
+            >
               <UserPlus size={14} />
               Add
             </Button>
-            <Link href={`https://github.com/orgs/${organizationName}/people`} target="_blank">
-              <Text size="2" color="gray" style={{ cursor: 'pointer' }}>View on GitHub →</Text>
+            <Link
+              href={`https://github.com/orgs/${organizationName}/people`}
+              target="_blank"
+            >
+              <Text size="2" color="gray" style={{ cursor: 'pointer' }}>
+                View on GitHub →
+              </Text>
             </Link>
           </Box>
         }
@@ -265,13 +345,27 @@ const MembersList = ({ members, searchQuery, organizationName }: { members: Gith
         {filteredMembers.length === 0 && searchQuery && (
           <Box style={{ textAlign: 'center', padding: '2rem' }}>
             <Search size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-            <Text size="3" color="gray">No members match &ldquo;{searchQuery}&rdquo;</Text>
+            <Text size="3" color="gray">
+              No members match &ldquo;{searchQuery}&rdquo;
+            </Text>
           </Box>
         )}
 
         {filteredMembers.map(member => (
-          <Box key={member.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Link href={member.html_url} target="_blank" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+          <Box
+            key={member.id}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <Link
+              href={member.html_url}
+              target="_blank"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                flex: 1,
+              }}
+            >
               <img
                 src={member.avatar_url}
                 alt={member.login}
@@ -279,9 +373,15 @@ const MembersList = ({ members, searchQuery, organizationName }: { members: Gith
               />
               <Text size="2">{member.login}</Text>
             </Link>
-            <Link href={`${member.html_url}?tab=repositories`} target="_blank" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Link
+              href={`${member.html_url}?tab=repositories`}
+              target="_blank"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+            >
               <FileCode size={14} style={{ opacity: 0.5 }} />
-              <Text size="1" color="gray">Repos</Text>
+              <Text size="1" color="gray">
+                Repos
+              </Text>
             </Link>
             <Button
               size="1"
@@ -300,16 +400,28 @@ const MembersList = ({ members, searchQuery, organizationName }: { members: Gith
         <Dialog.Content style={{ maxWidth: 450 }}>
           <Dialog.Title>Remove Member</Dialog.Title>
           <Dialog.Description size="2" mb="4">
-            Are you sure you want to remove <strong>{memberToDelete}</strong> from the organization?
+            Are you sure you want to remove <strong>{memberToDelete}</strong>{' '}
+            from the organization?
           </Dialog.Description>
 
-          <Box style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+          <Box
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+              justifyContent: 'flex-end',
+            }}
+          >
             <Dialog.Close>
               <Button variant="soft" color="gray">
                 Cancel
               </Button>
             </Dialog.Close>
-            <Button variant="solid" color="red" onClick={handleConfirmDelete} disabled={isDeleting}>
+            <Button
+              variant="solid"
+              color="red"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
               {isDeleting ? 'Removing...' : 'Remove'}
             </Button>
           </Box>
@@ -320,23 +432,35 @@ const MembersList = ({ members, searchQuery, organizationName }: { members: Gith
         <Dialog.Content style={{ maxWidth: 450 }}>
           <Dialog.Title>Add Member</Dialog.Title>
           <Dialog.Description size="2" mb="4">
-            Enter the GitHub username of the person you want to invite to the organization.
+            Enter the GitHub username of the person you want to invite to the
+            organization.
           </Dialog.Description>
 
           <TextField.Root
             placeholder="GitHub username"
             value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
+            onChange={e => setNewUsername(e.target.value)}
             size="2"
           />
 
-          <Box style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+          <Box
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+              justifyContent: 'flex-end',
+              marginTop: '1rem',
+            }}
+          >
             <Dialog.Close>
               <Button variant="soft" color="gray">
                 Cancel
               </Button>
             </Dialog.Close>
-            <Button variant="solid" onClick={handleAddMember} disabled={isAdding || !newUsername.trim()}>
+            <Button
+              variant="solid"
+              onClick={handleAddMember}
+              disabled={isAdding || !newUsername.trim()}
+            >
               {isAdding ? 'Adding...' : 'Add Member'}
             </Button>
           </Box>
@@ -346,7 +470,13 @@ const MembersList = ({ members, searchQuery, organizationName }: { members: Gith
   );
 };
 
-const TeamsList = ({ structure, searchQuery }: { structure: GithubOrganizationTeamStructure; searchQuery: string }) => {
+const TeamsList = ({
+  structure,
+  searchQuery,
+}: {
+  structure: GithubOrganizationTeamStructure;
+  searchQuery: string;
+}) => {
   const [openTeams, setOpenTeams] = useState<Record<string, boolean>>({});
 
   const toggleTeam = (teamName: string) => {
@@ -360,23 +490,34 @@ const TeamsList = ({ structure, searchQuery }: { structure: GithubOrganizationTe
     <CardContainer
       title={`Teams (${structure.teams.length})`}
       headerAction={
-        <Link href={`https://github.com/orgs/${structure.organizationName}/teams`} target="_blank">
-          <Text size="2" color="gray" style={{ cursor: 'pointer' }}>View on GitHub →</Text>
+        <Link
+          href={`https://github.com/orgs/${structure.organizationName}/teams`}
+          target="_blank"
+        >
+          <Text size="2" color="gray" style={{ cursor: 'pointer' }}>
+            View on GitHub →
+          </Text>
         </Link>
       }
     >
       {structure.teams.length === 0 && searchQuery && (
         <Box style={{ textAlign: 'center', padding: '2rem' }}>
           <Search size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-          <Text size="3" color="gray">No teams match &ldquo;{searchQuery}&rdquo;</Text>
+          <Text size="3" color="gray">
+            No teams match &ldquo;{searchQuery}&rdquo;
+          </Text>
         </Box>
       )}
 
       {structure.teams.length === 0 && !searchQuery && (
         <Box style={{ textAlign: 'center', padding: '3rem 2rem' }}>
           <Users size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-          <Text size="3" color="gray" as="div" mb="1">No teams found</Text>
-          <Text size="2" color="gray">This organization doesn&apos;t have any teams yet.</Text>
+          <Text size="3" color="gray" as="div" mb="1">
+            No teams found
+          </Text>
+          <Text size="2" color="gray">
+            This organization doesn&apos;t have any teams yet.
+          </Text>
         </Box>
       )}
 
@@ -397,12 +538,16 @@ const TeamsList = ({ structure, searchQuery }: { structure: GithubOrganizationTe
             }
             headerAction={
               <Badge color="gray" size="1">
-                {team.members.length} member{team.members.length !== 1 ? 's' : ''}
+                {team.members.length} member
+                {team.members.length !== 1 ? 's' : ''}
               </Badge>
             }
           >
             {team.members.map(member => (
-              <Box key={`${team.name}-${member.username}`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Box
+                key={`${team.name}-${member.username}`}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
                 <img
                   src={member.avatar_url}
                   alt={member.username}
@@ -412,7 +557,13 @@ const TeamsList = ({ structure, searchQuery }: { structure: GithubOrganizationTe
                   <GithubUserLink member={member} />
                 </Box>
                 <Badge
-                  color={member.role === 'admin' ? 'red' : member.role === 'maintainer' ? 'blue' : 'gray'}
+                  color={
+                    member.role === 'admin'
+                      ? 'red'
+                      : member.role === 'maintainer'
+                      ? 'blue'
+                      : 'gray'
+                  }
                   size="1"
                 >
                   {member.role}

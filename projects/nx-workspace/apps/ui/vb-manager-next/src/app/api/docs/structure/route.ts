@@ -10,7 +10,10 @@ interface FileNode {
   children?: FileNode[];
 }
 
-async function buildFileTree(dirPath: string, relativePath = ''): Promise<FileNode[]> {
+async function buildFileTree(
+  dirPath: string,
+  relativePath = '',
+): Promise<FileNode[]> {
   try {
     const entries = await readdir(dirPath);
     const nodes: FileNode[] = [];
@@ -55,7 +58,7 @@ async function buildFileTree(dirPath: string, relativePath = ''): Promise<FileNo
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const notesPath = join(homedir(), 'vigilant-broccoli', 'notes');
     const fileTree = await buildFileTree(notesPath);
@@ -68,9 +71,12 @@ export async function GET(req: NextRequest) {
     console.error('Error fetching file structure:', error);
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : 'Failed to fetch file structure'
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch file structure',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -720,7 +720,6 @@ export const GoogleTasksComponent = ({
     fetchTasks,
     createTask,
     toggleTaskComplete,
-    deleteTask,
     updateTask,
   } = useTasks(taskListId);
   const [sortMode, setSortMode] = useSortModeStorage(taskListId);

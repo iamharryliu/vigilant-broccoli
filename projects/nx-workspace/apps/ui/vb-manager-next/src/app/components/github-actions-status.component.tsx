@@ -23,12 +23,14 @@ function toActionsWorkflowUrl(blobUrl: string): string | null {
   // e.g. ["owner", "repo", "blob", "main", ".github", "workflows", "deploy-cms-flask.yml"]
   if (parts.length < 7) return null;
 
-  const [owner, repo, blobKeyword, branch, dotgithub, workflowsDir, ...rest] =
-    parts;
+  const [owner, repo, blobKeyword, _branch, ...rest] = parts;
   if (blobKeyword !== 'blob') return null;
-  if (dotgithub !== '.github' || workflowsDir !== 'workflows') return null;
 
-  const filePath = rest.join('/'); // e.g. "deploy-cms-flask.yml"
+  const dotgithubIdx = rest.indexOf('.github');
+  if (dotgithubIdx === -1 || rest[dotgithubIdx + 1] !== 'workflows')
+    return null;
+
+  const filePath = rest.slice(dotgithubIdx + 2).join('/'); // e.g. "deploy-cms-flask.yml"
 
   // Construct the new URL
   return `https://github.com/${owner}/${repo}/actions/workflows/${filePath}`;
@@ -101,21 +103,25 @@ export const GithubRepoActionStatusBadges = ({
       }
     >
       <Flex direction="column" gap="2">
-          {badges.length > 0 ? (
-            badges.map(badge => (
-              <a
-                key={badge.alt}
-                href={badge.href || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:opacity-80 transition-opacity"
-              >
-                <img src={badge.src} alt={badge.alt} className="max-w-full h-auto" />
-              </a>
-            ))
-          ) : (
-            <Text className="text-gray-500">No workflows found</Text>
-          )}
+        {badges.length > 0 ? (
+          badges.map(badge => (
+            <a
+              key={badge.alt}
+              href={badge.href || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity"
+            >
+              <img
+                src={badge.src}
+                alt={badge.alt}
+                className="max-w-full h-auto"
+              />
+            </a>
+          ))
+        ) : (
+          <Text className="text-gray-500">No workflows found</Text>
+        )}
       </Flex>
     </CardContainer>
   );

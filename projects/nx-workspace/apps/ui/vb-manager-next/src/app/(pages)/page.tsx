@@ -6,7 +6,6 @@ import { ClockComponent } from '../components/clock.component';
 import { TaskListSelectorComponent } from '../components/task-list-selector.component';
 import { UtilitiesComponent } from '../components/utilities.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
-import { DayAnalysisDataPreviewComponent } from '../components/day-analysis-data-preview.component';
 import {
   buildCalendarUrl,
   CalendarConfig,
@@ -94,7 +93,6 @@ export default function Page() {
         </div>
       </>
       <div className="flex flex-col gap-4">
-        <DayAnalysisDataPreviewComponent />
         {appMode === APP_MODE.PERSONAL ? (
           <TaskListSelectorComponent />
         ) : (
