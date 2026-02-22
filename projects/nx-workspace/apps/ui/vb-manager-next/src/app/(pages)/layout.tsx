@@ -35,24 +35,21 @@ export default function Layout({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    const handleKeyboardShortcut = (key: string) => {
+      if (key === '/') setSearchDialogOpen(true);
+      else if (key === 'm' || key === 'M') setEmailDialogOpen(true);
+      else if (key === 'c' || key === 'C') setChatbotDialogOpen(true);
+      else if (key === 'd' || key === 'D') toggleTheme();
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
       const isIgnoredInput = e.target instanceof Element && IGNORED_TAGS.includes(e.target.tagName);
+      const hasModifier = e.ctrlKey || e.metaKey || e.altKey;
 
-      if (isIgnoredInput) return;
+      if (isIgnoredInput || hasModifier) return;
 
-      if (e.key === '/') {
-        e.preventDefault();
-        setSearchDialogOpen(true);
-      } else if (e.key === 'm' || e.key === 'M') {
-        e.preventDefault();
-        setEmailDialogOpen(true);
-      } else if (e.key === 'c' || e.key === 'C') {
-        e.preventDefault();
-        setChatbotDialogOpen(true);
-      } else if (e.key === 'd' || e.key === 'D') {
-        e.preventDefault();
-        toggleTheme();
-      }
+      handleKeyboardShortcut(e.key);
+      e.preventDefault();
     };
 
     window.addEventListener('keydown', handleKeyDown);
