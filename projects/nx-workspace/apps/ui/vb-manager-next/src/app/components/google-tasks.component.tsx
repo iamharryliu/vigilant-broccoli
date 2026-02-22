@@ -1,10 +1,27 @@
 'use client';
 
 import { Card, Flex, Text, Checkbox, Button, TextField, Select } from '@radix-ui/themes';
-import { useEffect, useState, useCallback, memo } from 'react';
+import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+
+const ANIMATION_STYLES = `
+  @keyframes slideInAndFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .task-item-new {
+    animation: slideInAndFadeIn 0.3s ease-out;
+  }
+`;
 
 interface Task {
   id: string;
@@ -12,6 +29,7 @@ interface Task {
   notes?: string;
   due?: string;
   status: 'needsAction' | 'completed';
+  isNew?: boolean;
 }
 
 interface TaskList {
@@ -113,7 +131,21 @@ const useTasks = (taskListId: string) => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to create task');
-      await fetchTasks();
+      const taskData = data.task;
+      const newTask: Task = {
+        id: taskData.id,
+        title: taskData.title,
+        notes: taskData.notes,
+        due: taskData.due,
+        status: taskData.status || 'needsAction',
+        isNew: true,
+      };
+      setTasks((prevTasks) => [newTask, ...prevTasks]);
+      setTimeout(() => {
+        setTasks((prevTasks) =>
+          prevTasks.map((t) => (t.id === newTask.id ? { ...t, isNew: false } : t))
+        );
+      }, 300);
     } catch (err) {
       setError(handleApiError(err, 'Failed to create task'));
     }
@@ -129,7 +161,9 @@ const useTasks = (taskListId: string) => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to update task');
-      await fetchTasks();
+      setTasks((prevTasks) =>
+        prevTasks.map((t) => (t.id === task.id ? { ...t, status: newStatus } : t))
+      );
     } catch (err) {
       setError(handleApiError(err, 'Failed to update task'));
     }
@@ -137,12 +171,16 @@ const useTasks = (taskListId: string) => {
 
   const deleteTask = async (taskId: string) => {
     try {
-      const response = await fetch(`/api/tasks?taskListId=${taskListId}&taskId=${taskId}`, {
-        method: 'DELETE',
+      const response = await fetch(API_ENDPOINTS.TASKS, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskListId, taskId, status: 'completed' }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to delete task');
-      await fetchTasks();
+      setTasks((prevTasks) =>
+        prevTasks.map((t) => (t.id === taskId ? { ...t, status: 'completed' } : t))
+      );
     } catch (err) {
       setError(handleApiError(err, 'Failed to delete task'));
     }
@@ -158,7 +196,9 @@ const useTasks = (taskListId: string) => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to update task');
-      await fetchTasks();
+      setTasks((prevTasks) =>
+        prevTasks.map((t) => (t.id === taskId ? { ...t, title } : t))
+      );
     } catch (err) {
       setError(handleApiError(err, 'Failed to update task'));
     }
@@ -210,28 +250,15 @@ const useSortModeStorage = (taskListId: string) => {
   const [sortMode, setSortMode] = useState<SortMode>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
-      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DEFAULT) {
-        return saved as SortMode;
+      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE) {
+        return saved;
       }
     }
-    return SORT_MODE.DEFAULT;
+    return SORT_MODE.DEFAULT
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
-      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DEFAULT) {
-        setSortMode(saved as SortMode);
-      } else {
-        setSortMode(SORT_MODE.DEFAULT);
-      }
-    }
-  }, [taskListId]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(getStorageKey.sortMode(taskListId), sortMode);
-    }
+    localStorage.setItem(getStorageKey.sortMode(taskListId), sortMode);
   }, [sortMode, taskListId]);
 
   return [sortMode, setSortMode] as const;
@@ -246,6 +273,7 @@ interface TaskItemProps {
   onEditChange: (title: string) => void;
   onSaveEdit: () => void;
   onCancelEdit: () => void;
+  isNew?: boolean;
 }
 
 const TaskItem = memo(({
@@ -257,6 +285,7 @@ const TaskItem = memo(({
   onEditChange,
   onSaveEdit,
   onCancelEdit,
+  isNew = false,
 }: TaskItemProps) => {
   const quadrant = getEisenhowerQuadrant(task.title);
   const commitType = getCommitType(task.title);
@@ -270,7 +299,7 @@ const TaskItem = memo(({
   };
 
   return (
-    <div className={`flex items-start gap-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${quadrantColors[quadrant]}`}>
+    <div className={`flex items-start gap-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${quadrantColors[quadrant]} ${isNew ? 'task-item-new' : ''}`}>
       <Checkbox
         checked={task.status === 'completed'}
         onCheckedChange={() => onToggleComplete(task)}
@@ -380,25 +409,6 @@ const TaskHeader = memo(({
 
 TaskHeader.displayName = 'TaskHeader';
 
-const SortControls = memo(({ sortMode, onSortChange }: {
-  sortMode: SortMode;
-  onSortChange: (value: SortMode) => void;
-}) => (
-  <Flex gap="2" align="center">
-    <Text size="2" color="gray">Sort:</Text>
-    <Select.Root value={sortMode} onValueChange={onSortChange}>
-      <Select.Trigger placeholder="Sort by..." />
-      <Select.Content>
-        <Select.Item value={SORT_MODE.DEFAULT}>Default</Select.Item>
-        <Select.Item value={SORT_MODE.EISENHOWER}>Eisenhower Matrix</Select.Item>
-        <Select.Item value={SORT_MODE.COMMIT_TYPE}>Commit Type</Select.Item>
-      </Select.Content>
-    </Select.Root>
-  </Flex>
-));
-
-SortControls.displayName = 'SortControls';
-
 const AuthErrorBanner = memo(({ onSignOut }: { onSignOut: () => void }) => (
   <Flex direction="column" gap="2" p="3" className="bg-red-50 dark:bg-red-900/20 rounded">
     <Text size="2" weight="bold" color="red">Session Expired</Text>
@@ -415,7 +425,8 @@ const AddTaskForm = memo(({
   onTitleChange,
   onSubmit,
   onCancel,
-  onShowForm
+  onShowForm,
+  isLoading = false
 }: {
   showAddTask: boolean;
   newTaskTitle: string;
@@ -423,6 +434,7 @@ const AddTaskForm = memo(({
   onSubmit: () => void;
   onCancel: () => void;
   onShowForm: () => void;
+  isLoading?: boolean;
 }) => {
   if (!showAddTask) {
     return <Button onClick={onShowForm} size="2" variant="soft">+ Add Task</Button>;
@@ -435,42 +447,45 @@ const AddTaskForm = memo(({
         value={newTaskTitle}
         onChange={(e) => onTitleChange(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') onSubmit();
+          if (e.key === 'Enter' && !isLoading) onSubmit();
           else if (e.key === 'Escape') onCancel();
         }}
         className="flex-1"
+        disabled={isLoading}
       />
-      <Button onClick={onSubmit} size="2">Add</Button>
-      <Button onClick={onCancel} size="2" variant="soft">Cancel</Button>
+      <Button onClick={onSubmit} size="2" disabled={isLoading} loading={isLoading}>Add</Button>
+      <Button onClick={onCancel} size="2" variant="soft" disabled={isLoading}>Cancel</Button>
     </Flex>
   );
 });
 
 AddTaskForm.displayName = 'AddTaskForm';
 
-const TaskList = memo(({
-  loading,
-  error,
-  tasks,
-  editingTaskId,
-  editingTaskTitle,
-  onToggleComplete,
-  onStartEdit,
-  onEditChange,
-  onSaveEdit,
-  onCancelEdit,
-}: {
-  loading: boolean;
-  error: string | null;
-  tasks: Task[];
-  editingTaskId: string | null;
-  editingTaskTitle: string;
-  onToggleComplete: (task: Task) => void;
-  onStartEdit: (task: Task) => void;
-  onEditChange: (title: string) => void;
-  onSaveEdit: () => void;
-  onCancelEdit: () => void;
-}) => {
+const TaskList = memo((
+  {
+    loading,
+    error,
+    tasks,
+    editingTaskId,
+    editingTaskTitle,
+    onToggleComplete,
+    onStartEdit,
+    onEditChange,
+    onSaveEdit,
+    onCancelEdit,
+  }: {
+    loading: boolean;
+    error: string | null;
+    tasks: Task[];
+    editingTaskId: string | null;
+    editingTaskTitle: string;
+    onToggleComplete: (task: Task) => void;
+    onStartEdit: (task: Task) => void;
+    onEditChange: (title: string) => void;
+    onSaveEdit: () => void;
+    onCancelEdit: () => void;
+  }
+) => {
   if (loading) {
     return (
       <Flex direction="column" gap="2">
@@ -485,13 +500,15 @@ const TaskList = memo(({
     return <Text size="2" color="red">{error}</Text>;
   }
 
-  if (tasks.length === 0) {
+  const activeTasks = tasks.filter((t) => t.status !== 'completed');
+
+  if (activeTasks.length === 0) {
     return <Text size="2" color="gray">No tasks to display</Text>;
   }
 
   return (
     <Flex direction="column" gap="2">
-      {tasks.map((task) => (
+      {activeTasks.map((task) => (
         <TaskItem
           key={task.id}
           task={task}
@@ -502,10 +519,35 @@ const TaskList = memo(({
           onEditChange={onEditChange}
           onSaveEdit={onSaveEdit}
           onCancelEdit={onCancelEdit}
+          isNew={task.isNew}
         />
       ))}
     </Flex>
   );
+}, (prevProps, nextProps) => {
+  if (prevProps.loading !== nextProps.loading ||
+      prevProps.error !== nextProps.error ||
+      prevProps.editingTaskId !== nextProps.editingTaskId ||
+      prevProps.editingTaskTitle !== nextProps.editingTaskTitle) {
+    return false;
+  }
+
+  const prevDisplayTasks = prevProps.tasks.filter((t) => t.status !== 'completed' || t.isRemoving);
+  const nextDisplayTasks = nextProps.tasks.filter((t) => t.status !== 'completed' || t.isRemoving);
+
+  if (prevDisplayTasks.length !== nextDisplayTasks.length) {
+    return false;
+  }
+
+  for (let i = 0; i < prevDisplayTasks.length; i++) {
+    const prev = prevDisplayTasks[i];
+    const next = nextDisplayTasks[i];
+    if (prev.id !== next.id || prev.isNew !== next.isNew || prev.isRemoving !== next.isRemoving) {
+      return false;
+    }
+  }
+
+  return true;
 });
 
 TaskList.displayName = 'TaskList';
@@ -549,6 +591,7 @@ export const GoogleTasksComponent = ({
   const [sortMode, setSortMode] = useSortModeStorage(taskListId);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [showAddTask, setShowAddTask] = useState(false);
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingTaskTitle, setEditingTaskTitle] = useState('');
 
@@ -574,10 +617,16 @@ export const GoogleTasksComponent = ({
   }, [status, taskListId]);
 
   const handleCreateTask = useCallback(async () => {
-    await createTask(newTaskTitle);
-    setNewTaskTitle('');
-    setShowAddTask(false);
-  }, [newTaskTitle, createTask]);
+    if (isCreatingTask) return;
+    setIsCreatingTask(true);
+    try {
+      await createTask(newTaskTitle);
+      setNewTaskTitle('');
+      setShowAddTask(false);
+    } finally {
+      setIsCreatingTask(false);
+    }
+  }, [newTaskTitle, createTask, isCreatingTask]);
 
   const handleCancelAddTask = useCallback(() => {
     setShowAddTask(false);
@@ -617,10 +666,11 @@ export const GoogleTasksComponent = ({
     setSelectedTaskListId(newTaskListId);
   }, []);
 
-  const sortedTasks =
-    sortMode === SORT_MODE.EISENHOWER ? sortByEisenhower(tasks) :
-    sortMode === SORT_MODE.COMMIT_TYPE ? sortByCommitType(tasks) :
-    tasks;
+  const sortedTasks = useMemo(() => {
+    if (sortMode === SORT_MODE.EISENHOWER) return sortByEisenhower(tasks);
+    if (sortMode === SORT_MODE.COMMIT_TYPE) return sortByCommitType(tasks);
+    return tasks;
+  }, [sortMode, tasks]);
 
   if (status === 'loading') return <CardSkeleton showTitleSkeleton rows={5} />;
   if (status === 'unauthenticated') return <UnauthenticatedView />;
@@ -628,8 +678,10 @@ export const GoogleTasksComponent = ({
   const hasAuthError = titleAuthError || error?.includes('Unauthorized') || error?.includes('authentication') || session?.error === 'RefreshAccessTokenError';
 
   return (
-    <Card className="w-full">
-      <Flex direction="column" gap="3" p="4">
+    <>
+      <style>{ANIMATION_STYLES}</style>
+      <Card className="w-full">
+        <Flex direction="column" gap="3" p="4">
         <TaskHeader
           taskLists={taskLists}
           selectedTaskListId={taskListId}
@@ -650,6 +702,7 @@ export const GoogleTasksComponent = ({
           onSubmit={handleCreateTask}
           onCancel={handleCancelAddTask}
           onShowForm={() => setShowAddTask(true)}
+          isLoading={isCreatingTask}
         />
 
         <TaskList
@@ -664,7 +717,8 @@ export const GoogleTasksComponent = ({
           onSaveEdit={handleSaveEdit}
           onCancelEdit={handleCancelEdit}
         />
-      </Flex>
-    </Card>
+        </Flex>
+      </Card>
+    </>
   );
 };
