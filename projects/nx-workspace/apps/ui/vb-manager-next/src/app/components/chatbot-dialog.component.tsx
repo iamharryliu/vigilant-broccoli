@@ -7,14 +7,17 @@ import {
   Button,
   TextField,
   ScrollArea,
+  Card,
 } from '@radix-ui/themes';
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { Maximize2, Minimize2, X, RotateCcw } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   isStreaming?: boolean;
+  displayContent?: string;
 }
 
 interface ChatSuggestion {
@@ -55,6 +58,7 @@ export const ChatbotDialog = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -63,6 +67,22 @@ export const ChatbotDialog = ({
       handleSend(initialPrompt);
     }
   }, [initialPrompt, open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const hasModifier = e.ctrlKey || e.metaKey;
+
+      if (e.key.toLowerCase() === 'f' && !hasModifier) {
+        e.preventDefault();
+        setIsFullscreen(!isFullscreen);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, isFullscreen]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -165,30 +185,66 @@ export const ChatbotDialog = ({
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content style={{ maxWidth: 700, maxHeight: '80vh' }}>
-        <Dialog.Title>Jarvis</Dialog.Title>
+      <Dialog.Content
+        style={{
+          maxWidth: isFullscreen ? '95vw' : 700,
+          maxHeight: isFullscreen ? '95vh' : '80vh',
+        }}
+      >
+        <Flex justify="between" align="center" style={{ minHeight: '2.5rem' }}>
+          <Dialog.Title style={{ margin: 0 }}>Jarvis</Dialog.Title>
+          <Flex gap="6" align="center">
+            <Button onClick={handleClear} variant="ghost" size="3">
+              <RotateCcw size={16} />
+            </Button>
+            <Button
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              variant="ghost"
+              size="3"
+            >
+              {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            </Button>
+            <Dialog.Close>
+              <Button variant="ghost" size="3">
+                <X size={16} />
+              </Button>
+            </Dialog.Close>
+          </Flex>
+        </Flex>
 
-        <Flex direction="column" gap="3" style={{ height: '60vh' }}>
-          <ScrollArea ref={scrollRef} style={{ flex: 1, padding: '1rem' }}>
-            <Flex direction="column" gap="3">
+        <Flex
+          direction="column"
+          gap="3"
+          style={{
+            height: isFullscreen ? '85vh' : '60vh',
+            transition: 'height 0.3s ease',
+          }}
+        >
+          <ScrollArea
+            ref={scrollRef}
+            style={{ flex: 1, paddingTop: '0.5rem', paddingBottom: '0.5rem' }}
+          >
+            <Flex direction="column" gap="2" style={{ padding: '0 1rem' }}>
               {messages.map((message, index) => (
-                <Flex
+                <Card
                   key={index}
-                  direction="column"
-                  gap="1"
-                  className={`p-3 rounded ${
-                    message.role === 'user'
-                      ? 'bg-blue-100 dark:bg-blue-900/20 ml-8'
-                      : 'bg-gray-100 dark:bg-gray-800 mr-8'
-                  }`}
+                  style={{
+                    maxWidth: '85%',
+                    alignSelf:
+                      message.role === 'user' ? 'flex-end' : 'flex-start',
+                  }}
                 >
-                  <Text size="1" weight="bold" color="gray">
+                  <Text
+                    size="1"
+                    weight="medium"
+                    color={message.role === 'user' ? 'blue' : 'gray'}
+                  >
                     {message.role === 'user' ? 'You' : 'Assistant'}
                   </Text>
                   <div className="prose prose-sm dark:prose-invert max-w-none">
                     {message.role === 'user' ? (
                       <Text size="2" style={{ whiteSpace: 'pre-wrap' }}>
-                        {message.content}
+                        {message.displayContent || message.content}
                       </Text>
                     ) : message.isStreaming ? (
                       <Text size="2" style={{ whiteSpace: 'pre-wrap' }}>
@@ -198,7 +254,7 @@ export const ChatbotDialog = ({
                       <ReactMarkdown>{message.content}</ReactMarkdown>
                     )}
                   </div>
-                </Flex>
+                </Card>
               ))}
             </Flex>
           </ScrollArea>
@@ -209,30 +265,102 @@ export const ChatbotDialog = ({
                 {suggestions.map((suggestion, index) => (
                   <Button
                     key={index}
-                    onClick={() => handleSend(suggestion.prompt)}
+                    onClick={() => {
+                      const userMessage: Message = {
+                        role: 'user',
+                        content: suggestion.prompt,
+                        displayContent: suggestion.title,
+                      };
+                      const updatedMessages = [...messages, userMessage];
+                      setMessages(updatedMessages);
+                      setInput('');
+                      setIsStreaming(true);
+
+                      const compactedMessages =
+                        compactConversation(updatedMessages);
+                      abortControllerRef.current = new AbortController();
+
+                      const assistantMessage: Message = {
+                        role: 'assistant',
+                        content: '',
+                        isStreaming: true,
+                      };
+                      setMessages([...compactedMessages, assistantMessage]);
+
+                      fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          messages: compactedMessages,
+                          systemPrompt,
+                        }),
+                        signal: abortControllerRef.current.signal,
+                      }).then(async response => {
+                        if (!response.ok || !response.body) {
+                          setMessages(prev => {
+                            const updated = [...prev];
+                            updated[updated.length - 1].content =
+                              'Error: Failed to get response';
+                            updated[updated.length - 1].isStreaming = false;
+                            return updated;
+                          });
+                          setIsStreaming(false);
+                          return;
+                        }
+
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder();
+                        let accumulatedContent = '';
+                        let lastUpdate = Date.now();
+
+                        // eslint-disable-next-line no-constant-condition
+                        while (true) {
+                          const { done, value } = await reader.read();
+                          if (done) break;
+
+                          const chunk = decoder.decode(value, { stream: true });
+                          accumulatedContent += chunk;
+
+                          const now = Date.now();
+                          if (now - lastUpdate > 50 || done) {
+                            setMessages(prev => {
+                              const updated = [...prev];
+                              updated[updated.length - 1].content =
+                                accumulatedContent;
+                              return updated;
+                            });
+                            lastUpdate = now;
+                          }
+                        }
+
+                        setMessages(prev => {
+                          const updated = [...prev];
+                          updated[updated.length - 1].content =
+                            accumulatedContent;
+                          updated[updated.length - 1].isStreaming = false;
+                          return updated;
+                        });
+
+                        setIsStreaming(false);
+                      });
+                    }}
                     variant="soft"
-                    size="1"
+                    size="2"
                   >
                     {suggestion.title}
                   </Button>
                 ))}
               </Flex>
             )}
-            <TextField.Root
-              placeholder="Type your message..."
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={isStreaming}
-            />
-            <Flex gap="2" justify="end">
-              <Button
-                onClick={handleClear}
-                variant="soft"
+            <Flex gap="2" align="center">
+              <TextField.Root
+                placeholder="Type your message..."
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
                 disabled={isStreaming}
-              >
-                Clear
-              </Button>
+                style={{ flex: 1 }}
+              />
               <Button
                 onClick={() => handleSend()}
                 disabled={isStreaming || !input.trim()}

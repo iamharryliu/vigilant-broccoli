@@ -12,6 +12,9 @@ import {
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
 
+const BIRTHDAYS_CALENDAR =
+  'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
+
 const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
   personal: {
     height: 600,
@@ -39,6 +42,10 @@ const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
         id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON,
         color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK,
       },
+      {
+        id: BIRTHDAYS_CALENDAR,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
+      },
     ],
   },
   work: {
@@ -57,6 +64,10 @@ const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
       {
         id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
         color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_GREEN,
+      },
+      {
+        id: BIRTHDAYS_CALENDAR,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
       },
     ],
   },

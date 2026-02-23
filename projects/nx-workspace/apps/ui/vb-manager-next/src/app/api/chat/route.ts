@@ -34,15 +34,26 @@ export async function POST(request: NextRequest) {
     ? `Previous conversation:\n${conversationHistory}\n\nCurrent question:\n${latestUserMessage.content}`
     : latestUserMessage.content;
 
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const finalSystemPrompt =
+    (systemPrompt || 'You are a helpful assistant.') +
+    `\n\nCurrent date: ${currentDate}\n\nWhen providing day or week plans, keep them short and concise. Use bullet points and avoid lengthy explanations.`;
+
   const stream = new ReadableStream({
     async start(controller) {
       const streamResponse = await LLMService.promptStream({
         prompt: {
           userPrompt: fullPrompt,
-          systemPrompt: systemPrompt || 'You are a helpful assistant.',
+          systemPrompt: finalSystemPrompt,
         },
         modelConfig: {
-          model: LLM_MODEL.GPT_4O_MINI,
+          model: LLM_MODEL.GPT_4O,
           temperature: 0.7,
         },
       });
