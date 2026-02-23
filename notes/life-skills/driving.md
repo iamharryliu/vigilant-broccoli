@@ -10,29 +10,26 @@
 flowchart
 DEAD_PEDAL[Dead Pedal]
 CLUTCH_PEDAL[Clutch pedal]
-BRAKE PEDAL[Brake Pedal]
-GAS_PEDAL[Gas Pedal ]
+BRAKE_PEDAL[Brake Pedal]
+GAS_PEDAL[Gas Pedal]
 ```
 
-### Starting and Moving
+### Starting and Going
 
-- Press the clutch all the way down with your left foot
-- Start the engine and shift into first gear
-- Slowly release the clutch while gently pressing the gas - you'll feel a "bite point" where the car starts to move
-- Once moving, fully release the clutch and continue accelerating
+```mermaid
+flowchart TD
 
-### Shifting
+CLUTCH[Clutch]-->BRAKE[Brake]-->START_VEHICLE[Start Vehicle]-->HAND_BRAKE[Release Hand Brake]-->SPOT_CHECK[Spot Checks]-->SIGNAL[Signal]-->GEAR_SELECTION[Shift to First Gear]-->RELEASE_BRAKE[Release Brake]-->RELEASE_CLUTCH[Slowly Release Clutch]-->GAS[Slowly Gas]
+```
 
-#### Shifting Up
+### Changing Gear
 
-- Ease off the gas
-- Press the clutch down fully
-- Move the shifter to the next gear
-- Release the clutch smoothly while reapplying gas
+```mermaid
+flowchart LR
+EASE_OFF_GAS[Ease off Gas]-->CLUTCH[Clutch]-->SHIFT_GEAR[Shift Gear]-->RELEASE[Slowly Release Clutch + Gas]-->RELEASE_AND_ACCELERATE[Release Clutch + Accelerate]
+```
 
-#### Shifting Down
-
-- Same process, but match your speed to the lower gear - you might need a bit more gas as you release the clutch to keep things smooth.
+- For shifting down match your speed to the lower gear - you might need a bit more gas as you release the clutch to keep things smooth.
 
 ### Stopping and Parking
 
