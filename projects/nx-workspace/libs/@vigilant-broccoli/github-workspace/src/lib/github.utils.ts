@@ -133,8 +133,26 @@ async function fetchOrgMembers(
 
   console.log(`📡 Response status: ${response.status} ${response.statusText}`);
 
-  const members = (await response.json()) as GithubUser[];
-  console.log(`✓ Fetched ${members.length} members\n`);
+  const memberList = (await response.json()) as Array<{
+    login: string;
+    id: number;
+  }>;
+  console.log(`✓ Fetched ${memberList.length} members\n`);
+
+  const members: GithubUser[] = [];
+  for (const member of memberList) {
+    const membershipUrl = `https://api.github.com/orgs/${org}/memberships/${member.login}`;
+    const membershipResponse = await fetch(membershipUrl, options);
+    const membership = (await membershipResponse.json()) as {
+      role: GithubUserRole;
+    };
+
+    members.push({
+      login: member.login,
+      id: member.id,
+      role: membership.role,
+    });
+  }
 
   return members;
 }
@@ -221,6 +239,13 @@ async function syncGithubOrganizationMembers({
       !currentMembers.find(member => member.login === configuredUser.login),
   );
 
+  const usersToUpdateRole = githubUsers.filter(configuredUser => {
+    const currentMember = currentMembers.find(
+      member => member.login === configuredUser.login,
+    );
+    return currentMember && currentMember.role !== configuredUser.role;
+  });
+
   console.log('═══════════════════════════════════════════════════════════');
   console.log('📋 SYNC SUMMARY');
   console.log('═══════════════════════════════════════════════════════════\n');
@@ -245,6 +270,19 @@ async function syncGithubOrganizationMembers({
     console.log('✓ No users to add\n');
   }
 
+  if (usersToUpdateRole.length > 0) {
+    console.log(`🔄 Users to UPDATE ROLE (${usersToUpdateRole.length}):`);
+    usersToUpdateRole.forEach(user => {
+      const currentMember = currentMembers.find(m => m.login === user.login);
+      console.log(
+        `   🔀 ${user.login} (${currentMember?.role} → ${user.role})`,
+      );
+    });
+    console.log('');
+  } else {
+    console.log('✓ No users with role changes\n');
+  }
+
   console.log('═══════════════════════════════════════════════════════════\n');
 
   if (usersToRemove.length > 0) {
@@ -259,6 +297,15 @@ async function syncGithubOrganizationMembers({
   if (usersToAdd.length > 0) {
     console.log('➕ Processing additions...\n');
     for (const user of usersToAdd) {
+      await addOrgMember(organizationName, user.login, user.role, token);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    console.log('');
+  }
+
+  if (usersToUpdateRole.length > 0) {
+    console.log('🔄 Processing role updates...\n');
+    for (const user of usersToUpdateRole) {
       await addOrgMember(organizationName, user.login, user.role, token);
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
