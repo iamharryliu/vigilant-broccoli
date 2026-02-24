@@ -28,6 +28,7 @@ if vim.g.neovide then
 end
 
 vim.opt.clipboard = "unnamedplus"
+vim.opt.mouse = "a"
 
 vim.api.nvim_create_autocmd("TermOpen", {
   callback = function()
