@@ -35,9 +35,10 @@ Save (⌘S) or File → Export to save a new copy.
 
 ## Tools
 
-- [Alfred](https://www.alfredapp.com/) - Apple Spotlight alternative.
-  - Turn off keyboard shortcut for Apple Spotlight
-  - Change Alfred to **command + spacebar**
+- [Raycast](https://www.raycast.com/) - Apple Spotlight alternative.
+  - File search.
+  - Clipboard history.
+  - Emoji search.
 - [Dropzone 4](https://apps.apple.com/us/app/dropzone-4/id1485052491?mt=12) - Hold Option to delete Dropzone items.
 - [AltTab](https://alt-tab-macos.netlify.app/)
   - Controls > Shortcut 1 (All Tabs in All Apps) - **option + tab**
