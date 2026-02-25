@@ -81,9 +81,9 @@ position = Vector2(100, 100)
 
 [node name="HeartsLabel" type="Label" parent="UI" unique_id=1667400877]
 offset_left = 20.0
-offset_top = 20.0
-offset_right = 200.0
-offset_bottom = 60.0
+offset_top = 660.0
+offset_right = 300.0
+offset_bottom = 700.0
 theme_override_colors/font_color = Color(1, 0.1, 0.3, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 4
@@ -91,12 +91,40 @@ theme_override_font_sizes/font_size = 24
 text = "Hearts: 0/14"
 
 [node name="TimerLabel" type="Label" parent="UI" unique_id=966872238]
-offset_left = 1050.0
-offset_top = 20.0
+offset_left = 950.0
+offset_top = 660.0
 offset_right = 1250.0
-offset_bottom = 60.0
+offset_bottom = 700.0
 theme_override_colors/font_color = Color(1, 0.1, 0.3, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 24
 text = "Time: 03:00"
+
+[node name="ManaLabel" type="Label" parent="UI" unique_id=1234567890]
+offset_left = 20.0
+offset_top = 610.0
+offset_right = 250.0
+offset_bottom = 640.0
+theme_override_colors/font_color = Color(0.2, 0.7, 1, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "Mana: [███] Spacebar to shoot"
+
+[node name="ManaBar" type="Panel" parent="UI" unique_id=1234567891]
+offset_left = 20.0
+offset_top = 640.0
+offset_right = 200.0
+offset_bottom = 660.0
+theme_override_bg_colors/panel = Color(0.1, 0.1, 0.1, 0.8)
+
+[node name="ManaBG" type="ColorRect" parent="UI/ManaBar" unique_id=1234567892]
+offset_right = 180.0
+offset_bottom = 20.0
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="ManaFill" type="ColorRect" parent="UI/ManaBar" unique_id=1234567893]
+offset_right = 180.0
+offset_bottom = 20.0
+color = Color(0.2, 0.7, 1, 1)

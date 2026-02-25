@@ -8,10 +8,15 @@ const GAME_TIME = 180.0
 var hearts_collected = 0
 var time_remaining = GAME_TIME
 var game_over = false
+var previous_mana = 3
+var mana_tween = null
 
 @onready var player = $Player
 @onready var hearts_label = $UI/HeartsLabel
 @onready var timer_label = $UI/TimerLabel
+@onready var mana_label = $UI/ManaLabel
+@onready var mana_fill = $UI/ManaBar/ManaFill
+@onready var mana_bar = $UI/ManaBar
 
 var heart_positions = []
 
@@ -78,6 +83,56 @@ func update_ui():
 	var minutes = int(time_remaining) / 60
 	var seconds = int(time_remaining) % 60
 	timer_label.text = "Time: %02d:%02d" % [minutes, seconds]
+
+	var current_mana = player.mana
+	var mana_percentage = player.get_mana_percentage()
+
+	if current_mana < previous_mana:
+		animate_mana_drain()
+	elif current_mana > previous_mana:
+		animate_mana_recharge()
+	else:
+		mana_fill.size.x = 180 * mana_percentage
+
+	previous_mana = current_mana
+
+	var mana_display = ""
+	for i in range(3):
+		if i < player.mana:
+			mana_display += "█"
+		else:
+			mana_display += "░"
+	mana_label.text = "Mana: [%s] Spacebar to shoot" % mana_display
+
+func animate_mana_drain():
+	if mana_tween:
+		mana_tween.kill()
+
+	var target_width = 180 * player.get_mana_percentage()
+
+	mana_tween = create_tween()
+	mana_tween.set_trans(Tween.TRANS_BOUNCE)
+	mana_tween.set_ease(Tween.EASE_OUT)
+	mana_tween.tween_property(mana_fill, "size:x", target_width, 0.2)
+
+	mana_bar.modulate = Color.RED
+	var tween2 = create_tween()
+	tween2.tween_property(mana_bar, "modulate", Color.WHITE, 0.15)
+
+func animate_mana_recharge():
+	if mana_tween:
+		mana_tween.kill()
+
+	var target_width = 180 * player.get_mana_percentage()
+
+	mana_tween = create_tween()
+	mana_tween.set_trans(Tween.TRANS_CUBIC)
+	mana_tween.set_ease(Tween.EASE_OUT)
+	mana_tween.tween_property(mana_fill, "size:x", target_width, 0.5)
+
+	mana_bar.modulate = Color.LIGHT_BLUE
+	var tween2 = create_tween()
+	tween2.tween_property(mana_bar, "modulate", Color.WHITE, 0.3)
 
 func victory():
 	GameState.hearts_collected = hearts_collected
