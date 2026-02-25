@@ -1,0 +1,18 @@
+# Godot editor cache and temporary files
+.godot/editor/
+.godot/imported/
+.godot/shader_cache/
+.godot/uid_cache.bin
+.godot/scene_groups_cache.cfg
+.godot/global_script_class_cache.cfg
+
+# Export directory
+export/
+
+# Build artifacts
+build/
+dist/
+
+# OS specific files
+.DS_Store
+Thumbs.db
