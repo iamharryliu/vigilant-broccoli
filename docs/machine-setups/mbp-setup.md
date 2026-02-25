@@ -25,5 +25,7 @@ source ~/vigilant-broccoli/setup/mac/install.sh
 **Additional Preferences**
 
 - Divvy Shortcut `CMD + Shift + Spacebar`
-- Alfred Spotlight Shortcut `CMD + Spacebar`
-- Desktop Icons
+- RayCast
+  - File search
+  - Emoji finder
+  - Clipboard history
