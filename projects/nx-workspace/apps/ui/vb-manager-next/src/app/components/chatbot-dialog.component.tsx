@@ -619,6 +619,7 @@ export const ChatbotDialog = ({
           flexDirection: 'column',
           padding: 0,
           overflow: 'hidden',
+          transition: 'max-width 0.3s ease, height 0.3s ease',
         }}
       >
         <div style={{ padding: '1.5rem 1.5rem 0 1.5rem' }}>
