@@ -1,13 +1,19 @@
 import { NextRequest } from 'next/server';
 import { LLMService } from '@vigilant-broccoli/llm-tools';
-import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import { LLM_MODEL, LLMImage } from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+interface MessageImage {
+  data: string;
+  mimeType: string;
+}
+
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
+  images?: MessageImage[];
 }
 
 export async function POST(request: NextRequest) {
@@ -34,6 +40,14 @@ export async function POST(request: NextRequest) {
     ? `Previous conversation:\n${conversationHistory}\n\nCurrent question:\n${latestUserMessage.content}`
     : latestUserMessage.content;
 
+  const llmImages: LLMImage[] | undefined = latestUserMessage.images?.map(
+    (img, index) => ({
+      name: `image_${index}`,
+      base64: img.data,
+      mimeType: img.mimeType,
+    }),
+  );
+
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -51,6 +65,7 @@ export async function POST(request: NextRequest) {
         prompt: {
           userPrompt: fullPrompt,
           systemPrompt: finalSystemPrompt,
+          images: llmImages,
         },
         modelConfig: {
           model: LLM_MODEL.GPT_4O,
