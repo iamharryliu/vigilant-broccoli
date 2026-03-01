@@ -9,3 +9,17 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./certs:/etc/nginx/certs:ro
+
+  resilio:
+    image: linuxserver/resilio-sync:latest
+    container_name: resilio-sync
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./resilio/config:/config
+      - ~/resilio-sync:/sync
+    ports:
+      - "8888:8888"
+      - "55556:55555"
+    restart: unless-stopped
