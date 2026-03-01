@@ -96,6 +96,16 @@ export async function updateUserBirthday({
 
     console.log(`Updated birthday for ${realName} (${userId}): ${birthday}`);
   } catch (error) {
+    const errorCode = (error as { code?: string; data?: { error?: string } })
+      ?.data?.error;
+
+    if (errorCode === 'cannot_update_admin_user') {
+      console.log(
+        `Skipping ${realName} (${userId}): Cannot update admin user profile`,
+      );
+      return;
+    }
+
     console.log(`Unable to update Slack user ${realName}`);
     console.log(error);
   }
