@@ -447,6 +447,18 @@ const DEV_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
+  {
+    label: 'Resilio Sync',
+    target: 'http://localhost:8888/gui/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Immich',
+    target: 'http://localhost:2283/photos',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
 ];
 
 const VB_LINKS = [
