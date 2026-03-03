@@ -165,46 +165,40 @@ const useTasks = (taskListId: string) => {
   };
 
   const toggleTaskComplete = async (task: Task) => {
+    if (task.isRemoving) return;
+
+    if (task.status === 'completed') return;
+
+    // Optimistically mark complete and keep item visible while request is in-flight.
+    setTasks(prevTasks =>
+      prevTasks.map(t =>
+        t.id === task.id ? { ...t, status: 'completed', isRemoving: true } : t,
+      ),
+    );
+
     try {
-      const newStatus =
-        task.status === 'completed' ? 'needsAction' : 'completed';
       const response = await fetch(API_ENDPOINTS.TASKS, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           taskListId,
           taskId: task.id,
-          status: newStatus,
+          status: 'completed',
         }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to update task');
+      setTasks(prevTasks => prevTasks.filter(t => t.id !== task.id));
+    } catch (err) {
+      // If the server call fails, revert the task to unchecked.
       setTasks(prevTasks =>
         prevTasks.map(t =>
-          t.id === task.id ? { ...t, status: newStatus } : t,
+          t.id === task.id
+            ? { ...t, status: 'needsAction', isRemoving: false }
+            : t,
         ),
       );
-    } catch (err) {
       setError(handleApiError(err, 'Failed to update task'));
-    }
-  };
-
-  const deleteTask = async (taskId: string) => {
-    try {
-      const response = await fetch(API_ENDPOINTS.TASKS, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ taskListId, taskId, status: 'completed' }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to delete task');
-      setTasks(prevTasks =>
-        prevTasks.map(t =>
-          t.id === taskId ? { ...t, status: 'completed' } : t,
-        ),
-      );
-    } catch (err) {
-      setError(handleApiError(err, 'Failed to delete task'));
     }
   };
 
@@ -233,7 +227,6 @@ const useTasks = (taskListId: string) => {
     fetchTasks,
     createTask,
     toggleTaskComplete,
-    deleteTask,
     updateTask,
   };
 };
@@ -339,6 +332,7 @@ const TaskItem = memo(
         <Checkbox
           checked={task.status === 'completed'}
           onCheckedChange={() => onToggleComplete(task)}
+          disabled={task.isRemoving}
           className="mt-0.5"
         />
         <Flex direction="column" gap="1" className="flex-1">
@@ -604,7 +598,7 @@ const TaskList = memo(
       );
     }
 
-    const activeTasks = tasks.filter(t => t.status !== 'completed');
+    const activeTasks = tasks.filter(t => t.status !== 'completed' || t.isRemoving);
 
     if (activeTasks.length === 0) {
       return (
