@@ -34,7 +34,7 @@ r                                           # Rename file
 c                                           # Copy file
 x                                           # Cut file
 p                                           # Paste file
-r                                           # Refresh file
+R                                           # Refresh file
 d                                           # Delete file
 ```
 
