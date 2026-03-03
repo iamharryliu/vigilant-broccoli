@@ -6,18 +6,6 @@
 </a>
 </div>
 
-## Folder Structure
-
-- [Notes](./notes/) - Collection of markdown notes.
-- [Projects](./projects/) - Software projects.
-  - Nx workspace for Typescript projects
-  - Demo/Sandbox Applications
-  - Leetcode Solutions
-  - Other Projects
-- [Scripts](./scripts/) - Software scripts.
-- [Setup](./setup/) - Setup scripts and configurations.
-- [Snippets](./snippets/) - Text and code snippets for quick copy and paste.
-
 ## Machine Setups
 
 - [Macbook Pro Setup](./docs/machine-setups/mbp-setup.md)
