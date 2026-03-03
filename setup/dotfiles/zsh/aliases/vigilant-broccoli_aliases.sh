@@ -82,6 +82,9 @@ alias vbgcloudlogin="gcloud auth login && gcloud config set project vigilant-bro
 alias vbgcp="open 'https://console.cloud.google.com/welcome?hl=en&project=vigilant-broccoli'"
 alias vbgcpfirewall="open 'https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/list?project=vigilant-broccoli'"
 
+# Tmux
+alias neovidetmuxvb='neovide -- -c "terminal ~/vigilant-broccoli/scripts/shell/tmux-vb.sh" -c "startinsert"'
+
 # vigilant-broccoli vm
 alias vbvmwg=" sudo wg-quick up vb"
 alias sshvbvm="gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap"
@@ -89,6 +92,7 @@ alias sshvbvm="gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
 alias backupvbsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
+alias bitwarden="open -a bitwarden"
 
 # Hobby Code
 alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py --output '$HOME/My Drive/DJ Music Library' --filter 'mix'"

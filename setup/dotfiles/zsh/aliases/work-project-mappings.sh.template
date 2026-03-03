@@ -1,0 +1,4 @@
+declare -A WORK_PROJECT_PATHS
+WORK_PROJECT_PATHS=(
+    ["project-name"]="$HOME/path/to/project"
+)

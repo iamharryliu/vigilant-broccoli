@@ -22,7 +22,7 @@ tmux select-layout -t "$SESSION:1" tiled
 # Pane commands
 tmux send-keys -t "$SESSION:1.1" "yazi" C-m
 tmux send-keys -t "$SESSION:1.2" "btop" C-m
-tmux send-keys -t "$SESSION:1.3" "clear" C-m
+tmux send-keys -t "$SESSION:1.3" "neovidetmuxvb" C-m
 tmux send-keys -t "$SESSION:1.4" "lazydocker" C-m
 
 #################################
@@ -40,10 +40,10 @@ tmux send-keys -t "$SESSION:2.2" "cd $PROJECT && lazygit" C-m
 # Window 3: scratch
 #################################
 tmux new-window -t "$SESSION" -n bg
-tmux send-keys -t "$SESSION:3.1" "neovideterminal" C-m
+tmux send-keys -t "$SESSION:3.1" "" C-m
 
 #################################
 # Focus
 #################################
-tmux select-window -t "$SESSION:1"
+tmux select-window -t "$SESSION:3"
 tmux attach -t "$SESSION"
