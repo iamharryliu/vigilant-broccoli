@@ -1,17 +1,12 @@
 # TODO
 
-## NPM CI
+- mkcert -install
+- Employee Handler - Mising gam/gyb handling
+- tmux session handler
+
+## ci
 
 - chore: alias for `alias run lib:nx-release-publish`?
-
-## Storage Handling Practices
-
-- Image Storage Solution
-  - Cloud storage
-  - Physical storage
-  - Backups
-  - Accessibility - Immich implementation?
-- Machine storage handling
 
 ## vigilant-broccoli
 

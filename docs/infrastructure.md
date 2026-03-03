@@ -52,3 +52,30 @@ graph LR
   B -->|Delivers message| C[Email Consumer]
   C -->|Sends Email| D[SMTP Server / Email Service]
 ```
+
+## Organization Infrastructure
+
+- Secret Manager
+- VPN
+
+## Personal Infrastructure
+
+- Secrets - BitWarden
+- Image Handler - Immich
+- Machine Sync - Resilio Sync
+
+```mermaid
+flowchart LR
+
+subgraph MACHINE[Machine]
+  IMMICH[Immich]
+  subgraph SYNC[Sync]
+    BIT_WARDEN[BitWarden]
+    RESILIO[Resilio Sync]
+  end
+  IMMICH-->RESILIO
+end
+
+ANOTHER_MACHINE[Another Machine]
+SYNC<-->ANOTHER_MACHINE
+```
