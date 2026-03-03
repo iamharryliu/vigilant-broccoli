@@ -459,6 +459,12 @@ const DEV_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
+  {
+    label: 'Spotify Developer Dashboard',
+    target: 'https://developer.spotify.com/dashboard',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
 ];
 
 const VB_LINKS = [
@@ -493,6 +499,12 @@ const UTILITY_LINKS = [
   {
     label: MAC_OS_APP.SLACK.NAME,
     target: MAC_OS_APP.SLACK.NAME,
+    type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Bitwarden',
+    target: 'Bitwarden',
     type: OPEN_TYPE.MAC_APPLICATION,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
