@@ -28,6 +28,14 @@ t                                           # Open file in a new tab
 P                                           # Move cursor to parent folder
 K                                           # Navigate to the first sibling of current node
 J                                           # Navigate to the last sibling of current node
+
+a                                           # Create file
+r                                           # Rename file
+c                                           # Copy file
+x                                           # Cut file
+p                                           # Paste file
+r                                           # Refresh file
+d                                           # Delete file
 ```
 
 ## Oil.nvim
