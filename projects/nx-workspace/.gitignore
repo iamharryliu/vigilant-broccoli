@@ -55,6 +55,7 @@ apps/ui/personal-website-frontend/src/assets/grind-75/
 .next
 out
 **/next-env.d.ts
+*.tsbuildinfo
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
