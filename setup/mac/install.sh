@@ -23,9 +23,9 @@ create_symlink() {
 
 if ask "Symlink dotfiles?"; then
     create_symlink "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
-    create_symlink "$COMMON_DOTFILES_DIR" "$HOME/shell-common"
+    create_symlink "$DOTFILES_DIR/macos" "$HOME/shell-macos"
     create_symlink "$ZSH_DOTFILES_DIR/.rc.zsh" "$HOME/.zshrc"
-    create_symlink "$ZSH_DOTFILES_DIR/.aliases.zsh" "$HOME/.zsh_aliases"
+    create_symlink "$ZSH_DOTFILES_DIR/.aliases.mac.zsh" "$HOME/.zsh_aliases"
     create_symlink "$ZSH_DOTFILES_DIR/aliases" "$HOME/shell-aliases"
     create_symlink "$ZSH_DOTFILES_DIR/scripts" "$HOME/shell-scripts"
     create_symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"

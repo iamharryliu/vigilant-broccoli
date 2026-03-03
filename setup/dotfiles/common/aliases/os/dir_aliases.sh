@@ -6,7 +6,6 @@ newfile() {
 }
 alias mkdir='mkdir -pv'
 alias mkcd='function _mkcd() { mkdir -p "$1" && cd "$1"; }; _mkcd'
-alias ls='ls -FGhl'
 alias la='ls -A'
 alias lS='la -S'
 alias lSr='la -Sr'
