@@ -14,8 +14,7 @@ def get_spotify_playlists(
     client_id=os.environ.get("SPOTIFY_CLIENT_ID"),
     client_secret=os.environ.get("SPOTIFY_CLIENT_SECRET"),
 ) -> list[dict]:
-
-    redirect_uri = "http://127.0.0.1:8888/callback"
+    redirect_uri = "http://127.0.0.1:20001/callback"
 
     sp = spotipy.Spotify(
         auth_manager=SpotifyOAuth(
@@ -86,7 +85,7 @@ def main() -> None:
         playlists = json.loads(args.playlists)
     else:
         playlists = get_spotify_playlists(description_filter=args.filter)
-
+    print(playlists)
     service = SpotifyToMp3Service(output=args.output, parallel_downloads=args.parallel)
     service.download_playlists(playlists)
 
