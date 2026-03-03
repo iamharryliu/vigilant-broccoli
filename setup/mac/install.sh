@@ -9,12 +9,11 @@ create_symlink() {
     local link_name=$2
 
     if [ -L "$link_name" ]; then
-        echo "Symbolic link $link_name already exists."
-        return 0
+        rm "$link_name"
+        echo "Removed existing symlink $link_name"
     elif [ -e "$link_name" ]; then
-        echo "File $link_name already exists but is not a symbolic link."
-        rm -rf "$target"
-        echo "Removed existing file or symlink at $target"
+        rm -rf "$link_name"
+        echo "Removed existing file/directory $link_name"
     fi
 
     ln -s "$target" "$link_name"
