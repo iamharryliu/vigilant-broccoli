@@ -135,6 +135,7 @@ KEY_BIND + x                                        # Kill current pane (confirm
 # COPY MODE
 KEY_BIND + [                                        # Enter copy mode
 space                                               # Start selection
+y                                                   # Yank
 enter                                               # Copy selection
 q or escape                                         # Exit
 KEY_BIND + ]                                        # Paste Copied Text
