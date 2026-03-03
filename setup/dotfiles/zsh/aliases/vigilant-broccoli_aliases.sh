@@ -83,6 +83,7 @@ alias vbgcp="open 'https://console.cloud.google.com/welcome?hl=en&project=vigila
 alias vbgcpfirewall="open 'https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/list?project=vigilant-broccoli'"
 
 # Tmux
+alias tmuxvb="$REPO_DIR/scripts/shell/tmux-vb.sh"
 alias neovidetmuxvb='neovide -- -c "terminal ~/vigilant-broccoli/scripts/shell/tmux-vb.sh" -c "startinsert"'
 
 # vigilant-broccoli vm
