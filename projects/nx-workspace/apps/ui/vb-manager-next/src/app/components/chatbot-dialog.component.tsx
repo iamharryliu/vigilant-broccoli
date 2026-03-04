@@ -345,7 +345,7 @@ const InputControls = ({
       disabled={isStreaming || isRecording}
       aria-label="Upload image"
     >
-      <Image size={16} alt="" />
+      <Image size={16} />
     </Button>
     <Button
       onClick={onToggleRecording}
