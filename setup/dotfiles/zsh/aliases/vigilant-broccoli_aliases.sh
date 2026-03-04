@@ -115,6 +115,13 @@ worktmux() {
 alias vbvmwg=" sudo wg-quick up vb"
 alias sshvbvm="gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap"
 
+# WireGuard
+alias wg0-up='sudo wg-quick up wg0'
+alias wg0-down='sudo wg-quick down wg0'
+alias vb-up='sudo wg-quick up vb'
+alias vb-down='sudo wg-quick down vb'
+alias wg-status='sudo wg show'
+
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
 alias backupvbsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
