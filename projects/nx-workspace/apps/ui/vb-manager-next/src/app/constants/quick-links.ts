@@ -497,9 +497,39 @@ const VB_LINKS = [
 
 const UTILITY_LINKS = [
   {
+    label: MAC_OS_APP.CHROME.NAME,
+    target: MAC_OS_APP.CHROME.NAME,
+    type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: MAC_OS_APP.FIREFOX.NAME,
+    target: MAC_OS_APP.FIREFOX.NAME,
+    type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: UTILITY_URL.CHROME_EXTENSIONS.NAME,
+    target: UTILITY_URL.CHROME_EXTENSIONS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: MAC_OS_APP.OBSIDIAN.NAME,
+    target: MAC_OS_APP.OBSIDIAN.NAME,
+    type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: MAC_OS_APP.SLACK.NAME,
     target: MAC_OS_APP.SLACK.NAME,
     type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Slack Browser',
+    target: UTILITY_URL.SLACK.URL,
+    type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
@@ -593,6 +623,12 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: GOOGLE_SERVICES.STORAGE.NAME,
+    target: GOOGLE_SERVICES.STORAGE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: 'OpenL Bulk Translator',
     target: 'https://openl.io/bulk-translator',
     type: OPEN_TYPE.BROWSER,
@@ -643,6 +679,12 @@ const UTILITY_LINKS = [
   {
     label: UTILITY_URL.FIND_MY.NAME,
     target: UTILITY_URL.FIND_MY.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: UTILITY_URL.APPLE_STORAGE.NAME,
+    target: UTILITY_URL.APPLE_STORAGE.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },

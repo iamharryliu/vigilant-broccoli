@@ -103,6 +103,10 @@ export const GOOGLE_SERVICES = {
     NAME: 'Google Tasks',
     URL: 'https://tasks.google.com/tasks/',
   },
+  STORAGE: {
+    NAME: 'Google Storage',
+    URL: 'https://one.google.com/storage/management',
+  },
   GCP: {
     NAME: 'GCP',
     URL: 'https://console.cloud.google.com',
@@ -122,9 +126,21 @@ export const GOOGLE_SERVICES = {
 } as const;
 
 export const UTILITY_URL = {
+  CHROME_EXTENSIONS: {
+    NAME: 'Chrome Extensions',
+    URL: 'chrome://extensions/',
+  },
   FIND_MY: {
     NAME: 'Find My',
     URL: 'https://www.icloud.com/find/',
+  },
+  APPLE_STORAGE: {
+    NAME: 'Apple Storage',
+    URL: 'https://www.icloud.com/storage/',
+  },
+  SLACK: {
+    NAME: 'Slack',
+    URL: 'https://app.slack.com/client/',
   },
   AMAZON: {
     NAME: 'Amazon',

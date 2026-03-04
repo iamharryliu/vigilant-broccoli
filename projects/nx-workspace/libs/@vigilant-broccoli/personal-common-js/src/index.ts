@@ -58,6 +58,15 @@ export const PERSONAL_URL = {
 } as const;
 
 export const MAC_OS_APP = {
+  CHROME: {
+    NAME: 'Google Chrome',
+  },
+  FIREFOX: {
+    NAME: 'Firefox',
+  },
+  OBSIDIAN: {
+    NAME: 'Obsidian',
+  },
   SPOTIFY: {
     NAME: 'Spotify',
   },
