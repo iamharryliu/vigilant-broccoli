@@ -157,6 +157,8 @@ export function LinkGroupComponent({
         row[itemIndex + 1].element.focus();
       } else if (rowIndex < rows.length - 1) {
         rows[rowIndex + 1][0].element.focus();
+      } else {
+        searchInputRef.current?.focus();
       }
       return;
     }
@@ -176,6 +178,8 @@ export function LinkGroupComponent({
     if (direction === 'down') {
       if (rowIndex < rows.length - 1) {
         findClosestByX(rows[rowIndex + 1], current.centerX)?.element.focus();
+      } else {
+        searchInputRef.current?.focus();
       }
       return;
     }

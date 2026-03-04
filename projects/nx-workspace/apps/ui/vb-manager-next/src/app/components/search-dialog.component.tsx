@@ -46,8 +46,9 @@ export function SearchDialogComponent({
   const open = externalOpen ?? internalOpen;
   const setOpen = externalOnOpenChange ?? setInternalOpen;
   const [isGrouped, setIsGrouped] = useState(true);
+  const [dialogHeight, setDialogHeight] = useState<number | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [contentHeight, setContentHeight] = useState<number | undefined>(undefined);
+  const headerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   type Direction = 'up' | 'down' | 'left' | 'right';
   type FocusNode = { element: HTMLElement; centerX: number; centerY: number };
@@ -156,6 +157,8 @@ export function SearchDialogComponent({
         row[itemIndex + 1].element.focus();
       } else if (rowIndex < rows.length - 1) {
         rows[rowIndex + 1][0].element.focus();
+      } else {
+        searchInputRef.current?.focus();
       }
       return;
     }
@@ -175,6 +178,8 @@ export function SearchDialogComponent({
     if (direction === 'down') {
       if (rowIndex < rows.length - 1) {
         findClosestByX(rows[rowIndex + 1], current.centerX)?.element.focus();
+      } else {
+        searchInputRef.current?.focus();
       }
       return;
     }
@@ -202,23 +207,34 @@ export function SearchDialogComponent({
       setTimeout(() => searchInputRef.current?.focus(), 0);
     } else if (!open) {
       setSearchQuery('');
+      setDialogHeight(undefined);
     }
   }, [open]);
 
   useEffect(() => {
-    if (!open) {
-      setContentHeight(undefined);
-      return;
-    }
+    if (!open) return;
 
-    if (contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight);
-    }
+    const recalculateHeight = () => {
+      const headerHeight = headerRef.current?.scrollHeight ?? 0;
+      const resultsHeight = contentRef.current?.scrollHeight ?? 0;
+      const maxDialogHeight = Math.floor(window.innerHeight * 0.8);
+      const nextHeight = Math.min(maxDialogHeight, headerHeight + resultsHeight + 32);
+      setDialogHeight(nextHeight);
+    };
+
+    recalculateHeight();
+    const rafId = requestAnimationFrame(recalculateHeight);
+    window.addEventListener('resize', recalculateHeight);
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', recalculateHeight);
+    };
   }, [open, searchQuery, isGrouped]);
 
   const filteredLinks = searchQuery
     ? QUICK_LINKS.filter(link => fuzzyMatch(searchQuery, link.label))
     : QUICK_LINKS;
+  const hasNoResults = filteredLinks.length === 0 && searchQuery.trim().length > 0;
 
   const sortedLinks = [...filteredLinks].sort((a, b) =>
     a.label.localeCompare(b.label),
@@ -410,57 +426,88 @@ export function SearchDialogComponent({
         style={{
           maxWidth: 800,
           maxHeight: '80vh',
-          overflow: 'auto',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          height: dialogHeight,
+          transition: 'height 220ms cubic-bezier(0.22, 1, 0.36, 1)',
         }}
       >
-        <Dialog.Title>Quick Links</Dialog.Title>
+        <div ref={headerRef}>
+          <Dialog.Title>Quick Links</Dialog.Title>
 
-        <Flex gap="2" align="center" mb="4">
-          <TextField.Root
-            ref={searchInputRef}
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            size="2"
-            style={{ flex: 1 }}
-          />
-          <IconButton
-            size="2"
-            variant="soft"
-            onClick={() => setIsGrouped(!isGrouped)}
-            title={isGrouped ? 'Show ungrouped' : 'Show grouped'}
-          >
-            {isGrouped ? <ListBulletIcon /> : <DashboardIcon />}
-          </IconButton>
-        </Flex>
+          <Flex gap="2" align="center" mb="4">
+            <TextField.Root
+              ref={searchInputRef}
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              size="2"
+              style={{ flex: 1 }}
+            />
+            <IconButton
+              size="2"
+              variant="soft"
+              onClick={() => setIsGrouped(!isGrouped)}
+              title={isGrouped ? 'Show ungrouped' : 'Show grouped'}
+            >
+              {isGrouped ? <ListBulletIcon /> : <DashboardIcon />}
+            </IconButton>
+          </Flex>
+        </div>
 
-        <div
-          style={{
-            height: contentHeight,
-            transition: 'height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            overflow: 'hidden',
-          }}
-        >
+        {hasNoResults ? (
           <div
-            ref={contentRef}
-            style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0.75rem 0.5rem',
+            }}
           >
-            {isGrouped ? (
-              renderGroupedLinks()
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {sortedLinks.map(link => renderLink(link))}
-              </div>
-            )}
-
-            {filteredLinks.length === 0 && searchQuery && (
+            <div ref={contentRef} style={{ textAlign: 'center' }}>
               <Text size="2" color="gray">
                 No links found matching &quot;{searchQuery}&quot;
               </Text>
-            )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              // Fade results near top/bottom edges of the scroll viewport.
+              maskImage:
+                'linear-gradient(to bottom, transparent 0, black 16px, black calc(100% - 16px), transparent 100%)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, transparent 0, black 16px, black calc(100% - 16px), transparent 100%)',
+            }}
+          >
+            <div
+              ref={contentRef}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                paddingTop: '0.75rem',
+                paddingBottom: '0.75rem',
+              }}
+            >
+              {isGrouped ? (
+                renderGroupedLinks()
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {sortedLinks.map(link => renderLink(link))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </Dialog.Content>
     </Dialog.Root>
   );
