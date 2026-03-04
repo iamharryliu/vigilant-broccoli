@@ -528,3 +528,14 @@ export const STRIPE_LINK = {
     URL: 'https://status.stripe.com/',
   },
 } as const;
+
+export const ELEVENLABS_LINK = {
+  DASHBOARD: {
+    NAME: 'ElevenLabs Dashboard',
+    URL: 'https://elevenlabs.io/app',
+  },
+  API_KEYS: {
+    NAME: 'ElevenLabs API Keys',
+    URL: 'https://elevenlabs.io/app/api/api-keys',
+  },
+} as const;

@@ -18,7 +18,10 @@ import {
   RotateCcw,
   Image,
   Trash2,
+  Mic,
+  Square,
 } from 'lucide-react';
+import { useSpeechToText } from '../hooks/useSpeechToText';
 
 interface MessageImage {
   data: string;
@@ -239,6 +242,138 @@ const MessagesArea = ({
   </div>
 );
 
+const SuggestionsBar = ({
+  suggestions,
+  onSuggestionClick,
+}: {
+  suggestions: ChatSuggestion[];
+  onSuggestionClick: (suggestion: ChatSuggestion) => void;
+}) => (
+  <Flex direction="row" gap="2" wrap="wrap" align="center">
+    {suggestions.map((suggestion, index) => (
+      <Button
+        key={index}
+        onClick={() => onSuggestionClick(suggestion)}
+        variant="soft"
+        size="2"
+      >
+        {suggestion.title}
+      </Button>
+    ))}
+  </Flex>
+);
+
+const ImagePreviewList = ({
+  images,
+  onImageRemove,
+}: {
+  images: MessageImage[];
+  onImageRemove: (index: number) => void;
+}) => (
+  <Flex gap="2" wrap="wrap" align="center">
+    {images.map((img, index) => (
+      <ImagePreview
+        key={index}
+        img={img}
+        index={index}
+        onRemove={() => onImageRemove(index)}
+      />
+    ))}
+  </Flex>
+);
+
+const getInputPlaceholder = (
+  isRecording: boolean,
+  isProcessing: boolean,
+): string => {
+  if (isRecording) return 'Recording...';
+  if (isProcessing) return 'Processing...';
+  return 'Type your message...';
+};
+
+const isInputDisabled = (
+  isStreaming: boolean,
+  isRecording: boolean,
+  isProcessing: boolean,
+): boolean => isStreaming || isRecording || isProcessing;
+
+const isSendDisabled = (
+  isStreaming: boolean,
+  input: string,
+  uploadedImagesCount: number,
+): boolean => isStreaming || (!input.trim() && uploadedImagesCount === 0);
+
+const InputControls = ({
+  fileInputRef,
+  textInputRef,
+  input,
+  isStreaming,
+  isRecording,
+  isProcessing,
+  uploadedImages,
+  onImageUpload,
+  onToggleRecording,
+  onInputChange,
+  onKeyDown,
+  onSend,
+}: {
+  fileInputRef: React.RefObject<HTMLInputElement>;
+  textInputRef: React.RefObject<HTMLInputElement>;
+  input: string;
+  isStreaming: boolean;
+  isRecording: boolean;
+  isProcessing: boolean;
+  uploadedImages: MessageImage[];
+  onImageUpload: (files: FileList | null) => void;
+  onToggleRecording: () => void;
+  onInputChange: (value: string) => void;
+  onKeyDown: (e: React.KeyboardEvent) => void;
+  onSend: () => void;
+}) => (
+  <Flex gap="2" align="center">
+    <input
+      ref={fileInputRef}
+      type="file"
+      accept="image/*"
+      multiple
+      onChange={e => onImageUpload(e.target.files)}
+      style={{ display: 'none' }}
+    />
+    <Button
+      onClick={() => fileInputRef.current?.click()}
+      variant="soft"
+      disabled={isStreaming || isRecording}
+      aria-label="Upload image"
+    >
+      <Image size={16} alt="" />
+    </Button>
+    <Button
+      onClick={onToggleRecording}
+      variant="soft"
+      disabled={isStreaming || isProcessing}
+      color={isRecording ? 'red' : undefined}
+      aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+    >
+      {isRecording ? <Square size={16} /> : <Mic size={16} />}
+    </Button>
+    <TextField.Root
+      ref={textInputRef}
+      placeholder={getInputPlaceholder(isRecording, isProcessing)}
+      value={input}
+      onChange={e => onInputChange(e.target.value)}
+      onKeyDown={onKeyDown}
+      disabled={isInputDisabled(isStreaming, isRecording, isProcessing)}
+      style={{ flex: 1 }}
+    />
+    <Button
+      onClick={onSend}
+      disabled={isSendDisabled(isStreaming, input, uploadedImages.length)}
+    >
+      {isStreaming ? 'Sending...' : 'Send'}
+    </Button>
+  </Flex>
+);
+
 const InputArea = ({
   messages,
   suggestions,
@@ -253,6 +388,10 @@ const InputArea = ({
   onInputChange,
   onKeyDown,
   onSend,
+  isRecording,
+  isProcessing,
+  speechError,
+  onToggleRecording,
 }: {
   messages: Message[];
   suggestions: ChatSuggestion[];
@@ -267,67 +406,40 @@ const InputArea = ({
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   onSend: () => void;
+  isRecording: boolean;
+  isProcessing: boolean;
+  speechError: string | null;
+  onToggleRecording: () => void;
 }) => (
   <Flex direction="column" gap="2" style={{ flexShrink: 0 }}>
     {messages.length === 0 && suggestions.length > 0 && (
-      <Flex direction="row" gap="2" wrap="wrap" align="center">
-        {suggestions.map((suggestion, index) => (
-          <Button
-            key={index}
-            onClick={() => onSuggestionClick(suggestion)}
-            variant="soft"
-            size="2"
-          >
-            {suggestion.title}
-          </Button>
-        ))}
-      </Flex>
+      <SuggestionsBar
+        suggestions={suggestions}
+        onSuggestionClick={onSuggestionClick}
+      />
     )}
     {uploadedImages.length > 0 && (
-      <Flex gap="2" wrap="wrap" align="center">
-        {uploadedImages.map((img, index) => (
-          <ImagePreview
-            key={index}
-            img={img}
-            index={index}
-            onRemove={() => onImageRemove(index)}
-          />
-        ))}
-      </Flex>
+      <ImagePreviewList images={uploadedImages} onImageRemove={onImageRemove} />
     )}
-    <Flex gap="2" align="center">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={e => onImageUpload(e.target.files)}
-        style={{ display: 'none' }}
-      />
-      <Button
-        onClick={() => fileInputRef.current?.click()}
-        variant="soft"
-        disabled={isStreaming}
-        aria-label="Upload image"
-      >
-        <Image size={16} />
-      </Button>
-      <TextField.Root
-        ref={textInputRef}
-        placeholder="Type your message..."
-        value={input}
-        onChange={e => onInputChange(e.target.value)}
-        onKeyDown={onKeyDown}
-        disabled={isStreaming}
-        style={{ flex: 1 }}
-      />
-      <Button
-        onClick={onSend}
-        disabled={isStreaming || (!input.trim() && uploadedImages.length === 0)}
-      >
-        {isStreaming ? 'Sending...' : 'Send'}
-      </Button>
-    </Flex>
+    <InputControls
+      fileInputRef={fileInputRef}
+      textInputRef={textInputRef}
+      input={input}
+      isStreaming={isStreaming}
+      isRecording={isRecording}
+      isProcessing={isProcessing}
+      uploadedImages={uploadedImages}
+      onImageUpload={onImageUpload}
+      onToggleRecording={onToggleRecording}
+      onInputChange={onInputChange}
+      onKeyDown={onKeyDown}
+      onSend={onSend}
+    />
+    {speechError && (
+      <Text size="2" color="red">
+        {speechError}
+      </Text>
+    )}
   </Flex>
 );
 
@@ -396,6 +508,18 @@ export const ChatbotDialog = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textInputRef = useRef<HTMLInputElement>(null);
   const initialPromptProcessedRef = useRef(false);
+
+  const {
+    isRecording,
+    isProcessing,
+    error: speechError,
+    toggleRecording,
+  } = useSpeechToText({
+    streaming: true,
+    onTranscriptUpdate: transcript => {
+      setInput(transcript);
+    },
+  });
 
   useEffect(() => {
     if (open && initialPrompt && !initialPromptProcessedRef.current) {
@@ -664,6 +788,10 @@ export const ChatbotDialog = ({
             onInputChange={setInput}
             onKeyDown={handleKeyDown}
             onSend={() => handleSend()}
+            isRecording={isRecording}
+            isProcessing={isProcessing}
+            speechError={speechError}
+            onToggleRecording={toggleRecording}
           />
         </Flex>
       </Dialog.Content>
