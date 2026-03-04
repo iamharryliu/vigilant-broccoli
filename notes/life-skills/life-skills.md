@@ -1,12 +1,12 @@
 # Life Skills
 
 - **Essential**
-- [Home Management](../home/home-management.md)
-- [Cooking](../cooking/cooking.md)
+- [Home Management](../lifestyle/home/home-management.md)
+- [Cooking](../hobbies/cooking/cooking.md)
 - [Knots](https://www.youtube.com/watch?v=3X8drKsdf5E)
 - **Accessibility**
-  - [Language Learning](../hobbies/language-learning/language-learning.md)
-  - [Software](../software/software.md)
+  - [Language Learning](../learn/language-learning/language-learning.md)
+  - Software
   - [Driving](./driving.md)
   - Swimming
     - Treading Water
@@ -24,7 +24,7 @@
   - [Touch Typing](https://en.wikipedia.org/wiki/Touch_typing)
     - [typeracer](https://play.typeracer.com/)
   - Swipe Typing
-- [Productivity](./productivity.md)
+- [Productivity](./productivity/productivity.md)
 - [Social](./social/social.md)
 - [Career](./career/career.md)
 - [Design](./design/design.md)

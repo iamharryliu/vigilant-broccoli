@@ -12,6 +12,6 @@
 
 ## Folder Structure
 
-- [Notes](./notes/) - Collection of markdown notes.
+- [Notes](./notes/) - Collection of markdown notes linked with relative file paths.
 - [Projects](./projects/) - Software projects.
   - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects

@@ -1,7 +1,7 @@
 # Food Notes
 
 - [Bread](./bread/bread.md)
-- [Hydration Table](./bread/hydration-table.md)
+- [Hydration Table](./bread/bread-hydration.md)
 - [Eggs](./eggs.md)
 - [Grains](./grains.md)
 - [Noodles](./noodles.md)

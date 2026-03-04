@@ -3,7 +3,7 @@
 - [Tech Lingo](./tech-lingo.md)
 - [IT Support](./it-support.md)
 - [Hardware](./hardware/hardware.md)
-- [Software](../software/software.md)
+- [Software](../tech/software/software.md)
 
 ## Data Storage 3-2-1 Backup Rule
 

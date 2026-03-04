@@ -1,7 +1,7 @@
 # Dog
 
 - [Food](./dog-food.md)
-- [Commands](./dog-commands.md)
+- [Commands](../dog-commands.md)
 
 ## Training
 

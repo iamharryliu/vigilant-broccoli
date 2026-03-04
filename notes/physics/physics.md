@@ -1,6 +1,6 @@
 # Physics
 
-- [Waves](./waves/)
+- [Waves](./waves/waves.md)
 
 # Four Fundamental Forces
 

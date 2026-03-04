@@ -12,5 +12,4 @@
 - Drinks
   - [Coffee](./drinks/coffee.md)
   - [Alcohol](./drinks/alcohol.md)
-  - [Sweet Beverages](./drinks/sweet-beverages.md)
 - [Cooking Lingo](./cooking-lingo.md)

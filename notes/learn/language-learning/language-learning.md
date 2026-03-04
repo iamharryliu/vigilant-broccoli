@@ -17,7 +17,7 @@
 
 - General Language Spreadsheets
   - [Language Spread](./language-spread/language-spread.md)
-  - [Past Tense](./language-spread/language-spead-past-tense.md)
+  - [Past Tense](./language-spread/language-spread-past-participle.md)
   - Grammar
     - [Plural](./language-spread/language-spreads-plurals.md)
     - [Negation](./language-spread/language-spread-negation.md)
@@ -28,7 +28,7 @@
     - [Adverbs](./language-spread/language-spread-adverbs.md)
     - [Numbers](./language-spread/language-spread-numbers.md)
   - [Nouns](./language-spread/language-spread-nouns.md)
-    - [Family](./language-spread/language-spread-family.md)
+    - [People](./language-spread/language-spread-people.md)
     - [Food](./language-spread/language-spread-food.md)
     - [Pronouns](./language-spread/language-spread-pronouns.md)
   - [Questions](./language-spread/language-spread-questions.md)
