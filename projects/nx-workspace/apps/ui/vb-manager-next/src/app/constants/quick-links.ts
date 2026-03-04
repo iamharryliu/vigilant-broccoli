@@ -552,6 +552,24 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: 'Numi',
+    target: 'Numi',
+    type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Speedtest',
+    target: 'https://www.speedtest.net/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'KarmaNow',
+    target: 'https://www.karmanow.com/my-items',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: GOOGLE_SERVICES.GMAIL.NAME,
     target: GOOGLE_SERVICES.GMAIL.URL,
     type: OPEN_TYPE.BROWSER,

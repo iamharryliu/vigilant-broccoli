@@ -6,6 +6,10 @@ import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { CardContainer } from './card-container.component';
 import { DashboardIcon, ListBulletIcon } from '@radix-ui/react-icons';
+import {
+  moveQuickLinkFocusByDirection,
+  type Direction,
+} from '../utils/focus-navigation.utils';
 
 interface LinkItem {
   label: string;
@@ -29,7 +33,11 @@ const fuzzyMatch = (query: string, target: string): boolean => {
   const targetLower = target.toLowerCase();
 
   let queryIndex = 0;
-  for (let i = 0; i < targetLower.length && queryIndex < queryLower.length; i++) {
+  for (
+    let i = 0;
+    i < targetLower.length && queryIndex < queryLower.length;
+    i++
+  ) {
     if (targetLower[i] === queryLower[queryIndex]) {
       queryIndex++;
     }
@@ -50,146 +58,6 @@ export function LinkGroupComponent({
   const [isGrouped, setIsGrouped] = useState(grouped);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  type Direction = 'up' | 'down' | 'left' | 'right';
-  type FocusNode = { element: HTMLElement; centerX: number; centerY: number };
-  const ROW_TOLERANCE = 14;
-
-  const getFocusableLinks = (): HTMLElement[] => {
-    if (!contentRef.current) return [];
-    return Array.from(
-      contentRef.current.querySelectorAll<HTMLElement>('[data-quick-link-item="true"]'),
-    );
-  };
-
-  const buildLinkRows = (): FocusNode[][] => {
-    const nodes = getFocusableLinks()
-      .filter(
-        node =>
-          !node.hasAttribute('disabled') &&
-          node.tabIndex !== -1 &&
-          node.getClientRects().length > 0,
-      )
-      .map<FocusNode>(element => {
-        const rect = element.getBoundingClientRect();
-        return {
-          element,
-          centerX: rect.left + rect.width / 2,
-          centerY: rect.top + rect.height / 2,
-        };
-      })
-      .sort((a, b) => a.centerY - b.centerY || a.centerX - b.centerX);
-
-    const rows: FocusNode[][] = [];
-    for (const node of nodes) {
-      const lastRow = rows[rows.length - 1];
-      if (!lastRow) {
-        rows.push([node]);
-        continue;
-      }
-
-      const rowCenterY =
-        lastRow.reduce((sum, item) => sum + item.centerY, 0) / lastRow.length;
-      if (Math.abs(node.centerY - rowCenterY) <= ROW_TOLERANCE) {
-        lastRow.push(node);
-      } else {
-        rows.push([node]);
-      }
-    }
-
-    for (const row of rows) {
-      row.sort((a, b) => a.centerX - b.centerX);
-    }
-
-    return rows;
-  };
-
-  const findClosestByX = (row: FocusNode[], x: number): FocusNode | null => {
-    if (row.length === 0) return null;
-    let best = row[0];
-    let bestDistance = Math.abs(best.centerX - x);
-    for (const node of row) {
-      const distance = Math.abs(node.centerX - x);
-      if (distance < bestDistance) {
-        best = node;
-        bestDistance = distance;
-      }
-    }
-    return best;
-  };
-
-  const findNodePosition = (rows: FocusNode[][], element: HTMLElement) => {
-    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-      const itemIndex = rows[rowIndex].findIndex(node => node.element === element);
-      if (itemIndex !== -1) {
-        return { rowIndex, itemIndex };
-      }
-    }
-    return null;
-  };
-
-  const moveFocusByDirection = (
-    currentElement: HTMLElement,
-    direction: Direction,
-  ) => {
-    const rows = buildLinkRows();
-    if (rows.length === 0) return;
-
-    if (currentElement === searchInputRef.current) {
-      const inputRect = currentElement.getBoundingClientRect();
-      const inputCenterX = inputRect.left + inputRect.width / 2;
-      if (direction === 'down' || direction === 'right') {
-        findClosestByX(rows[0], inputCenterX)?.element.focus();
-        return;
-      }
-      findClosestByX(rows[rows.length - 1], inputCenterX)?.element.focus();
-      return;
-    }
-
-    const position = findNodePosition(rows, currentElement);
-    if (!position) return;
-
-    const { rowIndex, itemIndex } = position;
-    const row = rows[rowIndex];
-    const current = row[itemIndex];
-
-    if (direction === 'right') {
-      if (itemIndex < row.length - 1) {
-        row[itemIndex + 1].element.focus();
-      } else if (rowIndex < rows.length - 1) {
-        rows[rowIndex + 1][0].element.focus();
-      } else {
-        searchInputRef.current?.focus();
-      }
-      return;
-    }
-
-    if (direction === 'left') {
-      if (itemIndex > 0) {
-        row[itemIndex - 1].element.focus();
-      } else if (rowIndex > 0) {
-        const prevRow = rows[rowIndex - 1];
-        prevRow[prevRow.length - 1].element.focus();
-      } else {
-        searchInputRef.current?.focus();
-      }
-      return;
-    }
-
-    if (direction === 'down') {
-      if (rowIndex < rows.length - 1) {
-        findClosestByX(rows[rowIndex + 1], current.centerX)?.element.focus();
-      } else {
-        searchInputRef.current?.focus();
-      }
-      return;
-    }
-
-    if (rowIndex > 0) {
-      findClosestByX(rows[rowIndex - 1], current.centerX)?.element.focus();
-    } else {
-      searchInputRef.current?.focus();
-    }
-  };
 
   const handleGroupedToggle = () => {
     const newValue = !isGrouped;
@@ -262,11 +130,16 @@ export function LinkGroupComponent({
       e.key === 'ArrowDown'
         ? 'down'
         : e.key === 'ArrowUp'
-          ? 'up'
-          : e.key === 'ArrowRight'
-            ? 'right'
-            : 'left';
-    moveFocusByDirection(e.currentTarget as HTMLElement, direction);
+        ? 'up'
+        : e.key === 'ArrowRight'
+        ? 'right'
+        : 'left';
+    moveQuickLinkFocusByDirection({
+      contentRoot: contentRef.current,
+      searchInput: searchInputRef.current,
+      currentElement: e.currentTarget as HTMLElement,
+      direction,
+    });
   };
 
   const handleLinkKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
@@ -290,15 +163,21 @@ export function LinkGroupComponent({
       e.key === 'ArrowDown'
         ? 'down'
         : e.key === 'ArrowUp'
-          ? 'up'
-          : e.key === 'ArrowRight'
-            ? 'right'
-            : 'left';
-    moveFocusByDirection(e.currentTarget, direction);
+        ? 'up'
+        : e.key === 'ArrowRight'
+        ? 'right'
+        : 'left';
+    moveQuickLinkFocusByDirection({
+      contentRoot: contentRef.current,
+      searchInput: searchInputRef.current,
+      currentElement: e.currentTarget,
+      direction,
+    });
   };
 
   const renderLink = (link: LinkItem) => {
-    const baseClass = 'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-[transform,background-color] duration-150 ease-out focus-visible:scale-110';
+    const baseClass =
+      'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-[transform,background-color] duration-150 ease-out focus-visible:scale-110';
 
     if (
       link.type === OPEN_TYPE.MAC_APPLICATION ||
@@ -365,7 +244,7 @@ export function LinkGroupComponent({
             ref={searchInputRef}
             placeholder="Search..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             onKeyDown={handleInputKeyDown}
             size="1"
             style={{ width: '150px' }}
@@ -378,7 +257,7 @@ export function LinkGroupComponent({
           <div className="flex flex-col gap-4">
             {itemsWithoutSubgroup.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {itemsWithoutSubgroup.map((link) => renderLink(link))}
+                {itemsWithoutSubgroup.map(link => renderLink(link))}
               </div>
             )}
 
@@ -388,14 +267,14 @@ export function LinkGroupComponent({
                   {subgroupName}
                 </Text>
                 <div className="flex flex-wrap gap-2">
-                  {subgroupLinks.map((link) => renderLink(link))}
+                  {subgroupLinks.map(link => renderLink(link))}
                 </div>
               </div>
             ))}
           </div>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {sortedLinks.map((link) => renderLink(link))}
+            {sortedLinks.map(link => renderLink(link))}
           </div>
         )}
       </div>
