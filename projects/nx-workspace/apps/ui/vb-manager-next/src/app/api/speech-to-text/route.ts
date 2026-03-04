@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 
-const elevenlabs = new ElevenLabsClient({
-  apiKey: process.env.ELEVENLABS_API_KEY,
-});
+let elevenlabs: ElevenLabsClient | null = null;
+
+const getElevenLabsClient = () => {
+  if (!elevenlabs) {
+    elevenlabs = new ElevenLabsClient({
+      apiKey: process.env.ELEVENLABS_API_KEY,
+    });
+  }
+  return elevenlabs;
+};
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
@@ -16,7 +23,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const transcription = await elevenlabs.speechToText
+  const client = getElevenLabsClient();
+  const transcription = await client.speechToText
     .convert({
       file: audioFile,
       modelId: 'scribe_v2',
