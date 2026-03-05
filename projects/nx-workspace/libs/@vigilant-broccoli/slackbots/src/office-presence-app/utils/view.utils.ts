@@ -8,7 +8,6 @@ import {
 } from '../types';
 import { WebClient } from '@slack/web-api';
 import { BlockAction, SlackViewAction } from '@slack/bolt';
-import { SlackUtils } from '../../lib/utils/utils';
 import { SlackViewBuilder } from '../../lib/utils/view-builder.utils';
 import { APP_COPY } from '../consts/app-copy.const';
 import {
@@ -26,10 +25,9 @@ export function createPublishHomeView(appConfig: AppConfig) {
   ) {
     const userId =
       typeof source.user === 'string' ? source.user : source.user.id;
-    const isAdmin = await SlackUtils.getIsAdmin(source, client);
     await client.views.publish({
       user_id: userId,
-      view: getHomeView(userId, isAdmin, appConfig),
+      view: getHomeView(userId, appConfig),
     });
   };
 }
@@ -44,11 +42,7 @@ export function buildModalDateOptionSlackBlocks(dates: Date[]): {
   }));
 }
 
-function getHomeView(
-  userId: string,
-  isAdmin: boolean,
-  appConfig: AppConfig,
-): View {
+function getHomeView(userId: string, appConfig: AppConfig): View {
   const userPresences = loadAllPresences();
   if (!userPresences[userId]) {
     userPresences[userId] = {};
@@ -67,43 +61,27 @@ function getHomeView(
       SlackViewBuilder.generateMarkdownSection(
         APP_COPY.getAppDescription(appConfig.APP_NAME),
       ),
-      ...(isCheckedInToday || isAdmin
+      ...(isCheckedInToday
         ? [
             {
               type: 'actions',
               elements: [
-                ...(isCheckedInToday
-                  ? [
-                      {
-                        type: 'button',
-                        text: SlackViewBuilder.generatePlainText(
-                          APP_COPY.HOME_VIEW.ASK_LUNCH_BUTTON,
-                        ),
-                        action_id: APP_ACTION.OPEN_ASK_LUNCH_MODAL,
-                        style: 'primary',
-                      },
-                      {
-                        type: 'button',
-                        text: SlackViewBuilder.generatePlainText(
-                          APP_COPY.HOME_VIEW.CHECKOUT_BUTTON,
-                        ),
-                        action_id: APP_ACTION.SUBMIT_CHECKOUT,
-                        style: 'primary',
-                      },
-                    ]
-                  : []),
-
-                ...(isAdmin
-                  ? [
-                      {
-                        type: 'button',
-                        text: SlackViewBuilder.generatePlainText(
-                          APP_COPY.HOME_VIEW.ADMIN_SETTINGS_BUTTON,
-                        ),
-                        action_id: APP_ACTION.OPEN_SETTINGS_MODAL,
-                      },
-                    ]
-                  : []),
+                {
+                  type: 'button',
+                  text: SlackViewBuilder.generatePlainText(
+                    APP_COPY.HOME_VIEW.ASK_LUNCH_BUTTON,
+                  ),
+                  action_id: APP_ACTION.OPEN_ASK_LUNCH_MODAL,
+                  style: 'primary',
+                },
+                {
+                  type: 'button',
+                  text: SlackViewBuilder.generatePlainText(
+                    APP_COPY.HOME_VIEW.CHECKOUT_BUTTON,
+                  ),
+                  action_id: APP_ACTION.SUBMIT_CHECKOUT,
+                  style: 'primary',
+                },
               ],
             },
             SlackViewBuilder.DIVIDER,

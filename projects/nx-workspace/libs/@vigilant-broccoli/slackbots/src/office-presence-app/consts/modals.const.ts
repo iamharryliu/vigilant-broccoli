@@ -142,36 +142,6 @@ function buildOfficeBlock(
   };
 }
 
-export function getSettingModal(): View {
-  return {
-    type: 'modal',
-    callback_id: APP_ACTION.SUBMIT_SETTINGS,
-    title: SlackViewBuilder.generatePlainText(APP_COPY.SETTINGS_MODAL.TITLE),
-    close: SlackViewBuilder.generatePlainText(APP_COPY.COMMON.CLOSE),
-    submit: SlackViewBuilder.generatePlainText(APP_COPY.COMMON.SAVE),
-    blocks: [
-      SlackViewBuilder.generateMarkdownSection(
-        APP_COPY.SETTINGS_MODAL.COMING_SOON_MARKDOWN,
-      ),
-      {
-        type: 'input',
-        block_id: 'new_office_input',
-        label: SlackViewBuilder.generatePlainText(
-          APP_COPY.SETTINGS_MODAL.ADD_OFFICE_LABEL,
-        ),
-        element: {
-          type: 'plain_text_input',
-          action_id: 'new_office',
-          placeholder: SlackViewBuilder.generatePlainText(
-            APP_COPY.SETTINGS_MODAL.ADD_OFFICE_PLACEHOLDER,
-          ),
-        },
-        optional: true,
-      },
-    ],
-  };
-}
-
 export function getAskLunchModal(userId: string) {
   const chunkArray = <T>(arr: T[], size: number): T[][] => {
     const chunks: T[][] = [];

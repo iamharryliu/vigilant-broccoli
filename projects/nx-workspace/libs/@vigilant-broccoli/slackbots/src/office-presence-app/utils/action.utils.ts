@@ -69,14 +69,6 @@ export function handleScheduleModalSubmit(
   });
 }
 
-export function handleUpdateSettings(
-  _body: SlackViewAction,
-  _view: ViewOutput,
-) {
-  // eslint-disable-next-line no-console
-  console.log('Update Settings');
-}
-
 export async function handleAskLunchAction(
   userId: string,
   selectedUserIds: string[],

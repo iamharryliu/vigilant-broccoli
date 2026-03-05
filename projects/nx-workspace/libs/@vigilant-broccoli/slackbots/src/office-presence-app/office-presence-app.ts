@@ -10,13 +10,11 @@ import { SlackUtils } from '../lib/utils/utils';
 import {
   getAskLunchModal,
   createInputScheduleModal,
-  getSettingModal,
 } from './consts/modals.const';
 import {
   handleAskLunchAction,
   handleCheckboxAction,
   handleScheduleModalSubmit,
-  handleUpdateSettings,
 } from './utils/action.utils';
 import { createPublishHomeView } from './utils/view.utils';
 import { APP_ACTION } from './consts/app.consts';
@@ -75,12 +73,6 @@ export async function runOfficePresenceApp(
     await publishHomeView(client, body);
   });
 
-  app.view(APP_ACTION.SUBMIT_SETTINGS, async ({ ack, body, view, client }) => {
-    await ack();
-    handleUpdateSettings(body, view);
-    await publishHomeView(client, body);
-  });
-
   app.action<BlockAction>(
     APP_ACTION.OPEN_SCHEDULE_MODAL,
     SlackModalUtils.createModalHandler(getInputScheduleModal),
@@ -89,11 +81,6 @@ export async function runOfficePresenceApp(
   app.action<BlockAction>(
     APP_ACTION.OPEN_ASK_LUNCH_MODAL,
     SlackModalUtils.createModalHandlerWithUserId(getAskLunchModal),
-  );
-
-  app.action<BlockAction>(
-    APP_ACTION.OPEN_SETTINGS_MODAL,
-    SlackModalUtils.createModalHandler(getSettingModal),
   );
 
   app.view(APP_ACTION.ASK_LUNCH, async ({ body, ack, client }) => {
