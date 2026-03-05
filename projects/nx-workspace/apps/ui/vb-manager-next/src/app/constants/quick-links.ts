@@ -571,6 +571,18 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: 'QR Code Generator',
+    target: 'https://www.qr-code-generator.com/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'TinyURL',
+    target: 'https://tinyurl.com/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: GOOGLE_SERVICES.GMAIL.NAME,
     target: GOOGLE_SERVICES.GMAIL.URL,
     type: OPEN_TYPE.BROWSER,
