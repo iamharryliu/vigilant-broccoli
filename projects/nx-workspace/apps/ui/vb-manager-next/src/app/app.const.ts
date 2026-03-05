@@ -55,6 +55,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Demos',
     children: Object.values(DEMO_ROUTES),
   },
+  COMPONENT_SANDBOX: {
+    title: 'Component Sandbox',
+    path: '/component-sandbox',
+  },
 };
 
 const APP_ROUTE_SUBGROUP = 'vb-manager-next';

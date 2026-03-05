@@ -36,6 +36,7 @@ const LINK_GROUP_SUBGROUP = {
   HOME: 'Home',
   DEV: 'Dev',
   VIGILANT_BROCCOLI: 'vigilant-broccoli',
+  MESSAGING: 'Messaging',
 } as const;
 
 const DEV_LINKS = [
@@ -736,6 +737,33 @@ const CAREER_LINKS = [
   },
 ];
 
+const MESSAGING_LINKS = [
+  {
+    label: 'Messages',
+    target: MAC_OS_APP.MESSAGES.NAME,
+    type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.MESSAGING,
+  },
+  {
+    label: 'Instagram Messenger',
+    target: 'https://www.instagram.com/direct/inbox/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.MESSAGING,
+  },
+  {
+    label: 'Facebook Messenger',
+    target: 'https://www.messenger.com/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.MESSAGING,
+  },
+  {
+    label: 'WhatsApp',
+    target: MAC_OS_APP.WHATSAPP.NAME,
+    type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.MESSAGING,
+  },
+];
+
 const LEISURE_LINKS = [
   {
     label: MAC_OS_APP.SPOTIFY.NAME,
@@ -868,6 +896,7 @@ export const QUICK_LINKS = [
   ...DEV_LINKS,
   ...UTILITY_LINKS,
   ...CAREER_LINKS,
+  ...MESSAGING_LINKS,
   ...LEISURE_LINKS,
   ...LEARN_LINKS,
   ...FOR_LATER_LINKS,

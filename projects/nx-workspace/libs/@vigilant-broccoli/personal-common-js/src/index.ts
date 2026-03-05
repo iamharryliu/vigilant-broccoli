@@ -73,4 +73,10 @@ export const MAC_OS_APP = {
   SLACK: {
     NAME: 'Slack',
   },
+  MESSAGES: {
+    NAME: 'Messages',
+  },
+  WHATSAPP: {
+    NAME: 'WhatsApp',
+  },
 } as const;
