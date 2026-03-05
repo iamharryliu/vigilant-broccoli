@@ -43,9 +43,9 @@ if ask "Setup macOS preferences?"; then
     . $MAC_SETUP_DIR/setup_macos_preferences.sh
 fi
 
-if ask "Add wallpaper?"; then
-    WALLPAPER_PATH="$HOME/vigilant-broccoli/wallpapers/ducky.jpg"
-    osascript -e "tell application \"System Events\" to set picture of every desktop to \"$WALLPAPER_PATH\""
+if ask "Change wallpaper?"; then
+    chmod +x "$MAC_SETUP_DIR/change_wallpaper.sh"
+    . $MAC_SETUP_DIR/change_wallpaper.sh
 fi
 
 if ask "Configure terminal theme?"; then

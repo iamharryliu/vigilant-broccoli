@@ -48,6 +48,8 @@ alias pushdotfiles="cdvb && git add $DOTFILES_DIR && gc feat dotfiles 'Update do
 # Homebrew
 alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP_DIR/Brewfile"
 alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update Brewfile.' && gpush"
+# Wallpaper
+alias changewallpaper="$MAC_SETUP_DIR/change_wallpaper.sh"
 # Projects
 alias servepersonalfrontend="cdnx && npm run serve:personal-website"
 alias deploypersonalfrontend="cdnx && nx manual-deploy personal-website-frontend"
