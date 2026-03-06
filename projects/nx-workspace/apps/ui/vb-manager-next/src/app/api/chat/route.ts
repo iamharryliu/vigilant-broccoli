@@ -1,6 +1,11 @@
 import { NextRequest } from 'next/server';
 import { LLMService } from '@vigilant-broccoli/llm-tools';
-import { LLM_MODEL, LLMImage } from '@vigilant-broccoli/common-js';
+import {
+  LLM_MODELS,
+  LLMModel,
+  LLM_MODEL,
+  LLMImage,
+} from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -20,14 +25,18 @@ export async function POST(request: NextRequest) {
   const encoder = new TextEncoder();
 
   const body = await request.json();
-  const { messages, systemPrompt } = body as {
+  const { messages, systemPrompt, model } = body as {
     messages: Message[];
     systemPrompt?: string;
+    model?: LLMModel;
   };
 
   if (!messages || messages.length === 0) {
     return new Response('Missing messages', { status: 400 });
   }
+
+  const selectedModel =
+    model && LLM_MODELS.includes(model) ? model : LLM_MODEL.GPT_4O;
 
   const latestUserMessage = messages[messages.length - 1];
 
@@ -68,7 +77,7 @@ export async function POST(request: NextRequest) {
           images: llmImages,
         },
         modelConfig: {
-          model: LLM_MODEL.GPT_4O,
+          model: selectedModel,
           temperature: 0.7,
         },
       });

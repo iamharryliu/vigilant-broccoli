@@ -8,6 +8,7 @@ import {
   TextField,
   ScrollArea,
   Card,
+  Select,
 } from '@radix-ui/themes';
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -21,7 +22,15 @@ import {
   Mic,
   Square,
 } from 'lucide-react';
+import {
+  LLM_MODEL,
+  LLM_MODELS,
+  LLMModel,
+  modelSupportsImageInput,
+  modelSupportsImageOutput,
+} from '@vigilant-broccoli/common-js';
 import { useSpeechToText } from '../hooks/useSpeechToText';
+import { useTextToSpeech } from '../hooks/useTextToSpeech';
 
 interface MessageImage {
   data: string;
@@ -53,6 +62,16 @@ const MAX_MESSAGES = 20;
 
 const CONST_ERROR_MESSAGE = 'Error: Failed to get response';
 const CONST_STREAM_UPDATE_INTERVAL = 50;
+const DEFAULT_CHAT_MODEL = LLM_MODEL.GPT_4O;
+const CHAT_MODELS = LLM_MODELS.filter(
+  model => !modelSupportsImageOutput(model),
+);
+
+const formatModelLabel = (model: string) =>
+  model
+    .split('-')
+    .map(part => part.toUpperCase())
+    .join(' ');
 
 const MessageContent = ({ message }: { message: Message }) => {
   if (message.role === 'user') {
@@ -311,7 +330,10 @@ const InputControls = ({
   isRecording,
   isProcessing,
   uploadedImages,
+  selectedModel,
+  modelOptions,
   onImageUpload,
+  onModelChange,
   onToggleRecording,
   onInputChange,
   onKeyDown,
@@ -324,7 +346,10 @@ const InputControls = ({
   isRecording: boolean;
   isProcessing: boolean;
   uploadedImages: MessageImage[];
+  selectedModel: LLMModel;
+  modelOptions: LLMModel[];
   onImageUpload: (files: FileList | null) => void;
+  onModelChange: (model: LLMModel) => void;
   onToggleRecording: () => void;
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
@@ -365,6 +390,20 @@ const InputControls = ({
       disabled={isInputDisabled(isStreaming, isRecording, isProcessing)}
       style={{ flex: 1 }}
     />
+    <Select.Root
+      value={selectedModel}
+      onValueChange={value => onModelChange(value as LLMModel)}
+      disabled={isStreaming}
+    >
+      <Select.Trigger style={{ minWidth: '10rem' }} />
+      <Select.Content>
+        {modelOptions.map(model => (
+          <Select.Item key={model} value={model}>
+            {formatModelLabel(model)}
+          </Select.Item>
+        ))}
+      </Select.Content>
+    </Select.Root>
     <Button
       onClick={onSend}
       disabled={isSendDisabled(isStreaming, input, uploadedImages.length)}
@@ -380,11 +419,14 @@ const InputArea = ({
   uploadedImages,
   input,
   isStreaming,
+  selectedModel,
+  modelOptions,
   fileInputRef,
   textInputRef,
   onSuggestionClick,
   onImageRemove,
   onImageUpload,
+  onModelChange,
   onInputChange,
   onKeyDown,
   onSend,
@@ -398,11 +440,14 @@ const InputArea = ({
   uploadedImages: MessageImage[];
   input: string;
   isStreaming: boolean;
+  selectedModel: LLMModel;
+  modelOptions: LLMModel[];
   fileInputRef: React.RefObject<HTMLInputElement>;
   textInputRef: React.RefObject<HTMLInputElement>;
   onSuggestionClick: (suggestion: ChatSuggestion) => void;
   onImageRemove: (index: number) => void;
   onImageUpload: (files: FileList | null) => void;
+  onModelChange: (model: LLMModel) => void;
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   onSend: () => void;
@@ -429,7 +474,10 @@ const InputArea = ({
       isRecording={isRecording}
       isProcessing={isProcessing}
       uploadedImages={uploadedImages}
+      selectedModel={selectedModel}
+      modelOptions={modelOptions}
       onImageUpload={onImageUpload}
+      onModelChange={onModelChange}
       onToggleRecording={onToggleRecording}
       onInputChange={onInputChange}
       onKeyDown={onKeyDown}
@@ -503,6 +551,8 @@ export const ChatbotDialog = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<MessageImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedModel, setSelectedModel] =
+    useState<LLMModel>(DEFAULT_CHAT_MODEL);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -512,7 +562,7 @@ export const ChatbotDialog = ({
   const {
     isRecording,
     isProcessing,
-    error: speechError,
+    error: transcriptionError,
     toggleRecording,
   } = useSpeechToText({
     streaming: true,
@@ -520,6 +570,7 @@ export const ChatbotDialog = ({
       setInput(transcript);
     },
   });
+  const { error: textToSpeechError, speak, stop } = useTextToSpeech();
 
   useEffect(() => {
     if (open && initialPrompt && !initialPromptProcessedRef.current) {
@@ -537,10 +588,13 @@ export const ChatbotDialog = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const hasModifier = e.ctrlKey || e.metaKey;
-      const inputElement = textInputRef.current?.querySelector('input');
-      const isInputFocused = document.activeElement === inputElement;
+      const eventTarget = e.target as HTMLElement | null;
+      const isTypingTarget =
+        eventTarget instanceof HTMLInputElement ||
+        eventTarget instanceof HTMLTextAreaElement ||
+        eventTarget?.isContentEditable === true;
 
-      if (e.key.toLowerCase() === 'f' && !hasModifier && !isInputFocused) {
+      if (e.key.toLowerCase() === 'f' && !hasModifier && !isTypingTarget) {
         e.preventDefault();
         setIsFullscreen(!isFullscreen);
       }
@@ -572,6 +626,23 @@ export const ChatbotDialog = ({
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const availableModels =
+    uploadedImages.length > 0
+      ? CHAT_MODELS.filter(model => modelSupportsImageInput(model))
+      : CHAT_MODELS;
+
+  useEffect(() => {
+    if (availableModels.includes(selectedModel)) return;
+
+    setSelectedModel(availableModels[0] || DEFAULT_CHAT_MODEL);
+  }, [availableModels, selectedModel]);
+
+  useEffect(() => {
+    if (!open) {
+      stop();
+    }
+  }, [open, stop]);
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -644,15 +715,20 @@ export const ChatbotDialog = ({
 
     finalizeMessage(setMessages, accumulatedContent);
     setIsStreaming(false);
+    await speak(accumulatedContent);
   };
 
-  const sendChatRequest = async (compactedMessages: Message[]) => {
+  const sendChatRequest = async (
+    compactedMessages: Message[],
+    model: LLMModel,
+  ) => {
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         messages: compactedMessages,
         systemPrompt,
+        model,
       }),
       signal: abortControllerRef.current?.signal,
     });
@@ -681,6 +757,7 @@ export const ChatbotDialog = ({
     setInput('');
     setUploadedImages([]);
     setIsStreaming(true);
+    stop();
 
     const compactedMessages = compactConversation(updatedMessages);
     abortControllerRef.current = new AbortController();
@@ -692,7 +769,7 @@ export const ChatbotDialog = ({
     };
     setMessages([...compactedMessages, assistantMessage]);
 
-    await sendChatRequest(compactedMessages);
+    await sendChatRequest(compactedMessages, selectedModel);
   };
 
   const handleSuggestionClick = async (suggestion: ChatSuggestion) => {
@@ -707,6 +784,7 @@ export const ChatbotDialog = ({
     setMessages(updatedMessages);
     setInput('');
     setIsStreaming(true);
+    stop();
 
     const compactedMessages = compactConversation(updatedMessages);
     abortControllerRef.current = new AbortController();
@@ -718,10 +796,11 @@ export const ChatbotDialog = ({
     };
     setMessages([...compactedMessages, assistantMessage]);
 
-    await sendChatRequest(compactedMessages);
+    await sendChatRequest(compactedMessages, selectedModel);
   };
 
   const handleClear = () => {
+    stop();
     setMessages([]);
     setInput('');
   };
@@ -778,6 +857,8 @@ export const ChatbotDialog = ({
             uploadedImages={uploadedImages}
             input={input}
             isStreaming={isStreaming}
+            selectedModel={selectedModel}
+            modelOptions={availableModels}
             fileInputRef={fileInputRef}
             textInputRef={textInputRef}
             onSuggestionClick={handleSuggestionClick}
@@ -785,12 +866,13 @@ export const ChatbotDialog = ({
               setUploadedImages(prev => prev.filter((_, i) => i !== index))
             }
             onImageUpload={handleImageUpload}
+            onModelChange={setSelectedModel}
             onInputChange={setInput}
             onKeyDown={handleKeyDown}
             onSend={() => handleSend()}
             isRecording={isRecording}
             isProcessing={isProcessing}
-            speechError={speechError}
+            speechError={transcriptionError || textToSpeechError}
             onToggleRecording={toggleRecording}
           />
         </Flex>

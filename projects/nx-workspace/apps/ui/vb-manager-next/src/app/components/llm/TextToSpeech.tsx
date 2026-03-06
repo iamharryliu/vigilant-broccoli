@@ -1,60 +1,16 @@
 'use client';
 
 import { Box, Button, Flex, Text, TextArea } from '@radix-ui/themes';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Volume2 } from 'lucide-react';
+import { useTextToSpeech } from '../../hooks/useTextToSpeech';
 
 export const TextToSpeech = () => {
   const [text, setText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl);
-      }
-    };
-  }, [audioUrl]);
+  const { audioUrl, error, isLoading, speak } = useTextToSpeech();
 
   const handleSpeak = async () => {
-    if (!text.trim()) {
-      setError('Please enter text to convert');
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const response = await fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text.trim() }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ error: 'Failed to generate speech' }));
-        setError(errorData.error || 'Failed to generate speech');
-        return;
-      }
-
-      const audioBlob = await response.blob();
-      const nextAudioUrl = URL.createObjectURL(audioBlob);
-
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl);
-      }
-
-      setAudioUrl(nextAudioUrl);
-    } catch {
-      setError('Failed to generate speech');
-    } finally {
-      setIsLoading(false);
-    }
+    await speak(text);
   };
 
   return (
