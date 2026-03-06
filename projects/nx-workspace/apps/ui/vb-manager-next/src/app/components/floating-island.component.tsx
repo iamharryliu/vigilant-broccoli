@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { IconButton, Select } from '@radix-ui/themes';
 import { MessageCircle, Mail, Search, Moon, Sun } from 'lucide-react';
 import { ChatbotDialog } from './chatbot-dialog.component';
@@ -115,7 +115,7 @@ export const FloatingIslandComponent = ({
           title="Jarvis"
           style={{
             cursor: 'pointer',
-            transition: 'all 0.3s ease',
+            transition: 'transform 0.2s ease',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.1)';
@@ -135,7 +135,7 @@ export const FloatingIslandComponent = ({
           title="Email"
           style={{
             cursor: 'pointer',
-            transition: 'all 0.3s ease',
+            transition: 'transform 0.2s ease',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.1)';
@@ -155,7 +155,7 @@ export const FloatingIslandComponent = ({
           title="Search"
           style={{
             cursor: 'pointer',
-            transition: 'all 0.3s ease',
+            transition: 'transform 0.2s ease',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.1)';
@@ -175,7 +175,7 @@ export const FloatingIslandComponent = ({
           title={appearance === 'light' ? 'Dark mode' : 'Light mode'}
           style={{
             cursor: 'pointer',
-            transition: 'all 0.3s ease',
+            transition: 'transform 0.2s ease',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.1)';

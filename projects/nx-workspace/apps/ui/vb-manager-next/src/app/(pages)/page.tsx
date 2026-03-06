@@ -6,6 +6,7 @@ import { ClockComponent } from '../components/clock.component';
 import { TaskListSelectorComponent } from '../components/task-list-selector.component';
 import { UtilitiesComponent } from '../components/utilities.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
+import { ModeTransitionWrapper } from '../components/mode-transition-wrapper.component';
 import {
   buildCalendarUrl,
   CalendarConfig,
@@ -87,31 +88,37 @@ export default function Page() {
             </Flex>
           </Card>
           <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-            {appMode === APP_MODE.PERSONAL ? (
-              <iframe
-                src={buildCalendarUrl(CALENDAR_CONFIG.personal)}
-                className="w-full h-[600px] dark:invert dark:hue-rotate-180"
-                style={{ minHeight: '400px' }}
-              ></iframe>
-            ) : (
-              <iframe
-                src={buildCalendarUrl(CALENDAR_CONFIG.work)}
-                className="w-full h-[600px] dark:invert dark:hue-rotate-180"
-                style={{ minHeight: '400px' }}
-              />
-            )}
+            <ModeTransitionWrapper modeKey={appMode}>
+              {appMode === APP_MODE.PERSONAL ? (
+                <iframe
+                  src={buildCalendarUrl(CALENDAR_CONFIG.personal)}
+                  className="w-full h-[600px] dark:invert dark:hue-rotate-180"
+                  style={{ minHeight: '400px' }}
+                ></iframe>
+              ) : (
+                <iframe
+                  src={buildCalendarUrl(CALENDAR_CONFIG.work)}
+                  className="w-full h-[600px] dark:invert dark:hue-rotate-180"
+                  style={{ minHeight: '400px' }}
+                />
+              )}
+            </ModeTransitionWrapper>
           </div>
         </div>
       </>
       <div className="flex flex-col gap-4">
-        {appMode === APP_MODE.PERSONAL ? (
-          <TaskListSelectorComponent />
-        ) : (
-          <TaskListSelectorComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
-        )}
+        <ModeTransitionWrapper modeKey={appMode}>
+          {appMode === APP_MODE.PERSONAL ? (
+            <TaskListSelectorComponent />
+          ) : (
+            <TaskListSelectorComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
+          )}
+        </ModeTransitionWrapper>
       </div>
       <div className="flex flex-col gap-4">
-        <UtilitiesComponent />
+        <ModeTransitionWrapper modeKey={appMode}>
+          <UtilitiesComponent />
+        </ModeTransitionWrapper>
       </div>
     </div>
   );

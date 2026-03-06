@@ -30,7 +30,7 @@ export function ComponentSandboxPage() {
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     const initialState = stored
-      ? new Set(JSON.parse(stored))
+      ? new Set<string>(JSON.parse(stored) as string[])
       : new Set(['buttons']);
 
     requestAnimationFrame(() => {
