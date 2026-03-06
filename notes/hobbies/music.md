@@ -27,3 +27,29 @@ D|     D   D#  E   F   F#  G   G#  A   A#  B   C   C#  D
 A|     A   A#  B   C   C#  D   D#  E   F   F#  G   G#  A
 E|     E   F   F#  G   G#  A   A#  B   C   C#  D   D#  E
 ```
+
+## Fret Hand Techniques
+
+| Technique        | How to perform                                                                          |
+| :--------------- | :-------------------------------------------------------------------------------------- |
+| Hammer-on        | Fret a note then strike the string with another finger without picking again            |
+| Pull-off         | Pluck the string by pulling off a fretted finger to sound a lower note                  |
+| Bending          | Push or pull the string across the fretboard to raise the pitch                         |
+| Vibrato          | Rapidly bend the string slightly up and down to create pitch oscillation                |
+| Slides           | Fret a note and slide your finger up or down the fretboard while maintaining pressure   |
+| Natural harmonic | Lightly touch the string directly over a fret wire and pick to produce a bell-like tone |
+
+## Pick Hand Techniques
+
+| Technique         | How to perform                                                                                           |
+| :---------------- | :------------------------------------------------------------------------------------------------------- |
+| Alternate picking | Alternate between downstrokes and upstrokes in a continuous motion                                       |
+| Palm muting       | Rest the edge of your palm on the strings near the bridge while picking                                  |
+| Tapping           | Use pick hand fingers to hammer-on notes on the fretboard                                                |
+| Pinch harmonic    | Strike the string with the pick and immediately touch it with your thumb to create a high-pitched squeal |
+
+## Music Terminology
+
+| Term       | Description     |
+| :--------- | :-------------- |
+| Pentatonic | Five-note scale |
