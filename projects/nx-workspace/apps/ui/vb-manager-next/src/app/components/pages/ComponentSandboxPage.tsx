@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Box, Heading, Text } from '@radix-ui/themes';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { ButtonDemo } from '../demos/ButtonDemo';
+import { CollapsibleListItemDemo } from '../demos/CollapsibleListItemDemo';
 
 const STORAGE_KEY = 'component-sandbox-expanded';
 
@@ -12,6 +13,11 @@ const COMPONENT_SECTIONS = [
     id: 'buttons',
     title: 'Buttons',
     component: ButtonDemo,
+  },
+  {
+    id: 'collapsible-list-item',
+    title: 'Collapsible List Item',
+    component: CollapsibleListItemDemo,
   },
 ];
 

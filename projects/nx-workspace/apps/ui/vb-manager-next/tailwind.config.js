@@ -19,7 +19,22 @@ module.exports = {
     ...createGlobPatternsForDependencies(__dirname),
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        slideDown: {
+          from: { height: '0', opacity: '0' },
+          to: { height: 'var(--radix-collapsible-content-height)', opacity: '1' },
+        },
+        slideUp: {
+          from: { height: 'var(--radix-collapsible-content-height)', opacity: '1' },
+          to: { height: '0', opacity: '0' },
+        },
+      },
+      animation: {
+        slideDown: 'slideDown 200ms ease-out',
+        slideUp: 'slideUp 200ms ease-out',
+      },
+    },
   },
   plugins: [require('@tailwindcss/typography')],
 };

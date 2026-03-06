@@ -43,15 +43,24 @@ export const CollapsibleListItem = ({
           )}
           <div className="flex items-center gap-2">
             {headerAction}
-            <Text size="1" color="gray" className="group-hover:opacity-70 transition-opacity">
-              {isOpen ? '▲' : '▼'}
+            <Text
+              size="1"
+              color="gray"
+              className="group-hover:opacity-70 transition-all duration-200"
+              style={{ transform: isOpen ? 'rotate(0deg)' : 'rotate(180deg)' }}
+            >
+              ▲
             </Text>
           </div>
         </button>
       </Collapsible.Trigger>
 
-      <Collapsible.Content className="flex flex-col gap-3">
-        {children}
+      <Collapsible.Content
+        className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp"
+      >
+        <div className="flex flex-col gap-3">
+          {children}
+        </div>
       </Collapsible.Content>
     </Collapsible.Root>
   );
