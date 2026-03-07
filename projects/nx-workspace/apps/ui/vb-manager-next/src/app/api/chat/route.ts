@@ -57,16 +57,22 @@ export async function POST(request: NextRequest) {
     }),
   );
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
+  const now = new Date();
+  const currentDate = now.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+  const currentTime = now.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
 
   const finalSystemPrompt =
     (systemPrompt || 'You are a helpful assistant.') +
-    `\n\nCurrent date: ${currentDate}\n\nWhen providing day or week plans, keep them short and concise. Use bullet points and avoid lengthy explanations.`;
+    `\n\nCurrent date: ${currentDate}\nCurrent time: ${currentTime}\n\nWhen providing day or week plans, keep them short and concise. Use bullet points and avoid lengthy explanations.`;
 
   const stream = new ReadableStream({
     async start(controller) {
