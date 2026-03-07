@@ -1,6 +1,10 @@
 name: deploy
 on:
-  push: { branches: ['main'] }
+  push:
+    branches: ['main']
+    paths:
+      - 'projects/nx-workspace/**'
+      - 'projects/cms-flask/**'
   workflow_dispatch:
 
 permissions:

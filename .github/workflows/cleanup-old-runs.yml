@@ -1,4 +1,4 @@
-name: Cleanup Old Workflow Runs
+name: cleanup-github-actions-runs
 
 on:
   schedule:
@@ -17,11 +17,48 @@ jobs:
           RETENTION_DAYS=14
           CUTOFF_DATE=$(date -d "${RETENTION_DAYS} days ago" --iso-8601)
 
-          echo "Deleting workflow runs older than ${CUTOFF_DATE}"
+          echo "========================================="
+          echo "Workflow Run Cleanup"
+          echo "========================================="
+          echo "Repository: ${{ github.repository }}"
+          echo "Retention: ${RETENTION_DAYS} days"
+          echo "Cutoff date: ${CUTOFF_DATE}"
+          echo "Current date: $(date --iso-8601)"
+          echo "========================================="
+          echo ""
 
-          gh api repos/${{ github.repository }}/actions/runs \
+          echo "Fetching workflow runs older than ${CUTOFF_DATE}..."
+          OLD_RUNS=$(gh api repos/${{ github.repository }}/actions/runs \
             --paginate \
-            -q ".workflow_runs[] | select(.created_at < \"${CUTOFF_DATE}\") | .id" \
-            | xargs -I{} gh api repos/${{ github.repository }}/actions/runs/{} -X DELETE
+            -q ".workflow_runs[] | select(.created_at < \"${CUTOFF_DATE}\") | {id: .id, name: .name, created: .created_at, status: .status}")
+
+          if [[ -z "$OLD_RUNS" ]]; then
+            echo "No workflow runs found older than ${CUTOFF_DATE}"
+            echo "Nothing to delete."
+            exit 0
+          fi
+
+          TOTAL=$(echo "$OLD_RUNS" | wc -l)
+          echo "Found ${TOTAL} workflow run(s) to delete:"
+          echo ""
+          echo "$OLD_RUNS" | jq -r '"  - ID: \(.id) | \(.name) | \(.created) | \(.status)"'
+          echo ""
+
+          DELETED=0
+          echo "Starting deletion..."
+          echo "$OLD_RUNS" | jq -r '.id' | while read -r RUN_ID; do
+            echo "Deleting run ID: ${RUN_ID}..."
+            if gh api repos/${{ github.repository }}/actions/runs/${RUN_ID} -X DELETE; then
+              DELETED=$((DELETED + 1))
+              echo "  ✓ Deleted"
+            else
+              echo "  ✗ Failed to delete"
+            fi
+          done
+
+          echo ""
+          echo "========================================="
+          echo "Cleanup completed"
+          echo "========================================="
         env:
           GH_TOKEN: ${{ github.token }}
