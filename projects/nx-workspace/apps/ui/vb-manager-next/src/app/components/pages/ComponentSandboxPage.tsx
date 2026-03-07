@@ -5,6 +5,8 @@ import { Box, Heading, Text } from '@radix-ui/themes';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { ButtonDemo } from '../demos/ButtonDemo';
 import { CollapsibleListItemDemo } from '../demos/CollapsibleListItemDemo';
+import { CRUDListDemo } from '../demos/CRUDListDemo';
+import { SelectDemo } from '../demos/SelectDemo';
 
 const STORAGE_KEY = 'component-sandbox-expanded';
 
@@ -18,6 +20,16 @@ const COMPONENT_SECTIONS = [
     id: 'collapsible-list-item',
     title: 'Collapsible List Item',
     component: CollapsibleListItemDemo,
+  },
+  {
+    id: 'crud-list',
+    title: 'CRUD List Management',
+    component: CRUDListDemo,
+  },
+  {
+    id: 'select',
+    title: 'Select',
+    component: SelectDemo,
   },
 ];
 
