@@ -73,6 +73,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: GITHUB_LINK.DASHBOARD.NAME,
+    target: GITHUB_LINK.DASHBOARD.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: GITHUB_LINK.TOKENS.NAME,
     target: GITHUB_LINK.TOKENS.URL,
     type: OPEN_TYPE.BROWSER,
@@ -87,6 +93,18 @@ const DEV_LINKS = [
   {
     label: GITHUB_LINK.BILLING.NAME,
     target: GITHUB_LINK.BILLING.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: GITHUB_LINK.PAYMENT_HISTORY.NAME,
+    target: GITHUB_LINK.PAYMENT_HISTORY.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: GITHUB_LINK.USAGE.NAME,
+    target: GITHUB_LINK.USAGE.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -115,6 +133,24 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: FLYIO_LINK.PAYMENT_HISTORY.NAME,
+    target: FLYIO_LINK.PAYMENT_HISTORY.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: FLYIO_LINK.USAGE.NAME,
+    target: FLYIO_LINK.USAGE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: FLYIO_LINK.STATUS.NAME,
+    target: FLYIO_LINK.STATUS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: FLYIO_LINK.DOCS.NAME,
     target: FLYIO_LINK.DOCS.URL,
     type: OPEN_TYPE.BROWSER,
@@ -123,6 +159,36 @@ const DEV_LINKS = [
   {
     label: 'AWS Free Tier',
     target: 'https://aws.amazon.com/free/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: CLOUDFLARE_LINK.DASHBOARD.NAME,
+    target: CLOUDFLARE_LINK.DASHBOARD.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: CLOUDFLARE_LINK.BILLING.NAME,
+    target: CLOUDFLARE_LINK.BILLING.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: CLOUDFLARE_LINK.PAYMENT_HISTORY.NAME,
+    target: CLOUDFLARE_LINK.PAYMENT_HISTORY.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: CLOUDFLARE_LINK.USAGE.NAME,
+    target: CLOUDFLARE_LINK.USAGE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: CLOUDFLARE_LINK.STATUS.NAME,
+    target: CLOUDFLARE_LINK.STATUS.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -246,8 +312,32 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: OPENAI_LINK.DASHBOARD.NAME,
+    target: OPENAI_LINK.DASHBOARD.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: OPENAI_LINK.BILLING.NAME,
     target: OPENAI_LINK.BILLING.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: OPENAI_LINK.PAYMENT_HISTORY.NAME,
+    target: OPENAI_LINK.PAYMENT_HISTORY.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: OPENAI_LINK.USAGE.NAME,
+    target: OPENAI_LINK.USAGE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: OPENAI_LINK.STATUS.NAME,
+    target: OPENAI_LINK.STATUS.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -264,6 +354,18 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: TWILIO_LINK.USAGE.NAME,
+    target: TWILIO_LINK.USAGE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: TWILIO_LINK.STATUS.NAME,
+    target: TWILIO_LINK.STATUS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: TWILIO_LINK.PHONE_NUMBERS.NAME,
     target: TWILIO_LINK.PHONE_NUMBERS.URL,
     type: OPEN_TYPE.BROWSER,
@@ -276,6 +378,36 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: CLAUDE_LINK.DASHBOARD.NAME,
+    target: CLAUDE_LINK.DASHBOARD.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: CLAUDE_LINK.BILLING.NAME,
+    target: CLAUDE_LINK.BILLING.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: CLAUDE_LINK.PAYMENT_HISTORY.NAME,
+    target: CLAUDE_LINK.PAYMENT_HISTORY.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: CLAUDE_LINK.USAGE.NAME,
+    target: CLAUDE_LINK.USAGE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: CLAUDE_LINK.STATUS.NAME,
+    target: CLAUDE_LINK.STATUS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: CLAUDE_LINK.CODE.NAME,
     target: CLAUDE_LINK.CODE.URL,
     type: OPEN_TYPE.BROWSER,
@@ -284,6 +416,12 @@ const DEV_LINKS = [
   {
     label: GCP_LINK.DASHBOARD.NAME,
     target: GCP_LINK.DASHBOARD.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: GCP_LINK.BILLING.NAME,
+    target: GCP_LINK.BILLING.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -354,6 +492,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: ROBOFLOW_LINK.PAYMENT_HISTORY.NAME,
+    target: ROBOFLOW_LINK.PAYMENT_HISTORY.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: ROBOFLOW_LINK.USAGE.NAME,
     target: ROBOFLOW_LINK.USAGE.URL,
     type: OPEN_TYPE.BROWSER,
@@ -368,6 +512,12 @@ const DEV_LINKS = [
   {
     label: DEEPSEEK_LINK.BILLING.NAME,
     target: DEEPSEEK_LINK.BILLING.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: DEEPSEEK_LINK.PAYMENT_HISTORY.NAME,
+    target: DEEPSEEK_LINK.PAYMENT_HISTORY.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -414,6 +564,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: ANTHROPIC_LINK.PAYMENT_HISTORY.NAME,
+    target: ANTHROPIC_LINK.PAYMENT_HISTORY.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: ANTHROPIC_LINK.USAGE.NAME,
     target: ANTHROPIC_LINK.USAGE.URL,
     type: OPEN_TYPE.BROWSER,
@@ -428,6 +584,12 @@ const DEV_LINKS = [
   {
     label: STRIPE_LINK.BILLING.NAME,
     target: STRIPE_LINK.BILLING.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: STRIPE_LINK.PAYMENT_HISTORY.NAME,
+    target: STRIPE_LINK.PAYMENT_HISTORY.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },

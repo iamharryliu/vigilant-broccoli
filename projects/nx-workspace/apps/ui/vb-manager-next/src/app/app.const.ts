@@ -7,25 +7,6 @@ type ExtendedNavRoute = {
   children?: NextNavRoute[];
 };
 
-const DEMO_ROUTES = {
-  BUCKET_DEMO: {
-    title: 'Bucket Demo',
-    path: '/bucket-demo',
-  },
-  CHORES_DEMO: {
-    title: 'Chores Demo',
-    path: '/chores-demo',
-  },
-  STRIPE_DEMO: {
-    title: 'Stripe Demo',
-    path: '/stripe-demo',
-  },
-  MESSAGING: {
-    title: 'Messaging Demo',
-    path: '/messaging',
-  },
-};
-
 export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
   INDEX: {
     title: 'Home',
@@ -51,13 +32,13 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'DocsMD',
     path: '/docs-md',
   },
-  DEMOS: {
-    title: 'Demos',
-    children: Object.values(DEMO_ROUTES),
-  },
   COMPONENT_SANDBOX: {
     title: 'Component Sandbox',
     path: '/component-sandbox',
+  },
+  FEATURE_SANDBOX: {
+    title: 'Feature Sandbox',
+    path: '/feature-sandbox',
   },
 };
 

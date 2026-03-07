@@ -8,7 +8,8 @@ interface BucketFile {
   updatedAt?: string;
 }
 
-export default function BucketDemoPage() {
+export function BucketDemo() {
+  const [mounted, setMounted] = useState(false);
   const [files, setFiles] = useState<BucketFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,6 @@ export default function BucketDemoPage() {
     try {
       const response = await fetch(`/api/bucket?provider=${provider}`);
       const data = await response.json();
-      // Check if data is an array, otherwise set empty array
       setFiles(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch files:', error);
@@ -30,8 +30,14 @@ export default function BucketDemoPage() {
   };
 
   useEffect(() => {
-    fetchFiles();
-  }, [provider]);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      fetchFiles();
+    }
+  }, [provider, mounted]);
 
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,7 +65,11 @@ export default function BucketDemoPage() {
 
   const handleDownload = async (fileName: string) => {
     try {
-      const response = await fetch(`/api/bucket?fileName=${encodeURIComponent(fileName)}&provider=${provider}`);
+      const response = await fetch(
+        `/api/bucket?fileName=${encodeURIComponent(
+          fileName,
+        )}&provider=${provider}`,
+      );
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -80,9 +90,14 @@ export default function BucketDemoPage() {
     }
 
     try {
-      const response = await fetch(`/api/bucket?fileName=${encodeURIComponent(fileName)}&provider=${provider}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/bucket?fileName=${encodeURIComponent(
+          fileName,
+        )}&provider=${provider}`,
+        {
+          method: 'DELETE',
+        },
+      );
 
       if (response.ok) {
         await fetchFiles();
@@ -94,10 +109,10 @@ export default function BucketDemoPage() {
 
   return (
     <div className="container mx-auto p-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100">Bucket CRUD Demo</h1>
-
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Select Bucket Provider</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          Select Bucket Provider
+        </h2>
         <div className="flex gap-4">
           <button
             onClick={() => setProvider('local')}
@@ -121,12 +136,17 @@ export default function BucketDemoPage() {
           </button>
         </div>
         <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
-          Current provider: <span className="font-semibold text-gray-900 dark:text-gray-100">{provider === 'local' ? 'Local Storage' : 'Cloudflare R2'}</span>
+          Current provider:{' '}
+          <span className="font-semibold text-gray-900 dark:text-gray-100">
+            {provider === 'local' ? 'Local Storage' : 'Cloudflare R2'}
+          </span>
         </p>
       </div>
 
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Upload Files</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          Upload Files
+        </h2>
         <form onSubmit={handleUpload} className="space-y-4">
           <div>
             <input
@@ -136,7 +156,9 @@ export default function BucketDemoPage() {
               required
               className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800"
             />
-            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">You can select multiple files at once</p>
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              You can select multiple files at once
+            </p>
           </div>
           <button
             type="submit"
@@ -150,7 +172,9 @@ export default function BucketDemoPage() {
 
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Files</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Files
+          </h2>
           <button
             onClick={fetchFiles}
             disabled={loading}
@@ -161,7 +185,9 @@ export default function BucketDemoPage() {
         </div>
 
         {files.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-8">No files uploaded yet</p>
+          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+            No files uploaded yet
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -182,8 +208,11 @@ export default function BucketDemoPage() {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {files.map((file) => (
-                  <tr key={file.name} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                {files.map(file => (
+                  <tr
+                    key={file.name}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                       {file.name}
                     </td>
@@ -191,7 +220,9 @@ export default function BucketDemoPage() {
                       {file.size ? `${(file.size / 1024).toFixed(2)} KB` : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {file.updatedAt ? new Date(file.updatedAt).toLocaleString() : '-'}
+                      {file.updatedAt
+                        ? new Date(file.updatedAt).toLocaleString()
+                        : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                       <button

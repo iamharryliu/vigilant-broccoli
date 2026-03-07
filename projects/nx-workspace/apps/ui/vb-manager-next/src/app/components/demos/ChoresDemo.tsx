@@ -16,17 +16,16 @@ import {
   Dialog,
 } from '@radix-ui/themes';
 
-// Types
 interface Chore {
   id: string;
   name: string;
   description: string;
   recurrence: 'daily' | 'weekly' | 'monthly';
-  multiplier: number; // How many times per recurrence period
+  multiplier: number;
   isUrgent: boolean;
   isImportant: boolean;
-  completions: string[]; // Array of ISO date strings
-  createdAt: string; // ISO date string
+  completions: string[];
+  createdAt: string;
 }
 
 interface Todo {
@@ -35,12 +34,11 @@ interface Todo {
   isUrgent: boolean;
   isImportant: boolean;
   daysOverdue: number;
-  instanceNumber: number; // Which instance (1/3, 2/3, etc.)
-  totalInstances: number; // Total multiplier count
-  isCompleted: boolean; // Whether this instance is completed
+  instanceNumber: number;
+  totalInstances: number;
+  isCompleted: boolean;
 }
 
-// Custom hook for localStorage persistence
 function useLocalStorage<T>(
   key: string,
   initialValue: T,
@@ -74,13 +72,11 @@ function useLocalStorage<T>(
   return [storedValue, setValue];
 }
 
-// Helper function to calculate days between dates
 function daysBetween(date1: Date, date2: Date): number {
   const oneDay = 24 * 60 * 60 * 1000;
   return Math.floor((date2.getTime() - date1.getTime()) / oneDay);
 }
 
-// Helper to check if a date falls within the current period
 function isInCurrentPeriod(
   date: Date,
   recurrence: Chore['recurrence'],
@@ -109,7 +105,6 @@ function isInCurrentPeriod(
   }
 }
 
-// Generate todos from chores
 function generateTodos(chores: Chore[]): Todo[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -117,29 +112,23 @@ function generateTodos(chores: Chore[]): Todo[] {
   const todos: Todo[] = [];
 
   chores.forEach(chore => {
-    // Count completions in the current period
     const completionsInPeriod = chore.completions.filter(completionDateStr => {
       const completionDate = new Date(completionDateStr);
       return isInCurrentPeriod(completionDate, chore.recurrence, today);
     }).length;
 
-    // Calculate how many instances are still needed
     const remainingInstances = chore.multiplier - completionsInPeriod;
 
-    // Check if the chore is overdue
     const createdAt = new Date(chore.createdAt);
     createdAt.setHours(0, 0, 0, 0);
 
     let daysOverdue = 0;
 
-    // If created before today and not all completions are done, it's overdue
     if (createdAt < today && remainingInstances > 0) {
       daysOverdue = daysBetween(createdAt, today);
     }
 
-    // Only show this chore if there's at least one incomplete instance
     if (remainingInstances > 0) {
-      // Generate todos for ALL instances, marking completed ones
       for (let i = 0; i < chore.multiplier; i++) {
         const isCompleted = i < completionsInPeriod;
         todos.push({
@@ -258,20 +247,19 @@ const MONTHLY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   },
 ];
 
-// Default chores
 const DEFAULT_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   ...DAILY_CHORES,
   ...WEEKLY_CHORES,
   ...MONTHLY_CHORES,
 ];
 
-export default function ChoresDemoPage() {
+export function ChoresDemo() {
+  const [mounted, setMounted] = useState(false);
   const [chores, setChores] = useLocalStorage<Chore[]>('chores', []);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingChore, setEditingChore] = useState<Chore | null>(null);
 
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -281,9 +269,12 @@ export default function ChoresDemoPage() {
     isImportant: false,
   });
 
-  // Initialize with default chores if empty
   useEffect(() => {
-    if (chores.length === 0) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && chores.length === 0) {
       const defaultChores: Chore[] = DEFAULT_CHORES.map((chore, index) => ({
         ...chore,
         id: `default-${index}`,
@@ -291,14 +282,14 @@ export default function ChoresDemoPage() {
       }));
       setChores(defaultChores);
     }
-  }, []);
+  }, [mounted]);
 
-  // Update todos whenever chores change
   useEffect(() => {
-    setTodos(generateTodos(chores));
-  }, [chores]);
+    if (mounted) {
+      setTodos(generateTodos(chores));
+    }
+  }, [chores, mounted]);
 
-  // Reset form
   const resetForm = () => {
     setFormData({
       name: '',
@@ -312,7 +303,6 @@ export default function ChoresDemoPage() {
     setIsFormOpen(false);
   };
 
-  // Create chore
   const handleCreateChore = () => {
     const newChore: Chore = {
       id: Date.now().toString(),
@@ -324,7 +314,6 @@ export default function ChoresDemoPage() {
     resetForm();
   };
 
-  // Update chore
   const handleUpdateChore = () => {
     if (!editingChore) return;
     setChores(prev =>
@@ -335,13 +324,11 @@ export default function ChoresDemoPage() {
     resetForm();
   };
 
-  // Delete chore
   const handleDeleteChore = (id: string) => {
     if (!confirm('Are you sure you want to delete this chore?')) return;
     setChores(prev => prev.filter(chore => chore.id !== id));
   };
 
-  // Edit chore
   const handleEditChore = (chore: Chore) => {
     setEditingChore(chore);
     setFormData({
@@ -355,7 +342,6 @@ export default function ChoresDemoPage() {
     setIsFormOpen(true);
   };
 
-  // Mark todo as complete
   const handleCompleteTodo = (choreId: string) => {
     const completionDate = new Date().toISOString();
     setChores(prev =>
@@ -367,7 +353,6 @@ export default function ChoresDemoPage() {
     );
   };
 
-  // Mark todo as incomplete (remove most recent completion)
   const handleUncompleteTodo = (choreId: string) => {
     setChores(prev =>
       prev.map(chore => {
@@ -376,12 +361,10 @@ export default function ChoresDemoPage() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Find completions in the current period
         const completionsInPeriod = chore.completions.filter(dateStr =>
           isInCurrentPeriod(new Date(dateStr), chore.recurrence, today),
         );
 
-        // Remove the most recent completion in the current period
         if (completionsInPeriod.length > 0) {
           const mostRecentCompletion =
             completionsInPeriod[completionsInPeriod.length - 1];
@@ -400,11 +383,6 @@ export default function ChoresDemoPage() {
   return (
     <Box p="6" style={{ maxWidth: '1280px', margin: '0 auto' }}>
       <Flex direction="column" gap="4">
-        <Text size="8" weight="bold">
-          Chores Management
-        </Text>
-
-        {/* Todos Section */}
         <Card>
           <Flex direction="column" gap="4">
             <Text size="5" weight="bold">
@@ -419,9 +397,7 @@ export default function ChoresDemoPage() {
             ) : (
               <Flex direction="column" gap="2">
                 {(() => {
-                  // Sort todos by Eisenhower matrix
                   const sortedTodos = [...todos].sort((a, b) => {
-                    // Priority order: Important+Urgent, Important, Urgent, Other
                     const getPriority = (todo: Todo) => {
                       if (todo.isImportant && todo.isUrgent) return 0;
                       if (todo.isImportant) return 1;
@@ -431,7 +407,6 @@ export default function ChoresDemoPage() {
                     return getPriority(a) - getPriority(b);
                   });
 
-                  // Group by choreId while maintaining sort order
                   const grouped = sortedTodos.reduce((acc, todo) => {
                     if (!acc[todo.choreId]) {
                       acc[todo.choreId] = [];
@@ -467,7 +442,6 @@ export default function ChoresDemoPage() {
                               </Text>
                             </Flex>
 
-                            {/* Inline checkboxes */}
                             <Flex gap="3" align="center">
                               {choreTodos.map(todo => (
                                 <Checkbox
@@ -495,7 +469,6 @@ export default function ChoresDemoPage() {
           </Flex>
         </Card>
 
-        {/* Chores Section */}
         <Card>
           <Flex direction="column" gap="4">
             <Flex justify="between" align="center">
@@ -637,7 +610,6 @@ export default function ChoresDemoPage() {
               </Dialog.Root>
             </Flex>
 
-            {/* Chores List */}
             {chores.length === 0 ? (
               <Box py="8">
                 <Text align="center" color="gray" size="3">

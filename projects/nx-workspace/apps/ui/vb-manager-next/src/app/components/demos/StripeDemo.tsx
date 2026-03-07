@@ -1,6 +1,6 @@
-export default function StripeCheckoutPage() {
+export function StripeDemo() {
   return (
-    <section className="flex flex-col items-center justify-center min-h-screen p-8">
+    <section className="flex flex-col items-center justify-center p-8">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         <div className="mb-6">
           <img
