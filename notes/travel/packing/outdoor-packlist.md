@@ -2,7 +2,7 @@
 
 - Water
 - [Food Packlist](./food-packlist.md)
-- Clothing Laters ie Heattech
+- Clothing Layers ie Heattech
 - Sunscreen
 - **Health**
   - First Aid Kit
