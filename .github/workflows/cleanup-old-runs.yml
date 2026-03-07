@@ -1,0 +1,27 @@
+name: Cleanup Old Workflow Runs
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    steps:
+      - name: Delete old workflow runs
+        run: |
+          RETENTION_DAYS=14
+          CUTOFF_DATE=$(date -d "${RETENTION_DAYS} days ago" --iso-8601)
+
+          echo "Deleting workflow runs older than ${CUTOFF_DATE}"
+
+          gh api repos/${{ github.repository }}/actions/runs \
+            --paginate \
+            -q ".workflow_runs[] | select(.created_at < \"${CUTOFF_DATE}\") | .id" \
+            | xargs -I{} gh api repos/${{ github.repository }}/actions/runs/{} -X DELETE
+        env:
+          GH_TOKEN: ${{ github.token }}
