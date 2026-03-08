@@ -23,8 +23,10 @@ if vim.g.neovide then
   vim.keymap.set({ "n", "v" }, "<D-c>", '"+y', { silent = true })
 
   -- Paste
-  vim.keymap.set({ "n", "i" }, "<D-v>", '"+p', { silent = true })
+  vim.keymap.set("n", "<D-v>", '"+p', { silent = true })
+  vim.keymap.set("i", "<D-v>", "<C-r>+", { silent = true })
   vim.keymap.set("c", "<D-v>", "<C-r>+", { silent = true })
+  vim.keymap.set("t", "<D-v>", [[<C-\><C-n>"+pi]], { silent = true })
 end
 
 vim.opt.clipboard = "unnamedplus"

@@ -3,37 +3,45 @@ return {
     "catppuccin/nvim",
     name = "catppuccin",
     priority = 1000,
-    config = function()
-      require("catppuccin").setup({
-        flavour = "auto",
-        background = {
-          light = "latte",
-          dark = "mocha",
+    opts = {
+      flavour = "auto",
+      background = {
+        light = "latte",
+        dark = "mocha",
+      },
+      integrations = {
+        nvimtree = true,
+        telescope = true,
+        gitsigns = true,
+        mini = {
+          enabled = true,
         },
-        integrations = {
-          nvimtree = true,
-          telescope = true,
-          gitsigns = true,
-          mini = {
-            enabled = true,
+      },
+    },
+    config = function(_, opts)
+      require("catppuccin").setup(opts)
+      vim.cmd.colorscheme("catppuccin")
+    end,
+  },
+  {
+    "cormacrelf/dark-notify",
+    config = function()
+      require("dark_notify").run({
+        schemes = {
+          dark = {
+            colorscheme = "catppuccin",
+            background = "dark",
+          },
+          light = {
+            colorscheme = "catppuccin",
+            background = "light",
           },
         },
+        onchange = function(mode)
+          vim.o.background = mode
+          vim.cmd.colorscheme("catppuccin")
+        end,
       })
-
-      local function set_background_from_system()
-        local handle = io.popen("defaults read -g AppleInterfaceStyle 2>/dev/null")
-        local result = handle:read("*a")
-        handle:close()
-
-        if result:match("Dark") then
-          vim.o.background = "dark"
-        else
-          vim.o.background = "light"
-        end
-      end
-
-      set_background_from_system()
-      vim.cmd.colorscheme("catppuccin")
     end,
   },
 }

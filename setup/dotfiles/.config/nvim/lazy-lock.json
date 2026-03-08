@@ -3,6 +3,10 @@
     "branch": "main",
     "commit": "0a5de4da015a175f416d6ef1eda84661623e0500"
   },
+  "dark-notify": {
+    "branch": "master",
+    "commit": "65a27ed5bfadeb224a888e3897e43c840c87ce83"
+  },
   "diffview.nvim": {
     "branch": "main",
     "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a"

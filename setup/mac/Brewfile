@@ -11,6 +11,7 @@ brew "node", link: false
 brew "cloudflare-wrangler"
 brew "cocoapods"
 brew "deno"
+brew "cormacrelf/tap/dark-notify"
 brew "docker"
 brew "dockutil"
 brew "ffmpeg"
