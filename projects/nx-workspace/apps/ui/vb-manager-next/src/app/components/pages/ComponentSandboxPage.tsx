@@ -7,6 +7,7 @@ import { ButtonDemo } from '../demos/ButtonDemo';
 import { CollapsibleListItemDemo } from '../demos/CollapsibleListItemDemo';
 import { CRUDListDemo } from '../demos/CRUDListDemo';
 import { SelectDemo } from '../demos/SelectDemo';
+import { ErrorDemo } from '../demos/ErrorDemo';
 
 const STORAGE_KEY = 'component-sandbox-expanded';
 
@@ -30,6 +31,11 @@ const COMPONENT_SECTIONS = [
     id: 'select',
     title: 'Select',
     component: SelectDemo,
+  },
+  {
+    id: 'error',
+    title: 'Error Handling',
+    component: ErrorDemo,
   },
 ];
 

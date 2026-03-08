@@ -70,3 +70,39 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function POST(req: NextRequest) {
+  try {
+    const calendar = await getAuthenticatedCalendarClient();
+    const body = await req.json();
+    const calendarId = body.calendarId || 'primary';
+
+    const event = {
+      summary: body.summary,
+      description: body.description,
+      start: {
+        dateTime: body.start,
+        timeZone: body.timeZone || 'America/New_York',
+      },
+      end: {
+        dateTime: body.end,
+        timeZone: body.timeZone || 'America/New_York',
+      },
+    };
+
+    const response = await calendar.events.insert({
+      calendarId,
+      requestBody: event,
+    });
+
+    return NextResponse.json({ success: true, event: response.data });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : 'Failed to create event',
+      },
+      { status: 500 },
+    );
+  }
+}

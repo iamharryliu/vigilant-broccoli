@@ -2,11 +2,7 @@ import { NextNavRoute } from '@vigilant-broccoli/next-lib';
 
 export const APP_ROUTE: Record<string, NextNavRoute> = {
   INDEX: {
-    title: 'Home',
+    title: 'Component Sandbox',
     path: '/',
-  },
-  COMPONENT_LIBRARY: {
-    title: 'Component Library',
-    path: '/component-library',
   },
 };

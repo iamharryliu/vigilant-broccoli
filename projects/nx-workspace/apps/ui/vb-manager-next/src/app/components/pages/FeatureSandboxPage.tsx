@@ -7,6 +7,8 @@ import { BucketDemo } from '../demos/BucketDemo';
 import { ChoresDemo } from '../demos/ChoresDemo';
 import { StripeDemo } from '../demos/StripeDemo';
 import { MessagingPage } from './MessagingPage';
+import { CalendarDemo } from '../demos/CalendarDemo';
+import { FullCalendarDemo } from '../demos/FullCalendarDemo';
 
 const STORAGE_KEY = 'feature-sandbox-expanded';
 
@@ -30,6 +32,16 @@ const FEATURE_SECTIONS = [
     id: 'messaging',
     title: 'Messaging Demo',
     component: MessagingPage,
+  },
+  {
+    id: 'calendar',
+    title: 'Calendar - Doggo Tracker',
+    component: CalendarDemo,
+  },
+  {
+    id: 'fullcalendar',
+    title: 'FullCalendar Views',
+    component: FullCalendarDemo,
   },
 ];
 

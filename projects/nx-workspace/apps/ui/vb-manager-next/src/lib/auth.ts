@@ -46,7 +46,7 @@ export const authOptions: AuthOptions = {
       authorization: {
         params: {
           scope:
-            'openid email profile https://www.googleapis.com/auth/tasks https://www.googleapis.com/auth/calendar.readonly',
+            'openid email profile https://www.googleapis.com/auth/tasks https://www.googleapis.com/auth/calendar',
           access_type: 'offline',
           prompt: 'consent',
         },

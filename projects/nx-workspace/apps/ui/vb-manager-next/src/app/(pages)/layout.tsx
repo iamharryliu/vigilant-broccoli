@@ -5,6 +5,7 @@ import { NextNavBar, NextNavRoute } from '@vigilant-broccoli/next-lib';
 import { DropdownMenu, Button } from '@radix-ui/themes';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import { APP_ROUTE } from '../app.const';
 import { useTheme } from '../theme-context';
 import { FloatingIslandComponent } from '../components/floating-island.component';
@@ -20,6 +21,7 @@ const IGNORED_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
 export default function Layout({ children }: { children: ReactNode }) {
   const { appearance, toggleTheme } = useTheme();
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [chatbotDialogOpen, setChatbotDialogOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
@@ -43,7 +45,8 @@ export default function Layout({ children }: { children: ReactNode }) {
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isIgnoredInput = e.target instanceof Element && IGNORED_TAGS.includes(e.target.tagName);
+      const isIgnoredInput =
+        e.target instanceof Element && IGNORED_TAGS.includes(e.target.tagName);
       const hasModifier = e.ctrlKey || e.metaKey || e.altKey;
 
       if (isIgnoredInput || hasModifier) return;
@@ -89,6 +92,23 @@ export default function Layout({ children }: { children: ReactNode }) {
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
             ))}
+            {session ? (
+              <Button
+                variant="soft"
+                onClick={() => signOut()}
+                style={{ cursor: 'pointer' }}
+              >
+                Sign Out
+              </Button>
+            ) : (
+              <Button
+                variant="soft"
+                onClick={() => signIn('google')}
+                style={{ cursor: 'pointer' }}
+              >
+                Sign In
+              </Button>
+            )}
           </div>
         }
       />

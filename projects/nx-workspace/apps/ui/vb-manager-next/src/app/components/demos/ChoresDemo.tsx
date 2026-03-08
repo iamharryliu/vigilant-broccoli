@@ -380,6 +380,18 @@ export function ChoresDemo() {
     );
   };
 
+  if (!mounted) {
+    return (
+      <Box p="6" style={{ maxWidth: '1280px', margin: '0 auto' }}>
+        <Flex direction="column" gap="4">
+          <Text size="3" color="gray">
+            Loading...
+          </Text>
+        </Flex>
+      </Box>
+    );
+  }
+
   return (
     <Box p="6" style={{ maxWidth: '1280px', margin: '0 auto' }}>
       <Flex direction="column" gap="4">

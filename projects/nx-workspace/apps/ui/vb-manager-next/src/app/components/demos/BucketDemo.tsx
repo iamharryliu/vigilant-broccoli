@@ -107,6 +107,14 @@ export function BucketDemo() {
     }
   };
 
+  if (!mounted) {
+    return (
+      <div className="container mx-auto p-8 max-w-4xl">
+        <div className="text-gray-600 dark:text-gray-400">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-8 max-w-4xl">
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">

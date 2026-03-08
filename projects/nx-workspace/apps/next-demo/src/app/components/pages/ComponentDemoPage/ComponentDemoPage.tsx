@@ -1,9 +1,7 @@
-import { ErrorDemo } from './demo/ErrorDemo';
-
 export const ComponentDemoPage = () => {
   return (
-    <>
-      <ErrorDemo/>
-    </>
+    <div>
+      <p>Component demos have been moved to vb-manager-next</p>
+    </div>
   );
 };
