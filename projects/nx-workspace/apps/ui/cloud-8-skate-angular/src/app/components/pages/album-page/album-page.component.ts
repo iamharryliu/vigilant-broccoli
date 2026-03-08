@@ -1,6 +1,7 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ImageGalleryComponent } from '../../features/image-gallery/image-gallery.component';
+import { ContentContainerComponent } from '../../features/content-container/content-container.component';
 import { of, switchMap } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -13,7 +14,7 @@ import { SeoService } from '../../../services/seo.service';
 @Component({
   selector: 'app-album-page',
   templateUrl: './album-page.component.html',
-  imports: [ImageGalleryComponent, CommonModule],
+  imports: [ImageGalleryComponent, CommonModule, ContentContainerComponent],
 })
 export class AlbumPageComponent implements OnInit {
   album: Cloud8GalleryAlbumDetail | null = null;

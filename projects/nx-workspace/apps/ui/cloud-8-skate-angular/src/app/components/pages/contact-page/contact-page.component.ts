@@ -1,11 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ContactSectionComponent } from '../../features/contact-section/contact-section.component';
+import { ContentContainerComponent } from '../../features/content-container/content-container.component';
 import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-contact-page',
   templateUrl: './contact-page.component.html',
-  imports: [ContactSectionComponent],
+  imports: [ContactSectionComponent, ContentContainerComponent],
 })
 export class ContactPageComponent implements OnInit {
   private seoService = inject(SeoService);
@@ -16,7 +17,8 @@ export class ContactPageComponent implements OnInit {
       description:
         'Get in touch with Cloud8Skate. Contact us for skating events, meetups, and general inquiries about our Toronto skating community.',
       url: 'https://cloud8skate.com/contact',
-      keywords: 'contact Cloud8, Toronto skating contact, skating meetup Toronto',
+      keywords:
+        'contact Cloud8, Toronto skating contact, skating meetup Toronto',
     });
   }
 }

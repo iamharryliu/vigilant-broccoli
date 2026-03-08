@@ -2,11 +2,12 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MarkdownPageComponent } from 'general-components';
 import { SeoService } from '../../../services/seo.service';
+import { ContentContainerComponent } from '../../features/content-container/content-container.component';
 
 @Component({
   selector: 'app-more-page',
   templateUrl: './more.page.html',
-  imports: [MarkdownPageComponent],
+  imports: [MarkdownPageComponent, ContentContainerComponent],
 })
 export class MorePageComponent implements OnInit {
   contentFilepath = 'assets/site-content/more.md';

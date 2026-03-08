@@ -1,26 +1,24 @@
-<div class="lg:w-3/4 mx-auto">
-  <div class="px-4 pt-24 pb-8 lg:px-0 lg:pt-24 lg:pb-12">
-    @if (album; as currentAlbum) {
-    <section class="mb-8">
-      <h1 class="mb-4 text-3xl font-bold lg:text-4xl">
-        {{ currentAlbum.name }}
-      </h1>
-      <p class="mb-2 text-sm text-gray-500">
-        {{ currentAlbum.date | date : 'MMMM d, y' }}
-      </p>
-      @if (currentAlbum.description) {
-      <p class="mb-8 text-base leading-7 text-gray-700">
-        {{ currentAlbum.description }}
-      </p>
-      }
-      <app-image-gallery [images]="currentAlbum.images"></app-image-gallery>
-    </section>
-    } @else if (!isLoading) {
-    <section class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-      <p class="text-base leading-7 text-gray-700">
-        Gallery album content is not available right now.
-      </p>
-    </section>
+<app-content-container>
+  @if (album; as currentAlbum) {
+  <section class="mb-8">
+    <h1 class="mb-4 text-3xl font-bold lg:text-4xl">
+      {{ currentAlbum.name }}
+    </h1>
+    <p class="mb-2 text-sm text-gray-500">
+      {{ currentAlbum.date | date : 'MMMM d, y' }}
+    </p>
+    @if (currentAlbum.description) {
+    <p class="mb-8 text-base leading-7 text-gray-700">
+      {{ currentAlbum.description }}
+    </p>
     }
-  </div>
-</div>
+    <app-image-gallery [images]="currentAlbum.images"></app-image-gallery>
+  </section>
+  } @else if (!isLoading) {
+  <section class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+    <p class="text-base leading-7 text-gray-700">
+      Gallery album content is not available right now.
+    </p>
+  </section>
+  }
+</app-content-container>

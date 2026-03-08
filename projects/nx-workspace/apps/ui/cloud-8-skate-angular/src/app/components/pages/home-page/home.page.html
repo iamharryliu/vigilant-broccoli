@@ -9,10 +9,9 @@
     alt="Cloud8Skate logo - Toronto skating community"
   />
   <div
-    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 mx-auto bg-blue-500 bg-opacity-60 rounded-lg"
-    style="max-width: 800px; width: 90vw"
+    class="absolute top-1/2 left-1/2 w-[90vw] max-w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-blue-500 bg-opacity-60 p-4 text-center"
   >
-    <header class="mb-2">
+    <header class="mb-2 reveal-up reveal-up-delay-1">
       <h1 class="text-white text-center text-2xl lg:text-5xl font-extrabold">
         Cloud8
       </h1>
@@ -20,16 +19,19 @@
         Our heads are in the clouds.
       </p>
     </header>
-    <nav class="flex justify-center" aria-label="Quick navigation">
+    <nav
+      class="mx-auto flex w-fit flex-wrap justify-center gap-3 reveal-up reveal-up-delay-2"
+      aria-label="Quick navigation"
+    >
       <button
         (click)="scrollTo('about-section')"
-        class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic"
+        class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic interactive-chip"
       >
         About
       </button>
       <button
         (click)="scrollTo('calendar-section')"
-        class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic"
+        class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic interactive-chip"
       >
         Calendar
       </button>
@@ -37,7 +39,7 @@
         [href]="EXTERNAL_LINKS.CLOUD_8_SKATE_IG.url.external"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic"
+        class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic interactive-chip"
       >
         Instagram
       </a>
@@ -46,7 +48,7 @@
   <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
     <button
       (click)="scrollToNext('hero-section')"
-      class="btn-primary"
+      class="btn-primary floating-bob"
       [attr.aria-label]="getScrollButtonLabel('hero-section')"
     >
       <svg
@@ -79,7 +81,7 @@
     <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
       <button
         (click)="scrollToNext('about-section')"
-        class="btn-primary"
+        class="btn-primary floating-bob"
         [attr.aria-label]="getScrollButtonLabel('about-section')"
       >
         <svg
@@ -110,7 +112,7 @@
       <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
         <button
           (click)="scrollToNext('calendar-section')"
-          class="btn-primary"
+          class="btn-primary floating-bob"
           [attr.aria-label]="getScrollButtonLabel('calendar-section')"
         >
           <svg

@@ -1,11 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MarkdownPageComponent } from 'general-components';
 import { SeoService } from '../../../services/seo.service';
+import { ContentContainerComponent } from '../../features/content-container/content-container.component';
 
 @Component({
   selector: 'app-terminology-page',
   templateUrl: './terminology.page.html',
-  imports: [MarkdownPageComponent],
+  imports: [MarkdownPageComponent, ContentContainerComponent],
 })
 export class TerminologyPageComponent implements OnInit {
   private seoService = inject(SeoService);

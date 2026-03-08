@@ -5,11 +5,12 @@ import {
   Cloud8SanityService,
 } from '../../../services/cloud8-sanity.service';
 import { SeoService } from '../../../services/seo.service';
+import { ContentContainerComponent } from '../../features/content-container/content-container.component';
 
 @Component({
   selector: 'app-faq-page',
   templateUrl: './faq.page.html',
-  imports: [CommonModule],
+  imports: [CommonModule, ContentContainerComponent],
 })
 export class FaqPageComponent implements OnInit {
   private seoService = inject(SeoService);

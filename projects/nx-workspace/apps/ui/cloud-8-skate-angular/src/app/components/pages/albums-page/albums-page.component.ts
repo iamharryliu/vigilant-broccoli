@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ContentContainerComponent } from '../../features/content-container/content-container.component';
 import { INTERNAL_LINKS } from '../../../core/consts/routes.const';
 import {
   Cloud8GalleryAlbumSummary,
@@ -11,7 +12,7 @@ import { SeoService } from '../../../services/seo.service';
 @Component({
   selector: 'app-albums-page',
   templateUrl: './albums-page.component.html',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ContentContainerComponent],
 })
 export class AlbumsPageComponent implements OnInit {
   albums: Cloud8GalleryAlbumSummary[] = [];

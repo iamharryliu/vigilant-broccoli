@@ -5,3 +5,82 @@
 .grecaptcha-badge {
   visibility: hidden;
 }
+
+@keyframes fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentle-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.reveal-up {
+  animation: fade-slide-up 0.55s ease-out both;
+}
+
+.reveal-up-delay-1 {
+  animation-delay: 0.08s;
+}
+
+.reveal-up-delay-2 {
+  animation-delay: 0.16s;
+}
+
+.reveal-up-delay-3 {
+  animation-delay: 0.24s;
+}
+
+.floating-bob {
+  animation: gentle-bob 1.9s ease-in-out infinite;
+}
+
+.surface-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.surface-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px -24px rgba(15, 23, 42, 0.45);
+  border-color: rgb(96 165 250 / 0.45);
+}
+
+.interactive-chip {
+  transition: transform 0.2s ease, background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.interactive-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -18px rgba(37, 99, 235, 0.65);
+}
+
+.interactive-link {
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-up,
+  .floating-bob,
+  .surface-card,
+  .interactive-chip,
+  .interactive-link {
+    animation: none !important;
+    transition: none !important;
+  }
+}

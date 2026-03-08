@@ -1,11 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CalendarSectionComponent } from '../../features/calendar-section/calendar-section.component';
+import { ContentContainerComponent } from '../../features/content-container/content-container.component';
 import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-calendar-page',
   templateUrl: './calendar-page.component.html',
-  imports: [CalendarSectionComponent],
+  imports: [CalendarSectionComponent, ContentContainerComponent],
 })
 export class CalendarPageComponent implements OnInit {
   private seoService = inject(SeoService);
