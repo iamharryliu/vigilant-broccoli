@@ -7,14 +7,14 @@
   "tags": [],
   "targets": {
     "serve:mock": {
-      "command": "concurrently --kill-others \"nx serve personal-website-frontend\"  \"tsx apps/ui/personal-website-frontend/mock-server/server.ts --ext js,ts,json,html\""
+      "command": "concurrently --kill-others \"nx serve personal-website-frontend\"  \"node --import tsx apps/ui/personal-website-frontend/mock-server/server.ts --ext js,ts,json,html\""
     },
     "pre-build": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
-            "command": "tsx build_blog_json.ts && tsx file_structure_to_json.ts ../../notes ./apps/ui/personal-website-frontend/src/assets/md-library/md-library.json && rsync -r ../../notes apps/ui/personal-website-frontend/src/assets/md-library/ --delete && rsync -ar --exclude '__init__.py' --include '*/' --include '*.ts' --include '*.go' --include '*.py' --exclude '*' ../grind-75 apps/ui/personal-website-frontend/src/assets/grind-75/ --delete && tsx file_structure_to_json.ts apps/ui/personal-website-frontend/src/assets/grind-75/grind-75/ ./apps/ui/personal-website-frontend/src/assets/grind-75/grind-75.json"
+            "command": "node --import tsx build_blog_json.ts && node --import tsx file_structure_to_json.ts ../../notes ./apps/ui/personal-website-frontend/src/assets/md-library/md-library.json && rsync -r ../../notes apps/ui/personal-website-frontend/src/assets/md-library/ --delete && rsync -ar --exclude '__init__.py' --include '*/' --include '*.ts' --include '*.go' --include '*.py' --exclude '*' ../grind-75 apps/ui/personal-website-frontend/src/assets/grind-75/ --delete && node --import tsx file_structure_to_json.ts apps/ui/personal-website-frontend/src/assets/grind-75/grind-75/ ./apps/ui/personal-website-frontend/src/assets/grind-75/grind-75.json"
           }
         ]
       }

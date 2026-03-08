@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnInit } from '@angular/core';
-import { Event, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { LinkComponent } from '../link/link.component';
 import { Link } from '../models';
 
@@ -31,7 +31,7 @@ export class NavbarComponent implements OnInit {
   }
 
   @HostListener('window:scroll', ['$event'])
-  onWindowScroll(_: Event): void {
+  onWindowScroll(_: globalThis.Event): void {
     if (!this.initialized || window.scrollY <= 0) {
       return;
     }
