@@ -78,3 +78,12 @@ services:
     volumes:
       - ./immich/pgdata:/var/lib/postgresql/data
     restart: unless-stopped
+
+  adminer:
+    container_name: adminer
+    image: adminer:latest
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: database
+    depends_on:
+      - database
