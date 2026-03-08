@@ -21,8 +21,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,html,css,scss,md}": [
-      "npm run format:commit",
-      "git add"
+      "npm run format:commit"
     ]
   },
   "husky": {
