@@ -2,7 +2,7 @@
   "name": "@vigilant-broccoli/google-workspace",
   "version": "0.0.47",
   "dependencies": {
-    "@swc/helpers": "0.5.13",
+    "@swc/helpers": "0.5.19",
     "@vigilant-broccoli/common-node": "*"
   },
   "publishConfig": {

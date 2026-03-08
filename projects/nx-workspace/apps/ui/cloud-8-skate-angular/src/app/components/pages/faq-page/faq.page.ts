@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   Cloud8FaqPage,
   Cloud8SanityService,
@@ -10,7 +10,7 @@ import { ContentContainerComponent } from '../../features/content-container/cont
 @Component({
   selector: 'app-faq-page',
   templateUrl: './faq.page.html',
-  imports: [CommonModule, ContentContainerComponent],
+  imports: [ContentContainerComponent],
 })
 export class FaqPageComponent implements OnInit {
   private seoService = inject(SeoService);

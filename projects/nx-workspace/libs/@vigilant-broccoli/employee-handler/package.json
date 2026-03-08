@@ -2,7 +2,7 @@
   "name": "@vigilant-broccoli/employee-handler",
   "version": "0.0.17",
   "dependencies": {
-    "@swc/helpers": "0.5.13",
+    "@swc/helpers": "0.5.19",
     "@vigilant-broccoli/common-node": "*",
     "@vigilant-broccoli/google-workspace": "*",
     "nodemailer": "^7.0.10"
