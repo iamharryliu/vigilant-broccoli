@@ -1,6 +1,6 @@
 'use client';
 
-import { ComponentDemoPage } from '../../components/pages/ComponentDemoPage/ComponentDemoPage';
+import { ComponentDemoPage } from '../components/pages/ComponentDemoPage/ComponentDemoPage';
 
 export default function Index() {
   return <ComponentDemoPage />;
