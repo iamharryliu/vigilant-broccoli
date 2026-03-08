@@ -25,12 +25,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://cloud8skate.com/rules</loc>
-    <lastmod>2026-02-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://cloud8skate.com/playlists</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>monthly</changefreq>
@@ -43,7 +37,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://cloud8skate.com/albums</loc>
+    <loc>https://cloud8skate.com/gallery</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

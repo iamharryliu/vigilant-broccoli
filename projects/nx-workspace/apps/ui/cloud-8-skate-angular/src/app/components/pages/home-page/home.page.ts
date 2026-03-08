@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { EXTERNAL_LINKS } from '../../../core/consts/routes.const';
-import { ContactSectionComponent } from '../../features/contact-section/contact-section.component';
 import { MarkdownPageComponent } from 'general-components';
 import { CalendarSectionComponent } from '../../features/calendar-section/calendar-section.component';
 import { RouterModule } from '@angular/router';
@@ -9,12 +8,7 @@ import { SeoService } from '../../../services/seo.service';
 @Component({
   selector: 'app-home-page',
   templateUrl: './home.page.html',
-  imports: [
-    ContactSectionComponent,
-    MarkdownPageComponent,
-    CalendarSectionComponent,
-    RouterModule,
-  ],
+  imports: [MarkdownPageComponent, CalendarSectionComponent, RouterModule],
 })
 export class HomePageComponent implements OnInit {
   private seoService = inject(SeoService);

@@ -9,7 +9,6 @@ import { TerminologyPageComponent } from '../../components/pages/terminology-pag
 import { PlaylistsPageComponent } from '../../components/pages/playlists-page/playlists.page';
 import { AlbumsPageComponent } from '../../components/pages/albums-page/albums-page.component';
 import { AlbumPageComponent } from '../../components/pages/album-page/album-page.component';
-import { RulesPageComponent } from '../../components/pages/rules-page/rules.page';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -33,12 +32,6 @@ export const MORE_PAGE_ROUTE: Route = {
   path: 'more',
   data: { title: 'More Info' },
   component: MorePageComponent,
-};
-
-export const RULES_PAGE_ROUTE: Route = {
-  path: 'rules',
-  data: { title: 'Rules' },
-  component: RulesPageComponent,
 };
 
 export const MORE_SUBPAGE_ROUTE: Route = {
@@ -66,14 +59,14 @@ export const CALENDAR_PAGE_ROUTE: Route = {
 };
 
 const ALBUM_ROUTE: Route = {
-  path: ':albumName',
-  data: { title: 'Album Details' },
+  path: ':albumSlug',
+  data: { title: 'Gallery Album' },
   component: AlbumPageComponent,
 };
 
 export const ALBUMS_ROUTE: Route = {
-  path: 'albums',
-  data: { title: 'Images' },
+  path: 'gallery',
+  data: { title: 'Gallery' },
   children: [
     ALBUM_ROUTE,
     { path: '', component: AlbumsPageComponent, pathMatch: 'full' },
@@ -95,7 +88,6 @@ export const ROUTES: Routes = [
   PLAYLISTS_PAGE_ROUTE,
   TERMINOLOGY_PAGE_ROUTE,
   ALBUMS_ROUTE,
-  RULES_PAGE_ROUTE,
   WILD_CARD_ROUTE,
 ];
 
@@ -145,7 +137,7 @@ const ALBUMS: Link = {
   url: {
     internal: `/${ALBUMS_ROUTE.path}`,
   },
-  text: 'Photo Albums',
+  text: 'Gallery',
 };
 
 const CLOUD_8_SKATE_IG: Link = {

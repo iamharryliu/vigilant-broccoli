@@ -44,6 +44,37 @@ export interface Cloud8PlaylistsPage {
   playlistItems: Cloud8PlaylistItem[];
 }
 
+export interface Cloud8GalleryImage {
+  _key?: string;
+  alt?: string;
+  url: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Cloud8GalleryAlbumSummary {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+  coverImageUrl?: string;
+  imageCount: number;
+}
+
+export interface Cloud8GalleryAlbumDetail {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+  images: Cloud8GalleryImage[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -100,6 +131,63 @@ export class Cloud8SanityService {
 
     return this.http
       .get<SanityQueryResponse<Cloud8PlaylistsPage | null>>(url)
+      .pipe(
+        map(response => response.result ?? null),
+        catchError(() => of(null)),
+      );
+  }
+
+  getGalleryAlbums(): Observable<Cloud8GalleryAlbumSummary[]> {
+    const query = `
+      *[_type == "galleryAlbum"] | order(date desc, _updatedAt desc){
+        _id,
+        name,
+        "slug": slug.current,
+        description,
+        date,
+        "createdAt": _createdAt,
+        "updatedAt": _updatedAt,
+        "coverImageUrl": images[0].asset->url,
+        "imageCount": count(images)
+      }
+    `;
+
+    const url = `${this.getBaseQueryUrl()}?query=${encodeURIComponent(query)}`;
+
+    return this.http
+      .get<SanityQueryResponse<Cloud8GalleryAlbumSummary[] | null>>(url)
+      .pipe(
+        map(response => response.result ?? []),
+        catchError(() => of([])),
+      );
+  }
+
+  getGalleryAlbum(slug: string): Observable<Cloud8GalleryAlbumDetail | null> {
+    const query = `
+      *[_type == "galleryAlbum" && slug.current == $slug][0]{
+        _id,
+        name,
+        "slug": slug.current,
+        description,
+        date,
+        "createdAt": _createdAt,
+        "updatedAt": _updatedAt,
+        images[]{
+          _key,
+          alt,
+          "url": asset->url,
+          "createdAt": asset->_createdAt,
+          "updatedAt": asset->_updatedAt
+        }
+      }
+    `;
+
+    const url = `${this.getBaseQueryUrl()}?query=${encodeURIComponent(
+      query,
+    )}&$slug=${encodeURIComponent(JSON.stringify(slug))}`;
+
+    return this.http
+      .get<SanityQueryResponse<Cloud8GalleryAlbumDetail | null>>(url)
       .pipe(
         map(response => response.result ?? null),
         catchError(() => of(null)),

@@ -22,6 +22,7 @@ export default defineConfig({
             S.listItem()
               .title('Playlists Page')
               .child(S.document().schemaType('playlistsPage').documentId('playlistsPage')),
+            S.documentTypeListItem('galleryAlbum').title('Gallery Albums'),
           ]),
     }),
     visionTool(),

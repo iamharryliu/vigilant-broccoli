@@ -1,5 +1,5 @@
-
 import { Component, Input } from '@angular/core';
+import { Cloud8GalleryImage } from '../../../services/cloud8-sanity.service';
 
 @Component({
   selector: 'app-image-gallery',
@@ -7,5 +7,5 @@ import { Component, Input } from '@angular/core';
   imports: [],
 })
 export class ImageGalleryComponent {
-  @Input() images!: string[];
+  @Input() images!: Cloud8GalleryImage[];
 }

@@ -1,9 +1,14 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ImageGalleryComponent } from '../../features/image-gallery/image-gallery.component';
-import { Observable, switchMap } from 'rxjs';
+import { of, switchMap } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { ImageService } from '../../../services/images.service';
 import { CommonModule } from '@angular/common';
+import {
+  Cloud8GalleryAlbumDetail,
+  Cloud8SanityService,
+} from '../../../services/cloud8-sanity.service';
+import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-album-page',
@@ -11,20 +16,45 @@ import { CommonModule } from '@angular/common';
   imports: [ImageGalleryComponent, CommonModule],
 })
 export class AlbumPageComponent implements OnInit {
-  images$!: Observable<string[]>;
-  albumName!: string;
+  album: Cloud8GalleryAlbumDetail | null = null;
+  isLoading = true;
 
   private route = inject(ActivatedRoute);
-  private imageService = inject(ImageService);
+  private cloud8SanityService = inject(Cloud8SanityService);
+  private seoService = inject(SeoService);
+  private destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
-    this.images$ = this.route.paramMap.pipe(
-      switchMap(params => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const albumName = params.get('albumName')!;
-        this.albumName = albumName;
-        return this.imageService.getImagesByAlbumId(albumName);
-      }),
-    );
+    this.route.paramMap
+      .pipe(
+        switchMap(params => {
+          const albumSlug = params.get('albumSlug');
+          this.isLoading = true;
+
+          if (!albumSlug) {
+            return of(null);
+          }
+
+          return this.cloud8SanityService.getGalleryAlbum(albumSlug);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(album => {
+        this.album = album;
+        this.isLoading = false;
+
+        if (!album) {
+          return;
+        }
+
+        this.seoService.updateMetaTags({
+          title: album.name,
+          description:
+            album.description ||
+            `Cloud8Skate gallery album: ${album.name}. View photos from our Toronto skating sessions and events.`,
+          url: `https://cloud8skate.com/gallery/${album.slug}`,
+          keywords: 'Cloud8 gallery, Toronto skating photos, Cloud8 album',
+        });
+      });
   }
 }

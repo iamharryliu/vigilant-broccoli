@@ -1,41 +1,42 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ImageGalleryComponent } from '../../features/image-gallery/image-gallery.component';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { ENVIRONMENT } from '../../../../environments/environment';
-
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { INTERNAL_LINKS } from '../../../core/consts/routes.const';
-import { ImageAlbum } from '@prettydamntired/personal-website-lib';
+import {
+  Cloud8GalleryAlbumSummary,
+  Cloud8SanityService,
+} from '../../../services/cloud8-sanity.service';
 import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-albums-page',
   templateUrl: './albums-page.component.html',
-  imports: [ImageGalleryComponent, RouterModule],
+  imports: [CommonModule, RouterModule],
 })
 export class AlbumsPageComponent implements OnInit {
-  albums!: ImageAlbum[];
+  albums: Cloud8GalleryAlbumSummary[] = [];
+  isLoading = true;
   LINKS = INTERNAL_LINKS;
-  private http = inject(HttpClient);
+  private cloud8SanityService = inject(Cloud8SanityService);
   private seoService = inject(SeoService);
 
-  constructor() {
-    this.getPosts().subscribe((res) => (this.albums = res));
-  }
-
   ngOnInit() {
+    this.cloud8SanityService.getGalleryAlbums().subscribe(albums => {
+      this.albums = albums;
+      this.isLoading = false;
+    });
+
     this.seoService.updateMetaTags({
-      title: 'Photo Albums',
+      title: 'Gallery',
       description:
         'Cloud8Skate photo albums. View photos from our Toronto skating sessions, events, and meetups at The Bentway and College Park.',
-      url: 'https://cloud8skate.com/albums',
+      url: 'https://cloud8skate.com/gallery',
       keywords:
         'Cloud8 photos, Toronto skating photos, skating pictures, Cloud8 events',
     });
   }
 
-  private getPosts(): Observable<any> {
-    return this.http.get<any>(ENVIRONMENT.URLS.HEADLESS_CMS.IMAGE_ALBUMS);
+  trackAlbum(_: number, album: Cloud8GalleryAlbumSummary) {
+    return album._id;
   }
 }
