@@ -54,10 +54,6 @@ export const APP_COPY = {
   EDIT_EVENT_MODAL: {
     TITLE: 'Edit Office Event',
   },
-  REMINDER: {
-    SECTION_MARKDOWN:
-      'Friendly reminder to plan for your office presence with this app.',
-  },
   ACTIONS: {
     NO_USERS_SELECTED: "You didn't select any users to invite.",
     askingAboutLunch(userId: string) {

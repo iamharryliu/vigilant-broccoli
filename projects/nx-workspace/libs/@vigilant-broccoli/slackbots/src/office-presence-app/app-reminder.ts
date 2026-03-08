@@ -12,10 +12,13 @@ function getClient() {
 export function createReminderSender(appConfig: AppConfig) {
   return async function sendReminders() {
     const client = getClient();
+    const openAppUrl = appConfig.id
+      ? await getOpenAppUrl(client, appConfig.id)
+      : undefined;
     const allUsers = await SlackUtils.getAllRealUsers(client);
     const userIds = allUsers.map(user => user.id);
     for (const userId of userIds) {
-      await postMessage(client, userId, appConfig);
+      await postMessage(client, userId, appConfig, openAppUrl);
     }
   };
 }
@@ -24,6 +27,7 @@ async function postMessage(
   client: WebClient,
   channel: string,
   appConfig: AppConfig,
+  openAppUrl?: string,
 ) {
   const blocks: {
     type: 'section' | 'actions';
@@ -38,12 +42,12 @@ async function postMessage(
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: APP_COPY.REMINDER.SECTION_MARKDOWN,
+        text: APP_COPY.getReminderDmText(appConfig.APP_NAME),
       },
     },
   ];
 
-  if (appConfig.id) {
+  if (openAppUrl) {
     blocks.push({
       type: 'actions',
       elements: [
@@ -54,7 +58,7 @@ async function postMessage(
             text: APP_COPY.COMMON.OPEN_APP,
             emoji: true,
           },
-          url: getOpenAppUrl(appConfig.id),
+          url: openAppUrl,
         },
       ],
     });
@@ -72,6 +76,15 @@ async function postMessage(
   }
 }
 
-function getOpenAppUrl(appId: string) {
-  return `https://slack.com/app_redirect?app=${encodeURIComponent(appId)}`;
+async function getOpenAppUrl(client: WebClient, appId: string) {
+  const auth = await client.auth.test();
+  const params = new URLSearchParams({
+    app: appId,
+  });
+
+  if (auth.team_id) {
+    params.set('team', auth.team_id);
+  }
+
+  return `https://slack.com/app_redirect?${params.toString()}`;
 }
