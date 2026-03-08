@@ -1,3 +1,5 @@
+# Weapons Timeline
+
 | Category              | Approx. Date | Region of Origin       |
 | --------------------- | ------------ | ---------------------- |
 | Stone Tools           | ~600,000 BCE | Africa                 |
