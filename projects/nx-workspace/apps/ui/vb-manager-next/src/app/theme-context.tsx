@@ -11,21 +11,33 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const THEME_STORAGE_KEY = 'theme';
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [appearance, setAppearance] = useState<ThemeAppearance>('light');
 
-  // Load theme from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('theme') as ThemeAppearance | null;
+    const saved = localStorage.getItem(THEME_STORAGE_KEY) as ThemeAppearance | null;
     if (saved === 'light' || saved === 'dark') {
       setAppearance(saved);
     }
   }, []);
 
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === THEME_STORAGE_KEY && (e.newValue === 'light' || e.newValue === 'dark')) {
+        setAppearance(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   const toggleTheme = () => {
     const next = appearance === 'light' ? 'dark' : 'light';
     setAppearance(next);
-    localStorage.setItem('theme', next);
+    localStorage.setItem(THEME_STORAGE_KEY, next);
   };
 
   return (
