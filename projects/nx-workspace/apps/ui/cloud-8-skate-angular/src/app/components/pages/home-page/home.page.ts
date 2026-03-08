@@ -18,6 +18,15 @@ import { SeoService } from '../../../services/seo.service';
 })
 export class HomePageComponent implements OnInit {
   private seoService = inject(SeoService);
+  private readonly scrollOptions: ScrollIntoViewOptions = {
+    behavior: 'smooth',
+    block: 'start',
+  };
+  private readonly sectionOrder = [
+    'hero-section',
+    'about-section',
+    'calendar-section',
+  ] as const;
 
   EXTERNAL_LINKS = EXTERNAL_LINKS;
   contentFilepath = 'assets/site-content/about.md';
@@ -34,13 +43,42 @@ export class HomePageComponent implements OnInit {
   }
 
   scrollTo(section: string) {
-    document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById(section)?.scrollIntoView(this.scrollOptions);
   }
 
-  scrollToNext(event: Event) {
-    const button = event.target as HTMLElement;
-    const currentSection = button.closest('.section-container');
-    const nextSection = currentSection?.nextElementSibling;
-    nextSection?.scrollIntoView({ behavior: 'smooth' });
+  scrollToNext(currentSectionId: string) {
+    const currentSectionIndex = this.sectionOrder.indexOf(
+      currentSectionId as (typeof this.sectionOrder)[number],
+    );
+
+    if (currentSectionIndex === -1) {
+      return;
+    }
+
+    const nextSectionId = this.sectionOrder[currentSectionIndex + 1];
+
+    if (!nextSectionId) {
+      this.scrollToTop();
+      return;
+    }
+
+    this.scrollTo(nextSectionId);
+  }
+
+  isLastSection(sectionId: string) {
+    return this.sectionOrder[this.sectionOrder.length - 1] === sectionId;
+  }
+
+  getScrollButtonLabel(sectionId: string) {
+    return this.isLastSection(sectionId)
+      ? 'Scroll back to top'
+      : 'Scroll to next section';
+  }
+
+  scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   }
 }

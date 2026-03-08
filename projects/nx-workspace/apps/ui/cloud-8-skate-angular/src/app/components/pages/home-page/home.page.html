@@ -1,11 +1,17 @@
-<section class="h-dvh relative section-container" aria-label="Hero section">
+<section
+  class="h-dvh relative section-container"
+  id="hero-section"
+  aria-label="Hero section"
+>
   <img
     class="absolute w-full h-full object-contain"
     src="assets/cloud8skate.png"
-    alt="Cloud8Skate logo - Toronto skating community" />
+    alt="Cloud8Skate logo - Toronto skating community"
+  />
   <div
     class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 mx-auto bg-blue-500 bg-opacity-60 rounded-lg"
-    style="max-width: 800px; width: 90vw">
+    style="max-width: 800px; width: 90vw"
+  >
     <header class="mb-2">
       <h1 class="text-white text-center text-2xl lg:text-5xl font-extrabold">
         Cloud8
@@ -17,81 +23,110 @@
     <nav class="flex justify-center" aria-label="Quick navigation">
       <button
         (click)="scrollTo('about-section')"
-        class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic">
+        class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic"
+      >
         About
       </button>
       <button
         (click)="scrollTo('calendar-section')"
-        class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic">
+        class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic"
+      >
         Calendar
       </button>
       <a
         [href]="EXTERNAL_LINKS.CLOUD_8_SKATE_IG.url.external"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic">
+        class="inline-flex items-center justify-center px-5 py-3 me-3 text-base font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-xs lg:text-basic"
+      >
         Instagram
       </a>
     </nav>
   </div>
   <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-    <button (click)="scrollToNext($event)" class="btn-primary" aria-label="Scroll to next section">
+    <button
+      (click)="scrollToNext('hero-section')"
+      class="btn-primary"
+      [attr.aria-label]="getScrollButtonLabel('hero-section')"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="h-6 w-6"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
-        aria-hidden="true">
+        aria-hidden="true"
+      >
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
-          d="M19 9l-7 7-7-7" />
+          d="M19 9l-7 7-7-7"
+        />
       </svg>
     </button>
   </div>
 </section>
 <div class="lg:w-1/2 mx-auto pt-8 pb-8">
-  <section class="flex h-dvh relative pl-2 pr-2 section-container" id="about-section" aria-labelledby="about-heading">
+  <section
+    class="flex h-dvh relative pl-2 pr-2 section-container"
+    id="about-section"
+    aria-labelledby="about-heading"
+  >
     <article class="w-full m-auto">
       <lib-markdown-page [filepath]="contentFilepath"></lib-markdown-page>
     </article>
     <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-      <button (click)="scrollToNext($event)" class="btn-primary" aria-label="Scroll to next section">
+      <button
+        (click)="scrollToNext('about-section')"
+        class="btn-primary"
+        [attr.aria-label]="getScrollButtonLabel('about-section')"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-6 w-6"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          aria-hidden="true">
+          aria-hidden="true"
+        >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d="M19 9l-7 7-7-7" />
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
     </div>
   </section>
-  <section class="flex h-dvh relative pl-2 pr-2 section-container" id="calendar-section" aria-labelledby="calendar-heading">
+  <section
+    class="flex h-dvh relative pl-2 pr-2 section-container"
+    id="calendar-section"
+    aria-labelledby="calendar-heading"
+  >
     <div class="w-full m-auto">
-      <app-calendar-section/>
+      <app-calendar-section />
       <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-        <button (click)="scrollToNext($event)" class="btn-primary" aria-label="Scroll to next section">
+        <button
+          (click)="scrollToNext('calendar-section')"
+          class="btn-primary"
+          [attr.aria-label]="getScrollButtonLabel('calendar-section')"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
-            aria-hidden="true">
+            aria-hidden="true"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M19 9l-7 7-7-7" />
+              [attr.d]="isLastSection('calendar-section') ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'"
+            />
           </svg>
         </button>
       </div>
