@@ -3,8 +3,8 @@ import { AppConfig, PRESENCE_TIME } from '../types';
 import { SlackViewBuilder } from '../../lib/utils/view-builder.utils';
 import { APP_ACTION } from './app.consts';
 import { APP_COPY } from './app-copy.const';
-import { loadAllPresences } from '../utils/db.utils';
-import { getUpcomingWeekdays } from '../utils/date.utils';
+import { loadAllPresences, loadEventById } from '../utils/db.utils';
+import { getUpcomingWeekdays, formatISODateLocal } from '../utils/date.utils';
 import { buildModalDateOptionSlackBlocks } from '../utils/view.utils';
 
 export function createInputScheduleModal(appConfig: AppConfig) {
@@ -214,4 +214,220 @@ export function getAskLunchModal(userId: string) {
   };
 
   return modal;
+}
+
+export function getCreateEventModal() {
+  const dates = getUpcomingWeekdays(10);
+  const options = buildModalDateOptionSlackBlocks(dates);
+  const todayISO = formatISODateLocal(new Date());
+  const initialOptions = options.filter(opt => opt.value === todayISO);
+
+  const hourOptions = Array.from({ length: 24 }, (_, i) => ({
+    text: SlackViewBuilder.generatePlainText(String(i).padStart(2, '0')),
+    value: String(i),
+  }));
+
+  const minuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(
+    m => ({
+      text: SlackViewBuilder.generatePlainText(String(m).padStart(2, '0')),
+      value: String(m),
+    }),
+  );
+
+  return {
+    type: 'modal',
+    callback_id: APP_ACTION.SUBMIT_CREATE_EVENT,
+    title: SlackViewBuilder.generatePlainText(
+      APP_COPY.CREATE_EVENT_MODAL.TITLE,
+    ),
+    submit: SlackViewBuilder.generatePlainText(APP_COPY.COMMON.SUBMIT),
+    close: SlackViewBuilder.generatePlainText(APP_COPY.COMMON.CANCEL),
+    blocks: [
+      {
+        type: 'input',
+        block_id: 'event_name_block',
+        element: {
+          type: 'plain_text_input',
+          action_id: 'event_name',
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_NAME_LABEL,
+        ),
+      },
+      {
+        type: 'input',
+        block_id: 'event_date_block',
+        element: {
+          type: 'static_select',
+          action_id: 'event_date',
+          options,
+          ...(initialOptions.length > 0 && {
+            initial_option: initialOptions[0],
+          }),
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_DATE_LABEL,
+        ),
+      },
+      {
+        type: 'input',
+        block_id: 'event_time_hour_block',
+        element: {
+          type: 'static_select',
+          action_id: 'event_time_hour',
+          options: hourOptions,
+          initial_option: hourOptions[12],
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_TIME_HOUR_LABEL,
+        ),
+      },
+      {
+        type: 'input',
+        block_id: 'event_time_minute_block',
+        element: {
+          type: 'static_select',
+          action_id: 'event_time_minute',
+          options: minuteOptions,
+          initial_option: minuteOptions[0],
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_TIME_MINUTE_LABEL,
+        ),
+      },
+      {
+        type: 'input',
+        block_id: 'event_description_block',
+        element: {
+          type: 'plain_text_input',
+          action_id: 'event_description',
+          multiline: true,
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_DESCRIPTION_LABEL,
+        ),
+        optional: true,
+      },
+    ],
+  } as View;
+}
+
+export function getEditEventModal(eventId: number) {
+  const event = loadEventById(eventId);
+  if (!event) return null;
+
+  const dates = getUpcomingWeekdays(10);
+  const options = buildModalDateOptionSlackBlocks(dates);
+  const initialDateOption = options.find(opt => opt.value === event.date);
+
+  const hourOptions = Array.from({ length: 24 }, (_, i) => ({
+    text: SlackViewBuilder.generatePlainText(String(i).padStart(2, '0')),
+    value: String(i),
+  }));
+
+  const minuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(
+    m => ({
+      text: SlackViewBuilder.generatePlainText(String(m).padStart(2, '0')),
+      value: String(m),
+    }),
+  );
+
+  const [eventHour, eventMinute] = event.time.split(':');
+  const initialHourOption = hourOptions.find(
+    opt => opt.value === String(parseInt(eventHour, 10)),
+  );
+  const initialMinuteOption = minuteOptions.find(
+    opt => opt.value === String(parseInt(eventMinute, 10)),
+  );
+
+  return {
+    type: 'modal',
+    callback_id: `${APP_ACTION.SUBMIT_EDIT_EVENT}_${eventId}`,
+    title: SlackViewBuilder.generatePlainText(APP_COPY.EDIT_EVENT_MODAL.TITLE),
+    submit: SlackViewBuilder.generatePlainText(APP_COPY.COMMON.SAVE),
+    close: SlackViewBuilder.generatePlainText(APP_COPY.COMMON.CANCEL),
+    blocks: [
+      {
+        type: 'input',
+        block_id: 'event_name_block',
+        element: {
+          type: 'plain_text_input',
+          action_id: 'event_name',
+          initial_value: event.name,
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_NAME_LABEL,
+        ),
+      },
+      {
+        type: 'input',
+        block_id: 'event_date_block',
+        element: {
+          type: 'static_select',
+          action_id: 'event_date',
+          options,
+          ...(initialDateOption && { initial_option: initialDateOption }),
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_DATE_LABEL,
+        ),
+      },
+      {
+        type: 'input',
+        block_id: 'event_time_hour_block',
+        element: {
+          type: 'static_select',
+          action_id: 'event_time_hour',
+          options: hourOptions,
+          initial_option: initialHourOption || hourOptions[12],
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_TIME_HOUR_LABEL,
+        ),
+      },
+      {
+        type: 'input',
+        block_id: 'event_time_minute_block',
+        element: {
+          type: 'static_select',
+          action_id: 'event_time_minute',
+          options: minuteOptions,
+          initial_option: initialMinuteOption || minuteOptions[0],
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_TIME_MINUTE_LABEL,
+        ),
+      },
+      {
+        type: 'input',
+        block_id: 'event_description_block',
+        element: {
+          type: 'plain_text_input',
+          action_id: 'event_description',
+          multiline: true,
+          ...(event.description && { initial_value: event.description }),
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_DESCRIPTION_LABEL,
+        ),
+        optional: true,
+      },
+      {
+        type: 'input',
+        block_id: 'event_attendees_block',
+        element: {
+          type: 'multi_users_select',
+          action_id: 'event_attendees',
+          ...(event.attendees &&
+            event.attendees.length > 0 && {
+              initial_users: event.attendees,
+            }),
+        },
+        label: SlackViewBuilder.generatePlainText(
+          APP_COPY.CREATE_EVENT_MODAL.EVENT_ATTENDEES_LABEL,
+        ),
+        optional: true,
+      },
+    ],
+  } as View;
 }

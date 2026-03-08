@@ -4,8 +4,17 @@ import {
   ViewOutput,
   ViewStateSelectedOption,
 } from '@slack/bolt';
-import { loadAllPresences, savePresence, deletePresence } from './db.utils';
-import { UserPresence } from '../types';
+import {
+  loadAllPresences,
+  savePresence,
+  deletePresence,
+  saveEvent,
+  loadEventById,
+  updateEventAttendees,
+  deleteEvent,
+  updateEvent,
+} from './db.utils';
+import { UserPresence, OfficeEvent } from '../types';
 import { WebClient } from '@slack/web-api';
 import { APP_COPY } from '../consts/app-copy.const';
 
@@ -95,4 +104,119 @@ export async function handleAskLunchAction(
     user: userId,
     text: APP_COPY.ACTIONS.createdGroupChat(selectedUserIds.length),
   });
+}
+
+export function handleCreateEventSubmit(
+  body: SlackViewAction,
+  view: ViewOutput,
+) {
+  const userId = body.user.id;
+  const eventName = view.state.values.event_name_block.event_name.value || '';
+  const eventDate =
+    view.state.values.event_date_block.event_date.selected_option?.value || '';
+  const eventHour =
+    view.state.values.event_time_hour_block.event_time_hour.selected_option
+      ?.value || '12';
+  const eventMinute =
+    view.state.values.event_time_minute_block.event_time_minute.selected_option
+      ?.value || '0';
+  const eventTime = `${eventHour.padStart(2, '0')}:${eventMinute.padStart(
+    2,
+    '0',
+  )}`;
+  const eventDescription =
+    view.state.values.event_description_block.event_description.value || '';
+
+  const event: OfficeEvent = {
+    name: eventName,
+    date: eventDate,
+    time: eventTime,
+    creatorId: userId,
+    description: eventDescription,
+    attendees: [],
+  };
+
+  saveEvent(event);
+}
+
+export function handleEventAttendanceToggle(body: BlockAction) {
+  const action = body.actions[0];
+  if (action.type !== 'checkboxes') return;
+
+  const actionId = action.action_id;
+  const eventIdStr = actionId.split('_').pop();
+  if (!eventIdStr) return;
+
+  const eventId = parseInt(eventIdStr, 10);
+  const event = loadEventById(eventId);
+  if (!event) return;
+
+  const userId = body.user.id;
+  const isChecked = action.selected_options.length > 0;
+
+  let attendees = event.attendees || [];
+
+  if (isChecked) {
+    if (!attendees.includes(userId)) {
+      attendees.push(userId);
+    }
+
+    const allPresences = loadAllPresences();
+    const userPresences = allPresences[userId];
+    const hasPresence = userPresences && userPresences[event.date];
+
+    if (!hasPresence) {
+      savePresence(userId, event.date, {} as UserPresence);
+    }
+  } else {
+    attendees = attendees.filter(id => id !== userId);
+  }
+
+  updateEventAttendees(eventId, attendees);
+}
+
+export function handleDeleteEvent(body: BlockAction) {
+  const action = body.actions[0];
+  const actionId = action.action_id;
+  const eventIdStr = actionId.split('_').pop();
+  if (!eventIdStr) return;
+
+  const eventId = parseInt(eventIdStr, 10);
+  deleteEvent(eventId);
+}
+
+export function handleEditEventSubmit(
+  eventId: number,
+  body: SlackViewAction,
+  view: ViewOutput,
+) {
+  const eventName = view.state.values.event_name_block.event_name.value || '';
+  const eventDate =
+    view.state.values.event_date_block.event_date.selected_option?.value || '';
+  const eventHour =
+    view.state.values.event_time_hour_block.event_time_hour.selected_option
+      ?.value || '12';
+  const eventMinute =
+    view.state.values.event_time_minute_block.event_time_minute.selected_option
+      ?.value || '0';
+  const eventTime = `${eventHour.padStart(2, '0')}:${eventMinute.padStart(
+    2,
+    '0',
+  )}`;
+  const eventDescription =
+    view.state.values.event_description_block.event_description.value || '';
+  const selectedUsers =
+    view.state.values.event_attendees_block.event_attendees.selected_users ||
+    [];
+
+  const event: OfficeEvent = {
+    name: eventName,
+    date: eventDate,
+    time: eventTime,
+    creatorId: body.user.id,
+    description: eventDescription,
+    attendees: selectedUsers,
+  };
+
+  updateEvent(eventId, event);
 }

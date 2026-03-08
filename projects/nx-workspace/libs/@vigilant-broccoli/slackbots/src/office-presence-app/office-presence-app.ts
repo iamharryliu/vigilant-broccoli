@@ -10,11 +10,17 @@ import { SlackUtils } from '../lib/utils/utils';
 import {
   getAskLunchModal,
   createInputScheduleModal,
+  getCreateEventModal,
+  getEditEventModal,
 } from './consts/modals.const';
 import {
   handleAskLunchAction,
   handleCheckboxAction,
   handleScheduleModalSubmit,
+  handleCreateEventSubmit,
+  handleEventAttendanceToggle,
+  handleDeleteEvent,
+  handleEditEventSubmit,
 } from './utils/action.utils';
 import { createPublishHomeView } from './utils/view.utils';
 import { APP_ACTION } from './consts/app.consts';
@@ -83,6 +89,20 @@ export async function runOfficePresenceApp(
     SlackModalUtils.createModalHandlerWithUserId(getAskLunchModal),
   );
 
+  app.action<BlockAction>(
+    APP_ACTION.OPEN_CREATE_EVENT_MODAL,
+    SlackModalUtils.createModalHandler(getCreateEventModal),
+  );
+
+  app.view(
+    APP_ACTION.SUBMIT_CREATE_EVENT,
+    async ({ ack, body, view, client }) => {
+      await ack();
+      handleCreateEventSubmit(body, view);
+      await publishHomeView(client, body);
+    },
+  );
+
   app.view(APP_ACTION.ASK_LUNCH, async ({ body, ack, client }) => {
     await ack();
     const userId = body.user.id;
@@ -102,6 +122,55 @@ export async function runOfficePresenceApp(
   });
 
   app.action(APP_ACTION.SUBMIT_CHECKOUT, createCheckoutAction(publishHomeView));
+
+  app.action<BlockAction>(
+    new RegExp(`^${APP_ACTION.TOGGLE_EVENT_ATTENDANCE}_\\d+$`),
+    async ({ ack, body, client }) => {
+      await ack();
+      handleEventAttendanceToggle(body);
+      await publishHomeView(client, body);
+    },
+  );
+
+  app.action<BlockAction>(
+    new RegExp(`^${APP_ACTION.DELETE_EVENT}_\\d+$`),
+    async ({ ack, body, client }) => {
+      await ack();
+      handleDeleteEvent(body);
+      await publishHomeView(client, body);
+    },
+  );
+
+  app.action<BlockAction>(
+    new RegExp(`^${APP_ACTION.EDIT_EVENT}_\\d+$`),
+    async ({ ack, body, client }) => {
+      await ack();
+      const actionId = body.actions[0].action_id;
+      const eventIdStr = actionId.split('_').pop();
+      if (!eventIdStr) return;
+      const eventId = parseInt(eventIdStr, 10);
+      const modal = getEditEventModal(eventId);
+      if (modal) {
+        await client.views.open({
+          trigger_id: body.trigger_id,
+          view: modal,
+        });
+      }
+    },
+  );
+
+  app.view(
+    new RegExp(`^${APP_ACTION.SUBMIT_EDIT_EVENT}_\\d+$`),
+    async ({ ack, body, view, client }) => {
+      await ack();
+      const callbackId = view.callback_id;
+      const eventIdStr = callbackId.split('_').pop();
+      if (!eventIdStr) return;
+      const eventId = parseInt(eventIdStr, 10);
+      handleEditEventSubmit(eventId, body, view);
+      await publishHomeView(client, body);
+    },
+  );
 
   await app.start(config.port ?? DEFAULT_PORT);
   // eslint-disable-next-line no-console

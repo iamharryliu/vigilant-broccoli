@@ -1,10 +1,11 @@
-import { AppHomeOpenedEvent, View } from '@slack/types';
-import { loadAllPresences } from './db.utils';
+import { AppHomeOpenedEvent, View, KnownBlock } from '@slack/types';
+import { loadAllPresences, loadAllEvents } from './db.utils';
 import {
   AppConfig,
   PRESENCE_TIME,
   UserPresence,
   UserPresences,
+  OfficeEvent,
 } from '../types';
 import { WebClient } from '@slack/web-api';
 import { BlockAction, SlackViewAction } from '@slack/bolt';
@@ -61,6 +62,18 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
       SlackViewBuilder.generateMarkdownSection(
         APP_COPY.getAppDescription(appConfig.APP_NAME),
       ),
+      {
+        type: 'actions',
+        elements: [
+          {
+            type: 'button',
+            text: SlackViewBuilder.generatePlainText(
+              APP_COPY.HOME_VIEW.CREATE_EVENT_BUTTON,
+            ),
+            action_id: APP_ACTION.OPEN_CREATE_EVENT_MODAL,
+          },
+        ],
+      },
       ...(isCheckedInToday
         ? [
             {
@@ -111,40 +124,142 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
         ],
       },
       SlackViewBuilder.DIVIDER,
-      SlackViewBuilder.generateMarkdownSection(
-        buildPresence(dates, userPresences),
-      ),
+      ...buildPresenceBlocks(dates, userPresences, userId),
     ],
   } as View;
 }
 
-function buildPresence(days: Date[], userPresences: UserPresences): string {
-  const lines: string[] = [APP_COPY.HOME_VIEW.WHO_IS_IN_OFFICE_MARKDOWN];
+function buildPresenceBlocks(
+  days: Date[],
+  userPresences: UserPresences,
+  currentUserId: string,
+): KnownBlock[] {
+  const blocks: KnownBlock[] = [
+    SlackViewBuilder.generateMarkdownSection(
+      APP_COPY.HOME_VIEW.WHO_IS_IN_OFFICE_MARKDOWN,
+    ) as KnownBlock,
+  ];
+  const allEvents = loadAllEvents();
 
   for (const date of days) {
     const iso = formatISODateLocal(date);
+    const eventsForDay = allEvents
+      .filter(event => event.date === iso)
+      .sort((a, b) => a.time.localeCompare(b.time));
 
     const formattedPresences = Object.entries(userPresences)
       .filter(([_, presence]) => presence?.[iso])
       .map(([u, presence]) => {
         const dayPresence = presence[iso];
-
-        return formatPresence(u, dayPresence);
+        return formatPresence(u, dayPresence, eventsForDay);
       });
 
-    lines.push(
-      `*${formatDateLong(date)}*\n${
-        formattedPresences.length > 0
-          ? formattedPresences.join('\n')
-          : APP_COPY.HOME_VIEW.NO_ONE_SCHEDULED_MARKDOWN
-      }`,
+    const presenceText =
+      formattedPresences.length > 0
+        ? formattedPresences.join('\n')
+        : APP_COPY.HOME_VIEW.NO_ONE_SCHEDULED_MARKDOWN;
+
+    blocks.push(
+      SlackViewBuilder.generateMarkdownSection(
+        `*${formatDateLong(date)}*\n${presenceText}`,
+      ) as KnownBlock,
     );
+
+    if (eventsForDay.length > 0) {
+      blocks.push(...buildEventBlocks(eventsForDay, currentUserId));
+    }
   }
 
-  return lines.join('\n\n');
+  return blocks;
 }
 
-function formatPresence(u: string, presence: UserPresence): string {
+function buildEventBlocks(
+  events: OfficeEvent[],
+  currentUserId: string,
+): KnownBlock[] {
+  const blocks: KnownBlock[] = [];
+
+  for (const event of events) {
+    const attendeeCount = event.attendees?.length || 0;
+    const isAttending = event.attendees?.includes(currentUserId) || false;
+    const isCreator = event.creatorId === currentUserId;
+
+    const descriptionText = event.description ? ` - ${event.description}` : '';
+    const eventText = `${event.name} @ ${event.time} by <@${event.creatorId}> - (${attendeeCount} attending)${descriptionText}`;
+
+    const checkboxOption = {
+      text: {
+        type: 'plain_text' as const,
+        text: eventText,
+      },
+      value: `${event.id}`,
+    };
+
+    blocks.push({
+      type: 'actions',
+      elements: [
+        {
+          type: 'checkboxes',
+          action_id: `${APP_ACTION.TOGGLE_EVENT_ATTENDANCE}_${event.id}`,
+          options: [checkboxOption],
+          ...(isAttending && { initial_options: [checkboxOption] }),
+        },
+      ],
+    } as KnownBlock);
+
+    if (isCreator) {
+      blocks.push({
+        type: 'actions',
+        elements: [
+          {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'Edit',
+            },
+            action_id: `${APP_ACTION.EDIT_EVENT}_${event.id}`,
+            style: 'primary',
+          },
+          {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'Delete',
+            },
+            action_id: `${APP_ACTION.DELETE_EVENT}_${event.id}`,
+            style: 'danger',
+            confirm: {
+              title: {
+                type: 'plain_text',
+                text: 'Delete event?',
+              },
+              text: {
+                type: 'mrkdwn',
+                text: `Delete *${event.name}* on ${event.date} at ${event.time}?`,
+              },
+              confirm: {
+                type: 'plain_text',
+                text: 'Delete',
+              },
+              deny: {
+                type: 'plain_text',
+                text: 'Cancel',
+              },
+            },
+          },
+        ],
+      });
+    }
+  }
+
+  return blocks;
+}
+
+function formatPresence(
+  u: string,
+  presence: UserPresence,
+  eventsForDay: OfficeEvent[],
+): string {
   if (!presence) return `<@${u}>`;
 
   const parts: string[] = [];
@@ -155,6 +270,15 @@ function formatPresence(u: string, presence: UserPresence): string {
   if (presence.presenceTime === PRESENCE_TIME.MORNING)
     parts.push(APP_COPY.HOME_VIEW.MORNING_ONLY);
   if (presence.message) parts.push(` | 💬 _${presence.message}_`);
+
+  const userEvents = eventsForDay.filter(
+    event => event.attendees && event.attendees.includes(u),
+  );
+
+  if (userEvents.length > 0) {
+    const eventNames = userEvents.map(e => e.name).join(', ');
+    parts.push(` | Attending: ${eventNames}`);
+  }
 
   return `<@${u}> ${parts.join(' ')}`.trim();
 }

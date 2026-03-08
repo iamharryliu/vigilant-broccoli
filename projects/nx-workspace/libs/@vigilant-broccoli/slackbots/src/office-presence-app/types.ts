@@ -27,3 +27,23 @@ export type UserPresenceRow = {
   is_bringing_dog?: number;
   message?: string;
 };
+
+export type OfficeEvent = {
+  id?: number;
+  name: string;
+  date: string;
+  time: string;
+  creatorId: string;
+  description?: string;
+  attendees?: string[];
+};
+
+export type OfficeEventRow = {
+  id: number;
+  name: string;
+  date: string;
+  time: string;
+  creator_id: string;
+  description?: string;
+  attendees?: string;
+};

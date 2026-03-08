@@ -13,6 +13,7 @@ export const APP_COPY = {
     ADMIN_SETTINGS_BUTTON: 'Admin Settings ⚙️',
     SELECT_OFFICE_DAYS_MARKDOWN: '*Select your office days:*',
     ADD_VISIT_DETAILS_BUTTON: 'Add visit details. 🐶🏢🕐💬',
+    CREATE_EVENT_BUTTON: 'Create Office Event 📅',
     WHO_IS_IN_OFFICE_MARKDOWN: "*Who's in the office?*",
     NO_ONE_SCHEDULED_MARKDOWN: '_No one scheduled_',
     AFTERNOON_ONLY: ' | 🕐 Afternoon only',
@@ -40,6 +41,18 @@ export const APP_COPY = {
     SELECT_USERS_MARKDOWN: '*Select users to invite:*',
     TITLE: 'Ask for Lunch',
     SUBMIT: 'Send Invites',
+  },
+  CREATE_EVENT_MODAL: {
+    TITLE: 'Create Office Event',
+    EVENT_NAME_LABEL: 'Event Name',
+    EVENT_DATE_LABEL: 'Event Date',
+    EVENT_TIME_HOUR_LABEL: 'Hour',
+    EVENT_TIME_MINUTE_LABEL: 'Minute',
+    EVENT_DESCRIPTION_LABEL: 'Description',
+    EVENT_ATTENDEES_LABEL: 'Select Attendees',
+  },
+  EDIT_EVENT_MODAL: {
+    TITLE: 'Edit Office Event',
   },
   REMINDER: {
     SECTION_MARKDOWN:
