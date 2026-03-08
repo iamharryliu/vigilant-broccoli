@@ -4,6 +4,9 @@ import { Flex, Text, Button } from '@radix-ui/themes';
 import { useState, useEffect, useRef } from 'react';
 
 const STORAGE_KEY = 'vb-manager-timer-state';
+const BEEP_DURATION_MS = 500;
+const BEEP_INTERVAL_MS = 1000;
+const ALERT_DURATION_MS = 5000;
 
 interface TimerState {
   endTime: number;
@@ -24,6 +27,8 @@ export const TimerUtilityContent = () => {
   const [totalRepetitions, setTotalRepetitions] = useState(0);
   const [endTime, setEndTime] = useState(0);
   const notificationShownRef = useRef(false);
+  const ringingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const ringingStopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [notificationPermission, setNotificationPermission] =
     useState<NotificationPermission>('default');
 
@@ -46,6 +51,12 @@ export const TimerUtilityContent = () => {
         localStorage.removeItem(STORAGE_KEY);
       }
     }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      stopNotificationSound();
+    };
   }, []);
 
   const showNotification = () => {
@@ -75,7 +86,7 @@ export const TimerUtilityContent = () => {
 
         if (remaining <= 0) {
           if (!notificationShownRef.current) {
-            playNotificationSound();
+            startNotificationSound();
             showNotification();
             notificationShownRef.current = true;
           }
@@ -138,11 +149,36 @@ export const TimerUtilityContent = () => {
     gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
     gainNode.gain.exponentialRampToValueAtTime(
       0.01,
-      audioContext.currentTime + 0.5,
+      audioContext.currentTime + BEEP_DURATION_MS / 1000,
     );
 
     oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.5);
+    oscillator.stop(audioContext.currentTime + BEEP_DURATION_MS / 1000);
+  };
+
+  const stopNotificationSound = () => {
+    if (ringingIntervalRef.current) {
+      clearInterval(ringingIntervalRef.current);
+      ringingIntervalRef.current = null;
+    }
+
+    if (ringingStopTimeoutRef.current) {
+      clearTimeout(ringingStopTimeoutRef.current);
+      ringingStopTimeoutRef.current = null;
+    }
+  };
+
+  const startNotificationSound = () => {
+    stopNotificationSound();
+    playNotificationSound();
+
+    ringingIntervalRef.current = setInterval(() => {
+      playNotificationSound();
+    }, BEEP_INTERVAL_MS);
+
+    ringingStopTimeoutRef.current = setTimeout(() => {
+      stopNotificationSound();
+    }, ALERT_DURATION_MS);
   };
 
   const requestNotificationPermission = async () => {
@@ -194,11 +230,13 @@ export const TimerUtilityContent = () => {
 
   const handleTimerStop = () => {
     setTimerRunning(false);
+    stopNotificationSound();
     localStorage.removeItem(STORAGE_KEY);
   };
 
   const handleTimerReset = () => {
     setTimerRunning(false);
+    stopNotificationSound();
     setTimerRemaining(0);
     setTimerMinutes('');
     setTimerSeconds('');
