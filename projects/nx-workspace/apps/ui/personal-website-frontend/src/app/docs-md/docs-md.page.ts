@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Observable } from 'rxjs';
 import { AppService } from '../core/services/app.service';
 import { DOCS_MD_ROUTE, LINKS } from '../core/consts/routes.const';
@@ -15,26 +15,20 @@ import {
 
 @Component({
   selector: 'app-md-library',
-  imports: [
-    CommonModule,
-    LinkComponent,
-    MarkdownPageComponent,
-    FileSearchComponent,
-  ],
+  imports: [LinkComponent, MarkdownPageComponent, FileSearchComponent],
   templateUrl: './docs-md.page.html',
 })
 export class DocsMdPageComponent implements OnInit {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.dev' };
   fileContent$: Observable<FolderItem>;
 
-    public appService= inject(AppService);
-    private fileService= inject(FileService);
-    public pageService= inject(DocsMdPageService);
-    private router= inject(Router);
-    private route= inject(ActivatedRoute);
+  public appService = inject(AppService);
+  private fileService = inject(FileService);
+  public pageService = inject(DocsMdPageService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  constructor(
-  ) {
+  constructor() {
     this.fileContent$ = this.pageService.getFileContent();
   }
 

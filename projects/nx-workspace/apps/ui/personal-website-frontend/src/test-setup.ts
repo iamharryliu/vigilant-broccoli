@@ -5,7 +5,9 @@ globalThis.ngJest = {
     errorOnUnknownProperties: true,
   },
 };
-import 'jest-preset-angular/setup-jest';
+import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
+
+setupZoneTestEnv();
 import { TextEncoder, TextDecoder } from 'util';
 declare const global: any;
 global.TextEncoder = TextEncoder;
