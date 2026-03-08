@@ -1,9 +1,0 @@
-<form
-  action="{{ url_for('cms.delete_user_group', user_group_name=user_group.name) }}"
-  method="POST"
-  onsubmit="return confirm('Are you sure you want to delete {{user_group.name}}?');"
->
-  <button type="submit" class="btn btn-danger btn-sm">
-    <i class="bi bi-trash3-fill"></i>
-  </button>
-</form>

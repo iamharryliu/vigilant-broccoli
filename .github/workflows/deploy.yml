@@ -4,7 +4,6 @@ on:
     branches: ['main']
     paths:
       - 'projects/nx-workspace/**'
-      - 'projects/cms-flask/**'
   workflow_dispatch:
 
 permissions:
@@ -122,7 +121,3 @@ jobs:
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://127.0.0.1:8200
         run: npx nx run-many -t deploy --projects="${{ steps.check.outputs.affected_apps }}"
-
-      - name: Deploy CMS Flask
-        working-directory: ./projects/cms-flask
-        run: flyctl deploy --dockerfile Dockerfile --config fly.toml

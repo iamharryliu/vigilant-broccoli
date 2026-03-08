@@ -20,7 +20,6 @@ function toActionsWorkflowUrl(blobUrl: string): string | null {
 
   // Path is like /owner/repo/blob/main/.github/workflows/filename.yml
   const parts = url.pathname.split('/').filter(Boolean);
-  // e.g. ["owner", "repo", "blob", "main", ".github", "workflows", "deploy-cms-flask.yml"]
   if (parts.length < 7) return null;
 
   const [owner, repo, blobKeyword, _branch, ...rest] = parts;
@@ -30,7 +29,7 @@ function toActionsWorkflowUrl(blobUrl: string): string | null {
   if (dotgithubIdx === -1 || rest[dotgithubIdx + 1] !== 'workflows')
     return null;
 
-  const filePath = rest.slice(dotgithubIdx + 2).join('/'); // e.g. "deploy-cms-flask.yml"
+  const filePath = rest.slice(dotgithubIdx + 2).join('/');
 
   // Construct the new URL
   return `https://github.com/${owner}/${repo}/actions/workflows/${filePath}`;
