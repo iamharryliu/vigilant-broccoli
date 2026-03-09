@@ -84,6 +84,7 @@ alias vbgcpfirewall="open 'https://console.cloud.google.com/net-security/firewal
 # Tmux
 alias tmuxvb="$REPO_DIR/scripts/shell/tmux-vb.sh"
 alias neovidetmuxvb='neovide -- -c "terminal ~/vigilant-broccoli/scripts/shell/tmux-vb.sh" -c "startinsert"'
+alias tmuxsetup="$REPO_DIR/scripts/shell/tmux-setup-dev.sh"
 
 worktmux() {
     PROJECT_NAME="$1"

@@ -26,15 +26,18 @@ tmux send-keys -t "$SESSION:1.3" "neovidetmuxvb" C-m
 tmux send-keys -t "$SESSION:1.4" "lazydocker" C-m
 
 #################################
-# Window 2: dev (2 panes)
+# Window 2: dev (4 panes)
 #################################
 tmux new-window -t "$SESSION" -n dev
 
 tmux split-window -h -t "$SESSION:2"
-tmux select-layout -t "$SESSION:2" even-horizontal
+tmux split-window -v -t "$SESSION:2.2"
+tmux split-window -h -t "$SESSION:2.3"
 
 tmux send-keys -t "$SESSION:2.1" "cd $PROJECT && nvim ." C-m
 tmux send-keys -t "$SESSION:2.2" "cd $PROJECT && lazygit" C-m
+tmux send-keys -t "$SESSION:2.3" "cd $PROJECT" C-m
+tmux send-keys -t "$SESSION:2.4" "cd $PROJECT" C-m
 
 #################################
 # Window 3: scratch
