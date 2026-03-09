@@ -9,21 +9,18 @@ fi
 
 TARGET_PATH=$(cd "$TARGET_PATH" && pwd)
 
-tmux split-window -h
-tmux split-window -v
-tmux select-pane -t 2
-tmux split-window -h
+CURRENT_PANE=$(tmux display-message -p '#{pane_id}')
 
-tmux select-pane -t 0
-tmux send-keys "cd $TARGET_PATH && nvim ." C-m
+tmux split-window -h -t "$CURRENT_PANE"
+RIGHT_TOP=$(tmux display-message -p '#{pane_id}')
 
-tmux select-pane -t 1
-tmux send-keys "cd $TARGET_PATH && lazygit" C-m
+tmux split-window -v -t "$RIGHT_TOP"
+RIGHT_BOTTOM_LEFT=$(tmux display-message -p '#{pane_id}')
 
-tmux select-pane -t 2
-tmux send-keys "cd $TARGET_PATH" C-m
+tmux split-window -h -t "$RIGHT_BOTTOM_LEFT"
 
-tmux select-pane -t 3
-tmux send-keys "cd $TARGET_PATH" C-m
+tmux send-keys -t "$CURRENT_PANE" "cd $TARGET_PATH && nvim ." C-m
+tmux send-keys -t "$RIGHT_TOP" "cd $TARGET_PATH && lazygit" C-m
+tmux send-keys -t "$RIGHT_BOTTOM_LEFT" "cd $TARGET_PATH" C-m
 
-tmux select-pane -t 0
+tmux select-pane -t "$CURRENT_PANE"

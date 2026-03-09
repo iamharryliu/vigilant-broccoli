@@ -28,21 +28,13 @@ tmux send-keys -t "$SESSION:1.4" "lazydocker" C-m
 #################################
 # Window 2: dev (4 panes)
 #################################
-tmux new-window -t "$SESSION" -n dev
-
-tmux split-window -h -t "$SESSION:2"
-tmux split-window -v -t "$SESSION:2.2"
-tmux split-window -h -t "$SESSION:2.3"
-
-tmux send-keys -t "$SESSION:2.1" "cd $PROJECT && nvim ." C-m
-tmux send-keys -t "$SESSION:2.2" "cd $PROJECT && lazygit" C-m
-tmux send-keys -t "$SESSION:2.3" "cd $PROJECT" C-m
-tmux send-keys -t "$SESSION:2.4" "cd $PROJECT" C-m
+tmux new-window -t "$SESSION" -n dev -c "$PROJECT"
+bash "$HOME/vigilant-broccoli/scripts/shell/tmux-setup-dev.sh" "$PROJECT"
 
 #################################
-# Window 3: scratch
+# Window 3: other
 #################################
-tmux new-window -t "$SESSION" -n bg
+tmux new-window -t "$SESSION" -n other
 tmux send-keys -t "$SESSION:3.1" "" C-m
 
 #################################
