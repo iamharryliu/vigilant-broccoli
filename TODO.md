@@ -1,8 +1,6 @@
 # TODO
 
-- mkcert -install
 - Employee Handler - Mising gam/gyb handling
-- tmux session handler
 
 ## ci
 
@@ -17,11 +15,6 @@
   - Implement with Claude Workflow - `/vb-plan-day`, `/vb-plan-week`
 - **machine**
   - audit default pip list
-- **vb-cms**
-  - Dynamic page contents ie blogs, image gallery
-  - Handle receiving emails for message requests.
-  - Virus scanning for uploads.
-  - refactor(cms): Refactor Flask CMS to nx-workspace..
 - **Infrastructure**
   - GCP VM
     - Bootstrapping Vault and WireGuard
@@ -33,11 +26,6 @@
 - **Audit/Refactor Tasks**
   - feat: Setup linux vs mac setup scripts
   - chore: dotfile cleanup
-- **New Features**
-  - feat: home management
-    - Calendar Implementation
-      - [fullcalendar](https://fullcalendar.io/docs/react)
-      - Google Calendar integration
 - **R&D**
   - chore: Pihole reserach, pihole, pivpn, nordvpn integration.
   - chore: iCloud vb notes.
