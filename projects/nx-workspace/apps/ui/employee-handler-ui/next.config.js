@@ -8,6 +8,7 @@ const { composePlugins, withNx } = require('@nx/next');
  **/
 const nextConfig = {
   nx: {},
+  serverExternalPackages: ['better-sqlite3'],
   async redirects() {
     return [
       {

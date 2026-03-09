@@ -10,7 +10,8 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/next-demo"
+        "outputPath": "dist/apps/next-demo",
+        "webpack": true
       },
       "configurations": {
         "development": {
@@ -31,7 +32,8 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "next-demo:build",
-        "dev": true
+        "dev": true,
+        "webpack": true
       },
       "configurations": {
         "development": {
