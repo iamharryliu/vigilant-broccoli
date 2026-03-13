@@ -53,3 +53,11 @@ E|     E   F   F#  G   G#  A   A#  B   C   C#  D   D#  E
 | Term       | Description     |
 | :--------- | :-------------- |
 | Pentatonic | Five-note scale |
+
+## Guitar Songs
+
+### Monster
+
+- Chord Progression: Am -> G
+- Strumming Pattern: DDD DU UD D DU
+- [Reference](https://www.youtube.com/watch?v=0ppQskDZeoY&t=496s)
