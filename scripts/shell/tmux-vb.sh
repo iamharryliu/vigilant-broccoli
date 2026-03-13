@@ -22,8 +22,8 @@ tmux select-layout -t "$SESSION:1" tiled
 # Pane commands
 tmux send-keys -t "$SESSION:1.1" "yazi" C-m
 tmux send-keys -t "$SESSION:1.2" "btop" C-m
-tmux send-keys -t "$SESSION:1.3" "neovidetmuxvb" C-m
-tmux send-keys -t "$SESSION:1.4" "lazydocker" C-m
+tmux send-keys -t "$SESSION:1.3" "lazydocker" C-m
+tmux send-keys -t "$SESSION:1.4" "posting" C-m
 
 #################################
 # Window 2: dev (4 panes)
@@ -36,6 +36,12 @@ bash "$HOME/vigilant-broccoli/scripts/shell/tmux-setup-dev.sh" "$PROJECT"
 #################################
 tmux new-window -t "$SESSION" -n other
 tmux send-keys -t "$SESSION:3.1" "" C-m
+
+#################################
+# Window 4: neovide
+#################################
+tmux new-window -t "$SESSION" -n neovide
+tmux send-keys -t "$SESSION:4.1" "neovidetmuxvb" C-m
 
 #################################
 # Focus

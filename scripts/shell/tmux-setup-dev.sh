@@ -20,7 +20,7 @@ RIGHT_BOTTOM_LEFT=$(tmux display-message -p '#{pane_id}')
 tmux split-window -h -t "$RIGHT_BOTTOM_LEFT"
 
 tmux send-keys -t "$CURRENT_PANE" "cd $TARGET_PATH && nvim ." C-m
-tmux send-keys -t "$RIGHT_TOP" "cd $TARGET_PATH && lazygit" C-m
+tmux send-keys -t "$RIGHT_TOP" "cd $TARGET_PATH && gh dash" C-m
 tmux send-keys -t "$RIGHT_BOTTOM_LEFT" "cd $TARGET_PATH" C-m
 
 tmux select-pane -t "$CURRENT_PANE"
