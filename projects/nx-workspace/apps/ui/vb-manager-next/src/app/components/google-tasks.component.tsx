@@ -11,6 +11,8 @@ import {
 } from '@radix-ui/themes';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -298,7 +300,82 @@ interface TaskItemProps {
   onSaveEdit: () => void;
   onCancelEdit: () => void;
   isNew?: boolean;
+  enableDragDrop?: boolean;
+  taskListId?: string;
 }
+
+const QUADRANT_COLORS: Record<EisenhowerQuadrant, string> = {
+  Q1: 'bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500',
+  Q2: 'bg-blue-100 dark:bg-blue-900/20 border-l-4 border-blue-500',
+  Q3: 'bg-yellow-100 dark:bg-yellow-900/20 border-l-4 border-yellow-500',
+  Q4: 'bg-green-100 dark:bg-green-900/20 border-l-4 border-green-500',
+  none: '',
+};
+
+const DRAG_OPACITY = {
+  DRAGGING: 0.5,
+  DEFAULT: 1,
+} as const;
+
+const TaskItemContent = memo(
+  ({
+    task,
+    isEditing,
+    editingTitle,
+    onStartEdit,
+    onEditChange,
+    onSaveEdit,
+    onCancelEdit,
+  }: {
+    task: Task;
+    isEditing: boolean;
+    editingTitle: string;
+    onStartEdit: (task: Task) => void;
+    onEditChange: (value: string) => void;
+    onSaveEdit: () => void;
+    onCancelEdit: () => void;
+  }) => (
+    <Flex direction="column" gap="1" className="flex-1">
+      {isEditing ? (
+        <TextField.Root
+          value={editingTitle}
+          onChange={e => onEditChange(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') onSaveEdit();
+            else if (e.key === 'Escape') onCancelEdit();
+          }}
+          onBlur={onSaveEdit}
+          autoFocus
+          size="2"
+        />
+      ) : (
+        <Text
+          size="2"
+          className={
+            task.status === 'completed'
+              ? 'line-through text-gray-400 cursor-pointer'
+              : 'cursor-pointer'
+          }
+          onClick={() => onStartEdit(task)}
+        >
+          {task.title}
+        </Text>
+      )}
+      {task.notes && (
+        <Text size="1" color="gray">
+          {task.notes}
+        </Text>
+      )}
+      {task.due && (
+        <Text size="1" color="blue">
+          Due: {new Date(task.due).toLocaleDateString()}
+        </Text>
+      )}
+    </Flex>
+  ),
+);
+
+TaskItemContent.displayName = 'TaskItemContent';
 
 const TaskItem = memo(
   ({
@@ -311,67 +388,49 @@ const TaskItem = memo(
     onSaveEdit,
     onCancelEdit,
     isNew = false,
+    enableDragDrop = false,
+    taskListId,
   }: TaskItemProps) => {
     const quadrant = getEisenhowerQuadrant(task.title);
     const commitType = getCommitType(task.title);
 
-    const quadrantColors: Record<EisenhowerQuadrant, string> = {
-      Q1: 'bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500',
-      Q2: 'bg-blue-100 dark:bg-blue-900/20 border-l-4 border-blue-500',
-      Q3: 'bg-yellow-100 dark:bg-yellow-900/20 border-l-4 border-yellow-500',
-      Q4: 'bg-green-100 dark:bg-green-900/20 border-l-4 border-green-500',
-      none: '',
+    const { attributes, listeners, setNodeRef, transform, isDragging } =
+      useDraggable({
+        id: task.id,
+        data: { type: 'task', task, taskListId },
+        disabled: !enableDragDrop || isEditing,
+      });
+
+    const style = {
+      transform: CSS.Translate.toString(transform),
+      opacity: isDragging ? DRAG_OPACITY.DRAGGING : DRAG_OPACITY.DEFAULT,
     };
 
+    const isDraggable = enableDragDrop && !isEditing;
+    const dragProps = isDraggable ? { ...listeners, ...attributes } : {};
+    const className = `flex items-start gap-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${
+      QUADRANT_COLORS[quadrant]
+    } ${isNew ? 'task-item-new' : ''} ${
+      isDraggable ? 'cursor-grab active:cursor-grabbing' : ''
+    }`;
+
     return (
-      <div
-        className={`flex items-start gap-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${
-          quadrantColors[quadrant]
-        } ${isNew ? 'task-item-new' : ''}`}
-      >
+      <div ref={setNodeRef} style={style} {...dragProps} className={className}>
         <Checkbox
           checked={task.status === 'completed'}
           onCheckedChange={() => onToggleComplete(task)}
           disabled={task.isRemoving}
           className="mt-0.5"
         />
-        <Flex direction="column" gap="1" className="flex-1">
-          {isEditing ? (
-            <TextField.Root
-              value={editingTitle}
-              onChange={e => onEditChange(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') onSaveEdit();
-                else if (e.key === 'Escape') onCancelEdit();
-              }}
-              onBlur={onSaveEdit}
-              autoFocus
-              size="2"
-            />
-          ) : (
-            <Text
-              size="2"
-              className={
-                task.status === 'completed'
-                  ? 'line-through text-gray-400 cursor-pointer'
-                  : 'cursor-pointer'
-              }
-              onClick={() => onStartEdit(task)}
-            >
-              {task.title}
-            </Text>
-          )}
-          {task.notes && (
-            <Text size="1" color="gray">
-              {task.notes}
-            </Text>
-          )}
-          {task.due && (
-            <Text size="1" color="blue">
-              Due: {new Date(task.due).toLocaleDateString()}
-            </Text>
-          )}
-        </Flex>
+        <TaskItemContent
+          task={task}
+          isEditing={isEditing}
+          editingTitle={editingTitle}
+          onStartEdit={onStartEdit}
+          onEditChange={onEditChange}
+          onSaveEdit={onSaveEdit}
+          onCancelEdit={onCancelEdit}
+        />
         {commitType !== 'other' && (
           <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
             {commitType}
@@ -391,8 +450,6 @@ const TaskHeader = memo(
     onTaskListChange,
     sortMode,
     onSortChange,
-    userEmail,
-    onSignOut,
     showSelector,
   }: {
     taskLists: TaskList[];
@@ -400,8 +457,6 @@ const TaskHeader = memo(
     onTaskListChange: (taskListId: string) => void;
     sortMode: SortMode;
     onSortChange: (value: SortMode) => void;
-    userEmail?: string;
-    onSignOut: () => void;
     showSelector: boolean;
   }) => {
     const selectedTaskList = taskLists.find(
@@ -417,38 +472,6 @@ const TaskHeader = memo(
             </Text>
           ) : (
             <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-32 rounded" />
-          )}
-          <Flex gap="2" align="center">
-            {userEmail && (
-              <Text size="1" color="gray">
-                {userEmail}
-              </Text>
-            )}
-            <Button onClick={onSignOut} size="1" variant="soft">
-              Sign out
-            </Button>
-          </Flex>
-        </Flex>
-        <Flex gap="4" align="center">
-          {showSelector && taskLists.length > 0 && (
-            <Flex gap="2" align="center" className="flex-1">
-              <Text size="2" color="gray">
-                List:
-              </Text>
-              <Select.Root
-                value={selectedTaskListId}
-                onValueChange={onTaskListChange}
-              >
-                <Select.Trigger placeholder="Select task list..." />
-                <Select.Content>
-                  {taskLists.map(list => (
-                    <Select.Item key={list.id} value={list.id}>
-                      {list.title}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-            </Flex>
           )}
           <Flex gap="2" align="center">
             <Text size="2" color="gray">
@@ -468,6 +491,26 @@ const TaskHeader = memo(
             </Select.Root>
           </Flex>
         </Flex>
+        {showSelector && taskLists.length > 0 && (
+          <Flex gap="2" align="center">
+            <Text size="2" color="gray">
+              List:
+            </Text>
+            <Select.Root
+              value={selectedTaskListId}
+              onValueChange={onTaskListChange}
+            >
+              <Select.Trigger placeholder="Select task list..." />
+              <Select.Content>
+                {taskLists.map(list => (
+                  <Select.Item key={list.id} value={list.id}>
+                    {list.title}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Root>
+          </Flex>
+        )}
       </Flex>
     );
   },
@@ -565,6 +608,8 @@ const TaskList = memo(
     onEditChange,
     onSaveEdit,
     onCancelEdit,
+    enableDragDrop,
+    taskListId,
   }: {
     loading: boolean;
     error: string | null;
@@ -576,7 +621,13 @@ const TaskList = memo(
     onEditChange: (title: string) => void;
     onSaveEdit: () => void;
     onCancelEdit: () => void;
+    enableDragDrop?: boolean;
+    taskListId?: string;
   }) => {
+    const { setNodeRef } = useDroppable({
+      id: taskListId || 'default',
+      data: { type: 'task' },
+    });
     if (loading) {
       return (
         <Flex direction="column" gap="2">
@@ -598,33 +649,41 @@ const TaskList = memo(
       );
     }
 
-    const activeTasks = tasks.filter(t => t.status !== 'completed' || t.isRemoving);
+    const activeTasks = tasks.filter(
+      t => t.status !== 'completed' || t.isRemoving,
+    );
 
     if (activeTasks.length === 0) {
       return (
-        <Text size="2" color="gray">
-          No tasks to display
-        </Text>
+        <div ref={setNodeRef} className="min-h-[100px]">
+          <Text size="2" color="gray">
+            No tasks to display
+          </Text>
+        </div>
       );
     }
 
     return (
-      <Flex direction="column" gap="2">
-        {activeTasks.map(task => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            isEditing={editingTaskId === task.id}
-            editingTitle={editingTaskTitle}
-            onToggleComplete={onToggleComplete}
-            onStartEdit={onStartEdit}
-            onEditChange={onEditChange}
-            onSaveEdit={onSaveEdit}
-            onCancelEdit={onCancelEdit}
-            isNew={task.isNew}
-          />
-        ))}
-      </Flex>
+      <div ref={setNodeRef}>
+        <Flex direction="column" gap="2">
+          {activeTasks.map(task => (
+            <TaskItem
+              key={task.id}
+              task={task}
+              isEditing={editingTaskId === task.id}
+              editingTitle={editingTaskTitle}
+              onToggleComplete={onToggleComplete}
+              onStartEdit={onStartEdit}
+              onEditChange={onEditChange}
+              onSaveEdit={onSaveEdit}
+              onCancelEdit={onCancelEdit}
+              isNew={task.isNew}
+              enableDragDrop={enableDragDrop}
+              taskListId={taskListId}
+            />
+          ))}
+        </Flex>
+      </div>
     );
   },
   (prevProps, nextProps) => {
@@ -690,9 +749,13 @@ UnauthenticatedView.displayName = 'UnauthenticatedView';
 export const GoogleTasksComponent = ({
   taskListId: propTaskListId,
   showSelector = true,
+  enableDragDrop = false,
+  refreshTrigger = 0,
 }: {
   taskListId?: string;
   showSelector?: boolean;
+  enableDragDrop?: boolean;
+  refreshTrigger?: number;
 } = {}) => {
   const { data: session, status } = useSession();
   const { taskLists, authError: titleAuthError } = useTaskLists(status);
@@ -742,7 +805,7 @@ export const GoogleTasksComponent = ({
 
   useEffect(() => {
     if (status === 'authenticated') fetchTasks();
-  }, [status, taskListId]);
+  }, [status, taskListId, refreshTrigger]);
 
   const handleCreateTask = useCallback(async () => {
     if (isCreatingTask) return;
@@ -820,8 +883,6 @@ export const GoogleTasksComponent = ({
             onTaskListChange={handleTaskListChange}
             sortMode={sortMode}
             onSortChange={handleSortChange}
-            userEmail={session?.user?.email ?? undefined}
-            onSignOut={() => signOut()}
             showSelector={showSelector && !propTaskListId}
           />
 
@@ -848,6 +909,8 @@ export const GoogleTasksComponent = ({
             onEditChange={handleEditChange}
             onSaveEdit={handleSaveEdit}
             onCancelEdit={handleCancelEdit}
+            enableDragDrop={enableDragDrop}
+            taskListId={taskListId}
           />
         </Flex>
       </Card>

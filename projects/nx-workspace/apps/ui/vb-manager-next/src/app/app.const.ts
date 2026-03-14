@@ -12,6 +12,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Home',
     path: '/',
   },
+  SWIMLANES: {
+    title: 'Swimlanes',
+    path: '/swimlanes',
+  },
   DEV_DASHBOARD: {
     title: 'Dev Dashboard',
     path: '/dev-dashboard',
