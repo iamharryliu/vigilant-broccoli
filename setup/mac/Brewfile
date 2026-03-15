@@ -54,8 +54,8 @@ brew "pinentry-mac"
 brew "pipx"
 brew "pnpm"
 brew "portaudio"
-brew "postgresql@14"
-brew "postgresql@15"
+brew "postgresql@14", link: false
+brew "postgresql@15", link: true
 brew "posting"
 brew "powerlevel10k"
 brew "pre-commit"
