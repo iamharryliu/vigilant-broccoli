@@ -15,6 +15,8 @@ export const API_ENDPOINTS = {
 
   // GCloud
   GCLOUD_AUTH_STATUS: '/api/gcloud/auth-status',
+  GCLOUD_PROJECTS: '/api/gcloud/projects',
+  GCLOUD_SET_PROJECT: '/api/gcloud/set-project',
 
   // Fly.io
   FLYIO_APPS: '/api/flyio/apps',
