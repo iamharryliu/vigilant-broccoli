@@ -625,13 +625,13 @@ const DEV_LINKS = [
   },
   {
     label: 'Resilio Sync',
-    target: 'http://localhost:8888/gui/',
+    target: 'https://sync.vigilant-broccoli.app',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
     label: 'Immich',
-    target: 'http://localhost:2283/photos',
+    target: 'https://images.vigilant-broccoli.app',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
