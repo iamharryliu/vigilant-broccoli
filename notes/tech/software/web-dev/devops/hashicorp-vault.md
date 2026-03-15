@@ -197,6 +197,10 @@ vault delete auth/approle/role/<role-name>
 
 ## Auth
 
+```
+vault auth list
+```
+
 ### Github
 
 ```
@@ -346,6 +350,7 @@ echo "Vault client token: $CLIENT_TOKEN"
 
 ```
 vault auth enable jwt
+vault read auth/jwt/config # Verify JWT config
 
 vault list auth/jwt/roles
 vault read auth/jwt/role/ROLE_NAME
