@@ -26,18 +26,26 @@ export async function GET(req: NextRequest) {
     const response = await tasks.tasks.list({
       tasklist: taskListId,
       showCompleted: false,
-      maxResults: 10,
+      maxResults: 100,
+    });
+
+    const taskItems = (response.data.items || []).sort((a, b) => {
+      const posA = a.position || '';
+      const posB = b.position || '';
+      return posA.localeCompare(posB);
     });
 
     return NextResponse.json({
       success: true,
-      tasks: response.data.items || [],
+      tasks: taskItems,
     });
   } catch (error) {
     console.error('Error fetching tasks:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch tasks' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Failed to fetch tasks',
+      },
+      { status: 500 },
     );
   }
 }
@@ -64,8 +72,10 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error creating task:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create task' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Failed to create task',
+      },
+      { status: 500 },
     );
   }
 }
@@ -94,8 +104,10 @@ export async function PATCH(req: NextRequest) {
   } catch (error) {
     console.error('Error updating task:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to update task' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Failed to update task',
+      },
+      { status: 500 },
     );
   }
 }
@@ -109,7 +121,7 @@ export async function DELETE(req: NextRequest) {
     if (!taskId) {
       return NextResponse.json(
         { error: 'taskId is required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -124,8 +136,10 @@ export async function DELETE(req: NextRequest) {
   } catch (error) {
     console.error('Error deleting task:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete task' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Failed to delete task',
+      },
+      { status: 500 },
     );
   }
 }

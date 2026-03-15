@@ -150,6 +150,10 @@ export const UTILITY_URL = {
     NAME: 'Pinterest',
     URL: 'https://www.pinterest.com',
   },
+  SPOTIFY_FAMILY: {
+    NAME: 'Spotify Family',
+    URL: 'https://www.spotify.com/us/account/family/',
+  },
 } as const;
 
 export const OPENAI_LINK = {

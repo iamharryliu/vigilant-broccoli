@@ -11,8 +11,15 @@ import {
 } from '@radix-ui/themes';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
-import { useDraggable, useDroppable } from '@dnd-kit/core';
+import {
+  useDraggable,
+  useDroppable,
+  DndContext,
+  DragEndEvent,
+  closestCenter,
+} from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
+import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -222,6 +229,27 @@ const useTasks = (taskListId: string) => {
     }
   };
 
+  const moveTask = async (taskId: string, previousTaskId: string | null) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.TASKS_MOVE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskListId,
+          taskId,
+          previous: previousTaskId,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to move task');
+
+      await fetchTasks();
+    } catch (err) {
+      setError(handleApiError(err, 'Failed to move task'));
+      fetchTasks();
+    }
+  };
+
   return {
     tasks,
     loading,
@@ -230,6 +258,8 @@ const useTasks = (taskListId: string) => {
     createTask,
     toggleTaskComplete,
     updateTask,
+    moveTask,
+    setTasks,
   };
 };
 
@@ -394,12 +424,23 @@ const TaskItem = memo(
     const quadrant = getEisenhowerQuadrant(task.title);
     const commitType = getCommitType(task.title);
 
-    const { attributes, listeners, setNodeRef, transform, isDragging } =
-      useDraggable({
-        id: task.id,
-        data: { type: 'task', task, taskListId },
-        disabled: !enableDragDrop || isEditing,
-      });
+    const {
+      attributes,
+      listeners,
+      setNodeRef: setDraggableRef,
+      transform,
+      isDragging,
+    } = useDraggable({
+      id: task.id,
+      data: { type: 'task', task, taskListId },
+      disabled: !enableDragDrop || isEditing,
+    });
+
+    const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+      id: task.id,
+      data: { type: 'task', task },
+      disabled: !enableDragDrop,
+    });
 
     const style = {
       transform: CSS.Translate.toString(transform),
@@ -407,35 +448,52 @@ const TaskItem = memo(
     };
 
     const isDraggable = enableDragDrop && !isEditing;
-    const dragProps = isDraggable ? { ...listeners, ...attributes } : {};
-    const className = `flex items-start gap-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${
+    const className = `flex items-start gap-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${
       QUADRANT_COLORS[quadrant]
     } ${isNew ? 'task-item-new' : ''} ${
-      isDraggable ? 'cursor-grab active:cursor-grabbing' : ''
+      isOver ? 'border-t-2 border-blue-500' : ''
     }`;
 
     return (
-      <div ref={setNodeRef} style={style} {...dragProps} className={className}>
+      <div
+        ref={node => {
+          setDraggableRef(node);
+          setDroppableRef(node);
+        }}
+        style={style}
+        className={className}
+      >
+        {isDraggable && (
+          <div
+            {...listeners}
+            {...attributes}
+            className="cursor-grab active:cursor-grabbing opacity-50 hover:opacity-100 transition-opacity"
+          >
+            <DragHandleDots2Icon />
+          </div>
+        )}
         <Checkbox
           checked={task.status === 'completed'}
           onCheckedChange={() => onToggleComplete(task)}
           disabled={task.isRemoving}
           className="mt-0.5"
         />
-        <TaskItemContent
-          task={task}
-          isEditing={isEditing}
-          editingTitle={editingTitle}
-          onStartEdit={onStartEdit}
-          onEditChange={onEditChange}
-          onSaveEdit={onSaveEdit}
-          onCancelEdit={onCancelEdit}
-        />
-        {commitType !== 'other' && (
-          <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
-            {commitType}
-          </span>
-        )}
+        <div className="flex-1 flex items-start gap-2">
+          <TaskItemContent
+            task={task}
+            isEditing={isEditing}
+            editingTitle={editingTitle}
+            onStartEdit={onStartEdit}
+            onEditChange={onEditChange}
+            onSaveEdit={onSaveEdit}
+            onCancelEdit={onCancelEdit}
+          />
+          {commitType !== 'other' && (
+            <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
+              {commitType}
+            </span>
+          )}
+        </div>
       </div>
     );
   },
@@ -778,6 +836,8 @@ export const GoogleTasksComponent = ({
     createTask,
     toggleTaskComplete,
     updateTask,
+    moveTask,
+    setTasks,
   } = useTasks(taskListId);
   const [sortMode, setSortMode] = useSortModeStorage(taskListId);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -863,6 +923,38 @@ export const GoogleTasksComponent = ({
     return tasks;
   }, [sortMode, tasks]);
 
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      if (!over || active.id === over.id) return;
+
+      const activeTasks = sortedTasks.filter(
+        t => t.status !== 'completed' || t.isRemoving,
+      );
+      const activeIndex = activeTasks.findIndex(t => t.id === active.id);
+      const overIndex = activeTasks.findIndex(t => t.id === over.id);
+
+      if (activeIndex === -1 || overIndex === -1) return;
+
+      const reorderedTasks = [...activeTasks];
+      const [movedTask] = reorderedTasks.splice(activeIndex, 1);
+      reorderedTasks.splice(overIndex, 0, movedTask);
+
+      setTasks(
+        tasks.map(t => {
+          const newIndex = reorderedTasks.findIndex(rt => rt.id === t.id);
+          return newIndex !== -1 ? reorderedTasks[newIndex] : t;
+        }),
+      );
+
+      const previousTaskId =
+        overIndex > 0 ? reorderedTasks[overIndex - 1].id : null;
+      moveTask(active.id as string, previousTaskId);
+    },
+    [sortedTasks, tasks, setTasks, moveTask],
+  );
+
   if (status === 'loading') return <CardSkeleton showTitleSkeleton rows={5} />;
   if (status === 'unauthenticated') return <UnauthenticatedView />;
 
@@ -872,48 +964,52 @@ export const GoogleTasksComponent = ({
     error?.includes('authentication') ||
     session?.error === 'RefreshAccessTokenError';
 
+  const isDragDropEnabled = sortMode === SORT_MODE.DEFAULT;
+
   return (
     <>
       <style>{ANIMATION_STYLES}</style>
-      <Card className="w-full">
-        <Flex direction="column" gap="3" p="4">
-          <TaskHeader
-            taskLists={taskLists}
-            selectedTaskListId={taskListId}
-            onTaskListChange={handleTaskListChange}
-            sortMode={sortMode}
-            onSortChange={handleSortChange}
-            showSelector={showSelector && !propTaskListId}
-          />
+      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+        <Card className="w-full">
+          <Flex direction="column" gap="3" p="4">
+            <TaskHeader
+              taskLists={taskLists}
+              selectedTaskListId={taskListId}
+              onTaskListChange={handleTaskListChange}
+              sortMode={sortMode}
+              onSortChange={handleSortChange}
+              showSelector={showSelector && !propTaskListId}
+            />
 
-          {hasAuthError && <AuthErrorBanner onSignOut={() => signOut()} />}
+            {hasAuthError && <AuthErrorBanner onSignOut={() => signOut()} />}
 
-          <AddTaskForm
-            showAddTask={showAddTask}
-            newTaskTitle={newTaskTitle}
-            onTitleChange={setNewTaskTitle}
-            onSubmit={handleCreateTask}
-            onCancel={handleCancelAddTask}
-            onShowForm={() => setShowAddTask(true)}
-            isLoading={isCreatingTask}
-          />
+            <AddTaskForm
+              showAddTask={showAddTask}
+              newTaskTitle={newTaskTitle}
+              onTitleChange={setNewTaskTitle}
+              onSubmit={handleCreateTask}
+              onCancel={handleCancelAddTask}
+              onShowForm={() => setShowAddTask(true)}
+              isLoading={isCreatingTask}
+            />
 
-          <TaskList
-            loading={loading}
-            error={error}
-            tasks={sortedTasks}
-            editingTaskId={editingTaskId}
-            editingTaskTitle={editingTaskTitle}
-            onToggleComplete={toggleTaskComplete}
-            onStartEdit={handleStartEdit}
-            onEditChange={handleEditChange}
-            onSaveEdit={handleSaveEdit}
-            onCancelEdit={handleCancelEdit}
-            enableDragDrop={enableDragDrop}
-            taskListId={taskListId}
-          />
-        </Flex>
-      </Card>
+            <TaskList
+              loading={loading}
+              error={error}
+              tasks={sortedTasks}
+              editingTaskId={editingTaskId}
+              editingTaskTitle={editingTaskTitle}
+              onToggleComplete={toggleTaskComplete}
+              onStartEdit={handleStartEdit}
+              onEditChange={handleEditChange}
+              onSaveEdit={handleSaveEdit}
+              onCancelEdit={handleCancelEdit}
+              enableDragDrop={isDragDropEnabled || enableDragDrop}
+              taskListId={taskListId}
+            />
+          </Flex>
+        </Card>
+      </DndContext>
     </>
   );
 };
