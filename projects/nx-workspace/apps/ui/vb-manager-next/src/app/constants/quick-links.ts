@@ -636,6 +636,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: 'Grafana',
+    target: 'https://grafana.vigilant-broccoli.app',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: 'Spotify Developer Dashboard',
     target: 'https://developer.spotify.com/dashboard',
     type: OPEN_TYPE.BROWSER,
