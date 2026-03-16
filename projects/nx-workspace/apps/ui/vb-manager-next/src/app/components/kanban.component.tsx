@@ -25,7 +25,7 @@ import {
   Active,
   Over,
 } from '@dnd-kit/core';
-import { SortableContext, useSortable } from '@dnd-kit/sortable';
+import { SortableContext, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GoogleTasksComponent } from './google-tasks.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -53,6 +53,7 @@ const DRAG_TYPE = {
   TASK: 'task',
   LANE: 'lane',
   LANE_DROP_ZONE: 'lane-drop-zone',
+  BOARD: 'board',
 } as const;
 
 const DROP_ZONE_HEIGHT = {
@@ -167,6 +168,10 @@ const useBoards = () => {
     );
   }, []);
 
+  const reorderBoards = useCallback((newBoards: Board[]) => {
+    setBoards(newBoards);
+  }, []);
+
   const activeBoard = boards.find(board => board.id === activeBoardId);
 
   return {
@@ -184,8 +189,23 @@ const useBoards = () => {
     addLane,
     removeLane,
     reorderLanes,
+    reorderBoards,
   };
 };
+
+interface SortableBoardProps {
+  board: Board;
+  isActive: boolean;
+  onSelect: (boardId: string) => void;
+  onRemove: (boardId: string) => void;
+  editingBoardId: string | null;
+  editingBoardName: string;
+  onStartEdit: (boardId: string, name: string) => void;
+  onSaveEdit: () => void;
+  onEditNameChange: (name: string) => void;
+  onCancelEdit: () => void;
+  showDeleteButton: boolean;
+}
 
 interface SortableLaneProps {
   lane: Lane;
@@ -199,6 +219,90 @@ interface LaneDropZoneProps {
   position: number;
   boardId: string;
 }
+
+const SortableBoard = ({
+  board,
+  isActive,
+  onSelect,
+  onRemove,
+  editingBoardId,
+  editingBoardName,
+  onStartEdit,
+  onSaveEdit,
+  onEditNameChange,
+  onCancelEdit,
+  showDeleteButton,
+}: SortableBoardProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: board.id,
+    data: { type: DRAG_TYPE.BOARD, board },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? LANE_OPACITY.DRAGGING : LANE_OPACITY.DEFAULT,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Flex
+        justify="between"
+        align="center"
+        className={`py-1 px-2 rounded ${
+          isActive ? 'border-l-2 border-blue-500' : ''
+        }`}
+      >
+        {editingBoardId === board.id ? (
+          <TextField.Root
+            value={editingBoardName}
+            onChange={e => onEditNameChange(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') onSaveEdit();
+              else if (e.key === 'Escape') onCancelEdit();
+            }}
+            onBlur={onSaveEdit}
+            size="1"
+            className="flex-1"
+            autoFocus
+          />
+        ) : (
+          <div
+            {...attributes}
+            {...listeners}
+            onClick={() => onSelect(board.id)}
+            onDoubleClick={() => onStartEdit(board.id, board.name)}
+            className="flex-1 cursor-grab active:cursor-grabbing"
+          >
+            <Text size="2" weight={isActive ? 'bold' : 'regular'}>
+              {board.name}
+            </Text>
+          </div>
+        )}
+        {showDeleteButton && (
+          <IconButton
+            size="1"
+            variant="ghost"
+            color="gray"
+            onClick={e => {
+              e.stopPropagation();
+              onRemove(board.id);
+            }}
+          >
+            ✕
+          </IconButton>
+        )}
+      </Flex>
+    </div>
+  );
+};
 
 const LaneDropZone = ({ position, boardId }: LaneDropZoneProps) => {
   const { setNodeRef, isOver } = useDroppable({
@@ -297,10 +401,12 @@ export const KanbanComponent = () => {
     addLane,
     removeLane,
     reorderLanes,
+    reorderBoards,
   } = useBoards();
   const [selectedTaskListId, setSelectedTaskListId] = useState<string>('');
   const [activeTask, setActiveTask] = useState<any>(null);
   const [activeLane, setActiveLane] = useState<Lane | null>(null);
+  const [activeBoard_dnd, setActiveBoard_dnd] = useState<Board | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showNewBoardForm, setShowNewBoardForm] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
@@ -383,6 +489,8 @@ export const KanbanComponent = () => {
       setActiveTask(active.data.current);
     } else if (dragType === DRAG_TYPE.LANE) {
       setActiveLane(active.data.current?.lane);
+    } else if (dragType === DRAG_TYPE.BOARD) {
+      setActiveBoard_dnd(active.data.current?.board);
     }
   }, []);
 
@@ -462,18 +570,36 @@ export const KanbanComponent = () => {
     [],
   );
 
+  const handleBoardDragEnd = useCallback(
+    (active: Active, over: Over | null) => {
+      setActiveBoard_dnd(null);
+      if (!over || active.id === over.id) return;
+
+      const oldIndex = boards.findIndex(board => board.id === active.id);
+      const newIndex = boards.findIndex(board => board.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const newBoards = arrayMove(boards, oldIndex, newIndex);
+      reorderBoards(newBoards);
+    },
+    [boards, reorderBoards],
+  );
+
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
       const { active, over } = event;
       const dragType = active.data.current?.type;
 
-      if (dragType === DRAG_TYPE.LANE) {
+      if (dragType === DRAG_TYPE.BOARD) {
+        handleBoardDragEnd(active, over);
+      } else if (dragType === DRAG_TYPE.LANE) {
         handleLaneDragEnd(active, over);
       } else if (dragType === DRAG_TYPE.TASK) {
         await handleTaskDragEnd(active, over);
       }
     },
-    [handleLaneDragEnd, handleTaskDragEnd],
+    [handleBoardDragEnd, handleLaneDragEnd, handleTaskDragEnd],
   );
 
   const availableTaskLists = taskLists.filter(
@@ -556,69 +682,29 @@ export const KanbanComponent = () => {
                 </Dialog.Root>
               </Flex>
 
-              <div className="flex flex-col gap-1">
-                {boards.map(board => (
-                  <div key={board.id}>
-                    <Flex
-                      justify="between"
-                      align="center"
-                      className={`py-1 px-2 rounded ${
-                        activeBoardId === board.id
-                          ? 'border-l-2 border-blue-500'
-                          : ''
-                      }`}
-                    >
-                      {editingBoardId === board.id ? (
-                        <TextField.Root
-                          value={editingBoardName}
-                          onChange={e => setEditingBoardName(e.target.value)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') handleSaveEditBoard();
-                            else if (e.key === 'Escape') {
-                              setEditingBoardId(null);
-                              setEditingBoardName('');
-                            }
-                          }}
-                          onBlur={handleSaveEditBoard}
-                          size="1"
-                          className="flex-1"
-                          autoFocus
-                        />
-                      ) : (
-                        <div
-                          onClick={() => setActiveBoardId(board.id)}
-                          onDoubleClick={() =>
-                            handleStartEditBoard(board.id, board.name)
-                          }
-                          className="flex-1 cursor-pointer"
-                        >
-                          <Text
-                            size="2"
-                            weight={
-                              activeBoardId === board.id ? 'bold' : 'regular'
-                            }
-                          >
-                            {board.name}
-                          </Text>
-                        </div>
-                      )}
-                      {boards.length > 1 && (
-                        <IconButton
-                          size="1"
-                          variant="ghost"
-                          color="gray"
-                          onClick={e => {
-                            e.stopPropagation();
-                            removeBoard(board.id);
-                          }}
-                        >
-                          ✕
-                        </IconButton>
-                      )}
-                    </Flex>
-                  </div>
-                ))}
-              </div>
+              <SortableContext items={boards.map(b => b.id)}>
+                <div className="flex flex-col gap-1">
+                  {boards.map(board => (
+                    <SortableBoard
+                      key={board.id}
+                      board={board}
+                      isActive={activeBoardId === board.id}
+                      onSelect={setActiveBoardId}
+                      onRemove={removeBoard}
+                      editingBoardId={editingBoardId}
+                      editingBoardName={editingBoardName}
+                      onStartEdit={handleStartEditBoard}
+                      onSaveEdit={handleSaveEditBoard}
+                      onEditNameChange={setEditingBoardName}
+                      onCancelEdit={() => {
+                        setEditingBoardId(null);
+                        setEditingBoardName('');
+                      }}
+                      showDeleteButton={boards.length > 1}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
             </>
           )}
         </div>
@@ -725,6 +811,12 @@ export const KanbanComponent = () => {
             <Text size="3" weight="bold">
               {taskLists.find(list => list.id === activeLane.taskListId)
                 ?.title || 'Unknown List'}
+            </Text>
+          </div>
+        ) : activeBoard_dnd ? (
+          <div className="bg-white dark:bg-gray-800 p-2 rounded shadow-lg border border-gray-300 dark:border-gray-600 opacity-90">
+            <Text size="2" weight="bold">
+              {activeBoard_dnd.name}
             </Text>
           </div>
         ) : null}
