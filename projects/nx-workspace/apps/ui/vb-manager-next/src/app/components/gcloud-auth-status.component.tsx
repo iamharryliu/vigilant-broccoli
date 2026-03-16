@@ -91,6 +91,40 @@ export const GcloudAuthStatusComponent = () => {
     }
   };
 
+  const switchAccount = async (account: string) => {
+    setSwitchingProject(account);
+    try {
+      const response = await fetch(API_ENDPOINTS.GCLOUD_SET_ACCOUNT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to switch account');
+      }
+
+      const [authResponse, projectsResponse] = await Promise.all([
+        fetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
+        fetch(API_ENDPOINTS.GCLOUD_PROJECTS),
+      ]);
+
+      if (authResponse.ok) {
+        const authData = await authResponse.json();
+        setAuthStatus(authData);
+      }
+
+      if (projectsResponse.ok) {
+        const projectsData = await projectsResponse.json();
+        setProjects(projectsData);
+      }
+    } catch (err) {
+      console.error('Error switching account:', err);
+    } finally {
+      setSwitchingProject(null);
+    }
+  };
+
   useEffect(() => {
     const fetchGcloudData = async () => {
       try {
@@ -142,14 +176,62 @@ export const GcloudAuthStatusComponent = () => {
     <CardContainer title="GCP Management">
       {authStatus?.activeAccount ? (
         <Flex direction="column" gap="3">
-          <Flex align="center" gap="2">
-            <Badge color="green" size="2">
-              Active
-            </Badge>
-            <Text size="2" className="text-gray-700">
-              {authStatus.activeAccount}
-            </Text>
-          </Flex>
+          {authStatus.accounts.length > 0 && (
+            <Flex direction="column" gap="2">
+              <Text size="1" weight="bold">
+                Accounts ({authStatus.accounts.length}):
+              </Text>
+              <Flex direction="column" gap="1">
+                {authStatus.accounts
+                  .sort((a, b) => {
+                    if (a.account === authStatus.activeAccount) return -1;
+                    if (b.account === authStatus.activeAccount) return 1;
+                    return 0;
+                  })
+                  .map((acc, idx) => {
+                    const isActive = acc.account === authStatus.activeAccount;
+                    return (
+                      <Flex
+                        key={idx}
+                        align="center"
+                        gap="2"
+                        wrap="wrap"
+                        className={`p-2 rounded border ${
+                          isActive
+                            ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
+                            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+                        }`}
+                      >
+                        {isActive && (
+                          <Badge color="green" size="1">
+                            Active
+                          </Badge>
+                        )}
+                        <Text
+                          size="2"
+                          weight={isActive ? 'bold' : 'regular'}
+                          className="flex-1"
+                        >
+                          {acc.account}
+                        </Text>
+                        {!isActive && (
+                          <Button
+                            variant="soft"
+                            size="1"
+                            onClick={() => switchAccount(acc.account)}
+                            disabled={switchingProject === acc.account}
+                          >
+                            {switchingProject === acc.account
+                              ? 'Switching...'
+                              : 'Select'}
+                          </Button>
+                        )}
+                      </Flex>
+                    );
+                  })}
+              </Flex>
+            </Flex>
+          )}
 
           {projects.length > 0 && (
             <Flex direction="column" gap="2">
@@ -161,105 +243,91 @@ export const GcloudAuthStatusComponent = () => {
                 gap="1"
                 style={{ maxHeight: '400px', overflowY: 'auto' }}
               >
-                {projects.map(project => {
-                  const isExpanded = expandedProjects.has(project.projectId);
-                  const isCurrent =
-                    project.projectId === authStatus.currentProject;
-                  return (
-                    <Flex
-                      key={project.projectId}
-                      direction="column"
-                      gap="2"
-                      className={`p-2 rounded border ${
-                        isCurrent
-                          ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
-                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                      }`}
-                    >
-                      <Flex align="center" gap="2" wrap="wrap">
-                        <Text
-                          size="2"
-                          className="cursor-pointer"
-                          onClick={() => toggleProject(project.projectId)}
-                        >
-                          {isExpanded ? '▼' : '▶'}
-                        </Text>
-                        {isCurrent && (
-                          <Badge color="green" size="1">
-                            Current
-                          </Badge>
-                        )}
-                        <Text
-                          size="2"
-                          weight={isCurrent ? 'bold' : 'regular'}
-                          className="flex-1 cursor-pointer"
-                          onClick={() => toggleProject(project.projectId)}
-                        >
-                          {project.name || project.projectId}
-                        </Text>
-                        <Text size="1" color="gray">
-                          ({project.projectId})
-                        </Text>
-                        {!isCurrent && (
-                          <Button
-                            variant="soft"
-                            size="1"
-                            onClick={() => switchProject(project.projectId)}
-                            disabled={switchingProject === project.projectId}
+                {projects
+                  .sort((a, b) => {
+                    if (a.projectId === authStatus.currentProject) return -1;
+                    if (b.projectId === authStatus.currentProject) return 1;
+                    return 0;
+                  })
+                  .map(project => {
+                    const isExpanded = expandedProjects.has(project.projectId);
+                    const isCurrent =
+                      project.projectId === authStatus.currentProject;
+                    return (
+                      <Flex
+                        key={project.projectId}
+                        direction="column"
+                        gap="2"
+                        className={`p-2 rounded border ${
+                          isCurrent
+                            ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
+                            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+                        }`}
+                      >
+                        <Flex align="center" gap="2" wrap="wrap">
+                          <Text
+                            size="2"
+                            className="cursor-pointer"
+                            onClick={() => toggleProject(project.projectId)}
                           >
-                            {switchingProject === project.projectId
-                              ? 'Switching...'
-                              : 'Select'}
-                          </Button>
+                            {isExpanded ? '▼' : '▶'}
+                          </Text>
+                          {isCurrent && (
+                            <Badge color="green" size="1">
+                              Current
+                            </Badge>
+                          )}
+                          <Text
+                            size="2"
+                            weight={isCurrent ? 'bold' : 'regular'}
+                            className="flex-1 cursor-pointer"
+                            onClick={() => toggleProject(project.projectId)}
+                          >
+                            {project.name || project.projectId}
+                          </Text>
+                          <Text size="1" color="gray">
+                            ({project.projectId})
+                          </Text>
+                          {!isCurrent && (
+                            <Button
+                              variant="soft"
+                              size="1"
+                              onClick={() => switchProject(project.projectId)}
+                              disabled={switchingProject === project.projectId}
+                            >
+                              {switchingProject === project.projectId
+                                ? 'Switching...'
+                                : 'Select'}
+                            </Button>
+                          )}
+                        </Flex>
+
+                        {isExpanded && (
+                          <Flex
+                            gap="2"
+                            wrap="wrap"
+                            className="pl-6 pt-1 border-t border-gray-200 dark:border-gray-700"
+                          >
+                            {Object.entries(
+                              getProjectUrls(project.projectId),
+                            ).map(([key, url]) => (
+                              <Button key={key} asChild variant="soft" size="1">
+                                <a
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {BUTTON_LABELS[key]}
+                                  <ExternalLinkIcon width="12" height="12" />
+                                </a>
+                              </Button>
+                            ))}
+                          </Flex>
                         )}
                       </Flex>
-
-                      {isExpanded && (
-                        <Flex
-                          gap="2"
-                          wrap="wrap"
-                          className="pl-6 pt-1 border-t border-gray-200 dark:border-gray-700"
-                        >
-                          {Object.entries(
-                            getProjectUrls(project.projectId),
-                          ).map(([key, url]) => (
-                            <Button key={key} asChild variant="soft" size="1">
-                              <a
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {BUTTON_LABELS[key]}
-                                <ExternalLinkIcon width="12" height="12" />
-                              </a>
-                            </Button>
-                          ))}
-                        </Flex>
-                      )}
-                    </Flex>
-                  );
-                })}
+                    );
+                  })}
               </Flex>
-            </Flex>
-          )}
-
-          {authStatus.accounts.length > 1 && (
-            <Flex direction="column" gap="2">
-              <Text size="1" weight="bold" className="text-gray-600">
-                Other Accounts:
-              </Text>
-              {authStatus.accounts
-                .filter(acc => acc.account !== authStatus.activeAccount)
-                .map((acc, idx) => (
-                  <Flex key={idx} align="center" gap="2">
-                    <Badge color="gray" size="1">
-                      Inactive
-                    </Badge>
-                    <Text size="2" className="text-gray-500">
-                      {acc.account}
-                    </Text>
-                  </Flex>
-                ))}
             </Flex>
           )}
         </Flex>

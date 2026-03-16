@@ -8,7 +8,7 @@ import {
   Select,
   IconButton,
   TextField,
-  Tabs,
+  Dialog,
 } from '@radix-ui/themes';
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
@@ -25,7 +25,7 @@ import {
   Active,
   Over,
 } from '@dnd-kit/core';
-import { SortableContext, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GoogleTasksComponent } from './google-tasks.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -273,12 +273,14 @@ const SortableLane = ({
         showSelector={false}
         enableDragDrop={true}
         refreshTrigger={refreshTrigger}
+        disableInternalDndContext={true}
       />
     </div>
   );
 };
 
-export const SwimlanesComponent = () => {
+// eslint-disable-next-line complexity
+export const KanbanComponent = () => {
   const { data: session, status } = useSession();
   const {
     boards,
@@ -304,6 +306,8 @@ export const SwimlanesComponent = () => {
   const [newBoardName, setNewBoardName] = useState('');
   const [editingBoardId, setEditingBoardId] = useState<string | null>(null);
   const [editingBoardName, setEditingBoardName] = useState('');
+  const [showAddLaneDialog, setShowAddLaneDialog] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -342,6 +346,8 @@ export const SwimlanesComponent = () => {
   const handleAddLane = useCallback(() => {
     if (selectedTaskListId && activeBoardId) {
       addLane(activeBoardId, selectedTaskListId);
+      setShowAddLaneDialog(false);
+      setSelectedTaskListId('');
     }
   }, [selectedTaskListId, activeBoardId, addLane]);
 
@@ -417,21 +423,26 @@ export const SwimlanesComponent = () => {
       if (!over || active.id === over.id) return;
 
       const overType = over.data.current?.type;
-      if (overType !== 'task') return;
+      if (overType !== 'task' && overType !== 'taskList') return;
 
       const taskData = active.data.current;
       const sourceListId = taskData?.taskListId;
-      const targetListId = over.id as string;
+      const targetListId = over.data.current?.taskListId;
 
       if (!sourceListId || !targetListId || sourceListId === targetListId)
         return;
 
-      await fetch(
+      const deleteResponse = await fetch(
         `${API_ENDPOINTS.TASKS}?taskListId=${sourceListId}&taskId=${taskData.task.id}`,
         { method: 'DELETE' },
       );
 
-      await fetch(API_ENDPOINTS.TASKS, {
+      if (!deleteResponse.ok) {
+        console.error('Failed to delete task from source list');
+        return;
+      }
+
+      const createResponse = await fetch(API_ENDPOINTS.TASKS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -440,6 +451,11 @@ export const SwimlanesComponent = () => {
           notes: taskData.task.notes,
         }),
       });
+
+      if (!createResponse.ok) {
+        console.error('Failed to create task in target list');
+        return;
+      }
 
       setRefreshTrigger(prev => prev + 1);
     },
@@ -490,179 +506,214 @@ export const SwimlanesComponent = () => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <Flex direction="column" gap="4" className="w-full h-full p-4">
-        <Flex justify="between" align="center">
-          <Text size="5" weight="bold">
-            Task Swimlanes
-          </Text>
-          {!showNewBoardForm ? (
-            <Button
-              onClick={() => setShowNewBoardForm(true)}
-              size="2"
-              variant="soft"
-            >
-              + New Board
-            </Button>
-          ) : (
-            <Flex gap="2" align="center">
-              <TextField.Root
-                placeholder="Board name..."
-                value={newBoardName}
-                onChange={e => setNewBoardName(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') handleAddBoard();
-                  else if (e.key === 'Escape') {
-                    setShowNewBoardForm(false);
-                    setNewBoardName('');
-                  }
-                }}
-                size="2"
-                autoFocus
-              />
-              <Button onClick={handleAddBoard} size="2">
-                Add
-              </Button>
-              <Button
-                onClick={() => {
-                  setShowNewBoardForm(false);
-                  setNewBoardName('');
-                }}
-                size="2"
-                variant="soft"
-              >
-                Cancel
-              </Button>
-            </Flex>
-          )}
-        </Flex>
-
-        <Tabs.Root value={activeBoardId} onValueChange={setActiveBoardId}>
-          <Flex gap="2" align="center" className="flex-wrap">
-            <Tabs.List>
-              {boards.map(board => (
-                <div
-                  key={board.id}
-                  className="relative inline-flex items-center"
+      <div className="flex h-full">
+        <div
+          className={`transition-all duration-300 border-r flex flex-col gap-4 overflow-hidden ${
+            sidebarOpen ? 'w-64 p-4 overflow-y-auto' : 'w-0 p-0 border-r-0'
+          }`}
+        >
+          {sidebarOpen && (
+            <>
+              <Flex justify="between" align="center">
+                <Text size="4" weight="bold">
+                  Boards
+                </Text>
+                <Dialog.Root
+                  open={showNewBoardForm}
+                  onOpenChange={setShowNewBoardForm}
                 >
-                  <Tabs.Trigger value={board.id}>
-                    {editingBoardId === board.id ? (
+                  <Dialog.Trigger>
+                    <IconButton size="1" variant="ghost">
+                      +
+                    </IconButton>
+                  </Dialog.Trigger>
+                  <Dialog.Content>
+                    <Dialog.Title>Add Board</Dialog.Title>
+                    <Flex direction="column" gap="3">
                       <TextField.Root
-                        value={editingBoardName}
-                        onChange={e => setEditingBoardName(e.target.value)}
+                        placeholder="Board name..."
+                        value={newBoardName}
+                        onChange={e => setNewBoardName(e.target.value)}
                         onKeyDown={e => {
-                          if (e.key === 'Enter') handleSaveEditBoard();
-                          else if (e.key === 'Escape') {
-                            setEditingBoardId(null);
-                            setEditingBoardName('');
-                          }
-                          e.stopPropagation();
+                          if (e.key === 'Enter') handleAddBoard();
                         }}
-                        onBlur={handleSaveEditBoard}
-                        onClick={e => e.stopPropagation()}
-                        size="1"
+                        size="2"
                         autoFocus
                       />
-                    ) : (
-                      <span
-                        onDoubleClick={() =>
-                          handleStartEditBoard(board.id, board.name)
-                        }
-                      >
-                        {board.name}
-                      </span>
-                    )}
-                  </Tabs.Trigger>
-                  {boards.length > 1 && (
-                    <button
-                      className="ml-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                      onClick={e => {
-                        e.stopPropagation();
-                        removeBoard(board.id);
-                      }}
-                      aria-label="Remove board"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-            </Tabs.List>
-          </Flex>
-
-          {boards.map(board => (
-            <Tabs.Content key={board.id} value={board.id}>
-              <Flex direction="column" gap="4">
-                <Flex gap="2" align="center">
-                  <Select.Root
-                    value={selectedTaskListId}
-                    onValueChange={setSelectedTaskListId}
-                    disabled={availableTaskLists.length === 0}
-                  >
-                    <Select.Trigger
-                      placeholder={
-                        availableTaskLists.length === 0
-                          ? 'No task lists available'
-                          : 'Select task list...'
-                      }
-                    />
-                    <Select.Content>
-                      {availableTaskLists.map(list => (
-                        <Select.Item key={list.id} value={list.id}>
-                          {list.title}
-                        </Select.Item>
-                      ))}
-                    </Select.Content>
-                  </Select.Root>
-                  <Button
-                    onClick={handleAddLane}
-                    disabled={
-                      !selectedTaskListId || availableTaskLists.length === 0
-                    }
-                  >
-                    + Add Lane
-                  </Button>
-                </Flex>
-
-                {board.lanes.length === 0 ? (
-                  <Card>
-                    <Flex direction="column" gap="2" p="4" align="center">
-                      <Text size="2" color="gray">
-                        No lanes added yet. Add a lane to get started.
-                      </Text>
+                      <Flex gap="3" justify="end">
+                        <Dialog.Close>
+                          <Button variant="soft">Cancel</Button>
+                        </Dialog.Close>
+                        <Button
+                          onClick={handleAddBoard}
+                          disabled={!newBoardName.trim()}
+                        >
+                          Add Board
+                        </Button>
+                      </Flex>
                     </Flex>
-                  </Card>
-                ) : (
-                  <SortableContext items={board.lanes.map(l => l.id)}>
-                    <div className="flex gap-4 overflow-x-auto pb-4">
-                      <LaneDropZone position={0} boardId={board.id} />
-                      {board.lanes.map((lane, index) => {
-                        const taskList = taskLists.find(
-                          list => list.id === lane.taskListId,
-                        );
-                        return (
-                          <div key={lane.id} className="flex gap-4">
-                            <SortableLane
-                              lane={lane}
-                              taskList={taskList}
-                              boardId={board.id}
-                              onRemove={removeLane}
-                              refreshTrigger={refreshTrigger}
-                            />
-                            <LaneDropZone
-                              position={index + 1}
-                              boardId={board.id}
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </SortableContext>
-                )}
+                  </Dialog.Content>
+                </Dialog.Root>
               </Flex>
-            </Tabs.Content>
-          ))}
-        </Tabs.Root>
-      </Flex>
+
+              <div className="flex flex-col gap-1">
+                {boards.map(board => (
+                  <div key={board.id}>
+                    <Flex
+                      justify="between"
+                      align="center"
+                      className={`py-1 px-2 rounded ${
+                        activeBoardId === board.id
+                          ? 'border-l-2 border-blue-500'
+                          : ''
+                      }`}
+                    >
+                      {editingBoardId === board.id ? (
+                        <TextField.Root
+                          value={editingBoardName}
+                          onChange={e => setEditingBoardName(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') handleSaveEditBoard();
+                            else if (e.key === 'Escape') {
+                              setEditingBoardId(null);
+                              setEditingBoardName('');
+                            }
+                          }}
+                          onBlur={handleSaveEditBoard}
+                          size="1"
+                          className="flex-1"
+                          autoFocus
+                        />
+                      ) : (
+                        <div
+                          onClick={() => setActiveBoardId(board.id)}
+                          onDoubleClick={() =>
+                            handleStartEditBoard(board.id, board.name)
+                          }
+                          className="flex-1 cursor-pointer"
+                        >
+                          <Text
+                            size="2"
+                            weight={
+                              activeBoardId === board.id ? 'bold' : 'regular'
+                            }
+                          >
+                            {board.name}
+                          </Text>
+                        </div>
+                      )}
+                      {boards.length > 1 && (
+                        <IconButton
+                          size="1"
+                          variant="ghost"
+                          color="gray"
+                          onClick={e => {
+                            e.stopPropagation();
+                            removeBoard(board.id);
+                          }}
+                        >
+                          ✕
+                        </IconButton>
+                      )}
+                    </Flex>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="flex-1 overflow-hidden">
+          <Flex direction="column" gap="4" className="w-full h-full p-4">
+            <Flex align="center" gap="2">
+              <IconButton
+                size="2"
+                variant="ghost"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+              >
+                {sidebarOpen ? '←' : '→'}
+              </IconButton>
+              <Text size="4" weight="bold">
+                {activeBoard.name}
+              </Text>
+            </Flex>
+            <SortableContext items={activeBoard?.lanes.map(l => l.id) || []}>
+              <div className="flex gap-4 overflow-x-auto pb-4 h-full">
+                <LaneDropZone position={0} boardId={activeBoardId} />
+                {activeBoard?.lanes.map((lane, index) => {
+                  const taskList = taskLists.find(
+                    list => list.id === lane.taskListId,
+                  );
+                  return (
+                    <div key={lane.id} className="flex gap-4">
+                      <SortableLane
+                        lane={lane}
+                        taskList={taskList}
+                        boardId={activeBoardId}
+                        onRemove={removeLane}
+                        refreshTrigger={refreshTrigger}
+                      />
+                      <LaneDropZone
+                        position={index + 1}
+                        boardId={activeBoardId}
+                      />
+                    </div>
+                  );
+                })}
+                <Dialog.Root
+                  open={showAddLaneDialog}
+                  onOpenChange={setShowAddLaneDialog}
+                >
+                  <Dialog.Trigger>
+                    <Button
+                      variant="ghost"
+                      size="2"
+                      className="w-80 h-12 flex-shrink-0 border-2 border-dashed"
+                    >
+                      <Text size="3">+ Add Lane</Text>
+                    </Button>
+                  </Dialog.Trigger>
+                  <Dialog.Content>
+                    <Dialog.Title>Add Lane</Dialog.Title>
+                    <Flex direction="column" gap="3">
+                      <Select.Root
+                        value={selectedTaskListId}
+                        onValueChange={setSelectedTaskListId}
+                      >
+                        <Select.Trigger
+                          placeholder={
+                            availableTaskLists.length === 0
+                              ? 'No task lists available'
+                              : 'Select task list...'
+                          }
+                        />
+                        <Select.Content>
+                          {availableTaskLists.map(list => (
+                            <Select.Item key={list.id} value={list.id}>
+                              {list.title}
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Root>
+                      <Flex gap="3" justify="end">
+                        <Dialog.Close>
+                          <Button variant="soft">Cancel</Button>
+                        </Dialog.Close>
+                        <Button
+                          onClick={handleAddLane}
+                          disabled={!selectedTaskListId}
+                        >
+                          Add Lane
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  </Dialog.Content>
+                </Dialog.Root>
+              </div>
+            </SortableContext>
+          </Flex>
+        </div>
+      </div>
 
       <DragOverlay>
         {activeTask ? (

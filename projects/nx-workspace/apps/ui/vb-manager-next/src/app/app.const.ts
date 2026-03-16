@@ -12,9 +12,9 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Home',
     path: '/',
   },
-  SWIMLANES: {
-    title: 'Swimlanes',
-    path: '/swimlanes',
+  KANBAN: {
+    title: 'Kanban',
+    path: '/kanban',
   },
   DEV_DASHBOARD: {
     title: 'Dev Dashboard',

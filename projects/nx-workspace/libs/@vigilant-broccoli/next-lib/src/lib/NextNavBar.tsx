@@ -23,7 +23,7 @@ export const NextNavBar = ({
 
   return (
     <div
-      className="mb-8 relative sticky top-0 z-50"
+      className="relative sticky top-0 z-50"
       style={{ backgroundColor: bgColor }}
     >
       <TabNav.Root>

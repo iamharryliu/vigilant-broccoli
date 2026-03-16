@@ -438,7 +438,7 @@ const TaskItem = memo(
 
     const { setNodeRef: setDroppableRef, isOver } = useDroppable({
       id: task.id,
-      data: { type: 'task', task },
+      data: { type: 'task', task, taskListId },
       disabled: !enableDragDrop,
     });
 
@@ -684,7 +684,7 @@ const TaskList = memo(
   }) => {
     const { setNodeRef } = useDroppable({
       id: taskListId || 'default',
-      data: { type: 'task' },
+      data: { type: 'taskList', taskListId },
     });
     if (loading) {
       return (
@@ -809,11 +809,13 @@ export const GoogleTasksComponent = ({
   showSelector = true,
   enableDragDrop = false,
   refreshTrigger = 0,
+  disableInternalDndContext = false,
 }: {
   taskListId?: string;
   showSelector?: boolean;
   enableDragDrop?: boolean;
   refreshTrigger?: number;
+  disableInternalDndContext?: boolean;
 } = {}) => {
   const { data: session, status } = useSession();
   const { taskLists, authError: titleAuthError } = useTaskLists(status);
@@ -966,50 +968,61 @@ export const GoogleTasksComponent = ({
 
   const isDragDropEnabled = sortMode === SORT_MODE.DEFAULT;
 
+  const content = (
+    <Card className="w-full">
+      <Flex direction="column" gap="3" p="4">
+        <TaskHeader
+          taskLists={taskLists}
+          selectedTaskListId={taskListId}
+          onTaskListChange={handleTaskListChange}
+          sortMode={sortMode}
+          onSortChange={handleSortChange}
+          showSelector={showSelector && !propTaskListId}
+        />
+
+        {hasAuthError && <AuthErrorBanner onSignOut={() => signOut()} />}
+
+        <AddTaskForm
+          showAddTask={showAddTask}
+          newTaskTitle={newTaskTitle}
+          onTitleChange={setNewTaskTitle}
+          onSubmit={handleCreateTask}
+          onCancel={handleCancelAddTask}
+          onShowForm={() => setShowAddTask(true)}
+          isLoading={isCreatingTask}
+        />
+
+        <TaskList
+          loading={loading}
+          error={error}
+          tasks={sortedTasks}
+          editingTaskId={editingTaskId}
+          editingTaskTitle={editingTaskTitle}
+          onToggleComplete={toggleTaskComplete}
+          onStartEdit={handleStartEdit}
+          onEditChange={handleEditChange}
+          onSaveEdit={handleSaveEdit}
+          onCancelEdit={handleCancelEdit}
+          enableDragDrop={isDragDropEnabled || enableDragDrop}
+          taskListId={taskListId}
+        />
+      </Flex>
+    </Card>
+  );
+
   return (
     <>
       <style>{ANIMATION_STYLES}</style>
-      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-        <Card className="w-full">
-          <Flex direction="column" gap="3" p="4">
-            <TaskHeader
-              taskLists={taskLists}
-              selectedTaskListId={taskListId}
-              onTaskListChange={handleTaskListChange}
-              sortMode={sortMode}
-              onSortChange={handleSortChange}
-              showSelector={showSelector && !propTaskListId}
-            />
-
-            {hasAuthError && <AuthErrorBanner onSignOut={() => signOut()} />}
-
-            <AddTaskForm
-              showAddTask={showAddTask}
-              newTaskTitle={newTaskTitle}
-              onTitleChange={setNewTaskTitle}
-              onSubmit={handleCreateTask}
-              onCancel={handleCancelAddTask}
-              onShowForm={() => setShowAddTask(true)}
-              isLoading={isCreatingTask}
-            />
-
-            <TaskList
-              loading={loading}
-              error={error}
-              tasks={sortedTasks}
-              editingTaskId={editingTaskId}
-              editingTaskTitle={editingTaskTitle}
-              onToggleComplete={toggleTaskComplete}
-              onStartEdit={handleStartEdit}
-              onEditChange={handleEditChange}
-              onSaveEdit={handleSaveEdit}
-              onCancelEdit={handleCancelEdit}
-              enableDragDrop={isDragDropEnabled || enableDragDrop}
-              taskListId={taskListId}
-            />
-          </Flex>
-        </Card>
-      </DndContext>
+      {disableInternalDndContext ? (
+        content
+      ) : (
+        <DndContext
+          onDragEnd={handleDragEnd}
+          collisionDetection={closestCenter}
+        >
+          {content}
+        </DndContext>
+      )}
     </>
   );
 };
