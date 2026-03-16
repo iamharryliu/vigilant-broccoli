@@ -724,14 +724,14 @@ export const KanbanComponent = () => {
               </Text>
             </Flex>
             <SortableContext items={activeBoard?.lanes.map(l => l.id) || []}>
-              <div className="flex gap-4 overflow-x-auto pb-4 h-full">
+              <div className="flex gap-2 overflow-x-auto pb-4 h-full">
                 <LaneDropZone position={0} boardId={activeBoardId} />
                 {activeBoard?.lanes.map((lane, index) => {
                   const taskList = taskLists.find(
                     list => list.id === lane.taskListId,
                   );
                   return (
-                    <div key={lane.id} className="flex gap-4">
+                    <div key={lane.id} className="flex gap-2">
                       <SortableLane
                         lane={lane}
                         taskList={taskList}
@@ -746,19 +746,20 @@ export const KanbanComponent = () => {
                     </div>
                   );
                 })}
-                <Dialog.Root
-                  open={showAddLaneDialog}
-                  onOpenChange={setShowAddLaneDialog}
-                >
-                  <Dialog.Trigger>
-                    <Button
-                      variant="ghost"
-                      size="2"
-                      className="w-80 h-12 flex-shrink-0 border-2 border-dashed"
-                    >
-                      <Text size="3">+ Add Lane</Text>
-                    </Button>
-                  </Dialog.Trigger>
+                <div className="ml-2">
+                  <Dialog.Root
+                    open={showAddLaneDialog}
+                    onOpenChange={setShowAddLaneDialog}
+                  >
+                    <Dialog.Trigger>
+                      <Button
+                        variant="ghost"
+                        size="2"
+                        className="w-80 h-12 flex-shrink-0 border-2 border-dashed"
+                      >
+                        <Text size="3">+ Add Lane</Text>
+                      </Button>
+                    </Dialog.Trigger>
                   <Dialog.Content>
                     <Dialog.Title>Add Lane</Dialog.Title>
                     <Flex direction="column" gap="3">
@@ -795,6 +796,7 @@ export const KanbanComponent = () => {
                     </Flex>
                   </Dialog.Content>
                 </Dialog.Root>
+                </div>
               </div>
             </SortableContext>
           </Flex>
