@@ -1,7 +1,5 @@
 # TODO
 
-- Employee Handler - Mising gam/gyb handling
-
 ## ci
 
 - chore: alias for `alias run lib:nx-release-publish`?
