@@ -19,19 +19,31 @@ GAS_PEDAL[Gas Pedal]
 ```mermaid
 flowchart TD
 
-CLUTCH[Clutch]-->BRAKE[Brake]-->START_VEHICLE[Start Vehicle]-->HAND_BRAKE[Release Hand Brake]-->SPOT_CHECK[Spot Checks]-->SIGNAL[Signal]-->GEAR_SELECTION[Shift to First Gear]-->RELEASE_BRAKE[Release Brake]-->RELEASE_CLUTCH[Slowly Release Clutch]-->GAS[Slowly Gas]
+CLUTCH[Clutch]-->BRAKE[Brake]-->START_VEHICLE[Start Vehicle]-->HAND_BRAKE[Release Hand Brake]-->SPOT_CHECK[Spot Checks]-->SIGNAL[Signal]-->SHIFT_TO_FIRST_GEAR[Shift to First Gear]-->RELEASE_BRAKE[Release Brake]-->RELEASE_CLUTCH[Slowly Release Clutch]-->GAS[Slowly Gas]-->SHIFT_TO_SECOND_GEAR[Shift to Second Gear]
 ```
 
 ### Changing Gear
 
+#### Shifting Gear Up
+
 ```mermaid
 flowchart LR
-EASE_OFF_GAS[Ease off Gas]-->CLUTCH[Clutch]-->SHIFT_GEAR[Shift Gear]-->RELEASE[Slowly Release Clutch + Gas]-->RELEASE_AND_ACCELERATE[Release Clutch + Accelerate]
+RELEASE_GAS[Release Gas Pedal]-->CLUTCH[Clutch]-->SHIFT_GEAR[Shift Gear]-->RELEASE[Slowly Release Clutch + Gas]-->RELEASE_AND_ACCELERATE[Release Clutch + Accelerate]
 ```
 
-- For shifting down match your speed to the lower gear - you might need a bit more gas as you release the clutch to keep things smooth.
+#### Shifting Gear Down
+
+```mermaid
+flowchart LR
+RELEASE_GAS[Release Gas Pedal]-->PREPARE_BRAKE[Prepare to Break]-->CLUTCH[Clutch]-->SHIFT_GEAR[Shift Gear]-->RELEASE[Slowly Release Clutch + Gas]-->RELEASE_AND_ACCELERATE[Release Clutch + Accelerate]
+```
 
 ### Stopping and Parking
+
+```mermaid
+flowchart LR
+RELEASE_GAS[Release Gas Pedal]-->START_BRAKING[Start Braking/Slowing Down]-->CLUTCH[Clutch]-->STOP[Stop]-->SHIFT_TO_FIRST_GEAR[Shift to First Gear]
+```
 
 - Press the clutch down before you come to a complete stop (or the engine will stall), then shift to neutral.
 - Parking - Park in gear with emergency brake on.
