@@ -19,7 +19,7 @@ export const CopyPastable = ({
     });
   };
 
-  const shouldShowPlaceholder = isResultEmpty && placeholder;
+  const shouldShowPlaceholder = !!(isResultEmpty && placeholder);
   const displayText = shouldShowPlaceholder ? placeholder : text;
 
   return (
