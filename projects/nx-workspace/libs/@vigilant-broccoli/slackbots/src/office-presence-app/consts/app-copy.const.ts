@@ -66,7 +66,11 @@ export const APP_COPY = {
   getAppDescription(appName: string) {
     return `${appName} makes it easy to plan your office visits. Mark which office you are visiting, when you’ll be in, whole day, morning, afternoon, or if you are bringing your dog. You can also leave a note for additional information about your visit ie _Bringing surdeg!_.`;
   },
-  getReminderDmText(appName: string) {
-    return `Friendly reminder to plan for your office presence using ${appName}!`;
+  getReminderDmText(appName: string, userId?: string, appId?: string) {
+    const userMention = userId ? `<@${userId}>` : 'Hey';
+    const appMention = appId
+      ? `<!subteam^${appId}|@${appName}>`
+      : `@${appName}`;
+    return `${userMention} 👋 Friendly reminder to plan for your office presence using ${appMention}!`;
   },
 };

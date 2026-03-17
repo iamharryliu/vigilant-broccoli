@@ -36,6 +36,7 @@ export type OfficePresenceAppRunConfig = {
   reminderCron?: string;
   reminderTimezone?: string;
   enableReminders?: boolean;
+  includeWeekends?: boolean;
 };
 
 const DEFAULT_PORT = 3000;
@@ -48,11 +49,12 @@ const DEFAULT_OFFICES: string[] = [];
 export async function runOfficePresenceApp(
   config: OfficePresenceAppRunConfig = {},
 ) {
-  const { id, APP_NAME, OFFICES } = config;
+  const { id, APP_NAME, OFFICES, includeWeekends } = config;
   const appConfig: AppConfig = {
     id,
     APP_NAME: APP_NAME ?? DEFAULT_APP_NAME,
     OFFICES: OFFICES ?? DEFAULT_OFFICES,
+    includeWeekends,
   };
   const publishHomeView = createPublishHomeView(appConfig);
   const getInputScheduleModal = createInputScheduleModal(appConfig);

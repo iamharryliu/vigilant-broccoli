@@ -2,6 +2,7 @@ export type AppConfig = {
   id?: string;
   APP_NAME: string;
   OFFICES: string[];
+  includeWeekends?: boolean;
 };
 
 export const PRESENCE_TIME = {

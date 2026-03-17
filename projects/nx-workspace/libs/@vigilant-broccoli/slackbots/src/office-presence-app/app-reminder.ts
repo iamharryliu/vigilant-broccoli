@@ -42,7 +42,11 @@ async function postMessage(
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: APP_COPY.getReminderDmText(appConfig.APP_NAME),
+        text: APP_COPY.getReminderDmText(
+          appConfig.APP_NAME,
+          channel,
+          appConfig.id,
+        ),
       },
     },
   ];
@@ -67,7 +71,11 @@ async function postMessage(
   try {
     await client.chat.postMessage({
       channel,
-      text: APP_COPY.getReminderDmText(appConfig.APP_NAME),
+      text: APP_COPY.getReminderDmText(
+        appConfig.APP_NAME,
+        channel,
+        appConfig.id,
+      ),
       blocks,
     });
   } catch (error) {
@@ -78,13 +86,7 @@ async function postMessage(
 
 async function getOpenAppUrl(client: WebClient, appId: string) {
   const auth = await client.auth.test();
-  const params = new URLSearchParams({
-    app: appId,
-  });
-
-  if (auth.team_id) {
-    params.set('team', auth.team_id);
-  }
-
-  return `https://slack.com/app_redirect?${params.toString()}`;
+  return `https://slack.com/app_redirect?app=${encodeURIComponent(
+    appId,
+  )}&team=${encodeURIComponent(auth.team_id)}`;
 }

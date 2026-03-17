@@ -49,7 +49,7 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
     userPresences[userId] = {};
   }
   const selected = Object.keys(userPresences[userId]);
-  const dates = getUpcomingWeekdays(10);
+  const dates = getUpcomingWeekdays(10, appConfig.includeWeekends);
   const options = buildModalDateOptionSlackBlocks(dates);
   const initial = options.filter(opt => selected.includes(opt.value));
   const today = formatISODateLocal(new Date());

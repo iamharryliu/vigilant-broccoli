@@ -27,13 +27,16 @@ export function formatISODateLocal(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-export function getUpcomingWeekdays(numDays = 10): Date[] {
+export function getUpcomingWeekdays(
+  numDays = 10,
+  includeWeekends = false,
+): Date[] {
   const today = new Date();
   const days: Date[] = [];
   for (let i = 0; i < numDays; i++) {
     const d = addDays(today, i);
     const day = d.getDay();
-    if (day >= 1 && day <= 5) {
+    if (includeWeekends || (day >= 1 && day <= 5)) {
       days.push(d);
     }
   }
