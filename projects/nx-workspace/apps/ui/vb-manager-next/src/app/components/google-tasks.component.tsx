@@ -1013,16 +1013,12 @@ export const GoogleTasksComponent = ({
   return (
     <>
       <style>{ANIMATION_STYLES}</style>
-      {disableInternalDndContext ? (
-        content
-      ) : (
-        <DndContext
-          onDragEnd={handleDragEnd}
-          collisionDetection={closestCenter}
-        >
-          {content}
-        </DndContext>
-      )}
+      <DndContext
+        onDragEnd={handleDragEnd}
+        collisionDetection={closestCenter}
+      >
+        {content}
+      </DndContext>
     </>
   );
 };

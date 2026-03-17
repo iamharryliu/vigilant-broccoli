@@ -1,12 +1,12 @@
-import { Card, Heading, TextArea } from '@radix-ui/themes';
+import { Card, TextArea, Heading, Text } from '@radix-ui/themes';
 import { EnvUtils } from '@vigilant-broccoli/common-js';
-import { ConversionForm, CopyPastable } from '@vigilant-broccoli/react-lib';
+import { ConversionForm } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { countWords } from '@vigilant-broccoli/common-js';
 
 export const TextToolsPage = () => {
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <EnvironmentVariablesToJSONForm />
       <JSONToEnvVarForm />
       <JSONPrettier />
@@ -17,169 +17,130 @@ export const TextToolsPage = () => {
   );
 };
 
+const SAMPLE_ENV_VARS = `NODE_ENV=production\nSECRET_KEY="abc 123"`;
+
 const EnvironmentVariablesToJSONForm = () => {
   return (
-    <div className="flex space-x-4">
-      <div className="w-2/3">
-        <ConversionForm
-          copy={{
-            header: 'Environment Variables to JSON',
-            placeholder: 'Your environment variables..',
-          }}
-          initialText={''}
-          conversionFn={text =>
-            EnvUtils.getPrettierJSON(
-              JSON.stringify(EnvUtils.getJSONFromEnvironmentVariables(text)),
-            )
-          }
-        />
-      </div>
-      <div className="flex w-1/3">
-        <DemoExampleCard
-          heading={`Sample Environment Variables`}
-          exampleText={`NODE_ENV=production\nSECRET_KEY="abc 123"`}
-        />
-      </div>
-    </div>
+    <ConversionForm
+      copy={{
+        header: 'Environment Variables to JSON',
+        placeholder: SAMPLE_ENV_VARS,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_ENV_VARS}
+      conversionFn={text =>
+        EnvUtils.getPrettierJSON(
+          JSON.stringify(EnvUtils.getJSONFromEnvironmentVariables(text)),
+        )
+      }
+    />
   );
 };
 
-export const DemoExampleCard = ({
-  heading,
-  exampleText,
-}: {
-  heading: string;
-  exampleText: string;
-}) => {
-  return (
-    <Card className="w-full space-y-2">
-      <Heading size="4" mb="2">
-        {heading}
-      </Heading>
-      <div className="w-full">
-        <CopyPastable text={exampleText} />
-      </div>
-    </Card>
-  );
-};
+const SAMPLE_JSON = JSON.stringify(
+  { NODE_ENV: 'production', SECRET_KEY: 'abc 123' },
+  null,
+  2,
+);
 
 const JSONToEnvVarForm = () => {
   return (
-    <div className="flex space-x-4">
-      <div className="w-2/3">
-        <ConversionForm
-          copy={{
-            header: 'JSON to Environment Variables',
-            placeholder: 'Your JSON..',
-          }}
-          initialText={'{}'}
-          conversionFn={EnvUtils.getEnvironmentVariablesFromJSON}
-        />
-      </div>
-
-      <div className="w-1/3">
-        <DemoExampleCard
-          heading={`Sample JSON`}
-          exampleText={JSON.stringify(
-            { NODE_ENV: 'production', SECRET_KEY: 'abc 123' },
-            null,
-            2,
-          )}
-        />
-      </div>
-    </div>
+    <ConversionForm
+      copy={{
+        header: 'JSON to Environment Variables',
+        placeholder: SAMPLE_JSON,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_JSON}
+      conversionFn={EnvUtils.getEnvironmentVariablesFromJSON}
+    />
   );
 };
+
+const SAMPLE_JSON_COMPACT = JSON.stringify({
+  NODE_ENV: 'production',
+  SECRET_KEY: 'abc 123',
+});
 
 const JSONPrettier = () => {
   return (
-    <div className="flex space-x-4">
-      <div className="w-2/3">
-        <ConversionForm
-          copy={{ header: 'JSON Prettier', placeholder: 'Your JSON..' }}
-          initialText={'{}'}
-          conversionFn={EnvUtils.getPrettierJSON}
-        />
-      </div>
-
-      <div className="w-1/3">
-        <DemoExampleCard
-          heading={'Sample JSON'}
-          exampleText={JSON.stringify({
-            NODE_ENV: 'production',
-            SECRET_KEY: 'abc 123',
-          })}
-        />
-      </div>
-    </div>
+    <ConversionForm
+      copy={{ header: 'JSON Prettier', placeholder: SAMPLE_JSON_COMPACT }}
+      initialText={''}
+      sampleText={SAMPLE_JSON_COMPACT}
+      conversionFn={EnvUtils.getPrettierJSON}
+    />
   );
 };
+
+const SAMPLE_ENV_VARS_2 = `NODE_ENV=production\nSECRET_KEY="abc 123"`;
 
 const CleanEnvConversionForm = () => {
   return (
-    <div className="flex space-x-4">
-      <div className="w-2/3">
-        <ConversionForm
-          copy={{
-            header: 'Get Stubbed Environment Variable Keys',
-            placeholder: 'Environment Variables',
-          }}
-          initialText={''}
-          conversionFn={EnvUtils.getStubbedEnvironmentVariableKeys}
-        />
-      </div>
-
-      <div className="w-1/3">
-        <DemoExampleCard
-          heading={'Sample Environment Variables'}
-          exampleText={`NODE_ENV=production\nSECRET_KEY="abc 123"`}
-        />
-      </div>
-    </div>
+    <ConversionForm
+      copy={{
+        header: 'Get Stubbed Environment Variable Keys',
+        placeholder: SAMPLE_ENV_VARS_2,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_ENV_VARS_2}
+      conversionFn={EnvUtils.getStubbedEnvironmentVariableKeys}
+    />
   );
 };
 
+const SAMPLE_BLOCK_STRING = `-----BEGIN CERTIFICATE-----\nSomething\n-----END CERTIFICATE-----"`;
+
 const FormatBlockStringToSingleStringForm = () => {
   return (
-    <div className="flex space-x-4">
-      <div className="w-2/3">
-        <ConversionForm
-          copy={{
-            header: 'Block String to Single Line String',
-            placeholder: 'Text',
-          }}
-          initialText={''}
-          conversionFn={EnvUtils.formatBlockStringToSingleLineString}
-        />
-      </div>
-
-      <div className="w-1/3">
-        <DemoExampleCard
-          heading={'Sample Environment Variables'}
-          exampleText={`-----BEGIN CERTIFICATE-----\nSomething\n-----END CERTIFICATE-----"`}
-        />
-      </div>
-    </div>
+    <ConversionForm
+      copy={{
+        header: 'Block String to Single Line String',
+        placeholder: SAMPLE_BLOCK_STRING,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_BLOCK_STRING}
+      conversionFn={EnvUtils.formatBlockStringToSingleLineString}
+    />
   );
 };
 
 const CharacterCounter = () => {
   const [text, setText] = useState('');
+
+  const charCount = text.length;
+  const charCountNoSpaces = text.replace(/\s/g, '').length;
+  const wordCount = countWords(text);
+  const sentenceCount = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+
   return (
     <Card>
       <Heading size="4" mb="2">
         Text Analysis
       </Heading>
       <div className="flex space-x-4">
-        <TextArea
-          className="w-1/2"
-          value={text}
-          onChange={e => setText(e.target.value)}
-          placeholder="Enter text.."
-        />
         <div className="w-1/2">
-          <p>Length: {text.length}</p>
-          <p>Words: {countWords(text)}</p>
+          <TextArea
+            value={text}
+            onChange={e => setText(e.target.value)}
+            placeholder="Enter text.."
+            size="3"
+            className="h-full resize-y"
+          />
+        </div>
+        <div className="w-1/2 space-y-4">
+          <div>
+            <Text>Characters: {charCount}</Text>
+          </div>
+          <div>
+            <Text>Characters (no spaces): {charCountNoSpaces}</Text>
+          </div>
+          <div>
+            <Text>Words: {wordCount}</Text>
+          </div>
+          <div>
+            <Text>Sentences: {sentenceCount}</Text>
+          </div>
         </div>
       </div>
     </Card>

@@ -537,8 +537,12 @@ export const KanbanComponent = () => {
       const sourceListId = taskData?.taskListId;
       const targetListId = over.data.current?.taskListId;
 
-      if (!sourceListId || !targetListId || sourceListId === targetListId)
+      if (!sourceListId || !targetListId) return;
+
+      if (sourceListId === targetListId) {
+        setRefreshTrigger(prev => prev + 1);
         return;
+      }
 
       const deleteResponse = await fetch(
         `${API_ENDPOINTS.TASKS}?taskListId=${sourceListId}&taskId=${taskData.task.id}`,

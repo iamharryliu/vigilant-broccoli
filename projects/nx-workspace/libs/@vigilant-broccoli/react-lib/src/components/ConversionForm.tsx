@@ -6,10 +6,12 @@ export const ConversionForm = ({
   copy,
   initialText,
   conversionFn,
+  sampleText,
 }: {
   copy: Record<string, string>;
   initialText: string;
   conversionFn: (text: string) => string;
+  sampleText?: string;
 }) => {
   const [text, setText] = useState(initialText);
   const [isDragging, setIsDragging] = useState(false);
@@ -69,10 +71,16 @@ export const ConversionForm = ({
             onChange={e => setText(e.target.value)}
             placeholder={copy.placeholder}
             size="3"
+            className='h-full'
+            resize="vertical"
           />
         </div>
         <div className="w-1/2">
-          <CopyPastable text={conversionFn(text)} />
+          <CopyPastable
+            text={conversionFn(text)}
+            placeholder={sampleText ? conversionFn(sampleText) : undefined}
+            isResultEmpty={!text}
+          />
         </div>
       </div>
     </Card>
