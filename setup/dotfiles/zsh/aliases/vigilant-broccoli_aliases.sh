@@ -1,6 +1,11 @@
 # Code Workspaces
-alias openvbws="code $HOME/Workspaces/vb.code-workspace"
-alias openworkws="code $HOME/Workspaces/work.code-workspace"
+vsws() {
+    if [ -z "$1" ]; then
+        code "$HOME/Workspaces"
+    else
+        code "$HOME/Workspaces/$1.code-workspace"
+    fi
+}
 
 # Journal
 ICLOUD_JOURNAL_DIR="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal"
