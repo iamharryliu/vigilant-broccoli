@@ -6,24 +6,9 @@
 
 ## vigilant-broccoli
 
-- **Jarvis**
-  - Consume
-    - Journal TODO
-    - vb TODO
-  - Implement with Claude Workflow - `/vb-plan-day`, `/vb-plan-week`
-- **machine**
-  - audit default pip list
 - **Infrastructure**
   - GCP VM
     - Bootstrapping Vault and WireGuard
-- **employee-handler**
-  - Inform user if gam or gyb needs to be setup.
-  - Create missing folder/file structures.
-- **Fix/`Chore`**
-  - chore: Replace Obsidian brackets. `[[something]]`
-- **Audit/Refactor Tasks**
-  - feat: Setup linux vs mac setup scripts
-  - chore: dotfile cleanup
 - **R&D**
   - chore: Pihole reserach, pihole, pivpn, nordvpn integration.
   - chore: iCloud vb notes.
