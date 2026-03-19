@@ -134,3 +134,8 @@ alias bitwarden="open -a bitwarden"
 
 # Hobby Code
 alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py --output '$HOME/My Drive/DJ Music Library' --filter 'mix'"
+
+# Docker
+alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
+
+alias brewup="brew update && brew upgrade && brew cleanup"

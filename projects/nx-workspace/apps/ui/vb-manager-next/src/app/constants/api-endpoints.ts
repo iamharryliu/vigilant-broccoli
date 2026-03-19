@@ -32,6 +32,9 @@ export const API_ENDPOINTS = {
   PUBLIC_IP: '/api/public-ip',
   LOCAL_IP: '/api/local-ip',
 
+  // System
+  LOCAL_MACHINE: '/api/local-machine',
+
   // Tasks
   TASKS: '/api/tasks',
   TASKS_LISTS: '/api/tasks/lists',

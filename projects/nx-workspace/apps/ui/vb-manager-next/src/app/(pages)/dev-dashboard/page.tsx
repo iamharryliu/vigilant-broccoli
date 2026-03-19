@@ -1,5 +1,6 @@
 'use client';
 
+import { LocalMachineComponent } from '../../components/local-machine.component';
 import { DockerStatusComponent } from '../../components/docker-status.component';
 import { FlyIoAppsComponent } from '../../components/flyio-apps.component';
 import { GcloudAuthStatusComponent } from '../../components/gcloud-auth-status.component';
@@ -15,6 +16,7 @@ export default function Page() {
     <div className="grid grid-cols-3 gap-4 h-full">
       <div className="flex flex-col gap-4">
         <PublicIpComponent />
+        <LocalMachineComponent />
         <WireguardStatusComponent />
         <PM2StatusComponent />
         <DockerStatusComponent />
