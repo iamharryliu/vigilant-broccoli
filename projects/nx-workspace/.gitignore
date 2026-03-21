@@ -53,6 +53,7 @@ apps/ui/personal-website-frontend/src/assets/grind-75/
 
 # Next.js
 .next
+next-env.d.ts
 out
 **/next-env.d.ts
 *.tsbuildinfo

@@ -6,14 +6,15 @@ const vercel = new Vercel({
   bearerToken: process.env.VERCEL_API_TOKEN,
 });
 
-export async function inviteVercelUser(user: Omit<VercelUser, 'uid'>) {
+export async function inviteVercelUser(
+  teamId: string,
+  user: Omit<VercelUser, 'uid'>,
+) {
   try {
-    await vercel.teams.inviteUserToTeam([
-      {
-        email: user.email,
-        role: user.role,
-      },
-    ]);
+    await vercel.teams.inviteUserToTeam({
+      teamId,
+      requestBody: [{ email: user.email, role: user.role }],
+    });
     console.log(
       `✓ Successfully invited ${user.email} with role ${user.role}...`,
     );
@@ -105,10 +106,11 @@ export async function updateTeamMembers(
 }
 
 export async function inviteNewUsers(
+  teamId: string,
   usersToInvite: Omit<VercelUser, 'uid'>[],
 ): Promise<void> {
   for (const user of usersToInvite) {
-    await inviteVercelUser(user);
+    await inviteVercelUser(teamId, user);
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
 }
@@ -144,5 +146,5 @@ export async function syncVercelUsers(
 
   await removeTeamMembers(teamId, usersToRemove);
   await updateTeamMembers(teamId, usersToUpdate, configuredUsers);
-  await inviteNewUsers(usersToInvite);
+  await inviteNewUsers(teamId, usersToInvite);
 }
