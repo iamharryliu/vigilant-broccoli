@@ -175,9 +175,10 @@ export function LinkGroupComponent({
     });
   };
 
-  const renderLink = (link: LinkItem) => {
+  const renderLink = (link: LinkItem, index: number) => {
     const baseClass =
       'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-[transform,background-color] duration-150 ease-out focus-visible:scale-110';
+    const uniqueKey = `${link.label}-${link.target}-${index}`;
 
     if (
       link.type === OPEN_TYPE.MAC_APPLICATION ||
@@ -186,7 +187,7 @@ export function LinkGroupComponent({
     ) {
       return (
         <button
-          key={link.target}
+          key={uniqueKey}
           onClick={() => handleShellExecute(link.type, link.target)}
           className={`${baseClass} cursor-pointer`}
           onKeyDown={handleLinkKeyDown}
@@ -200,7 +201,7 @@ export function LinkGroupComponent({
     if (link.type === OPEN_TYPE.INTERNAL) {
       return (
         <a
-          key={link.target}
+          key={uniqueKey}
           href={link.target}
           className={baseClass}
           onKeyDown={handleLinkKeyDown}
@@ -213,7 +214,7 @@ export function LinkGroupComponent({
 
     return (
       <a
-        key={link.target}
+        key={uniqueKey}
         href={link.target}
         target="_blank"
         rel="noopener noreferrer"
@@ -257,7 +258,9 @@ export function LinkGroupComponent({
           <div className="flex flex-col gap-4">
             {itemsWithoutSubgroup.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {itemsWithoutSubgroup.map(link => renderLink(link))}
+                {itemsWithoutSubgroup.map((link, index) =>
+                  renderLink(link, index),
+                )}
               </div>
             )}
 
@@ -267,14 +270,14 @@ export function LinkGroupComponent({
                   {subgroupName}
                 </Text>
                 <div className="flex flex-wrap gap-2">
-                  {subgroupLinks.map(link => renderLink(link))}
+                  {subgroupLinks.map((link, index) => renderLink(link, index))}
                 </div>
               </div>
             ))}
           </div>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {sortedLinks.map(link => renderLink(link))}
+            {sortedLinks.map((link, index) => renderLink(link, index))}
           </div>
         )}
       </div>

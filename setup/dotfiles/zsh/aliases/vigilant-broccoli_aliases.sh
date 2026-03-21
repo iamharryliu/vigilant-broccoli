@@ -77,9 +77,7 @@ alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-b
 alias buildEmployeeHandler="nnx build @vigilant-broccoli/employee-handler"
 
 # Cloud
-alias vbgcloudlogin="gcloud auth login && gcloud config set project vigilant-brocoli && gcloud auth application-default login"
-alias vbgcp="open 'https://console.cloud.google.com/welcome?hl=en&project=vigilant-broccoli'"
-alias vbgcpfirewall="open 'https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/list?project=vigilant-broccoli'"
+alias vbgcloudlogin="gcloudlogin vigilant-broccoli"
 
 # Tmux
 alias tmuxvb="$REPO_DIR/scripts/shell/tmux-vb.sh"

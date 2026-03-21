@@ -18,6 +18,65 @@ type ExtendedNavRoute = {
 
 const IGNORED_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
 
+const isIgnoredInputElement = (target: EventTarget | null): boolean => {
+  return target instanceof Element && IGNORED_TAGS.includes(target.tagName);
+};
+
+const shouldIgnoreKeystroke = (e: KeyboardEvent): boolean => {
+  return isIgnoredInputElement(e.target) || e.ctrlKey || e.metaKey || e.altKey;
+};
+
+type KeyboardHandlers = {
+  setSearchDialogOpen: (open: boolean) => void;
+  setEmailDialogOpen: (open: boolean) => void;
+  setChatbotDialogOpen: (open: boolean) => void;
+  setCalendarDialogOpen: (open: boolean) => void;
+  toggleTheme: () => void;
+};
+
+const processKeyboardInput = (
+  key: string,
+  isShift: boolean,
+  handlers: KeyboardHandlers,
+): boolean => {
+  switch (key) {
+    case '/':
+      handlers.setSearchDialogOpen(true);
+      return true;
+    case 'm':
+      handlers.setEmailDialogOpen(true);
+      return true;
+    case 'c':
+      if (!isShift) {
+        handlers.setChatbotDialogOpen(true);
+        return true;
+      }
+      if (isShift) {
+        handlers.setCalendarDialogOpen(true);
+        return true;
+      }
+      return false;
+    case 'd':
+      handlers.toggleTheme();
+      return true;
+    default:
+      return false;
+  }
+};
+
+const handleKeyboardShortcut = (
+  e: KeyboardEvent,
+  handlers: KeyboardHandlers,
+): void => {
+  if (shouldIgnoreKeystroke(e)) {
+    return;
+  }
+
+  if (processKeyboardInput(e.key.toLowerCase(), e.shiftKey, handlers)) {
+    e.preventDefault();
+  }
+};
+
 export default function Layout({ children }: { children: ReactNode }) {
   const { appearance, toggleTheme } = useTheme();
   const pathname = usePathname();
@@ -39,18 +98,13 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isIgnoredInput =
-        e.target instanceof Element && IGNORED_TAGS.includes(e.target.tagName);
-      const hasModifier = e.ctrlKey || e.metaKey || e.altKey;
-
-      if (isIgnoredInput || hasModifier) return;
-
-      if (e.key === '/') setSearchDialogOpen(true);
-      else if (e.key === 'm' || e.key === 'M') setEmailDialogOpen(true);
-      else if (e.key === 'c' && !e.shiftKey) setChatbotDialogOpen(true);
-      else if (e.key === 'C' && e.shiftKey) setCalendarDialogOpen(true);
-      else if (e.key === 'd' || e.key === 'D') toggleTheme();
-      e.preventDefault();
+      handleKeyboardShortcut(e, {
+        setSearchDialogOpen,
+        setEmailDialogOpen,
+        setChatbotDialogOpen,
+        setCalendarDialogOpen,
+        toggleTheme,
+      });
     };
 
     window.addEventListener('keydown', handleKeyDown);

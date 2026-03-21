@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { IconButton, Select } from '@radix-ui/themes';
 import { MessageCircle, Mail, Search, Moon, Sun, Calendar } from 'lucide-react';
 import { ChatbotDialog } from './chatbot-dialog.component';
@@ -28,7 +28,7 @@ const isWeekPlanningVisible = (): boolean => {
   return dayOfWeek >= 0 && dayOfWeek <= 3;
 };
 
-const generatePlanningPrompt = (data: any): string =>
+const generatePlanningPrompt = (data: Record<string, unknown>): string =>
   `Please help me plan my day based on the following information:
 
 ${JSON.stringify(data, null, 2)}
@@ -40,7 +40,7 @@ Please analyze:
 4. The current weather and how it might affect my plans
 5. Give me a structured plan with time blocks and priorities`;
 
-const generateWeekPlanningPrompt = (data: any): string =>
+const generateWeekPlanningPrompt = (data: Record<string, unknown>): string =>
   `Please help me plan my work week based on the following information:
 
 ${JSON.stringify(data, null, 2)}
@@ -51,6 +51,16 @@ Please analyze:
 3. Any overdue tasks that need immediate attention this week
 4. Realistic time blocks for deep work and focus sessions
 5. Give me a strategic plan for Monday-Friday with daily focus areas`;
+
+const BUTTON_STYLE = {
+  cursor: 'pointer' as const,
+  transition: 'transform 0.2s ease',
+};
+
+const getDialogState = (
+  externalOpen: boolean | undefined,
+  internalOpen: boolean,
+): boolean => externalOpen ?? internalOpen;
 
 export const FloatingIslandComponent = ({
   searchDialogOpen: externalSearchOpen,
@@ -64,10 +74,13 @@ export const FloatingIslandComponent = ({
 }: FloatingIslandProps = {}) => {
   const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
-  const [internalChatbotDialogOpen, setInternalChatbotDialogOpen] = useState(false);
+  const [internalChatbotDialogOpen, setInternalChatbotDialogOpen] =
+    useState(false);
   const [internalEmailDialogOpen, setInternalEmailDialogOpen] = useState(false);
-  const [internalSearchDialogOpen, setInternalSearchDialogOpen] = useState(false);
-  const [internalCalendarDialogOpen, setInternalCalendarDialogOpen] = useState(false);
+  const [internalSearchDialogOpen, setInternalSearchDialogOpen] =
+    useState(false);
+  const [internalCalendarDialogOpen, setInternalCalendarDialogOpen] =
+    useState(false);
   const dayData = useDayAnalysisSuggestions();
 
   const getSuggestions = () => {
@@ -87,14 +100,37 @@ export const FloatingIslandComponent = ({
     return suggestions;
   };
 
-  const searchDialogOpen = externalSearchOpen ?? internalSearchDialogOpen;
-  const setSearchDialogOpen = externalSetSearchOpen ?? setInternalSearchDialogOpen;
-  const chatbotDialogOpen = externalChatbotOpen ?? internalChatbotDialogOpen;
-  const setChatbotDialogOpen = externalSetChatbotOpen ?? setInternalChatbotDialogOpen;
-  const emailDialogOpen = externalEmailOpen ?? internalEmailDialogOpen;
+  const searchDialogOpen = getDialogState(
+    externalSearchOpen,
+    internalSearchDialogOpen,
+  );
+  const setSearchDialogOpen =
+    externalSetSearchOpen ?? setInternalSearchDialogOpen;
+  const chatbotDialogOpen = getDialogState(
+    externalChatbotOpen,
+    internalChatbotDialogOpen,
+  );
+  const setChatbotDialogOpen =
+    externalSetChatbotOpen ?? setInternalChatbotDialogOpen;
+  const emailDialogOpen = getDialogState(
+    externalEmailOpen,
+    internalEmailDialogOpen,
+  );
   const setEmailDialogOpen = externalSetEmailOpen ?? setInternalEmailDialogOpen;
-  const calendarDialogOpen = externalCalendarOpen ?? internalCalendarDialogOpen;
-  const setCalendarDialogOpen = externalSetCalendarOpen ?? setInternalCalendarDialogOpen;
+  const calendarDialogOpen = getDialogState(
+    externalCalendarOpen,
+    internalCalendarDialogOpen,
+  );
+  const setCalendarDialogOpen =
+    externalSetCalendarOpen ?? setInternalCalendarDialogOpen;
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = 'scale(1.1)';
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = 'scale(1)';
+  };
 
   return (
     <>
@@ -121,16 +157,9 @@ export const FloatingIslandComponent = ({
           variant="soft"
           size="2"
           title="Jarvis"
-          style={{
-            cursor: 'pointer',
-            transition: 'transform 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
+          style={BUTTON_STYLE}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           <MessageCircle size={20} />
         </IconButton>
@@ -141,16 +170,9 @@ export const FloatingIslandComponent = ({
           variant="soft"
           size="2"
           title="Email"
-          style={{
-            cursor: 'pointer',
-            transition: 'transform 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
+          style={BUTTON_STYLE}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           <Mail size={20} />
         </IconButton>
@@ -161,9 +183,9 @@ export const FloatingIslandComponent = ({
           variant="soft"
           size="2"
           title="Calendar"
-          style={{ cursor: 'pointer', transition: 'transform 0.2s ease' }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+          style={BUTTON_STYLE}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           <Calendar size={20} />
         </IconButton>
@@ -174,16 +196,9 @@ export const FloatingIslandComponent = ({
           variant="soft"
           size="2"
           title="Search"
-          style={{
-            cursor: 'pointer',
-            transition: 'transform 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
+          style={BUTTON_STYLE}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           <Search size={20} />
         </IconButton>
@@ -194,16 +209,9 @@ export const FloatingIslandComponent = ({
           variant="soft"
           size="2"
           title={appearance === 'light' ? 'Dark mode' : 'Light mode'}
-          style={{
-            cursor: 'pointer',
-            transition: 'transform 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
+          style={BUTTON_STYLE}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           {appearance === 'light' ? <Moon size={20} /> : <Sun size={20} />}
         </IconButton>
@@ -226,9 +234,18 @@ export const FloatingIslandComponent = ({
         onOpenChange={setChatbotDialogOpen}
         suggestions={getSuggestions()}
       />
-      <EmailModalComponent open={emailDialogOpen} onOpenChange={setEmailDialogOpen} />
-      <SearchDialogComponent open={searchDialogOpen} onOpenChange={setSearchDialogOpen} />
-      <CalendarDialog open={calendarDialogOpen} onOpenChange={setCalendarDialogOpen} />
+      <EmailModalComponent
+        open={emailDialogOpen}
+        onOpenChange={setEmailDialogOpen}
+      />
+      <SearchDialogComponent
+        open={searchDialogOpen}
+        onOpenChange={setSearchDialogOpen}
+      />
+      <CalendarDialog
+        open={calendarDialogOpen}
+        onOpenChange={setCalendarDialogOpen}
+      />
     </>
   );
 };

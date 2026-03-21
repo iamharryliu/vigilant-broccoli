@@ -47,6 +47,36 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: GCP_LINK.CONSOLE.NAME,
+    target: GCP_LINK.CONSOLE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: GCP_LINK.COMPUTE.NAME,
+    target: GCP_LINK.COMPUTE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: GCP_LINK.FIREWALL.NAME,
+    target: GCP_LINK.FIREWALL.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: GOOGLE_SERVICES.ANALYTICS.NAME,
+    target: GOOGLE_SERVICES.ANALYTICS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: GOOGLE_SERVICES.RECAPTCHA.NAME,
+    target: GOOGLE_SERVICES.RECAPTCHA.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: 'VB - GCP Billing',
     target:
       'https://console.cloud.google.com/billing/017A09-73DEB3-7A8E42/reports?inv=1&invt=Ab2jMQ&project=vigilant-broccoli',

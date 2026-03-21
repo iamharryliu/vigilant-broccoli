@@ -17,27 +17,91 @@ import {
 
 const LOCAL_STORAGE_KEY = 'quick-links-grouped-state';
 
-const fuzzyMatch = (query: string, target: string): boolean => {
+type FuzzyMatchResult = {
+  matched: boolean;
+  score: number;
+};
+
+const fuzzyMatch = (query: string, target: string): FuzzyMatchResult => {
   const queryLower = query.toLowerCase();
   const targetLower = target.toLowerCase();
 
   let queryIndex = 0;
+  let score = 0;
+  let previousMatchIndex = -1;
+
   for (
     let i = 0;
     i < targetLower.length && queryIndex < queryLower.length;
     i++
   ) {
     if (targetLower[i] === queryLower[queryIndex]) {
+      const gap = previousMatchIndex === -1 ? i : i - previousMatchIndex - 1;
+      const gapPenalty = gap * 0.1;
+      const positionBonus = Math.max(0, 10 - i);
+      score += 10 - gapPenalty + positionBonus;
+      previousMatchIndex = i;
       queryIndex++;
     }
   }
 
-  return queryIndex === queryLower.length;
+  const matched = queryIndex === queryLower.length;
+
+  if (matched) {
+    if (targetLower.startsWith(queryLower)) {
+      score += 50;
+    } else if (targetLower.includes(' ' + queryLower)) {
+      score += 30;
+    }
+  }
+
+  return { matched, score };
 };
 
 type SearchDialogComponentProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+};
+
+const NON_BROWSER_TYPES = [
+  OPEN_TYPE.MAC_APPLICATION,
+  OPEN_TYPE.VSCODE,
+  OPEN_TYPE.FILE_SYSTEM,
+] as const;
+
+const getGroupedLinks = (links: (typeof QUICK_LINKS)[0][]) => {
+  const itemsWithoutSubgroup = links.filter(link => !link.subgroup);
+  const itemsWithSubgroup = links.filter(link => link.subgroup);
+
+  const subgroups = itemsWithSubgroup.reduce((acc, link) => {
+    const group = link.subgroup;
+    if (group && !acc[group]) {
+      acc[group] = [];
+    }
+    if (group) {
+      acc[group].push(link);
+    }
+    return acc;
+  }, {} as Record<string, typeof QUICK_LINKS>);
+
+  const subgroupEntries = Object.entries(subgroups).sort(([a], [b]) =>
+    a.localeCompare(b),
+  );
+
+  return { itemsWithoutSubgroup, subgroupEntries };
+};
+
+const openLink = (
+  link: (typeof QUICK_LINKS)[0],
+  handleShellExecute: (type: OpenType, target: string) => Promise<void>,
+) => {
+  if (
+    NON_BROWSER_TYPES.includes(link.type as (typeof NON_BROWSER_TYPES)[number])
+  ) {
+    handleShellExecute(link.type, link.target);
+  } else {
+    window.open(link.target, '_blank', 'noopener,noreferrer');
+  }
 };
 
 export function SearchDialogComponent({
@@ -50,11 +114,7 @@ export function SearchDialogComponent({
   const open = externalOpen ?? internalOpen;
   const setOpen = externalOnOpenChange ?? setInternalOpen;
   const [isGrouped, setIsGrouped] = useState(true);
-  const [dialogHeight, setDialogHeight] = useState<number | undefined>(
-    undefined,
-  );
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -73,60 +133,29 @@ export function SearchDialogComponent({
       setTimeout(() => searchInputRef.current?.focus(), 0);
     } else if (!open) {
       setSearchQuery('');
-      setDialogHeight(undefined);
     }
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-
-    const recalculateHeight = () => {
-      const headerHeight = headerRef.current?.scrollHeight ?? 0;
-      const resultsHeight = contentRef.current?.scrollHeight ?? 0;
-      const maxDialogHeight = Math.floor(window.innerHeight * 0.8);
-      const nextHeight = Math.min(
-        maxDialogHeight,
-        headerHeight + resultsHeight + 32,
-      );
-      setDialogHeight(nextHeight);
-    };
-
-    recalculateHeight();
-    const rafId = requestAnimationFrame(recalculateHeight);
-    window.addEventListener('resize', recalculateHeight);
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', recalculateHeight);
-    };
-  }, [open, searchQuery, isGrouped]);
-
-  const filteredLinks = searchQuery
-    ? QUICK_LINKS.filter(link => fuzzyMatch(searchQuery, link.label))
+  const filteredAndScoredLinks = searchQuery
+    ? QUICK_LINKS.map(link => {
+        const result = fuzzyMatch(searchQuery, link.label);
+        return { link, result };
+      })
+        .filter(({ result }) => result.matched)
+        .sort((a, b) => b.result.score - a.result.score)
+        .map(({ link }) => link)
     : QUICK_LINKS;
+
+  const filteredLinks = filteredAndScoredLinks;
   const hasNoResults =
     filteredLinks.length === 0 && searchQuery.trim().length > 0;
 
-  const sortedLinks = [...filteredLinks].sort((a, b) =>
-    a.label.localeCompare(b.label),
-  );
+  const sortedLinks = searchQuery
+    ? filteredLinks
+    : [...filteredLinks].sort((a, b) => a.label.localeCompare(b.label));
 
-  const itemsWithoutSubgroup = sortedLinks.filter(link => !link.subgroup);
-  const itemsWithSubgroup = sortedLinks.filter(link => link.subgroup);
-
-  const subgroups = itemsWithSubgroup.reduce((acc, link) => {
-    const group = link.subgroup;
-    if (group && !acc[group]) {
-      acc[group] = [];
-    }
-    if (group) {
-      acc[group].push(link);
-    }
-    return acc;
-  }, {} as Record<string, typeof QUICK_LINKS>);
-
-  const subgroupEntries = Object.entries(subgroups).sort(([a], [b]) =>
-    a.localeCompare(b),
-  );
+  const { itemsWithoutSubgroup, subgroupEntries } =
+    getGroupedLinks(sortedLinks);
 
   const handleShellExecute = async (type: OpenType, target: string) => {
     const response = await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
@@ -144,24 +173,7 @@ export function SearchDialogComponent({
 
   const handleFirstLinkAction = () => {
     if (filteredLinks.length === 0) return;
-
-    const firstLink = sortedLinks[0];
-    const nonBrowserTypes = [
-      OPEN_TYPE.MAC_APPLICATION,
-      OPEN_TYPE.VSCODE,
-      OPEN_TYPE.FILE_SYSTEM,
-    ] as const;
-
-    if (
-      nonBrowserTypes.includes(
-        firstLink.type as (typeof nonBrowserTypes)[number],
-      )
-    ) {
-      handleShellExecute(firstLink.type, firstLink.target);
-    } else {
-      window.open(firstLink.target, '_blank', 'noopener,noreferrer');
-    }
-
+    openLink(sortedLinks[0], handleShellExecute);
     setOpen(false);
     setSearchQuery('');
   };
@@ -230,22 +242,19 @@ export function SearchDialogComponent({
     });
   };
 
-  const nonBrowserTypes = [
-    OPEN_TYPE.MAC_APPLICATION,
-    OPEN_TYPE.VSCODE,
-    OPEN_TYPE.FILE_SYSTEM,
-  ] as const;
-
-  const renderLink = (link: (typeof QUICK_LINKS)[0]) => {
+  const renderLink = (link: (typeof QUICK_LINKS)[0], index: number) => {
     const baseClass =
       'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-[transform,background-color] duration-150 ease-out focus-visible:scale-110';
+    const uniqueKey = `${link.label}-${link.target}-${index}`;
 
     if (
-      nonBrowserTypes.includes(link.type as (typeof nonBrowserTypes)[number])
+      NON_BROWSER_TYPES.includes(
+        link.type as (typeof NON_BROWSER_TYPES)[number],
+      )
     ) {
       return (
         <button
-          key={link.target}
+          key={uniqueKey}
           onClick={() => handleShellExecute(link.type, link.target)}
           onKeyDown={handleLinkKeyDown}
           className={`${baseClass} cursor-pointer`}
@@ -258,7 +267,7 @@ export function SearchDialogComponent({
 
     return (
       <a
-        key={link.target}
+        key={uniqueKey}
         href={link.target}
         target="_blank"
         rel="noopener noreferrer"
@@ -275,7 +284,7 @@ export function SearchDialogComponent({
     <>
       {itemsWithoutSubgroup.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {itemsWithoutSubgroup.map(link => renderLink(link))}
+          {itemsWithoutSubgroup.map((link, index) => renderLink(link, index))}
         </div>
       )}
 
@@ -285,12 +294,21 @@ export function SearchDialogComponent({
             {subgroupName}
           </Text>
           <div className="flex flex-wrap gap-2">
-            {subgroupLinks.map(link => renderLink(link))}
+            {subgroupLinks.map((link, index) => renderLink(link, index))}
           </div>
         </div>
       ))}
     </>
   );
+
+  const renderContent = () =>
+    isGrouped ? (
+      renderGroupedLinks()
+    ) : (
+      <div className="flex flex-wrap gap-2">
+        {sortedLinks.map((link, index) => renderLink(link, index))}
+      </div>
+    );
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -305,15 +323,12 @@ export function SearchDialogComponent({
       <Dialog.Content
         style={{
           maxWidth: 800,
-          maxHeight: '80vh',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          height: dialogHeight,
-          transition: 'height 220ms cubic-bezier(0.22, 1, 0.36, 1)',
         }}
       >
-        <div ref={headerRef}>
+        <div>
           <Dialog.Title>Quick Links</Dialog.Title>
 
           <Flex gap="2" align="center" mb="4">
@@ -340,8 +355,6 @@ export function SearchDialogComponent({
         {hasNoResults ? (
           <div
             style={{
-              flex: 1,
-              minHeight: 0,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -357,15 +370,8 @@ export function SearchDialogComponent({
         ) : (
           <div
             style={{
-              flex: 1,
-              minHeight: 0,
               overflowY: 'auto',
               overflowX: 'hidden',
-              // Fade results near top/bottom edges of the scroll viewport.
-              maskImage:
-                'linear-gradient(to bottom, transparent 0, black 16px, black calc(100% - 16px), transparent 100%)',
-              WebkitMaskImage:
-                'linear-gradient(to bottom, transparent 0, black 16px, black calc(100% - 16px), transparent 100%)',
             }}
           >
             <div
@@ -378,13 +384,7 @@ export function SearchDialogComponent({
                 paddingBottom: '0.75rem',
               }}
             >
-              {isGrouped ? (
-                renderGroupedLinks()
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {sortedLinks.map(link => renderLink(link))}
-                </div>
-              )}
+              {renderContent()}
             </div>
           </div>
         )}

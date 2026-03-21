@@ -123,6 +123,10 @@ export const GOOGLE_SERVICES = {
     NAME: 'Gemini',
     URL: 'https://gemini.google.com/app',
   },
+  RECAPTCHA: {
+    NAME: 'Google reCAPTCHA',
+    URL: 'https://www.google.com/recaptcha/admin/',
+  },
 } as const;
 
 export const UTILITY_URL = {
@@ -375,6 +379,10 @@ export const GCP_LINK = {
     NAME: 'GCP Dashboard',
     URL: 'https://console.cloud.google.com/home/dashboard?project=vigilant-broccoli',
   },
+  CONSOLE: {
+    NAME: 'GCP Console',
+    URL: 'https://console.cloud.google.com/',
+  },
   BILLING: {
     NAME: 'GCP Billing',
     URL: 'https://console.cloud.google.com/billing',
@@ -382,6 +390,18 @@ export const GCP_LINK = {
   STATUS: {
     NAME: 'GCP Status',
     URL: 'https://status.cloud.google.com/',
+  },
+  COMPUTE: {
+    NAME: 'GCP Compute Engine',
+    URL: 'https://console.cloud.google.com/compute/',
+  },
+  CREDENTIALS: {
+    NAME: 'GCP Credentials',
+    URL: 'https://console.cloud.google.com/apis/credentials',
+  },
+  FIREWALL: {
+    NAME: 'GCP Firewall',
+    URL: 'https://console.cloud.google.com/net-security/firewall-manager/firewall-policies',
   },
 } as const;
 
