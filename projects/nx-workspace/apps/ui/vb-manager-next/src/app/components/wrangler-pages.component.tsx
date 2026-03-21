@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Link, Text } from '@radix-ui/themes';
+import { Button, Flex, Link } from '@radix-ui/themes';
 import { useEffect, useState, useMemo } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
@@ -24,6 +24,7 @@ export const WranglerPagesComponent = () => {
   const [projectsData, setProjectsData] = useState<WranglerProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const linkItems = useMemo<LinkListItemConfig[]>(() => {
     return projectsData.map(project => {
@@ -70,6 +71,22 @@ export const WranglerPagesComponent = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleLogin = async () => {
+    setLoggingIn(true);
+    await fetch(API_ENDPOINTS.WRANGLER_LOGIN, { method: 'POST' });
+    const poll = setInterval(async () => {
+      const response = await fetch(API_ENDPOINTS.WRANGLER_PAGES);
+      const data: WranglerPagesResponse = await response.json();
+      if (data.success && data.projects) {
+        clearInterval(poll);
+        setProjectsData(data.projects);
+        setLoggingIn(false);
+        setError(null);
+        setLoading(false);
+      }
+    }, 3000);
+  };
+
   if (loading) {
     return <CardSkeleton title="Wrangler Pages" rows={5} />;
   }
@@ -93,7 +110,14 @@ export const WranglerPagesComponent = () => {
           </Link>
         }
       >
-        <Text color="red">{error}</Text>
+        <Button
+          onClick={handleLogin}
+          loading={loggingIn}
+          size="2"
+          variant="soft"
+        >
+          Wrangler Login
+        </Button>
       </CardContainer>
     );
   }
