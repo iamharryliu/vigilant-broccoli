@@ -215,6 +215,23 @@ async function removeOrgMember(organizationName: string, username: string) {
   );
 }
 
+function setSecret(repo: string, key: string, value: string): void {
+  ShellUtils.runShellCommand(
+    `gh secret set ${key} --repo ${repo} --body "${value}"`,
+  );
+  console.log(`✅ GitHub: Set secret ${key}`);
+}
+
+async function setSecrets(
+  repo: string,
+  secrets: Record<string, string>,
+  prefix = '',
+): Promise<void> {
+  for (const [key, value] of Object.entries(secrets)) {
+    setSecret(repo, `${prefix}${key}`, value);
+  }
+}
+
 export const GithubService = {
   // READ
   getOwnedOrganizations,
@@ -235,4 +252,7 @@ export const GithubService = {
   removeMembersNotInConfig,
   removeOrgMember,
   deleteAllTeams,
+  // SECRETS
+  setSecret,
+  setSecrets,
 };
