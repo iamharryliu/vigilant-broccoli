@@ -2,7 +2,6 @@
 
 import { Card, Flex } from '@radix-ui/themes';
 import { WeatherComponent } from '../components/weather.component';
-import { ClockComponent } from '../components/clock.component';
 import { TaskListSelectorComponent } from '../components/task-list-selector.component';
 import { UtilitiesComponent } from '../components/utilities.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
@@ -83,7 +82,6 @@ export default function Page() {
         <div className="flex flex-col gap-4">
           <Card className="w-full">
             <Flex direction="column" gap="4" p="4">
-              <ClockComponent />
               <WeatherComponent />
             </Flex>
           </Card>

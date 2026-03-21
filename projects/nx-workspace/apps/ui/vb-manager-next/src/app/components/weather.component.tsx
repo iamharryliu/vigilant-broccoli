@@ -70,12 +70,6 @@ export const WeatherComponent = () => {
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [outfitRecommendation, setOutfitRecommendation] = useState<
-    Record<string, string>
-  >({});
-  const [loadingOutfit, setLoadingOutfit] = useState<Record<string, boolean>>(
-    {},
-  );
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -139,48 +133,6 @@ export const WeatherComponent = () => {
     fetchWeather();
   }, []);
 
-  const getOutfitRecommendation = async (city: {
-    name: string;
-    lat: number;
-    lon: number;
-  }) => {
-    setLoadingOutfit(prev => ({ ...prev, [city.name]: true }));
-    setOutfitRecommendation(prev => ({ ...prev, [city.name]: '' }));
-
-    try {
-      const response = await fetch(
-        `/api/outfit-recommendation?lat=${city.lat}&lon=${city.lon}`,
-      );
-
-      if (!response.ok || !response.body) {
-        throw new Error('Failed to get outfit recommendation');
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        setOutfitRecommendation(prev => ({
-          ...prev,
-          [city.name]: (prev[city.name] || '') + chunk,
-        }));
-      }
-    } catch (err) {
-      console.error('Error fetching outfit recommendation:', err);
-      setOutfitRecommendation(prev => ({
-        ...prev,
-        [city.name]: 'Failed to get recommendation',
-      }));
-    } finally {
-      setLoadingOutfit(prev => ({ ...prev, [city.name]: false }));
-    }
-  };
-
   if (loading) {
     return (
       <Flex justify="center" align="center" p="4">
@@ -237,28 +189,6 @@ export const WeatherComponent = () => {
                   </Text>
                 </div>
               ))}
-            </div>
-
-            <div className="mt-2">
-              <Button
-                size="1"
-                variant="soft"
-                onClick={() => getOutfitRecommendation(city)}
-                disabled={loadingOutfit[city.name]}
-                className="mb-2"
-              >
-                {loadingOutfit[city.name]
-                  ? 'Getting recommendation...'
-                  : 'Get Outfit Recommendation'}
-              </Button>
-
-              {outfitRecommendation[city.name] && (
-                <Box className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
-                  <Text size="2" className="whitespace-pre-wrap">
-                    {outfitRecommendation[city.name]}
-                  </Text>
-                </Box>
-              )}
             </div>
           </Box>
         );

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { IconButton, Select } from '@radix-ui/themes';
+import { useState, useEffect } from 'react';
+import { IconButton, Select, Text, Flex } from '@radix-ui/themes';
 import { MessageCircle, Mail, Search, Moon, Sun, Calendar } from 'lucide-react';
 import { ChatbotDialog } from './chatbot-dialog.component';
 import { EmailModalComponent } from './email-modal.component';
@@ -10,6 +10,7 @@ import { CalendarDialog } from './calendar-dialog.component';
 import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
+import { ClockComponent } from './clock.component';
 
 interface FloatingIslandProps {
   searchDialogOpen?: boolean;
@@ -52,6 +53,17 @@ Please analyze:
 4. Realistic time blocks for deep work and focus sessions
 5. Give me a strategic plan for Monday-Friday with daily focus areas`;
 
+const generateOutfitRecommendationPrompt = (outfitText: string): string =>
+  `Here is an outfit recommendation based on the current weather:
+
+${outfitText}
+
+Please help me refine this recommendation by:
+1. Suggesting alternative outfit options if needed
+2. Adding accessories based on the weather
+3. Considering my schedule and activities for today
+4. Providing styling tips for the recommended outfits`;
+
 const BUTTON_STYLE = {
   cursor: 'pointer' as const,
   transition: 'transform 0.2s ease',
@@ -81,7 +93,38 @@ export const FloatingIslandComponent = ({
     useState(false);
   const [internalCalendarDialogOpen, setInternalCalendarDialogOpen] =
     useState(false);
+  const [outfitRecommendation, setOutfitRecommendation] = useState<string>('');
   const dayData = useDayAnalysisSuggestions();
+
+  useEffect(() => {
+    const fetchOutfitRecommendation = async () => {
+      const MALMÖ = { lat: 55.605, lon: 13.0038 };
+      try {
+        const response = await fetch(
+          `/api/outfit-recommendation?lat=${MALMÖ.lat}&lon=${MALMÖ.lon}`,
+        );
+
+        if (!response.ok || !response.body) return;
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let text = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          text += chunk;
+        }
+
+        setOutfitRecommendation(text);
+      } catch (err) {
+        console.error('Error fetching outfit recommendation:', err);
+      }
+    };
+
+    fetchOutfitRecommendation();
+  }, []);
 
   const getSuggestions = () => {
     if (!dayData) return [];
@@ -91,12 +134,21 @@ export const FloatingIslandComponent = ({
         prompt: generatePlanningPrompt(dayData),
       },
     ];
+
+    if (outfitRecommendation) {
+      suggestions.push({
+        title: '👔 Get Outfit Recommendation',
+        prompt: generateOutfitRecommendationPrompt(outfitRecommendation),
+      });
+    }
+
     if (isWeekPlanningVisible()) {
       suggestions.push({
         title: '📊 Plan My Work Week',
         prompt: generateWeekPlanningPrompt(dayData),
       });
     }
+
     return suggestions;
   };
 
@@ -143,7 +195,8 @@ export const FloatingIslandComponent = ({
           zIndex: 40,
           display: 'flex',
           flexDirection: 'row',
-          gap: '0.75rem',
+          gap: '1.5rem',
+          alignItems: 'center',
           padding: '1rem',
           backgroundColor: 'var(--color-background)',
           borderRadius: '0.75rem',
@@ -151,80 +204,99 @@ export const FloatingIslandComponent = ({
           boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
         }}
       >
-        {/* Chatbot Button */}
-        <IconButton
-          onClick={() => setChatbotDialogOpen(true)}
-          variant="soft"
-          size="2"
-          title="Jarvis"
-          style={BUTTON_STYLE}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <MessageCircle size={20} />
-        </IconButton>
+        {/* Block 1: Time */}
+        <div style={{ minWidth: 'max-content' }}>
+          <ClockComponent type="time" />
+        </div>
 
-        {/* Email Button */}
-        <IconButton
-          onClick={() => setEmailDialogOpen(true)}
-          variant="soft"
-          size="2"
-          title="Email"
-          style={BUTTON_STYLE}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <Mail size={20} />
-        </IconButton>
+        {/* Divider */}
+        <div style={{ width: '1px', height: '60px', backgroundColor: 'var(--gray-6)' }} />
 
-        {/* Calendar Button */}
-        <IconButton
-          onClick={() => setCalendarDialogOpen(true)}
-          variant="soft"
-          size="2"
-          title="Calendar"
-          style={BUTTON_STYLE}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <Calendar size={20} />
-        </IconButton>
+        {/* Block 2: Info */}
+        <div style={{ minWidth: 'max-content' }}>
+          <ClockComponent type="info" />
+        </div>
 
-        {/* Search Button */}
-        <IconButton
-          onClick={() => setSearchDialogOpen(true)}
-          variant="soft"
-          size="2"
-          title="Search"
-          style={BUTTON_STYLE}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <Search size={20} />
-        </IconButton>
+        {/* Divider */}
+        <div style={{ width: '1px', height: '60px', backgroundColor: 'var(--gray-6)' }} />
 
-        {/* Theme Toggle Button */}
-        <IconButton
-          onClick={toggleTheme}
-          variant="soft"
-          size="2"
-          title={appearance === 'light' ? 'Dark mode' : 'Light mode'}
-          style={BUTTON_STYLE}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          {appearance === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-        </IconButton>
+        {/* Block 3: Controls */}
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '0.75rem', alignItems: 'center' }}>
+          {/* Chatbot Button */}
+          <IconButton
+            onClick={() => setChatbotDialogOpen(true)}
+            variant="soft"
+            size="2"
+            title="Jarvis"
+            style={BUTTON_STYLE}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <MessageCircle size={20} />
+          </IconButton>
 
-        {/* Mode Select */}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Select.Root value={appMode} onValueChange={setAppMode}>
-            <Select.Trigger placeholder="Select mode" />
-            <Select.Content>
-              <Select.Item value="personal">Personal</Select.Item>
-              <Select.Item value="work">Work</Select.Item>
-            </Select.Content>
-          </Select.Root>
+          {/* Email Button */}
+          <IconButton
+            onClick={() => setEmailDialogOpen(true)}
+            variant="soft"
+            size="2"
+            title="Email"
+            style={BUTTON_STYLE}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Mail size={20} />
+          </IconButton>
+
+          {/* Calendar Button */}
+          <IconButton
+            onClick={() => setCalendarDialogOpen(true)}
+            variant="soft"
+            size="2"
+            title="Calendar"
+            style={BUTTON_STYLE}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Calendar size={20} />
+          </IconButton>
+
+          {/* Search Button */}
+          <IconButton
+            onClick={() => setSearchDialogOpen(true)}
+            variant="soft"
+            size="2"
+            title="Search"
+            style={BUTTON_STYLE}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Search size={20} />
+          </IconButton>
+
+          {/* Theme Toggle Button */}
+          <IconButton
+            onClick={toggleTheme}
+            variant="soft"
+            size="2"
+            title={appearance === 'light' ? 'Dark mode' : 'Light mode'}
+            style={BUTTON_STYLE}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {appearance === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </IconButton>
+
+          {/* Mode Select */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Select.Root value={appMode} onValueChange={setAppMode}>
+              <Select.Trigger placeholder="Select mode" />
+              <Select.Content>
+                <Select.Item value="personal">Personal</Select.Item>
+                <Select.Item value="work">Work</Select.Item>
+              </Select.Content>
+            </Select.Root>
+          </div>
         </div>
       </div>
 

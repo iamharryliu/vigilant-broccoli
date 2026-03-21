@@ -1,17 +1,20 @@
 'use client';
 
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { DATE_CONST, getISOWeekNumber } from '@vigilant-broccoli/common-js';
 
-export const ClockComponent = () => {
+interface ClockBlockProps {
+  type: 'time' | 'info';
+}
+
+export const ClockComponent = ({ type = 'time' }: ClockBlockProps) => {
   const [currentTime, setCurrentTime] = useState('');
   const [currentDate, setCurrentDate] = useState('');
   const [dayOfWeek, setDayOfWeek] = useState('');
   const [weekNumber, setWeekNumber] = useState('');
   const [timezone, setTimezone] = useState('');
 
-  // Update clock every second
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
@@ -25,15 +28,12 @@ export const ClockComponent = () => {
       const day = now.getDate().toString().padStart(2, '0');
       setCurrentDate(`${year}-${month}-${day}`);
 
-      // Get day of week
       const days = DATE_CONST.DAY
       setDayOfWeek(days[now.getDay()]);
 
-      // Calculate ISO week number
       const weekNo = getISOWeekNumber(now);
       setWeekNumber(weekNo.toString());
 
-      // Get timezone information
       const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const offsetMinutes = -now.getTimezoneOffset();
       const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
@@ -50,17 +50,22 @@ export const ClockComponent = () => {
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <Flex direction="column" align="center" gap="1">
+  if (type === 'time') {
+    return (
       <Text size="8" weight="bold" className="font-mono">
         {currentTime}
       </Text>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
       <Text size="2" color="gray" className="font-mono">
         Week {weekNumber}, {dayOfWeek}, {currentDate}
       </Text>
       <Text size="1" color="gray">
         {timezone}
       </Text>
-    </Flex>
+    </div>
   );
 };
