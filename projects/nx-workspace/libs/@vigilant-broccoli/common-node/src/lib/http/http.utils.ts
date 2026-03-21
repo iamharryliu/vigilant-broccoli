@@ -1,5 +1,3 @@
-import { CorsOptions } from 'cors';
-
 const makeHttpRequest = async <T>(
   endpoint: string,
   requestOptions: RequestInit,
@@ -13,18 +11,6 @@ const makeHttpRequest = async <T>(
   return response.json();
 };
 
-export const createCorsOptions = (allowedOrigins: string[]): CorsOptions => ({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS blocked for origin: ${origin}`));
-    }
-  },
-  credentials: true,
-});
-
-// TODO: delete??
 export const HttpUtils = {
   makeHttpRequest,
 };

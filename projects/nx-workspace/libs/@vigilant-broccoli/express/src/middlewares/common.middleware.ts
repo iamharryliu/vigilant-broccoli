@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { CorsOptions } from 'cors';
 import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { logger, RecaptchaService } from '@vigilant-broccoli/common-node';
 
@@ -46,3 +47,14 @@ export const checkRecaptchaToken = async (
     next();
   }
 };
+
+export const createCorsOptions = (allowedOrigins: string[]): CorsOptions => ({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked for origin: ${origin}`));
+    }
+  },
+  credentials: true,
+});

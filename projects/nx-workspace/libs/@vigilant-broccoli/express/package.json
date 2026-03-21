@@ -4,9 +4,9 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "express": "*",
-    "@prettydamntired/personal-website-lib": "*",
     "@vigilant-broccoli/common-js": "*",
-    "@vigilant-broccoli/common-node": "*"
+    "@vigilant-broccoli/common-node": "*",
+    "cors": "^2.8.5"
   },
   "publishConfig": {
     "access": "public"
