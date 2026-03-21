@@ -87,33 +87,33 @@ export default function Page() {
               <WeatherComponent />
             </Flex>
           </Card>
-          <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-            <ModeTransitionWrapper modeKey={appMode}>
-              {appMode === APP_MODE.PERSONAL ? (
-                <iframe
-                  src={buildCalendarUrl(CALENDAR_CONFIG.personal)}
-                  className="w-full h-[600px] dark:invert dark:hue-rotate-180"
-                  style={{ minHeight: '400px' }}
-                ></iframe>
-              ) : (
-                <iframe
-                  src={buildCalendarUrl(CALENDAR_CONFIG.work)}
-                  className="w-full h-[600px] dark:invert dark:hue-rotate-180"
-                  style={{ minHeight: '400px' }}
-                />
-              )}
-            </ModeTransitionWrapper>
-          </div>
+          <ModeTransitionWrapper modeKey={appMode}>
+            {appMode === APP_MODE.PERSONAL ? (
+              <TaskListSelectorComponent />
+            ) : (
+              <TaskListSelectorComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
+            )}
+          </ModeTransitionWrapper>
         </div>
       </>
       <div className="flex flex-col gap-4">
-        <ModeTransitionWrapper modeKey={appMode}>
-          {appMode === APP_MODE.PERSONAL ? (
-            <TaskListSelectorComponent />
-          ) : (
-            <TaskListSelectorComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
-          )}
-        </ModeTransitionWrapper>
+        <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
+          <ModeTransitionWrapper modeKey={appMode}>
+            {appMode === APP_MODE.PERSONAL ? (
+              <iframe
+                src={buildCalendarUrl(CALENDAR_CONFIG.personal)}
+                className="w-full h-[600px] dark:invert dark:hue-rotate-180"
+                style={{ minHeight: '400px' }}
+              ></iframe>
+            ) : (
+              <iframe
+                src={buildCalendarUrl(CALENDAR_CONFIG.work)}
+                className="w-full h-[600px] dark:invert dark:hue-rotate-180"
+                style={{ minHeight: '400px' }}
+              />
+            )}
+          </ModeTransitionWrapper>
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <ModeTransitionWrapper modeKey={appMode}>

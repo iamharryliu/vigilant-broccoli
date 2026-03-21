@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { IconButton, Select } from '@radix-ui/themes';
-import { MessageCircle, Mail, Search, Moon, Sun } from 'lucide-react';
+import { MessageCircle, Mail, Search, Moon, Sun, Calendar } from 'lucide-react';
 import { ChatbotDialog } from './chatbot-dialog.component';
 import { EmailModalComponent } from './email-modal.component';
 import { SearchDialogComponent } from './search-dialog.component';
+import { CalendarDialog } from './calendar-dialog.component';
 import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
@@ -17,6 +18,8 @@ interface FloatingIslandProps {
   setChatbotDialogOpen?: (open: boolean) => void;
   emailDialogOpen?: boolean;
   setEmailDialogOpen?: (open: boolean) => void;
+  calendarDialogOpen?: boolean;
+  setCalendarDialogOpen?: (open: boolean) => void;
 }
 
 const isWeekPlanningVisible = (): boolean => {
@@ -56,12 +59,15 @@ export const FloatingIslandComponent = ({
   setChatbotDialogOpen: externalSetChatbotOpen,
   emailDialogOpen: externalEmailOpen,
   setEmailDialogOpen: externalSetEmailOpen,
+  calendarDialogOpen: externalCalendarOpen,
+  setCalendarDialogOpen: externalSetCalendarOpen,
 }: FloatingIslandProps = {}) => {
   const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
   const [internalChatbotDialogOpen, setInternalChatbotDialogOpen] = useState(false);
   const [internalEmailDialogOpen, setInternalEmailDialogOpen] = useState(false);
   const [internalSearchDialogOpen, setInternalSearchDialogOpen] = useState(false);
+  const [internalCalendarDialogOpen, setInternalCalendarDialogOpen] = useState(false);
   const dayData = useDayAnalysisSuggestions();
 
   const getSuggestions = () => {
@@ -87,6 +93,8 @@ export const FloatingIslandComponent = ({
   const setChatbotDialogOpen = externalSetChatbotOpen ?? setInternalChatbotDialogOpen;
   const emailDialogOpen = externalEmailOpen ?? internalEmailDialogOpen;
   const setEmailDialogOpen = externalSetEmailOpen ?? setInternalEmailDialogOpen;
+  const calendarDialogOpen = externalCalendarOpen ?? internalCalendarDialogOpen;
+  const setCalendarDialogOpen = externalSetCalendarOpen ?? setInternalCalendarDialogOpen;
 
   return (
     <>
@@ -145,6 +153,19 @@ export const FloatingIslandComponent = ({
           }}
         >
           <Mail size={20} />
+        </IconButton>
+
+        {/* Calendar Button */}
+        <IconButton
+          onClick={() => setCalendarDialogOpen(true)}
+          variant="soft"
+          size="2"
+          title="Calendar"
+          style={{ cursor: 'pointer', transition: 'transform 0.2s ease' }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+        >
+          <Calendar size={20} />
         </IconButton>
 
         {/* Search Button */}
@@ -207,6 +228,7 @@ export const FloatingIslandComponent = ({
       />
       <EmailModalComponent open={emailDialogOpen} onOpenChange={setEmailDialogOpen} />
       <SearchDialogComponent open={searchDialogOpen} onOpenChange={setSearchDialogOpen} />
+      <CalendarDialog open={calendarDialogOpen} onOpenChange={setCalendarDialogOpen} />
     </>
   );
 };

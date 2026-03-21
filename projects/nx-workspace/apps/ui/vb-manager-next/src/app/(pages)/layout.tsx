@@ -25,6 +25,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [chatbotDialogOpen, setChatbotDialogOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
 
   const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
   const dropdownRoutes = allRoutes.filter(
@@ -37,13 +38,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const handleKeyboardShortcut = (key: string) => {
-      if (key === '/') setSearchDialogOpen(true);
-      else if (key === 'm' || key === 'M') setEmailDialogOpen(true);
-      else if (key === 'c' || key === 'C') setChatbotDialogOpen(true);
-      else if (key === 'd' || key === 'D') toggleTheme();
-    };
-
     const handleKeyDown = (e: KeyboardEvent) => {
       const isIgnoredInput =
         e.target instanceof Element && IGNORED_TAGS.includes(e.target.tagName);
@@ -51,7 +45,11 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       if (isIgnoredInput || hasModifier) return;
 
-      handleKeyboardShortcut(e.key);
+      if (e.key === '/') setSearchDialogOpen(true);
+      else if (e.key === 'm' || e.key === 'M') setEmailDialogOpen(true);
+      else if (e.key === 'c' && !e.shiftKey) setChatbotDialogOpen(true);
+      else if (e.key === 'C' && e.shiftKey) setCalendarDialogOpen(true);
+      else if (e.key === 'd' || e.key === 'D') toggleTheme();
       e.preventDefault();
     };
 
@@ -120,6 +118,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         setChatbotDialogOpen={setChatbotDialogOpen}
         emailDialogOpen={emailDialogOpen}
         setEmailDialogOpen={setEmailDialogOpen}
+        calendarDialogOpen={calendarDialogOpen}
+        setCalendarDialogOpen={setCalendarDialogOpen}
       />
     </div>
   );
