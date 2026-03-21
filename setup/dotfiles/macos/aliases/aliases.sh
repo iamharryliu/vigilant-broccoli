@@ -53,7 +53,14 @@ alertinterval() {
   echo "✅ Cron updated: $CRON_LINE"
 }
 
+# Homebrew
 alias brewinit="brew bundle --file $MAC_SETUP_DIR/Brewfile"
+alias brewup="brew update && brew upgrade && brew cleanup --prune=all --prune=all"
+alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP_DIR/Brewfile"
+alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update Brewfile.' && gpush"
+
+# Desktop Setup
 alias setupdock=". $MAC_SETUP_DIR/setup_dock.sh"
 alias setupmac=". $MAC_SETUP_DIR/setup_macos_preferences.sh"
 alias toggledarkmode='osascript -e "tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode"'
+alias changewallpaper="$MAC_SETUP_DIR/change_wallpaper.sh"

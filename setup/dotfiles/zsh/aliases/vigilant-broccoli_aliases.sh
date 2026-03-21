@@ -50,11 +50,6 @@ alias pushsnippets="cdvb && git add $SNIPPETS_DIR && gc docs snippets 'Update sn
 alias pushactions="cdvb && git add $GIT_WORKFLOWS_DIR && gc build github-actions 'Update Github actions.' && gpush"
 alias pushsetup="cdvb && git add $SETUP_DIR && gc feat setup 'Update setup scripts.' && gpush"
 alias pushdotfiles="cdvb && git add $DOTFILES_DIR && gc feat dotfiles 'Update dotfiles.' && gpush"
-# Homebrew
-alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP_DIR/Brewfile"
-alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update Brewfile.' && gpush"
-# Wallpaper
-alias changewallpaper="$MAC_SETUP_DIR/change_wallpaper.sh"
 # Projects
 alias servepersonalfrontend="cdnx && npm run serve:personal-website"
 alias deploypersonalfrontend="cdnx && nx manual-deploy personal-website-frontend"
@@ -130,12 +125,9 @@ alias wg-status='sudo wg show'
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
 alias backupvbsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
-alias bitwarden="open -a bitwarden"
 
 # Hobby Code
 alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py --output '$HOME/My Drive/DJ Music Library' --filter 'mix'"
 
 # Docker
 alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
-
-alias brewup="brew update && brew upgrade && brew cleanup"
