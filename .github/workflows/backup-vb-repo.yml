@@ -19,7 +19,7 @@ jobs:
       AWS_REGION: us-east-1
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -72,7 +72,7 @@ jobs:
             kv/data/secrets CLOUDFLARE_R2_SECRET_ACCESS_KEY | CLOUDFLARE_R2_SECRET_ACCESS_KEY ;
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
 
