@@ -8,3 +8,4 @@
 | hardening           | Process of making a system, application, or network more secure by reducing its vulnerabilities and attack surface.                                 |
 | microservices       | Breaking applications into tiny remote services that run independently of each other.                                                               |
 | immutable           | Cannot be changed after it’s created.                                                                                                               |
+| tree shaking        | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.                                  |
