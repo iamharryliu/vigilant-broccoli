@@ -59,7 +59,7 @@ export const ClockComponent = ({ type = 'time' }: ClockBlockProps) => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'center' }}>
       <Text size="2" color="gray" className="font-mono">
         Week {weekNumber}, {dayOfWeek}, {currentDate}
       </Text>
