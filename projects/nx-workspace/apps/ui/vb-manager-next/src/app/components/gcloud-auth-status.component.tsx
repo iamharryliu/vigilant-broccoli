@@ -2,7 +2,7 @@
 
 import { Flex, Text, Badge, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
-import { ExternalLinkIcon } from '@radix-ui/react-icons';
+import { ExternalLinkIcon, CopyIcon, CheckIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -44,6 +44,66 @@ interface GcloudAuthStatus {
   currentProject: string | null;
 }
 
+interface ReauthStatus {
+  needsReauth: boolean;
+  activeAccount: string | null;
+  error?: string;
+}
+
+interface AccountItemProps {
+  account: GcloudAccount;
+  isActive: boolean;
+  needsAuth: boolean;
+  switchingProject: string | null;
+  activeAccount: string | null;
+  onSwitchAccount: (account: string) => void;
+}
+
+const AccountItem = ({
+  account,
+  isActive,
+  needsAuth,
+  switchingProject,
+  onSwitchAccount,
+}: AccountItemProps) => (
+  <Flex
+    align="center"
+    gap="2"
+    wrap="wrap"
+    className={`p-2 rounded border ${
+      isActive && needsAuth
+        ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600'
+        : isActive
+        ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
+        : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+    }`}
+  >
+    {isActive && !needsAuth && (
+      <Badge color="green" size="1">
+        Active
+      </Badge>
+    )}
+    {needsAuth && (
+      <Badge color="yellow" size="1">
+        ⚠️ Reauth
+      </Badge>
+    )}
+    <Text size="2" weight={isActive ? 'bold' : 'regular'} className="flex-1">
+      {account.account}
+    </Text>
+    {!isActive && (
+      <Button
+        variant="soft"
+        size="1"
+        onClick={() => onSwitchAccount(account.account)}
+        disabled={switchingProject === account.account}
+      >
+        {switchingProject === account.account ? 'Switching...' : 'Select'}
+      </Button>
+    )}
+  </Flex>
+);
+
 export const GcloudAuthStatusComponent = () => {
   const [authStatus, setAuthStatus] = useState<GcloudAuthStatus | null>(null);
   const [projects, setProjects] = useState<GcloudProject[]>([]);
@@ -51,8 +111,18 @@ export const GcloudAuthStatusComponent = () => {
     new Set(),
   );
   const [switchingProject, setSwitchingProject] = useState<string | null>(null);
+  const [reauthStatus, setReauthStatus] = useState<ReauthStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedCommand, setCopiedCommand] = useState<boolean>(false);
+
+  const copyAuthCommand = () => {
+    navigator.clipboard.writeText(
+      'gcloud auth login && gcloud auth application-default login',
+    );
+    setCopiedCommand(true);
+    setTimeout(() => setCopiedCommand(false), 2000);
+  };
 
   const toggleProject = (projectId: string) => {
     setExpandedProjects(prev => {
@@ -85,7 +155,7 @@ export const GcloudAuthStatusComponent = () => {
         setAuthStatus(authData);
       }
     } catch (err) {
-      console.error('Error switching project:', err);
+      // Error switching project
     } finally {
       setSwitchingProject(null);
     }
@@ -104,22 +174,38 @@ export const GcloudAuthStatusComponent = () => {
         throw new Error('Failed to switch account');
       }
 
-      const [authResponse, projectsResponse] = await Promise.all([
+      const [authResponse, reauthResponse] = await Promise.all([
         fetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
-        fetch(API_ENDPOINTS.GCLOUD_PROJECTS),
+        fetch('/api/gcloud/reauth-needed'),
       ]);
 
       if (authResponse.ok) {
         const authData = await authResponse.json();
         setAuthStatus(authData);
-      }
 
-      if (projectsResponse.ok) {
-        const projectsData = await projectsResponse.json();
-        setProjects(projectsData);
+        let reauthData: ReauthStatus = {
+          needsReauth: false,
+          activeAccount: authData.activeAccount,
+        };
+
+        if (reauthResponse.ok) {
+          reauthData = await reauthResponse.json();
+        }
+
+        setReauthStatus(reauthData);
+
+        if (!reauthData.needsReauth) {
+          const projectsResponse = await fetch(API_ENDPOINTS.GCLOUD_PROJECTS);
+          if (projectsResponse.ok) {
+            const projectsData = await projectsResponse.json();
+            setProjects(projectsData);
+          }
+        } else {
+          setProjects([]);
+        }
       }
     } catch (err) {
-      console.error('Error switching account:', err);
+      // Error switching account
     } finally {
       setSwitchingProject(null);
     }
@@ -128,9 +214,9 @@ export const GcloudAuthStatusComponent = () => {
   useEffect(() => {
     const fetchGcloudData = async () => {
       try {
-        const [authResponse, projectsResponse] = await Promise.all([
+        const [authResponse, reauthResponse] = await Promise.all([
           fetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
-          fetch(API_ENDPOINTS.GCLOUD_PROJECTS),
+          fetch('/api/gcloud/reauth-needed'),
         ]);
 
         if (!authResponse.ok) {
@@ -140,9 +226,25 @@ export const GcloudAuthStatusComponent = () => {
         const authData = await authResponse.json();
         setAuthStatus(authData);
 
-        if (projectsResponse.ok) {
-          const projectsData = await projectsResponse.json();
-          setProjects(projectsData);
+        let reauthData: ReauthStatus = {
+          needsReauth: false,
+          activeAccount: authData.activeAccount,
+        };
+
+        if (reauthResponse.ok) {
+          reauthData = await reauthResponse.json();
+        }
+
+        setReauthStatus(reauthData);
+
+        if (!reauthData.needsReauth) {
+          const projectsResponse = await fetch(API_ENDPOINTS.GCLOUD_PROJECTS);
+          if (projectsResponse.ok) {
+            const projectsData = await projectsResponse.json();
+            setProjects(projectsData);
+          }
+        } else {
+          setProjects([]);
         }
 
         setLoading(false);
@@ -151,7 +253,6 @@ export const GcloudAuthStatusComponent = () => {
           err instanceof Error ? err.message : 'Failed to fetch gcloud status',
         );
         setLoading(false);
-        console.error('Gcloud auth status error:', err);
       }
     };
 
@@ -190,40 +291,29 @@ export const GcloudAuthStatusComponent = () => {
                   })
                   .map((acc, idx) => {
                     const isActive = acc.account === authStatus.activeAccount;
+                    const needsAuth = isActive && reauthStatus?.needsReauth;
                     return (
-                      <Flex
-                        key={idx}
-                        align="center"
-                        gap="2"
-                        wrap="wrap"
-                        className={`p-2 rounded border ${
-                          isActive
-                            ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
-                            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                        }`}
-                      >
-                        {isActive && (
-                          <Badge color="green" size="1">
-                            Active
-                          </Badge>
-                        )}
-                        <Text
-                          size="2"
-                          weight={isActive ? 'bold' : 'regular'}
-                          className="flex-1"
-                        >
-                          {acc.account}
-                        </Text>
-                        {!isActive && (
+                      <Flex key={idx} direction="column" gap="1">
+                        <AccountItem
+                          account={acc}
+                          isActive={isActive}
+                          needsAuth={!!needsAuth}
+                          switchingProject={switchingProject}
+                          activeAccount={authStatus.activeAccount}
+                          onSwitchAccount={switchAccount}
+                        />
+                        {needsAuth && (
                           <Button
-                            variant="soft"
+                            variant="ghost"
                             size="1"
-                            onClick={() => switchAccount(acc.account)}
-                            disabled={switchingProject === acc.account}
+                            onClick={copyAuthCommand}
+                            title="Copy auth command"
                           >
-                            {switchingProject === acc.account
-                              ? 'Switching...'
-                              : 'Select'}
+                            {copiedCommand ? (
+                              <CheckIcon width="16" height="16" />
+                            ) : (
+                              <CopyIcon width="16" height="16" />
+                            )}
                           </Button>
                         )}
                       </Flex>

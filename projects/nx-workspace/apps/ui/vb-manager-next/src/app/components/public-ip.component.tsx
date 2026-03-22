@@ -3,9 +3,69 @@
 import { Card, Flex, Text, Button, Select, Tooltip } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CopyIcon, CheckIcon, InfoCircledIcon } from '@radix-ui/react-icons';
+import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 type SecretType = 'hex' | 'base64' | 'url-safe' | 'uuid';
+
+interface LocalMachineStatsProps {
+  diskLoading: boolean;
+  diskAvailable: string;
+  speedLoading: boolean;
+  downloadSpeed: string;
+  uploadSpeed: string;
+}
+
+const LocalMachineStats = ({
+  diskLoading,
+  diskAvailable,
+  speedLoading,
+  downloadSpeed,
+  uploadSpeed,
+}: LocalMachineStatsProps) => (
+  <Flex
+    direction="column"
+    gap="2"
+    style={{
+      borderTop: '1px solid var(--gray-5)',
+      paddingTop: '12px',
+      marginTop: '8px',
+    }}
+  >
+    <Flex align="center" gap="2">
+      <Text size="2" weight="bold">
+        Available disk space:
+      </Text>
+      {diskLoading ? (
+        <Skeleton className="h-6 w-20" />
+      ) : (
+        <Text size="2">{diskAvailable}</Text>
+      )}
+    </Flex>
+    <Flex align="center" gap="4">
+      <Flex align="center" gap="2">
+        <Text size="2" weight="bold">
+          Download:
+        </Text>
+        {speedLoading ? (
+          <Skeleton className="h-6 w-24" />
+        ) : (
+          <Text size="2">{downloadSpeed}</Text>
+        )}
+      </Flex>
+      <Flex align="center" gap="2">
+        <Text size="2" weight="bold">
+          Upload:
+        </Text>
+        {speedLoading ? (
+          <Skeleton className="h-6 w-24" />
+        ) : (
+          <Text size="2">{uploadSpeed}</Text>
+        )}
+      </Flex>
+    </Flex>
+  </Flex>
+);
 
 const SECRET_TYPE_OPTIONS: {
   value: SecretType;
@@ -43,7 +103,12 @@ export const PublicIpComponent = () => {
   const [publicIp, setPublicIp] = useState<string>('');
   const [localIp, setLocalIp] = useState<string>('');
   const [sshKey, setSshKey] = useState<string>('');
+  const [diskAvailable, setDiskAvailable] = useState<string>('');
+  const [downloadSpeed, setDownloadSpeed] = useState<string>('');
+  const [uploadSpeed, setUploadSpeed] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [diskLoading, setDiskLoading] = useState(true);
+  const [speedLoading, setSpeedLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [publicCopied, setPublicCopied] = useState(false);
   const [localCopied, setLocalCopied] = useState(false);
@@ -107,6 +172,51 @@ export const PublicIpComponent = () => {
     };
 
     fetchIpAddresses();
+  }, []);
+
+  useEffect(() => {
+    const fetchDiskSpace = async () => {
+      try {
+        setDiskLoading(true);
+        const response = await fetch(API_ENDPOINTS.DISK_SPACE);
+        if (!response.ok) {
+          throw new Error('Failed to fetch disk space');
+        }
+        const data = await response.json();
+        setDiskAvailable(data.available);
+      } catch (err) {
+        console.error('Disk space error:', err);
+      } finally {
+        setDiskLoading(false);
+      }
+    };
+
+    fetchDiskSpace();
+    const interval = setInterval(fetchDiskSpace, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchSpeedTest = async () => {
+      try {
+        setSpeedLoading(true);
+        const response = await fetch(API_ENDPOINTS.SPEED_TEST);
+        if (!response.ok) {
+          throw new Error('Failed to fetch speed test');
+        }
+        const data = await response.json();
+        setDownloadSpeed(data.downloadSpeed);
+        setUploadSpeed(data.uploadSpeed);
+      } catch (err) {
+        console.error('Speed test error:', err);
+      } finally {
+        setSpeedLoading(false);
+      }
+    };
+
+    fetchSpeedTest();
+    const interval = setInterval(fetchSpeedTest, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const handlePublicCopy = async () => {
@@ -213,6 +323,14 @@ export const PublicIpComponent = () => {
               <CopyIcon /> Copy
             </Button>
           </Flex>
+
+          <LocalMachineStats
+            diskLoading={diskLoading}
+            diskAvailable=""
+            speedLoading={speedLoading}
+            downloadSpeed=""
+            uploadSpeed=""
+          />
         </Flex>
       </Card>
     );
@@ -326,6 +444,14 @@ export const PublicIpComponent = () => {
             {secretCopied ? <CheckIcon /> : <CopyIcon />}
           </Button>
         </Flex>
+
+        <LocalMachineStats
+          diskLoading={diskLoading}
+          diskAvailable={diskAvailable}
+          speedLoading={speedLoading}
+          downloadSpeed={downloadSpeed}
+          uploadSpeed={uploadSpeed}
+        />
       </Flex>
     </Card>
   );

@@ -47,7 +47,8 @@ interface Message {
 
 interface ChatSuggestion {
   title: string;
-  prompt: string;
+  prompt?: string;
+  onClick?: () => void | Promise<void>;
 }
 
 interface ChatbotDialogProps {
@@ -775,9 +776,22 @@ export const ChatbotDialog = ({
   const handleSuggestionClick = async (suggestion: ChatSuggestion) => {
     if (isStreaming) return;
 
+    let promptToUse = suggestion.prompt;
+
+    if (suggestion.onClick) {
+      const result = await suggestion.onClick();
+      if (result && 'prompt' in result) {
+        promptToUse = result.prompt;
+      } else {
+        return;
+      }
+    }
+
+    if (!promptToUse) return;
+
     const userMessage: Message = {
       role: 'user',
-      content: suggestion.prompt,
+      content: promptToUse,
       displayContent: suggestion.title,
     };
     const updatedMessages = [...messages, userMessage];

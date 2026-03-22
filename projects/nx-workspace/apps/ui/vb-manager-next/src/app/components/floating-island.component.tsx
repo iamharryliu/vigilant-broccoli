@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { IconButton, Select, Text, Flex } from '@radix-ui/themes';
+import { IconButton, Select } from '@radix-ui/themes';
 import { MessageCircle, Mail, Search, Moon, Sun, Calendar } from 'lucide-react';
 import { ChatbotDialog } from './chatbot-dialog.component';
 import { EmailModalComponent } from './email-modal.component';
@@ -96,35 +96,35 @@ export const FloatingIslandComponent = ({
   const [outfitRecommendation, setOutfitRecommendation] = useState<string>('');
   const dayData = useDayAnalysisSuggestions();
 
-  useEffect(() => {
-    const fetchOutfitRecommendation = async () => {
-      const MALMÖ = { lat: 55.605, lon: 13.0038 };
-      try {
-        const response = await fetch(
-          `/api/outfit-recommendation?lat=${MALMÖ.lat}&lon=${MALMÖ.lon}`,
-        );
+  const fetchOutfitRecommendation = async () => {
+    const MALMÖ = { lat: 55.605, lon: 13.0038 };
+    try {
+      const response = await fetch(
+        `/api/outfit-recommendation?lat=${MALMÖ.lat}&lon=${MALMÖ.lon}`,
+      );
 
-        if (!response.ok || !response.body) return;
+      if (!response.ok || !response.body) return;
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let text = '';
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let text = '';
+      let isDone = false;
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const chunk = decoder.decode(value, { stream: true });
-          text += chunk;
-        }
-
-        setOutfitRecommendation(text);
-      } catch (err) {
-        // Error fetching outfit recommendation
+      while (!isDone) {
+        const { done, value } = await reader.read();
+        isDone = done;
+        if (isDone) break;
+        const chunk = decoder.decode(value, { stream: true });
+        text += chunk;
       }
-    };
 
-    fetchOutfitRecommendation();
-  }, [setOutfitRecommendation]);
+      setOutfitRecommendation(text);
+      return text;
+    } catch (err) {
+      // Error fetching outfit recommendation
+      return null;
+    }
+  };
 
   const getSuggestions = () => {
     if (!dayData) return [];
@@ -135,12 +135,17 @@ export const FloatingIslandComponent = ({
       },
     ];
 
-    if (outfitRecommendation) {
-      suggestions.push({
-        title: '👔 Get Outfit Recommendation',
-        prompt: generateOutfitRecommendationPrompt(outfitRecommendation),
-      });
-    }
+    suggestions.push({
+      title: '👔 Get Outfit Recommendation',
+      onClick: async () => {
+        const recommendation = await fetchOutfitRecommendation();
+        if (recommendation) {
+          return {
+            prompt: generateOutfitRecommendationPrompt(recommendation),
+          };
+        }
+      },
+    });
 
     if (isWeekPlanningVisible()) {
       suggestions.push({
@@ -210,7 +215,13 @@ export const FloatingIslandComponent = ({
         </div>
 
         {/* Divider */}
-        <div style={{ width: '1px', height: '60px', backgroundColor: 'var(--gray-6)' }} />
+        <div
+          style={{
+            width: '1px',
+            height: '60px',
+            backgroundColor: 'var(--gray-6)',
+          }}
+        />
 
         {/* Block 2: Info */}
         <div style={{ minWidth: 'max-content' }}>
@@ -218,10 +229,23 @@ export const FloatingIslandComponent = ({
         </div>
 
         {/* Divider */}
-        <div style={{ width: '1px', height: '60px', backgroundColor: 'var(--gray-6)' }} />
+        <div
+          style={{
+            width: '1px',
+            height: '60px',
+            backgroundColor: 'var(--gray-6)',
+          }}
+        />
 
         {/* Block 3: Controls */}
-        <div style={{ display: 'flex', flexDirection: 'row', gap: '0.75rem', alignItems: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '0.75rem',
+            alignItems: 'center',
+          }}
+        >
           {/* Chatbot Button */}
           <IconButton
             onClick={() => setChatbotDialogOpen(true)}

@@ -35,6 +35,8 @@ export const API_ENDPOINTS = {
 
   // System
   LOCAL_MACHINE: '/api/local-machine',
+  DISK_SPACE: '/api/disk-space',
+  SPEED_TEST: '/api/speed-test',
 
   // Tasks
   TASKS: '/api/tasks',
