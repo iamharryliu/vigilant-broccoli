@@ -1,5 +1,11 @@
 # TODO
 
+## fix
+
+- fix: dldjmusic
+  - https://github.com/spotDL/spotify-downloader/issues/2585
+  - https://github.com/spotDL/spotify-downloader/issues/2617
+
 ## ci
 
 - chore: alias for `alias run lib:nx-release-publish`?
