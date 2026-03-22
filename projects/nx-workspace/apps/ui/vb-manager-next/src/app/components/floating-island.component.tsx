@@ -119,12 +119,12 @@ export const FloatingIslandComponent = ({
 
         setOutfitRecommendation(text);
       } catch (err) {
-        console.error('Error fetching outfit recommendation:', err);
+        // Error fetching outfit recommendation
       }
     };
 
     fetchOutfitRecommendation();
-  }, []);
+  }, [setOutfitRecommendation]);
 
   const getSuggestions = () => {
     if (!dayData) return [];
