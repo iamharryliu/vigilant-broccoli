@@ -122,7 +122,7 @@ alias wg-status='sudo wg show'
 
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
-alias backupbitwarden='source $NX_DIR/.env && BW_SESSION=$(echo "$BW_PASSWORD" | bw unlock --raw) && bw export --format json --output ~/resilio-sync/backup/bitwarden-$(date -u +%Y-%m-%d).json'
+alias backupbitwarden='source $NX_DIR/.env && BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw) bw export --format json --output ~/resilio-sync/backup/bitwarden-$(date -u +%Y-%m-%d).json'
 alias backupvbsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
 alias backupsecrets="backupbitwarden && backupvbsecrets"
 
