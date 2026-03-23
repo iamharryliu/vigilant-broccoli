@@ -30,13 +30,20 @@
 ### Tasks
 
 - Drag tasks between lanes (creates in target first, then deletes from source)
-- Drag to reorder within same lane
-- Lane highlights on hover when dragging a task
+- Drag to reorder within same lane (calls `/api/tasks/move` with previous task ID)
+- Lane highlights on hover when dragging a task; non-target lanes show subtle drop zone hint
+- Blue drop indicator bar shows between tasks during reorder
 
 ## State
 
 - Board config: `localStorage` keys `swimlanes-boards`, `swimlanes-active-board`
 - Task data: fetched from Google Tasks API via `/api/tasks`, `/api/tasks/lists`
+
+## Drag Overlays
+
+- Task: shows title, notes preview, due date, commit type badge, Eisenhower quadrant color
+- Lane: header with skeleton task placeholders
+- Board: compact sidebar-style chip with blue accent
 
 ## Constraints
 

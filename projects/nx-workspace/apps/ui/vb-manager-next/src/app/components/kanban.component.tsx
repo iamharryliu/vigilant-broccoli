@@ -61,6 +61,30 @@ const LANE_OPACITY = {
   DEFAULT: 1,
 } as const;
 
+const OVERLAY_CLASSES = {
+  BASE: 'rounded shadow-xl border',
+  LIGHT: 'bg-white border-gray-200',
+  DARK: 'dark:bg-gray-800 dark:border-gray-600',
+} as const;
+
+const QUADRANT_OVERLAY_COLORS: Record<string, string> = {
+  Q1: 'border-l-4 border-l-red-500',
+  Q2: 'border-l-4 border-l-blue-500',
+  Q3: 'border-l-4 border-l-yellow-500',
+  Q4: 'border-l-4 border-l-green-500',
+} as const;
+
+const getQuadrantFromTitle = (title: string): string | null => {
+  const match = title.match(/^(Q[1-4])[\s:]/i);
+  return match ? match[1].toUpperCase() : null;
+};
+
+const getCommitTypeFromTitle = (title: string): string | null => {
+  const withoutQuadrant = title.replace(/^Q[1-4][\s:]+/i, '');
+  const match = withoutQuadrant.match(/^([a-z&]+)[(:]/i);
+  return match ? match[1].toLowerCase() : null;
+};
+
 const useBoards = () => {
   const [boards, setBoards] = useState<Board[]>([]);
   const [activeBoardId, setActiveBoardId] = useState<string>('');
@@ -209,6 +233,8 @@ interface SortableLaneProps {
   onRemove: (boardId: string, laneId: string) => void;
   refreshTrigger: number;
   isTaskDragOver: boolean;
+  isDraggingTask: boolean;
+  isDraggingLane: boolean;
 }
 
 const SortableBoard = ({
@@ -302,6 +328,8 @@ const SortableLane = ({
   onRemove,
   refreshTrigger,
   isTaskDragOver,
+  isDraggingTask,
+  isDraggingLane,
 }: SortableLaneProps) => {
   const {
     attributes,
@@ -326,24 +354,32 @@ const SortableLane = ({
       <div
         ref={setSortableRef}
         style={style}
-        className="w-80 flex-shrink-0 rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 dark:bg-blue-950 opacity-50"
+        className="w-80 h-64 flex-shrink-0 rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 dark:bg-blue-950 opacity-50"
       />
     );
   }
+
+  const laneHighlight = isTaskDragOver
+    ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950'
+    : isDraggingTask
+    ? 'ring-1 ring-dashed ring-gray-300 dark:ring-gray-600'
+    : '';
 
   return (
     <div
       ref={setSortableRef}
       style={style}
-      className={`flex flex-col gap-2 w-80 flex-shrink-0 rounded-lg transition-all duration-150 ${
-        isTaskDragOver ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''
-      }`}
+      className={`flex flex-col gap-2 w-80 flex-shrink-0 rounded-lg transition-all duration-150 ${laneHighlight}`}
     >
       <Flex justify="between" align="center" className="px-2">
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing flex items-center gap-1 flex-1"
+          className={`flex items-center gap-1 flex-1 ${
+            isDraggingLane
+              ? 'cursor-grabbing'
+              : 'cursor-grab active:cursor-grabbing'
+          }`}
         >
           <DragHandleDots2Icon className="opacity-40 hover:opacity-70 flex-shrink-0" />
           <Text size="3" weight="bold">
@@ -369,6 +405,80 @@ const SortableLane = ({
     </div>
   );
 };
+
+const TaskDragOverlay = ({
+  task,
+}: {
+  task: { title: string; notes?: string; due?: string };
+}) => {
+  const quadrant = getQuadrantFromTitle(task.title);
+  const commitType = getCommitTypeFromTitle(task.title);
+  const quadrantClass = quadrant ? QUADRANT_OVERLAY_COLORS[quadrant] : '';
+
+  return (
+    <div
+      className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} p-3 max-w-72 rotate-2 ${quadrantClass}`}
+    >
+      <Flex direction="column" gap="1">
+        <Flex align="center" gap="2">
+          <DragHandleDots2Icon className="opacity-60 flex-shrink-0" />
+          <Text size="2" weight="medium" className="line-clamp-2">
+            {task.title}
+          </Text>
+        </Flex>
+        {task.notes && (
+          <Text size="1" color="gray" className="ml-5 line-clamp-1">
+            {task.notes}
+          </Text>
+        )}
+        <Flex gap="2" align="center" className="ml-5">
+          {task.due && (
+            <Text size="1" color="blue">
+              {new Date(task.due).toLocaleDateString()}
+            </Text>
+          )}
+          {commitType && (
+            <span className="text-xs px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+              {commitType}
+            </span>
+          )}
+        </Flex>
+      </Flex>
+    </div>
+  );
+};
+
+const LaneDragOverlay = ({ title }: { title: string }) => (
+  <div
+    className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} p-3 w-80 rotate-1`}
+  >
+    <Flex align="center" gap="2">
+      <DragHandleDots2Icon className="opacity-60 flex-shrink-0" />
+      <Text size="3" weight="bold">
+        {title}
+      </Text>
+    </Flex>
+    <div className="mt-2 space-y-1.5">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div
+          key={i}
+          className="h-6 rounded bg-gray-100 dark:bg-gray-700"
+          style={{ width: `${80 - i * 15}%` }}
+        />
+      ))}
+    </div>
+  </div>
+);
+
+const BoardDragOverlay = ({ name }: { name: string }) => (
+  <div
+    className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} py-1.5 px-3 border-l-2 border-l-blue-500 rotate-1`}
+  >
+    <Text size="2" weight="bold">
+      {name}
+    </Text>
+  </div>
+);
 
 // eslint-disable-next-line complexity
 export const KanbanComponent = () => {
@@ -526,6 +636,67 @@ export const KanbanComponent = () => {
     setDraggingLanes(null);
   }, [activeBoard, draggingLanes, reorderLanes]);
 
+  const handleTaskReorder = useCallback(
+    async (taskListId: string, taskId: string, overTaskId: string) => {
+      const response = await fetch(
+        `${API_ENDPOINTS.TASKS}?taskListId=${taskListId}`,
+      );
+      const data = await response.json();
+      if (!response.ok || !data.tasks) return;
+
+      const tasks: { id: string }[] = data.tasks.filter(
+        (t: { status: string }) => t.status !== 'completed',
+      );
+      const activeIndex = tasks.findIndex(t => t.id === taskId);
+      const overIndex = tasks.findIndex(t => t.id === overTaskId);
+      if (activeIndex === -1 || overIndex === -1) return;
+
+      const reordered = [...tasks];
+      const [moved] = reordered.splice(activeIndex, 1);
+      reordered.splice(overIndex, 0, moved);
+
+      const newIndex = reordered.findIndex(t => t.id === taskId);
+      const previousTaskId = newIndex > 0 ? reordered[newIndex - 1].id : null;
+
+      await fetch(API_ENDPOINTS.TASKS_MOVE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskListId,
+          taskId,
+          previous: previousTaskId,
+        }),
+      });
+
+      setRefreshTrigger(prev => prev + 1);
+    },
+    [],
+  );
+
+  const handleTaskCrossListMove = useCallback(
+    async (taskData: any, sourceListId: string, targetListId: string) => {
+      const createResponse = await fetch(API_ENDPOINTS.TASKS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskListId: targetListId,
+          title: taskData.task.title,
+          notes: taskData.task.notes,
+        }),
+      });
+
+      if (!createResponse.ok) return;
+
+      await fetch(
+        `${API_ENDPOINTS.TASKS}?taskListId=${sourceListId}&taskId=${taskData.task.id}`,
+        { method: 'DELETE' },
+      );
+
+      setRefreshTrigger(prev => prev + 1);
+    },
+    [],
+  );
+
   const handleTaskDragEnd = useCallback(
     async (active: Active, over: Over | null) => {
       setActiveTask(null);
@@ -543,38 +714,19 @@ export const KanbanComponent = () => {
       if (!sourceListId || !targetListId) return;
 
       if (sourceListId === targetListId) {
-        setRefreshTrigger(prev => prev + 1);
+        if (overType === 'task') {
+          await handleTaskReorder(
+            sourceListId,
+            active.id as string,
+            over.id as string,
+          );
+        }
         return;
       }
 
-      const createResponse = await fetch(API_ENDPOINTS.TASKS, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          taskListId: targetListId,
-          title: taskData.task.title,
-          notes: taskData.task.notes,
-        }),
-      });
-
-      if (!createResponse.ok) {
-        console.error('Failed to create task in target list');
-        return;
-      }
-
-      const deleteResponse = await fetch(
-        `${API_ENDPOINTS.TASKS}?taskListId=${sourceListId}&taskId=${taskData.task.id}`,
-        { method: 'DELETE' },
-      );
-
-      if (!deleteResponse.ok) {
-        console.error('Failed to delete task from source list');
-        return;
-      }
-
-      setRefreshTrigger(prev => prev + 1);
+      await handleTaskCrossListMove(taskData, sourceListId, targetListId);
     },
-    [],
+    [handleTaskReorder, handleTaskCrossListMove],
   );
 
   const handleBoardDragEnd = useCallback(
@@ -593,6 +745,14 @@ export const KanbanComponent = () => {
     [boards, reorderBoards],
   );
 
+  const resetDragState = useCallback(() => {
+    setActiveTask(null);
+    setActiveLane(null);
+    setActiveBoard_dnd(null);
+    setOverTaskListId(null);
+    setDraggingLanes(null);
+  }, []);
+
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
       const { active, over } = event;
@@ -605,8 +765,10 @@ export const KanbanComponent = () => {
       } else if (dragType === DRAG_TYPE.TASK) {
         await handleTaskDragEnd(active, over);
       }
+
+      resetDragState();
     },
-    [handleBoardDragEnd, handleLaneDragEnd, handleTaskDragEnd],
+    [handleBoardDragEnd, handleLaneDragEnd, handleTaskDragEnd, resetDragState],
   );
 
   const availableTaskLists = taskLists.filter(
@@ -639,6 +801,7 @@ export const KanbanComponent = () => {
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
+      onDragCancel={resetDragState}
     >
       <div className="flex h-full">
         <div
@@ -748,6 +911,8 @@ export const KanbanComponent = () => {
                       onRemove={removeLane}
                       refreshTrigger={refreshTrigger}
                       isTaskDragOver={overTaskListId === lane.taskListId}
+                      isDraggingTask={!!activeTask}
+                      isDraggingLane={!!activeLane}
                     />
                   );
                 })}
@@ -808,24 +973,18 @@ export const KanbanComponent = () => {
         </div>
       </div>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {activeTask ? (
-          <div className="bg-white dark:bg-gray-800 p-3 rounded shadow-lg border border-gray-300 dark:border-gray-600 opacity-90">
-            <Text size="2">{activeTask.task.title}</Text>
-          </div>
+          <TaskDragOverlay task={activeTask.task} />
         ) : activeLane ? (
-          <div className="bg-white dark:bg-gray-800 p-3 rounded shadow-lg border border-gray-300 dark:border-gray-600 opacity-90 w-80">
-            <Text size="3" weight="bold">
-              {taskLists.find(list => list.id === activeLane.taskListId)
-                ?.title || 'Unknown List'}
-            </Text>
-          </div>
+          <LaneDragOverlay
+            title={
+              taskLists.find(list => list.id === activeLane.taskListId)
+                ?.title || 'Unknown List'
+            }
+          />
         ) : activeBoard_dnd ? (
-          <div className="bg-white dark:bg-gray-800 p-2 rounded shadow-lg border border-gray-300 dark:border-gray-600 opacity-90">
-            <Text size="2" weight="bold">
-              {activeBoard_dnd.name}
-            </Text>
-          </div>
+          <BoardDragOverlay name={activeBoard_dnd.name} />
         ) : null}
       </DragOverlay>
     </DndContext>

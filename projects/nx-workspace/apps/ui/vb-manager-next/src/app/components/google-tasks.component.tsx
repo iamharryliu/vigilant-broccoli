@@ -12,12 +12,16 @@ import {
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import {
-  useDraggable,
   useDroppable,
   DndContext,
   DragEndEvent,
   closestCenter,
 } from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
@@ -427,39 +431,31 @@ const TaskItem = memo(
     const {
       attributes,
       listeners,
-      setNodeRef: setDraggableRef,
+      setNodeRef,
       transform,
+      transition,
       isDragging,
-    } = useDraggable({
+    } = useSortable({
       id: task.id,
       data: { type: 'task', task, taskListId },
       disabled: !enableDragDrop || isEditing,
     });
 
-    const { setNodeRef: setDroppableRef, isOver } = useDroppable({
-      id: task.id,
-      data: { type: 'task', task, taskListId },
-      disabled: !enableDragDrop,
-    });
-
     const style = {
-      transform: CSS.Translate.toString(transform),
+      transform: CSS.Transform.toString(transform),
+      transition,
       opacity: isDragging ? DRAG_OPACITY.DRAGGING : DRAG_OPACITY.DEFAULT,
     };
 
     const isDraggable = enableDragDrop && !isEditing;
-    const className = `flex items-start gap-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${
-      QUADRANT_COLORS[quadrant]
-    } ${isNew ? 'task-item-new' : ''}`;
 
     return (
       <div
-        ref={node => {
-          setDraggableRef(node);
-          setDroppableRef(node);
-        }}
+        ref={setNodeRef}
         style={style}
-        className={className}
+        className={`flex items-start gap-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${
+          QUADRANT_COLORS[quadrant]
+        } ${isNew ? 'task-item-new' : ''}`}
       >
         {isDraggable && (
           <div
@@ -735,24 +731,29 @@ const TaskList = memo(
             : ''
         }`}
       >
-        <Flex direction="column" gap="2">
-          {activeTasks.map(task => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              isEditing={editingTaskId === task.id}
-              editingTitle={editingTaskTitle}
-              onToggleComplete={onToggleComplete}
-              onStartEdit={onStartEdit}
-              onEditChange={onEditChange}
-              onSaveEdit={onSaveEdit}
-              onCancelEdit={onCancelEdit}
-              isNew={task.isNew}
-              enableDragDrop={enableDragDrop}
-              taskListId={taskListId}
-            />
-          ))}
-        </Flex>
+        <SortableContext
+          items={activeTasks.map(t => t.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <Flex direction="column" gap="2">
+            {activeTasks.map(task => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                isEditing={editingTaskId === task.id}
+                editingTitle={editingTaskTitle}
+                onToggleComplete={onToggleComplete}
+                onStartEdit={onStartEdit}
+                onEditChange={onEditChange}
+                onSaveEdit={onSaveEdit}
+                onCancelEdit={onCancelEdit}
+                isNew={task.isNew}
+                enableDragDrop={enableDragDrop}
+                taskListId={taskListId}
+              />
+            ))}
+          </Flex>
+        </SortableContext>
       </div>
     );
   },
