@@ -648,6 +648,49 @@ const AddTaskForm = memo(
 
 AddTaskForm.displayName = 'AddTaskForm';
 
+const getDisplayTasks = (tasks: Task[]) =>
+  tasks.filter(t => t.status !== 'completed' || t.isRemoving);
+
+const areDisplayTasksEqual = (prevTasks: Task[], nextTasks: Task[]) => {
+  const prev = getDisplayTasks(prevTasks);
+  const next = getDisplayTasks(nextTasks);
+  if (prev.length !== next.length) return false;
+  return prev.every(
+    (t, i) =>
+      t.id === next[i].id &&
+      t.isNew === next[i].isNew &&
+      t.isRemoving === next[i].isRemoving,
+  );
+};
+
+const PLACEHOLDER_PREFIX = 'placeholder-';
+
+const TaskPlaceholder = ({ id, title, taskListId }: { id: string; title: string; taskListId?: string }) => {
+  const placeholderId = `${PLACEHOLDER_PREFIX}${id}`;
+  const { setNodeRef, transform, transition } = useSortable({
+    id: placeholderId,
+    data: { type: 'task', taskListId },
+    disabled: true,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-2 py-2 px-2 -mx-2 rounded border-2 border-dashed border-blue-400 bg-blue-50 dark:bg-blue-950 opacity-70"
+    >
+      <Text size="2" color="gray" className="truncate">
+        {title}
+      </Text>
+    </div>
+  );
+};
+
 const TaskList = memo(
   ({
     loading,
@@ -662,6 +705,7 @@ const TaskList = memo(
     onCancelEdit,
     enableDragDrop,
     taskListId,
+    dragOverTask,
   }: {
     loading: boolean;
     error: string | null;
@@ -675,6 +719,7 @@ const TaskList = memo(
     onCancelEdit: () => void;
     enableDragDrop?: boolean;
     taskListId?: string;
+    dragOverTask?: DragOverTask | null;
   }) => {
     const { setNodeRef, isOver } = useDroppable({
       id: taskListId || 'default',
@@ -705,37 +750,31 @@ const TaskList = memo(
       t => t.status !== 'completed' || t.isRemoving,
     );
 
-    if (activeTasks.length === 0) {
-      return (
-        <div
-          ref={setNodeRef}
-          className={`min-h-[100px] rounded-lg transition-all duration-150 ${
-            isOver
-              ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
-              : ''
-          }`}
-        >
-          <Text size="2" color="gray">
-            No tasks to display
-          </Text>
-        </div>
-      );
-    }
+    const showPlaceholder =
+      dragOverTask && !activeTasks.some(t => t.id === dragOverTask.id);
+
+    const sortableIds: string[] = activeTasks.map(t => t.id);
+    if (showPlaceholder) sortableIds.push(`${PLACEHOLDER_PREFIX}${dragOverTask.id}`);
+
+    const highlightClass = isOver
+      ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
+      : '';
 
     return (
       <div
         ref={setNodeRef}
-        className={`rounded-lg transition-all duration-150 ${
-          isOver
-            ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
-            : ''
-        }`}
+        className={`rounded-lg transition-all duration-150 min-h-[60px] ${highlightClass}`}
       >
         <SortableContext
-          items={activeTasks.map(t => t.id)}
+          items={sortableIds}
           strategy={verticalListSortingStrategy}
         >
           <Flex direction="column" gap="2">
+            {activeTasks.length === 0 && !showPlaceholder && (
+              <Text size="2" color="gray">
+                No tasks to display
+              </Text>
+            )}
             {activeTasks.map(task => (
               <TaskItem
                 key={task.id}
@@ -752,45 +791,25 @@ const TaskList = memo(
                 taskListId={taskListId}
               />
             ))}
+            {showPlaceholder && (
+              <TaskPlaceholder id={dragOverTask.id} title={dragOverTask.title} taskListId={taskListId} />
+            )}
           </Flex>
         </SortableContext>
       </div>
     );
   },
   (prevProps, nextProps) => {
-    if (
+    const scalarChanged =
       prevProps.loading !== nextProps.loading ||
       prevProps.error !== nextProps.error ||
       prevProps.editingTaskId !== nextProps.editingTaskId ||
-      prevProps.editingTaskTitle !== nextProps.editingTaskTitle
-    ) {
-      return false;
-    }
+      prevProps.editingTaskTitle !== nextProps.editingTaskTitle ||
+      prevProps.dragOverTask?.id !== nextProps.dragOverTask?.id;
 
-    const prevDisplayTasks = prevProps.tasks.filter(
-      t => t.status !== 'completed' || t.isRemoving,
-    );
-    const nextDisplayTasks = nextProps.tasks.filter(
-      t => t.status !== 'completed' || t.isRemoving,
-    );
+    if (scalarChanged) return false;
 
-    if (prevDisplayTasks.length !== nextDisplayTasks.length) {
-      return false;
-    }
-
-    for (let i = 0; i < prevDisplayTasks.length; i++) {
-      const prev = prevDisplayTasks[i];
-      const next = nextDisplayTasks[i];
-      if (
-        prev.id !== next.id ||
-        prev.isNew !== next.isNew ||
-        prev.isRemoving !== next.isRemoving
-      ) {
-        return false;
-      }
-    }
-
-    return true;
+    return areDisplayTasksEqual(prevProps.tasks, nextProps.tasks);
   },
 );
 
@@ -816,6 +835,11 @@ const UnauthenticatedView = memo(() => (
 
 UnauthenticatedView.displayName = 'UnauthenticatedView';
 
+interface DragOverTask {
+  id: string;
+  title: string;
+}
+
 // eslint-disable-next-line complexity
 export const GoogleTasksComponent = ({
   taskListId: propTaskListId,
@@ -823,12 +847,14 @@ export const GoogleTasksComponent = ({
   enableDragDrop = false,
   refreshTrigger = 0,
   disableInternalDndContext = false,
+  dragOverTask,
 }: {
   taskListId?: string;
   showSelector?: boolean;
   enableDragDrop?: boolean;
   refreshTrigger?: number;
   disableInternalDndContext?: boolean;
+  dragOverTask?: DragOverTask | null;
 } = {}) => {
   const { data: session, status } = useSession();
   const { taskLists, authError: titleAuthError } = useTaskLists(status);
@@ -1018,6 +1044,7 @@ export const GoogleTasksComponent = ({
           onCancelEdit={handleCancelEdit}
           enableDragDrop={isDragDropEnabled || enableDragDrop}
           taskListId={taskListId}
+          dragOverTask={dragOverTask}
         />
       </Flex>
     </Card>

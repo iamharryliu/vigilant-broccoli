@@ -226,6 +226,11 @@ interface SortableBoardProps {
   showDeleteButton: boolean;
 }
 
+interface DragOverTask {
+  id: string;
+  title: string;
+}
+
 interface SortableLaneProps {
   lane: Lane;
   taskList: TaskList | undefined;
@@ -235,6 +240,7 @@ interface SortableLaneProps {
   isTaskDragOver: boolean;
   isDraggingTask: boolean;
   isDraggingLane: boolean;
+  dragOverTask: DragOverTask | null;
 }
 
 const SortableBoard = ({
@@ -330,6 +336,7 @@ const SortableLane = ({
   isTaskDragOver,
   isDraggingTask,
   isDraggingLane,
+  dragOverTask,
 }: SortableLaneProps) => {
   const {
     attributes,
@@ -401,6 +408,7 @@ const SortableLane = ({
         enableDragDrop={true}
         refreshTrigger={refreshTrigger}
         disableInternalDndContext={true}
+        dragOverTask={dragOverTask}
       />
     </div>
   );
@@ -913,6 +921,13 @@ export const KanbanComponent = () => {
                       isTaskDragOver={overTaskListId === lane.taskListId}
                       isDraggingTask={!!activeTask}
                       isDraggingLane={!!activeLane}
+                      dragOverTask={
+                        activeTask &&
+                        overTaskListId === lane.taskListId &&
+                        activeTask.taskListId !== lane.taskListId
+                          ? { id: activeTask.task.id, title: activeTask.task.title }
+                          : null
+                      }
                     />
                   );
                 })}
