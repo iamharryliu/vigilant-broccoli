@@ -12,6 +12,12 @@ import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { ClockComponent } from './clock.component';
 
+interface ChatSuggestion {
+  title: string;
+  prompt?: string;
+  onClick?: () => Promise<{ prompt: string } | void>;
+}
+
 interface FloatingIslandProps {
   searchDialogOpen?: boolean;
   setSearchDialogOpen?: (open: boolean) => void;
@@ -126,9 +132,9 @@ export const FloatingIslandComponent = ({
     }
   };
 
-  const getSuggestions = () => {
+  const getSuggestions = (): ChatSuggestion[] => {
     if (!dayData) return [];
-    const suggestions = [
+    const suggestions: ChatSuggestion[] = [
       {
         title: '📅 Plan My Day',
         prompt: generatePlanningPrompt(dayData),

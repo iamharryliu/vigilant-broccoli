@@ -48,7 +48,7 @@ interface Message {
 interface ChatSuggestion {
   title: string;
   prompt?: string;
-  onClick?: () => void | Promise<void>;
+  onClick?: () => Promise<{ prompt: string } | void>;
 }
 
 interface ChatbotDialogProps {
@@ -780,7 +780,7 @@ export const ChatbotDialog = ({
 
     if (suggestion.onClick) {
       const result = await suggestion.onClick();
-      if (result && 'prompt' in result) {
+      if (result && typeof result === 'object' && 'prompt' in result) {
         promptToUse = result.prompt;
       } else {
         return;
