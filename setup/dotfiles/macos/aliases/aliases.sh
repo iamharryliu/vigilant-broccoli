@@ -9,7 +9,7 @@ load_aliases() {
 }
 
 BASE_DIR=$DOTFILES_DIR/macos/aliases
-for SUB_DIR in os devops network; do
+for SUB_DIR in os devops; do
   load_aliases "$BASE_DIR/$SUB_DIR"
 done
 
