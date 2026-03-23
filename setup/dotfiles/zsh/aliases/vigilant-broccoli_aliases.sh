@@ -122,7 +122,9 @@ alias wg-status='sudo wg show'
 
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
+alias backupbitwarden='source $NX_DIR/.env && BW_SESSION=$(echo "$BW_PASSWORD" | bw unlock --raw) && bw export --format json --output ~/resilio-sync/backup/bitwarden-$(date -u +%Y-%m-%d).json'
 alias backupvbsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
+alias backupsecrets="backupbitwarden && backupvbsecrets"
 
 # Hobby Code
 alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py --output '$HOME/My Drive/DJ Music Library' --filter 'mix'"

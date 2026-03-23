@@ -51,7 +51,7 @@ async function backupVaultSecrets(
       finalOutputPath = resolve(homedir(), finalOutputPath.slice(2));
     }
 
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().split('T')[0];
     const [dir, file] = [
       finalOutputPath.substring(0, finalOutputPath.lastIndexOf('/')),
       finalOutputPath.substring(finalOutputPath.lastIndexOf('/') + 1),
