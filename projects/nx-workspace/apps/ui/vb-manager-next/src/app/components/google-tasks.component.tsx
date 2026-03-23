@@ -450,9 +450,7 @@ const TaskItem = memo(
     const isDraggable = enableDragDrop && !isEditing;
     const className = `flex items-start gap-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${
       QUADRANT_COLORS[quadrant]
-    } ${isNew ? 'task-item-new' : ''} ${
-      isOver ? 'border-t-2 border-blue-500' : ''
-    }`;
+    } ${isNew ? 'task-item-new' : ''}`;
 
     return (
       <div
@@ -682,7 +680,7 @@ const TaskList = memo(
     enableDragDrop?: boolean;
     taskListId?: string;
   }) => {
-    const { setNodeRef } = useDroppable({
+    const { setNodeRef, isOver } = useDroppable({
       id: taskListId || 'default',
       data: { type: 'taskList', taskListId },
     });
@@ -713,7 +711,14 @@ const TaskList = memo(
 
     if (activeTasks.length === 0) {
       return (
-        <div ref={setNodeRef} className="min-h-[100px]">
+        <div
+          ref={setNodeRef}
+          className={`min-h-[100px] rounded-lg transition-all duration-150 ${
+            isOver
+              ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
+              : ''
+          }`}
+        >
           <Text size="2" color="gray">
             No tasks to display
           </Text>
@@ -722,7 +727,14 @@ const TaskList = memo(
     }
 
     return (
-      <div ref={setNodeRef}>
+      <div
+        ref={setNodeRef}
+        className={`rounded-lg transition-all duration-150 ${
+          isOver
+            ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
+            : ''
+        }`}
+      >
         <Flex direction="column" gap="2">
           {activeTasks.map(task => (
             <TaskItem
@@ -1010,13 +1022,19 @@ export const GoogleTasksComponent = ({
     </Card>
   );
 
+  if (disableInternalDndContext) {
+    return (
+      <>
+        <style>{ANIMATION_STYLES}</style>
+        {content}
+      </>
+    );
+  }
+
   return (
     <>
       <style>{ANIMATION_STYLES}</style>
-      <DndContext
-        onDragEnd={handleDragEnd}
-        collisionDetection={closestCenter}
-      >
+      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
         {content}
       </DndContext>
     </>

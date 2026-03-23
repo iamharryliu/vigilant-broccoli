@@ -21,12 +21,13 @@ import {
   useSensors,
   DragStartEvent,
   DragEndEvent,
-  useDroppable,
+  DragOverEvent,
   Active,
   Over,
 } from '@dnd-kit/core';
 import { SortableContext, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import { GoogleTasksComponent } from './google-tasks.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -52,13 +53,7 @@ const STORAGE_KEY_ACTIVE_BOARD = 'swimlanes-active-board';
 const DRAG_TYPE = {
   TASK: 'task',
   LANE: 'lane',
-  LANE_DROP_ZONE: 'lane-drop-zone',
   BOARD: 'board',
-} as const;
-
-const DROP_ZONE_HEIGHT = {
-  DEFAULT: 'h-1',
-  ACTIVE: 'h-4',
 } as const;
 
 const LANE_OPACITY = {
@@ -213,11 +208,7 @@ interface SortableLaneProps {
   boardId: string;
   onRemove: (boardId: string, laneId: string) => void;
   refreshTrigger: number;
-}
-
-interface LaneDropZoneProps {
-  position: number;
-  boardId: string;
+  isTaskDragOver: boolean;
 }
 
 const SortableBoard = ({
@@ -304,35 +295,18 @@ const SortableBoard = ({
   );
 };
 
-const LaneDropZone = ({ position, boardId }: LaneDropZoneProps) => {
-  const { setNodeRef, isOver } = useDroppable({
-    id: `drop-zone-${boardId}-${position}`,
-    data: { type: DRAG_TYPE.LANE_DROP_ZONE, position, boardId },
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`transition-all ${
-        isOver
-          ? `${DROP_ZONE_HEIGHT.ACTIVE} bg-blue-500 rounded mx-2 my-1`
-          : DROP_ZONE_HEIGHT.DEFAULT
-      }`}
-    />
-  );
-};
-
 const SortableLane = ({
   lane,
   taskList,
   boardId,
   onRemove,
   refreshTrigger,
+  isTaskDragOver,
 }: SortableLaneProps) => {
   const {
     attributes,
     listeners,
-    setNodeRef,
+    setNodeRef: setSortableRef,
     transform,
     transition,
     isDragging,
@@ -347,18 +321,31 @@ const SortableLane = ({
     opacity: isDragging ? LANE_OPACITY.DRAGGING : LANE_OPACITY.DEFAULT,
   };
 
+  if (isDragging) {
+    return (
+      <div
+        ref={setSortableRef}
+        style={style}
+        className="w-80 flex-shrink-0 rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 dark:bg-blue-950 opacity-50"
+      />
+    );
+  }
+
   return (
     <div
-      ref={setNodeRef}
+      ref={setSortableRef}
       style={style}
-      className="flex flex-col gap-2 w-80 flex-shrink-0"
+      className={`flex flex-col gap-2 w-80 flex-shrink-0 rounded-lg transition-all duration-150 ${
+        isTaskDragOver ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950' : ''
+      }`}
     >
       <Flex justify="between" align="center" className="px-2">
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing flex-1"
+          className="cursor-grab active:cursor-grabbing flex items-center gap-1 flex-1"
         >
+          <DragHandleDots2Icon className="opacity-40 hover:opacity-70 flex-shrink-0" />
           <Text size="3" weight="bold">
             {taskList?.title || 'Unknown List'}
           </Text>
@@ -407,6 +394,8 @@ export const KanbanComponent = () => {
   const [activeTask, setActiveTask] = useState<any>(null);
   const [activeLane, setActiveLane] = useState<Lane | null>(null);
   const [activeBoard_dnd, setActiveBoard_dnd] = useState<Board | null>(null);
+  const [overTaskListId, setOverTaskListId] = useState<string | null>(null);
+  const [draggingLanes, setDraggingLanes] = useState<Lane[] | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showNewBoardForm, setShowNewBoardForm] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
@@ -481,52 +470,66 @@ export const KanbanComponent = () => {
     setEditingBoardName('');
   }, [editingBoardId, editingBoardName, renameBoard]);
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const { active } = event;
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      const { active } = event;
+      const dragType = active.data.current?.type;
+
+      if (dragType === DRAG_TYPE.TASK) {
+        setActiveTask(active.data.current);
+      } else if (dragType === DRAG_TYPE.LANE) {
+        setActiveLane(active.data.current?.lane);
+        setDraggingLanes(activeBoard?.lanes ?? null);
+      } else if (dragType === DRAG_TYPE.BOARD) {
+        setActiveBoard_dnd(active.data.current?.board);
+      }
+    },
+    [activeBoard],
+  );
+
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    const { active, over } = event;
     const dragType = active.data.current?.type;
 
     if (dragType === DRAG_TYPE.TASK) {
-      setActiveTask(active.data.current);
-    } else if (dragType === DRAG_TYPE.LANE) {
-      setActiveLane(active.data.current?.lane);
-    } else if (dragType === DRAG_TYPE.BOARD) {
-      setActiveBoard_dnd(active.data.current?.board);
+      setOverTaskListId(over?.data.current?.taskListId ?? null);
+      return;
+    }
+
+    if (dragType === DRAG_TYPE.LANE && over) {
+      setDraggingLanes(prev => {
+        if (!prev) return prev;
+
+        const overLaneId =
+          over.data.current?.type === DRAG_TYPE.LANE
+            ? (over.id as string)
+            : over.data.current?.taskListId
+            ? prev.find(l => l.taskListId === over.data.current?.taskListId)?.id
+            : undefined;
+
+        if (!overLaneId) return prev;
+
+        const oldIndex = prev.findIndex(l => l.id === active.id);
+        const newIndex = prev.findIndex(l => l.id === overLaneId);
+        if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex)
+          return prev;
+        return arrayMove(prev, oldIndex, newIndex);
+      });
     }
   }, []);
 
-  const handleLaneDragEnd = useCallback(
-    (active: Active, over: Over | null) => {
-      setActiveLane(null);
-      if (!over || !activeBoard) return;
-
-      const overType = over.data.current?.type;
-      if (overType !== DRAG_TYPE.LANE_DROP_ZONE) return;
-
-      const dropPosition = over.data.current?.position;
-      if (dropPosition === undefined) return;
-
-      const oldIndex = activeBoard.lanes.findIndex(
-        lane => lane.id === active.id,
-      );
-      if (oldIndex === -1) return;
-
-      const newLanes = [...activeBoard.lanes];
-      const [movedLane] = newLanes.splice(oldIndex, 1);
-
-      let insertIndex = dropPosition;
-      if (oldIndex < dropPosition) {
-        insertIndex = dropPosition - 1;
-      }
-
-      newLanes.splice(insertIndex, 0, movedLane);
-      reorderLanes(activeBoard.id, newLanes);
-    },
-    [activeBoard, reorderLanes],
-  );
+  const handleLaneDragEnd = useCallback(() => {
+    setActiveLane(null);
+    if (activeBoard && draggingLanes) {
+      reorderLanes(activeBoard.id, draggingLanes);
+    }
+    setDraggingLanes(null);
+  }, [activeBoard, draggingLanes, reorderLanes]);
 
   const handleTaskDragEnd = useCallback(
     async (active: Active, over: Over | null) => {
       setActiveTask(null);
+      setOverTaskListId(null);
 
       if (!over || active.id === over.id) return;
 
@@ -544,16 +547,6 @@ export const KanbanComponent = () => {
         return;
       }
 
-      const deleteResponse = await fetch(
-        `${API_ENDPOINTS.TASKS}?taskListId=${sourceListId}&taskId=${taskData.task.id}`,
-        { method: 'DELETE' },
-      );
-
-      if (!deleteResponse.ok) {
-        console.error('Failed to delete task from source list');
-        return;
-      }
-
       const createResponse = await fetch(API_ENDPOINTS.TASKS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -566,6 +559,16 @@ export const KanbanComponent = () => {
 
       if (!createResponse.ok) {
         console.error('Failed to create task in target list');
+        return;
+      }
+
+      const deleteResponse = await fetch(
+        `${API_ENDPOINTS.TASKS}?taskListId=${sourceListId}&taskId=${taskData.task.id}`,
+        { method: 'DELETE' },
+      );
+
+      if (!deleteResponse.ok) {
+        console.error('Failed to delete task from source list');
         return;
       }
 
@@ -598,7 +601,7 @@ export const KanbanComponent = () => {
       if (dragType === DRAG_TYPE.BOARD) {
         handleBoardDragEnd(active, over);
       } else if (dragType === DRAG_TYPE.LANE) {
-        handleLaneDragEnd(active, over);
+        handleLaneDragEnd();
       } else if (dragType === DRAG_TYPE.TASK) {
         await handleTaskDragEnd(active, over);
       }
@@ -634,6 +637,7 @@ export const KanbanComponent = () => {
       sensors={sensors}
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="flex h-full">
@@ -727,27 +731,24 @@ export const KanbanComponent = () => {
                 {activeBoard.name}
               </Text>
             </Flex>
-            <SortableContext items={activeBoard?.lanes.map(l => l.id) || []}>
+            <SortableContext
+              items={(draggingLanes ?? activeBoard?.lanes ?? []).map(l => l.id)}
+            >
               <div className="flex gap-2 overflow-x-auto pb-4 h-full">
-                <LaneDropZone position={0} boardId={activeBoardId} />
-                {activeBoard?.lanes.map((lane, index) => {
+                {(draggingLanes ?? activeBoard?.lanes ?? []).map(lane => {
                   const taskList = taskLists.find(
                     list => list.id === lane.taskListId,
                   );
                   return (
-                    <div key={lane.id} className="flex gap-2">
-                      <SortableLane
-                        lane={lane}
-                        taskList={taskList}
-                        boardId={activeBoardId}
-                        onRemove={removeLane}
-                        refreshTrigger={refreshTrigger}
-                      />
-                      <LaneDropZone
-                        position={index + 1}
-                        boardId={activeBoardId}
-                      />
-                    </div>
+                    <SortableLane
+                      key={lane.id}
+                      lane={lane}
+                      taskList={taskList}
+                      boardId={activeBoardId}
+                      onRemove={removeLane}
+                      refreshTrigger={refreshTrigger}
+                      isTaskDragOver={overTaskListId === lane.taskListId}
+                    />
                   );
                 })}
                 <div className="ml-2">
@@ -764,42 +765,42 @@ export const KanbanComponent = () => {
                         <Text size="3">+ Add Lane</Text>
                       </Button>
                     </Dialog.Trigger>
-                  <Dialog.Content>
-                    <Dialog.Title>Add Lane</Dialog.Title>
-                    <Flex direction="column" gap="3">
-                      <Select.Root
-                        value={selectedTaskListId}
-                        onValueChange={setSelectedTaskListId}
-                      >
-                        <Select.Trigger
-                          placeholder={
-                            availableTaskLists.length === 0
-                              ? 'No task lists available'
-                              : 'Select task list...'
-                          }
-                        />
-                        <Select.Content>
-                          {availableTaskLists.map(list => (
-                            <Select.Item key={list.id} value={list.id}>
-                              {list.title}
-                            </Select.Item>
-                          ))}
-                        </Select.Content>
-                      </Select.Root>
-                      <Flex gap="3" justify="end">
-                        <Dialog.Close>
-                          <Button variant="soft">Cancel</Button>
-                        </Dialog.Close>
-                        <Button
-                          onClick={handleAddLane}
-                          disabled={!selectedTaskListId}
+                    <Dialog.Content>
+                      <Dialog.Title>Add Lane</Dialog.Title>
+                      <Flex direction="column" gap="3">
+                        <Select.Root
+                          value={selectedTaskListId}
+                          onValueChange={setSelectedTaskListId}
                         >
-                          Add Lane
-                        </Button>
+                          <Select.Trigger
+                            placeholder={
+                              availableTaskLists.length === 0
+                                ? 'No task lists available'
+                                : 'Select task list...'
+                            }
+                          />
+                          <Select.Content>
+                            {availableTaskLists.map(list => (
+                              <Select.Item key={list.id} value={list.id}>
+                                {list.title}
+                              </Select.Item>
+                            ))}
+                          </Select.Content>
+                        </Select.Root>
+                        <Flex gap="3" justify="end">
+                          <Dialog.Close>
+                            <Button variant="soft">Cancel</Button>
+                          </Dialog.Close>
+                          <Button
+                            onClick={handleAddLane}
+                            disabled={!selectedTaskListId}
+                          >
+                            Add Lane
+                          </Button>
+                        </Flex>
                       </Flex>
-                    </Flex>
-                  </Dialog.Content>
-                </Dialog.Root>
+                    </Dialog.Content>
+                  </Dialog.Root>
                 </div>
               </div>
             </SortableContext>
