@@ -58,3 +58,17 @@
       - name
       - description
       - image[]
+
+## Backlog
+
+- Audit:
+  - pip list
+  - npm list
+- SendGrid/Resend implementation.
+- Supabase implementation.
+- Guitar tuning utility.
+- Pomodoro utility.
+- Unit testing aliases??
+- Vibecheck revibe.
+- Toronto Alerts cleanup.
+- Angular component library.
