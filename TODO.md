@@ -61,6 +61,7 @@
 
 ## Backlog
 
+- Harden secret management.
 - Audit:
   - pip list
   - npm list
