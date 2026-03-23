@@ -11,7 +11,7 @@ export async function GET() {
   return new Promise<NextResponse>(resolve => {
     exec(
       'gcloud projects list --format="value(projectId,name,projectNumber)"',
-      (error, stdout, stderr) => {
+      (error, stdout, _stderr) => {
         try {
           if (error) {
             return resolve(

@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Text, Button, Flex, Spinner } from '@radix-ui/themes';
+import { Box, Text, Flex, Spinner } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { DATE_CONST } from '@vigilant-broccoli/common-js';
 
@@ -147,8 +147,7 @@ export const WeatherComponent = () => {
 
   return (
     <Box>
-      {weatherData.map((cityWeather, cityIndex) => {
-        const city = CITIES[cityIndex];
+      {weatherData.map(cityWeather => {
         return (
           <Box key={cityWeather.city}>
             <div className="grid grid-cols-4 gap-4 mb-3">

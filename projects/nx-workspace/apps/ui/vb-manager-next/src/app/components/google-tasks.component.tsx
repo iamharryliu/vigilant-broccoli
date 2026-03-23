@@ -665,7 +665,15 @@ const areDisplayTasksEqual = (prevTasks: Task[], nextTasks: Task[]) => {
 
 const PLACEHOLDER_PREFIX = 'placeholder-';
 
-const TaskPlaceholder = ({ id, title, taskListId }: { id: string; title: string; taskListId?: string }) => {
+const TaskPlaceholder = ({
+  id,
+  title,
+  taskListId,
+}: {
+  id: string;
+  title: string;
+  taskListId?: string;
+}) => {
   const placeholderId = `${PLACEHOLDER_PREFIX}${id}`;
   const { setNodeRef, transform, transition } = useSortable({
     id: placeholderId,
@@ -754,7 +762,8 @@ const TaskList = memo(
       dragOverTask && !activeTasks.some(t => t.id === dragOverTask.id);
 
     const sortableIds: string[] = activeTasks.map(t => t.id);
-    if (showPlaceholder) sortableIds.push(`${PLACEHOLDER_PREFIX}${dragOverTask.id}`);
+    if (showPlaceholder)
+      sortableIds.push(`${PLACEHOLDER_PREFIX}${dragOverTask.id}`);
 
     const highlightClass = isOver
       ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
@@ -792,7 +801,11 @@ const TaskList = memo(
               />
             ))}
             {showPlaceholder && (
-              <TaskPlaceholder id={dragOverTask.id} title={dragOverTask.title} taskListId={taskListId} />
+              <TaskPlaceholder
+                id={dragOverTask.id}
+                title={dragOverTask.title}
+                taskListId={taskListId}
+              />
             )}
           </Flex>
         </SortableContext>
@@ -950,9 +963,12 @@ export const GoogleTasksComponent = ({
     setEditingTaskTitle('');
   }, []);
 
-  const handleSortChange = useCallback((value: SortMode) => {
-    setSortMode(value);
-  }, []);
+  const handleSortChange = useCallback(
+    (value: SortMode) => {
+      setSortMode(value);
+    },
+    [setSortMode],
+  );
 
   const handleTaskListChange = useCallback((newTaskListId: string) => {
     setSelectedTaskListId(newTaskListId);

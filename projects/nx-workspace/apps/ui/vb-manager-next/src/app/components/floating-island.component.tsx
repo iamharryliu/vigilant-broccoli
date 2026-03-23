@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { IconButton, Select } from '@radix-ui/themes';
 import { MessageCircle, Mail, Search, Moon, Sun, Calendar } from 'lucide-react';
 import { ChatbotDialog } from './chatbot-dialog.component';
@@ -99,7 +99,6 @@ export const FloatingIslandComponent = ({
     useState(false);
   const [internalCalendarDialogOpen, setInternalCalendarDialogOpen] =
     useState(false);
-  const [outfitRecommendation, setOutfitRecommendation] = useState<string>('');
   const dayData = useDayAnalysisSuggestions();
 
   const fetchOutfitRecommendation = async () => {
@@ -124,7 +123,6 @@ export const FloatingIslandComponent = ({
         text += chunk;
       }
 
-      setOutfitRecommendation(text);
       return text;
     } catch (err) {
       // Error fetching outfit recommendation

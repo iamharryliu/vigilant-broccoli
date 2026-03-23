@@ -490,7 +490,7 @@ const BoardDragOverlay = ({ name }: { name: string }) => (
 
 // eslint-disable-next-line complexity
 export const KanbanComponent = () => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const {
     boards,
     activeBoard,
@@ -498,7 +498,6 @@ export const KanbanComponent = () => {
     setActiveBoardId,
     taskLists,
     setTaskLists,
-    loading,
     setLoading,
     addBoard,
     removeBoard,
@@ -925,7 +924,10 @@ export const KanbanComponent = () => {
                         activeTask &&
                         overTaskListId === lane.taskListId &&
                         activeTask.taskListId !== lane.taskListId
-                          ? { id: activeTask.task.id, title: activeTask.task.title }
+                          ? {
+                              id: activeTask.task.id,
+                              title: activeTask.task.title,
+                            }
                           : null
                       }
                     />

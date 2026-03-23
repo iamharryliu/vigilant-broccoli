@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Flex, Callout, Dialog, Heading, Text } from '@radix-ui/themes';
+import { Button, Flex, Callout, Dialog } from '@radix-ui/themes';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 
 export const ErrorDemo = () => {
