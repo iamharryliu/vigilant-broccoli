@@ -239,3 +239,9 @@ resource "cloudflare_r2_bucket" "storage_buckets" {
   name       = "storage-buckets"
   location   = "ENAM"
 }
+
+resource "cloudflare_r2_bucket" "vibecheck" {
+  account_id = var.cloudflare_account_id
+  name       = "vibecheck-bucket"
+  location   = "ENAM"
+}
