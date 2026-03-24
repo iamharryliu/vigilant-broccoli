@@ -57,6 +57,8 @@ interface AccountItemProps {
   switchingProject: string | null;
   activeAccount: string | null;
   onSwitchAccount: (account: string) => void;
+  copiedCommand: boolean;
+  onCopyAuthCommand: () => void;
 }
 
 const AccountItem = ({
@@ -65,6 +67,8 @@ const AccountItem = ({
   needsAuth,
   switchingProject,
   onSwitchAccount,
+  copiedCommand,
+  onCopyAuthCommand,
 }: AccountItemProps) => (
   <Flex
     align="center"
@@ -91,6 +95,21 @@ const AccountItem = ({
     <Text size="2" weight={isActive ? 'bold' : 'regular'} className="flex-1">
       {account.account}
     </Text>
+    {needsAuth && (
+      <Button
+        variant="ghost"
+        size="1"
+        onClick={onCopyAuthCommand}
+        title="Copy auth command"
+      >
+        gcloud auth login
+        {copiedCommand ? (
+          <CheckIcon width="12" height="12" />
+        ) : (
+          <CopyIcon width="12" height="12" />
+        )}
+      </Button>
+    )}
     {!isActive && (
       <Button
         variant="soft"
@@ -293,30 +312,17 @@ export const GcloudAuthStatusComponent = () => {
                     const isActive = acc.account === authStatus.activeAccount;
                     const needsAuth = isActive && reauthStatus?.needsReauth;
                     return (
-                      <Flex key={idx} direction="column" gap="1">
-                        <AccountItem
-                          account={acc}
-                          isActive={isActive}
-                          needsAuth={!!needsAuth}
-                          switchingProject={switchingProject}
-                          activeAccount={authStatus.activeAccount}
-                          onSwitchAccount={switchAccount}
-                        />
-                        {needsAuth && (
-                          <Button
-                            variant="ghost"
-                            size="1"
-                            onClick={copyAuthCommand}
-                            title="Copy auth command"
-                          >
-                            {copiedCommand ? (
-                              <CheckIcon width="16" height="16" />
-                            ) : (
-                              <CopyIcon width="16" height="16" />
-                            )}
-                          </Button>
-                        )}
-                      </Flex>
+                      <AccountItem
+                        key={idx}
+                        account={acc}
+                        isActive={isActive}
+                        needsAuth={!!needsAuth}
+                        switchingProject={switchingProject}
+                        activeAccount={authStatus.activeAccount}
+                        onSwitchAccount={switchAccount}
+                        copiedCommand={copiedCommand}
+                        onCopyAuthCommand={copyAuthCommand}
+                      />
                     );
                   })}
               </Flex>
