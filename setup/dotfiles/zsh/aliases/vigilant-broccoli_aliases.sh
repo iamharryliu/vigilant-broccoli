@@ -22,7 +22,7 @@ alias pulljournal="cdjournal && gpull"
 # VB
 PROJECTS_DIR="$REPO_DIR/projects"
 GRIND75_DIR="$PROJECTS_DIR/grind-75"
-NX_DIR="$PROJECTS_DIR/nx-workspace"
+export NX_DIR="$PROJECTS_DIR/nx-workspace"
 # Directory
 alias cdvb="cd $REPO_DIR"
 alias cdprojects="cd $PROJECTS_DIR"
@@ -122,9 +122,7 @@ alias wg-status='sudo wg show'
 
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
-alias backupbitwarden='source $NX_DIR/.env && BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw) bw export --password "$BW_PASSWORD" --format encrypted_json --output ~/resilio-sync/backup/bitwarden-$(date -u +%Y-%m-%d).json'
-alias backupvbsecrets="cdnx && npx tsx scripts/backup-vault-secrets.ts && cd -"
-alias backupsecrets="backupbitwarden && backupvbsecrets"
+alias backupsecrets='$NX_DIR/scripts/shell/backup-secrets.sh'
 
 # Hobby Code
 alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py --output '$HOME/My Drive/DJ Music Library' --filter 'mix'"
