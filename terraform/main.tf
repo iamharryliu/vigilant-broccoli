@@ -194,3 +194,29 @@ resource "google_project_iam_member" "github_actions_oslogin" {
   role    = "roles/compute.osLogin"
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
+
+resource "google_storage_bucket" "backup" {
+  name          = "vigilant-broccoli-backup"
+  location      = var.region
+  storage_class = "STANDARD"
+  force_destroy = false
+
+  versioning {
+    enabled = true
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 90
+    }
+    action {
+      type = "Delete"
+    }
+  }
+}
+
+resource "google_storage_bucket_iam_member" "github_actions_backup" {
+  bucket = google_storage_bucket.backup.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.github_actions.email}"
+}
