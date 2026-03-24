@@ -1,7 +1,8 @@
 resource "github_repository" "vigilant_broccoli" {
   name        = var.github_repo
   description = "Personal monorepo for projects and utilities"
-  visibility  = "public"
+  homepage_url = "https://vb-next-demo.vercel.app"
+  visibility   = "public"
 
   has_issues      = true
   has_projects    = true

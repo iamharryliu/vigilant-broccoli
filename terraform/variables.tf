@@ -1,24 +1,11 @@
 variable "region" {
-  description = "GCP region for resources"
-  type        = string
-  default     = "us-east1"
-  # default = "us-central1"  # Iowa
-  # default = "us-west1"      # Oregon
+  type    = string
+  default = "us-east1"
 }
 
 variable "zone" {
-  description = "GCP zone for compute resources"
-  type        = string
-  default     = "us-east1-b"
-  # default = "us-east1-c"
-  # default = "us-east1-d"
-  # default = "us-central1-a"
-  # default = "us-central1-b"
-  # default = "us-central1-c"
-  # default = "us-central1-f"
-  # default = "us-west1-a"
-  # default = "us-west1-b"
-  # default = "us-west1-c"
+  type    = string
+  default = "us-east1-b"
 }
 
 variable "github_owner" {
@@ -31,4 +18,13 @@ variable "github_repo" {
   description = "GitHub repository name"
   type        = string
   default     = "vigilant-broccoli"
+}
+
+variable "cloudflare_account_id" {
+  type = string
+}
+
+variable "cloudflare_api_token" {
+  type      = string
+  sensitive = true
 }

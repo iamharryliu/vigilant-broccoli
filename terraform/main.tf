@@ -19,6 +19,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 6.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5.0"
+    }
   }
 }
 
@@ -30,6 +34,10 @@ provider "google" {
 
 provider "github" {
   owner = var.github_owner
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }
 
 resource "google_compute_instance" "vb_free_vm" {
@@ -46,7 +54,6 @@ resource "google_compute_instance" "vb_free_vm" {
     auto_delete = false # Keep disk when instance is deleted
     initialize_params {
       size = 10
-      # size = 30
       type = "pd-standard"
     }
   }
@@ -219,4 +226,16 @@ resource "google_storage_bucket_iam_member" "github_actions_backup" {
   bucket = google_storage_bucket.backup.name
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "cloudflare_r2_bucket" "vigilant_broccoli" {
+  account_id = var.cloudflare_account_id
+  name       = "vigilant-broccoli"
+  location   = "ENAM"
+}
+
+resource "cloudflare_r2_bucket" "storage_buckets" {
+  account_id = var.cloudflare_account_id
+  name       = "storage-buckets"
+  location   = "ENAM"
 }
