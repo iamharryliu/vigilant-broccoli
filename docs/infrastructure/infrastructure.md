@@ -1,5 +1,51 @@
 # Infrastructure
 
+## Personal Infrastructure
+
+### Secret Management
+
+- Google Password Manager
+- Bitwarden
+- Hashicorp Vault
+
+### Syncing Devices
+
+- Cloud Services
+- Resilio Sync
+
+### Image Services
+
+- Apple Photos
+- Google Photos
+- Immich
+
+### Backups
+
+```mermaid
+flowchart LR
+
+
+subgraph LOCAL_MACHINE[Local Machine]
+  LOCAL_MACHINE_BW[Bitwarden]
+  LOCAL_MACHINE_IMMICH[Immich]
+  LOCAL_MACHINE_RESILIO[Resilio]
+  LOCAL_MACHINE_BW-->BACKUP
+  LOCAL_MACHINE_IMMICH-->BACKUP
+  BACKUP[Backup]
+  BACKUP-->LOCAL_MACHINE_RESILIO
+end
+
+subgraph ANOTHER_MACHINE[Another Device]
+  ANOTHER_DEVICE_RESILIO[Resilio]
+end
+
+USER[User]-->LOCAL_MACHINE_BW
+REMOTE_SECRET_MANAGER[Remote Secret Manager]<-->LOCAL_MACHINE_BW
+LOCAL_MACHINE_RESILIO-->ANOTHER_DEVICE_RESILIO
+```
+
+### CI
+
 ```mermaid
 graph TD
 
@@ -44,7 +90,7 @@ DEPLOY_NX_APPS-->CLOUDFLARE_UI_APPS
 
 ```
 
-## RabbitMQ Email Consumer Architecture
+### RabbitMQ Email Consumer Architecture
 
 ```mermaid
 graph LR
@@ -57,25 +103,3 @@ graph LR
 
 - Secret Manager
 - VPN
-
-## Personal Infrastructure
-
-- Secrets - BitWarden
-- Image Handler - Immich
-- Machine Sync - Resilio Sync
-
-```mermaid
-flowchart LR
-
-subgraph MACHINE[Machine]
-  IMMICH[Immich]
-  subgraph SYNC[Sync]
-    BIT_WARDEN[BitWarden]
-    RESILIO[Resilio Sync]
-  end
-  IMMICH-->RESILIO
-end
-
-ANOTHER_MACHINE[Another Machine]
-SYNC<-->ANOTHER_MACHINE
-```
