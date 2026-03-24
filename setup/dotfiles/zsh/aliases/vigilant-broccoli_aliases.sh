@@ -122,7 +122,7 @@ alias wg-status='sudo wg show'
 
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
-alias backupsecrets='$NX_DIR/scripts/shell/backup-secrets.sh'
+alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh'
 
 # Hobby Code
 alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py --output '$HOME/My Drive/DJ Music Library' --filter 'mix'"
