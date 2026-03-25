@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { NavbarSectionComponent } from '../../features/navbar-section/navbar-section.component';
 import { ENVIRONMENT } from '../../../../environments/environment';
 import { ToggleDarkThemeButtonComponent } from '../../features/toggle-dark-mode-button/toggle-dark-mode-button.component';
+import { ProfileCardComponent } from '../../features/profile-card/profile-card.component';
 
 @Component({
   selector: 'app-general-layout',
@@ -12,9 +13,7 @@ import { ToggleDarkThemeButtonComponent } from '../../features/toggle-dark-mode-
     NavbarSectionComponent,
     RouterModule,
     ToggleDarkThemeButtonComponent,
-  ],
-  styles: [
-    '#profile-picture {width: 120px; height: 120px; border-radius: 50%;}',
+    ProfileCardComponent,
   ],
 })
 export class GeneralLayoutComponent {
