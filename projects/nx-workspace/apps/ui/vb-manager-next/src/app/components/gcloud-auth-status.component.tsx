@@ -61,6 +61,42 @@ interface AccountItemProps {
   onCopyAuthCommand: () => void;
 }
 
+const ACCOUNT_BORDER_STYLES = {
+  needsAuth:
+    'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600',
+  active:
+    'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700',
+  inactive: 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800',
+};
+
+const getAccountBorderStyle = (isActive: boolean, needsAuth: boolean) => {
+  if (isActive && needsAuth) return ACCOUNT_BORDER_STYLES.needsAuth;
+  if (isActive) return ACCOUNT_BORDER_STYLES.active;
+  return ACCOUNT_BORDER_STYLES.inactive;
+};
+
+const AccountBadge = ({
+  isActive,
+  needsAuth,
+}: {
+  isActive: boolean;
+  needsAuth: boolean;
+}) => {
+  if (needsAuth)
+    return (
+      <Badge color="yellow" size="1">
+        ⚠️ Reauth
+      </Badge>
+    );
+  if (isActive)
+    return (
+      <Badge color="green" size="1">
+        Active
+      </Badge>
+    );
+  return null;
+};
+
 const AccountItem = ({
   account,
   isActive,
@@ -74,24 +110,12 @@ const AccountItem = ({
     align="center"
     gap="2"
     wrap="wrap"
-    className={`p-2 rounded border ${
-      isActive && needsAuth
-        ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600'
-        : isActive
-        ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
-        : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-    }`}
+    className={`p-2 rounded border ${getAccountBorderStyle(
+      isActive,
+      needsAuth,
+    )}`}
   >
-    {isActive && !needsAuth && (
-      <Badge color="green" size="1">
-        Active
-      </Badge>
-    )}
-    {needsAuth && (
-      <Badge color="yellow" size="1">
-        ⚠️ Reauth
-      </Badge>
-    )}
+    <AccountBadge isActive={isActive} needsAuth={needsAuth} />
     <Text size="2" weight={isActive ? 'bold' : 'regular'} className="flex-1">
       {account.account}
     </Text>
@@ -122,6 +146,102 @@ const AccountItem = ({
     )}
   </Flex>
 );
+
+interface ProjectItemProps {
+  project: GcloudProject;
+  isCurrent: boolean;
+  isExpanded: boolean;
+  switchingProject: string | null;
+  onToggle: (projectId: string) => void;
+  onSwitch: (projectId: string) => void;
+}
+
+const ProjectItem = ({
+  project,
+  isCurrent,
+  isExpanded,
+  switchingProject,
+  onToggle,
+  onSwitch,
+}: ProjectItemProps) => (
+  <Flex
+    direction="column"
+    gap="2"
+    className={`p-2 rounded border ${
+      isCurrent
+        ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
+        : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+    }`}
+  >
+    <Flex align="center" gap="2" wrap="wrap">
+      <Text
+        size="2"
+        className="cursor-pointer"
+        onClick={() => onToggle(project.projectId)}
+      >
+        {isExpanded ? '▼' : '▶'}
+      </Text>
+      {isCurrent && (
+        <Badge color="green" size="1">
+          Current
+        </Badge>
+      )}
+      <Text
+        size="2"
+        weight={isCurrent ? 'bold' : 'regular'}
+        className="flex-1 cursor-pointer"
+        onClick={() => onToggle(project.projectId)}
+      >
+        {project.name || project.projectId}
+      </Text>
+      <Text size="1" color="gray">
+        ({project.projectId})
+      </Text>
+      {!isCurrent && (
+        <Button
+          variant="soft"
+          size="1"
+          onClick={() => onSwitch(project.projectId)}
+          disabled={switchingProject === project.projectId}
+        >
+          {switchingProject === project.projectId ? 'Switching...' : 'Select'}
+        </Button>
+      )}
+    </Flex>
+
+    {isExpanded && (
+      <Flex
+        gap="2"
+        wrap="wrap"
+        className="pl-6 pt-1 border-t border-gray-200 dark:border-gray-700"
+      >
+        {Object.entries(getProjectUrls(project.projectId)).map(([key, url]) => (
+          <Button key={key} asChild variant="soft" size="1">
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              {BUTTON_LABELS[key]}
+              <ExternalLinkIcon width="12" height="12" />
+            </a>
+          </Button>
+        ))}
+      </Flex>
+    )}
+  </Flex>
+);
+
+const parseReauthData = (
+  reauthResponse: Response,
+  reauthJson: ReauthStatus | null,
+  activeAccount: string | null,
+): ReauthStatus =>
+  reauthResponse.ok && reauthJson
+    ? reauthJson
+    : { needsReauth: false, activeAccount };
+
+const fetchProjectsIfNeeded = async (needsReauth: boolean) => {
+  if (needsReauth) return [];
+  const projectsResponse = await fetch(API_ENDPOINTS.GCLOUD_PROJECTS);
+  return projectsResponse.ok ? projectsResponse.json() : [];
+};
 
 export const GcloudAuthStatusComponent = () => {
   const [authStatus, setAuthStatus] = useState<GcloudAuthStatus | null>(null);
@@ -170,8 +290,7 @@ export const GcloudAuthStatusComponent = () => {
 
       const authResponse = await fetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS);
       if (authResponse.ok) {
-        const authData = await authResponse.json();
-        setAuthStatus(authData);
+        setAuthStatus(await authResponse.json());
       }
     } catch (err) {
       // Error switching project
@@ -201,27 +320,16 @@ export const GcloudAuthStatusComponent = () => {
       if (authResponse.ok) {
         const authData = await authResponse.json();
         setAuthStatus(authData);
-
-        let reauthData: ReauthStatus = {
-          needsReauth: false,
-          activeAccount: authData.activeAccount,
-        };
-
-        if (reauthResponse.ok) {
-          reauthData = await reauthResponse.json();
-        }
-
+        const reauthJson = reauthResponse.ok
+          ? await reauthResponse.json()
+          : null;
+        const reauthData = parseReauthData(
+          reauthResponse,
+          reauthJson,
+          authData.activeAccount,
+        );
         setReauthStatus(reauthData);
-
-        if (!reauthData.needsReauth) {
-          const projectsResponse = await fetch(API_ENDPOINTS.GCLOUD_PROJECTS);
-          if (projectsResponse.ok) {
-            const projectsData = await projectsResponse.json();
-            setProjects(projectsData);
-          }
-        } else {
-          setProjects([]);
-        }
+        setProjects(await fetchProjectsIfNeeded(reauthData.needsReauth));
       }
     } catch (err) {
       // Error switching account
@@ -244,28 +352,16 @@ export const GcloudAuthStatusComponent = () => {
 
         const authData = await authResponse.json();
         setAuthStatus(authData);
-
-        let reauthData: ReauthStatus = {
-          needsReauth: false,
-          activeAccount: authData.activeAccount,
-        };
-
-        if (reauthResponse.ok) {
-          reauthData = await reauthResponse.json();
-        }
-
+        const reauthJson = reauthResponse.ok
+          ? await reauthResponse.json()
+          : null;
+        const reauthData = parseReauthData(
+          reauthResponse,
+          reauthJson,
+          authData.activeAccount,
+        );
         setReauthStatus(reauthData);
-
-        if (!reauthData.needsReauth) {
-          const projectsResponse = await fetch(API_ENDPOINTS.GCLOUD_PROJECTS);
-          if (projectsResponse.ok) {
-            const projectsData = await projectsResponse.json();
-            setProjects(projectsData);
-          }
-        } else {
-          setProjects([]);
-        }
-
+        setProjects(await fetchProjectsIfNeeded(reauthData.needsReauth));
         setLoading(false);
       } catch (err) {
         setError(
@@ -292,137 +388,69 @@ export const GcloudAuthStatusComponent = () => {
     );
   }
 
+  const sortedAccounts = [...(authStatus?.accounts || [])].sort((a, b) => {
+    if (a.account === authStatus?.activeAccount) return -1;
+    if (b.account === authStatus?.activeAccount) return 1;
+    return 0;
+  });
+
+  const sortedProjects = [...projects].sort((a, b) => {
+    if (a.projectId === authStatus?.currentProject) return -1;
+    if (b.projectId === authStatus?.currentProject) return 1;
+    return 0;
+  });
+
   return (
     <CardContainer title="GCP Management">
       {authStatus?.activeAccount ? (
         <Flex direction="column" gap="3">
-          {authStatus.accounts.length > 0 && (
+          {sortedAccounts.length > 0 && (
             <Flex direction="column" gap="2">
               <Text size="1" weight="bold">
-                Accounts ({authStatus.accounts.length}):
+                Accounts ({sortedAccounts.length}):
               </Text>
               <Flex direction="column" gap="1">
-                {authStatus.accounts
-                  .sort((a, b) => {
-                    if (a.account === authStatus.activeAccount) return -1;
-                    if (b.account === authStatus.activeAccount) return 1;
-                    return 0;
-                  })
-                  .map((acc, idx) => {
-                    const isActive = acc.account === authStatus.activeAccount;
-                    const needsAuth = isActive && reauthStatus?.needsReauth;
-                    return (
-                      <AccountItem
-                        key={idx}
-                        account={acc}
-                        isActive={isActive}
-                        needsAuth={!!needsAuth}
-                        switchingProject={switchingProject}
-                        activeAccount={authStatus.activeAccount}
-                        onSwitchAccount={switchAccount}
-                        copiedCommand={copiedCommand}
-                        onCopyAuthCommand={copyAuthCommand}
-                      />
-                    );
-                  })}
+                {sortedAccounts.map((acc, idx) => (
+                  <AccountItem
+                    key={idx}
+                    account={acc}
+                    isActive={acc.account === authStatus.activeAccount}
+                    needsAuth={
+                      acc.account === authStatus.activeAccount &&
+                      !!reauthStatus?.needsReauth
+                    }
+                    switchingProject={switchingProject}
+                    activeAccount={authStatus.activeAccount}
+                    onSwitchAccount={switchAccount}
+                    copiedCommand={copiedCommand}
+                    onCopyAuthCommand={copyAuthCommand}
+                  />
+                ))}
               </Flex>
             </Flex>
           )}
 
-          {projects.length > 0 && (
+          {sortedProjects.length > 0 && (
             <Flex direction="column" gap="2">
               <Text size="1" weight="bold">
-                All Projects ({projects.length}):
+                All Projects ({sortedProjects.length}):
               </Text>
               <Flex
                 direction="column"
                 gap="1"
                 style={{ maxHeight: '400px', overflowY: 'auto' }}
               >
-                {projects
-                  .sort((a, b) => {
-                    if (a.projectId === authStatus.currentProject) return -1;
-                    if (b.projectId === authStatus.currentProject) return 1;
-                    return 0;
-                  })
-                  .map(project => {
-                    const isExpanded = expandedProjects.has(project.projectId);
-                    const isCurrent =
-                      project.projectId === authStatus.currentProject;
-                    return (
-                      <Flex
-                        key={project.projectId}
-                        direction="column"
-                        gap="2"
-                        className={`p-2 rounded border ${
-                          isCurrent
-                            ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
-                            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                        }`}
-                      >
-                        <Flex align="center" gap="2" wrap="wrap">
-                          <Text
-                            size="2"
-                            className="cursor-pointer"
-                            onClick={() => toggleProject(project.projectId)}
-                          >
-                            {isExpanded ? '▼' : '▶'}
-                          </Text>
-                          {isCurrent && (
-                            <Badge color="green" size="1">
-                              Current
-                            </Badge>
-                          )}
-                          <Text
-                            size="2"
-                            weight={isCurrent ? 'bold' : 'regular'}
-                            className="flex-1 cursor-pointer"
-                            onClick={() => toggleProject(project.projectId)}
-                          >
-                            {project.name || project.projectId}
-                          </Text>
-                          <Text size="1" color="gray">
-                            ({project.projectId})
-                          </Text>
-                          {!isCurrent && (
-                            <Button
-                              variant="soft"
-                              size="1"
-                              onClick={() => switchProject(project.projectId)}
-                              disabled={switchingProject === project.projectId}
-                            >
-                              {switchingProject === project.projectId
-                                ? 'Switching...'
-                                : 'Select'}
-                            </Button>
-                          )}
-                        </Flex>
-
-                        {isExpanded && (
-                          <Flex
-                            gap="2"
-                            wrap="wrap"
-                            className="pl-6 pt-1 border-t border-gray-200 dark:border-gray-700"
-                          >
-                            {Object.entries(
-                              getProjectUrls(project.projectId),
-                            ).map(([key, url]) => (
-                              <Button key={key} asChild variant="soft" size="1">
-                                <a
-                                  href={url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  {BUTTON_LABELS[key]}
-                                  <ExternalLinkIcon width="12" height="12" />
-                                </a>
-                              </Button>
-                            ))}
-                          </Flex>
-                        )}
-                      </Flex>
-                    );
-                  })}
+                {sortedProjects.map(project => (
+                  <ProjectItem
+                    key={project.projectId}
+                    project={project}
+                    isCurrent={project.projectId === authStatus.currentProject}
+                    isExpanded={expandedProjects.has(project.projectId)}
+                    switchingProject={switchingProject}
+                    onToggle={toggleProject}
+                    onSwitch={switchProject}
+                  />
+                ))}
               </Flex>
             </Flex>
           )}

@@ -54,6 +54,24 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --config=apps/ui/vb-manager-next/e2e/playwright.config.ts"
+      }
+    },
+    "e2e:headed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --config=apps/ui/vb-manager-next/e2e/playwright.config.ts --headed"
+      }
+    },
+    "e2e:headed:slow": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --config=apps/ui/vb-manager-next/e2e/playwright.config.ts --headed --project=slow"
+      }
+    },
     "pm2:start": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],

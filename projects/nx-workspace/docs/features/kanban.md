@@ -20,9 +20,17 @@
 - Drag to reorder boards in sidebar
 - Sidebar collapsible
 
+### Task Lists
+
+- Manage Task Lists dialog (☰ button in sidebar header) for viewing all Google Task lists
+- Rename lists (double-click or edit button) via Google Tasks API PATCH
+- Delete lists with confirmation (permanently deletes from Google, removes associated lanes from all boards)
+- Create new list from the Add Lane dialog (+ Create new list)
+
 ### Lanes
 
 - Add lane by selecting a Google Tasks list (each list usable once per board)
+- Option to create a new Google Tasks list inline when adding a lane
 - Remove lanes
 - Drag handle in header to reorder; reorder is tracked in local state during drag and committed on drop
 - Dragging lane resolves target by `taskListId` since `over` may be a task item droppable inside the lane, not the lane itself
@@ -37,7 +45,7 @@
 ## State
 
 - Board config: `localStorage` keys `swimlanes-boards`, `swimlanes-active-board`
-- Task data: fetched from Google Tasks API via `/api/tasks`, `/api/tasks/lists`
+- Task data: fetched from Google Tasks API via `/api/tasks`, `/api/tasks/lists` (GET, POST, PATCH, DELETE)
 
 ## Drag Overlays
 

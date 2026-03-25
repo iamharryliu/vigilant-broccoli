@@ -68,3 +68,7 @@ vault-secrets.json
 storage-buckets/
 
 logs/
+
+# Playwright
+.last-run.json
+test-results/

@@ -519,6 +519,12 @@ export const KanbanComponent = () => {
   const [editingBoardId, setEditingBoardId] = useState<string | null>(null);
   const [editingBoardName, setEditingBoardName] = useState('');
   const [showAddLaneDialog, setShowAddLaneDialog] = useState(false);
+  const [showCreateList, setShowCreateList] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const [creatingList, setCreatingList] = useState(false);
+  const [showManageLists, setShowManageLists] = useState(false);
+  const [editingListId, setEditingListId] = useState<string | null>(null);
+  const [editingListName, setEditingListName] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const sensors = useSensors(
@@ -562,6 +568,60 @@ export const KanbanComponent = () => {
       setSelectedTaskListId('');
     }
   }, [selectedTaskListId, activeBoardId, addLane]);
+
+  const handleDeleteList = useCallback(
+    async (taskListId: string) => {
+      const response = await fetch(
+        `${API_ENDPOINTS.TASKS_LISTS}?taskListId=${taskListId}`,
+        { method: 'DELETE' },
+      );
+      if (!response.ok) return;
+      setTaskLists(prev => prev.filter(list => list.id !== taskListId));
+      boards.forEach(board => {
+        const lane = board.lanes.find(l => l.taskListId === taskListId);
+        if (lane) removeLane(board.id, lane.id);
+      });
+    },
+    [boards, removeLane, setTaskLists],
+  );
+
+  const handleRenameList = useCallback(
+    async (taskListId: string, title: string) => {
+      const response = await fetch(
+        `${API_ENDPOINTS.TASKS_LISTS}?taskListId=${taskListId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title }),
+        },
+      );
+      if (!response.ok) return;
+      setTaskLists(prev =>
+        prev.map(list => (list.id === taskListId ? { ...list, title } : list)),
+      );
+      setEditingListId(null);
+      setEditingListName('');
+    },
+    [setTaskLists],
+  );
+
+  const handleCreateList = useCallback(async () => {
+    if (!newListName.trim()) return;
+    setCreatingList(true);
+    const response = await fetch(API_ENDPOINTS.TASKS_LISTS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: newListName.trim() }),
+    });
+    const data = await response.json();
+    if (response.ok && data.taskList) {
+      setTaskLists(prev => [...prev, data.taskList]);
+      setSelectedTaskListId(data.taskList.id);
+      setNewListName('');
+      setShowCreateList(false);
+    }
+    setCreatingList(false);
+  }, [newListName, setTaskLists]);
 
   const handleAddBoard = useCallback(() => {
     if (newBoardName.trim()) {
@@ -822,42 +882,146 @@ export const KanbanComponent = () => {
                 <Text size="4" weight="bold">
                   Boards
                 </Text>
-                <Dialog.Root
-                  open={showNewBoardForm}
-                  onOpenChange={setShowNewBoardForm}
-                >
-                  <Dialog.Trigger>
-                    <IconButton size="1" variant="ghost">
-                      +
-                    </IconButton>
-                  </Dialog.Trigger>
-                  <Dialog.Content>
-                    <Dialog.Title>Add Board</Dialog.Title>
-                    <Flex direction="column" gap="3">
-                      <TextField.Root
-                        placeholder="Board name..."
-                        value={newBoardName}
-                        onChange={e => setNewBoardName(e.target.value)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') handleAddBoard();
-                        }}
-                        size="2"
-                        autoFocus
-                      />
-                      <Flex gap="3" justify="end">
-                        <Dialog.Close>
-                          <Button variant="soft">Cancel</Button>
-                        </Dialog.Close>
-                        <Button
-                          onClick={handleAddBoard}
-                          disabled={!newBoardName.trim()}
-                        >
-                          Add Board
-                        </Button>
+                <Flex gap="1">
+                  <Dialog.Root
+                    open={showManageLists}
+                    onOpenChange={open => {
+                      setShowManageLists(open);
+                      if (!open) {
+                        setEditingListId(null);
+                        setEditingListName('');
+                      }
+                    }}
+                  >
+                    <Dialog.Trigger>
+                      <IconButton size="1" variant="ghost">
+                        ☰
+                      </IconButton>
+                    </Dialog.Trigger>
+                    <Dialog.Content>
+                      <Dialog.Title>Manage Task Lists</Dialog.Title>
+                      <Flex direction="column" gap="2">
+                        {taskLists.map(list => (
+                          <Flex
+                            key={list.id}
+                            justify="between"
+                            align="center"
+                            className="py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                          >
+                            {editingListId === list.id ? (
+                              <TextField.Root
+                                value={editingListName}
+                                onChange={e =>
+                                  setEditingListName(e.target.value)
+                                }
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter')
+                                    handleRenameList(list.id, editingListName);
+                                  else if (e.key === 'Escape') {
+                                    setEditingListId(null);
+                                    setEditingListName('');
+                                  }
+                                }}
+                                onBlur={() =>
+                                  handleRenameList(list.id, editingListName)
+                                }
+                                size="1"
+                                className="flex-1"
+                                autoFocus
+                              />
+                            ) : (
+                              <Text
+                                size="2"
+                                className="flex-1 cursor-pointer"
+                                onDoubleClick={() => {
+                                  setEditingListId(list.id);
+                                  setEditingListName(list.title);
+                                }}
+                              >
+                                {list.title}
+                              </Text>
+                            )}
+                            <Flex gap="1">
+                              {editingListId !== list.id && (
+                                <IconButton
+                                  size="1"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setEditingListId(list.id);
+                                    setEditingListName(list.title);
+                                  }}
+                                >
+                                  ✎
+                                </IconButton>
+                              )}
+                              <IconButton
+                                size="1"
+                                variant="ghost"
+                                color="red"
+                                onClick={() => {
+                                  if (
+                                    confirm(
+                                      `Delete "${list.title}" and all its tasks? This cannot be undone.`,
+                                    )
+                                  )
+                                    handleDeleteList(list.id);
+                                }}
+                              >
+                                🗑
+                              </IconButton>
+                            </Flex>
+                          </Flex>
+                        ))}
+                        {taskLists.length === 0 && (
+                          <Text size="2" color="gray">
+                            No task lists found
+                          </Text>
+                        )}
                       </Flex>
-                    </Flex>
-                  </Dialog.Content>
-                </Dialog.Root>
+                      <Flex justify="end" mt="4">
+                        <Dialog.Close>
+                          <Button variant="soft">Close</Button>
+                        </Dialog.Close>
+                      </Flex>
+                    </Dialog.Content>
+                  </Dialog.Root>
+                  <Dialog.Root
+                    open={showNewBoardForm}
+                    onOpenChange={setShowNewBoardForm}
+                  >
+                    <Dialog.Trigger>
+                      <IconButton size="1" variant="ghost">
+                        +
+                      </IconButton>
+                    </Dialog.Trigger>
+                    <Dialog.Content>
+                      <Dialog.Title>Add Board</Dialog.Title>
+                      <Flex direction="column" gap="3">
+                        <TextField.Root
+                          placeholder="Board name..."
+                          value={newBoardName}
+                          onChange={e => setNewBoardName(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') handleAddBoard();
+                          }}
+                          size="2"
+                          autoFocus
+                        />
+                        <Flex gap="3" justify="end">
+                          <Dialog.Close>
+                            <Button variant="soft">Cancel</Button>
+                          </Dialog.Close>
+                          <Button
+                            onClick={handleAddBoard}
+                            disabled={!newBoardName.trim()}
+                          >
+                            Add Board
+                          </Button>
+                        </Flex>
+                      </Flex>
+                    </Dialog.Content>
+                  </Dialog.Root>
+                </Flex>
               </Flex>
 
               <SortableContext items={boards.map(b => b.id)}>
@@ -950,35 +1114,78 @@ export const KanbanComponent = () => {
                     <Dialog.Content>
                       <Dialog.Title>Add Lane</Dialog.Title>
                       <Flex direction="column" gap="3">
-                        <Select.Root
-                          value={selectedTaskListId}
-                          onValueChange={setSelectedTaskListId}
-                        >
-                          <Select.Trigger
-                            placeholder={
-                              availableTaskLists.length === 0
-                                ? 'No task lists available'
-                                : 'Select task list...'
-                            }
-                          />
-                          <Select.Content>
-                            {availableTaskLists.map(list => (
-                              <Select.Item key={list.id} value={list.id}>
-                                {list.title}
-                              </Select.Item>
-                            ))}
-                          </Select.Content>
-                        </Select.Root>
+                        {showCreateList ? (
+                          <Flex direction="column" gap="2">
+                            <TextField.Root
+                              placeholder="New list name..."
+                              value={newListName}
+                              onChange={e => setNewListName(e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') handleCreateList();
+                                else if (e.key === 'Escape')
+                                  setShowCreateList(false);
+                              }}
+                              autoFocus
+                            />
+                            <Flex gap="2">
+                              <Button
+                                size="1"
+                                variant="soft"
+                                onClick={() => setShowCreateList(false)}
+                              >
+                                Back
+                              </Button>
+                              <Button
+                                size="1"
+                                onClick={handleCreateList}
+                                disabled={!newListName.trim() || creatingList}
+                              >
+                                {creatingList ? 'Creating...' : 'Create List'}
+                              </Button>
+                            </Flex>
+                          </Flex>
+                        ) : (
+                          <>
+                            <Select.Root
+                              value={selectedTaskListId}
+                              onValueChange={setSelectedTaskListId}
+                            >
+                              <Select.Trigger
+                                placeholder={
+                                  availableTaskLists.length === 0
+                                    ? 'No task lists available'
+                                    : 'Select task list...'
+                                }
+                              />
+                              <Select.Content>
+                                {availableTaskLists.map(list => (
+                                  <Select.Item key={list.id} value={list.id}>
+                                    {list.title}
+                                  </Select.Item>
+                                ))}
+                              </Select.Content>
+                            </Select.Root>
+                            <Button
+                              size="1"
+                              variant="ghost"
+                              onClick={() => setShowCreateList(true)}
+                            >
+                              + Create new list
+                            </Button>
+                          </>
+                        )}
                         <Flex gap="3" justify="end">
                           <Dialog.Close>
                             <Button variant="soft">Cancel</Button>
                           </Dialog.Close>
-                          <Button
-                            onClick={handleAddLane}
-                            disabled={!selectedTaskListId}
-                          >
-                            Add Lane
-                          </Button>
+                          {!showCreateList && (
+                            <Button
+                              onClick={handleAddLane}
+                              disabled={!selectedTaskListId}
+                            >
+                              Add Lane
+                            </Button>
+                          )}
                         </Flex>
                       </Flex>
                     </Dialog.Content>
