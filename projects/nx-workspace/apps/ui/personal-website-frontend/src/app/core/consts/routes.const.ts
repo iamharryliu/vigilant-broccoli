@@ -4,7 +4,6 @@ import { AboutPageComponent } from '../../components/pages/about-page/about.page
 import { HomePageComponent } from '../../components/pages/home-page/home.page';
 import { LinkTreePageComponent } from '../../components/pages/link-tree-page/link-tree.page';
 import { DocsMdPageComponent } from '../../docs-md/docs-md.page';
-import { ProjectsPageComponent } from '../../components/pages/projects-page/projects.page';
 import { LeetCodePageComponent } from '../../leet-code/leet-code.page';
 import { Link } from 'general-components';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
@@ -60,17 +59,6 @@ export const LINK_TREE_ROUTE: Route = {
   component: LinkTreePageComponent,
 };
 
-export const PROJECTS_PAGE_ROUTE: Route = {
-  path: '',
-  component: ProjectsPageComponent,
-};
-
-export const PROJECTS_ROUTE: Route = {
-  path: 'projects',
-  data: { title: 'projects' },
-  children: [PROJECTS_PAGE_ROUTE],
-};
-
 export const COMPONENT_LIBRARY_ROUTE: Route = {
   path: 'component-library',
   data: { title: 'component library' },
@@ -94,11 +82,9 @@ export const ROUTES: Routes = [
   CAREER_ROUTE,
   RESUME_ROUTE,
   CONTACT_ROUTE,
-  PROJECTS_ROUTE,
   DOCS_MD_ROUTE,
   DOCS_MD_FILE_ROUTE,
   LINK_TREE_ROUTE,
-  PROJECTS_PAGE_ROUTE,
   COMPONENT_LIBRARY_ROUTE,
   LEETCODE_ROUTE,
   LEETCODE_SOLUTION_ROUTE,
@@ -130,14 +116,6 @@ const CONTACT_PAGE: Link = {
     external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${ABOUT_ROUTE.path}`,
   },
   text: 'Contact',
-};
-
-const PROJECTS_PAGE: Link = {
-  url: {
-    internal: `/${PROJECTS_ROUTE.path}`,
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${PROJECTS_ROUTE.path}`,
-  },
-  text: 'Projects',
 };
 
 const LINK_TREE: Link = {
@@ -210,7 +188,6 @@ const INTERNAL_LINKS = {
   ABOUT_PAGE,
   CONTACT_PAGE,
   LINK_TREE,
-  PROJECTS_PAGE,
   DOCS_MD,
 };
 
