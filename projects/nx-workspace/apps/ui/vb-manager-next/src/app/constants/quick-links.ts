@@ -751,12 +751,6 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
-    label: 'Numi',
-    target: 'Numi',
-    type: OPEN_TYPE.MAC_APPLICATION,
-    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
-  },
-  {
     label: 'Speedtest',
     target: 'https://www.speedtest.net/',
     type: OPEN_TYPE.BROWSER,
