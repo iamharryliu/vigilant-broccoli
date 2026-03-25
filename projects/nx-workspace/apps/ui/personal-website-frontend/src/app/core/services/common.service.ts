@@ -5,7 +5,6 @@ import {
   APP_NAME,
   MessageRequest,
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
-  SubscribeRequest,
 } from '@prettydamntired/personal-website-lib';
 import { ENVIRONMENT } from '../../../environments/environment';
 
@@ -13,7 +12,6 @@ import { ENVIRONMENT } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class CommonService {
-
   private http = inject(HttpClient);
 
   BACKEND_URL = ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL;
@@ -28,20 +26,6 @@ export class CommonService {
         subject: 'Message from personal website.',
         text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
       },
-    );
-  }
-
-  subscribeToNewsletter(request: SubscribeRequest): Observable<any> {
-    return this.http.post<any>(
-      `${this.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SUBSCRIBE}`,
-      request,
-    );
-  }
-
-  verifyEmailSubscription(token: string): Observable<any> {
-    return this.http.put<any>(
-      `${this.BACKEND_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.VERIFY_SUBSCRIPTION}`,
-      { token },
     );
   }
 }

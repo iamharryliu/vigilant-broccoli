@@ -3,13 +3,10 @@ import { ENVIRONMENT } from '../../../environments/environment';
 import { AboutPageComponent } from '../../components/pages/about-page/about.page';
 import { HomePageComponent } from '../../components/pages/home-page/home.page';
 import { LinkTreePageComponent } from '../../components/pages/link-tree-page/link-tree.page';
-import { VerifyEmailSubscriptionPageComponent } from '../../components/pages/verify-email-subscription-page/verify-email-subscription.page';
 import { DocsMdPageComponent } from '../../docs-md/docs-md.page';
 import { ProjectsPageComponent } from '../../components/pages/projects-page/projects.page';
 import { LeetCodePageComponent } from '../../leet-code/leet-code.page';
 import { Link } from 'general-components';
-import { BlogDirectoryComponent } from '../../blog-directory/blog-directory.component';
-import { BlogComponent } from '../../blog/blog.component';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
 import { CareerPageComponent } from '../../components/pages/career-page/career.page';
 import { ResumeRedirectComponent } from '../../components/redirects/resume.redirect';
@@ -44,18 +41,6 @@ export const DOCS_MD_FILE_ROUTE: Route = {
   component: DocsMdPageComponent,
 };
 
-export const BLOG_DIRECTORY_ROUTE: Route = {
-  path: 'blogs',
-  data: { title: 'blogs' },
-  component: BlogDirectoryComponent,
-};
-
-export const BLOG_ROUTE: Route = {
-  path: 'blogs/:date/:type/:filename',
-  data: { title: 'blog' },
-  component: BlogComponent,
-};
-
 export const ABOUT_ROUTE: Route = {
   path: 'about',
   data: { title: 'about' },
@@ -85,12 +70,6 @@ export const PROJECTS_ROUTE: Route = {
   children: [PROJECTS_PAGE_ROUTE],
 };
 
-export const VERIFY_EMAIL_ROUTE: Route = {
-  path: 'verify-email-subscription',
-  data: { title: 'verify email sub' },
-  component: VerifyEmailSubscriptionPageComponent,
-};
-
 export const LEETCODE_ROUTE: Route = {
   path: 'grind-75',
   data: { title: 'grind 75' },
@@ -110,11 +89,8 @@ export const ROUTES: Routes = [
   CONTACT_ROUTE,
   PROJECTS_ROUTE,
   DOCS_MD_ROUTE,
-  BLOG_DIRECTORY_ROUTE,
-  BLOG_ROUTE,
   DOCS_MD_FILE_ROUTE,
   LINK_TREE_ROUTE,
-  VERIFY_EMAIL_ROUTE,
   PROJECTS_PAGE_ROUTE,
   LEETCODE_ROUTE,
   LEETCODE_SOLUTION_ROUTE,
@@ -221,13 +197,6 @@ const DOCS_MD: Link = {
   text: 'DocsMD',
 };
 
-const BLOGS: Link = {
-  url: {
-    internal: `/${BLOG_DIRECTORY_ROUTE.path}`,
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${BLOG_DIRECTORY_ROUTE.path}`,
-  },
-  text: 'Blog',
-};
 const INTERNAL_LINKS = {
   INDEX_PAGE,
   ABOUT_PAGE,
@@ -235,7 +204,6 @@ const INTERNAL_LINKS = {
   LINK_TREE,
   PROJECTS_PAGE,
   DOCS_MD,
-  BLOGS,
 };
 
 const EXTERNAL_LINKS = {

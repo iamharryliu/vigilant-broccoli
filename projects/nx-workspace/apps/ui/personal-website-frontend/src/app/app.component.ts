@@ -7,7 +7,6 @@ import {
   Router,
 } from '@angular/router';
 import { AppService } from './core/services/app.service';
-import { BlogService } from './core/services/blog.service';
 import { TAILWIND_BREAKPOINTS } from '@vigilant-broccoli/common-browser';
 
 @Component({
@@ -18,15 +17,12 @@ import { TAILWIND_BREAKPOINTS } from '@vigilant-broccoli/common-browser';
 export class AppComponent {
   private navigatedSignal = signal<NavigationEnd | null>(null);
 
+  private router = inject(Router);
+  private titleService = inject(Title);
+  private appService = inject(AppService);
+  private route = inject(ActivatedRoute);
 
-    private router = inject(Router);
-    private titleService = inject(Title);
-    private appService = inject(AppService);
-    private route = inject(ActivatedRoute);
-    private blogService = inject(BlogService);
-
-  constructor(
-  ) {
+  constructor() {
     this.checkWindowSize();
 
     this.router.events.subscribe(event => {
@@ -54,12 +50,7 @@ export class AppComponent {
   private setTitle(): void {
     const snapshot: ActivatedRouteSnapshot = this.route.firstChild
       ?.snapshot as ActivatedRouteSnapshot;
-    const filename = snapshot.params['filename'];
-    let title = '';
-    if (filename) {
-      title = this.blogService.titleCase(filename);
-    }
-    title = snapshot.data['title'];
+    const title = snapshot.data['title'];
     this.titleService.setTitle(`design by harry - ${title}`);
   }
 

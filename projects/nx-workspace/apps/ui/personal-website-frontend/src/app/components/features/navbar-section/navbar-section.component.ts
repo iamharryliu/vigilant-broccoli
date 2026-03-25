@@ -12,6 +12,5 @@ export class NavbarSectionComponent {
     { ...LINKS.ABOUT_PAGE, type: LINK_TYPE.INTERNAL },
     { ...LINKS.DOCS_MD, type: LINK_TYPE.INTERNAL },
     { ...LINKS.PROJECTS_PAGE, type: LINK_TYPE.INTERNAL },
-    // { ...LINKS.BLOGS, type: LINK_TYPE.INTERNAL },
   ];
 }
