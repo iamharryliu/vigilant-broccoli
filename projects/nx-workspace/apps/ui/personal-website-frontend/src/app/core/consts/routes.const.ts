@@ -9,7 +9,6 @@ import { Link } from 'general-components';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
 import { CareerPageComponent } from '../../components/pages/career-page/career.page';
 import { ComponentLibraryPageComponent } from '../../components/pages/component-library-page/component-library.page';
-import { ResumeRedirectComponent } from '../../components/redirects/resume.redirect';
 
 export const INDEX_ROUTE: Route = {
   path: '',
@@ -21,12 +20,6 @@ export const CAREER_ROUTE: Route = {
   path: 'career',
   data: { title: 'career' },
   component: CareerPageComponent,
-};
-
-export const RESUME_ROUTE: Route = {
-  path: 'resume',
-  data: { title: 'resume' },
-  component: ResumeRedirectComponent,
 };
 
 export const DOCS_MD_ROUTE: Route = {
@@ -80,7 +73,6 @@ export const ROUTES: Routes = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
   CAREER_ROUTE,
-  RESUME_ROUTE,
   CONTACT_ROUTE,
   DOCS_MD_ROUTE,
   DOCS_MD_FILE_ROUTE,
@@ -170,7 +162,7 @@ const SKATE_IG: Link = {
 
 const RESUME: Link = {
   url: {
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${RESUME_ROUTE.path}`,
+    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/assets/resume.pdf`,
   },
   text: 'Resume',
 };
