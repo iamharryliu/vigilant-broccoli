@@ -1,16 +1,13 @@
 import { Component } from '@angular/core';
-import { NavbarComponent, LINK_TYPE } from 'general-components';
+import { RouterModule } from '@angular/router';
 import { LINKS } from '../../../core/consts/routes.const';
 
 @Component({
   selector: 'app-navbar-section',
   templateUrl: './navbar-section.component.html',
-  imports: [NavbarComponent],
+  imports: [RouterModule],
 })
 export class NavbarSectionComponent {
-  links = [
-    { ...LINKS.ABOUT_PAGE, type: LINK_TYPE.INTERNAL },
-    { ...LINKS.DOCS_MD, type: LINK_TYPE.INTERNAL },
-    { ...LINKS.PROJECTS_PAGE, type: LINK_TYPE.INTERNAL },
-  ];
+  links = [LINKS.ABOUT_PAGE, LINKS.DOCS_MD, LINKS.PROJECTS_PAGE];
+  isMobileNavOpen = false;
 }
