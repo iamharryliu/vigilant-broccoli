@@ -9,63 +9,95 @@ import { Link } from 'general-components';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
 import { CareerPageComponent } from '../../components/pages/career-page/career.page';
 import { ComponentLibraryPageComponent } from '../../components/pages/component-library-page/component-library.page';
+import { URLS } from './urls.const';
+
+export const DEFAULT_DESCRIPTION =
+  'Harry Liu - Software developer, designer, and creator. Explore my portfolio, projects, and blog.';
 
 export const INDEX_ROUTE: Route = {
   path: '',
-  data: { title: 'home' },
+  data: { title: 'home', description: DEFAULT_DESCRIPTION },
   component: HomePageComponent,
 };
 
 export const CAREER_ROUTE: Route = {
   path: 'career',
-  data: { title: 'career' },
+  data: {
+    title: 'career',
+    description: "Harry Liu's career experience and work history.",
+  },
   component: CareerPageComponent,
 };
 
 export const DOCS_MD_ROUTE: Route = {
   path: 'docs-md',
-  data: { title: 'DocsMD' },
+  data: {
+    title: 'DocsMD',
+    description: 'Browse markdown documents and notes by Harry Liu.',
+  },
   redirectTo: 'docs-md/',
   pathMatch: 'full',
 };
 export const DOCS_MD_FILE_ROUTE: Route = {
   path: 'docs-md/:markdownFilename',
-  data: { title: 'DocsMD' },
+  data: {
+    title: 'DocsMD',
+    description: 'Browse markdown documents and notes by Harry Liu.',
+  },
   component: DocsMdPageComponent,
 };
 
 export const ABOUT_ROUTE: Route = {
   path: 'about',
-  data: { title: 'about' },
+  data: {
+    title: 'about',
+    description:
+      'Learn more about Harry Liu - developer, designer, and creator.',
+  },
   component: AboutPageComponent,
 };
 
 export const CONTACT_ROUTE: Route = {
   path: 'contact',
-  data: { title: 'contact' },
+  data: {
+    title: 'contact',
+    description: 'Get in touch with Harry Liu.',
+  },
   component: ContactPageComponent,
 };
 
 export const LINK_TREE_ROUTE: Route = {
   path: 'links',
-  data: { title: ' link tree' },
+  data: {
+    title: 'link tree',
+    description: "Harry Liu's links - social media, projects, and more.",
+  },
   component: LinkTreePageComponent,
 };
 
 export const COMPONENT_LIBRARY_ROUTE: Route = {
   path: 'component-library',
-  data: { title: 'component library' },
+  data: {
+    title: 'component library',
+    description: 'A showcase of reusable UI components by Harry Liu.',
+  },
   component: ComponentLibraryPageComponent,
 };
 
 export const LEETCODE_ROUTE: Route = {
   path: 'grind-75',
-  data: { title: 'grind 75' },
+  data: {
+    title: 'grind 75',
+    description: 'Grind 75 LeetCode solutions by Harry Liu.',
+  },
   component: LeetCodePageComponent,
 };
 export const LEETCODE_SOLUTION_ROUTE: Route = {
   path: 'grind-75/:language/:filename',
-  data: { title: 'grind75' },
+  data: {
+    title: 'grind75',
+    description: 'Grind 75 LeetCode solutions by Harry Liu.',
+  },
   component: LeetCodePageComponent,
 };
 
@@ -89,7 +121,7 @@ export const ROUTES: Routes = [
 const INDEX_PAGE: Link = {
   url: {
     internal: INDEX_ROUTE.path,
-    external: ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL,
+    external: ENVIRONMENT.APP_URL,
   },
   text: 'Home',
 };
@@ -97,7 +129,7 @@ const INDEX_PAGE: Link = {
 const ABOUT_PAGE: Link = {
   url: {
     internal: `/${ABOUT_ROUTE.path}`,
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${ABOUT_ROUTE.path}`,
+    external: `${ENVIRONMENT.APP_URL}/${ABOUT_ROUTE.path}`,
   },
   text: 'About',
 };
@@ -105,7 +137,7 @@ const ABOUT_PAGE: Link = {
 const CONTACT_PAGE: Link = {
   url: {
     internal: `/${CONTACT_ROUTE.path}`,
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${ABOUT_ROUTE.path}`,
+    external: `${ENVIRONMENT.APP_URL}/${ABOUT_ROUTE.path}`,
   },
   text: 'Contact',
 };
@@ -113,56 +145,70 @@ const CONTACT_PAGE: Link = {
 const LINK_TREE: Link = {
   url: {
     internal: `/${LINK_TREE_ROUTE.path}`,
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${LINK_TREE_ROUTE.path}`,
+    external: `${ENVIRONMENT.APP_URL}/${LINK_TREE_ROUTE.path}`,
   },
   text: 'Links',
 };
 
 const LINKEDIN: Link = {
   url: {
-    external: ENVIRONMENT.URLS.LINKEDIN,
+    external: URLS.LINKEDIN,
   },
   text: 'LinkedIn',
 };
 
 const KOFI: Link = {
   url: {
-    external: ENVIRONMENT.URLS.KOFI,
+    external: URLS.KOFI,
   },
   text: 'Buy me a coffee? 🥺',
 };
 
 const GITHUB: Link = {
   url: {
-    external: ENVIRONMENT.URLS.GITHUB,
+    external: URLS.GITHUB,
   },
   text: 'Github',
 };
 
 const PERSONAL_INSTAGRAM: Link = {
   url: {
-    external: ENVIRONMENT.URLS.PERSONAL_IG,
+    external: URLS.PERSONAL_IG,
   },
   text: 'Personal Instagram',
 };
 
 const SECONDHAND_STORE_IG: Link = {
   url: {
-    external: ENVIRONMENT.URLS.SECONDHAND_STORE_IG,
+    external: URLS.SECONDHAND_STORE_IG,
   },
   text: 'Secondhand Store harrysellsshit',
 };
 
 const SKATE_IG: Link = {
   url: {
-    external: ENVIRONMENT.URLS.SKATE_IG,
+    external: URLS.SKATE_IG,
   },
   text: 'Toronto City Skate',
 };
 
+const CLOUD8SKATE: Link = {
+  url: {
+    external: URLS.CLOUD8SKATE,
+  },
+  text: 'Cloud 8 Skate',
+};
+
+const CLOUD8SKATE_IG: Link = {
+  url: {
+    external: URLS.CLOUD8SKATE_IG,
+  },
+  text: 'Cloud 8 Skate Instagram',
+};
+
 const RESUME: Link = {
   url: {
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/assets/resume.pdf`,
+    external: `${ENVIRONMENT.APP_URL}/assets/resume.pdf`,
   },
   text: 'Resume',
 };
@@ -170,7 +216,7 @@ const RESUME: Link = {
 const DOCS_MD: Link = {
   url: {
     internal: `/${DOCS_MD_ROUTE.path}`,
-    external: `${ENVIRONMENT.URLS.PERSONAL_WEBSITE_FRONTEND_URL}/${DOCS_MD_ROUTE.path}`,
+    external: `${ENVIRONMENT.APP_URL}/${DOCS_MD_ROUTE.path}`,
   },
   text: 'DocsMD',
 };
@@ -189,6 +235,8 @@ const EXTERNAL_LINKS = {
   PERSONAL_INSTAGRAM,
   SECONDHAND_STORE_IG,
   SKATE_IG,
+  CLOUD8SKATE,
+  CLOUD8SKATE_IG,
   RESUME,
   KOFI,
 };

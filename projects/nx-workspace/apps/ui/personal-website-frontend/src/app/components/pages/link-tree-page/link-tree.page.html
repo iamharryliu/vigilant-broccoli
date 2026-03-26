@@ -3,12 +3,17 @@
     <div class="pt-8 mb-8">
       <app-profile-card></app-profile-card>
     </div>
-    <div class="space-y-3 mb-8 max-w-md mx-auto">
-      @for (link of LINKS; track link) {
-      <div
-        class="text-center transform transition-all duration-200 hover:scale-105"
-      >
-        <lib-button-link [link]="link" type="external"></lib-button-link>
+    <div class="space-y-3 mb-8 max-w-sm mx-auto px-4">
+      @for (link of links; track link.text) {
+      <div class="transform transition-all duration-200 hover:scale-105">
+        <a
+          [href]="link.url"
+          target="_blank"
+          class="relative flex items-center w-full text-white bg-black hover:bg-gray-800 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-black dark:hover:bg-gray-800"
+        >
+          <i [class]="link.icon" class="w-5 text-lg"></i>
+          <span class="flex-1 text-center font-bold">{{ link.text }}</span>
+        </a>
       </div>
       }
     </div>

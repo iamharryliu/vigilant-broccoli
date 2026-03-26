@@ -14,7 +14,7 @@ import { ENVIRONMENT } from '../../../environments/environment';
 export class CommonService {
   private http = inject(HttpClient);
 
-  BACKEND_URL = ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL;
+  BACKEND_URL = ENVIRONMENT.API_URL;
 
   sendMessage(request: MessageRequest): Observable<any> {
     const { email, name, message } = request;

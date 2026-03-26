@@ -20,7 +20,7 @@ export class SuccessInterceptor implements HttpInterceptor {
         if (
           event instanceof HttpResponse &&
           event.url != null &&
-          event.url.startsWith(ENVIRONMENT.URLS.PERSONAL_WEBSITE_BACKEND_URL) &&
+          event.url.startsWith(ENVIRONMENT.API_URL) &&
           event.body.message != null
         ) {
           alert(event.body.message);

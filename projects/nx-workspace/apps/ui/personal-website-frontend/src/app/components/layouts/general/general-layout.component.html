@@ -28,16 +28,48 @@
             <i class="fa-brands fa-linkedin fa-xl"></i>
           </a>
           <a
-            [routerLink]="LINKS.CONTACT_PAGE.url.internal"
+            [href]="LINKS.CONTACT_PAGE.url.external"
+            target="_blank"
             class="transition-all duration-200 hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
           >
-            <i class="fa-solid fa-envelope fa-xl"></i>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
           </a>
           <a
-            [routerLink]="LINKS.LINK_TREE.url.internal"
+            [href]="LINKS.LINK_TREE.url.external"
+            target="_blank"
             class="transition-all duration-200 hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
           >
-            <i class="fa-solid fa-link fa-xl"></i>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+              />
+              <path
+                d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+              />
+            </svg>
           </a>
           @if (ENVIRONMENT.JOB_HUNT_MODE) {
           <a
