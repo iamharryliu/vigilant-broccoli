@@ -65,7 +65,7 @@ async function fetchSecretsFromVault(vaultPath: string): Promise<VaultSecrets> {
 async function deploySecretsToFlyio(
   appName: string,
   secrets: Record<string, string>,
-  dryRun = false
+  dryRun = false,
 ): Promise<void> {
   const secretPairs: string[] = [];
 
@@ -82,24 +82,38 @@ async function deploySecretsToFlyio(
 
   const secretsArg = secretPairs.join(' ');
   const command = `flyctl secrets set --app ${appName} ${secretsArg} --stage`;
+  const maskedCommand = `flyctl secrets set --app ${appName} ${Object.keys(
+    secrets,
+  )
+    .map(k => `${k}=***`)
+    .join(' ')} --stage`;
 
   console.log(`\nDeploying ${secretPairs.length} secrets to ${appName}...`);
 
   if (dryRun) {
-    console.log(`[DRY RUN] Would execute: ${command.replace(/=([^\s]+)/g, '=***')}`);
+    console.log(`[DRY RUN] Would execute: ${maskedCommand}`);
     console.log(`[DRY RUN] Secrets: ${Object.keys(secrets).join(', ')}`);
     return;
   }
 
-  execSync(command, { stdio: 'inherit' });
-  console.log(`Successfully staged secrets for ${appName}`);
+  try {
+    execSync(command, { stdio: 'pipe' });
+    console.log(`Successfully staged secrets for ${appName}`);
+  } catch {
+    console.error(
+      `Failed to deploy secrets to ${appName}. Run with --dry-run to debug.`,
+    );
+    process.exit(1);
+  }
 }
 
 async function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    console.error('Usage: npx tsx scripts/deploy-flyio-secrets.ts <app-name> [--dry-run]');
+    console.error(
+      'Usage: npx tsx scripts/deploy-flyio-secrets.ts <app-name> [--dry-run]',
+    );
     console.error('\nAvailable apps:');
     Object.keys(secretsMapping).forEach(app => {
       console.error(`  - ${app}`);
@@ -121,7 +135,9 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`\nDeploying secrets for ${projectName} (Fly app: ${config.flyAppName})`);
+  console.log(
+    `\nDeploying secrets for ${projectName} (Fly app: ${config.flyAppName})`,
+  );
 
   const envExamplePath = join(config.appPath, '.env.example');
   console.log(`Reading required secrets from ${envExamplePath}...`);
@@ -129,10 +145,12 @@ async function main() {
   const requiredEnvVars = parseEnvExample(envExamplePath);
 
   const filteredEnvVars = requiredEnvVars.filter(
-    envVar => !config.excludeEnvVars?.includes(envVar)
+    envVar => !config.excludeEnvVars?.includes(envVar),
   );
 
-  console.log(`Found ${filteredEnvVars.length} secrets to deploy: ${filteredEnvVars.join(', ')}`);
+  console.log(
+    `Found ${filteredEnvVars.length} secrets to deploy: ${filteredEnvVars.join(', ')}`,
+  );
 
   const vaultSecrets = await fetchSecretsFromVault(config.vaultPath);
 
@@ -153,7 +171,7 @@ async function main() {
   console.log('\nDone!');
 }
 
-main().catch((error) => {
-  console.error('Error:', error);
+main().catch(() => {
+  console.error('Secret deployment failed.');
   process.exit(1);
 });

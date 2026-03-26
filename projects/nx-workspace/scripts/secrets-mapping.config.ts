@@ -21,7 +21,7 @@ export const secretsMapping: SecretsMapping = {
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
   'personal-website-backend': {
-    flyAppName: 'personal-website-backend',
+    flyAppName: 'harryliu-personal-website-backend',
     appPath: './apps/personal-website/personal-website-backend',
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
