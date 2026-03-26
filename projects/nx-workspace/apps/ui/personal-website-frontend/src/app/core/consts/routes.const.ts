@@ -137,7 +137,7 @@ const ABOUT_PAGE: Link = {
 const CONTACT_PAGE: Link = {
   url: {
     internal: `/${CONTACT_ROUTE.path}`,
-    external: `${ENVIRONMENT.APP_URL}/${ABOUT_ROUTE.path}`,
+    external: `${ENVIRONMENT.APP_URL}/${CONTACT_ROUTE.path}`,
   },
   text: 'Contact',
 };

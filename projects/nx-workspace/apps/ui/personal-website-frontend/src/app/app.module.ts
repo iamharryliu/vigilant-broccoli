@@ -13,10 +13,12 @@ import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { SuccessInterceptor } from './core/interceptors/success.interceptor';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha-2';
 import {
+  CONTACT_SERVICE,
   CredentialsInterceptorService,
   RecaptchaInterceptor,
   ThemeService,
 } from 'general-components';
+import { CommonService } from './core/services/common.service';
 import {
   NgxGoogleAnalyticsModule,
   NgxGoogleAnalyticsRouterModule,
@@ -42,6 +44,10 @@ export function initTheme(themeService: ThemeService): () => void {
       const initializerFn = initTheme(inject(ThemeService));
       return initializerFn();
     }),
+    {
+      provide: CONTACT_SERVICE,
+      useExisting: CommonService,
+    },
     {
       provide: RECAPTCHA_V3_SITE_KEY,
       useValue: ENVIRONMENT.RECAPTCHA_V3_SITE_KEY,

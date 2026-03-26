@@ -10,6 +10,8 @@ export { FileService } from './lib/services/file.service';
 export { MarkdownService } from './lib/services/markdown.service';
 export { ThemeService } from './lib/services/theme.service';
 export { HttpService } from './lib/services/http.service';
+export { CONTACT_SERVICE } from './lib/services/common.service';
+export type { ContactService } from './lib/services/common.service';
 // Pipes
 export { HyphenatedToTitleCasePipe } from './lib/pipes/hyphenated-to-titlecase.pipe';
 
@@ -21,7 +23,7 @@ export { NavbarComponent } from './lib/navbar/navbar.component';
 // Links
 export { LinkComponent } from './lib/link/link.component';
 export { ButtonLinkComponent } from './lib/button-link/button-link.component';
-// Message
+// Contact
 export { ContactComponent } from './lib/contact/contact.component';
 export { FolderItemComponent } from './lib/folder-item/folder-item.component';
 // Markdown
