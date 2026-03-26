@@ -207,7 +207,8 @@ export const FloatingIslandComponent = ({
           gap: '1.5rem',
           alignItems: 'center',
           padding: '1rem',
-          backgroundColor: 'var(--color-background)',
+          backgroundColor: 'color-mix(in srgb, var(--color-background) 50%, transparent)',
+
           borderRadius: '0.75rem',
           border: '1px solid var(--gray-6)',
           boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
