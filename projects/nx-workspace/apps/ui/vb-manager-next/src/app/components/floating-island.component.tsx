@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { IconButton, Select } from '@radix-ui/themes';
 import { MessageCircle, Mail, Search, Moon, Sun, Calendar } from 'lucide-react';
 import { ChatbotDialog } from './chatbot-dialog.component';
@@ -11,6 +11,7 @@ import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { ClockComponent } from './clock.component';
+import { useDrag } from '../hooks/useDrag';
 
 interface ChatSuggestion {
   title: string;
@@ -92,6 +93,8 @@ export const FloatingIslandComponent = ({
 }: FloatingIslandProps = {}) => {
   const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { position, isDragging, handlePointerDown } = useDrag(containerRef);
   const [internalChatbotDialogOpen, setInternalChatbotDialogOpen] =
     useState(false);
   const [internalEmailDialogOpen, setInternalEmailDialogOpen] = useState(false);
@@ -197,21 +200,27 @@ export const FloatingIslandComponent = ({
     <>
       {/* Floating Card Container */}
       <div
+        ref={containerRef}
+        onPointerDown={handlePointerDown}
         style={{
           position: 'fixed',
-          bottom: '2rem',
-          right: '2rem',
+          left: `${position.x}px`,
+          top: `${position.y}px`,
           zIndex: 40,
           display: 'flex',
           flexDirection: 'row',
           gap: '1.5rem',
           alignItems: 'center',
           padding: '1rem',
-          backgroundColor: 'color-mix(in srgb, var(--color-background) 50%, transparent)',
-
+          backgroundColor:
+            'color-mix(in srgb, var(--color-background) 50%, transparent)',
           borderRadius: '0.75rem',
           border: '1px solid var(--gray-6)',
           boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          userSelect: isDragging ? 'none' : 'auto',
+          touchAction: 'none',
+          visibility: position.x < 0 ? 'hidden' : 'visible',
         }}
       >
         {/* Block 1: Time */}
