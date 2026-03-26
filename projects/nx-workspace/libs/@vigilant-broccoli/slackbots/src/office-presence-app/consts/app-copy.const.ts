@@ -1,4 +1,40 @@
-export const APP_COPY = {
+export type AppCopy = typeof DEFAULT_APP_COPY;
+
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
+export type AppCopyOverrides = DeepPartial<AppCopy>;
+
+const deepMerge = <T extends Record<string, unknown>>(
+  target: T,
+  source: DeepPartial<T>,
+): T => {
+  const result = { ...target };
+  for (const key of Object.keys(source) as (keyof T)[]) {
+    const sourceVal = source[key];
+    const targetVal = target[key];
+    if (
+      sourceVal &&
+      typeof sourceVal === 'object' &&
+      typeof targetVal === 'object' &&
+      !Array.isArray(sourceVal)
+    ) {
+      result[key] = deepMerge(
+        targetVal as Record<string, unknown>,
+        sourceVal as DeepPartial<Record<string, unknown>>,
+      ) as T[keyof T];
+    } else if (sourceVal !== undefined) {
+      result[key] = sourceVal as T[keyof T];
+    }
+  }
+  return result;
+};
+
+export const resolveAppCopy = (overrides?: AppCopyOverrides): AppCopy =>
+  overrides ? deepMerge(DEFAULT_APP_COPY, overrides) : DEFAULT_APP_COPY;
+
+export const DEFAULT_APP_COPY = {
   COMMON: {
     SUBMIT: 'Submit',
     CANCEL: 'Cancel',
@@ -55,6 +91,7 @@ export const APP_COPY = {
     TITLE: 'Edit Office Event',
   },
   ACTIONS: {
+    CHECKED_OUT_MESSAGE: 'has left the building!',
     NO_USERS_SELECTED: "You didn't select any users to invite.",
     askingAboutLunch(userId: string) {
       return `<@${userId}> is asking about lunch today! 🍔`;
@@ -64,7 +101,7 @@ export const APP_COPY = {
     },
   },
   getAppDescription(appName: string) {
-    return `${appName} makes it easy to plan your office visits. Mark which office you are visiting, when you’ll be in, whole day, morning, afternoon, or if you are bringing your dog. You can also leave a note for additional information about your visit ie _Bringing surdeg!_.`;
+    return `${appName} makes it easy to plan your office visits. Mark which office you are visiting, when you'll be in, whole day, morning, afternoon, or if you are bringing your dog. You can also leave a note for additional information about your visit ie _Bringing surdeg!_.`;
   },
   getReminderDmText(appName: string, userId?: string, appId?: string) {
     const userMention = userId ? `<@${userId}>` : 'Hey';
