@@ -376,9 +376,9 @@ const SortableLane = ({
     <div
       ref={setSortableRef}
       style={style}
-      className={`flex flex-col gap-2 w-80 flex-shrink-0 rounded-lg transition-all duration-150 ${laneHighlight}`}
+      className={`flex flex-col gap-2 w-80 flex-shrink-0 rounded-lg transition-all duration-150 h-full overflow-hidden ${laneHighlight}`}
     >
-      <Flex justify="between" align="center" className="px-2">
+      <Flex justify="between" align="center" className="px-2 flex-shrink-0">
         <div
           {...attributes}
           {...listeners}
@@ -402,14 +402,16 @@ const SortableLane = ({
           ✕
         </IconButton>
       </Flex>
-      <GoogleTasksComponent
-        taskListId={lane.taskListId}
-        showSelector={false}
-        enableDragDrop={true}
-        refreshTrigger={refreshTrigger}
-        disableInternalDndContext={true}
-        dragOverTask={dragOverTask}
-      />
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <GoogleTasksComponent
+          taskListId={lane.taskListId}
+          showSelector={false}
+          enableDragDrop={true}
+          refreshTrigger={refreshTrigger}
+          disableInternalDndContext={true}
+          dragOverTask={dragOverTask}
+        />
+      </div>
     </div>
   );
 };
