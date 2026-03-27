@@ -191,7 +191,7 @@
     "ngx-google-analytics": "^14.0.1",
     "node-cron": "^4.2.1",
     "node-vault": "^0.10.9",
-    "nodemailer": "^7.0.10",
+    "nodemailer": "^8.0.4",
     "openai": "^4.87.4",
     "pinia": "^3.0.3",
     "react": "18.3.1",
