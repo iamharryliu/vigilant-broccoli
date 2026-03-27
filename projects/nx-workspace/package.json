@@ -129,7 +129,7 @@
     "vite-plugin-dts": "4.5.4",
     "vitest": "^4.1.0",
     "vue-tsc": "^2.2.8",
-    "wrangler": "^3.27.0"
+    "wrangler": "^4.78.0"
   },
   "workspaces": [
     "packages/*"
