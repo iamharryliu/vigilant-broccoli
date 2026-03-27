@@ -65,6 +65,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: GCP_LINK.CREDENTIALS.NAME,
+    target: GCP_LINK.CREDENTIALS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: GOOGLE_SERVICES.ANALYTICS.NAME,
     target: GOOGLE_SERVICES.ANALYTICS.URL,
     type: OPEN_TYPE.BROWSER,
