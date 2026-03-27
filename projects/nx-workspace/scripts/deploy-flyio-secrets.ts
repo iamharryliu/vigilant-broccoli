@@ -171,7 +171,7 @@ async function main() {
   console.log('\nDone!');
 }
 
-main().catch(() => {
-  console.error('Secret deployment failed.');
+main().catch(error => {
+  console.error('Secret deployment failed.', error);
   process.exit(1);
 });
