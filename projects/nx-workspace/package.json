@@ -212,5 +212,10 @@
     "zod": "^3.25.56",
     "zone.js": "0.16.1"
   },
-  "nx": {}
+  "nx": {},
+  "overrides": {
+    "next-auth": {
+      "nodemailer": "$nodemailer"
+    }
+  }
 }
