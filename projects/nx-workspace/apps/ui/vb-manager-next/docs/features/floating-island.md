@@ -10,6 +10,7 @@
 
 - **Time**: Live clock display
 - **Info**: Date and contextual info
+- **Weather**: City name, emoji weather status, and temperature; clickable to open weather dialog (keyboard shortcut: `w`)
 - **Controls**: Action buttons and mode selector
 
 ## Controls
@@ -17,6 +18,7 @@
 - Jarvis chatbot (with day planning & outfit suggestions)
 - Email composer
 - Calendar dialog
+- Notepad (keyboard shortcut: `n`) — quick note-taking, syncs to `~/resilio-sync/shared/machines/{hostname}/notepad.md`
 - Search dialog (keyboard shortcut: `/`)
 - Theme toggle (light/dark)
 - App mode selector (Personal/Work)

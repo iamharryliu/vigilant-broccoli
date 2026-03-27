@@ -1,7 +1,5 @@
-import { ServicesPage } from "../../components/pages/ServicesPage";
+import { ServicesPage } from '../../components/pages/ServicesPage';
 
 export default function Page() {
-  return (
-    <ServicesPage/>
-  );
+  return <ServicesPage />;
 }

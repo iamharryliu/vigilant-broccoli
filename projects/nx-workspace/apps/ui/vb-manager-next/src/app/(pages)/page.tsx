@@ -1,9 +1,8 @@
 'use client';
 
-import { Card, Flex } from '@radix-ui/themes';
-import { WeatherComponent } from '../components/weather.component';
 import { TaskListSelectorComponent } from '../components/task-list-selector.component';
 import { UtilitiesComponent } from '../components/utilities.component';
+import { NotepadEditorComponent } from '../components/notepad-editor.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import { ModeTransitionWrapper } from '../components/mode-transition-wrapper.component';
 import {
@@ -77,23 +76,16 @@ export default function Page() {
   const { appMode } = useAppMode();
 
   return (
-    <div className="grid grid-cols-3 gap-4 h-full mb-4">
-      <>
-        <div className="flex flex-col gap-4">
-          <Card className="w-full">
-            <Flex direction="column" gap="4" p="4">
-              <WeatherComponent />
-            </Flex>
-          </Card>
-          <ModeTransitionWrapper modeKey={appMode}>
-            {appMode === APP_MODE.PERSONAL ? (
-              <TaskListSelectorComponent />
-            ) : (
-              <TaskListSelectorComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
-            )}
-          </ModeTransitionWrapper>
-        </div>
-      </>
+    <div className="grid grid-cols-4 gap-4 h-full mb-4">
+      <div className="flex flex-col gap-4">
+        <ModeTransitionWrapper modeKey={appMode}>
+          {appMode === APP_MODE.PERSONAL ? (
+            <TaskListSelectorComponent />
+          ) : (
+            <TaskListSelectorComponent taskListId="cXJUTkpUQzZ6bTBpQjNybA" />
+          )}
+        </ModeTransitionWrapper>
+      </div>
       <div className="flex flex-col gap-4">
         <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
           <ModeTransitionWrapper modeKey={appMode}>
@@ -112,6 +104,9 @@ export default function Page() {
             )}
           </ModeTransitionWrapper>
         </div>
+      </div>
+      <div className="flex flex-col gap-4">
+        <NotepadEditorComponent style={{ height: '100%' }} />
       </div>
       <div className="flex flex-col gap-4">
         <ModeTransitionWrapper modeKey={appMode}>

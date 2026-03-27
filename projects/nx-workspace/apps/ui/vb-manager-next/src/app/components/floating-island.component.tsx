@@ -2,16 +2,28 @@
 
 import { useState, useRef } from 'react';
 import { IconButton, Select } from '@radix-ui/themes';
-import { MessageCircle, Mail, Search, Moon, Sun, Calendar } from 'lucide-react';
+import {
+  MessageCircle,
+  Mail,
+  Search,
+  Moon,
+  Sun,
+  Calendar,
+  StickyNote,
+} from 'lucide-react';
 import { ChatbotDialog } from './chatbot-dialog.component';
 import { EmailModalComponent } from './email-modal.component';
 import { SearchDialogComponent } from './search-dialog.component';
 import { CalendarDialog } from './calendar-dialog.component';
+import { NotepadDialog } from './notepad-dialog.component';
+import { WeatherDialog } from './weather-dialog.component';
 import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { ClockComponent } from './clock.component';
 import { useDrag } from '../hooks/useDrag';
+import { useWeather, getWeatherIcon } from '../hooks/useWeather';
+import { Skeleton } from './skeleton.component';
 
 interface ChatSuggestion {
   title: string;
@@ -28,6 +40,10 @@ interface FloatingIslandProps {
   setEmailDialogOpen?: (open: boolean) => void;
   calendarDialogOpen?: boolean;
   setCalendarDialogOpen?: (open: boolean) => void;
+  notepadDialogOpen?: boolean;
+  setNotepadDialogOpen?: (open: boolean) => void;
+  weatherDialogOpen?: boolean;
+  setWeatherDialogOpen?: (open: boolean) => void;
 }
 
 const isWeekPlanningVisible = (): boolean => {
@@ -81,6 +97,7 @@ const getDialogState = (
   internalOpen: boolean,
 ): boolean => externalOpen ?? internalOpen;
 
+// eslint-disable-next-line complexity
 export const FloatingIslandComponent = ({
   searchDialogOpen: externalSearchOpen,
   setSearchDialogOpen: externalSetSearchOpen,
@@ -90,6 +107,10 @@ export const FloatingIslandComponent = ({
   setEmailDialogOpen: externalSetEmailOpen,
   calendarDialogOpen: externalCalendarOpen,
   setCalendarDialogOpen: externalSetCalendarOpen,
+  notepadDialogOpen: externalNotepadOpen,
+  setNotepadDialogOpen: externalSetNotepadOpen,
+  weatherDialogOpen: externalWeatherOpen,
+  setWeatherDialogOpen: externalSetWeatherOpen,
 }: FloatingIslandProps = {}) => {
   const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
@@ -102,6 +123,11 @@ export const FloatingIslandComponent = ({
     useState(false);
   const [internalCalendarDialogOpen, setInternalCalendarDialogOpen] =
     useState(false);
+  const [internalNotepadDialogOpen, setInternalNotepadDialogOpen] =
+    useState(false);
+  const [internalWeatherDialogOpen, setInternalWeatherDialogOpen] =
+    useState(false);
+  const { weatherData, loading: weatherLoading } = useWeather();
   const dayData = useDayAnalysisSuggestions();
 
   const fetchOutfitRecommendation = async () => {
@@ -187,6 +213,18 @@ export const FloatingIslandComponent = ({
   );
   const setCalendarDialogOpen =
     externalSetCalendarOpen ?? setInternalCalendarDialogOpen;
+  const notepadDialogOpen = getDialogState(
+    externalNotepadOpen,
+    internalNotepadDialogOpen,
+  );
+  const setNotepadDialogOpen =
+    externalSetNotepadOpen ?? setInternalNotepadDialogOpen;
+  const weatherDialogOpen = getDialogState(
+    externalWeatherOpen,
+    internalWeatherDialogOpen,
+  );
+  const setWeatherDialogOpen =
+    externalSetWeatherOpen ?? setInternalWeatherDialogOpen;
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.style.transform = 'scale(1.1)';
@@ -251,7 +289,72 @@ export const FloatingIslandComponent = ({
           }}
         />
 
-        {/* Block 3: Controls */}
+        {/* Block 3: Weather */}
+        <div
+          onClick={() => !weatherLoading && setWeatherDialogOpen(true)}
+          style={{
+            width: '5rem',
+            cursor: weatherLoading ? 'default' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            transition: 'opacity 0.2s ease',
+          }}
+          onMouseEnter={e => {
+            if (!weatherLoading) e.currentTarget.style.opacity = '0.7';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.opacity = '1';
+          }}
+          title="Weather"
+        >
+          {weatherLoading || !weatherData[0] ? (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                width: '100%',
+              }}
+            >
+              <Skeleton className="h-6 w-6 rounded-full" />
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem',
+                  flex: 1,
+                }}
+              >
+                <Skeleton className="h-3.5 w-10" />
+                <Skeleton className="h-2.5 w-8" />
+              </div>
+            </div>
+          ) : (
+            <>
+              <span style={{ fontSize: '1.5rem' }}>
+                {getWeatherIcon(weatherData[0].now.icon)}
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>
+                  {weatherData[0].now.temp}&deg;C
+                </span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--gray-9)' }}>
+                  {weatherData[0].city}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+        <div
+          style={{
+            width: '1px',
+            height: '60px',
+            backgroundColor: 'var(--gray-6)',
+          }}
+        />
+
+        {/* Block 4: Controls */}
         <div
           style={{
             display: 'flex',
@@ -297,6 +400,19 @@ export const FloatingIslandComponent = ({
             onMouseLeave={handleMouseLeave}
           >
             <Calendar size={20} />
+          </IconButton>
+
+          {/* Notepad Button */}
+          <IconButton
+            onClick={() => setNotepadDialogOpen(true)}
+            variant="soft"
+            size="2"
+            title="Notepad"
+            style={BUTTON_STYLE}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <StickyNote size={20} />
           </IconButton>
 
           {/* Search Button */}
@@ -355,6 +471,14 @@ export const FloatingIslandComponent = ({
       <CalendarDialog
         open={calendarDialogOpen}
         onOpenChange={setCalendarDialogOpen}
+      />
+      <NotepadDialog
+        open={notepadDialogOpen}
+        onOpenChange={setNotepadDialogOpen}
+      />
+      <WeatherDialog
+        open={weatherDialogOpen}
+        onOpenChange={setWeatherDialogOpen}
       />
     </>
   );
