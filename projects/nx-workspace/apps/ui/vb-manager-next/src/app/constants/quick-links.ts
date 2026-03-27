@@ -677,6 +677,12 @@ const DEV_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
+  {
+    label: 'Resend API Keys',
+    target: 'https://resend.com/api-keys',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
 ];
 
 const VB_LINKS = [
