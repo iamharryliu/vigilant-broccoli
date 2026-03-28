@@ -8,10 +8,15 @@
 - Bitwarden
 - Hashicorp Vault
 
-### Syncing Devices
+### Sync Services
 
-- Cloud Services
+- Google Drive
 - Resilio Sync
+
+### Storage Services
+
+- GCS Buckets
+- Cloudflare R2 Buckets
 
 ### Image Services
 
@@ -24,24 +29,33 @@
 ```mermaid
 flowchart LR
 
+USER[User]
 
 subgraph LOCAL_MACHINE[Local Machine]
   LOCAL_MACHINE_BW[Bitwarden]
   LOCAL_MACHINE_IMMICH[Immich]
-  LOCAL_MACHINE_RESILIO[Resilio]
-  LOCAL_MACHINE_BW-->BACKUP
+  LOCAL_MACHINE_SYNC_SERVICE[Sync Service]
+  LOCAL_MACHINE_BW-->|Encypted secrets|BACKUP
   LOCAL_MACHINE_IMMICH-->BACKUP
   BACKUP[Backup]
-  BACKUP-->LOCAL_MACHINE_RESILIO
+  BACKUP<-->LOCAL_MACHINE_SYNC_SERVICE
 end
 
 subgraph ANOTHER_MACHINE[Another Device]
-  ANOTHER_DEVICE_RESILIO[Resilio]
+  ANOTHER_MACHINE_SYNC_SERVICE[Sync Service]
 end
 
-USER[User]-->LOCAL_MACHINE_BW
-REMOTE_SECRET_MANAGER[Remote Secret Manager]<-->LOCAL_MACHINE_BW
-LOCAL_MACHINE_RESILIO-->ANOTHER_DEVICE_RESILIO
+CLOUD_DRIVE[Cloud Drive]
+
+
+USER<-->LOCAL_MACHINE_BW
+USER<-->LOCAL_MACHINE_IMMICH
+CLOUD_DRIVE-->USER
+
+
+REMOTE_SECRET_MANAGER[Remote Secret Manager]-->LOCAL_MACHINE_BW
+LOCAL_MACHINE_SYNC_SERVICE-->|Local sync|ANOTHER_MACHINE_SYNC_SERVICE
+BACKUP-->|Cloud backup|CLOUD_DRIVE
 ```
 
 ### CI
