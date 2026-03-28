@@ -45,6 +45,10 @@ const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
         id: BIRTHDAYS_CALENDAR,
         color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
       },
+      {
+        id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.H_AND_K,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.PINK,
+      },
     ],
   },
   work: {

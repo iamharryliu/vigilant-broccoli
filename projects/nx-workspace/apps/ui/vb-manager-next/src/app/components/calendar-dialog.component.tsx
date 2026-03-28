@@ -17,7 +17,7 @@ const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
     wkst: 2,
     ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
     showPrint: 0,
-    mode: 'AGENDA',
+    mode: 'MONTH',
     title: 'Personal Calendar',
     ownerCalendars: [
       {
@@ -42,6 +42,10 @@ const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
         id: BIRTHDAYS_CALENDAR,
         color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
       },
+      {
+        id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.H_AND_K,
+        color: GOOGLE_CALENDAR.CALENDAR_COLOR.PINK,
+      },
     ],
   },
   work: {
@@ -49,7 +53,7 @@ const CALENDAR_CONFIG: Record<'personal' | 'work', CalendarConfig> = {
     wkst: 2,
     ctz: GOOGLE_CALENDAR.TIMEZONE.STOCKHOLM,
     showPrint: 0,
-    mode: 'AGENDA',
+    mode: 'MONTH',
     ownerCalendars: [
       {
         email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
@@ -76,17 +80,35 @@ interface CalendarDialogProps {
 
 export const CalendarDialog = ({ open, onOpenChange }: CalendarDialogProps) => {
   const { appMode } = useAppMode();
-  const config = appMode === APP_MODE.PERSONAL ? CALENDAR_CONFIG.personal : CALENDAR_CONFIG.work;
+  const config =
+    appMode === APP_MODE.PERSONAL
+      ? CALENDAR_CONFIG.personal
+      : CALENDAR_CONFIG.work;
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content style={{ maxWidth: '90vw', width: '90vw', height: '90vh', padding: 0, overflow: 'hidden' }}>
-        <VisuallyHidden><Dialog.Title>Calendar</Dialog.Title></VisuallyHidden>
+      <Dialog.Content
+        style={{
+          maxWidth: '90vw',
+          width: '90vw',
+          height: '90vh',
+          padding: 0,
+          overflow: 'hidden',
+        }}
+      >
+        <VisuallyHidden>
+          <Dialog.Title>Calendar</Dialog.Title>
+        </VisuallyHidden>
         <iframe
           tabIndex={-1}
           src={buildCalendarUrl(config)}
           className="dark:invert dark:hue-rotate-180"
-          style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            display: 'block',
+          }}
         />
       </Dialog.Content>
     </Dialog.Root>
