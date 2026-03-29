@@ -1,14 +1,5 @@
 <app-content-container>
   <section class="mb-8 reveal-up">
-    <h1 class="mb-4 text-3xl font-bold lg:text-4xl reveal-up reveal-up-delay-1">
-      Gallery
-    </h1>
-    <p
-      class="mb-8 text-base leading-7 text-gray-700 reveal-up reveal-up-delay-2"
-    >
-      Photos from Cloud8 sessions, meetups, and skate events.
-    </p>
-
     @if (albums.length) {
     <div class="grid grid-cols-2 gap-6 lg:grid-cols-3">
       @for (album of albums; track trackAlbum($index, album)) {
