@@ -3,7 +3,8 @@
 127.0.0.1       adminer.vigilant-broccoli.app
 127.0.0.1       loki.vigilant-broccoli.app
 127.0.0.1       grafana.vigilant-broccoli.app
-127.0.0.1       sync.vigilant-broccoli.app
+# TODO: Investigate Resilio Docker container sync speed issue.
+# 127.0.0.1       sync.vigilant-broccoli.app
 127.0.0.1       images.vigilant-broccoli.app
 255.255.255.255	broadcasthost
 ::1             localhost
