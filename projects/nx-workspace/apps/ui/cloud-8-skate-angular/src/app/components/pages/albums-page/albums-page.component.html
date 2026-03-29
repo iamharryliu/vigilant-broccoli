@@ -10,44 +10,32 @@
     </p>
 
     @if (albums.length) {
-    <div class="grid gap-6 sm:grid-cols-2">
+    <div class="grid grid-cols-2 gap-6 lg:grid-cols-3">
       @for (album of albums; track trackAlbum($index, album)) {
-      <article
-        class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm surface-card reveal-up"
+      <a
+        [routerLink]="[LINKS.ALBUMS.url.internal, album.slug]"
+        class="block reveal-up"
       >
-        <a [routerLink]="[LINKS.ALBUMS.url.internal, album.slug]" class="block">
-          @if (album.coverImageUrl) {
-          <img
-            [src]="album.coverImageUrl"
-            [alt]="album.name"
-            class="aspect-[4/3] w-full object-cover"
-          />
-          } @else {
-          <div
-            class="flex aspect-[4/3] items-center justify-center bg-gray-100 text-gray-500"
-          >
-            No cover image
-          </div>
-          }
-        </a>
-        <div class="p-5">
-          <a
-            [routerLink]="[LINKS.ALBUMS.url.internal, album.slug]"
-            class="text-xl font-semibold text-gray-900 hover:text-blue-600 interactive-link"
-          >
-            {{ album.name }}
-          </a>
-          <p class="mt-2 text-sm text-gray-500">
-            {{ album.date | date : 'MMMM d, y' }} •
-            {{ album.imageCount }} photos
-          </p>
-          @if (album.description) {
-          <p class="mt-3 text-base leading-7 text-gray-700">
-            {{ album.description }}
-          </p>
-          }
+        @if (album.coverImageUrl) {
+        <img
+          [src]="album.coverImageUrl"
+          [alt]="album.name"
+          class="aspect-square w-full object-cover"
+        />
+        } @else {
+        <div
+          class="flex aspect-square items-center justify-center bg-gray-100 text-gray-500"
+        >
+          No cover image
         </div>
-      </article>
+        }
+        <p class="mt-2 text-center text-base font-semibold text-gray-900">
+          {{ album.name }}
+        </p>
+        <p class="mt-1 text-center text-sm text-gray-500">
+          {{ album.date | date : 'MMMM d, y' }}
+        </p>
+      </a>
       }
     </div>
     } @else if (!isLoading) {
