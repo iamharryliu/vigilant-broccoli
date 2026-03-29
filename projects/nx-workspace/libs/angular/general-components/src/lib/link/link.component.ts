@@ -13,6 +13,8 @@ export class LinkComponent {
   @Input() link!: Link;
   @Output() clickEmitter = new EventEmitter<void>();
   @Input() textClasses?: string[];
+  @Input() activeClasses?: string[];
+  @Input() routerLinkActiveOptions: { exact: boolean } = { exact: true };
 
   click() {
     this.clickEmitter.emit();

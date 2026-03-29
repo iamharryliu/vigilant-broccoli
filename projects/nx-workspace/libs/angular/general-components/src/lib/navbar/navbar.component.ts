@@ -14,6 +14,7 @@ export class NavbarComponent implements OnInit {
   @Input() bgColor = 'bg-inherit';
   @Input() links: Link[] = [];
   @Input() textClasses?: string[];
+  @Input() activeClasses?: string[];
   @Input() isBold = false;
   @Input() isStickyForBrowser = false;
   @Input() isFixedForBrowser = false;
