@@ -9,19 +9,11 @@ import {
 import { RecaptchaInterceptor } from 'general-components';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha-2';
 import { ENVIRONMENT } from '../environments/environment';
-import {
-  NgxGoogleAnalyticsModule,
-  NgxGoogleAnalyticsRouterModule,
-} from 'ngx-google-analytics';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(ROUTES),
     importProvidersFrom(RecaptchaV3Module),
-    importProvidersFrom(
-      NgxGoogleAnalyticsModule.forRoot(ENVIRONMENT.ANALYTICS_ID),
-    ),
-    importProvidersFrom(NgxGoogleAnalyticsRouterModule),
     provideHttpClient(withInterceptorsFromDi()),
     {
       provide: RECAPTCHA_V3_SITE_KEY,
