@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.grecaptcha-badge {
-  visibility: hidden;
-}
-
 @keyframes fade-slide-up {
   from {
     opacity: 0;
@@ -50,7 +46,9 @@
 }
 
 .surface-card {
-  transition: transform 0.22s ease, box-shadow 0.22s ease,
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
     border-color 0.22s ease;
 }
 
@@ -61,7 +59,9 @@
 }
 
 .interactive-chip {
-  transition: transform 0.2s ease, background-color 0.2s ease,
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
     box-shadow 0.2s ease;
 }
 
@@ -71,7 +71,9 @@
 }
 
 .interactive-link {
-  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 
@@ -18,6 +19,7 @@ const BASE_URL = 'https://cloud8skate.com';
 export class SeoService {
   private titleService = inject(Title);
   private metaService = inject(Meta);
+  private document = inject(DOCUMENT);
 
   updateMetaTags(config: SeoConfig) {
     const image = config.image || DEFAULT_IMAGE;
@@ -32,7 +34,10 @@ export class SeoService {
     });
 
     if (config.keywords) {
-      this.metaService.updateTag({ name: 'keywords', content: config.keywords });
+      this.metaService.updateTag({
+        name: 'keywords',
+        content: config.keywords,
+      });
     }
 
     this.metaService.updateTag({ property: 'og:title', content: fullTitle });
@@ -50,7 +55,7 @@ export class SeoService {
     });
     this.metaService.updateTag({ name: 'twitter:image', content: image });
 
-    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    const canonicalLink = this.document.querySelector('link[rel="canonical"]');
     if (canonicalLink) {
       canonicalLink.setAttribute('href', url);
     }

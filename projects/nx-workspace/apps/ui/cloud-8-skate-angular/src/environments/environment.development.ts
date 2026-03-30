@@ -1,6 +1,5 @@
 export const ENVIRONMENT = {
   PRODUCTION: false,
-  RECAPTCHA_V3_SITE_KEY: '6LfAdbMoAAAAAOR8IRGqw-3gPj8Fdl5GHqm6wzOF',
   ANALYTICS_ID: 'G-SJELMQXML9',
   API_URL: 'http://localhost:3000',
 };

@@ -1,6 +1,5 @@
 import { Route, Routes } from '@angular/router';
 import { Link } from 'general-components';
-import { ContactPageComponent } from '../../components/pages/contact-page/contact-page.component';
 import { FaqPageComponent } from '../../components/pages/faq-page/faq.page';
 import { HomePageComponent } from '../../components/pages/home-page/home.page';
 import { MorePageComponent } from '../../components/pages/more-page/more.page';
@@ -15,12 +14,6 @@ export const HOME_PAGE_ROUTE: Route = {
   path: '',
   data: { title: 'Home' },
   component: HomePageComponent,
-};
-
-export const CONTACT_PAGE_ROUTE: Route = {
-  path: 'contact',
-  data: { title: 'Contact' },
-  component: ContactPageComponent,
 };
 
 export const FAQ_PAGE_ROUTE: Route = {
@@ -82,7 +75,6 @@ const WILD_CARD_ROUTE: Route = {
 
 export const ROUTES: Routes = [
   HOME_PAGE_ROUTE,
-  CONTACT_PAGE_ROUTE,
   MORE_PAGE_ROUTE,
   MORE_SUBPAGE_ROUTE,
   CALENDAR_PAGE_ROUTE,
@@ -121,13 +113,6 @@ const MORE: Link = {
   text: 'More',
 };
 
-const CONTACT: Link = {
-  url: {
-    internal: `/${CONTACT_PAGE_ROUTE.path}`,
-  },
-  text: 'Contact',
-};
-
 const PLAYLISTS: Link = {
   url: {
     internal: `/${PLAYLISTS_PAGE_ROUTE.path}`,
@@ -158,7 +143,6 @@ const TORONTO_CITY_SKATE_IG: Link = {
 
 export const INTERNAL_LINKS = {
   HOME,
-  CONTACT,
   CALENDAR,
   FAQ,
   MORE,

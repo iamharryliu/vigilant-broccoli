@@ -1,4 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { EXTERNAL_LINKS } from '../../../core/consts/routes.const';
 import { MarkdownPageComponent } from 'general-components';
 import { CalendarSectionComponent } from '../../features/calendar-section/calendar-section.component';
@@ -12,6 +14,8 @@ import { SeoService } from '../../../services/seo.service';
 })
 export class HomePageComponent implements OnInit {
   private seoService = inject(SeoService);
+  private document = inject(DOCUMENT);
+  private platformId = inject(PLATFORM_ID);
   private readonly scrollOptions: ScrollIntoViewOptions = {
     behavior: 'smooth',
     block: 'start',
@@ -37,7 +41,7 @@ export class HomePageComponent implements OnInit {
   }
 
   scrollTo(section: string) {
-    document.getElementById(section)?.scrollIntoView(this.scrollOptions);
+    this.document.getElementById(section)?.scrollIntoView(this.scrollOptions);
   }
 
   scrollToNext(currentSectionId: string) {
@@ -70,9 +74,8 @@ export class HomePageComponent implements OnInit {
   }
 
   scrollToTop() {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 }

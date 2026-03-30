@@ -1,5 +1,12 @@
-import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  HostListener,
+  Input,
+  OnInit,
+  PLATFORM_ID,
+  inject,
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LinkComponent } from '../link/link.component';
 import { Link } from '../models';
@@ -19,16 +26,19 @@ export class NavbarComponent implements OnInit {
   @Input() isStickyForBrowser = false;
   @Input() isFixedForBrowser = false;
   @Input() isFixedForMobile = false;
+  private platformId = inject(PLATFORM_ID);
   private previousScrollTop = 0;
   private initialized = false;
   isMobileNavOpen = false;
   isFading = false;
 
   ngOnInit(): void {
-    this.previousScrollTop = window.scrollY;
-    setTimeout(() => {
-      this.initialized = true;
-    }, 1000);
+    if (isPlatformBrowser(this.platformId)) {
+      this.previousScrollTop = window.scrollY;
+      setTimeout(() => {
+        this.initialized = true;
+      }, 1000);
+    }
   }
 
   @HostListener('window:scroll', ['$event'])
