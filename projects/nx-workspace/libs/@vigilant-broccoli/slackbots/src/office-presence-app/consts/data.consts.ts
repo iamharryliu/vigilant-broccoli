@@ -22,3 +22,5 @@ export const MONTHS = [
   'November',
   'December',
 ];
+
+export const INPUT_MAX_LENGTH = 150;

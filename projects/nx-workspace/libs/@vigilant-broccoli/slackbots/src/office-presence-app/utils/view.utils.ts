@@ -10,7 +10,7 @@ import {
 import { WebClient } from '@slack/web-api';
 import { BlockAction, SlackViewAction } from '@slack/bolt';
 import { SlackViewBuilder } from '../../lib/utils/view-builder.utils';
-import { APP_COPY } from '../consts/app-copy.const';
+import { AppCopy } from '../consts/app-copy.const';
 import {
   formatDateLong,
   formatDateShort,
@@ -44,6 +44,7 @@ export function buildModalDateOptionSlackBlocks(dates: Date[]): {
 }
 
 function getHomeView(userId: string, appConfig: AppConfig): View {
+  const { copy } = appConfig;
   const userPresences = loadAllPresences();
   if (!userPresences[userId]) {
     userPresences[userId] = {};
@@ -60,7 +61,7 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
     blocks: [
       SlackViewBuilder.generateHeader(appConfig.APP_NAME),
       SlackViewBuilder.generateMarkdownSection(
-        APP_COPY.getAppDescription(appConfig.APP_NAME),
+        copy.getAppDescription(appConfig.APP_NAME),
       ),
       {
         type: 'actions',
@@ -68,7 +69,7 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
           {
             type: 'button',
             text: SlackViewBuilder.generatePlainText(
-              APP_COPY.HOME_VIEW.CREATE_EVENT_BUTTON,
+              copy.HOME_VIEW.CREATE_EVENT_BUTTON,
             ),
             action_id: APP_ACTION.OPEN_CREATE_EVENT_MODAL,
           },
@@ -82,7 +83,7 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
                 {
                   type: 'button',
                   text: SlackViewBuilder.generatePlainText(
-                    APP_COPY.HOME_VIEW.ASK_LUNCH_BUTTON,
+                    copy.HOME_VIEW.ASK_LUNCH_BUTTON,
                   ),
                   action_id: APP_ACTION.OPEN_ASK_LUNCH_MODAL,
                   style: 'primary',
@@ -90,7 +91,7 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
                 {
                   type: 'button',
                   text: SlackViewBuilder.generatePlainText(
-                    APP_COPY.HOME_VIEW.CHECKOUT_BUTTON,
+                    copy.HOME_VIEW.CHECKOUT_BUTTON,
                   ),
                   action_id: APP_ACTION.SUBMIT_CHECKOUT,
                   style: 'primary',
@@ -102,7 +103,7 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
         : []),
       {
         ...SlackViewBuilder.generateMarkdownSection(
-          APP_COPY.HOME_VIEW.SELECT_OFFICE_DAYS_MARKDOWN,
+          copy.HOME_VIEW.SELECT_OFFICE_DAYS_MARKDOWN,
         ),
         accessory: {
           type: 'checkboxes',
@@ -117,14 +118,14 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
           {
             type: 'button',
             text: SlackViewBuilder.generatePlainText(
-              APP_COPY.HOME_VIEW.ADD_VISIT_DETAILS_BUTTON,
+              copy.HOME_VIEW.ADD_VISIT_DETAILS_BUTTON,
             ),
             action_id: APP_ACTION.OPEN_SCHEDULE_MODAL,
           },
         ],
       },
       SlackViewBuilder.DIVIDER,
-      ...buildPresenceBlocks(dates, userPresences, userId),
+      ...buildPresenceBlocks(dates, userPresences, userId, copy),
     ],
   } as View;
 }
@@ -133,10 +134,11 @@ function buildPresenceBlocks(
   days: Date[],
   userPresences: UserPresences,
   currentUserId: string,
+  copy: AppCopy,
 ): KnownBlock[] {
   const blocks: KnownBlock[] = [
     SlackViewBuilder.generateMarkdownSection(
-      APP_COPY.HOME_VIEW.WHO_IS_IN_OFFICE_MARKDOWN,
+      copy.HOME_VIEW.WHO_IS_IN_OFFICE_MARKDOWN,
     ) as KnownBlock,
   ];
   const allEvents = loadAllEvents();
@@ -151,13 +153,13 @@ function buildPresenceBlocks(
       .filter(([_, presence]) => presence?.[iso])
       .map(([u, presence]) => {
         const dayPresence = presence[iso];
-        return formatPresence(u, dayPresence, eventsForDay);
+        return formatPresence(u, dayPresence, eventsForDay, copy);
       });
 
     const presenceText =
       formattedPresences.length > 0
         ? formattedPresences.join('\n')
-        : APP_COPY.HOME_VIEW.NO_ONE_SCHEDULED_MARKDOWN;
+        : copy.HOME_VIEW.NO_ONE_SCHEDULED_MARKDOWN;
 
     blocks.push(
       SlackViewBuilder.generateMarkdownSection(
@@ -259,6 +261,7 @@ function formatPresence(
   u: string,
   presence: UserPresence,
   eventsForDay: OfficeEvent[],
+  copy: AppCopy,
 ): string {
   if (!presence) return `<@${u}>`;
 
@@ -266,9 +269,9 @@ function formatPresence(
   if (presence.isBringingDog) parts.push(' 🐶');
   if (presence.office) parts.push('🏢 ' + presence.office);
   if (presence.presenceTime === PRESENCE_TIME.AFTERNOON)
-    parts.push(APP_COPY.HOME_VIEW.AFTERNOON_ONLY);
+    parts.push(copy.HOME_VIEW.AFTERNOON_ONLY);
   if (presence.presenceTime === PRESENCE_TIME.MORNING)
-    parts.push(APP_COPY.HOME_VIEW.MORNING_ONLY);
+    parts.push(copy.HOME_VIEW.MORNING_ONLY);
   if (presence.message) parts.push(` | 💬 _${presence.message}_`);
 
   const userEvents = eventsForDay.filter(

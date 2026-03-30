@@ -8,10 +8,10 @@ import { SLACK_EVENT } from '../lib/consts';
 import { SlackModalUtils } from '../lib/utils/modal.utils';
 import { SlackUtils } from '../lib/utils/utils';
 import {
-  getAskLunchModal,
+  createAskLunchModal,
   createInputScheduleModal,
-  getCreateEventModal,
-  getEditEventModal,
+  createCreateEventModal,
+  createEditEventModal,
 } from './consts/modals.const';
 import {
   handleAskLunchAction,
@@ -27,6 +27,7 @@ import { APP_ACTION } from './consts/app.consts';
 import { loadAllPresences, savePresence } from './utils/db.utils';
 import { createReminderSender } from './app-reminder';
 import { AppConfig } from './types';
+import { AppCopyOverrides, resolveAppCopy } from './consts/app-copy.const';
 
 export type OfficePresenceAppRunConfig = {
   id?: string;
@@ -37,6 +38,7 @@ export type OfficePresenceAppRunConfig = {
   reminderTimezone?: string;
   enableReminders?: boolean;
   includeWeekends?: boolean;
+  copy?: AppCopyOverrides;
 };
 
 const DEFAULT_PORT = 3000;
@@ -49,15 +51,19 @@ const DEFAULT_OFFICES: string[] = [];
 export async function runOfficePresenceApp(
   config: OfficePresenceAppRunConfig = {},
 ) {
-  const { id, APP_NAME, OFFICES, includeWeekends } = config;
+  const { id, APP_NAME, OFFICES, includeWeekends, copy } = config;
   const appConfig: AppConfig = {
     id,
     APP_NAME: APP_NAME ?? DEFAULT_APP_NAME,
     OFFICES: OFFICES ?? DEFAULT_OFFICES,
     includeWeekends,
+    copy: resolveAppCopy(copy),
   };
   const publishHomeView = createPublishHomeView(appConfig);
   const getInputScheduleModal = createInputScheduleModal(appConfig);
+  const getAskLunchModal = createAskLunchModal(appConfig);
+  const getCreateEventModal = createCreateEventModal(appConfig);
+  const getEditEventModal = createEditEventModal(appConfig);
   const sendReminders = createReminderSender(appConfig);
 
   const app = SlackUtils.getSocketApp();
@@ -120,10 +126,13 @@ export async function runOfficePresenceApp(
         }
       }
     }
-    await handleAskLunchAction(userId, selectedUsers, client);
+    await handleAskLunchAction(userId, selectedUsers, client, appConfig.copy);
   });
 
-  app.action(APP_ACTION.SUBMIT_CHECKOUT, createCheckoutAction(publishHomeView));
+  app.action(
+    APP_ACTION.SUBMIT_CHECKOUT,
+    createCheckoutAction(appConfig, publishHomeView),
+  );
 
   app.action<BlockAction>(
     new RegExp(`^${APP_ACTION.TOGGLE_EVENT_ATTENDANCE}_\\d+$`),
@@ -192,6 +201,7 @@ export async function runOfficePresenceApp(
 }
 
 function createCheckoutAction(
+  appConfig: AppConfig,
   publishHomeView: ReturnType<typeof createPublishHomeView>,
 ) {
   return async function handleCheckoutAction({
@@ -207,7 +217,7 @@ function createCheckoutAction(
     const allPresences = loadAllPresences();
     const userPresences = allPresences[userId];
     const presence = userPresences[today];
-    presence.message = 'has left the building!';
+    presence.message = appConfig.copy.ACTIONS.CHECKED_OUT_MESSAGE;
     savePresence(userId, today, presence);
     await publishHomeView(client, body);
   };
