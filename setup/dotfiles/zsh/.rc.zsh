@@ -35,3 +35,6 @@ unset __conda_setup
 source ~/.bash_profile
 
 tmux source-file ~/.tmux.conf 2>/dev/null
+
+bindkey '^[[1;3D' backward-word
+bindkey '^[[1;3C' forward-word

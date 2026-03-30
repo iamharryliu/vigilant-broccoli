@@ -48,6 +48,11 @@ if ask "Change wallpaper?"; then
     . $MAC_SETUP_DIR/change_wallpaper.sh
 fi
 
+if ask "Setup Dock Stacks?"; then
+    chmod +x "$MAC_SETUP_DIR/setup_dock_stacks.sh"
+    . $MAC_SETUP_DIR/setup_dock_stacks.sh
+fi
+
 if ask "Configure terminal theme?"; then
     p10k configure
 fi

@@ -38,22 +38,26 @@ jobs:
         id: check
         working-directory: ./projects/nx-workspace
         run: |
-          BASE="${{ github.event.before }}"
-
-          # fallback if empty, zero hash, or missing commit
-          if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
-            echo "BASE commit $BASE not found, falling back to origin/main"
-            BASE="origin/main"
-          fi
-          AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
-          AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
-          AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
-          echo "affected_apps=$AFFECTED"
-          echo "affected_apps=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
-          if [[ -n "$AFFECTED_NORMALIZED" ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
+            echo "deploy_cmd=npx nx run-many -t deploy" >> $GITHUB_OUTPUT
           else
-            echo "has_deployments=false" >> $GITHUB_OUTPUT
+            BASE="${{ github.event.before }}"
+
+            # fallback if empty, zero hash, or missing commit
+            if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+              echo "BASE commit $BASE not found, falling back to origin/main"
+              BASE="origin/main"
+            fi
+            AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
+            AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
+            AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
+            echo "deploy_cmd=npx nx run-many -t deploy --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
+            if [[ -n "$AFFECTED_NORMALIZED" ]]; then
+              echo "has_deployments=true" >> $GITHUB_OUTPUT
+            else
+              echo "has_deployments=false" >> $GITHUB_OUTPUT
+            fi
           fi
 
       - name: Authenticate to Google Cloud
@@ -122,4 +126,5 @@ jobs:
         env:
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://127.0.0.1:8200
-        run: npx nx run-many -t deploy --projects="${{ steps.check.outputs.affected_apps }}"
+          NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/projects/nx-workspace/scripts/vault-ca.crt
+        run: ${{ steps.check.outputs.deploy_cmd }}

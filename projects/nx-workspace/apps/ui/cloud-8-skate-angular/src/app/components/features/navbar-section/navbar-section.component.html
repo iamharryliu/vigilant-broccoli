@@ -1,6 +1,15 @@
 <lib-navbar
   [links]="links"
-  [textClasses]="['font-medium', 'text-white', 'hover:text-gray-200']"
+  [textClasses]="[
+    'font-medium',
+    'text-white',
+    'hover:text-gray-200',
+    'inline-block',
+    'transition-transform',
+    'duration-200',
+    'hover:scale-110',
+  ]"
+  [activeClasses]="['underline', 'underline-offset-4']"
   [bgColor]="'lg:bg-blue-500'"
   [isFixedForBrowser]="true"
   [isFixedForMobile]="true"

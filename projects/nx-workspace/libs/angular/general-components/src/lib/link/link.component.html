@@ -4,6 +4,8 @@
   (click)="click()"
   [attr.target]="type !== 'internal' ? '_blank' : ''"
   [ngClass]="textClasses"
+  [routerLinkActive]="activeClasses ?? []"
+  [routerLinkActiveOptions]="routerLinkActiveOptions"
 >
   {{ link.text }}
 </a>

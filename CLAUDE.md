@@ -14,6 +14,9 @@
 ## Folder Structure
 
 - [Notes](./notes/) - Collection of markdown notes linked with relative file paths.
+- [Setup](./setup/) - Machine setup scripts and dotfiles.
+  - [dotfiles](./setup/dotfiles/) - Shell configs, aliases, and scripts (symlinked to `$HOME`).
+  - [mac](./setup/mac/) - macOS setup: `install.sh` entry point, dock, dock stacks, preferences, wallpaper.
 - [Projects](./projects/) - Software projects.
   - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects
     - [vb-manager-next](./projects/nx-workspace/apps/ui/vb-manager-next) - Next.js management dashboard app (Tailwind, NextAuth, PM2 deployed)

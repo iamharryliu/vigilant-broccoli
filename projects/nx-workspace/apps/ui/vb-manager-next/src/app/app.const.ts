@@ -24,10 +24,6 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Text Tools',
     path: '/text-tools',
   },
-  SERVICES: {
-    title: 'Service Management',
-    path: '/service-management',
-  },
   AI_TOOL: {
     title: 'LLM Tools',
     path: '/llm-tools',

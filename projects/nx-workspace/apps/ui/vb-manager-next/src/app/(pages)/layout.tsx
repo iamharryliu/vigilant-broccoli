@@ -31,6 +31,8 @@ type KeyboardHandlers = {
   setEmailDialogOpen: (open: boolean) => void;
   setChatbotDialogOpen: (open: boolean) => void;
   setCalendarDialogOpen: (open: boolean) => void;
+  setNotepadDialogOpen: (open: boolean) => void;
+  setWeatherDialogOpen: (open: boolean) => void;
   toggleTheme: () => void;
 };
 
@@ -56,6 +58,12 @@ const processKeyboardInput = (
         return true;
       }
       return false;
+    case 'n':
+      handlers.setNotepadDialogOpen(true);
+      return true;
+    case 'w':
+      handlers.setWeatherDialogOpen(true);
+      return true;
     case 'd':
       handlers.toggleTheme();
       return true;
@@ -85,6 +93,8 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [chatbotDialogOpen, setChatbotDialogOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
+  const [notepadDialogOpen, setNotepadDialogOpen] = useState(false);
+  const [weatherDialogOpen, setWeatherDialogOpen] = useState(false);
 
   const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
   const dropdownRoutes = allRoutes.filter(
@@ -103,6 +113,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         setEmailDialogOpen,
         setChatbotDialogOpen,
         setCalendarDialogOpen,
+        setNotepadDialogOpen,
+        setWeatherDialogOpen,
         toggleTheme,
       });
     };
@@ -174,6 +186,10 @@ export default function Layout({ children }: { children: ReactNode }) {
         setEmailDialogOpen={setEmailDialogOpen}
         calendarDialogOpen={calendarDialogOpen}
         setCalendarDialogOpen={setCalendarDialogOpen}
+        notepadDialogOpen={notepadDialogOpen}
+        setNotepadDialogOpen={setNotepadDialogOpen}
+        weatherDialogOpen={weatherDialogOpen}
+        setWeatherDialogOpen={setWeatherDialogOpen}
       />
     </div>
   );

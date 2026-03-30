@@ -65,14 +65,25 @@ export const useDrag = (
   useEffect(() => {
     if (!initialized) return;
 
-    const handleResize = () => {
+    const reclamp = () => {
       const el = ref.current;
       if (!el) return;
       setPosition(prev => clampPosition(prev.x, prev.y, el));
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', reclamp);
+
+    const el = ref.current;
+    let observer: ResizeObserver | null = null;
+    if (el) {
+      observer = new ResizeObserver(reclamp);
+      observer.observe(el);
+    }
+
+    return () => {
+      window.removeEventListener('resize', reclamp);
+      observer?.disconnect();
+    };
   }, [initialized, ref]);
 
   const handlePointerDown = useCallback(

@@ -19,8 +19,7 @@
         "assets": [
           "apps/ui/cloud-8-skate-angular/src/favicon.ico",
           "apps/ui/cloud-8-skate-angular/src/assets",
-          "apps/ui/cloud-8-skate-angular/src/robots.txt",
-          "apps/ui/cloud-8-skate-angular/src/sitemap.xml"
+          "apps/ui/cloud-8-skate-angular/src/robots.txt"
         ],
         "styles": [
           "apps/ui/cloud-8-skate-angular/src/styles.scss",
@@ -80,13 +79,17 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "generate-sitemap": {
+      "command": "node apps/ui/cloud-8-skate-angular/scripts/generate-sitemap.mjs",
+      "dependsOn": ["build"]
+    },
     "deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
-      "dependsOn": ["build"]
+      "dependsOn": ["generate-sitemap"]
     },
     "manual-deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
-      "dependsOn": ["build"]
+      "dependsOn": ["generate-sitemap"]
     }
   }
 }

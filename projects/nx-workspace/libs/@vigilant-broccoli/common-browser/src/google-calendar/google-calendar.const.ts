@@ -19,6 +19,8 @@ export const GOOGLE_CALENDAR = {
       SWEDEN: 'en.swedish#holiday@group.v.calendar.google.com',
     },
     PHASES_OF_THE_MOON: 'ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com',
+    H_AND_K:
+      '539abad77f9d2e321ea402608c2b33fbf88ea71de29e916dff3a00c5de1686b0@group.calendar.google.com',
   },
   CALENDAR_EMAIL: {
     PERSONAL: 'harryliu1995@gmail.com',
