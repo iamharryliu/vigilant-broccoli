@@ -1,6 +1,7 @@
 import { WebClient } from '@slack/web-api';
 import { SlackUtils } from '../lib/utils/utils';
 import { AppConfig } from './types';
+import { APP_COPY } from './consts/app-copy.const';
 
 function getClient() {
   const token = process.env.SLACK_BOT_TOKEN;
@@ -28,7 +29,6 @@ async function postMessage(
   appConfig: AppConfig,
   openAppUrl?: string,
 ) {
-  const { copy } = appConfig;
   const blocks: {
     type: 'section' | 'actions';
     text?: { type: 'mrkdwn'; text: string };
@@ -42,7 +42,11 @@ async function postMessage(
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: copy.getReminderDmText(appConfig.APP_NAME, channel, appConfig.id),
+        text: APP_COPY.getReminderDmText(
+          appConfig.APP_NAME,
+          channel,
+          appConfig.id,
+        ),
       },
     },
   ];
@@ -55,7 +59,7 @@ async function postMessage(
           type: 'button',
           text: {
             type: 'plain_text',
-            text: copy.COMMON.OPEN_APP,
+            text: APP_COPY.COMMON.OPEN_APP,
             emoji: true,
           },
           url: openAppUrl,
@@ -67,7 +71,11 @@ async function postMessage(
   try {
     await client.chat.postMessage({
       channel,
-      text: copy.getReminderDmText(appConfig.APP_NAME, channel, appConfig.id),
+      text: APP_COPY.getReminderDmText(
+        appConfig.APP_NAME,
+        channel,
+        appConfig.id,
+      ),
       blocks,
     });
   } catch (error) {

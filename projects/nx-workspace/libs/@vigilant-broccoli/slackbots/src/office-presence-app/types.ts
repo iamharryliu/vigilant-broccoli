@@ -1,11 +1,8 @@
-import { AppCopy } from './consts/app-copy.const';
-
 export type AppConfig = {
   id?: string;
   APP_NAME: string;
   OFFICES: string[];
   includeWeekends?: boolean;
-  copy: AppCopy;
 };
 
 export const PRESENCE_TIME = {

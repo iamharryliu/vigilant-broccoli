@@ -16,8 +16,7 @@ import {
 } from './db.utils';
 import { UserPresence, OfficeEvent } from '../types';
 import { WebClient } from '@slack/web-api';
-import { AppCopy } from '../consts/app-copy.const';
-import { validateInput } from './input-validation.utils';
+import { APP_COPY } from '../consts/app-copy.const';
 
 export function handleCheckboxAction(body: BlockAction) {
   const action = body.actions[0];
@@ -64,9 +63,7 @@ export function handleScheduleModalSubmit(
       view.state.values.dog_block.dog
         .selected_options as ViewStateSelectedOption[]
     ).length > 0;
-  const message = validateInput(
-    view.state.values.message_block.message.value || '',
-  );
+  const message = view.state.values.message_block.message.value || '';
 
   const userPresence: UserPresence = {
     office,
@@ -85,13 +82,12 @@ export async function handleAskLunchAction(
   userId: string,
   selectedUserIds: string[],
   client: WebClient,
-  copy: AppCopy,
 ) {
   if (selectedUserIds.length === 0) {
     await client.chat.postEphemeral({
       channel: userId,
       user: userId,
-      text: copy.ACTIONS.NO_USERS_SELECTED,
+      text: APP_COPY.ACTIONS.NO_USERS_SELECTED,
     });
     return;
   }
@@ -101,12 +97,12 @@ export async function handleAskLunchAction(
   });
   await client.chat.postMessage({
     channel: conv.channel?.id as string,
-    text: copy.ACTIONS.askingAboutLunch(userId),
+    text: APP_COPY.ACTIONS.askingAboutLunch(userId),
   });
   await client.chat.postEphemeral({
     channel: userId,
     user: userId,
-    text: copy.ACTIONS.createdGroupChat(selectedUserIds.length),
+    text: APP_COPY.ACTIONS.createdGroupChat(selectedUserIds.length),
   });
 }
 
@@ -115,9 +111,7 @@ export function handleCreateEventSubmit(
   view: ViewOutput,
 ) {
   const userId = body.user.id;
-  const eventName = validateInput(
-    view.state.values.event_name_block.event_name.value || '',
-  );
+  const eventName = view.state.values.event_name_block.event_name.value || '';
   const eventDate =
     view.state.values.event_date_block.event_date.selected_option?.value || '';
   const eventHour =
@@ -130,9 +124,8 @@ export function handleCreateEventSubmit(
     2,
     '0',
   )}`;
-  const eventDescription = validateInput(
-    view.state.values.event_description_block.event_description.value || '',
-  );
+  const eventDescription =
+    view.state.values.event_description_block.event_description.value || '';
 
   const event: OfficeEvent = {
     name: eventName,
@@ -197,9 +190,7 @@ export function handleEditEventSubmit(
   body: SlackViewAction,
   view: ViewOutput,
 ) {
-  const eventName = validateInput(
-    view.state.values.event_name_block.event_name.value || '',
-  );
+  const eventName = view.state.values.event_name_block.event_name.value || '';
   const eventDate =
     view.state.values.event_date_block.event_date.selected_option?.value || '';
   const eventHour =
@@ -212,9 +203,8 @@ export function handleEditEventSubmit(
     2,
     '0',
   )}`;
-  const eventDescription = validateInput(
-    view.state.values.event_description_block.event_description.value || '',
-  );
+  const eventDescription =
+    view.state.values.event_description_block.event_description.value || '';
   const selectedUsers =
     view.state.values.event_attendees_block.event_attendees.selected_users ||
     [];
