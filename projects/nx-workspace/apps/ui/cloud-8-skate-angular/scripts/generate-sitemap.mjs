@@ -10,7 +10,6 @@ const STATIC_ROUTES = [
   { path: '/playlists', changefreq: 'monthly', priority: '0.7' },
   { path: '/skate-terminology', changefreq: 'monthly', priority: '0.7' },
   { path: '/gallery', changefreq: 'weekly', priority: '0.8' },
-  { path: '/contact', changefreq: 'yearly', priority: '0.6' },
 ];
 
 const fetchAlbumSlugs = async () => {

@@ -13,6 +13,11 @@
         "outputPath": "dist/apps/ui/cloud-8-skate-angular",
         "index": "apps/ui/cloud-8-skate-angular/src/index.html",
         "browser": "apps/ui/cloud-8-skate-angular/src/main.ts",
+        "server": "apps/ui/cloud-8-skate-angular/src/main.server.ts",
+        "ssr": {
+          "entry": "apps/ui/cloud-8-skate-angular/src/worker.ts"
+        },
+        "outputMode": "server",
         "polyfills": ["zone.js"],
         "tsConfig": "apps/ui/cloud-8-skate-angular/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
@@ -84,11 +89,11 @@
       "dependsOn": ["build"]
     },
     "deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
+      "command": "npx wrangler deploy --config deployment-configs/wrangler-configs/cloud-8-skate.toml",
       "dependsOn": ["generate-sitemap"]
     },
     "manual-deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
+      "command": "npx wrangler deploy --config deployment-configs/wrangler-configs/cloud-8-skate.toml",
       "dependsOn": ["generate-sitemap"]
     }
   }

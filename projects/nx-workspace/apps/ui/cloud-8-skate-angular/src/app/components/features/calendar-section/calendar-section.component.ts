@@ -1,4 +1,5 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, HostListener, PLATFORM_ID, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
@@ -10,9 +11,11 @@ export class CalendarSectionComponent {
   iframeSrc: SafeResourceUrl = '';
 
   private sanitizer = inject(DomSanitizer);
+  private platformId = inject(PLATFORM_ID);
 
   constructor() {
-    this.updateIframeMode(window.innerWidth);
+    const width = isPlatformBrowser(this.platformId) ? window.innerWidth : 1024;
+    this.updateIframeMode(width);
   }
 
   @HostListener('window:resize', ['$event'])

@@ -1,4 +1,10 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  afterNextRender,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { GeneralLayoutComponent } from './components/layouts/general-layout.component';
 
@@ -10,9 +16,14 @@ import { GeneralLayoutComponent } from './components/layouts/general-layout.comp
 export class AppComponent {
   private navigatedSignal = signal<NavigationEnd | null>(null);
   private router = inject(Router);
+  private isBrowser = false;
 
   constructor() {
-    this.router.events.subscribe((event) => {
+    afterNextRender(() => {
+      this.isBrowser = true;
+    });
+
+    this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.navigatedSignal.set(event);
       }
@@ -29,7 +40,9 @@ export class AppComponent {
   }
 
   private handlePageNavigate() {
-    window.scrollTo(0, 0);
+    if (this.isBrowser) {
+      window.scrollTo(0, 0);
+    }
     this.navigatedSignal.set(null);
   }
 }
