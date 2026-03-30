@@ -9,6 +9,7 @@ import { TerminologyPageComponent } from '../../components/pages/terminology-pag
 import { PlaylistsPageComponent } from '../../components/pages/playlists-page/playlists.page';
 import { AlbumsPageComponent } from '../../components/pages/albums-page/albums-page.component';
 import { AlbumPageComponent } from '../../components/pages/album-page/album-page.component';
+import { NotFoundPageComponent } from '../../components/pages/not-found-page/not-found.page';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -75,7 +76,8 @@ export const ALBUMS_ROUTE: Route = {
 
 const WILD_CARD_ROUTE: Route = {
   path: '**',
-  redirectTo: '',
+  data: { title: 'Page Not Found' },
+  component: NotFoundPageComponent,
 };
 
 export const ROUTES: Routes = [
