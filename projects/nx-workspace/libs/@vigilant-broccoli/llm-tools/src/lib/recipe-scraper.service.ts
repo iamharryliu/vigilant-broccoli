@@ -1,6 +1,5 @@
 import { LLMService } from './llm.service';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
-import axios from 'axios';
 
 export interface RecipeMarkdown {
   title: string;
@@ -47,8 +46,8 @@ const scrapeRecipeFromUrl = async (
   recipeTemplate: string,
   languageCode = 'en-US',
 ): Promise<RecipeMarkdown> => {
-  const response = await axios.get(url);
-  const htmlContent = response.data;
+  const response = await fetch(url);
+  const htmlContent = await response.text();
 
   const cleanContent = extractCleanContent(htmlContent);
   const result = await LLMService.prompt<string>({
