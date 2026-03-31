@@ -1,5 +1,5 @@
 # Code Workspaces
-vsws() {
+openworkspace() {
     if [ -z "$1" ]; then
         code "$HOME/Workspaces"
     else
