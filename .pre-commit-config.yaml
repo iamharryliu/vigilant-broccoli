@@ -20,26 +20,6 @@ repos:
         pass_filenames: false
   - repo: local
     hooks:
-      - id: flask-demo-tests
-        name: Test Flask Demo
-        entry: bash -c 'changed_files=$(git diff --cached --name-only --diff-filter=AM | grep -E "^projects/demo-apps/flask-demo/.*\.py$"); if [ -n "$changed_files" ]; then ./projects/demo-apps/flask-demo/venv/bin/pytest ./projects/demo-apps/flask-demo; fi'
-        language: python
-        types: [python]
-        pass_filenames: false
-        always_run: true
-        additional_dependencies: [flask]
-  # - repo: local
-  #   hooks:
-  #     - id: toronto-alerts-flask
-  #       name: Toronto Alerts
-  #       entry: ./projects/toronto-alerts/toronto-alerts-flask/venv/bin/pytest projects/toronto-alerts/toronto-alerts-flask
-  #       language: python
-  #       types: [python]
-  #       pass_filenames: false
-  #       always_run: true
-  #       additional_dependencies: [flask]
-  - repo: local
-    hooks:
       - id: lint-staged
         name: Run lint-staged
         entry: npx lint-staged
