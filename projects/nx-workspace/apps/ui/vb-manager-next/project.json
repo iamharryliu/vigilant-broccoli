@@ -51,6 +51,13 @@
         }
       }
     },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/ui/vb-manager-next"],
+      "options": {
+        "jestConfig": "apps/ui/vb-manager-next/jest.config.ts"
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint"
     },

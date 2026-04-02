@@ -26,6 +26,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { getCommitType } from '../utils/commit-type.utils';
 
 const ANIMATION_STYLES = `
   @keyframes slideInAndFadeIn {
@@ -82,15 +83,6 @@ const getEisenhowerQuadrant = (title: string): EisenhowerQuadrant => {
     return match[1].toUpperCase() as EisenhowerQuadrant;
   }
   return 'none';
-};
-
-const getCommitType = (title: string): string => {
-  const withoutQuadrant = title.replace(/^Q[1-4][\s:]+/i, '');
-  const match = withoutQuadrant.match(/^([a-z&]+)[(:]/i);
-  if (match) {
-    return match[1].toLowerCase();
-  }
-  return 'other';
 };
 
 const sortByEisenhower = (tasks: Task[]): Task[] => {
