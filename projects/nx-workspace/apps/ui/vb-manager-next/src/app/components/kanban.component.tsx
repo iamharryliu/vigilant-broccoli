@@ -28,6 +28,7 @@ import {
 import { SortableContext, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DragHandleDots2Icon } from '@radix-ui/react-icons';
+import { X, Menu, Pencil, Trash2, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GoogleTasksComponent } from './google-tasks.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -319,7 +320,7 @@ const SortableBoard = ({
               onRemove(board.id);
             }}
           >
-            ✕
+            <X size={14} />
           </IconButton>
         )}
       </Flex>
@@ -399,7 +400,7 @@ const SortableLane = ({
           color="red"
           onClick={() => onRemove(boardId, lane.id)}
         >
-          ✕
+          <X size={14} />
         </IconButton>
       </Flex>
       <div className="flex-1 overflow-y-auto min-h-0">
@@ -897,7 +898,7 @@ export const KanbanComponent = () => {
                   >
                     <Dialog.Trigger>
                       <IconButton size="1" variant="ghost">
-                        ☰
+                        <Menu size={14} />
                       </IconButton>
                     </Dialog.Trigger>
                     <Dialog.Content>
@@ -943,7 +944,7 @@ export const KanbanComponent = () => {
                                 {list.title}
                               </Text>
                             )}
-                            <Flex gap="1">
+                            <Flex gap="2">
                               {editingListId !== list.id && (
                                 <IconButton
                                   size="1"
@@ -953,7 +954,7 @@ export const KanbanComponent = () => {
                                     setEditingListName(list.title);
                                   }}
                                 >
-                                  ✎
+                                  <Pencil size={14} />
                                 </IconButton>
                               )}
                               <IconButton
@@ -969,7 +970,7 @@ export const KanbanComponent = () => {
                                     handleDeleteList(list.id);
                                 }}
                               >
-                                🗑
+                                <Trash2 size={14} />
                               </IconButton>
                             </Flex>
                           </Flex>
@@ -993,7 +994,7 @@ export const KanbanComponent = () => {
                   >
                     <Dialog.Trigger>
                       <IconButton size="1" variant="ghost">
-                        +
+                        <Plus size={14} />
                       </IconButton>
                     </Dialog.Trigger>
                     <Dialog.Content>
@@ -1061,7 +1062,7 @@ export const KanbanComponent = () => {
                 variant="ghost"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
               >
-                {sidebarOpen ? '←' : '→'}
+                {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
               </IconButton>
               <Text size="4" weight="bold">
                 {activeBoard.name}

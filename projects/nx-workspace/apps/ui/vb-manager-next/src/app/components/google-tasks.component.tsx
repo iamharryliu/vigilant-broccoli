@@ -1016,8 +1016,8 @@ export const GoogleTasksComponent = ({
   const isDragDropEnabled = sortMode === SORT_MODE.DEFAULT;
 
   const content = (
-    <Card className="w-full">
-      <Flex direction="column" gap="3" p="4">
+    <Card className="w-full h-full flex flex-col overflow-hidden">
+      <Flex direction="column" gap="3" p="4" className="h-full">
         <TaskHeader
           taskLists={taskLists}
           selectedTaskListId={taskListId}
@@ -1039,21 +1039,23 @@ export const GoogleTasksComponent = ({
           isLoading={isCreatingTask}
         />
 
-        <TaskList
-          loading={loading}
-          error={error}
-          tasks={sortedTasks}
-          editingTaskId={editingTaskId}
-          editingTaskTitle={editingTaskTitle}
-          onToggleComplete={toggleTaskComplete}
-          onStartEdit={handleStartEdit}
-          onEditChange={handleEditChange}
-          onSaveEdit={handleSaveEdit}
-          onCancelEdit={handleCancelEdit}
-          enableDragDrop={isDragDropEnabled || enableDragDrop}
-          taskListId={taskListId}
-          dragOverTask={dragOverTask}
-        />
+        <div className="flex-1 overflow-y-auto min-h-0 px-2 -mx-2">
+          <TaskList
+            loading={loading}
+            error={error}
+            tasks={sortedTasks}
+            editingTaskId={editingTaskId}
+            editingTaskTitle={editingTaskTitle}
+            onToggleComplete={toggleTaskComplete}
+            onStartEdit={handleStartEdit}
+            onEditChange={handleEditChange}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
+            enableDragDrop={isDragDropEnabled || enableDragDrop}
+            taskListId={taskListId}
+            dragOverTask={dragOverTask}
+          />
+        </div>
       </Flex>
     </Card>
   );
