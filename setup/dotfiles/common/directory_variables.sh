@@ -12,6 +12,7 @@ export DOTFILES_DIR="$SETUP_DIR/dotfiles"
 export COMMON_DOTFILES_DIR="$DOTFILES_DIR/common"
 export ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
 export CLAUDE_COMMANDS_DIR="$DOTFILES_DIR/.claude/commands"
+export CLAUDE_SKILLS_DIR="$DOTFILES_DIR/.claude/skills"
 
 # Audit
 alias finddotenv='find . -type f -name ".env" -exec realpath {} \;'
