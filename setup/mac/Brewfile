@@ -75,6 +75,7 @@ brew "teamookla/speedtest/speedtest", link: false
 cask "alt-tab"
 cask "appcleaner"
 cask "balenaetcher"
+cask "bankid"
 cask "bitwarden"
 cask "bruno"
 cask "burp-suite"
