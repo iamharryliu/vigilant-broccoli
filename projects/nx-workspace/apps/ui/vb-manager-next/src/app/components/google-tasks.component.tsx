@@ -50,6 +50,7 @@ interface Task {
   title: string;
   notes?: string;
   due?: string;
+  updated?: string;
   status: 'needsAction' | 'completed';
   isNew?: boolean;
   isRemoving?: boolean;
@@ -67,6 +68,8 @@ const SORT_MODE = {
   DEFAULT: 'default',
   EISENHOWER: 'eisenhower',
   COMMIT_TYPE: 'commitType',
+  DATE_CREATED_NEWEST: 'dateCreatedNewest',
+  DATE_CREATED_OLDEST: 'dateCreatedOldest',
 } as const;
 
 type SortMode = (typeof SORT_MODE)[keyof typeof SORT_MODE];
@@ -106,6 +109,14 @@ const sortByCommitType = (tasks: Task[]): Task[] => {
     const typeA = getCommitType(a.title);
     const typeB = getCommitType(b.title);
     return typeA.localeCompare(typeB);
+  });
+};
+
+const sortByDateCreated = (tasks: Task[], newest = true): Task[] => {
+  return [...tasks].sort((a, b) => {
+    const dateA = a.updated ? new Date(a.updated).getTime() : 0;
+    const dateB = b.updated ? new Date(b.updated).getTime() : 0;
+    return newest ? dateB - dateA : dateA - dateB;
   });
 };
 
@@ -153,6 +164,7 @@ const useTasks = (taskListId: string) => {
         title: taskData.title,
         notes: taskData.notes,
         due: taskData.due,
+        updated: taskData.updated,
         status: taskData.status || 'needsAction',
         isNew: true,
       };
@@ -302,7 +314,7 @@ const useSortModeStorage = (taskListId: string) => {
   const [sortMode, setSortMode] = useState<SortMode>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
-      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE) {
+      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DATE_CREATED_NEWEST || saved === SORT_MODE.DATE_CREATED_OLDEST) {
         return saved;
       }
     }
@@ -328,6 +340,7 @@ interface TaskItemProps {
   isNew?: boolean;
   enableDragDrop?: boolean;
   taskListId?: string;
+  sortMode?: SortMode;
 }
 
 const QUADRANT_COLORS: Record<EisenhowerQuadrant, string> = {
@@ -352,6 +365,7 @@ const TaskItemContent = memo(
     onEditChange,
     onSaveEdit,
     onCancelEdit,
+    sortMode,
   }: {
     task: Task;
     isEditing: boolean;
@@ -360,6 +374,7 @@ const TaskItemContent = memo(
     onEditChange: (value: string) => void;
     onSaveEdit: () => void;
     onCancelEdit: () => void;
+    sortMode?: SortMode;
   }) => (
     <Flex direction="column" gap="1" className="flex-1">
       {isEditing ? (
@@ -397,6 +412,11 @@ const TaskItemContent = memo(
           Due: {new Date(task.due).toLocaleDateString()}
         </Text>
       )}
+      {(sortMode === SORT_MODE.DATE_CREATED_NEWEST || sortMode === SORT_MODE.DATE_CREATED_OLDEST) && task.updated && (
+        <Text size="1" color="gray">
+          Created: {new Date(task.updated).toLocaleDateString()}
+        </Text>
+      )}
     </Flex>
   ),
 );
@@ -416,6 +436,7 @@ const TaskItem = memo(
     isNew = false,
     enableDragDrop = false,
     taskListId,
+    sortMode,
   }: TaskItemProps) => {
     const quadrant = getEisenhowerQuadrant(task.title);
     const commitType = getCommitType(task.title);
@@ -473,6 +494,7 @@ const TaskItem = memo(
             onEditChange={onEditChange}
             onSaveEdit={onSaveEdit}
             onCancelEdit={onCancelEdit}
+            sortMode={sortMode}
           />
           {commitType !== 'other' && (
             <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
@@ -530,6 +552,12 @@ const TaskHeader = memo(
                 </Select.Item>
                 <Select.Item value={SORT_MODE.COMMIT_TYPE}>
                   Commit Type
+                </Select.Item>
+                <Select.Item value={SORT_MODE.DATE_CREATED_NEWEST}>
+                  Date Created (Newest)
+                </Select.Item>
+                <Select.Item value={SORT_MODE.DATE_CREATED_OLDEST}>
+                  Date Created (Oldest)
                 </Select.Item>
               </Select.Content>
             </Select.Root>
@@ -706,6 +734,7 @@ const TaskList = memo(
     enableDragDrop,
     taskListId,
     dragOverTask,
+    sortMode,
   }: {
     loading: boolean;
     error: string | null;
@@ -720,6 +749,7 @@ const TaskList = memo(
     enableDragDrop?: boolean;
     taskListId?: string;
     dragOverTask?: DragOverTask | null;
+    sortMode?: SortMode;
   }) => {
     const { setNodeRef, isOver } = useDroppable({
       id: taskListId || 'default',
@@ -790,6 +820,7 @@ const TaskList = memo(
                 isNew={task.isNew}
                 enableDragDrop={enableDragDrop}
                 taskListId={taskListId}
+                sortMode={sortMode}
               />
             ))}
             {showPlaceholder && (
@@ -810,7 +841,8 @@ const TaskList = memo(
       prevProps.error !== nextProps.error ||
       prevProps.editingTaskId !== nextProps.editingTaskId ||
       prevProps.editingTaskTitle !== nextProps.editingTaskTitle ||
-      prevProps.dragOverTask?.id !== nextProps.dragOverTask?.id;
+      prevProps.dragOverTask?.id !== nextProps.dragOverTask?.id ||
+      prevProps.sortMode !== nextProps.sortMode;
 
     if (scalarChanged) return false;
 
@@ -969,6 +1001,8 @@ export const GoogleTasksComponent = ({
   const sortedTasks = useMemo(() => {
     if (sortMode === SORT_MODE.EISENHOWER) return sortByEisenhower(tasks);
     if (sortMode === SORT_MODE.COMMIT_TYPE) return sortByCommitType(tasks);
+    if (sortMode === SORT_MODE.DATE_CREATED_NEWEST) return sortByDateCreated(tasks, true);
+    if (sortMode === SORT_MODE.DATE_CREATED_OLDEST) return sortByDateCreated(tasks, false);
     return tasks;
   }, [sortMode, tasks]);
 
@@ -1054,6 +1088,7 @@ export const GoogleTasksComponent = ({
             enableDragDrop={isDragDropEnabled || enableDragDrop}
             taskListId={taskListId}
             dragOverTask={dragOverTask}
+            sortMode={sortMode}
           />
         </div>
       </Flex>
