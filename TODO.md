@@ -9,6 +9,7 @@ Can you make a docs/features/ to track specs and document specs for the project.
 - fix: dldjmusic
   - https://github.com/spotDL/spotify-downloader/issues/2585
   - https://github.com/spotDL/spotify-downloader/issues/2617
+  - https://github.com/spotDL/spotify-downloader/pull/2626
 
 ## ci
 
