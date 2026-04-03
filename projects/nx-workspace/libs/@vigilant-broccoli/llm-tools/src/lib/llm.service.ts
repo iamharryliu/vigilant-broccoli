@@ -37,10 +37,12 @@ function buildAnthropicContent(request: LLMPromptRequest<unknown>) {
 
 function parseAnthropicResponse<T>(
   msg: Anthropic.Message,
-  responseFormat?: { example?: string; zod?: unknown },
+  responseFormat?: { example?: string; zod?: { parse: (v: unknown) => T } },
 ): T | string {
   const textContent = msg.content[0] as Anthropic.TextBlock;
-  return responseFormat ? JSON.parse(textContent.text) : textContent.text;
+  if (!responseFormat) return textContent.text;
+  const parsed = JSON.parse(textContent.text);
+  return responseFormat.zod ? responseFormat.zod.parse(parsed) : parsed;
 }
 
 async function promptAnthropic<T>(
@@ -92,6 +94,9 @@ async function promptOpenAI<T>(
     throw new Error('LLM returned no content.');
   }
 
+  const parsed = responseFormat ? JSON.parse(message.content) : message.content;
+  const data = responseFormat?.zod ? responseFormat.zod.parse(parsed) : parsed;
+
   return {
     model: modelConfig?.model || LLM_MODEL.GPT_4O,
     tokens: {
@@ -99,7 +104,7 @@ async function promptOpenAI<T>(
       completion: usage.completion_tokens,
       total: usage.total_tokens,
     },
-    data: responseFormat ? JSON.parse(message.content) : message.content,
+    data,
   };
 }
 

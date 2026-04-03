@@ -56,6 +56,8 @@ export const API_ENDPOINTS = {
 
   // LLM
   LLM_TEST: '/api/llm-test',
+  SPEECH_TO_TEXT: '/api/speech-to-text',
+  VOICE_LIST: '/api/voice-list',
 
   // SSH
   SSH_KEY: '/api/ssh-key',
