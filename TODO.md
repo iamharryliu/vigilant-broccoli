@@ -55,14 +55,6 @@ Can you make a docs/features/ to track specs and document specs for the project.
     - name
     - description
     - position
-- Remember It
-  - An item finder, search to image memory tool.
-  - Image library to remember where things are
-    - Keyword/tag searching
-    - Create Entry
-      - name
-      - description
-      - image[]
 
 ## Backlog
 

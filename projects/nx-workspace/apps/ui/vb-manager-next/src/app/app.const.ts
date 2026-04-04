@@ -40,6 +40,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Feature Sandbox',
     path: '/feature-sandbox',
   },
+  WHERE_IS: {
+    title: 'Where Is',
+    path: '/where-is',
+  },
 };
 
 const APP_ROUTE_SUBGROUP = 'vb-manager-next';
