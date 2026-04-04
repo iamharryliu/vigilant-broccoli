@@ -33,9 +33,11 @@ type KeyboardHandlers = {
   setCalendarDialogOpen: (open: boolean) => void;
   setNotepadDialogOpen: (open: boolean) => void;
   setWeatherDialogOpen: (open: boolean) => void;
+  setPomodoroDialogOpen: (open: boolean) => void;
   toggleTheme: () => void;
 };
 
+// eslint-disable-next-line complexity
 const processKeyboardInput = (
   key: string,
   isShift: boolean,
@@ -64,6 +66,12 @@ const processKeyboardInput = (
     case 'w':
       handlers.setWeatherDialogOpen(true);
       return true;
+    case 'p':
+      if (isShift) {
+        handlers.setPomodoroDialogOpen(true);
+        return true;
+      }
+      return false;
     case 'd':
       handlers.toggleTheme();
       return true;
@@ -95,6 +103,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
   const [notepadDialogOpen, setNotepadDialogOpen] = useState(false);
   const [weatherDialogOpen, setWeatherDialogOpen] = useState(false);
+  const [pomodoroDialogOpen, setPomodoroDialogOpen] = useState(false);
 
   const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
   const dropdownRoutes = allRoutes.filter(
@@ -115,6 +124,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         setCalendarDialogOpen,
         setNotepadDialogOpen,
         setWeatherDialogOpen,
+        setPomodoroDialogOpen,
         toggleTheme,
       });
     };
@@ -190,6 +200,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         setNotepadDialogOpen={setNotepadDialogOpen}
         weatherDialogOpen={weatherDialogOpen}
         setWeatherDialogOpen={setWeatherDialogOpen}
+        pomodoroDialogOpen={pomodoroDialogOpen}
+        setPomodoroDialogOpen={setPomodoroDialogOpen}
       />
     </div>
   );

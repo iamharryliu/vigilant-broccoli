@@ -10,6 +10,7 @@ import {
   Sun,
   Calendar,
   StickyNote,
+  Timer,
 } from 'lucide-react';
 import { ChatbotDialog } from './chatbot-dialog.component';
 import { EmailModalComponent } from './email-modal.component';
@@ -17,6 +18,8 @@ import { SearchDialogComponent } from './search-dialog.component';
 import { CalendarDialog } from './calendar-dialog.component';
 import { NotepadDialog } from './notepad-dialog.component';
 import { WeatherDialog } from './weather-dialog.component';
+import { PomodoroDialog } from './pomodoro-dialog.component';
+import { usePomodoro } from '../hooks/usePomodoro';
 import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
@@ -44,6 +47,8 @@ interface FloatingIslandProps {
   setNotepadDialogOpen?: (open: boolean) => void;
   weatherDialogOpen?: boolean;
   setWeatherDialogOpen?: (open: boolean) => void;
+  pomodoroDialogOpen?: boolean;
+  setPomodoroDialogOpen?: (open: boolean) => void;
 }
 
 const isWeekPlanningVisible = (): boolean => {
@@ -111,6 +116,8 @@ export const FloatingIslandComponent = ({
   setNotepadDialogOpen: externalSetNotepadOpen,
   weatherDialogOpen: externalWeatherOpen,
   setWeatherDialogOpen: externalSetWeatherOpen,
+  pomodoroDialogOpen: externalPomodoroOpen,
+  setPomodoroDialogOpen: externalSetPomodoroOpen,
 }: FloatingIslandProps = {}) => {
   const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
@@ -127,6 +134,9 @@ export const FloatingIslandComponent = ({
     useState(false);
   const [internalWeatherDialogOpen, setInternalWeatherDialogOpen] =
     useState(false);
+  const [internalPomodoroDialogOpen, setInternalPomodoroDialogOpen] =
+    useState(false);
+  const pomodoro = usePomodoro();
   const { weatherData, loading: weatherLoading } = useWeather();
   const dayData = useDayAnalysisSuggestions();
 
@@ -225,6 +235,12 @@ export const FloatingIslandComponent = ({
   );
   const setWeatherDialogOpen =
     externalSetWeatherOpen ?? setInternalWeatherDialogOpen;
+  const pomodoroDialogOpen = getDialogState(
+    externalPomodoroOpen,
+    internalPomodoroDialogOpen,
+  );
+  const setPomodoroDialogOpen =
+    externalSetPomodoroOpen ?? setInternalPomodoroDialogOpen;
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.style.transform = 'scale(1.1)';
@@ -415,6 +431,19 @@ export const FloatingIslandComponent = ({
             <StickyNote size={20} />
           </IconButton>
 
+          {/* Pomodoro Button */}
+          <IconButton
+            onClick={() => setPomodoroDialogOpen(true)}
+            variant="soft"
+            size="2"
+            title="Pomodoro (Shift+P)"
+            style={BUTTON_STYLE}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Timer size={20} />
+          </IconButton>
+
           {/* Search Button */}
           <IconButton
             onClick={() => setSearchDialogOpen(true)}
@@ -479,6 +508,11 @@ export const FloatingIslandComponent = ({
       <WeatherDialog
         open={weatherDialogOpen}
         onOpenChange={setWeatherDialogOpen}
+      />
+      <PomodoroDialog
+        open={pomodoroDialogOpen}
+        onOpenChange={setPomodoroDialogOpen}
+        pomodoro={pomodoro}
       />
     </>
   );

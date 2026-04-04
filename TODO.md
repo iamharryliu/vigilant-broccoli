@@ -65,7 +65,6 @@ Can you make a docs/features/ to track specs and document specs for the project.
 - SendGrid/Resend implementation.
 - Supabase implementation.
 - Guitar tuning utility.
-- Pomodoro utility.
 - Unit testing aliases??
 - Vibecheck revibe.
 - Toronto Alerts cleanup.
