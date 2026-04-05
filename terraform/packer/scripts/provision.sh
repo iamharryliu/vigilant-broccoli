@@ -88,10 +88,6 @@ cp /tmp/wg-init.sh /usr/local/bin/wg-init.sh
 chmod +x /usr/local/bin/wg-init.sh
 cp /tmp/wg-init.service /etc/systemd/system/wg-init.service
 
-echo "Installing Vault post-init script..."
-cp /tmp/vault-post-init.sh /usr/local/bin/vault-post-init.sh
-chmod +x /usr/local/bin/vault-post-init.sh
-
 systemctl daemon-reload
 systemctl enable vault
 systemctl enable wg-init.service
