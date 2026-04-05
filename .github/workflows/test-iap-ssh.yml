@@ -61,6 +61,7 @@ jobs:
           caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
           method: jwt
           role: github-actions-role
+          jwtGithubAudience: https://github.com/harryliu1995
           secrets: |
             kv/data/test test | TEST_SECRET ;
 
