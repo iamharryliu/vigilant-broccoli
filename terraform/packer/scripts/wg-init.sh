@@ -21,6 +21,11 @@ if [ -z "${SERVER_PRIVATE_KEY}" ]; then
   exit 1
 fi
 
+if [ -z "${PEER_LAPTOP_PUBLIC_KEY}" ]; then
+  echo "ERROR: VB_VM_WG_ELVA11_MBP_PUBLIC_KEY is empty"
+  exit 1
+fi
+
 echo "Writing ${WG_CONF}..."
 
 umask 077
@@ -32,13 +37,11 @@ PrivateKey = ${SERVER_PRIVATE_KEY}
 
 EOF
 
-if [ -n "${PEER_LAPTOP_PUBLIC_KEY}" ]; then
-  cat >> "${WG_CONF}" <<EOF
+cat >> "${WG_CONF}" <<EOF
 [Peer]
 PublicKey = ${PEER_LAPTOP_PUBLIC_KEY}
 AllowedIPs = 10.0.1.2/32
 EOF
-fi
 
 chmod 600 "${WG_CONF}"
 

@@ -119,6 +119,11 @@ build {
     destination = "/tmp/99-wireguard.conf"
   }
 
+  provisioner "file" {
+    source      = "${path.root}/scripts/vault-post-init.sh"
+    destination = "/tmp/vault-post-init.sh"
+  }
+
   provisioner "shell" {
     inline = [
       "set -e",

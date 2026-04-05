@@ -18,16 +18,12 @@ apt-get install -y \
   curl \
   wget \
   gnupg \
-  lsb-release \
   ca-certificates \
-  apt-transport-https \
   jq \
   unzip \
   vim \
   openssl \
-  wireguard \
-  wireguard-tools \
-  iptables
+  wireguard
 
 echo "Installing Docker..."
 curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
@@ -39,7 +35,6 @@ echo "Installing Vault ${VAULT_VERSION}..."
 curl -fsSL "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" -o /tmp/vault.zip
 unzip -o /tmp/vault.zip -d /usr/local/bin/
 chmod +x /usr/local/bin/vault
-vault --version
 
 echo "Creating vault user..."
 if ! id -u ${VAULT_USER} >/dev/null 2>&1; then
@@ -92,6 +87,10 @@ echo "Installing WireGuard first-boot init..."
 cp /tmp/wg-init.sh /usr/local/bin/wg-init.sh
 chmod +x /usr/local/bin/wg-init.sh
 cp /tmp/wg-init.service /etc/systemd/system/wg-init.service
+
+echo "Installing Vault post-init script..."
+cp /tmp/vault-post-init.sh /usr/local/bin/vault-post-init.sh
+chmod +x /usr/local/bin/vault-post-init.sh
 
 systemctl daemon-reload
 systemctl enable vault

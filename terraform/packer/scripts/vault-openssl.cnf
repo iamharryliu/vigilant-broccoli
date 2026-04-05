@@ -12,7 +12,7 @@ CN = vb-vault
 DNS.1 = vb-vault
 DNS.2 = localhost
 IP.1 = 127.0.0.1
-IP.2 = 10.0.0.1
+IP.2 = 10.0.1.1
 
 [ v3_ext ]
 subjectAltName = @alt_names
