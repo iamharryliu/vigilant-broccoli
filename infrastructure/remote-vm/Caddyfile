@@ -1,0 +1,8 @@
+{
+	local_certs
+}
+
+resilio {
+	tls internal
+	reverse_proxy resilio:8888
+}
