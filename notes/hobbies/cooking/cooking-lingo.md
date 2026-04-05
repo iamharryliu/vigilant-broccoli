@@ -7,6 +7,7 @@
 | Braise   | To cook food slowly in a small amount of liquid after browning it first.                   |
 | Grill    | Cook food over direct heat, usually from below, often on a rack or grate for char marks.   |
 | Marinate | To soak food in a seasoned liquid (marinade) to add flavor and tenderize.                  |
+| Poach    | Cook food gently in liquid kept just below boiling, producing a tender, delicate result.   |
 | Roast    | Cook food in dry heat, usually in an oven, with hot air circulating around it.             |
 | Sear     | Cook the surface of food quickly over high heat to develop a browned crust.                |
 
