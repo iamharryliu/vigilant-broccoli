@@ -140,6 +140,11 @@ resource "google_project_service" "iap" {
   disable_on_destroy = false
 }
 
+resource "google_project_service" "secretmanager" {
+  service            = "secretmanager.googleapis.com"
+  disable_on_destroy = false
+}
+
 resource "google_iam_workload_identity_pool" "github_actions" {
   workload_identity_pool_id = "github-actions"
   display_name              = "GitHub Actions Pool"
@@ -199,6 +204,12 @@ resource "google_service_account_iam_member" "github_actions_compute_service_acc
 resource "google_project_iam_member" "github_actions_oslogin" {
   project = data.google_project.project.project_id
   role    = "roles/compute.osLogin"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_project_iam_member" "github_actions_secret_accessor" {
+  project = data.google_project.project.project_id
+  role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
