@@ -53,8 +53,9 @@ resource "google_compute_instance" "vb_free_vm" {
   boot_disk {
     auto_delete = false # Keep disk when instance is deleted
     initialize_params {
-      size = 10
-      type = "pd-standard"
+      image = "projects/vigilant-broccoli/global/images/family/vb-vm"
+      size  = 10
+      type  = "pd-standard"
     }
   }
 
@@ -74,13 +75,7 @@ resource "google_compute_instance" "vb_free_vm" {
   # Service account
   service_account {
     scopes = [
-      "https://www.googleapis.com/auth/devstorage.read_only",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring.write",
-      "https://www.googleapis.com/auth/pubsub",
-      "https://www.googleapis.com/auth/service.management.readonly",
-      "https://www.googleapis.com/auth/servicecontrol",
-      "https://www.googleapis.com/auth/trace.append",
+      "https://www.googleapis.com/auth/cloud-platform",
     ]
   }
 
@@ -124,7 +119,7 @@ resource "google_compute_firewall" "allow_iap_ssh" {
   }
 
   source_ranges = ["35.235.240.0/20"]
-  target_tags   = ["wireguard"]
+  target_tags   = ["wireguard", "packer-build"]
 }
 
 data "google_project" "project" {
@@ -211,6 +206,42 @@ resource "google_project_iam_member" "github_actions_secret_accessor" {
   project = data.google_project.project.project_id
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_project_iam_member" "vm_default_sa_secret_accessor" {
+  project = data.google_project.project.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
+resource "google_secret_manager_secret" "wg_server_private_key" {
+  secret_id = "VB_VM_WG_SERVER_PRIVATE_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret" "wg_server_public_key" {
+  secret_id = "VB_VM_WG_SERVER_PUBLIC_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret" "wg_elva11_mbp_public_key" {
+  secret_id = "VB_VM_WG_ELVA11_MBP_PUBLIC_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
 }
 
 resource "google_storage_bucket" "backup" {

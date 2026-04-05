@@ -1,0 +1,17 @@
+[Unit]
+Description=Vault Server
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User=vault
+Group=vault
+ExecStart=/usr/local/bin/vault server -config=/etc/vault/config.hcl
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+LimitNOFILE=65536
+CapabilityBoundingSet=CAP_IPC_LOCK
+AmbientCapabilities=CAP_IPC_LOCK
+
+[Install]
+WantedBy=multi-user.target

@@ -111,7 +111,6 @@ worktmux() {
 
 # vigilant-broccoli vm
 alias vbvmwg=" sudo wg-quick up vb"
-alias sshvbvm="gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap"
 
 # WireGuard
 alias wg0-up='sudo wg-quick up wg0'

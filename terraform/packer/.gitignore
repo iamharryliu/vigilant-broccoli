@@ -1,0 +1,4 @@
+packer-manifest.json
+packer_cache/
+crash.log
+*.pkrvars.hcl.local

@@ -5,7 +5,10 @@
     "format": "prettier --write .",
     "format:commit": "prettier --write",
     "gcp:login": "gcloud auth login && gcloud config set project vigilant-broccoli && gcloud auth application-default login",
-    "vm:ssh": "gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap"
+    "vm:ssh": "gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap",
+    "vm:status": "gcloud compute instances describe vb-free-vm --zone=us-east1-b --format='value(status)'",
+    "vm:stop": "gcloud compute instances stop vb-free-vm --zone=us-east1-b",
+    "vm:start": "gcloud compute instances start vb-free-vm --zone=us-east1-b"
   },
   "repository": {
     "type": "git",
