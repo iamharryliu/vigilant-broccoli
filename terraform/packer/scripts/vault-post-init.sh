@@ -56,6 +56,9 @@ vault write auth/jwt/role/${ROLE_NAME} - <<EOF
 }
 EOF
 
+echo "Creating kv/test placeholder..."
+vault kv put ${KV_PATH}/test test=test
+
 echo ""
 echo "Done. Populate secrets with:"
 echo "  vault kv put ${KV_PATH}/secrets KEY=VALUE ..."
