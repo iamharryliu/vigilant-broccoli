@@ -4,7 +4,7 @@
     "install-all": "npm-recursive-install",
     "format": "prettier --write .",
     "format:commit": "prettier --write",
-    "gcloud:login": "gcloud auth login && gcloud config set project vigilant-broccoli && gcloud auth application-default login"
+    "gcp:login": "gcloud auth login && gcloud config set project vigilant-broccoli && gcloud auth application-default login"
   },
   "repository": {
     "type": "git",

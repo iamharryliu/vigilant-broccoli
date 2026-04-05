@@ -40,7 +40,7 @@ alias pushghreadme="cd $HOME/iamharryliu && gpull && git add README.md && gc doc
 alias pullvb="cd $REPO_DIR && gpull"
 alias pullall='pulljournal && pullvb'
 alias vbrepo="open https://github.com/iamharryliu/vigilant-broccoli"
-alias vbactions='chrome "https://github.com/iamharryliu/vigilant-broccoli/actions"'
+alias vbactions='open "https://github.com/iamharryliu/vigilant-broccoli/actions"'
 alias vbnpm='open "https://www.npmjs.com/settings/vigilant-broccoli/packages"'
 # vb push
 alias pushdocs="cdvb && git add $DOCS_DIR && gc docs notes 'Update Markdown docs.' && gpush"

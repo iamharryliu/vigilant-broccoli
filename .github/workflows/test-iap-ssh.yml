@@ -1,4 +1,4 @@
-name: Test IAP Tunnel Vault Access
+name: test-iap-ssh-tunnel-to-vault
 
 on:
   workflow_dispatch:
