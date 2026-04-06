@@ -43,11 +43,9 @@ cd terraform
 terraform apply
 ```
 
-Note VM external IP from output.
-
 ## 5. Laptop WireGuard config
 
-Write `/etc/wireguard/vb.conf`:
+Write `/opt/homebrew/etc/wireguard/vb.conf`:
 
 ```ini
 [Interface]
@@ -83,18 +81,22 @@ vault operator unseal <key3>
 
 ```bash
 export VAULT_TOKEN=<root-token-from-step-6>
-./terraform/packer/scripts/run-vault-post-init.sh
+npm run vm:post-init
 ```
 
-## 8. Regenerate Vault TLS cert
-
-Run after VM external IP changes (e.g. after VM restart/rebuild):
+## 8. Regenerate Vault TLS cert + update WireGuard endpoint
 
 ```bash
-./terraform/packer/scripts/run-vault-regen-cert.sh
+npm run vm:regen-cert
 ```
 
-This regenerates the Vault TLS cert with the current external IP in SANs, restarts Vault, and copies the cert locally to `projects/nx-workspace/scripts/vault-ca.crt`. Vault will need to be unsealed after.
+Regenerates Vault TLS cert with current external IP, restarts Vault, copies cert to `projects/nx-workspace/scripts/vault-ca.crt`, and updates WireGuard endpoint in `/opt/homebrew/etc/wireguard/vb.conf`. Vault will need to be unsealed after.
+
+To update WireGuard endpoint only:
+
+```bash
+npm run vm:update-wg
+```
 
 ## 9. Populate secrets
 
@@ -112,7 +114,8 @@ vault kv put kv/secrets \
 ## After VM restart
 
 ```bash
-sudo wg-quick up vb
+npm run vm:update-wg
+sudo wg-quick down vb && sudo wg-quick up vb
 ssh harryliu@10.0.1.1
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_SKIP_VERIFY=true
@@ -121,7 +124,7 @@ vault operator unseal <key2>
 vault operator unseal <key3>
 ```
 
-If external IP changed, also run step 8.
+If external IP changed, run `npm run vm:regen-cert` instead and unseal after.
 
 ## Rebuilding image
 

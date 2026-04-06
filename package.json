@@ -8,7 +8,10 @@
     "vm:ssh": "gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap",
     "vm:status": "gcloud compute instances describe vb-free-vm --zone=us-east1-b --format='value(status)'",
     "vm:stop": "gcloud compute instances stop vb-free-vm --zone=us-east1-b",
-    "vm:start": "gcloud compute instances start vb-free-vm --zone=us-east1-b"
+    "vm:start": "gcloud compute instances start vb-free-vm --zone=us-east1-b",
+    "vm:post-init": "./terraform/packer/scripts/run-vault-post-init.sh",
+    "vm:regen-cert": "./terraform/packer/scripts/run-vault-regen-cert.sh && npm run vm:update-wg",
+    "vm:update-wg": "./terraform/packer/scripts/run-update-wg-endpoint.sh"
   },
   "repository": {
     "type": "git",
