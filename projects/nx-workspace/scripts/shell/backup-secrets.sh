@@ -12,7 +12,7 @@ bw sync > /dev/null
 
 # Fetch vault secrets directly to variable (no local file)
 cd "$NX_DIR"
-NOTES=$(npx tsx scripts/backup-vault-secrets.ts)
+NOTES=$(NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/backup-vault-secrets.ts)
 
 # Get or create folder
 FOLDER_ID=$(bw list folders | jq -r ".[] | select(.name == \"$FOLDER_NAME\") | .id")
@@ -36,6 +36,65 @@ else
   echo "$ITEM_JSON" | bw encode | bw create item > /dev/null
   echo "✓ Created Bitwarden secure note: $ITEM_NAME"
 fi
+
+MAX_NOTE_LENGTH=5000
+
+upsert_bw_note() {
+  local item_name="$1"
+  local notes="$2"x
+  local folder_id="$3"
+
+  local existing_id
+  existing_id=$(bw list items --search "$item_name" --folderid "$folder_id" 2>/dev/null | jq -r ".[] | select(.name == \"$item_name\") | .id")
+
+  if [ -n "$existing_id" ]; then
+    bw get item "$existing_id" | jq --arg notes "$notes" '.notes = $notes' | bw encode | bw edit item "$existing_id" > /dev/null
+    echo "✓ Updated Bitwarden secure note: $item_name"
+  else
+    jq -n \
+      --arg name "$item_name" \
+      --arg notes "$notes" \
+      --arg folderId "$folder_id" \
+      '{type: 2, secureNote: {type: 0}, name: $name, notes: $notes, folderId: $folderId}' | bw encode | bw create item > /dev/null
+    echo "✓ Created Bitwarden secure note: $item_name"
+  fi
+}
+
+backup_csv_to_bitwarden() {
+  local file="$1"
+  local base_name="$2"
+
+  if [ ! -f "$file" ]; then
+    return
+  fi
+
+  local csv_contents
+  csv_contents=$(cat "$file")
+
+  local csv_folder_id
+  csv_folder_id=$(bw list folders | jq -r ".[] | select(.name == \"$base_name\") | .id")
+  if [ -z "$csv_folder_id" ]; then
+    csv_folder_id=$(jq -n --arg name "$base_name" '{name: $name}' | bw encode | bw create folder | jq -r '.id')
+    echo "✓ Created Bitwarden folder: $base_name"
+  fi
+
+  local total_length=${#csv_contents}
+  if [ "$total_length" -le "$MAX_NOTE_LENGTH" ]; then
+    upsert_bw_note "$base_name-$TIMESTAMP" "$csv_contents" "$csv_folder_id"
+  else
+    local part=1
+    local offset=0
+    while [ "$offset" -lt "$total_length" ]; do
+      local chunk="${csv_contents:$offset:$MAX_NOTE_LENGTH}"
+      upsert_bw_note "$base_name-$TIMESTAMP-part$part" "$chunk" "$csv_folder_id"
+      offset=$((offset + MAX_NOTE_LENGTH))
+      part=$((part + 1))
+    done
+  fi
+}
+
+backup_csv_to_bitwarden "$HOME/Desktop/Passwords.csv" "apple-passwords"
+backup_csv_to_bitwarden "$HOME/Desktop/Chrome Passwords.csv" "chrome-passwords"
 
 # Export Bitwarden vault (encrypted, now includes vault secrets)
 bw export --password "$BW_PASSWORD" --format encrypted_json --output ~/resilio-sync/backup/bitwarden/bitwarden-backup-$TIMESTAMP.json

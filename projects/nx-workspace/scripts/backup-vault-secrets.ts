@@ -1,10 +1,17 @@
 import { readFileSync } from 'fs';
+import https from 'https';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import 'dotenv/config';
 
 const VAULT_ADDR = 'https://10.0.1.1:8200';
-const SECRET_PATH = '/kv/data/secrets';
+const SECRET_PATH = 'kv/data/secrets';
+const CERTS = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  'vault-ca.crt',
+);
 
-backupVaultSecrets(VAULT_ADDR, SECRET_PATH);
+backupVaultSecrets(VAULT_ADDR, SECRET_PATH, CERTS);
 
 async function backupVaultSecrets(
   vaultAddr: string,
@@ -22,7 +29,9 @@ async function backupVaultSecrets(
   const requestOptions: Record<string, unknown> = {};
 
   if (certs) {
-    requestOptions.ca = readFileSync(certs, 'utf-8');
+    requestOptions.httpsAgent = new https.Agent({
+      ca: readFileSync(certs),
+    });
   }
 
   const vault = nodeVault.default({
