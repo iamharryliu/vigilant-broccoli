@@ -1,7 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { Button, Badge } from '@radix-ui/themes';
-import { Play, Pause, RotateCcw, SkipForward, BellOff } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  SkipForward,
+  BellOff,
+  Settings,
+} from 'lucide-react';
 import { usePomodoro, PomodoroPhase, AlertMode } from '../hooks/usePomodoro';
 
 const ALERT_MODE_LABELS: Record<AlertMode, string> = {
@@ -18,22 +26,11 @@ const formatTime = (totalSeconds: number): string => {
 const getPhaseLabel = (phase: PomodoroPhase): string =>
   phase === 'task' ? 'Focus Time' : 'Break Time';
 
-const TASK_DURATION_SECONDS = 25 * 60;
-const BREAK_DURATION_SECONDS = 10 * 60;
-
-const getProgressPercent = (
-  secondsLeft: number,
-  phase: PomodoroPhase,
-): number => {
-  const total =
-    phase === 'task' ? TASK_DURATION_SECONDS : BREAK_DURATION_SECONDS;
-  return ((total - secondsLeft) / total) * 100;
-};
-
 interface PomodoroComponentProps {
   pomodoro: ReturnType<typeof usePomodoro>;
 }
 
+// eslint-disable-next-line complexity
 export const PomodoroComponent = ({ pomodoro }: PomodoroComponentProps) => {
   const {
     phase,
@@ -42,6 +39,10 @@ export const PomodoroComponent = ({ pomodoro }: PomodoroComponentProps) => {
     completedCount,
     alertMode,
     isAlerting,
+    focusMinutes,
+    breakMinutes,
+    setFocusMinutes,
+    setBreakMinutes,
     setAlertMode,
     handleReset,
     handleSkip,
@@ -49,7 +50,10 @@ export const PomodoroComponent = ({ pomodoro }: PomodoroComponentProps) => {
     clearBeepLoop,
   } = pomodoro;
 
-  const progress = getProgressPercent(secondsLeft, phase);
+  const [showSettings, setShowSettings] = useState(false);
+
+  const totalSeconds = phase === 'task' ? focusMinutes * 60 : breakMinutes * 60;
+  const progress = ((totalSeconds - secondsLeft) / totalSeconds) * 100;
   const circumference = 2 * Math.PI * 90;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
@@ -175,7 +179,7 @@ export const PomodoroComponent = ({ pomodoro }: PomodoroComponentProps) => {
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
         {(Object.keys(ALERT_MODE_LABELS) as AlertMode[]).map(mode => (
           <Badge
             key={mode}
@@ -188,7 +192,82 @@ export const PomodoroComponent = ({ pomodoro }: PomodoroComponentProps) => {
             {ALERT_MODE_LABELS[mode]}
           </Badge>
         ))}
+        <Badge
+          color={showSettings ? 'blue' : 'gray'}
+          variant={showSettings ? 'solid' : 'surface'}
+          size="1"
+          onClick={() => setShowSettings(prev => !prev)}
+          style={{ cursor: 'pointer' }}
+        >
+          <Settings size={12} />
+        </Badge>
       </div>
+
+      {showSettings && (
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.85rem',
+            }}
+          >
+            Focus
+            <input
+              type="number"
+              min={1}
+              value={focusMinutes}
+              onChange={e => setFocusMinutes(parseInt(e.target.value, 10) || 1)}
+              disabled={isRunning}
+              style={{
+                width: '3.5rem',
+                padding: '0.25rem 0.4rem',
+                borderRadius: '6px',
+                border: '1px solid var(--gray-6)',
+                background: 'var(--gray-2)',
+                textAlign: 'center',
+                fontSize: '0.85rem',
+              }}
+            />
+            min
+          </label>
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.85rem',
+            }}
+          >
+            Break
+            <input
+              type="number"
+              min={1}
+              value={breakMinutes}
+              onChange={e => setBreakMinutes(parseInt(e.target.value, 10) || 1)}
+              disabled={isRunning}
+              style={{
+                width: '3.5rem',
+                padding: '0.25rem 0.4rem',
+                borderRadius: '6px',
+                border: '1px solid var(--gray-6)',
+                background: 'var(--gray-2)',
+                textAlign: 'center',
+                fontSize: '0.85rem',
+              }}
+            />
+            min
+          </label>
+        </div>
+      )}
     </div>
   );
 };

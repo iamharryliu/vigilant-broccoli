@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const TASK_DURATION_SECONDS = 25 * 60;
-const BREAK_DURATION_SECONDS = 10 * 60;
+const DEFAULT_FOCUS_MINUTES = 25;
+const DEFAULT_BREAK_MINUTES = 10;
 const NOTIFICATION_FREQUENCY = 880;
 const NOTIFICATION_DURATION = 0.15;
 const NOTIFICATION_BEEP_COUNT = 3;
@@ -43,12 +43,18 @@ const playNotificationSound = (): void => {
   }
 };
 
-const getDuration = (phase: PomodoroPhase): number =>
-  phase === 'task' ? TASK_DURATION_SECONDS : BREAK_DURATION_SECONDS;
-
 export const usePomodoro = () => {
+  const [focusMinutes, setFocusMinutesState] = useState(DEFAULT_FOCUS_MINUTES);
+  const [breakMinutes, setBreakMinutesState] = useState(DEFAULT_BREAK_MINUTES);
+
+  const getDuration = useCallback(
+    (p: PomodoroPhase): number =>
+      p === 'task' ? focusMinutes * 60 : breakMinutes * 60,
+    [focusMinutes, breakMinutes],
+  );
+
   const [phase, setPhase] = useState<PomodoroPhase>('task');
-  const [secondsLeft, setSecondsLeft] = useState(TASK_DURATION_SECONDS);
+  const [secondsLeft, setSecondsLeft] = useState(focusMinutes * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
   const [alertMode, setAlertMode] = useState<AlertMode>('timed');
@@ -65,6 +71,12 @@ export const usePomodoro = () => {
   phaseRef.current = phase;
   alertModeRef.current = alertMode;
   isAlertingRef.current = isAlerting;
+
+  useEffect(() => {
+    if (!isRunning) {
+      setSecondsLeft(getDuration(phase));
+    }
+  }, [focusMinutes, breakMinutes, phase, isRunning, getDuration]);
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
@@ -121,7 +133,7 @@ export const usePomodoro = () => {
       setSecondsLeft(duration);
       endTimeRef.current = Date.now() + duration * 1000;
     },
-    [startBeepLoop],
+    [startBeepLoop, getDuration],
   );
 
   useEffect(() => {
@@ -159,7 +171,7 @@ export const usePomodoro = () => {
       setSecondsLeft(getDuration(prev));
       return prev;
     });
-  }, [clearTimer, clearBeepLoop]);
+  }, [clearTimer, clearBeepLoop, getDuration]);
 
   const handleSkip = useCallback(() => {
     clearBeepLoop();
@@ -175,7 +187,7 @@ export const usePomodoro = () => {
       }
       return nextPhase;
     });
-  }, [clearBeepLoop, isRunning]);
+  }, [clearBeepLoop, isRunning, getDuration]);
 
   const handleToggleRunning = useCallback(() => {
     setIsRunning(prev => {
@@ -184,6 +196,14 @@ export const usePomodoro = () => {
     });
   }, [clearBeepLoop]);
 
+  const setFocusMinutes = useCallback((minutes: number) => {
+    setFocusMinutesState(Math.max(1, minutes));
+  }, []);
+
+  const setBreakMinutes = useCallback((minutes: number) => {
+    setBreakMinutesState(Math.max(1, minutes));
+  }, []);
+
   return {
     phase,
     secondsLeft,
@@ -191,6 +211,10 @@ export const usePomodoro = () => {
     completedCount,
     alertMode,
     isAlerting,
+    focusMinutes,
+    breakMinutes,
+    setFocusMinutes,
+    setBreakMinutes,
     setAlertMode,
     handleReset,
     handleSkip,
