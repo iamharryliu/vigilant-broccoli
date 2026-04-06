@@ -1,5 +1,8 @@
 import { spawn } from 'child_process';
 import { readFileSync } from 'fs';
+import https from 'https';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import 'dotenv/config';
 
 async function fetchSecrets(
@@ -18,8 +21,9 @@ async function fetchSecrets(
   const requestOptions: Record<string, unknown> = {};
 
   if (certs) {
-    const ca = readFileSync(certs);
-    requestOptions.ca = ca;
+    requestOptions.httpsAgent = new https.Agent({
+      ca: readFileSync(certs),
+    });
   }
 
   const vault = nodeVault.default({
@@ -48,9 +52,13 @@ async function fetchSecrets(
 
 async function fetchSecretsAndServe() {
   const vaultAddr = 'https://10.0.1.1:8200';
-  const secretPath = '/kv/data/secrets';
+  const secretPath = 'kv/data/secrets';
+  const certs = path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    'vault-ca.crt',
+  );
 
-  await fetchSecrets(vaultAddr, secretPath);
+  await fetchSecrets(vaultAddr, secretPath, certs);
 
   const args = process.argv.slice(2);
   if (args.length > 0) {
