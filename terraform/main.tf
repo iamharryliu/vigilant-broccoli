@@ -41,9 +41,10 @@ provider "cloudflare" {
 }
 
 resource "google_compute_instance" "vb_free_vm" {
-  name         = "vb-free-vm"
-  machine_type = "e2-micro" # Free tier eligible
-  zone         = var.zone
+  name                      = "vb-free-vm"
+  machine_type              = "e2-micro" # Free tier eligible
+  zone                      = var.zone
+  allow_stopping_for_update = true
 
   metadata = {
     ssh-keys = "harryliu:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCdsUNm7YC0dLJ5zNDCNsLcT1c/ff6C/1i0IhAbqKXNGfT5ObXmTtnBOuH1UnTnRGIAr52agN6l5VMx62r90OsCh0+zbvTDSl7dWPvvXOwCXKrftuSKTH84r6gYsRiDGuh6j3zpfokCg1yJlcryp2Dgs1ua26DZm301NXkEaB9MSWYZzgeFv9fmWTgvCXpIHsRnSKV8PINDA3Ouavz1T6uqbAeNL71NVBwEqHlPDWtzGryQdbIS6tA2ufKB8KZSHCZjuORwm8K8Jaf6FIywMOx/3rKOl6u85pI7//D1TORP/pnt1Hn9Wd/QCwtL+J4nhv4eqHtarRpJXtyK7e1c/7Ga8FU/BjNodzA+Sfm5yDg+LZfBcxBVh+8KTCNc1QrmcmhVoPKEh9luG/v/5A8DpuzaG6Wr/c2YKVCU4MU+POFAP94D2M+MgvbHdMDj57oTtqHrNnY97A06LuLpouqmZ6ZG8imbV3pj+UpogpDvJCxZ+iF0+8LJaNnkRzZ84G+hBl5xgQ+JhQ5V7uLYUi0w8D+SwFTTxflTeDBmVgcqPB5TY3tvOasbFIDIP4xCLlPq1J0EaTaESNtfCC7nZPXPjjfjPzKrE56Ne0OLQQdvn1OALvYgSFl58rkSYj1M0esAbQYxfhMzpHovr49wShGg8F+ipCqMRRtzwDbN6fd84M5nTw== harryliu@Harrys-MacBook-Pro.local"
@@ -65,7 +66,9 @@ resource "google_compute_instance" "vb_free_vm" {
   tags = ["wireguard"]
 
   service_account {
-    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+    scopes = [
+      "https://www.googleapis.com/auth/cloud-platform",
+    ]
   }
 }
 

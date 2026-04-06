@@ -65,6 +65,7 @@ jobs:
           caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
           method: jwt
           role: github-actions-role
+          jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
           secrets: |
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
             kv/data/secrets CLOUDFLARE_R2_ACCESS_KEY_ID | CLOUDFLARE_R2_ACCESS_KEY_ID ;

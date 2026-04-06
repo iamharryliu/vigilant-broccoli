@@ -61,6 +61,7 @@ jobs:
           caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
           method: jwt
           role: github-actions-role
+          jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
           secrets: |
             kv/data/secrets MY_EMAIL | MY_EMAIL ;
             kv/data/secrets MY_EMAIL_PASSWORD | MY_EMAIL_PASSWORD ;
