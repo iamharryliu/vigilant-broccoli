@@ -8,7 +8,7 @@ interface FileNode {
   children?: FileNode[];
 }
 
-const ignorePatterns: RegExp[] = [/__pycache__/];
+const ignorePatterns: RegExp[] = [/__pycache__/, /\.obsidian/];
 
 function shouldIgnore(itemPath: string): boolean {
   return ignorePatterns.some(pattern => pattern.test(itemPath));
@@ -33,8 +33,11 @@ function folderToJson(folderPath: string, rootPath: string): FileNode {
     }
 
     if (fs.statSync(itemPath).isDirectory()) {
-      result.children?.push(folderToJson(itemPath, rootPath));
-    } else {
+      const folder = folderToJson(itemPath, rootPath);
+      if (folder.children && folder.children.length > 0) {
+        result.children?.push(folder);
+      }
+    } else if (item.endsWith('.md')) {
       result.children?.push({
         name: item,
         type: 'file',

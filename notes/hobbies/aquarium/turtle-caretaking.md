@@ -19,10 +19,9 @@
 
 ### Water Change and Refilling Water
 
-- Scoop out pitchers of water into a bucket and pour out water into sink/toilet.
-- You can refill water either by using tap water (requires water conditioner) or using rain water (does not require water conditioner).
-- Refill via rainwater:
-  - To refill using rain water just scoop pitchers of rain water from a bucket into the aquarium
-- Refill via tap water:
-  - Fill up a large bucket of water and add a capful of water conditioner.
-- Refill the aquarium water to a height that dexter is able to comfortably enter his basking dock.
+1. Scoop out a few pitchers of water into a bucket and pour out water into sink/toilet.
+2. Water refill
+   - You can refill water either by using tap water (requires water conditioner) or using rain water (does not require water conditioner).
+   - via rainwater: To refill using rain water just scoop pitchers of rain water from a bucket into the aquarium
+   - via tap water: Fill up a large bucket of water and add a capful of water conditioner.
+   - Refill the aquarium water to a height that dexter is able to comfortably enter his basking dock.
