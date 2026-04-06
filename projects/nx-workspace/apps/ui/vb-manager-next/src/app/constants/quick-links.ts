@@ -787,6 +787,63 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: 'Freedom Usage',
+    target: 'https://myaccount.freedommobile.ca/usage',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Presto',
+    target: 'https://www.prestocard.ca/en/account-dashboard',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'TD EasyWeb',
+    target:
+      'https://authentication.td.com/uap-ui/?consumer=easyweb&locale=en_CA#/uap/login',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Questrade',
+    target: 'https://login.questrade.com/account/login',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'TFSA Room Calculator',
+    target:
+      'https://www.moneysense.ca/save/investing/tfsa-contribution-room-calculator/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Neo Financial',
+    target: 'https://member.neofinancial.com/login',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'MBNA',
+    target: 'https://www.mbna.ca/en',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'CT Triangle',
+    target: 'https://www.ctfs.com/content/dash/en/public/login.html',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Home Depot',
+    target:
+      'https://citiretailservices.citibankonline.com/RSnextgen/svc/launch/index.action?siteId=CACN_HOMEDEPOT#signon',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: GOOGLE_SERVICES.GMAIL.NAME,
     target: GOOGLE_SERVICES.GMAIL.URL,
     type: OPEN_TYPE.BROWSER,
