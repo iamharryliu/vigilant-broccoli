@@ -32,6 +32,18 @@ resource "github_branch_default" "default" {
   branch     = github_branch.main.branch
 }
 
+resource "github_actions_secret" "gcp_service_account" {
+  repository      = github_repository.vigilant_broccoli.name
+  secret_name     = "GCP_SERVICE_ACCOUNT"
+  plaintext_value = google_service_account.github_actions.email
+}
+
+resource "github_actions_secret" "gcp_workload_identity_provider" {
+  repository      = github_repository.vigilant_broccoli.name
+  secret_name     = "GCP_WORKLOAD_IDENTITY_PROVIDER"
+  plaintext_value = google_iam_workload_identity_pool_provider.github.name
+}
+
 resource "github_branch_protection" "main" {
   repository_id = github_repository.vigilant_broccoli.node_id
   pattern       = "main"
