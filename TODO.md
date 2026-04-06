@@ -71,3 +71,4 @@ Can you make a docs/features/ to track specs and document specs for the project.
 - Angular component library.
 - Replace Obsidian brackets.
 - Dotfile cleanup.
+- Improve npm library separation.
