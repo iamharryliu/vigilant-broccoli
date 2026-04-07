@@ -226,6 +226,26 @@ resource "google_secret_manager_secret" "wg_elva11_mbp_public_key" {
   depends_on = [google_project_service.secretmanager]
 }
 
+resource "google_secret_manager_secret" "vault_unseal_keys" {
+  secret_id = "VB_VM_VAULT_UNSEAL_KEYS"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret" "vault_root_token" {
+  secret_id = "VB_VM_VAULT_ROOT_TOKEN"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
 resource "google_storage_bucket" "backup" {
   name          = "vigilant-broccoli-backup"
   location      = var.region

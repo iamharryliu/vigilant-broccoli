@@ -11,7 +11,8 @@
     "vm:start": "gcloud compute instances start vb-free-vm --zone=us-east1-b",
     "vm:post-init": "./terraform/packer/scripts/run-vault-post-init.sh",
     "vm:regen-cert": "./terraform/packer/scripts/run-vault-regen-cert.sh && npm run vm:update-wg",
-    "vm:update-wg": "./terraform/packer/scripts/run-update-wg-endpoint.sh"
+    "vm:update-wg": "./terraform/packer/scripts/run-update-wg-endpoint.sh",
+    "vm:vault:unseal": "./terraform/packer/scripts/run-vault-unseal.sh"
   },
   "repository": {
     "type": "git",
