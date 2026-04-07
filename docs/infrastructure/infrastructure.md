@@ -4,25 +4,27 @@
 
 ### Secret Management
 
-- Google Password Manager
-- Bitwarden
-- Hashicorp Vault
+- Google Password Manager - Browser Password
+- Apple Password Manager - iOS Passwords
+- Hashicorp Vault - Application Secrets
+- Bitwarden - Other and secret management backup point
 
 ### Sync Services
 
+- Resilio Sync - Local Device Sync
 - Google Drive
-- Resilio Sync
+- iCloud - iOS Sync
 
 ### Storage Services
 
-- GCS Buckets
-- Cloudflare R2 Buckets
+- GCP Buckets
+- Cloudflare Buckets
 
 ### Image Services
 
-- Apple Photos
-- Google Photos
-- Immich
+- Apple Photos - iOS Image/Video Sync
+- Google Photos - Image/Video Backup
+- Immich - Local Image/Video Sync
 
 ### Backups
 
@@ -38,7 +40,7 @@ end
 subgraph LOCAL_MACHINE[Local Machine]
   LOCAL_MACHINE_IMMICH[Immich]
   LOCAL_MACHINE_SYNC_SERVICE[Sync Service]
-  LOCAL_MACHINE_IMMICH-->BACKUP
+  LOCAL_MACHINE_IMMICH-->LOCAL_MACHINE_SYNC_SERVICE
   BACKUP[Backup]
   BACKUP<-->LOCAL_MACHINE_SYNC_SERVICE
 end
