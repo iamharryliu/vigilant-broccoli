@@ -25,3 +25,12 @@ scrape_configs:
       - source_labels: ['__meta_docker_container_name']
         regex: '/(.*)'
         target_label: 'container'
+
+  - job_name: pm2
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: pm2
+          app: vb-manager-next
+          __path__: /pm2-logs/vb-manager-next-*.log

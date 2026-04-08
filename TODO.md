@@ -1,9 +1,5 @@
 # TODO
 
-```
-Can you make a docs/features/ to track specs and document specs for the project. I don't want verbose specs. Write it as minimal as possible. preferably a few headers and markdown lists under the specs.
-```
-
 ## fix
 
 - fix: dldjmusic

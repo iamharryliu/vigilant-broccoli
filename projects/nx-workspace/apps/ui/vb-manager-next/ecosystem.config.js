@@ -19,6 +19,7 @@ module.exports = {
       max_memory_restart: '1G',
       time: true,
       merge_logs: true,
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
     },
   ],
 };

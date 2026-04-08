@@ -17,7 +17,8 @@
     "vm:vault:seal": "./terraform/packer/scripts/run-vault-seal.sh",
     "vm:vault:save-secrets-local": "./terraform/packer/scripts/run-vault-get-secrets.sh",
     "vm:vault:set-secrets": "./terraform/packer/scripts/run-vault-set-secrets.sh",
-    "secret-rotation:flyio": "./terraform/packer/scripts/rotate-fly-token.sh"
+    "secret-rotation:flyio": "./terraform/packer/scripts/rotate-fly-token.sh",
+    "local:docker:restart": "docker compose -f infrastructure/local/docker-compose.yml restart"
   },
   "repository": {
     "type": "git",
