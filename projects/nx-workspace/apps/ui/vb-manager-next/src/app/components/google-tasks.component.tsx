@@ -314,7 +314,12 @@ const useSortModeStorage = (taskListId: string) => {
   const [sortMode, setSortMode] = useState<SortMode>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
-      if (saved === SORT_MODE.EISENHOWER || saved === SORT_MODE.COMMIT_TYPE || saved === SORT_MODE.DATE_CREATED_NEWEST || saved === SORT_MODE.DATE_CREATED_OLDEST) {
+      if (
+        saved === SORT_MODE.EISENHOWER ||
+        saved === SORT_MODE.COMMIT_TYPE ||
+        saved === SORT_MODE.DATE_CREATED_NEWEST ||
+        saved === SORT_MODE.DATE_CREATED_OLDEST
+      ) {
         return saved;
       }
     }
@@ -412,11 +417,13 @@ const TaskItemContent = memo(
           Due: {new Date(task.due).toLocaleDateString()}
         </Text>
       )}
-      {(sortMode === SORT_MODE.DATE_CREATED_NEWEST || sortMode === SORT_MODE.DATE_CREATED_OLDEST) && task.updated && (
-        <Text size="1" color="gray">
-          Created: {new Date(task.updated).toLocaleDateString()}
-        </Text>
-      )}
+      {(sortMode === SORT_MODE.DATE_CREATED_NEWEST ||
+        sortMode === SORT_MODE.DATE_CREATED_OLDEST) &&
+        task.updated && (
+          <Text size="1" color="gray">
+            Created: {new Date(task.updated).toLocaleDateString()}
+          </Text>
+        )}
     </Flex>
   ),
 );
@@ -640,7 +647,7 @@ const AddTaskForm = memo(
     return (
       <Flex gap="2" align="end">
         <TextField.Root
-          placeholder="Add a new task..."
+          placeholder="Add a task, or use * item1 > item2 for multiple..."
           value={newTaskTitle}
           onChange={e => onTitleChange(e.target.value)}
           onKeyDown={e => {
@@ -949,7 +956,19 @@ export const GoogleTasksComponent = ({
     if (isCreatingTask) return;
     setIsCreatingTask(true);
     try {
-      await createTask(newTaskTitle);
+      if (newTaskTitle.startsWith('*')) {
+        const titles = newTaskTitle
+          .slice(1)
+          .split('>')
+          .map(t => t.trim())
+          .filter(Boolean)
+          .reverse();
+        for (const title of titles) {
+          await createTask(title);
+        }
+      } else {
+        await createTask(newTaskTitle);
+      }
       setNewTaskTitle('');
       setShowAddTask(false);
     } finally {
@@ -1001,8 +1020,10 @@ export const GoogleTasksComponent = ({
   const sortedTasks = useMemo(() => {
     if (sortMode === SORT_MODE.EISENHOWER) return sortByEisenhower(tasks);
     if (sortMode === SORT_MODE.COMMIT_TYPE) return sortByCommitType(tasks);
-    if (sortMode === SORT_MODE.DATE_CREATED_NEWEST) return sortByDateCreated(tasks, true);
-    if (sortMode === SORT_MODE.DATE_CREATED_OLDEST) return sortByDateCreated(tasks, false);
+    if (sortMode === SORT_MODE.DATE_CREATED_NEWEST)
+      return sortByDateCreated(tasks, true);
+    if (sortMode === SORT_MODE.DATE_CREATED_OLDEST)
+      return sortByDateCreated(tasks, false);
     return tasks;
   }, [sortMode, tasks]);
 

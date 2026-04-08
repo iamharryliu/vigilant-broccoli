@@ -57,3 +57,7 @@
 
 - A task list can only appear once per board
 - Requires authenticated session to load task lists
+
+## Reference
+
+- [Google Tasks](./google-tasks.md) — standalone task list with sorting, voice input, and multi-task creation
