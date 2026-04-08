@@ -66,6 +66,16 @@ function getStubbedEnvironmentVariableKeys(envContent: string): string {
     .join('\n');
 }
 
+function getStubbedJSONValues(jsonText: string): string {
+  try {
+    const obj = JSON.parse(jsonText?.trim());
+    const stubbed = Object.fromEntries(Object.keys(obj).map(key => [key, '']));
+    return JSON.stringify(stubbed, null, 2);
+  } catch {
+    return '';
+  }
+}
+
 function formatBlockStringToSingleLineString(block: string): string {
   return block.split(/\r?\n/).join('\\n');
 }
@@ -75,5 +85,6 @@ export const EnvUtils = {
   getEnvironmentVariablesFromJSON,
   getJSONFromEnvironmentVariables,
   getStubbedEnvironmentVariableKeys,
+  getStubbedJSONValues,
   formatBlockStringToSingleLineString,
 };

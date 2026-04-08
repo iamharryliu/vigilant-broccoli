@@ -11,6 +11,7 @@ export const TextToolsPage = () => {
       <JSONToEnvVarForm />
       <JSONPrettier />
       <CleanEnvConversionForm />
+      <StubbedJSONValuesForm />
       <FormatBlockStringToSingleStringForm />
       <CharacterCounter />
     </div>
@@ -89,6 +90,20 @@ const CleanEnvConversionForm = () => {
   );
 };
 
+const StubbedJSONValuesForm = () => {
+  return (
+    <ConversionForm
+      copy={{
+        header: 'Get Stubbed JSON Values',
+        placeholder: SAMPLE_JSON,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_JSON}
+      conversionFn={EnvUtils.getStubbedJSONValues}
+    />
+  );
+};
+
 const SAMPLE_BLOCK_STRING = `-----BEGIN CERTIFICATE-----\nSomething\n-----END CERTIFICATE-----"`;
 
 const FormatBlockStringToSingleStringForm = () => {
@@ -111,7 +126,9 @@ const CharacterCounter = () => {
   const charCount = text.length;
   const charCountNoSpaces = text.replace(/\s/g, '').length;
   const wordCount = countWords(text);
-  const sentenceCount = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+  const sentenceCount = text
+    .split(/[.!?]+/)
+    .filter(s => s.trim().length > 0).length;
 
   return (
     <Card>
