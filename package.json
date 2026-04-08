@@ -16,7 +16,8 @@
     "vm:vault:unseal": "./terraform/packer/scripts/run-vault-unseal.sh",
     "vm:vault:seal": "./terraform/packer/scripts/run-vault-seal.sh",
     "vm:vault:save-secrets-local": "./terraform/packer/scripts/run-vault-get-secrets.sh",
-    "vm:vault:set-secrets": "./terraform/packer/scripts/run-vault-set-secrets.sh"
+    "vm:vault:set-secrets": "./terraform/packer/scripts/run-vault-set-secrets.sh",
+    "secret-rotation:flyio": "./terraform/packer/scripts/rotate-fly-token.sh"
   },
   "repository": {
     "type": "git",

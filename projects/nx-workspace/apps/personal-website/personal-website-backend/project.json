@@ -99,7 +99,7 @@
     "deploy:secrets": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsx scripts/deploy-flyio-secrets.ts personal-website-backend"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts personal-website-backend"
       }
     },
     "deploy": {
