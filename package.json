@@ -15,6 +15,7 @@
     "vm:vault:test-local-connection": "gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap --command='export VAULT_ADDR=https://127.0.0.1:8200 VAULT_SKIP_VERIFY=true && vault status && echo \"✓ Vault is accessible\"'",
     "vm:vault:unseal": "./terraform/packer/scripts/run-vault-unseal.sh",
     "vm:vault:seal": "./terraform/packer/scripts/run-vault-seal.sh",
+    "vm:vault:save-secrets-local": "./terraform/packer/scripts/run-vault-get-secrets.sh",
     "vm:vault:set-secrets": "./terraform/packer/scripts/run-vault-set-secrets.sh"
   },
   "repository": {
