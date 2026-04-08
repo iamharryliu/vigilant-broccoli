@@ -63,34 +63,21 @@ PersistentKeepalive = 25
 sudo wg-quick up vb
 ```
 
-## 6. Initialize + unseal Vault (first boot only)
+## 6. Initialize Vault + configure (first boot only)
 
 ```bash
-ssh harryliu@10.0.1.1
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_SKIP_VERIFY=true
-vault operator init
-vault operator unseal <key1>
-vault operator unseal <key2>
-vault operator unseal <key3>
-```
-
-**SAVE unseal keys + root token securely.**
-
-## 7. Configure github-actions-role
-
-```bash
-export VAULT_TOKEN=<root-token-from-step-6>
 npm run vm:post-init
 ```
 
-## 8. Regenerate Vault TLS cert + update WireGuard endpoint
+Initializes Vault, saves unseal keys + root token to GCP Secret Manager, unseals, and configures KV engine, JWT auth, and github-actions role.
+
+## 9. Regenerate Vault TLS cert + update WireGuard endpoint (optional)
 
 ```bash
 npm run vm:regen-cert
 ```
 
-Regenerates Vault TLS cert with current external IP, restarts Vault, copies cert to `projects/nx-workspace/scripts/vault-ca.crt`, and updates WireGuard endpoint in `/opt/homebrew/etc/wireguard/vb.conf`. Vault will need to be unsealed after.
+Regenerates Vault TLS cert with current external IP, restarts Vault, copies cert to `projects/nx-workspace/scripts/vault-ca.crt`, and updates WireGuard endpoint. Vault will need to be unsealed after (`npm run vm:vault:unseal`).
 
 To update WireGuard endpoint only:
 
@@ -98,35 +85,53 @@ To update WireGuard endpoint only:
 npm run vm:update-wg
 ```
 
-## 9. Populate secrets
+## 7. Test Vault access
 
 ```bash
-ssh harryliu@10.0.1.1
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_SKIP_VERIFY=true
-export VAULT_TOKEN=<root-token>
-vault kv put kv/secrets \
-  CLOUDFLARE_ACCOUNT_ID=... \
-  CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS=... \
-  FLY_API_TOKEN=...
+npm run vault:test:local
 ```
 
-## After VM restart
+Verify Vault is unsealed and accessible.
+
+## 8. Populate secrets
+
+Create `~/.vault-secrets.json`:
+
+```json
+{
+  "CLOUDFLARE_ACCOUNT_ID": "...",
+  "CLOUDFLARE_API_TOKEN": "...",
+  "FLY_API_TOKEN": "..."
+}
+```
+
+Then run:
 
 ```bash
-npm run vm:update-wg
+npm run vm:vault:set-secrets
+```
+
+## 10. After VM restart
+
+```bash
+npm run vm:vault:unseal
+```
+
+If external IP changed:
+
+```bash
+npm run vm:regen-cert
+npm run vm:vault:unseal
 sudo wg-quick down vb && sudo wg-quick up vb
-ssh harryliu@10.0.1.1
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_SKIP_VERIFY=true
-vault operator unseal <key1>
-vault operator unseal <key2>
-vault operator unseal <key3>
 ```
 
-If external IP changed, run `npm run vm:regen-cert` instead and unseal after.
+## 11. Seal Vault
 
-## Rebuilding image
+```bash
+npm run vm:vault:seal
+```
+
+## 12. Rebuilding image
 
 ```bash
 cd terraform/packer
