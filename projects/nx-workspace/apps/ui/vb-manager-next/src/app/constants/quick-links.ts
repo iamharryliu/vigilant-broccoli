@@ -763,6 +763,19 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: 'Google Password Manager',
+    target: MAC_OS_APP.CHROME.NAME,
+    args: 'chrome://password-manager/settings',
+    type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Apple Password Manager',
+    target: 'Passwords',
+    type: OPEN_TYPE.MAC_APPLICATION,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: 'Speedtest',
     target: 'https://www.speedtest.net/',
     type: OPEN_TYPE.BROWSER,

@@ -73,16 +73,19 @@ const getGroupedLinks = (links: (typeof QUICK_LINKS)[0][]) => {
   const itemsWithoutSubgroup = links.filter(link => !link.subgroup);
   const itemsWithSubgroup = links.filter(link => link.subgroup);
 
-  const subgroups = itemsWithSubgroup.reduce((acc, link) => {
-    const group = link.subgroup;
-    if (group && !acc[group]) {
-      acc[group] = [];
-    }
-    if (group) {
-      acc[group].push(link);
-    }
-    return acc;
-  }, {} as Record<string, typeof QUICK_LINKS>);
+  const subgroups = itemsWithSubgroup.reduce(
+    (acc, link) => {
+      const group = link.subgroup;
+      if (group && !acc[group]) {
+        acc[group] = [];
+      }
+      if (group) {
+        acc[group].push(link);
+      }
+      return acc;
+    },
+    {} as Record<string, typeof QUICK_LINKS>,
+  );
 
   const subgroupEntries = Object.entries(subgroups).sort(([a], [b]) =>
     a.localeCompare(b),
@@ -93,12 +96,16 @@ const getGroupedLinks = (links: (typeof QUICK_LINKS)[0][]) => {
 
 const openLink = (
   link: (typeof QUICK_LINKS)[0],
-  handleShellExecute: (type: OpenType, target: string) => Promise<void>,
+  handleShellExecute: (
+    type: OpenType,
+    target: string,
+    args?: string,
+  ) => Promise<void>,
 ) => {
   if (
     NON_BROWSER_TYPES.includes(link.type as (typeof NON_BROWSER_TYPES)[number])
   ) {
-    handleShellExecute(link.type, link.target);
+    handleShellExecute(link.type, link.target, link.args);
   } else {
     window.open(link.target, '_blank', 'noopener,noreferrer');
   }
@@ -157,13 +164,17 @@ export function SearchDialogComponent({
   const { itemsWithoutSubgroup, subgroupEntries } =
     getGroupedLinks(sortedLinks);
 
-  const handleShellExecute = async (type: OpenType, target: string) => {
+  const handleShellExecute = async (
+    type: OpenType,
+    target: string,
+    args?: string,
+  ) => {
     const response = await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ type, target }),
+      body: JSON.stringify({ type, target, args }),
     });
 
     if (!response.ok) {
@@ -196,10 +207,10 @@ export function SearchDialogComponent({
         e.key === 'ArrowDown'
           ? 'down'
           : e.key === 'ArrowUp'
-          ? 'up'
-          : e.key === 'ArrowRight'
-          ? 'right'
-          : 'left';
+            ? 'up'
+            : e.key === 'ArrowRight'
+              ? 'right'
+              : 'left';
       moveQuickLinkFocusByDirection({
         contentRoot: contentRef.current,
         searchInput: searchInputRef.current,
@@ -230,10 +241,10 @@ export function SearchDialogComponent({
       e.key === 'ArrowDown'
         ? 'down'
         : e.key === 'ArrowUp'
-        ? 'up'
-        : e.key === 'ArrowRight'
-        ? 'right'
-        : 'left';
+          ? 'up'
+          : e.key === 'ArrowRight'
+            ? 'right'
+            : 'left';
     moveQuickLinkFocusByDirection({
       contentRoot: contentRef.current,
       searchInput: searchInputRef.current,
@@ -255,7 +266,7 @@ export function SearchDialogComponent({
       return (
         <button
           key={uniqueKey}
-          onClick={() => handleShellExecute(link.type, link.target)}
+          onClick={() => handleShellExecute(link.type, link.target, link.args)}
           onKeyDown={handleLinkKeyDown}
           className={`${baseClass} cursor-pointer`}
           data-quick-link-item="true"

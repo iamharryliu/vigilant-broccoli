@@ -14,6 +14,7 @@ import {
 interface LinkItem {
   label: string;
   target: string;
+  args?: string;
   type: OpenType;
   subgroup?: string;
 }
@@ -84,27 +85,34 @@ export function LinkGroupComponent({
   const itemsWithoutSubgroup = sortedLinks.filter(link => !link.subgroup);
   const itemsWithSubgroup = sortedLinks.filter(link => link.subgroup);
 
-  const subgroups = itemsWithSubgroup.reduce((acc, link) => {
-    const group = link.subgroup!;
-    if (!acc[group]) {
-      acc[group] = [];
-    }
-    acc[group].push(link);
-    return acc;
-  }, {} as Record<string, LinkItem[]>);
+  const subgroups = itemsWithSubgroup.reduce(
+    (acc, link) => {
+      const group = link.subgroup!;
+      if (!acc[group]) {
+        acc[group] = [];
+      }
+      acc[group].push(link);
+      return acc;
+    },
+    {} as Record<string, LinkItem[]>,
+  );
 
   const subgroupEntries = alphabeticalSubgroups
     ? Object.entries(subgroups).sort(([a], [b]) => a.localeCompare(b))
     : subgroupOrder.map(key => [key, subgroups[key]] as [string, LinkItem[]]);
 
-  const handleShellExecute = async (type: OpenType, target: string) => {
+  const handleShellExecute = async (
+    type: OpenType,
+    target: string,
+    args?: string,
+  ) => {
     try {
       const response = await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ type, target }),
+        body: JSON.stringify({ type, target, args }),
       });
 
       if (!response.ok) {
@@ -130,10 +138,10 @@ export function LinkGroupComponent({
       e.key === 'ArrowDown'
         ? 'down'
         : e.key === 'ArrowUp'
-        ? 'up'
-        : e.key === 'ArrowRight'
-        ? 'right'
-        : 'left';
+          ? 'up'
+          : e.key === 'ArrowRight'
+            ? 'right'
+            : 'left';
     moveQuickLinkFocusByDirection({
       contentRoot: contentRef.current,
       searchInput: searchInputRef.current,
@@ -163,10 +171,10 @@ export function LinkGroupComponent({
       e.key === 'ArrowDown'
         ? 'down'
         : e.key === 'ArrowUp'
-        ? 'up'
-        : e.key === 'ArrowRight'
-        ? 'right'
-        : 'left';
+          ? 'up'
+          : e.key === 'ArrowRight'
+            ? 'right'
+            : 'left';
     moveQuickLinkFocusByDirection({
       contentRoot: contentRef.current,
       searchInput: searchInputRef.current,
@@ -188,7 +196,7 @@ export function LinkGroupComponent({
       return (
         <button
           key={uniqueKey}
-          onClick={() => handleShellExecute(link.type, link.target)}
+          onClick={() => handleShellExecute(link.type, link.target, link.args)}
           className={`${baseClass} cursor-pointer`}
           onKeyDown={handleLinkKeyDown}
           data-quick-link-item="true"

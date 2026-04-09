@@ -16,6 +16,7 @@ export interface OpenResult {
 export const open = async (
   type: OpenType,
   target: string,
+  args?: string,
 ): Promise<OpenResult> => {
   let shellCommand: string;
 
@@ -31,7 +32,9 @@ export const open = async (
       break;
     }
     case OPEN_TYPE.MAC_APPLICATION: {
-      shellCommand = `open -a '${target}'`;
+      shellCommand = args
+        ? `open -a '${target}' "${args}"`
+        : `open -a '${target}'`;
       break;
     }
     default:
@@ -40,14 +43,6 @@ export const open = async (
         status: 'error',
         error: `Unsupported open type: ${type}`,
       };
-  }
-
-  if (!shellCommand || typeof shellCommand !== 'string') {
-    return {
-      message: 'Failed to generate shell command',
-      status: 'error',
-      error: 'Failed to generate shell command',
-    };
   }
 
   const { stdout, stderr } = await execAsync(shellCommand);
