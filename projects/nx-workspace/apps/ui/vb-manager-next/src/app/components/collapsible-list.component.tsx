@@ -23,6 +23,7 @@ export const CollapsibleList = ({
   storageKeyPrefix,
   showBorders = true,
 }: CollapsibleListProps) => {
+  const [mounted, setMounted] = useState(false);
   const [openStates, setOpenStates] = useState<Record<string, boolean>>(() => {
     const initialState: Record<string, boolean> = {};
     items.forEach(item => {
@@ -32,19 +33,15 @@ export const CollapsibleList = ({
   });
 
   useEffect(() => {
-    if (!storageKeyPrefix) return;
-
+    if (!storageKeyPrefix) { setMounted(true); return; }
     const loadedStates: Record<string, boolean> = {};
     items.forEach(item => {
       const saved = localStorage.getItem(`${storageKeyPrefix}-${item.id}`);
-      if (saved !== null) {
-        loadedStates[item.id] = saved === 'true';
-      } else {
-        loadedStates[item.id] = item.defaultOpen ?? false;
-      }
+      loadedStates[item.id] = saved !== null ? saved === 'true' : (item.defaultOpen ?? false);
     });
     setOpenStates(loadedStates);
-  }, [storageKeyPrefix, items]);
+    setMounted(true);
+  }, []);
 
   const toggleItem = (id: string) => {
     setOpenStates(prev => {
@@ -57,6 +54,8 @@ export const CollapsibleList = ({
       return newState;
     });
   };
+
+  if (!mounted) return null;
 
   return (
     <>
