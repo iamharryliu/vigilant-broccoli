@@ -1,6 +1,6 @@
 source ~/.zsh_aliases
 
-$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh &
+($REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh &)
 
 export PATH="/opt/homebrew/bin:$PATH"
 
