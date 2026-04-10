@@ -13,9 +13,6 @@
 
 ## vigilant-broccoli
 
-- **Infrastructure**
-  - GCP VM
-    - Bootstrapping Vault and WireGuard
 - **R&D**
   - chore: Pihole reserach, pihole, pivpn, nordvpn integration.
   - chore: iCloud vb notes.
@@ -63,7 +60,6 @@
 - Guitar tuning utility.
 - Unit testing aliases??
 - Vibecheck revibe.
-- Toronto Alerts cleanup.
 - Angular component library.
 - Replace Obsidian brackets.
 - Dotfile cleanup.
