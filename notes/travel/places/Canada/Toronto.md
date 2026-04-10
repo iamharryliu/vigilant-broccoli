@@ -12,10 +12,6 @@
   - [Pricing](https://members.bikesharetoronto.com/mobile/plans)
   - [Map](https://bikesharetoronto.com/system-map/)
 
-### Communication
-
-- Use roaming because Toronto phone plans suck.
-
 ### Services
 
 - [Emergency Services](https://www.tps.ca/contact/9-1-1-emergency/) - 9-1-1 is only to be used in emergency situations. An emergency is any situation that requires immediate assistance from a police officer, a firefighter or a paramedic. Sometimes all three will respond, such as in the event of a serious traffic collision where people are trapped or injured. If you are ever in doubt of whether a situation is an emergency, you should call 9-1-1.
