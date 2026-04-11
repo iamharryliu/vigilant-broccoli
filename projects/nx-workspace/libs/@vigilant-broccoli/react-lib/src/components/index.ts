@@ -1,4 +1,5 @@
 export * from './AudioPlayer';
+export * from './CopyButton';
 export * from './CopyPastable';
 export * from './Select';
 export * from './CRUDListManagement';

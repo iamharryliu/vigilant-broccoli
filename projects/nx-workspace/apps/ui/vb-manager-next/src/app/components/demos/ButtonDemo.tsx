@@ -8,15 +8,11 @@ import {
   Search,
   Moon,
   Calendar,
-  StickyNote,
   Trash2,
-  Pencil,
-  Plus,
-  Menu,
   Play,
   Square,
-  ChevronLeft,
 } from 'lucide-react';
+import { CopyButton } from '@vigilant-broccoli/react-lib';
 
 export function ButtonDemo() {
   const [mockLoading, setMockLoading] = useState(false);
@@ -38,33 +34,7 @@ export function ButtonDemo() {
           <Button variant="outline">Outline</Button>
           <Button variant="ghost">Ghost</Button>
         </Grid>
-      </div>
 
-      <div>
-        <Heading size="4" mb="3">
-          Sizes
-        </Heading>
-        <Flex gap="3" align="center">
-          <Button size="1">Small</Button>
-          <Button size="2">Medium (default)</Button>
-          <Button size="3">Large</Button>
-        </Flex>
-      </div>
-
-      <div>
-        <Heading size="4" mb="3">
-          States
-        </Heading>
-        <Flex gap="3">
-          <Button loading={mockLoading} onClick={handleMockLoad}>Click to Load</Button>
-          <Button disabled>Disabled</Button>
-        </Flex>
-      </div>
-
-      <div>
-        <Heading size="4" mb="3">
-          Icon Buttons - Variants
-        </Heading>
         <Flex gap="3" align="center">
           <IconButton title="Solid">
             <MessageCircle size={16} />
@@ -83,8 +53,14 @@ export function ButtonDemo() {
 
       <div>
         <Heading size="4" mb="3">
-          Icon Buttons - Sizes
+          Sizes
         </Heading>
+        <Flex gap="3" align="center">
+          <Button size="1">Small</Button>
+          <Button size="2">Medium (default)</Button>
+          <Button size="3">Large</Button>
+        </Flex>
+
         <Flex gap="3" align="center">
           <IconButton size="1" variant="soft" title="Small">
             <Calendar size={14} />
@@ -100,47 +76,114 @@ export function ButtonDemo() {
 
       <div>
         <Heading size="4" mb="3">
-          Icon Buttons - Floating Island Style
+          States
+        </Heading>
+        <Flex gap="3">
+          <Button loading={mockLoading} onClick={handleMockLoad}>
+            Click to Load
+          </Button>
+          <Button disabled>Disabled</Button>
+        </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Icon Buttons - Colors (Soft)
         </Heading>
         <Flex gap="3" align="center">
-          <IconButton variant="soft" size="2" title="Chat">
-            <MessageCircle size={20} />
+          <IconButton variant="soft" color="blue" title="Blue">
+            <MessageCircle size={16} />
           </IconButton>
-          <IconButton variant="soft" size="2" title="Email">
-            <Mail size={20} />
+          <IconButton variant="soft" color="green" title="Green">
+            <Mail size={16} />
           </IconButton>
-          <IconButton variant="soft" size="2" title="Calendar">
-            <Calendar size={20} />
+          <IconButton variant="soft" color="red" title="Red">
+            <Trash2 size={16} />
           </IconButton>
-          <IconButton variant="soft" size="2" title="Notepad">
-            <StickyNote size={20} />
+          <IconButton variant="soft" color="orange" title="Orange">
+            <Search size={16} />
           </IconButton>
-          <IconButton variant="soft" size="2" title="Search">
-            <Search size={20} />
+          <IconButton variant="soft" color="purple" title="Purple">
+            <Calendar size={16} />
           </IconButton>
         </Flex>
       </div>
 
       <div>
         <Heading size="4" mb="3">
-          Icon Buttons - Kanban Actions
+          Icon Buttons - Colors (Ghost)
         </Heading>
         <Flex gap="3" align="center">
-          <IconButton size="1" variant="ghost" title="Menu">
-            <Menu size={14} />
+          <IconButton variant="ghost" color="blue" title="Blue">
+            <MessageCircle size={16} />
           </IconButton>
-          <IconButton size="1" variant="ghost" title="Edit">
-            <Pencil size={14} />
+          <IconButton variant="ghost" color="green" title="Green">
+            <Mail size={16} />
           </IconButton>
-          <IconButton size="1" variant="ghost" color="red" title="Delete">
-            <Trash2 size={14} />
+          <IconButton variant="ghost" color="red" title="Red">
+            <Trash2 size={16} />
           </IconButton>
-          <IconButton size="1" variant="ghost" title="Add">
-            <Plus size={14} />
+          <IconButton variant="ghost" color="orange" title="Orange">
+            <Search size={16} />
           </IconButton>
-          <IconButton size="2" variant="ghost" title="Collapse">
-            <ChevronLeft size={16} />
+          <IconButton variant="ghost" color="purple" title="Purple">
+            <Calendar size={16} />
           </IconButton>
+        </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Icon Buttons - Colors (Outline)
+        </Heading>
+        <Flex gap="3" align="center">
+          <IconButton variant="outline" color="blue" title="Blue">
+            <MessageCircle size={16} />
+          </IconButton>
+          <IconButton variant="outline" color="green" title="Green">
+            <Mail size={16} />
+          </IconButton>
+          <IconButton variant="outline" color="red" title="Red">
+            <Trash2 size={16} />
+          </IconButton>
+          <IconButton variant="outline" color="orange" title="Orange">
+            <Search size={16} />
+          </IconButton>
+          <IconButton variant="outline" color="purple" title="Purple">
+            <Calendar size={16} />
+          </IconButton>
+        </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Icon Buttons - Colors (Solid)
+        </Heading>
+        <Flex gap="3" align="center">
+          <IconButton variant="solid" color="blue" title="Blue">
+            <MessageCircle size={16} />
+          </IconButton>
+          <IconButton variant="solid" color="green" title="Green">
+            <Mail size={16} />
+          </IconButton>
+          <IconButton variant="solid" color="red" title="Red">
+            <Trash2 size={16} />
+          </IconButton>
+          <IconButton variant="solid" color="orange" title="Orange">
+            <Search size={16} />
+          </IconButton>
+          <IconButton variant="solid" color="purple" title="Purple">
+            <Calendar size={16} />
+          </IconButton>
+        </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Copy Button
+        </Heading>
+        <Flex gap="3" align="center">
+          <CopyButton text="hello copy pastable" />
         </Flex>
       </div>
 
