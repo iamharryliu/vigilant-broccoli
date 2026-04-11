@@ -7,6 +7,7 @@ TIMESTAMP=$(date -u +%Y-%m-%d)
 FOLDER_NAME="vb-vault-secrets"
 ITEM_NAME="vb-vault-secrets-$TIMESTAMP"
 
+export BW_PASSWORD=$(gcloud secrets versions access latest --secret="BITWARDEN_PASSWORD")
 export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
 bw sync > /dev/null
 

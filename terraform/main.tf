@@ -246,6 +246,16 @@ resource "google_secret_manager_secret" "vault_root_token" {
   depends_on = [google_project_service.secretmanager]
 }
 
+resource "google_secret_manager_secret" "bitwarden_password" {
+  secret_id = "BITWARDEN_PASSWORD"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
 resource "google_storage_bucket" "backup" {
   name          = "vigilant-broccoli-backup"
   location      = var.region

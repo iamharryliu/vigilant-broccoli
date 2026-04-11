@@ -118,6 +118,7 @@ alias wg-status='sudo wg show'
 
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
+# TODO: Fix this to only save specific things for the rsync
 alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh && rsync -av --delete ~/resilio-sync/ ~/My\ Drive/resilio-backup/'
 
 # Hobby Code
