@@ -1,15 +1,12 @@
 import { NextRequest } from 'next/server';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
-import { homedir, hostname } from 'os';
+import { homedir } from 'os';
 
-const RESILIO_SYNC_PATH = '~/resilio-sync/shared/machines';
+const NOTEPAD_PATH = '~/resilio-sync/shared/notepad.md';
 
-const getNotepadPath = (): string => {
-  const machineId = hostname();
-  const basePath = RESILIO_SYNC_PATH.replace(/^~(?=$|\/|\\)/, homedir());
-  return resolve(basePath, machineId, 'notepad.md');
-};
+const getNotepadPath = (): string =>
+  resolve(NOTEPAD_PATH.replace(/^~(?=$|\/|\\)/, homedir()));
 
 export async function GET() {
   const filePath = getNotepadPath();
@@ -25,9 +22,8 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const { content } = await request.json();
   const filePath = getNotepadPath();
-  const dir = dirname(filePath);
 
-  mkdirSync(dir, { recursive: true });
+  mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, content, 'utf-8');
 
   return Response.json({ success: true });
