@@ -11,17 +11,17 @@ VAULT_TOKEN=$(gcloud secrets versions access latest \
   --secret=VB_VM_VAULT_ROOT_TOKEN \
   --project="${GCP_PROJECT}")
 
-echo "Revoking all vb-deploy-token entries..."
-fly tokens list --scope org --org personal | grep "vb-deploy-token" | grep -v "REVOKED" | awk '{print $1}' | while read TOKEN_ID; do
+echo "Revoking all active tokens..."
+fly tokens list --scope org --org personal | awk 'NR > 1 && NF == 4 {print $1}' | while read TOKEN_ID; do
   if [ -n "$TOKEN_ID" ]; then
     echo "Revoking token (ID: $TOKEN_ID)..."
     fly tokens revoke "$TOKEN_ID" 2>/dev/null || true
   fi
 done
-echo "✓ All vb-deploy-token entries revoked"
+echo "✓ All active tokens revoked"
 
 echo "Creating new Fly.io organization token..."
-NEW_TOKEN=$(fly tokens create org -n vb-deploy-token -o personal 2>&1 | grep "FlyV1" | awk '{print $NF}')
+NEW_TOKEN=$(fly tokens create org -n vb-deploy-token -o personal 2>&1 | grep -o 'fm2_[^ ]*' | head -1)
 
 if [ -z "$NEW_TOKEN" ]; then
   echo "ERROR: Failed to create new Fly.io token"
