@@ -99,10 +99,11 @@ async function deploySecretsToFlyio(
   try {
     execSync(command, { stdio: 'pipe' });
     console.log(`Successfully staged secrets for ${appName}`);
-  } catch {
-    console.error(
-      `Failed to deploy secrets to ${appName}. Run with --dry-run to debug.`,
-    );
+  } catch (error: unknown) {
+    const execError = error as { stdout?: Buffer; stderr?: Buffer };
+    console.error(`Failed to deploy secrets to ${appName}.`);
+    if (execError.stdout) console.error(execError.stdout.toString());
+    if (execError.stderr) console.error(execError.stderr.toString());
     process.exit(1);
   }
 }
