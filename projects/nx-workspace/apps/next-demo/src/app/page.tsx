@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from './providers/auth-provider';
+import { ROUTES } from '../lib/routes';
 
 export default function HomePage() {
   const session = useAuth();
@@ -10,13 +11,18 @@ export default function HomePage() {
       <h1 className="text-2xl font-bold">next-demo</h1>
       {session ? (
         <>
-          <p className="text-sm text-gray-500">Signed in as {session.user.email}</p>
-          <a href="/homes" className="text-blue-600 hover:underline">
+          <p className="text-sm text-gray-500">
+            Signed in as {session.user.email}
+          </p>
+          <a href={ROUTES.HOMES} className="text-blue-600 hover:underline">
             Homes
+          </a>
+          <a href={ROUTES.WHERE_IS} className="text-blue-600 hover:underline">
+            Where Is
           </a>
         </>
       ) : (
-        <a href="/login" className="text-blue-600 hover:underline">
+        <a href={ROUTES.LOGIN} className="text-blue-600 hover:underline">
           Sign in
         </a>
       )}

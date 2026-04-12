@@ -3,9 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../../../libs/supabase';
-
-const DASHBOARD_ROUTE = '/dashboard';
-const LOGIN_ROUTE = '/login';
+import { ROUTES } from '../../../lib/routes';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -25,7 +23,7 @@ export default function SignUpPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}${DASHBOARD_ROUTE}`,
+        emailRedirectTo: `${window.location.origin}${ROUTES.DASHBOARD}`,
       },
     });
 
@@ -40,7 +38,9 @@ export default function SignUpPage() {
   const handleGoogleSignIn = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}${DASHBOARD_ROUTE}` },
+      options: {
+        redirectTo: `${window.location.origin}${ROUTES.AUTH_CALLBACK}`,
+      },
     });
   };
 
@@ -83,7 +83,7 @@ export default function SignUpPage() {
         </button>
         <p className="text-center text-sm">
           Already have an account?{' '}
-          <a href={LOGIN_ROUTE} className="text-blue-600 hover:underline">
+          <a href={ROUTES.LOGIN} className="text-blue-600 hover:underline">
             Sign in
           </a>
         </p>

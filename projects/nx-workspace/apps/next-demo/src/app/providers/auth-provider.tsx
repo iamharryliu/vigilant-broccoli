@@ -15,7 +15,6 @@ export default function AuthProvider({
 }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
 
-  // Run once on mount — get session and subscribe to changes
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
 

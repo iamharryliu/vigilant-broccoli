@@ -2,6 +2,7 @@ import '@radix-ui/themes/styles.css';
 import { Theme } from '@radix-ui/themes';
 import './global.css';
 import AuthProvider from './providers/auth-provider';
+import AppLayout from './components/AppLayout';
 
 export const metadata = {
   title: 'next-demo',
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Theme>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <AppLayout>{children}</AppLayout>
+          </AuthProvider>
         </Theme>
       </body>
     </html>

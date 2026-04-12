@@ -6,12 +6,7 @@ import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { Button } from '@radix-ui/themes';
 import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
-
-type Home = {
-  id: number;
-  name: string;
-  description: string;
-};
+import { Home } from '../../lib/types';
 
 const DEFAULT_HOME: Home = { id: 0, name: '', description: '' };
 
@@ -21,7 +16,11 @@ const COPY = {
   [FORM_TYPE.UPDATE]: { TITLE: 'Update Home', DESCRIPTION: 'Edit this home.' },
 };
 
-const HomeFormComponent = ({ formType, initialFormValues, submitHandler }: CRUDFormProps<Home>) => {
+const HomeFormComponent = ({
+  formType,
+  initialFormValues,
+  submitHandler,
+}: CRUDFormProps<Home>) => {
   const [home, setHome] = useState(initialFormValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,7 +37,7 @@ const HomeFormComponent = ({ formType, initialFormValues, submitHandler }: CRUDF
         <input
           className="w-full rounded border px-3 py-2"
           value={home.name}
-          onChange={(e) => setHome((prev) => ({ ...prev, name: e.target.value }))}
+          onChange={e => setHome(prev => ({ ...prev, name: e.target.value }))}
         />
       </div>
       <div className="space-y-1">
@@ -46,7 +45,9 @@ const HomeFormComponent = ({ formType, initialFormValues, submitHandler }: CRUDF
         <input
           className="w-full rounded border px-3 py-2"
           value={home.description}
-          onChange={(e) => setHome((prev) => ({ ...prev, description: e.target.value }))}
+          onChange={e =>
+            setHome(prev => ({ ...prev, description: e.target.value }))
+          }
         />
       </div>
       <Button onClick={handleSubmit} loading={isSubmitting} className="w-full">
@@ -56,7 +57,7 @@ const HomeFormComponent = ({ formType, initialFormValues, submitHandler }: CRUDF
   );
 };
 
-const HomeListItem = ({ item }: { item: Home; items: Home[] }) => (
+const HomeListItem = ({ item }: { item: Home }) => (
   <div>
     <p className="font-medium">{item.name}</p>
     <p className="text-sm text-gray-500">{item.description}</p>
@@ -68,15 +69,22 @@ export default function HomesPage() {
   const [homes, setHomes] = useState<Home[]>([]);
 
   useEffect(() => {
-    supabase.from('homes').select('*').then(({ data }) => {
-      if (data) setHomes(data);
-    });
+    supabase
+      .from('homes')
+      .select('*')
+      .then(({ data }) => {
+        if (data) setHomes(data);
+      });
   }, []);
 
   const createHome = async (home: Home): Promise<Home> => {
     const { data } = await supabase
       .from('homes')
-      .insert({ name: home.name, description: home.description, user_id: session?.user.id })
+      .insert({
+        name: home.name,
+        description: home.description,
+        user_id: session?.user.id,
+      })
       .select()
       .single();
     return data;

@@ -1,15 +1,14 @@
 'use client';
 
 import { supabase } from '../../../../libs/supabase';
-
-const AUTH_CALLBACK_ROUTE = '/auth/callback';
+import { ROUTES } from '../../../lib/routes';
 
 export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}${AUTH_CALLBACK_ROUTE}`,
+        redirectTo: `${window.location.origin}${ROUTES.AUTH_CALLBACK}`,
       },
     });
   };
