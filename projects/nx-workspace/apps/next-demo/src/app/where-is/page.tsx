@@ -64,11 +64,11 @@ const fuzzyMatch = (query: string, item: WhereIsItem): boolean => {
   return q.split(' ').every(word => searchText.includes(word));
 };
 
-const WhereIsListItem = ({ item }: { item: WhereIsItem }) => (
+const WhereIsListItem = ({ item }: { item: WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'> }) => (
   <Flex gap="3" align="center">
-    {item.imageUrls[0] && (
+    {item.imageUrls?.[0] && (
       <img
-        src={item.imageUrls[0]}
+        src={item.imageUrls?.[0]}
         alt={item.title}
         className="w-16 h-16 object-cover rounded shrink-0"
       />
@@ -338,9 +338,16 @@ export default function WhereIsPage() {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     });
     const updated: WhereIsItem[] = await res.json();
-    setItems(updated);
+    const newItem = updated[0];
 
-    return { ...form, id: updated[0]?.id ?? '' };
+    return {
+      id: newItem?.id ?? '',
+      title: newItem?.title ?? form.title,
+      description: newItem?.description ?? description,
+      tags: newItem?.tags ?? tags,
+      images: [],
+      imageUrls: newItem?.imageUrls ?? [],
+    } as WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'>;
   };
 
   const updateItem = async (form: WhereIsFormValues): Promise<void> => {
