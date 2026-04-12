@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { spawn } from 'child_process';
 import { readFileSync } from 'fs';
 import 'dotenv/config';
 
@@ -29,28 +29,47 @@ async function fetchSecretsFromVault(): Promise<VaultSecrets> {
 
   console.log(`Fetching secrets from Vault at ${VAULT_PATH}...`);
   const result = await vault.read(VAULT_PATH);
-  return (result.data.data || result.data || result) as VaultSecrets;
+  const raw = result.data.data || result.data || result;
+  return Object.fromEntries(
+    Object.entries(raw as VaultSecrets).map(([k, v]) => [
+      k,
+      typeof v === 'string' ? v.trim() : v,
+    ]),
+  ) as VaultSecrets;
 }
 
-function vercelEnvAdd(key: string, value: string, environment: string) {
-  try {
-    execSync(`vercel env add ${key} ${environment} <<< '${value}'`, {
-      stdio: 'pipe',
-      shell: '/bin/bash',
+function runAsync(cmd: string, input?: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn('bash', ['-c', cmd], {
+      stdio: ['pipe', 'pipe', 'pipe'],
     });
+    if (input !== undefined) {
+      child.stdin.write(input);
+      child.stdin.end();
+    }
+    child.on('close', code =>
+      code === 0 ? resolve() : reject(new Error(`exit ${code}`)),
+    );
+  });
+}
+
+async function vercelEnvAdd(key: string, value: string, environment: string) {
+  const safeValue = value.replace(/'/g, "'\\''");
+  try {
+    await runAsync(
+      `printf '%s' '${safeValue}' | vercel env add ${key} ${environment}`,
+    );
     console.log(`✓ ${key}`);
   } catch {
     // Already exists — remove and re-add
+    await runAsync(`vercel env rm ${key} ${environment} --yes`);
     try {
-      execSync(`vercel env rm ${key} ${environment} --yes`, { stdio: 'pipe' });
-      execSync(`vercel env add ${key} ${environment} <<< '${value}'`, {
-        stdio: 'pipe',
-        shell: '/bin/bash',
-      });
+      await runAsync(
+        `printf '%s' '${safeValue}' | vercel env add ${key} ${environment}`,
+      );
       console.log(`✓ ${key} (updated)`);
-    } catch (err: unknown) {
-      const e = err as { stderr?: Buffer };
-      console.error(`✗ ${key}: ${e.stderr?.toString() ?? String(err)}`);
+    } catch {
+      console.error(`✗ ${key}: failed to deploy`);
     }
   }
 }
@@ -99,27 +118,28 @@ async function main() {
     `\nDeploying secrets for ${projectName} to Vercel (${environment})...\n`,
   );
 
-  if (hardcoded) {
-    console.log('Deploying hardcoded secrets...');
-    for (const [key, value] of Object.entries(hardcoded)) {
-      vercelEnvAdd(key, value, environment);
-    }
-  }
+  const allSecrets: Record<string, string> = { ...hardcoded };
 
   if (keysFromVault?.length) {
-    console.log('\nFetching vault secrets...');
+    console.log('Fetching vault secrets...');
     const vaultSecrets = await fetchSecretsFromVault();
 
-    console.log('Deploying vault secrets...');
     for (const key of keysFromVault) {
       const value = vaultSecrets[key];
       if (value) {
-        vercelEnvAdd(key, value, environment);
+        allSecrets[key] = value;
       } else {
         console.warn(`⚠ ${key}: not found in vault, skipping`);
       }
     }
   }
+
+  console.log('Deploying secrets...');
+  await Promise.all(
+    Object.entries(allSecrets).map(([key, value]) =>
+      vercelEnvAdd(key, value, environment),
+    ),
+  );
 
   console.log('\nDone!');
 }
