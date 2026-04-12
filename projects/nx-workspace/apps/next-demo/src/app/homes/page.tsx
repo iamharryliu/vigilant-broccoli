@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { CRUDItemList, CRUDFormProps } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { Button } from '@radix-ui/themes';
@@ -59,24 +60,34 @@ const HomeFormComponent = ({
 };
 
 const HomeListItem = ({ item }: { item: Home }) => (
-  <Link href={`/homes/${item.id}`} className="block hover:opacity-70">
+  <div>
     <p className="font-medium">{item.name}</p>
     <p className="text-sm text-gray-500">{item.description}</p>
-  </Link>
+  </div>
 );
 
 export default function HomesPage() {
+  const router = useRouter();
   const session = useAuth();
-  const [homes, setHomes] = useState<Home[]>([]);
+  const [ownedHomes, setOwnedHomes] = useState<Home[]>([]);
+  const [memberHomes, setMemberHomes] = useState<Home[]>([]);
 
   useEffect(() => {
     supabase
       .from('homes')
-      .select('*')
+      .select('id, name, description')
+      .eq('user_id', session?.user.id ?? '')
       .then(({ data }) => {
-        if (data) setHomes(data);
+        if (data) setOwnedHomes(data);
       });
-  }, []);
+    supabase
+      .from('homes')
+      .select('id, name, description')
+      .neq('user_id', session?.user.id ?? '')
+      .then(({ data }) => {
+        if (data) setMemberHomes(data);
+      });
+  }, [session?.user.id]);
 
   const createHome = async (home: Home): Promise<Home> => {
     const { data } = await supabase
@@ -86,9 +97,9 @@ export default function HomesPage() {
         description: home.description,
         user_id: session?.user.id,
       })
-      .select()
+      .select('id, name, description')
       .single();
-    return data;
+    return data ?? home;
   };
 
   const updateHome = async (home: Home): Promise<void> => {
@@ -103,19 +114,35 @@ export default function HomesPage() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl p-8">
+    <main className="mx-auto max-w-2xl p-8 space-y-8">
       <CRUDItemList
-        items={homes}
-        setItems={setHomes}
+        items={ownedHomes}
+        setItems={setOwnedHomes}
         createItem={createHome}
         createItemFormDefaultValues={DEFAULT_HOME}
         updateItem={updateHome}
         deleteItem={deleteHome}
+        onItemClick={home => router.push(`/homes/${home.id}`)}
         FormComponent={HomeFormComponent}
         ListItemComponent={HomeListItem}
         copy={COPY}
         isCards
       />
+      {memberHomes.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-gray-500">Member of</p>
+          {memberHomes.map(h => (
+            <Link
+              key={h.id}
+              href={`/homes/${h.id}`}
+              className="block rounded border p-3 hover:opacity-70"
+            >
+              <p className="font-medium">{h.name}</p>
+              <p className="text-sm text-gray-500">{h.description}</p>
+            </Link>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

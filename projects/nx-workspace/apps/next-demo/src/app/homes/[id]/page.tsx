@@ -95,6 +95,8 @@ export default function HomeDetailPage({
   const [saving, setSaving] = useState(false);
   const [members, setMembers] = useState<HomeMember[]>([]);
 
+  const [isOwner, setIsOwner] = useState(false);
+
   useEffect(() => {
     supabase
       .from('homes')
@@ -109,6 +111,7 @@ export default function HomeDetailPage({
         setHome(data);
         setName(data.name);
         setDescription(data.description ?? '');
+        setIsOwner(data.user_id === session?.user.id);
       });
   }, [id, router]);
 
@@ -120,9 +123,11 @@ export default function HomeDetailPage({
       .then((data: unknown) => {
         if (Array.isArray(data))
           setMembers(
-            data.map(m => ({
-              ...(m as HomeMember),
-              createdAt: (m as HomeMember).createdAt ?? '',
+            data.map((m: Record<string, string>) => ({
+              id: m.id,
+              email: m.email,
+              status: m.status as 'pending' | 'accepted',
+              createdAt: m.created_at ?? '',
             })),
           );
       });
@@ -151,13 +156,12 @@ export default function HomeDetailPage({
         accessToken: session?.access_token,
       }),
     });
-    const newMember: HomeMember = {
+    return {
       id: crypto.randomUUID(),
       email: member.email,
       status: 'pending',
       createdAt: new Date().toISOString(),
     };
-    return newMember;
   };
 
   const deleteMember = async (memberId: string | number) => {
@@ -172,14 +176,12 @@ export default function HomeDetailPage({
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-8">
-      <Flex align="center" gap="3">
-        <button
-          onClick={() => router.push(ROUTES.HOMES)}
-          className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
-        >
-          ← Homes
-        </button>
-      </Flex>
+      <button
+        onClick={() => router.push(ROUTES.HOMES)}
+        className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
+      >
+        ← Homes
+      </button>
 
       <div className="space-y-4">
         <Text size="6" weight="bold">
@@ -193,6 +195,7 @@ export default function HomeDetailPage({
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="Home name"
+            disabled={!isOwner}
           />
         </div>
         <div>
@@ -203,24 +206,27 @@ export default function HomeDetailPage({
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="Description"
+            disabled={!isOwner}
           />
         </div>
-        <Button
-          onClick={handleSave}
-          loading={saving}
-          disabled={!name.trim()}
-          className="cursor-pointer"
-        >
-          Save
-        </Button>
+        {isOwner && (
+          <Button
+            onClick={handleSave}
+            loading={saving}
+            disabled={!name.trim()}
+            className="cursor-pointer"
+          >
+            Save
+          </Button>
+        )}
       </div>
 
       <CRUDItemList
         items={members}
         setItems={setMembers}
-        createItem={inviteMember}
+        createItem={isOwner ? inviteMember : undefined}
         createItemFormDefaultValues={DEFAULT_MEMBER}
-        deleteItem={deleteMember}
+        deleteItem={isOwner ? deleteMember : undefined}
         FormComponent={MemberFormComponent}
         ListItemComponent={MemberListItem}
         copy={MEMBER_COPY}

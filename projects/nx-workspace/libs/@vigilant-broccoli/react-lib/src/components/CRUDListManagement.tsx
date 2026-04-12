@@ -71,6 +71,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   createItemFormDefaultValues,
   updateItem,
   deleteItem,
+  onItemClick,
   copy = DEFAULT_COPY,
   isCards,
 }: {
@@ -84,6 +85,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   createItemFormDefaultValues?: T;
   updateItem?: UpdateItem<T>;
   deleteItem?: DeleteItem;
+  onItemClick?: (item: T) => void;
   copy?: ListManagementCopy;
   isCards?: boolean;
 }) => {
@@ -122,7 +124,11 @@ export const CRUDItemList = <T extends CRUDItem>({
           {HeaderComponent}
           {items.map(item =>
             isCards ? (
-              <Card key={item.id}>
+              <Card
+                key={item.id}
+                onClick={() => onItemClick?.(item)}
+                className={onItemClick ? 'cursor-pointer' : ''}
+              >
                 <div className="flex justify-between">
                   <div className="w-full">
                     {ListItemComponent ? (
@@ -143,7 +149,12 @@ export const CRUDItemList = <T extends CRUDItem>({
                 </div>
               </Card>
             ) : (
-              <div key={item.id} className="flex justify-between">
+              <div
+                key={item.id}
+                className="flex justify-between"
+                onClick={() => onItemClick?.(item)}
+                style={onItemClick ? { cursor: 'pointer' } : undefined}
+              >
                 <div className="w-full">
                   {ListItemComponent ? (
                     <ListItemComponent item={item} items={items} />
@@ -188,7 +199,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   return (
     <Popover.Root>
       <Popover.Trigger>
-        <Button variant="ghost">
+        <Button variant="ghost" onClick={e => e.stopPropagation()}>
           <EllipsisVertical />
         </Button>
       </Popover.Trigger>

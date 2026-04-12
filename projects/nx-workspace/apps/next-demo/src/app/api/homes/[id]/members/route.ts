@@ -49,6 +49,7 @@ export async function POST(
     home_id: Number(id),
     email: normalizedEmail,
     invited_by: user?.id,
+    invited_by_email: user?.email,
   });
 
   if (insertError) {

@@ -103,6 +103,7 @@ async function main() {
       'CLOUDFLARE_R2_ACCESS_KEY_ID',
       'CLOUDFLARE_R2_SECRET_ACCESS_KEY',
       'OPENAI_API_KEY',
+      'SUPABASE_SERVICE_ROLE_KEY',
     ],
   };
 
