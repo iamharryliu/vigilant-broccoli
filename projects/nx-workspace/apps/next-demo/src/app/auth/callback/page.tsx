@@ -9,9 +9,12 @@ export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       router.push(session ? ROUTES.HOME : ROUTES.LOGIN);
     });
+    return () => subscription.unsubscribe();
   }, [router]);
 
   return <p>Signing you in...</p>;

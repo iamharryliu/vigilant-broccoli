@@ -115,6 +115,32 @@ export async function POST(request: NextRequest) {
   return Response.json({ success: true });
 }
 
+export async function PATCH(request: NextRequest) {
+  const { id, title, description, tags, accessToken } =
+    (await request.json()) as {
+      id: string;
+      title: string;
+      description: string;
+      tags: string[];
+      accessToken: string;
+    };
+  const supabase = createServerClient(accessToken);
+
+  const { error } = await supabase
+    .from('where_is_items')
+    .update({ title, description, tags })
+    .eq('id', id);
+
+  if (error) {
+    return Response.json(
+      { error: error.message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+
+  return Response.json({ success: true });
+}
+
 export async function DELETE(request: NextRequest) {
   const { id, accessToken } = await request.json();
   const supabase = createServerClient(accessToken ?? '');

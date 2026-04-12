@@ -10,7 +10,7 @@ import { AlertDialog, Button, Card, Heading, Popover } from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 
 type CRUDItem = {
-  id: number;
+  id: string | number;
 };
 
 interface ListManagementCopy {
@@ -45,7 +45,7 @@ const DEFAULT_COPY = {
 
 type CreateItem<T> = (item: T) => Promise<T>;
 type UpdateItem<T> = (item: T) => Promise<void>;
-type DeleteItem = (id: number) => Promise<void>;
+type DeleteItem = (id: string | number) => Promise<void>;
 
 type CRUDFormSubmitHandler<T> = (item: T, formType: FormType) => Promise<void>;
 export type CRUDFormProps<T> = {
@@ -97,7 +97,7 @@ export const CRUDItemList = <T extends CRUDItem>({
       setItems(prev => prev.map(x => (x.id === item.id ? item : x)));
     }
   }
-  async function handleDelete(id: number) {
+  async function handleDelete(id: string | number) {
     if (!deleteItem) return;
     await deleteItem(id);
     setItems(prev => prev.filter(item => item.id !== id));
@@ -182,7 +182,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   item: T;
   FormComponent: CRUDFormComponent<T>;
   submitHandler: CRUDFormSubmitHandler<T>;
-  deleteItem: DeleteItem;
+  deleteItem: (id: string | number) => Promise<void>;
   copy: ListManagementCopy;
 }) => {
   return (

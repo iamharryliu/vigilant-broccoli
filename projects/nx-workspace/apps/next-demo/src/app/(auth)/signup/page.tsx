@@ -23,7 +23,7 @@ export default function SignUpPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}${ROUTES.DASHBOARD}`,
+        emailRedirectTo: `${window.location.origin}${ROUTES.HOME}`,
       },
     });
 

@@ -20,12 +20,14 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF
 - AI generates description + tags from images
 - Fuzzy search across title, description, tags
+- Update title, description, and tags inline
 - Delete removes DB rows + R2 objects
 
 ## Routes
 
 - `GET /api/where-is?homeId=` — list items for a home
 - `POST /api/where-is` — create item + upload images
+- `PATCH /api/where-is` — update title, description, tags
 - `DELETE /api/where-is` — delete item + R2 images
 - `POST /api/where-is/analyze` — AI analysis of images
 

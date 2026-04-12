@@ -6,6 +6,7 @@ import { useAuth } from '../providers/auth-provider';
 import { isWhitelisted } from '../../lib/whitelist';
 import { ROUTES } from '../../lib/routes';
 import { supabase } from '../../../libs/supabase';
+import Navbar from './Navbar';
 
 const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.SIGNUP, ROUTES.AUTH_CALLBACK];
 
@@ -14,9 +15,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r));
+  const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r));
 
+  useEffect(() => {
     if (!session && !isPublic) {
       router.replace(ROUTES.LOGIN);
       return;
@@ -31,7 +32,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (session && isPublic) {
       router.replace(ROUTES.HOME);
     }
-  }, [session, pathname, router]);
+  }, [session, isPublic, router]);
 
-  return <>{children}</>;
+  return (
+    <>
+      {session && !isPublic && <Navbar />}
+      {children}
+    </>
+  );
 }
