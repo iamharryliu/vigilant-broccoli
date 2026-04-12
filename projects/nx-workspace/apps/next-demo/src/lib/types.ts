@@ -4,6 +4,13 @@ export type Home = {
   description: string;
 };
 
+export type HomeMember = {
+  id: string;
+  email: string;
+  status: 'pending' | 'accepted';
+  createdAt: string;
+};
+
 export interface WhereIsItem {
   id: string;
   title: string;

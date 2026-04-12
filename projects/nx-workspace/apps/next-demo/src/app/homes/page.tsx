@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { CRUDItemList, CRUDFormProps } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { Button } from '@radix-ui/themes';
@@ -58,10 +59,10 @@ const HomeFormComponent = ({
 };
 
 const HomeListItem = ({ item }: { item: Home }) => (
-  <div>
+  <Link href={`/homes/${item.id}`} className="block hover:opacity-70">
     <p className="font-medium">{item.name}</p>
     <p className="text-sm text-gray-500">{item.description}</p>
-  </div>
+  </Link>
 );
 
 export default function HomesPage() {
