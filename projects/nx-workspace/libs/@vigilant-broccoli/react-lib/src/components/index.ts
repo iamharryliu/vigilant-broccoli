@@ -6,3 +6,4 @@ export * from './CRUDListManagement';
 export * from './ConversionForm';
 export * from './Button';
 export * from './ServiceLinksTable';
+export * from './SocialSigninButton';

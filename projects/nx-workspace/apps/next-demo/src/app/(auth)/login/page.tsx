@@ -2,6 +2,7 @@
 
 import { supabase } from '../../../../libs/supabase';
 import { ROUTES } from '../../../lib/routes';
+import { GoogleSigninButton } from '@vigilant-broccoli/react-lib';
 
 export default function LoginPage() {
   const handleGoogleSignIn = async () => {
@@ -17,12 +18,7 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm space-y-6">
         <h1 className="text-2xl font-bold">Sign in</h1>
-        <button
-          onClick={handleGoogleSignIn}
-          className="w-full rounded border py-2 hover:bg-gray-50"
-        >
-          Sign in with Google
-        </button>
+        <GoogleSigninButton onClick={handleGoogleSignIn} />
       </div>
     </main>
   );

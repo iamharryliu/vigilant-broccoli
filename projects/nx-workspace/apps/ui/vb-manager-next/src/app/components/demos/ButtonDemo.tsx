@@ -12,7 +12,11 @@ import {
   Play,
   Square,
 } from 'lucide-react';
-import { CopyButton } from '@vigilant-broccoli/react-lib';
+import {
+  CopyButton,
+  GoogleSigninButton,
+  MicrosoftSigninButton,
+} from '@vigilant-broccoli/react-lib';
 
 export function ButtonDemo() {
   const [mockLoading, setMockLoading] = useState(false);
@@ -184,6 +188,16 @@ export function ButtonDemo() {
         </Heading>
         <Flex gap="3" align="center">
           <CopyButton text="hello copy pastable" />
+        </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Social Signin Buttons
+        </Heading>
+        <Flex direction="column" gap="3" style={{ maxWidth: 300 }}>
+          <GoogleSigninButton />
+          <MicrosoftSigninButton />
         </Flex>
       </div>
 
