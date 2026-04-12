@@ -73,17 +73,18 @@ export default function HomesPage() {
   const [memberHomes, setMemberHomes] = useState<Home[]>([]);
 
   useEffect(() => {
+    if (!session?.user.id) return;
     supabase
       .from('homes')
       .select('id, name, description')
-      .eq('user_id', session?.user.id ?? '')
+      .eq('user_id', session.user.id)
       .then(({ data }) => {
         if (data) setOwnedHomes(data);
       });
     supabase
       .from('homes')
       .select('id, name, description')
-      .neq('user_id', session?.user.id ?? '')
+      .neq('user_id', session.user.id)
       .then(({ data }) => {
         if (data) setMemberHomes(data);
       });

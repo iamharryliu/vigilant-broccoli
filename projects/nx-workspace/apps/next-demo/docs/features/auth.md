@@ -1,9 +1,8 @@
-# Auth & Homes
+# Auth
 
 ## Stack
 
 - Supabase Auth — Google OAuth
-- Supabase — `homes` table
 - Email whitelist — hardcoded in `src/lib/whitelist.ts`
 
 ## Auth Flow
@@ -12,18 +11,11 @@
 - Unauthenticated users redirected to `/login`
 - Non-whitelisted users signed out immediately
 
-## Homes
-
-- `homes` — `id`, `user_id`, `name`, `description`
-- CRUD via `CRUDItemList` component
-- RLS enforced via Supabase JWT
-
 ## Routes
 
 - `GET /login` — Google sign-in
 - `GET /signup` — email/password + Google sign-up
 - `GET /auth/callback` — OAuth redirect handler
-- `GET /homes` — homes CRUD
 
 ## Env Vars
 

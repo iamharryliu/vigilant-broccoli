@@ -151,9 +151,8 @@ export const CRUDItemList = <T extends CRUDItem>({
             ) : (
               <div
                 key={item.id}
-                className="flex justify-between"
+                className={`flex justify-between${onItemClick ? ' cursor-pointer' : ''}`}
                 onClick={() => onItemClick?.(item)}
-                style={onItemClick ? { cursor: 'pointer' } : undefined}
               >
                 <div className="w-full">
                   {ListItemComponent ? (

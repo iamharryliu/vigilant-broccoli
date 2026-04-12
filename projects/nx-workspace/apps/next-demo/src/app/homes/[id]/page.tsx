@@ -113,7 +113,7 @@ export default function HomeDetailPage({
         setDescription(data.description ?? '');
         setIsOwner(data.user_id === session?.user.id);
       });
-  }, [id, router]);
+  }, [id, router, session?.user.id]);
 
   useEffect(() => {
     fetch(`/api/homes/${id}/members`, {

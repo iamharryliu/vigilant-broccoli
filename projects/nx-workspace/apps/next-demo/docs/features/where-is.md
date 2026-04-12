@@ -16,12 +16,18 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 ## Features
 
 - Tied to a home — auto-selects if user has 1 home, dropdown if multiple, redirects to `/homes` if none
+- Shared with accepted home members — full CRUD access
 - Upload up to 10 images per item (max 10MB each, max 50MB total)
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF
 - AI generates description + tags from images
 - Fuzzy search across title, description, tags
 - Update title, description, and tags inline
 - Delete removes DB rows + R2 objects
+
+## RLS
+
+- Owner: full CRUD via `auth.uid() = user_id`
+- Accepted home members: full CRUD via `is_home_member()` + `is_home_owner()` security definer functions
 
 ## Routes
 
