@@ -97,7 +97,7 @@ export default function HomesPage() {
       .eq('id', home.id);
   };
 
-  const deleteHome = async (id: number): Promise<void> => {
+  const deleteHome = async (id: string | number): Promise<void> => {
     await supabase.from('homes').delete().eq('id', id);
   };
 
