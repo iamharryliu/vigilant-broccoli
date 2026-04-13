@@ -48,11 +48,15 @@ export class ContactComponent {
 
   form = new FormGroup({
     name: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
+    ]),
     message: new FormControl('', Validators.required),
   });
 
   submitForm() {
+    if (this.form.invalid) return;
     this.submit$.next(true);
   }
 }
