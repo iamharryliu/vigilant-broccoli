@@ -7,8 +7,8 @@ TIMESTAMP=$(date -u +%Y-%m-%d)
 FOLDER_NAME="vb-vault-secrets"
 ITEM_NAME="vb-vault-secrets-$TIMESTAMP"
 
-export BW_PASSWORD=$(gcloud secrets versions access latest --secret="BITWARDEN_PASSWORD")
-export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
+export BITWARDEN_PASSWORD=$(gcloud secrets versions access latest --secret="BITWARDEN_PASSWORD")
+export BW_SESSION=$(bw unlock --passwordenv BITWARDEN_PASSWORD --raw)
 bw sync > /dev/null
 
 # Fetch vault secrets directly to variable (no local file)
@@ -98,5 +98,5 @@ backup_csv_to_bitwarden "$HOME/Desktop/Passwords.csv" "apple-passwords"
 backup_csv_to_bitwarden "$HOME/Desktop/Chrome Passwords.csv" "chrome-passwords"
 
 # Export Bitwarden vault (encrypted, now includes vault secrets)
-bw export --password "$BW_PASSWORD" --format encrypted_json --output ~/resilio-sync/backup/bitwarden/bitwarden-backup-$TIMESTAMP.json
+bw export --password "$BITWARDEN_PASSWORD" --format encrypted_json --output ~/resilio-sync/backup/bitwarden/bitwarden-backup-$TIMESTAMP.json
 echo "✓ Bitwarden vault exported (encrypted)"
