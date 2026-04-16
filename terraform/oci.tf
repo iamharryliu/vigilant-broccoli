@@ -59,7 +59,7 @@ resource "oci_core_security_list" "rabbitmq_sl" {
     protocol = "6"
     source   = "0.0.0.0/0"
     tcp_options {
-      min = 5672
+      min = 5671
       max = 5672
     }
   }
@@ -68,7 +68,7 @@ resource "oci_core_security_list" "rabbitmq_sl" {
     protocol = "6"
     source   = "0.0.0.0/0"
     tcp_options {
-      min = 15672
+      min = 15671
       max = 15672
     }
   }

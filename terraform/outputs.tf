@@ -13,5 +13,5 @@ output "rabbitmq_public_ip" {
 }
 
 output "rabbitmq_management_url" {
-  value = "http://${oci_core_instance.rabbitmq.public_ip}:15672"
+  value = "https://${oci_core_instance.rabbitmq.public_ip}:15671"
 }

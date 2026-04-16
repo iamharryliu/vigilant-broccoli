@@ -17,11 +17,21 @@ write_files:
           environment:
             RABBITMQ_DEFAULT_USER: ${rabbitmq_user}
             RABBITMQ_DEFAULT_PASS: ${rabbitmq_password}
+            RABBITMQ_SSL_CACERTFILE: /etc/rabbitmq/certs/ca.crt
+            RABBITMQ_SSL_CERTFILE: /etc/rabbitmq/certs/server.crt
+            RABBITMQ_SSL_KEYFILE: /etc/rabbitmq/certs/server.key
+            RABBITMQ_MANAGEMENT_SSL_PORT: 15671
+            RABBITMQ_MANAGEMENT_SSL_CACERTFILE: /etc/rabbitmq/certs/ca.crt
+            RABBITMQ_MANAGEMENT_SSL_CERTFILE: /etc/rabbitmq/certs/server.crt
+            RABBITMQ_MANAGEMENT_SSL_KEYFILE: /etc/rabbitmq/certs/server.key
           ports:
+            - "5671:5671"
             - "5672:5672"
+            - "15671:15671"
             - "15672:15672"
           volumes:
             - rabbitmq_data:/var/lib/rabbitmq
+            - /opt/rabbitmq/certs:/etc/rabbitmq/certs:ro
       volumes:
         rabbitmq_data:
 
@@ -29,6 +39,10 @@ runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ubuntu
+  - mkdir -p /opt/rabbitmq/certs
+  - openssl req -x509 -nodes -newkey rsa:2048 -days 3650 -keyout /opt/rabbitmq/certs/server.key -out /opt/rabbitmq/certs/server.crt -subj "/CN=rabbitmq"
+  - cp /opt/rabbitmq/certs/server.crt /opt/rabbitmq/certs/ca.crt
+  - chmod 644 /opt/rabbitmq/certs/*
   - docker compose -f /opt/rabbitmq/docker-compose.yml up -d
   - sleep 15
   - docker exec rabbitmq rabbitmqctl set_user_tags ${rabbitmq_user} administrator
