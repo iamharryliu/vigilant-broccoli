@@ -29,8 +29,8 @@ export const CRUDListDemo = () => {
     await JSONPlaceholderPostService.updateTodo(item);
   }
 
-  async function deleteItem(id: number) {
-    await JSONPlaceholderPostService.deleteTodo(id);
+  async function deleteItem(id: string | number) {
+    await JSONPlaceholderPostService.deleteTodo(Number(id));
   }
 
   return (
