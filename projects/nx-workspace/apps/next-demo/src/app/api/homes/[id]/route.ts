@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
-import { createServerClient } from '../../../../../libs/supabase-server';
+import {
+  createServerClient,
+  createAdminClient,
+} from '../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export async function PATCH(
@@ -8,9 +11,33 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const { name, description, accessToken } = await request.json();
-  const supabase = createServerClient(accessToken);
+  const userClient = createServerClient(accessToken);
 
-  const { error } = await supabase
+  const {
+    data: { user },
+  } = await userClient.auth.getUser();
+  if (!user) {
+    return Response.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
+  }
+
+  const adminClient = createAdminClient();
+
+  const { data: membership } = await adminClient
+    .from('home_members')
+    .select('role')
+    .eq('home_id', id)
+    .eq('user_id', user.id)
+    .eq('status', 'accepted')
+    .maybeSingle();
+
+  const isAdmin = membership?.role === 'HOME_ADMIN';
+
+  const client = isAdmin ? adminClient : userClient;
+
+  const { error } = await client
     .from('homes')
     .update({ name, description })
     .eq('id', id);

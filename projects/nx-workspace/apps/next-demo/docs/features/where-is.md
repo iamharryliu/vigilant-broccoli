@@ -15,7 +15,7 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 
 ## Features
 
-- Tied to a home — auto-selects if user has 1 home, dropdown if multiple, redirects to `/homes` if none
+- Tied to a home — dropdown selector always shown, home persisted in `?home=` query param, defaults to first home, redirects to `/homes` if none
 - Shared with accepted home members — full CRUD access
 - Upload up to 10 images per item (max 10MB each, max 50MB total)
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF

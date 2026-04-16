@@ -53,7 +53,9 @@ export const HomeDetailView = ({ homeId }: Props) => {
             createdAt: m.created_at ?? '',
           }));
           setMembers(mapped);
-          const currentMember = mapped.find(m => m.email === session?.user.email);
+          const currentMember = mapped.find(
+            m => m.email === session?.user.email,
+          );
           setIsAdmin(currentMember?.role === HOME_ROLE.ADMIN);
         }
       });
@@ -127,13 +129,13 @@ export const HomeDetailView = ({ homeId }: Props) => {
           onDescriptionChange={setDescription}
           onSave={handleSave}
           saving={saving}
-          disabled={!isOwner}
+          disabled={!isOwner && !isAdmin}
         />
       </div>
       <MemberList
         members={members}
         setMembers={setMembers}
-        isOwner={isOwner}
+        isOwner={isOwner || isAdmin}
         isAdmin={isAdmin}
         onInvite={inviteMember}
         onDelete={deleteMember}

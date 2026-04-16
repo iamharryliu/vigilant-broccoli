@@ -5,6 +5,18 @@ import {
 } from '../../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
+async function isHomeAdmin(homeId: string, userId: string): Promise<boolean> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from('home_members')
+    .select('role')
+    .eq('home_id', homeId)
+    .eq('user_id', userId)
+    .eq('status', 'accepted')
+    .maybeSingle();
+  return data?.role === 'HOME_ADMIN';
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -45,7 +57,10 @@ export async function POST(
 
   const normalizedEmail = email.trim().toLowerCase();
 
-  const { error: insertError } = await supabase.from('home_members').insert({
+  const canManage = user && (await isHomeAdmin(id, user.id));
+  const writeClient = canManage ? createAdminClient() : supabase;
+
+  const { error: insertError } = await writeClient.from('home_members').insert({
     home_id: Number(id),
     email: normalizedEmail,
     invited_by: user?.id,
@@ -83,9 +98,14 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const { memberId, role, accessToken } = await request.json();
-  const supabase = createServerClient(accessToken);
+  const userClient = createServerClient(accessToken);
+  const {
+    data: { user },
+  } = await userClient.auth.getUser();
+  const canManage = user && (await isHomeAdmin(id, user.id));
+  const client = canManage ? createAdminClient() : userClient;
 
-  const { error } = await supabase
+  const { error } = await client
     .from('home_members')
     .update({ role })
     .eq('id', memberId)
@@ -107,9 +127,14 @@ export async function DELETE(
 ) {
   const { id } = await params;
   const { memberId, accessToken } = await request.json();
-  const supabase = createServerClient(accessToken);
+  const userClient = createServerClient(accessToken);
+  const {
+    data: { user },
+  } = await userClient.auth.getUser();
+  const canManage = user && (await isHomeAdmin(id, user.id));
+  const client = canManage ? createAdminClient() : userClient;
 
-  const { error } = await supabase
+  const { error } = await client
     .from('home_members')
     .delete()
     .eq('id', memberId)
