@@ -109,6 +109,7 @@ type Props = {
   members: HomeMember[];
   setMembers: React.Dispatch<React.SetStateAction<HomeMember[]>>;
   isOwner: boolean;
+  isAdmin: boolean;
   onInvite: (member: HomeMember) => Promise<HomeMember>;
   onDelete: (memberId: string | number) => Promise<void>;
   onRoleChange: (memberId: string, role: HomeRole) => Promise<void>;
@@ -118,6 +119,7 @@ export const MemberList = ({
   members,
   setMembers,
   isOwner,
+  isAdmin,
   onInvite,
   onDelete,
   onRoleChange,
@@ -132,7 +134,7 @@ export const MemberList = ({
     ListItemComponent={({ item }) => (
       <MemberListItem
         item={item}
-        isOwner={isOwner}
+        isOwner={isOwner || isAdmin}
         onRoleChange={onRoleChange}
       />
     )}

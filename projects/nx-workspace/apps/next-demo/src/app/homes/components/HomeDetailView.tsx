@@ -19,6 +19,7 @@ export const HomeDetailView = ({ homeId }: Props) => {
   const [saving, setSaving] = useState(false);
   const [members, setMembers] = useState<HomeMember[]>([]);
   const [isOwner, setIsOwner] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -43,16 +44,18 @@ export const HomeDetailView = ({ homeId }: Props) => {
     })
       .then(r => r.json())
       .then((data: unknown) => {
-        if (Array.isArray(data))
-          setMembers(
-            data.map((m: Record<string, string>) => ({
-              id: m.id,
-              email: m.email,
-              status: m.status as 'pending' | 'accepted',
-              role: (m.role ?? HOME_ROLE.MEMBER) as HomeRole,
-              createdAt: m.created_at ?? '',
-            })),
-          );
+        if (Array.isArray(data)) {
+          const mapped = data.map((m: Record<string, string>) => ({
+            id: m.id,
+            email: m.email,
+            status: m.status as 'pending' | 'accepted',
+            role: (m.role ?? HOME_ROLE.MEMBER) as HomeRole,
+            createdAt: m.created_at ?? '',
+          }));
+          setMembers(mapped);
+          const currentMember = mapped.find(m => m.email === session?.user.email);
+          setIsAdmin(currentMember?.role === HOME_ROLE.ADMIN);
+        }
       });
   }, [homeId, session?.access_token]);
 
@@ -131,6 +134,7 @@ export const HomeDetailView = ({ homeId }: Props) => {
         members={members}
         setMembers={setMembers}
         isOwner={isOwner}
+        isAdmin={isAdmin}
         onInvite={inviteMember}
         onDelete={deleteMember}
         onRoleChange={updateMemberRole}
