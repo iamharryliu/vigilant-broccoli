@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Box,
   Button,
@@ -64,7 +64,11 @@ const fuzzyMatch = (query: string, item: WhereIsItem): boolean => {
   return q.split(' ').every(word => searchText.includes(word));
 };
 
-const WhereIsListItem = ({ item }: { item: WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'> }) => (
+const WhereIsListItem = ({
+  item,
+}: {
+  item: WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'>;
+}) => (
   <Flex gap="3" align="center">
     {item.imageUrls?.[0] && (
       <img
@@ -270,12 +274,18 @@ const WhereIsFormComponent = ({
 
 export default function WhereIsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const session = useAuth();
   const [homes, setHomes] = useState<HomeOption[]>([]);
   const [selectedHomeId, setSelectedHomeId] = useState<number | null>(null);
-  const [loadingHomes, setLoadingHomes] = useState(true);
   const [items, setItems] = useState<WhereIsItem[]>([]);
   const [query, setQuery] = useState('');
+  const [loaded, setLoaded] = useState(false);
+
+  const handleHomeChange = (homeId: number) => {
+    setSelectedHomeId(homeId);
+    router.replace(`${ROUTES.WHERE_IS}?home=${homeId}`);
+  };
 
   useEffect(() => {
     supabase
@@ -288,18 +298,26 @@ export default function WhereIsPage() {
           return;
         }
         setHomes(userHomes);
-        setSelectedHomeId(userHomes.length === 1 ? userHomes[0].id : null);
-        setLoadingHomes(false);
+        const paramHomeId = Number(searchParams.get('home'));
+        const homeId =
+          paramHomeId && userHomes.some(h => h.id === paramHomeId)
+            ? paramHomeId
+            : userHomes[0].id;
+        setSelectedHomeId(homeId);
       });
   }, [router]);
 
   useEffect(() => {
     if (selectedHomeId === null) return;
+    setLoaded(false);
     fetch(`/api/where-is?homeId=${selectedHomeId}`, {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     })
       .then(r => r.json())
-      .then(setItems);
+      .then(data => {
+        setItems(data);
+        setLoaded(true);
+      });
   }, [selectedHomeId, session?.access_token]);
 
   const createItem = async (
@@ -372,9 +390,8 @@ export default function WhereIsPage() {
     });
   };
 
-  if (loadingHomes) return <p className="p-6">Loading...</p>;
+  if (homes.length === 0) return null;
 
-  const selectedHome = homes.find(h => h.id === selectedHomeId);
   const filtered = items.filter(item => fuzzyMatch(query, item));
 
   // Map WhereIsItem to WhereIsFormValues shape for CRUDItemList
@@ -394,31 +411,22 @@ export default function WhereIsPage() {
         <Text size="6" weight="bold">
           Where Is
         </Text>
-        {homes.length > 1 && (
-          <Select.Root
-            value={selectedHomeId?.toString() ?? ''}
-            onValueChange={v => setSelectedHomeId(Number(v))}
-          >
-            <Select.Trigger placeholder="Select a home" />
-            <Select.Content>
-              {homes.map(h => (
-                <Select.Item key={h.id} value={h.id.toString()}>
-                  {h.name}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
-        )}
-        {homes.length === 1 && selectedHome && (
-          <Text size="2" color="gray">
-            {selectedHome.name}
-          </Text>
-        )}
+        <Select.Root
+          value={selectedHomeId?.toString() ?? ''}
+          onValueChange={v => handleHomeChange(Number(v))}
+        >
+          <Select.Trigger placeholder="Select a home" />
+          <Select.Content>
+            {homes.map(h => (
+              <Select.Item key={h.id} value={h.id.toString()}>
+                {h.name}
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Root>
       </Flex>
 
-      {selectedHomeId === null ? (
-        <Text color="gray">Select a home to view storage areas.</Text>
-      ) : (
+      {selectedHomeId !== null && loaded && (
         <>
           <TextField.Root
             placeholder="Search items (e.g. scissors, batteries)..."

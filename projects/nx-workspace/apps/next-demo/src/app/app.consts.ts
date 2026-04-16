@@ -1,6 +1,6 @@
 import { ROUTES } from '../lib/routes';
 
 export const NAV_LINKS = [
-  { label: 'Homes', href: ROUTES.HOMES },
+  { label: 'Home', href: ROUTES.MY_HOME },
   { label: 'Where Is', href: ROUTES.WHERE_IS },
 ];

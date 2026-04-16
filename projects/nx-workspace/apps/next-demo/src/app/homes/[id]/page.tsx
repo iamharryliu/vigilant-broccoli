@@ -1,85 +1,9 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { use } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Button, Flex, Text, TextField } from '@radix-ui/themes';
-import { CRUDItemList, CRUDFormProps } from '@vigilant-broccoli/react-lib';
-import { FORM_TYPE } from '@vigilant-broccoli/common-js';
-import { supabase } from '../../../../libs/supabase';
-import { useAuth } from '../../providers/auth-provider';
 import { ROUTES } from '../../../lib/routes';
-import { Home, HomeMember } from '../../../lib/types';
-
-const MEMBER_COPY = {
-  LIST: { TITLE: 'Members', EMPTY_MESSAGE: 'No members yet.' },
-  [FORM_TYPE.CREATE]: {
-    TITLE: 'Invite Member',
-    DESCRIPTION: 'Send an invite to a new member by email.',
-  },
-  [FORM_TYPE.UPDATE]: { TITLE: 'Update Member', DESCRIPTION: '' },
-};
-
-const DEFAULT_MEMBER: HomeMember = {
-  id: '',
-  email: '',
-  status: 'pending',
-  createdAt: '',
-};
-
-const MemberFormComponent = ({
-  formType,
-  initialFormValues,
-  submitHandler,
-}: CRUDFormProps<HomeMember>) => {
-  const [email, setEmail] = useState(initialFormValues.email);
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleSubmit = async () => {
-    if (!email.trim()) return;
-    setSubmitting(true);
-    await submitHandler({ ...initialFormValues, email }, formType);
-    setSubmitting(false);
-  };
-
-  return (
-    <Flex direction="column" gap="3" mt="3">
-      <div>
-        <Text size="1" weight="medium" as="p" mb="1">
-          Email
-        </Text>
-        <TextField.Root
-          placeholder="member@example.com"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          disabled={formType === FORM_TYPE.UPDATE}
-        />
-      </div>
-      {formType === FORM_TYPE.CREATE && (
-        <Button
-          onClick={handleSubmit}
-          disabled={!email.trim() || submitting}
-          loading={submitting}
-          className="cursor-pointer"
-        >
-          Send Invite
-        </Button>
-      )}
-    </Flex>
-  );
-};
-
-const MemberListItem = ({ item }: { item: HomeMember }) => (
-  <Flex align="center" gap="3">
-    <Text size="2">{item.email}</Text>
-    <Badge
-      variant="soft"
-      color={item.status === 'accepted' ? 'green' : 'orange'}
-      size="1"
-    >
-      {item.status}
-    </Badge>
-  </Flex>
-);
+import { HomeDetailView } from '../components/HomeDetailView';
 
 export default function HomeDetailPage({
   params,
@@ -88,91 +12,6 @@ export default function HomeDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const session = useAuth();
-  const [home, setHome] = useState<Home | null>(null);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [members, setMembers] = useState<HomeMember[]>([]);
-
-  const [isOwner, setIsOwner] = useState(false);
-
-  useEffect(() => {
-    supabase
-      .from('homes')
-      .select('*')
-      .eq('id', id)
-      .single()
-      .then(({ data }) => {
-        if (!data) {
-          router.replace(ROUTES.HOMES);
-          return;
-        }
-        setHome(data);
-        setName(data.name);
-        setDescription(data.description ?? '');
-        setIsOwner(data.user_id === session?.user.id);
-      });
-  }, [id, router, session?.user.id]);
-
-  useEffect(() => {
-    fetch(`/api/homes/${id}/members`, {
-      headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
-    })
-      .then(r => r.json())
-      .then((data: unknown) => {
-        if (Array.isArray(data))
-          setMembers(
-            data.map((m: Record<string, string>) => ({
-              id: m.id,
-              email: m.email,
-              status: m.status as 'pending' | 'accepted',
-              createdAt: m.created_at ?? '',
-            })),
-          );
-      });
-  }, [id, session?.access_token]);
-
-  const handleSave = async () => {
-    setSaving(true);
-    await fetch(`/api/homes/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        description,
-        accessToken: session?.access_token,
-      }),
-    });
-    setSaving(false);
-  };
-
-  const inviteMember = async (member: HomeMember): Promise<HomeMember> => {
-    await fetch(`/api/homes/${id}/members`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: member.email,
-        accessToken: session?.access_token,
-      }),
-    });
-    return {
-      id: crypto.randomUUID(),
-      email: member.email,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    };
-  };
-
-  const deleteMember = async (memberId: string | number) => {
-    await fetch(`/api/homes/${id}/members`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memberId, accessToken: session?.access_token }),
-    });
-  };
-
-  if (!home) return <p className="p-6">Loading...</p>;
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-8">
@@ -182,55 +21,7 @@ export default function HomeDetailPage({
       >
         ← Homes
       </button>
-
-      <div className="space-y-4">
-        <Text size="6" weight="bold">
-          Home Details
-        </Text>
-        <div>
-          <Text size="1" weight="medium" as="p" mb="1">
-            Name
-          </Text>
-          <TextField.Root
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Home name"
-            disabled={!isOwner}
-          />
-        </div>
-        <div>
-          <Text size="1" weight="medium" as="p" mb="1">
-            Description
-          </Text>
-          <TextField.Root
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            placeholder="Description"
-            disabled={!isOwner}
-          />
-        </div>
-        {isOwner && (
-          <Button
-            onClick={handleSave}
-            loading={saving}
-            disabled={!name.trim()}
-            className="cursor-pointer"
-          >
-            Save
-          </Button>
-        )}
-      </div>
-
-      <CRUDItemList
-        items={members}
-        setItems={setMembers}
-        createItem={isOwner ? inviteMember : undefined}
-        createItemFormDefaultValues={DEFAULT_MEMBER}
-        deleteItem={isOwner ? deleteMember : undefined}
-        FormComponent={MemberFormComponent}
-        ListItemComponent={MemberListItem}
-        copy={MEMBER_COPY}
-      />
+      <HomeDetailView homeId={id} />
     </div>
   );
 }
