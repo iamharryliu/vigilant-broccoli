@@ -1,4 +1,4 @@
-import { EllipsisVertical, Plus } from 'lucide-react';
+import { Ellipsis, Plus } from 'lucide-react';
 import {
   ComponentType,
   Dispatch,
@@ -129,7 +129,7 @@ export const CRUDItemList = <T extends CRUDItem>({
                 onClick={() => onItemClick?.(item)}
                 className={onItemClick ? 'cursor-pointer' : ''}
               >
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <div className="w-full">
                     {ListItemComponent ? (
                       <ListItemComponent item={item} items={items} />
@@ -151,7 +151,7 @@ export const CRUDItemList = <T extends CRUDItem>({
             ) : (
               <div
                 key={item.id}
-                className={`flex justify-between${onItemClick ? ' cursor-pointer' : ''}`}
+                className={`flex justify-between items-center${onItemClick ? ' cursor-pointer' : ''}`}
                 onClick={() => onItemClick?.(item)}
               >
                 <div className="w-full">
@@ -199,7 +199,7 @@ const EllipsisOptions = <T extends CRUDItem>({
     <Popover.Root>
       <Popover.Trigger>
         <Button variant="ghost" onClick={e => e.stopPropagation()}>
-          <EllipsisVertical />
+          <Ellipsis />
         </Button>
       </Popover.Trigger>
       <Popover.Content align="end" className="w-min">
