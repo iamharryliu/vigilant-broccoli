@@ -74,7 +74,7 @@ const MemberListItem = ({
   isOwner: boolean;
   onRoleChange: (memberId: string, role: HomeRole) => Promise<void>;
 }) => (
-  <Flex align="center" gap="3">
+  <Flex align="center" justify="between" width="100%">
     <Flex align="center" gap="2">
       <Text size="2">{item.email}</Text>
       <Badge
@@ -85,7 +85,6 @@ const MemberListItem = ({
         {item.status}
       </Badge>
     </Flex>
-    <div className="flex-1" />
     {item.status === 'accepted' && isOwner ? (
       <Select.Root
         value={item.role}

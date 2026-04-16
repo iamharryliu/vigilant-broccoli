@@ -130,7 +130,7 @@ export const CRUDItemList = <T extends CRUDItem>({
                 className={onItemClick ? 'cursor-pointer' : ''}
               >
                 <div className="flex justify-between items-center">
-                  <div className="w-full">
+                  <div className="w-[90%]">
                     {ListItemComponent ? (
                       <ListItemComponent item={item} items={items} />
                     ) : (
@@ -154,7 +154,7 @@ export const CRUDItemList = <T extends CRUDItem>({
                 className={`flex justify-between items-center${onItemClick ? ' cursor-pointer' : ''}`}
                 onClick={() => onItemClick?.(item)}
               >
-                <div className="w-full">
+                <div className="w-[90%]">
                   {ListItemComponent ? (
                     <ListItemComponent item={item} items={items} />
                   ) : (
