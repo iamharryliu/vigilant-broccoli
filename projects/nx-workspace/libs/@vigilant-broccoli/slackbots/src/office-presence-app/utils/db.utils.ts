@@ -5,7 +5,7 @@ import {
   OfficeEvent,
   OfficeEventRow,
 } from '../types';
-import * as Database from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { formatISODateLocal } from './date.utils';
 
 const db = new Database('state.db');
