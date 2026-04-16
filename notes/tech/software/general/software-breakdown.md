@@ -1,5 +1,14 @@
 # Software Breakdown
 
+- Provision
+  - Developer Access
+  - Secret Manager
+  - Database
+  - Service Account/Auth
+- CI
+  - API apps
+  - UI apps
+
 ```mermaid
 flowchart TB
 

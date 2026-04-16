@@ -27,6 +27,7 @@
 | Edge Requests                  | Requests served/handled at edge servers close to users.Benefits are lower latency, faster response, smarter request handling.                                                                       |
 | On-Prem                        | Short for “on-premises,” meaning software, hardware, or infrastructure hosted locally within an organization’s facilities.                                                                          |
 | Greenfield Project             | A type of initiative (often in construction, software, or business) that is built from scratch, without needing to work within the constraints of existing systems, infrastructure, or legacy code. |
+| Brownfield Project             | A type of initiative that involves working with or building on top of existing systems, infrastructure, or legacy code, requiring consideration of prior constraints and technical debt.            |
 | ACID                           | A set of properties that guarantee reliable transaction processing in relational database systems                                                                                                   |
 
 ## Hot Takes
