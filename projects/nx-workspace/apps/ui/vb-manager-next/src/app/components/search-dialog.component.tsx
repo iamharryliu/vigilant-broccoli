@@ -7,7 +7,7 @@ import {
   DashboardIcon,
   ListBulletIcon,
 } from '@radix-ui/react-icons';
-import { QUICK_LINKS } from '../constants/quick-links';
+import { QUICK_LINKS, type QuickLink } from '../constants/quick-links';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import {
@@ -69,7 +69,7 @@ const NON_BROWSER_TYPES = [
   OPEN_TYPE.FILE_SYSTEM,
 ] as const;
 
-const getGroupedLinks = (links: (typeof QUICK_LINKS)[0][]) => {
+const getGroupedLinks = (links: QuickLink[]) => {
   const itemsWithoutSubgroup = links.filter(link => !link.subgroup);
   const itemsWithSubgroup = links.filter(link => link.subgroup);
 
@@ -84,7 +84,7 @@ const getGroupedLinks = (links: (typeof QUICK_LINKS)[0][]) => {
       }
       return acc;
     },
-    {} as Record<string, typeof QUICK_LINKS>,
+    {} as Record<string, QuickLink[]>,
   );
 
   const subgroupEntries = Object.entries(subgroups).sort(([a], [b]) =>
@@ -95,7 +95,7 @@ const getGroupedLinks = (links: (typeof QUICK_LINKS)[0][]) => {
 };
 
 const openLink = (
-  link: (typeof QUICK_LINKS)[0],
+  link: QuickLink,
   handleShellExecute: (
     type: OpenType,
     target: string,
@@ -253,7 +253,7 @@ export function SearchDialogComponent({
     });
   };
 
-  const renderLink = (link: (typeof QUICK_LINKS)[0], index: number) => {
+  const renderLink = (link: QuickLink, index: number) => {
     const baseClass =
       'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-[transform,background-color] duration-150 ease-out focus-visible:scale-110';
     const uniqueKey = `${link.label}-${link.target}-${index}`;

@@ -1,4 +1,4 @@
-import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
+import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import {
   ANTHROPIC_LINK,
   CLAUDE_LINK,
@@ -689,6 +689,30 @@ const DEV_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
+  {
+    label: 'Oracle Cloud',
+    target: 'https://cloud.oracle.com/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: 'Oracle Cloud Auth Tokens',
+    target: 'https://cloud.oracle.com/identity/domains/my-profile/auth-tokens',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: 'Oracle Cloud Billing',
+    target: 'https://cloud.oracle.com/billing/subscriptions',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: 'Oracle Cloud Payment History',
+    target: 'https://cloud.oracle.com/invoices-and-orders/upgrade-and-payment',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
 ];
 
 const VB_LINKS = [
@@ -1176,7 +1200,15 @@ const HOME_LINKS = [
   },
 ];
 
-export const QUICK_LINKS = [
+export type QuickLink = {
+  label: string;
+  target: string;
+  type: OpenType;
+  subgroup: string;
+  args?: string;
+};
+
+export const QUICK_LINKS: QuickLink[] = [
   ...APP_ROUTE_QUICK_LINKS,
   ...VB_LINKS,
   ...DEV_LINKS,
