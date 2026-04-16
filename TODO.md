@@ -21,33 +21,40 @@
 
 ## Home Management
 
+- Chores
+  - Common calendar
+  - Chore list
+  - Schedule, week, month, views of chore calendar
+  - Plant watering
+- Household Rules
+  - Create Rule
+    - name
+    - description
+    - position
+- Price tracker
+  - Receipt > LLM > Meta
+  - Manual Input > Meta
 - Food Planning
   - Recipes
     - Recipe scraper
     - Recipe reviews
   - Recipe Suggester
     - Fridge Inventory + Saved Recipes -> LLM -> Suggested Recipes -> Grocery List
+- Availability Calendar
+  - Calendar for booking items.
+  - Create Booking
+    - Item
+      - Name
+      - Description
+  - View Bookings
+  - Edit Booking
+  - Rules/conditions
 - Leisure
   - Shows
   - Movies
   - Crafts
 - Home Projects
-- Co-operative living tools.
-- Vehicle Calendar
-  - Calendar for booking behicle.
-  - Create Booking
-    - Vehicle
-      - Name
-      - Model
-      - Notes
-  - View Bookings
-  - Edit Booking
-  - Rules
-- Household Rules
-  - Create Rule
-    - name
-    - description
-    - position
+- Home documentation
 
 ## Backlog
 
