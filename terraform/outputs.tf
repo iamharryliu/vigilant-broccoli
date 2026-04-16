@@ -7,3 +7,11 @@ output "vb_free_vm_internal_ip" {
   description = "Internal IP of vb-free-vm"
   value       = google_compute_instance.vb_free_vm.network_interface[0].network_ip
 }
+
+output "rabbitmq_public_ip" {
+  value = oci_core_instance.rabbitmq.public_ip
+}
+
+output "rabbitmq_management_url" {
+  value = "http://${oci_core_instance.rabbitmq.public_ip}:15672"
+}

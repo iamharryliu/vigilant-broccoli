@@ -1,0 +1,35 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - docker.io
+  - docker-compose-v2
+
+write_files:
+  - path: /opt/rabbitmq/docker-compose.yml
+    content: |
+      services:
+        rabbitmq:
+          image: rabbitmq:3-management-alpine
+          container_name: rabbitmq
+          restart: unless-stopped
+          environment:
+            RABBITMQ_DEFAULT_USER: ${rabbitmq_user}
+            RABBITMQ_DEFAULT_PASS: ${rabbitmq_password}
+          ports:
+            - "5672:5672"
+            - "15672:15672"
+          volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
+      volumes:
+        rabbitmq_data:
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ubuntu
+  - docker compose -f /opt/rabbitmq/docker-compose.yml up -d
+  - sleep 15
+  - docker exec rabbitmq rabbitmqctl set_user_tags ${rabbitmq_user} administrator
+  - docker exec rabbitmq rabbitmqctl set_permissions -p / ${rabbitmq_user} ".*" ".*" ".*"
