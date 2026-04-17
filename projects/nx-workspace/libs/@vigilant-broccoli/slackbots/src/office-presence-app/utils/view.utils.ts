@@ -1,5 +1,6 @@
 import { AppHomeOpenedEvent, View, KnownBlock } from '@slack/types';
 import { loadAllPresences, loadAllEvents } from './db.utils';
+import { INPUT_MAX_LENGTH } from '../consts/data.consts';
 import {
   AppConfig,
   PRESENCE_TIME,
@@ -187,7 +188,11 @@ function buildEventBlocks(
     const isCreator = event.creatorId === currentUserId;
 
     const descriptionText = event.description ? ` - ${event.description}` : '';
-    const eventText = `${event.name} @ ${event.time} by <@${event.creatorId}> - (${attendeeCount} attending)${descriptionText}`;
+    const fullEventText = `${event.name} @ ${event.time} by <@${event.creatorId}> - (${attendeeCount} attending)${descriptionText}`;
+    const eventText =
+      fullEventText.length > INPUT_MAX_LENGTH
+        ? fullEventText.substring(0, INPUT_MAX_LENGTH - 1) + '…'
+        : fullEventText;
 
     const checkboxOption = {
       text: {
