@@ -1,8 +1,8 @@
 {
+  "plugins": ["react-hooks"],
   "extends": [
-    "plugin:@nx/react-typescript",
-    "next",
-    "next/core-web-vitals",
+    "plugin:@next/next/recommended",
+    "plugin:react-hooks/recommended",
     "../../../.eslintrc.json"
   ],
   "ignorePatterns": ["!**/*", ".next/**/*"],

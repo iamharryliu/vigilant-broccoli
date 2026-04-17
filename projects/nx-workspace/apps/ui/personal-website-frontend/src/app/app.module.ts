@@ -11,7 +11,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { SuccessInterceptor } from './core/interceptors/success.interceptor';
-import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha-2';
 import {
   CONTACT_SERVICE,
   CredentialsInterceptorService,
@@ -34,7 +33,6 @@ export function initTheme(themeService: ThemeService): () => void {
   imports: [
     BrowserModule,
     AppRoutingModule,
-    RecaptchaV3Module,
     NgxGoogleAnalyticsModule.forRoot(ENVIRONMENT.ANALYTICS_ID),
     NgxGoogleAnalyticsRouterModule,
   ],
@@ -47,10 +45,6 @@ export function initTheme(themeService: ThemeService): () => void {
     {
       provide: CONTACT_SERVICE,
       useExisting: CommonService,
-    },
-    {
-      provide: RECAPTCHA_V3_SITE_KEY,
-      useValue: ENVIRONMENT.RECAPTCHA_V3_SITE_KEY,
     },
     {
       provide: HTTP_INTERCEPTORS,
