@@ -77,8 +77,8 @@ alias buildEmployeeHandler="nnx build @vigilant-broccoli/employee-handler"
 alias vbgcloudlogin="gcloudlogin vigilant-broccoli"
 
 # Tmux
-alias tmuxvb="$REPO_DIR/scripts/shell/tmux-vb.sh"
-alias neovidetmuxvb='neovide -- -c "terminal tmux attach -t vb || ~/vigilant-broccoli/scripts/shell/tmux-vb.sh" -c "startinsert"'
+alias tmuxvb="$REPO_DIR/setup/dotfiles/common/scripts/tmux-vb.sh"
+alias neovidetmuxvb='neovide -- -c "terminal tmux attach -t vb || ~/vigilant-broccoli/setup/dotfiles/common/scripts/tmux-vb.sh" -c "startinsert"'
 
 # vigilant-broccoli vm
 alias vbvmwg=" sudo wg-quick up vb"

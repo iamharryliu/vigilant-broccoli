@@ -1,4 +1,4 @@
-alias vibecode="$REPO_DIR/scripts/shell/tmux-setup-dev.sh"
+alias vibecode="$REPO_DIR/setup/dotfiles/common/scripts/tmux-setup-dev.sh"
 
 newtmuxwindow() {
     tmux new-window -n "$1" -c "${2:-.}"
