@@ -1,0 +1,55 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - docker.io
+  - docker-compose-v2
+
+write_files:
+  - path: /opt/rabbitmq/rabbitmq.conf
+    content: |
+      listeners.ssl.default = 5671
+      ssl_options.cacertfile = /etc/rabbitmq/certs/ca.crt
+      ssl_options.certfile   = /etc/rabbitmq/certs/server.crt
+      ssl_options.keyfile    = /etc/rabbitmq/certs/server.key
+      ssl_options.verify     = verify_none
+      management.ssl.port       = 15671
+      management.ssl.cacertfile = /etc/rabbitmq/certs/ca.crt
+      management.ssl.certfile   = /etc/rabbitmq/certs/server.crt
+      management.ssl.keyfile    = /etc/rabbitmq/certs/server.key
+
+  - path: /opt/rabbitmq/docker-compose.yml
+    content: |
+      services:
+        rabbitmq:
+          image: rabbitmq:3-management-alpine
+          container_name: rabbitmq
+          restart: unless-stopped
+          environment:
+            RABBITMQ_DEFAULT_USER: ${rabbitmq_user}
+            RABBITMQ_DEFAULT_PASS: ${rabbitmq_password}
+          ports:
+            - "5671:5671"
+            - "5672:5672"
+            - "15671:15671"
+            - "15672:15672"
+          volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
+            - /opt/rabbitmq/certs:/etc/rabbitmq/certs:ro
+            - /opt/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      volumes:
+        rabbitmq_data:
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ubuntu
+  - mkdir -p /opt/rabbitmq/certs
+  - openssl req -x509 -nodes -newkey rsa:2048 -days 3650 -keyout /opt/rabbitmq/certs/server.key -out /opt/rabbitmq/certs/server.crt -subj "/CN=rabbitmq"
+  - cp /opt/rabbitmq/certs/server.crt /opt/rabbitmq/certs/ca.crt
+  - chmod 644 /opt/rabbitmq/certs/*
+  - docker compose -f /opt/rabbitmq/docker-compose.yml up -d
+  - sleep 15
+  - docker exec rabbitmq rabbitmqctl set_user_tags ${rabbitmq_user} administrator
+  - docker exec rabbitmq rabbitmqctl set_permissions -p / ${rabbitmq_user} ".*" ".*" ".*"
