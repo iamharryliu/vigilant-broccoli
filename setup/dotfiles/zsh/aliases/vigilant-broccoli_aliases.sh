@@ -100,3 +100,12 @@ alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source
 
 # Docker
 alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
+
+# Cheatsheet
+vb-cheatsheet() {
+    echo "=== Tmux ==="
+    echo "tmuxvb                              Start/attach vb tmux session"
+    echo "vibecode [dir] [-n name]            Vibe coding layout (claude + lazygit + shells)"
+    echo "newtmuxwindow <name> [dir]          Create named tmux window"
+    echo "rmtmuxw <name>                      Kill named tmux window"
+}
