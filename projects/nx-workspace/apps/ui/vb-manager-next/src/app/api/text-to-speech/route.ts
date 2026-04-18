@@ -21,6 +21,9 @@ const getElevenLabsClient = () => {
 };
 
 export async function POST(request: NextRequest) {
+  console.log('[text-to-speech] POST request received');
+  const startTime = Date.now();
+
   try {
     const body = (await request.json()) as {
       text?: string;
@@ -31,8 +34,13 @@ export async function POST(request: NextRequest) {
     const voiceId = body.voiceId?.trim() || DEFAULT_VOICE_ID;
 
     if (!text) {
+      console.warn('[text-to-speech] No text provided');
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
+
+    console.log(
+      `[text-to-speech] Text received: ${text.length} chars, voiceId: ${voiceId === DEFAULT_VOICE_ID ? 'default' : voiceId}`,
+    );
 
     const client = getElevenLabsClient();
     const audioStream = await client.textToSpeech.convert(voiceId, {
@@ -41,6 +49,9 @@ export async function POST(request: NextRequest) {
       outputFormat: 'mp3_44100_128',
     });
 
+    const duration = Date.now() - startTime;
+    console.log(`[text-to-speech] Audio generated in ${duration}ms`);
+
     return new Response(audioStream, {
       headers: {
         'Content-Type': 'audio/mpeg',
@@ -48,7 +59,8 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('ElevenLabs text-to-speech error:', error);
+    const duration = Date.now() - startTime;
+    console.error(`[text-to-speech] Error after ${duration}ms:`, error);
     return NextResponse.json(
       { error: 'Failed to generate speech' },
       { status: 500 },

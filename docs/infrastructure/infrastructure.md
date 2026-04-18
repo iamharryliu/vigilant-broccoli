@@ -1,5 +1,47 @@
 # Infrastructure
 
+- Grafana
+- Resilio
+
+## Cloud Infrastructure
+
+```mermaid
+flowchart
+
+subgraph GCP
+
+  SECRET_MANAGER[Secret Manager]
+  IAP[IAP]
+  GCS_BACKUP[GCS Backup Bucket]
+
+  subgraph GCP_VM[GCP VM]
+    WIREGUARD[Wireguard]
+    VAULT[Vault]
+  end
+
+  subgraph WORKLOAD_IDENTITY[Workload Identity]
+    GITHUB_ACTIONS_SA[GitHub Actions SA]
+  end
+
+  SECRET_MANAGER-->GCP_VM
+  IAP-->GCP_VM
+  GITHUB_ACTIONS_SA-->GCS_BACKUP
+  GITHUB_ACTIONS_SA-->SECRET_MANAGER
+
+end
+
+subgraph CLOUDFLARE[Cloudflare]
+  R2[R2 Buckets]
+end
+
+subgraph ORACLE_VM[Oracle VM]
+  RABBITMQ[RabbitMQ]
+end
+
+GITHUB_ACTIONS[GitHub Actions]-->WORKLOAD_IDENTITY
+SUPABASE[Supabase]
+```
+
 ## Personal Infrastructure
 
 ### Secret Management

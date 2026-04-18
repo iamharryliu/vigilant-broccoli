@@ -1,5 +1,6 @@
 'use client';
 
+import { AwsManagementComponent } from '../../components/aws-management.component';
 import { DockerStatusComponent } from '../../components/docker-status.component';
 import { FlyIoAppsComponent } from '../../components/flyio-apps.component';
 import { GcloudAuthStatusComponent } from '../../components/gcloud-auth-status.component';
@@ -21,6 +22,7 @@ export default function Page() {
       </div>
       <div className="flex flex-col gap-4">
         <GcloudAuthStatusComponent />
+        <AwsManagementComponent />
         <FlyIoAppsComponent />
         <WranglerPagesComponent />
       </div>

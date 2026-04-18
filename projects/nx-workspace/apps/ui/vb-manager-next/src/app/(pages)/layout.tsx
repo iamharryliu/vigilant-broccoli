@@ -9,6 +9,7 @@ import { useSession, signIn, signOut } from 'next-auth/react';
 import { APP_ROUTE } from '../app.const';
 import { useTheme } from '../theme-context';
 import { FloatingIslandComponent } from '../components/floating-island.component';
+import { RightSidebar } from '../components/right-sidebar.component';
 
 type ExtendedNavRoute = {
   title: string;
@@ -134,7 +135,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   }, [toggleTheme]);
 
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full h-screen flex flex-col overflow-hidden">
       <NextNavBar
         routes={tabRoutes}
         isDark={appearance === 'dark'}
@@ -186,7 +187,17 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         }
       />
-      <main className="p-4">{children}</main>
+      <div className="flex flex-1 overflow-hidden">
+        <main className="flex-1 p-4 min-w-0 overflow-y-auto">{children}</main>
+        <RightSidebar
+          setChatbotDialogOpen={setChatbotDialogOpen}
+          setEmailDialogOpen={setEmailDialogOpen}
+          setCalendarDialogOpen={setCalendarDialogOpen}
+          setNotepadDialogOpen={setNotepadDialogOpen}
+          setPomodoroDialogOpen={setPomodoroDialogOpen}
+          setSearchDialogOpen={setSearchDialogOpen}
+        />
+      </div>
       <FloatingIslandComponent
         searchDialogOpen={searchDialogOpen}
         setSearchDialogOpen={setSearchDialogOpen}

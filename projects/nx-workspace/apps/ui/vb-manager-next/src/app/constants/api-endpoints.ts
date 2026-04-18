@@ -59,6 +59,9 @@ export const API_ENDPOINTS = {
   SPEECH_TO_TEXT: '/api/speech-to-text',
   VOICE_LIST: '/api/voice-list',
 
+  // AWS
+  AWS_PROFILES: '/api/aws/profiles',
+
   // SSH
   SSH_KEY: '/api/ssh-key',
 

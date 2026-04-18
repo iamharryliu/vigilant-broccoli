@@ -110,7 +110,12 @@ export default function Page() {
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        <NotepadEditorComponent style={{ height: '100%' }} />
+        <div
+          className="border border-gray-300 dark:border-gray-700 rounded-lg p-4 flex flex-col"
+          style={{ height: '100%' }}
+        >
+          <NotepadEditorComponent style={{ flex: 1 }} />
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <ModeTransitionWrapper modeKey={appMode}>

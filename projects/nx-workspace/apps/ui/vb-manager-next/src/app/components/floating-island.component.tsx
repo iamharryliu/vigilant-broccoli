@@ -1,17 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { IconButton, Select } from '@radix-ui/themes';
-import {
-  MessageCircle,
-  Mail,
-  Search,
-  Moon,
-  Sun,
-  Calendar,
-  StickyNote,
-  Timer,
-} from 'lucide-react';
+import { Select } from '@radix-ui/themes';
 import { ChatbotDialog } from './chatbot-dialog.component';
 import { EmailModalComponent } from './email-modal.component';
 import { SearchDialogComponent } from './search-dialog.component';
@@ -20,7 +10,6 @@ import { NotepadDialog } from './notepad-dialog.component';
 import { WeatherDialog } from './weather-dialog.component';
 import { PomodoroDialog } from './pomodoro-dialog.component';
 import { usePomodoro } from '../hooks/usePomodoro';
-import { useTheme } from '../theme-context';
 import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { ClockComponent } from './clock.component';
@@ -92,11 +81,6 @@ Please help me refine this recommendation by:
 3. Considering my schedule and activities for today
 4. Providing styling tips for the recommended outfits`;
 
-const BUTTON_STYLE = {
-  cursor: 'pointer' as const,
-  transition: 'transform 0.2s ease',
-};
-
 const getDialogState = (
   externalOpen: boolean | undefined,
   internalOpen: boolean,
@@ -119,7 +103,6 @@ export const FloatingIslandComponent = ({
   pomodoroDialogOpen: externalPomodoroOpen,
   setPomodoroDialogOpen: externalSetPomodoroOpen,
 }: FloatingIslandProps = {}) => {
-  const { appearance, toggleTheme } = useTheme();
   const { appMode, setAppMode } = useAppMode();
   const containerRef = useRef<HTMLDivElement>(null);
   const { position, isDragging, handlePointerDown } = useDrag(containerRef);
@@ -242,14 +225,6 @@ export const FloatingIslandComponent = ({
   const setPomodoroDialogOpen =
     externalSetPomodoroOpen ?? setInternalPomodoroDialogOpen;
 
-  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.transform = 'scale(1.1)';
-  };
-
-  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.transform = 'scale(1)';
-  };
-
   return (
     <>
       {/* Floating Card Container */}
@@ -370,116 +345,15 @@ export const FloatingIslandComponent = ({
           }}
         />
 
-        {/* Block 4: Controls */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: '0.75rem',
-            alignItems: 'center',
-          }}
-        >
-          {/* Chatbot Button */}
-          <IconButton
-            onClick={() => setChatbotDialogOpen(true)}
-            variant="soft"
-            size="2"
-            title="Jarvis"
-            style={BUTTON_STYLE}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <MessageCircle size={20} />
-          </IconButton>
-
-          {/* Email Button */}
-          <IconButton
-            onClick={() => setEmailDialogOpen(true)}
-            variant="soft"
-            size="2"
-            title="Email"
-            style={BUTTON_STYLE}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <Mail size={20} />
-          </IconButton>
-
-          {/* Calendar Button */}
-          <IconButton
-            onClick={() => setCalendarDialogOpen(true)}
-            variant="soft"
-            size="2"
-            title="Calendar"
-            style={BUTTON_STYLE}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <Calendar size={20} />
-          </IconButton>
-
-          {/* Notepad Button */}
-          <IconButton
-            onClick={() => setNotepadDialogOpen(true)}
-            variant="soft"
-            size="2"
-            title="Notepad"
-            style={BUTTON_STYLE}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <StickyNote size={20} />
-          </IconButton>
-
-          {/* Pomodoro Button */}
-          <IconButton
-            onClick={() => setPomodoroDialogOpen(true)}
-            variant="soft"
-            size="2"
-            title="Pomodoro (Shift+P)"
-            style={BUTTON_STYLE}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <Timer size={20} />
-          </IconButton>
-
-          {/* Search Button */}
-          <IconButton
-            onClick={() => setSearchDialogOpen(true)}
-            variant="soft"
-            size="2"
-            title="Search"
-            style={BUTTON_STYLE}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <Search size={20} />
-          </IconButton>
-
-          {/* Theme Toggle Button */}
-          <IconButton
-            onClick={toggleTheme}
-            variant="soft"
-            size="2"
-            title={appearance === 'light' ? 'Dark mode' : 'Light mode'}
-            style={BUTTON_STYLE}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            {appearance === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-          </IconButton>
-
-          {/* Mode Select */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Select.Root value={appMode} onValueChange={setAppMode}>
-              <Select.Trigger placeholder="Select mode" />
-              <Select.Content>
-                <Select.Item value="personal">Personal</Select.Item>
-                <Select.Item value="work">Work</Select.Item>
-              </Select.Content>
-            </Select.Root>
-          </div>
+        {/* Block 4: Mode Select */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Select.Root value={appMode} onValueChange={setAppMode}>
+            <Select.Trigger placeholder="Select mode" />
+            <Select.Content>
+              <Select.Item value="personal">Personal</Select.Item>
+              <Select.Item value="work">Work</Select.Item>
+            </Select.Content>
+          </Select.Root>
         </div>
       </div>
 

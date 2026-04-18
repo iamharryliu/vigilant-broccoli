@@ -6,7 +6,12 @@
 
 ```
 brew install awscli
+
+
 aws configure
+aws configure sso
+
+aws sso login
 
 vim ~/.aws/credentials
 
@@ -23,12 +28,16 @@ aws sts get-caller-identity --profile PROFILE_NAME
 aws iam list-users
 ```
 
-
 | Term           | Description                                                                                                                                                      |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Security Group | A virtual firewall for your EC2 instances (and other resources like RDS, Lambda in VPCs, etc.). It controls what traffic is allowed in and out of your resource. |
 
-## References
+## `~/.aws/config` vs `~/.aws/credentials`
 
-- [IAM User](https://www.youtube.com/watch?v=HuE-QhrmE1c)
-- [Deploy an App](https://www.youtube.com/watch?v=lczXbbUG3DE)
+|                | `credentials`               | `config`                                         |
+| -------------- | --------------------------- | ------------------------------------------------ |
+| Purpose        | Auth secrets (keys, tokens) | Settings & behavior (region, output, roles, SSO) |
+| Profile header | `[profile-name]`            | `[profile profile-name]` (except `[default]`)    |
+| SDK reads      | Always                      | Always                                           |
+
+Precedence: env vars > `~/.aws/credentials` > `~/.aws/config`
