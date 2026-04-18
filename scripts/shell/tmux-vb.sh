@@ -3,7 +3,7 @@
 SESSION="vb"
 PROJECT="$HOME/vigilant-broccoli"
 
-tmux has-session -t "$SESSION" 2>/dev/null && tmux attach -t "$SESSION"
+tmux has-session -t "$SESSION" 2>/dev/null && tmux attach -t "$SESSION" && exit 0
 
 tmux new-session -d -s "$SESSION"
 
@@ -29,7 +29,7 @@ tmux send-keys -t "$SESSION:1.4" "posting" C-m
 # Window 2: dev (4 panes)
 #################################
 tmux new-window -t "$SESSION" -n dev -c "$PROJECT"
-bash "$HOME/vigilant-broccoli/scripts/shell/tmux-setup-dev.sh" "$PROJECT"
+tmux send-keys -t "$SESSION:2.1" "vibecode $PROJECT" C-m
 
 #################################
 # Window 3: other

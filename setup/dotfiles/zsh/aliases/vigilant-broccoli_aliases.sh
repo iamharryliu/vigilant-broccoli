@@ -79,32 +79,6 @@ alias vbgcloudlogin="gcloudlogin vigilant-broccoli"
 # Tmux
 alias tmuxvb="$REPO_DIR/scripts/shell/tmux-vb.sh"
 alias neovidetmuxvb='neovide -- -c "terminal tmux attach -t vb || ~/vigilant-broccoli/scripts/shell/tmux-vb.sh" -c "startinsert"'
-alias tmuxsetup="$REPO_DIR/scripts/shell/tmux-setup-dev.sh"
-
-worktmux() {
-    PROJECT_NAME="$1"
-
-    if [ -f ~/shell-aliases/work-project-mappings.sh ]; then
-        source ~/shell-aliases/work-project-mappings.sh
-    fi
-
-    PROJECT_PATH="${WORK_PROJECT_PATHS[$PROJECT_NAME]}"
-
-    if [ -z "$PROJECT_PATH" ]; then
-        echo "Unknown project: $PROJECT_NAME"
-        return 1
-    fi
-
-    tmux has-session -t "$PROJECT_NAME" 2>/dev/null && tmux attach -t "$PROJECT_NAME" && return
-
-    tmux new-session -d -s "$PROJECT_NAME"
-    tmux rename-window -t "$PROJECT_NAME:1" "$PROJECT_NAME"
-    tmux split-window -h -t "$PROJECT_NAME:1"
-    tmux select-layout -t "$PROJECT_NAME:1" even-horizontal
-    tmux send-keys -t "$PROJECT_NAME:1.1" "nvim $PROJECT_PATH" C-m
-    tmux select-pane -t "$PROJECT_NAME:1.1"
-    tmux attach -t "$PROJECT_NAME"
-}
 
 # vigilant-broccoli vm
 alias vbvmwg=" sudo wg-quick up vb"
