@@ -8,6 +8,6 @@ import { LINKS } from '../../../core/consts/routes.const';
   imports: [RouterModule],
 })
 export class NavbarSectionComponent {
-  links = [LINKS.ABOUT_PAGE, LINKS.DOCS_MD];
+  links = [LINKS.ABOUT_PAGE /*, LINKS.DOCS_MD */];
   isMobileNavOpen = false;
 }
