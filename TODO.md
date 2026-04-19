@@ -19,6 +19,10 @@
   - chore: Research identification implementations
   - chore: Research iPhone finder implementation
 
+## Small Business
+
+- Stripe interface
+
 ## Home Management
 
 - Chores
