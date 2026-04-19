@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { LLM_MODEL, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { createServerClient } from '../../../../libs/supabase-server';
+import { createServerClient } from '../../../../../libs/supabase-server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
