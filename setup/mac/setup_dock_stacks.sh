@@ -9,6 +9,7 @@ declare -a DEVELOPMENT_APPS=(
     "/Applications/DBeaver.app"
     "/Applications/Docker.app"
     "/Applications/Godot.app"
+    "/Applications/iTerm.app"
     "/Applications/Postman.app"
     "/Applications/Visual Studio Code.app"
     "/Applications/VMware Fusion.app"
