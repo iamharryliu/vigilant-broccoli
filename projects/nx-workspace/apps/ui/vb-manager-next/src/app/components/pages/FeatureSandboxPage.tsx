@@ -6,7 +6,6 @@ import { ChoresDemo } from '../demos/ChoresDemo';
 import { StripeDemo } from '../demos/StripeDemo';
 import { MessagingPage } from './MessagingPage';
 import { CalendarDemo } from '../demos/CalendarDemo';
-import { FullCalendarDemo } from '../demos/FullCalendarDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -40,11 +39,6 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'calendar',
     title: 'Calendar - Doggo Tracker',
     content: <CalendarDemo />,
-  },
-  {
-    id: 'fullcalendar',
-    title: 'FullCalendar Views',
-    content: <FullCalendarDemo />,
   },
 ];
 
