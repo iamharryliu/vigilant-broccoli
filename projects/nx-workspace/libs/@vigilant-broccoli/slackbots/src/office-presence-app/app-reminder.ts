@@ -11,14 +11,20 @@ function getClient() {
 export function createReminderSender(appConfig: AppConfig) {
   return async function sendReminders() {
     const client = getClient();
-    const openAppUrl = appConfig.id
-      ? await getOpenAppUrl(client, appConfig.id)
-      : undefined;
+    const botUserId = await getBotUserId(client);
     const allUsers = await SlackUtils.getAllRealUsers(client);
     const userIds = allUsers.map(user => user.id);
     for (const userId of userIds) {
-      await postMessage(client, userId, appConfig, openAppUrl);
+      await postMessage(client, userId, appConfig, botUserId);
     }
+  };
+}
+
+export function createReminderPreviewer(appConfig: AppConfig) {
+  return async function previewReminder(userId: string) {
+    const client = getClient();
+    const botUserId = await getBotUserId(client);
+    await postMessage(client, userId, appConfig, botUserId);
   };
 }
 
@@ -26,59 +32,19 @@ async function postMessage(
   client: WebClient,
   channel: string,
   appConfig: AppConfig,
-  openAppUrl?: string,
+  botUserId?: string,
 ) {
   const { copy } = appConfig;
-  const blocks: {
-    type: 'section' | 'actions';
-    text?: { type: 'mrkdwn'; text: string };
-    elements?: {
-      type: 'button';
-      text: { type: 'plain_text'; text: string; emoji: boolean };
-      url: string;
-    }[];
-  }[] = [
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: copy.getReminderDmText(appConfig.APP_NAME, channel, appConfig.id),
-      },
-    },
-  ];
-
-  if (openAppUrl) {
-    blocks.push({
-      type: 'actions',
-      elements: [
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: copy.COMMON.OPEN_APP,
-            emoji: true,
-          },
-          url: openAppUrl,
-        },
-      ],
-    });
-  }
-
+  const text = copy.getReminderDmText(appConfig.APP_NAME, channel, botUserId);
   try {
-    await client.chat.postMessage({
-      channel,
-      text: copy.getReminderDmText(appConfig.APP_NAME, channel, appConfig.id),
-      blocks,
-    });
+    await client.chat.postMessage({ channel, text });
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error posting message:', error);
   }
 }
 
-async function getOpenAppUrl(client: WebClient, appId: string) {
+async function getBotUserId(client: WebClient) {
   const auth = await client.auth.test();
-  return `https://slack.com/app_redirect?app=${encodeURIComponent(
-    appId,
-  )}&team=${encodeURIComponent(auth.team_id)}`;
+  return auth.user_id;
 }

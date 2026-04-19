@@ -23,9 +23,9 @@ import {
   handleEditEventSubmit,
 } from './utils/action.utils';
 import { createPublishHomeView } from './utils/view.utils';
-import { APP_ACTION } from './consts/app.consts';
+import { APP_ACTION, APP_COMMAND } from './consts/app.consts';
 import { loadAllPresences, savePresence } from './utils/db.utils';
-import { createReminderSender } from './app-reminder';
+import { createReminderSender, createReminderPreviewer } from './app-reminder';
 import { AppConfig } from './types';
 import { AppCopyOverrides, resolveAppCopy } from './consts/app-copy.const';
 
@@ -38,6 +38,7 @@ export type OfficePresenceAppRunConfig = {
   reminderTimezone?: string;
   enableReminders?: boolean;
   includeWeekends?: boolean;
+  daysAhead?: number;
   copy?: AppCopyOverrides;
 };
 
@@ -51,12 +52,13 @@ const DEFAULT_OFFICES: string[] = [];
 export async function runOfficePresenceApp(
   config: OfficePresenceAppRunConfig = {},
 ) {
-  const { id, APP_NAME, OFFICES, includeWeekends, copy } = config;
+  const { id, APP_NAME, OFFICES, includeWeekends, daysAhead, copy } = config;
   const appConfig: AppConfig = {
     id,
     APP_NAME: APP_NAME ?? DEFAULT_APP_NAME,
     OFFICES: OFFICES ?? DEFAULT_OFFICES,
     includeWeekends,
+    daysAhead,
     copy: resolveAppCopy(copy),
   };
   const publishHomeView = createPublishHomeView(appConfig);
@@ -65,6 +67,7 @@ export async function runOfficePresenceApp(
   const getCreateEventModal = createCreateEventModal(appConfig);
   const getEditEventModal = createEditEventModal(appConfig);
   const sendReminders = createReminderSender(appConfig);
+  const previewReminder = createReminderPreviewer(appConfig);
 
   const app = SlackUtils.getSocketApp();
 
@@ -182,6 +185,11 @@ export async function runOfficePresenceApp(
       await publishHomeView(client, body);
     },
   );
+
+  app.command(APP_COMMAND.PREVIEW_REMINDER, async ({ ack, command }) => {
+    await ack();
+    await previewReminder(command.user_id);
+  });
 
   await app.start(config.port ?? DEFAULT_PORT);
   // eslint-disable-next-line no-console

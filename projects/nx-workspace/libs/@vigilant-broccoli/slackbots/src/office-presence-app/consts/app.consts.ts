@@ -1,3 +1,7 @@
+export const APP_COMMAND = {
+  PREVIEW_REMINDER: '/preview-reminder',
+};
+
 export const APP_ACTION = {
   WORKDAY_CHECKBOXES: 'WORKDAY_CHECKBOXES',
   OPEN_SCHEDULE_MODAL: 'OPEN_SCHEDULE_MODAL',

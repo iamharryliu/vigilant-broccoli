@@ -41,7 +41,6 @@ export const DEFAULT_APP_COPY = {
     CLOSE: 'Close',
     SAVE: 'Save',
     YES: 'Yes',
-    OPEN_APP: 'Open App',
   },
   HOME_VIEW: {
     ASK_LUNCH_BUTTON: 'Ask about lunch 🍔',
@@ -103,11 +102,9 @@ export const DEFAULT_APP_COPY = {
   getAppDescription(appName: string) {
     return `${appName} makes it easy to plan your office visits. Mark which office you are visiting, when you'll be in, whole day, morning, afternoon, or if you are bringing your dog. You can also leave a note for additional information about your visit ie _Bringing surdeg!_.`;
   },
-  getReminderDmText(appName: string, userId?: string, appId?: string) {
+  getReminderDmText(appName: string, userId?: string, botUserId?: string) {
     const userMention = userId ? `<@${userId}>` : 'Hey';
-    const appMention = appId
-      ? `<!subteam^${appId}|@${appName}>`
-      : `@${appName}`;
-    return `${userMention} 👋 Friendly reminder to plan for your office presence using ${appMention}!`;
+    const appMention = botUserId ? `<@${botUserId}>` : `@${appName}`;
+    return `${userMention} 👋\n\nFriendly reminder to plan your office presence using ${appMention}.\n\nClick the Home tab to get started!`;
   },
 };

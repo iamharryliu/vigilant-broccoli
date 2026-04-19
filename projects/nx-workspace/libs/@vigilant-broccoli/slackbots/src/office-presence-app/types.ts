@@ -5,6 +5,7 @@ export type AppConfig = {
   APP_NAME: string;
   OFFICES: string[];
   includeWeekends?: boolean;
+  daysAhead?: number;
   copy: AppCopy;
 };
 

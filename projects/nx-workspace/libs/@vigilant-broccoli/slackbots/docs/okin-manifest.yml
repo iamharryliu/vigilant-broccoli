@@ -9,9 +9,14 @@ features:
   bot_user:
     display_name: OK-IN
     always_online: false
+  slash_commands:
+    - command: /preview-reminder
+      description: Preview the reminder message that would be sent to you
+      should_escape: false
 oauth_config:
   scopes:
     bot:
+      - commands
       - channels:read
       - channels:write.invites
       - chat:write
