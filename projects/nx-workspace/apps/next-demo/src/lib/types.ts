@@ -19,6 +19,20 @@ export type HomeMember = {
   createdAt: string;
 };
 
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  description: string | null;
+  start: string;
+  end: string;
+  allDay: boolean;
+  color: string | null;
+  googleEventId: string | null;
+  homeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface WhereIsItem {
   id: string;
   title: string;

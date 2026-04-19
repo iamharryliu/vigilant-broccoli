@@ -6,4 +6,6 @@ export const ROUTES = {
   HOMES: '/homes',
   WHERE_IS: '/where-is',
   AUTH_CALLBACK: '/auth/callback',
+  CALENDAR: '/calendar',
+  HOME_CALENDAR: (id: string | number) => `/homes/${id}/calendar`,
 } as const;

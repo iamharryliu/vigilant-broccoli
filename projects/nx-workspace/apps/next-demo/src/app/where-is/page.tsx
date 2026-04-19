@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Box,
@@ -390,6 +390,53 @@ export default function WhereIsPage() {
     });
   };
 
+  const importFileRef = useRef<HTMLInputElement>(null);
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+
+  const handleExport = useCallback(async () => {
+    if (!selectedHomeId || !session?.access_token) return;
+    setExporting(true);
+    const res = await fetch(`/api/where-is/export?homeId=${selectedHomeId}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `where-is-export-${selectedHomeId}-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExporting(false);
+  }, [selectedHomeId, session?.access_token]);
+
+  const handleImport = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file || !selectedHomeId || !session) return;
+      setImporting(true);
+      const text = await file.text();
+      const importData = JSON.parse(text);
+      await fetch('/api/where-is/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          importData,
+          homeId: selectedHomeId,
+          userId: session.user.id,
+          accessToken: session.access_token,
+        }),
+      });
+      const res = await fetch(`/api/where-is?homeId=${selectedHomeId}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      setItems(await res.json());
+      setImporting(false);
+      if (importFileRef.current) importFileRef.current.value = '';
+    },
+    [selectedHomeId, session],
+  );
+
   if (homes.length === 0) return null;
 
   const filtered = items.filter(item => fuzzyMatch(query, item));
@@ -411,19 +458,58 @@ export default function WhereIsPage() {
         <Text size="6" weight="bold">
           Where Is
         </Text>
-        <Select.Root
-          value={selectedHomeId?.toString() ?? ''}
-          onValueChange={v => handleHomeChange(Number(v))}
-        >
-          <Select.Trigger placeholder="Select a home" />
-          <Select.Content>
-            {homes.map(h => (
-              <Select.Item key={h.id} value={h.id.toString()}>
-                {h.name}
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Root>
+        <Flex gap="2" align="center">
+          <Button
+            variant="soft"
+            size="2"
+            onClick={handleExport}
+            disabled={exporting || items.length === 0}
+            className="cursor-pointer"
+          >
+            {exporting ? (
+              <>
+                <Spinner /> Exporting...
+              </>
+            ) : (
+              'Export'
+            )}
+          </Button>
+          <Button
+            variant="soft"
+            size="2"
+            onClick={() => importFileRef.current?.click()}
+            disabled={importing}
+            className="cursor-pointer"
+          >
+            {importing ? (
+              <>
+                <Spinner /> Importing...
+              </>
+            ) : (
+              'Import'
+            )}
+          </Button>
+          <input
+            ref={importFileRef}
+            type="file"
+            accept=".json"
+            onChange={handleImport}
+            className="hidden"
+          />
+          <Select.Root
+            value={selectedHomeId?.toString() ?? ''}
+            onValueChange={v => handleHomeChange(Number(v))}
+          >
+            <Select.Trigger placeholder="Select a home" />
+            <Select.Content>
+              {homes.map(h => (
+                <Select.Item key={h.id} value={h.id.toString()}>
+                  {h.name}
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Root>
+        </Flex>
       </Flex>
 
       {selectedHomeId !== null && loaded && (

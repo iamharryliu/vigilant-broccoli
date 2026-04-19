@@ -23,6 +23,8 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 - Fuzzy search across title, description, tags
 - Update title, description, and tags inline
 - Delete removes DB rows + R2 objects
+- Export all items to JSON (includes base64 images)
+- Import from export JSON into any home
 
 ## RLS
 
@@ -36,6 +38,8 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 - `PATCH /api/where-is` — update title, description, tags
 - `DELETE /api/where-is` — delete item + R2 images
 - `POST /api/where-is/analyze` — AI analysis of images
+- `GET /api/where-is/export?homeId=` — export all items + images as JSON (base64-embedded)
+- `POST /api/where-is/import` — import items + images from export JSON
 
 ## Env Vars
 

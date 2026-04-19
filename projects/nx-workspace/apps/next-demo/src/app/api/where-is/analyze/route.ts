@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { LLM_MODEL, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { createServerClient } from '../../../../libs/supabase-server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -28,6 +29,18 @@ Respond with valid JSON in this exact format:
 The tags should be individual items found across all images. Keep them lowercase and concise (1-3 words each). Include 5-20 items.`;
 
 export async function POST(request: NextRequest) {
+  const accessToken =
+    request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
+  const {
+    data: { user },
+  } = await createServerClient(accessToken).auth.getUser();
+  if (!user) {
+    return Response.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
+  }
+
   const parsed = RequestSchema.safeParse(await request.json());
   if (!parsed.success) {
     return Response.json(
