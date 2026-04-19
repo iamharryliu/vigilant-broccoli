@@ -30,7 +30,6 @@ import { AppConfig } from './types';
 import { AppCopyOverrides, resolveAppCopy } from './consts/app-copy.const';
 
 export type OfficePresenceAppRunConfig = {
-  id?: string;
   APP_NAME?: string;
   OFFICES?: string[];
   port?: number;
@@ -52,9 +51,8 @@ const DEFAULT_OFFICES: string[] = [];
 export async function runOfficePresenceApp(
   config: OfficePresenceAppRunConfig = {},
 ) {
-  const { id, APP_NAME, OFFICES, includeWeekends, daysAhead, copy } = config;
+  const { APP_NAME, OFFICES, includeWeekends, daysAhead, copy } = config;
   const appConfig: AppConfig = {
-    id,
     APP_NAME: APP_NAME ?? DEFAULT_APP_NAME,
     OFFICES: OFFICES ?? DEFAULT_OFFICES,
     includeWeekends,
