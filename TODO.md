@@ -1,5 +1,9 @@
 # TODO
 
+## INFRASTRUCTURE
+
+- Use personal Docker
+
 ## fix
 
 - fix: dldjmusic
@@ -26,9 +30,7 @@
 ## Home Management
 
 - Chores
-  - Common calendar
   - Chore list
-  - Schedule, week, month, views of chore calendar
   - Plant watering
 - Household Rules
   - Create Rule
@@ -53,10 +55,6 @@
   - View Bookings
   - Edit Booking
   - Rules/conditions
-- Leisure
-  - Shows
-  - Movies
-  - Crafts
 - Home Projects
 - Home documentation
 

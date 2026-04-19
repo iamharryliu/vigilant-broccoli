@@ -8,4 +8,5 @@ export const ROUTES = {
   AUTH_CALLBACK: '/auth/callback',
   CALENDAR: '/calendar',
   HOME_CALENDAR: (id: string | number) => `/homes/${id}/calendar`,
+  LEISURE: '/leisure',
 } as const;

@@ -9,6 +9,7 @@ import {
   Text,
   Select,
 } from '@radix-ui/themes';
+import { toDatetimeLocal, toDateLocal } from '../../../lib/date-utils';
 
 export interface CalendarEventFormData {
   title: string;
@@ -39,20 +40,6 @@ const EVENT_COLORS = [
   { label: 'Pink', value: '#ec4899' },
   { label: 'Teal', value: '#14b8a6' },
 ];
-
-const toDatetimeLocal = (iso: string): string => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-};
-
-const toDateLocal = (iso: string): string => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-};
 
 export function CalendarEventForm({
   initialData,

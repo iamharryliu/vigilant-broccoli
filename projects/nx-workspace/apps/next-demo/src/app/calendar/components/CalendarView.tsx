@@ -9,6 +9,7 @@ import type {
   EventClickArg,
   EventDropArg,
   EventInput,
+  EventReceiveArg,
 } from '@fullcalendar/core';
 import { CalendarEvent } from '../../../lib/types';
 
@@ -22,6 +23,10 @@ interface Props {
     end: string,
     allDay: boolean,
   ) => void;
+  onEventReceive?: (arg: EventReceiveArg) => void;
+  droppable?: boolean;
+  showViewSwitcher?: boolean;
+  height?: string;
 }
 
 const toFullCalendarEvent = (e: CalendarEvent): EventInput => ({
@@ -39,6 +44,10 @@ export function CalendarView({
   onSelectSlot,
   onEventClick,
   onEventDrop,
+  onEventReceive,
+  droppable = false,
+  showViewSwitcher = true,
+  height = '75vh',
 }: Props) {
   const handleSelect = (arg: DateSelectArg) => {
     onSelectSlot(arg.startStr, arg.endStr, arg.allDay);
@@ -65,17 +74,21 @@ export function CalendarView({
       headerToolbar={{
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay',
+        right: showViewSwitcher
+          ? 'dayGridMonth,timeGridWeek,timeGridDay'
+          : 'dayGridMonth',
       }}
-      height="75vh"
+      height={height}
       selectable
       selectMirror
       editable
+      droppable={droppable}
       dayMaxEvents
       events={events.map(toFullCalendarEvent)}
       select={handleSelect}
       eventClick={handleEventClick}
       eventDrop={handleEventDrop}
+      eventReceive={onEventReceive}
     />
   );
 }

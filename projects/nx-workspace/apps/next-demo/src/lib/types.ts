@@ -28,6 +28,30 @@ export interface CalendarEvent {
   allDay: boolean;
   color: string | null;
   googleEventId: string | null;
+  leisureActivityId: string | null;
+  homeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const LEISURE_CATEGORIES = [
+  'Movies',
+  'Shows',
+  'Crafts',
+  'Games',
+  'Outdoors',
+  'Music',
+  'Books',
+  'Other',
+] as const;
+
+export type LeisureCategory = (typeof LEISURE_CATEGORIES)[number];
+
+export interface LeisureActivity {
+  id: string;
+  title: string;
+  description: string | null;
+  category: LeisureCategory;
   homeId: number;
   createdAt: string;
   updatedAt: string;
