@@ -1,1 +1,1 @@
-Can you make a docs/features/this-feature.md to track and document specs for the this feature. I do not want verbose specs. Write as minimal as possible. Preferably just a few headers and markdown lists.
+Can you update/make a docs/features/this-feature.md to track and document specs for the this feature. I do not want verbose specs. Write as minimal as possible. Preferably just a few headers and markdown lists.
