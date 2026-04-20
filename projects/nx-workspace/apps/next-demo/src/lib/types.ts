@@ -57,6 +57,42 @@ export interface LeisureActivity {
   updatedAt: string;
 }
 
+export const RESOURCE_CATEGORIES = [
+  'Vehicle',
+  'Room',
+  'Equipment',
+  'Electronics',
+  'Furniture',
+  'Tool',
+  'Other',
+] as const;
+
+export type ResourceCategory = (typeof RESOURCE_CATEGORIES)[number];
+
+export interface Resource {
+  id: string;
+  name: string;
+  description: string | null;
+  category: ResourceCategory;
+  quantity: number;
+  homeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ResourceBooking {
+  id: string;
+  resourceId: string;
+  title: string;
+  description: string | null;
+  startDate: string;
+  endDate: string;
+  homeId: number;
+  calendarEventId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface WhereIsItem {
   id: string;
   title: string;

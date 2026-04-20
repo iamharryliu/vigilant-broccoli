@@ -5,4 +5,5 @@ export const NAV_LINKS = [
   { label: 'Where Is', href: ROUTES.WHERE_IS },
   { label: 'Calendar', href: ROUTES.CALENDAR },
   { label: 'Leisure', href: ROUTES.LEISURE },
+  { label: 'Resources', href: ROUTES.RESOURCES },
 ];
