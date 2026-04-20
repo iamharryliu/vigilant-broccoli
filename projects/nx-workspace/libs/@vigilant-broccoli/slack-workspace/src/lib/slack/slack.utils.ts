@@ -61,6 +61,43 @@ export async function getFieldId(
   return field?.id || null;
 }
 
+export async function updateUserPhoneNumber({
+  client,
+  slackUser,
+  phoneNumber,
+}: {
+  client: WebClient;
+  slackUser: Member;
+  phoneNumber: string;
+}): Promise<void> {
+  const userId = slackUser.id;
+  const realName = slackUser.profile?.real_name;
+
+  try {
+    await client.users.profile.set({
+      user: userId,
+      profile: { phone: phoneNumber },
+    });
+
+    console.log(
+      `Updated phone number for ${realName} (${userId}): ${phoneNumber}`,
+    );
+  } catch (error) {
+    const errorCode = (error as { code?: string; data?: { error?: string } })
+      ?.data?.error;
+
+    if (errorCode === 'cannot_update_admin_user') {
+      console.log(
+        `Skipping ${realName} (${userId}): Cannot update admin user profile`,
+      );
+      return;
+    }
+
+    console.log(`Unable to update Slack phone number for ${realName}`);
+    console.log(error);
+  }
+}
+
 export async function updateUserBirthday({
   client,
   slackUser,
