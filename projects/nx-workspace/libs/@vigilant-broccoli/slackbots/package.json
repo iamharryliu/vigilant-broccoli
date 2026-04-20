@@ -1,6 +1,6 @@
 {
   "name": "@vigilant-broccoli/slackbots",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",

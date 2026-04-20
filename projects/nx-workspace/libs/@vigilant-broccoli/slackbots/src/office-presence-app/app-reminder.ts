@@ -35,7 +35,7 @@ async function postMessage(
   botUserId?: string,
 ) {
   const { copy } = appConfig;
-  const text = copy.getReminderDmText(appConfig.APP_NAME, channel, botUserId);
+  const text = copy.getReminderDmText(appConfig.APP_NAME, botUserId);
   try {
     await client.chat.postMessage({ channel, text });
   } catch (error) {

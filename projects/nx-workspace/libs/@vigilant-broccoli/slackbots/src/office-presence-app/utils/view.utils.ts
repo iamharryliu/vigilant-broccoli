@@ -17,6 +17,7 @@ import {
   formatDateShort,
   formatISODateLocal,
   getUpcomingWeekdays,
+  getWeekNumber,
 } from './date.utils';
 import { APP_ACTION } from '../consts/app.consts';
 
@@ -38,10 +39,17 @@ export function buildModalDateOptionSlackBlocks(dates: Date[]): {
   text: { type: string; text: string };
   value: string;
 }[] {
-  return dates.map(date => ({
-    text: SlackViewBuilder.generatePlainText(formatDateShort(date)),
-    value: formatISODateLocal(date),
-  }));
+  return dates.map((date, index) => {
+    const isMonday = date.getDay() === 1;
+    const showWeek = index === 0 || isMonday;
+    const label = showWeek
+      ? `${formatDateShort(date)} (Week ${getWeekNumber(date)})`
+      : formatDateShort(date);
+    return {
+      text: SlackViewBuilder.generatePlainText(label),
+      value: formatISODateLocal(date),
+    };
+  });
 }
 
 function getHomeView(userId: string, appConfig: AppConfig): View {
