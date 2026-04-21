@@ -9,8 +9,9 @@ import type {
   EventClickArg,
   EventDropArg,
   EventInput,
-  EventReceiveArg,
 } from '@fullcalendar/core';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type EventReceiveArg = any;
 import { CalendarEvent } from '../../../lib/types';
 
 interface Props {

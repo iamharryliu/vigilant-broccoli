@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { EventReceiveArg } from '@fullcalendar/core';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type EventReceiveArg = any;
 import { Dialog, Text } from '@radix-ui/themes';
 import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
