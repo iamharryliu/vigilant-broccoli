@@ -1,6 +1,3 @@
-alias flydashboard='chrome "https://fly.io/dashboard"'
-alias flyBilling='chrome "https://fly.io/dashboard/personal/billing"'
-
 # Apps
 alias flyls='fly apps list'
 # Create and Destroy
