@@ -1,6 +1,27 @@
 #!/bin/bash
 set -euo pipefail
 
+GCLOUD_ACCOUNT="harryliu1995@gmail.com"
+GCLOUD_PROJECT="vigilant-broccoli"
+
+CURRENT_ACCOUNT=$(gcloud config get-value account 2>/dev/null)
+if [ "$CURRENT_ACCOUNT" != "$GCLOUD_ACCOUNT" ]; then
+  echo "Error: gcloud account is '$CURRENT_ACCOUNT', expected '$GCLOUD_ACCOUNT'. Run: gcp:login" >&2
+  exit 1
+fi
+
+CURRENT_PROJECT=$(gcloud config get-value project 2>/dev/null)
+if [ "$CURRENT_PROJECT" != "$GCLOUD_PROJECT" ]; then
+  echo "Error: gcloud project is '$CURRENT_PROJECT', expected '$GCLOUD_PROJECT'. Run: gcp:login" >&2
+  exit 1
+fi
+
+ADC_FILE="$HOME/.config/gcloud/application_default_credentials.json"
+if [ ! -f "$ADC_FILE" ] || ! grep -q '"authorized_user"' "$ADC_FILE" 2>/dev/null; then
+  echo "Error: application-default credentials not configured. Run: gcp:login" >&2
+  exit 1
+fi
+
 source "$NX_DIR/.env"
 
 TIMESTAMP=$(date -u +%Y-%m-%d)
