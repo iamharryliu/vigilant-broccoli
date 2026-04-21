@@ -4,6 +4,10 @@ import {
   createAdminClient,
 } from '../../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const SENDER_EMAIL = 'Harry Liu <contact@harryliu.dev>';
 
 async function isHomeAdmin(homeId: string, userId: string): Promise<boolean> {
   const admin = createAdminClient();
@@ -49,7 +53,6 @@ export async function POST(
   const { id } = await params;
   const { email, accessToken } = await request.json();
   const supabase = createServerClient(accessToken);
-  const admin = createAdminClient();
 
   const {
     data: { user },
@@ -60,12 +63,15 @@ export async function POST(
   const canManage = user && (await isHomeAdmin(id, user.id));
   const writeClient = canManage ? createAdminClient() : supabase;
 
-  const { error: insertError } = await writeClient.from('home_members').insert({
-    home_id: Number(id),
-    email: normalizedEmail,
-    invited_by: user?.id,
-    invited_by_email: user?.email,
-  });
+  const { error: insertError } = await writeClient.from('home_members').upsert(
+    {
+      home_id: Number(id),
+      email: normalizedEmail,
+      invited_by: user?.id,
+      invited_by_email: user?.email,
+    },
+    { onConflict: 'home_id,email' },
+  );
 
   if (insertError) {
     return Response.json(
@@ -74,17 +80,18 @@ export async function POST(
     );
   }
 
-  const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(
-    normalizedEmail,
-    {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
-      data: { home_id: id },
-    },
-  );
+  const { error: emailError } = await resend.emails.send({
+    from: SENDER_EMAIL,
+    to: normalizedEmail,
+    subject: `You've been invited to a home`,
+    html: `<p>Hi,</p>
+<p>You've been invited to join a home by ${user?.email}.</p>
+<p><a href="${process.env.NEXT_PUBLIC_APP_URL}/auth/callback">Click here to accept the invite</a></p>`,
+  });
 
-  if (inviteError && inviteError.message !== 'User already registered') {
+  if (emailError) {
     return Response.json(
-      { error: inviteError.message },
+      { error: emailError.message },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }

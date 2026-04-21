@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
 import 'dotenv/config';
 
 const VAULT_CA_CERT_PATH = './scripts/vault-ca.crt';
@@ -74,6 +75,15 @@ async function vercelEnvAdd(key: string, value: string, environment: string) {
   }
 }
 
+function parseEnvKeys(filePath: string): string[] {
+  if (!existsSync(filePath)) return [];
+  return readFileSync(filePath, 'utf-8')
+    .split('\n')
+    .filter(line => line && !line.startsWith('#'))
+    .map(line => line.split('=')[0].trim())
+    .filter(Boolean);
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const projectName = args[0];
@@ -86,7 +96,6 @@ async function main() {
     process.exit(1);
   }
 
-  // Hardcoded public/non-sensitive vars per project
   const hardcodedSecrets: Record<string, Record<string, string>> = {
     'next-demo': {
       NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
@@ -96,24 +105,20 @@ async function main() {
     },
   };
 
-  // Vault-sourced keys per project
-  const vaultKeys: Record<string, string[]> = {
-    'next-demo': [
-      'CLOUDFLARE_ACCOUNT_ID',
-      'CLOUDFLARE_R2_ACCESS_KEY_ID',
-      'CLOUDFLARE_R2_SECRET_ACCESS_KEY',
-      'OPENAI_API_KEY',
-      'SUPABASE_SERVICE_ROLE_KEY',
-    ],
+  const projectEnvExamples: Record<string, string> = {
+    'next-demo': 'apps/next-demo/.env.local.example',
   };
 
   const hardcoded = hardcodedSecrets[projectName];
-  const keysFromVault = vaultKeys[projectName];
+  const examplePath = projectEnvExamples[projectName];
 
-  if (!hardcoded && !keysFromVault) {
+  if (!hardcoded && !examplePath) {
     console.error(`Error: No configuration found for project "${projectName}"`);
     process.exit(1);
   }
+
+  const allKeys = examplePath ? parseEnvKeys(resolve(examplePath)) : [];
+  const keysFromVault = allKeys.filter(k => !(k in (hardcoded ?? {})));
 
   console.log(
     `\nDeploying secrets for ${projectName} to Vercel (${environment})...\n`,
@@ -121,7 +126,7 @@ async function main() {
 
   const allSecrets: Record<string, string> = { ...hardcoded };
 
-  if (keysFromVault?.length) {
+  if (keysFromVault.length) {
     console.log('Fetching vault secrets...');
     const vaultSecrets = await fetchSecretsFromVault();
 
