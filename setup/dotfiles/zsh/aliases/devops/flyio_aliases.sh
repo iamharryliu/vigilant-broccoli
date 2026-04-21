@@ -51,8 +51,6 @@ function flyrssh() {
         flyssh "$1"
     fi
 }
-# Secrets
-alias deployflyiosecrets='cd $PROJECTS_DIR/secrets-manager && python flyio_secrets_manager.py'
 # Postgres
 alias flysqlconn='flyctl postgres connect --app'
 alias flysqlproxy='flyctl proxy 5432 --app'
