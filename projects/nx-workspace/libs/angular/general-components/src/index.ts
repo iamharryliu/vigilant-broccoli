@@ -12,6 +12,11 @@ export { ThemeService } from './lib/services/theme.service';
 export { HttpService } from './lib/services/http.service';
 export { CONTACT_SERVICE } from './lib/services/common.service';
 export type { ContactService } from './lib/services/common.service';
+export {
+  RecaptchaV3Service,
+  RECAPTCHA_V3_SITE_KEY,
+} from './lib/services/recaptcha-v3.service';
+
 // Pipes
 export { HyphenatedToTitleCasePipe } from './lib/pipes/hyphenated-to-titlecase.pipe';
 

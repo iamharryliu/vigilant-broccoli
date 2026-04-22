@@ -6,13 +6,20 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
-import { RecaptchaInterceptor } from 'general-components';
+import {
+  RECAPTCHA_V3_SITE_KEY,
+  RecaptchaInterceptor,
+} from 'general-components';
 import { ENVIRONMENT } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(ROUTES),
     provideHttpClient(withInterceptorsFromDi()),
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useValue: ENVIRONMENT.RECAPTCHA_V3_SITE_KEY,
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RecaptchaInterceptor,

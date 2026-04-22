@@ -14,6 +14,7 @@ import { SuccessInterceptor } from './core/interceptors/success.interceptor';
 import {
   CONTACT_SERVICE,
   CredentialsInterceptorService,
+  RECAPTCHA_V3_SITE_KEY,
   RecaptchaInterceptor,
   ThemeService,
 } from 'general-components';
@@ -42,6 +43,10 @@ export function initTheme(themeService: ThemeService): () => void {
       const initializerFn = initTheme(inject(ThemeService));
       return initializerFn();
     }),
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useValue: ENVIRONMENT.RECAPTCHA_V3_SITE_KEY,
+    },
     {
       provide: CONTACT_SERVICE,
       useExisting: CommonService,
