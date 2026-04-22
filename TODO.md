@@ -57,8 +57,6 @@
 - Audit:
   - pip list
   - npm list
-- SendGrid/Resend implementation.
-- Supabase implementation.
 - Guitar tuning utility.
 - Unit testing aliases??
 - Vibecheck revibe.
