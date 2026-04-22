@@ -37,7 +37,7 @@ gcloud compute ssh "${VM_NAME}" \
   --tunnel-through-iap \
   --command="
 export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_SKIP_VERIFY=true
+export VAULT_CACERT=/etc/vault/tls/vault.crt
 export VAULT_TOKEN='${VAULT_TOKEN}'
 
 vault kv put ${KV_PATH}/secrets ${KV_ARGS}
