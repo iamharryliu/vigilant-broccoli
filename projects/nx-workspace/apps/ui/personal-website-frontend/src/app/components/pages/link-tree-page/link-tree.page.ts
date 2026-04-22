@@ -22,6 +22,11 @@ export class LinkTreePageComponent {
       icon: 'fa-solid fa-globe',
     },
     {
+      text: 'Calendar',
+      url: LINKS.CALENDAR_PAGE.url.external!,
+      icon: 'fa-solid fa-calendar',
+    },
+    {
       text: 'Resume',
       url: LINKS.RESUME.url.external!,
       icon: 'fa-solid fa-file',

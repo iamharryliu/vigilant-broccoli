@@ -9,6 +9,7 @@ import { Link } from 'general-components';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact.page';
 import { CareerPageComponent } from '../../components/pages/career-page/career.page';
 import { ComponentLibraryPageComponent } from '../../components/pages/component-library-page/component-library.page';
+import { CalendarPageComponent } from '../../components/pages/calendar-page/calendar.page';
 import { URLS } from './urls.const';
 
 export const DEFAULT_DESCRIPTION =
@@ -84,6 +85,15 @@ export const COMPONENT_LIBRARY_ROUTE: Route = {
   component: ComponentLibraryPageComponent,
 };
 
+export const CALENDAR_ROUTE: Route = {
+  path: 'calendar',
+  data: {
+    title: 'calendar',
+    description: "Harry Liu's calendar.",
+  },
+  component: CalendarPageComponent,
+};
+
 export const LEETCODE_ROUTE: Route = {
   path: 'grind-75',
   data: {
@@ -109,6 +119,7 @@ export const ROUTES: Routes = [
   DOCS_MD_ROUTE,
   DOCS_MD_FILE_ROUTE,
   LINK_TREE_ROUTE,
+  CALENDAR_ROUTE,
   COMPONENT_LIBRARY_ROUTE,
   LEETCODE_ROUTE,
   LEETCODE_SOLUTION_ROUTE,
@@ -140,6 +151,14 @@ const CONTACT_PAGE: Link = {
     external: `${ENVIRONMENT.APP_URL}/${CONTACT_ROUTE.path}`,
   },
   text: 'Contact',
+};
+
+const CALENDAR_PAGE: Link = {
+  url: {
+    internal: `/${CALENDAR_ROUTE.path}`,
+    external: `${ENVIRONMENT.APP_URL}/${CALENDAR_ROUTE.path}`,
+  },
+  text: 'Calendar',
 };
 
 const LINK_TREE: Link = {
@@ -224,6 +243,7 @@ const DOCS_MD: Link = {
 const INTERNAL_LINKS = {
   INDEX_PAGE,
   ABOUT_PAGE,
+  CALENDAR_PAGE,
   CONTACT_PAGE,
   LINK_TREE,
   DOCS_MD,

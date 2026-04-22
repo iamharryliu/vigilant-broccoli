@@ -70,14 +70,20 @@
               />
             </svg>
           </a>
-          @if (ENVIRONMENT.JOB_HUNT_MODE) {
           <a
-            href="https://www.linkedin.com/in/iamharryliu/"
-            target="_blank"
-            class="transition-all duration-200 hover:scale-110 hover:text-blue-700 dark:hover:text-blue-500"
+            [routerLink]="LINKS.CALENDAR_PAGE.url.internal"
+            class="transition-all duration-200 hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
           >
-            <i class="fa-brands fa-linkedin fa-xl"></i>
+            <i class="fa-solid fa-calendar fa-xl"></i>
           </a>
+          @if (ENVIRONMENT.JOB_HUNT_MODE) {
+            <a
+              href="https://www.linkedin.com/in/iamharryliu/"
+              target="_blank"
+              class="transition-all duration-200 hover:scale-110 hover:text-blue-700 dark:hover:text-blue-500"
+            >
+              <i class="fa-brands fa-linkedin fa-xl"></i>
+            </a>
           }
           <app-toggle-dark-mode-button></app-toggle-dark-mode-button>
         </div>
