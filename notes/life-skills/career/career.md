@@ -1,6 +1,10 @@
 # Career
 
-- [Interviewer Prep](./interviewer-prep.md)
+## Profile
+
+- [LinkedIn](https://www.linkedin.com/)
+- [Resume](https://harryliu.dev/assets/resume.pdf)
+- [Github README](https://github.com/iamharryliu)
 
 ## Job Hunting
 
