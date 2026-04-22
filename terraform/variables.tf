@@ -55,9 +55,3 @@ variable "rabbitmq_user" {
   type    = string
   default = "admin"
 }
-
-variable "rabbitmq_password" {
-  type      = string
-  default   = "changeme"
-  sensitive = true
-}

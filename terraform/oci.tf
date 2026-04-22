@@ -110,7 +110,7 @@ resource "oci_core_instance" "rabbitmq" {
     ssh_authorized_keys = var.ssh_public_key
     user_data = base64encode(templatefile("${path.module}/cloud-init-rabbitmq.yaml", {
       rabbitmq_user     = var.rabbitmq_user
-      rabbitmq_password = var.rabbitmq_password
+      rabbitmq_password = random_password.rabbitmq_password.result
     }))
   }
 }

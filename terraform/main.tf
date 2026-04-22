@@ -27,6 +27,10 @@ terraform {
       source  = "oracle/oci"
       version = "~> 6.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -266,6 +270,26 @@ resource "google_secret_manager_secret" "bitwarden_password" {
   }
 
   depends_on = [google_project_service.secretmanager]
+}
+
+resource "random_password" "rabbitmq_password" {
+  length  = 32
+  special = false
+}
+
+resource "google_secret_manager_secret" "rabbitmq_password" {
+  secret_id = "RABBITMQ_PASSWORD"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "rabbitmq_password" {
+  secret      = google_secret_manager_secret.rabbitmq_password.id
+  secret_data = random_password.rabbitmq_password.result
 }
 
 resource "google_storage_bucket" "backup" {
