@@ -138,6 +138,33 @@ resource "google_project_service" "secretmanager" {
   disable_on_destroy = false
 }
 
+resource "google_project_service" "cloudkms" {
+  service            = "cloudkms.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_kms_key_ring" "vault" {
+  name     = "vault-keyring"
+  location = var.region
+
+  depends_on = [google_project_service.cloudkms]
+}
+
+resource "google_kms_crypto_key" "vault_unseal" {
+  name     = "vault-unseal-key"
+  key_ring = google_kms_key_ring.vault.id
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "google_kms_crypto_key_iam_member" "vault_unseal" {
+  crypto_key_id = google_kms_crypto_key.vault_unseal.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  member        = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
 resource "google_iam_workload_identity_pool" "github_actions" {
   workload_identity_pool_id = "github-actions"
   display_name              = "GitHub Actions Pool"
