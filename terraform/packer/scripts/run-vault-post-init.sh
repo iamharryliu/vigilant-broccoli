@@ -21,7 +21,7 @@ export VAULT_CACERT=/etc/vault/tls/vault.crt
 if vault status 2>&1 | grep -q 'Initialized.*true'; then
   echo 'ALREADY_INITIALIZED'
 else
-  vault operator init -key-shares=5 -key-threshold=3
+  vault operator init -recovery-shares=5 -recovery-threshold=3
 fi
 ")
 
@@ -34,29 +34,21 @@ if echo "$INIT_OUTPUT" | grep -q "ALREADY_INITIALIZED"; then
       --project="${GCP_PROJECT}")
   fi
 else
-  echo "Vault initialized. Saving keys to Secret Manager..."
+  echo "Vault initialized. Saving recovery keys and root token to Secret Manager..."
 
-  UNSEAL_KEYS=$(echo "$INIT_OUTPUT" | grep "Unseal Key" | awk '{print $NF}')
+  RECOVERY_KEYS=$(echo "$INIT_OUTPUT" | grep "Recovery Key" | awk '{print $NF}')
   ROOT_TOKEN=$(echo "$INIT_OUTPUT" | grep "Initial Root Token" | awk '{print $NF}')
 
-  echo -n "$UNSEAL_KEYS" | gcloud secrets versions add VB_VM_VAULT_UNSEAL_KEYS \
+  echo -n "$RECOVERY_KEYS" | gcloud secrets versions add VB_VM_VAULT_UNSEAL_KEYS \
     --data-file=- --project="${GCP_PROJECT}"
   echo -n "$ROOT_TOKEN" | gcloud secrets versions add VB_VM_VAULT_ROOT_TOKEN \
     --data-file=- --project="${GCP_PROJECT}"
 
-  echo "Unseal keys and root token saved to Secret Manager."
+  echo "Recovery keys and root token saved to Secret Manager."
   VAULT_TOKEN="$ROOT_TOKEN"
 fi
 
-echo "Unsealing Vault..."
-UNSEAL_KEYS=$(gcloud secrets versions access latest \
-  --secret=VB_VM_VAULT_UNSEAL_KEYS \
-  --project="${GCP_PROJECT}")
-
-KEY1=$(echo "$UNSEAL_KEYS" | sed -n '1p')
-KEY2=$(echo "$UNSEAL_KEYS" | sed -n '2p')
-KEY3=$(echo "$UNSEAL_KEYS" | sed -n '3p')
-
+echo "Waiting for Vault auto-unseal..."
 gcloud compute ssh "${VM_NAME}" \
   --zone="${VM_ZONE}" \
   --tunnel-through-iap \
@@ -64,16 +56,15 @@ gcloud compute ssh "${VM_NAME}" \
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 
-vault operator unseal ${KEY1} > /dev/null
-vault operator unseal ${KEY2} > /dev/null
-vault operator unseal ${KEY3} > /dev/null
-
-if vault status 2>&1 | grep -q 'Sealed.*false'; then
-  echo 'Vault unsealed successfully.'
-else
-  echo 'ERROR: Vault is still sealed.'
-  exit 1
-fi
+for i in 1 2 3 4 5; do
+  if vault status 2>&1 | grep -q 'Sealed.*false'; then
+    echo 'Vault is unsealed.'
+    exit 0
+  fi
+  sleep 2
+done
+echo 'ERROR: Vault is still sealed after waiting.'
+exit 1
 "
 
 echo "Configuring Vault..."
