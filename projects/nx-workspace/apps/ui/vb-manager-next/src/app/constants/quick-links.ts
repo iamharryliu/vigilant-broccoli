@@ -157,6 +157,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: 'VB - NPM Tokens (prettydamntired)',
+    target: 'https://www.npmjs.com/settings/prettydamntired/tokens',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: FLYIO_LINK.DASHBOARD.NAME,
     target: FLYIO_LINK.DASHBOARD.URL,
     type: OPEN_TYPE.BROWSER,
@@ -680,6 +686,12 @@ const DEV_LINKS = [
   {
     label: 'Spotify Developer Dashboard',
     target: 'https://developer.spotify.com/dashboard',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: 'Resend Emails',
+    target: 'https://resend.com/emails',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
