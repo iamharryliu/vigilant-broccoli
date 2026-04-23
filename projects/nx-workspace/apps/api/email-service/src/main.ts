@@ -1,12 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { Resend } from 'resend';
+import { EmailService } from '@vigilant-broccoli/common-node';
 
 const HOST = process.env.HOST ?? 'localhost';
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 const API_KEY = process.env.EMAIL_SERVICE_API_KEY;
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-const resend = new Resend(RESEND_API_KEY);
+const emailService = new EmailService({ provider: 'resend' });
 const app = express();
 
 app.use(express.json());
@@ -32,14 +31,12 @@ app.post('/send-email', validateApiKey, async (req: Request, res: Response) => {
     return;
   }
 
-  const { error } = await resend.emails.send({ from, to, subject, html });
-
-  if (error) {
-    res.status(500).json({ error: error.message });
-    return;
+  try {
+    await emailService.sendEmail({ from, to, subject, html });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
   }
-
-  res.json({ success: true });
 });
 
 app.listen(PORT, HOST, () => {
