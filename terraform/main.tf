@@ -44,16 +44,16 @@ provider "github" {
   owner = var.github_owner
 }
 
-provider "cloudflare" {
-  api_token = var.cloudflare_api_token
-}
+provider "cloudflare" {}
 
 provider "oci" {
-  tenancy_ocid     = var.tenancy_ocid
-  user_ocid        = var.user_ocid
-  fingerprint      = var.fingerprint
-  private_key_path = var.private_key_path
-  region           = "ca-toronto-1"
+  config_file_profile = "DEFAULT"
+  region              = "ca-toronto-1"
+}
+
+locals {
+  oci_config       = file("~/.oci/config")
+  oci_tenancy_ocid = regex("tenancy=(ocid1\\.tenancy\\.[^\n]+)", local.oci_config)[0]
 }
 
 resource "google_compute_instance" "vb_free_vm" {

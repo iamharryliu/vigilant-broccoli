@@ -1,9 +1,9 @@
 data "oci_identity_availability_domains" "ads" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = local.oci_tenancy_ocid
 }
 
 data "oci_core_images" "ubuntu_arm" {
-  compartment_id           = var.tenancy_ocid
+  compartment_id           = local.oci_tenancy_ocid
   operating_system         = "Canonical Ubuntu"
   operating_system_version = "22.04"
   shape                    = "VM.Standard.A1.Flex"
@@ -12,21 +12,21 @@ data "oci_core_images" "ubuntu_arm" {
 }
 
 resource "oci_core_vcn" "rabbitmq_vcn" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = local.oci_tenancy_ocid
   cidr_block     = "10.0.0.0/16"
   display_name   = "rabbitmq-vcn"
   dns_label      = "rabbitmqvcn"
 }
 
 resource "oci_core_internet_gateway" "igw" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = local.oci_tenancy_ocid
   vcn_id         = oci_core_vcn.rabbitmq_vcn.id
   display_name   = "rabbitmq-igw"
   enabled        = true
 }
 
 resource "oci_core_route_table" "public_rt" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = local.oci_tenancy_ocid
   vcn_id         = oci_core_vcn.rabbitmq_vcn.id
   display_name   = "rabbitmq-public-rt"
 
@@ -37,7 +37,7 @@ resource "oci_core_route_table" "public_rt" {
 }
 
 resource "oci_core_security_list" "rabbitmq_sl" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = local.oci_tenancy_ocid
   vcn_id         = oci_core_vcn.rabbitmq_vcn.id
   display_name   = "rabbitmq-security-list"
 
@@ -75,7 +75,7 @@ resource "oci_core_security_list" "rabbitmq_sl" {
 }
 
 resource "oci_core_subnet" "public_subnet" {
-  compartment_id    = var.tenancy_ocid
+  compartment_id    = local.oci_tenancy_ocid
   vcn_id            = oci_core_vcn.rabbitmq_vcn.id
   cidr_block        = "10.0.1.0/24"
   display_name      = "rabbitmq-public-subnet"
@@ -86,7 +86,7 @@ resource "oci_core_subnet" "public_subnet" {
 
 # ARM Ampere A1 — Oracle Free Tier: up to 4 OCPUs + 24GB RAM total
 resource "oci_core_instance" "rabbitmq" {
-  compartment_id      = var.tenancy_ocid
+  compartment_id      = local.oci_tenancy_ocid
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
   display_name        = "rabbitmq-vm"
   shape               = "VM.Standard.A1.Flex"

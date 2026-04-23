@@ -21,29 +21,8 @@ variable "github_repo" {
 }
 
 variable "cloudflare_account_id" {
-  type = string
-}
-
-variable "cloudflare_api_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "tenancy_ocid" {
-  type = string
-}
-
-variable "user_ocid" {
-  type = string
-}
-
-variable "fingerprint" {
-  type = string
-}
-
-variable "private_key_path" {
   type    = string
-  default = "/Users/harryliu/.ssh/oci_api_key.pem"
+  default = "26d066ec62c4d27b8da5e9aebac17293"
 }
 
 variable "ssh_public_key" {
