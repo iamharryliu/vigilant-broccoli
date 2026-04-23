@@ -1,4 +1,4 @@
-name: security-check-vb-express
+name: security-check-email-service
 
 on:
   workflow_run:
@@ -20,11 +20,11 @@ jobs:
 
       - name: Run security check
         run: |
-          chmod +x scripts/shell/test-vb-express-security.sh
-          scripts/shell/test-vb-express-security.sh
+          chmod +x scripts/shell/test-email-service-security.sh
+          scripts/shell/test-email-service-security.sh
 
       - name: Notify on failure
         if: failure()
         run: |
-          echo "Security check failed! The /llm endpoint may be accepting unauthorized requests."
+          echo "Security check failed! The /send-email endpoint may be accepting unauthorized requests."
           exit 1
