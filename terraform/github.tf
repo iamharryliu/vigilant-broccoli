@@ -44,6 +44,12 @@ resource "github_actions_secret" "gcp_workload_identity_provider" {
   plaintext_value = google_iam_workload_identity_pool_provider.github.name
 }
 
+resource "github_actions_secret" "dockerhub_token" {
+  repository      = github_repository.vigilant_broccoli.name
+  secret_name     = "DOCKERHUB_TOKEN"
+  plaintext_value = "changeme"
+}
+
 resource "github_branch_protection" "main" {
   repository_id = github_repository.vigilant_broccoli.node_id
   pattern       = "main"
