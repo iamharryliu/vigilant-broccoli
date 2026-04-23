@@ -13,11 +13,11 @@
         "platform": "node",
         "outputPath": "dist/apps/office-presence-socket-server-demo",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
+        "thirdParty": true,
         "main": "apps/office-presence-socket-server-demo/src/main.ts",
         "tsConfig": "apps/office-presence-socket-server-demo/tsconfig.app.json",
         "assets": ["apps/office-presence-socket-server-demo/src/assets"],
-        "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,
           "outExtension": {
@@ -28,7 +28,6 @@
       "configurations": {
         "development": {},
         "production": {
-          "generateLockfile": true,
           "esbuildOptions": {
             "sourcemap": false,
             "outExtension": {
@@ -37,33 +36,6 @@
           }
         }
       }
-    },
-    "prune-lockfile": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "executor": "@nx/js:prune-lockfile",
-      "outputs": [
-        "{workspaceRoot}/dist/apps/office-presence-socket-server-demo/package.json",
-        "{workspaceRoot}/dist/apps/office-presence-socket-server-demo/package-lock.json"
-      ],
-      "options": {
-        "buildTarget": "build"
-      }
-    },
-    "copy-workspace-modules": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "outputs": [
-        "{workspaceRoot}/dist/apps/office-presence-socket-server-demo/workspace_modules"
-      ],
-      "executor": "@nx/js:copy-workspace-modules",
-      "options": {
-        "buildTarget": "build"
-      }
-    },
-    "prune": {
-      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
-      "executor": "nx:noop"
     },
     "serve": {
       "continuous": true,
@@ -86,8 +58,9 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
-    "docker:build": {
-      "dependsOn": ["build", "prune"]
+    "deploy-container": {
+      "dependsOn": ["build"],
+      "command": "docker buildx build --platform linux/amd64 -f apps/office-presence-socket-server-demo/Dockerfile -t iamharryliu/office-presence-socket-server-demo:latest -t iamharryliu/office-presence-socket-server-demo:${COMMIT_SHA:-latest} --push dist/apps/office-presence-socket-server-demo"
     }
   }
 }
