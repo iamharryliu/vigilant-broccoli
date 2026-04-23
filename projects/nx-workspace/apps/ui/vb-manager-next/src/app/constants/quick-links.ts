@@ -713,6 +713,12 @@ const DEV_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
+  {
+    label: 'Docker Hub Repositories',
+    target: 'https://hub.docker.com/repositories',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
 ];
 
 const VB_LINKS = [
