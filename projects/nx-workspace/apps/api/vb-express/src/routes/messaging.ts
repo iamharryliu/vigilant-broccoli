@@ -21,7 +21,7 @@ router.post('/send-email-message', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'to and subject are required' });
   }
 
-  const result = await emailService.sendEmail({
+  await emailService.sendEmail({
     from,
     to,
     subject,
@@ -29,10 +29,7 @@ router.post('/send-email-message', async (req: Request, res: Response) => {
     html,
   });
 
-  return res.json({
-    success: true,
-    messageId: result.messageId,
-  });
+  return res.json({ success: true });
 });
 
 router.post('/send-text-message', async (req: Request, res: Response) => {

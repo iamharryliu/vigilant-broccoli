@@ -1,14 +1,14 @@
 import http from 'http';
 import https from 'https';
 import { getDefaultEmailRequest } from '../email/email.consts';
-import { EmailService } from '../email/email.service';
+import { EmailService, EmailServiceConfig } from '../email/email.service';
 import { logger } from '../logging/logger.service';
 
 export class SiteMonitor {
   private emailService: EmailService;
 
-  constructor() {
-    this.emailService = new EmailService();
+  constructor(emailConfig?: EmailServiceConfig) {
+    this.emailService = new EmailService(emailConfig);
   }
 
   async monitorSiteActivity(site: string): Promise<void> {

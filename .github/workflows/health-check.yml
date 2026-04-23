@@ -91,8 +91,7 @@ jobs:
           jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
           secrets: |
             kv/data/test test | TEST_SECRET ;
-            kv/data/secrets MY_EMAIL | MY_EMAIL ;
-            kv/data/secrets MY_EMAIL_PASSWORD | MY_EMAIL_PASSWORD ;
+            kv/data/secrets RESEND_API_KEY | RESEND_API_KEY ;
 
       - name: Verify Vault Access
         run: |
@@ -121,6 +120,5 @@ jobs:
       - name: Run health check
         working-directory: ./projects/nx-workspace
         env:
-          MY_EMAIL: ${{ env.MY_EMAIL }}
-          MY_EMAIL_PASSWORD: ${{ env.MY_EMAIL_PASSWORD }}
+          RESEND_API_KEY: ${{ env.RESEND_API_KEY }}
         run: npm install @vigilant-broccoli/common-js && npx nx run @vigilant-broccoli/scripts:run-script:health-check

@@ -8,7 +8,7 @@ const sites = [
 ];
 
 async function main() {
-  const siteMonitor = new SiteMonitor();
+  const siteMonitor = new SiteMonitor({ provider: 'resend' });
   await Promise.all(sites.map(site => siteMonitor.monitorSiteActivity(site)));
 }
 

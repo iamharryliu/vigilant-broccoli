@@ -20,7 +20,7 @@ interface ResendConfig {
   apiKey?: string;
 }
 
-type EmailServiceConfig = SmtpConfig | ResendConfig;
+export type EmailServiceConfig = SmtpConfig | ResendConfig;
 
 export class EmailService {
   private provider: EmailProvider;
@@ -52,12 +52,14 @@ export class EmailService {
 
   async sendEmail(request: Email = getDefaultEmailRequest()): Promise<void> {
     if (this.provider === 'resend' && this.resend) {
+      const to = Array.isArray(request.to) ? request.to : [request.to];
       const { error } = await this.resend.emails.send({
         from: request.from || '',
-        to: Array.isArray(request.to) ? request.to : [request.to],
+        to,
         subject: request.subject,
-        text: request.text,
-        html: request.html,
+        ...(request.html
+          ? { html: request.html }
+          : { text: request.text || '' }),
       });
       if (error) {
         throw new Error(error.message);
