@@ -14,15 +14,6 @@
    gcloud secrets versions add BITWARDEN_PASSWORD --data-file=- <<< "your-bitwarden-password"
    ```
 
-## MY_EMAIL_PASSWORD (Google App Password)
-
-1. Create new password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-2. Update GCP Secret Manager:
-   ```bash
-   gcloud secrets versions add MY_EMAIL_PASSWORD --data-file=- <<< "your-new-password"
-   ```
-3. Delete old password from Google Account
-
 ## FLY_API_TOKEN (Fly.io Token)
 
 ```bash

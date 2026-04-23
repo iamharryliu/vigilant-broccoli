@@ -1054,6 +1054,12 @@ const UTILITY_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
+  {
+    label: 'Google App Passwords',
+    target: 'https://myaccount.google.com/apppasswords',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
 ];
 
 const CAREER_LINKS = [
