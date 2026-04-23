@@ -39,8 +39,6 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "has_container_deployments=true" >> $GITHUB_OUTPUT
-            echo "deploy_container_cmd=npx nx run-many -t deploy-container" >> $GITHUB_OUTPUT
             echo "has_deployments=true" >> $GITHUB_OUTPUT
             echo "deploy_cmd=npx nx run-many -t deploy" >> $GITHUB_OUTPUT
           else
@@ -51,40 +49,23 @@ jobs:
               BASE="origin/main"
             fi
 
-            CONTAINER_AFFECTED=$(npx nx show projects --affected --withTarget=deploy-container --base=$BASE --head=${{ github.sha }})
-            CONTAINER_NORMALIZED=$(echo "$CONTAINER_AFFECTED" | tr -d '[:space:]')
-            CONTAINER_COMMA=$(echo "$CONTAINER_AFFECTED" | tr '\n' ',' | sed 's/,$//')
-            if [[ -n "$CONTAINER_NORMALIZED" ]]; then
-              echo "has_container_deployments=true" >> $GITHUB_OUTPUT
-              echo "deploy_container_cmd=npx nx run-many -t deploy-container --projects=\"$CONTAINER_COMMA\"" >> $GITHUB_OUTPUT
-            else
-              echo "has_container_deployments=false" >> $GITHUB_OUTPUT
-            fi
-
-            DEPLOY_AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
-            DEPLOY_NORMALIZED=$(echo "$DEPLOY_AFFECTED" | tr -d '[:space:]')
-            DEPLOY_COMMA=$(echo "$DEPLOY_AFFECTED" | tr '\n' ',' | sed 's/,$//')
-            if [[ -n "$DEPLOY_NORMALIZED" ]]; then
+            AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
+            AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
+            AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
+            if [[ -n "$AFFECTED_NORMALIZED" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
-              echo "deploy_cmd=npx nx run-many -t deploy --projects=\"$DEPLOY_COMMA\"" >> $GITHUB_OUTPUT
+              echo "deploy_cmd=npx nx run-many -t deploy --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
             else
               echo "has_deployments=false" >> $GITHUB_OUTPUT
             fi
           fi
 
       - name: Log in to Docker Hub
-        if: steps.check.outputs.has_container_deployments == 'true'
+        if: steps.check.outputs.has_deployments == 'true'
         uses: docker/login-action@v3
         with:
           username: iamharryliu
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Deploy affected containers
-        if: steps.check.outputs.has_container_deployments == 'true'
-        working-directory: ./projects/nx-workspace
-        env:
-          COMMIT_SHA: ${{ github.sha }}
-        run: ${{ steps.check.outputs.deploy_container_cmd }}
 
       - name: Authenticate to Google Cloud
         # if: steps.check.outputs.has_deployments == 'true'
@@ -151,6 +132,7 @@ jobs:
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
+          COMMIT_SHA: ${{ github.sha }}
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://127.0.0.1:8200
           NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/projects/nx-workspace/scripts/vault-ca.crt

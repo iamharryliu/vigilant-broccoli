@@ -14,6 +14,7 @@
         "outputPath": "dist/apps/api/email-service",
         "format": ["cjs"],
         "bundle": true,
+        "thirdParty": true,
         "main": "apps/api/email-service/src/main.ts",
         "tsConfig": "apps/api/email-service/tsconfig.app.json",
         "assets": ["apps/api/email-service/src/assets"],
@@ -59,7 +60,11 @@
     },
     "deploy-container": {
       "dependsOn": ["build"],
-      "command": "docker build -f apps/api/email-service/Dockerfile -t iamharryliu/email-service:latest -t iamharryliu/email-service:${COMMIT_SHA:-latest} dist/apps/api/email-service && docker push iamharryliu/email-service:latest && docker push iamharryliu/email-service:${COMMIT_SHA:-latest}"
+      "command": "docker buildx build --platform linux/amd64 -f apps/api/email-service/Dockerfile -t iamharryliu/email-service:latest -t iamharryliu/email-service:${COMMIT_SHA:-latest} --push dist/apps/api/email-service"
+    },
+    "deploy": {
+      "dependsOn": ["deploy-container"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/email-service.toml"
     }
   }
 }

@@ -48,6 +48,10 @@ resource "github_actions_secret" "dockerhub_token" {
   repository      = github_repository.vigilant_broccoli.name
   secret_name     = "DOCKERHUB_TOKEN"
   plaintext_value = "changeme"
+
+  lifecycle {
+    ignore_changes = [plaintext_value]
+  }
 }
 
 resource "github_branch_protection" "main" {
