@@ -158,9 +158,6 @@ wgupn() {
   sudo wg-quick up "$wg_name"
 }
 
-# Hashicorp Vault
-alias openlocalvault="open 'https://127.0.0.1:8200'"
-
 # AWS
 alias awsprofiles="code ~/.aws/credentials"
 

@@ -4,18 +4,14 @@ import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
+import { getVaultToken } from './gcp-vault-token';
 
 async function fetchSecrets(
   vaultAddr: string,
   secretPath: string,
   certs?: string,
 ) {
-  const vaultToken = process.env.VAULT_TOKEN;
-
-  if (!vaultToken) {
-    console.error('Error: VAULT_TOKEN environment variable is required');
-    process.exit(1);
-  }
+  const vaultToken = getVaultToken();
 
   const nodeVault = await import('node-vault');
   const requestOptions: Record<string, unknown> = {};

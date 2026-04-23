@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 import 'dotenv/config';
+import { getVaultToken } from './gcp-vault-token';
 
 const VAULT_CA_CERT_PATH = './scripts/vault-ca.crt';
 const VAULT_PATH = 'kv/data/secrets';
@@ -12,12 +13,7 @@ interface VaultSecrets {
 
 async function fetchSecretsFromVault(): Promise<VaultSecrets> {
   const vaultAddr = process.env.VAULT_ADDR || 'https://10.0.1.1:8200';
-  const vaultToken = process.env.VAULT_TOKEN;
-
-  if (!vaultToken) {
-    console.error('Error: VAULT_TOKEN environment variable is required');
-    process.exit(1);
-  }
+  const vaultToken = getVaultToken();
 
   const ca = readFileSync(VAULT_CA_CERT_PATH);
   const nodeVault = await import('node-vault');
