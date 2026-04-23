@@ -39,37 +39,37 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            BASE="origin/main~1"
+            echo "has_container_deployments=true" >> $GITHUB_OUTPUT
+            echo "deploy_container_cmd=npx nx run-many -t deploy-container" >> $GITHUB_OUTPUT
+            echo "has_deployments=true" >> $GITHUB_OUTPUT
+            echo "deploy_cmd=npx nx run-many -t deploy" >> $GITHUB_OUTPUT
           else
             BASE="${{ github.event.before }}"
 
-            # fallback if empty, zero hash, or missing commit
             if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
               echo "BASE commit $BASE not found, falling back to origin/main"
               BASE="origin/main"
             fi
-          fi
 
-          echo "BASE=$BASE" >> $GITHUB_OUTPUT
+            CONTAINER_AFFECTED=$(npx nx show projects --affected --withTarget=deploy-container --base=$BASE --head=${{ github.sha }})
+            CONTAINER_NORMALIZED=$(echo "$CONTAINER_AFFECTED" | tr -d '[:space:]')
+            CONTAINER_COMMA=$(echo "$CONTAINER_AFFECTED" | tr '\n' ',' | sed 's/,$//')
+            if [[ -n "$CONTAINER_NORMALIZED" ]]; then
+              echo "has_container_deployments=true" >> $GITHUB_OUTPUT
+              echo "deploy_container_cmd=npx nx run-many -t deploy-container --projects=\"$CONTAINER_COMMA\"" >> $GITHUB_OUTPUT
+            else
+              echo "has_container_deployments=false" >> $GITHUB_OUTPUT
+            fi
 
-          CONTAINER_AFFECTED=$(npx nx show projects --affected --withTarget=deploy-container --base=$BASE --head=${{ github.sha }})
-          CONTAINER_NORMALIZED=$(echo "$CONTAINER_AFFECTED" | tr -d '[:space:]')
-          CONTAINER_COMMA=$(echo "$CONTAINER_AFFECTED" | tr '\n' ',' | sed 's/,$//')
-          if [[ -n "$CONTAINER_NORMALIZED" ]]; then
-            echo "has_container_deployments=true" >> $GITHUB_OUTPUT
-            echo "deploy_container_cmd=npx nx run-many -t deploy-container --projects=\"$CONTAINER_COMMA\"" >> $GITHUB_OUTPUT
-          else
-            echo "has_container_deployments=false" >> $GITHUB_OUTPUT
-          fi
-
-          DEPLOY_AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
-          DEPLOY_NORMALIZED=$(echo "$DEPLOY_AFFECTED" | tr -d '[:space:]')
-          DEPLOY_COMMA=$(echo "$DEPLOY_AFFECTED" | tr '\n' ',' | sed 's/,$//')
-          if [[ -n "$DEPLOY_NORMALIZED" ]]; then
-            echo "has_deployments=true" >> $GITHUB_OUTPUT
-            echo "deploy_cmd=npx nx run-many -t deploy --projects=\"$DEPLOY_COMMA\"" >> $GITHUB_OUTPUT
-          else
-            echo "has_deployments=false" >> $GITHUB_OUTPUT
+            DEPLOY_AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
+            DEPLOY_NORMALIZED=$(echo "$DEPLOY_AFFECTED" | tr -d '[:space:]')
+            DEPLOY_COMMA=$(echo "$DEPLOY_AFFECTED" | tr '\n' ',' | sed 's/,$//')
+            if [[ -n "$DEPLOY_NORMALIZED" ]]; then
+              echo "has_deployments=true" >> $GITHUB_OUTPUT
+              echo "deploy_cmd=npx nx run-many -t deploy --projects=\"$DEPLOY_COMMA\"" >> $GITHUB_OUTPUT
+            else
+              echo "has_deployments=false" >> $GITHUB_OUTPUT
+            fi
           fi
 
       - name: Log in to Docker Hub
