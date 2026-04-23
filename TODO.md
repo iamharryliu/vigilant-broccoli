@@ -1,31 +1,6 @@
 # TODO
 
-## INFRASTRUCTURE
-
-- Use personal Docker
-
-## fix
-
-- fix: dldjmusic
-  - https://github.com/spotDL/spotify-downloader/issues/2585
-  - https://github.com/spotDL/spotify-downloader/issues/2617
-  - https://github.com/spotDL/spotify-downloader/pull/2626
-
-## ci
-
-- chore: alias for `alias run lib:nx-release-publish`?
-
-## vigilant-broccoli
-
-- **R&D**
-  - chore: Pihole reserach, pihole, pivpn, nordvpn integration.
-  - chore: iCloud vb notes.
-  - chore: Research identification implementations
-  - chore: Research iPhone finder implementation
-
-## Small Business
-
-- Stripe interface
+- [Github Projects](https://github.com/iamharryliu?tab=projects)
 
 ## Home Management
 
@@ -50,17 +25,3 @@
   - Rules/conditions
 - Home Projects
 - Home documentation
-
-## Backlog
-
-- Harden secret management.
-- Audit:
-  - pip list
-  - npm list
-- Guitar tuning utility.
-- Unit testing aliases??
-- Vibecheck revibe.
-- Angular component library.
-- Replace Obsidian brackets.
-- Dotfile cleanup.
-- Improve npm library separation.
