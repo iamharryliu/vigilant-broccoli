@@ -1,5 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { EmailService } from '@vigilant-broccoli/common-node';
+import {
+  EmailService,
+  requestLoggerMiddleware,
+} from '@vigilant-broccoli/common-node';
 
 const HOST = process.env.HOST ?? 'localhost';
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -9,6 +12,7 @@ const emailService = new EmailService({ provider: 'resend' });
 const app = express();
 
 app.use(express.json());
+app.use(requestLoggerMiddleware);
 
 const validateApiKey = (req: Request, res: Response, next: NextFunction) => {
   const key = req.headers['x-api-key'];

@@ -24,6 +24,8 @@ export * from './lib/logger/logger.model';
 export * from './lib/logger/logger.const';
 export * from './lib/logger/logger.transports';
 export * from './lib/logging/logger.service';
+// Middleware
+export * from './lib/middleware/request-logger.middleware';
 // Encryption
 export * from './lib/encryption/encryption.service';
 // Site Monitor
