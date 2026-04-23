@@ -6,6 +6,7 @@
     "format:commit": "prettier --write",
     "gcp:login": "gcloud auth login && gcloud config set project vigilant-broccoli && gcloud auth application-default login",
     "npm:login": "npm login",
+    "oracle:config": "vim ~/.oci/config",
     "tf:plan": "eval $(./terraform/scripts/load-vault-tf-env.sh) && cd terraform && terraform plan",
     "tf:apply": "eval $(./terraform/scripts/load-vault-tf-env.sh) && cd terraform && terraform apply",
     "tf:output": "cd terraform && terraform output",

@@ -522,6 +522,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: TERRAFORM_LINK.TOKENS.NAME,
+    target: TERRAFORM_LINK.TOKENS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: ROBOFLOW_LINK.DASHBOARD.NAME,
     target: ROBOFLOW_LINK.DASHBOARD.URL,
     type: OPEN_TYPE.BROWSER,
