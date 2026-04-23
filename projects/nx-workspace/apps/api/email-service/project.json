@@ -62,8 +62,14 @@
       "dependsOn": ["build"],
       "command": "docker buildx build --platform linux/amd64 -f apps/api/email-service/Dockerfile -t iamharryliu/email-service:latest -t iamharryliu/email-service:${COMMIT_SHA:-latest} --push dist/apps/api/email-service"
     },
+    "deploy:secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts email-service"
+      }
+    },
     "deploy": {
-      "dependsOn": ["deploy-container"],
+      "dependsOn": ["deploy-container", "deploy:secrets"],
       "command": "flyctl deploy --config ./deployment-configs/fly-configs/email-service.toml"
     }
   }

@@ -1,14 +1,12 @@
 import { FastifyInstance } from 'fastify';
-import { Resend } from 'resend';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
 import {
   getEnvironmentVariable,
   RecaptchaService,
 } from '@vigilant-broccoli/common-node';
 
-const ENV_KEYS = {
-  RESEND_API_KEY: 'RESEND_API_KEY',
-} as const;
+const EMAIL_SERVICE_URL = getEnvironmentVariable('EMAIL_SERVICE_URL');
+const EMAIL_SERVICE_API_KEY = getEnvironmentVariable('EMAIL_SERVICE_API_KEY');
 
 const PERSONAL_EMAIL = 'harryliu1995@gmail.com';
 const SENDER_EMAIL = 'Harry Liu <contact@harryliu.dev>';
@@ -16,32 +14,51 @@ const SENDER_EMAIL = 'Harry Liu <contact@harryliu.dev>';
 type ContactRequestBody = MessageRequest & { recaptchaToken?: string };
 
 const recaptchaService = new RecaptchaService();
-const resend = new Resend(getEnvironmentVariable(ENV_KEYS.RESEND_API_KEY));
 
 const verifyRecaptcha = async (token?: string) => {
   if (!token) return false;
   return recaptchaService.isTrustedRequest(token);
 };
 
+const sendEmail = async (
+  from: string,
+  to: string,
+  subject: string,
+  html: string,
+) => {
+  const response = await fetch(`${EMAIL_SERVICE_URL}/send-email`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': EMAIL_SERVICE_API_KEY,
+    },
+    body: JSON.stringify({ from, to, subject, html }),
+  });
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.error || 'Email service request failed');
+  }
+};
+
 const sendEmails = (name: string, email: string, message: string) =>
   Promise.all([
-    resend.emails.send({
-      from: SENDER_EMAIL,
-      to: PERSONAL_EMAIL,
-      subject: `Contact form message from ${name}`,
-      html: `<p><strong>Name:</strong> ${name}</p>
+    sendEmail(
+      SENDER_EMAIL,
+      PERSONAL_EMAIL,
+      `Contact form message from ${name}`,
+      `<p><strong>Name:</strong> ${name}</p>
 <p><strong>Email:</strong> ${email}</p>
 <p><strong>Message:</strong></p>
 <p>${message}</p>`,
-    }),
-    resend.emails.send({
-      from: SENDER_EMAIL,
-      to: email,
-      subject: `Thanks for reaching out, ${name}!`,
-      html: `<p>Hi ${name},</p>
+    ),
+    sendEmail(
+      SENDER_EMAIL,
+      email,
+      `Thanks for reaching out, ${name}!`,
+      `<p>Hi ${name},</p>
 <p>Thanks for your message! I've received it and will get back to you soon.</p>
 <p>- Harry</p>`,
-    }),
+    ),
   ]);
 
 export default async function (fastify: FastifyInstance) {
@@ -59,13 +76,7 @@ export default async function (fastify: FastifyInstance) {
         .send({ error: 'name, email, and message are required' });
     }
 
-    const [notification, confirmation] = await sendEmails(name, email, message);
-
-    if (notification.error || confirmation.error) {
-      return reply.status(500).send({
-        error: notification.error?.message || confirmation.error?.message,
-      });
-    }
+    await sendEmails(name, email, message);
 
     return reply.send({ success: true });
   });
