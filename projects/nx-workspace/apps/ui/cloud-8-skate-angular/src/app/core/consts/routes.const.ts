@@ -10,6 +10,7 @@ import { PlaylistsPageComponent } from '../../components/pages/playlists-page/pl
 import { AlbumsPageComponent } from '../../components/pages/albums-page/albums-page.component';
 import { AlbumPageComponent } from '../../components/pages/album-page/album-page.component';
 import { NotFoundPageComponent } from '../../components/pages/not-found-page/not-found.page';
+import { WaiverPageComponent } from '../../components/pages/waiver-page/waiver.page';
 
 export const HOME_PAGE_ROUTE: Route = {
   path: '',
@@ -53,6 +54,12 @@ export const TERMINOLOGY_PAGE_ROUTE: Route = {
   component: TerminologyPageComponent,
 };
 
+export const WAIVER_PAGE_ROUTE: Route = {
+  path: 'waiver',
+  data: { title: 'Waiver' },
+  component: WaiverPageComponent,
+};
+
 export const CALENDAR_PAGE_ROUTE: Route = {
   path: 'calendar',
   data: { title: 'Calendar' },
@@ -87,6 +94,7 @@ export const ROUTES: Routes = [
   MORE_SUBPAGE_ROUTE,
   CALENDAR_PAGE_ROUTE,
   FAQ_PAGE_ROUTE,
+  WAIVER_PAGE_ROUTE,
   PLAYLISTS_PAGE_ROUTE,
   TERMINOLOGY_PAGE_ROUTE,
   ALBUMS_ROUTE,
@@ -135,11 +143,26 @@ const PLAYLISTS: Link = {
   text: 'Playlists',
 };
 
+const WAIVER: Link = {
+  url: {
+    internal: `/${WAIVER_PAGE_ROUTE.path}`,
+  },
+  text: 'Waiver',
+};
+
 const ALBUMS: Link = {
   url: {
     internal: `/${ALBUMS_ROUTE.path}`,
   },
   text: 'Gallery',
+};
+
+const WAIVER_DOC: Link = {
+  url: {
+    external:
+      'https://docs.google.com/document/d/1ll19WybAa0mxTtXJZwUVu1WVHZFbylDezAl-05b1glQ/edit?usp=sharing',
+  },
+  text: 'Cloud8Skate Waiver Document',
 };
 
 const CLOUD_8_SKATE_IG: Link = {
@@ -161,12 +184,14 @@ export const INTERNAL_LINKS = {
   CONTACT,
   CALENDAR,
   FAQ,
+  WAIVER,
   MORE,
   PLAYLISTS,
   ALBUMS,
 };
 
 export const EXTERNAL_LINKS = {
+  WAIVER_DOC,
   CLOUD_8_SKATE_IG,
   TORONTO_CITY_SKATE_IG,
 };
