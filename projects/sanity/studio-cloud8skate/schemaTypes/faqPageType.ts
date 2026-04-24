@@ -110,6 +110,39 @@ export const faqPageType = defineType({
       ],
       initialValue: [
         {
+          question: 'Are there rules?',
+          answer: 'Yes. Please review the community rules and waiver before joining a session.',
+          links: [
+            {
+              label: 'Community rules',
+              url: 'https://docs.google.com/document/d/1uSd7tTWcFiKoUa-FERtknOZR24hzQpfBLOSnPOI2ID0/edit?tab=t.0',
+            },
+            {
+              label: 'Waiver',
+              url: 'https://cloud8skate.com/waiver',
+            },
+          ],
+        },
+        {
+          question: 'How can I join?',
+          answer: 'Just show up and skate with us.',
+        },
+        {
+          question: 'Do you have events?',
+          answer:
+            'Yes. Keep an eye on our calendar and Instagram for upcoming meetups, sessions, and announcements.',
+          links: [
+            {
+              label: 'Calendar',
+              url: 'https://cloud8skate.com/calendar',
+            },
+            {
+              label: '@cloud8skate on Instagram',
+              url: 'https://www.instagram.com/cloud8skate/',
+            },
+          ],
+        },
+        {
           question: 'Where can I find Cloud8?',
           answer:
             'Cloud8 can usually be found at The Bentway, College Park, and various ice skating rinks around Toronto.',
@@ -128,35 +161,6 @@ export const faqPageType = defineType({
           question: 'What kind of skating does Cloud8 do?',
           answer:
             'Cloud8 welcomes enthusiasts of all skating styles, including inline skating, rollerblading, quad skating, roller skating, and ice skating.',
-        },
-        {
-          question: 'Do you have events?',
-          answer:
-            'Yes. Keep an eye on our calendar and Instagram for upcoming meetups, sessions, and announcements.',
-          links: [
-            {
-              label: 'Calendar',
-              url: 'https://cloud8skate.com/calendar',
-            },
-            {
-              label: '@cloud8skate on Instagram',
-              url: 'https://www.instagram.com/cloud8skate/',
-            },
-          ],
-        },
-        {
-          question: 'How can I join?',
-          answer: 'Just show up and skate with us.',
-        },
-        {
-          question: 'Are there rules?',
-          answer: 'Yes. Please review the community rules before joining a session.',
-          links: [
-            {
-              label: 'Community rules',
-              url: 'https://docs.google.com/document/d/1uSd7tTWcFiKoUa-FERtknOZR24hzQpfBLOSnPOI2ID0/edit?tab=t.0',
-            },
-          ],
         },
         {
           question: 'Where can I find the music you skate to?',
