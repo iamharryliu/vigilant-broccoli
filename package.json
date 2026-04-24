@@ -10,6 +10,7 @@
     "tf:plan": "eval $(./terraform/scripts/load-vault-tf-env.sh) && cd terraform && terraform plan",
     "tf:apply": "eval $(./terraform/scripts/load-vault-tf-env.sh) && cd terraform && terraform apply",
     "tf:output": "cd terraform && terraform output",
+    "oci:ssh": "ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd terraform && terraform output -raw rabbitmq_public_ip)",
     "vm:ssh": "gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap",
     "vm:status": "gcloud compute instances describe vb-free-vm --zone=us-east1-b --format='value(status)'",
     "vm:stop": "gcloud compute instances stop vb-free-vm --zone=us-east1-b",
