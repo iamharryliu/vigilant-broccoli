@@ -28,15 +28,21 @@ app.get('/', (_req, res) => {
 });
 
 app.post('/send-email', validateApiKey, async (req: Request, res: Response) => {
-  const { from, to, subject, html } = req.body;
+  const { from, to, subject, text, html } = req.body;
 
-  if (!from || !to || !subject || !html) {
-    res.status(400).json({ error: 'from, to, subject, and html are required' });
+  if (!to || !subject) {
+    res.status(400).json({ error: 'to and subject are required' });
     return;
   }
 
   try {
-    await emailService.sendEmail({ from, to, subject, html });
+    await emailService.sendEmail({
+      from,
+      to,
+      subject,
+      text,
+      html,
+    });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });

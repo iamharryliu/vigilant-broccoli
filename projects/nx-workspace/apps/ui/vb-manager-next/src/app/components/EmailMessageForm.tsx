@@ -73,7 +73,7 @@ export const EmailMessageForm = ({
           <label className="block text-sm mb-1">From (optional)</label>
           <TextField.Root
             value={from}
-            onChange={(e) => setFrom(e.target.value)}
+            onChange={e => setFrom(e.target.value)}
             placeholder="sender@example.com"
           />
         </div>
@@ -81,8 +81,8 @@ export const EmailMessageForm = ({
           <label className="block text-sm mb-1">To</label>
           <TextField.Root
             value={to}
-            onChange={(e) => setTo(e.target.value)}
-            placeholder="recipient@example.com"
+            onChange={e => setTo(e.target.value)}
+            placeholder="receiver@example.com"
           />
         </div>
       </div>
@@ -90,7 +90,7 @@ export const EmailMessageForm = ({
         <label className="block text-sm mb-1">Subject</label>
         <TextField.Root
           value={subject}
-          onChange={(e) => setSubject(e.target.value)}
+          onChange={e => setSubject(e.target.value)}
           placeholder="Email subject"
         />
       </div>
@@ -98,7 +98,7 @@ export const EmailMessageForm = ({
         <label className="block text-sm mb-1">Text (optional)</label>
         <TextArea
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={e => setText(e.target.value)}
           placeholder="Plain text message"
           rows={3}
         />
@@ -107,7 +107,7 @@ export const EmailMessageForm = ({
         <label className="block text-sm mb-1">HTML (optional)</label>
         <TextArea
           value={html}
-          onChange={(e) => setHtml(e.target.value)}
+          onChange={e => setHtml(e.target.value)}
           placeholder="<p>HTML message</p>"
           rows={3}
         />

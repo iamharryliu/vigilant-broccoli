@@ -5,14 +5,15 @@ import { Dialog, IconButton } from '@radix-ui/themes';
 import { EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { EmailMessageForm } from './EmailMessageForm';
 
-const DEFAULT_FROM = 'Harry <harryliu1995@gmail.com>';
-
 type EmailModalComponentProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 };
 
-export const EmailModalComponent = ({ open: externalOpen, onOpenChange: externalOnOpenChange }: EmailModalComponentProps = {}) => {
+export const EmailModalComponent = ({
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
+}: EmailModalComponentProps = {}) => {
   const [internalOpen, setInternalOpen] = useState(false);
 
   const open = externalOpen ?? internalOpen;
@@ -32,7 +33,6 @@ export const EmailModalComponent = ({ open: externalOpen, onOpenChange: external
         <Dialog.Title>Send Email Message</Dialog.Title>
 
         <EmailMessageForm
-          defaultFrom={DEFAULT_FROM}
           defaultTo=""
           defaultSubject=""
           defaultText=""

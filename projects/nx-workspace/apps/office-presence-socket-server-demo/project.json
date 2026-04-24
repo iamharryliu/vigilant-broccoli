@@ -37,6 +37,19 @@
         }
       }
     },
+    "serve:docker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'docker run --platform linux/amd64 -p 3000:3000 -e SLACK_BOT_TOKEN=$SLACK_BOT_TOKEN -e SLACK_APP_TOKEN=$SLACK_APP_TOKEN -e OFFICES=$OFFICES -e ENABLE_REMINDERS=$ENABLE_REMINDERS -e INCLUDE_WEEKENDS=$INCLUDE_WEEKENDS -e DAYS_AHEAD=$DAYS_AHEAD iamharryliu/office-presence-socket-server-demo:latest'"
+      }
+    },
+    "serve:vault": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'nx serve office-presence-socket-server-demo'"
+      }
+    },
     "serve": {
       "continuous": true,
       "executor": "@nx/js:node",

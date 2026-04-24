@@ -9,6 +9,8 @@ import { Email } from './email.models';
 
 type EmailProvider = 'smtp' | 'resend';
 
+const DEFAULT_FROM = 'test@harryliu.dev';
+
 interface SmtpConfig {
   provider: 'smtp';
   email?: string;
@@ -24,11 +26,16 @@ export type EmailServiceConfig = SmtpConfig | ResendConfig;
 
 export class EmailService {
   private provider: EmailProvider;
+  private defaultFrom: string;
   private transporter?: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
   private resend?: Resend;
 
-  constructor(config: EmailServiceConfig = { provider: 'smtp' }) {
+  constructor(
+    config: EmailServiceConfig = { provider: 'smtp' },
+    defaultFrom = DEFAULT_FROM,
+  ) {
     this.provider = config.provider;
+    this.defaultFrom = defaultFrom;
 
     if (config.provider === 'resend') {
       const apiKey = config.apiKey || getEnvironmentVariable('RESEND_API_KEY');
@@ -51,15 +58,18 @@ export class EmailService {
   }
 
   async sendEmail(request: Email = getDefaultEmailRequest()): Promise<void> {
+    const from = request.from || this.defaultFrom;
+
     if (this.provider === 'resend' && this.resend) {
       const to = Array.isArray(request.to) ? request.to : [request.to];
+      const content = request.html
+        ? { html: request.html }
+        : { text: request.text || request.subject };
       const { error } = await this.resend.emails.send({
-        from: request.from || '',
+        from,
         to,
         subject: request.subject,
-        ...(request.html
-          ? { html: request.html }
-          : { text: request.text || '' }),
+        ...content,
       });
       if (error) {
         throw new Error(error.message);
@@ -69,7 +79,7 @@ export class EmailService {
 
     if (this.transporter) {
       await this.transporter.sendMail({
-        from: request.from,
+        from,
         to: request.to,
         subject: request.subject,
         text: request.text,
