@@ -69,7 +69,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "node --import tsx scripts/fetch-secrets.ts 'node dist/apps/personal-website/personal-website-backend/main.js'"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'node dist/apps/personal-website/personal-website-backend/main.js'"
       }
     },
     "serve:no-vault": {

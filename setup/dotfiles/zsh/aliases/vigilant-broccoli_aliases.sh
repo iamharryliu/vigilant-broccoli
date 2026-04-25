@@ -36,12 +36,9 @@ alias cdnx="cd $NX_DIR"
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
 alias pushghreadme="cd $HOME/iamharryliu && gpull && git add README.md && gc docs github-readme 'Update Github profile README.md' && gpush"
-# vigilant-broccoli
-alias pullvb="cd $REPO_DIR && gpull"
-alias pullall='pulljournal && pullvb'
-alias vbrepo="open https://github.com/iamharryliu/vigilant-broccoli"
-alias vbactions='open "https://github.com/iamharryliu/vigilant-broccoli/actions"'
-alias vbnpm='open "https://www.npmjs.com/settings/vigilant-broccoli/packages"'
+alias vbrepo="cdvb && npm run repo"
+alias vbactions="cdvb && npm run repo:actions"
+alias vbnpm="cdvb && npm run npm:packages"
 # vb push
 alias pushdocs="cdvb && git add $DOCS_DIR && gc docs notes 'Update Markdown docs.' && gpush"
 alias pushnotes="cdvb && git add $NOTES_DIR && gc docs notes 'Update Markdown notes.' && gpush"
@@ -65,9 +62,6 @@ alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
 ## Obsidian
 alias obsidiannotes="open 'obsidian://open?vault=notes'"
 alias obsidianjournal="open 'obsidian://open?vault=journal'"
-
-# Billing
-alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
 
 # Employee Handler
 alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"

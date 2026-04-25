@@ -277,8 +277,8 @@ resource "random_password" "rabbitmq_password" {
   special = false
 }
 
-resource "google_secret_manager_secret" "rabbitmq_password" {
-  secret_id = "RABBITMQ_PASSWORD"
+resource "google_secret_manager_secret" "rabbitmq_connection_string" {
+  secret_id = "RABBITMQ_CONNECTION_STRING"
 
   replication {
     auto {}
@@ -287,9 +287,24 @@ resource "google_secret_manager_secret" "rabbitmq_password" {
   depends_on = [google_project_service.secretmanager]
 }
 
-resource "google_secret_manager_secret_version" "rabbitmq_password" {
-  secret      = google_secret_manager_secret.rabbitmq_password.id
-  secret_data = random_password.rabbitmq_password.result
+resource "google_secret_manager_secret_version" "rabbitmq_connection_string" {
+  secret      = google_secret_manager_secret.rabbitmq_connection_string.id
+  secret_data = "amqps://${var.rabbitmq_user}:${random_password.rabbitmq_password.result}@${oci_core_instance.rabbitmq.public_ip}:5671"
+}
+
+resource "google_secret_manager_secret" "email_service_api_key" {
+  secret_id = "EMAIL_SERVICE_API_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "email_service_api_key" {
+  secret      = google_secret_manager_secret.email_service_api_key.id
+  secret_data = var.email_service_api_key
 }
 
 resource "google_storage_bucket" "backup" {

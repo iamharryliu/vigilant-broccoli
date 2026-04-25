@@ -38,6 +38,22 @@ write_files:
             - rabbitmq_data:/var/lib/rabbitmq
             - /opt/rabbitmq/certs:/etc/rabbitmq/certs:ro
             - /opt/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+          healthcheck:
+            test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        email-consumer:
+          image: ${email_consumer_image}
+          container_name: email-consumer
+          restart: unless-stopped
+          environment:
+            RABBITMQ_CONNECTION_STRING: amqp://${rabbitmq_user}:${rabbitmq_password}@rabbitmq:5672
+            EMAIL_SERVICE_URL: ${email_service_url}
+            EMAIL_SERVICE_API_KEY: ${email_service_api_key}
+          depends_on:
+            rabbitmq:
+              condition: service_healthy
       volumes:
         rabbitmq_data:
 

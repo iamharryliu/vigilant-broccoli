@@ -13,7 +13,7 @@
         "platform": "node",
         "outputPath": "dist/apps/consumers/email-consumer",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
         "main": "apps/consumers/email-consumer/src/main.ts",
         "tsConfig": "apps/consumers/email-consumer/tsconfig.app.json",
         "assets": ["apps/consumers/email-consumer/src/assets"],
@@ -38,33 +38,6 @@
         }
       }
     },
-    "prune-lockfile": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "executor": "@nx/js:prune-lockfile",
-      "outputs": [
-        "{workspaceRoot}/dist/apps/consumers/email-consumer/package.json",
-        "{workspaceRoot}/dist/apps/consumers/email-consumer/package-lock.json"
-      ],
-      "options": {
-        "buildTarget": "build"
-      }
-    },
-    "copy-workspace-modules": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "outputs": [
-        "{workspaceRoot}/dist/apps/consumers/email-consumer/workspace_modules"
-      ],
-      "executor": "@nx/js:copy-workspace-modules",
-      "options": {
-        "buildTarget": "build"
-      }
-    },
-    "prune": {
-      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
-      "executor": "nx:noop"
-    },
     "serve": {
       "continuous": true,
       "executor": "@nx/js:node",
@@ -87,11 +60,16 @@
       "executor": "@nx/eslint:lint"
     },
     "docker:build": {
-      "dependsOn": ["build", "prune"]
+      "dependsOn": ["build"],
+      "command": "docker buildx build --platform linux/arm64 -t iamharryliu/email-consumer:latest -t iamharryliu/email-consumer:${COMMIT_SHA:-latest} -f ./apps/consumers/email-consumer/Dockerfile ."
+    },
+    "docker:push": {
+      "dependsOn": ["docker:build"],
+      "command": "docker push iamharryliu/email-consumer --all-tags"
     },
     "deploy": {
-      "command": "flyctl deploy --dockerfile ./apps/consumers/email-consumer/Dockerfile --config ./deployment-configs/fly-configs/email-consumer.toml",
-      "dependsOn": ["build"]
+      "dependsOn": ["docker:push"],
+      "command": "ssh ubuntu@$(cd ../../terraform && terraform output -raw rabbitmq_public_ip) 'cd /opt/rabbitmq && docker compose pull email-consumer && docker compose up -d email-consumer'"
     }
   }
 }

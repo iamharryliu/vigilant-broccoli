@@ -1,53 +1,48 @@
-import { MessageRequest } from '@prettydamntired/personal-website-lib';
-import { DEFAULT_APP_EMAIL_CONFIG } from '@prettydamntired/personal-website-api-lib';
 import amqplib from 'amqplib';
 import {
   Email,
-  EmailService,
   getEnvironmentVariable,
   QUEUE,
 } from '@vigilant-broccoli/common-node';
 
-async function sendMessage(request: MessageRequest) {
-  const email = {
-    ...DEFAULT_APP_EMAIL_CONFIG[request.appName],
-    ...request,
-  } as Email;
-  const { from, to, subject, text, html } = email;
-  const mailService = new EmailService();
-  await mailService.sendEmail({
-    from,
-    to,
-    subject,
-    text,
-    html,
+const EMAIL_SERVICE_URL = getEnvironmentVariable('EMAIL_SERVICE_URL');
+const EMAIL_SERVICE_API_KEY = getEnvironmentVariable('EMAIL_SERVICE_API_KEY');
+
+async function sendEmail(email: Email) {
+  const response = await fetch(`${EMAIL_SERVICE_URL}/send-email`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': EMAIL_SERVICE_API_KEY,
+    },
+    body: JSON.stringify(email),
   });
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.error || 'Email service request failed');
+  }
 }
 
 async function receiveMessage() {
-  try {
-    const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
-      'RABBITMQ_CONNECTION_STRING',
-    );
-    const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
-    const channel = await connection.createChannel();
-    await channel.assertQueue(QUEUE.EMAIL, { durable: true });
-    console.log(`📥 Waiting for messages in ${QUEUE.EMAIL}...`);
-    channel.consume(
-      QUEUE.EMAIL,
-      async msg => {
-        if (msg) {
-          console.log(`✅ Received message.`);
-          await sendMessage(JSON.parse(msg.content.toString()));
-          channel.ack(msg);
-          console.log('✅ Email sent and message acknowledged.');
-        }
-      },
-      { noAck: false },
-    );
-  } catch (error) {
-    console.error('Error:', error);
-  }
+  const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
+    'RABBITMQ_CONNECTION_STRING',
+  );
+  const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
+  const channel = await connection.createChannel();
+  await channel.assertQueue(QUEUE.EMAIL, { durable: true });
+  console.log(`Waiting for messages in ${QUEUE.EMAIL}...`);
+  channel.consume(
+    QUEUE.EMAIL,
+    async msg => {
+      if (msg) {
+        console.log('Received message.');
+        await sendEmail(JSON.parse(msg.content.toString()));
+        channel.ack(msg);
+        console.log('Email sent and message acknowledged.');
+      }
+    },
+    { noAck: false },
+  );
 }
 
 receiveMessage();

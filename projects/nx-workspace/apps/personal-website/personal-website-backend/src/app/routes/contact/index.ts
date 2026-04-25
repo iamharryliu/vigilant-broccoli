@@ -1,12 +1,16 @@
 import { FastifyInstance } from 'fastify';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
 import {
+  Email,
   getEnvironmentVariable,
+  QUEUE,
   RecaptchaService,
 } from '@vigilant-broccoli/common-node';
+import amqplib from 'amqplib';
 
-const EMAIL_SERVICE_URL = getEnvironmentVariable('EMAIL_SERVICE_URL');
-const EMAIL_SERVICE_API_KEY = getEnvironmentVariable('EMAIL_SERVICE_API_KEY');
+const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
+  'RABBITMQ_CONNECTION_STRING',
+);
 
 const PERSONAL_EMAIL = 'harryliu1995@gmail.com';
 const SENDER_EMAIL = 'Harry Liu <contact@harryliu.dev>';
@@ -20,46 +24,37 @@ const verifyRecaptcha = async (token?: string) => {
   return recaptchaService.isTrustedRequest(token);
 };
 
-const sendEmail = async (
-  from: string,
-  to: string,
-  subject: string,
-  html: string,
-) => {
-  const response = await fetch(`${EMAIL_SERVICE_URL}/send-email`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': EMAIL_SERVICE_API_KEY,
-    },
-    body: JSON.stringify({ from, to, subject, html }),
-  });
-  if (!response.ok) {
-    const body = await response.json();
-    throw new Error(body.error || 'Email service request failed');
+const publishToQueue = async (emails: Email[]) => {
+  const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
+  const channel = await connection.createChannel();
+  await channel.assertQueue(QUEUE.EMAIL, { durable: true });
+  for (const email of emails) {
+    channel.sendToQueue(QUEUE.EMAIL, Buffer.from(JSON.stringify(email)), {
+      persistent: true,
+    });
   }
+  setTimeout(() => connection.close(), 500);
 };
 
-const sendEmails = (name: string, email: string, message: string) =>
-  Promise.all([
-    sendEmail(
-      SENDER_EMAIL,
-      PERSONAL_EMAIL,
-      `Contact form message from ${name}`,
-      `<p><strong>Name:</strong> ${name}</p>
+const buildEmails = (name: string, email: string, message: string): Email[] => [
+  {
+    from: SENDER_EMAIL,
+    to: PERSONAL_EMAIL,
+    subject: `Contact form message from ${name}`,
+    html: `<p><strong>Name:</strong> ${name}</p>
 <p><strong>Email:</strong> ${email}</p>
 <p><strong>Message:</strong></p>
 <p>${message}</p>`,
-    ),
-    sendEmail(
-      SENDER_EMAIL,
-      email,
-      `Thanks for reaching out, ${name}!`,
-      `<p>Hi ${name},</p>
+  },
+  {
+    from: SENDER_EMAIL,
+    to: email,
+    subject: `Thanks for reaching out, ${name}!`,
+    html: `<p>Hi ${name},</p>
 <p>Thanks for your message! I've received it and will get back to you soon.</p>
 <p>- Harry</p>`,
-    ),
-  ]);
+  },
+];
 
 export default async function (fastify: FastifyInstance) {
   fastify.post('/send-message', async (request, reply) => {
@@ -76,7 +71,7 @@ export default async function (fastify: FastifyInstance) {
         .send({ error: 'name, email, and message are required' });
     }
 
-    await sendEmails(name, email, message);
+    await publishToQueue(buildEmails(name, email, message));
 
     return reply.send({ success: true });
   });
