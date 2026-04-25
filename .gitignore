@@ -75,6 +75,9 @@ work-aliases/
 work-aliases.sh
 personal-aliases.sh
 
+# Local workspaces
+setup/workspaces/work-*
+
 ignore/
 
 # TODO: re-evaluage
