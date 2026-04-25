@@ -43,20 +43,19 @@ router.post(
   async (req: Request, res: Response) => {
     const messageRequest = req.body as MessageRequest;
     const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
-    const channel = await connection.createChannel();
-    await channel.assertQueue(QUEUE.EMAIL, { durable: true });
-    channel.sendToQueue(
-      QUEUE.EMAIL,
-      Buffer.from(JSON.stringify(messageRequest)),
-      {
-        persistent: true,
-      },
-    );
-    console.log(`📤 Queued Message from: ${messageRequest.email}`);
-    setTimeout(() => {
+    try {
+      const channel = await connection.createChannel();
+      await channel.assertQueue(QUEUE.EMAIL, { durable: true });
+      channel.sendToQueue(
+        QUEUE.EMAIL,
+        Buffer.from(JSON.stringify(messageRequest)),
+        { persistent: true },
+      );
+      console.log(`📤 Queued Message from: ${messageRequest.email}`);
+      res.json({ success: true });
+    } finally {
       connection.close();
-    }, 500);
-    res.json({ success: true });
+    }
   },
 );
 
