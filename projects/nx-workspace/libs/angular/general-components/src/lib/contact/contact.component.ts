@@ -24,6 +24,7 @@ export class ContactComponent {
   @Input() APP_NAME!: AppName;
   @Input() headerText = 'Message Us!';
   loading = false;
+  submitted = false;
 
   private commonService = inject(CONTACT_SERVICE);
 
@@ -42,6 +43,7 @@ export class ContactComponent {
       )
       .subscribe(_ => {
         this.loading = false;
+        this.submitted = true;
         this.form.reset();
       });
   }
