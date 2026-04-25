@@ -59,13 +59,9 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
-    "deploy-container": {
+    "deploy": {
       "dependsOn": ["build"],
       "command": "docker buildx build --platform linux/arm64 -t iamharryliu/email-consumer:latest -t iamharryliu/email-consumer:${COMMIT_SHA:-latest} --push -f ./apps/consumers/email-consumer/Dockerfile ."
-    },
-    "deploy": {
-      "dependsOn": ["deploy-container"],
-      "command": "ssh ubuntu@$(cd ../../terraform && terraform output -raw rabbitmq_public_ip) 'cd /opt/rabbitmq && docker compose pull email-consumer && docker compose up -d email-consumer'"
     }
   }
 }
