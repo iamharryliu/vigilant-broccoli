@@ -3,8 +3,12 @@ import {
   QUEUE,
   getEnvironmentVariable,
   TextMessageService,
+  Email,
 } from '@vigilant-broccoli/common-node';
-import { MessageRequest } from '@prettydamntired/personal-website-lib';
+import {
+  APP_NAME,
+  MessageRequest,
+} from '@prettydamntired/personal-website-lib';
 import amqplib from 'amqplib';
 import {
   requireJsonContent,
@@ -16,6 +20,48 @@ const textMessageService = new TextMessageService();
 const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
   'RABBITMQ_CONNECTION_STRING',
 );
+const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
+const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
+  ? {
+      ca: [Buffer.from(RABBITMQ_CA_CERT, 'base64')],
+      checkServerIdentity: () => undefined,
+    }
+  : undefined;
+
+const APP_EMAIL_CONFIG: Record<string, { from: string; to: string }> = {
+  [APP_NAME.HARRYLIU_DESIGN]: {
+    from: 'Harry Liu <contact@harryliu.dev>',
+    to: 'harryliu1995@gmail.com',
+  },
+  [APP_NAME.CLOUD_8_SKATE]: {
+    from: 'Cloud8Skate <contact@harryliu.dev>',
+    to: 'cloud8.ca@gmail.com',
+  },
+};
+
+const buildEmails = (
+  name: string,
+  email: string,
+  message: string,
+  appName: string,
+): Email[] => {
+  const config =
+    APP_EMAIL_CONFIG[appName] ?? APP_EMAIL_CONFIG[APP_NAME.HARRYLIU_DESIGN];
+  return [
+    {
+      from: config.from,
+      to: config.to,
+      subject: `Contact form message from ${name}`,
+      html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Message:</strong></p><p>${message}</p>`,
+    },
+    {
+      from: config.from,
+      to: email,
+      subject: `Thanks for reaching out, ${name}!`,
+      html: `<p>Hi ${name},</p><p>Thanks for your message! I've received it and will get back to you soon.</p><p>- Harry</p>`,
+    },
+  ];
+};
 
 router.post('/send-text-message', async (req: Request, res: Response) => {
   const { body, from, to } = req.body;
@@ -41,17 +87,23 @@ router.post(
   requireJsonContent,
   checkRecaptchaToken,
   async (req: Request, res: Response) => {
-    const messageRequest = req.body as MessageRequest;
-    const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
+    const { name, email, message, appName } = req.body as MessageRequest;
+    const emails = buildEmails(name, email, message, appName);
+    const connection = await amqplib.connect(
+      RABBITMQ_CONNECTION_STRING,
+      RABBITMQ_SOCKET_OPTIONS,
+    );
     try {
       const channel = await connection.createChannel();
       await channel.assertQueue(QUEUE.EMAIL, { durable: true });
-      channel.sendToQueue(
-        QUEUE.EMAIL,
-        Buffer.from(JSON.stringify(messageRequest)),
-        { persistent: true },
-      );
-      console.log(`📤 Queued Message from: ${messageRequest.email}`);
+      for (const emailPayload of emails) {
+        channel.sendToQueue(
+          QUEUE.EMAIL,
+          Buffer.from(JSON.stringify(emailPayload)),
+          { persistent: true },
+        );
+      }
+      console.log(`📤 Queued ${emails.length} emails from: ${email}`);
       res.json({ success: true });
     } finally {
       connection.close();

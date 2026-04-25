@@ -6,9 +6,12 @@ import { toNodeHandler } from 'better-auth/node';
 import tasksRouter from './routes/tasks';
 import llmRouter from './routes/llm';
 import messagingRouter from './routes/messaging';
-import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import {
+  getEnvironmentVariable,
+  requestLoggerMiddleware,
+} from '@vigilant-broccoli/common-node';
 import { createApiKeyMiddleware } from './libs/middlewares/api-key.middleware';
-import { requestLogger, createCorsOptions } from '@vigilant-broccoli/express';
+import { createCorsOptions } from '@vigilant-broccoli/express';
 
 const APP_PORT = getEnvironmentVariable('PORT') || 3333;
 const APP_HOST = getEnvironmentVariable('HOST') || '127.0.0.1';
@@ -36,7 +39,7 @@ const createApp = () => {
   app.use(express.static('public'));
   app.use(cors(createCorsOptions(ALLOWED_ORIGINS)));
   app.use(express.json());
-  app.use(requestLogger);
+  app.use(requestLoggerMiddleware);
   app.get('/', (_, response) => {
     response.send('vb-express');
   });
