@@ -1,9 +1,12 @@
 # Code Workspaces
-openworkspace() {
+alias vswsls='ls -1 $WORKSPACES_DIR | sed "s/\.code-workspace$//"'
+vsws() {
     if [ -z "$1" ]; then
-        code "$HOME/Workspaces"
+        code "$WORKSPACES_DIR"
+    elif [ -f "$WORKSPACES_DIR/$1.code-workspace" ]; then
+        code "$WORKSPACES_DIR/$1.code-workspace"
     else
-        code "$HOME/Workspaces/$1.code-workspace"
+        echo "Workspace '$1' not found"
     fi
 }
 
