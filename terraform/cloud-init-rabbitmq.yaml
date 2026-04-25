@@ -19,6 +19,21 @@ write_files:
       management.ssl.certfile   = /etc/rabbitmq/certs/server.crt
       management.ssl.keyfile    = /etc/rabbitmq/certs/server.key
 
+  - path: /opt/rabbitmq/certs/server.key
+    permissions: '0644'
+    content: |
+      ${indent(6, rabbitmq_tls_key)}
+
+  - path: /opt/rabbitmq/certs/server.crt
+    permissions: '0644'
+    content: |
+      ${indent(6, rabbitmq_tls_cert)}
+
+  - path: /opt/rabbitmq/certs/ca.crt
+    permissions: '0644'
+    content: |
+      ${indent(6, rabbitmq_tls_cert)}
+
   - path: /opt/rabbitmq/docker-compose.yml
     content: |
       services:
@@ -61,10 +76,6 @@ runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ubuntu
-  - mkdir -p /opt/rabbitmq/certs
-  - openssl req -x509 -nodes -newkey rsa:2048 -days 3650 -keyout /opt/rabbitmq/certs/server.key -out /opt/rabbitmq/certs/server.crt -subj "/CN=rabbitmq"
-  - cp /opt/rabbitmq/certs/server.crt /opt/rabbitmq/certs/ca.crt
-  - chmod 644 /opt/rabbitmq/certs/*
   - docker compose -f /opt/rabbitmq/docker-compose.yml up -d
   - sleep 15
   - docker exec rabbitmq rabbitmqctl set_user_tags ${rabbitmq_user} administrator

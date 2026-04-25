@@ -10,6 +10,7 @@ import amqplib from 'amqplib';
 const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
   'RABBITMQ_CONNECTION_STRING',
 );
+const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
 
 const PERSONAL_EMAIL = 'harryliu1995@gmail.com';
 const SENDER_EMAIL = 'Harry Liu <contact@harryliu.dev>';
@@ -29,7 +30,16 @@ const verifyRecaptcha = async (token?: string) => {
 };
 
 const publishToQueue = async (emails: Email[]) => {
-  const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
+  const socketOptions = RABBITMQ_CA_CERT
+    ? {
+        ca: [Buffer.from(RABBITMQ_CA_CERT, 'base64')],
+        checkServerIdentity: () => undefined,
+      }
+    : undefined;
+  const connection = await amqplib.connect(
+    RABBITMQ_CONNECTION_STRING,
+    socketOptions,
+  );
   const channel = await connection.createChannel();
   await channel.assertQueue(QUEUE.EMAIL, { durable: true });
   for (const email of emails) {

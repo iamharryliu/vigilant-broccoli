@@ -109,11 +109,13 @@ resource "oci_core_instance" "rabbitmq" {
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
     user_data = base64encode(templatefile("${path.module}/cloud-init-rabbitmq.yaml", {
-      rabbitmq_user        = var.rabbitmq_user
-      rabbitmq_password    = random_password.rabbitmq_password.result
-      email_consumer_image = var.email_consumer_image
-      email_service_url    = var.email_service_url
+      rabbitmq_user         = var.rabbitmq_user
+      rabbitmq_password     = random_password.rabbitmq_password.result
+      email_consumer_image  = var.email_consumer_image
+      email_service_url     = var.email_service_url
       email_service_api_key = var.email_service_api_key
+      rabbitmq_tls_key      = tls_private_key.rabbitmq.private_key_pem
+      rabbitmq_tls_cert     = tls_self_signed_cert.rabbitmq.cert_pem
     }))
   }
 }

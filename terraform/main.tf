@@ -277,6 +277,42 @@ resource "random_password" "rabbitmq_password" {
   special = false
 }
 
+resource "tls_private_key" "rabbitmq" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "tls_self_signed_cert" "rabbitmq" {
+  private_key_pem = tls_private_key.rabbitmq.private_key_pem
+
+  subject {
+    common_name = "rabbitmq"
+  }
+
+  validity_period_hours = 87600 # 10 years
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+}
+
+resource "google_secret_manager_secret" "rabbitmq_ca_cert" {
+  secret_id = "RABBITMQ_CA_CERT"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "rabbitmq_ca_cert" {
+  secret      = google_secret_manager_secret.rabbitmq_ca_cert.id
+  secret_data = base64encode(tls_self_signed_cert.rabbitmq.cert_pem)
+}
+
 resource "google_secret_manager_secret" "rabbitmq_connection_string" {
   secret_id = "RABBITMQ_CONNECTION_STRING"
 
