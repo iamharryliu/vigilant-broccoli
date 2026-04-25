@@ -27,6 +27,7 @@ const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
       checkServerIdentity: () => undefined,
     }
   : undefined;
+const RABBITMQ_CONNECT_TIMEOUT_MS = 10000;
 
 const APP_EMAIL_CONFIG: Record<string, { from: string; to: string }> = {
   [APP_NAME.HARRYLIU_DESIGN]: {
@@ -63,6 +64,17 @@ const buildEmails = (
   ];
 };
 
+const connectToRabbitMQ = () =>
+  Promise.race([
+    amqplib.connect(RABBITMQ_CONNECTION_STRING, RABBITMQ_SOCKET_OPTIONS),
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error('RabbitMQ connection timeout')),
+        RABBITMQ_CONNECT_TIMEOUT_MS,
+      ),
+    ),
+  ]);
+
 router.post('/send-text-message', async (req: Request, res: Response) => {
   const { body, from, to } = req.body;
 
@@ -89,12 +101,16 @@ router.post(
   async (req: Request, res: Response) => {
     const { name, email, message, appName } = req.body as MessageRequest;
     const emails = buildEmails(name, email, message, appName);
-    const connection = await amqplib.connect(
-      RABBITMQ_CONNECTION_STRING,
-      RABBITMQ_SOCKET_OPTIONS,
-    );
+    const connection = await connectToRabbitMQ().catch(err => {
+      console.error('Failed to connect to RabbitMQ:', (err as Error).message);
+      return null;
+    });
+    if (!connection) {
+      res.status(500).json({ error: 'Failed to send message' });
+      return;
+    }
     try {
-      const channel = await connection.createChannel();
+      const channel = await connection.createConfirmChannel();
       await channel.assertQueue(QUEUE.EMAIL, { durable: true });
       for (const emailPayload of emails) {
         channel.sendToQueue(
@@ -103,8 +119,12 @@ router.post(
           { persistent: true },
         );
       }
+      await channel.waitForConfirms();
       console.log(`📤 Queued ${emails.length} emails from: ${email}`);
       res.json({ success: true });
+    } catch (err) {
+      console.error('Failed to queue emails:', (err as Error).message);
+      res.status(500).json({ error: 'Failed to send message' });
     } finally {
       connection.close();
     }
