@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-import { MessageRequest } from '@prettydamntired/personal-website-lib';
 import {
   Email,
   getEnvironmentVariable,
@@ -15,7 +14,12 @@ const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
 const PERSONAL_EMAIL = 'harryliu1995@gmail.com';
 const SENDER_EMAIL = 'Harry Liu <contact@harryliu.dev>';
 
-type ContactRequestBody = MessageRequest & { recaptchaToken?: string };
+interface ContactRequestBody {
+  name: string;
+  email: string;
+  message: string;
+  recaptchaToken?: string;
+}
 
 const recaptchaService = new RecaptchaService();
 
