@@ -7,10 +7,12 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import {
+  CONTACT_SERVICE,
   RECAPTCHA_V3_SITE_KEY,
   RecaptchaInterceptor,
 } from 'general-components';
 import { ENVIRONMENT } from '../environments/environment';
+import { CommonService } from './services/common.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,6 +26,10 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: RecaptchaInterceptor,
       multi: true,
+    },
+    {
+      provide: CONTACT_SERVICE,
+      useExisting: CommonService,
     },
   ],
 };

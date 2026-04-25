@@ -1,13 +1,21 @@
 import { Router, Request, Response } from 'express';
-import { QUEUE, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
-import { TextMessageService } from '@vigilant-broccoli/common-node';
+import {
+  QUEUE,
+  getEnvironmentVariable,
+  TextMessageService,
+} from '@vigilant-broccoli/common-node';
 import { MessageRequest } from '@prettydamntired/personal-website-lib';
 import amqplib from 'amqplib';
-import { requireJsonContent } from '@vigilant-broccoli/express';
+import {
+  requireJsonContent,
+  checkRecaptchaToken,
+} from '@vigilant-broccoli/express';
 
 const router = Router();
-
 const textMessageService = new TextMessageService();
+const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
+  'RABBITMQ_CONNECTION_STRING',
+);
 
 router.post('/send-text-message', async (req: Request, res: Response) => {
   const { body, from, to } = req.body;
@@ -31,11 +39,9 @@ router.post('/send-text-message', async (req: Request, res: Response) => {
 router.post(
   '/contact/send-message',
   requireJsonContent,
-  async (req: Request, res: Response, _next) => {
+  checkRecaptchaToken,
+  async (req: Request, res: Response) => {
     const messageRequest = req.body as MessageRequest;
-    const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
-      'RABBITMQ_CONNECTION_STRING',
-    );
     const connection = await amqplib.connect(RABBITMQ_CONNECTION_STRING);
     const channel = await connection.createChannel();
     await channel.assertQueue(QUEUE.EMAIL, { durable: true });
