@@ -1,5 +1,7 @@
 # Code Workspaces
-alias vswsls='ls -1 $WORKSPACES_DIR | sed "s/\.code-workspace$//"'
+vswsls() {
+    ls -1 "$WORKSPACES_DIR" | sed 's/\.code-workspace$//' | nl -ba | sed 's/^ *//;s/\t/   /'
+}
 vsws() {
     if [ -z "$1" ]; then
         code "$WORKSPACES_DIR"
@@ -8,6 +10,11 @@ vsws() {
     else
         echo "Workspace '$1' not found"
     fi
+}
+vswsn() {
+    local name
+    name=$(ls -1 "$WORKSPACES_DIR" | sed 's/\.code-workspace$//' | sed -n "${1}p")
+    vsws "$name"
 }
 
 # Journal
