@@ -36,9 +36,17 @@ async function receiveMessage() {
     async msg => {
       if (msg) {
         console.log('Received message.');
-        await sendEmail(JSON.parse(msg.content.toString()));
-        channel.ack(msg);
-        console.log('Email sent and message acknowledged.');
+        try {
+          await sendEmail(JSON.parse(msg.content.toString()));
+          channel.ack(msg);
+          console.log('Email sent and message acknowledged.');
+        } catch (err) {
+          console.error(
+            'Failed to send email, requeuing:',
+            (err as Error).message,
+          );
+          channel.nack(msg, false, true);
+        }
       }
     },
     { noAck: false },
