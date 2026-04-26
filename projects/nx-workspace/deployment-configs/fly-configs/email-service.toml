@@ -1,5 +1,5 @@
 app = 'vb-email-service'
-primary_region = 'ams'
+primary_region = 'yyz'
 
 [build]
   image = 'iamharryliu/email-service:latest'
