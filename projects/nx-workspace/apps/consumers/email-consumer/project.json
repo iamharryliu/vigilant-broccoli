@@ -62,10 +62,6 @@
     "deploy": {
       "dependsOn": ["build"],
       "command": "docker buildx build --platform linux/arm64 -t iamharryliu/email-consumer:latest -t iamharryliu/email-consumer:${COMMIT_SHA:-latest} --push -f ./apps/consumers/email-consumer/Dockerfile ."
-    },
-    "restart": {
-      "dependsOn": ["deploy"],
-      "command": "ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd ../../terraform && terraform output -raw rabbitmq_public_ip) 'docker pull iamharryliu/email-consumer:latest && docker compose -f /opt/rabbitmq/docker-compose.yml up -d --no-deps email-consumer'"
     }
   }
 }

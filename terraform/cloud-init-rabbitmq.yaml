@@ -62,6 +62,8 @@ write_files:
           image: ${email_consumer_image}
           container_name: email-consumer
           restart: unless-stopped
+          labels:
+            - "com.centurylinklabs.watchtower.enable=true"
           environment:
             RABBITMQ_CONNECTION_STRING: amqp://${rabbitmq_user}:${rabbitmq_password}@rabbitmq:5672
             EMAIL_SERVICE_URL: ${email_service_url}
@@ -69,6 +71,17 @@ write_files:
           depends_on:
             rabbitmq:
               condition: service_healthy
+        watchtower:
+          image: containrrr/watchtower
+          container_name: watchtower
+          restart: unless-stopped
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+          environment:
+            WATCHTOWER_CLEANUP: "true"
+            WATCHTOWER_POLL_INTERVAL: "300"
+            WATCHTOWER_LABEL_ENABLE: "true"
+            DOCKER_API_VERSION: DOCKER_API_VERSION_PLACEHOLDER
       volumes:
         rabbitmq_data:
 
@@ -76,6 +89,7 @@ runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ubuntu
+  - 'DOCKER_API=$(docker version --format "{{.Server.APIVersion}}") && sed -i "s/DOCKER_API_VERSION_PLACEHOLDER/$DOCKER_API/" /opt/rabbitmq/docker-compose.yml'
   - docker compose -f /opt/rabbitmq/docker-compose.yml up -d
   - sleep 15
   - docker exec rabbitmq rabbitmqctl set_user_tags ${rabbitmq_user} administrator

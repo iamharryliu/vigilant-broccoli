@@ -77,8 +77,11 @@ alias obsidianjournal="open 'obsidian://open?vault=journal'"
 alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
 alias buildEmployeeHandler="nnx build @vigilant-broccoli/employee-handler"
 
-# Cloud
-alias vbgcloudlogin="gcloudlogin vigilant-broccoli"
+# OCI VM
+sshocivm() {
+  ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd $REPO_DIR/terraform && terraform output -raw rabbitmq_public_ip 2>/dev/null) "$@"
+}
+alias ocivmlogs='sshocivm -t "docker logs email-consumer --tail 100 -f"'
 
 # Tmux
 alias tmuxvb="$REPO_DIR/setup/dotfiles/common/scripts/tmux-vb.sh"
@@ -96,6 +99,7 @@ alias wg-status='sudo wg show'
 
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
+alias cpvaulttoken="gcloud secrets versions access latest --secret=VB_VM_VAULT_ROOT_TOKEN --project=vigilant-broccoli | pbcopy && echo 'Vault root token copied to clipboard.'"
 alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh && rsync -av --delete ~/resilio-sync/backup/ ~/My\ Drive/resilio-backup/'
 
 # Hobby Code
