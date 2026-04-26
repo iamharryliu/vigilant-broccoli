@@ -124,7 +124,7 @@ jobs:
           fi
 
           echo ""
-          echo "[Vault]"
+          echo "[GCP VM — Vault]"
           HEALTH=$(curl -k -s https://127.0.0.1:8200/v1/sys/health) || HEALTH=""
           if [ -n "$HEALTH" ]; then
             SEALED=$(echo "$HEALTH" | jq -r '.sealed')
@@ -141,7 +141,7 @@ jobs:
           fi
 
           echo ""
-          echo "[RabbitMQ Connection]"
+          echo "[OCI VM — RabbitMQ Connection]"
           RMQ_RESULT=$(node -e "
             const amqplib = require('amqplib');
             const caCert = process.env.RABBITMQ_CA_CERT;

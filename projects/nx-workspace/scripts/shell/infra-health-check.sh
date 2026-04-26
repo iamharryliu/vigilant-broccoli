@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 NX_DIR="$REPO_DIR/projects/nx-workspace"
+GCP_PROJECT="${GCP_PROJECT:-vigilant-broccoli}"
 
 PASS=0
 FAIL=0
@@ -47,7 +48,34 @@ http_check "cloud8skate.com" "https://cloud8skate.com"
 http_check "vb-next-demo.vercel.app" "https://vb-next-demo.vercel.app"
 
 echo ""
-echo "[OCI VM — RabbitMQ]"
+echo "[GCP VM]"
+VM_STATUS=$(gcloud compute instances describe vb-free-vm --zone=us-east1-b --format='value(status)' 2>/dev/null) || VM_STATUS="unknown"
+if [ "$VM_STATUS" = "RUNNING" ]; then
+  check "vb-free-vm" "ok"
+else
+  check "vb-free-vm" "$VM_STATUS"
+fi
+
+echo ""
+echo "[GCP VM — Vault]"
+GCP_VAULT_URL="${GCP_VAULT_URL:-https://10.0.1.1:8200}"
+vault_status=$(curl -k -s --max-time 10 "${GCP_VAULT_URL}/v1/sys/health" 2>/dev/null) || vault_status=""
+if [ -n "$vault_status" ]; then
+  sealed=$(echo "$vault_status" | grep -o '"sealed":[a-z]*' | cut -d: -f2)
+  initialized=$(echo "$vault_status" | grep -o '"initialized":[a-z]*' | cut -d: -f2)
+  if [ "$sealed" = "false" ] && [ "$initialized" = "true" ]; then
+    check "vault" "ok"
+  elif [ "$sealed" = "true" ]; then
+    check "vault" "sealed"
+  else
+    check "vault" "initialized=$initialized sealed=$sealed"
+  fi
+else
+  check "vault" "unreachable (requires VPN/tunnel)"
+fi
+
+echo ""
+echo "[OCI VM — Containers]"
 OCI_VM_IP="${OCI_VM_IP:-}"
 if [ -z "$OCI_VM_IP" ]; then
   OCI_VM_IP=$(cd "$REPO_DIR/terraform" && terraform output -raw rabbitmq_public_ip 2>/dev/null) || true
@@ -72,8 +100,7 @@ else
 fi
 
 echo ""
-echo "[RabbitMQ Connection]"
-GCP_PROJECT="${GCP_PROJECT:-vigilant-broccoli}"
+echo "[OCI VM — RabbitMQ Connection]"
 RABBITMQ_CONNECTION_STRING=$(gcloud secrets versions access latest --secret=RABBITMQ_CONNECTION_STRING --project="$GCP_PROJECT" 2>/dev/null) || RABBITMQ_CONNECTION_STRING=""
 RABBITMQ_CA_CERT=$(gcloud secrets versions access latest --secret=RABBITMQ_CA_CERT --project="$GCP_PROJECT" 2>/dev/null) || RABBITMQ_CA_CERT=""
 if [ -n "$RABBITMQ_CONNECTION_STRING" ]; then
@@ -101,24 +128,6 @@ if [ -n "$RABBITMQ_CONNECTION_STRING" ]; then
   fi
 else
   check "rabbitmq broker" "failed to fetch secrets from GCP Secret Manager"
-fi
-
-echo ""
-echo "[GCP VM — Vault]"
-GCP_VAULT_URL="${GCP_VAULT_URL:-https://10.0.1.1:8200}"
-vault_status=$(curl -k -s --max-time 10 "${GCP_VAULT_URL}/v1/sys/health" 2>/dev/null) || vault_status=""
-if [ -n "$vault_status" ]; then
-  sealed=$(echo "$vault_status" | grep -o '"sealed":[a-z]*' | cut -d: -f2)
-  initialized=$(echo "$vault_status" | grep -o '"initialized":[a-z]*' | cut -d: -f2)
-  if [ "$sealed" = "false" ] && [ "$initialized" = "true" ]; then
-    check "vault" "ok"
-  elif [ "$sealed" = "true" ]; then
-    check "vault" "sealed"
-  else
-    check "vault" "initialized=$initialized sealed=$sealed"
-  fi
-else
-  check "vault" "unreachable (requires VPN/tunnel)"
 fi
 
 echo ""

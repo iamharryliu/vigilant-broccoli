@@ -5,9 +5,6 @@
   "projectType": "library",
   "tags": [],
   "targets": {
-    "run-script": {
-      "executor": "nx:run-commands"
-    },
     "lint": {
       "executor": "@nx/eslint:lint"
     },
