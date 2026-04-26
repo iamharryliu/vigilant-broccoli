@@ -6,14 +6,7 @@
   "tags": [],
   "targets": {
     "run-script": {
-      "executor": "nx:run-commands",
-      "configurations": {
-        "health-check": {
-          "commands": [
-            "npx tsx libs/@vigilant-broccoli/scripts/health-check.ts"
-          ]
-        }
-      }
+      "executor": "nx:run-commands"
     },
     "lint": {
       "executor": "@nx/eslint:lint"

@@ -28,8 +28,6 @@ export * from './lib/logging/logger.service';
 export * from './lib/middleware/request-logger.middleware';
 // Encryption
 export * from './lib/encryption/encryption.service';
-// Site Monitor
-export * from './lib/site-monitor/site-monitor.service';
 // Text Message
 export * from './lib/text-message/text-message.service';
 // Google Recaptcha

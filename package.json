@@ -27,7 +27,8 @@
     "gcp:vm:vault:save-secrets-local": "./terraform/packer/scripts/run-vault-get-secrets.sh",
     "gcp:vm:vault:set-secrets": "./terraform/packer/scripts/run-vault-set-secrets.sh",
     "secret-rotation:flyio": "./terraform/packer/scripts/rotate-fly-token.sh",
-    "local:docker:restart": "docker compose -f infrastructure/local/docker-compose.yml restart"
+    "local:docker:restart": "docker compose -f infrastructure/local/docker-compose.yml restart",
+    "health-check:infra": "./projects/nx-workspace/scripts/shell/infra-health-check.sh"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,170 @@
+name: infra-health-check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  infra-health-check:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Vault CA Certificate
+        run: |
+          CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
+          echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
+
+      - name: Open IAP Tunnel to Vault
+        run: |
+          gcloud compute ssh vb-free-vm \
+            --zone=us-east1-b \
+            --tunnel-through-iap \
+            --ssh-flag="-N" \
+            --ssh-flag="-L 8200:127.0.0.1:8200" \
+            --ssh-flag="-o ServerAliveInterval=30" \
+            --ssh-flag="-o ServerAliveCountMax=3" &
+          echo "Waiting for tunnel to establish..."
+          for i in {1..30}; do
+            if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
+              echo "Tunnel established successfully"
+              break
+            fi
+            echo "Attempt $i: Tunnel not ready yet..."
+            sleep 2
+          done
+
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: https://127.0.0.1:8200
+          caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
+          method: jwt
+          role: github-actions-role
+          jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
+          secrets: |
+            kv/data/secrets RABBITMQ_CONNECTION_STRING | RABBITMQ_CONNECTION_STRING ;
+            kv/data/secrets RABBITMQ_CA_CERT | RABBITMQ_CA_CERT ;
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Install amqplib
+        run: npm install amqplib --no-save > /dev/null 2>&1
+
+      - name: Run health checks
+        env:
+          RABBITMQ_CONNECTION_STRING: ${{ env.RABBITMQ_CONNECTION_STRING }}
+          RABBITMQ_CA_CERT: ${{ env.RABBITMQ_CA_CERT }}
+        run: |
+          PASS=0
+          FAIL=0
+
+          check() {
+            local name="$1"
+            local status="$2"
+            if [ "$status" = "ok" ]; then
+              echo "  ✓ $name"
+              PASS=$((PASS + 1))
+            else
+              echo "  ✗ $name — $status"
+              FAIL=$((FAIL + 1))
+            fi
+          }
+
+          http_check() {
+            local name="$1"
+            local url="$2"
+            local expected="${3:-200}"
+            local code
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$url" 2>/dev/null) || code="timeout"
+            if [ "$code" = "$expected" ]; then
+              check "$name" "ok"
+            else
+              check "$name" "HTTP $code (expected $expected)"
+            fi
+          }
+
+          echo "=== Infrastructure Health Check ==="
+          echo ""
+
+          echo "[Fly.io Apps]"
+          http_check "vb-express" "https://vb-express.fly.dev"
+          http_check "vb-email-service" "https://vb-email-service.fly.dev"
+
+          echo ""
+          echo "[Websites]"
+          http_check "harryliu.dev" "https://harryliu.dev"
+          http_check "cloud8skate.com" "https://cloud8skate.com"
+          http_check "vb-next-demo.vercel.app" "https://vb-next-demo.vercel.app"
+
+          echo ""
+          echo "[GCP VM]"
+          VM_STATUS=$(gcloud compute instances describe vb-free-vm --zone=us-east1-b --format='value(status)' 2>/dev/null) || VM_STATUS="unknown"
+          if [ "$VM_STATUS" = "RUNNING" ]; then
+            check "vb-free-vm" "ok"
+          else
+            check "vb-free-vm" "$VM_STATUS"
+          fi
+
+          echo ""
+          echo "[Vault]"
+          HEALTH=$(curl -k -s https://127.0.0.1:8200/v1/sys/health) || HEALTH=""
+          if [ -n "$HEALTH" ]; then
+            SEALED=$(echo "$HEALTH" | jq -r '.sealed')
+            INITIALIZED=$(echo "$HEALTH" | jq -r '.initialized')
+            if [ "$SEALED" = "false" ] && [ "$INITIALIZED" = "true" ]; then
+              check "vault" "ok"
+            elif [ "$SEALED" = "true" ]; then
+              check "vault" "sealed"
+            else
+              check "vault" "initialized=$INITIALIZED sealed=$SEALED"
+            fi
+          else
+            check "vault" "unreachable"
+          fi
+
+          echo ""
+          echo "[RabbitMQ Connection]"
+          RMQ_RESULT=$(node -e "
+            const amqplib = require('amqplib');
+            const caCert = process.env.RABBITMQ_CA_CERT;
+            const socketOptions = caCert
+              ? { ca: [Buffer.from(caCert, 'base64')], checkServerIdentity: () => undefined, servername: 'rabbitmq' }
+              : undefined;
+            (async () => {
+              const conn = await amqplib.connect(process.env.RABBITMQ_CONNECTION_STRING, socketOptions);
+              const ch = await conn.createChannel();
+              const q = await ch.checkQueue('EMAIL');
+              console.log('ok:' + q.messageCount + ':' + q.consumerCount);
+              await conn.close();
+            })().catch(e => console.log('fail:' + e.message));
+          ") || RMQ_RESULT="fail:node error"
+          if echo "$RMQ_RESULT" | grep -q "^ok:"; then
+            MSG_COUNT=$(echo "$RMQ_RESULT" | cut -d: -f2)
+            CONSUMER_COUNT=$(echo "$RMQ_RESULT" | cut -d: -f3)
+            check "rabbitmq broker (messages: $MSG_COUNT, consumers: $CONSUMER_COUNT)" "ok"
+          else
+            ERR=$(echo "$RMQ_RESULT" | cut -d: -f2-)
+            check "rabbitmq broker" "$ERR"
+          fi
+
+          echo ""
+          echo "=== Results: $PASS passed, $FAIL failed ==="
+          [ "$FAIL" -eq 0 ] || exit 1
