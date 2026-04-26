@@ -20,7 +20,7 @@ export class RecaptchaService {
       .then(response => response.json())
       .then(json => {
         const { score } = json;
-        return score > 0.3;
+        return score >= 0.5;
       });
   }
 }
