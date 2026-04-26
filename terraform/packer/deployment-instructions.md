@@ -1,6 +1,24 @@
 # Deployment Instructions
 
-## 1. Create Secret Manager secrets + IAM
+## OCI RabbitMQ
+
+### Prerequisites
+
+Set up `./.oci/config` — see [Auth Tokens](https://cloud.oracle.com/identity/domains/my-profile/auth-tokens?region=ca-toronto-1) for API key setup.
+
+### Deploy
+
+```bash
+cd terraform
+terraform init
+terraform apply
+```
+
+---
+
+## GCP vb-free-vm
+
+### 1. Create Secret Manager secrets + IAM
 
 ```bash
 cd terraform
@@ -12,7 +30,7 @@ terraform apply \
   -target=google_secret_manager_secret.wg_elva11_mbp_public_key
 ```
 
-## 2. Generate WireGuard keys + populate secrets
+### 2.Generate WireGuard keys + populate secrets
 
 ```bash
 SERVER_PRIV=$(wg genkey)
@@ -28,7 +46,7 @@ echo "Laptop private key (save for wg0.conf): $LAPTOP_PRIV"
 echo "Server public key (for wg0.conf [Peer]): $SERVER_PUB"
 ```
 
-## 3. Build VM image
+### 3.Build VM image
 
 ```bash
 cd terraform/packer
@@ -36,14 +54,14 @@ make init
 make build
 ```
 
-## 4. Deploy VM
+### 4.Deploy VM
 
 ```bash
 cd terraform
 terraform apply
 ```
 
-## 5. Laptop WireGuard config
+### 5.Laptop WireGuard config
 
 Write `/opt/homebrew/etc/wireguard/vb.conf`:
 
@@ -63,18 +81,18 @@ PersistentKeepalive = 25
 sudo wg-quick up vb
 ```
 
-## 6. Initialize Vault + configure (first boot only)
+### 6.Initialize Vault + configure (first boot only)
 
 ```bash
-npm run vm:post-init
+npm run gcp:vm:post-init
 ```
 
 Initializes Vault, saves unseal keys + root token to GCP Secret Manager, unseals, and configures KV engine, JWT auth, and github-actions role.
 
-## 9. Regenerate Vault TLS cert + update WireGuard endpoint (optional)
+### 9.Regenerate Vault TLS cert + update WireGuard endpoint (optional)
 
 ```bash
-npm run vm:regen-cert
+npm run gcp:vm:regen-cert
 ```
 
 Regenerates Vault TLS cert with current external IP, restarts Vault, copies cert to `projects/nx-workspace/scripts/vault-ca.crt`, and updates WireGuard endpoint. Vault will need to be unsealed after (`npm run vm:vault:unseal`).
@@ -82,10 +100,10 @@ Regenerates Vault TLS cert with current external IP, restarts Vault, copies cert
 To update WireGuard endpoint only:
 
 ```bash
-npm run vm:update-wg
+npm run gcp:vm:update-wg
 ```
 
-## 7. Test Vault access
+### 7.Test Vault access
 
 ```bash
 npm run vault:test:local
@@ -93,7 +111,7 @@ npm run vault:test:local
 
 Verify Vault is unsealed and accessible.
 
-## 8. Populate secrets
+### 8.Populate secrets
 
 Create `~/.vault-secrets.json`:
 
@@ -108,10 +126,10 @@ Create `~/.vault-secrets.json`:
 Then run:
 
 ```bash
-npm run vm:vault:set-secrets
+npm run gcp:vm:vault:set-secrets
 ```
 
-## 10. After VM restart
+### 10.After VM restart
 
 ```bash
 npm run vm:vault:unseal
@@ -120,18 +138,18 @@ npm run vm:vault:unseal
 If external IP changed:
 
 ```bash
-npm run vm:regen-cert
-npm run vm:vault:unseal
+npm run gcp:vm:regen-cert
+npm run gcp:vm:vault:unseal
 sudo wg-quick down vb && sudo wg-quick up vb
 ```
 
-## 11. Seal Vault
+### 11.Seal Vault
 
 ```bash
-npm run vm:vault:seal
+npm run gcp:vm:vault:seal
 ```
 
-## 12. Rebuilding image
+### 12.Rebuilding image
 
 ```bash
 cd terraform/packer
