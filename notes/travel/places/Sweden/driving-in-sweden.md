@@ -1,5 +1,7 @@
 # Driving in Sweden
 
+- Most accidents in the summer time.
+- December 1 - March 31 - Winter tires are required
 - Yield to vehicle on the right at uncontrolled intersections.
   - Exceptions:
     - [Home Zone](https://korkortonline.se/en/theory/road-signs/instruction-signs/e9/)

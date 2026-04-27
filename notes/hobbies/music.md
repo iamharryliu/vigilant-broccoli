@@ -6,10 +6,6 @@
 A | A# | B | C | C# | D | D# | E | F | F# | G | G# | A
 ```
 
-- 12 notes in an octave
-- Natural notes vs sharps/flat
--
-
 ## Guitar
 
 - Same notes are 5 frets apart when move to higher string, except when moving from the G string to the B string than they are 4 frets apart.
@@ -50,9 +46,18 @@ E|     E   F   F#  G   G#  A   A#  B   C   C#  D   D#  E
 
 ## Music Terminology
 
-| Term       | Description     |
-| :--------- | :-------------- |
-| Pentatonic | Five-note scale |
+| Term                 | Description                                                                 |
+| :------------------- | :-------------------------------------------------------------------------- |
+| Flat (♭)             | Lowers a note by one semitone (D → D♭)                                      |
+| Major scale          | W, W, H, W, W, W, H — bright, happy sound                                   |
+| Minor scale          | W, H, W, W, H, W, W — dark, sad sound                                       |
+| Natural notes        | Notes without sharps or flats: A, B, C, D, E, F, G                          |
+| Octave               | Interval of 12 semitones, same note at a higher/lower pitch (C → C)         |
+| Pentatonic           | Five-note scale                                                             |
+| Semitone / Half step | One fret on guitar, adjacent keys on piano (C → C♯)                         |
+| Sharp (♯)            | Raises a note by one semitone (C → C♯)                                      |
+| Tone / Whole step    | Two frets on guitar, one key skipped on piano (C → D), 1 tone = 2 semitones |
+| Triad                | Three-note chord built from root, third, and fifth                          |
 
 ## Guitar Songs
 
