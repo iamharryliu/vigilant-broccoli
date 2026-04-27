@@ -9,6 +9,7 @@ import {
   IconButton,
   TextField,
   Dialog,
+  AlertDialog,
 } from '@radix-ui/themes';
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
@@ -280,8 +281,8 @@ const SortableBoard = ({
       <Flex
         justify="between"
         align="center"
-        className={`py-1 px-2 rounded ${
-          isActive ? 'border-l-2 border-blue-500' : ''
+        className={`py-1 px-2 rounded hover:bg-[var(--gray-a3)] transition-colors ${
+          isActive ? 'border-l-2 border-blue-500 bg-[var(--gray-a3)]' : ''
         }`}
       >
         {editingBoardId === board.id ? (
@@ -311,17 +312,41 @@ const SortableBoard = ({
           </div>
         )}
         {showDeleteButton && (
-          <IconButton
-            size="1"
-            variant="ghost"
-            color="gray"
-            onClick={e => {
-              e.stopPropagation();
-              onRemove(board.id);
-            }}
-          >
-            <X size={14} />
-          </IconButton>
+          <AlertDialog.Root>
+            <AlertDialog.Trigger>
+              <IconButton
+                size="1"
+                variant="ghost"
+                color="gray"
+                onClick={e => e.stopPropagation()}
+              >
+                <X size={14} />
+              </IconButton>
+            </AlertDialog.Trigger>
+            <AlertDialog.Content maxWidth="400px">
+              <AlertDialog.Title>Delete Board</AlertDialog.Title>
+              <AlertDialog.Description>
+                Are you sure you want to delete &quot;{board.name}&quot;? This
+                action cannot be undone.
+              </AlertDialog.Description>
+              <Flex gap="3" mt="4" justify="end">
+                <AlertDialog.Cancel>
+                  <Button variant="soft" color="gray">
+                    Cancel
+                  </Button>
+                </AlertDialog.Cancel>
+                <AlertDialog.Action>
+                  <Button
+                    variant="solid"
+                    color="red"
+                    onClick={() => onRemove(board.id)}
+                  >
+                    Delete
+                  </Button>
+                </AlertDialog.Action>
+              </Flex>
+            </AlertDialog.Content>
+          </AlertDialog.Root>
         )}
       </Flex>
     </div>
@@ -876,7 +901,7 @@ export const KanbanComponent = () => {
       <div className="flex h-full">
         <div
           className={`transition-all duration-300 border-r flex flex-col gap-4 overflow-hidden ${
-            sidebarOpen ? 'w-64 p-4 overflow-y-auto' : 'w-0 p-0 border-r-0'
+            sidebarOpen ? 'w-64 py-4 pr-4 pl-6 overflow-y-auto' : 'w-0 p-0 border-r-0'
           }`}
         >
           {sidebarOpen && (
