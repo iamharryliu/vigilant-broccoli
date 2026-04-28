@@ -1,6 +1,6 @@
 {
   "name": "@vigilant-broccoli/slack-workspace",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
@@ -9,6 +9,10 @@
     "@slack/web-api": "^7.10.0",
     "@vigilant-broccoli/common-node": "*",
     "@vigilant-broccoli/common-js": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamharryliu/vigilant-broccoli"
   },
   "publishConfig": {
     "access": "public"

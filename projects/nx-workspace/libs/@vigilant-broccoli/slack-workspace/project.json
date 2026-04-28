@@ -23,6 +23,13 @@
         "assets": ["libs/@vigilant-broccoli/slack-workspace/*.md"]
       }
     },
+    "publish-package": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "npm publish dist/libs/@vigilant-broccoli/slack-workspace --access public --provenance"
+      }
+    },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"
