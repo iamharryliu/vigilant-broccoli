@@ -1,15 +1,43 @@
 import { spawn } from 'child_process';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
 import { getVaultToken } from './gcp-vault-token';
 
+function parseEnvFileKeys(filePath: string): Set<string> {
+  const content = readFileSync(filePath, 'utf-8');
+  const keys = new Set<string>();
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=/);
+    if (match) keys.add(match[1]);
+  }
+  return keys;
+}
+
+function parseArgs(argv: string[]) {
+  let envFile: string | undefined;
+  const rest: string[] = [];
+
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--env-file' && i + 1 < argv.length) {
+      envFile = argv[++i];
+    } else {
+      rest.push(argv[i]);
+    }
+  }
+
+  return { envFile, command: rest };
+}
+
 async function fetchSecrets(
   vaultAddr: string,
   secretPath: string,
   certs?: string,
+  allowedKeys?: Set<string>,
 ) {
   const vaultToken = getVaultToken();
 
@@ -34,14 +62,18 @@ async function fetchSecrets(
   const result = await vault.read(secretPath);
   const secrets = result.data.data || result.data || result;
 
+  let injected = 0;
   for (const [key, value] of Object.entries(secrets)) {
-    if (typeof value === 'string') {
-      process.env[key] = value;
-    }
+    if (typeof value !== 'string') continue;
+    if (allowedKeys && !allowedKeys.has(key)) continue;
+    process.env[key] = value;
+    injected++;
   }
 
   console.log(`✓ Secrets fetched successfully`);
-  console.log(`✓ Total secrets: ${Object.keys(secrets).length}`);
+  console.log(
+    `✓ Injected ${injected}/${Object.keys(secrets).length} secrets${allowedKeys ? ` (filtered by env file)` : ''}`,
+  );
 
   return secrets;
 }
@@ -54,13 +86,24 @@ async function fetchSecretsAndServe() {
     'vault-ca.crt',
   );
 
-  await fetchSecrets(vaultAddr, secretPath, certs);
+  const { envFile, command } = parseArgs(process.argv.slice(2));
 
-  const args = process.argv.slice(2);
-  if (args.length > 0) {
-    console.log(`\nStarting: ${args.join(' ')}\n`);
+  let allowedKeys: Set<string> | undefined;
+  if (envFile) {
+    if (!existsSync(envFile)) {
+      console.error(`Error: env file not found: ${envFile}`);
+      process.exit(1);
+    }
+    allowedKeys = parseEnvFileKeys(envFile);
+    console.log(`Using env file: ${envFile} (${allowedKeys.size} keys)`);
+  }
 
-    const child = spawn(args[0], args.slice(1), {
+  await fetchSecrets(vaultAddr, secretPath, certs, allowedKeys);
+
+  if (command.length > 0) {
+    console.log(`\nStarting: ${command.join(' ')}\n`);
+
+    const child = spawn(command[0], command.slice(1), {
       stdio: 'inherit',
       env: { ...process.env },
       shell: true,
