@@ -4,6 +4,7 @@ import { Flex, Text, Badge, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
+import { ExpandableListItem } from './expandable-list-item.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface WireguardConnection {
@@ -17,22 +18,40 @@ interface WireguardStatus {
   connections: WireguardConnection[];
 }
 
+const BORDER_STYLES = {
+  active:
+    'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700',
+};
+
 export const WireguardStatusComponent = () => {
   const [wgStatus, setWgStatus] = useState<WireguardStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [expandedConnections, setExpandedConnections] = useState<Set<string>>(
+    new Set(),
+  );
+  const [copiedName, setCopiedName] = useState<string | null>(null);
 
-  const handleCopyCommand = async (connection: WireguardConnection, index: number) => {
+  const toggleConnection = (name: string) => {
+    setExpandedConnections(prev => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
+
+  const handleCopyCommand = async (connection: WireguardConnection) => {
     const configName = connection.name.replace('.conf', '');
-    const command = connection.status === 'active'
-      ? `sudo wg-quick down ${configName}`
-      : `sudo wg-quick up ${configName}`;
+    const command =
+      connection.status === 'active'
+        ? `sudo wg-quick down ${configName}`
+        : `sudo wg-quick up ${configName}`;
 
     try {
       await navigator.clipboard.writeText(command);
-      setCopiedIndex(index);
-      setTimeout(() => setCopiedIndex(null), 2000);
+      setCopiedName(connection.name);
+      setTimeout(() => setCopiedName(null), 2000);
     } catch (err) {
       console.error('Failed to copy command:', err);
     }
@@ -49,14 +68,17 @@ export const WireguardStatusComponent = () => {
         setWgStatus(data);
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch WireGuard status');
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to fetch WireGuard status',
+        );
         setLoading(false);
         console.error('WireGuard status error:', err);
       }
     };
 
     fetchWireguardStatus();
-    // Refresh every 10 seconds
     const interval = setInterval(fetchWireguardStatus, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -76,43 +98,51 @@ export const WireguardStatusComponent = () => {
   return (
     <CardContainer title="WireGuard Connections">
       {wgStatus && wgStatus.connections.length > 0 ? (
-          <Flex direction="column" gap="3">
-            {wgStatus.connections.map((conn, idx) => (
-              <Flex key={idx} direction="column" gap="2" className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
-                <Flex align="center" gap="2" justify="between">
-                  <Flex align="center" gap="2">
-                    <Badge color={conn.status === 'active' ? 'green' : 'gray'} size="2">
-                      {conn.status === 'active' ? 'Active' : 'Inactive'}
-                    </Badge>
-                    <Text size="3" weight="bold" className="text-gray-700">
-                      {conn.name.replace('.conf', '')}
-                    </Text>
-                  </Flex>
-                  <Button
-                    size="1"
-                    variant="soft"
-                    onClick={() => handleCopyCommand(conn, idx)}
-                  >
-                    {copiedIndex === idx ? 'Copied!' : `Copy ${conn.status === 'active' ? 'Down' : 'Up'} Command`}
-                  </Button>
-                </Flex>
-
-                {conn.status === 'active' && (
-                  <Flex direction="column" gap="1" className="ml-2">
-                    <Text size="1" className="text-gray-600">
-                      Interface: <Text className="text-gray-700">{conn.interface}</Text>
-                    </Text>
-                    <Text size="1" className="text-gray-600">
-                      Address: <Text className="text-gray-700">{conn.address}</Text>
-                    </Text>
-                  </Flex>
-                )}
-              </Flex>
-            ))}
-          </Flex>
-        ) : (
-          <Text className="text-gray-500">No WireGuard configurations found</Text>
-        )}
+        <Flex direction="column" gap="1">
+          {wgStatus.connections.map(conn => (
+            <ExpandableListItem
+              key={conn.name}
+              label={conn.name.replace('.conf', '')}
+              labelWeight={conn.status === 'active' ? 'bold' : 'regular'}
+              isExpanded={expandedConnections.has(conn.name)}
+              onToggle={() => toggleConnection(conn.name)}
+              borderClassName={
+                conn.status === 'active' ? BORDER_STYLES.active : undefined
+              }
+              badges={
+                <Badge
+                  color={conn.status === 'active' ? 'green' : 'gray'}
+                  size="1"
+                >
+                  {conn.status === 'active' ? 'Active' : 'Inactive'}
+                </Badge>
+              }
+              actions={
+                <Button
+                  size="1"
+                  variant="soft"
+                  onClick={() => handleCopyCommand(conn)}
+                >
+                  {copiedName === conn.name
+                    ? 'Copied!'
+                    : `Copy ${conn.status === 'active' ? 'Down' : 'Up'} Command`}
+                </Button>
+              }
+            >
+              <Text size="1" color="gray">
+                Interface: {conn.interface}
+              </Text>
+              <Text size="1" color="gray">
+                Address: {conn.address}
+              </Text>
+            </ExpandableListItem>
+          ))}
+        </Flex>
+      ) : (
+        <Text className="text-gray-500">
+          No WireGuard configurations found
+        </Text>
+      )}
     </CardContainer>
   );
 };

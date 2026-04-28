@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { ExternalLinkIcon, CopyIcon, CheckIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
+import { ExpandableListItem } from './expandable-list-item.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const AWS_CONSOLE_BASE = 'https://console.aws.amazon.com';
@@ -55,11 +56,7 @@ interface ProfileItemProps {
 const PROFILE_BORDER_STYLES = {
   ssoExpired:
     'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600',
-  default: 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800',
 };
-
-const getProfileBorderStyle = (ssoExpired: boolean) =>
-  ssoExpired ? PROFILE_BORDER_STYLES.ssoExpired : PROFILE_BORDER_STYLES.default;
 
 const ProfileBadge = ({
   ssoExpired,
@@ -90,27 +87,17 @@ const ProfileItem = ({
   copiedExport,
   onCopyExportCommand,
 }: ProfileItemProps) => (
-  <Flex
-    direction="column"
-    gap="2"
-    className={`p-2 rounded border ${getProfileBorderStyle(profile.ssoExpired)}`}
-  >
-    <Flex align="center" gap="2" wrap="wrap">
-      <Text
-        size="2"
-        className="cursor-pointer"
-        onClick={() => onToggle(profile.name)}
-      >
-        {isExpanded ? '▼' : '▶'}
-      </Text>
+  <ExpandableListItem
+    label={profile.name}
+    isExpanded={isExpanded}
+    onToggle={() => onToggle(profile.name)}
+    borderClassName={
+      profile.ssoExpired ? PROFILE_BORDER_STYLES.ssoExpired : undefined
+    }
+    badges={
       <ProfileBadge ssoExpired={profile.ssoExpired} isSso={profile.isSso} />
-      <Text
-        size="2"
-        className="flex-1 cursor-pointer"
-        onClick={() => onToggle(profile.name)}
-      >
-        {profile.name}
-      </Text>
+    }
+    actions={
       <Button
         variant="ghost"
         size="1"
@@ -124,47 +111,39 @@ const ProfileItem = ({
           <CopyIcon width="12" height="12" />
         )}
       </Button>
-    </Flex>
-
-    {isExpanded && (
-      <Flex
-        direction="column"
-        gap="2"
-        className="pl-6 pt-1 border-t border-gray-200 dark:border-gray-700"
-      >
-        {profile.region && (
-          <Text size="1" color="gray">
-            Region: {profile.region}
-          </Text>
-        )}
-        {profile.ssoAccountId && (
-          <Text size="1" color="gray">
-            Account: {profile.ssoAccountId}
-          </Text>
-        )}
-        {profile.ssoRoleName && (
-          <Text size="1" color="gray">
-            Role: {profile.ssoRoleName}
-          </Text>
-        )}
-        {profile.identity && (
-          <Text size="1" color="gray">
-            ARN: {profile.identity.arn}
-          </Text>
-        )}
-        <Flex gap="2" wrap="wrap">
-          {Object.entries(getProfileUrls(profile.region)).map(([key, url]) => (
-            <Button key={key} asChild variant="soft" size="1">
-              <a href={url} target="_blank" rel="noopener noreferrer">
-                {CONSOLE_LABELS[key]}
-                <ExternalLinkIcon width="12" height="12" />
-              </a>
-            </Button>
-          ))}
-        </Flex>
-      </Flex>
+    }
+  >
+    {profile.region && (
+      <Text size="1" color="gray">
+        Region: {profile.region}
+      </Text>
     )}
-  </Flex>
+    {profile.ssoAccountId && (
+      <Text size="1" color="gray">
+        Account: {profile.ssoAccountId}
+      </Text>
+    )}
+    {profile.ssoRoleName && (
+      <Text size="1" color="gray">
+        Role: {profile.ssoRoleName}
+      </Text>
+    )}
+    {profile.identity && (
+      <Text size="1" color="gray">
+        ARN: {profile.identity.arn}
+      </Text>
+    )}
+    <Flex gap="2" wrap="wrap">
+      {Object.entries(getProfileUrls(profile.region)).map(([key, url]) => (
+        <Button key={key} asChild variant="soft" size="1">
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            {CONSOLE_LABELS[key]}
+            <ExternalLinkIcon width="12" height="12" />
+          </a>
+        </Button>
+      ))}
+    </Flex>
+  </ExpandableListItem>
 );
 
 export const AwsManagementComponent = () => {
