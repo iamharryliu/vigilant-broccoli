@@ -27,7 +27,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "npx nx run @vigilant-broccoli/slackbots:nx-release-publish"
+        "command": "npm publish dist/libs/@vigilant-broccoli/slackbots --access public --provenance"
       }
     },
     "nx-release-publish": {
