@@ -1,0 +1,98 @@
+name: deploy-npm-packages
+on:
+  push:
+    branches: ['main']
+    paths:
+      - 'projects/nx-workspace/libs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: ./projects/nx-workspace/package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        working-directory: ./projects/nx-workspace
+        run: npm ci
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Vault CA Certificate
+        run: |
+          CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
+          echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
+
+      - name: Open IAP Tunnel to Vault
+        run: |
+          gcloud compute ssh vb-free-vm \
+            --zone=us-east1-b \
+            --tunnel-through-iap \
+            --ssh-flag="-N" \
+            --ssh-flag="-L 8200:127.0.0.1:8200" \
+            --ssh-flag="-o ServerAliveInterval=30" \
+            --ssh-flag="-o ServerAliveCountMax=3" &
+
+          SSH_PID=$!
+          echo "SSH_PID=$SSH_PID" >> $GITHUB_ENV
+
+          echo "Waiting for tunnel to establish..."
+          for i in {1..30}; do
+            if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
+              echo "Tunnel established successfully"
+              curl -k -s https://127.0.0.1:8200/v1/sys/health | jq .
+              exit 0
+            fi
+            echo "Attempt $i: Tunnel not ready yet..."
+            sleep 2
+          done
+          echo "ERROR: IAP tunnel to Vault failed to establish after 30 attempts"
+          exit 1
+
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: https://127.0.0.1:8200
+          caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
+          method: jwt
+          role: github-actions-role
+          jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
+          exportToken: true
+          secrets: |
+            kv/data/secrets NPM_TOKEN | NPM_TOKEN ;
+
+      - name: Get affected projects
+        id: affected
+        working-directory: ./projects/nx-workspace
+        run: |
+          AFFECTED=$(npx nx show projects --affected --type=lib --base=HEAD~1 --head=HEAD 2>/dev/null | tr -d '[]"' | tr ',' ' ')
+          echo "projects=$AFFECTED" >> $GITHUB_OUTPUT
+
+      - name: Publish affected
+        if: steps.affected.outputs.projects != ''
+        working-directory: ./projects/nx-workspace
+        env:
+          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
+        run: npx nx run-many -t publish-package --projects=${{ steps.affected.outputs.projects }}

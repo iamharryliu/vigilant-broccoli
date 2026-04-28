@@ -40,7 +40,11 @@
     "serve:docker": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'docker run --platform linux/amd64 -p 3000:3000 -e SLACK_BOT_TOKEN=$SLACK_BOT_TOKEN -e SLACK_APP_TOKEN=$SLACK_APP_TOKEN -e OFFICES=$OFFICES -e ENABLE_REMINDERS=$ENABLE_REMINDERS -e INCLUDE_WEEKENDS=$INCLUDE_WEEKENDS -e DAYS_AHEAD=$DAYS_AHEAD iamharryliu/office-presence-socket-server-demo:latest'"
+        "commands": [
+          "docker ps -q --filter ancestor=iamharryliu/office-presence-socket-server-demo | xargs -r docker rm -f",
+          "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'docker run --pull=always --platform linux/amd64 -p 3000:3000 -e SLACK_BOT_TOKEN=$SLACK_BOT_TOKEN -e SLACK_APP_TOKEN=$SLACK_APP_TOKEN -e OFFICES=$OFFICES -e ENABLE_REMINDERS=$ENABLE_REMINDERS -e INCLUDE_WEEKENDS=$INCLUDE_WEEKENDS -e DAYS_AHEAD=$DAYS_AHEAD iamharryliu/office-presence-socket-server-demo:latest'"
+        ],
+        "parallel": false
       }
     },
     "serve:vault": {
@@ -71,9 +75,28 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "deploy-and-serve": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "commands": [
+          "nx run office-presence-socket-server-demo:deploy-container",
+          "nx run office-presence-socket-server-demo:serve:docker"
+        ],
+        "parallel": false
+      }
+    },
     "deploy-container": {
+      "executor": "nx:run-commands",
+      "cache": false,
       "dependsOn": ["build"],
-      "command": "docker buildx build --platform linux/amd64 -f apps/office-presence-socket-server-demo/Dockerfile -t iamharryliu/office-presence-socket-server-demo:latest -t iamharryliu/office-presence-socket-server-demo:${COMMIT_SHA:-latest} --push dist/apps/office-presence-socket-server-demo"
+      "options": {
+        "commands": [
+          "docker buildx build --platform linux/amd64 -f apps/office-presence-socket-server-demo/Dockerfile -t iamharryliu/office-presence-socket-server-demo:latest -t iamharryliu/office-presence-socket-server-demo:${COMMIT_SHA:-latest} --push dist/apps/office-presence-socket-server-demo",
+          "docker rmi $(docker images iamharryliu/office-presence-socket-server-demo --filter 'dangling=true' -q) 2>/dev/null || true"
+        ],
+        "parallel": false
+      }
     }
   }
 }

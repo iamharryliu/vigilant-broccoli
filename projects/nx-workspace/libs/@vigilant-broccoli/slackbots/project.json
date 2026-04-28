@@ -23,6 +23,13 @@
         "assets": ["libs/@vigilant-broccoli/slackbots/*.md"]
       }
     },
+    "publish-package": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "npx nx run @vigilant-broccoli/slackbots:nx-release-publish"
+      }
+    },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"
