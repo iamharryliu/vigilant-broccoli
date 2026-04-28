@@ -44,6 +44,9 @@ export * from './lib/bucket/providers/cloudflare.provider';
 export * from './lib/bucket/providers/aws.provider';
 export * from './lib/bucket/providers/gcs.provider';
 
+// Wrangler
+export * from './lib/wrangler/wrangler.service';
+
 export const QUEUE = {
   EMAIL: 'EMAIL',
 };

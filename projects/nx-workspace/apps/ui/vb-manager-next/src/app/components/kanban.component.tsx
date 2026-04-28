@@ -9,8 +9,8 @@ import {
   IconButton,
   TextField,
   Dialog,
-  AlertDialog,
 } from '@radix-ui/themes';
+import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import {
@@ -29,7 +29,15 @@ import {
 import { SortableContext, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DragHandleDots2Icon } from '@radix-ui/react-icons';
-import { X, Menu, Pencil, Trash2, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  X,
+  Menu,
+  Pencil,
+  Trash2,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { GoogleTasksComponent } from './google-tasks.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -312,8 +320,8 @@ const SortableBoard = ({
           </div>
         )}
         {showDeleteButton && (
-          <AlertDialog.Root>
-            <AlertDialog.Trigger>
+          <ConfirmDeleteDialog
+            trigger={
               <IconButton
                 size="1"
                 variant="ghost"
@@ -322,31 +330,11 @@ const SortableBoard = ({
               >
                 <X size={14} />
               </IconButton>
-            </AlertDialog.Trigger>
-            <AlertDialog.Content maxWidth="400px">
-              <AlertDialog.Title>Delete Board</AlertDialog.Title>
-              <AlertDialog.Description>
-                Are you sure you want to delete &quot;{board.name}&quot;? This
-                action cannot be undone.
-              </AlertDialog.Description>
-              <Flex gap="3" mt="4" justify="end">
-                <AlertDialog.Cancel>
-                  <Button variant="soft" color="gray">
-                    Cancel
-                  </Button>
-                </AlertDialog.Cancel>
-                <AlertDialog.Action>
-                  <Button
-                    variant="solid"
-                    color="red"
-                    onClick={() => onRemove(board.id)}
-                  >
-                    Delete
-                  </Button>
-                </AlertDialog.Action>
-              </Flex>
-            </AlertDialog.Content>
-          </AlertDialog.Root>
+            }
+            title="Delete Board"
+            description={`Are you sure you want to delete "${board.name}"? This action cannot be undone.`}
+            onConfirm={() => onRemove(board.id)}
+          />
         )}
       </Flex>
     </div>
@@ -395,8 +383,8 @@ const SortableLane = ({
   const laneHighlight = isTaskDragOver
     ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950'
     : isDraggingTask
-    ? 'ring-1 ring-dashed ring-gray-300 dark:ring-gray-600'
-    : '';
+      ? 'ring-1 ring-dashed ring-gray-300 dark:ring-gray-600'
+      : '';
 
   return (
     <div
@@ -709,8 +697,9 @@ export const KanbanComponent = () => {
           over.data.current?.type === DRAG_TYPE.LANE
             ? (over.id as string)
             : over.data.current?.taskListId
-            ? prev.find(l => l.taskListId === over.data.current?.taskListId)?.id
-            : undefined;
+              ? prev.find(l => l.taskListId === over.data.current?.taskListId)
+                  ?.id
+              : undefined;
 
         if (!overLaneId) return prev;
 
@@ -901,7 +890,9 @@ export const KanbanComponent = () => {
       <div className="flex h-full">
         <div
           className={`transition-all duration-300 border-r flex flex-col gap-4 overflow-hidden ${
-            sidebarOpen ? 'w-64 py-4 pr-4 pl-6 overflow-y-auto' : 'w-0 p-0 border-r-0'
+            sidebarOpen
+              ? 'w-64 py-4 pr-4 pl-6 overflow-y-auto'
+              : 'w-0 p-0 border-r-0'
           }`}
         >
           {sidebarOpen && (
@@ -982,21 +973,20 @@ export const KanbanComponent = () => {
                                   <Pencil size={14} />
                                 </IconButton>
                               )}
-                              <IconButton
-                                size="1"
-                                variant="ghost"
-                                color="red"
-                                onClick={() => {
-                                  if (
-                                    confirm(
-                                      `Delete "${list.title}" and all its tasks? This cannot be undone.`,
-                                    )
-                                  )
-                                    handleDeleteList(list.id);
-                                }}
-                              >
-                                <Trash2 size={14} />
-                              </IconButton>
+                              <ConfirmDeleteDialog
+                                trigger={
+                                  <IconButton
+                                    size="1"
+                                    variant="ghost"
+                                    color="red"
+                                  >
+                                    <Trash2 size={14} />
+                                  </IconButton>
+                                }
+                                title="Delete Task List"
+                                description={`Delete "${list.title}" and all its tasks? This cannot be undone.`}
+                                onConfirm={() => handleDeleteList(list.id)}
+                              />
                             </Flex>
                           </Flex>
                         ))}
@@ -1087,7 +1077,11 @@ export const KanbanComponent = () => {
                 variant="ghost"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
               >
-                {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+                {sidebarOpen ? (
+                  <ChevronLeft size={16} />
+                ) : (
+                  <ChevronRight size={16} />
+                )}
               </IconButton>
               <Text size="4" weight="bold">
                 {activeBoard.name}

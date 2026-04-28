@@ -16,24 +16,6 @@ services:
       - monitoring
       - default
 
-  # TODO: Investigate Resilio Docker container sync speed issue.
-  # resilio:
-  #   image: linuxserver/resilio-sync:latest
-  #   container_name: resilio-sync
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #   volumes:
-  #     - ./resilio/config:/config
-  #     - ~/resilio-sync:/sync
-  #   ports:
-  #     - "28888:8888"
-  #     - "55556:55555"
-  #   restart: unless-stopped
-  #   networks:
-  #     - monitoring
-  #     - default
-
   immich-server:
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:release
