@@ -31,6 +31,11 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
+import {
+  EventDraft,
+  EventDraftCard,
+  EventDraftStatus,
+} from './event-draft-card.component';
 
 interface MessageImage {
   data: string;
@@ -43,7 +48,13 @@ interface Message {
   isStreaming?: boolean;
   displayContent?: string;
   images?: MessageImage[];
+  eventDraft?: EventDraft;
+  eventStatus?: EventDraftStatus;
+  eventError?: string;
+  eventLink?: string;
 }
+
+const CALENDAR_SUGGESTION_TITLE = 'Create calendar event';
 
 interface ChatSuggestion {
   title: string;
@@ -91,7 +102,9 @@ const MessageContent = ({ message }: { message: Message }) => {
     );
   }
 
-  return <ReactMarkdown>{message.content}</ReactMarkdown>;
+  return (
+    <>{message.content && <ReactMarkdown>{message.content}</ReactMarkdown>}</>
+  );
 };
 
 const ImagePreview = ({
@@ -173,6 +186,8 @@ const MessagesArea = ({
   onDragOver,
   onDragLeave,
   onDrop,
+  onEventCreate,
+  onEventCancel,
 }: {
   messages: Message[];
   isDragging: boolean;
@@ -180,6 +195,8 @@ const MessagesArea = ({
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
+  onEventCreate: (messageIndex: number, draft: EventDraft) => void;
+  onEventCancel: (messageIndex: number) => void;
 }) => (
   <div
     onDragOver={onDragOver}
@@ -255,6 +272,16 @@ const MessagesArea = ({
             <div className="prose prose-sm dark:prose-invert max-w-none">
               <MessageContent message={message} />
             </div>
+            {message.eventDraft && (
+              <EventDraftCard
+                draft={message.eventDraft}
+                status={message.eventStatus || 'draft'}
+                errorMessage={message.eventError}
+                eventLink={message.eventLink}
+                onCreate={draft => onEventCreate(index, draft)}
+                onCancel={() => onEventCancel(index)}
+              />
+            )}
           </Card>
         ))}
       </Flex>
@@ -773,8 +800,183 @@ export const ChatbotDialog = ({
     await sendChatRequest(compactedMessages, selectedModel);
   };
 
+  const handleParseEvent = async () => {
+    if (isStreaming) return;
+    if (!input.trim() && uploadedImages.length === 0) return;
+
+    const inputSnapshot = input;
+    const imagesSnapshot = uploadedImages;
+
+    const userMessage: Message = {
+      role: 'user',
+      content: inputSnapshot,
+      displayContent: CALENDAR_SUGGESTION_TITLE,
+      images: imagesSnapshot.length > 0 ? imagesSnapshot : undefined,
+    };
+    const pendingAssistant: Message = {
+      role: 'assistant',
+      content: 'Parsing event...',
+      isStreaming: true,
+    };
+
+    setMessages(prev => [...prev, userMessage, pendingAssistant]);
+    setInput('');
+    setUploadedImages([]);
+
+    try {
+      const response = await fetch('/api/calendar/parse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: inputSnapshot,
+          images: imagesSnapshot.length > 0 ? imagesSnapshot : undefined,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        setMessages(prev => {
+          const updated = [...prev];
+          const last = updated[updated.length - 1];
+          updated[updated.length - 1] = {
+            ...last,
+            content: payload.error || 'Failed to parse event',
+            isStreaming: false,
+          };
+          return updated;
+        });
+        return;
+      }
+
+      const events = (payload.events || []) as EventDraft[];
+      const headerContent =
+        events.length === 1
+          ? 'Review the event below before creating it.'
+          : `Review the ${events.length} events below before creating them.`;
+
+      setMessages(prev => {
+        const withoutPending = prev.slice(0, -1);
+        const eventMessages: Message[] = events.map(event => ({
+          role: 'assistant',
+          content: '',
+          isStreaming: false,
+          eventDraft: event,
+          eventStatus: 'draft',
+        }));
+        return [
+          ...withoutPending,
+          {
+            role: 'assistant',
+            content: headerContent,
+            isStreaming: false,
+          },
+          ...eventMessages,
+        ];
+      });
+    } catch (error) {
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          role: 'assistant',
+          content:
+            error instanceof Error ? error.message : 'Failed to parse event',
+          isStreaming: false,
+        };
+        return updated;
+      });
+    }
+  };
+
+  const handleEventCreate = async (messageIndex: number, draft: EventDraft) => {
+    setMessages(prev => {
+      const updated = [...prev];
+      updated[messageIndex] = {
+        ...updated[messageIndex],
+        eventDraft: draft,
+        eventStatus: 'creating',
+        eventError: undefined,
+      };
+      return updated;
+    });
+
+    try {
+      const response = await fetch('/api/calendar/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          summary: draft.summary,
+          description: draft.description,
+          start: draft.allDay ? draft.start.slice(0, 10) : draft.start,
+          end: draft.allDay
+            ? draft.end.slice(0, 10) || draft.start.slice(0, 10)
+            : draft.end || draft.start,
+          timeZone: draft.timeZone,
+          location: draft.location,
+          allDay: draft.allDay,
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        setMessages(prev => {
+          const updated = [...prev];
+          updated[messageIndex] = {
+            ...updated[messageIndex],
+            eventStatus: 'error',
+            eventError: payload.error || 'Failed to create event',
+          };
+          return updated;
+        });
+        return;
+      }
+
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[messageIndex] = {
+          ...updated[messageIndex],
+          eventStatus: 'created',
+          eventLink: payload.event?.htmlLink,
+        };
+        return updated;
+      });
+    } catch (error) {
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[messageIndex] = {
+          ...updated[messageIndex],
+          eventStatus: 'error',
+          eventError:
+            error instanceof Error ? error.message : 'Failed to create event',
+        };
+        return updated;
+      });
+    }
+  };
+
+  const handleEventCancel = (messageIndex: number) => {
+    setMessages(prev => {
+      const updated = [...prev];
+      updated[messageIndex] = {
+        ...updated[messageIndex],
+        eventDraft: undefined,
+        eventStatus: undefined,
+        eventError: undefined,
+        content: 'Event cancelled.',
+      };
+      return updated;
+    });
+  };
+
   const handleSuggestionClick = async (suggestion: ChatSuggestion) => {
     if (isStreaming) return;
+
+    if (suggestion.title === CALENDAR_SUGGESTION_TITLE) {
+      await handleParseEvent();
+      return;
+    }
 
     let promptToUse = suggestion.prompt;
 
@@ -863,11 +1065,13 @@ export const ChatbotDialog = ({
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onEventCreate={handleEventCreate}
+            onEventCancel={handleEventCancel}
           />
 
           <InputArea
             messages={messages}
-            suggestions={suggestions}
+            suggestions={[{ title: CALENDAR_SUGGESTION_TITLE }, ...suggestions]}
             uploadedImages={uploadedImages}
             input={input}
             isStreaming={isStreaming}
