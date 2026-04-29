@@ -34,11 +34,11 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: npm ci
 
-      - name: Get affected projects
+      - name: Get affected publishable projects
         id: affected
         working-directory: ./projects/nx-workspace
         run: |
-          AFFECTED=$(npx nx show projects --affected --type=lib --base=HEAD~1 --head=HEAD 2>/dev/null | tr -d '[]"' | tr ',' ' ')
+          AFFECTED=$(npx nx show projects --affected --type=lib --withTarget=publish-package --base=HEAD~1 --head=HEAD 2>/dev/null | tr -d '[]"' | tr ',' ' ' | xargs)
           echo "projects=$AFFECTED" >> $GITHUB_OUTPUT
 
       - name: Publish affected
