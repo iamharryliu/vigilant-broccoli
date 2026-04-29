@@ -1,1 +1,1 @@
-Can you give the pros/cons of this implementation?
+List pros and cons of this implementation.
