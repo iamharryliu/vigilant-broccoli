@@ -9,6 +9,7 @@
     "@slack/bolt": "*",
     "@slack/types": "*",
     "@slack/web-api": "*",
+    "@vigilant-broccoli/slack-workspace": "*",
     "node-cron": "^4.2.1",
     "better-sqlite3": "^12.4.1"
   },

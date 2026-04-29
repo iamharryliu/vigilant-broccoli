@@ -3,6 +3,7 @@ import { WebClient } from '@slack/web-api';
 import { Member } from '@slack/web-api/dist/types/response/UsersListResponse';
 import { SlackMessage } from './slack.models';
 import { SLACK_FIELD_LABEL } from './slack.consts';
+import { SlackViewBuilder } from './view-builder.utils';
 
 export const createSlackHeaders = (
   token: string,
@@ -10,16 +11,8 @@ export const createSlackHeaders = (
   Authorization: `Bearer ${token}`,
 });
 
-export const createSlackBlocks = (
-  message: string,
-): Array<{ type: string; text: { type: string; text: string } }> => [
-  {
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: message,
-    },
-  },
+export const createSlackBlocks = (message: string) => [
+  SlackViewBuilder.generateMarkdownSection(message),
 ];
 
 export const stringifyQuery = (message: SlackMessage): string =>

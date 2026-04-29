@@ -1,6 +1,6 @@
 import { KnownBlock, ModalView, View } from '@slack/types';
 import { AppConfig, PRESENCE_TIME } from '../types';
-import { SlackViewBuilder } from '../../lib/utils/view-builder.utils';
+import { SlackViewBuilder } from '@vigilant-broccoli/slack-workspace';
 import { APP_ACTION } from './app.consts';
 import { loadAllPresences, loadEventById } from '../utils/db.utils';
 import { getUpcomingWeekdays, formatISODateLocal } from '../utils/date.utils';

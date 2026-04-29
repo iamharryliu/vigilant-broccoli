@@ -1,6 +1,7 @@
 import { App, SlackViewAction, BlockAction } from '@slack/bolt';
 import { AppHomeOpenedEvent } from '@slack/types';
 import type { WebClient } from '@slack/web-api';
+import { getAllUsers } from '@vigilant-broccoli/slack-workspace';
 
 function getSocketApp(
   token = process.env.SLACK_BOT_TOKEN,
@@ -36,22 +37,8 @@ async function getIsAdmin(
 }
 
 async function getAllRealUsers(client: WebClient) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let allUsers: any[] = [];
-  let cursor;
-
-  do {
-    const res = await client.users.list({ cursor });
-    allUsers = allUsers.concat(res.members || []);
-    cursor = res.response_metadata?.next_cursor;
-  } while (cursor);
-
-  // Filter to active, non-bot, non-Slackbot users
-  const realUsers = allUsers.filter(
-    u => !u.is_bot && !u.deleted && u.id !== 'USLACKBOT',
-  );
-
-  return realUsers;
+  const allUsers = await getAllUsers(client);
+  return allUsers.filter(u => !u.is_bot && !u.deleted && u.id !== 'USLACKBOT');
 }
 
 export const SlackUtils = {

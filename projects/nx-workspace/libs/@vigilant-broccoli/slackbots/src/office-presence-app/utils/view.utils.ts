@@ -10,7 +10,7 @@ import {
 } from '../types';
 import { WebClient } from '@slack/web-api';
 import { BlockAction, SlackViewAction } from '@slack/bolt';
-import { SlackViewBuilder } from '../../lib/utils/view-builder.utils';
+import { SlackViewBuilder } from '@vigilant-broccoli/slack-workspace';
 import { AppCopy } from '../consts/app-copy.const';
 import {
   formatDateLong,
