@@ -1,7 +1,45 @@
 # Infrastructure
 
-- Grafana
-- Resilio
+- [Github Repo](http://github.com/iamharryliu/vigilant-broccoli/)
+  - [Github Actions](https://github.com/iamharryliu/vigilant-broccoli/actions)
+- [NPM Packages](https://www.npmjs.com/settings/vigilant-broccoli/packages)
+- [Docker Hub Repositories](https://hub.docker.com/repositories/iamharryliu)
+
+## Local Infrastructure
+
+```mermaid
+flowchart
+USER[User]
+
+subgraph DOCKER[Docker]
+  GRAFANA[Grafana]
+  ADMINER[Adminer]
+end
+
+subgraph PM2
+  VB_MANAGER_NEXT[VB Manager Next]
+end
+
+subgraph CLOUD_SERVICES[Cloud Services]
+  GITHUB[Github]
+  CLOUDFLARE[Cloudflare]
+  FLY_IO[Fly.io]
+  GCP[GCP]
+  AWS[AWS]
+end
+
+subgraph WIREGUARD[Wireguard]
+  PERSONAL_CLOUD[Personal Cloud]
+  WORK_CLOUDS[Work Clouds]
+end
+
+VB_MANAGER_NEXT-->CLOUD_SERVICES
+VB_MANAGER_NEXT-->GRAFANA
+
+USER-->WIREGUARD
+USER-->VB_MANAGER_NEXT
+USER-->ADMINER
+```
 
 ## Cloud Infrastructure
 
