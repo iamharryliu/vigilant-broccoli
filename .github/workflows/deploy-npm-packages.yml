@@ -38,10 +38,10 @@ jobs:
         id: affected
         working-directory: ./projects/nx-workspace
         run: |
-          AFFECTED=$(npx nx show projects --affected --type=lib --withTarget=publish-package --base=HEAD~1 --head=HEAD 2>/dev/null | tr -d '[]"' | tr ' ' ',' | xargs)
+          AFFECTED=$(npx nx show projects --affected --type=lib --withTarget=publish-package --base=HEAD~1 --head=HEAD 2>/dev/null | tr '\n' ',' | sed 's/,$//')
           echo "projects=$AFFECTED" >> $GITHUB_OUTPUT
 
       - name: Publish affected
         if: steps.affected.outputs.projects != ''
         working-directory: ./projects/nx-workspace
-        run: npx nx run-many -t publish-package --projects=${{ steps.affected.outputs.projects }}
+        run: npx nx run-many -t publish-package --projects="${{ steps.affected.outputs.projects }}"
