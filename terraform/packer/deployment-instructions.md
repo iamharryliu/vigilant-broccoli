@@ -81,13 +81,15 @@ PersistentKeepalive = 25
 sudo wg-quick up vb
 ```
 
-### 6.Initialize Vault + configure (first boot only)
+### 6. Initialize Vault + configure (first boot only)
 
 ```bash
 npm run gcp:vm:post-init
 ```
 
 Initializes Vault, saves unseal keys + root token to GCP Secret Manager, unseals, and configures KV engine, JWT auth, and github-actions role.
+
+After every VM restart, you'll need to re-unseal Vault — see step 10 below.
 
 ### 9.Regenerate Vault TLS cert + update WireGuard endpoint (optional)
 
