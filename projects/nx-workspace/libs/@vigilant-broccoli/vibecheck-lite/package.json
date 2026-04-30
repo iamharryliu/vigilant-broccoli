@@ -1,5 +1,5 @@
 {
-  "name": "@prettydamntired/vibecheck-lite",
+  "name": "@vigilant-broccoli/vibecheck-lite",
   "version": "1.0.23",
   "dependencies": {
     "tslib": "^2.3.0",

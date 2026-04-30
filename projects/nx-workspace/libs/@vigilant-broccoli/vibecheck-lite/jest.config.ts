@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: '@prettydamntired/vibecheck-lite',
+  displayName: '@vigilant-broccoli/vibecheck-lite',
   preset: '../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {

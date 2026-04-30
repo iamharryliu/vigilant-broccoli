@@ -1,5 +1,5 @@
 {
-  "name": "@prettydamntired/vibecheck-lite",
+  "name": "@vigilant-broccoli/vibecheck-lite",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/@vigilant-broccoli/vibecheck-lite/src",
   "projectType": "library",
@@ -15,10 +15,6 @@
         "main": "libs/@vigilant-broccoli/vibecheck-lite/src/index.ts",
         "assets": ["libs/@vigilant-broccoli/vibecheck-lite/*.md"]
       }
-    },
-    "publish": {
-      "command": "cd libs/@vigilant-broccoli/vibecheck-lite && npm version patch && cd ../../../dist/libs/@vigilant-broccoli/vibecheck-lite && npm publish --access=public && cd ../../../",
-      "dependsOn": ["build", "test", "lint"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
