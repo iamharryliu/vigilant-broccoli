@@ -1,5 +1,10 @@
 # Kitchen Tools
 
+## Knives
+
+- [Knife Parts](https://ca.pinterest.com/search/pins/?q=knife%20parts)
+- [Types of Knives](https://ca.pinterest.com/search/pins/?q=types%20of%20kitchen%20knives)
+
 ## Cutting Boards
 
 ### Wooden Cutting Boards
