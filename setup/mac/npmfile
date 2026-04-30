@@ -1,0 +1,10 @@
+@angular/cli
+@bitwarden/cli
+@cocal/google-calendar-mcp
+@google/gemini-cli
+@sanity/cli
+@usebruno/cli
+nx
+pm2
+ts-node
+tsx

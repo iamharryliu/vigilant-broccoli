@@ -59,6 +59,11 @@ alias brewup="brew update && brew upgrade && brew cleanup --prune=all --prune=al
 alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP_DIR/Brewfile"
 alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update Brewfile.' && gpush"
 
+# npm global
+alias npminit="xargs npm install -g < $MAC_SETUP_DIR/npmfile"
+alias npmdump="npm list -g --depth=0 --parseable | tail -n +2 | xargs -I{} basename {} | grep -v '^npm$\|^corepack$' > $MAC_SETUP_DIR/npmfile"
+alias pushnpm="cdvb && git add $MAC_SETUP_DIR/npmfile && gc feat npm 'Update npmfile.' && gpush"
+
 # Desktop Setup
 alias setupdock=". $MAC_SETUP_DIR/setup_dock.sh"
 alias setupmac=". $MAC_SETUP_DIR/setup_macos_preferences.sh"
