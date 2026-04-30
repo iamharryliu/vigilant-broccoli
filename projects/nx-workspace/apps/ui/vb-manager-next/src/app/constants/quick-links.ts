@@ -759,6 +759,12 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
+    label: 'VB - GitHub Projects',
+    target: 'https://github.com/iamharryliu/vigilant-broccoli/projects',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
     label: 'VB - GCP API Credentials',
     target:
       'https://console.cloud.google.com/apis/credentials?project=vigilant-broccoli',
