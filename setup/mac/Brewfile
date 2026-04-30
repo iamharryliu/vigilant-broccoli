@@ -58,7 +58,6 @@ brew "tree"
 brew "vercel-cli"
 brew "wget"
 brew "wireguard-tools"
-brew "yarn", link: false
 brew "yazi"
 brew "zsh-autosuggestions"
 brew "cormacrelf/tap/dark-notify"
