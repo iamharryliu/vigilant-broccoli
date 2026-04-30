@@ -1,9 +1,11 @@
 # Infrastructure
 
-- [Github Repo](http://github.com/iamharryliu/vigilant-broccoli/)
-  - [Github Actions](https://github.com/iamharryliu/vigilant-broccoli/actions)
-- [NPM Packages](https://www.npmjs.com/settings/vigilant-broccoli/packages)
-- [Docker Hub Repositories](https://hub.docker.com/repositories/iamharryliu)
+## Table of Contents
+
+- [Local Infrastructure](#local-infrastructure)
+- [Cloud Infrastructure](#cloud-infrastructure)
+- [Personal Infrastructure](#personal-infrastructure)
+- [Organization Infrastructure](#organization-infrastructure)
 
 ## Local Infrastructure
 
@@ -43,12 +45,31 @@ USER-->ADMINER
 
 ## Cloud Infrastructure
 
+- [Github Repo](http://github.com/iamharryliu/vigilant-broccoli/)
+  - [Github Actions](https://github.com/iamharryliu/vigilant-broccoli/actions)
+- [NPM Packages](https://www.npmjs.com/settings/vigilant-broccoli/packages)
+- [Docker Hub Repositories](https://hub.docker.com/repositories/iamharryliu)
+
 ```mermaid
 flowchart
 
 subgraph SERVERLESS_CONTAINERS[Serverless Containers]
   PRODUCER_SERVICES[Producer Services]
   CONSUMER_SERVICES[Consumer Services]
+end
+
+subgraph GITHUB[Github]
+  GITHUB_MONOREPO[Github Monorepo]
+  GITHUB_ACTIONS[GitHub Actions]
+  GITHUB_MONOREPO-->GITHUB_ACTIONS
+end
+
+subgraph NPM
+  NPM_PACKAGES[NPM Packages]
+end
+
+subgraph DOCKER[Docker]
+  DOCKER_HUB[Docker Hub]
 end
 
 subgraph GCP
@@ -87,7 +108,10 @@ VAULT-->SERVERLESS_CONTAINERS
 
 SERVERLESS_CONTAINERS-->SUPABASE
 SERVERLESS_CONTAINERS-->CLOUDFLARE
-GITHUB_ACTIONS[GitHub Actions]-->WORKLOAD_IDENTITY
+
+GITHUB_ACTIONS-->NPM_PACKAGES
+GITHUB_ACTIONS-->DOCKER_HUB
+GITHUB_ACTIONS-->WORKLOAD_IDENTITY
 SUPABASE[Supabase]
 ```
 
