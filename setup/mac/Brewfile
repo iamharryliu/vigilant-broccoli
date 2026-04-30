@@ -35,8 +35,6 @@ brew "neovide"
 brew "nmap"
 brew "node@22", link: true
 brew "nss"
-brew "openblas"
-brew "numpy"
 brew "nvm"
 brew "pinentry-mac"
 brew "pipx"
