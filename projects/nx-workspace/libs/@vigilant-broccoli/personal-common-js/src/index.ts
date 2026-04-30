@@ -1,3 +1,21 @@
+export const APP_NAME = {
+  HARRYLIU_DESIGN: 'HARRYLIU_DESIGN',
+  CLOUD_8_SKATE: 'CLOUD_8_SKATE',
+} as const;
+
+export type AppName = (typeof APP_NAME)[keyof typeof APP_NAME];
+
+export interface MessageRequest {
+  appName: AppName;
+  name: string;
+  email: string;
+  message: string;
+}
+
+export const PERSONAL_WEBSITE_BACKEND_ENDPOINTS = {
+  SEND_MESSAGE: '/contact/send-message',
+} as const;
+
 const JOURNAL_BASE_PATH =
   '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal';
 

@@ -5,7 +5,7 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { AppName, MessageRequest } from '@prettydamntired/personal-website-lib';
+import { AppName, MessageRequest } from '@vigilant-broccoli/personal-common-js';
 import { Subject, exhaustMap, tap } from 'rxjs';
 import { CONTACT_SERVICE } from '../services/common.service';
 

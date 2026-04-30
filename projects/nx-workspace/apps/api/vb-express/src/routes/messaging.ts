@@ -8,7 +8,7 @@ import {
 import {
   APP_NAME,
   MessageRequest,
-} from '@prettydamntired/personal-website-lib';
+} from '@vigilant-broccoli/personal-common-js';
 import amqplib, { ConfirmChannel } from 'amqplib';
 import {
   requireJsonContent,

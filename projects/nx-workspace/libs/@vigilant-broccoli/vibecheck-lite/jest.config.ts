@@ -1,12 +1,11 @@
 /* eslint-disable */
 export default {
-  displayName: '@prettydamntired/personal-website-api-lib',
+  displayName: '@prettydamntired/vibecheck-lite',
   preset: '../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory:
-    '../../../coverage/libs/@prettydamntired/personal-website-api-lib',
+  coverageDirectory: '../../../coverage/libs/@vigilant-broccoli/vibecheck-lite',
 };

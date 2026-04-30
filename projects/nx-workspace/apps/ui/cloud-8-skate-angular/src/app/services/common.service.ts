@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import {
   MessageRequest,
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
-} from '@prettydamntired/personal-website-lib';
+} from '@vigilant-broccoli/personal-common-js';
 import { ENVIRONMENT } from '../../environments/environment';
 
 @Injectable({
