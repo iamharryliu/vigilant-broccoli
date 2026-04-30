@@ -28,7 +28,8 @@
       "dependsOn": ["build"],
       "options": {
         "command": "npm publish --access public --provenance",
-        "cwd": "dist/libs/@vigilant-broccoli/slackbots"
+        "cwd": "dist/libs/@vigilant-broccoli/slackbots",
+        "forwardAllArgs": false
       }
     },
     "nx-release-publish": {
