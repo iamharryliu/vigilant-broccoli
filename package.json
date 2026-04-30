@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "repo": "open https://github.com/iamharryliu/vigilant-broccoli",
-    "repo:actions": "open https://github.com/iamharryliu/vigilant-broccoli/actions",
+    "open:repo": "open https://github.com/iamharryliu/vigilant-broccoli",
+    "open:repo:actions": "open https://github.com/iamharryliu/vigilant-broccoli/actions",
     "npm:packages": "open https://www.npmjs.com/settings/vigilant-broccoli/packages",
     "install-all": "npm-recursive-install",
     "format": "prettier --write .",
