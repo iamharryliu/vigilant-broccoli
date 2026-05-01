@@ -390,6 +390,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: 'OpenAI Billing Overview',
+    target: 'https://platform.openai.com/account/billing/overview',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: TWILIO_LINK.BILLING.NAME,
     target: TWILIO_LINK.BILLING.URL,
     type: OPEN_TYPE.BROWSER,
