@@ -10,7 +10,11 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/vb-manager-next-mobile"
+        "outputPath": "dist/apps/vb-manager-next-mobile",
+        "env": {
+          "BETTER_AUTH_SECRET": "build-placeholder",
+          "BETTER_AUTH_URL": "http://localhost:3000"
+        }
       },
       "configurations": {
         "development": {

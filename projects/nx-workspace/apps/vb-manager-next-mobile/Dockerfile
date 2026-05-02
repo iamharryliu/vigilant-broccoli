@@ -10,8 +10,8 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 COPY dist/apps/vb-manager-next-mobile/.next/standalone ./
-COPY dist/apps/vb-manager-next-mobile/.next/static ./.next/static
-COPY dist/apps/vb-manager-next-mobile/public ./public
+COPY dist/apps/vb-manager-next-mobile/.next/static ./apps/vb-manager-next-mobile/.next/static
+COPY dist/apps/vb-manager-next-mobile/public ./apps/vb-manager-next-mobile/public
 
 RUN apk add --no-cache python3 make g++ && \
     npm rebuild better-sqlite3 && \
@@ -23,4 +23,4 @@ USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["node", "apps/vb-manager-next-mobile/server.js"]
