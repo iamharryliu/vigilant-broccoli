@@ -6,7 +6,8 @@ primary_region = 'yyz'
 [env]
   PORT = '3000'
   HOSTNAME = '0.0.0.0'
-  BETTER_AUTH_URL = 'https://vb-manager-next-mobile.fly.dev'
+  NEXT_PUBLIC_SUPABASE_URL = 'https://jrdosjjgmsoodpjmjqxx.supabase.co'
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0'
 
 [http_service]
   internal_port = 3000

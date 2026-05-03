@@ -1,12 +1,15 @@
 'use client';
 
-import { authClient } from '../../../libs/auth-client';
+import { supabase } from '../../../libs/supabase';
 
 export default function LoginPage() {
-  const handleGoogleSignIn = async () => {
-    await authClient.signIn.social({
+  const handleGoogleSignIn = () => {
+    supabase.auth.signInWithOAuth({
       provider: 'google',
-      callbackURL: '/',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        scopes: 'https://www.googleapis.com/auth/calendar',
+      },
     });
   };
 

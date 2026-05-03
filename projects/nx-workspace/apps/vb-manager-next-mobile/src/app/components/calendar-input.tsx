@@ -6,6 +6,7 @@ import {
   EventDraft,
   EventDraftStatus,
 } from './event-draft-card';
+import { getGoogleToken } from '../providers/auth-provider';
 
 interface ImagePreview {
   data: string;
@@ -99,9 +100,13 @@ export const CalendarInput = () => {
       prev.map((s, i) => (i === index ? { ...s, status: 'creating' } : s)),
     );
 
+    const token = getGoogleToken();
     const res = await fetch('/api/calendar/events', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body: JSON.stringify(draft),
     });
 

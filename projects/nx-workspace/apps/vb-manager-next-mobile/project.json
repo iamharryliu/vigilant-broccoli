@@ -6,18 +6,6 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/dist/apps/vb-manager-next-mobile"],
-      "defaultConfiguration": "production",
-      "options": {
-        "command": "npx nx run vb-manager-next-mobile:build:next",
-        "env": {
-          "BETTER_AUTH_SECRET": "build-placeholder",
-          "BETTER_AUTH_URL": "http://localhost:3000"
-        }
-      }
-    },
-    "build:next": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
@@ -35,28 +23,24 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.local.example 'cd apps/vb-manager-next-mobile && next dev --port 4200'",
-        "env": {
-          "BETTER_AUTH_SECRET": "BETTER_AUTH_SECRET",
-          "BETTER_AUTH_URL": "http://localhost:4200"
-        }
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.local.example 'cd apps/vb-manager-next-mobile && next dev --port 4200'"
       }
     },
     "serve:no-vault": {
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "vb-manager-next-mobile:build:next",
+        "buildTarget": "vb-manager-next-mobile:build",
         "dev": true,
         "port": 4200
       },
       "configurations": {
         "development": {
-          "buildTarget": "vb-manager-next-mobile:build:next:development",
+          "buildTarget": "vb-manager-next-mobile:build:development",
           "dev": true
         },
         "production": {
-          "buildTarget": "vb-manager-next-mobile:build:next:production",
+          "buildTarget": "vb-manager-next-mobile:build:production",
           "dev": false
         }
       }

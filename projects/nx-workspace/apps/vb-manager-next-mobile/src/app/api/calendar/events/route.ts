@@ -1,32 +1,20 @@
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '../../../../../libs/auth';
 
-const getCalendarClient = async (request: NextRequest) => {
-  const session = await auth.api.getSession({ headers: request.headers });
+export const runtime = 'nodejs';
 
-  if (!session?.session) {
-    throw new Error('Not authenticated');
-  }
-
-  const tokenData = await auth.api.getAccessToken({
-    headers: request.headers,
-    body: { providerId: 'google' },
-  });
-
-  if (!tokenData?.accessToken) {
-    throw new Error('No Google access token');
-  }
+const getCalendarClient = (req: NextRequest) => {
+  const token = req.headers.get('authorization')?.replace('Bearer ', '');
+  if (!token) throw new Error('Not authenticated');
 
   const oauth2Client = new google.auth.OAuth2();
-  oauth2Client.setCredentials({ access_token: tokenData.accessToken });
-
+  oauth2Client.setCredentials({ access_token: token });
   return google.calendar({ version: 'v3', auth: oauth2Client });
 };
 
 export async function POST(req: NextRequest) {
   try {
-    const calendar = await getCalendarClient(req);
+    const calendar = getCalendarClient(req);
     const body = await req.json();
     const calendarId = body.calendarId || 'primary';
     const timeZone = body.timeZone || 'America/New_York';

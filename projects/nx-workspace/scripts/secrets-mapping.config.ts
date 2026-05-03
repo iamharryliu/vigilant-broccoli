@@ -36,6 +36,10 @@ export const secretsMapping: SecretsMapping = {
     flyAppName: 'vb-manager-next-mobile',
     appPath: './apps/vb-manager-next-mobile',
     vaultPath: COMMON_VAULT_PATH,
-    excludeEnvVars: COMMON_EXCLUDED_VARS,
+    excludeEnvVars: [
+      ...COMMON_EXCLUDED_VARS,
+      'NEXT_PUBLIC_SUPABASE_URL',
+      'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+    ],
   },
 };
