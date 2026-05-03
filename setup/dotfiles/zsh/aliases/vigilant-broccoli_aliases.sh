@@ -47,7 +47,7 @@ alias cdnx="cd $NX_DIR"
 alias gitme='chrome "https://github.com/iamharryliu"'
 alias pushghreadme="cd $HOME/iamharryliu && gpull && git add README.md && gc docs github-readme 'Update Github profile README.md' && gpush"
 alias vbrepo="cdvb && npm run repo"
-alias vbactions="cdvb && npm run repo:actions"
+alias vbactions="cdvb && npm run open:repo:actions"
 alias vbnpm="cdvb && npm run npm:packages"
 # vb push
 alias pushdocs="cdvb && git add $DOCS_DIR && gc docs notes 'Update Markdown docs.' && gpush"

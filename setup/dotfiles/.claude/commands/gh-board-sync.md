@@ -1,15 +1,17 @@
 Sync sub-boards to reflect the master board `vigilant-broccoli` for owner iamharryliu.
 
-Discover the layout at runtime — do not hardcode project numbers or area names:
+Run:
 
-- Master = the project titled `vigilant-broccoli`.
-- Areas = the options of master's `Area` single-select field.
-- Sub-board for an area = the project whose title matches that area name.
-- An item with no `Area`, or with an area that has no matching project title, stays only on master.
+```bash
+./scripts/shell/gh-board.sh sync
+```
 
-Steps:
+The script routes issues to sub-boards based on `area:*` labels (e.g. `area:vb-manager-next`, `area:infrastructure`). It will:
 
-1. For each item on master, ensure it exists on the matching sub-board (add if missing) and copy `Status` from master.
-2. For each sub-board item, remove it if the matching master item's `Area` no longer points to that sub-board (or the issue is missing from master).
+1. Add issues to their matching sub-board if missing
+2. Update `Status` on sub-board items if it differs from master
+3. Remove sub-board items whose issue no longer carries that area label
 
-Use `gh project list`, `gh project field-list`, `gh project item-list`, `gh project item-add`, `gh project item-delete`, and `gh project item-edit`.
+Issues with `area:misc` or no area label stay on master only.
+
+After the script completes, report a summary of what was added, updated, and removed.

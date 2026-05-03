@@ -61,8 +61,10 @@ alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update 
 
 # npm global
 alias npminit="xargs npm install -g < $MAC_SETUP_DIR/npmfile"
-alias npmdump="npm list -g --depth=0 --parseable | tail -n +2 | xargs -I{} basename {} | grep -v '^npm$\|^corepack$' > $MAC_SETUP_DIR/npmfile"
+alias npmdump="npm list -g --depth=0 --json | python3 -c \"import json,sys; pkgs=json.load(sys.stdin).get('dependencies',{}); [print(k) for k in pkgs if k not in ('npm','corepack')]\" > $MAC_SETUP_DIR/npmfile"
 alias pushnpm="cdvb && git add $MAC_SETUP_DIR/npmfile && gc feat npm 'Update npmfile.' && gpush"
+alias depsdump="brewdump && npmdump"
+alias pushdeps="depsdump && cdvb && git add $MAC_SETUP_DIR/Brewfile $MAC_SETUP_DIR/npmfile && gc feat deps 'Update Brewfile and npmfile.' && gpush"
 
 # Desktop Setup
 alias setupdock=". $MAC_SETUP_DIR/setup_dock.sh"
