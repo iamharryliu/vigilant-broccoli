@@ -1,26 +1,41 @@
-# Secret Rotation Guide
+# Secret Management
+
+## Secret Hierarchy
+
+```mermaid
+flowchart
+
+subgraph PASSWORD_MANAGERS[Password Managers]
+  MAIN_SECRET_MANAGER[Main Secret Manager]
+  MOBILE_PASSWORD_MANAGER[Mobile Password Manager]
+  BROWSER_PASSWORD_MANAGER[Browser Password Manager]
+  APP_SECRET_MANAGER[App Secret Manager]
+  MOBILE_PASSWORD_MANAGER-->MAIN_SECRET_MANAGER
+  BROWSER_PASSWORD_MANAGER-->MAIN_SECRET_MANAGER
+  APP_SECRET_MANAGER-->MAIN_SECRET_MANAGER
+end
+
+RECOVERY_ACCOUNT[Recovery Account]-->MAIN_ACCOUNT[Main Account]-->PASSWORD_MANAGERS
+```
+
+## Secret Rotation
 
 - Rotate credentials semi-annually
-  - Recovery account
-  - Main account
-  - Bitwarden password
-  - Apple password
-  - Resilio key??
 
-## BITWARDEN_PASSWORD
+### BITWARDEN_PASSWORD
 
 1. Update GCP Secret Manager:
    ```bash
    gcloud secrets versions add BITWARDEN_PASSWORD --data-file=- <<< "your-bitwarden-password"
    ```
 
-## FLY_API_TOKEN (Fly.io Token)
+### FLY_API_TOKEN (Fly.io Token)
 
 ```bash
 ./terraform/packer/scripts/rotate-fly-token.sh
 ```
 
-## Cloudflare Secrets
+### Cloudflare Secrets
 
 Rotate manually at
 

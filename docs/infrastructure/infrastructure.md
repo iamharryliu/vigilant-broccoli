@@ -117,13 +117,6 @@ SUPABASE[Supabase]
 
 ## Personal Infrastructure
 
-### Secret Management
-
-- Google Password Manager - Browser Password
-- Apple Password Manager - iOS Passwords
-- Hashicorp Vault - Application Secrets
-- Bitwarden - Other and secret management backup point
-
 ### Sync Services
 
 - Resilio Sync - Local Device Sync
