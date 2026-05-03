@@ -12,6 +12,75 @@ permissions:
   id-token: write
 
 jobs:
+  deploy-npm-packages:
+    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: ./projects/nx-workspace/package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        working-directory: ./projects/nx-workspace
+        run: npm ci
+
+      - name: Check if npm publish needed
+        id: check
+        working-directory: ./projects/nx-workspace
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "has_packages=true" >> $GITHUB_OUTPUT
+            echo "affected_projects=" >> $GITHUB_OUTPUT
+          else
+            BASE="${{ github.event.before }}"
+
+            if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+              echo "BASE commit $BASE not found, falling back to origin/main"
+              BASE="origin/main"
+            fi
+
+            AFFECTED=$(npx nx show projects --affected --withTarget=nx-release-publish --base=$BASE --head=${{ github.sha }})
+            AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
+            AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
+            if [[ -n "$AFFECTED_NORMALIZED" ]]; then
+              echo "has_packages=true" >> $GITHUB_OUTPUT
+              echo "affected_projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
+            else
+              echo "has_packages=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Build affected packages
+        if: steps.check.outputs.has_packages == 'true'
+        working-directory: ./projects/nx-workspace
+        run: |
+          if [[ -n "${{ steps.check.outputs.affected_projects }}" ]]; then
+            npx nx run-many -t build --projects="${{ steps.check.outputs.affected_projects }}"
+          else
+            npx nx run-many -t build
+          fi
+
+      - name: Publish npm packages
+        if: steps.check.outputs.has_packages == 'true'
+        working-directory: ./projects/nx-workspace
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [[ -n "${{ steps.check.outputs.affected_projects }}" ]]; then
+            npx nx run-many -t nx-release-publish --projects="${{ steps.check.outputs.affected_projects }}"
+          else
+            npx nx run-many -t nx-release-publish
+          fi
+
   main:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
     runs-on: ubuntu-latest
