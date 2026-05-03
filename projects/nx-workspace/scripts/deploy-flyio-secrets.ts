@@ -16,20 +16,12 @@ function parseEnvExample(filePath: string): string[] {
     process.exit(1);
   }
 
-  const content = readFileSync(filePath, 'utf-8');
-  const envVars: string[] = [];
-
-  content.split('\n').forEach(line => {
-    const trimmedLine = line.trim();
-    if (trimmedLine && !trimmedLine.startsWith('#')) {
-      const [key] = trimmedLine.split('=');
-      if (key) {
-        envVars.push(key.trim());
-      }
-    }
-  });
-
-  return envVars;
+  return readFileSync(filePath, 'utf-8')
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line && !line.startsWith('#'))
+    .map(line => line.split('=')[0].trim())
+    .filter(Boolean);
 }
 
 async function fetchSecretsFromVault(vaultPath: string): Promise<VaultSecrets> {
@@ -39,23 +31,39 @@ async function fetchSecretsFromVault(vaultPath: string): Promise<VaultSecrets> {
   console.log(`Connecting to Vault at ${vaultAddr}...`);
 
   const ca = readFileSync(VAULT_CA_CERT_PATH);
-
   const nodeVault = await import('node-vault');
   const vault = nodeVault.default({
     apiVersion: 'v1',
     endpoint: vaultAddr,
     token: vaultToken,
-    requestOptions: {
-      ca,
-    },
+    requestOptions: { ca },
   });
 
   console.log(`Fetching secrets from Vault at ${vaultPath}...`);
   const result = await vault.read(vaultPath);
+  return (result.data.data || result.data || result) as VaultSecrets;
+}
 
-  const secrets = result.data.data || result.data || result;
+function runFlyctl(command: string): void {
+  try {
+    execSync(command, { stdio: 'pipe' });
+  } catch (error: unknown) {
+    const execError = error as { stdout?: Buffer; stderr?: Buffer };
+    if (execError.stdout) console.error(execError.stdout.toString());
+    if (execError.stderr) console.error(execError.stderr.toString());
+    process.exit(1);
+  }
+}
 
-  return secrets as VaultSecrets;
+function getExistingSecretKeys(appName: string): string[] {
+  try {
+    const output = execSync(`flyctl secrets list --app ${appName} --json`, {
+      stdio: 'pipe',
+    }).toString();
+    return (JSON.parse(output) as { name: string }[]).map(s => s.name);
+  } catch {
+    return [];
+  }
 }
 
 async function deploySecretsToFlyio(
@@ -63,45 +71,38 @@ async function deploySecretsToFlyio(
   secrets: Record<string, string>,
   dryRun = false,
 ): Promise<void> {
-  const secretPairs: string[] = [];
+  const incomingKeys = Object.keys(secrets).filter(k => secrets[k]);
 
-  for (const [key, value] of Object.entries(secrets)) {
-    if (value) {
-      secretPairs.push(`${key}=${value}`);
-    }
-  }
-
-  if (secretPairs.length === 0) {
+  if (incomingKeys.length === 0) {
     console.log(`No secrets to deploy for ${appName}`);
     return;
   }
 
-  const secretsArg = secretPairs.join(' ');
-  const command = `flyctl secrets set --app ${appName} ${secretsArg} --stage`;
-  const maskedCommand = `flyctl secrets set --app ${appName} ${Object.keys(
-    secrets,
-  )
-    .map(k => `${k}=***`)
-    .join(' ')} --stage`;
+  const existingKeys = getExistingSecretKeys(appName);
+  if (existingKeys.length > 0) {
+    const unsetCommand = `flyctl secrets unset --app ${appName} ${existingKeys.join(' ')} --stage`;
+    console.log(`\nClearing ${existingKeys.length} existing secret(s)...`);
+    if (dryRun) {
+      console.log(`[DRY RUN] Would execute: ${unsetCommand}`);
+    } else {
+      runFlyctl(unsetCommand);
+    }
+  }
 
-  console.log(`\nDeploying ${secretPairs.length} secrets to ${appName}...`);
+  const secretsArg = incomingKeys
+    .map(k => `${k}='${secrets[k].replace(/'/g, "'\\''")}'`)
+    .join(' ');
+  console.log(`\nDeploying ${incomingKeys.length} secrets to ${appName}...`);
 
   if (dryRun) {
-    console.log(`[DRY RUN] Would execute: ${maskedCommand}`);
-    console.log(`[DRY RUN] Secrets: ${Object.keys(secrets).join(', ')}`);
+    console.log(
+      `[DRY RUN] Would set: ${incomingKeys.map(k => `${k}=***`).join(' ')}`,
+    );
     return;
   }
 
-  try {
-    execSync(command, { stdio: 'pipe' });
-    console.log(`Successfully staged secrets for ${appName}`);
-  } catch (error: unknown) {
-    const execError = error as { stdout?: Buffer; stderr?: Buffer };
-    console.error(`Failed to deploy secrets to ${appName}.`);
-    if (execError.stdout) console.error(execError.stdout.toString());
-    if (execError.stderr) console.error(execError.stderr.toString());
-    process.exit(1);
-  }
+  runFlyctl(`flyctl secrets set --app ${appName} ${secretsArg} --stage`);
+  console.log(`Successfully staged secrets for ${appName}`);
 }
 
 async function main() {
@@ -112,23 +113,18 @@ async function main() {
       'Usage: npx tsx scripts/deploy-flyio-secrets.ts <app-name> [--dry-run]',
     );
     console.error('\nAvailable apps:');
-    Object.keys(secretsMapping).forEach(app => {
-      console.error(`  - ${app}`);
-    });
+    Object.keys(secretsMapping).forEach(app => console.error(`  - ${app}`));
     process.exit(1);
   }
 
   const projectName = args[0];
   const dryRun = args.includes('--dry-run');
-
   const config = secretsMapping[projectName];
 
   if (!config) {
     console.error(`Error: No configuration found for app "${projectName}"`);
     console.error('\nAvailable apps:');
-    Object.keys(secretsMapping).forEach(app => {
-      console.error(`  - ${app}`);
-    });
+    Object.keys(secretsMapping).forEach(app => console.error(`  - ${app}`));
     process.exit(1);
   }
 
@@ -139,10 +135,8 @@ async function main() {
   const envExamplePath = join(config.appPath, '.env.example');
   console.log(`Reading required secrets from ${envExamplePath}...`);
 
-  const requiredEnvVars = parseEnvExample(envExamplePath);
-
-  const filteredEnvVars = requiredEnvVars.filter(
-    envVar => !config.excludeEnvVars?.includes(envVar),
+  const filteredEnvVars = parseEnvExample(envExamplePath).filter(
+    key => !config.excludeEnvVars?.includes(key),
   );
 
   console.log(
@@ -152,14 +146,12 @@ async function main() {
   const vaultSecrets = await fetchSecretsFromVault(config.vaultPath);
 
   const secretsToDeploy: Record<string, string> = {};
-
-  for (const envVarName of filteredEnvVars) {
-    const value = vaultSecrets[envVarName];
-
+  for (const key of filteredEnvVars) {
+    const value = vaultSecrets[key];
     if (value) {
-      secretsToDeploy[envVarName] = value;
+      secretsToDeploy[key] = value;
     } else {
-      console.warn(`Warning: Secret "${envVarName}" not found in Vault`);
+      console.warn(`Warning: Secret "${key}" not found in Vault`);
     }
   }
 
