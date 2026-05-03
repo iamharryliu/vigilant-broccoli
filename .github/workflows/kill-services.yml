@@ -65,10 +65,7 @@ jobs:
           method: jwt
           role: github-actions-role
           jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
-          exportToken: true
           secrets: |
-            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
-            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
@@ -79,18 +76,4 @@ jobs:
             echo "Suspending $app..."
             flyctl apps suspend $app
             echo "✓ $app suspended"
-          done
-
-      - name: Install wrangler
-        run: npm install -g wrangler
-
-      - name: Kill Cloudflare Pages deployments
-        run: |
-          for project in cloud-8-skate-angular harryliu-dev-angular; do
-            echo "Deleting all deployments for $project..."
-            wrangler pages deployment list --project-name $project --json \
-              | jq -r '.[].id' \
-              | xargs -P 10 -I {} sh -c \
-                "wrangler pages deployment delete {} --project-name $project --force 2>&1 || true"
-            echo "✓ $project deployments cleared"
           done
