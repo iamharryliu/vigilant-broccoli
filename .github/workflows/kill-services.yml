@@ -70,10 +70,12 @@ jobs:
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Suspend Fly apps
+      - name: Destroy Fly app machines
         run: |
           for app in vb-express vb-email-service vb-manager-next-mobile; do
-            echo "Suspending $app..."
-            flyctl apps suspend $app
-            echo "✓ $app suspended"
+            echo "Destroying machines for $app..."
+            flyctl machine list --app $app --json \
+              | jq -r '.[].id' \
+              | xargs -I {} flyctl machine destroy {} --app $app --force
+            echo "✓ $app machines destroyed"
           done
