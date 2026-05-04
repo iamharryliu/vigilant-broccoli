@@ -72,3 +72,6 @@ logs/
 test-results/
 .vercel
 .env*.local
+
+.nx/polygraph
+.nx/self-healing
