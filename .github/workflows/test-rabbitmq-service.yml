@@ -1,6 +1,11 @@
-name: test-rabbitmq
+name: test-rabbitmq-service
 
 on:
+  push:
+    paths:
+      - .github/workflows/test-rabbitmq-service.yml
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 permissions:

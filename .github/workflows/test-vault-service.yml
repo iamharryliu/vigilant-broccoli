@@ -1,6 +1,11 @@
-name: test-iap-ssh-tunnel-to-vault
+name: test-vault-service
 
 on:
+  push:
+    paths:
+      - .github/workflows/test-vault-service.yml
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 permissions:

@@ -1,6 +1,11 @@
 name: test-email-service
 
 on:
+  push:
+    paths:
+      - .github/workflows/test-email-service.yml
+  schedule:
+    - cron: '0 0 * * 0'
   workflow_dispatch:
 
 permissions:
