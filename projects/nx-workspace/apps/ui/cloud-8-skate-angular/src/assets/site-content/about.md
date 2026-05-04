@@ -5,6 +5,7 @@ Cloud8 is a Toronto-based skating collective with a mission to live our best ska
 [Calendar](https://cloud8skate.com/calendar)
 [Check the Weather](https://weather.gc.ca/en/location/index.html?coords=43.655,-79.383)
 [Music Playlists](https://cloud8skate.com/playlists)
+[Waiver](https://cloud8skate.com/waiver)
 [FAQ](https://cloud8skate.com/faq)
 
 Follow us on Instagram

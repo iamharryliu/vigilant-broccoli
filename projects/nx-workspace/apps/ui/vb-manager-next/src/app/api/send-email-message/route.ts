@@ -14,20 +14,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const response = await fetch(`${getEnvironmentVariable('VB_EXPRESS_URL')}/api/send-email-message`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+  const response = await fetch(
+    `${getEnvironmentVariable('EMAIL_SERVICE_URL')}/send-email`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getEnvironmentVariable('EMAIL_SERVICE_API_KEY'),
+      },
+      body: JSON.stringify({ from, to, subject, text, html }),
     },
-    body: JSON.stringify({
-      from,
-      to,
-      subject,
-      text,
-      html,
-    }),
-  });
+  );
 
   const data = await response.json();
 

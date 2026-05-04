@@ -6,4 +6,5 @@ export const NAV_LINKS = [
   { label: 'Calendar', href: ROUTES.CALENDAR },
   { label: 'Leisure', href: ROUTES.LEISURE },
   { label: 'Resources', href: ROUTES.RESOURCES },
+  { label: 'Tasks', href: ROUTES.TASKS },
 ];

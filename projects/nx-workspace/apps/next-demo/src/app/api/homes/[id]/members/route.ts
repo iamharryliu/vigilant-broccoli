@@ -6,8 +6,9 @@ import {
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const SENDER_EMAIL = 'Harry Liu <contact@harryliu.dev>';
+
+const getResend = () => new Resend(process.env.RESEND_API_KEY);
 
 async function isHomeAdmin(homeId: string, userId: string): Promise<boolean> {
   const admin = createAdminClient();
@@ -80,7 +81,7 @@ export async function POST(
     );
   }
 
-  const { error: emailError } = await resend.emails.send({
+  const { error: emailError } = await getResend().emails.send({
     from: SENDER_EMAIL,
     to: normalizedEmail,
     subject: `You've been invited to a home`,

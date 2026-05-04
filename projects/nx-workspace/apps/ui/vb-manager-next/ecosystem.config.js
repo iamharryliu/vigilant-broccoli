@@ -11,6 +11,7 @@ module.exports = {
         NEXTAUTH_URL: 'https://manager.vigilant-broccoli.app',
         NEXTAUTH_SECRET: 'your-secret-key-here-change-this-in-production',
         VB_EXPRESS_URL: 'https://vb-express.fly.dev',
+        EMAIL_SERVICE_URL: 'https://vb-email-service.fly.dev',
         ...process.env,
       },
       instances: 1,

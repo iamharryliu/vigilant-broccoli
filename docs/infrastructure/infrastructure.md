@@ -1,12 +1,76 @@
 # Infrastructure
 
-- Grafana
-- Resilio
+## Table of Contents
 
-## Cloud Infrastructure
+- [Local Infrastructure](#local-infrastructure)
+- [Cloud Infrastructure](#cloud-infrastructure)
+- [Personal Infrastructure](#personal-infrastructure)
+- [Organization Infrastructure](#organization-infrastructure)
+
+## Local Infrastructure
 
 ```mermaid
 flowchart
+USER[User]
+
+subgraph DOCKER[Docker]
+  GRAFANA[Grafana]
+  ADMINER[Adminer]
+end
+
+subgraph PM2
+  VB_MANAGER_NEXT[VB Manager Next]
+end
+
+subgraph CLOUD_SERVICES[Cloud Services]
+  GITHUB[Github]
+  CLOUDFLARE[Cloudflare]
+  FLY_IO[Fly.io]
+  GCP[GCP]
+  AWS[AWS]
+end
+
+subgraph WIREGUARD[Wireguard]
+  PERSONAL_CLOUD[Personal Cloud]
+  WORK_CLOUDS[Work Clouds]
+end
+
+VB_MANAGER_NEXT-->CLOUD_SERVICES
+VB_MANAGER_NEXT-->GRAFANA
+
+USER-->WIREGUARD
+USER-->VB_MANAGER_NEXT
+USER-->ADMINER
+```
+
+## Cloud Infrastructure
+
+- [Github Repo](http://github.com/iamharryliu/vigilant-broccoli/)
+  - [Github Actions](https://github.com/iamharryliu/vigilant-broccoli/actions)
+- [NPM Packages](https://www.npmjs.com/settings/vigilant-broccoli/packages)
+- [Docker Hub Repositories](https://hub.docker.com/repositories/iamharryliu)
+
+```mermaid
+flowchart
+
+subgraph SERVERLESS_CONTAINERS[Serverless Containers]
+  PRODUCER_SERVICES[Producer Services]
+  CONSUMER_SERVICES[Consumer Services]
+end
+
+subgraph GITHUB[Github]
+  GITHUB_MONOREPO[Github Monorepo]
+  GITHUB_ACTIONS[GitHub Actions]
+  GITHUB_MONOREPO-->GITHUB_ACTIONS
+end
+
+subgraph NPM
+  NPM_PACKAGES[NPM Packages]
+end
+
+subgraph DOCKER[Docker]
+  DOCKER_HUB[Docker Hub]
+end
 
 subgraph GCP
 
@@ -38,18 +102,20 @@ subgraph ORACLE_VM[Oracle VM]
   RABBITMQ[RabbitMQ]
 end
 
-GITHUB_ACTIONS[GitHub Actions]-->WORKLOAD_IDENTITY
+
+PRODUCER_SERVICES-->RABBITMQ-->CONSUMER_SERVICES
+VAULT-->SERVERLESS_CONTAINERS
+
+SERVERLESS_CONTAINERS-->SUPABASE
+SERVERLESS_CONTAINERS-->CLOUDFLARE
+
+GITHUB_ACTIONS-->NPM_PACKAGES
+GITHUB_ACTIONS-->DOCKER_HUB
+GITHUB_ACTIONS-->WORKLOAD_IDENTITY
 SUPABASE[Supabase]
 ```
 
 ## Personal Infrastructure
-
-### Secret Management
-
-- Google Password Manager - Browser Password
-- Apple Password Manager - iOS Passwords
-- Hashicorp Vault - Application Secrets
-- Bitwarden - Other and secret management backup point
 
 ### Sync Services
 

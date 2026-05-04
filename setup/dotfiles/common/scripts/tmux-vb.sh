@@ -29,7 +29,22 @@ tmux send-keys -t "$SESSION:1.4" "posting" C-m
 # Window 2: dev (4 panes)
 #################################
 tmux new-window -t "$SESSION" -n dev -c "$PROJECT"
-tmux send-keys -t "$SESSION:2.1" "vibecode $PROJECT" C-m
+
+DEV_PANE=$(tmux display-message -t "$SESSION:dev" -p '#{pane_id}')
+
+tmux split-window -h -t "$DEV_PANE" -c "$PROJECT"
+DEV_RIGHT_LEFT=$(tmux display-message -t "$SESSION:dev" -p '#{pane_id}')
+
+tmux split-window -h -t "$DEV_RIGHT_LEFT" -c "$PROJECT"
+DEV_RIGHT_RIGHT_TOP=$(tmux display-message -t "$SESSION:dev" -p '#{pane_id}')
+
+tmux split-window -v -t "$DEV_RIGHT_RIGHT_TOP" -c "$PROJECT"
+DEV_RIGHT_RIGHT_BOTTOM=$(tmux display-message -t "$SESSION:dev" -p '#{pane_id}')
+
+tmux send-keys -t "$DEV_PANE" "cd $PROJECT && claude" C-m
+tmux send-keys -t "$DEV_RIGHT_RIGHT_BOTTOM" "cd $PROJECT && lazygit" C-m
+
+tmux select-pane -t "$DEV_PANE"
 
 #################################
 # Window 3: other
@@ -46,5 +61,5 @@ tmux send-keys -t "$SESSION:4.1" "neovidetmuxvb" C-m
 #################################
 # Focus
 #################################
-tmux select-window -t "$SESSION:3"
+tmux select-window -t "$SESSION:2"
 tmux attach -t "$SESSION"

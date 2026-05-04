@@ -2,7 +2,7 @@ name: security-check-vb-express
 
 on:
   workflow_run:
-    workflows: ["deploy-nx-apps"]
+    workflows: ["deploy"]
     types:
       - completed
   schedule:

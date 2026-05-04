@@ -4,6 +4,7 @@ import { Flex, Text, Badge, IconButton, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
+import { ExpandableListItem } from './expandable-list-item.component';
 import {
   ExternalLinkIcon,
   PlayIcon,
@@ -212,6 +213,17 @@ export const DockerStatusComponent = () => {
     );
   };
 
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  const toggleItem = (id: string) => {
+    setExpandedItems(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   const totalCount =
     (dockerStatus?.projects.length || 0) +
     (dockerStatus?.standaloneContainers.length || 0);
@@ -260,91 +272,88 @@ export const DockerStatusComponent = () => {
       }
     >
       {dockerStatus && totalCount > 0 ? (
-          <Flex direction="column" gap="3">
-            {dockerStatus.projects.map(project => (
-              <Flex
-                key={project.name}
-                direction="column"
-                gap="2"
-                className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0"
-              >
-                <Flex align="center" gap="2" justify="between">
-                  <Flex align="center" gap="2">
-                    <Badge color={getBadgeColor(project.state)}>
-                      {getProjectBadgeLabel(project.state)}
-                    </Badge>
-                    <Text size="3" weight="bold" className="text-gray-700">
-                      {project.name}
-                    </Text>
-                  </Flex>
-                  {renderControlButton(project.state, project.name, true, 'project')}
-                </Flex>
-
-                {project.services.length > 0 && (
-                  <Flex direction="column" gap="1">
-                    {project.services.map(service => (
-                      <Flex key={service.name} align="center" gap="2">
-                        <Badge color="blue" variant="soft" size="1">
-                          {service.name}
-                        </Badge>
-                        {service.ports && (
-                          <Text size="1" className="text-gray-600 font-mono">
-                            {service.ports}
-                          </Text>
-                        )}
-                      </Flex>
-                    ))}
-                  </Flex>
-                )}
-              </Flex>
-            ))}
-
-            {dockerStatus.standaloneContainers.map(container => (
-              <Flex
-                key={container.id}
-                direction="column"
-                gap="2"
-                className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0"
-              >
-                <Flex align="center" gap="2" justify="between">
-                  <Flex align="center" gap="2">
-                    <Badge size="2" color={getBadgeColor(container.state)}>
-                      {container.state.charAt(0).toUpperCase() +
-                        container.state.slice(1)}
-                    </Badge>
-                    <Text size="3" weight="bold" className="text-gray-700">
-                      {container.name}
-                    </Text>
-                  </Flex>
-                  {renderControlButton(container.state, container.id, false, 'container')}
-                </Flex>
-
-                <Flex direction="column" gap="1" className="ml-2">
-                  <Text size="1" className="text-gray-600">
-                    ID:{' '}
-                    <Text className="text-gray-700 font-mono">
-                      {container.id.substring(0, 12)}
-                    </Text>
-                  </Text>
-                  <Text size="1" className="text-gray-600">
-                    Status:{' '}
-                    <Text className="text-gray-700">{container.status}</Text>
-                  </Text>
-                  {container.ports && (
-                    <Text size="1" className="text-gray-600">
-                      Ports:{' '}
-                      <Text className="text-gray-700 font-mono">
-                        {container.ports}
-                      </Text>
+        <Flex direction="column" gap="1">
+          {dockerStatus.projects.map(project => (
+            <ExpandableListItem
+              key={project.name}
+              label={project.name}
+              labelWeight="bold"
+              isExpanded={expandedItems.has(project.name)}
+              onToggle={() => toggleItem(project.name)}
+              borderClassName={
+                project.state === 'running'
+                  ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
+                  : undefined
+              }
+              badges={
+                <Badge color={getBadgeColor(project.state)} size="1">
+                  {getProjectBadgeLabel(project.state)}
+                </Badge>
+              }
+              actions={renderControlButton(
+                project.state,
+                project.name,
+                true,
+                'project',
+              )}
+            >
+              {project.services.map(service => (
+                <Flex key={service.name} align="center" gap="2">
+                  <Badge color="blue" variant="soft" size="1">
+                    {service.name}
+                  </Badge>
+                  {service.ports && (
+                    <Text size="1" className="text-gray-600 font-mono">
+                      {service.ports}
                     </Text>
                   )}
                 </Flex>
-              </Flex>
-            ))}
-          </Flex>
-        ) : (
-          <Text className="text-gray-500">No Docker containers found</Text>
-        )}
+              ))}
+            </ExpandableListItem>
+          ))}
+
+          {dockerStatus.standaloneContainers.map(container => (
+            <ExpandableListItem
+              key={container.id}
+              label={container.name}
+              labelWeight="bold"
+              isExpanded={expandedItems.has(container.id)}
+              onToggle={() => toggleItem(container.id)}
+              borderClassName={
+                container.state === 'running'
+                  ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
+                  : undefined
+              }
+              badges={
+                <Badge color={getBadgeColor(container.state)} size="1">
+                  {container.state.charAt(0).toUpperCase() +
+                    container.state.slice(1)}
+                </Badge>
+              }
+              actions={renderControlButton(
+                container.state,
+                container.id,
+                false,
+                'container',
+              )}
+            >
+              <Text size="1" color="gray">
+                ID: <Text className="font-mono">{container.id.substring(0, 12)}</Text>
+              </Text>
+              <Text size="1" color="gray">
+                Status: {container.status}
+              </Text>
+              {container.ports && (
+                <Text size="1" color="gray">
+                  Ports: <Text className="font-mono">{container.ports}</Text>
+                </Text>
+              )}
+            </ExpandableListItem>
+          ))}
+        </Flex>
+      ) : (
+        <Text className="text-gray-500">No Docker containers found</Text>
+      )}
     </CardContainer>
   );
 };

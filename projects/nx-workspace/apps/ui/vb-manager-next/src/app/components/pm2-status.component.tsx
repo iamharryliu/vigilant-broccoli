@@ -4,11 +4,8 @@ import { Flex, Text, Badge, IconButton } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
-import {
-  PlayIcon,
-  StopIcon,
-  ReloadIcon,
-} from '@radix-ui/react-icons';
+import { ExpandableListItem } from './expandable-list-item.component';
+import { PlayIcon, StopIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface PM2Process {
@@ -170,6 +167,19 @@ export const PM2StatusComponent = () => {
     return `${totalSeconds}s`;
   };
 
+  const [expandedProcesses, setExpandedProcesses] = useState<Set<number>>(
+    new Set(),
+  );
+
+  const toggleProcess = (pmId: number) => {
+    setExpandedProcesses(prev => {
+      const next = new Set(prev);
+      if (next.has(pmId)) next.delete(pmId);
+      else next.add(pmId);
+      return next;
+    });
+  };
+
   useEffect(() => {
     fetchPM2Status();
     const interval = setInterval(fetchPM2Status, 30000);
@@ -195,24 +205,26 @@ export const PM2StatusComponent = () => {
       title={`PM2 Processes${pm2Processes ? ` (${processCount})` : ''}`}
     >
       {pm2Processes && processCount > 0 ? (
-        <Flex direction="column" gap="3">
+        <Flex direction="column" gap="1">
           {pm2Processes.map(process => (
-            <Flex
+            <ExpandableListItem
               key={process.pm_id}
-              direction="column"
-              gap="2"
-              className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0"
-            >
-              <Flex align="center" gap="2" justify="between">
-                <Flex align="center" gap="2">
-                  <Badge color={getBadgeColor(process.status)}>
-                    {process.status.charAt(0).toUpperCase() +
-                      process.status.slice(1)}
-                  </Badge>
-                  <Text size="3" weight="bold" className="text-gray-700">
-                    {process.name}
-                  </Text>
-                </Flex>
+              label={process.name}
+              labelWeight="bold"
+              isExpanded={expandedProcesses.has(process.pm_id)}
+              onToggle={() => toggleProcess(process.pm_id)}
+              borderClassName={
+                process.status === 'online'
+                  ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
+                  : undefined
+              }
+              badges={
+                <Badge color={getBadgeColor(process.status)} size="1">
+                  {process.status.charAt(0).toUpperCase() +
+                    process.status.slice(1)}
+                </Badge>
+              }
+              actions={
                 <Flex gap="1">
                   {process.status === 'online' ? (
                     <>
@@ -247,37 +259,23 @@ export const PM2StatusComponent = () => {
                     </IconButton>
                   )}
                 </Flex>
+              }
+            >
+              <Flex gap="3" wrap="wrap">
+                <Text size="1" color="gray">
+                  CPU: <Text className="font-mono">{process.cpu.toFixed(1)}%</Text>
+                </Text>
+                <Text size="1" color="gray">
+                  Memory: <Text className="font-mono">{formatMemory(process.memory)}</Text>
+                </Text>
+                <Text size="1" color="gray">
+                  Uptime: <Text className="font-mono">{formatUptime(process.uptime)}</Text>
+                </Text>
+                <Text size="1" color="gray">
+                  Restarts: <Text className="font-mono">{process.restarts}</Text>
+                </Text>
               </Flex>
-
-              <Flex direction="column" gap="1" className="ml-2">
-                <Flex gap="3">
-                  <Text size="1" className="text-gray-600">
-                    CPU:{' '}
-                    <Text className="text-gray-700 font-mono">
-                      {process.cpu.toFixed(1)}%
-                    </Text>
-                  </Text>
-                  <Text size="1" className="text-gray-600">
-                    Memory:{' '}
-                    <Text className="text-gray-700 font-mono">
-                      {formatMemory(process.memory)}
-                    </Text>
-                  </Text>
-                  <Text size="1" className="text-gray-600">
-                    Uptime:{' '}
-                    <Text className="text-gray-700 font-mono">
-                      {formatUptime(process.uptime)}
-                    </Text>
-                  </Text>
-                  <Text size="1" className="text-gray-600">
-                    Restarts:{' '}
-                    <Text className="text-gray-700 font-mono">
-                      {process.restarts}
-                    </Text>
-                  </Text>
-                </Flex>
-              </Flex>
-            </Flex>
+            </ExpandableListItem>
           ))}
         </Flex>
       ) : (

@@ -157,6 +157,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: 'VB - NPM Tokens (prettydamntired)',
+    target: 'https://www.npmjs.com/settings/prettydamntired/tokens',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: FLYIO_LINK.DASHBOARD.NAME,
     target: FLYIO_LINK.DASHBOARD.URL,
     type: OPEN_TYPE.BROWSER,
@@ -384,6 +390,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: 'OpenAI Billing Overview',
+    target: 'https://platform.openai.com/account/billing/overview',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: TWILIO_LINK.BILLING.NAME,
     target: TWILIO_LINK.BILLING.URL,
     type: OPEN_TYPE.BROWSER,
@@ -512,6 +524,12 @@ const DEV_LINKS = [
   {
     label: TERRAFORM_LINK.STATUS.NAME,
     target: TERRAFORM_LINK.STATUS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: TERRAFORM_LINK.TOKENS.NAME,
+    target: TERRAFORM_LINK.TOKENS.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
@@ -684,6 +702,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: 'Resend Emails',
+    target: 'https://resend.com/emails',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: 'Resend API Keys',
     target: 'https://resend.com/api-keys',
     type: OPEN_TYPE.BROWSER,
@@ -713,6 +737,12 @@ const DEV_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
+  {
+    label: 'Docker Hub Repositories',
+    target: 'https://hub.docker.com/repositories',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
 ];
 
 const VB_LINKS = [
@@ -731,6 +761,12 @@ const VB_LINKS = [
   {
     label: 'VB - GitHub Actions',
     target: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: 'VB - GitHub Projects',
+    target: 'https://github.com/iamharryliu/vigilant-broccoli/projects',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
@@ -1027,6 +1063,12 @@ const UTILITY_LINKS = [
   {
     label: UTILITY_URL.APPLE_STORAGE.NAME,
     target: UTILITY_URL.APPLE_STORAGE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: 'Google App Passwords',
+    target: 'https://myaccount.google.com/apppasswords',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },

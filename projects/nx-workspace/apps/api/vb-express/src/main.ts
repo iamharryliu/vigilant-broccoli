@@ -6,9 +6,12 @@ import { toNodeHandler } from 'better-auth/node';
 import tasksRouter from './routes/tasks';
 import llmRouter from './routes/llm';
 import messagingRouter from './routes/messaging';
-import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import {
+  getEnvironmentVariable,
+  requestLoggerMiddleware,
+} from '@vigilant-broccoli/common-node';
 import { createApiKeyMiddleware } from './libs/middlewares/api-key.middleware';
-import { requestLogger, createCorsOptions } from '@vigilant-broccoli/express';
+import { createCorsOptions } from '@vigilant-broccoli/express';
 
 const APP_PORT = getEnvironmentVariable('PORT') || 3333;
 const APP_HOST = getEnvironmentVariable('HOST') || '127.0.0.1';
@@ -24,9 +27,11 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000',
   'http://127.0.0.1:4200',
   'http://127.0.0.1:5173',
-  // 'https://app.example.com',
-  // 'https://admin.example.com',
-  // 'https://dashboard.example.io',
+  // ---- Production ----
+  'https://harryliu.dev',
+  'https://www.harryliu.dev',
+  'https://cloud8skate.com',
+  'https://www.cloud8skate.com',
 ];
 
 const createApp = () => {
@@ -34,15 +39,15 @@ const createApp = () => {
   app.use(express.static('public'));
   app.use(cors(createCorsOptions(ALLOWED_ORIGINS)));
   app.use(express.json());
-  app.use(requestLogger);
+  app.use(requestLoggerMiddleware);
   app.get('/', (_, response) => {
     response.send('vb-express');
   });
   app.all('/api/auth/{*path}', toNodeHandler(auth));
+  app.use(messagingRouter);
   app.use(createApiKeyMiddleware(API_KEY));
   app.use('/api/tasks', tasksRouter);
   app.use('/api/llm', llmRouter);
-  app.use('/api', messagingRouter);
   return app;
 };
 

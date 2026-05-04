@@ -3,15 +3,6 @@ import { CorsOptions } from 'cors';
 import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { logger, RecaptchaService } from '@vigilant-broccoli/common-node';
 
-export const requestLogger = (
-  request: Request,
-  _response: Response,
-  next: NextFunction,
-) => {
-  console.log(`${request.method} ${request.path}`);
-  next();
-};
-
 export const requireJsonContent = (
   request: Request,
   response: Response,

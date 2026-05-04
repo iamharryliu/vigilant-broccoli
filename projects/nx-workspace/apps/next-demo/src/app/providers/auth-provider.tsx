@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../libs/supabase';
+import { GOOGLE_TOKEN_STORAGE_KEY } from '../hooks/use-google-token';
 
 const AuthContext = createContext<Session | null>(null);
 
@@ -21,6 +22,9 @@ export default function AuthProvider({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.provider_token) {
+        localStorage.setItem(GOOGLE_TOKEN_STORAGE_KEY, session.provider_token);
+      }
       setSession(session);
     });
 

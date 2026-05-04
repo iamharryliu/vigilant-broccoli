@@ -1,12 +1,5 @@
 import { MONTHS, WEEKDAYS } from '../consts/data.consts';
 
-export function formatDateShort(date: Date): string {
-  const dayName = WEEKDAYS[date.getDay()];
-  const d = String(date.getDate()).padStart(2, '0');
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  return `${dayName} ${d}/${m}`;
-}
-
 export function formatDateLong(date: Date): string {
   const dayName = WEEKDAYS[date.getDay()];
   const dayNumber = date.getDate();

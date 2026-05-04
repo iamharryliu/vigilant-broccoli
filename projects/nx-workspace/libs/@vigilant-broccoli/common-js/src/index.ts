@@ -441,6 +441,10 @@ export const TERRAFORM_LINK = {
     NAME: 'Terraform Status',
     URL: 'https://status.hashicorp.com/',
   },
+  TOKENS: {
+    NAME: 'Terraform Tokens',
+    URL: 'https://app.terraform.io/app/settings/tokens',
+  },
 } as const;
 
 export const ROBOFLOW_LINK = {

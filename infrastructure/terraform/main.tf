@@ -1,0 +1,415 @@
+terraform {
+  required_version = ">= 1.0"
+
+  # Terraform Cloud - using local execution with remote state storage
+  cloud {
+    organization = "vigilant-broccoli"
+
+    workspaces {
+      name = "vigilant-broccoli-infrastructure"
+    }
+  }
+
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 5.0"
+    }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5.0"
+    }
+    oci = {
+      source  = "oracle/oci"
+      version = "~> 6.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
+  }
+}
+
+provider "google" {
+  project = "vigilant-broccoli"
+  region  = var.region
+  zone    = var.zone
+}
+
+provider "github" {
+  owner = var.github_owner
+}
+
+provider "cloudflare" {}
+
+provider "oci" {
+  config_file_profile = "DEFAULT"
+  region              = "ca-toronto-1"
+}
+
+locals {
+  oci_config       = file("~/.oci/config")
+  oci_tenancy_ocid = regex("tenancy=(ocid1\\.tenancy\\.[^\n]+)", local.oci_config)[0]
+}
+
+resource "google_compute_instance" "vb_free_vm" {
+  name                      = "vb-free-vm"
+  machine_type              = "e2-micro" # Free tier eligible
+  zone                      = var.zone
+  allow_stopping_for_update = true
+
+  metadata = {
+    ssh-keys = "harryliu:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCdsUNm7YC0dLJ5zNDCNsLcT1c/ff6C/1i0IhAbqKXNGfT5ObXmTtnBOuH1UnTnRGIAr52agN6l5VMx62r90OsCh0+zbvTDSl7dWPvvXOwCXKrftuSKTH84r6gYsRiDGuh6j3zpfokCg1yJlcryp2Dgs1ua26DZm301NXkEaB9MSWYZzgeFv9fmWTgvCXpIHsRnSKV8PINDA3Ouavz1T6uqbAeNL71NVBwEqHlPDWtzGryQdbIS6tA2ufKB8KZSHCZjuORwm8K8Jaf6FIywMOx/3rKOl6u85pI7//D1TORP/pnt1Hn9Wd/QCwtL+J4nhv4eqHtarRpJXtyK7e1c/7Ga8FU/BjNodzA+Sfm5yDg+LZfBcxBVh+8KTCNc1QrmcmhVoPKEh9luG/v/5A8DpuzaG6Wr/c2YKVCU4MU+POFAP94D2M+MgvbHdMDj57oTtqHrNnY97A06LuLpouqmZ6ZG8imbV3pj+UpogpDvJCxZ+iF0+8LJaNnkRzZ84G+hBl5xgQ+JhQ5V7uLYUi0w8D+SwFTTxflTeDBmVgcqPB5TY3tvOasbFIDIP4xCLlPq1J0EaTaESNtfCC7nZPXPjjfjPzKrE56Ne0OLQQdvn1OALvYgSFl58rkSYj1M0esAbQYxfhMzpHovr49wShGg8F+ipCqMRRtzwDbN6fd84M5nTw== harryliu@Harrys-MacBook-Pro.local"
+  }
+
+  boot_disk {
+    initialize_params {
+      image = "projects/vigilant-broccoli/global/images/family/vb-vm"
+      size  = 10
+      type  = "pd-standard"
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {}
+  }
+
+  tags = ["wireguard"]
+
+  service_account {
+    scopes = [
+      "https://www.googleapis.com/auth/cloud-platform",
+    ]
+  }
+}
+
+resource "google_compute_firewall" "wireguard" {
+  name    = "allow-wireguard-access"
+  network = "default"
+
+  direction = "INGRESS"
+  priority  = 1000
+
+  allow {
+    protocol = "udp"
+    ports    = ["51820"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["wireguard"]
+}
+
+resource "google_compute_firewall" "allow_iap_ssh" {
+  name    = "allow-iap-ssh"
+  network = "default"
+
+  direction = "INGRESS"
+  priority  = 1000
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = ["35.235.240.0/20"]
+  target_tags   = ["wireguard", "packer-build"]
+}
+
+data "google_project" "project" {
+}
+
+resource "google_project_service" "iamcredentials" {
+  service            = "iamcredentials.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "iap" {
+  service            = "iap.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "secretmanager" {
+  service            = "secretmanager.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "cloudkms" {
+  service            = "cloudkms.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_kms_key_ring" "vault" {
+  name     = "vault-keyring"
+  location = var.region
+
+  depends_on = [google_project_service.cloudkms]
+}
+
+resource "google_kms_crypto_key" "vault_unseal" {
+  name     = "vault-unseal-key"
+  key_ring = google_kms_key_ring.vault.id
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "google_kms_crypto_key_iam_member" "vault_unseal" {
+  crypto_key_id = google_kms_crypto_key.vault_unseal.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  member        = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
+resource "google_iam_workload_identity_pool" "github_actions" {
+  workload_identity_pool_id = "github-actions"
+  display_name              = "GitHub Actions Pool"
+  description               = "Workload Identity Pool for GitHub Actions"
+}
+
+resource "google_iam_workload_identity_pool_provider" "github" {
+  workload_identity_pool_id          = google_iam_workload_identity_pool.github_actions.workload_identity_pool_id
+  workload_identity_pool_provider_id = "github"
+  display_name                       = "GitHub provider"
+  description                        = "OIDC identity pool provider for GitHub Actions"
+
+  attribute_mapping = {
+    "google.subject"       = "assertion.sub"
+    "attribute.actor"      = "assertion.actor"
+    "attribute.repository" = "assertion.repository"
+    "attribute.aud"        = "assertion.aud"
+  }
+
+  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}'"
+
+  oidc {
+    issuer_uri = "https://token.actions.githubusercontent.com"
+  }
+}
+
+resource "google_service_account" "github_actions" {
+  account_id   = "github-actions"
+  display_name = "GitHub Actions"
+  description  = "Service account for GitHub Actions workflows"
+}
+
+resource "google_project_iam_member" "github_actions_compute" {
+  project = data.google_project.project.project_id
+  role    = "roles/compute.instanceAdmin.v1"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_project_iam_member" "github_actions_iap" {
+  project = data.google_project.project.project_id
+  role    = "roles/iap.tunnelResourceAccessor"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_service_account_iam_member" "github_actions_workload_identity" {
+  service_account_id = google_service_account.github_actions.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.github_actions.workload_identity_pool_id}/attribute.repository/${var.github_owner}/${var.github_repo}"
+}
+
+resource "google_service_account_iam_member" "github_actions_compute_service_account" {
+  service_account_id = "projects/vigilant-broccoli/serviceAccounts/${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_project_iam_member" "github_actions_oslogin" {
+  project = data.google_project.project.project_id
+  role    = "roles/compute.osLogin"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_project_iam_member" "github_actions_secret_accessor" {
+  project = data.google_project.project.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_project_iam_member" "vm_default_sa_secret_accessor" {
+  project = data.google_project.project.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
+resource "google_secret_manager_secret" "wg_server_private_key" {
+  secret_id = "VB_VM_WG_SERVER_PRIVATE_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret" "wg_server_public_key" {
+  secret_id = "VB_VM_WG_SERVER_PUBLIC_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret" "wg_elva11_mbp_public_key" {
+  secret_id = "VB_VM_WG_ELVA11_MBP_PUBLIC_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret" "vault_unseal_keys" {
+  secret_id = "VB_VM_VAULT_UNSEAL_KEYS"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret" "vault_root_token" {
+  secret_id = "VB_VM_VAULT_ROOT_TOKEN"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret" "bitwarden_password" {
+  secret_id = "BITWARDEN_PASSWORD"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "random_password" "rabbitmq_password" {
+  length  = 32
+  special = false
+}
+
+resource "tls_private_key" "rabbitmq" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "tls_self_signed_cert" "rabbitmq" {
+  private_key_pem = tls_private_key.rabbitmq.private_key_pem
+
+  subject {
+    common_name = "rabbitmq"
+  }
+
+  validity_period_hours = 87600 # 10 years
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+}
+
+resource "google_secret_manager_secret" "rabbitmq_ca_cert" {
+  secret_id = "RABBITMQ_CA_CERT"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "rabbitmq_ca_cert" {
+  secret      = google_secret_manager_secret.rabbitmq_ca_cert.id
+  secret_data = base64encode(tls_self_signed_cert.rabbitmq.cert_pem)
+}
+
+resource "google_secret_manager_secret" "rabbitmq_connection_string" {
+  secret_id = "RABBITMQ_CONNECTION_STRING"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "rabbitmq_connection_string" {
+  secret      = google_secret_manager_secret.rabbitmq_connection_string.id
+  secret_data = "amqps://${var.rabbitmq_user}:${random_password.rabbitmq_password.result}@${oci_core_instance.rabbitmq.public_ip}:5671"
+}
+
+resource "google_secret_manager_secret" "email_service_api_key" {
+  secret_id = "EMAIL_SERVICE_API_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "email_service_api_key" {
+  secret      = google_secret_manager_secret.email_service_api_key.id
+  secret_data = var.email_service_api_key
+}
+
+resource "google_storage_bucket" "backup" {
+  name          = "vigilant-broccoli-backup"
+  location      = var.region
+  storage_class = "STANDARD"
+  force_destroy = false
+
+  versioning {
+    enabled = true
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 90
+    }
+    action {
+      type = "Delete"
+    }
+  }
+}
+
+resource "google_storage_bucket_iam_member" "github_actions_backup" {
+  bucket = google_storage_bucket.backup.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "cloudflare_r2_bucket" "vigilant_broccoli" {
+  account_id = var.cloudflare_account_id
+  name       = "vigilant-broccoli"
+  location   = "ENAM"
+}
+
+resource "cloudflare_r2_bucket" "storage_buckets" {
+  account_id = var.cloudflare_account_id
+  name       = "storage-buckets"
+  location   = "ENAM"
+}
+
+resource "cloudflare_r2_bucket" "vibecheck" {
+  account_id = var.cloudflare_account_id
+  name       = "vibecheck-bucket"
+  location   = "ENAM"
+}

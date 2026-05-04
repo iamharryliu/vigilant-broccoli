@@ -40,6 +40,7 @@ export default function SignUpPage() {
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}${ROUTES.AUTH_CALLBACK}`,
+        scopes: 'https://www.googleapis.com/auth/tasks',
       },
     });
   };

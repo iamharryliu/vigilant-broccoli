@@ -50,7 +50,7 @@ export const DEFAULT_APP_COPY = {
     ADD_VISIT_DETAILS_BUTTON: 'Add visit details. 🐶🏢🕐💬',
     CREATE_EVENT_BUTTON: 'Create Office Event 📅',
     WHO_IS_IN_OFFICE_MARKDOWN: "*Who's in the office?*",
-    NO_ONE_SCHEDULED_MARKDOWN: '_No one scheduled_',
+    NO_ONE_SCHEDULED: 'No one scheduled',
     AFTERNOON_ONLY: ' | 🕐 Afternoon only',
     MORNING_ONLY: ' | 🕘 Morning only',
   },

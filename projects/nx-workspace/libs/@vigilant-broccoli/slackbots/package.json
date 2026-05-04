@@ -1,6 +1,6 @@
 {
   "name": "@vigilant-broccoli/slackbots",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
@@ -9,8 +9,13 @@
     "@slack/bolt": "*",
     "@slack/types": "*",
     "@slack/web-api": "*",
+    "@vigilant-broccoli/slack-workspace": "*",
     "node-cron": "^4.2.1",
     "better-sqlite3": "^12.4.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamharryliu/vigilant-broccoli"
   },
   "publishConfig": {
     "access": "public"

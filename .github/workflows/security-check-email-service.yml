@@ -1,0 +1,30 @@
+name: security-check-email-service
+
+on:
+  workflow_run:
+    workflows: ["deploy"]
+    types:
+      - completed
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Run security check
+        run: |
+          chmod +x scripts/shell/test-email-service-security.sh
+          scripts/shell/test-email-service-security.sh
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Security check failed! The /send-email endpoint may be accepting unauthorized requests."
+          exit 1

@@ -33,6 +33,7 @@ if ask "Symlink dotfiles?"; then
     create_symlink "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
     create_symlink "$CLAUDE_COMMANDS_DIR" "$HOME/.claude/commands"
     create_symlink "$CLAUDE_SKILLS_DIR" "$HOME/.claude/skills"
+    create_symlink "$WORKSPACES_DIR" "$HOME/Workspaces"
     chmod -R +x "$HOME/shell-aliases/"
     chmod -R +x "$HOME/shell-scripts/"
     source $HOME/.zshrc

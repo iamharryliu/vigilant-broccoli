@@ -1,0 +1,62 @@
+{
+  "name": "vb-manager-next-mobile",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/vb-manager-next-mobile",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/vb-manager-next-mobile"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "apps/vb-manager-next-mobile"
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.local.example 'cd apps/vb-manager-next-mobile && next dev --port 4200'"
+      }
+    },
+    "serve:no-vault": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "vb-manager-next-mobile:build",
+        "dev": true,
+        "port": 4200
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "vb-manager-next-mobile:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "vb-manager-next-mobile:build:production",
+          "dev": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "deploy:secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts vb-manager-next-mobile"
+      }
+    },
+    "deploy": {
+      "command": "flyctl deploy --dockerfile ./apps/vb-manager-next-mobile/Dockerfile --config ./deployment-configs/fly-configs/vb-manager-next-mobile.toml",
+      "dependsOn": ["build", "lint", "deploy:secrets"]
+    }
+  }
+}

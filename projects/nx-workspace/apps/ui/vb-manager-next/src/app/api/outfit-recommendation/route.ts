@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { VibecheckLite } from '@prettydamntired/vibecheck-lite';
+import { VibecheckLite } from '@vigilant-broccoli/vibecheck-lite';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     });
   } catch (error) {

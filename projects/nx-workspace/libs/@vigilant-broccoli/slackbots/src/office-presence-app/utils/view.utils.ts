@@ -10,11 +10,10 @@ import {
 } from '../types';
 import { WebClient } from '@slack/web-api';
 import { BlockAction, SlackViewAction } from '@slack/bolt';
-import { SlackViewBuilder } from '../../lib/utils/view-builder.utils';
+import { SlackViewBuilder } from '@vigilant-broccoli/slack-workspace';
 import { AppCopy } from '../consts/app-copy.const';
 import {
   formatDateLong,
-  formatDateShort,
   formatISODateLocal,
   getUpcomingWeekdays,
   getWeekNumber,
@@ -35,21 +34,23 @@ export function createPublishHomeView(appConfig: AppConfig) {
   };
 }
 
+const MONDAY = 1;
+
+function formatDateWithWeek(date: Date, index: number): string {
+  const showWeek = index === 0 || date.getDay() === MONDAY;
+  return showWeek
+    ? `${formatDateLong(date)} - Week ${getWeekNumber(date)}`
+    : formatDateLong(date);
+}
+
 export function buildModalDateOptionSlackBlocks(dates: Date[]): {
   text: { type: string; text: string };
   value: string;
 }[] {
-  return dates.map((date, index) => {
-    const isMonday = date.getDay() === 1;
-    const showWeek = index === 0 || isMonday;
-    const label = showWeek
-      ? `${formatDateShort(date)} (Week ${getWeekNumber(date)})`
-      : formatDateShort(date);
-    return {
-      text: SlackViewBuilder.generatePlainText(label),
-      value: formatISODateLocal(date),
-    };
-  });
+  return dates.map((date, index) => ({
+    text: SlackViewBuilder.generatePlainText(formatDateWithWeek(date, index)),
+    value: formatISODateLocal(date),
+  }));
 }
 
 function getHomeView(userId: string, appConfig: AppConfig): View {
@@ -155,34 +156,36 @@ function buildPresenceBlocks(
   ];
   const allEvents = loadAllEvents();
 
-  for (const date of days) {
+  days.forEach((date, index) => {
     const iso = formatISODateLocal(date);
     const eventsForDay = allEvents
       .filter(event => event.date === iso)
       .sort((a, b) => a.time.localeCompare(b.time));
 
-    const formattedPresences = Object.entries(userPresences)
+    const dayPresences = Object.entries(userPresences)
       .filter(([_, presence]) => presence?.[iso])
-      .map(([u, presence]) => {
-        const dayPresence = presence[iso];
-        return formatPresence(u, dayPresence, eventsForDay, copy);
-      });
+      .map(([u, presence]) => ({ userId: u, presence: presence[iso] }));
 
-    const presenceText =
-      formattedPresences.length > 0
-        ? formattedPresences.join('\n')
-        : copy.HOME_VIEW.NO_ONE_SCHEDULED_MARKDOWN;
+    const formattedPresences = dayPresences.map(({ userId, presence }) =>
+      formatPresence(userId, presence, eventsForDay, copy),
+    );
+
+    const datePrefix = `*${formatDateWithWeek(date, index)}*`;
+    const sectionText = buildDaySectionText(
+      datePrefix,
+      dayPresences.map(({ presence }) => presence),
+      formattedPresences,
+      copy,
+    );
 
     blocks.push(
-      SlackViewBuilder.generateMarkdownSection(
-        `*${formatDateLong(date)}*\n${presenceText}`,
-      ) as KnownBlock,
+      SlackViewBuilder.generateMarkdownSection(sectionText) as KnownBlock,
     );
 
     if (eventsForDay.length > 0) {
       blocks.push(...buildEventBlocks(eventsForDay, currentUserId));
     }
-  }
+  });
 
   return blocks;
 }
@@ -271,6 +274,34 @@ function buildEventBlocks(
   }
 
   return blocks;
+}
+
+function buildDaySectionText(
+  datePrefix: string,
+  presences: UserPresence[],
+  formattedPresences: string[],
+  copy: AppCopy,
+): string {
+  const count = presences.length;
+  if (count === 0) {
+    return `${datePrefix} - _${copy.HOME_VIEW.NO_ONE_SCHEDULED}_`;
+  }
+  const officeBreakdown = buildOfficeBreakdown(presences);
+  const breakdownSuffix = officeBreakdown ? ` (${officeBreakdown})` : '';
+  const peopleLabel = count === 1 ? 'person' : 'people';
+  return `${datePrefix} - *${count} ${peopleLabel}${breakdownSuffix}*\n${formattedPresences.join('\n')}`;
+}
+
+function buildOfficeBreakdown(presences: UserPresence[]): string {
+  const counts = new Map<string, number>();
+  for (const presence of presences) {
+    if (!presence?.office) continue;
+    counts.set(presence.office, (counts.get(presence.office) ?? 0) + 1);
+  }
+  if (counts.size === 0) return '';
+  return Array.from(counts.entries())
+    .map(([office, n]) => `${office}: ${n}`)
+    .join(', ');
 }
 
 function formatPresence(

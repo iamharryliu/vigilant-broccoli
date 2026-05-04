@@ -24,10 +24,10 @@ export * from './lib/logger/logger.model';
 export * from './lib/logger/logger.const';
 export * from './lib/logger/logger.transports';
 export * from './lib/logging/logger.service';
+// Middleware
+export * from './lib/middleware/request-logger.middleware';
 // Encryption
 export * from './lib/encryption/encryption.service';
-// Site Monitor
-export * from './lib/site-monitor/site-monitor.service';
 // Text Message
 export * from './lib/text-message/text-message.service';
 // Google Recaptcha
@@ -43,6 +43,9 @@ export * from './lib/bucket/providers/local.provider';
 export * from './lib/bucket/providers/cloudflare.provider';
 export * from './lib/bucket/providers/aws.provider';
 export * from './lib/bucket/providers/gcs.provider';
+
+// Wrangler
+export * from './lib/wrangler/wrangler.service';
 
 export const QUEUE = {
   EMAIL: 'EMAIL',

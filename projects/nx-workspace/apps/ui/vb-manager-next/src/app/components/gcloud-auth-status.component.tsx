@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { ExternalLinkIcon, CopyIcon, CheckIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
+import { ExpandableListItem } from './expandable-list-item.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const GCP_CONSOLE_BASE = 'https://console.cloud.google.com';
@@ -164,68 +165,52 @@ const ProjectItem = ({
   onToggle,
   onSwitch,
 }: ProjectItemProps) => (
-  <Flex
-    direction="column"
-    gap="2"
-    className={`p-2 rounded border ${
+  <ExpandableListItem
+    label={project.name || project.projectId}
+    isExpanded={isExpanded}
+    onToggle={() => onToggle(project.projectId)}
+    labelWeight={isCurrent ? 'bold' : 'regular'}
+    borderClassName={
       isCurrent
         ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
-        : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-    }`}
-  >
-    <Flex align="center" gap="2" wrap="wrap">
-      <Text
-        size="2"
-        className="cursor-pointer"
-        onClick={() => onToggle(project.projectId)}
-      >
-        {isExpanded ? '▼' : '▶'}
-      </Text>
-      {isCurrent && (
+        : undefined
+    }
+    badges={
+      isCurrent ? (
         <Badge color="green" size="1">
           Current
         </Badge>
-      )}
-      <Text
-        size="2"
-        weight={isCurrent ? 'bold' : 'regular'}
-        className="flex-1 cursor-pointer"
-        onClick={() => onToggle(project.projectId)}
-      >
-        {project.name || project.projectId}
-      </Text>
-      <Text size="1" color="gray">
-        ({project.projectId})
-      </Text>
-      {!isCurrent && (
-        <Button
-          variant="soft"
-          size="1"
-          onClick={() => onSwitch(project.projectId)}
-          disabled={switchingProject === project.projectId}
-        >
-          {switchingProject === project.projectId ? 'Switching...' : 'Select'}
-        </Button>
-      )}
-    </Flex>
-
-    {isExpanded && (
-      <Flex
-        gap="2"
-        wrap="wrap"
-        className="pl-6 pt-1 border-t border-gray-200 dark:border-gray-700"
-      >
-        {Object.entries(getProjectUrls(project.projectId)).map(([key, url]) => (
-          <Button key={key} asChild variant="soft" size="1">
-            <a href={url} target="_blank" rel="noopener noreferrer">
-              {BUTTON_LABELS[key]}
-              <ExternalLinkIcon width="12" height="12" />
-            </a>
+      ) : undefined
+    }
+    actions={
+      <>
+        <Text size="1" color="gray">
+          ({project.projectId})
+        </Text>
+        {!isCurrent && (
+          <Button
+            variant="soft"
+            size="1"
+            onClick={() => onSwitch(project.projectId)}
+            disabled={switchingProject === project.projectId}
+          >
+            {switchingProject === project.projectId ? 'Switching...' : 'Select'}
           </Button>
-        ))}
-      </Flex>
-    )}
-  </Flex>
+        )}
+      </>
+    }
+  >
+    <Flex gap="2" wrap="wrap">
+      {Object.entries(getProjectUrls(project.projectId)).map(([key, url]) => (
+        <Button key={key} asChild variant="soft" size="1">
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            {BUTTON_LABELS[key]}
+            <ExternalLinkIcon width="12" height="12" />
+          </a>
+        </Button>
+      ))}
+    </Flex>
+  </ExpandableListItem>
 );
 
 const parseReauthData = (

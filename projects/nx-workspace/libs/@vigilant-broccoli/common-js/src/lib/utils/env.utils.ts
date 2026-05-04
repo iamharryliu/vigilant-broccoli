@@ -1,15 +1,23 @@
+const EXPORT_PREFIX = 'export ';
+
+function stripExportPrefix(line: string): string {
+  const trimmed = line.trim();
+  return trimmed.startsWith(EXPORT_PREFIX)
+    ? trimmed.slice(EXPORT_PREFIX.length).trim()
+    : trimmed;
+}
+
 function getJSONFromEnvironmentVariables(text: string) {
   const result: Record<string, string> = {};
   const lines = text.split(/\r?\n/);
 
   for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue; // Skip empty lines and comments
+    const trimmed = stripExportPrefix(line);
+    if (!trimmed || trimmed.startsWith('#')) continue;
     const equalsIndex = trimmed.indexOf('=');
     if (equalsIndex === -1) continue;
     const key = trimmed.slice(0, equalsIndex).trim();
     const value = trimmed.slice(equalsIndex + 1).trim();
-    // Remove surrounding quotes if any
     result[key] = value.replace(/^['"]|['"]$/g, '');
   }
 
@@ -44,25 +52,15 @@ function getPrettierJSON(jsonText: string): string {
 }
 
 function getStubbedEnvironmentVariableKeys(envContent: string): string {
+  const ENV_KEY_PATTERN = /^[A-Z_][A-Z0-9_]*$/i;
+
   return envContent
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => {
-      // Skip comments, blank lines, and anything without '='
-      if (line === '' || line.startsWith('#') || !line.includes('=')) {
-        return false;
-      }
-
-      // Extract key from before first '='
-      const [key] = line.split('=', 1);
-
-      // Match valid env variable names: letters, numbers, underscores, cannot start with number
-      return /^[A-Z_][A-Z0-9_]*$/i.test(key.trim());
-    })
-    .map(line => {
-      const [key] = line.split('=', 1);
-      return `${key.trim()}=`;
-    })
+    .split(/\r?\n/)
+    .map(stripExportPrefix)
+    .filter(line => line && !line.startsWith('#') && line.includes('='))
+    .map(line => line.split('=', 1)[0].trim())
+    .filter(key => ENV_KEY_PATTERN.test(key))
+    .map(key => `${key}=`)
     .join('\n');
 }
 

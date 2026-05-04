@@ -1,0 +1,96 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - docker.io
+  - docker-compose-v2
+
+write_files:
+  - path: /opt/rabbitmq/rabbitmq.conf
+    content: |
+      listeners.ssl.default = 5671
+      ssl_options.cacertfile = /etc/rabbitmq/certs/ca.crt
+      ssl_options.certfile   = /etc/rabbitmq/certs/server.crt
+      ssl_options.keyfile    = /etc/rabbitmq/certs/server.key
+      ssl_options.verify     = verify_none
+      management.ssl.port       = 15671
+      management.ssl.cacertfile = /etc/rabbitmq/certs/ca.crt
+      management.ssl.certfile   = /etc/rabbitmq/certs/server.crt
+      management.ssl.keyfile    = /etc/rabbitmq/certs/server.key
+
+  - path: /opt/rabbitmq/certs/server.key
+    permissions: '0644'
+    content: |
+      ${indent(6, rabbitmq_tls_key)}
+
+  - path: /opt/rabbitmq/certs/server.crt
+    permissions: '0644'
+    content: |
+      ${indent(6, rabbitmq_tls_cert)}
+
+  - path: /opt/rabbitmq/certs/ca.crt
+    permissions: '0644'
+    content: |
+      ${indent(6, rabbitmq_tls_cert)}
+
+  - path: /opt/rabbitmq/docker-compose.yml
+    content: |
+      services:
+        rabbitmq:
+          image: rabbitmq:3-management-alpine
+          container_name: rabbitmq
+          restart: unless-stopped
+          environment:
+            RABBITMQ_DEFAULT_USER: ${rabbitmq_user}
+            RABBITMQ_DEFAULT_PASS: ${rabbitmq_password}
+          ports:
+            - "5671:5671"
+            - "5672:5672"
+            - "15671:15671"
+            - "15672:15672"
+          volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
+            - /opt/rabbitmq/certs:/etc/rabbitmq/certs:ro
+            - /opt/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+          healthcheck:
+            test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        email-consumer:
+          image: ${email_consumer_image}
+          container_name: email-consumer
+          restart: unless-stopped
+          labels:
+            - "com.centurylinklabs.watchtower.enable=true"
+          environment:
+            RABBITMQ_CONNECTION_STRING: amqp://${rabbitmq_user}:${rabbitmq_password}@rabbitmq:5672
+            EMAIL_SERVICE_URL: ${email_service_url}
+            EMAIL_SERVICE_API_KEY: ${email_service_api_key}
+          depends_on:
+            rabbitmq:
+              condition: service_healthy
+        watchtower:
+          image: containrrr/watchtower
+          container_name: watchtower
+          restart: unless-stopped
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+          environment:
+            WATCHTOWER_CLEANUP: "true"
+            WATCHTOWER_POLL_INTERVAL: "300"
+            WATCHTOWER_LABEL_ENABLE: "true"
+            DOCKER_API_VERSION: DOCKER_API_VERSION_PLACEHOLDER
+      volumes:
+        rabbitmq_data:
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ubuntu
+  - 'DOCKER_API=$(docker version --format "{{.Server.APIVersion}}") && sed -i "s/DOCKER_API_VERSION_PLACEHOLDER/$DOCKER_API/" /opt/rabbitmq/docker-compose.yml'
+  - docker compose -f /opt/rabbitmq/docker-compose.yml up -d
+  - sleep 15
+  - docker exec rabbitmq rabbitmqctl set_user_tags ${rabbitmq_user} administrator
+  - docker exec rabbitmq rabbitmqctl set_permissions -p / ${rabbitmq_user} ".*" ".*" ".*"

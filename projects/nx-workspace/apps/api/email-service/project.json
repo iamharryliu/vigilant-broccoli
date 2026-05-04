@@ -1,0 +1,76 @@
+{
+  "name": "email-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/email-service/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/api/email-service",
+        "format": ["cjs"],
+        "bundle": true,
+        "thirdParty": true,
+        "main": "apps/api/email-service/src/main.ts",
+        "tsConfig": "apps/api/email-service/tsconfig.app.json",
+        "assets": ["apps/api/email-service/src/assets"],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "email-service:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "email-service:build:development"
+        },
+        "production": {
+          "buildTarget": "email-service:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "deploy-container": {
+      "dependsOn": ["build"],
+      "command": "docker buildx build --platform linux/amd64 -f apps/api/email-service/Dockerfile -t iamharryliu/email-service:latest -t iamharryliu/email-service:${COMMIT_SHA:-latest} --push dist/apps/api/email-service"
+    },
+    "deploy:secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts email-service"
+      }
+    },
+    "deploy": {
+      "dependsOn": ["deploy-container", "deploy:secrets"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/email-service.toml"
+    }
+  }
+}

@@ -12,6 +12,75 @@ permissions:
   id-token: write
 
 jobs:
+  deploy-npm-packages:
+    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: ./projects/nx-workspace/package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        working-directory: ./projects/nx-workspace
+        run: npm ci
+
+      - name: Check if npm publish needed
+        id: check
+        working-directory: ./projects/nx-workspace
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "has_packages=true" >> $GITHUB_OUTPUT
+            echo "affected_projects=" >> $GITHUB_OUTPUT
+          else
+            BASE="${{ github.event.before }}"
+
+            if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+              echo "BASE commit $BASE not found, falling back to origin/main"
+              BASE="origin/main"
+            fi
+
+            AFFECTED=$(npx nx show projects --affected --withTarget=nx-release-publish --base=$BASE --head=${{ github.sha }})
+            AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
+            AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
+            if [[ -n "$AFFECTED_NORMALIZED" ]]; then
+              echo "has_packages=true" >> $GITHUB_OUTPUT
+              echo "affected_projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
+            else
+              echo "has_packages=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Build affected packages
+        if: steps.check.outputs.has_packages == 'true'
+        working-directory: ./projects/nx-workspace
+        run: |
+          if [[ -n "${{ steps.check.outputs.affected_projects }}" ]]; then
+            npx nx run-many -t build --projects="${{ steps.check.outputs.affected_projects }}"
+          else
+            npx nx run-many -t build
+          fi
+
+      - name: Publish npm packages
+        if: steps.check.outputs.has_packages == 'true'
+        working-directory: ./projects/nx-workspace
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [[ -n "${{ steps.check.outputs.affected_projects }}" ]]; then
+            npx nx run-many -t nx-release-publish --projects="${{ steps.check.outputs.affected_projects }}"
+          else
+            npx nx run-many -t nx-release-publish
+          fi
+
   main:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
     runs-on: ubuntu-latest
@@ -44,41 +113,56 @@ jobs:
           else
             BASE="${{ github.event.before }}"
 
-            # fallback if empty, zero hash, or missing commit
             if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
               echo "BASE commit $BASE not found, falling back to origin/main"
               BASE="origin/main"
             fi
+
             AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
             AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
             AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
-            echo "deploy_cmd=npx nx run-many -t deploy --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
             if [[ -n "$AFFECTED_NORMALIZED" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
+              echo "deploy_cmd=npx nx run-many -t deploy --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
             else
               echo "has_deployments=false" >> $GITHUB_OUTPUT
             fi
           fi
 
+      - name: Set up QEMU
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: iamharryliu
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Authenticate to Google Cloud
-        # if: steps.check.outputs.has_deployments == 'true'
+        if: steps.check.outputs.has_deployments == 'true'
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Setup Cloud SDK
-        # if: steps.check.outputs.has_deployments == 'true'
+        if: steps.check.outputs.has_deployments == 'true'
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Setup Vault CA Certificate
-        # if: steps.check.outputs.has_deployments == 'true'
+        if: steps.check.outputs.has_deployments == 'true'
         run: |
           CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
           echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
 
       - name: Open IAP Tunnel to Vault
-        # if: steps.check.outputs.has_deployments == 'true'
+        if: steps.check.outputs.has_deployments == 'true'
         run: |
           gcloud compute ssh vb-free-vm \
             --zone=us-east1-b \
@@ -96,14 +180,16 @@ jobs:
             if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
               echo "Tunnel established successfully"
               curl -k -s https://127.0.0.1:8200/v1/sys/health | jq .
-              break
+              exit 0
             fi
             echo "Attempt $i: Tunnel not ready yet..."
             sleep 2
           done
+          echo "ERROR: IAP tunnel to Vault failed to establish after 30 attempts"
+          exit 1
 
       - name: Import Secrets from Vault
-        # if: steps.check.outputs.has_deployments == 'true'
+        if: steps.check.outputs.has_deployments == 'true'
         uses: hashicorp/vault-action@v3
         with:
           url: https://127.0.0.1:8200
@@ -119,12 +205,13 @@ jobs:
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
-        # if: steps.check.outputs.has_deployments == 'true'
+        if: steps.check.outputs.has_deployments == 'true'
 
       - name: Deploy affected apps
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
+          COMMIT_SHA: ${{ github.sha }}
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://127.0.0.1:8200
           NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/projects/nx-workspace/scripts/vault-ca.crt

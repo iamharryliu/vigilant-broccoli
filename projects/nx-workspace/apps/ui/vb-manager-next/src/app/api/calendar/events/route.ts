@@ -76,19 +76,23 @@ export async function POST(req: NextRequest) {
     const calendar = await getAuthenticatedCalendarClient();
     const body = await req.json();
     const calendarId = body.calendarId || 'primary';
+    const timeZone = body.timeZone || 'America/New_York';
 
-    const event = {
-      summary: body.summary,
-      description: body.description,
-      start: {
-        dateTime: body.start,
-        timeZone: body.timeZone || 'America/New_York',
-      },
-      end: {
-        dateTime: body.end,
-        timeZone: body.timeZone || 'America/New_York',
-      },
-    };
+    const event = body.allDay
+      ? {
+          summary: body.summary,
+          description: body.description,
+          location: body.location,
+          start: { date: body.start },
+          end: { date: body.end || body.start },
+        }
+      : {
+          summary: body.summary,
+          description: body.description,
+          location: body.location,
+          start: { dateTime: body.start, timeZone },
+          end: { dateTime: body.end, timeZone },
+        };
 
     const response = await calendar.events.insert({
       calendarId,

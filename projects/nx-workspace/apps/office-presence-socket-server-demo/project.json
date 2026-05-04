@@ -13,11 +13,11 @@
         "platform": "node",
         "outputPath": "dist/apps/office-presence-socket-server-demo",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
+        "thirdParty": true,
         "main": "apps/office-presence-socket-server-demo/src/main.ts",
         "tsConfig": "apps/office-presence-socket-server-demo/tsconfig.app.json",
         "assets": ["apps/office-presence-socket-server-demo/src/assets"],
-        "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,
           "outExtension": {
@@ -28,7 +28,6 @@
       "configurations": {
         "development": {},
         "production": {
-          "generateLockfile": true,
           "esbuildOptions": {
             "sourcemap": false,
             "outExtension": {
@@ -38,32 +37,22 @@
         }
       }
     },
-    "prune-lockfile": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "executor": "@nx/js:prune-lockfile",
-      "outputs": [
-        "{workspaceRoot}/dist/apps/office-presence-socket-server-demo/package.json",
-        "{workspaceRoot}/dist/apps/office-presence-socket-server-demo/package-lock.json"
-      ],
+    "serve:docker": {
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "build"
+        "commands": [
+          "docker ps -q --filter ancestor=iamharryliu/office-presence-socket-server-demo | xargs -r docker rm -f",
+          "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'docker run --pull=always --platform linux/amd64 -p 3000:3000 -e SLACK_BOT_TOKEN=$SLACK_BOT_TOKEN -e SLACK_APP_TOKEN=$SLACK_APP_TOKEN -e OFFICES=$OFFICES -e ENABLE_REMINDERS=$ENABLE_REMINDERS -e INCLUDE_WEEKENDS=$INCLUDE_WEEKENDS -e DAYS_AHEAD=$DAYS_AHEAD iamharryliu/office-presence-socket-server-demo:latest'"
+        ],
+        "parallel": false
       }
     },
-    "copy-workspace-modules": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "outputs": [
-        "{workspaceRoot}/dist/apps/office-presence-socket-server-demo/workspace_modules"
-      ],
-      "executor": "@nx/js:copy-workspace-modules",
+    "serve:vault": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "build"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'nx serve office-presence-socket-server-demo'"
       }
-    },
-    "prune": {
-      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
-      "executor": "nx:noop"
     },
     "serve": {
       "continuous": true,
@@ -86,8 +75,28 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
-    "docker:build": {
-      "dependsOn": ["build", "prune"]
+    "deploy-and-serve": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "commands": [
+          "nx run office-presence-socket-server-demo:deploy-container",
+          "nx run office-presence-socket-server-demo:serve:docker"
+        ],
+        "parallel": false
+      }
+    },
+    "deploy-container": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": ["build"],
+      "options": {
+        "commands": [
+          "docker buildx build --platform linux/amd64 -f apps/office-presence-socket-server-demo/Dockerfile -t iamharryliu/office-presence-socket-server-demo:latest -t iamharryliu/office-presence-socket-server-demo:${COMMIT_SHA:-latest} --push dist/apps/office-presence-socket-server-demo",
+          "docker rmi $(docker images iamharryliu/office-presence-socket-server-demo --filter 'dangling=true' -q) 2>/dev/null || true"
+        ],
+        "parallel": false
+      }
     }
   }
 }

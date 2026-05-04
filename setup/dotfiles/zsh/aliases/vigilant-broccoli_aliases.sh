@@ -1,10 +1,20 @@
 # Code Workspaces
-openworkspace() {
+vswsls() {
+    ls -1 "$WORKSPACES_DIR" | sed 's/\.code-workspace$//' | nl -ba | sed 's/^ *//;s/\t/   /'
+}
+vsws() {
     if [ -z "$1" ]; then
-        code "$HOME/Workspaces"
+        code "$WORKSPACES_DIR"
+    elif [ -f "$WORKSPACES_DIR/$1.code-workspace" ]; then
+        code "$WORKSPACES_DIR/$1.code-workspace"
     else
-        code "$HOME/Workspaces/$1.code-workspace"
+        echo "Workspace '$1' not found"
     fi
+}
+vswsn() {
+    local name
+    name=$(ls -1 "$WORKSPACES_DIR" | sed 's/\.code-workspace$//' | sed -n "${1}p")
+    vsws "$name"
 }
 
 # Journal
@@ -36,12 +46,9 @@ alias cdnx="cd $NX_DIR"
 # Github
 alias gitme='chrome "https://github.com/iamharryliu"'
 alias pushghreadme="cd $HOME/iamharryliu && gpull && git add README.md && gc docs github-readme 'Update Github profile README.md' && gpush"
-# vigilant-broccoli
-alias pullvb="cd $REPO_DIR && gpull"
-alias pullall='pulljournal && pullvb'
-alias vbrepo="open https://github.com/iamharryliu/vigilant-broccoli"
-alias vbactions='open "https://github.com/iamharryliu/vigilant-broccoli/actions"'
-alias vbnpm='open "https://www.npmjs.com/settings/vigilant-broccoli/packages"'
+alias vbrepo="cdvb && npm run repo"
+alias vbactions="cdvb && npm run open:repo:actions"
+alias vbnpm="cdvb && npm run npm:packages"
 # vb push
 alias pushdocs="cdvb && git add $DOCS_DIR && gc docs notes 'Update Markdown docs.' && gpush"
 alias pushnotes="cdvb && git add $NOTES_DIR && gc docs notes 'Update Markdown notes.' && gpush"
@@ -66,15 +73,15 @@ alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
 alias obsidiannotes="open 'obsidian://open?vault=notes'"
 alias obsidianjournal="open 'obsidian://open?vault=journal'"
 
-# Billing
-alias checkDevBilling='openFlyBilling && openOpenAIBilling && openAWSBilling'
-
 # Employee Handler
 alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
 alias buildEmployeeHandler="nnx build @vigilant-broccoli/employee-handler"
 
-# Cloud
-alias vbgcloudlogin="gcloudlogin vigilant-broccoli"
+# OCI VM
+sshocivm() {
+  ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd $REPO_DIR/infrastructure/terraform && terraform output -raw rabbitmq_public_ip 2>/dev/null) "$@"
+}
+alias ocivmlogs='sshocivm -t "docker logs email-consumer --tail 100 -f"'
 
 # Tmux
 alias tmuxvb="$REPO_DIR/setup/dotfiles/common/scripts/tmux-vb.sh"
@@ -92,6 +99,7 @@ alias wg-status='sudo wg show'
 
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
+alias cpvaulttoken="gcloud secrets versions access latest --secret=VB_VM_VAULT_ROOT_TOKEN --project=vigilant-broccoli | pbcopy && echo 'Vault root token copied to clipboard.'"
 alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh && rsync -av --delete ~/resilio-sync/backup/ ~/My\ Drive/resilio-backup/'
 
 # Hobby Code

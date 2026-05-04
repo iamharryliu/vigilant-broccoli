@@ -4,10 +4,6 @@ alias openmail="code /var/mail/$(whoami)"
 alias clearmail="echo '' > /var/mail/$(whoami)"
 load_aliases ~/shell-aliases/devops/
 
-## UTILITY
-alias cronguru="chrome 'https://crontab.guru/'"
-alias ghtokens="open 'https://github.com/settings/personal-access-tokens'"
-
 ## TERRAFORM
 # Shared helper: terraform_run <action> [env] [auto]
 # - action: init|plan|apply|destroy
@@ -157,9 +153,6 @@ wgupn() {
   echo "Bringing up WireGuard interface: $wg_name"
   sudo wg-quick up "$wg_name"
 }
-
-# Hashicorp Vault
-alias openlocalvault="open 'https://127.0.0.1:8200'"
 
 # AWS
 alias awsprofiles="code ~/.aws/credentials"

@@ -67,6 +67,7 @@ export const GithubRepoActionStatusBadges = ({
     async function init() {
       try {
         const badges = await getBadges(repoUrl);
+        badges.sort((a, b) => a.alt.localeCompare(b.alt));
         setBadges(badges);
         setLoading(false);
       } catch (err) {

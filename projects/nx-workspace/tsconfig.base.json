@@ -15,14 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@prettydamntired/personal-website-api-lib": [
-        "libs/@prettydamntired/personal-website-api-lib/src/index.ts"
-      ],
-      "@prettydamntired/personal-website-lib": [
-        "libs/@prettydamntired/personal-website-lib/src/index.ts"
-      ],
-      "@prettydamntired/vibecheck-lite": [
-        "libs/@prettydamntired/vibecheck-lite/src/index.ts"
+      "@vigilant-broccoli/vibecheck-lite": [
+        "libs/@vigilant-broccoli/vibecheck-lite/src/index.ts"
       ],
       "@vigilant-broccoli/common-browser": [
         "libs/@vigilant-broccoli/common-browser/src/index.ts"

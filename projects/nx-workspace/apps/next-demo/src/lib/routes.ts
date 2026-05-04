@@ -10,4 +10,5 @@ export const ROUTES = {
   HOME_CALENDAR: (id: string | number) => `/homes/${id}/calendar`,
   LEISURE: '/leisure',
   RESOURCES: '/resources',
+  TASKS: '/tasks',
 } as const;
