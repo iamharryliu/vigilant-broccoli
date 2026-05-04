@@ -30,7 +30,11 @@
     "secret-rotation:flyio": "./infrastructure/terraform/packer/scripts/rotate-fly-token.sh",
     "local:docker:restart": "docker compose -f infrastructure/local/docker-compose.yml restart",
     "health-check": "./projects/nx-workspace/scripts/shell/health-check.sh",
-    "gh:board:sync": "./scripts/shell/gh-board.sh sync"
+    "gh:board:sync": "./scripts/shell/gh-board.sh sync",
+    "gh:actions:deploy": "gh workflow run deploy --repo iamharryliu/vigilant-broccoli",
+    "gh:actions:health-check": "gh workflow run health-check --repo iamharryliu/vigilant-broccoli",
+    "gh:actions:kill-services": "gh workflow run kill-services --repo iamharryliu/vigilant-broccoli",
+    "gh:actions:test-services": "gh workflow run test-email-service --repo iamharryliu/vigilant-broccoli && gh workflow run test-rabbitmq-service --repo iamharryliu/vigilant-broccoli && gh workflow run test-vault-service --repo iamharryliu/vigilant-broccoli && gh workflow run test-gcp-secret-manager-access --repo iamharryliu/vigilant-broccoli"
   },
   "repository": {
     "type": "git",
