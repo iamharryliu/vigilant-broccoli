@@ -29,6 +29,9 @@ jobs:
           cache-dependency-path: ./projects/nx-workspace/package-lock.json
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         working-directory: ./projects/nx-workspace
         run: npm ci
