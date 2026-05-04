@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-WALLPAPERS_DIR="$HOME/vigilant-broccoli/wallpapers"
+WALLPAPERS_DIR="$HOME/vigilant-broccoli/personal/wallpapers"
 
 echo "Select wallpaper:"
 wallpapers=("$WALLPAPERS_DIR"/*)
