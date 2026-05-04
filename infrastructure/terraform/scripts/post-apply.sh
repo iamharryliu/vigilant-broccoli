@@ -47,6 +47,7 @@ sync_secrets_to_vault() {
   fi
 
   local conn_str="amqps://${rabbitmq_user}:${rabbitmq_password}@${rabbitmq_ip}:5671"
+  local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
 
   gcloud compute ssh "${vm_name}" \
     --zone="${vm_zone}" \
@@ -57,7 +58,7 @@ export VAULT_CACERT=/etc/vault/tls/vault.crt
 export VAULT_TOKEN='${vault_token}'
 
 vault kv patch kv/secrets \
-  RABBITMQ_CA_CERT='${ca_cert}' \
+  RABBITMQ_CA_CERT='${ca_cert_b64}' \
   RABBITMQ_CONNECTION_STRING='${conn_str}' \
   EMAIL_SERVICE_API_KEY='${email_api_key}'
 
