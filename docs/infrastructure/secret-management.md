@@ -32,7 +32,7 @@ RECOVERY_ACCOUNT[Recovery Account]-->MAIN_ACCOUNT[Main Account]-->PASSWORD_MANAG
 ### FLY_API_TOKEN (Fly.io Token)
 
 ```bash
-./terraform/packer/scripts/rotate-fly-token.sh
+./infrastructure/terraform/packer/scripts/rotate-fly-token.sh
 ```
 
 ### Cloudflare Secrets
@@ -45,3 +45,5 @@ Rotate manually at
 - `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS`
 - `CLOUDFLARE_R2_ACCESS_KEY_ID`
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
+
+Wireguard secrets, resilio secrets

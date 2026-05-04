@@ -1,1 +1,1 @@
-Audit cloud infrastructure in terraform/ (Terraform/Packer).
+Audit cloud infrastructure in infrastructure/terraform/ (Terraform/Packer).
