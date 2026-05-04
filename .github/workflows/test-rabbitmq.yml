@@ -76,7 +76,7 @@ jobs:
           const QUEUE = 'EMAIL';
           const caCert = process.env.RABBITMQ_CA_CERT;
           const socketOptions = caCert
-            ? { ca: [Buffer.from(caCert, 'base64')], checkServerIdentity: () => undefined }
+            ? { ca: [Buffer.from(caCert, 'base64')], checkServerIdentity: () => undefined, servername: 'rabbitmq' }
             : undefined;
 
           (async () => {
@@ -95,5 +95,5 @@ jobs:
             const { messageCount, consumerCount } = await channel.checkQueue(QUEUE);
             console.log('Queue status — messages:', messageCount, 'consumers:', consumerCount);
             await connection.close();
-          })();
+          })().catch(err => { console.error('Error:', err.message); process.exit(1); });
           "
