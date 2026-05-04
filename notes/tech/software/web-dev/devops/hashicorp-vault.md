@@ -421,6 +421,12 @@ vault write auth/jwt/role/github-actions-role \
   ttl="1h"
 ```
 
+## KMS Auto-Unseal
+
+- Vault starts unsealed
+- You can still manually seal at any time
+- Vault will auto-unseal on restarts, no human intervention needed
+
 ### Troubleshooting
 
 ```
