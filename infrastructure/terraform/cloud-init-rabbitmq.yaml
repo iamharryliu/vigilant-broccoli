@@ -67,7 +67,7 @@ write_files:
           environment:
             RABBITMQ_CONNECTION_STRING: amqp://${rabbitmq_user}:${rabbitmq_password}@rabbitmq:5672
             EMAIL_SERVICE_URL: ${email_service_url}
-            EMAIL_SERVICE_API_KEY: ${email_service_api_key}
+            EMAIL_SERVICE_API_KEY: ${email_service_api_key_random}
           depends_on:
             rabbitmq:
               condition: service_healthy

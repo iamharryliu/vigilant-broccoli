@@ -138,6 +138,33 @@ resource "google_project_service" "secretmanager" {
   disable_on_destroy = false
 }
 
+resource "google_project_service" "cloudkms" {
+  service            = "cloudkms.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_kms_key_ring" "vault" {
+  name     = "vault-keyring"
+  location = var.region
+
+  depends_on = [google_project_service.cloudkms]
+}
+
+resource "google_kms_crypto_key" "vault_unseal" {
+  name     = "vault-unseal-key"
+  key_ring = google_kms_key_ring.vault.id
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "google_kms_crypto_key_iam_member" "vault_unseal" {
+  crypto_key_id = google_kms_crypto_key.vault_unseal.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  member        = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
 resource "google_iam_workload_identity_pool" "github_actions" {
   workload_identity_pool_id = "github-actions"
   display_name              = "GitHub Actions Pool"
@@ -277,6 +304,11 @@ resource "random_password" "rabbitmq_password" {
   special = false
 }
 
+resource "random_password" "email_service_api_key" {
+  length  = 32
+  special = true
+}
+
 resource "tls_private_key" "rabbitmq" {
   algorithm = "RSA"
   rsa_bits  = 2048
@@ -298,50 +330,6 @@ resource "tls_self_signed_cert" "rabbitmq" {
   ]
 }
 
-resource "google_secret_manager_secret" "rabbitmq_ca_cert" {
-  secret_id = "RABBITMQ_CA_CERT"
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [google_project_service.secretmanager]
-}
-
-resource "google_secret_manager_secret_version" "rabbitmq_ca_cert" {
-  secret      = google_secret_manager_secret.rabbitmq_ca_cert.id
-  secret_data = base64encode(tls_self_signed_cert.rabbitmq.cert_pem)
-}
-
-resource "google_secret_manager_secret" "rabbitmq_connection_string" {
-  secret_id = "RABBITMQ_CONNECTION_STRING"
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [google_project_service.secretmanager]
-}
-
-resource "google_secret_manager_secret_version" "rabbitmq_connection_string" {
-  secret      = google_secret_manager_secret.rabbitmq_connection_string.id
-  secret_data = "amqps://${var.rabbitmq_user}:${random_password.rabbitmq_password.result}@${oci_core_instance.rabbitmq.public_ip}:5671"
-}
-
-resource "google_secret_manager_secret" "email_service_api_key" {
-  secret_id = "EMAIL_SERVICE_API_KEY"
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [google_project_service.secretmanager]
-}
-
-resource "google_secret_manager_secret_version" "email_service_api_key" {
-  secret      = google_secret_manager_secret.email_service_api_key.id
-  secret_data = var.email_service_api_key
-}
 
 resource "google_storage_bucket" "backup" {
   name          = "vigilant-broccoli-backup"

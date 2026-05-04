@@ -44,8 +44,3 @@ variable "email_service_url" {
   type    = string
   default = "https://vb-email-service.fly.dev"
 }
-
-variable "email_service_api_key" {
-  type      = string
-  sensitive = true
-}
