@@ -38,20 +38,23 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "has_packages=true" >> $GITHUB_OUTPUT
-            echo "affected_projects=" >> $GITHUB_OUTPUT
+            PROJECTS=$(npx nx show projects --withTarget=publish-package)
+            PROJECTS_COMMA=$(echo "$PROJECTS" | tr '\n' ',' | sed 's/,$//')
+            if [[ -n "$PROJECTS_COMMA" ]]; then
+              echo "has_packages=true" >> $GITHUB_OUTPUT
+              echo "affected_projects=$PROJECTS_COMMA" >> $GITHUB_OUTPUT
+            else
+              echo "has_packages=false" >> $GITHUB_OUTPUT
+            fi
           else
             BASE="${{ github.event.before }}"
-
             if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
               echo "BASE commit $BASE not found, falling back to origin/main"
               BASE="origin/main"
             fi
 
-            AFFECTED=$(npx nx show projects --affected --withTarget=nx-release-publish --base=$BASE --head=${{ github.sha }})
-            AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
-            AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
-            if [[ -n "$AFFECTED_NORMALIZED" ]]; then
+            AFFECTED_COMMA=$(npx nx show projects --affected --withTarget=publish-package --base=$BASE --head=${{ github.sha }} | tr '\n' ',' | sed 's/,$//')
+            if [[ -n "$AFFECTED_COMMA" ]]; then
               echo "has_packages=true" >> $GITHUB_OUTPUT
               echo "affected_projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
             else
@@ -62,24 +65,14 @@ jobs:
       - name: Build affected packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
-        run: |
-          if [[ -n "${{ steps.check.outputs.affected_projects }}" ]]; then
-            npx nx run-many -t build --projects="${{ steps.check.outputs.affected_projects }}"
-          else
-            npx nx run-many -t build
-          fi
+        run: npx nx run-many -t build --projects="${{ steps.check.outputs.affected_projects }}"
 
       - name: Publish npm packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [[ -n "${{ steps.check.outputs.affected_projects }}" ]]; then
-            npx nx run-many -t nx-release-publish --projects="${{ steps.check.outputs.affected_projects }}"
-          else
-            npx nx run-many -t nx-release-publish
-          fi
+        run: npx nx run-many -t publish-package --projects="${{ steps.check.outputs.affected_projects }}"
 
   main:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
@@ -118,10 +111,8 @@ jobs:
               BASE="origin/main"
             fi
 
-            AFFECTED=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }})
-            AFFECTED_NORMALIZED=$(echo "$AFFECTED" | tr -d '[:space:]')
-            AFFECTED_COMMA=$(echo "$AFFECTED" | tr '\n' ',' | sed 's/,$//')
-            if [[ -n "$AFFECTED_NORMALIZED" ]]; then
+            AFFECTED_COMMA=$(npx nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }} | tr '\n' ',' | sed 's/,$//')
+            if [[ -n "$AFFECTED_COMMA" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
               echo "deploy_cmd=npx nx run-many -t deploy --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
             else
