@@ -4,7 +4,7 @@ set -e
 GCP_PROJECT="vigilant-broccoli"
 VAULT_KV_PATH="kv"
 VM_NAME="vb-free-vm"
-VM_ZONE="us-east1-b"
+VM_ZONE="us-central1-a"
 
 echo "Fetching root token from Secret Manager..."
 VAULT_TOKEN=$(gcloud secrets versions access latest \

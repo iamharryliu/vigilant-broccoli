@@ -2,7 +2,7 @@
 set -e
 
 VM_NAME="vb-free-vm"
-VM_ZONE="us-east1-b"
+VM_ZONE="us-central1-a"
 GCP_PROJECT="vigilant-broccoli"
 GITHUB_OWNER="iamharryliu"
 GITHUB_REPO="vigilant-broccoli"
@@ -47,25 +47,6 @@ else
   echo "Recovery keys and root token saved to Secret Manager."
   VAULT_TOKEN="$ROOT_TOKEN"
 fi
-
-echo "Waiting for Vault auto-unseal..."
-gcloud compute ssh "${VM_NAME}" \
-  --zone="${VM_ZONE}" \
-  --tunnel-through-iap \
-  --command="
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-
-for i in 1 2 3 4 5; do
-  if vault status 2>&1 | grep -q 'Sealed.*false'; then
-    echo 'Vault is unsealed.'
-    exit 0
-  fi
-  sleep 2
-done
-echo 'ERROR: Vault is still sealed after waiting.'
-exit 1
-"
 
 echo "Configuring Vault..."
 gcloud compute ssh "${VM_NAME}" \

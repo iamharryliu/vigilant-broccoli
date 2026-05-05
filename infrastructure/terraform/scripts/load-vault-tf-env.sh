@@ -1,25 +1,23 @@
 #!/bin/bash
 set -e
 
-VM_NAME="vb-free-vm"
-VM_ZONE="us-east1-b"
 GCP_PROJECT="vigilant-broccoli"
-KV_PATH="kv"
+BW_FOLDER="vb-vault-secrets"
 
-VAULT_TOKEN=$(gcloud secrets versions access latest \
-  --secret=VB_VM_VAULT_ROOT_TOKEN \
+export BITWARDEN_PASSWORD
+BITWARDEN_PASSWORD=$(gcloud secrets versions access latest \
+  --secret=BITWARDEN_PASSWORD \
   --project="${GCP_PROJECT}")
 
-SECRETS=$(gcloud compute ssh "${VM_NAME}" \
-  --zone="${VM_ZONE}" \
-  --tunnel-through-iap \
-  --command="
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
+BW_SESSION=$(bw unlock --passwordenv BITWARDEN_PASSWORD --raw)
+export BW_SESSION
 
-vault kv get -format=json ${KV_PATH}/secrets | jq -r '.data.data'
-")
+FOLDER_ID=$(bw list folders --session "$BW_SESSION" | jq -r ".[] | select(.name == \"$BW_FOLDER\") | .id")
+
+LATEST_ITEM=$(bw list items --folderid "$FOLDER_ID" --session "$BW_SESSION" \
+  | jq -r '[.[] | select(.name | test("^vb-vault-secrets-[0-9]{4}-[0-9]{2}-[0-9]{2}$"))] | sort_by(.name) | last')
+echo "Using Bitwarden note: $(echo "$LATEST_ITEM" | jq -r '.name')" >&2
+SECRETS=$(echo "$LATEST_ITEM" | jq -r '.notes' | sed -n '/^{/,$p' | jq '.')
 
 KEY_MAP=(
   "CLOUDFLARE_API_TOKEN:CLOUDFLARE_API_TOKEN"

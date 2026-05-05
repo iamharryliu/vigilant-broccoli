@@ -2,7 +2,7 @@
 set -e
 
 VM_NAME="vb-free-vm"
-VM_ZONE="us-east1-b"
+VM_ZONE="us-central1-a"
 WG_CONF="/opt/homebrew/etc/wireguard/vb.conf"
 
 EXTERNAL_IP=$(gcloud compute instances describe "${VM_NAME}" \

@@ -5,17 +5,14 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TERRAFORM_DIR="$SCRIPT_DIR/../"
 WG_CONF="/opt/homebrew/etc/wireguard/vb.conf"
 
-NEW_IP=$(cd "$TERRAFORM_DIR" && terraform output -raw vb_free_vm_external_ip)
+NEW_IP=$(cd "$TERRAFORM_DIR" && terraform output -raw gcp_vm_external_ip)
 CURRENT_IP=$(grep 'Endpoint' "$WG_CONF" | sed 's/.*= \(.*\):.*/\1/')
-
-echo "Terraform VM IP: $NEW_IP"
-echo "Current WG endpoint: $CURRENT_IP"
 
 sync_secrets_to_vault() {
   echo "Syncing secrets to Vault..."
 
   local vm_name="vb-free-vm"
-  local vm_zone="us-east1-b"
+  local vm_zone="us-central1-a"
 
   cd "$TERRAFORM_DIR"
   local state_json
@@ -57,10 +54,17 @@ export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 export VAULT_TOKEN='${vault_token}'
 
-vault kv patch kv/secrets \
-  RABBITMQ_CA_CERT='${ca_cert_b64}' \
-  RABBITMQ_CONNECTION_STRING='${conn_str}' \
-  EMAIL_SERVICE_API_KEY='${email_api_key}'
+if vault kv get kv/secrets >/dev/null 2>&1; then
+  vault kv patch kv/secrets \
+    RABBITMQ_CA_CERT='${ca_cert_b64}' \
+    RABBITMQ_CONNECTION_STRING='${conn_str}' \
+    EMAIL_SERVICE_API_KEY='${email_api_key}'
+else
+  vault kv put kv/secrets \
+    RABBITMQ_CA_CERT='${ca_cert_b64}' \
+    RABBITMQ_CONNECTION_STRING='${conn_str}' \
+    EMAIL_SERVICE_API_KEY='${email_api_key}'
+fi
 
 echo 'Secrets synced to Vault'
 "
@@ -68,7 +72,6 @@ echo 'Secrets synced to Vault'
 }
 
 if [ "$NEW_IP" = "$CURRENT_IP" ]; then
-  echo "VM IP unchanged. Syncing secrets to Vault..."
   sync_secrets_to_vault
   exit 0
 fi

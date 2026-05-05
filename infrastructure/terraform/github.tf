@@ -17,9 +17,12 @@ resource "github_repository" "vigilant_broccoli" {
 
   auto_init              = false
   archive_on_destroy     = true
-  vulnerability_alerts   = true
   squash_merge_commit_title   = "COMMIT_OR_PR_TITLE"
   squash_merge_commit_message = "COMMIT_MESSAGES"
+}
+
+resource "github_repository_vulnerability_alerts" "vigilant_broccoli" {
+  repository = github_repository.vigilant_broccoli.name
 }
 
 resource "github_branch" "main" {
@@ -33,24 +36,24 @@ resource "github_branch_default" "default" {
 }
 
 resource "github_actions_secret" "gcp_service_account" {
-  repository      = github_repository.vigilant_broccoli.name
-  secret_name     = "GCP_SERVICE_ACCOUNT"
-  plaintext_value = google_service_account.github_actions.email
+  repository  = github_repository.vigilant_broccoli.name
+  secret_name = "GCP_SERVICE_ACCOUNT"
+  value       = google_service_account.github_actions.email
 }
 
 resource "github_actions_secret" "gcp_workload_identity_provider" {
-  repository      = github_repository.vigilant_broccoli.name
-  secret_name     = "GCP_WORKLOAD_IDENTITY_PROVIDER"
-  plaintext_value = google_iam_workload_identity_pool_provider.github.name
+  repository  = github_repository.vigilant_broccoli.name
+  secret_name = "GCP_WORKLOAD_IDENTITY_PROVIDER"
+  value       = google_iam_workload_identity_pool_provider.github.name
 }
 
 resource "github_actions_secret" "dockerhub_token" {
-  repository      = github_repository.vigilant_broccoli.name
-  secret_name     = "DOCKERHUB_TOKEN"
-  plaintext_value = "changeme"
+  repository  = github_repository.vigilant_broccoli.name
+  secret_name = "DOCKERHUB_TOKEN"
+  value       = "changeme"
 
   lifecycle {
-    ignore_changes = [plaintext_value]
+    ignore_changes = [value]
   }
 }
 

@@ -12,7 +12,7 @@ storage "file" {
 
 seal "gcpckms" {
   project    = "vigilant-broccoli"
-  region     = "us-east1"
+  region     = "us-central1"
   key_ring   = "vault-keyring"
   crypto_key = "vault-unseal-key"
 }

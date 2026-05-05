@@ -35,7 +35,7 @@ jobs:
       - name: Open IAP Tunnel to Vault
         run: |
           gcloud compute ssh vb-free-vm \
-            --zone=us-east1-b \
+            --zone=us-central1-a \
             --tunnel-through-iap \
             --ssh-flag="-N" \
             --ssh-flag="-L 8200:127.0.0.1:8200" \
@@ -118,7 +118,7 @@ jobs:
 
           echo ""
           echo "[GCP VM]"
-          VM_STATUS=$(gcloud compute instances describe vb-free-vm --zone=us-east1-b --format='value(status)' 2>/dev/null) || VM_STATUS="unknown"
+          VM_STATUS=$(gcloud compute instances describe vb-free-vm --zone=us-central1-a --format='value(status)' 2>/dev/null) || VM_STATUS="unknown"
           if [ "$VM_STATUS" = "RUNNING" ]; then
             check "vb-free-vm" "ok"
           else

@@ -2,9 +2,9 @@
 set -e
 
 VM_NAME="vb-free-vm"
-VM_ZONE="us-east1-b"
+VM_ZONE="us-central1-a"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-LOCAL_CERT="${SCRIPT_DIR}/../../../projects/nx-workspace/scripts/vault-ca.crt"
+LOCAL_CERT="${SCRIPT_DIR}/../../../../projects/nx-workspace/scripts/vault-ca.crt"
 
 EXTERNAL_IP=$(gcloud compute instances describe "${VM_NAME}" \
   --zone="${VM_ZONE}" \

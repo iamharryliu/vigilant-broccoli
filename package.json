@@ -15,14 +15,14 @@
     "tf:post-apply": "./infrastructure/terraform/scripts/post-apply.sh",
     "tf:output": "cd infrastructure/terraform && terraform output",
     "oci:vm:ssh": "ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd infrastructure/terraform && terraform output -raw rabbitmq_public_ip)",
-    "gcp:vm:ssh": "gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap",
-    "gcp:vm:status": "gcloud compute instances describe vb-free-vm --zone=us-east1-b --format='value(status)'",
-    "gcp:vm:stop": "gcloud compute instances stop vb-free-vm --zone=us-east1-b",
-    "gcp:vm:start": "gcloud compute instances start vb-free-vm --zone=us-east1-b",
+    "gcp:vm:ssh": "gcloud compute ssh vb-free-vm --zone=us-central1-a --tunnel-through-iap",
+    "gcp:vm:status": "gcloud compute instances describe vb-free-vm --zone=us-central1-a --format='value(status)'",
+    "gcp:vm:stop": "gcloud compute instances stop vb-free-vm --zone=us-central1-a",
+    "gcp:vm:start": "gcloud compute instances start vb-free-vm --zone=us-central1-a",
     "gcp:vm:post-init": "./infrastructure/terraform/packer/scripts/run-vault-post-init.sh",
     "gcp:vm:regen-cert": "./infrastructure/terraform/packer/scripts/run-vault-regen-cert.sh && npm run gcp:vm:update-wg",
     "gcp:vm:update-wg": "./infrastructure/terraform/packer/scripts/run-update-wg-endpoint.sh",
-    "gcp:vm:vault:test-local-connection": "gcloud compute ssh vb-free-vm --zone=us-east1-b --tunnel-through-iap --command='export VAULT_ADDR=https://127.0.0.1:8200 VAULT_SKIP_VERIFY=true && vault status && echo \"✓ Vault is accessible\"'",
+    "gcp:vm:vault:test-local-connection": "gcloud compute ssh vb-free-vm --zone=us-central1-a --tunnel-through-iap --command='export VAULT_ADDR=https://127.0.0.1:8200 VAULT_SKIP_VERIFY=true && vault status && echo \"✓ Vault is accessible\"'",
     "gcp:vm:vault:unseal": "./infrastructure/terraform/packer/scripts/run-vault-unseal.sh",
     "gcp:vm:vault:seal": "./infrastructure/terraform/packer/scripts/run-vault-seal.sh",
     "gcp:vm:vault:save-secrets-local": "./infrastructure/terraform/packer/scripts/run-vault-get-secrets.sh",
@@ -35,7 +35,7 @@
     "gh:actions:health-check": "gh workflow run health-check --repo iamharryliu/vigilant-broccoli",
     "gh:actions:kill-services": "gh workflow run kill-services --repo iamharryliu/vigilant-broccoli",
     "gh:actions:test-services": "gh workflow run test-email-service --repo iamharryliu/vigilant-broccoli && gh workflow run test-rabbitmq-service --repo iamharryliu/vigilant-broccoli && gh workflow run test-vault-service --repo iamharryliu/vigilant-broccoli && gh workflow run test-gcp-secret-manager-access --repo iamharryliu/vigilant-broccoli",
-    "repo:local:vulnerability-audit": "python3 scripts/python/vuln_tree.py ."
+    "audit": "python3 scripts/python/vuln_tree.py ."
   },
   "repository": {
     "type": "git",

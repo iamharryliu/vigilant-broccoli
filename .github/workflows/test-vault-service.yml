@@ -38,7 +38,7 @@ jobs:
       - name: Open IAP Tunnel to Vault
         run: |
           gcloud compute ssh vb-free-vm \
-            --zone=us-east1-b \
+            --zone=us-central1-a \
             --tunnel-through-iap \
             --ssh-flag="-N" \
             --ssh-flag="-L 8200:127.0.0.1:8200" \

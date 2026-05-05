@@ -1,7 +1,7 @@
 .PHONY: help init validate build list-images prune-images clean
 
 PROJECT_ID ?= vigilant-broccoli
-ZONE ?= us-east1-b
+ZONE ?= us-central1-a
 IMAGE_FAMILY ?= vb-vm
 KEEP_IMAGES ?= 3
 
@@ -23,7 +23,7 @@ validate: init
 	packer validate vb-vm.pkr.hcl
 
 build: init
-	packer build vb-vm.pkr.hcl
+	packer build -var "zone=$(ZONE)" vb-vm.pkr.hcl
 	$(MAKE) prune-images KEEP_IMAGES=1
 
 list-images:

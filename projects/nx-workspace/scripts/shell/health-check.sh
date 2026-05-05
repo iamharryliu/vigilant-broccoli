@@ -49,7 +49,7 @@ http_check "vb-next-demo.vercel.app" "https://vb-next-demo.vercel.app"
 
 echo ""
 echo "[GCP VM]"
-VM_STATUS=$(gcloud compute instances describe vb-free-vm --zone=us-east1-b --format='value(status)' 2>/dev/null) || VM_STATUS="unknown"
+VM_STATUS=$(gcloud compute instances describe vb-free-vm --zone=us-central1-a --format='value(status)' 2>/dev/null) || VM_STATUS="unknown"
 if [ "$VM_STATUS" = "RUNNING" ]; then
   check "vb-free-vm" "ok"
 else

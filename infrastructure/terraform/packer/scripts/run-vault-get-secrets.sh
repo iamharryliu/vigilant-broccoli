@@ -2,7 +2,7 @@
 set -e
 
 VM_NAME="vb-free-vm"
-VM_ZONE="us-east1-b"
+VM_ZONE="us-central1-a"
 GCP_PROJECT="vigilant-broccoli"
 OUTPUT_FILE="$HOME/Desktop/vault-secrets.json"
 KV_PATH="kv"

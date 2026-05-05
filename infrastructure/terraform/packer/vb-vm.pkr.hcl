@@ -16,7 +16,7 @@ variable "project_id" {
 variable "zone" {
   type        = string
   description = "GCP Zone"
-  default     = "us-east1-b"
+  default     = "us-central1-a"
 }
 
 variable "image_family" {

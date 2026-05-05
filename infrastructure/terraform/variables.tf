@@ -1,11 +1,11 @@
 variable "region" {
   type    = string
-  default = "us-east1"
+  default = "us-central1"
 }
 
 variable "zone" {
   type    = string
-  default = "us-east1-b"
+  default = "us-central1-a"
 }
 
 variable "github_owner" {
