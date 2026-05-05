@@ -22,14 +22,16 @@ echo -n "secret_value" | gcloud secrets versions add SECRET_NAME --data-file=-
 # DELETE
 gcloud secrets delete SECRET_NAME
 gcloud secrets delete SECRET_NAME --quiet
+gsutil -m rm -r "gs://BUCKET_NAME/path"
+gsutil -m rm -r "gs://BUCKET_NAME/8"
 ```
 
 # Snapshot Process
 
 ```
-gcloud compute disks snapshot free-vm --snapshot-names=free-vm-snapshot --zone=us-east1-c
+gcloud compute disks snapshot free-vm --snapshot-names=free-vm-snapshot --zone=REGION
 
-gcloud compute disks create vb-free-vm --source-snapshot=free-vm-snapshot --type=pd-standard --zone=us-east1-b
+gcloud compute disks create vb-free-vm --source-snapshot=free-vm-snapshot --type=pd-standard --zone=REGION
 
-gcloud compute instances create vb-free-vm --zone=us-east1-b --disk=name=vb-free-vm,boot=yes --machine-type=e2-micro
+gcloud compute instances create vb-free-vm --zone=REGION --disk=name=vb-free-vm,boot=yes --machine-type=MACHINE_TYPE
 ```

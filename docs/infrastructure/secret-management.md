@@ -5,37 +5,31 @@
 ```mermaid
 flowchart
 
-subgraph PASSWORD_MANAGERS[Password Managers]
-  MAIN_SECRET_MANAGER[Main Secret Manager]
+
+RECOVERY_ACCOUNT[Recovery Account]
+MAIN_ACCOUNT[Main Account]
+DOCUMENT_MANAGER[Document Manager]
+subgraph DEVICE_PASSWORD_MANAGERS[Device Password Managers]
   MOBILE_PASSWORD_MANAGER[Mobile Password Manager]
   BROWSER_PASSWORD_MANAGER[Browser Password Manager]
-  APP_SECRET_MANAGER[App Secret Manager]
-  MOBILE_PASSWORD_MANAGER-->MAIN_SECRET_MANAGER
-  BROWSER_PASSWORD_MANAGER-->MAIN_SECRET_MANAGER
-  APP_SECRET_MANAGER-->MAIN_SECRET_MANAGER
 end
+APP_SECRET_MANAGER[App Secret Manager]
 
-RECOVERY_ACCOUNT[Recovery Account]-->MAIN_ACCOUNT[Main Account]-->PASSWORD_MANAGERS
+RECOVERY_ACCOUNT-->MAIN_ACCOUNT-->DOCUMENT_MANAGER-->DEVICE_PASSWORD_MANAGERS-->APP_SECRET_MANAGER
 ```
 
 ## Secret Rotation
 
 - Rotate credentials semi-annually
 
-### BITWARDEN_PASSWORD
+### Bitwarden
 
 1. Update GCP Secret Manager:
    ```bash
    gcloud secrets versions add BITWARDEN_PASSWORD --data-file=- <<< "your-bitwarden-password"
    ```
 
-### FLY_API_TOKEN (Fly.io Token)
-
-```bash
-./infrastructure/terraform/packer/scripts/rotate-fly-token.sh
-```
-
-### Cloudflare Secrets
+### Cloudflare
 
 Rotate manually at
 
@@ -46,4 +40,7 @@ Rotate manually at
 - `CLOUDFLARE_R2_ACCESS_KEY_ID`
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
 
-Wireguard secrets, resilio secrets
+### Other
+
+- Wireguard secrets
+- Resilio secrets

@@ -53,9 +53,9 @@ USER-->ADMINER
 ```mermaid
 flowchart
 
-subgraph SERVERLESS_CONTAINERS[Serverless Containers]
-  PRODUCER_SERVICES[Producer Services]
-  CONSUMER_SERVICES[Consumer Services]
+subgraph DEPLOYED_SERVERLESS_APPS[Deployed Serverless Apps]
+  PRODUCER_CONSUMER_APPS[Producer/Consumer Apps]
+  DEPLOYED_SERVERLESS_SERVICES[Services]
 end
 
 subgraph GITHUB[Github]
@@ -63,19 +63,14 @@ subgraph GITHUB[Github]
   GITHUB_ACTIONS[GitHub Actions]
   GITHUB_MONOREPO-->GITHUB_ACTIONS
 end
-
-subgraph NPM
+subgraph DEPENDENCY_DISTRIBUTION[Dependency Distribution]
   NPM_PACKAGES[NPM Packages]
-end
-
-subgraph DOCKER[Docker]
   DOCKER_HUB[Docker Hub]
 end
 
 subgraph GCP
 
   SECRET_MANAGER[Secret Manager]
-  IAP[IAP]
   GCS_BACKUP[GCS Backup Bucket]
 
   subgraph GCP_VM[GCP VM]
@@ -83,14 +78,12 @@ subgraph GCP
     VAULT[Vault]
   end
 
-  subgraph WORKLOAD_IDENTITY[Workload Identity]
-    GITHUB_ACTIONS_SA[GitHub Actions SA]
-  end
+  GCP_SA[GCP Service Account]
 
-  SECRET_MANAGER-->GCP_VM
-  IAP-->GCP_VM
-  GITHUB_ACTIONS_SA-->GCS_BACKUP
-  GITHUB_ACTIONS_SA-->SECRET_MANAGER
+  GCP_SA-->GCP_VM
+  GCP_SA-->GCS_BACKUP
+  GCP_SA-->SECRET_MANAGER
+  SECRET_MANAGER-->VAULT
 
 end
 
@@ -98,21 +91,55 @@ subgraph CLOUDFLARE[Cloudflare]
   R2[R2 Buckets]
 end
 
-subgraph ORACLE_VM[Oracle VM]
-  RABBITMQ[RabbitMQ]
+  RABBITMQ[(RabbitMQ)]
+
+OTHER_SERVICES{Other Services}
+
+
+subgraph DB_SERVICES[Database Services]
+  SUPABASE[Supabase]
 end
 
+subgraph MESSAGE_SERVICES[Message Services]
+  TWILIO[Twilio]
+  RESEND[Resend]
+  SendGrid[SendGrid]
+end
 
-PRODUCER_SERVICES-->RABBITMQ-->CONSUMER_SERVICES
-VAULT-->SERVERLESS_CONTAINERS
+subgraph LLM_SERVICES[LLM Services]
+  OPENAI[Open AI]
+  ANTHROPIC[Anthropic]
+  DEEP_SEEK[Deep Seek]
+  GEMINI[Gemini]
+  GROK[Grok]
+  ELEVEN_LABS[Eleven Labs]
+end
 
-SERVERLESS_CONTAINERS-->SUPABASE
-SERVERLESS_CONTAINERS-->CLOUDFLARE
+subgraph MONEY_SERVICES[Money Services]
+  STRIPE[Stripe]
+end
 
-GITHUB_ACTIONS-->NPM_PACKAGES
-GITHUB_ACTIONS-->DOCKER_HUB
-GITHUB_ACTIONS-->WORKLOAD_IDENTITY
-SUPABASE[Supabase]
+subgraph UTILITY_SERVICES[Utility Services]
+  CURRENCY_SERVICE[Currency Service]
+  WEATHER_SERVICE[Weather Service]
+end
+
+RABBITMQ<-->PRODUCER_CONSUMER_APPS[Producer/Consumer Apps]
+VAULT-->DEPLOYED_SERVERLESS_APPS
+
+PRODUCER_CONSUMER_APPS<-->DEPLOYED_SERVERLESS_SERVICES
+DEPLOYED_SERVERLESS_SERVICES-->OTHER_SERVICES
+
+GITHUB_ACTIONS-->DEPENDENCY_DISTRIBUTION
+GITHUB_ACTIONS-->GCP_SA
+
+OTHER_SERVICES-->CLOUDFLARE
+OTHER_SERVICES-->LLM_SERVICES
+OTHER_SERVICES-->DB_SERVICES
+OTHER_SERVICES-->MESSAGE_SERVICES
+OTHER_SERVICES-->UTILITY_SERVICES
+OTHER_SERVICES-->MONEY_SERVICES
+
 ```
 
 ## Personal Infrastructure
