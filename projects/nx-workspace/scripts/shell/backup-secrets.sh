@@ -22,8 +22,6 @@ if [ ! -f "$ADC_FILE" ] || ! grep -q '"authorized_user"' "$ADC_FILE" 2>/dev/null
   exit 1
 fi
 
-source "$NX_DIR/.env"
-
 TIMESTAMP=$(date -u +%Y-%m-%d)
 FOLDER_NAME="vb-vault-secrets"
 ITEM_NAME="vb-vault-secrets-$TIMESTAMP"
