@@ -61,7 +61,7 @@ MAX_NOTE_LENGTH=5000
 
 upsert_bw_note() {
   local item_name="$1"
-  local notes="$2"x
+  local notes="$2"
   local folder_id="$3"
 
   local existing_id

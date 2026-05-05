@@ -7,7 +7,7 @@ export function getVaultToken(): string {
   const envToken = process.env.VAULT_TOKEN;
   if (envToken) return envToken;
 
-  console.log('Fetching Vault token from GCP Secret Manager...');
+  console.error('Fetching Vault token from GCP Secret Manager...');
   const token = execSync(
     `gcloud secrets versions access latest --secret=${SECRET_NAME} --project=${GCP_PROJECT}`,
     { encoding: 'utf-8' },
