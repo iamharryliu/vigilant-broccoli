@@ -10,3 +10,5 @@ mkdir -p "$BACKUP_DIR"
 curl -sL -o "$BACKUP_DIR/$FILENAME" https://github.com/iamharryliu/vigilant-broccoli/archive/refs/heads/main.zip
 
 echo "✓ Repo backed up to $BACKUP_DIR/$FILENAME"
+
+ls -1t "$BACKUP_DIR"/vb-repo-*.zip | tail -n +6 | xargs rm -f --
