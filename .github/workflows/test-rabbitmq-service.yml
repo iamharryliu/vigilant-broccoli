@@ -12,6 +12,12 @@ permissions:
   contents: read
   id-token: write
 
+env:
+  GCP_ZONE: us-central1-a
+  VM_NAME: vb-free-vm
+  VAULT_ROLE: github-actions-role
+  VAULT_AUDIENCE: https://github.com/iamharryliu/vigilant-broccoli
+
 jobs:
   test-rabbitmq:
     runs-on: ubuntu-latest
@@ -36,8 +42,8 @@ jobs:
 
       - name: Open IAP Tunnel to Vault
         run: |
-          gcloud compute ssh vb-free-vm \
-            --zone=us-central1-a \
+          gcloud compute ssh ${{ env.VM_NAME }} \
+            --zone=${{ env.GCP_ZONE }} \
             --tunnel-through-iap \
             --ssh-flag="-N" \
             --ssh-flag="-L 8200:127.0.0.1:8200" \
@@ -59,8 +65,8 @@ jobs:
           url: https://127.0.0.1:8200
           caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
           method: jwt
-          role: github-actions-role
-          jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
+          role: ${{ env.VAULT_ROLE }}
+          jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
           secrets: |
             kv/data/secrets RABBITMQ_CONNECTION_STRING | RABBITMQ_CONNECTION_STRING ;
             kv/data/secrets RABBITMQ_CA_CERT | RABBITMQ_CA_CERT ;

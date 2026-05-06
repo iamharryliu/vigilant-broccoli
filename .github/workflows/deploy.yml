@@ -11,6 +11,14 @@ permissions:
   contents: read
   id-token: write
 
+env:
+  GCP_PROJECT: vigilant-broccoli
+  GCP_ZONE: us-central1-a
+  VM_NAME: vb-free-vm
+  VAULT_ROLE: github-actions-role
+  VAULT_AUDIENCE: https://github.com/iamharryliu/vigilant-broccoli
+  DOCKERHUB_USERNAME: iamharryliu
+
 jobs:
   deploy-npm-packages:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
@@ -148,8 +156,8 @@ jobs:
       - name: Open IAP Tunnel to Vault
         if: steps.check.outputs.has_deployments == 'true'
         run: |
-          gcloud compute ssh vb-free-vm \
-            --zone=us-central1-a \
+          gcloud compute ssh ${{ env.VM_NAME }} \
+            --zone=${{ env.GCP_ZONE }} \
             --tunnel-through-iap \
             --ssh-flag="-N" \
             --ssh-flag="-L 8200:127.0.0.1:8200" \
@@ -179,8 +187,8 @@ jobs:
           url: https://127.0.0.1:8200
           caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
           method: jwt
-          role: github-actions-role
-          jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
+          role: ${{ env.VAULT_ROLE }}
+          jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
           exportToken: true
           secrets: |
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
@@ -193,7 +201,7 @@ jobs:
         if: steps.check.outputs.has_deployments == 'true'
         uses: docker/login-action@v3
         with:
-          username: iamharryliu
+          username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
