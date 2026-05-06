@@ -2,6 +2,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/../../config.sh"
+
 TERRAFORM_DIR="$SCRIPT_DIR/../"
 WG_CONF="/opt/homebrew/etc/wireguard/vb.conf"
 
@@ -11,8 +13,8 @@ CURRENT_IP=$(grep 'Endpoint' "$WG_CONF" | sed 's/.*= \(.*\):.*/\1/')
 sync_secrets_to_vault() {
   echo "Syncing secrets to Vault..."
 
-  local vm_name="vb-free-vm"
-  local vm_zone="us-central1-a"
+  local vm_name="${VM_NAME}"
+  local vm_zone="${GCP_ZONE}"
 
   cd "$TERRAFORM_DIR"
   local state_json

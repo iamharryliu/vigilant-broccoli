@@ -1,12 +1,13 @@
 #!/bin/bash
 set -e
 
-VM_NAME="vb-free-vm"
-VM_ZONE="us-central1-a"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/../../../config.sh"
+
 WG_CONF="/opt/homebrew/etc/wireguard/vb.conf"
 
 EXTERNAL_IP=$(gcloud compute instances describe "${VM_NAME}" \
-  --zone="${VM_ZONE}" \
+  --zone="${GCP_ZONE}" \
   --format="get(networkInterfaces[0].accessConfigs[0].natIP)")
 
 if [ -z "${EXTERNAL_IP}" ]; then

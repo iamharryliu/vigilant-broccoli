@@ -1,11 +1,10 @@
 #!/bin/bash
 set -e
 
-VM_NAME="vb-free-vm"
-VM_ZONE="us-central1-a"
-GCP_PROJECT="vigilant-broccoli"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/../../../config.sh"
+
 OUTPUT_FILE="$HOME/Desktop/vault-secrets.json"
-KV_PATH="kv"
 
 echo "Fetching root token from Secret Manager..."
 VAULT_TOKEN=$(gcloud secrets versions access latest \
@@ -14,14 +13,14 @@ VAULT_TOKEN=$(gcloud secrets versions access latest \
 
 echo "Fetching secrets from Vault..."
 SECRETS=$(gcloud compute ssh "${VM_NAME}" \
-  --zone="${VM_ZONE}" \
+  --zone="${GCP_ZONE}" \
   --tunnel-through-iap \
   --command="
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 export VAULT_TOKEN='${VAULT_TOKEN}'
 
-vault kv get -format=json ${KV_PATH}/secrets | jq '.data.data'
+vault kv get -format=json ${VAULT_KV_PATH}/secrets | jq '.data.data'
 ")
 
 echo "$SECRETS" > "$OUTPUT_FILE"

@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-GCP_PROJECT="vigilant-broccoli"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/../../config.sh"
+
 BW_FOLDER="vb-vault-secrets"
 
 export BITWARDEN_PASSWORD

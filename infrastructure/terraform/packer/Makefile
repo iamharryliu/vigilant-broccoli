@@ -1,8 +1,10 @@
 .PHONY: help init validate build list-images prune-images clean
 
-PROJECT_ID ?= vigilant-broccoli
-ZONE ?= us-central1-a
-IMAGE_FAMILY ?= vb-vm
+MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+CONFIG_SH := $(MAKEFILE_DIR)../../../infrastructure/config.sh
+PROJECT_ID ?= $(shell . $(CONFIG_SH) && echo $$GCP_PROJECT)
+ZONE ?= $(shell . $(CONFIG_SH) && echo $$GCP_ZONE)
+IMAGE_FAMILY ?= $(shell . $(CONFIG_SH) && echo $$VM_IMAGE_FAMILY)
 KEEP_IMAGES ?= 3
 
 help:
@@ -23,7 +25,7 @@ validate: init
 	packer validate vb-vm.pkr.hcl
 
 build: init
-	packer build -var "zone=$(ZONE)" vb-vm.pkr.hcl
+	packer build -var "project_id=$(PROJECT_ID)" -var "zone=$(ZONE)" vb-vm.pkr.hcl
 	$(MAKE) prune-images KEEP_IMAGES=1
 
 list-images:

@@ -1,11 +1,10 @@
 #!/bin/bash
 set -e
 
-VM_NAME="vb-free-vm"
-VM_ZONE="us-central1-a"
-GCP_PROJECT="vigilant-broccoli"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/../../../config.sh"
+
 SECRETS_FILE="$HOME/Desktop/vault-secrets.json"
-KV_PATH="kv"
 
 if [ ! -f "$SECRETS_FILE" ]; then
   echo "ERROR: Secrets file not found: $SECRETS_FILE"
@@ -33,14 +32,14 @@ fi
 
 echo "Setting secrets in Vault..."
 gcloud compute ssh "${VM_NAME}" \
-  --zone="${VM_ZONE}" \
+  --zone="${GCP_ZONE}" \
   --tunnel-through-iap \
   --command="
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 export VAULT_TOKEN='${VAULT_TOKEN}'
 
-vault kv put ${KV_PATH}/secrets ${KV_ARGS}
+vault kv put ${VAULT_KV_PATH}/secrets ${KV_ARGS}
 
 echo 'Secrets set successfully.'
 "

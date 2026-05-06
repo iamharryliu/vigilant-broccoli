@@ -1,9 +1,8 @@
 #!/bin/bash
 set -e
 
-VM_NAME="vb-free-vm"
-VM_ZONE="us-central1-a"
-GCP_PROJECT="vigilant-broccoli"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/../../../config.sh"
 
 echo "Fetching unseal keys from Secret Manager..."
 UNSEAL_KEYS=$(gcloud secrets versions access latest \
@@ -16,7 +15,7 @@ KEY3=$(echo "$UNSEAL_KEYS" | sed -n '3p')
 
 echo "Unsealing Vault..."
 gcloud compute ssh "${VM_NAME}" \
-  --zone="${VM_ZONE}" \
+  --zone="${GCP_ZONE}" \
   --tunnel-through-iap \
   --command="
 export VAULT_ADDR=https://127.0.0.1:8200

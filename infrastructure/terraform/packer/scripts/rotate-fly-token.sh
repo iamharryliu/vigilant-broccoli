@@ -1,10 +1,8 @@
 #!/bin/bash
 set -e
 
-GCP_PROJECT="vigilant-broccoli"
-VAULT_KV_PATH="kv"
-VM_NAME="vb-free-vm"
-VM_ZONE="us-central1-a"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/../../../config.sh"
 
 echo "Fetching root token from Secret Manager..."
 VAULT_TOKEN=$(gcloud secrets versions access latest \
@@ -30,7 +28,7 @@ fi
 
 echo "Updating Vault with new token..."
 gcloud compute ssh "${VM_NAME}" \
-  --zone="${VM_ZONE}" \
+  --zone="${GCP_ZONE}" \
   --tunnel-through-iap \
   --command="
 export VAULT_ADDR=https://127.0.0.1:8200
