@@ -104,6 +104,16 @@ app.get('/', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
+const queueEmails = async (emails: Email[]): Promise<void> => {
+  const ch = await getPublishChannel();
+  for (const email of emails) {
+    ch.sendToQueue(QUEUE.EMAIL, Buffer.from(JSON.stringify(email)), {
+      persistent: true,
+    });
+  }
+  console.log(`📤 Queued ${emails.length} emails`);
+};
+
 app.post(
   `/${EMAIL_SERVICE_ENDPOINT.SEND_EMAIL}`,
   validateApiKey,
@@ -114,10 +124,7 @@ app.post(
       return;
     }
     try {
-      const ch = await getPublishChannel();
-      ch.sendToQueue(QUEUE.EMAIL, Buffer.from(JSON.stringify(email)), {
-        persistent: true,
-      });
+      await queueEmails([email]);
       res.json({ success: true });
     } catch (err) {
       console.error('Failed to queue email:', (err as Error).message);
@@ -137,13 +144,7 @@ app.post(
       return;
     }
     try {
-      const ch = await getPublishChannel();
-      for (const email of emails) {
-        ch.sendToQueue(QUEUE.EMAIL, Buffer.from(JSON.stringify(email)), {
-          persistent: true,
-        });
-      }
-      console.log(`📤 Queued ${emails.length} emails`);
+      await queueEmails(emails);
       res.json({ success: true });
     } catch (err) {
       console.error('Failed to queue emails:', (err as Error).message);
