@@ -33,7 +33,7 @@ export const secretsMapping: SecretsMapping = {
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
   'email-subscription-service': {
-    flyAppName: 'vb-email-subscription-service',
+    flyAppName: 'email-subscription-service',
     appPath: './apps/api/email-subscription-service',
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,

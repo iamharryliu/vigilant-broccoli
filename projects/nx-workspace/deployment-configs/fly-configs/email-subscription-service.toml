@@ -1,4 +1,4 @@
-app = 'vb-email-subscription-service'
+app = 'email-subscription-service'
 primary_region = 'yyz'
 
 [build]

@@ -17,7 +17,7 @@ env:
   VM_NAME: vb-free-vm
   VAULT_ROLE: github-actions-role
   VAULT_AUDIENCE: https://github.com/iamharryliu/vigilant-broccoli
-  SERVICE_URL: https://vb-email-subscription-service.fly.dev
+  SERVICE_URL: https://email-subscription-service.fly.dev
   TEST_EMAIL: harryliu1995@gmail.com
   TEST_SUBSCRIPTION: ci-test
 
