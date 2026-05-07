@@ -21,12 +21,20 @@
       }
     },
     "serve": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/small-business-next/.env.local.example 'cd apps/ui/small-business-next && next dev --port 4200'"
+      }
+    },
+    "serve:no-vault": {
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "small-business-next:build",
         "dev": true,
-        "webpack": true
+        "webpack": true,
+        "port": 4201
       },
       "configurations": {
         "development": {
