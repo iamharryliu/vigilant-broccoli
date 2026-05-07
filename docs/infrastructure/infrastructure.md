@@ -240,39 +240,34 @@ graph TD
 TERRAFORM[Terraform]
 
 subgraph INFRASTRUCTURE[Infrastructure]
-  subgraph GCP_VM[GCP VM]
-    SECRETS_MANAGER[Secrets Manager]
-    VPN[VPN]
-  end
+  GCP[GCP]
+  AWS[AWS]
+  AZURE[AZURE]
+  OCI[OCI]
+
+
 end
 
 subgraph GITHUB_ACTIONS[Github Actions]
-  DEPLOY_NX_APPS[Deploy Nx Apps]
+  DEPLOYMENTS[Deployments]
   subgraph AUTOMATIONS[Automations]
-    UPDATE_RESUME[Update Resume]
-    CLOUD_BACKUP_VB[Cloud Backup VB]
-    CLOUD_BACKUP_SECRETS[Cloud Backup Secrets]
+    UPDATES[Updates]
+    BACKUPS[Backups]
     HEALTH_CHECK[Health Checks]
   end
 end
 
-subgraph CLOUDFLARE_UI_APPS[Cloudflare UI Applications]
-  CLOUD_8_SKATE[Cloud8Skate]
-  PERSONAL_WEBSITE_UI[Personal Website UI]
+subgraph CLOUDFLARE_PAGES[Cloudflare Pages]
 end
 
-subgraph FLYIO_SERVICE_APPS[Fly.io Service Applications]
-  VB_BACKEND[vigilant-broccoli Backend]
-  QUEUE[RabbitMQ Queue]
-  EMAIL_CONSUMER[Email Consumer]
-  CMS[CMS - Content Management System]
+subgraph FLYIO_APPLICATIONS[Fly.io Applications]
 end
 
 
 %% Connections
 TERRAFORM-->INFRASTRUCTURE
-DEPLOY_NX_APPS-->FLYIO_SERVICE_APPS
-DEPLOY_NX_APPS-->CLOUDFLARE_UI_APPS
+DEPLOYMENTS-->FLYIO_APPLICATIONS
+DEPLOYMENTS-->CLOUDFLARE_PAGES
 
 ```
 
