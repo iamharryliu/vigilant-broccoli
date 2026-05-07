@@ -26,5 +26,5 @@ jobs:
       - name: Notify on failure
         if: failure()
         run: |
-          echo "Security check failed! The /send-email endpoint may be accepting unauthorized requests."
+          echo "Security check failed! The /queue-emails endpoint may be accepting unauthorized requests."
           exit 1

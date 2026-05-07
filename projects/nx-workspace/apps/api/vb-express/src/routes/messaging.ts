@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import {
-  QUEUE,
+  EMAIL_SERVICE_ENDPOINT,
   getEnvironmentVariable,
   TextMessageService,
   Email,
@@ -9,7 +9,6 @@ import {
   APP_NAME,
   MessageRequest,
 } from '@vigilant-broccoli/personal-common-js';
-import amqplib, { ConfirmChannel } from 'amqplib';
 import {
   requireJsonContent,
   checkRecaptchaToken,
@@ -17,37 +16,8 @@ import {
 
 const router = Router();
 const textMessageService = new TextMessageService();
-const RABBITMQ_CONNECTION_STRING = getEnvironmentVariable(
-  'RABBITMQ_CONNECTION_STRING',
-);
-const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
-const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
-  ? {
-      ca: [Buffer.from(RABBITMQ_CA_CERT, 'base64')],
-      checkServerIdentity: () => undefined,
-    }
-  : undefined;
-
-let channel: ConfirmChannel | null = null;
-
-const getChannel = async (): Promise<ConfirmChannel> => {
-  if (channel) return channel;
-  const connection = await amqplib.connect(
-    RABBITMQ_CONNECTION_STRING,
-    RABBITMQ_SOCKET_OPTIONS,
-  );
-  connection.on('error', err => {
-    console.error('RabbitMQ connection error:', err.message);
-    channel = null;
-  });
-  connection.on('close', () => {
-    console.warn('RabbitMQ connection closed, will reconnect on next request');
-    channel = null;
-  });
-  channel = await connection.createConfirmChannel();
-  await channel.assertQueue(QUEUE.EMAIL, { durable: true });
-  return channel;
-};
+const EMAIL_SERVICE_URL = getEnvironmentVariable('EMAIL_SERVICE_URL');
+const EMAIL_SERVICE_API_KEY = getEnvironmentVariable('EMAIL_SERVICE_API_KEY');
 
 const APP_EMAIL_CONFIG: Record<string, { from: string; to: string }> = {
   [APP_NAME.HARRYLIU_DESIGN]: {
@@ -111,17 +81,24 @@ router.post(
     const { name, email, message, appName } = req.body as MessageRequest;
     const emails = buildEmails(name, email, message, appName);
     try {
-      const ch = await getChannel();
-      for (const emailPayload of emails) {
-        ch.sendToQueue(QUEUE.EMAIL, Buffer.from(JSON.stringify(emailPayload)), {
-          persistent: true,
-        });
+      const response = await fetch(
+        `${EMAIL_SERVICE_URL}/${EMAIL_SERVICE_ENDPOINT.QUEUE_EMAILS}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': EMAIL_SERVICE_API_KEY,
+          },
+          body: JSON.stringify(emails),
+        },
+      );
+      if (!response.ok) {
+        throw new Error(`Email service responded with ${response.status}`);
       }
       console.log(`📤 Queued ${emails.length} emails from: ${email}`);
       res.json({ success: true });
     } catch (err) {
       console.error('Failed to queue emails:', (err as Error).message);
-      channel = null;
       res.status(500).json({ error: 'Failed to send message' });
     }
   },

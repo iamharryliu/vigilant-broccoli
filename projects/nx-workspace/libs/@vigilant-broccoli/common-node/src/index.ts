@@ -50,3 +50,8 @@ export * from './lib/wrangler/wrangler.service';
 export const QUEUE = {
   EMAIL: 'EMAIL',
 };
+
+export const EMAIL_SERVICE_ENDPOINT = {
+  QUEUE_EMAILS: 'queue-emails',
+  SEND_EMAIL: 'send-email',
+};

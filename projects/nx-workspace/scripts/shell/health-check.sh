@@ -78,13 +78,13 @@ echo ""
 echo "[OCI VM — Containers]"
 OCI_VM_IP="${OCI_VM_IP:-}"
 if [ -z "$OCI_VM_IP" ]; then
-  OCI_VM_IP=$(cd "$REPO_DIR/terraform" && terraform output -raw rabbitmq_public_ip 2>/dev/null) || true
+  OCI_VM_IP=$(cd "$REPO_DIR/infrastructure/terraform" && terraform output -raw oci_vm_public_ip 2>/dev/null) || true
 fi
 if [ -n "$OCI_VM_IP" ]; then
   CONTAINERS=$(ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 "ubuntu@${OCI_VM_IP}" \
     'docker ps --format "{{.Names}}:{{.Status}}" 2>/dev/null' 2>/dev/null) || CONTAINERS=""
   if [ -n "$CONTAINERS" ]; then
-    for container in rabbitmq email-consumer watchtower; do
+    for container in rabbitmq watchtower; do
       status=$(echo "$CONTAINERS" | grep "^${container}:" | cut -d: -f2- || true)
       if echo "$status" | grep -q "Up"; then
         check "container: $container" "ok"
@@ -101,8 +101,17 @@ fi
 
 echo ""
 echo "[OCI VM — RabbitMQ Connection]"
-RABBITMQ_CONNECTION_STRING=$(gcloud secrets versions access latest --secret=RABBITMQ_CONNECTION_STRING --project="$GCP_PROJECT" 2>/dev/null) || RABBITMQ_CONNECTION_STRING=""
-RABBITMQ_CA_CERT=$(gcloud secrets versions access latest --secret=RABBITMQ_CA_CERT --project="$GCP_PROJECT" 2>/dev/null) || RABBITMQ_CA_CERT=""
+VAULT_TOKEN=$(gcloud secrets versions access latest --secret=VB_VM_VAULT_ROOT_TOKEN --project="$GCP_PROJECT" 2>/dev/null) || VAULT_TOKEN=""
+if [ -n "$VAULT_TOKEN" ]; then
+  vault_secrets=$(curl -k -s --max-time 10 \
+    -H "X-Vault-Token: $VAULT_TOKEN" \
+    "${GCP_VAULT_URL}/v1/kv/data/secrets" 2>/dev/null) || vault_secrets=""
+  RABBITMQ_CONNECTION_STRING=$(echo "$vault_secrets" | grep -o '"RABBITMQ_CONNECTION_STRING":"[^"]*"' | cut -d'"' -f4) || RABBITMQ_CONNECTION_STRING=""
+  RABBITMQ_CA_CERT=$(echo "$vault_secrets" | grep -o '"RABBITMQ_CA_CERT":"[^"]*"' | cut -d'"' -f4) || RABBITMQ_CA_CERT=""
+else
+  RABBITMQ_CONNECTION_STRING=""
+  RABBITMQ_CA_CERT=""
+fi
 if [ -n "$RABBITMQ_CONNECTION_STRING" ]; then
   rmq_result=$(NODE_PATH="$NX_DIR/node_modules" RABBITMQ_CONNECTION_STRING="$RABBITMQ_CONNECTION_STRING" RABBITMQ_CA_CERT="$RABBITMQ_CA_CERT" node -e "
     const amqplib = require('amqplib');
@@ -127,7 +136,7 @@ if [ -n "$RABBITMQ_CONNECTION_STRING" ]; then
     check "rabbitmq broker" "$err"
   fi
 else
-  check "rabbitmq broker" "failed to fetch secrets from GCP Secret Manager"
+  check "rabbitmq broker" "failed to fetch secrets from Vault (token: ${VAULT_TOKEN:+present}, vault reachable: ${vault_secrets:+yes})"
 fi
 
 echo ""

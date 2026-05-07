@@ -14,7 +14,7 @@
     "tf:apply": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply && cd ../.. && ./infrastructure/terraform/scripts/post-apply.sh",
     "tf:post-apply": "./infrastructure/terraform/scripts/post-apply.sh",
     "tf:output": "cd infrastructure/terraform && terraform output",
-    "oci:vm:ssh": "ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd infrastructure/terraform && terraform output -raw rabbitmq_public_ip)",
+    "oci:vm:ssh": "ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd infrastructure/terraform && terraform output -raw oci_vm_public_ip)",
     "gcp:vm:ssh": "gcloud compute ssh vb-free-vm --zone=us-central1-a --tunnel-through-iap",
     "gcp:vm:status": "gcloud compute instances describe vb-free-vm --zone=us-central1-a --format='value(status)'",
     "gcp:vm:stop": "gcloud compute instances stop vb-free-vm --zone=us-central1-a",

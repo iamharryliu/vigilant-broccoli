@@ -79,9 +79,8 @@ alias buildEmployeeHandler="nnx build @vigilant-broccoli/employee-handler"
 
 # OCI VM
 sshocivm() {
-  ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd $REPO_DIR/infrastructure/terraform && terraform output -raw rabbitmq_public_ip 2>/dev/null) "$@"
+  ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd $REPO_DIR/infrastructure/terraform && terraform output -raw oci_vm_public_ip 2>/dev/null) "$@"
 }
-alias ocivmlogs='sshocivm -t "docker logs email-consumer --tail 100 -f"'
 
 # Tmux
 alias tmuxvb="$REPO_DIR/setup/dotfiles/common/scripts/tmux-vb.sh"

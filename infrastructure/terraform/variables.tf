@@ -34,13 +34,3 @@ variable "rabbitmq_user" {
   type    = string
   default = "admin"
 }
-
-variable "email_consumer_image" {
-  type    = string
-  default = "iamharryliu/email-consumer:latest"
-}
-
-variable "email_service_url" {
-  type    = string
-  default = "https://vb-email-service.fly.dev"
-}

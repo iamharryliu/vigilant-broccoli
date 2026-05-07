@@ -3,10 +3,10 @@
 set -e
 
 EMAIL_SERVICE_URL="https://vb-email-service.fly.dev"
-ENDPOINT="/send-email"
+ENDPOINT="/queue-emails"
 FULL_URL="${EMAIL_SERVICE_URL}${ENDPOINT}"
 
-PAYLOAD='{"from":"test@test.com","to":"test@test.com","subject":"test","html":"test"}'
+PAYLOAD='[{"from":"test@test.com","to":"test@test.com","subject":"test","html":"test"}]'
 FAILED=0
 
 echo "Testing email-service security: ${FULL_URL}"

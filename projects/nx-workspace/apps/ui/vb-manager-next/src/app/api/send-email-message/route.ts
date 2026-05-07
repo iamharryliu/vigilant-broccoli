@@ -1,4 +1,7 @@
-import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import {
+  EMAIL_SERVICE_ENDPOINT,
+  getEnvironmentVariable,
+} from '@vigilant-broccoli/common-node';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -15,7 +18,7 @@ export async function POST(request: NextRequest) {
   }
 
   const response = await fetch(
-    `${getEnvironmentVariable('EMAIL_SERVICE_URL')}/send-email`,
+    `${getEnvironmentVariable('EMAIL_SERVICE_URL')}/${EMAIL_SERVICE_ENDPOINT.SEND_EMAIL}`,
     {
       method: 'POST',
       headers: {
