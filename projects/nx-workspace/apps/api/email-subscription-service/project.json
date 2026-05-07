@@ -1,0 +1,104 @@
+{
+  "name": "email-subscription-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/email-subscription-service/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/api/email-subscription-service",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/api/email-subscription-service/src/main.ts",
+        "tsConfig": "apps/api/email-subscription-service/tsconfig.app.json",
+        "assets": ["apps/api/email-subscription-service/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "generateLockfile": true,
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "prune-lockfile": {
+      "dependsOn": ["build"],
+      "cache": true,
+      "executor": "@nx/js:prune-lockfile",
+      "outputs": [
+        "{workspaceRoot}/dist/apps/api/email-subscription-service/package.json",
+        "{workspaceRoot}/dist/apps/api/email-subscription-service/package-lock.json"
+      ],
+      "options": {
+        "buildTarget": "build"
+      }
+    },
+    "copy-workspace-modules": {
+      "dependsOn": ["build"],
+      "cache": true,
+      "outputs": [
+        "{workspaceRoot}/dist/apps/api/email-subscription-service/workspace_modules"
+      ],
+      "executor": "@nx/js:copy-workspace-modules",
+      "options": {
+        "buildTarget": "build"
+      }
+    },
+    "prune": {
+      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+      "executor": "nx:noop"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "email-subscription-service:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "email-subscription-service:build:development"
+        },
+        "production": {
+          "buildTarget": "email-subscription-service:build:production"
+        }
+      }
+    },
+    "docker:build": {
+      "dependsOn": ["build", "prune"]
+    },
+    "deploy-container": {
+      "dependsOn": ["build", "prune"],
+      "command": "docker buildx build --platform linux/amd64 -f apps/api/email-subscription-service/Dockerfile -t iamharryliu/email-subscription-service:latest -t iamharryliu/email-subscription-service:${COMMIT_SHA:-latest} --push dist/apps/api/email-subscription-service"
+    },
+    "deploy:secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts email-subscription-service"
+      }
+    },
+    "deploy": {
+      "dependsOn": ["deploy-container", "deploy:secrets"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/email-subscription-service.toml"
+    }
+  }
+}

@@ -49,6 +49,7 @@ export * from './lib/wrangler/wrangler.service';
 
 export const QUEUE = {
   EMAIL: 'EMAIL',
+  EMAIL_SUBSCRIPTION: 'EMAIL_SUBSCRIPTION',
 };
 
 export const EMAIL_SERVICE_ENDPOINT = {

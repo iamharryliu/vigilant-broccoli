@@ -32,6 +32,12 @@ export const secretsMapping: SecretsMapping = {
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
+  'email-subscription-service': {
+    flyAppName: 'vb-email-subscription-service',
+    appPath: './apps/api/email-subscription-service',
+    vaultPath: COMMON_VAULT_PATH,
+    excludeEnvVars: COMMON_EXCLUDED_VARS,
+  },
   'vb-manager-next-mobile': {
     flyAppName: 'vb-manager-next-mobile',
     appPath: './apps/vb-manager-next-mobile',
