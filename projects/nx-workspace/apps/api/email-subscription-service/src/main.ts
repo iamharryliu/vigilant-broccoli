@@ -29,7 +29,7 @@ const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
 
 const supabase = createClient(
   'https://jrdosjjgmsoodpjmjqxx.supabase.co',
-  process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+  process.env.SUPABASE_SECRET_KEY as string,
 );
 
 const app = express();
