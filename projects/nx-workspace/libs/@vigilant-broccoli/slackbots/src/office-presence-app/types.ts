@@ -9,6 +9,7 @@ export type AppConfig = {
 };
 
 export const PRESENCE_TIME = {
+  UNDECIDED: 'undecided',
   WHOLE_DAY: 'whole day',
   MORNING: 'morning',
   AFTERNOON: 'afternoon',

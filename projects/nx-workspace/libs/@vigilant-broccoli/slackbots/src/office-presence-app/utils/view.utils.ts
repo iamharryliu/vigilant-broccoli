@@ -286,10 +286,10 @@ function buildDaySectionText(
   if (count === 0) {
     return `${datePrefix} - _${copy.HOME_VIEW.NO_ONE_SCHEDULED}_`;
   }
-  const officeBreakdown = buildOfficeBreakdown(presences);
-  const breakdownSuffix = officeBreakdown ? ` (${officeBreakdown})` : '';
   const peopleLabel = count === 1 ? 'person' : 'people';
-  return `${datePrefix} - *${count} ${peopleLabel}${breakdownSuffix}*\n${formattedPresences.join('\n')}`;
+  const officeBreakdown = buildOfficeBreakdown(presences);
+  const breakdownLine = officeBreakdown ? `\n_${officeBreakdown}_` : '';
+  return `${datePrefix} - *${count} ${peopleLabel}*\n${formattedPresences.join('\n')}${breakdownLine}`;
 }
 
 function buildOfficeBreakdown(presences: UserPresence[]): string {
@@ -315,6 +315,8 @@ function formatPresence(
   const parts: string[] = [];
   if (presence.isBringingDog) parts.push(' 🐶');
   if (presence.office) parts.push('🏢 ' + presence.office);
+  if (presence.presenceTime === PRESENCE_TIME.WHOLE_DAY)
+    parts.push(copy.HOME_VIEW.WHOLE_DAY);
   if (presence.presenceTime === PRESENCE_TIME.AFTERNOON)
     parts.push(copy.HOME_VIEW.AFTERNOON_ONLY);
   if (presence.presenceTime === PRESENCE_TIME.MORNING)

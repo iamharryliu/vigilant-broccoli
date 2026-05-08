@@ -51,7 +51,19 @@ export function createInputScheduleModal(appConfig: AppConfig) {
           element: {
             type: 'radio_buttons',
             action_id: 'presence',
+            initial_option: {
+              text: SlackViewBuilder.generatePlainText(
+                copy.PRESENCE_MODAL.UNDECIDED,
+              ),
+              value: PRESENCE_TIME.UNDECIDED,
+            },
             options: [
+              {
+                text: SlackViewBuilder.generatePlainText(
+                  copy.PRESENCE_MODAL.UNDECIDED,
+                ),
+                value: PRESENCE_TIME.UNDECIDED,
+              },
               {
                 text: SlackViewBuilder.generatePlainText(
                   copy.PRESENCE_MODAL.WHOLE_DAY,
