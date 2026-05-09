@@ -1,0 +1,9 @@
+[Unit]
+Description=Google Guest Agent Core Plugin Watchdog
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/guest-agent-watchdog.sh
+
+[Install]
+WantedBy=multi-user.target

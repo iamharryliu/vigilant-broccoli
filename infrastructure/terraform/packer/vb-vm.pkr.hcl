@@ -119,6 +119,21 @@ build {
     destination = "/tmp/99-wireguard.conf"
   }
 
+  provisioner "file" {
+    source      = "${path.root}/scripts/guest-agent-watchdog.sh"
+    destination = "/tmp/guest-agent-watchdog.sh"
+  }
+
+  provisioner "file" {
+    source      = "${path.root}/scripts/guest-agent-watchdog.service"
+    destination = "/tmp/guest-agent-watchdog.service"
+  }
+
+  provisioner "file" {
+    source      = "${path.root}/scripts/guest-agent-watchdog.timer"
+    destination = "/tmp/guest-agent-watchdog.timer"
+  }
+
   provisioner "shell" {
     inline = [
       "set -e",

@@ -88,8 +88,15 @@ cp /tmp/wg-init.sh /usr/local/bin/wg-init.sh
 chmod +x /usr/local/bin/wg-init.sh
 cp /tmp/wg-init.service /etc/systemd/system/wg-init.service
 
+echo "Installing guest agent watchdog..."
+cp /tmp/guest-agent-watchdog.sh /usr/local/bin/guest-agent-watchdog.sh
+chmod +x /usr/local/bin/guest-agent-watchdog.sh
+cp /tmp/guest-agent-watchdog.service /etc/systemd/system/guest-agent-watchdog.service
+cp /tmp/guest-agent-watchdog.timer /etc/systemd/system/guest-agent-watchdog.timer
+
 systemctl daemon-reload
 systemctl enable vault
 systemctl enable wg-init.service
+systemctl enable guest-agent-watchdog.timer
 
 echo "=== VB VM Image Provisioning Completed Successfully at $(date) ==="
