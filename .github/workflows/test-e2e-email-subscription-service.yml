@@ -1,12 +1,16 @@
-name: test-email-subscription-service
+name: test-e2e-email-subscription-service
 
 on:
   push:
     paths:
-      - .github/workflows/test-email-subscription-service.yml
+      - .github/workflows/test-e2e-email-subscription-service.yml
   schedule:
     - cron: '0 0 * * 0'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["deploy"]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
@@ -23,6 +27,7 @@ env:
 
 jobs:
   test-email-subscription-service:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment:
       name: production

@@ -1,16 +1,20 @@
-name: test-vault-service
+name: test-e2e-email-service
 
 on:
   push:
     paths:
-      - .github/workflows/test-vault-service.yml
+      - .github/workflows/test-e2e-email-service.yml
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * 0'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["deploy"]
+    types: [completed]
+    branches: [main]
 
 permissions:
-  id-token: write
   contents: read
+  id-token: write
 
 env:
   GCP_ZONE: us-central1-a
@@ -19,13 +23,13 @@ env:
   VAULT_AUDIENCE: https://github.com/iamharryliu/vigilant-broccoli
 
 jobs:
-  test-vault-service:
+  test-email-service:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment:
       name: production
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -50,15 +54,10 @@ jobs:
             --ssh-flag="-L 8200:127.0.0.1:8200" \
             --ssh-flag="-o ServerAliveInterval=30" \
             --ssh-flag="-o ServerAliveCountMax=3" &
-
-          SSH_PID=$!
-          echo "SSH_PID=$SSH_PID" >> $GITHUB_ENV
-
           echo "Waiting for tunnel to establish..."
           for i in {1..30}; do
             if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
               echo "Tunnel established successfully"
-              curl -k -s https://127.0.0.1:8200/v1/sys/health | jq .
               break
             fi
             echo "Attempt $i: Tunnel not ready yet..."
@@ -74,14 +73,22 @@ jobs:
           role: ${{ env.VAULT_ROLE }}
           jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
           secrets: |
-            kv/data/test test | TEST_SECRET ;
+            kv/data/secrets EMAIL_SERVICE_API_KEY | EMAIL_SERVICE_API_KEY ;
 
-      - name: Verify Secret Retrieved
+      - name: Test email service
+        env:
+          EMAIL_SERVICE_API_KEY: ${{ env.EMAIL_SERVICE_API_KEY }}
         run: |
-          echo "Secret retrieved successfully"
-          if [ -n "$TEST_SECRET" ]; then
-            echo "TEST_SECRET is set (length: ${#TEST_SECRET})"
+          STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
+            -X POST https://vb-email-service.fly.dev/queue-emails \
+            -H 'Content-Type: application/json' \
+            -H "x-api-key: ${EMAIL_SERVICE_API_KEY}" \
+            -d '[{"from":"Harry Liu <contact@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"[CI] Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')
+          echo "Response status: $STATUS"
+          cat /tmp/response.json
+          if [ "$STATUS" = "200" ]; then
+            echo "✓ Email service test passed"
           else
-            echo "ERROR: TEST_SECRET is empty or not set"
+            echo "✗ Email service test failed"
             exit 1
           fi

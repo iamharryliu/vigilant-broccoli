@@ -1,10 +1,13 @@
-name: security-check-email-service
+name: test-security-email-service
 
 on:
+  push:
+    paths:
+      - .github/workflows/test-security-email-service.yml
   workflow_run:
     workflows: ["deploy"]
-    types:
-      - completed
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
@@ -12,7 +15,7 @@ on:
 jobs:
   security-check:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout code
