@@ -56,6 +56,11 @@ locals {
   oci_tenancy_ocid = regex("tenancy=(ocid1\\.tenancy\\.[^\n]+)", local.oci_config)[0]
 }
 
+data "google_compute_image" "vb_vm" {
+  family  = "vb-vm"
+  project = "vigilant-broccoli"
+}
+
 resource "google_compute_instance" "vb_free_vm" {
   name                      = "vb-free-vm"
   machine_type              = "e2-micro" # Free tier eligible
@@ -68,7 +73,7 @@ resource "google_compute_instance" "vb_free_vm" {
 
   boot_disk {
     initialize_params {
-      image = "projects/vigilant-broccoli/global/images/family/vb-vm"
+      image = data.google_compute_image.vb_vm.self_link
       size  = 10
       type  = "pd-standard"
     }

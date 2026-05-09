@@ -80,13 +80,25 @@ fi
 
 echo "VM IP changed ($CURRENT_IP -> $NEW_IP). Running post-apply steps..."
 
-echo "Step 1/3: Running vault post-init..."
+echo "Step 1/4: Waiting for VM SSH to become available..."
+until gcloud compute ssh "${VM_NAME}" \
+  --zone="${GCP_ZONE}" \
+  --tunnel-through-iap \
+  --command="exit 0" \
+  --ssh-flag="-o ConnectTimeout=5" \
+  --quiet 2>/dev/null; do
+  echo "  SSH not ready, retrying in 10s..."
+  sleep 10
+done
+echo "  SSH ready."
+
+echo "Step 2/3: Running vault post-init..."
 npm run gcp:vm:post-init
 
-echo "Step 2/3: Syncing secrets to Vault..."
+echo "Step 3/3: Syncing secrets to Vault..."
 sync_secrets_to_vault
 
-echo "Step 3/3: Regenerating vault cert + updating WireGuard endpoint..."
+echo "Step 4/4: Regenerating vault cert + updating WireGuard endpoint..."
 npm run gcp:vm:regen-cert
 
 echo "Post-apply complete."

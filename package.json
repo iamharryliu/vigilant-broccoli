@@ -19,6 +19,7 @@
     "gcp:vm:status": "gcloud compute instances describe vb-free-vm --zone=us-central1-a --format='value(status)'",
     "gcp:vm:stop": "gcloud compute instances stop vb-free-vm --zone=us-central1-a",
     "gcp:vm:start": "gcloud compute instances start vb-free-vm --zone=us-central1-a",
+    "gcp:vm:image:build": "cd infrastructure/terraform/packer && make init && make build",
     "gcp:vm:post-init": "./infrastructure/terraform/packer/scripts/run-vault-post-init.sh",
     "gcp:vm:regen-cert": "./infrastructure/terraform/packer/scripts/run-vault-regen-cert.sh && npm run gcp:vm:update-wg",
     "gcp:vm:update-wg": "./infrastructure/terraform/packer/scripts/run-update-wg-endpoint.sh",

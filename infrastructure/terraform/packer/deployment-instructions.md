@@ -49,9 +49,7 @@ echo "Server public key (for wg0.conf [Peer]): $SERVER_PUB"
 ### 3.Build VM image
 
 ```bash
-cd infrastructure/terraform/packer
-make init
-make build
+npm run gcp:vm:image:build
 ```
 
 ### 4.Deploy VM
@@ -154,8 +152,6 @@ npm run gcp:vm:vault:seal
 ### 12.Rebuilding image
 
 ```bash
-cd infrastructure/terraform/packer
-make build
-cd ..
-terraform apply   # destroys /opt/vault/data — re-run steps 6-9
+npm run gcp:vm:image:build
+cd infrastructure/terraform && terraform apply   # destroys /opt/vault/data — re-run steps 6-9
 ```
