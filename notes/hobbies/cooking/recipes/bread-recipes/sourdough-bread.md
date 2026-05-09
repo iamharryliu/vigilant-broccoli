@@ -2,38 +2,39 @@
 
 ## Ingredients
 
-- Flour
-- Water
-- Sourdough Starter
-- Salt
+- flour
+- water
+- sourdough starter
+- salt
+- rice flour
 
 ## Instructions
 
-- **Make Dough**
-  - In a large bowl, roughly mix together **flour, water, sourdough starter, and salt**, then let rest for **10 minutes**.
-  - Using **wet hands**, knead the dough into a smooth ball, ensuring all the flour is incorporated. Let rest for **30 minutes**.
-  - Lightly spray water on a surface, then stretch the dough into a **thin, transparent window**. Fold it onto itself in thirds **vertically** and **horizontally**.
-- **Bulk Fermentation (First Rise)**
-  - Let the dough ferment **at room temperature or in the fridge** until it has **approximately doubled in size**.
-- **Shaping**
-  - **Pre-shape** the dough by tucking it into itself to create a taut ball. Let rest for **10 minutes**.
-  - **Final shaping**—form the dough into its final shape for proofing.
-- **Proofing (Second Rise)**
-  - Place the dough in a **banneton** and proof for **1 hour 30 minutes** at room temperature.
-  - The dough is ready to bake at this stage, but you can **refrigerate it** for extended proofing to develop more flavor or until you're ready to bake.
+- **Mixing**
+  - In a mixer, mix together water and sourdough starter.
+  - Add in flour and salt.
+  - Start mixer and mix until everything is well mixed.
+  - Let dough rest for 10 minutes.
+  - Fold the dough into itself and let it rest for another 20 minutes.
+  - Spray counter surface with water and stretch the dough into a thin sheet to fold into itself in thirds (vertically and horizontally)
+- **Bulk fermentation and shaping**
+  - Let the dough bulk ferment either in fridge or on the counter until the dough has doubled in size and has large bubbles.
+  - After the dough has finished bulk fermenting, pre-shape the dough by folding it into itself and shaping into a tight ball.
+  - Let the pre-shaped dough rest for 10 minutes.
+  - Sprinkle rice flour on dough and perform [final shaping](https://www.youtube.com/results?search_query=sourdough+shaping).
+  - Cover the dough in rice flour and place in a rice flour dusted banneton to proof at room temperature for 1.5 hours or in fridge until ready to bake.
 - **Baking**
-  - **Preheat** the oven to **230°C** with the **Dutch oven inside**.
-  - Once preheated, remove the Dutch oven and lower the temperature to **220°C**.
-  - Sprinkle a generous amount of **rice flour** in the Dutch oven to prevent the dough’s bottom from overheating.
-  - Place the dough on a baking sheet and score it at a **45° angle** to encourage a nice ear during baking.
-    - _Optional: Add additional scoring for artistic design._
-  - Lift the baking sheet and place it into the **cast iron**.
-    - _Optional: Spray the dough generously with water to encourage blistering before baking._
-  - Cover with the lid and bake for **15-20 minutes**.
-  - Remove the lid and bake for an additional **15 minutes**, or until the crust reaches your desired color.
-- **Storage**
-  - Cut in half and store in dutch oven, leave lid slightly open for first few hours so that excess moisture can escape.
+  - Preheat the oven to 250°C with the Dutch oven or baking steel inside of oven.
+  - Place the dough on a baking paper and score at a 45° angle across length of dough. Lift baking paper and place either into dutch oven or cooking steel.
+  - With dutch oven:
+    - Bake for 20 minutes with lid on
+    - Remove Dutch oven lid and continue baking until bread crust has browned to your liking.
+  - With baking steel:
+    - Bake for 20 minutes with large vessel of water inside oven
+    - Remove water vessel and continue baking until bread crust has browned to your liking.
+  - _Optional: Spray the dough generously with water to encourage blistering at start of baking and when removing lid/water._
 
 ## References
 
+- [Shaping techniques](https://www.youtube.com/results?search_query=sourdough+shaping)
 - [How I Make Sourdough Bread Every Day In LESS Than 30 Minutes (hands-on time)](https://www.youtube.com/watch?v=ZxCf39G_7pY&t=384s)
