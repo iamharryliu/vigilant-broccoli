@@ -1,18 +1,20 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, ReactNode } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Box,
-  Button,
   Flex,
   Text,
   TextField,
   Badge,
-  Spinner,
-  Select,
 } from '@radix-ui/themes';
-import { CRUDItemList, CRUDFormProps } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Select,
+  CRUDItemList,
+  CRUDFormProps,
+} from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
@@ -66,21 +68,26 @@ const fuzzyMatch = (query: string, item: WhereIsItem): boolean => {
 
 const WhereIsListItem = ({
   item,
+  ellipsis,
 }: {
   item: WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'>;
+  ellipsis?: ReactNode;
 }) => (
-  <Flex gap="3" align="center">
+  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
     {item.imageUrls?.[0] && (
       <img
         src={item.imageUrls?.[0]}
         alt={item.title}
-        className="w-16 h-16 object-cover rounded shrink-0"
+        className="w-full h-48 object-cover rounded sm:w-16 sm:h-16 sm:shrink-0"
       />
     )}
     <Box className="flex-1 min-w-0">
-      <Text weight="bold" size="2">
-        {item.title}
-      </Text>
+      <div className="flex justify-between items-center">
+        <Text weight="bold" size="2">
+          {item.title}
+        </Text>
+        {ellipsis}
+      </div>
       <Text size="1" color="gray" as="p">
         {item.description}
       </Text>
@@ -92,7 +99,7 @@ const WhereIsListItem = ({
         ))}
       </Flex>
     </Box>
-  </Flex>
+  </div>
 );
 
 const WhereIsFormComponent = ({
@@ -107,7 +114,6 @@ const WhereIsFormComponent = ({
   const [previews, setPreviews] = useState<PreviewImage[]>(
     initialFormValues.images,
   );
-  const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isUpdate = formType === FORM_TYPE.UPDATE;
@@ -150,12 +156,10 @@ const WhereIsFormComponent = ({
   const handleSubmit = async () => {
     if (!title.trim()) return;
     if (!isUpdate && !previews.length) return;
-    setSubmitting(true);
     await submitHandler(
       { ...initialFormValues, title, description, tags, images: previews },
       formType,
     );
-    setSubmitting(false);
   };
 
   return (
@@ -193,14 +197,7 @@ const WhereIsFormComponent = ({
             onKeyDown={handleTagKeyDown}
             className="flex-1"
           />
-          <Button
-            variant="soft"
-            size="2"
-            onClick={addTag}
-            className="cursor-pointer"
-          >
-            Add
-          </Button>
+          <Button onClick={async () => addTag()}>Add</Button>
         </Flex>
         <Flex gap="2" mt="2" wrap="wrap">
           {tags.map(tag => (
@@ -251,22 +248,10 @@ const WhereIsFormComponent = ({
         </>
       )}
 
-      <Button
-        onClick={handleSubmit}
-        disabled={
-          !title.trim() || (!isUpdate && !previews.length) || submitting
-        }
-        className="cursor-pointer"
-      >
-        {submitting ? (
-          <>
-            <Spinner /> {isUpdate ? 'Saving...' : 'Analyzing...'}
-          </>
-        ) : isUpdate ? (
-          'Save'
-        ) : (
-          `Upload & Analyze${previews.length > 1 ? ` (${previews.length} images)` : ''}`
-        )}
+      <Button onClick={handleSubmit}>
+        {isUpdate
+          ? 'Save'
+          : `Upload & Analyze${previews.length > 1 ? ` (${previews.length} images)` : ''}`}
       </Button>
     </Flex>
   );
@@ -277,14 +262,14 @@ export default function WhereIsPage() {
   const searchParams = useSearchParams();
   const session = useAuth();
   const [homes, setHomes] = useState<HomeOption[]>([]);
-  const [selectedHomeId, setSelectedHomeId] = useState<number | null>(null);
+  const [selectedHome, setSelectedHome] = useState<HomeOption | null>(null);
   const [items, setItems] = useState<WhereIsItem[]>([]);
   const [query, setQuery] = useState('');
   const [loaded, setLoaded] = useState(false);
 
-  const handleHomeChange = (homeId: number) => {
-    setSelectedHomeId(homeId);
-    router.replace(`${ROUTES.WHERE_IS}?home=${homeId}`);
+  const handleHomeChange = (home: HomeOption) => {
+    setSelectedHome(home);
+    router.replace(`${ROUTES.WHERE_IS}?home=${home.id}`);
   };
 
   useEffect(() => {
@@ -299,18 +284,17 @@ export default function WhereIsPage() {
         }
         setHomes(userHomes);
         const paramHomeId = Number(searchParams.get('home'));
-        const homeId =
-          paramHomeId && userHomes.some(h => h.id === paramHomeId)
-            ? paramHomeId
-            : userHomes[0].id;
-        setSelectedHomeId(homeId);
+        const home =
+          (paramHomeId && userHomes.find(h => h.id === paramHomeId)) ||
+          userHomes[0];
+        setSelectedHome(home);
       });
   }, [router]);
 
   useEffect(() => {
-    if (selectedHomeId === null) return;
+    if (selectedHome === null) return;
     setLoaded(false);
-    fetch(`/api/where-is?homeId=${selectedHomeId}`, {
+    fetch(`/api/where-is?homeId=${selectedHome.id}`, {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     })
       .then(r => r.json())
@@ -318,7 +302,7 @@ export default function WhereIsPage() {
         setItems(data);
         setLoaded(true);
       });
-  }, [selectedHomeId, session?.access_token]);
+  }, [selectedHome, session?.access_token]);
 
   const createItem = async (
     form: WhereIsFormValues,
@@ -342,7 +326,7 @@ export default function WhereIsPage() {
         title: form.title,
         description,
         tags,
-        homeId: selectedHomeId,
+        homeId: selectedHome?.id,
         userId: session?.user.id,
         accessToken: session?.access_token,
         images: form.images.map(p => ({
@@ -352,7 +336,7 @@ export default function WhereIsPage() {
       }),
     });
 
-    const res = await fetch(`/api/where-is?homeId=${selectedHomeId}`, {
+    const res = await fetch(`/api/where-is?homeId=${selectedHome?.id}`, {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     });
     const updated: WhereIsItem[] = await res.json();
@@ -391,30 +375,25 @@ export default function WhereIsPage() {
   };
 
   const importFileRef = useRef<HTMLInputElement>(null);
-  const [exporting, setExporting] = useState(false);
-  const [importing, setImporting] = useState(false);
 
   const handleExport = useCallback(async () => {
-    if (!selectedHomeId || !session?.access_token) return;
-    setExporting(true);
-    const res = await fetch(`/api/where-is/export?homeId=${selectedHomeId}`, {
+    if (!selectedHome || !session?.access_token) return;
+    const res = await fetch(`/api/where-is/export?homeId=${selectedHome.id}`, {
       headers: { Authorization: `Bearer ${session.access_token}` },
     });
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `where-is-export-${selectedHomeId}-${Date.now()}.json`;
+    a.download = `where-is-export-${selectedHome.id}-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    setExporting(false);
-  }, [selectedHomeId, session?.access_token]);
+  }, [selectedHome, session?.access_token]);
 
   const handleImport = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      if (!file || !selectedHomeId || !session) return;
-      setImporting(true);
+      if (!file || !selectedHome || !session) return;
       const text = await file.text();
       const importData = JSON.parse(text);
       await fetch('/api/where-is/import', {
@@ -422,26 +401,24 @@ export default function WhereIsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           importData,
-          homeId: selectedHomeId,
+          homeId: selectedHome.id,
           userId: session.user.id,
           accessToken: session.access_token,
         }),
       });
-      const res = await fetch(`/api/where-is?homeId=${selectedHomeId}`, {
+      const res = await fetch(`/api/where-is?homeId=${selectedHome.id}`, {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       setItems(await res.json());
-      setImporting(false);
       if (importFileRef.current) importFileRef.current.value = '';
     },
-    [selectedHomeId, session],
+    [selectedHome, session],
   );
 
   if (homes.length === 0) return null;
 
   const filtered = items.filter(item => fuzzyMatch(query, item));
 
-  // Map WhereIsItem to WhereIsFormValues shape for CRUDItemList
   const formItems = filtered.map(item => ({
     id: item.id,
     title: item.title,
@@ -453,66 +430,29 @@ export default function WhereIsPage() {
   }));
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-      <Flex justify="between" align="center">
-        <Text size="6" weight="bold">
-          Where Is
-        </Text>
-        <Flex gap="2" align="center">
-          <Button
-            variant="soft"
-            size="2"
-            onClick={handleExport}
-            disabled={exporting || items.length === 0}
-            className="cursor-pointer"
-          >
-            {exporting ? (
-              <>
-                <Spinner /> Exporting...
-              </>
-            ) : (
-              'Export'
-            )}
-          </Button>
-          <Button
-            variant="soft"
-            size="2"
-            onClick={() => importFileRef.current?.click()}
-            disabled={importing}
-            className="cursor-pointer"
-          >
-            {importing ? (
-              <>
-                <Spinner /> Importing...
-              </>
-            ) : (
-              'Import'
-            )}
-          </Button>
-          <input
-            ref={importFileRef}
-            type="file"
-            accept=".json"
-            onChange={handleImport}
-            className="hidden"
-          />
-          <Select.Root
-            value={selectedHomeId?.toString() ?? ''}
-            onValueChange={v => handleHomeChange(Number(v))}
-          >
-            <Select.Trigger placeholder="Select a home" />
-            <Select.Content>
-              {homes.map(h => (
-                <Select.Item key={h.id} value={h.id.toString()}>
-                  {h.name}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
-        </Flex>
+    <div className="max-w-5xl mx-auto p-2 sm:p-6 space-y-6">
+      <Flex gap="2" align="center" wrap="wrap">
+        <Button onClick={handleExport}>Export</Button>
+        <Button onClick={async () => importFileRef.current?.click()}>
+          Import
+        </Button>
+        <input
+          ref={importFileRef}
+          type="file"
+          accept=".json"
+          onChange={handleImport}
+          className="hidden"
+        />
+        <Select
+          selectedOption={selectedHome ?? undefined}
+          setValue={handleHomeChange}
+          options={homes}
+          optionDisplayKey="name"
+          placeholder="Select a home"
+        />
       </Flex>
 
-      {selectedHomeId !== null && loaded && (
+      {selectedHome !== null && loaded && (
         <>
           <TextField.Root
             placeholder="Search items (e.g. scissors, batteries)..."

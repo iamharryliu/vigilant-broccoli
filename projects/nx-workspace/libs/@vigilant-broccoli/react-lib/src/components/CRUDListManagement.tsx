@@ -1,4 +1,4 @@
-import { Ellipsis, Plus } from 'lucide-react';
+import { Ellipsis, EllipsisVertical, Plus } from 'lucide-react';
 import {
   ComponentType,
   Dispatch,
@@ -58,6 +58,7 @@ type CRUDFormComponent<T> = ComponentType<CRUDFormProps<T>>;
 type ListItemComponentProps<T> = ComponentType<{
   item: T;
   items: T[];
+  ellipsis?: ReactNode;
 }>;
 
 export const CRUDItemList = <T extends CRUDItem>({
@@ -74,6 +75,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   onItemClick,
   copy = DEFAULT_COPY,
   isCards,
+  showEllipsis = true,
 }: {
   items: T[];
   setItems: Dispatch<SetStateAction<T[]>>;
@@ -88,6 +90,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   onItemClick?: (item: T) => void;
   copy?: ListManagementCopy;
   isCards?: boolean;
+  showEllipsis?: boolean;
 }) => {
   async function submitHandler(item: T, formType: FormType) {
     if (formType === FORM_TYPE.CREATE && createItem) {
@@ -104,6 +107,24 @@ export const CRUDItemList = <T extends CRUDItem>({
     await deleteItem(id);
     setItems(prev => prev.filter(item => item.id !== id));
   }
+
+  const renderEllipsis = (item: T) =>
+    showEllipsis && FormComponent ? (
+      <EllipsisOptions
+        item={item}
+        FormComponent={FormComponent}
+        deleteItem={handleDelete}
+        copy={copy}
+        submitHandler={submitHandler}
+      />
+    ) : undefined;
+
+  const renderItem = (item: T) =>
+    ListItemComponent ? (
+      <ListItemComponent item={item} items={items} ellipsis={renderEllipsis(item)} />
+    ) : (
+      JSON.stringify(item)
+    );
 
   return (
     <div className="space-y-4">
@@ -129,47 +150,15 @@ export const CRUDItemList = <T extends CRUDItem>({
                 onClick={() => onItemClick?.(item)}
                 className={onItemClick ? 'cursor-pointer' : ''}
               >
-                <div className="flex justify-between items-center">
-                  <div className="w-[90%]">
-                    {ListItemComponent ? (
-                      <ListItemComponent item={item} items={items} />
-                    ) : (
-                      JSON.stringify(item)
-                    )}
-                  </div>
-                  {FormComponent && (
-                    <EllipsisOptions
-                      item={item}
-                      FormComponent={FormComponent}
-                      deleteItem={handleDelete}
-                      copy={copy}
-                      submitHandler={submitHandler}
-                    />
-                  )}
-                </div>
+                {renderItem(item)}
               </Card>
             ) : (
               <div
                 key={item.id}
-                className={`flex justify-between items-center${onItemClick ? ' cursor-pointer' : ''}`}
+                className={onItemClick ? 'cursor-pointer' : ''}
                 onClick={() => onItemClick?.(item)}
               >
-                <div className="w-[90%]">
-                  {ListItemComponent ? (
-                    <ListItemComponent item={item} items={items} />
-                  ) : (
-                    JSON.stringify(item)
-                  )}
-                </div>
-                {FormComponent && (
-                  <EllipsisOptions
-                    item={item}
-                    FormComponent={FormComponent}
-                    deleteItem={handleDelete}
-                    copy={copy}
-                    submitHandler={submitHandler}
-                  />
-                )}
+                {renderItem(item)}
               </div>
             ),
           )}
@@ -199,7 +188,8 @@ const EllipsisOptions = <T extends CRUDItem>({
     <Popover.Root>
       <Popover.Trigger>
         <Button variant="ghost" onClick={e => e.stopPropagation()}>
-          <Ellipsis />
+          <EllipsisVertical className="sm:hidden" />
+          <Ellipsis className="hidden sm:block" />
         </Button>
       </Popover.Trigger>
       <Popover.Content align="end" className="w-min">
@@ -251,7 +241,7 @@ const CRUDItemFormDialog = <T,>({
   copy: ListManagementCopy;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  async function diaglogSubmitHandler(item: T, formType: FormType) {
+  async function dialogSubmitHandler(item: T, formType: FormType) {
     await submitHandler(item, formType);
     setIsOpen(false);
   }
@@ -270,7 +260,7 @@ const CRUDItemFormDialog = <T,>({
         <FormComponent
           formType={formType}
           initialFormValues={initialFormValues}
-          submitHandler={diaglogSubmitHandler}
+          submitHandler={dialogSubmitHandler}
         />
       </AlertDialog.Content>
     </AlertDialog.Root>

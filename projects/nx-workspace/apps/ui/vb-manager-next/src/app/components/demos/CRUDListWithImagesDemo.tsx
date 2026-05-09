@@ -1,0 +1,238 @@
+'use client';
+
+import { useRef, useState, ReactNode } from 'react';
+import { Badge, Flex, Text, TextField } from '@radix-ui/themes';
+import { Button, CRUDFormProps, CRUDItemList } from '@vigilant-broccoli/react-lib';
+import { FORM_TYPE } from '@vigilant-broccoli/common-js';
+
+type ImageItem = {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  imageUrl: string;
+};
+
+type ImageItemForm = {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  imageDataUrl: string;
+};
+
+const DEFAULT_FORM: ImageItemForm = {
+  id: 0,
+  title: '',
+  description: '',
+  tags: [],
+  imageDataUrl: '',
+};
+
+const COPY = {
+  LIST: { TITLE: 'Image Items', EMPTY_MESSAGE: 'No items yet.' },
+  [FORM_TYPE.CREATE]: {
+    TITLE: 'Add Item',
+    DESCRIPTION: 'Upload an image with title, description, and tags.',
+  },
+  [FORM_TYPE.UPDATE]: {
+    TITLE: 'Update Item',
+    DESCRIPTION: 'Edit the title, description, and tags.',
+  },
+};
+
+const SEED_ITEMS: ImageItem[] = [
+  {
+    id: 1,
+    title: 'Mountain Landscape',
+    description: 'A scenic view of a mountain range at sunset.',
+    tags: ['nature', 'mountains', 'sunset'],
+    imageUrl: 'https://picsum.photos/seed/mountain/400/300',
+  },
+  {
+    id: 2,
+    title: 'City Street',
+    description: 'Busy urban street with people and traffic.',
+    tags: ['city', 'urban', 'street'],
+    imageUrl: 'https://picsum.photos/seed/city/400/300',
+  },
+  {
+    id: 3,
+    title: 'Ocean Waves',
+    description: 'Calm ocean waves on a sandy beach.',
+    tags: ['ocean', 'beach', 'waves'],
+    imageUrl: 'https://picsum.photos/seed/ocean/400/300',
+  },
+];
+
+const ImageListItem = ({
+  item,
+  ellipsis,
+}: {
+  item: ImageItemForm & { imageUrl?: string };
+  ellipsis?: ReactNode;
+}) => {
+  const src = item.imageDataUrl || item.imageUrl;
+  return (
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+      {src && (
+        <img
+          src={src}
+          alt={item.title}
+          className="w-full h-48 object-cover rounded sm:w-16 sm:h-16 sm:shrink-0"
+        />
+      )}
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-between items-center">
+          <Text weight="bold" size="2">
+            {item.title}
+          </Text>
+          {ellipsis}
+        </div>
+        <Text size="1" color="gray" as="p">
+          {item.description}
+        </Text>
+        <Flex wrap="wrap" gap="1" mt="1">
+          {item.tags.map(tag => (
+            <Badge key={tag} variant="soft" size="1">
+              {tag}
+            </Badge>
+          ))}
+        </Flex>
+      </div>
+    </div>
+  );
+};
+
+const ImageItemFormComponent = ({
+  formType,
+  initialFormValues,
+  submitHandler,
+}: CRUDFormProps<ImageItemForm>) => {
+  const [title, setTitle] = useState(initialFormValues.title);
+  const [description, setDescription] = useState(initialFormValues.description);
+  const [tags, setTags] = useState<string[]>(initialFormValues.tags);
+  const [tagInput, setTagInput] = useState('');
+  const [imageDataUrl, setImageDataUrl] = useState(initialFormValues.imageDataUrl);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isUpdate = formType === FORM_TYPE.UPDATE;
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => setImageDataUrl(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const addTag = () => {
+    const t = tagInput.trim().toLowerCase();
+    if (t && !tags.includes(t)) setTags(prev => [...prev, t]);
+    setTagInput('');
+  };
+
+  const handleSubmit = async () => {
+    if (!title.trim()) return;
+    await submitHandler(
+      { ...initialFormValues, title, description, tags, imageDataUrl },
+      formType,
+    );
+  };
+
+  return (
+    <Flex direction="column" gap="3" mt="3">
+      <div>
+        <Text size="1" weight="medium" as="p" mb="1">Title</Text>
+        <TextField.Root
+          placeholder="e.g. Mountain Landscape"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+        />
+      </div>
+      <div>
+        <Text size="1" weight="medium" as="p" mb="1">Description</Text>
+        <TextField.Root
+          placeholder="Brief description"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
+      </div>
+      <div>
+        <Text size="1" weight="medium" as="p" mb="1">Tags</Text>
+        <Flex gap="2">
+          <TextField.Root
+            placeholder="Add tag..."
+            value={tagInput}
+            onChange={e => setTagInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
+            className="flex-1"
+          />
+          <Button onClick={async () => addTag()}>Add</Button>
+        </Flex>
+        <Flex gap="2" mt="2" wrap="wrap">
+          {tags.map(tag => (
+            <Badge
+              key={tag}
+              variant="soft"
+              size="1"
+              className="cursor-pointer"
+              onClick={() => setTags(prev => prev.filter(t => t !== tag))}
+            >
+              {tag} ✕
+            </Badge>
+          ))}
+        </Flex>
+      </div>
+      {!isUpdate && (
+        <>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="text-sm"
+          />
+          {imageDataUrl && (
+            <img
+              src={imageDataUrl}
+              alt="preview"
+              className="w-full h-48 object-cover rounded"
+            />
+          )}
+        </>
+      )}
+      <Button onClick={handleSubmit}>{isUpdate ? 'Save' : 'Add Item'}</Button>
+    </Flex>
+  );
+};
+
+export const CRUDListWithImagesDemo = ({ isCards, showEllipsis }: { isCards?: boolean; showEllipsis?: boolean }) => {
+  const [items, setItems] = useState<ImageItemForm[]>(
+    SEED_ITEMS.map(item => ({ ...item, imageDataUrl: '' })),
+  );
+  const nextId = useRef(Math.max(...SEED_ITEMS.map(i => i.id)) + 1);
+
+  const createItem = async (form: ImageItemForm): Promise<ImageItemForm> => {
+    return { ...form, id: nextId.current++ };
+  };
+
+  const updateItem = async (_form: ImageItemForm): Promise<void> => {};
+
+  const deleteItem = async (_id: string | number): Promise<void> => {};
+
+  return (
+    <CRUDItemList
+      items={items as never}
+      setItems={setItems as never}
+      createItem={createItem as never}
+      createItemFormDefaultValues={DEFAULT_FORM}
+      updateItem={updateItem as never}
+      deleteItem={deleteItem}
+      FormComponent={ImageItemFormComponent as never}
+      ListItemComponent={ImageListItem as never}
+      copy={COPY}
+      isCards={isCards}
+      showEllipsis={showEllipsis}
+    />
+  );
+};

@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Button, Switch, Flex } from '@radix-ui/themes';
+import { Button } from '@radix-ui/themes';
 import { CRUDFormProps, CRUDItemList } from '@vigilant-broccoli/react-lib';
 import {
   JSONPlaceHolderPost,
   JSONPlaceholderPostService,
 } from '@vigilant-broccoli/common-js';
 
-export const CRUDListDemo = () => {
+export const CRUDListDemo = ({ isCards }: { isCards?: boolean }) => {
   const [items, setItems] = useState<JSONPlaceHolderPost[]>([]);
-  const [isCards, setIsCards] = useState(false);
   const CREATE_ITEM_FORM_DEFAULT_VALUES = { id: 0, title: '' };
 
   useEffect(() => {
@@ -34,20 +33,17 @@ export const CRUDListDemo = () => {
   }
 
   return (
-    <Flex direction="column" gap="4">
-      <Switch checked={isCards} onCheckedChange={setIsCards} />
-      <CRUDItemList
-        createItemFormDefaultValues={CREATE_ITEM_FORM_DEFAULT_VALUES}
-        items={items}
-        setItems={setItems}
-        ListItemComponent={ListItemComponent}
-        FormComponent={FormComponent}
-        createItem={createItem}
-        updateItem={updateItem}
-        deleteItem={deleteItem}
-        isCards={isCards}
-      />
-    </Flex>
+    <CRUDItemList
+      createItemFormDefaultValues={CREATE_ITEM_FORM_DEFAULT_VALUES}
+      items={items}
+      setItems={setItems}
+      ListItemComponent={ListItemComponent}
+      FormComponent={FormComponent}
+      createItem={createItem}
+      updateItem={updateItem}
+      deleteItem={deleteItem}
+      isCards={isCards}
+    />
   );
 };
 
