@@ -1,4 +1,4 @@
-name: kill-services
+name: manual-kill-services
 
 on:
   workflow_dispatch:
