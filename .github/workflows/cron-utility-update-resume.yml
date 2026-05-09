@@ -1,6 +1,9 @@
-name: update-resume
+name: cron-utility-update-resume
 
 on:
+  push:
+    paths:
+      - .github/workflows/cron-utility-update-resume.yml
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:

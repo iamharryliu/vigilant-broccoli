@@ -1,6 +1,9 @@
-name: backup-vb-repo
+name: cron-utility-backup-repo
 
 on:
+  push:
+    paths:
+      - .github/workflows/cron-utility-backup-repo.yml
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
