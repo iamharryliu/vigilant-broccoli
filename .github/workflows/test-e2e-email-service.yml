@@ -83,7 +83,7 @@ jobs:
             -X POST https://vb-email-service.fly.dev/queue-emails \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${EMAIL_SERVICE_API_KEY}" \
-            -d '[{"from":"Harry Liu <ci-test@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"[CI] Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')
+            -d '[{"from":"Harry Liu <ci-test@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"ci-test: Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')
           echo "Response status: $STATUS"
           cat /tmp/response.json
           if [ "$STATUS" = "200" ]; then
