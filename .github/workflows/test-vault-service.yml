@@ -55,7 +55,7 @@ jobs:
           echo "SSH_PID=$SSH_PID" >> $GITHUB_ENV
 
           echo "Waiting for tunnel to establish..."
-          for i in {1..60}; do
+          for i in {1..30}; do
             if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
               echo "Tunnel established successfully"
               curl -k -s https://127.0.0.1:8200/v1/sys/health | jq .
