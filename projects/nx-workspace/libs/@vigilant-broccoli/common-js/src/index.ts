@@ -403,6 +403,10 @@ export const GCP_LINK = {
     NAME: 'GCP Firewall',
     URL: 'https://console.cloud.google.com/net-security/firewall-manager/firewall-policies',
   },
+  AUTH_AUDIENCE: {
+    NAME: 'GCP Auth Audience',
+    URL: 'https://console.cloud.google.com/auth/audience',
+  },
 } as const;
 
 export const OPENWEATHER_LINK = {
