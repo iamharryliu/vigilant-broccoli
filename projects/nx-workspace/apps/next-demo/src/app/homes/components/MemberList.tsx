@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Badge, Button, Flex, Select, Text, TextField } from '@radix-ui/themes';
 import { CRUDItemList, CRUDFormProps } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
@@ -69,41 +69,55 @@ const MemberListItem = ({
   item,
   isOwner,
   onRoleChange,
+  ellipsis,
 }: {
   item: HomeMember;
   isOwner: boolean;
   onRoleChange: (memberId: string, role: HomeRole) => Promise<void>;
-}) => (
-  <Flex align="center" justify="between" width="100%">
-    <Flex align="center" gap="2">
-      <Text size="2">{item.email}</Text>
-      <Badge
-        variant="soft"
-        color={item.status === 'accepted' ? 'green' : 'orange'}
-        size="1"
-      >
-        {item.status}
-      </Badge>
+  ellipsis?: ReactNode;
+}) => {
+  const isItemOwner = item.role === HOME_ROLE.OWNER;
+  return (
+    <Flex align="center" justify="between" width="100%">
+      <Flex align="center" gap="2">
+        <Text size="2">{item.email}</Text>
+        {!isItemOwner && (
+          <Badge
+            variant="soft"
+            color={item.status === 'accepted' ? 'green' : 'orange'}
+            size="1"
+          >
+            {item.status}
+          </Badge>
+        )}
+      </Flex>
+      <Flex align="center" gap="2">
+        {isItemOwner ? (
+          <Badge variant="soft" color="blue" size="1">
+            Owner
+          </Badge>
+        ) : item.status === 'accepted' && isOwner ? (
+          <Select.Root
+            value={item.role}
+            onValueChange={v => onRoleChange(item.id, v as HomeRole)}
+            size="1"
+          >
+            <Select.Trigger onClick={e => e.stopPropagation()} />
+            <Select.Content>
+              <Select.Item value={HOME_ROLE.MEMBER}>Member</Select.Item>
+              <Select.Item value={HOME_ROLE.ADMIN}>Admin</Select.Item>
+            </Select.Content>
+          </Select.Root>
+        ) : (
+          <Badge variant="outline" size="1">
+            {item.role}
+          </Badge>
+        )}
+        {!isItemOwner && ellipsis}
+      </Flex>
     </Flex>
-    {item.status === 'accepted' && isOwner ? (
-      <Select.Root
-        value={item.role}
-        onValueChange={v => onRoleChange(item.id, v as HomeRole)}
-        size="1"
-      >
-        <Select.Trigger onClick={e => e.stopPropagation()} />
-        <Select.Content>
-          <Select.Item value={HOME_ROLE.MEMBER}>Member</Select.Item>
-          <Select.Item value={HOME_ROLE.ADMIN}>Admin</Select.Item>
-        </Select.Content>
-      </Select.Root>
-    ) : (
-      <Badge variant="outline" size="1">
-        {item.role}
-      </Badge>
-    )}
-  </Flex>
-);
+  );
+};
 
 type Props = {
   members: HomeMember[];
@@ -131,13 +145,15 @@ export const MemberList = ({
     createItemFormDefaultValues={DEFAULT_MEMBER}
     deleteItem={isOwner ? onDelete : undefined}
     FormComponent={MemberFormComponent}
-    ListItemComponent={({ item }) => (
+    ListItemComponent={({ item, ellipsis }) => (
       <MemberListItem
         item={item}
         isOwner={isOwner || isAdmin}
         onRoleChange={onRoleChange}
+        ellipsis={ellipsis}
       />
     )}
     copy={MEMBER_COPY}
+    showEllipsis={isOwner}
   />
 );

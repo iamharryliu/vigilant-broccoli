@@ -50,7 +50,7 @@ export const HomeDetailView = ({ homeId }: Props) => {
           const mapped = data.map((m: Record<string, string>) => ({
             id: m.id,
             email: m.email,
-            status: m.status as 'pending' | 'accepted',
+            status: (m.status ?? 'accepted') as 'pending' | 'accepted',
             role: (m.role ?? HOME_ROLE.MEMBER) as HomeRole,
             createdAt: m.created_at ?? '',
           }));

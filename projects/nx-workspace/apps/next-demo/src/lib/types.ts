@@ -5,6 +5,7 @@ export type Home = {
 };
 
 export const HOME_ROLE = {
+  OWNER: 'HOME_OWNER',
   MEMBER: 'HOME_MEMBER',
   ADMIN: 'HOME_ADMIN',
 } as const;

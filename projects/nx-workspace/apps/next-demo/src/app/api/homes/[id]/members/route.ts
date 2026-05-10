@@ -4,11 +4,19 @@ import {
   createAdminClient,
 } from '../../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { Resend } from 'resend';
 
-const SENDER_EMAIL = 'Harry Liu <contact@harryliu.dev>';
+const EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev/send-email';
+const SENDER_EMAIL = 'home.management@harryliu.dev';
 
-const getResend = () => new Resend(process.env.RESEND_API_KEY);
+async function sendEmail(to: string, subject: string, html: string) {
+  const apiKey = process.env.EMAIL_SERVICE_API_KEY;
+  const res = await fetch(EMAIL_SERVICE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey ?? '' },
+    body: JSON.stringify({ from: SENDER_EMAIL, to, subject, html }),
+  });
+  if (!res.ok) throw new Error(`Email service error: ${res.status}`);
+}
 
 async function isHomeAdmin(homeId: string, userId: string): Promise<boolean> {
   const admin = createAdminClient();
@@ -30,12 +38,20 @@ export async function GET(
   const accessToken =
     request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
   const supabase = createServerClient(accessToken);
+  const admin = createAdminClient();
 
-  const { data, error } = await supabase
-    .from('home_members')
-    .select('id, email, status, role, created_at')
-    .eq('home_id', id)
-    .order('created_at', { ascending: true });
+  const [{ data: home }, { data: members, error }] = await Promise.all([
+    admin
+      .from('homes')
+      .select('user_id, created_at')
+      .eq('id', id)
+      .maybeSingle(),
+    supabase
+      .from('home_members')
+      .select('id, email, status, role, created_at')
+      .eq('home_id', id)
+      .order('created_at', { ascending: true }),
+  ]);
 
   if (error) {
     return Response.json(
@@ -44,7 +60,24 @@ export async function GET(
     );
   }
 
-  return Response.json(data ?? []);
+  let ownerEntry = null;
+  if (home?.user_id) {
+    const { data: ownerUser } = await admin.auth.admin.getUserById(
+      home.user_id,
+    );
+    if (ownerUser?.user) {
+      ownerEntry = {
+        id: `owner-${home.user_id}`,
+        email: ownerUser.user.email ?? '',
+        status: 'accepted',
+        role: 'HOME_OWNER',
+        created_at: home.created_at,
+      };
+    }
+  }
+
+  const list = ownerEntry ? [ownerEntry, ...(members ?? [])] : (members ?? []);
+  return Response.json(list);
 }
 
 export async function POST(
@@ -81,18 +114,17 @@ export async function POST(
     );
   }
 
-  const { error: emailError } = await getResend().emails.send({
-    from: SENDER_EMAIL,
-    to: normalizedEmail,
-    subject: `You've been invited to a home`,
-    html: `<p>Hi,</p>
+  try {
+    await sendEmail(
+      normalizedEmail,
+      `You've been invited to a home`,
+      `<p>Hi,</p>
 <p>You've been invited to join a home by ${user?.email}.</p>
 <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/auth/callback">Click here to accept the invite</a></p>`,
-  });
-
-  if (emailError) {
+    );
+  } catch (e) {
     return Response.json(
-      { error: emailError.message },
+      { error: (e as Error).message },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
