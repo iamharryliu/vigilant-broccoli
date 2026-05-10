@@ -93,6 +93,16 @@ export interface ResourceBooking {
   updatedAt: string;
 }
 
+export interface HouseholdRule {
+  id: string;
+  name: string;
+  description: string | null;
+  position: number;
+  homeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface WhereIsItem {
   id: string;
   title: string;

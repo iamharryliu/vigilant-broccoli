@@ -7,4 +7,5 @@ export const NAV_LINKS = [
   { label: 'Leisure', href: ROUTES.LEISURE },
   { label: 'Resources', href: ROUTES.RESOURCES },
   { label: 'Tasks', href: ROUTES.TASKS },
+  { label: 'Household Rules', href: ROUTES.HOUSEHOLD_RULES },
 ];
