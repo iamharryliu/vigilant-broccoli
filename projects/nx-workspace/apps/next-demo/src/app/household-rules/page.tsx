@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Flex, Text, TextField, TextArea } from '@radix-ui/themes';
 import {
   Button,
@@ -9,9 +8,8 @@ import {
   CRUDItemList,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
-import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
-import { ROUTES } from '../../lib/routes';
+import { useHome } from '../providers/home-provider';
 import { HouseholdRule } from '../../lib/types';
 
 const DEFAULT_FORM: HouseholdRule = {
@@ -130,30 +128,13 @@ const RuleForm = ({
 };
 
 export default function HouseholdRulesPage() {
-  const router = useRouter();
   const session = useAuth();
-  const [homeId, setHomeId] = useState<number | null>(null);
+  const { selectedHomeId: homeId } = useHome();
   const [rules, setRules] = useState<HouseholdRule[]>([]);
   const nextPosition = useRef(0);
 
   const token = session?.access_token ?? '';
   const authHeader = () => ({ Authorization: `Bearer ${token}` });
-
-  useEffect(() => {
-    supabase
-      .from('homes')
-      .select('id')
-      .order('created_at', { ascending: true })
-      .limit(1)
-      .single()
-      .then(({ data }) => {
-        if (!data) {
-          router.replace(ROUTES.HOMES);
-          return;
-        }
-        setHomeId(data.id);
-      });
-  }, [router]);
 
   const fetchRules = useCallback(async () => {
     if (!homeId || !token) return;

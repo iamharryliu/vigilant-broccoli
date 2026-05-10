@@ -7,6 +7,7 @@ export const ROUTES = {
   WHERE_IS: '/where-is',
   AUTH_CALLBACK: '/auth/callback',
   CALENDAR: '/calendar',
+  OVERALL_CALENDAR: '/calendar/overall',
   HOME_CALENDAR: (id: string | number) => `/homes/${id}/calendar`,
   LEISURE: '/leisure',
   RESOURCES: '/resources',
@@ -17,4 +18,5 @@ export const ROUTES = {
   PROJECTS: '/projects',
   MEALS: '/meals',
   DOCS: '/docs',
+  SETTINGS: '/settings',
 } as const;

@@ -2,6 +2,7 @@ import '@radix-ui/themes/styles.css';
 import { Theme } from '@radix-ui/themes';
 import './global.css';
 import AuthProvider from './providers/auth-provider';
+import HomeProvider from './providers/home-provider';
 import AppLayout from './components/AppLayout';
 
 export const metadata = {
@@ -19,7 +20,9 @@ export default function RootLayout({
       <body>
         <Theme>
           <AuthProvider>
-            <AppLayout>{children}</AppLayout>
+            <HomeProvider>
+              <AppLayout>{children}</AppLayout>
+            </HomeProvider>
           </AuthProvider>
         </Theme>
       </body>

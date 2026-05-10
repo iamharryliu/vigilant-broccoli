@@ -1,13 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventReceiveArg = any;
 import { Dialog, Text } from '@radix-ui/themes';
-import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
-import { ROUTES } from '../../lib/routes';
+import { useHome } from '../providers/home-provider';
 import { CalendarEvent, LeisureActivity } from '../../lib/types';
 import { CalendarView } from '../calendar/components/CalendarView';
 import {
@@ -26,9 +24,8 @@ type CalendarModal =
   | null;
 
 export default function LeisurePage() {
-  const router = useRouter();
   const session = useAuth();
-  const [homeId, setHomeId] = useState<number | null>(null);
+  const { selectedHomeId: homeId } = useHome();
   const [activities, setActivities] = useState<LeisureActivity[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [pendingDrop, setPendingDrop] = useState<PendingDrop | null>(null);
@@ -39,22 +36,6 @@ export default function LeisurePage() {
     Authorization: `Bearer ${token}`,
     ...extra,
   });
-
-  useEffect(() => {
-    supabase
-      .from('homes')
-      .select('id')
-      .order('created_at', { ascending: true })
-      .limit(1)
-      .single()
-      .then(({ data }) => {
-        if (!data) {
-          router.replace(ROUTES.HOMES);
-          return;
-        }
-        setHomeId(data.id);
-      });
-  }, [router]);
 
   const fetchActivities = useCallback(async () => {
     if (!homeId || !token) return;

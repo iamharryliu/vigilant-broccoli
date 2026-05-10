@@ -1,11 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Badge, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
-import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
-import { ROUTES } from '../../lib/routes';
+import { useHome } from '../providers/home-provider';
 import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';
 import { HomeDocForm, HomeDocFormData } from './components/HomeDocForm';
 
@@ -35,9 +33,8 @@ const formatBytes = (bytes: number) => {
 type ModalState = { type: 'create' } | { type: 'edit'; doc: HomeDoc } | null;
 
 export default function DocsPage() {
-  const router = useRouter();
   const session = useAuth();
-  const [homeId, setHomeId] = useState<number | null>(null);
+  const { selectedHomeId: homeId } = useHome();
   const [docs, setDocs] = useState<HomeDoc[]>([]);
   const [modal, setModal] = useState<ModalState>(null);
   const [query, setQuery] = useState('');
@@ -51,22 +48,6 @@ export default function DocsPage() {
     Authorization: `Bearer ${token}`,
     ...extra,
   });
-
-  useEffect(() => {
-    supabase
-      .from('homes')
-      .select('id')
-      .order('created_at', { ascending: true })
-      .limit(1)
-      .single()
-      .then(({ data }) => {
-        if (!data) {
-          router.replace(ROUTES.HOMES);
-          return;
-        }
-        setHomeId(data.id);
-      });
-  }, [router]);
 
   const fetchDocs = useCallback(async () => {
     if (!homeId || !token) return;

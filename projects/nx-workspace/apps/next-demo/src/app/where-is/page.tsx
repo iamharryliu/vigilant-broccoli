@@ -1,27 +1,16 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, ReactNode } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  Box,
-  Flex,
-  Text,
-  TextField,
-  Badge,
-} from '@radix-ui/themes';
+import { useState, useEffect, useRef, ReactNode } from 'react';
+import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
 import {
   Button,
-  Select,
   CRUDItemList,
   CRUDFormProps,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
-import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
-import { ROUTES } from '../../lib/routes';
+import { useHome } from '../providers/home-provider';
 import { WhereIsItem } from '../../lib/types';
-
-type HomeOption = { id: number; name: string };
 
 interface PreviewImage {
   base64: string;
@@ -258,43 +247,16 @@ const WhereIsFormComponent = ({
 };
 
 export default function WhereIsPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const session = useAuth();
-  const [homes, setHomes] = useState<HomeOption[]>([]);
-  const [selectedHome, setSelectedHome] = useState<HomeOption | null>(null);
+  const { selectedHomeId } = useHome();
   const [items, setItems] = useState<WhereIsItem[]>([]);
   const [query, setQuery] = useState('');
   const [loaded, setLoaded] = useState(false);
 
-  const handleHomeChange = (home: HomeOption) => {
-    setSelectedHome(home);
-    router.replace(`${ROUTES.WHERE_IS}?home=${home.id}`);
-  };
-
   useEffect(() => {
-    supabase
-      .from('homes')
-      .select('id, name')
-      .then(({ data }) => {
-        const userHomes = data ?? [];
-        if (userHomes.length === 0) {
-          router.replace(ROUTES.HOMES);
-          return;
-        }
-        setHomes(userHomes);
-        const paramHomeId = Number(searchParams.get('home'));
-        const home =
-          (paramHomeId && userHomes.find(h => h.id === paramHomeId)) ||
-          userHomes[0];
-        setSelectedHome(home);
-      });
-  }, [router]);
-
-  useEffect(() => {
-    if (selectedHome === null) return;
+    if (selectedHomeId === null) return;
     setLoaded(false);
-    fetch(`/api/where-is?homeId=${selectedHome.id}`, {
+    fetch(`/api/where-is?homeId=${selectedHomeId}`, {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     })
       .then(r => r.json())
@@ -302,7 +264,7 @@ export default function WhereIsPage() {
         setItems(data);
         setLoaded(true);
       });
-  }, [selectedHome, session?.access_token]);
+  }, [selectedHomeId, session?.access_token]);
 
   const createItem = async (
     form: WhereIsFormValues,
@@ -326,7 +288,7 @@ export default function WhereIsPage() {
         title: form.title,
         description,
         tags,
-        homeId: selectedHome?.id,
+        homeId: selectedHomeId,
         userId: session?.user.id,
         accessToken: session?.access_token,
         images: form.images.map(p => ({
@@ -336,7 +298,7 @@ export default function WhereIsPage() {
       }),
     });
 
-    const res = await fetch(`/api/where-is?homeId=${selectedHome?.id}`, {
+    const res = await fetch(`/api/where-is?homeId=${selectedHomeId}`, {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     });
     const updated: WhereIsItem[] = await res.json();
@@ -374,48 +336,7 @@ export default function WhereIsPage() {
     });
   };
 
-  const importFileRef = useRef<HTMLInputElement>(null);
-
-  const handleExport = useCallback(async () => {
-    if (!selectedHome || !session?.access_token) return;
-    const res = await fetch(`/api/where-is/export?homeId=${selectedHome.id}`, {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    });
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `where-is-export-${selectedHome.id}-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [selectedHome, session?.access_token]);
-
-  const handleImport = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file || !selectedHome || !session) return;
-      const text = await file.text();
-      const importData = JSON.parse(text);
-      await fetch('/api/where-is/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          importData,
-          homeId: selectedHome.id,
-          userId: session.user.id,
-          accessToken: session.access_token,
-        }),
-      });
-      const res = await fetch(`/api/where-is?homeId=${selectedHome.id}`, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-      setItems(await res.json());
-      if (importFileRef.current) importFileRef.current.value = '';
-    },
-    [selectedHome, session],
-  );
-
-  if (homes.length === 0) return null;
+  if (selectedHomeId === null) return null;
 
   const filtered = items.filter(item => fuzzyMatch(query, item));
 
@@ -431,28 +352,7 @@ export default function WhereIsPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-2 sm:p-6 space-y-6">
-      <Flex gap="2" align="center" wrap="wrap">
-        <Button onClick={handleExport}>Export</Button>
-        <Button onClick={async () => importFileRef.current?.click()}>
-          Import
-        </Button>
-        <input
-          ref={importFileRef}
-          type="file"
-          accept=".json"
-          onChange={handleImport}
-          className="hidden"
-        />
-        <Select
-          selectedOption={selectedHome ?? undefined}
-          setValue={handleHomeChange}
-          options={homes}
-          optionDisplayKey="name"
-          placeholder="Select a home"
-        />
-      </Flex>
-
-      {selectedHome !== null && loaded && (
+      {loaded && (
         <>
           <TextField.Root
             placeholder="Search items (e.g. scissors, batteries)..."

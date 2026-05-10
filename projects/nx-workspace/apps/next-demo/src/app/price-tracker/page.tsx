@@ -1,22 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
 import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
 import {
   Button,
-  Select,
   CRUDItemList,
   CRUDFormProps,
 } from '@vigilant-broccoli/react-lib';
 import { Button as RadixButton } from '@radix-ui/themes';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
-import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
-import { ROUTES } from '../../lib/routes';
+import { useHome } from '../providers/home-provider';
 import { PriceItem } from '../../lib/types';
-
-type HomeOption = { id: number; name: string };
 
 type ParsedLineItem = {
   name: string;
@@ -517,10 +512,8 @@ const PriceItemForm = ({
 };
 
 export default function PriceTrackerPage() {
-  const router = useRouter();
   const session = useAuth();
-  const [homes, setHomes] = useState<HomeOption[]>([]);
-  const [selectedHome, setSelectedHome] = useState<HomeOption | null>(null);
+  const { selectedHomeId } = useHome();
   const [items, setItems] = useState<PriceItem[]>([]);
   const [query, setQuery] = useState('');
   const [loaded, setLoaded] = useState(false);
@@ -530,24 +523,9 @@ export default function PriceTrackerPage() {
   });
 
   useEffect(() => {
-    supabase
-      .from('homes')
-      .select('id, name')
-      .then(({ data }) => {
-        const userHomes = data ?? [];
-        if (userHomes.length === 0) {
-          router.replace(ROUTES.HOMES);
-          return;
-        }
-        setHomes(userHomes);
-        setSelectedHome(userHomes[0]);
-      });
-  }, [router]);
-
-  useEffect(() => {
-    if (!selectedHome) return;
+    if (!selectedHomeId) return;
     setLoaded(false);
-    fetch(`/api/price-tracker?homeId=${selectedHome.id}`, {
+    fetch(`/api/price-tracker?homeId=${selectedHomeId}`, {
       headers: authHeader(),
     })
       .then(r => r.json())
@@ -555,7 +533,7 @@ export default function PriceTrackerPage() {
         setItems(Array.isArray(data) ? data : []);
         setLoaded(true);
       });
-  }, [selectedHome, session?.access_token]);
+  }, [selectedHomeId, session?.access_token]);
 
   const createItem = async (
     form: PriceItemFormValues & {
@@ -593,7 +571,7 @@ export default function PriceTrackerPage() {
               name: entry.name,
               category: entry.category,
               unit: entry.unit,
-              homeId: selectedHome?.id,
+              homeId: selectedHomeId,
               userId,
               entries: [
                 {
@@ -614,14 +592,14 @@ export default function PriceTrackerPage() {
           name: form.name,
           category: form.category,
           unit: form.unit,
-          homeId: selectedHome?.id,
+          homeId: selectedHomeId,
           userId,
           entries: form.entries,
         }),
       });
     }
 
-    const res = await fetch(`/api/price-tracker?homeId=${selectedHome?.id}`, {
+    const res = await fetch(`/api/price-tracker?homeId=${selectedHomeId}`, {
       headers: authHeader(),
     });
     const updated: PriceItem[] = await res.json();
@@ -650,7 +628,7 @@ export default function PriceTrackerPage() {
     });
   };
 
-  if (homes.length === 0) return null;
+  if (!selectedHomeId) return null;
 
   const filtered = items.filter(item => {
     if (!query.trim()) return true;
@@ -675,17 +653,7 @@ export default function PriceTrackerPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-2 sm:p-6 space-y-6">
-      <Flex gap="2" align="center" wrap="wrap">
-        <Select
-          selectedOption={selectedHome ?? undefined}
-          setValue={setSelectedHome}
-          options={homes}
-          optionDisplayKey="name"
-          placeholder="Select a home"
-        />
-      </Flex>
-
-      {selectedHome !== null && loaded && (
+      {loaded && (
         <>
           <TextField.Root
             placeholder="Search items..."

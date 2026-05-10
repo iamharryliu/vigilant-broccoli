@@ -1,12 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { Text } from '@radix-ui/themes';
 import { supabase } from '../../../../libs/supabase';
 import { useAuth } from '../../providers/auth-provider';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
-import { ROUTES } from '../../../lib/routes';
 import { HomeForm } from './HomeForm';
 import { MemberList } from './MemberList';
 
@@ -125,12 +123,6 @@ export const HomeDetailView = ({ homeId }: Props) => {
           <Text size="6" weight="bold">
             Home Details
           </Text>
-          <Link
-            href={ROUTES.HOME_CALENDAR(homeId)}
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
-            View Calendar →
-          </Link>
         </div>
         <HomeForm
           name={name}

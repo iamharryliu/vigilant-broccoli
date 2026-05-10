@@ -6,7 +6,8 @@ import { useAuth } from '../providers/auth-provider';
 import { isWhitelisted } from '../../lib/whitelist';
 import { ROUTES } from '../../lib/routes';
 import { supabase } from '../../../libs/supabase';
-import Navbar from './Navbar';
+import Topbar from './Topbar';
+import Sidebar from './Sidebar';
 
 const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.SIGNUP, ROUTES.AUTH_CALLBACK];
 
@@ -34,10 +35,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [session, isPublic, router]);
 
+  const authenticated = session && !isPublic;
+
+  if (!authenticated) {
+    return <>{children}</>;
+  }
+
   return (
     <>
-      {session && !isPublic && <Navbar />}
-      {children}
+      <Topbar />
+      <Sidebar />
+      <div className="pt-[49px] pl-14">{children}</div>
     </>
   );
 }

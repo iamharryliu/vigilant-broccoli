@@ -1,11 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Dialog, Text } from '@radix-ui/themes';
-import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
-import { ROUTES } from '../../lib/routes';
+import { useHome } from '../providers/home-provider';
 import { CalendarEvent, Resource, ResourceBooking } from '../../lib/types';
 import { CalendarView } from '../calendar/components/CalendarView';
 import { ResourceList } from './components/ResourceList';
@@ -41,9 +39,8 @@ const bookingToCalendarEvent = (
 });
 
 export default function ResourcesPage() {
-  const router = useRouter();
   const session = useAuth();
-  const [homeId, setHomeId] = useState<number | null>(null);
+  const { selectedHomeId: homeId } = useHome();
   const [resources, setResources] = useState<Resource[]>([]);
   const [bookings, setBookings] = useState<ResourceBooking[]>([]);
   const [pendingDrop, setPendingDrop] =
@@ -55,22 +52,6 @@ export default function ResourcesPage() {
     Authorization: `Bearer ${token}`,
     ...extra,
   });
-
-  useEffect(() => {
-    supabase
-      .from('homes')
-      .select('id')
-      .order('created_at', { ascending: true })
-      .limit(1)
-      .single()
-      .then(({ data }) => {
-        if (!data) {
-          router.replace(ROUTES.HOMES);
-          return;
-        }
-        setHomeId(data.id);
-      });
-  }, [router]);
 
   const fetchResources = useCallback(async () => {
     if (!homeId || !token) return;
