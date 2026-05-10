@@ -8,4 +8,5 @@ export const NAV_LINKS = [
   { label: 'Resources', href: ROUTES.RESOURCES },
   { label: 'Tasks', href: ROUTES.TASKS },
   { label: 'Household Rules', href: ROUTES.HOUSEHOLD_RULES },
+  { label: 'Price Tracker', href: ROUTES.PRICE_TRACKER },
 ];

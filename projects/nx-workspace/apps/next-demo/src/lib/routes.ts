@@ -12,4 +12,5 @@ export const ROUTES = {
   RESOURCES: '/resources',
   TASKS: '/tasks',
   HOUSEHOLD_RULES: '/household-rules',
+  PRICE_TRACKER: '/price-tracker',
 } as const;

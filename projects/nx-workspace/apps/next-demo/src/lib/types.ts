@@ -111,3 +111,22 @@ export interface WhereIsItem {
   imageUrls: string[];
   createdAt: string;
 }
+
+export interface PriceEntry {
+  id: string;
+  price: number;
+  store: string | null;
+  purchasedAt: string;
+  createdAt: string;
+}
+
+export interface PriceItem {
+  id: string;
+  name: string;
+  category: string | null;
+  unit: string | null;
+  homeId: number;
+  entries: PriceEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
