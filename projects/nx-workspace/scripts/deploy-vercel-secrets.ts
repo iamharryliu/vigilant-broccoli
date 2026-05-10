@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { execSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 import 'dotenv/config';
@@ -35,39 +35,45 @@ async function fetchSecretsFromVault(): Promise<VaultSecrets> {
   ) as VaultSecrets;
 }
 
-function runAsync(cmd: string, input?: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const child = spawn('bash', ['-c', cmd], {
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
-    if (input !== undefined) {
-      child.stdin.write(input);
-      child.stdin.end();
+const vercelEnv = { ...process.env };
+delete vercelEnv.NODE_EXTRA_CA_CERTS;
+delete vercelEnv.FORCE_COLOR;
+
+function vercelEnvClear(environment: string) {
+  const awkScript = '/^[[:space:]]+[A-Z_][A-Z0-9_]+[[:space:]]/ {print $1}';
+  const output = execSync(
+    `npx vercel env ls ${environment} 2>/dev/null | awk '${awkScript}'`,
+    { shell: '/bin/bash', env: vercelEnv },
+  ).toString();
+  const keys = output
+    .split('\n')
+    .map(k => k.trim())
+    .filter(Boolean);
+  if (!keys.length) return;
+  console.log(`Removing ${keys.length} existing secrets...`);
+  for (const key of keys) {
+    try {
+      execSync(`npx vercel env rm ${key} ${environment} --yes`, {
+        stdio: 'pipe',
+        env: vercelEnv,
+      });
+      console.log(`  - ${key}`);
+    } catch (e) {
+      console.warn(`  ⚠ ${key}: ${(e as Error).message}`);
     }
-    child.on('close', code =>
-      code === 0 ? resolve() : reject(new Error(`exit ${code}`)),
-    );
-  });
+  }
 }
 
 async function vercelEnvAdd(key: string, value: string, environment: string) {
-  const safeValue = value.replace(/'/g, "'\\''");
   try {
-    await runAsync(
-      `printf '%s' '${safeValue}' | vercel env add ${key} ${environment}`,
-    );
+    execSync(`npx vercel env add ${key} ${environment}`, {
+      input: value,
+      stdio: ['pipe', 'inherit', 'inherit'],
+      env: vercelEnv,
+    });
     console.log(`✓ ${key}`);
-  } catch {
-    // Already exists — remove and re-add
-    await runAsync(`vercel env rm ${key} ${environment} --yes`);
-    try {
-      await runAsync(
-        `printf '%s' '${safeValue}' | vercel env add ${key} ${environment}`,
-      );
-      console.log(`✓ ${key} (updated)`);
-    } catch {
-      console.error(`✗ ${key}: failed to deploy`);
-    }
+  } catch (e) {
+    console.error(`✗ ${key}: failed to deploy`, (e as Error).message);
   }
 }
 
@@ -135,6 +141,8 @@ async function main() {
       }
     }
   }
+
+  vercelEnvClear(environment);
 
   console.log('Deploying secrets...');
   await Promise.all(
