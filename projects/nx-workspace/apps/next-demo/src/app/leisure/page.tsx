@@ -243,20 +243,27 @@ export default function LeisurePage() {
           )}
 
           {calendarModal?.type === 'edit' && (
-            <CalendarEventForm
-              initialData={{
-                title: calendarModal.event.title,
-                description: calendarModal.event.description ?? '',
-                start: calendarModal.event.start,
-                end: calendarModal.event.end,
-                allDay: calendarModal.event.allDay,
-                color: calendarModal.event.color ?? '',
-              }}
-              onSubmit={handleCalendarEdit}
-              onDelete={handleCalendarDelete}
-              onCancel={() => setCalendarModal(null)}
-              isEdit
-            />
+            <>
+              {calendarModal.event.createdByEmail && (
+                <Text size="1" color="gray">
+                  Created by {calendarModal.event.createdByEmail}
+                </Text>
+              )}
+              <CalendarEventForm
+                initialData={{
+                  title: calendarModal.event.title,
+                  description: calendarModal.event.description ?? '',
+                  start: calendarModal.event.start,
+                  end: calendarModal.event.end,
+                  allDay: calendarModal.event.allDay,
+                  color: calendarModal.event.color ?? '',
+                }}
+                onSubmit={handleCalendarEdit}
+                onDelete={handleCalendarDelete}
+                onCancel={() => setCalendarModal(null)}
+                isEdit
+              />
+            </>
           )}
         </Dialog.Content>
       </Dialog.Root>

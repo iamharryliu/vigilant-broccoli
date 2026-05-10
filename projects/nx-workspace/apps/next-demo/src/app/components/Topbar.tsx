@@ -1,8 +1,11 @@
 'use client';
 
-import { Button, Select } from '@radix-ui/themes';
+import Link from 'next/link';
+import { Select, DropdownMenu, IconButton } from '@radix-ui/themes';
+import { User } from 'lucide-react';
 import { supabase } from '../../../libs/supabase';
 import { useHome } from '../providers/home-provider';
+import { ROUTES } from '../../lib/routes';
 
 export default function Topbar() {
   const { homes, selectedHomeId, setSelectedHomeId } = useHome();
@@ -25,14 +28,27 @@ export default function Topbar() {
           </Select.Content>
         </Select.Root>
       )}
-      <Button
-        variant="ghost"
-        size="1"
-        className="cursor-pointer"
-        onClick={() => supabase.auth.signOut()}
-      >
-        Sign out
-      </Button>
+
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <IconButton variant="ghost" size="1" className="cursor-pointer">
+            <User size={16} />
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="end" size="1">
+          <DropdownMenu.Item asChild>
+            <Link href={ROUTES.USER_SETTINGS}>User Settings</Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            color="red"
+            className="cursor-pointer"
+            onClick={() => supabase.auth.signOut()}
+          >
+            Sign out
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
     </header>
   );
 }

@@ -141,20 +141,27 @@ export default function HomeCalendarPage({
           )}
 
           {modal?.type === 'edit' && (
-            <CalendarEventForm
-              initialData={{
-                title: modal.event.title,
-                description: modal.event.description ?? '',
-                start: modal.event.start,
-                end: modal.event.end,
-                allDay: modal.event.allDay,
-                color: modal.event.color ?? '',
-              }}
-              onSubmit={handleEdit}
-              onDelete={handleDelete}
-              onCancel={() => setModal(null)}
-              isEdit
-            />
+            <>
+              {modal.event.createdByEmail && (
+                <Text size="1" color="gray">
+                  Created by {modal.event.createdByEmail}
+                </Text>
+              )}
+              <CalendarEventForm
+                initialData={{
+                  title: modal.event.title,
+                  description: modal.event.description ?? '',
+                  start: modal.event.start,
+                  end: modal.event.end,
+                  allDay: modal.event.allDay,
+                  color: modal.event.color ?? '',
+                }}
+                onSubmit={handleEdit}
+                onDelete={handleDelete}
+                onCancel={() => setModal(null)}
+                isEdit
+              />
+            </>
           )}
         </Dialog.Content>
       </Dialog.Root>

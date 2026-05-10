@@ -136,6 +136,11 @@ export function ResourceList({
                       {resource.description}
                     </Text>
                   )}
+                  {resource.createdByEmail && (
+                    <Text size="1" color="gray" className="truncate block">
+                      Added by {resource.createdByEmail}
+                    </Text>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2 ml-2 shrink-0">

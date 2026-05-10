@@ -33,6 +33,7 @@ export interface CalendarEvent {
   projectId?: string | null;
   mealId?: string | null;
   homeId: number;
+  createdByEmail?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -79,6 +80,7 @@ export interface Resource {
   category: ResourceCategory;
   quantity: number;
   homeId: number;
+  createdByEmail?: string | null;
   createdAt: string;
   updatedAt: string;
 }

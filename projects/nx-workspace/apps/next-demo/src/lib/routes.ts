@@ -19,4 +19,5 @@ export const ROUTES = {
   MEALS: '/meals',
   DOCS: '/docs',
   SETTINGS: '/settings',
+  USER_SETTINGS: '/user-settings',
 } as const;

@@ -9,21 +9,20 @@ import { ROUTES } from '../../lib/routes';
 
 type FlatPage = { label: string; href: string };
 
-const ALL_PAGES: FlatPage[] = NAV_LINKS.flatMap(({ label, href, children }): FlatPage[] =>
-  children
-    ? [{ label, href }, ...children.map(c => ({ label: c.label, href: c.href as string }))]
-    : [{ label, href: href as string }],
+const ALL_PAGES: FlatPage[] = NAV_LINKS.flatMap(
+  ({ label, href, children }): FlatPage[] =>
+    children
+      ? [
+          { label, href },
+          ...children.map(c => ({ label: c.label, href: c.href as string })),
+        ]
+      : [{ label, href: href as string }],
 );
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [expanded, setExpanded] = useState<string[]>([]);
+  const [hovered, setHovered] = useState<string | null>(null);
   const [query, setQuery] = useState('');
-
-  const toggle = (href: string) =>
-    setExpanded(prev =>
-      prev.includes(href) ? prev.filter(h => h !== href) : [...prev, href],
-    );
 
   const results = query.trim()
     ? ALL_PAGES.filter(p => p.label.toLowerCase().includes(query.toLowerCase()))
@@ -33,7 +32,7 @@ export default function Sidebar() {
     <aside
       className="group/sidebar fixed top-0 left-0 bottom-0 z-30 w-14 hover:w-48 border-r border-gray-200 bg-white flex flex-col overflow-hidden transition-all duration-200"
       onMouseLeave={() => {
-        setExpanded([]);
+        setHovered(null);
         setQuery('');
       }}
     >
@@ -80,7 +79,7 @@ export default function Sidebar() {
         ) : (
           NAV_LINKS.map(({ label, href, icon: Icon, children }) => {
             const isActive = pathname.startsWith(href);
-            const isOpen = expanded.includes(href);
+            const isOpen = hovered === href;
             const childActive =
               children?.some(c => pathname.startsWith(c.href)) ?? false;
             const highlight = isActive || childActive;
@@ -88,9 +87,13 @@ export default function Sidebar() {
 
             if (children) {
               return (
-                <div key={href}>
-                  <button
-                    onClick={() => toggle(href)}
+                <div
+                  key={href}
+                  onMouseEnter={() => setHovered(href)}
+                  onMouseLeave={() => setHovered(null)}
+                >
+                  <Link
+                    href={href}
                     className={`w-full flex items-center gap-3 px-2 py-2 ${baseClass}`}
                   >
                     <span className="shrink-0">
@@ -106,20 +109,24 @@ export default function Sidebar() {
                         <ChevronRight size={14} />
                       )}
                     </span>
-                  </button>
-                  {isOpen && (
-                    <div className="opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-150 flex flex-col gap-1 mt-1 ml-3">
-                      {children.map(child => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className={`text-sm px-3 py-1.5 rounded-md whitespace-nowrap ${pathname.startsWith(child.href) ? 'font-medium text-black bg-gray-100' : 'text-gray-500 hover:text-black hover:bg-gray-50'}`}
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+                  </Link>
+                  <div
+                    className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="flex flex-col gap-1 mt-1 ml-3 pb-1">
+                        {children.map(child => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className={`text-sm px-3 py-1.5 rounded-md whitespace-nowrap ${pathname.startsWith(child.href) ? 'font-medium text-black bg-gray-100' : 'text-gray-500 hover:text-black hover:bg-gray-50'}`}
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             }

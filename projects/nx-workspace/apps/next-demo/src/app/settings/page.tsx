@@ -9,15 +9,51 @@ const EXPORT_OPTIONS = [{ key: 'where-is', label: 'Where Is' }] as const;
 
 type ExportKey = (typeof EXPORT_OPTIONS)[number]['key'];
 
+const CLEAR_OPTIONS = [
+  { key: 'calendar-events', label: 'Calendar Events' },
+  { key: 'household-rules', label: 'Household Rules' },
+  { key: 'home-members', label: 'Home Members' },
+  { key: 'home-resources', label: 'Resources' },
+  { key: 'resource-bookings', label: 'Resource Bookings' },
+  { key: 'home-projects', label: 'Projects' },
+  { key: 'leisure-activities', label: 'Leisure Activities' },
+  { key: 'meals', label: 'Meals' },
+  { key: 'docs', label: 'Documents' },
+  { key: 'where-is', label: 'Where Is' },
+] as const;
+
+type ClearKey = (typeof CLEAR_OPTIONS)[number]['key'];
+
 export default function SettingsPage() {
   const session = useAuth();
   const { homes, selectedHomeId } = useHome();
   const selectedHome = homes.find(h => h.id === selectedHomeId);
+
   const [selected, setSelected] = useState<Set<ExportKey>>(new Set());
   const importFileRef = useRef<HTMLInputElement>(null);
 
+  const [clearSelected, setClearSelected] = useState<Set<ClearKey>>(new Set());
+  const [clearing, setClearing] = useState(false);
+  const [clearResults, setClearResults] = useState<Record<
+    string,
+    string
+  > | null>(null);
+
+  const [seeding, setSeeding] = useState(false);
+  const [seedResults, setSeedResults] = useState<Record<string, string> | null>(
+    null,
+  );
+
   const toggle = (key: ExportKey) =>
     setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+
+  const toggleClear = (key: ClearKey) =>
+    setClearSelected(prev => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
       else next.add(key);
@@ -50,7 +86,6 @@ export default function SettingsPage() {
     if (!file || !selectedHomeId || !session) return;
     const text = await file.text();
     const importData = JSON.parse(text);
-
     if (selected.has('where-is')) {
       await fetch('/api/where-is/import', {
         method: 'POST',
@@ -63,8 +98,45 @@ export default function SettingsPage() {
         }),
       });
     }
-
     if (importFileRef.current) importFileRef.current.value = '';
+  };
+
+  const handleSeed = async () => {
+    if (!selectedHomeId || !session?.access_token) return;
+    setSeeding(true);
+    setSeedResults(null);
+    const res = await fetch('/api/dev/seed', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ homeId: selectedHomeId }),
+    });
+    const { results } = await res.json();
+    setSeedResults(results);
+    setSeeding(false);
+  };
+
+  const handleClear = async () => {
+    if (!selectedHomeId || !session?.access_token || clearSelected.size === 0)
+      return;
+    setClearing(true);
+    setClearResults(null);
+    const res = await fetch('/api/dev/clear', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        homeId: selectedHomeId,
+        keys: [...clearSelected],
+      }),
+    });
+    const { results } = await res.json();
+    setClearResults(results);
+    setClearing(false);
   };
 
   return (
@@ -72,28 +144,6 @@ export default function SettingsPage() {
       <Text size="6" weight="bold">
         Settings
       </Text>
-
-      <section className="space-y-3">
-        <Text size="3" weight="medium">
-          Account
-        </Text>
-        <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
-          <div className="flex items-center justify-between px-4 py-3">
-            <Text size="2" color="gray">
-              Email
-            </Text>
-            <Text size="2">{session?.user.email ?? '—'}</Text>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3">
-            <Text size="2" color="gray">
-              User ID
-            </Text>
-            <Text size="2" className="font-mono text-xs">
-              {session?.user.id ?? '—'}
-            </Text>
-          </div>
-        </div>
-      </section>
 
       <section className="space-y-3">
         <Text size="3" weight="medium">
@@ -157,6 +207,97 @@ export default function SettingsPage() {
             className="hidden"
           />
         </div>
+      </section>
+
+      <section className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Text size="3" weight="medium">
+            Dev
+          </Text>
+          <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-700 font-medium">
+            danger
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={handleSeed}
+            disabled={seeding || !selectedHomeId}
+            loading={seeding}
+          >
+            Seed Mock Data
+          </Button>
+          <Text size="1" color="gray">
+            Inserts sample rules, meals, projects, events and more.
+          </Text>
+        </div>
+        {seedResults && (
+          <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
+            {Object.entries(seedResults).map(([key, status]) => (
+              <div
+                key={key}
+                className="flex items-center justify-between px-4 py-2"
+              >
+                <Text size="2" color="gray">
+                  {key}
+                </Text>
+                <Text size="2" color={status === 'ok' ? 'green' : 'red'}>
+                  {status}
+                </Text>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <Text size="2" color="gray">
+          Clear all records for the selected home. This is irreversible.
+        </Text>
+        <div className="border border-red-100 rounded-lg divide-y divide-red-50">
+          {CLEAR_OPTIONS.map(({ key, label }) => (
+            <label
+              key={key}
+              className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-red-50"
+            >
+              <Checkbox
+                checked={clearSelected.has(key)}
+                onCheckedChange={() => toggleClear(key)}
+              />
+              <Text size="2">{label}</Text>
+            </label>
+          ))}
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            color="red"
+            onClick={handleClear}
+            disabled={clearSelected.size === 0 || clearing || !selectedHomeId}
+            loading={clearing}
+          >
+            Clear Selected
+          </Button>
+          {clearSelected.size > 0 && (
+            <Text size="1" color="gray">
+              {clearSelected.size} selected
+            </Text>
+          )}
+        </div>
+        {clearResults && (
+          <div className="border border-gray-200 rounded-lg divide-y divide-gray-100 mt-2">
+            {Object.entries(clearResults).map(([key, status]) => (
+              <div
+                key={key}
+                className="flex items-center justify-between px-4 py-2"
+              >
+                <Text size="2" color="gray">
+                  {key}
+                </Text>
+                <Text size="2" color={status === 'ok' ? 'green' : 'red'}>
+                  {status}
+                </Text>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
