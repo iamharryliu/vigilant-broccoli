@@ -60,6 +60,11 @@ export default function SettingsPage() {
       return next;
     });
 
+  const allClearKeys = CLEAR_OPTIONS.map(o => o.key);
+  const allClearSelected = allClearKeys.every(k => clearSelected.has(k));
+  const toggleAllClear = () =>
+    setClearSelected(allClearSelected ? new Set() : new Set(allClearKeys));
+
   const handleExport = async () => {
     if (!selectedHomeId || !session?.access_token) return;
     for (const key of selected) {
@@ -253,6 +258,15 @@ export default function SettingsPage() {
           Clear all records for the selected home. This is irreversible.
         </Text>
         <div className="border border-red-100 rounded-lg divide-y divide-red-50">
+          <label className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-red-50">
+            <Checkbox
+              checked={allClearSelected}
+              onCheckedChange={toggleAllClear}
+            />
+            <Text size="2" weight="medium">
+              Select All
+            </Text>
+          </label>
           {CLEAR_OPTIONS.map(({ key, label }) => (
             <label
               key={key}

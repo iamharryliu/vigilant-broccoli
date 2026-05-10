@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
-import { createServerClient } from '../../../../../libs/supabase-server';
+import {
+  createServerClient,
+  createAdminClient,
+} from '../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
@@ -53,10 +56,30 @@ export async function POST(request: NextRequest) {
       continue;
     }
 
-    const homeIdCol = table === 'home_members' ? 'home_id' : 'home_id';
+    if (table === 'home_members') {
+      const admin = createAdminClient();
+      const { data: home } = await admin
+        .from('homes')
+        .select('user_id')
+        .eq('id', homeId)
+        .maybeSingle();
+      const ownerUserId = home?.user_id;
+      let query = supabase.from('home_members').delete().eq('home_id', homeId);
+      if (ownerUserId) {
+        const { data: ownerMember } = await admin
+          .from('home_members')
+          .select('id')
+          .eq('home_id', homeId)
+          .eq('user_id', ownerUserId)
+          .maybeSingle();
+        if (ownerMember?.id) query = query.neq('id', ownerMember.id);
+      }
+      const { error } = await query;
+      results[key] = error ? error.message : 'ok';
+      continue;
+    }
 
-    const { error } = await supabase.from(table).delete().eq(homeIdCol, homeId);
-
+    const { error } = await supabase.from(table).delete().eq('home_id', homeId);
     results[key] = error ? error.message : 'ok';
   }
 
