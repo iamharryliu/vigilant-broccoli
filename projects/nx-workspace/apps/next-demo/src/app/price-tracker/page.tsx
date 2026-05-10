@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Flex, Text, TextField, Badge, TextArea } from '@radix-ui/themes';
+import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
 import {
   Button,
   Select,
@@ -567,7 +567,6 @@ export default function PriceTrackerPage() {
     },
   ): Promise<PriceItemFormValues> => {
     const userId = session?.user.id ?? '';
-    const accessToken = session?.access_token ?? '';
 
     if (
       form.entries.length > 0 &&
@@ -617,7 +616,6 @@ export default function PriceTrackerPage() {
           unit: form.unit,
           homeId: selectedHome?.id,
           userId,
-          accessToken,
           entries: form.entries,
         }),
       });
@@ -673,10 +671,6 @@ export default function PriceTrackerPage() {
       store: e.store,
       purchasedAt: e.purchasedAt,
     })),
-    imageUrls: [] as string[],
-    homeId: item.homeId,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
   }));
 
   return (

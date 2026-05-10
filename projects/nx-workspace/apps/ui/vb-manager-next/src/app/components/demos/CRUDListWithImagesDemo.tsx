@@ -2,7 +2,11 @@
 
 import { useRef, useState, ReactNode } from 'react';
 import { Badge, Flex, Text, TextField } from '@radix-ui/themes';
-import { Button, CRUDFormProps, CRUDItemList } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  CRUDFormProps,
+  CRUDItemList,
+} from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 
 type ImageItem = {
@@ -76,6 +80,7 @@ const ImageListItem = ({
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
       {src && (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={src}
           alt={item.title}
@@ -113,7 +118,9 @@ const ImageItemFormComponent = ({
   const [description, setDescription] = useState(initialFormValues.description);
   const [tags, setTags] = useState<string[]>(initialFormValues.tags);
   const [tagInput, setTagInput] = useState('');
-  const [imageDataUrl, setImageDataUrl] = useState(initialFormValues.imageDataUrl);
+  const [imageDataUrl, setImageDataUrl] = useState(
+    initialFormValues.imageDataUrl,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isUpdate = formType === FORM_TYPE.UPDATE;
 
@@ -142,7 +149,9 @@ const ImageItemFormComponent = ({
   return (
     <Flex direction="column" gap="3" mt="3">
       <div>
-        <Text size="1" weight="medium" as="p" mb="1">Title</Text>
+        <Text size="1" weight="medium" as="p" mb="1">
+          Title
+        </Text>
         <TextField.Root
           placeholder="e.g. Mountain Landscape"
           value={title}
@@ -150,7 +159,9 @@ const ImageItemFormComponent = ({
         />
       </div>
       <div>
-        <Text size="1" weight="medium" as="p" mb="1">Description</Text>
+        <Text size="1" weight="medium" as="p" mb="1">
+          Description
+        </Text>
         <TextField.Root
           placeholder="Brief description"
           value={description}
@@ -158,13 +169,20 @@ const ImageItemFormComponent = ({
         />
       </div>
       <div>
-        <Text size="1" weight="medium" as="p" mb="1">Tags</Text>
+        <Text size="1" weight="medium" as="p" mb="1">
+          Tags
+        </Text>
         <Flex gap="2">
           <TextField.Root
             placeholder="Add tag..."
             value={tagInput}
             onChange={e => setTagInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag();
+              }
+            }}
             className="flex-1"
           />
           <Button onClick={async () => addTag()}>Add</Button>
@@ -193,6 +211,7 @@ const ImageItemFormComponent = ({
             className="text-sm"
           />
           {imageDataUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={imageDataUrl}
               alt="preview"
@@ -206,7 +225,13 @@ const ImageItemFormComponent = ({
   );
 };
 
-export const CRUDListWithImagesDemo = ({ isCards, showEllipsis }: { isCards?: boolean; showEllipsis?: boolean }) => {
+export const CRUDListWithImagesDemo = ({
+  isCards,
+  showEllipsis,
+}: {
+  isCards?: boolean;
+  showEllipsis?: boolean;
+}) => {
   const [items, setItems] = useState<ImageItemForm[]>(
     SEED_ITEMS.map(item => ({ ...item, imageDataUrl: '' })),
   );
@@ -216,9 +241,9 @@ export const CRUDListWithImagesDemo = ({ isCards, showEllipsis }: { isCards?: bo
     return { ...form, id: nextId.current++ };
   };
 
-  const updateItem = async (_form: ImageItemForm): Promise<void> => {};
+  const updateItem = (_form: ImageItemForm) => Promise.resolve();
 
-  const deleteItem = async (_id: string | number): Promise<void> => {};
+  const deleteItem = (_id: string | number) => Promise.resolve();
 
   return (
     <CRUDItemList

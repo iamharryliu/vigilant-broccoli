@@ -13,4 +13,8 @@ export const ROUTES = {
   TASKS: '/tasks',
   HOUSEHOLD_RULES: '/household-rules',
   PRICE_TRACKER: '/price-tracker',
+  CHORES: '/chores',
+  PROJECTS: '/projects',
+  MEALS: '/meals',
+  DOCS: '/docs',
 } as const;

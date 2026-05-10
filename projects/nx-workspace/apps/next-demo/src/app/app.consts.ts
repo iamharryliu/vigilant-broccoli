@@ -9,4 +9,8 @@ export const NAV_LINKS = [
   { label: 'Tasks', href: ROUTES.TASKS },
   { label: 'Household Rules', href: ROUTES.HOUSEHOLD_RULES },
   { label: 'Price Tracker', href: ROUTES.PRICE_TRACKER },
+  { label: 'Chores', href: ROUTES.CHORES },
+  { label: 'Projects', href: ROUTES.PROJECTS },
+  { label: 'Meals', href: ROUTES.MEALS },
+  { label: 'Docs', href: ROUTES.DOCS },
 ];

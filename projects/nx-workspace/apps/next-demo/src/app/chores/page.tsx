@@ -44,14 +44,11 @@ function useLocalStorage<T>(
   initialValue: T,
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === 'undefined') {
-      return initialValue;
-    }
+    if (typeof window === 'undefined') return initialValue;
     try {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(`Error loading ${key} from localStorage:`, error);
+    } catch {
       return initialValue;
     }
   });
@@ -64,8 +61,8 @@ function useLocalStorage<T>(
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
-    } catch (error) {
-      console.error(`Error saving ${key} to localStorage:`, error);
+    } catch {
+      // ignore
     }
   };
 
@@ -73,8 +70,9 @@ function useLocalStorage<T>(
 }
 
 function daysBetween(date1: Date, date2: Date): number {
-  const oneDay = 24 * 60 * 60 * 1000;
-  return Math.floor((date2.getTime() - date1.getTime()) / oneDay);
+  return Math.floor(
+    (date2.getTime() - date1.getTime()) / (24 * 60 * 60 * 1000),
+  );
 }
 
 function isInCurrentPeriod(
@@ -82,73 +80,60 @@ function isInCurrentPeriod(
   recurrence: Chore['recurrence'],
   today: Date,
 ): boolean {
-  const dateNormalized = new Date(date);
-  dateNormalized.setHours(0, 0, 0, 0);
-
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
   switch (recurrence) {
     case 'daily':
-      return dateNormalized.getTime() === today.getTime();
+      return d.getTime() === today.getTime();
     case 'weekly': {
       const weekStart = new Date(today);
       weekStart.setDate(today.getDate() - today.getDay());
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekStart.getDate() + 6);
-      return dateNormalized >= weekStart && dateNormalized <= weekEnd;
+      return d >= weekStart && d <= weekEnd;
     }
     case 'monthly':
       return (
-        dateNormalized.getMonth() === today.getMonth() &&
-        dateNormalized.getFullYear() === today.getFullYear()
+        d.getMonth() === today.getMonth() &&
+        d.getFullYear() === today.getFullYear()
       );
-    default:
-      return false;
   }
 }
 
 function generateTodos(chores: Chore[]): Todo[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
   const todos: Todo[] = [];
 
   chores.forEach(chore => {
-    const completionsInPeriod = chore.completions.filter(completionDateStr => {
-      const completionDate = new Date(completionDateStr);
-      return isInCurrentPeriod(completionDate, chore.recurrence, today);
-    }).length;
-
+    const completionsInPeriod = chore.completions.filter(s =>
+      isInCurrentPeriod(new Date(s), chore.recurrence, today),
+    ).length;
     const remainingInstances = chore.multiplier - completionsInPeriod;
+    if (remainingInstances <= 0) return;
 
     const createdAt = new Date(chore.createdAt);
     createdAt.setHours(0, 0, 0, 0);
+    const daysOverdue = createdAt < today ? daysBetween(createdAt, today) : 0;
 
-    let daysOverdue = 0;
-
-    if (createdAt < today && remainingInstances > 0) {
-      daysOverdue = daysBetween(createdAt, today);
-    }
-
-    if (remainingInstances > 0) {
-      for (let i = 0; i < chore.multiplier; i++) {
-        const isCompleted = i < completionsInPeriod;
-        todos.push({
-          choreId: chore.id,
-          choreName: chore.name,
-          isUrgent: chore.isUrgent,
-          isImportant: chore.isImportant,
-          daysOverdue,
-          instanceNumber: i + 1,
-          totalInstances: chore.multiplier,
-          isCompleted,
-        });
-      }
+    for (let i = 0; i < chore.multiplier; i++) {
+      todos.push({
+        choreId: chore.id,
+        choreName: chore.name,
+        isUrgent: chore.isUrgent,
+        isImportant: chore.isImportant,
+        daysOverdue,
+        instanceNumber: i + 1,
+        totalInstances: chore.multiplier,
+        isCompleted: i < completionsInPeriod,
+      });
     }
   });
 
   return todos;
 }
 
-const DAILY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
+const DEFAULT_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   {
     name: 'Walk dog',
     description: 'Take the dog for a walk around the block',
@@ -185,9 +170,6 @@ const DAILY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
     isImportant: true,
     completions: [],
   },
-];
-
-const WEEKLY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   {
     name: 'Run robot vacuum',
     description: '',
@@ -224,9 +206,6 @@ const WEEKLY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
     isImportant: false,
     completions: [],
   },
-];
-
-const MONTHLY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   {
     name: 'Clean kitchen surfaces',
     description: '',
@@ -247,27 +226,22 @@ const MONTHLY_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
   },
 ];
 
-const DEFAULT_CHORES: Omit<Chore, 'id' | 'createdAt'>[] = [
-  ...DAILY_CHORES,
-  ...WEEKLY_CHORES,
-  ...MONTHLY_CHORES,
-];
+const EMPTY_FORM = {
+  name: '',
+  description: '',
+  recurrence: 'weekly' as Chore['recurrence'],
+  multiplier: 1,
+  isUrgent: false,
+  isImportant: false,
+};
 
-export function ChoresDemo() {
+export default function ChoresPage() {
   const [mounted, setMounted] = useState(false);
   const [chores, setChores] = useLocalStorage<Chore[]>('chores', []);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingChore, setEditingChore] = useState<Chore | null>(null);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    recurrence: 'weekly' as Chore['recurrence'],
-    multiplier: 1,
-    isUrgent: false,
-    isImportant: false,
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
 
   useEffect(() => {
     setMounted(true);
@@ -275,61 +249,51 @@ export function ChoresDemo() {
 
   useEffect(() => {
     if (mounted && chores.length === 0) {
-      const defaultChores: Chore[] = DEFAULT_CHORES.map((chore, index) => ({
-        ...chore,
-        id: `default-${index}`,
-        createdAt: new Date().toISOString(),
-      }));
-      setChores(defaultChores);
+      setChores(
+        DEFAULT_CHORES.map((chore, i) => ({
+          ...chore,
+          id: `default-${i}`,
+          createdAt: new Date().toISOString(),
+        })),
+      );
     }
   }, [mounted]);
 
   useEffect(() => {
-    if (mounted) {
-      setTodos(generateTodos(chores));
-    }
+    if (mounted) setTodos(generateTodos(chores));
   }, [chores, mounted]);
 
   const resetForm = () => {
-    setFormData({
-      name: '',
-      description: '',
-      recurrence: 'weekly',
-      multiplier: 1,
-      isUrgent: false,
-      isImportant: false,
-    });
+    setFormData(EMPTY_FORM);
     setEditingChore(null);
     setIsFormOpen(false);
   };
 
-  const handleCreateChore = () => {
-    const newChore: Chore = {
-      id: Date.now().toString(),
-      ...formData,
-      completions: [],
-      createdAt: new Date().toISOString(),
-    };
-    setChores(prev => [...prev, newChore]);
+  const handleSaveChore = () => {
+    if (editingChore) {
+      setChores(prev =>
+        prev.map(c => (c.id === editingChore.id ? { ...c, ...formData } : c)),
+      );
+    } else {
+      setChores(prev => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          ...formData,
+          completions: [],
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+    }
     resetForm();
   };
 
-  const handleUpdateChore = () => {
-    if (!editingChore) return;
-    setChores(prev =>
-      prev.map(chore =>
-        chore.id === editingChore.id ? { ...chore, ...formData } : chore,
-      ),
-    );
-    resetForm();
+  const handleDelete = (id: string) => {
+    if (!confirm('Delete this chore?')) return;
+    setChores(prev => prev.filter(c => c.id !== id));
   };
 
-  const handleDeleteChore = (id: string) => {
-    if (!confirm('Are you sure you want to delete this chore?')) return;
-    setChores(prev => prev.filter(chore => chore.id !== id));
-  };
-
-  const handleEditChore = (chore: Chore) => {
+  const handleEdit = (chore: Chore) => {
     setEditingChore(chore);
     setFormData({
       name: chore.name,
@@ -342,65 +306,60 @@ export function ChoresDemo() {
     setIsFormOpen(true);
   };
 
-  const handleCompleteTodo = (choreId: string) => {
-    const completionDate = new Date().toISOString();
+  const handleComplete = (choreId: string) => {
     setChores(prev =>
-      prev.map(chore =>
-        chore.id === choreId
-          ? { ...chore, completions: [...chore.completions, completionDate] }
-          : chore,
+      prev.map(c =>
+        c.id === choreId
+          ? { ...c, completions: [...c.completions, new Date().toISOString()] }
+          : c,
       ),
     );
   };
 
-  const handleUncompleteTodo = (choreId: string) => {
+  const handleUncomplete = (choreId: string) => {
     setChores(prev =>
-      prev.map(chore => {
-        if (chore.id !== choreId) return chore;
-
+      prev.map(c => {
+        if (c.id !== choreId) return c;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-
-        const completionsInPeriod = chore.completions.filter(dateStr =>
-          isInCurrentPeriod(new Date(dateStr), chore.recurrence, today),
+        const inPeriod = c.completions.filter(s =>
+          isInCurrentPeriod(new Date(s), c.recurrence, today),
         );
-
-        if (completionsInPeriod.length > 0) {
-          const mostRecentCompletion =
-            completionsInPeriod[completionsInPeriod.length - 1];
-          const newCompletions = [...chore.completions];
-          const indexToRemove =
-            newCompletions.lastIndexOf(mostRecentCompletion);
-          newCompletions.splice(indexToRemove, 1);
-          return { ...chore, completions: newCompletions };
-        }
-
-        return chore;
+        if (!inPeriod.length) return c;
+        const last = inPeriod[inPeriod.length - 1];
+        const next = [...c.completions];
+        next.splice(next.lastIndexOf(last), 1);
+        return { ...c, completions: next };
       }),
     );
   };
 
-  if (!mounted) {
-    return (
-      <Box p="6" style={{ maxWidth: '1280px', margin: '0 auto' }}>
-        <Flex direction="column" gap="4">
-          <Text size="3" color="gray">
-            Loading...
-          </Text>
-        </Flex>
-      </Box>
-    );
-  }
+  if (!mounted) return null;
+
+  const sortedTodos = [...todos].sort((a, b) => {
+    const p = (t: Todo) =>
+      t.isImportant && t.isUrgent ? 0 : t.isImportant ? 1 : t.isUrgent ? 2 : 3;
+    return p(a) - p(b);
+  });
+
+  const grouped = sortedTodos.reduce(
+    (acc, todo) => {
+      if (!acc[todo.choreId]) acc[todo.choreId] = [];
+      acc[todo.choreId].push(todo);
+      return acc;
+    },
+    {} as Record<string, Todo[]>,
+  );
 
   return (
-    <Box p="6" style={{ maxWidth: '1280px', margin: '0 auto' }}>
+    <div className="max-w-5xl mx-auto p-2 sm:p-6 space-y-6">
       <Flex direction="column" gap="4">
         <Card>
           <Flex direction="column" gap="4">
             <Text size="5" weight="bold">
               Active Todos
             </Text>
-            {todos.length === 0 ? (
+            {Object.keys(grouped).length === 0 ? (
               <Box py="8">
                 <Text align="center" color="gray" size="3">
                   No todos due yet!
@@ -408,74 +367,50 @@ export function ChoresDemo() {
               </Box>
             ) : (
               <Flex direction="column" gap="2">
-                {(() => {
-                  const sortedTodos = [...todos].sort((a, b) => {
-                    const getPriority = (todo: Todo) => {
-                      if (todo.isImportant && todo.isUrgent) return 0;
-                      if (todo.isImportant) return 1;
-                      if (todo.isUrgent) return 2;
-                      return 3;
-                    };
-                    return getPriority(a) - getPriority(b);
-                  });
-
-                  const grouped = sortedTodos.reduce((acc, todo) => {
-                    if (!acc[todo.choreId]) {
-                      acc[todo.choreId] = [];
-                    }
-                    acc[todo.choreId].push(todo);
-                    return acc;
-                  }, {} as Record<string, typeof todos>);
-
-                  return Object.entries(grouped).map(
-                    ([choreId, choreTodos]) => {
-                      const firstTodo = choreTodos[0];
-                      return (
-                        <Card key={choreId} variant="surface">
-                          <Flex justify="between" align="center" gap="4">
-                            <Flex gap="2" align="center" flexGrow="1">
-                              <Text size="3" weight="medium">
-                                {firstTodo.choreName}
-                              </Text>
-                              {firstTodo.isUrgent && (
-                                <Badge color="red" size="1">
-                                  Urgent
-                                </Badge>
-                              )}
-                              {firstTodo.isImportant && (
-                                <Badge color="amber" size="1">
-                                  Important
-                                </Badge>
-                              )}
-                              <Text size="2" color="gray">
-                                {firstTodo.daysOverdue === 0
-                                  ? '• Due today'
-                                  : `• ${firstTodo.daysOverdue}d overdue`}
-                              </Text>
-                            </Flex>
-
-                            <Flex gap="3" align="center">
-                              {choreTodos.map(todo => (
-                                <Checkbox
-                                  key={todo.instanceNumber}
-                                  size="3"
-                                  checked={todo.isCompleted}
-                                  onCheckedChange={checked => {
-                                    if (checked && !todo.isCompleted) {
-                                      handleCompleteTodo(todo.choreId);
-                                    } else if (!checked && todo.isCompleted) {
-                                      handleUncompleteTodo(todo.choreId);
-                                    }
-                                  }}
-                                />
-                              ))}
-                            </Flex>
-                          </Flex>
-                        </Card>
-                      );
-                    },
+                {Object.entries(grouped).map(([choreId, choreTodos]) => {
+                  const first = choreTodos[0];
+                  return (
+                    <Card key={choreId} variant="surface">
+                      <Flex justify="between" align="center" gap="4">
+                        <Flex gap="2" align="center" flexGrow="1">
+                          <Text size="3" weight="medium">
+                            {first.choreName}
+                          </Text>
+                          {first.isUrgent && (
+                            <Badge color="red" size="1">
+                              Urgent
+                            </Badge>
+                          )}
+                          {first.isImportant && (
+                            <Badge color="amber" size="1">
+                              Important
+                            </Badge>
+                          )}
+                          <Text size="2" color="gray">
+                            {first.daysOverdue === 0
+                              ? '• Due today'
+                              : `• ${first.daysOverdue}d overdue`}
+                          </Text>
+                        </Flex>
+                        <Flex gap="3" align="center">
+                          {choreTodos.map(todo => (
+                            <Checkbox
+                              key={todo.instanceNumber}
+                              size="3"
+                              checked={todo.isCompleted}
+                              onCheckedChange={checked => {
+                                if (checked && !todo.isCompleted)
+                                  handleComplete(todo.choreId);
+                                else if (!checked && todo.isCompleted)
+                                  handleUncomplete(todo.choreId);
+                              }}
+                            />
+                          ))}
+                        </Flex>
+                      </Flex>
+                    </Card>
                   );
-                })()}
+                })}
               </Flex>
             )}
           </Flex>
@@ -508,13 +443,12 @@ export function ChoresDemo() {
                         }
                       />
                     </Box>
-
                     <Box>
                       <Text as="label" size="2" weight="medium" mb="1">
                         Description
                       </Text>
                       <TextArea
-                        placeholder="e.g., Wipe counters, sweep floor, do dishes"
+                        placeholder="Optional details"
                         value={formData.description}
                         onChange={e =>
                           setFormData({
@@ -525,7 +459,6 @@ export function ChoresDemo() {
                         rows={3}
                       />
                     </Box>
-
                     <Flex gap="4">
                       <Box style={{ flex: 1 }}>
                         <Text as="label" size="2" weight="medium" mb="1">
@@ -548,7 +481,6 @@ export function ChoresDemo() {
                           </Select.Content>
                         </Select.Root>
                       </Box>
-
                       <Box style={{ width: '120px' }}>
                         <Text as="label" size="2" weight="medium" mb="1">
                           Multiplier
@@ -570,7 +502,6 @@ export function ChoresDemo() {
                         />
                       </Box>
                     </Flex>
-
                     <Flex gap="4">
                       <Text as="label" size="2">
                         <Flex gap="2" align="center">
@@ -601,7 +532,6 @@ export function ChoresDemo() {
                         </Flex>
                       </Text>
                     </Flex>
-
                     <Flex gap="2" justify="end" mt="4">
                       <Dialog.Close>
                         <Button variant="soft" color="gray" onClick={resetForm}>
@@ -609,9 +539,7 @@ export function ChoresDemo() {
                         </Button>
                       </Dialog.Close>
                       <Button
-                        onClick={
-                          editingChore ? handleUpdateChore : handleCreateChore
-                        }
+                        onClick={handleSaveChore}
                         disabled={!formData.name.trim()}
                       >
                         {editingChore ? 'Update' : 'Create'}
@@ -645,15 +573,9 @@ export function ChoresDemo() {
                   {chores.map(chore => {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
-                    const completionsInPeriod = chore.completions.filter(
-                      dateStr =>
-                        isInCurrentPeriod(
-                          new Date(dateStr),
-                          chore.recurrence,
-                          today,
-                        ),
+                    const completionsInPeriod = chore.completions.filter(s =>
+                      isInCurrentPeriod(new Date(s), chore.recurrence, today),
                     ).length;
-
                     return (
                       <Table.Row key={chore.id}>
                         <Table.Cell>
@@ -704,7 +626,7 @@ export function ChoresDemo() {
                             <Button
                               size="1"
                               variant="soft"
-                              onClick={() => handleEditChore(chore)}
+                              onClick={() => handleEdit(chore)}
                             >
                               Edit
                             </Button>
@@ -712,7 +634,7 @@ export function ChoresDemo() {
                               size="1"
                               variant="soft"
                               color="red"
-                              onClick={() => handleDeleteChore(chore.id)}
+                              onClick={() => handleDelete(chore.id)}
                             >
                               Delete
                             </Button>
@@ -727,6 +649,6 @@ export function ChoresDemo() {
           </Flex>
         </Card>
       </Flex>
-    </Box>
+    </div>
   );
 }

@@ -2,10 +2,8 @@
 
 import { Box, Heading, Text } from '@radix-ui/themes';
 import { BucketDemo } from '../demos/BucketDemo';
-import { ChoresDemo } from '../demos/ChoresDemo';
 import { StripeDemo } from '../demos/StripeDemo';
 import { MessagingPage } from './MessagingPage';
-import { CalendarDemo } from '../demos/CalendarDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -21,11 +19,6 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     defaultOpen: true,
   },
   {
-    id: 'chores-demo',
-    title: 'Chores Demo',
-    content: <ChoresDemo />,
-  },
-  {
     id: 'stripe-demo',
     title: 'Stripe Demo',
     content: <StripeDemo />,
@@ -34,11 +27,6 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'messaging',
     title: 'Messaging Demo',
     content: <MessagingPage />,
-  },
-  {
-    id: 'calendar',
-    title: 'Calendar - Doggo Tracker',
-    content: <CalendarDemo />,
   },
 ];
 
