@@ -81,8 +81,8 @@ export default function Page() {
 
   return (
     <div className="grid grid-cols-4 gap-4 h-full mb-4">
-      <div className="flex flex-col gap-4">
-        <ModeTransitionWrapper modeKey={appMode}>
+      <div className="flex flex-col h-full">
+        <ModeTransitionWrapper modeKey={appMode} className="h-full">
           {appMode === APP_MODE.PERSONAL ? (
             <TaskListSelectorComponent />
           ) : (
@@ -90,19 +90,19 @@ export default function Page() {
           )}
         </ModeTransitionWrapper>
       </div>
-      <div className="flex flex-col gap-4">
-        <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-          <ModeTransitionWrapper modeKey={appMode}>
+      <div className="flex flex-col h-full">
+        <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden h-full">
+          <ModeTransitionWrapper modeKey={appMode} className="h-full">
             {appMode === APP_MODE.PERSONAL ? (
               <iframe
                 src={buildCalendarUrl(CALENDAR_CONFIG.personal)}
-                className="w-full h-[600px] dark:invert dark:hue-rotate-180"
+                className="w-full h-full dark:invert dark:hue-rotate-180"
                 style={{ minHeight: '400px' }}
               ></iframe>
             ) : (
               <iframe
                 src={buildCalendarUrl(CALENDAR_CONFIG.work)}
-                className="w-full h-[600px] dark:invert dark:hue-rotate-180"
+                className="w-full h-full dark:invert dark:hue-rotate-180"
                 style={{ minHeight: '400px' }}
               />
             )}

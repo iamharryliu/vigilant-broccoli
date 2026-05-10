@@ -5,9 +5,10 @@ import { ReactNode, useEffect, useState } from 'react';
 interface ModeTransitionWrapperProps {
   children: ReactNode;
   modeKey: string;
+  className?: string;
 }
 
-export const ModeTransitionWrapper = ({ children, modeKey }: ModeTransitionWrapperProps) => {
+export const ModeTransitionWrapper = ({ children, modeKey, className }: ModeTransitionWrapperProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [content, setContent] = useState(children);
 
@@ -30,7 +31,7 @@ export const ModeTransitionWrapper = ({ children, modeKey }: ModeTransitionWrapp
 
   return (
     <div
-      className="transition-opacity duration-150 ease-out"
+      className={`transition-opacity duration-150 ease-out${className ? ` ${className}` : ''}`}
       style={{ opacity: isVisible ? 1 : 0 }}
     >
       {content}
