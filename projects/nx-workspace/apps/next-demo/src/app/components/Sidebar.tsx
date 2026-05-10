@@ -9,13 +9,10 @@ import { ROUTES } from '../../lib/routes';
 
 type FlatPage = { label: string; href: string };
 
-const ALL_PAGES: FlatPage[] = NAV_LINKS.flatMap(({ label, href, children }) =>
+const ALL_PAGES: FlatPage[] = NAV_LINKS.flatMap(({ label, href, children }): FlatPage[] =>
   children
-    ? [
-        { label, href },
-        ...children.map(c => ({ label: c.label, href: c.href })),
-      ]
-    : [{ label, href }],
+    ? [{ label, href }, ...children.map(c => ({ label: c.label, href: c.href as string }))]
+    : [{ label, href: href as string }],
 );
 
 export default function Sidebar() {
