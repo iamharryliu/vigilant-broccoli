@@ -23,8 +23,6 @@ jobs:
   deploy-npm-packages:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
     runs-on: ubuntu-latest
-    environment:
-      name: production
     steps:
       - uses: actions/checkout@v5
         with:
@@ -85,8 +83,6 @@ jobs:
   main:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
     runs-on: ubuntu-latest
-    environment:
-      name: production
     steps:
       - uses: actions/checkout@v5
         with:

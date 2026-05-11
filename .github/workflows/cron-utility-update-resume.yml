@@ -21,8 +21,6 @@ env:
 jobs:
   upload-resume:
     runs-on: ubuntu-latest
-    environment:
-      name: production
     env:
       AWS_REGION: us-east-1
     steps:

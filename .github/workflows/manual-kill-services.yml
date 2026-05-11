@@ -22,8 +22,6 @@ jobs:
   kill:
     if: ${{ github.event.inputs.confirm == 'kill' }}
     runs-on: ubuntu-latest
-    environment:
-      name: production
     steps:
       - uses: actions/checkout@v5
 
