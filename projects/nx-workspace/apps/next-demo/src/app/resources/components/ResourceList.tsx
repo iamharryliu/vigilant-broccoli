@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
 import { Badge, Button, Dialog, Flex, Text } from '@radix-ui/themes';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { Resource, ResourceBooking } from '../../../lib/types';
 import { ResourceForm, ResourceFormData } from './ResourceForm';
 
@@ -156,12 +157,10 @@ export function ResourceList({
                     {count} booked
                   </Badge>
                 )}
-                <button
-                  onClick={e => { e.stopPropagation(); setModal({ type: 'edit', resource }); }}
-                  className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
-                >
-                  Edit
-                </button>
+                <EllipsisCTA
+                  onUpdate={() => setModal({ type: 'edit', resource })}
+                  onDelete={() => onDelete(resource.id)}
+                />
               </div>
             </div>
           );

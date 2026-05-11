@@ -6,7 +6,14 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import { AlertDialog, Button, Card, Heading, Popover } from '@radix-ui/themes';
+import {
+  AlertDialog,
+  Button,
+  Card,
+  Dialog,
+  Heading,
+  Popover,
+} from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 
 type CRUDItem = {
@@ -110,18 +117,24 @@ export const CRUDItemList = <T extends CRUDItem>({
 
   const renderEllipsis = (item: T) =>
     showEllipsis && FormComponent ? (
-      <EllipsisOptions
-        item={item}
-        FormComponent={FormComponent}
-        deleteItem={handleDelete}
-        copy={copy}
-        submitHandler={submitHandler}
-      />
+      <div onClick={e => e.stopPropagation()}>
+        <EllipsisOptions
+          item={item}
+          FormComponent={FormComponent}
+          deleteItem={handleDelete}
+          copy={copy}
+          submitHandler={submitHandler}
+        />
+      </div>
     ) : undefined;
 
   const renderItem = (item: T) =>
     ListItemComponent ? (
-      <ListItemComponent item={item} items={items} ellipsis={renderEllipsis(item)} />
+      <ListItemComponent
+        item={item}
+        items={items}
+        ellipsis={renderEllipsis(item)}
+      />
     ) : (
       JSON.stringify(item)
     );
@@ -184,44 +197,101 @@ const EllipsisOptions = <T extends CRUDItem>({
   deleteItem: (id: string | number) => Promise<void>;
   copy: ListManagementCopy;
 }) => {
+  const [updateOpen, setUpdateOpen] = useState(false);
   return (
-    <Popover.Root>
-      <Popover.Trigger>
-        <Button variant="ghost" onClick={e => e.stopPropagation()}>
-          <EllipsisVertical className="sm:hidden" />
-          <Ellipsis className="hidden sm:block" />
-        </Button>
-      </Popover.Trigger>
-      <Popover.Content align="end" className="w-min">
-        <CRUDItemFormDialog
-          formType={FORM_TYPE.UPDATE}
-          initialFormValues={item}
-          FormComponent={UpdateFormComponent}
-          submitHandler={formSubmitHandler}
-          copy={copy}
-        />
-        <DeleteItemConfirmationDialog deleteItem={() => deleteItem(item.id)} />
-      </Popover.Content>
-    </Popover.Root>
+    <>
+      <EllipsisCTA
+        onUpdate={() => setUpdateOpen(true)}
+        onDelete={() => deleteItem(item.id)}
+      />
+      <CRUDItemFormDialog
+        open={updateOpen}
+        onOpenChange={setUpdateOpen}
+        formType={FORM_TYPE.UPDATE}
+        initialFormValues={item}
+        FormComponent={UpdateFormComponent}
+        submitHandler={formSubmitHandler}
+        copy={copy}
+      />
+    </>
+  );
+};
+
+export const EllipsisCTA = ({
+  onUpdate,
+  onDelete,
+}: {
+  onUpdate: () => void;
+  onDelete: () => void | Promise<void>;
+}) => {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  return (
+    <div onClick={e => e.stopPropagation()}>
+      <Popover.Root>
+        <Popover.Trigger>
+          <Button variant="ghost">
+            <EllipsisVertical className="sm:hidden" />
+            <Ellipsis className="hidden sm:block" />
+          </Button>
+        </Popover.Trigger>
+        <Popover.Content align="end" className="w-min">
+          <div className="flex flex-col">
+            <Button variant="ghost" onClick={onUpdate}>
+              Update
+            </Button>
+            <Button
+              variant="ghost"
+              color="red"
+              onClick={() => setConfirmDelete(true)}
+            >
+              Delete
+            </Button>
+          </div>
+        </Popover.Content>
+      </Popover.Root>
+      <DeleteItemConfirmationDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        deleteItem={async () => {
+          await onDelete();
+        }}
+      />
+    </div>
   );
 };
 
 export const DeleteItemConfirmationDialog = ({
   deleteItem,
+  open,
+  onOpenChange,
 }: {
   deleteItem: () => Promise<void>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) => {
+  const [loading, setLoading] = useState(false);
+  async function handleDelete() {
+    setLoading(true);
+    await deleteItem();
+    setLoading(false);
+  }
   return (
-    <AlertDialog.Root>
-      <AlertDialog.Trigger>
-        <Button className="w-min text-red-500" variant="ghost">
-          Delete
-        </Button>
-      </AlertDialog.Trigger>
+    <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
+      {open === undefined && (
+        <AlertDialog.Trigger>
+          <Button className="w-min" color="red" variant="ghost">
+            Delete
+          </Button>
+        </AlertDialog.Trigger>
+      )}
       <AlertDialog.Content className="sm:max-w-[425px]">
         <AlertDialog.Title>Delete Item</AlertDialog.Title>
-        <AlertDialog.Description>{`Are you sure you want to delete this item?`}</AlertDialog.Description>
-        <Button onClick={deleteItem}>Yes</Button>
+        <AlertDialog.Description>
+          Are you sure you want to delete this item?
+        </AlertDialog.Description>
+        <Button color="red" loading={loading} onClick={handleDelete}>
+          Delete
+        </Button>
       </AlertDialog.Content>
     </AlertDialog.Root>
   );
@@ -233,36 +303,39 @@ const CRUDItemFormDialog = <T,>({
   FormComponent,
   submitHandler,
   copy,
+  open,
+  onOpenChange,
 }: {
   formType: FormType;
   initialFormValues: T;
   FormComponent: CRUDFormComponent<T>;
   submitHandler: CRUDFormSubmitHandler<T>;
   copy: ListManagementCopy;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   async function dialogSubmitHandler(item: T, formType: FormType) {
     await submitHandler(item, formType);
-    setIsOpen(false);
+    onOpenChange?.(false);
   }
   return (
-    <AlertDialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialog.Trigger>
-        <Button variant="ghost" onClick={() => setIsOpen(true)}>
-          {formType === FORM_TYPE.CREATE ? <Plus /> : 'Update'}
-        </Button>
-      </AlertDialog.Trigger>
-      <AlertDialog.Content>
-        <AlertDialog.Title>{copy[formType].TITLE}</AlertDialog.Title>
-        <AlertDialog.Description>
-          {copy[formType].DESCRIPTION}
-        </AlertDialog.Description>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      {open === undefined && (
+        <Dialog.Trigger>
+          <Button variant="ghost">
+            {formType === FORM_TYPE.CREATE ? <Plus /> : 'Update'}
+          </Button>
+        </Dialog.Trigger>
+      )}
+      <Dialog.Content onCloseAutoFocus={e => e.preventDefault()}>
+        <Dialog.Title>{copy[formType].TITLE}</Dialog.Title>
+        <Dialog.Description>{copy[formType].DESCRIPTION}</Dialog.Description>
         <FormComponent
           formType={formType}
           initialFormValues={initialFormValues}
           submitHandler={dialogSubmitHandler}
         />
-      </AlertDialog.Content>
-    </AlertDialog.Root>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };

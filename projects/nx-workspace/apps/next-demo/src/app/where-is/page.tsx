@@ -64,23 +64,20 @@ const WhereIsListItem = ({
   item: WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'>;
   ellipsis?: ReactNode;
 }) => (
-  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
     {item.imageUrls?.[0] && (
       <div className="shrink-0">
         <img
           src={item.imageUrls?.[0]}
           alt={item.title}
-          className="w-full h-48 object-cover rounded sm:w-16 sm:h-16"
+          className="w-16 h-16 object-cover rounded"
         />
       </div>
     )}
     <Box className="flex-1 min-w-0">
-      <div className="flex justify-between items-center">
-        <Text weight="bold" size="2">
-          {item.title}
-        </Text>
-        {ellipsis}
-      </div>
+      <Text weight="bold" size="2" as="p">
+        {item.title}
+      </Text>
       <Text size="1" color="gray" as="p">
         {item.description}
       </Text>
@@ -92,6 +89,7 @@ const WhereIsListItem = ({
         ))}
       </Flex>
     </Box>
+    {ellipsis}
   </div>
 );
 
@@ -375,7 +373,9 @@ export default function WhereIsPage() {
             FormComponent={WhereIsFormComponent as never}
             ListItemComponent={WhereIsListItem as never}
             copy={COPY}
-            onItemClick={(item: { id: string }) => router.push(ROUTES.WHERE_IS_DETAIL(item.id))}
+            onItemClick={(item: { id: string }) =>
+              router.push(ROUTES.WHERE_IS_DETAIL(item.id))
+            }
           />
         </>
       )}

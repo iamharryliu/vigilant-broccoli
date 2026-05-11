@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
 import { Badge, Button, Dialog, Flex, Text } from '@radix-ui/themes';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, Meal } from '../../../lib/types';
 import { MealForm, MealFormData } from './MealForm';
 
@@ -145,12 +146,10 @@ export function MealList({
                     {count} planned
                   </Badge>
                 )}
-                <button
-                  onClick={e => { e.stopPropagation(); setModal({ type: 'edit', meal }); }}
-                  className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
-                >
-                  Edit
-                </button>
+                <EllipsisCTA
+                  onUpdate={() => setModal({ type: 'edit', meal })}
+                  onDelete={() => onDelete(meal.id)}
+                />
               </div>
             </div>
           );

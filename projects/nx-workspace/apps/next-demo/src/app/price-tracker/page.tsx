@@ -87,7 +87,7 @@ const PriceItemListItem = ({
   const maxPrice = prices.length ? Math.max(...prices) : null;
 
   return (
-    <div className="flex items-center justify-between gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
       <Box className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <Text weight="bold" size="2">
@@ -674,7 +674,9 @@ export default function PriceTrackerPage() {
             FormComponent={PriceItemForm as never}
             ListItemComponent={PriceItemListItem as never}
             copy={COPY}
-            onItemClick={(item: { id: string }) => router.push(ROUTES.PRICE_TRACKER_DETAIL(item.id))}
+            onItemClick={(item: { id: string }) =>
+              router.push(ROUTES.PRICE_TRACKER_DETAIL(item.id))
+            }
           />
         </>
       )}

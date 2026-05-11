@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
 import { Badge, Button, Dialog, Flex, Text } from '@radix-ui/themes';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, LeisureActivity } from '../../../lib/types';
 import {
   LeisureActivityForm,
@@ -152,12 +153,10 @@ export function LeisureList({
                     {count} scheduled
                   </Badge>
                 )}
-                <button
-                  onClick={e => { e.stopPropagation(); setModal({ type: 'edit', activity }); }}
-                  className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
-                >
-                  Edit
-                </button>
+                <EllipsisCTA
+                  onUpdate={() => setModal({ type: 'edit', activity })}
+                  onDelete={() => onDelete(activity.id)}
+                />
               </div>
             </div>
           );

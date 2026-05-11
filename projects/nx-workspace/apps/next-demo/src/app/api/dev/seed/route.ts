@@ -5,7 +5,6 @@ import { uploadImage } from '../../where-is/r2';
 
 export const runtime = 'nodejs';
 
-const today = () => new Date().toISOString().split('T')[0];
 const daysFromNow = (n: number) => {
   const d = new Date();
   d.setDate(d.getDate() + n);
@@ -342,41 +341,326 @@ export async function POST(request: NextRequest) {
     const { error: priceEntriesErr } = await supabase
       .from('price_entries')
       .insert([
+        // Whole Milk — 3 stores over 6 months, spike around 3 months ago
+        {
+          item_id: milk.id,
+          price: 4.99,
+          store: 'Walmart',
+          purchased_at: daysFromNow(-180),
+        },
+        {
+          item_id: milk.id,
+          price: 5.49,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-178),
+        },
+        {
+          item_id: milk.id,
+          price: 4.79,
+          store: 'Costco',
+          purchased_at: daysFromNow(-175),
+        },
+        {
+          item_id: milk.id,
+          price: 5.19,
+          store: 'Walmart',
+          purchased_at: daysFromNow(-150),
+        },
+        {
+          item_id: milk.id,
+          price: 5.49,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-148),
+        },
+        {
+          item_id: milk.id,
+          price: 4.89,
+          store: 'Costco',
+          purchased_at: daysFromNow(-145),
+        },
+        {
+          item_id: milk.id,
+          price: 5.29,
+          store: 'Walmart',
+          purchased_at: daysFromNow(-120),
+        },
+        {
+          item_id: milk.id,
+          price: 5.69,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-118),
+        },
+        {
+          item_id: milk.id,
+          price: 4.99,
+          store: 'Costco',
+          purchased_at: daysFromNow(-115),
+        },
+        {
+          item_id: milk.id,
+          price: 6.29,
+          store: 'Walmart',
+          purchased_at: daysFromNow(-90),
+        },
+        {
+          item_id: milk.id,
+          price: 6.79,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-88),
+        },
+        {
+          item_id: milk.id,
+          price: 5.99,
+          store: 'Costco',
+          purchased_at: daysFromNow(-85),
+        },
+        {
+          item_id: milk.id,
+          price: 5.79,
+          store: 'Walmart',
+          purchased_at: daysFromNow(-60),
+        },
+        {
+          item_id: milk.id,
+          price: 6.09,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-58),
+        },
         {
           item_id: milk.id,
           price: 5.49,
           store: 'Costco',
-          purchased_at: daysFromNow(-7),
+          purchased_at: daysFromNow(-55),
+        },
+        {
+          item_id: milk.id,
+          price: 5.59,
+          store: 'Walmart',
+          purchased_at: daysFromNow(-30),
         },
         {
           item_id: milk.id,
           price: 5.99,
           store: 'Loblaws',
-          purchased_at: daysFromNow(-14),
+          purchased_at: daysFromNow(-28),
+        },
+        {
+          item_id: milk.id,
+          price: 5.29,
+          store: 'Costco',
+          purchased_at: daysFromNow(-25),
+        },
+        {
+          item_id: milk.id,
+          price: 5.49,
+          store: 'Walmart',
+          purchased_at: daysFromNow(-7),
+        },
+        {
+          item_id: milk.id,
+          price: 5.89,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-5),
+        },
+        {
+          item_id: milk.id,
+          price: 5.19,
+          store: 'Costco',
+          purchased_at: daysFromNow(-3),
+        },
+        // Sourdough Bread — 2 stores, steady rise over time
+        {
+          item_id: bread.id,
+          price: 3.49,
+          store: 'Whole Foods',
+          purchased_at: daysFromNow(-180),
+        },
+        {
+          item_id: bread.id,
+          price: 2.99,
+          store: 'Local Bakery',
+          purchased_at: daysFromNow(-175),
+        },
+        {
+          item_id: bread.id,
+          price: 3.69,
+          store: 'Whole Foods',
+          purchased_at: daysFromNow(-140),
+        },
+        {
+          item_id: bread.id,
+          price: 3.19,
+          store: 'Local Bakery',
+          purchased_at: daysFromNow(-135),
+        },
+        {
+          item_id: bread.id,
+          price: 3.89,
+          store: 'Whole Foods',
+          purchased_at: daysFromNow(-100),
+        },
+        {
+          item_id: bread.id,
+          price: 3.39,
+          store: 'Local Bakery',
+          purchased_at: daysFromNow(-95),
+        },
+        {
+          item_id: bread.id,
+          price: 4.19,
+          store: 'Whole Foods',
+          purchased_at: daysFromNow(-60),
+        },
+        {
+          item_id: bread.id,
+          price: 3.69,
+          store: 'Local Bakery',
+          purchased_at: daysFromNow(-55),
         },
         {
           item_id: bread.id,
           price: 4.29,
           store: 'Whole Foods',
-          purchased_at: daysFromNow(-3),
+          purchased_at: daysFromNow(-20),
+        },
+        {
+          item_id: bread.id,
+          price: 3.89,
+          store: 'Local Bakery',
+          purchased_at: daysFromNow(-15),
+        },
+        {
+          item_id: bread.id,
+          price: 4.49,
+          store: 'Whole Foods',
+          purchased_at: daysFromNow(-4),
         },
         {
           item_id: bread.id,
           price: 3.99,
           store: 'Local Bakery',
-          purchased_at: daysFromNow(-10),
+          purchased_at: daysFromNow(-2),
+        },
+        // Chicken Breast — 3 stores, volatile pricing
+        {
+          item_id: chicken.id,
+          price: 11.99,
+          store: 'Costco',
+          purchased_at: daysFromNow(-180),
         },
         {
           item_id: chicken.id,
-          price: 12.99,
+          price: 13.99,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-178),
+        },
+        {
+          item_id: chicken.id,
+          price: 12.49,
+          store: 'Metro',
+          purchased_at: daysFromNow(-175),
+        },
+        {
+          item_id: chicken.id,
+          price: 10.99,
           store: 'Costco',
-          purchased_at: daysFromNow(-5),
+          purchased_at: daysFromNow(-150),
         },
         {
           item_id: chicken.id,
           price: 14.49,
           store: 'Loblaws',
-          purchased_at: daysFromNow(-12),
+          purchased_at: daysFromNow(-145),
+        },
+        {
+          item_id: chicken.id,
+          price: 13.29,
+          store: 'Metro',
+          purchased_at: daysFromNow(-140),
+        },
+        {
+          item_id: chicken.id,
+          price: 12.99,
+          store: 'Costco',
+          purchased_at: daysFromNow(-120),
+        },
+        {
+          item_id: chicken.id,
+          price: 15.99,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-115),
+        },
+        {
+          item_id: chicken.id,
+          price: 11.49,
+          store: 'Costco',
+          purchased_at: daysFromNow(-90),
+        },
+        {
+          item_id: chicken.id,
+          price: 16.49,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-88),
+        },
+        {
+          item_id: chicken.id,
+          price: 14.99,
+          store: 'Metro',
+          purchased_at: daysFromNow(-85),
+        },
+        {
+          item_id: chicken.id,
+          price: 13.49,
+          store: 'Costco',
+          purchased_at: daysFromNow(-60),
+        },
+        {
+          item_id: chicken.id,
+          price: 15.49,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-55),
+        },
+        {
+          item_id: chicken.id,
+          price: 13.99,
+          store: 'Metro',
+          purchased_at: daysFromNow(-50),
+        },
+        {
+          item_id: chicken.id,
+          price: 12.99,
+          store: 'Costco',
+          purchased_at: daysFromNow(-30),
+        },
+        {
+          item_id: chicken.id,
+          price: 14.99,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-25),
+        },
+        {
+          item_id: chicken.id,
+          price: 13.49,
+          store: 'Metro',
+          purchased_at: daysFromNow(-20),
+        },
+        {
+          item_id: chicken.id,
+          price: 12.49,
+          store: 'Costco',
+          purchased_at: daysFromNow(-7),
+        },
+        {
+          item_id: chicken.id,
+          price: 15.29,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-5),
+        },
+        {
+          item_id: chicken.id,
+          price: 13.99,
+          store: 'Metro',
+          purchased_at: daysFromNow(-3),
         },
       ]);
     results['price-entries'] = priceEntriesErr ? priceEntriesErr.message : 'ok';

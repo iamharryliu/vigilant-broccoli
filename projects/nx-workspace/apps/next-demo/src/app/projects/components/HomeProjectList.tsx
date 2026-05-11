@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
 import { Badge, Button, Dialog, Flex, Text } from '@radix-ui/themes';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, HomeProject } from '../../../lib/types';
 import { HomeProjectForm, HomeProjectFormData } from './HomeProjectForm';
 
@@ -163,12 +164,10 @@ export function HomeProjectList({
                     {count} scheduled
                   </Badge>
                 )}
-                <button
-                  onClick={e => { e.stopPropagation(); setModal({ type: 'edit', project }); }}
-                  className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
-                >
-                  Edit
-                </button>
+                <EllipsisCTA
+                  onUpdate={() => setModal({ type: 'edit', project })}
+                  onDelete={() => onDelete(project.id)}
+                />
               </div>
             </div>
           );

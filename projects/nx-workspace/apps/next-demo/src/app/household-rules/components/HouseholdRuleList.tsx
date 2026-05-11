@@ -44,7 +44,7 @@ const RuleListItem = ({
   item: HouseholdRule;
   ellipsis?: React.ReactNode;
 }) => (
-  <div className="flex items-start justify-between gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+  <div className="flex items-center justify-between gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
     <div className="flex items-start gap-3 min-w-0">
       <Text size="1" color="gray" className="shrink-0 pt-0.5">
         #{item.position}
@@ -170,7 +170,7 @@ export function HouseholdRuleList({
       FormComponent={RuleForm}
       ListItemComponent={RuleListItem as never}
       copy={COPY}
-      onItemClick={(item) => router.push(ROUTES.HOUSEHOLD_RULES_DETAIL(item.id))}
+      onItemClick={item => router.push(ROUTES.HOUSEHOLD_RULES_DETAIL(item.id))}
     />
   );
 }

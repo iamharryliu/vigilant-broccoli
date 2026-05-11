@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';
@@ -168,7 +169,7 @@ export default function DocsPage() {
             className="p-4 rounded-lg border border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
             onClick={() => router.push(ROUTES.DOCS_DETAIL(doc.id))}
           >
-            <Flex justify="between" align="start" gap="3">
+            <Flex justify="between" align="center" gap="3">
               <div className="flex-1 min-w-0">
                 <Flex align="center" gap="2" wrap="wrap" mb="1">
                   <Text weight="bold" size="3">
@@ -208,14 +209,17 @@ export default function DocsPage() {
                   </Flex>
                 )}
               </div>
-              <div className="flex gap-2 shrink-0">
-                <button
-                  onClick={e => { e.stopPropagation(); setModal({ type: 'edit', doc }); }}
-                  className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
-                >
-                  Edit
-                </button>
-              </div>
+              <EllipsisCTA
+                onUpdate={() => setModal({ type: 'edit', doc })}
+                onDelete={async () => {
+                  await fetch('/api/docs', {
+                    method: 'DELETE',
+                    headers: authHeader({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({ id: doc.id }),
+                  });
+                  fetchDocs();
+                }}
+              />
             </Flex>
           </div>
         ))}
