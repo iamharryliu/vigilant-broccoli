@@ -16,6 +16,7 @@ const MAX_REQUEST_BYTES = 50 * 1024 * 1024; // 50MB — 10 images × ~5MB each
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const homeId = searchParams.get('homeId');
+  const id = searchParams.get('id');
   const accessToken =
     request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
   const supabase = createServerClient(accessToken);
@@ -25,7 +26,8 @@ export async function GET(request: NextRequest) {
     .select('*, where_is_images(*)')
     .order('created_at', { ascending: false });
 
-  if (homeId) query = query.eq('home_id', homeId);
+  if (id) query = query.eq('id', id);
+  else if (homeId) query = query.eq('home_id', homeId);
 
   const { data: items } = await query;
 
@@ -43,7 +45,7 @@ export async function GET(request: NextRequest) {
     createdAt: item.created_at,
   }));
 
-  return Response.json(result);
+  return Response.json(id ? (result[0] ?? null) : result);
 }
 
 export async function POST(request: NextRequest) {

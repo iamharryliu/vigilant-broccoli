@@ -30,6 +30,7 @@ const toLeisureActivity = (
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const homeId = searchParams.get('homeId');
+  const id = searchParams.get('id');
   const supabase = getSupabase(req);
 
   let query = supabase
@@ -37,7 +38,8 @@ export async function GET(req: NextRequest) {
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (homeId) query = query.eq('home_id', homeId);
+  if (id) query = query.eq('id', id);
+  else if (homeId) query = query.eq('home_id', homeId);
 
   const { data, error } = await query;
   if (error)
@@ -50,7 +52,8 @@ export async function GET(req: NextRequest) {
   const userIds = [...new Set(rows.map(r => r.user_id).filter(Boolean))];
   const emailMap = await buildEmailMap(userIds);
 
-  return Response.json(rows.map(r => toLeisureActivity(r, emailMap)));
+  const result = rows.map(r => toLeisureActivity(r, emailMap));
+  return Response.json(id ? (result[0] ?? null) : result);
 }
 
 export async function POST(req: NextRequest) {

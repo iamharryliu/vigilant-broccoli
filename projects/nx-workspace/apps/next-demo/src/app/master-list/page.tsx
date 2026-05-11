@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Tabs, Text } from '@radix-ui/themes';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -13,6 +14,7 @@ import {
   Resource,
   ResourceBooking,
 } from '../../lib/types';
+import { ROUTES } from '../../lib/routes';
 import { LeisureList } from '../leisure/components/LeisureList';
 import { LeisureActivityFormData } from '../leisure/components/LeisureActivityForm';
 import { MealList } from '../meals/components/MealList';
@@ -24,6 +26,7 @@ import { ResourceFormData } from '../resources/components/ResourceForm';
 import { HouseholdRuleList } from '../household-rules/components/HouseholdRuleList';
 
 export default function MasterListPage() {
+  const router = useRouter();
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
 
@@ -239,6 +242,7 @@ export default function MasterListPage() {
               onEdit={handleLeisureEdit}
               onDelete={handleLeisureDelete}
               hideDragHint
+              onItemClick={a => router.push(ROUTES.LEISURE_DETAIL(a.id))}
             />
           </Tabs.Content>
 
@@ -250,6 +254,7 @@ export default function MasterListPage() {
               onEdit={handleMealEdit}
               onDelete={handleMealDelete}
               hideDragHint
+              onItemClick={m => router.push(ROUTES.MEALS_DETAIL(m.id))}
             />
           </Tabs.Content>
 
@@ -261,6 +266,7 @@ export default function MasterListPage() {
               onEdit={handleProjectEdit}
               onDelete={handleProjectDelete}
               hideDragHint
+              onItemClick={p => router.push(ROUTES.PROJECTS_DETAIL(p.id))}
             />
           </Tabs.Content>
 
@@ -272,6 +278,7 @@ export default function MasterListPage() {
               onEdit={handleResourceEdit}
               onDelete={handleResourceDelete}
               hideDragHint
+              onItemClick={r => router.push(ROUTES.RESOURCES_DETAIL(r.id))}
             />
           </Tabs.Content>
 

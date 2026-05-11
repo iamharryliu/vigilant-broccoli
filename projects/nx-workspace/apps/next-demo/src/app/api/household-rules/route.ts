@@ -23,6 +23,7 @@ const toRule = (row: Record<string, unknown>) => ({
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const homeId = searchParams.get('homeId');
+  const id = searchParams.get('id');
   const supabase = getSupabase(req);
 
   let query = supabase
@@ -30,7 +31,8 @@ export async function GET(req: NextRequest) {
     .select('*')
     .order('position', { ascending: true });
 
-  if (homeId) query = query.eq('home_id', homeId);
+  if (id) query = query.eq('id', id);
+  else if (homeId) query = query.eq('home_id', homeId);
 
   const { data, error } = await query;
   if (error)
@@ -39,7 +41,8 @@ export async function GET(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  return Response.json((data ?? []).map(toRule));
+  const result = (data ?? []).map(toRule);
+  return Response.json(id ? (result[0] ?? null) : result);
 }
 
 export async function POST(req: NextRequest) {

@@ -32,6 +32,7 @@ interface Props {
   onEdit: (id: string, data: LeisureActivityFormData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   hideDragHint?: boolean;
+  onItemClick?: (activity: LeisureActivity) => void;
 }
 
 export function LeisureList({
@@ -41,6 +42,7 @@ export function LeisureList({
   onEdit,
   onDelete,
   hideDragHint,
+  onItemClick,
 }: Props) {
   const linkedEventCount = (activityId: string) =>
     calendarEvents.filter(e => e.leisureActivityId === activityId).length;
@@ -117,7 +119,8 @@ export function LeisureList({
               data-title={activity.title}
               data-description={activity.description ?? ''}
               data-category={activity.category}
-              className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white cursor-grab active:cursor-grabbing hover:border-gray-300 transition-colors"
+              className={`flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white transition-colors ${onItemClick ? 'cursor-pointer hover:bg-gray-50' : 'cursor-grab active:cursor-grabbing hover:border-gray-300'}`}
+              onClick={onItemClick ? () => onItemClick(activity) : undefined}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Badge
@@ -150,7 +153,7 @@ export function LeisureList({
                   </Badge>
                 )}
                 <button
-                  onClick={() => setModal({ type: 'edit', activity })}
+                  onClick={e => { e.stopPropagation(); setModal({ type: 'edit', activity }); }}
                   className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
                 >
                   Edit

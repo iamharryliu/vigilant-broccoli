@@ -28,6 +28,7 @@ interface Props {
   onEdit: (id: string, data: ResourceFormData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   hideDragHint?: boolean;
+  onItemClick?: (resource: Resource) => void;
 }
 
 export function ResourceList({
@@ -37,6 +38,7 @@ export function ResourceList({
   onEdit,
   onDelete,
   hideDragHint,
+  onItemClick,
 }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
   const [modal, setModal] = useState<ModalState>(null);
@@ -115,7 +117,8 @@ export function ResourceList({
               data-title={resource.name}
               data-description={resource.description ?? ''}
               data-category={resource.category}
-              className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white cursor-grab active:cursor-grabbing hover:border-gray-300 transition-colors"
+              className={`flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white transition-colors ${onItemClick ? 'cursor-pointer hover:bg-gray-50' : 'cursor-grab active:cursor-grabbing hover:border-gray-300'}`}
+              onClick={onItemClick ? () => onItemClick(resource) : undefined}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Badge
@@ -154,7 +157,7 @@ export function ResourceList({
                   </Badge>
                 )}
                 <button
-                  onClick={() => setModal({ type: 'edit', resource })}
+                  onClick={e => { e.stopPropagation(); setModal({ type: 'edit', resource }); }}
                   className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
                 >
                   Edit

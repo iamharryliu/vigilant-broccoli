@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
 import {
   Button,
@@ -12,6 +13,7 @@ import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { PriceItem } from '../../lib/types';
+import { ROUTES } from '../../lib/routes';
 
 type ParsedLineItem = {
   name: string;
@@ -85,7 +87,7 @@ const PriceItemListItem = ({
   const maxPrice = prices.length ? Math.max(...prices) : null;
 
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex items-center justify-between gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
       <Box className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <Text weight="bold" size="2">
@@ -512,6 +514,7 @@ const PriceItemForm = ({
 };
 
 export default function PriceTrackerPage() {
+  const router = useRouter();
   const session = useAuth();
   const { selectedHomeId } = useHome();
   const [items, setItems] = useState<PriceItem[]>([]);
@@ -671,6 +674,7 @@ export default function PriceTrackerPage() {
             FormComponent={PriceItemForm as never}
             ListItemComponent={PriceItemListItem as never}
             copy={COPY}
+            onItemClick={(item: { id: string }) => router.push(ROUTES.PRICE_TRACKER_DETAIL(item.id))}
           />
         </>
       )}

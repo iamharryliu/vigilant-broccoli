@@ -1,11 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Badge, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';
 import { HomeDocForm, HomeDocFormData } from './components/HomeDocForm';
+import { ROUTES } from '../../lib/routes';
 
 const CATEGORY_COLORS: Record<DocCategory, string> = {
   Insurance: 'blue',
@@ -33,6 +35,7 @@ const formatBytes = (bytes: number) => {
 type ModalState = { type: 'create' } | { type: 'edit'; doc: HomeDoc } | null;
 
 export default function DocsPage() {
+  const router = useRouter();
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [docs, setDocs] = useState<HomeDoc[]>([]);
@@ -162,7 +165,8 @@ export default function DocsPage() {
         {filtered.map(doc => (
           <div
             key={doc.id}
-            className="p-4 rounded-lg border border-gray-200 bg-white hover:border-gray-300 transition-colors"
+            className="p-4 rounded-lg border border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
+            onClick={() => router.push(ROUTES.DOCS_DETAIL(doc.id))}
           >
             <Flex justify="between" align="start" gap="3">
               <div className="flex-1 min-w-0">
@@ -191,6 +195,7 @@ export default function DocsPage() {
                         href={f.url}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
                         className="flex items-center gap-1 px-2 py-1 rounded border border-gray-200 hover:border-gray-400 text-sm text-gray-700 transition-colors"
                       >
                         <span>{FILE_ICONS[f.mimeType] ?? '📎'}</span>
@@ -205,7 +210,7 @@ export default function DocsPage() {
               </div>
               <div className="flex gap-2 shrink-0">
                 <button
-                  onClick={() => setModal({ type: 'edit', doc })}
+                  onClick={e => { e.stopPropagation(); setModal({ type: 'edit', doc }); }}
                   className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
                 >
                   Edit

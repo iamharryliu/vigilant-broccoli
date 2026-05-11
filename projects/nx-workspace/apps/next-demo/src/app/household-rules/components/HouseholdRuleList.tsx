@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Flex, Text, TextField, TextArea } from '@radix-ui/themes';
 import {
   Button,
@@ -9,6 +10,7 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { HouseholdRule } from '../../../lib/types';
+import { ROUTES } from '../../../lib/routes';
 
 const DEFAULT_FORM: HouseholdRule = {
   id: '',
@@ -42,7 +44,7 @@ const RuleListItem = ({
   item: HouseholdRule;
   ellipsis?: React.ReactNode;
 }) => (
-  <div className="flex items-start justify-between gap-2 p-3 rounded-lg border border-gray-200 bg-white">
+  <div className="flex items-start justify-between gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
     <div className="flex items-start gap-3 min-w-0">
       <Text size="1" color="gray" className="shrink-0 pt-0.5">
         #{item.position}
@@ -148,6 +150,7 @@ export function HouseholdRuleList({
   onUpdate,
   onDelete,
 }: Props) {
+  const router = useRouter();
   const nextPosition = useRef(
     rules.length > 0 ? Math.max(...rules.map(r => r.position)) + 1 : 0,
   );
@@ -167,6 +170,7 @@ export function HouseholdRuleList({
       FormComponent={RuleForm}
       ListItemComponent={RuleListItem as never}
       copy={COPY}
+      onItemClick={(item) => router.push(ROUTES.HOUSEHOLD_RULES_DETAIL(item.id))}
     />
   );
 }

@@ -24,6 +24,7 @@ interface Props {
   onEdit: (id: string, data: MealFormData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   hideDragHint?: boolean;
+  onItemClick?: (meal: Meal) => void;
 }
 
 export function MealList({
@@ -33,6 +34,7 @@ export function MealList({
   onEdit,
   onDelete,
   hideDragHint,
+  onItemClick,
 }: Props) {
   const linkedEventCount = (mealId: string) =>
     calendarEvents.filter(e => e.mealId === mealId).length;
@@ -110,7 +112,8 @@ export function MealList({
               data-title={meal.title}
               data-description={meal.description ?? ''}
               data-category={meal.category}
-              className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white cursor-grab active:cursor-grabbing hover:border-gray-300 transition-colors"
+              className={`flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white transition-colors ${onItemClick ? 'cursor-pointer hover:bg-gray-50' : 'cursor-grab active:cursor-grabbing hover:border-gray-300'}`}
+              onClick={onItemClick ? () => onItemClick(meal) : undefined}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Badge
@@ -143,7 +146,7 @@ export function MealList({
                   </Badge>
                 )}
                 <button
-                  onClick={() => setModal({ type: 'edit', meal })}
+                  onClick={e => { e.stopPropagation(); setModal({ type: 'edit', meal }); }}
                   className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
                 >
                   Edit

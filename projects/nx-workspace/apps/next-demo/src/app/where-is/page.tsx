@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
 import {
   Button,
@@ -11,6 +12,7 @@ import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { WhereIsItem } from '../../lib/types';
+import { ROUTES } from '../../lib/routes';
 
 interface PreviewImage {
   base64: string;
@@ -62,13 +64,15 @@ const WhereIsListItem = ({
   item: WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'>;
   ellipsis?: ReactNode;
 }) => (
-  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
     {item.imageUrls?.[0] && (
-      <img
-        src={item.imageUrls?.[0]}
-        alt={item.title}
-        className="w-full h-48 object-cover rounded sm:w-16 sm:h-16 sm:shrink-0"
-      />
+      <div className="shrink-0">
+        <img
+          src={item.imageUrls?.[0]}
+          alt={item.title}
+          className="w-full h-48 object-cover rounded sm:w-16 sm:h-16"
+        />
+      </div>
     )}
     <Box className="flex-1 min-w-0">
       <div className="flex justify-between items-center">
@@ -247,6 +251,7 @@ const WhereIsFormComponent = ({
 };
 
 export default function WhereIsPage() {
+  const router = useRouter();
   const session = useAuth();
   const { selectedHomeId } = useHome();
   const [items, setItems] = useState<WhereIsItem[]>([]);
@@ -370,6 +375,7 @@ export default function WhereIsPage() {
             FormComponent={WhereIsFormComponent as never}
             ListItemComponent={WhereIsListItem as never}
             copy={COPY}
+            onItemClick={(item: { id: string }) => router.push(ROUTES.WHERE_IS_DETAIL(item.id))}
           />
         </>
       )}
