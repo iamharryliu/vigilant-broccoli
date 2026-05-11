@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import {
-  createTasksClient,
+  createTask,
   isExpiredError,
   GOOGLE_TOKEN_EXPIRED,
-} from '../../../../../libs/google-tasks';
+} from '@vigilant-broccoli/google-workspace';
 
 export const runtime = 'nodejs';
 
@@ -31,16 +31,12 @@ export async function POST(request: NextRequest) {
   }
 
   const { items, googleToken, taskListId } = parsed.data;
-  const tasksClient = createTasksClient(googleToken);
   const results: TaskResult[] = [];
 
   for (const title of items) {
     try {
-      const res = await tasksClient.tasks.insert({
-        tasklist: taskListId,
-        requestBody: { title },
-      });
-      results.push({ title, success: true, taskId: res.data.id });
+      const task = await createTask(googleToken, taskListId, title);
+      results.push({ title, success: true, taskId: task.id });
     } catch (err: unknown) {
       if (isExpiredError(err)) {
         return NextResponse.json(

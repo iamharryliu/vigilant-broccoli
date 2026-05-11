@@ -1,93 +1,83 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
+import {
+  listTaskLists,
+  isExpiredError,
+} from '@vigilant-broccoli/google-workspace';
 
-const GOOGLE_TASKS_LISTS_URL =
-  'https://tasks.googleapis.com/tasks/v1/users/@me/lists';
+export const runtime = 'nodejs';
+
+const getAccessToken = async (): Promise<string> => {
+  const session = await getServerSession(authOptions);
+  if (!session?.accessToken) throw new Error('Not authenticated');
+  return session.accessToken as string;
+};
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.accessToken) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const response = await fetch(GOOGLE_TASKS_LISTS_URL, {
-    headers: {
-      Authorization: `Bearer ${session.accessToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Google Tasks API error:', errorText);
+  try {
+    const accessToken = await getAccessToken();
+    const taskLists = await listTaskLists(accessToken);
+    return NextResponse.json({ taskLists });
+  } catch (error) {
+    if (isExpiredError(error)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     return NextResponse.json(
       { error: 'Failed to fetch task lists from Google' },
-      { status: response.status },
+      { status: 500 },
     );
   }
-
-  const data = await response.json();
-
-  return NextResponse.json({
-    taskLists: data.items || [],
-  });
 }
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
-
   if (!session?.accessToken) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { title } = await request.json();
-
-  const response = await fetch(GOOGLE_TASKS_LISTS_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${session.accessToken}`,
-      'Content-Type': 'application/json',
+  const res = await fetch(
+    'https://tasks.googleapis.com/tasks/v1/users/@me/lists',
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title }),
     },
-    body: JSON.stringify({ title }),
-  });
+  );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Google Tasks API error:', errorText);
+  if (!res.ok) {
     return NextResponse.json(
       { error: 'Failed to create task list' },
-      { status: response.status },
+      { status: res.status },
     );
   }
 
-  const data = await response.json();
-  return NextResponse.json({ taskList: data });
+  return NextResponse.json({ taskList: await res.json() });
 }
 
 export async function DELETE(request: NextRequest) {
   const session = await getServerSession(authOptions);
-
   if (!session?.accessToken) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const taskListId = searchParams.get('taskListId');
-
-  const response = await fetch(`${GOOGLE_TASKS_LISTS_URL}/${taskListId}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${session.accessToken}`,
+  const taskListId = new URL(request.url).searchParams.get('taskListId');
+  const res = await fetch(
+    `https://tasks.googleapis.com/tasks/v1/users/@me/lists/${taskListId}`,
+    {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${session.accessToken}` },
     },
-  });
+  );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Google Tasks API error:', errorText);
+  if (!res.ok) {
     return NextResponse.json(
       { error: 'Failed to delete task list' },
-      { status: response.status },
+      { status: res.status },
     );
   }
 
@@ -96,33 +86,30 @@ export async function DELETE(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   const session = await getServerSession(authOptions);
-
   if (!session?.accessToken) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const taskListId = searchParams.get('taskListId');
+  const taskListId = new URL(request.url).searchParams.get('taskListId');
   const { title } = await request.json();
-
-  const response = await fetch(`${GOOGLE_TASKS_LISTS_URL}/${taskListId}`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${session.accessToken}`,
-      'Content-Type': 'application/json',
+  const res = await fetch(
+    `https://tasks.googleapis.com/tasks/v1/users/@me/lists/${taskListId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title }),
     },
-    body: JSON.stringify({ title }),
-  });
+  );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Google Tasks API error:', errorText);
+  if (!res.ok) {
     return NextResponse.json(
       { error: 'Failed to rename task list' },
-      { status: response.status },
+      { status: res.status },
     );
   }
 
-  const data = await response.json();
-  return NextResponse.json({ taskList: data });
+  return NextResponse.json({ taskList: await res.json() });
 }

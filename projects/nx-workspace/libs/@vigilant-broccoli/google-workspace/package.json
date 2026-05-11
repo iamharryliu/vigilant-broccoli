@@ -3,7 +3,8 @@
   "version": "0.0.47",
   "dependencies": {
     "@swc/helpers": "0.5.19",
-    "@vigilant-broccoli/common-node": "*"
+    "@vigilant-broccoli/common-node": "*",
+    "googleapis": "^154.1.0"
   },
   "publishConfig": {
     "access": "public"

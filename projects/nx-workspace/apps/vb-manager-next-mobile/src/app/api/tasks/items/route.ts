@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  listTaskLists,
+  listTasks,
   isExpiredError,
   GOOGLE_TOKEN_EXPIRED,
 } from '@vigilant-broccoli/google-workspace';
@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const googleToken = body.googleToken;
+  const { googleToken, taskListId = '@default' } = body;
   if (!googleToken) {
     return NextResponse.json(
       { error: 'googleToken is required' },
@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const lists = await listTaskLists(googleToken);
-    return NextResponse.json({ lists });
+    const tasks = await listTasks(googleToken, taskListId);
+    return NextResponse.json({ tasks });
   } catch (error) {
     if (isExpiredError(error)) {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       );
     }
     return NextResponse.json(
-      { error: 'Failed to fetch task lists' },
+      { error: 'Failed to fetch tasks' },
       { status: 500 },
     );
   }
