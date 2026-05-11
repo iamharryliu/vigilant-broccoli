@@ -2,7 +2,12 @@
 
 import { ReactNode, useState } from 'react';
 import { Badge, Button, Flex, Select, Text, TextField } from '@radix-ui/themes';
-import { CRUDItemList, CRUDFormProps } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDItemList,
+  CRUDFormProps,
+  Avatar,
+  AvatarFallback,
+} from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
 
@@ -80,6 +85,9 @@ const MemberListItem = ({
   return (
     <Flex align="center" justify="between" width="100%">
       <Flex align="center" gap="2">
+        <Avatar>
+          <AvatarFallback>{item.email[0]?.toUpperCase() ?? '?'}</AvatarFallback>
+        </Avatar>
         <Text size="2">{item.email}</Text>
         {!isItemOwner && (
           <Badge

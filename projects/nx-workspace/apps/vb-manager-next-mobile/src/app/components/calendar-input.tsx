@@ -6,7 +6,10 @@ import {
   EventDraft,
   EventDraftStatus,
 } from './event-draft-card';
-import { getGoogleToken } from '../providers/auth-provider';
+import {
+  getGoogleToken,
+  signOutDueToExpiredToken,
+} from '../providers/auth-provider';
 
 interface ImagePreview {
   data: string;
@@ -113,6 +116,10 @@ export const CalendarInput = () => {
     const data = await res.json();
 
     if (!res.ok) {
+      if (res.status === 401) {
+        await signOutDueToExpiredToken();
+        return;
+      }
       setEventStates(prev =>
         prev.map((s, i) =>
           i === index

@@ -1,5 +1,6 @@
 import './global.css';
 import AuthProvider from './providers/auth-provider';
+import { BottomNav } from './components/bottom-nav';
 
 export const metadata = {
   title: 'VB Manager',
@@ -20,7 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gray-50">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <BottomNav />
+        </AuthProvider>
       </body>
     </html>
   );

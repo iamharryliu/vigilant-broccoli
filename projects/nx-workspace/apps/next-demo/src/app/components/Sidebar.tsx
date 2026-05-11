@@ -21,7 +21,7 @@ const ALL_PAGES: FlatPage[] = NAV_LINKS.flatMap(
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [hovered, setHovered] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
   const [query, setQuery] = useState('');
 
   const results = query.trim()
@@ -32,7 +32,7 @@ export default function Sidebar() {
     <aside
       className="group/sidebar fixed top-0 left-0 bottom-0 z-30 w-14 hover:w-48 border-r border-gray-200 bg-white flex flex-col overflow-hidden transition-all duration-200"
       onMouseLeave={() => {
-        setHovered(null);
+        setOpen(null);
         setQuery('');
       }}
     >
@@ -79,7 +79,7 @@ export default function Sidebar() {
         ) : (
           NAV_LINKS.map(({ label, href, icon: Icon, children }) => {
             const isActive = pathname.startsWith(href);
-            const isOpen = hovered === href;
+            const isOpen = open === href;
             const childActive =
               children?.some(c => pathname.startsWith(c.href)) ?? false;
             const highlight = isActive || childActive;
@@ -87,13 +87,9 @@ export default function Sidebar() {
 
             if (children) {
               return (
-                <div
-                  key={href}
-                  onMouseEnter={() => setHovered(href)}
-                  onMouseLeave={() => setHovered(null)}
-                >
-                  <Link
-                    href={href}
+                <div key={href}>
+                  <button
+                    onClick={() => setOpen(isOpen ? null : href)}
                     className={`w-full flex items-center gap-3 px-2 py-2 ${baseClass}`}
                   >
                     <span className="shrink-0">
@@ -109,7 +105,7 @@ export default function Sidebar() {
                         <ChevronRight size={14} />
                       )}
                     </span>
-                  </Link>
+                  </button>
                   <div
                     className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
                   >

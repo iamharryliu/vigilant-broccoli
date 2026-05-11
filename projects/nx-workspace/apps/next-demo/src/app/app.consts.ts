@@ -28,7 +28,6 @@ export const NAV_LINKS = [
     icon: Wrench,
     children: [
       { label: 'Where Is', href: ROUTES.WHERE_IS },
-      { label: 'Tasks', href: ROUTES.TASKS },
       { label: 'Docs', href: ROUTES.DOCS },
       { label: 'Price Tracker', href: ROUTES.PRICE_TRACKER },
     ],

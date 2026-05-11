@@ -12,6 +12,11 @@ export const useAuth = () => useContext(AuthContext);
 
 export const getGoogleToken = () => localStorage.getItem(GOOGLE_TOKEN_KEY);
 
+export const signOutDueToExpiredToken = async () => {
+  localStorage.removeItem(GOOGLE_TOKEN_KEY);
+  await supabase.auth.signOut();
+};
+
 export default function AuthProvider({
   children,
 }: {

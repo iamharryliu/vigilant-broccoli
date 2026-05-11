@@ -1,4 +1,5 @@
 export * from './AudioPlayer';
+export * from './Avatar';
 export * from './CopyButton';
 export * from './CopyPastable';
 export * from './Select';

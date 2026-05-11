@@ -11,7 +11,6 @@ export const ROUTES = {
   HOME_CALENDAR: (id: string | number) => `/homes/${id}/calendar`,
   LEISURE: '/leisure',
   RESOURCES: '/resources',
-  TASKS: '/tasks',
   HOUSEHOLD_RULES: '/household-rules',
   PRICE_TRACKER: '/price-tracker',
   CHORES: '/chores',
