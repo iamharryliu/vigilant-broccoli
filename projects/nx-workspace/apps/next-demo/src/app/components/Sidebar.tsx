@@ -36,14 +36,11 @@ export default function Sidebar() {
         setQuery('');
       }}
     >
-      <div className="flex items-center gap-3 px-2 group-hover/sidebar:px-3 h-[49px] border-b border-gray-200 shrink-0">
-        <span className="shrink-0 w-[18px] h-[18px] rounded-sm bg-black" />
-        <Link
-          href={ROUTES.HOME}
-          className="opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-150 font-semibold text-sm whitespace-nowrap"
-        >
+      <div className="flex items-center justify-center group-hover/sidebar:justify-start group-hover/sidebar:gap-3 group-hover/sidebar:px-3 h-[49px] border-b border-gray-200 shrink-0">
+        <Link href={ROUTES.HOME} className="shrink-0 w-[18px] h-[18px] rounded-sm bg-black" />
+        <span className="w-0 group-hover/sidebar:w-auto overflow-hidden opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-150 font-semibold text-sm whitespace-nowrap">
           next-demo
-        </Link>
+        </span>
       </div>
 
       <div className="flex flex-col gap-1 px-2 group-hover/sidebar:px-3 py-4 overflow-y-auto overflow-x-hidden">
