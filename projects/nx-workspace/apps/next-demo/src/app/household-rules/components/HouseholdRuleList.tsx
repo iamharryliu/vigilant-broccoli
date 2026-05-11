@@ -159,7 +159,7 @@ export function HouseholdRuleList({
       createItem={onCreate}
       createItemFormDefaultValues={{
         ...DEFAULT_FORM,
-        homeId,
+        homeId: Number(homeId),
         position: nextPosition.current,
       }}
       updateItem={onUpdate}

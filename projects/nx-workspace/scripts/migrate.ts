@@ -48,48 +48,51 @@ async function run() {
   });
   await client.connect();
 
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS schema_migrations (
-      filename text PRIMARY KEY,
-      applied_at timestamptz NOT NULL DEFAULT now()
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        filename text PRIMARY KEY,
+        applied_at timestamptz NOT NULL DEFAULT now()
+      );
+    `);
+
+    const { rows: applied } = await client.query<{ filename: string }>(
+      'SELECT filename FROM schema_migrations ORDER BY filename',
     );
-  `);
+    const appliedSet = new Set(applied.map(r => r.filename));
 
-  const { rows: applied } = await client.query<{ filename: string }>(
-    'SELECT filename FROM schema_migrations ORDER BY filename',
-  );
-  const appliedSet = new Set(applied.map(r => r.filename));
+    const files = readdirSync(MIGRATIONS_DIR)
+      .filter(f => f.endsWith('.sql'))
+      .sort();
 
-  const files = readdirSync(MIGRATIONS_DIR)
-    .filter(f => f.endsWith('.sql'))
-    .sort();
+    const pending = files.filter(f => !appliedSet.has(f));
 
-  const pending = files.filter(f => !appliedSet.has(f));
-
-  if (pending.length === 0) {
-    console.log('migrate: all migrations up to date');
-    await client.end();
-    return;
-  }
-
-  console.log(
-    `migrate: ${pending.length} pending migration(s)${baseline ? ' (baseline)' : ''}`,
-  );
-
-  for (const file of pending) {
-    if (!baseline) {
-      const sql = readFileSync(path.join(MIGRATIONS_DIR, file), 'utf-8');
-      console.log(`migrate: applying ${file}...`);
-      await client.query(sql);
+    if (pending.length === 0) {
+      console.log('migrate: all migrations up to date');
+      return;
     }
-    await client.query('INSERT INTO schema_migrations (filename) VALUES ($1)', [
-      file,
-    ]);
-    console.log(`migrate: ✓ ${file}`);
-  }
 
-  console.log('migrate: done');
-  await client.end();
+    console.log(
+      `migrate: ${pending.length} pending migration(s)${baseline ? ' (baseline)' : ''}`,
+    );
+
+    for (const file of pending) {
+      if (!baseline) {
+        const sql = readFileSync(path.join(MIGRATIONS_DIR, file), 'utf-8');
+        console.log(`migrate: applying ${file}...`);
+        await client.query(sql);
+      }
+      await client.query(
+        'INSERT INTO schema_migrations (filename) VALUES ($1)',
+        [file],
+      );
+      console.log(`migrate: ✓ ${file}`);
+    }
+
+    console.log('migrate: done');
+  } finally {
+    await client.end();
+  }
 }
 
 run().catch(err => {
