@@ -11,6 +11,12 @@ import {
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
 
+const ROLE_LABEL: Record<string, string> = {
+  [HOME_ROLE.OWNER]: 'Owner',
+  [HOME_ROLE.ADMIN]: 'Admin',
+  [HOME_ROLE.MEMBER]: 'Member',
+};
+
 const MEMBER_COPY = {
   LIST: { TITLE: 'Members', EMPTY_MESSAGE: 'No members yet.' },
   [FORM_TYPE.CREATE]: {
@@ -34,12 +40,13 @@ const MemberFormComponent = ({
   submitHandler,
 }: CRUDFormProps<HomeMember>) => {
   const [email, setEmail] = useState(initialFormValues.email);
+  const [role, setRole] = useState<HomeRole>(initialFormValues.role);
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (!email.trim()) return;
     setSubmitting(true);
-    await submitHandler({ ...initialFormValues, email }, formType);
+    await submitHandler({ ...initialFormValues, email, role }, formType);
     setSubmitting(false);
   };
 
@@ -56,6 +63,28 @@ const MemberFormComponent = ({
           disabled={formType === FORM_TYPE.UPDATE}
         />
       </div>
+      {formType === FORM_TYPE.UPDATE && (
+        <div>
+          <Text size="1" weight="medium" as="p" mb="1">
+            Role
+          </Text>
+          <Select.Root
+            value={role}
+            onValueChange={v => setRole(v as HomeRole)}
+            size="2"
+          >
+            <Select.Trigger />
+            <Select.Content>
+              <Select.Item value={HOME_ROLE.MEMBER}>
+                {ROLE_LABEL[HOME_ROLE.MEMBER]}
+              </Select.Item>
+              <Select.Item value={HOME_ROLE.ADMIN}>
+                {ROLE_LABEL[HOME_ROLE.ADMIN]}
+              </Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </div>
+      )}
       {formType === FORM_TYPE.CREATE && (
         <Button
           onClick={handleSubmit}
@@ -72,13 +101,9 @@ const MemberFormComponent = ({
 
 const MemberListItem = ({
   item,
-  isOwner,
-  onRoleChange,
   ellipsis,
 }: {
   item: HomeMember;
-  isOwner: boolean;
-  onRoleChange: (memberId: string, role: HomeRole) => Promise<void>;
   ellipsis?: ReactNode;
 }) => {
   const isItemOwner = item.role === HOME_ROLE.OWNER;
@@ -89,38 +114,16 @@ const MemberListItem = ({
           <AvatarFallback>{item.email[0]?.toUpperCase() ?? '?'}</AvatarFallback>
         </Avatar>
         <Text size="2">{item.email}</Text>
-        {!isItemOwner && (
-          <Badge
-            variant="soft"
-            color={item.status === 'accepted' ? 'green' : 'orange'}
-            size="1"
-          >
-            {item.status}
+        {!isItemOwner && item.status === 'pending' && (
+          <Badge variant="soft" color="orange" size="1">
+            pending
           </Badge>
         )}
       </Flex>
       <Flex align="center" gap="2">
-        {isItemOwner ? (
-          <Badge variant="soft" color="blue" size="1">
-            Owner
-          </Badge>
-        ) : item.status === 'accepted' && isOwner ? (
-          <Select.Root
-            value={item.role}
-            onValueChange={v => onRoleChange(item.id, v as HomeRole)}
-            size="1"
-          >
-            <Select.Trigger onClick={e => e.stopPropagation()} />
-            <Select.Content>
-              <Select.Item value={HOME_ROLE.MEMBER}>Member</Select.Item>
-              <Select.Item value={HOME_ROLE.ADMIN}>Admin</Select.Item>
-            </Select.Content>
-          </Select.Root>
-        ) : (
-          <Badge variant="outline" size="1">
-            {item.role}
-          </Badge>
-        )}
+        <Badge variant="soft" color={isItemOwner ? 'blue' : 'gray'} size="1">
+          {ROLE_LABEL[item.role] ?? item.role}
+        </Badge>
         {!isItemOwner && ellipsis}
       </Flex>
     </Flex>
@@ -151,15 +154,17 @@ export const MemberList = ({
     setItems={setMembers}
     createItem={isOwner ? onInvite : undefined}
     createItemFormDefaultValues={DEFAULT_MEMBER}
+    updateItem={
+      isOwner
+        ? async (member: HomeMember) => {
+            await onRoleChange(member.id, member.role);
+          }
+        : undefined
+    }
     deleteItem={isOwner ? onDelete : undefined}
     FormComponent={MemberFormComponent}
     ListItemComponent={({ item, ellipsis }) => (
-      <MemberListItem
-        item={item}
-        isOwner={isOwner || isAdmin}
-        onRoleChange={onRoleChange}
-        ellipsis={ellipsis}
-      />
+      <MemberListItem item={item} ellipsis={ellipsis} />
     )}
     copy={MEMBER_COPY}
     showEllipsis={isOwner}

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createServerClient } from '../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { uploadImage } from '../../where-is/r2';
 
 export const runtime = 'nodejs';
 
@@ -292,6 +293,172 @@ export async function POST(request: NextRequest) {
     },
   ]);
   results['calendar-events'] = calErr ? calErr.message : 'ok';
+
+  // Price tracker
+  const { data: priceItemRows, error: priceItemsErr } = await supabase
+    .from('price_items')
+    .insert([
+      {
+        name: 'Whole Milk',
+        category: 'Dairy',
+        unit: '4L',
+        home_id: homeId,
+        user_id: user.id,
+      },
+      {
+        name: 'Sourdough Bread',
+        category: 'Bakery',
+        unit: 'loaf',
+        home_id: homeId,
+        user_id: user.id,
+      },
+      {
+        name: 'Chicken Breast',
+        category: 'Meat',
+        unit: 'kg',
+        home_id: homeId,
+        user_id: user.id,
+      },
+    ])
+    .select();
+  results['price-items'] = priceItemsErr ? priceItemsErr.message : 'ok';
+
+  if (priceItemRows && priceItemRows.length > 0) {
+    const [milk, bread, chicken] = priceItemRows;
+    const { error: priceEntriesErr } = await supabase
+      .from('price_entries')
+      .insert([
+        {
+          item_id: milk.id,
+          price: 5.49,
+          store: 'Costco',
+          purchased_at: daysFromNow(-7),
+        },
+        {
+          item_id: milk.id,
+          price: 5.99,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-14),
+        },
+        {
+          item_id: bread.id,
+          price: 4.29,
+          store: 'Whole Foods',
+          purchased_at: daysFromNow(-3),
+        },
+        {
+          item_id: bread.id,
+          price: 3.99,
+          store: 'Local Bakery',
+          purchased_at: daysFromNow(-10),
+        },
+        {
+          item_id: chicken.id,
+          price: 12.99,
+          store: 'Costco',
+          purchased_at: daysFromNow(-5),
+        },
+        {
+          item_id: chicken.id,
+          price: 14.49,
+          store: 'Loblaws',
+          purchased_at: daysFromNow(-12),
+        },
+      ]);
+    results['price-entries'] = priceEntriesErr ? priceEntriesErr.message : 'ok';
+  }
+
+  // Where Is
+  const whereIsSeeds = [
+    {
+      title: 'Toolbox',
+      description: 'Red metal toolbox with drill bits and screwdrivers.',
+      tags: ['tools', 'garage'],
+      picsum: 20,
+    },
+    {
+      title: 'First Aid Kit',
+      description: 'White box with bandages, antiseptic, and pain relief.',
+      tags: ['medical', 'emergency'],
+      picsum: 42,
+    },
+    {
+      title: 'Spare Keys',
+      description: 'Front door and mailbox spare keys on a blue keychain.',
+      tags: ['keys', 'security'],
+      picsum: 60,
+    },
+    {
+      title: 'Winter Clothes',
+      description: 'Jackets, scarves, and gloves in storage bins.',
+      tags: ['clothes', 'seasonal'],
+      picsum: 100,
+    },
+  ];
+
+  const { data: whereIsRows, error: whereIsErr } = await supabase
+    .from('where_is_items')
+    .insert(
+      whereIsSeeds.map(({ title, description, tags }) => ({
+        title,
+        description,
+        tags,
+        home_id: homeId,
+        user_id: user.id,
+      })),
+    )
+    .select();
+  results['where-is'] = whereIsErr ? whereIsErr.message : 'ok';
+
+  if (whereIsRows) {
+    await Promise.allSettled(
+      whereIsRows.map(async (row, i) => {
+        const seed = whereIsSeeds[i];
+        const imgRes = await fetch(
+          `https://picsum.photos/seed/${seed.picsum}/640/480`,
+        );
+        if (!imgRes.ok) return;
+        const buffer = Buffer.from(await imgRes.arrayBuffer());
+        const r2Key = `where-is/${row.id}/${crypto.randomUUID()}.jpg`;
+        await uploadImage(r2Key, buffer, 'image/jpeg');
+        await supabase.from('where_is_images').insert({
+          item_id: row.id,
+          r2_key: r2Key,
+          mime_type: 'image/jpeg',
+          sort_order: 0,
+        });
+      }),
+    );
+  }
+
+  // Docs
+  const { error: docsErr } = await supabase.from('home_docs').insert([
+    {
+      name: 'Home Insurance Policy',
+      description: 'Annual renewal — expires Dec 2025.',
+      category: 'Insurance',
+      home_id: homeId,
+    },
+    {
+      name: 'Dishwasher Manual',
+      description: 'Bosch Series 6.',
+      category: 'Manual',
+      home_id: homeId,
+    },
+    {
+      name: 'Lease Agreement',
+      description: 'Signed lease for current tenancy.',
+      category: 'Contract',
+      home_id: homeId,
+    },
+    {
+      name: 'Appliance Warranty',
+      description: 'Fridge and washer/dryer warranties.',
+      category: 'Warranty',
+      home_id: homeId,
+    },
+  ]);
+  results['docs'] = docsErr ? docsErr.message : 'ok';
 
   return Response.json({ results });
 }

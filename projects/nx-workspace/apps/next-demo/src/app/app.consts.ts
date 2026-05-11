@@ -1,15 +1,7 @@
-import {
-  Home,
-  Calendar,
-  Wrench,
-  BookOpen,
-  ListTodo,
-  Settings,
-} from 'lucide-react';
+import { Calendar, Wrench, BookOpen, ListTodo, Settings } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
 export const NAV_LINKS = [
-  { label: 'Home', href: ROUTES.MY_HOME, icon: Home },
   {
     label: 'Calendar',
     href: ROUTES.CALENDAR,

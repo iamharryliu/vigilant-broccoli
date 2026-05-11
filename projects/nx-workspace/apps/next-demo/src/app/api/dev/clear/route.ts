@@ -18,6 +18,7 @@ const TABLE_MAP: Record<string, string> = {
   meals: 'meals',
   docs: 'home_docs',
   'where-is': 'where_is_items',
+  'price-tracker': 'price_items',
 };
 
 export async function POST(request: NextRequest) {

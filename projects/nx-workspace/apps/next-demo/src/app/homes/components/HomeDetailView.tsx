@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Text } from '@radix-ui/themes';
 import { supabase } from '../../../../libs/supabase';
 import { useAuth } from '../../providers/auth-provider';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
@@ -119,11 +118,6 @@ export const HomeDetailView = ({ homeId }: Props) => {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Text size="6" weight="bold">
-            Home Details
-          </Text>
-        </div>
         <HomeForm
           name={name}
           description={description}

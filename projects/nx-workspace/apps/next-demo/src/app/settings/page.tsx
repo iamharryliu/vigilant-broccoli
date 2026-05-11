@@ -4,6 +4,9 @@ import { useRef, useState } from 'react';
 import { Text, Checkbox, Button } from '@radix-ui/themes';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
+import { HomeDetailView } from '../homes/components/HomeDetailView';
+import { HomeCreateForm } from '../homes/components/HomeCreateForm';
+import { supabase } from '../../../libs/supabase';
 
 const EXPORT_OPTIONS = [{ key: 'where-is', label: 'Where Is' }] as const;
 
@@ -20,6 +23,7 @@ const CLEAR_OPTIONS = [
   { key: 'meals', label: 'Meals' },
   { key: 'docs', label: 'Documents' },
   { key: 'where-is', label: 'Where Is' },
+  { key: 'price-tracker', label: 'Price Tracker' },
 ] as const;
 
 type ClearKey = (typeof CLEAR_OPTIONS)[number]['key'];
@@ -71,9 +75,7 @@ export default function SettingsPage() {
       if (key === 'where-is') {
         const res = await fetch(
           `/api/where-is/export?homeId=${selectedHomeId}`,
-          {
-            headers: { Authorization: `Bearer ${session.access_token}` },
-          },
+          { headers: { Authorization: `Bearer ${session.access_token}` } },
         );
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
@@ -144,6 +146,13 @@ export default function SettingsPage() {
     setClearing(false);
   };
 
+  const handleCreateHome = async (name: string, description: string) => {
+    await supabase
+      .from('homes')
+      .insert({ name, description, user_id: session?.user.id });
+    window.location.reload();
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-8">
       <Text size="6" weight="bold">
@@ -154,26 +163,11 @@ export default function SettingsPage() {
         <Text size="3" weight="medium">
           Home
         </Text>
-        <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
-          <div className="flex items-center justify-between px-4 py-3">
-            <Text size="2" color="gray">
-              Selected Home
-            </Text>
-            <Text size="2">{selectedHome?.name ?? '—'}</Text>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3">
-            <Text size="2" color="gray">
-              Home ID
-            </Text>
-            <Text size="2">{selectedHomeId ?? '—'}</Text>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3">
-            <Text size="2" color="gray">
-              Total Homes
-            </Text>
-            <Text size="2">{homes.length}</Text>
-          </div>
-        </div>
+        {selectedHome ? (
+          <HomeDetailView homeId={String(selectedHome.id)} />
+        ) : (
+          <HomeCreateForm onSubmit={handleCreateHome} />
+        )}
       </section>
 
       <section className="space-y-3">
