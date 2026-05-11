@@ -59,11 +59,13 @@ jobs:
             if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
               echo "Tunnel established successfully"
               curl -k -s https://127.0.0.1:8200/v1/sys/health | jq .
-              break
+              exit 0
             fi
             echo "Attempt $i: Tunnel not ready yet..."
             sleep 2
           done
+          echo "ERROR: IAP tunnel to Vault failed to establish after 30 attempts"
+          exit 1
 
       - name: Import Secrets from Vault
         uses: hashicorp/vault-action@v3
