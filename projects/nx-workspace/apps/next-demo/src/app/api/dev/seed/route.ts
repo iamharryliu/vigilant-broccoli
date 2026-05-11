@@ -80,30 +80,35 @@ export async function POST(request: NextRequest) {
         description: 'Epic sci-fi film set on a desert planet.',
         category: 'Movies',
         home_id: homeId,
+        user_id: user.id,
       },
       {
         title: 'The Last of Us',
         description: 'Post-apocalyptic HBO series.',
         category: 'Shows',
         home_id: homeId,
+        user_id: user.id,
       },
       {
         title: 'Catan',
         description: 'Classic resource-trading board game.',
         category: 'Games',
         home_id: homeId,
+        user_id: user.id,
       },
       {
         title: 'Morning hike at the ravine',
         description: '5km trail nearby.',
         category: 'Outdoors',
         home_id: homeId,
+        user_id: user.id,
       },
       {
         title: 'Knitting project',
         description: 'Winter scarf for mum.',
         category: 'Crafts',
         home_id: homeId,
+        user_id: user.id,
       },
     ]);
   results['leisure-activities'] = leisureErr ? leisureErr.message : 'ok';
@@ -116,6 +121,7 @@ export async function POST(request: NextRequest) {
       category: 'Dinner',
       servings: 4,
       home_id: homeId,
+      user_id: user.id,
     },
     {
       title: 'Avocado Toast',
@@ -123,6 +129,7 @@ export async function POST(request: NextRequest) {
       category: 'Breakfast',
       servings: 2,
       home_id: homeId,
+      user_id: user.id,
     },
     {
       title: 'Caesar Salad',
@@ -130,6 +137,7 @@ export async function POST(request: NextRequest) {
       category: 'Lunch',
       servings: 3,
       home_id: homeId,
+      user_id: user.id,
     },
     {
       title: 'Chicken Stir Fry',
@@ -137,6 +145,7 @@ export async function POST(request: NextRequest) {
       category: 'Dinner',
       servings: 4,
       home_id: homeId,
+      user_id: user.id,
     },
     {
       title: 'Chocolate Lava Cake',
@@ -144,6 +153,7 @@ export async function POST(request: NextRequest) {
       category: 'Dessert',
       servings: 2,
       home_id: homeId,
+      user_id: user.id,
     },
   ]);
   results['meals'] = mealsErr ? mealsErr.message : 'ok';
@@ -156,6 +166,7 @@ export async function POST(request: NextRequest) {
       category: 'Painting',
       status: 'Todo',
       home_id: homeId,
+      user_id: user.id,
     },
     {
       title: 'Fix leaking kitchen faucet',
@@ -163,6 +174,7 @@ export async function POST(request: NextRequest) {
       category: 'Plumbing',
       status: 'In Progress',
       home_id: homeId,
+      user_id: user.id,
     },
     {
       title: 'Build garden bed',
@@ -170,6 +182,7 @@ export async function POST(request: NextRequest) {
       category: 'Garden',
       status: 'Todo',
       home_id: homeId,
+      user_id: user.id,
     },
     {
       title: 'Install new light fixtures',
@@ -177,6 +190,7 @@ export async function POST(request: NextRequest) {
       category: 'Electrical',
       status: 'Done',
       home_id: homeId,
+      user_id: user.id,
     },
   ]);
   results['home-projects'] = projectsErr ? projectsErr.message : 'ok';

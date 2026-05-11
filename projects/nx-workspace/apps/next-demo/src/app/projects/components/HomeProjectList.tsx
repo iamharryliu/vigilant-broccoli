@@ -34,6 +34,7 @@ interface Props {
   onAdd: (data: HomeProjectFormData) => Promise<void>;
   onEdit: (id: string, data: HomeProjectFormData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  hideDragHint?: boolean;
 }
 
 export function HomeProjectList({
@@ -42,6 +43,7 @@ export function HomeProjectList({
   onAdd,
   onEdit,
   onDelete,
+  hideDragHint,
 }: Props) {
   const linkedEventCount = (projectId: string) =>
     calendarEvents.filter(e => e.projectId === projectId).length;
@@ -98,9 +100,11 @@ export function HomeProjectList({
         </Button>
       </Flex>
 
-      <Text size="1" color="gray">
-        Drag any project onto the calendar to schedule it.
-      </Text>
+      {!hideDragHint && (
+        <Text size="1" color="gray">
+          Drag any project onto the calendar to schedule it.
+        </Text>
+      )}
 
       <div ref={listRef} className="flex flex-col gap-2">
         {projects.length === 0 && (
@@ -134,6 +138,11 @@ export function HomeProjectList({
                   {project.description && (
                     <Text size="1" color="gray" className="truncate block">
                       {project.description}
+                    </Text>
+                  )}
+                  {project.createdByEmail && (
+                    <Text size="1" color="gray" className="truncate block">
+                      {project.createdByEmail}
                     </Text>
                   )}
                 </div>

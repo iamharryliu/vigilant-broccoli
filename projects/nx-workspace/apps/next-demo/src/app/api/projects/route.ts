@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createServerClient } from '../../../../libs/supabase-server';
+import { buildEmailMap } from '../../../../libs/email-map';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
@@ -10,13 +11,19 @@ const getSupabase = (req: NextRequest) => {
   return createServerClient(accessToken);
 };
 
-const toProject = (row: Record<string, unknown>) => ({
+const toProject = (
+  row: Record<string, unknown>,
+  emailMap: Record<string, string> = {},
+) => ({
   id: row.id,
   title: row.title,
   description: row.description ?? null,
   category: row.category,
   status: row.status,
   homeId: row.home_id,
+  createdByEmail: row.user_id
+    ? (emailMap[row.user_id as string] ?? null)
+    : null,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -40,12 +47,19 @@ export async function GET(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  return Response.json((data ?? []).map(toProject));
+  const rows = data ?? [];
+  const userIds = [...new Set(rows.map(r => r.user_id).filter(Boolean))];
+  const emailMap = await buildEmailMap(userIds);
+
+  return Response.json(rows.map(r => toProject(r, emailMap)));
 }
 
 export async function POST(req: NextRequest) {
   const supabase = getSupabase(req);
   const body = await req.json();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data, error } = await supabase
     .from('home_projects')
@@ -55,6 +69,7 @@ export async function POST(req: NextRequest) {
       category: body.category,
       status: body.status ?? 'Todo',
       home_id: body.homeId,
+      user_id: user?.id ?? null,
     })
     .select()
     .single();
@@ -65,7 +80,8 @@ export async function POST(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  return Response.json(toProject(data));
+  const emailMap = data.user_id ? await buildEmailMap([data.user_id]) : {};
+  return Response.json(toProject(data, emailMap));
 }
 
 export async function PATCH(req: NextRequest) {
@@ -98,7 +114,8 @@ export async function PATCH(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  return Response.json(toProject(data));
+  const emailMap = data.user_id ? await buildEmailMap([data.user_id]) : {};
+  return Response.json(toProject(data, emailMap));
 }
 
 export async function DELETE(req: NextRequest) {

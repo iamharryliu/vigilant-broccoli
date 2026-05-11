@@ -31,6 +31,7 @@ interface Props {
   onAdd: (data: LeisureActivityFormData) => Promise<void>;
   onEdit: (id: string, data: LeisureActivityFormData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  hideDragHint?: boolean;
 }
 
 export function LeisureList({
@@ -39,6 +40,7 @@ export function LeisureList({
   onAdd,
   onEdit,
   onDelete,
+  hideDragHint,
 }: Props) {
   const linkedEventCount = (activityId: string) =>
     calendarEvents.filter(e => e.leisureActivityId === activityId).length;
@@ -94,9 +96,11 @@ export function LeisureList({
         </Button>
       </Flex>
 
-      <Text size="1" color="gray">
-        Drag any activity onto the calendar to schedule it.
-      </Text>
+      {!hideDragHint && (
+        <Text size="1" color="gray">
+          Drag any activity onto the calendar to schedule it.
+        </Text>
+      )}
 
       <div ref={listRef} className="flex flex-col gap-2">
         {activities.length === 0 && (
@@ -130,6 +134,11 @@ export function LeisureList({
                   {activity.description && (
                     <Text size="1" color="gray" className="truncate block">
                       {activity.description}
+                    </Text>
+                  )}
+                  {activity.createdByEmail && (
+                    <Text size="1" color="gray" className="truncate block">
+                      {activity.createdByEmail}
                     </Text>
                   )}
                 </div>

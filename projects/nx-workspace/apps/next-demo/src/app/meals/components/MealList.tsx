@@ -23,6 +23,7 @@ interface Props {
   onAdd: (data: MealFormData) => Promise<void>;
   onEdit: (id: string, data: MealFormData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  hideDragHint?: boolean;
 }
 
 export function MealList({
@@ -31,6 +32,7 @@ export function MealList({
   onAdd,
   onEdit,
   onDelete,
+  hideDragHint,
 }: Props) {
   const linkedEventCount = (mealId: string) =>
     calendarEvents.filter(e => e.mealId === mealId).length;
@@ -87,9 +89,11 @@ export function MealList({
         </Button>
       </Flex>
 
-      <Text size="1" color="gray">
-        Drag any meal onto the calendar to plan it.
-      </Text>
+      {!hideDragHint && (
+        <Text size="1" color="gray">
+          Drag any meal onto the calendar to plan it.
+        </Text>
+      )}
 
       <div ref={listRef} className="flex flex-col gap-2">
         {meals.length === 0 && (
@@ -123,6 +127,11 @@ export function MealList({
                   {meal.servings && (
                     <Text size="1" color="gray" className="truncate block">
                       {meal.servings} servings
+                    </Text>
+                  )}
+                  {meal.createdByEmail && (
+                    <Text size="1" color="gray" className="truncate block">
+                      {meal.createdByEmail}
                     </Text>
                   )}
                 </div>

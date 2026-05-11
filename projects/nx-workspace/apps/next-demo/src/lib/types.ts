@@ -57,6 +57,7 @@ export interface LeisureActivity {
   description: string | null;
   category: LeisureCategory;
   homeId: number;
+  createdByEmail?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -168,6 +169,7 @@ export interface Meal {
   category: MealCategory;
   servings: number | null;
   homeId: number;
+  createdByEmail?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -196,6 +198,7 @@ export interface HomeProject {
   category: ProjectCategory;
   status: ProjectStatus;
   homeId: number;
+  createdByEmail?: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -27,6 +27,7 @@ interface Props {
   onAdd: (data: ResourceFormData) => Promise<void>;
   onEdit: (id: string, data: ResourceFormData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  hideDragHint?: boolean;
 }
 
 export function ResourceList({
@@ -35,6 +36,7 @@ export function ResourceList({
   onAdd,
   onEdit,
   onDelete,
+  hideDragHint,
 }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
   const [modal, setModal] = useState<ModalState>(null);
@@ -92,9 +94,11 @@ export function ResourceList({
         </Button>
       </Flex>
 
-      <Text size="1" color="gray">
-        Drag any resource onto the calendar to book it.
-      </Text>
+      {!hideDragHint && (
+        <Text size="1" color="gray">
+          Drag any resource onto the calendar to book it.
+        </Text>
+      )}
 
       <div ref={listRef} className="flex flex-col gap-2">
         {resources.length === 0 && (

@@ -6,6 +6,7 @@ export const ROUTES = {
   WHERE_IS: '/where-is',
   AUTH_CALLBACK: '/auth/callback',
   CALENDAR: '/calendar',
+  MASTER_LIST: '/master-list',
   OVERALL_CALENDAR: '/calendar/overall',
   HOME_CALENDAR: (id: string | number) => `/homes/${id}/calendar`,
   LEISURE: '/leisure',

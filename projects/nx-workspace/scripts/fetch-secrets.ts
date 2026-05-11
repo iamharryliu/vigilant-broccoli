@@ -19,18 +19,18 @@ function parseEnvFileKeys(filePath: string): Set<string> {
 }
 
 function parseArgs(argv: string[]) {
-  let envFile: string | undefined;
+  const envFiles: string[] = [];
   const rest: string[] = [];
 
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--env-file' && i + 1 < argv.length) {
-      envFile = argv[++i];
+      envFiles.push(argv[++i]);
     } else {
       rest.push(argv[i]);
     }
   }
 
-  return { envFile, command: rest };
+  return { envFiles, command: rest };
 }
 
 async function fetchSecrets(
@@ -86,16 +86,21 @@ async function fetchSecretsAndServe() {
     'vault-ca.crt',
   );
 
-  const { envFile, command } = parseArgs(process.argv.slice(2));
+  const { envFiles, command } = parseArgs(process.argv.slice(2));
 
   let allowedKeys: Set<string> | undefined;
-  if (envFile) {
-    if (!existsSync(envFile)) {
-      console.error(`Error: env file not found: ${envFile}`);
-      process.exit(1);
+  if (envFiles.length > 0) {
+    allowedKeys = new Set();
+    for (const envFile of envFiles) {
+      if (!existsSync(envFile)) {
+        console.error(`Error: env file not found: ${envFile}`);
+        process.exit(1);
+      }
+      for (const key of parseEnvFileKeys(envFile)) allowedKeys.add(key);
     }
-    allowedKeys = parseEnvFileKeys(envFile);
-    console.log(`Using env file: ${envFile} (${allowedKeys.size} keys)`);
+    console.log(
+      `Using env files: ${envFiles.join(', ')} (${allowedKeys.size} keys)`,
+    );
   }
 
   await fetchSecrets(vaultAddr, secretPath, certs, allowedKeys);

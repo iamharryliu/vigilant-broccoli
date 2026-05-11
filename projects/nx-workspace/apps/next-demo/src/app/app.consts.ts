@@ -1,4 +1,4 @@
-import { Calendar, Wrench, BookOpen, ListTodo, Settings } from 'lucide-react';
+import { Calendar, Wrench, ListTodo, Settings, LayoutList } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
 export const NAV_LINKS = [
@@ -24,7 +24,15 @@ export const NAV_LINKS = [
       { label: 'Price Tracker', href: ROUTES.PRICE_TRACKER },
     ],
   },
-  { label: 'Household Rules', href: ROUTES.HOUSEHOLD_RULES, icon: BookOpen },
+  {
+    label: 'Lists',
+    href: ROUTES.MASTER_LIST,
+    icon: LayoutList,
+    children: [
+      { label: 'Master List', href: ROUTES.MASTER_LIST },
+      { label: 'Household Rules', href: ROUTES.HOUSEHOLD_RULES },
+    ],
+  },
   { label: 'Chores', href: ROUTES.CHORES, icon: ListTodo },
   { label: 'Settings', href: ROUTES.SETTINGS, icon: Settings },
 ];

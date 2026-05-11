@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createServerClient } from '../../../../libs/supabase-server';
+import { buildEmailMap } from '../../../../libs/email-map';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
@@ -10,12 +11,18 @@ const getSupabase = (req: NextRequest) => {
   return createServerClient(accessToken);
 };
 
-const toLeisureActivity = (row: Record<string, unknown>) => ({
+const toLeisureActivity = (
+  row: Record<string, unknown>,
+  emailMap: Record<string, string> = {},
+) => ({
   id: row.id,
   title: row.title,
   description: row.description ?? null,
   category: row.category,
   homeId: row.home_id,
+  createdByEmail: row.user_id
+    ? (emailMap[row.user_id as string] ?? null)
+    : null,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -39,12 +46,19 @@ export async function GET(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  return Response.json((data ?? []).map(toLeisureActivity));
+  const rows = data ?? [];
+  const userIds = [...new Set(rows.map(r => r.user_id).filter(Boolean))];
+  const emailMap = await buildEmailMap(userIds);
+
+  return Response.json(rows.map(r => toLeisureActivity(r, emailMap)));
 }
 
 export async function POST(req: NextRequest) {
   const supabase = getSupabase(req);
   const body = await req.json();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data, error } = await supabase
     .from('leisure_activities')
@@ -53,6 +67,7 @@ export async function POST(req: NextRequest) {
       description: body.description || null,
       category: body.category,
       home_id: body.homeId,
+      user_id: user?.id ?? null,
     })
     .select()
     .single();
@@ -63,7 +78,8 @@ export async function POST(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  return Response.json(toLeisureActivity(data));
+  const emailMap = data.user_id ? await buildEmailMap([data.user_id]) : {};
+  return Response.json(toLeisureActivity(data, emailMap));
 }
 
 export async function PATCH(req: NextRequest) {
@@ -95,7 +111,8 @@ export async function PATCH(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  return Response.json(toLeisureActivity(data));
+  const emailMap = data.user_id ? await buildEmailMap([data.user_id]) : {};
+  return Response.json(toLeisureActivity(data, emailMap));
 }
 
 export async function DELETE(req: NextRequest) {
