@@ -76,18 +76,6 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
       SlackViewBuilder.generateMarkdownSection(
         copy.getAppDescription(appConfig.APP_NAME),
       ),
-      {
-        type: 'actions',
-        elements: [
-          {
-            type: 'button',
-            text: SlackViewBuilder.generatePlainText(
-              copy.HOME_VIEW.CREATE_EVENT_BUTTON,
-            ),
-            action_id: APP_ACTION.OPEN_CREATE_EVENT_MODAL,
-          },
-        ],
-      },
       ...(isCheckedInToday
         ? [
             {
@@ -134,6 +122,13 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
               copy.HOME_VIEW.ADD_VISIT_DETAILS_BUTTON,
             ),
             action_id: APP_ACTION.OPEN_SCHEDULE_MODAL,
+          },
+          {
+            type: 'button',
+            text: SlackViewBuilder.generatePlainText(
+              copy.HOME_VIEW.CREATE_EVENT_BUTTON,
+            ),
+            action_id: APP_ACTION.OPEN_CREATE_EVENT_MODAL,
           },
         ],
       },
