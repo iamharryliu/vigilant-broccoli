@@ -44,6 +44,8 @@ export * from './lib/bucket/providers/cloudflare.provider';
 export * from './lib/bucket/providers/aws.provider';
 export * from './lib/bucket/providers/gcs.provider';
 
+// Audio
+export * from './lib/audio/audio.service';
 // Wrangler
 export * from './lib/wrangler/wrangler.service';
 

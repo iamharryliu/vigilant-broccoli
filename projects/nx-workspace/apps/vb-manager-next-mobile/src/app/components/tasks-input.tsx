@@ -6,6 +6,7 @@ import {
   signOutDueToExpiredToken,
 } from '../providers/auth-provider';
 import { GOOGLE_TOKEN_EXPIRED } from '../../../libs/api-errors';
+import { useVoiceRecorder } from '../hooks/use-voice-recorder';
 
 type Phase = 'input' | 'analyzing' | 'preview' | 'creating' | 'done';
 
@@ -42,9 +43,18 @@ export const TasksInput = () => {
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const [googleToken, setGoogleToken] = useState<string | null>(null);
+  const { recordingState, voiceError, toggleRecording } = useVoiceRecorder(
+    transcript =>
+      setTextInput(prev => (prev ? `${prev}\n${transcript}` : transcript)),
+  );
 
   useEffect(() => {
-    setGoogleToken(getGoogleToken());
+    const token = getGoogleToken();
+    if (!token) {
+      signOutDueToExpiredToken();
+      return;
+    }
+    setGoogleToken(token);
   }, []);
 
   useEffect(() => {
@@ -181,14 +191,7 @@ export const TasksInput = () => {
   const successCount = results.filter(r => r.success).length;
   const failCount = results.filter(r => !r.success).length;
 
-  if (!googleToken) {
-    return (
-      <p className="text-sm text-amber-700 bg-amber-50 rounded-xl px-4 py-3">
-        Google Tasks access required. Sign out and sign back in to grant
-        permission.
-      </p>
-    );
-  }
+  if (!googleToken) return null;
 
   return (
     <div className="space-y-4">
@@ -272,6 +275,34 @@ export const TasksInput = () => {
               </svg>
               Camera
             </button>
+            <button
+              onClick={toggleRecording}
+              disabled={recordingState === 'transcribing'}
+              className={`flex items-center gap-2 border rounded-lg px-3 py-2 text-sm transition-colors ${
+                recordingState === 'recording'
+                  ? 'border-red-300 bg-red-50 text-red-600'
+                  : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
+              } disabled:opacity-50`}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                />
+              </svg>
+              {recordingState === 'recording'
+                ? 'Stop'
+                : recordingState === 'transcribing'
+                  ? '...'
+                  : 'Voice'}
+            </button>
             {images.length > 0 ? (
               <button
                 onClick={handleParseImage}
@@ -289,6 +320,12 @@ export const TasksInput = () => {
               </button>
             )}
           </div>
+
+          {voiceError && (
+            <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+              {voiceError}
+            </p>
+          )}
 
           <input
             ref={fileInputRef}

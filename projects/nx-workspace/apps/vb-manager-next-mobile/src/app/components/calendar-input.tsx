@@ -10,6 +10,7 @@ import {
   getGoogleToken,
   signOutDueToExpiredToken,
 } from '../providers/auth-provider';
+import { useVoiceRecorder } from '../hooks/use-voice-recorder';
 
 interface ImagePreview {
   data: string;
@@ -32,6 +33,10 @@ export const CalendarInput = () => {
   const [eventStates, setEventStates] = useState<EventState[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const { recordingState, voiceError, toggleRecording } = useVoiceRecorder(
+    transcript =>
+      setText(prev => (prev ? `${prev}\n${transcript}` : transcript)),
+  );
 
   const addImageFile = (file: File) => {
     const reader = new FileReader();
@@ -226,6 +231,34 @@ export const CalendarInput = () => {
           Camera
         </button>
         <button
+          onClick={toggleRecording}
+          disabled={recordingState === 'transcribing'}
+          className={`flex items-center gap-2 border rounded-lg px-3 py-2 text-sm transition-colors ${
+            recordingState === 'recording'
+              ? 'border-red-300 bg-red-50 text-red-600'
+              : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
+          } disabled:opacity-50`}
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+            />
+          </svg>
+          {recordingState === 'recording'
+            ? 'Stop'
+            : recordingState === 'transcribing'
+              ? '...'
+              : 'Voice'}
+        </button>
+        <button
           onClick={handleParse}
           disabled={!canParse}
           className="flex-1 bg-blue-500 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
@@ -233,6 +266,12 @@ export const CalendarInput = () => {
           {parsing ? 'Extracting...' : 'Extract events'}
         </button>
       </div>
+
+      {voiceError && (
+        <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+          {voiceError}
+        </p>
+      )}
 
       <input
         ref={fileInputRef}

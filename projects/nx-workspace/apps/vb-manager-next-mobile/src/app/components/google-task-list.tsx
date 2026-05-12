@@ -100,11 +100,11 @@ export const GoogleTaskList = () => {
 
   useEffect(() => {
     const token = getGoogleToken();
-    setGoogleToken(token);
     if (!token) {
-      setLoading(false);
+      signOutDueToExpiredToken();
       return;
     }
+    setGoogleToken(token);
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) setSelectedListId(stored);
 
@@ -167,14 +167,7 @@ export const GoogleTaskList = () => {
   const selectedListName =
     taskLists.find(l => l.id === selectedListId)?.title ?? 'Tasks';
 
-  if (!googleToken) {
-    return (
-      <p className="text-sm text-amber-700 bg-amber-50 rounded-xl px-4 py-3">
-        Google Tasks access required. Sign out and sign back in to grant
-        permission.
-      </p>
-    );
-  }
+  if (!googleToken) return null;
 
   return (
     <div className="space-y-4">
