@@ -201,18 +201,12 @@ function buildEventBlocks(
     const isAttending = event.attendees?.includes(currentUserId) || false;
     const isCreator = event.creatorId === currentUserId;
 
-    const descriptionText = event.description ? ` - ${event.description}` : '';
-    const fullEventText = `${event.name} @ ${event.time} by <@${event.creatorId}> - (${attendeeCount} attending)${descriptionText}`;
-    const eventText =
-      fullEventText.length > INPUT_MAX_LENGTH
-        ? fullEventText.substring(0, INPUT_MAX_LENGTH - 1) + '…'
-        : fullEventText;
-
+    const mainText = `${event.name} @ ${event.time} by <@${event.creatorId}> - (${attendeeCount} attending)`;
     const checkboxOption = {
-      text: {
-        type: 'plain_text' as const,
-        text: eventText,
-      },
+      text: SlackViewBuilder.generatePlainText(mainText),
+      ...(event.description && {
+        description: SlackViewBuilder.generatePlainText(event.description),
+      }),
       value: `${event.id}`,
     };
 

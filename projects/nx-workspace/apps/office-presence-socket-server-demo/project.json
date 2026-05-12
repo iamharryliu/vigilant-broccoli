@@ -15,6 +15,7 @@
         "format": ["cjs"],
         "bundle": true,
         "thirdParty": true,
+        "external": ["better-sqlite3"],
         "main": "apps/office-presence-socket-server-demo/src/main.ts",
         "tsConfig": "apps/office-presence-socket-server-demo/tsconfig.app.json",
         "assets": ["apps/office-presence-socket-server-demo/src/assets"],
