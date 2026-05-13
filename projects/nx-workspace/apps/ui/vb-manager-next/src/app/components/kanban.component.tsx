@@ -39,6 +39,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { GoogleTasksComponent } from './google-tasks.component';
+import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface TaskList {
@@ -404,7 +405,11 @@ const SortableLane = ({
         >
           <DragHandleDots2Icon className="opacity-40 hover:opacity-70 flex-shrink-0" />
           <Text size="3" weight="bold">
-            {taskList?.title || 'Unknown List'}
+            {taskList?.title ? (
+              taskList.title
+            ) : (
+              <Skeleton className="w-32 h-5" />
+            )}
           </Text>
         </div>
         <IconButton
@@ -479,7 +484,7 @@ const LaneDragOverlay = ({ title }: { title: string }) => (
     <Flex align="center" gap="2">
       <DragHandleDots2Icon className="opacity-60 flex-shrink-0" />
       <Text size="3" weight="bold">
-        {title}
+        {title ? title : <Skeleton className="w-32 h-5" />}
       </Text>
     </Flex>
     <div className="mt-2 space-y-1.5">

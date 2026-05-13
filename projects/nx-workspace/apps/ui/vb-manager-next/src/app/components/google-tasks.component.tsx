@@ -597,27 +597,6 @@ const TaskHeader = memo(
 
 TaskHeader.displayName = 'TaskHeader';
 
-const AuthErrorBanner = memo(({ onSignOut }: { onSignOut: () => void }) => (
-  <Flex
-    direction="column"
-    gap="2"
-    p="3"
-    className="bg-red-50 dark:bg-red-900/20 rounded"
-  >
-    <Text size="2" weight="bold" color="red">
-      Session Expired
-    </Text>
-    <Text size="2" color="red">
-      Your Google authentication has expired. Please sign out and sign in again.
-    </Text>
-    <Button onClick={onSignOut} size="2" variant="solid" color="red">
-      Sign Out & Re-authenticate
-    </Button>
-  </Flex>
-));
-
-AuthErrorBanner.displayName = 'AuthErrorBanner';
-
 const AddTaskForm = memo(
   ({
     showAddTask,
@@ -952,6 +931,18 @@ export const GoogleTasksComponent = ({
     if (status === 'authenticated') fetchTasks();
   }, [status, taskListId, refreshTrigger]);
 
+  useEffect(() => {
+    const hasAuthError =
+      titleAuthError ||
+      error?.includes('Unauthorized') ||
+      error?.includes('authentication') ||
+      session?.error === 'RefreshAccessTokenError';
+
+    if (hasAuthError) {
+      signOut();
+    }
+  }, [titleAuthError, error, session?.error]);
+
   const handleCreateTask = useCallback(async () => {
     if (isCreatingTask) return;
     setIsCreatingTask(true);
@@ -1062,12 +1053,6 @@ export const GoogleTasksComponent = ({
   if (status === 'loading') return <CardSkeleton showTitleSkeleton rows={5} />;
   if (status === 'unauthenticated') return <UnauthenticatedView />;
 
-  const hasAuthError =
-    titleAuthError ||
-    error?.includes('Unauthorized') ||
-    error?.includes('authentication') ||
-    session?.error === 'RefreshAccessTokenError';
-
   const isDragDropEnabled = sortMode === SORT_MODE.DEFAULT;
 
   const content = (
@@ -1081,8 +1066,6 @@ export const GoogleTasksComponent = ({
           onSortChange={handleSortChange}
           showSelector={showSelector && !propTaskListId}
         />
-
-        {hasAuthError && <AuthErrorBanner onSignOut={() => signOut()} />}
 
         <AddTaskForm
           showAddTask={showAddTask}

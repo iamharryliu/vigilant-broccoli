@@ -57,6 +57,7 @@ export const RightSidebar = ({
         minWidth: '48px',
         alignSelf: 'stretch',
         overflowY: 'auto',
+        backgroundColor: 'var(--gray-1)',
       }}
     >
       <IconButton
