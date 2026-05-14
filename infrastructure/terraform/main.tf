@@ -75,7 +75,7 @@ resource "google_compute_instance" "vb_free_vm" {
   boot_disk {
     initialize_params {
       image = data.google_compute_image.vb_vm.self_link
-      size  = 10
+      size  = 30
       type  = "pd-standard"
     }
   }
