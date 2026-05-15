@@ -8,7 +8,7 @@ import { createReadStream } from 'fs';
 
 const router = Router();
 
-const itemsSchema = z.object({ items: z.array(z.string()) });
+const itemsSchema = z.object({ items: z.array(z.string()) }).required();
 
 const buildSystemPrompt = (context?: string) =>
   `You are a list extraction assistant. The user will describe what they want a list of.
