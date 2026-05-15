@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react';
 import { Button, Flex, Text, Spinner } from '@radix-ui/themes';
-import { HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 
 const AUDIO_MIME_TYPE = 'audio/webm';
@@ -44,24 +43,11 @@ export const VoiceListGenerator = () => {
     const formData = new FormData();
     formData.append('audio', audioBlob, 'recording.webm');
 
-    const transcribeRes = await fetch(API_ENDPOINTS.SPEECH_TO_TEXT, {
+    const res = await fetch(API_ENDPOINTS.VOICE_LIST, {
       method: 'POST',
       body: formData,
     });
-    const { transcript } = await transcribeRes.json();
-
-    if (!transcript) {
-      setError('Could not transcribe audio.');
-      setStatus('idle');
-      return;
-    }
-
-    const listRes = await fetch(API_ENDPOINTS.VOICE_LIST, {
-      method: 'POST',
-      headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
-      body: JSON.stringify({ transcript }),
-    });
-    const { items: parsed, error: listError } = await listRes.json();
+    const { items: parsed, error: listError } = await res.json();
 
     if (listError || !parsed) {
       setError('Failed to generate list.');

@@ -1,28 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { AudioService } from '@vigilant-broccoli/common-node';
+import { NextRequest } from 'next/server';
+import {
+  getEnvironmentVariable,
+  VB_EXPRESS_ENDPOINT,
+} from '@vigilant-broccoli/common-node';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json()) as { text?: string; voiceId?: string };
-  const text = body.text?.trim();
-
-  if (!text)
-    return NextResponse.json({ error: 'Text is required' }, { status: 400 });
-
-  try {
-    const audioStream = await AudioService.streamTextToSpeech(text, {
-      voiceId: body.voiceId?.trim(),
-    });
-    return new Response(audioStream, {
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.TEXT_TO_SPEECH}`,
+    {
+      method: 'POST',
       headers: {
-        'Content-Type': 'audio/mpeg',
-        'Cache-Control': 'no-store',
+        'Content-Type': 'application/json',
+        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
       },
-    });
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : 'Failed to generate speech';
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+      body: await request.text(),
+    },
+  );
+
+  return new Response(res.body, {
+    status: res.status,
+    headers: {
+      'Content-Type': res.headers.get('Content-Type') ?? 'audio/mpeg',
+      'Cache-Control': 'no-store',
+    },
+  });
 }

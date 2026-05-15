@@ -1,16 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AudioService } from '@vigilant-broccoli/common-node';
+import {
+  getEnvironmentVariable,
+  VB_EXPRESS_ENDPOINT,
+} from '@vigilant-broccoli/common-node';
 
-export async function POST(req: NextRequest) {
-  const formData = await req.formData();
-  const audio = formData.get('audio') as Blob | null;
-  if (!audio) return NextResponse.json({ error: 'No audio' }, { status: 400 });
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-  try {
-    const text = await AudioService.getTranscriptText(audio);
-    return NextResponse.json({ text });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Transcription failed';
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+export async function POST(request: NextRequest) {
+  const contentType = request.headers.get('content-type') ?? '';
+
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.SPEECH_TO_TEXT}`,
+    {
+      method: 'POST',
+      headers: {
+        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        'content-type': contentType,
+      },
+      body: request.body,
+      // @ts-expect-error Node fetch supports duplex
+      duplex: 'half',
+    },
+  );
+
+  const data = await res.json();
+  return NextResponse.json(
+    { text: data.transcript ?? data.text },
+    { status: res.status },
+  );
 }

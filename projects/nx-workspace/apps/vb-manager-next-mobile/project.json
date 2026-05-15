@@ -55,7 +55,7 @@
       }
     },
     "deploy": {
-      "command": "flyctl deploy --dockerfile ./apps/vb-manager-next-mobile/Dockerfile --config ./deployment-configs/fly-configs/vb-manager-next-mobile.toml",
+      "command": "flyctl deploy --dockerfile ./apps/vb-manager-next-mobile/Dockerfile --config ./deployment-configs/fly-configs/vb-manager-next-mobile.toml --build-arg VB_EXPRESS_URL=https://vb-express.fly.dev",
       "dependsOn": ["build", "lint", "deploy:secrets"]
     }
   }

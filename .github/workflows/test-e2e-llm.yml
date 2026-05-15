@@ -1,4 +1,4 @@
-name: test-e2e-email-service
+name: test-e2e-llm
 
 on:
   schedule:
@@ -20,7 +20,7 @@ env:
   VAULT_AUDIENCE: https://github.com/iamharryliu/vigilant-broccoli
 
 jobs:
-  test-email-service:
+  test-vb-express:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
@@ -70,22 +70,11 @@ jobs:
           role: ${{ env.VAULT_ROLE }}
           jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
           secrets: |
-            kv/data/secrets EMAIL_SERVICE_API_KEY | EMAIL_SERVICE_API_KEY ;
+            kv/data/secrets VB_EXPRESS_API_KEY | VB_EXPRESS_API_KEY ;
 
-      - name: Test email service
+      - name: Run e2e tests
         env:
-          EMAIL_SERVICE_API_KEY: ${{ env.EMAIL_SERVICE_API_KEY }}
+          VB_EXPRESS_API_KEY: ${{ env.VB_EXPRESS_API_KEY }}
         run: |
-          STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
-            -X POST https://vb-email-service.fly.dev/queue-emails \
-            -H 'Content-Type: application/json' \
-            -H "x-api-key: ${EMAIL_SERVICE_API_KEY}" \
-            -d '[{"from":"Harry Liu <ci-test@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"ci-test: Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')
-          echo "Response status: $STATUS"
-          cat /tmp/response.json
-          if [ "$STATUS" = "200" ]; then
-            echo "✓ Email service test passed"
-          else
-            echo "✗ Email service test failed"
-            exit 1
-          fi
+          chmod +x scripts/shell/test-llm-e2e.sh
+          scripts/shell/test-llm-e2e.sh

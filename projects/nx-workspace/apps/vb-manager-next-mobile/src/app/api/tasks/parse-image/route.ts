@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  getEnvironmentVariable,
+  VB_EXPRESS_ENDPOINT,
+} from '@vigilant-broccoli/common-node';
+import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 import { z } from 'zod';
-import OpenAI from 'openai';
 
 export const runtime = 'nodejs';
 
@@ -10,9 +14,7 @@ const RequestSchema = z.object({
     .min(1),
 });
 
-const ResponseSchema = z.object({
-  items: z.array(z.string()),
-});
+const ResponseSchema = z.object({ items: z.array(z.string()) });
 
 const SYSTEM_PROMPT = `You are a list extraction assistant. Given an image containing a handwritten or printed list (grocery list, to-do list, shopping list, etc.), extract each list item as a separate entry.
 
@@ -36,32 +38,39 @@ export async function POST(request: NextRequest) {
   }
 
   const { images } = parsed.data;
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-  const response = await client.chat.completions.create({
-    model: 'gpt-4o',
-    temperature: 0.2,
-    response_format: { type: 'json_object' },
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: 'Extract all list items visible in this image.',
-          },
-          ...images.map(img => ({
-            type: 'image_url' as const,
-            image_url: { url: `data:${img.mimeType};base64,${img.base64}` },
-          })),
-        ],
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.LLM}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
       },
-    ],
-  });
+      body: JSON.stringify({
+        userPrompt: 'Extract all list items visible in this image.',
+        systemPrompt: SYSTEM_PROMPT,
+        model: LLM_MODEL.GPT_4O,
+        images: images.map(img => ({
+          name: 'image',
+          base64: img.base64,
+          mimeType: img.mimeType,
+        })),
+        responseFormat: 'json',
+      }),
+    },
+  );
 
-  const raw = JSON.parse(response.choices[0].message.content ?? '{}');
-  const validated = ResponseSchema.safeParse(raw);
+  if (!res.ok) {
+    return NextResponse.json(
+      { error: 'Unexpected response shape' },
+      { status: 422 },
+    );
+  }
+
+  const { outputs } = await res.json();
+  const validated = ResponseSchema.safeParse(outputs?.[0]);
+
   if (!validated.success) {
     return NextResponse.json(
       { error: 'Unexpected response shape' },

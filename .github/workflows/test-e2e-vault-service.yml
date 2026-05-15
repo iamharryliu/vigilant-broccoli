@@ -1,9 +1,6 @@
 name: test-e2e-vault-service
 
 on:
-  push:
-    paths:
-      - .github/workflows/test-e2e-vault-service.yml
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:

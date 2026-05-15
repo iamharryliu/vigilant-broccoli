@@ -123,6 +123,25 @@ export const TasksInput = () => {
     setPhase('preview');
   };
 
+  const handleParseVoice = async () => {
+    if (!textInput.trim()) return;
+    setPhase('analyzing');
+    setError(null);
+    const res = await fetch('/api/tasks/parse-voice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transcript: textInput }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.items?.length) {
+      setError('Failed to parse list.');
+      setPhase('input');
+      return;
+    }
+    setItems(data.items);
+    setPhase('preview');
+  };
+
   const handleParseImage = async () => {
     if (!images.length) return;
     setPhase('analyzing');
@@ -312,13 +331,22 @@ export const TasksInput = () => {
               Extract from image
             </button>
           ) : (
-            <button
-              onClick={handleParseText}
-              disabled={!textInput.trim()}
-              className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
-            >
-              Parse list
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleParseText}
+                disabled={!textInput.trim()}
+                className="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              >
+                Parse list
+              </button>
+              <button
+                onClick={handleParseVoice}
+                disabled={!textInput.trim()}
+                className="flex-1 bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
+              >
+                AI Parse
+              </button>
+            </div>
           )}
 
           {voiceError && (

@@ -1,22 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AudioService } from '@vigilant-broccoli/common-node';
+import {
+  getEnvironmentVariable,
+  VB_EXPRESS_ENDPOINT,
+} from '@vigilant-broccoli/common-node';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
-  const formData = await request.formData();
-  const audioFile = formData.get('audio') as Blob | null;
+  const contentType = request.headers.get('content-type') ?? '';
 
-  if (!audioFile)
-    return NextResponse.json(
-      { error: 'No audio file provided' },
-      { status: 400 },
-    );
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.SPEECH_TO_TEXT}`,
+    {
+      method: 'POST',
+      headers: {
+        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        'content-type': contentType,
+      },
+      body: request.body,
+      // @ts-expect-error Node fetch supports duplex
+      duplex: 'half',
+    },
+  );
 
-  try {
-    const transcript = await AudioService.getTranscriptText(audioFile);
-    return NextResponse.json({ transcript });
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : 'Failed to transcribe audio';
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+  const data = await res.json();
+  return NextResponse.json(data, { status: res.status });
 }

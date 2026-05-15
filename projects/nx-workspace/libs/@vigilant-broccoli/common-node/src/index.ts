@@ -58,3 +58,10 @@ export const EMAIL_SERVICE_ENDPOINT = {
   QUEUE_EMAILS: 'queue-emails',
   SEND_EMAIL: 'send-email',
 };
+
+export const VB_EXPRESS_ENDPOINT = {
+  SPEECH_TO_TEXT: 'api/speech-to-text',
+  TEXT_TO_SPEECH: 'api/text-to-speech',
+  VOICE_LIST: 'api/voice-list',
+  LLM: 'api/llm',
+};

@@ -17,47 +17,35 @@ router.post('/', async (req: Request, res: Response) => {
   const {
     userPrompt,
     systemPrompt,
-    models,
+    model,
     images,
     numOutputs = 1,
+    responseFormat,
   } = req.body as {
     userPrompt: string;
     systemPrompt?: string;
-    models: LLMModel[];
+    model: LLMModel;
     images?: UploadedImage[];
     numOutputs?: number;
+    responseFormat?: 'json';
   };
 
-  if (!userPrompt || !models || models.length === 0) {
-    return res.status(400).json({
-      error: 'Missing required fields: userPrompt and models',
-    });
+  if (!userPrompt || !model) {
+    return res
+      .status(400)
+      .json({ error: 'Missing required fields: userPrompt and model' });
   }
 
-  const results: Record<LLMModel, string[]> = {} as Record<LLMModel, string[]>;
-
-  await Promise.all(
-    models.map(async model => {
-      const outputs = await LLMService.generateMultipleOutputs(
-        {
-          prompt: {
-            userPrompt,
-            systemPrompt,
-            images,
-          },
-          modelConfig: {
-            model,
-          },
-        },
-        numOutputs,
-        modelSupportsImageOutput(model),
-      );
-
-      results[model] = outputs;
-    }),
+  const outputs = await LLMService.generateMultipleOutputs(
+    { prompt: { userPrompt, systemPrompt, images }, modelConfig: { model } },
+    numOutputs,
+    modelSupportsImageOutput(model),
   );
 
-  return res.json({ results });
+  const parsed =
+    responseFormat === 'json' ? outputs.map(o => JSON.parse(o)) : outputs;
+
+  return res.json({ outputs: parsed });
 });
 
 export default router;

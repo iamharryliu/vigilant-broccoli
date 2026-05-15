@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  getEnvironmentVariable,
+  VB_EXPRESS_ENDPOINT,
+} from '@vigilant-broccoli/common-node';
+import { LLM_MODEL } from '@vigilant-broccoli/common-js';
 import { z } from 'zod';
-import OpenAI from 'openai';
 
 export const runtime = 'nodejs';
 
@@ -16,9 +20,7 @@ const eventSchema = z.object({
   allDay: z.boolean(),
 });
 
-const responseSchema = z.object({
-  events: z.array(eventSchema),
-});
+const responseSchema = z.object({ events: z.array(eventSchema) });
 
 interface MessageImage {
   data: string;
@@ -50,8 +52,11 @@ Per-event rules:
 };
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json()) as ParseRequest;
-  const { text, images, timeZone = DEFAULT_TIME_ZONE } = body;
+  const {
+    text,
+    images,
+    timeZone = DEFAULT_TIME_ZONE,
+  } = (await request.json()) as ParseRequest;
 
   if (!text?.trim() && (!images || images.length === 0)) {
     return NextResponse.json(
@@ -60,33 +65,41 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const userPrompt = text?.trim()
+    ? `Extract the calendar event from the following content:\n\n${text.trim()}`
+    : 'Extract the calendar event from the attached image(s).';
 
-  const userContent: OpenAI.Chat.ChatCompletionContentPart[] = [
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.LLM}`,
     {
-      type: 'text',
-      text: text?.trim()
-        ? `Extract the calendar event from the following content:\n\n${text.trim()}`
-        : 'Extract the calendar event from the attached image(s).',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+      },
+      body: JSON.stringify({
+        userPrompt,
+        systemPrompt: buildSystemPrompt(timeZone),
+        model: LLM_MODEL.GPT_4O,
+        images: (images ?? []).map(img => ({
+          name: 'image',
+          base64: img.data,
+          mimeType: img.mimeType,
+        })),
+        responseFormat: 'json',
+      }),
     },
-    ...(images ?? []).map(img => ({
-      type: 'image_url' as const,
-      image_url: { url: `data:${img.mimeType};base64,${img.data}` },
-    })),
-  ];
+  );
 
-  const response = await client.chat.completions.create({
-    model: 'gpt-4o',
-    temperature: 0,
-    response_format: { type: 'json_object' },
-    messages: [
-      { role: 'system', content: buildSystemPrompt(timeZone) },
-      { role: 'user', content: userContent },
-    ],
-  });
+  if (!res.ok) {
+    return NextResponse.json(
+      { error: 'Failed to parse LLM response' },
+      { status: 422 },
+    );
+  }
 
-  const raw = JSON.parse(response.choices[0].message.content ?? '{}');
-  const parsed = responseSchema.safeParse(raw);
+  const { outputs } = await res.json();
+  const parsed = responseSchema.safeParse(outputs?.[0]);
 
   if (!parsed.success) {
     return NextResponse.json(

@@ -2,9 +2,11 @@ FROM node:lts-alpine AS runner
 
 WORKDIR /app
 
+ARG VB_EXPRESS_URL
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV VB_EXPRESS_URL=$VB_EXPRESS_URL
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs

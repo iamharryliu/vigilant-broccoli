@@ -5,10 +5,11 @@ const CLIENT_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 
 export const auth = betterAuth({
   trustedOrigins: CLIENT_ORIGINS,
-  // baseURL: 'https://vb-express.fly.dev',
   socialProviders: {
     google: {
-      clientId: getEnvironmentVariable('GOOGLE_AUTH_PROVIDER_CLIENT_ID') as string,
+      clientId: getEnvironmentVariable(
+        'GOOGLE_AUTH_PROVIDER_CLIENT_ID',
+      ) as string,
       clientSecret: getEnvironmentVariable(
         'GOOGLE_AUTH_PROVIDER_CLIENT_SECRET',
       ) as string,

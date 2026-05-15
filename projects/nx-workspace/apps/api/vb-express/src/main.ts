@@ -6,6 +6,9 @@ import { toNodeHandler } from 'better-auth/node';
 import tasksRouter from './routes/tasks';
 import llmRouter from './routes/llm';
 import messagingRouter from './routes/messaging';
+import voiceListRouter from './routes/voice-list';
+import speechToTextRouter from './routes/speech-to-text';
+import textToSpeechRouter from './routes/text-to-speech';
 import {
   getEnvironmentVariable,
   requestLoggerMiddleware,
@@ -48,6 +51,9 @@ const createApp = () => {
   app.use(createApiKeyMiddleware(API_KEY));
   app.use('/api/tasks', tasksRouter);
   app.use('/api/llm', llmRouter);
+  app.use('/api/voice-list', voiceListRouter);
+  app.use('/api/speech-to-text', speechToTextRouter);
+  app.use('/api/text-to-speech', textToSpeechRouter);
   return app;
 };
 
