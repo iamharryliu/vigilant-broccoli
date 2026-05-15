@@ -8,7 +8,8 @@ import { createReadStream } from 'fs';
 
 const router = Router();
 
-const itemsSchema = z.object({ items: z.array(z.string()) }).required();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const itemsSchema = z.object({ items: z.string().array() }) as any;
 
 const buildSystemPrompt = (context?: string) =>
   `You are a list extraction assistant. The user will describe what they want a list of.
