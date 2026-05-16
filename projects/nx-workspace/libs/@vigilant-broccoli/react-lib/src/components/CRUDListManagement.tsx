@@ -8,13 +8,13 @@ import {
 } from 'react';
 import {
   AlertDialog,
-  Button,
   Card,
   Dialog,
   Heading,
   Popover,
 } from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
+import { Button } from './Button';
 
 type CRUDItem = {
   id: string | number;
@@ -240,8 +240,7 @@ export const EllipsisCTA = ({
               Update
             </Button>
             <Button
-              variant="ghost"
-              color="red"
+              variant="destructive"
               onClick={() => setConfirmDelete(true)}
             >
               Delete
@@ -268,34 +267,26 @@ export const DeleteItemConfirmationDialog = ({
   deleteItem: () => Promise<void>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-}) => {
-  const [loading, setLoading] = useState(false);
-  async function handleDelete() {
-    setLoading(true);
-    await deleteItem();
-    setLoading(false);
-  }
-  return (
-    <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
-      {open === undefined && (
-        <AlertDialog.Trigger>
-          <Button className="w-min" color="red" variant="ghost">
-            Delete
-          </Button>
-        </AlertDialog.Trigger>
-      )}
-      <AlertDialog.Content className="sm:max-w-[425px]">
-        <AlertDialog.Title>Delete Item</AlertDialog.Title>
-        <AlertDialog.Description>
-          Are you sure you want to delete this item?
-        </AlertDialog.Description>
-        <Button color="red" loading={loading} onClick={handleDelete}>
+}) => (
+  <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
+    {open === undefined && (
+      <AlertDialog.Trigger>
+        <Button className="w-min" variant="destructive">
           Delete
         </Button>
-      </AlertDialog.Content>
-    </AlertDialog.Root>
-  );
-};
+      </AlertDialog.Trigger>
+    )}
+    <AlertDialog.Content className="sm:max-w-[425px]">
+      <AlertDialog.Title>Delete Item</AlertDialog.Title>
+      <AlertDialog.Description>
+        Are you sure you want to delete this item?
+      </AlertDialog.Description>
+      <Button variant="destructive" onClick={deleteItem}>
+        Delete
+      </Button>
+    </AlertDialog.Content>
+  </AlertDialog.Root>
+);
 
 export const CRUDItemFormDialog = <T,>({
   formType,
