@@ -128,9 +128,13 @@ async function main() {
 
   const allSecrets: Record<string, string> = { ...hardcoded };
 
-  if (keysFromVault.length) {
+  if (keysFromVault.length || !vercelEnv.VERCEL_TOKEN) {
     console.log('Fetching vault secrets...');
     const vaultSecrets = await fetchSecretsFromVault();
+
+    if (!vercelEnv.VERCEL_TOKEN && vaultSecrets.VERCEL_TOKEN) {
+      vercelEnv.VERCEL_TOKEN = vaultSecrets.VERCEL_TOKEN;
+    }
 
     for (const key of keysFromVault) {
       const value = vaultSecrets[key];
