@@ -28,7 +28,10 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { CardContainer } from '../../../../components/card-container.component';
-import { CollapsibleListItem } from '../../../../components/collapsible-list-item.component';
+import {
+  CollapsibleList,
+  CollapsibleListItemConfig,
+} from '@vigilant-broccoli/react-lib';
 import { LinkList } from '../../../../components/link-list.component';
 import { LinkListItemConfig } from '../../../../components/link-list-item.component';
 
@@ -477,14 +480,49 @@ const TeamsList = ({
   structure: GithubOrganizationTeamStructure;
   searchQuery: string;
 }) => {
-  const [openTeams, setOpenTeams] = useState<Record<string, boolean>>({});
-
-  const toggleTeam = (teamName: string) => {
-    setOpenTeams(prev => ({
-      ...prev,
-      [teamName]: !prev[teamName],
-    }));
-  };
+  const teamItems: CollapsibleListItemConfig[] = structure.teams.map(team => ({
+    id: team.name,
+    titleContent: (
+      <Heading size="4">
+        <GithubTeamLink
+          organization={structure.organizationName}
+          team={team.name}
+        />
+      </Heading>
+    ),
+    headerAction: (
+      <Badge color="gray" size="1">
+        {team.members.length} member{team.members.length !== 1 ? 's' : ''}
+      </Badge>
+    ),
+    content: team.members.map(member => (
+      <Box
+        key={`${team.name}-${member.username}`}
+        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+      >
+        <img
+          src={member.avatar_url}
+          alt={member.username}
+          style={{ width: '20px', height: '20px', borderRadius: '4px' }}
+        />
+        <Box style={{ flex: 1 }}>
+          <GithubUserLink member={member} />
+        </Box>
+        <Badge
+          color={
+            member.role === 'admin'
+              ? 'red'
+              : member.role === 'maintainer'
+                ? 'blue'
+                : 'gray'
+          }
+          size="1"
+        >
+          {member.role}
+        </Badge>
+      </Box>
+    )),
+  }));
 
   return (
     <CardContainer
@@ -521,58 +559,7 @@ const TeamsList = ({
         </Box>
       )}
 
-      {structure.teams.map(team => {
-        const isOpen = openTeams[team.name] ?? false;
-        return (
-          <CollapsibleListItem
-            key={team.name}
-            isOpen={isOpen}
-            setIsOpen={() => toggleTeam(team.name)}
-            titleContent={
-              <Heading size="4">
-                <GithubTeamLink
-                  organization={structure.organizationName}
-                  team={team.name}
-                />
-              </Heading>
-            }
-            headerAction={
-              <Badge color="gray" size="1">
-                {team.members.length} member
-                {team.members.length !== 1 ? 's' : ''}
-              </Badge>
-            }
-          >
-            {team.members.map(member => (
-              <Box
-                key={`${team.name}-${member.username}`}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              >
-                <img
-                  src={member.avatar_url}
-                  alt={member.username}
-                  style={{ width: '20px', height: '20px', borderRadius: '4px' }}
-                />
-                <Box style={{ flex: 1 }}>
-                  <GithubUserLink member={member} />
-                </Box>
-                <Badge
-                  color={
-                    member.role === 'admin'
-                      ? 'red'
-                      : member.role === 'maintainer'
-                      ? 'blue'
-                      : 'gray'
-                  }
-                  size="1"
-                >
-                  {member.role}
-                </Badge>
-              </Box>
-            ))}
-          </CollapsibleListItem>
-        );
-      })}
+      <CollapsibleList items={teamItems} />
     </CardContainer>
   );
 };

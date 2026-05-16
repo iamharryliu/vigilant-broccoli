@@ -5,7 +5,7 @@ import { CardContainer } from './card-container.component';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
-} from './collapsible-list.component';
+} from '@vigilant-broccoli/react-lib';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import { RecipeScraperUtilityContent } from './utilities/recipe-scraper.utility';
 import { DjMusicUtilityContent } from './utilities/dj-music.utility';

@@ -32,10 +32,6 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'DocsMD',
     path: '/docs-md',
   },
-  COMPONENT_SANDBOX: {
-    title: 'Component Sandbox',
-    path: '/component-sandbox',
-  },
   FEATURE_SANDBOX: {
     title: 'Feature Sandbox',
     path: '/feature-sandbox',

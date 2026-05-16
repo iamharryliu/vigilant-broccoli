@@ -1,5 +1,3 @@
-'use client';
-
 import { Button, Flex, Grid, Heading, IconButton } from '@radix-ui/themes';
 import { useState } from 'react';
 import {

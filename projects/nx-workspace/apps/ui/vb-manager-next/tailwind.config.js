@@ -23,16 +23,32 @@ module.exports = {
       keyframes: {
         slideDown: {
           from: { height: '0', opacity: '0' },
-          to: { height: 'var(--radix-collapsible-content-height)', opacity: '1' },
+          to: {
+            height: 'var(--radix-collapsible-content-height)',
+            opacity: '1',
+          },
         },
         slideUp: {
-          from: { height: 'var(--radix-collapsible-content-height)', opacity: '1' },
+          from: {
+            height: 'var(--radix-collapsible-content-height)',
+            opacity: '1',
+          },
           to: { height: '0', opacity: '0' },
+        },
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
         },
       },
       animation: {
         slideDown: 'slideDown 200ms ease-out',
         slideUp: 'slideUp 200ms ease-out',
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
       },
     },
   },

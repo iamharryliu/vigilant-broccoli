@@ -1,5 +1,3 @@
-'use client';
-
 import { useRef, useState, ReactNode } from 'react';
 import { Badge, Flex, Text, TextField } from '@radix-ui/themes';
 import {
@@ -80,7 +78,6 @@ const ImageListItem = ({
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
       {src && (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={src}
           alt={item.title}
@@ -211,7 +208,6 @@ const ImageItemFormComponent = ({
             className="text-sm"
           />
           {imageDataUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={imageDataUrl}
               alt="preview"

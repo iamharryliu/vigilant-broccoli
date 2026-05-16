@@ -7,7 +7,7 @@ import { MessagingPage } from './MessagingPage';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
-} from '../collapsible-list.component';
+} from '@vigilant-broccoli/react-lib';
 
 const STORAGE_KEY = 'feature-sandbox';
 

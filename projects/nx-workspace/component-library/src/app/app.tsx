@@ -1,17 +1,15 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { Box, Heading, Switch, Text } from '@radix-ui/themes';
-import { ButtonDemo } from '../demos/ButtonDemo';
-import { CollapsibleListItemDemo } from '../demos/CollapsibleListItemDemo';
-import { CRUDListNoImagesDemo } from '../demos/CRUDListNoImagesDemo';
-import { CRUDListWithImagesDemo } from '../demos/CRUDListWithImagesDemo';
-import { SelectDemo } from '../demos/SelectDemo';
-import { ErrorDemo } from '../demos/ErrorDemo';
+import { ButtonDemo } from './components/demos/ButtonDemo';
+import { CollapsibleListItemDemo } from './components/demos/CollapsibleListItemDemo';
+import { CRUDListNoImagesDemo } from './components/demos/CRUDListNoImagesDemo';
+import { CRUDListWithImagesDemo } from './components/demos/CRUDListWithImagesDemo';
+import { SelectDemo } from './components/demos/SelectDemo';
+import { ErrorDemo } from './components/demos/ErrorDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
-} from '../collapsible-list.component';
+} from '@vigilant-broccoli/react-lib';
 
 const STORAGE_KEY = 'component-sandbox';
 const CRUD_STORAGE_KEYS = {
@@ -25,17 +23,32 @@ const CRUDListSection = () => {
 
   useEffect(() => {
     setIsCards(localStorage.getItem(CRUD_STORAGE_KEYS.IS_CARDS) === 'true');
-    setShowEllipsis(localStorage.getItem(CRUD_STORAGE_KEYS.SHOW_ELLIPSIS) !== 'false');
+    setShowEllipsis(
+      localStorage.getItem(CRUD_STORAGE_KEYS.SHOW_ELLIPSIS) !== 'false',
+    );
   }, []);
+
   return (
     <div className="space-y-8">
       <div className="flex gap-4">
         <label className="flex items-center gap-2 text-sm cursor-pointer">
-          <Switch checked={isCards} onCheckedChange={v => { setIsCards(v); localStorage.setItem(CRUD_STORAGE_KEYS.IS_CARDS, String(v)); }} />
+          <Switch
+            checked={isCards}
+            onCheckedChange={v => {
+              setIsCards(v);
+              localStorage.setItem(CRUD_STORAGE_KEYS.IS_CARDS, String(v));
+            }}
+          />
           Cards
         </label>
         <label className="flex items-center gap-2 text-sm cursor-pointer">
-          <Switch checked={showEllipsis} onCheckedChange={v => { setShowEllipsis(v); localStorage.setItem(CRUD_STORAGE_KEYS.SHOW_ELLIPSIS, String(v)); }} />
+          <Switch
+            checked={showEllipsis}
+            onCheckedChange={v => {
+              setShowEllipsis(v);
+              localStorage.setItem(CRUD_STORAGE_KEYS.SHOW_ELLIPSIS, String(v));
+            }}
+          />
           Ellipsis
         </label>
       </div>
@@ -74,7 +87,7 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
   },
 ];
 
-export function ComponentSandboxPage() {
+export function App() {
   return (
     <Box className="w-full min-h-screen">
       <div className="p-6 max-w-4xl mx-auto">
@@ -92,3 +105,5 @@ export function ComponentSandboxPage() {
     </Box>
   );
 }
+
+export default App;

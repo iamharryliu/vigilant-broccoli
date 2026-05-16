@@ -36,14 +36,18 @@ export const SelectDemo = () => {
         />
         <div className="flex gap-4 text-xs">
           <div>
-            <div className="text-gray-500 dark:text-gray-400 mb-1">Options:</div>
+            <div className="text-gray-500 dark:text-gray-400 mb-1">
+              Options:
+            </div>
             <pre className="text-gray-500 dark:text-gray-400">
               {JSON.stringify(SELECT_STRING_OPTIONS, null, 2)}
             </pre>
           </div>
           {selectedString && (
             <div>
-              <div className="text-gray-500 dark:text-gray-400 mb-1">Selected:</div>
+              <div className="text-gray-500 dark:text-gray-400 mb-1">
+                Selected:
+              </div>
               <pre className="text-gray-500 dark:text-gray-400">
                 {JSON.stringify(selectedString, null, 2)}
               </pre>
@@ -63,14 +67,18 @@ export const SelectDemo = () => {
         />
         <div className="flex gap-4 text-xs">
           <div>
-            <div className="text-gray-500 dark:text-gray-400 mb-1">Options:</div>
+            <div className="text-gray-500 dark:text-gray-400 mb-1">
+              Options:
+            </div>
             <pre className="text-gray-500 dark:text-gray-400">
               {JSON.stringify(SELECT_NUMBER_OPTIONS, null, 2)}
             </pre>
           </div>
           {selectedNumber !== undefined && (
             <div>
-              <div className="text-gray-500 dark:text-gray-400 mb-1">Selected:</div>
+              <div className="text-gray-500 dark:text-gray-400 mb-1">
+                Selected:
+              </div>
               <pre className="text-gray-500 dark:text-gray-400">
                 {JSON.stringify(selectedNumber, null, 2)}
               </pre>
@@ -91,14 +99,18 @@ export const SelectDemo = () => {
         />
         <div className="flex gap-4 text-xs">
           <div>
-            <div className="text-gray-500 dark:text-gray-400 mb-1">Options:</div>
+            <div className="text-gray-500 dark:text-gray-400 mb-1">
+              Options:
+            </div>
             <pre className="text-gray-500 dark:text-gray-400">
               {JSON.stringify(SELECT_PERSON_OPTIONS, null, 2)}
             </pre>
           </div>
           {selectedPerson && (
             <div>
-              <div className="text-gray-500 dark:text-gray-400 mb-1">Selected:</div>
+              <div className="text-gray-500 dark:text-gray-400 mb-1">
+                Selected:
+              </div>
               <pre className="text-gray-500 dark:text-gray-400">
                 {JSON.stringify(selectedPerson, null, 2)}
               </pre>

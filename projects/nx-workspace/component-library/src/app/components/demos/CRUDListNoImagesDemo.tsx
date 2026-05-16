@@ -1,5 +1,3 @@
-'use client';
-
 import { useRef, useState, ReactNode } from 'react';
 import { Badge, Flex, Text, TextField } from '@radix-ui/themes';
 import {
