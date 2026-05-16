@@ -52,7 +52,7 @@
     "deploy:secrets": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel-secrets.ts next-demo production"
+        "command": "VERCEL_PROJECT_ID=prj_KxSfQ3e3wvKg0VK1BY5frjuuRehd NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel-secrets.ts next-demo production"
       }
     },
     "deploy": {

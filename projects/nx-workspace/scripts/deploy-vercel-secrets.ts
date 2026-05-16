@@ -110,6 +110,7 @@ async function main() {
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
         'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
       NEXT_PUBLIC_APP_URL: 'https://vb-next-demo.vercel.app/',
+      VB_EXPRESS_URL: 'https://vb-express.fly.dev',
     },
   };
 

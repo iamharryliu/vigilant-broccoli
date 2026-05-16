@@ -21,7 +21,7 @@ env:
 
 jobs:
   deploy-npm-packages:
-    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
+    if: ${{ !startsWith(github.event.head_commit.message, 'docs') && contains(toJson(github.event.commits.*.modified + github.event.commits.*.added + github.event.commits.*.removed), 'projects/nx-workspace/libs/') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
