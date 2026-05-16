@@ -12,6 +12,7 @@ import {
 import {
   Button,
   CopyButton,
+  MonospaceText,
   GoogleSigninButton,
   MicrosoftSigninButton,
 } from '@vigilant-broccoli/react-lib';
@@ -49,11 +50,21 @@ export function ButtonDemo() {
           Icon Buttons
         </Heading>
         <Flex gap="3" align="center">
-          <Button size="icon" title="Message"><MessageCircle size={16} /></Button>
-          <Button size="icon" variant="outline" title="Mail"><Mail size={16} /></Button>
-          <Button size="icon" variant="ghost" title="Search"><Search size={16} /></Button>
-          <Button size="icon" variant="secondary" title="Moon"><Moon size={16} /></Button>
-          <Button size="icon" variant="destructive" title="Delete"><Trash2 size={16} /></Button>
+          <Button size="icon" title="Message">
+            <MessageCircle size={16} />
+          </Button>
+          <Button size="icon" variant="outline" title="Mail">
+            <Mail size={16} />
+          </Button>
+          <Button size="icon" variant="ghost" title="Search">
+            <Search size={16} />
+          </Button>
+          <Button size="icon" variant="secondary" title="Moon">
+            <Moon size={16} />
+          </Button>
+          <Button size="icon" variant="destructive" title="Delete">
+            <Trash2 size={16} />
+          </Button>
         </Flex>
       </div>
 
@@ -75,9 +86,15 @@ export function ButtonDemo() {
           Controls
         </Heading>
         <Flex gap="3" align="center">
-          <Button size="icon" variant="ghost" title="Play"><Play size={14} /></Button>
-          <Button size="icon" variant="ghost" title="Stop"><Square size={14} /></Button>
-          <Button size="icon" variant="ghost" disabled title="Disabled"><Play size={14} /></Button>
+          <Button size="icon" variant="ghost" title="Play">
+            <Play size={14} />
+          </Button>
+          <Button size="icon" variant="ghost" title="Stop">
+            <Square size={14} />
+          </Button>
+          <Button size="icon" variant="ghost" disabled title="Disabled">
+            <Play size={14} />
+          </Button>
         </Flex>
       </div>
 
@@ -86,9 +103,15 @@ export function ButtonDemo() {
           Calendar
         </Heading>
         <Flex gap="3" align="center">
-          <Button size="icon" variant="outline" title="Calendar sm"><Calendar size={14} /></Button>
-          <Button size="icon" variant="outline" title="Calendar md"><Calendar size={16} /></Button>
-          <Button size="icon" variant="outline" title="Calendar lg"><Calendar size={20} /></Button>
+          <Button size="icon" variant="outline" title="Calendar sm">
+            <Calendar size={14} />
+          </Button>
+          <Button size="icon" variant="outline" title="Calendar md">
+            <Calendar size={16} />
+          </Button>
+          <Button size="icon" variant="outline" title="Calendar lg">
+            <Calendar size={20} />
+          </Button>
         </Flex>
       </div>
 
@@ -98,6 +121,27 @@ export function ButtonDemo() {
         </Heading>
         <Flex gap="3" align="center">
           <CopyButton text="hello copy pastable" />
+          <CopyButton
+            text={async () => {
+              await new Promise(r => setTimeout(r, 1000));
+              return 'async result';
+            }}
+          />
+        </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Monospace Text
+        </Heading>
+        <Flex direction="column" gap="3">
+          <MonospaceText text="192.168.1.1" />
+          <MonospaceText text="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3very long ssh key content that should be truncated" />
+          <MonospaceText
+            text="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3very long ssh key content no truncation"
+            truncate={false}
+          />
+          <MonospaceText text="loading skeleton" loading />
         </Flex>
       </div>
 

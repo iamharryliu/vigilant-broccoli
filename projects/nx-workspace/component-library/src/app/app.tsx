@@ -6,6 +6,7 @@ import { CRUDListNoImagesDemo } from './components/demos/CRUDListNoImagesDemo';
 import { CRUDListWithImagesDemo } from './components/demos/CRUDListWithImagesDemo';
 import { SelectDemo } from './components/demos/SelectDemo';
 import { ErrorDemo } from './components/demos/ErrorDemo';
+import { StatusCardListDemo } from './components/demos/StatusCardListDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -66,6 +67,11 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
     defaultOpen: true,
   },
   {
+    id: 'status-card-list',
+    title: 'Status Card List',
+    content: <StatusCardListDemo />,
+  },
+  {
     id: 'collapsible-list-item',
     title: 'Collapsible List Item',
     content: <CollapsibleListItemDemo />,
@@ -84,6 +90,33 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'error',
     title: 'Error Handling',
     content: <ErrorDemo />,
+  },
+  {
+    id: 'collapsible-list-chevron-left',
+    title: 'Collapsible List (Chevron Left)',
+    content: (
+      <CollapsibleList
+        chevronPosition="left"
+        items={[
+          {
+            id: 'a',
+            title: 'Item A',
+            content: <span>Content for item A</span>,
+          },
+          {
+            id: 'b',
+            title: 'Item B',
+            content: <span>Content for item B</span>,
+            defaultOpen: true,
+          },
+          {
+            id: 'c',
+            title: 'Item C',
+            content: <span>Content for item C</span>,
+          },
+        ]}
+      />
+    ),
   },
 ];
 

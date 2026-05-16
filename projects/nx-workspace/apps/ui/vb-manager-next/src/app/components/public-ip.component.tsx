@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, Flex, Text, Select, Tooltip } from '@radix-ui/themes';
-import { CopyButton } from '@vigilant-broccoli/react-lib';
+import { CopyButton, MonospaceText } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Skeleton } from './skeleton.component';
@@ -216,81 +216,6 @@ export const PublicIpComponent = () => {
     return () => clearInterval(interval);
   }, []);
 
-
-  if (loading) {
-    return (
-      <Card className="w-full">
-        <Flex direction="column" gap="3" p="4">
-          <Flex justify="between" align="center" gap="3">
-            <Flex align="center" gap="2">
-              <Text size="5" weight="bold">
-                Public IP:
-              </Text>
-              <Text
-                size="3"
-                style={{
-                  fontFamily: 'monospace',
-                  padding: '4px 8px',
-                  backgroundColor: 'var(--gray-3)',
-                  borderRadius: '4px',
-                  width: '120px',
-                  height: '24px',
-                }}
-              ></Text>
-            </Flex>
-            <CopyButton text="" disabled />
-          </Flex>
-
-          <Flex justify="between" align="center" gap="3">
-            <Flex align="center" gap="2">
-              <Text size="5" weight="bold">
-                Local IP:
-              </Text>
-              <Text
-                size="3"
-                style={{
-                  fontFamily: 'monospace',
-                  padding: '4px 8px',
-                  backgroundColor: 'var(--gray-3)',
-                  borderRadius: '4px',
-                  width: '120px',
-                  height: '24px',
-                }}
-              ></Text>
-            </Flex>
-            <CopyButton text="" disabled />
-          </Flex>
-
-          <Flex justify="between" align="center" gap="3">
-            <Flex align="center" gap="2">
-              <Text size="5" weight="bold">
-                Public SSH Key:
-              </Text>
-            </Flex>
-            <CopyButton text="" disabled />
-          </Flex>
-
-          <Flex justify="between" align="center" gap="3">
-            <Flex align="center" gap="2">
-              <Text size="5" weight="bold">
-                Secret Gen:
-              </Text>
-            </Flex>
-            <CopyButton text="" disabled />
-          </Flex>
-
-          <LocalMachineStats
-            diskLoading={diskLoading}
-            diskAvailable=""
-            speedLoading={speedLoading}
-            downloadSpeed=""
-            uploadSpeed=""
-          />
-        </Flex>
-      </Card>
-    );
-  }
-
   if (error) {
     return (
       <Card className="w-full">
@@ -311,47 +236,21 @@ export const PublicIpComponent = () => {
           <Text size="5" weight="bold">
             Public IP:
           </Text>
-          <Flex align="center" gap="3">
-            <Text
-              size="3"
-              style={{
-                fontFamily: 'monospace',
-                padding: '4px 8px',
-                backgroundColor: 'var(--gray-3)',
-                borderRadius: '4px',
-              }}
-            >
-              {publicIp}
-            </Text>
-            <CopyButton text={publicIp} />
-          </Flex>
+          <MonospaceText text={publicIp} loading={loading} />
         </Flex>
 
         <Flex justify="between" align="center" gap="3">
           <Text size="5" weight="bold">
             Local IP:
           </Text>
-          <Flex align="center" gap="3">
-            <Text
-              size="3"
-              style={{
-                fontFamily: 'monospace',
-                padding: '4px 8px',
-                backgroundColor: 'var(--gray-3)',
-                borderRadius: '4px',
-              }}
-            >
-              {localIp}
-            </Text>
-            <CopyButton text={localIp} />
-          </Flex>
+          <MonospaceText text={localIp} loading={loading} />
         </Flex>
 
         <Flex justify="between" align="center" gap="3">
           <Text size="5" weight="bold">
             Public SSH Key:
           </Text>
-          <CopyButton text={sshKey} disabled={!sshKey} />
+          <MonospaceText text={sshKey} loading={loading} disabled={!sshKey} />
         </Flex>
 
         <Flex justify="between" align="center" gap="3">
@@ -385,6 +284,7 @@ export const PublicIpComponent = () => {
             </Tooltip>
           </Flex>
           <CopyButton
+            disabled={loading}
             text={async () => {
               const response = await fetch(
                 `${API_ENDPOINTS.GENERATE_SECRET}?type=${secretType}`,

@@ -9,16 +9,21 @@ export interface CollapsibleListItemConfig {
   headerAction?: ReactNode;
   content: ReactNode;
   defaultOpen?: boolean;
+  className?: string;
 }
 
 interface CollapsibleListProps {
   items: CollapsibleListItemConfig[];
   storageKeyPrefix?: string;
+  chevronPosition?: 'left' | 'right';
+  triggerClassName?: string;
 }
 
 export const CollapsibleList = ({
   items,
   storageKeyPrefix,
+  chevronPosition = 'right',
+  triggerClassName = 'py-3',
 }: CollapsibleListProps) => {
   const [mounted, setMounted] = useState(false);
   const [openItems, setOpenItems] = useState<string[]>([]);
@@ -65,25 +70,29 @@ export const CollapsibleList = ({
         <AccordionPrimitive.Item
           key={item.id}
           value={item.id}
-          className="border-t border-gray-300 dark:border-gray-700"
+          className={
+            item.className ?? 'border-t border-gray-300 dark:border-gray-700'
+          }
         >
-          <AccordionPrimitive.Header className="flex">
-            <AccordionPrimitive.Trigger className="flex flex-1 items-center justify-between py-3 text-sm font-bold cursor-pointer transition-all [&[data-state=open]>svg]:rotate-180">
-              <div className="flex items-center flex-1 mr-2">
+          <AccordionPrimitive.Header className="flex items-center">
+            <AccordionPrimitive.Trigger
+              className={`flex flex-1 items-center ${triggerClassName} text-sm cursor-pointer transition-all [&[data-state=open]>svg]:rotate-180`}
+            >
+              {chevronPosition === 'left' && (
+                <ChevronDown className="h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200 mr-2" />
+              )}
+              <div className="flex items-center flex-1">
                 {item.titleContent ?? (
                   <span className="text-sm font-bold">{item.title}</span>
                 )}
-                {item.headerAction && (
-                  <span
-                    className="ml-auto mr-2"
-                    onClick={e => e.stopPropagation()}
-                  >
-                    {item.headerAction}
-                  </span>
-                )}
               </div>
-              <ChevronDown className="h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200" />
+              {chevronPosition === 'right' && (
+                <ChevronDown className="h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200" />
+              )}
             </AccordionPrimitive.Trigger>
+            {item.headerAction && (
+              <div className="ml-2 flex items-center">{item.headerAction}</div>
+            )}
           </AccordionPrimitive.Header>
           <AccordionPrimitive.Content className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div className="flex flex-col gap-3 pb-4">{item.content}</div>

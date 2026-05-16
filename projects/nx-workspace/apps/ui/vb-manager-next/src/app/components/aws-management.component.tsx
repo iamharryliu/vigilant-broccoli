@@ -1,12 +1,15 @@
 'use client';
 
 import { Flex, Text, Badge } from '@radix-ui/themes';
-import { buttonVariants } from '@vigilant-broccoli/react-lib';
+import {
+  buttonVariants,
+  StatusCardList,
+  StatusCardListItem,
+} from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
-import { ExpandableListItem } from './expandable-list-item.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const AWS_CONSOLE_BASE = 'https://console.aws.amazon.com';
@@ -46,87 +49,64 @@ interface AwsProfile {
   ssoExpired: boolean;
 }
 
-const PROFILE_BORDER_STYLES = {
-  ssoExpired:
-    'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600',
-};
+const BORDER_SSO_EXPIRED =
+  'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600';
 
-const ProfileBadge = ({
-  ssoExpired,
-  isSso,
-}: {
-  ssoExpired: boolean;
-  isSso: boolean;
-}) => {
-  if (ssoExpired)
-    return (
-      <Badge color="yellow" size="1">
-        ⚠️ SSO Expired
-      </Badge>
-    );
-  if (isSso)
-    return (
-      <Badge color="blue" size="1">
-        SSO
-      </Badge>
-    );
-  return null;
-};
-
-const ProfileItem = ({
-  profile,
-  isExpanded,
-  onToggle,
-}: {
-  profile: AwsProfile;
-  isExpanded: boolean;
-  onToggle: (name: string) => void;
-}) => (
-  <ExpandableListItem
-    label={profile.name}
-    isExpanded={isExpanded}
-    onToggle={() => onToggle(profile.name)}
-    borderClassName={
-      profile.ssoExpired ? PROFILE_BORDER_STYLES.ssoExpired : undefined
-    }
-    badges={
-      <ProfileBadge ssoExpired={profile.ssoExpired} isSso={profile.isSso} />
-    }
-  >
-    {profile.region && (
-      <Text size="1" color="gray">
-        Region: {profile.region}
-      </Text>
-    )}
-    {profile.ssoAccountId && (
-      <Text size="1" color="gray">
-        Account: {profile.ssoAccountId}
-      </Text>
-    )}
-    {profile.ssoRoleName && (
-      <Text size="1" color="gray">
-        Role: {profile.ssoRoleName}
-      </Text>
-    )}
-    {profile.identity && (
-      <Text size="1" color="gray">
-        ARN: {profile.identity.arn}
-      </Text>
-    )}
-    <Flex gap="2" wrap="wrap">
-      {Object.entries(getProfileUrls(profile.region)).map(([key, url]) => (
-        <a key={key} href={url} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: 'secondary', size: 'sm' })}>
-          {CONSOLE_LABELS[key]}
-          <ExternalLinkIcon width="12" height="12" />
-        </a>
-      ))}
-    </Flex>
-  </ExpandableListItem>
-);
+const toItem = (profile: AwsProfile): StatusCardListItem => ({
+  id: profile.name,
+  label: profile.name,
+  borderClassName: profile.ssoExpired ? BORDER_SSO_EXPIRED : undefined,
+  badges: profile.ssoExpired ? (
+    <Badge color="yellow" size="1">
+      ⚠️ SSO Expired
+    </Badge>
+  ) : profile.isSso ? (
+    <Badge color="blue" size="1">
+      SSO
+    </Badge>
+  ) : undefined,
+  children: (
+    <>
+      {profile.region && (
+        <Text size="1" color="gray">
+          Region: {profile.region}
+        </Text>
+      )}
+      {profile.ssoAccountId && (
+        <Text size="1" color="gray">
+          Account: {profile.ssoAccountId}
+        </Text>
+      )}
+      {profile.ssoRoleName && (
+        <Text size="1" color="gray">
+          Role: {profile.ssoRoleName}
+        </Text>
+      )}
+      {profile.identity && (
+        <Text size="1" color="gray">
+          ARN: {profile.identity.arn}
+        </Text>
+      )}
+      <Flex gap="2" wrap="wrap">
+        {Object.entries(getProfileUrls(profile.region)).map(([key, url]) => (
+          <a
+            key={key}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+          >
+            {CONSOLE_LABELS[key]}
+            <ExternalLinkIcon width="12" height="12" />
+          </a>
+        ))}
+      </Flex>
+    </>
+  ),
+});
 
 export const AwsManagementComponent = () => {
   const [profiles, setProfiles] = useState<AwsProfile[]>([]);
-  const [expandedProfiles, setExpandedProfiles] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -151,15 +131,6 @@ export const AwsManagementComponent = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const toggleProfile = (name: string) => {
-    setExpandedProfiles(prev => {
-      const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
-  };
-
   if (loading) return <CardSkeleton title="AWS Management" rows={3} />;
 
   if (error) {
@@ -171,22 +142,11 @@ export const AwsManagementComponent = () => {
   }
 
   return (
-    <CardContainer title="AWS Management">
-      <Flex direction="column" gap="2">
-        <Text size="1" weight="bold">
-          Profiles ({profiles.length}):
-        </Text>
-        <Flex direction="column" gap="1">
-          {profiles.map(profile => (
-            <ProfileItem
-              key={profile.name}
-              profile={profile}
-              isExpanded={expandedProfiles.has(profile.name)}
-              onToggle={toggleProfile}
-            />
-          ))}
-        </Flex>
-      </Flex>
+    <CardContainer title={`AWS Management (${profiles.length})`}>
+      <StatusCardList
+        items={profiles.map(toItem)}
+        emptyMessage="No AWS profiles found"
+      />
     </CardContainer>
   );
 };

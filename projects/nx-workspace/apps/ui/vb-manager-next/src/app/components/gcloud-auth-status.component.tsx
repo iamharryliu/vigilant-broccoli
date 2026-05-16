@@ -1,12 +1,18 @@
 'use client';
 
 import { Flex, Text, Badge } from '@radix-ui/themes';
-import { Button, buttonVariants } from '@vigilant-broccoli/react-lib';
+import {
+  BORDER_ACTIVE,
+  Button,
+  buttonVariants,
+  MonospaceText,
+  StatusCardList,
+  StatusCardListItem,
+} from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import { ExternalLinkIcon, CopyIcon, CheckIcon } from '@radix-ui/react-icons';
+import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
-import { ExpandableListItem } from './expandable-list-item.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const GCP_CONSOLE_BASE = 'https://console.cloud.google.com';
@@ -59,22 +65,17 @@ interface AccountItemProps {
   switchingProject: string | null;
   activeAccount: string | null;
   onSwitchAccount: (account: string) => void;
-  copiedCommand: boolean;
-  onCopyAuthCommand: () => void;
 }
 
-const ACCOUNT_BORDER_STYLES = {
-  needsAuth:
-    'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600',
-  active:
-    'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700',
-  inactive: 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800',
-};
+const BORDER_NEEDS_AUTH =
+  'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600';
+const BORDER_INACTIVE =
+  'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800';
 
 const getAccountBorderStyle = (isActive: boolean, needsAuth: boolean) => {
-  if (isActive && needsAuth) return ACCOUNT_BORDER_STYLES.needsAuth;
-  if (isActive) return ACCOUNT_BORDER_STYLES.active;
-  return ACCOUNT_BORDER_STYLES.inactive;
+  if (isActive && needsAuth) return BORDER_NEEDS_AUTH;
+  if (isActive) return BORDER_ACTIVE;
+  return BORDER_INACTIVE;
 };
 
 const AccountBadge = ({
@@ -99,43 +100,27 @@ const AccountBadge = ({
   return null;
 };
 
+const AUTH_COMMAND =
+  'gcloud auth login && gcloud auth application-default login';
+
 const AccountItem = ({
   account,
   isActive,
   needsAuth,
   switchingProject,
   onSwitchAccount,
-  copiedCommand,
-  onCopyAuthCommand,
 }: AccountItemProps) => (
   <Flex
     align="center"
     gap="2"
     wrap="wrap"
-    className={`p-2 rounded border ${getAccountBorderStyle(
-      isActive,
-      needsAuth,
-    )}`}
+    className={`p-2 rounded border ${getAccountBorderStyle(isActive, needsAuth)}`}
   >
     <AccountBadge isActive={isActive} needsAuth={needsAuth} />
     <Text size="2" weight={isActive ? 'bold' : 'regular'} className="flex-1">
       {account.account}
     </Text>
-    {needsAuth && (
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onCopyAuthCommand}
-        title="Copy auth command"
-      >
-        gcloud auth login
-        {copiedCommand ? (
-          <CheckIcon width="12" height="12" />
-        ) : (
-          <CopyIcon width="12" height="12" />
-        )}
-      </Button>
-    )}
+    {needsAuth && <MonospaceText text={AUTH_COMMAND} truncate={true} />}
     {!isActive && (
       <Button
         variant="secondary"
@@ -149,68 +134,47 @@ const AccountItem = ({
   </Flex>
 );
 
-interface ProjectItemProps {
-  project: GcloudProject;
-  isCurrent: boolean;
-  isExpanded: boolean;
-  switchingProject: string | null;
-  onToggle: (projectId: string) => void;
-  onSwitch: (projectId: string) => void;
-}
-
-const ProjectItem = ({
-  project,
-  isCurrent,
-  isExpanded,
-  switchingProject,
-  onToggle,
-  onSwitch,
-}: ProjectItemProps) => (
-  <ExpandableListItem
-    label={project.name || project.projectId}
-    isExpanded={isExpanded}
-    onToggle={() => onToggle(project.projectId)}
-    labelWeight={isCurrent ? 'bold' : 'regular'}
-    borderClassName={
-      isCurrent
-        ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
-        : undefined
-    }
-    badges={
-      isCurrent ? (
-        <Badge color="green" size="1">
-          Current
-        </Badge>
-      ) : undefined
-    }
-    actions={
-      <>
-        <Text size="1" color="gray">
-          ({project.projectId})
-        </Text>
-        {!isCurrent && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => onSwitch(project.projectId)}
-            disabled={switchingProject === project.projectId}
-          >
-            {switchingProject === project.projectId ? 'Switching...' : 'Select'}
-          </Button>
-        )}
-      </>
-    }
-  >
+const toProjectItem = (
+  project: GcloudProject,
+  isCurrent: boolean,
+  switchingProject: string | null,
+  onSwitch: (projectId: string) => void,
+): StatusCardListItem => ({
+  id: project.projectId,
+  label: project.name || project.projectId,
+  borderClassName: isCurrent ? BORDER_ACTIVE : undefined,
+  badges: isCurrent ? (
+    <Badge color="green" size="1">
+      Current
+    </Badge>
+  ) : undefined,
+  actions: !isCurrent ? (
+    <Button
+      variant="secondary"
+      size="sm"
+      onClick={() => onSwitch(project.projectId)}
+      disabled={switchingProject === project.projectId}
+    >
+      {switchingProject === project.projectId ? 'Switching...' : 'Select'}
+    </Button>
+  ) : undefined,
+  children: (
     <Flex gap="2" wrap="wrap">
       {Object.entries(getProjectUrls(project.projectId)).map(([key, url]) => (
-        <a key={key} href={url} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: 'secondary', size: 'sm' })}>
+        <a
+          key={key}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+        >
           {BUTTON_LABELS[key]}
           <ExternalLinkIcon width="12" height="12" />
         </a>
       ))}
     </Flex>
-  </ExpandableListItem>
-);
+  ),
+});
 
 const parseReauthData = (
   reauthResponse: Response,
@@ -230,35 +194,10 @@ const fetchProjectsIfNeeded = async (needsReauth: boolean) => {
 export const GcloudAuthStatusComponent = () => {
   const [authStatus, setAuthStatus] = useState<GcloudAuthStatus | null>(null);
   const [projects, setProjects] = useState<GcloudProject[]>([]);
-  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(
-    new Set(),
-  );
   const [switchingProject, setSwitchingProject] = useState<string | null>(null);
   const [reauthStatus, setReauthStatus] = useState<ReauthStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [copiedCommand, setCopiedCommand] = useState<boolean>(false);
-
-  const copyAuthCommand = () => {
-    navigator.clipboard.writeText(
-      'gcloud auth login && gcloud auth application-default login',
-    );
-    setCopiedCommand(true);
-    setTimeout(() => setCopiedCommand(false), 2000);
-  };
-
-  const toggleProject = (projectId: string) => {
-    setExpandedProjects(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(projectId)) {
-        newSet.delete(projectId);
-      } else {
-        newSet.add(projectId);
-      }
-      return newSet;
-    });
-  };
-
   const switchProject = async (projectId: string) => {
     setSwitchingProject(projectId);
     try {
@@ -406,8 +345,6 @@ export const GcloudAuthStatusComponent = () => {
                     switchingProject={switchingProject}
                     activeAccount={authStatus.activeAccount}
                     onSwitchAccount={switchAccount}
-                    copiedCommand={copiedCommand}
-                    onCopyAuthCommand={copyAuthCommand}
                   />
                 ))}
               </Flex>
@@ -419,23 +356,18 @@ export const GcloudAuthStatusComponent = () => {
               <Text size="1" weight="bold">
                 All Projects ({sortedProjects.length}):
               </Text>
-              <Flex
-                direction="column"
-                gap="1"
-                style={{ maxHeight: '400px', overflowY: 'auto' }}
-              >
-                {sortedProjects.map(project => (
-                  <ProjectItem
-                    key={project.projectId}
-                    project={project}
-                    isCurrent={project.projectId === authStatus.currentProject}
-                    isExpanded={expandedProjects.has(project.projectId)}
-                    switchingProject={switchingProject}
-                    onToggle={toggleProject}
-                    onSwitch={switchProject}
-                  />
-                ))}
-              </Flex>
+              <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <StatusCardList
+                  items={sortedProjects.map(project =>
+                    toProjectItem(
+                      project,
+                      project.projectId === authStatus.currentProject,
+                      switchingProject,
+                      switchProject,
+                    ),
+                  )}
+                />
+              </div>
             </Flex>
           )}
         </Flex>

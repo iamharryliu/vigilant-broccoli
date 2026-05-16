@@ -1,12 +1,16 @@
 'use client';
 
 import { Flex, Text, Badge } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import {
+  BORDER_ACTIVE,
+  Button,
+  StatusCardList,
+  StatusCardListItem,
+} from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
+import { PlayIcon, StopIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
-import { ExpandableListItem } from './expandable-list-item.component';
-import { PlayIcon, StopIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface PM2Process {
@@ -19,6 +23,47 @@ interface PM2Process {
   uptime: number;
 }
 
+const getBadgeColor = (
+  status: string,
+): 'green' | 'yellow' | 'red' | 'gray' | 'blue' => {
+  switch (status) {
+    case 'online':
+      return 'green';
+    case 'stopped':
+    case 'errored':
+      return 'red';
+    case 'stopping':
+      return 'yellow';
+    case 'launching':
+      return 'blue';
+    default:
+      return 'gray';
+  }
+};
+
+const formatMemory = (bytes: number) =>
+  `${(bytes / (1024 * 1024)).toFixed(0)} MB`;
+
+const formatUptime = (ms: number): string => {
+  const totalSeconds = Math.floor(ms / 1000);
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const days = Math.floor(totalHours / 24);
+  if (days > 0) {
+    const hours = totalHours % 24;
+    return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+  }
+  if (totalHours > 0) {
+    const minutes = totalMinutes % 60;
+    return minutes > 0 ? `${totalHours}h ${minutes}m` : `${totalHours}h`;
+  }
+  if (totalMinutes > 0) {
+    const seconds = totalSeconds % 60;
+    return seconds > 0 ? `${totalMinutes}m ${seconds}s` : `${totalMinutes}m`;
+  }
+  return `${totalSeconds}s`;
+};
+
 export const PM2StatusComponent = () => {
   const [pm2Processes, setPm2Processes] = useState<PM2Process[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,9 +75,7 @@ export const PM2StatusComponent = () => {
   const fetchPM2Status = async () => {
     try {
       const response = await fetch(API_ENDPOINTS.PM2_PROCESSES);
-      if (!response.ok) {
-        throw new Error('Failed to fetch PM2 process status');
-      }
+      if (!response.ok) throw new Error('Failed to fetch PM2 process status');
       const data = await response.json();
       setPm2Processes(data);
       setError(null);
@@ -48,138 +91,112 @@ export const PM2StatusComponent = () => {
     }
   };
 
-  const handleStart = async (processId: number) => {
+  const withAction = async (processId: number, fn: () => Promise<Response>) => {
     setActionInProgress(prev => new Set(prev).add(processId));
     try {
-      const response = await fetch(API_ENDPOINTS.PM2_START, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ processId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to start process');
-      }
-
-      setTimeout(() => fetchPM2Status(), 1000);
+      const response = await fn();
+      if (!response.ok) throw new Error('Action failed');
+      setTimeout(fetchPM2Status, 1000);
     } catch (err) {
-      console.error('Failed to start process:', err);
+      console.error('PM2 action error:', err);
     } finally {
       setActionInProgress(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(processId);
-        return newSet;
+        const s = new Set(prev);
+        s.delete(processId);
+        return s;
       });
     }
   };
 
-  const handleStop = async (processId: number) => {
-    setActionInProgress(prev => new Set(prev).add(processId));
-    try {
-      const response = await fetch(API_ENDPOINTS.PM2_STOP, {
+  const handleStart = (id: number) =>
+    withAction(id, () =>
+      fetch(API_ENDPOINTS.PM2_START, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ processId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to stop process');
-      }
-
-      setTimeout(() => fetchPM2Status(), 1000);
-    } catch (err) {
-      console.error('Failed to stop process:', err);
-    } finally {
-      setActionInProgress(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(processId);
-        return newSet;
-      });
-    }
-  };
-
-  const handleRestart = async (processId: number) => {
-    setActionInProgress(prev => new Set(prev).add(processId));
-    try {
-      const response = await fetch(API_ENDPOINTS.PM2_RESTART, {
+        body: JSON.stringify({ processId: id }),
+      }),
+    );
+  const handleStop = (id: number) =>
+    withAction(id, () =>
+      fetch(API_ENDPOINTS.PM2_STOP, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ processId }),
-      });
+        body: JSON.stringify({ processId: id }),
+      }),
+    );
+  const handleRestart = (id: number) =>
+    withAction(id, () =>
+      fetch(API_ENDPOINTS.PM2_RESTART, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ processId: id }),
+      }),
+    );
 
-      if (!response.ok) {
-        throw new Error('Failed to restart process');
-      }
-
-      setTimeout(() => fetchPM2Status(), 1000);
-    } catch (err) {
-      console.error('Failed to restart process:', err);
-    } finally {
-      setActionInProgress(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(processId);
-        return newSet;
-      });
-    }
-  };
-
-  const getBadgeColor = (
-    status: string,
-  ): 'green' | 'yellow' | 'red' | 'gray' | 'blue' => {
-    switch (status) {
-      case 'online':
-        return 'green';
-      case 'stopped':
-        return 'red';
-      case 'errored':
-        return 'red';
-      case 'stopping':
-        return 'yellow';
-      case 'launching':
-        return 'blue';
-      default:
-        return 'gray';
-    }
-  };
-
-  const formatMemory = (bytes: number): string => {
-    const mb = bytes / (1024 * 1024);
-    return `${mb.toFixed(0)} MB`;
-  };
-
-  const formatUptime = (ms: number): string => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const totalMinutes = Math.floor(totalSeconds / 60);
-    const totalHours = Math.floor(totalMinutes / 60);
-    const days = Math.floor(totalHours / 24);
-
-    if (days > 0) {
-      const hours = totalHours % 24;
-      return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
-    }
-    if (totalHours > 0) {
-      const minutes = totalMinutes % 60;
-      return minutes > 0 ? `${totalHours}h ${minutes}m` : `${totalHours}h`;
-    }
-    if (totalMinutes > 0) {
-      const seconds = totalSeconds % 60;
-      return seconds > 0 ? `${totalMinutes}m ${seconds}s` : `${totalMinutes}m`;
-    }
-    return `${totalSeconds}s`;
-  };
-
-  const [expandedProcesses, setExpandedProcesses] = useState<Set<number>>(
-    new Set(),
-  );
-
-  const toggleProcess = (pmId: number) => {
-    setExpandedProcesses(prev => {
-      const next = new Set(prev);
-      if (next.has(pmId)) next.delete(pmId);
-      else next.add(pmId);
-      return next;
-    });
-  };
+  const toItem = (process: PM2Process): StatusCardListItem => ({
+    id: String(process.pm_id),
+    label: process.name,
+    borderClassName: process.status === 'online' ? BORDER_ACTIVE : undefined,
+    badges: (
+      <Badge color={getBadgeColor(process.status)} size="1">
+        {process.status.charAt(0).toUpperCase() + process.status.slice(1)}
+      </Badge>
+    ),
+    actions: (
+      <Flex gap="1">
+        {process.status === 'online' ? (
+          <>
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={() => handleRestart(process.pm_id)}
+              disabled={actionInProgress.has(process.pm_id)}
+              title="Restart process"
+            >
+              <ReloadIcon />
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={() => handleStop(process.pm_id)}
+              disabled={actionInProgress.has(process.pm_id)}
+              title="Stop process"
+            >
+              <StopIcon />
+            </Button>
+          </>
+        ) : (
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={() => handleStart(process.pm_id)}
+            disabled={actionInProgress.has(process.pm_id)}
+            title="Start process"
+          >
+            <PlayIcon />
+          </Button>
+        )}
+      </Flex>
+    ),
+    children: (
+      <Flex gap="3" wrap="wrap">
+        <Text size="1" color="gray">
+          CPU: <Text className="font-mono">{process.cpu.toFixed(1)}%</Text>
+        </Text>
+        <Text size="1" color="gray">
+          Memory:{' '}
+          <Text className="font-mono">{formatMemory(process.memory)}</Text>
+        </Text>
+        <Text size="1" color="gray">
+          Uptime:{' '}
+          <Text className="font-mono">{formatUptime(process.uptime)}</Text>
+        </Text>
+        <Text size="1" color="gray">
+          Restarts: <Text className="font-mono">{process.restarts}</Text>
+        </Text>
+      </Flex>
+    ),
+  });
 
   useEffect(() => {
     fetchPM2Status();
@@ -187,9 +204,7 @@ export const PM2StatusComponent = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) {
-    return <CardSkeleton title="PM2 Processes" rows={3} />;
-  }
+  if (loading) return <CardSkeleton title="PM2 Processes" rows={3} />;
 
   if (error) {
     return (
@@ -199,89 +214,14 @@ export const PM2StatusComponent = () => {
     );
   }
 
-  const processCount = pm2Processes?.length || 0;
-
   return (
     <CardContainer
-      title={`PM2 Processes${pm2Processes ? ` (${processCount})` : ''}`}
+      title={`PM2 Processes${pm2Processes ? ` (${pm2Processes.length})` : ''}`}
     >
-      {pm2Processes && processCount > 0 ? (
-        <Flex direction="column" gap="1">
-          {pm2Processes.map(process => (
-            <ExpandableListItem
-              key={process.pm_id}
-              label={process.name}
-              labelWeight="bold"
-              isExpanded={expandedProcesses.has(process.pm_id)}
-              onToggle={() => toggleProcess(process.pm_id)}
-              borderClassName={
-                process.status === 'online'
-                  ? 'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700'
-                  : undefined
-              }
-              badges={
-                <Badge color={getBadgeColor(process.status)} size="1">
-                  {process.status.charAt(0).toUpperCase() +
-                    process.status.slice(1)}
-                </Badge>
-              }
-              actions={
-                <Flex gap="1">
-                  {process.status === 'online' ? (
-                    <>
-                      <Button
-                        size="icon"
-                        variant="secondary"
-                        onClick={() => handleRestart(process.pm_id)}
-                        disabled={actionInProgress.has(process.pm_id)}
-                        title="Restart process"
-                      >
-                        <ReloadIcon />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="secondary"
-                        onClick={() => handleStop(process.pm_id)}
-                        disabled={actionInProgress.has(process.pm_id)}
-                        title="Stop process"
-                      >
-                        <StopIcon />
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      onClick={() => handleStart(process.pm_id)}
-                      disabled={actionInProgress.has(process.pm_id)}
-                      title="Start process"
-                    >
-                      <PlayIcon />
-                    </Button>
-                  )}
-                </Flex>
-              }
-            >
-              <Flex gap="3" wrap="wrap">
-                <Text size="1" color="gray">
-                  CPU: <Text className="font-mono">{process.cpu.toFixed(1)}%</Text>
-                </Text>
-                <Text size="1" color="gray">
-                  Memory: <Text className="font-mono">{formatMemory(process.memory)}</Text>
-                </Text>
-                <Text size="1" color="gray">
-                  Uptime: <Text className="font-mono">{formatUptime(process.uptime)}</Text>
-                </Text>
-                <Text size="1" color="gray">
-                  Restarts: <Text className="font-mono">{process.restarts}</Text>
-                </Text>
-              </Flex>
-            </ExpandableListItem>
-          ))}
-        </Flex>
-      ) : (
-        <Text className="text-gray-500">No PM2 processes found</Text>
-      )}
+      <StatusCardList
+        items={(pm2Processes ?? []).map(toItem)}
+        emptyMessage="No PM2 processes found"
+      />
     </CardContainer>
   );
 };

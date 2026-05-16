@@ -1,12 +1,15 @@
 'use client';
 
-import { Flex, Link, Text } from '@radix-ui/themes';
-import { useEffect, useState, useMemo } from 'react';
+import { Badge, Flex, Link } from '@radix-ui/themes';
+import {
+  buttonVariants,
+  StatusCardList,
+  StatusCardListItem,
+} from '@vigilant-broccoli/react-lib';
+import { useEffect, useState } from 'react';
+import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
-import { LinkList } from './link-list.component';
-import { LinkListItemConfig } from './link-list-item.component';
-import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface FlyApp {
@@ -20,44 +23,63 @@ interface FlyAppsResponse {
   error?: string;
 }
 
-// Helper function to get status badge color
 const getStatusColor = (
   status: string,
 ): 'green' | 'yellow' | 'red' | 'gray' => {
-  const normalizedStatus = status.toLowerCase();
-  if (normalizedStatus === 'deployed' || normalizedStatus === 'running')
-    return 'green';
-  if (normalizedStatus === 'suspended') return 'yellow';
-  if (normalizedStatus === 'pending') return 'gray';
+  const s = status.toLowerCase();
+  if (s === 'deployed' || s === 'running') return 'green';
+  if (s === 'suspended') return 'yellow';
+  if (s === 'pending') return 'gray';
   return 'red';
 };
+
+const dashboardLink = (
+  <Link
+    href="https://fly.io/dashboard"
+    target="_blank"
+    rel="noopener noreferrer"
+    size="2"
+  >
+    <Flex align="center" gap="1">
+      Dashboard
+      <ExternalLinkIcon width="12" height="12" />
+    </Flex>
+  </Link>
+);
+
+const toItem = (app: FlyApp): StatusCardListItem => ({
+  id: app.name,
+  label: app.name,
+  badges: (
+    <Badge color={getStatusColor(app.status)} size="1">
+      {app.status}
+    </Badge>
+  ),
+  children: (
+    <a
+      href={`https://fly.io/apps/${app.name}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+    >
+      fly.io/apps/{app.name}
+      <ExternalLinkIcon width="12" height="12" />
+    </a>
+  ),
+});
 
 export const FlyIoAppsComponent = () => {
   const [appsData, setAppsData] = useState<FlyApp[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const linkItems = useMemo<LinkListItemConfig[]>(() => {
-    return appsData.map(app => ({
-      text: app.name,
-      url: `https://fly.io/apps/${app.name}`,
-      badge: {
-        text: app.status,
-        color: getStatusColor(app.status),
-      },
-    }));
-  }, [appsData]);
-
   useEffect(() => {
     const fetchFlyApps = async () => {
       try {
         const response = await fetch(API_ENDPOINTS.FLYIO_APPS);
         const data: FlyAppsResponse = await response.json();
-
-        if (!data.success || !data.apps) {
+        if (!data.success || !data.apps)
           throw new Error(data.error || 'Failed to fetch Fly.io apps');
-        }
-
         setAppsData(data.apps);
         setLoading(false);
       } catch (err) {
@@ -70,58 +92,26 @@ export const FlyIoAppsComponent = () => {
     };
 
     fetchFlyApps();
-    // Refresh every 60 seconds
     const interval = setInterval(fetchFlyApps, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) {
-    return <CardSkeleton title="Fly.io Apps" rows={5} />;
-  }
+  if (loading) return <CardSkeleton title="Fly.io Apps" rows={5} />;
 
   if (error) {
     return (
-      <CardContainer
-        title="Fly.io Apps"
-        gap="3"
-        headerAction={
-          <Link
-            href="https://fly.io/dashboard"
-            target="_blank"
-            rel="noopener noreferrer"
-            size="2"
-          >
-            <Flex align="center" gap="1">
-              Dashboard
-              <ExternalLinkIcon width="12" height="12" />
-            </Flex>
-          </Link>
-        }
-      >
-        <Text color="red">{error}</Text>
+      <CardContainer title="Fly.io Apps" gap="3" headerAction={dashboardLink}>
+        <Badge color="red">{error}</Badge>
       </CardContainer>
     );
   }
 
   return (
-    <CardContainer
-      title="Fly.io Apps"
-      gap="3"
-      headerAction={
-        <Link
-          href="https://fly.io/dashboard"
-          target="_blank"
-          rel="noopener noreferrer"
-          size="2"
-        >
-          <Flex align="center" gap="1">
-            Dashboard
-            <ExternalLinkIcon width="12" height="12" />
-          </Flex>
-        </Link>
-      }
-    >
-      <LinkList items={linkItems} emptyMessage="No apps found" />
+    <CardContainer title="Fly.io Apps" gap="3" headerAction={dashboardLink}>
+      <StatusCardList
+        items={appsData.map(toItem)}
+        emptyMessage="No apps found"
+      />
     </CardContainer>
   );
 };
