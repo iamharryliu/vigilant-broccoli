@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, Badge, Button } from '@radix-ui/themes';
+import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Button, buttonVariants } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { ExternalLinkIcon, CopyIcon, CheckIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
@@ -100,7 +101,7 @@ const ProfileItem = ({
     actions={
       <Button
         variant="ghost"
-        size="1"
+        size="sm"
         onClick={() => onCopyExportCommand(profile.name)}
         title="Copy export command"
       >
@@ -135,12 +136,10 @@ const ProfileItem = ({
     )}
     <Flex gap="2" wrap="wrap">
       {Object.entries(getProfileUrls(profile.region)).map(([key, url]) => (
-        <Button key={key} asChild variant="soft" size="1">
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            {CONSOLE_LABELS[key]}
-            <ExternalLinkIcon width="12" height="12" />
-          </a>
-        </Button>
+        <a key={key} href={url} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: 'secondary', size: 'sm' })}>
+          {CONSOLE_LABELS[key]}
+          <ExternalLinkIcon width="12" height="12" />
+        </a>
       ))}
     </Flex>
   </ExpandableListItem>

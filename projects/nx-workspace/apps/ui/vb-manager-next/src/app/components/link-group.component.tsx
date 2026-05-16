@@ -1,6 +1,7 @@
 'use client';
 
-import { Text, TextField, IconButton, Flex } from '@radix-ui/themes';
+import { Text, TextField, Flex } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useRef, useState } from 'react';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -241,14 +242,14 @@ export function LinkGroupComponent({
       gap="3"
       headerAction={
         <Flex gap="2" align="center">
-          <IconButton
-            size="1"
-            variant="soft"
+          <Button
+            size="icon"
+            variant="secondary"
             onClick={handleGroupedToggle}
             title={isGrouped ? 'Show ungrouped' : 'Show grouped'}
           >
             {isGrouped ? <ListBulletIcon /> : <DashboardIcon />}
-          </IconButton>
+          </Button>
           <TextField.Root
             ref={searchInputRef}
             placeholder="Search..."

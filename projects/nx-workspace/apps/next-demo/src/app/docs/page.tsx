@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
+import { Badge, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';

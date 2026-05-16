@@ -1,6 +1,7 @@
 'use client';
 
-import { Badge, Button, Flex, IconButton, Link, Text } from '@radix-ui/themes';
+import { Badge, Flex, Link, Text } from '@radix-ui/themes';
+import { Button, buttonVariants } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
@@ -130,8 +131,7 @@ export const WranglerPagesComponent = () => {
         <Button
           onClick={handleLogin}
           loading={loggingIn}
-          size="2"
-          variant="soft"
+          variant="secondary"
         >
           Wrangler Login
         </Button>
@@ -163,26 +163,18 @@ export const WranglerPagesComponent = () => {
                 }
                 actions={
                   <Flex gap="1" align="center">
-                    <IconButton
-                      asChild
-                      size="1"
-                      variant="ghost"
-                      title="Open site"
-                    >
-                      <a href={url} target="_blank" rel="noopener noreferrer">
+                    <a href={url} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: 'ghost', size: 'icon' })} title="Open site">
                         <ExternalLinkIcon />
-                      </a>
-                    </IconButton>
+                    </a>
                     <ConfirmDeleteDialog
                       trigger={
-                        <IconButton
-                          size="1"
-                          variant="ghost"
-                          color="red"
+                        <Button
+                          size="icon"
+                          variant="destructive"
                           title="Delete project"
                         >
                           <TrashIcon />
-                        </IconButton>
+                        </Button>
                       }
                       title="Delete Wrangler Pages Project"
                       description={`Are you sure you want to delete "${project.name}"? This action cannot be undone.`}

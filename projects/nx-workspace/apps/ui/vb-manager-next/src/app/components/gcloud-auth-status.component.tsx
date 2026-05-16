@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, Badge, Button } from '@radix-ui/themes';
+import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Button, buttonVariants } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { ExternalLinkIcon, CopyIcon, CheckIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
@@ -123,7 +124,7 @@ const AccountItem = ({
     {needsAuth && (
       <Button
         variant="ghost"
-        size="1"
+        size="sm"
         onClick={onCopyAuthCommand}
         title="Copy auth command"
       >
@@ -137,8 +138,8 @@ const AccountItem = ({
     )}
     {!isActive && (
       <Button
-        variant="soft"
-        size="1"
+        variant="secondary"
+        size="sm"
         onClick={() => onSwitchAccount(account.account)}
         disabled={switchingProject === account.account}
       >
@@ -189,8 +190,8 @@ const ProjectItem = ({
         </Text>
         {!isCurrent && (
           <Button
-            variant="soft"
-            size="1"
+            variant="secondary"
+            size="sm"
             onClick={() => onSwitch(project.projectId)}
             disabled={switchingProject === project.projectId}
           >
@@ -202,12 +203,10 @@ const ProjectItem = ({
   >
     <Flex gap="2" wrap="wrap">
       {Object.entries(getProjectUrls(project.projectId)).map(([key, url]) => (
-        <Button key={key} asChild variant="soft" size="1">
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            {BUTTON_LABELS[key]}
-            <ExternalLinkIcon width="12" height="12" />
-          </a>
-        </Button>
+        <a key={key} href={url} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: 'secondary', size: 'sm' })}>
+          {BUTTON_LABELS[key]}
+          <ExternalLinkIcon width="12" height="12" />
+        </a>
       ))}
     </Flex>
   </ExpandableListItem>

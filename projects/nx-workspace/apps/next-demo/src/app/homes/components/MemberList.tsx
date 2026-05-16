@@ -1,7 +1,8 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { Badge, Button, Flex, Select, Text, TextField } from '@radix-ui/themes';
+import { Badge, Flex, Select, Text, TextField } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import {
   CRUDItemList,
   CRUDFormProps,
@@ -89,7 +90,6 @@ const MemberFormComponent = ({
         <Button
           onClick={handleSubmit}
           disabled={!email.trim() || submitting}
-          loading={submitting}
           className="cursor-pointer"
         >
           Send Invite

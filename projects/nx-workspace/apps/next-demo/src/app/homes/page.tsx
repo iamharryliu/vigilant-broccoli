@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CRUDItemList, CRUDFormProps } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
-import { Button } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
 import { Home } from '../../lib/types';
@@ -52,7 +52,7 @@ const HomeFormComponent = ({
           }
         />
       </div>
-      <Button onClick={handleSubmit} loading={isSubmitting} className="w-full">
+      <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full">
         Submit
       </Button>
     </div>

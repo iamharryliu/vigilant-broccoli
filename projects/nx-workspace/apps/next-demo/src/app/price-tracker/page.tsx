@@ -8,7 +8,6 @@ import {
   CRUDItemList,
   CRUDFormProps,
 } from '@vigilant-broccoli/react-lib';
-import { Button as RadixButton } from '@radix-ui/themes';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -358,21 +357,21 @@ const PriceItemForm = ({
           ))}
         </Flex>
         <Flex gap="2">
-          <RadixButton
+          <Button
             onClick={handleSubmitReceipt}
             disabled={!pendingItems.some(i => i.confirmed)}
           >
             Save {pendingItems.filter(i => i.confirmed).length} Items
-          </RadixButton>
-          <RadixButton
-            variant="soft"
+          </Button>
+          <Button
+            variant="secondary"
             onClick={() => {
               setPendingItems([]);
               setPreviews([]);
             }}
           >
             Back
-          </RadixButton>
+          </Button>
         </Flex>
       </Flex>
     );
@@ -381,18 +380,18 @@ const PriceItemForm = ({
   return (
     <Flex direction="column" gap="3" mt="3">
       <Flex gap="2">
-        <RadixButton
-          variant={!manualEntry ? 'solid' : 'soft'}
+        <Button
+          variant={!manualEntry ? 'default' : 'secondary'}
           onClick={() => setManualEntry(false)}
         >
           Upload Receipt
-        </RadixButton>
-        <RadixButton
-          variant={manualEntry ? 'solid' : 'soft'}
+        </Button>
+        <Button
+          variant={manualEntry ? 'default' : 'secondary'}
           onClick={() => setManualEntry(true)}
         >
           Manual Entry
-        </RadixButton>
+        </Button>
       </Flex>
 
       {!manualEntry ? (
@@ -431,15 +430,14 @@ const PriceItemForm = ({
               {analyzeError}
             </Text>
           )}
-          <RadixButton
+          <Button
             onClick={handleAnalyze}
             disabled={!previews.length || analyzing}
-            loading={analyzing}
           >
             {analyzing
               ? 'Analyzing...'
               : `Analyze Receipt${previews.length > 1 ? ` (${previews.length} images)` : ''}`}
-          </RadixButton>
+          </Button>
         </>
       ) : (
         <>

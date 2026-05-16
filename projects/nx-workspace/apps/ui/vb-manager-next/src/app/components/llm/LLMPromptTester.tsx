@@ -1,4 +1,5 @@
-import { Badge, Box, Button, Flex, Text, TextArea, Select as RadixSelect } from '@radix-ui/themes';
+import { Badge, Box, Flex, Text, TextArea, Select as RadixSelect } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useRef } from 'react';
 import { CopyPastable, Select } from '@vigilant-broccoli/react-lib';
 import {
@@ -221,7 +222,6 @@ export const LLMSimplePromptTester = () => {
         <Button
           variant="outline"
           onClick={() => fileInputRef.current?.click()}
-          size="2"
         >
           Upload Images
         </Button>
@@ -297,7 +297,7 @@ export const LLMSimplePromptTester = () => {
         )}
       </Box>
 
-      <Button onClick={handleSubmit} loading={isLoading} size="3">
+      <Button onClick={handleSubmit} loading={isLoading} size="lg">
         Test Prompts
       </Button>
 

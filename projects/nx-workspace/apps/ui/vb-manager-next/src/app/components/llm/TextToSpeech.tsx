@@ -1,6 +1,7 @@
 'use client';
 
-import { Box, Button, Flex, Text, TextArea } from '@radix-ui/themes';
+import { Box, Flex, Text, TextArea } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import { useTextToSpeech } from '../../hooks/useTextToSpeech';

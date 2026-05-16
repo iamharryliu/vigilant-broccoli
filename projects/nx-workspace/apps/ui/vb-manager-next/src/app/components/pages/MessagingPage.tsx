@@ -1,6 +1,7 @@
 'use client';
 
-import { Card, Heading, Button, TextField, TextArea } from '@radix-ui/themes';
+import { Card, Heading, TextField, TextArea } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { EmailMessageForm } from '../EmailMessageForm';
 

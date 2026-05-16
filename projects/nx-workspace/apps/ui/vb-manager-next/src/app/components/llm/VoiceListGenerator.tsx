@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Button, Flex, Text, Spinner } from '@radix-ui/themes';
+import { Flex, Text, Spinner } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 
 const AUDIO_MIME_TYPE = 'audio/webm';
@@ -68,12 +69,12 @@ export const VoiceListGenerator = () => {
 
       <Flex gap="3" align="center">
         {status === 'idle' && (
-          <Button onClick={startRecording} size="3">
+          <Button onClick={startRecording} size="lg">
             🎙 Start Recording
           </Button>
         )}
         {status === 'recording' && (
-          <Button onClick={stopRecording} size="3" color="red">
+          <Button onClick={stopRecording} size="lg" variant="destructive">
             ⏹ Stop Recording
           </Button>
         )}

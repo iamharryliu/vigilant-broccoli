@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Badge } from '@radix-ui/themes';
+import { Badge } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import {
   Play,
   Pause,
@@ -137,8 +138,7 @@ export const PomodoroComponent = ({ pomodoro }: PomodoroComponentProps) => {
         }}
       >
         <Button
-          variant="soft"
-          size="2"
+          variant="secondary"
           onClick={handleToggleRunning}
           style={{ cursor: 'pointer' }}
         >
@@ -146,9 +146,7 @@ export const PomodoroComponent = ({ pomodoro }: PomodoroComponentProps) => {
           {isRunning ? 'Pause' : 'Start'}
         </Button>
         <Button
-          variant="soft"
-          color="gray"
-          size="2"
+          variant="secondary"
           onClick={handleReset}
           style={{ cursor: 'pointer' }}
         >
@@ -156,9 +154,7 @@ export const PomodoroComponent = ({ pomodoro }: PomodoroComponentProps) => {
           Reset
         </Button>
         <Button
-          variant="soft"
-          color="gray"
-          size="2"
+          variant="secondary"
           onClick={handleSkip}
           style={{ cursor: 'pointer' }}
         >
@@ -167,9 +163,7 @@ export const PomodoroComponent = ({ pomodoro }: PomodoroComponentProps) => {
         </Button>
         {isAlerting && (
           <Button
-            variant="soft"
-            color="red"
-            size="2"
+            variant="destructive"
             onClick={clearBeepLoop}
             style={{ cursor: 'pointer' }}
           >

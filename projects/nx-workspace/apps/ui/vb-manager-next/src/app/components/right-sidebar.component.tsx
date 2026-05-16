@@ -1,6 +1,7 @@
 'use client';
 
-import { IconButton } from '@radix-ui/themes';
+import React from 'react';
+import { Button } from '@vigilant-broccoli/react-lib';
 import {
   MessageCircle,
   Mail,
@@ -60,89 +61,89 @@ export const RightSidebar = ({
         backgroundColor: 'var(--gray-1)',
       }}
     >
-      <IconButton
+      <Button
         onClick={() => setChatbotDialogOpen(true)}
         variant="ghost"
-        size="2"
+        size="icon"
         title="Jarvis (C)"
         style={BUTTON_STYLE}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         <MessageCircle size={18} />
-      </IconButton>
+      </Button>
 
-      <IconButton
+      <Button
         onClick={() => setEmailDialogOpen(true)}
         variant="ghost"
-        size="2"
+        size="icon"
         title="Email (M)"
         style={BUTTON_STYLE}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         <Mail size={18} />
-      </IconButton>
+      </Button>
 
-      <IconButton
+      <Button
         onClick={() => setCalendarDialogOpen(true)}
         variant="ghost"
-        size="2"
+        size="icon"
         title="Calendar (Shift+C)"
         style={BUTTON_STYLE}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         <Calendar size={18} />
-      </IconButton>
+      </Button>
 
-      <IconButton
+      <Button
         onClick={() => setNotepadDialogOpen(true)}
         variant="ghost"
-        size="2"
+        size="icon"
         title="Notepad (N)"
         style={BUTTON_STYLE}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         <StickyNote size={18} />
-      </IconButton>
+      </Button>
 
-      <IconButton
+      <Button
         onClick={() => setPomodoroDialogOpen(true)}
         variant="ghost"
-        size="2"
+        size="icon"
         title="Pomodoro (Shift+P)"
         style={BUTTON_STYLE}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         <Timer size={18} />
-      </IconButton>
+      </Button>
 
-      <IconButton
+      <Button
         onClick={() => setSearchDialogOpen(true)}
         variant="ghost"
-        size="2"
+        size="icon"
         title="Search (/)"
         style={BUTTON_STYLE}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         <Search size={18} />
-      </IconButton>
+      </Button>
 
-      <IconButton
+      <Button
         onClick={toggleTheme}
         variant="ghost"
-        size="2"
+        size="icon"
         title={appearance === 'light' ? 'Dark mode (D)' : 'Light mode (D)'}
         style={BUTTON_STYLE}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {appearance === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-      </IconButton>
+      </Button>
     </div>
   );
 };

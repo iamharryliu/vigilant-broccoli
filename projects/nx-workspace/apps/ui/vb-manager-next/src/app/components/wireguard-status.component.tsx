@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, Badge, Button } from '@radix-ui/themes';
+import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
@@ -119,8 +120,8 @@ export const WireguardStatusComponent = () => {
               }
               actions={
                 <Button
-                  size="1"
-                  variant="soft"
+                  size="sm"
+                  variant="secondary"
                   onClick={() => handleCopyCommand(conn)}
                 >
                   {copiedName === conn.name

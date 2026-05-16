@@ -1,6 +1,8 @@
-import { IconButton } from '@radix-ui/themes';
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from './Button';
+
+const COPY_RESET_MS = 1000;
 
 export const CopyButton = ({
   text,
@@ -11,17 +13,15 @@ export const CopyButton = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text).catch(err => {
-      console.error('Failed to copy text: ', err);
-    });
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1000);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
   };
 
   return (
-    <IconButton variant="ghost" onClick={handleCopy} disabled={disabled}>
+    <Button variant="ghost" size="icon" onClick={handleCopy} disabled={disabled}>
       {copied ? <Check size={16} /> : <Copy size={16} />}
-    </IconButton>
+    </Button>
   );
 };

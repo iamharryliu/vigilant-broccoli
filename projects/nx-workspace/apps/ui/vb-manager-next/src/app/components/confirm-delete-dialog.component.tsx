@@ -1,4 +1,5 @@
-import { AlertDialog, Button, Flex } from '@radix-ui/themes';
+import { AlertDialog, Flex } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { ReactNode } from 'react';
 
 interface ConfirmDeleteDialogProps {
@@ -25,14 +26,13 @@ export const ConfirmDeleteDialog = ({
       <AlertDialog.Description>{description}</AlertDialog.Description>
       <Flex gap="3" mt="4" justify="end">
         <AlertDialog.Cancel>
-          <Button variant="soft" color="gray">
+          <Button variant="secondary">
             Cancel
           </Button>
         </AlertDialog.Cancel>
         <AlertDialog.Action>
           <Button
-            variant="solid"
-            color="red"
+            variant="destructive"
             onClick={onConfirm}
             loading={loading}
           >

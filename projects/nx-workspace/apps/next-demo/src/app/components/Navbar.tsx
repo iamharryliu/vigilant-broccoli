@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { supabase } from '../../../libs/supabase';
@@ -36,9 +36,9 @@ export default function Navbar() {
           <div className="hidden sm:flex">
             <Button
               variant="ghost"
-              size="1"
+              size="sm"
               className="cursor-pointer"
-              onClick={() => supabase.auth.signOut()}
+              onClick={() => { supabase.auth.signOut(); }}
             >
               Sign out
             </Button>
@@ -46,7 +46,7 @@ export default function Navbar() {
           <div className="flex sm:hidden">
             <Button
               variant="ghost"
-              size="1"
+              size="sm"
               className="cursor-pointer"
               onClick={() => setOpen(prev => !prev)}
             >
@@ -70,9 +70,9 @@ export default function Navbar() {
           ))}
           <Button
             variant="ghost"
-            size="1"
+            size="sm"
             className="cursor-pointer self-start"
-            onClick={() => supabase.auth.signOut()}
+            onClick={() => { supabase.auth.signOut(); }}
           >
             Sign out
           </Button>

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Text, TextField } from '@radix-ui/themes';
+import { Text, TextField } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { supabase } from '../../../libs/supabase';
 
@@ -75,7 +76,6 @@ export default function UserSettingsPage() {
                 placeholder="Enter display name"
               />
               <Button
-                size="2"
                 onClick={handleSave}
                 disabled={saving || !displayName.trim()}
                 className="cursor-pointer"

@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Text, Checkbox, Button } from '@radix-ui/themes';
+import { Text, Checkbox } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { HomeDetailView } from '../homes/components/HomeDetailView';
@@ -193,7 +194,7 @@ export default function SettingsPage() {
             Export
           </Button>
           <Button
-            onClick={async () => importFileRef.current?.click()}
+            onClick={() => importFileRef.current?.click()}
             disabled={selected.size === 0}
           >
             Import
@@ -222,7 +223,6 @@ export default function SettingsPage() {
             variant="outline"
             onClick={handleSeed}
             disabled={seeding || !selectedHomeId}
-            loading={seeding}
           >
             Seed Mock Data
           </Button>
@@ -276,10 +276,9 @@ export default function SettingsPage() {
         </div>
         <div className="flex items-center gap-3">
           <Button
-            color="red"
+            variant="destructive"
             onClick={handleClear}
             disabled={clearSelected.size === 0 || clearing || !selectedHomeId}
-            loading={clearing}
           >
             Clear Selected
           </Button>

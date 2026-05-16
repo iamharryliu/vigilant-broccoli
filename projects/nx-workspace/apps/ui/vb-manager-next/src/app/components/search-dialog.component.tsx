@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Dialog, IconButton, TextField, Text, Flex } from '@radix-ui/themes';
+import { Dialog, TextField, Text, Flex } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import {
   MagnifyingGlassIcon,
   DashboardIcon,
@@ -325,9 +326,9 @@ export function SearchDialogComponent({
     <Dialog.Root open={open} onOpenChange={setOpen}>
       {externalOpen === undefined && (
         <Dialog.Trigger>
-          <IconButton variant="soft" size="2" aria-label="Search Quick Links">
+          <Button size="icon" variant="secondary" aria-label="Search Quick Links">
             <MagnifyingGlassIcon />
-          </IconButton>
+          </Button>
         </Dialog.Trigger>
       )}
 
@@ -352,14 +353,14 @@ export function SearchDialogComponent({
               size="2"
               style={{ flex: 1 }}
             />
-            <IconButton
-              size="2"
-              variant="soft"
+            <Button
+              size="icon"
+              variant="secondary"
               onClick={() => setIsGrouped(!isGrouped)}
               title={isGrouped ? 'Show ungrouped' : 'Show grouped'}
             >
               {isGrouped ? <ListBulletIcon /> : <DashboardIcon />}
-            </IconButton>
+            </Button>
           </Flex>
         </div>
 

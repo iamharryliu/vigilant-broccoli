@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Flex, Text, TextField, Badge, Button } from '@radix-ui/themes';
+import { Flex, Text, TextField, Badge } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { CRUDFormProps } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
@@ -197,7 +198,7 @@ export const WhereIsFormComponent = ({
       </div>
 
       {isUpdate && (
-        <Button variant="soft" onClick={handleReanalyze} disabled={analyzing}>
+        <Button variant="secondary" onClick={handleReanalyze} disabled={analyzing}>
           {analyzing ? 'Analyzing...' : 'Re-analyze'}
         </Button>
       )}
@@ -281,13 +282,12 @@ export const WhereIsFormComponent = ({
               ))}
             </Flex>
             <Flex gap="2" mt="1">
-              <Button size="1" onClick={handleSubmit}>
+              <Button size="sm" onClick={handleSubmit}>
                 Apply & Save
               </Button>
               <Button
-                size="1"
-                variant="soft"
-                color="gray"
+                size="sm"
+                variant="secondary"
                 onClick={() => setAnalysisPreview(null)}
               >
                 Discard

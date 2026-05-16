@@ -2,7 +2,8 @@
 
 import { ReactNode, useState, useEffect } from 'react';
 import { NextNavBar, NextNavRoute } from '@vigilant-broccoli/next-lib';
-import { DropdownMenu, Button } from '@radix-ui/themes';
+import { DropdownMenu } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
@@ -169,7 +170,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             ))}
             {session ? (
               <Button
-                variant="soft"
+                variant="secondary"
                 onClick={() => signOut()}
                 style={{ cursor: 'pointer' }}
               >
@@ -177,8 +178,8 @@ export default function Layout({ children }: { children: ReactNode }) {
               </Button>
             ) : (
               <Button
-                variant="soft"
-                onClick={() => signIn('google')}
+                variant="secondary"
+                onClick={() => { signIn('google'); }}
                 style={{ cursor: 'pointer' }}
               >
                 Sign In

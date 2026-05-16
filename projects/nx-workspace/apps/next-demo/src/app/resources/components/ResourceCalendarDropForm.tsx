@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Flex, Text, TextField, TextArea } from '@radix-ui/themes';
+import { Flex, Text, TextField, TextArea } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { toDateLocal } from '../../../lib/date-utils';
 import { ResourceBookingFormData } from './ResourceBookingForm';
 
@@ -92,8 +93,7 @@ export function ResourceCalendarDropForm({
         <Flex justify="end" gap="2" pt="2">
           <Button
             type="button"
-            variant="soft"
-            color="gray"
+            variant="secondary"
             onClick={onCancel}
             className="cursor-pointer"
           >

@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Badge, Button, Dialog, Flex, Text } from '@radix-ui/themes';
+import { Badge, Dialog, Flex, Text } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { Resource, ResourceBooking } from '../../../lib/types';
 import { ResourceForm, ResourceFormData } from './ResourceForm';
@@ -89,7 +90,6 @@ export function ResourceList({
           Resources
         </Text>
         <Button
-          size="2"
           onClick={() => setModal({ type: 'create' })}
           className="cursor-pointer"
         >

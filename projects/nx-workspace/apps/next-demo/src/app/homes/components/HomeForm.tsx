@@ -1,6 +1,7 @@
 'use client';
 
-import { Button, Flex, Text, TextField } from '@radix-ui/themes';
+import { Flex, Text, TextField } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 
 type Props = {
   name: string;
@@ -47,8 +48,7 @@ export const HomeForm = ({
     {!disabled && (
       <Button
         onClick={onSave}
-        loading={saving}
-        disabled={!name.trim()}
+        disabled={saving || !name.trim()}
         className="cursor-pointer"
       >
         Save

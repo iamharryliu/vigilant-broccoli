@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button, Flex, Text, TextField, TextArea } from '@radix-ui/themes';
+import { Flex, Text, TextField, TextArea } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { CalendarEventFormData } from '../../calendar/components/CalendarEventForm';
 import { toDatetimeLocal, toDateLocal } from '../../../lib/date-utils';
 
@@ -137,8 +138,7 @@ export function HomeProjectCalendarDropForm({
         <Flex justify="end" gap="2" pt="2">
           <Button
             type="button"
-            variant="soft"
-            color="gray"
+            variant="secondary"
             onClick={onCancel}
             className="cursor-pointer"
           >

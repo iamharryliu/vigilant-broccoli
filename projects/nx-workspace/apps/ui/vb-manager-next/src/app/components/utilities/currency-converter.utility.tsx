@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, TextField, Button, ScrollArea, Select } from '@radix-ui/themes';
+import { Flex, Text, TextField, ScrollArea, Select } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
 const HISTORY_STORAGE_KEY = 'currency-converter-history';
@@ -167,7 +168,7 @@ export const CurrencyConverterUtilityContent = () => {
             <Text size="1" weight="bold" color="gray">
               History
             </Text>
-            <Button size="1" variant="ghost" color="red" onClick={clearHistory}>
+            <Button size="sm" variant="destructive" onClick={clearHistory}>
               Clear
             </Button>
           </Flex>

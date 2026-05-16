@@ -1,6 +1,7 @@
 'use client';
 
-import { Box, Flex, Text, TextArea, IconButton } from '@radix-ui/themes';
+import { Box, Flex, Text, TextArea } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useRef } from 'react';
 import { Mic, Square, X } from 'lucide-react';
 
@@ -98,24 +99,23 @@ export const SpeechToText = () => {
       </Text>
 
       <Flex gap="2" align="center">
-        <IconButton
-          size="3"
+        <Button
+          size="icon"
           onClick={toggleRecording}
           disabled={isProcessing}
-          color={isRecording ? 'red' : 'blue'}
         >
           {isRecording ? <Square size={16} /> : <Mic size={16} />}
-        </IconButton>
+        </Button>
 
         {transcript && (
-          <IconButton
-            size="3"
-            variant="soft"
+          <Button
+            size="icon"
+            variant="secondary"
             onClick={clearTranscript}
             disabled={isRecording || isProcessing}
           >
             <X size={16} />
-          </IconButton>
+          </Button>
         )}
 
         {isProcessing && (

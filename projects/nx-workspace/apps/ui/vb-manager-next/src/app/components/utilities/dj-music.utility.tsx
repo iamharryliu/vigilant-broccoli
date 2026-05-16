@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, Button, Badge } from '@radix-ui/themes';
+import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
@@ -95,15 +96,12 @@ export const DjMusicUtilityContent = () => {
             onClick={handleDjDownload}
             disabled={djLoading}
             loading={djLoading}
-            size="2"
-            variant="solid"
             style={{ flex: 1 }}
           >
             Download DJ Music
           </Button>
           <Button
             onClick={handleOpenRekordBox}
-            size="2"
             variant="outline"
           >
             Open RekordBox
@@ -120,8 +118,7 @@ export const DjMusicUtilityContent = () => {
 
         <Button
           onClick={() => setPlaylistsExpanded(!playlistsExpanded)}
-          variant="soft"
-          size="2"
+          variant="secondary"
           style={{ justifyContent: 'space-between' }}
         >
           <Flex align="center" gap="2">

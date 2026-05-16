@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Badge, Button, Flex, Text } from '@radix-ui/themes';
+import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useAuth } from './providers/auth-provider';
 
 type PendingInvite = {
@@ -66,8 +67,8 @@ export default function HomePage() {
                 </Badge>
               </Flex>
               <Button
-                size="1"
-                variant="soft"
+                size="sm"
+                variant="secondary"
                 className="cursor-pointer"
                 onClick={() => acceptInvite(invite)}
               >

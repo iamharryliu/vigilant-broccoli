@@ -1,23 +1,72 @@
-import { Button as RadixButton } from '@radix-ui/themes';
-import { useState } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { Loader2 } from 'lucide-react';
+import { ButtonHTMLAttributes, forwardRef, useState } from 'react';
+import { cn } from '../utils/cn';
 
-type ButtonProps = {
-  onClick: () => Promise<void>;
-  children: React.ReactNode;
-};
+export const buttonVariants = cva(
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90',
+        destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
+        outline: 'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
+        secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
+        link: 'text-primary underline-offset-4 hover:underline',
+      },
+      size: {
+        default: 'h-9 px-4 py-2',
+        sm: 'h-8 rounded-md px-3 text-xs',
+        lg: 'h-10 rounded-md px-8',
+        icon: 'h-9 w-9',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+    },
+  },
+);
 
-export const Button = ({ onClick, children }: ButtonProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleClick = async () => {
-    setIsLoading(true);
-    await onClick();
-    setIsLoading(false);
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof buttonVariants> & {
+    onClick?: () => Promise<void> | void;
+    loading?: boolean;
   };
 
-  return (
-    <RadixButton onClick={handleClick} loading={isLoading}>
-      {children}
-    </RadixButton>
-  );
-};
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, onClick, loading, disabled, children, ...props }, ref) => {
+    const [asyncLoading, setAsyncLoading] = useState(false);
+
+    const handleClick = async () => {
+      if (!onClick) return;
+      const result = onClick();
+      if (result instanceof Promise) {
+        setAsyncLoading(true);
+        await result;
+        setAsyncLoading(false);
+      }
+    };
+
+    const isLoading = loading !== undefined ? loading : asyncLoading;
+
+    return (
+      <button
+        ref={ref}
+        onClick={handleClick}
+        disabled={isLoading || disabled}
+        className={cn(buttonVariants({ variant, size }), 'relative', className)}
+        {...props}
+      >
+        {isLoading && (
+          <span className="absolute inset-0 flex items-center justify-center">
+            <Loader2 className="h-4 w-4 animate-spin" />
+          </span>
+        )}
+        <span className={cn(isLoading && 'invisible')}>{children}</span>
+      </button>
+    );
+  },
+);
+Button.displayName = 'Button';

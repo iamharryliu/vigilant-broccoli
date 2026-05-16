@@ -1,6 +1,7 @@
 'use client';
 
-import { Box, Text, Callout, Button, Flex } from '@radix-ui/themes';
+import { Box, Text, Callout, Flex } from '@radix-ui/themes';
+import { Button, buttonVariants } from '@vigilant-broccoli/react-lib';
 import { Skeleton } from './skeleton.component';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -155,18 +156,17 @@ const OrganizationItem = ({
       className={`quick-links ${detailedView ? 'expanded' : ''}`}
     >
       {Object.entries(getOrgUrls(organization.login)).map(([key, url]) => (
-        <Button
+        <a
           key={key}
-          asChild
-          variant="soft"
-          size="1"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={buttonVariants({ variant: 'secondary', size: 'sm' })}
           onClick={e => e.stopPropagation()}
         >
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            {BUTTON_LABELS[key]}
-            <ExternalLink size={12} />
-          </a>
-        </Button>
+          {BUTTON_LABELS[key]}
+          <ExternalLink size={12} />
+        </a>
       ))}
     </Flex>
   </Box>
@@ -261,16 +261,14 @@ const ViewToggleButtons = ({
 }) => (
   <Flex gap="1">
     <Button
-      variant={detailedView ? 'soft' : 'solid'}
-      size="2"
+      variant={detailedView ? 'secondary' : 'default'}
       onClick={() => onViewToggle(false)}
       style={{ opacity: detailedView ? 0.6 : 1 }}
     >
       <List size={16} />
     </Button>
     <Button
-      variant={detailedView ? 'solid' : 'soft'}
-      size="2"
+      variant={detailedView ? 'default' : 'secondary'}
       onClick={() => onViewToggle(true)}
       style={{ opacity: detailedView ? 1 : 0.6 }}
     >

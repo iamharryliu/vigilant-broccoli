@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, Button, ScrollArea } from '@radix-ui/themes';
+import { Flex, Text, ScrollArea } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
 interface Lap {
@@ -60,18 +61,17 @@ export const StopwatchUtilityContent = () => {
     <Flex direction="column" gap="4">
       <Flex align="center" justify="between" gap="3">
         <Flex gap="2">
-          <Button size="2" variant="soft" onClick={handleStopwatchToggle}>
+          <Button variant="secondary" onClick={handleStopwatchToggle}>
             {stopwatchRunning ? 'Pause' : 'Start'}
           </Button>
           <Button
-            size="2"
             variant="outline"
             onClick={handleLap}
             disabled={stopwatchTime === 0}
           >
             Lap
           </Button>
-          <Button size="2" variant="outline" onClick={handleStopwatchReset}>
+          <Button variant="outline" onClick={handleStopwatchReset}>
             Reset
           </Button>
         </Flex>

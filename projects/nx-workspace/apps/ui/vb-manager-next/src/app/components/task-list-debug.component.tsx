@@ -1,6 +1,7 @@
 'use client';
 
-import { Card, Flex, Text, Table, Code, Button, IconButton } from '@radix-ui/themes';
+import { Card, Flex, Text, Table, Code } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { CopyIcon } from '@radix-ui/react-icons';
@@ -62,7 +63,7 @@ export const TaskListDebugComponent = () => {
       <Flex direction="column" gap="3" p="4">
         <Flex justify="between" align="center">
           <Text size="3" weight="medium" color="gray">Task Lists Info</Text>
-          <Button onClick={handleToggle} size="1" variant="soft">
+          <Button onClick={handleToggle} size="sm" variant="secondary">
             {isExpanded ? 'Hide' : 'Show'} Task Lists
           </Button>
         </Flex>
@@ -96,14 +97,14 @@ export const TaskListDebugComponent = () => {
                         <Code size="1">{list.id}</Code>
                       </Table.Cell>
                       <Table.Cell>
-                        <IconButton
-                          size="1"
+                        <Button
+                          size="icon"
                           variant="ghost"
                           onClick={() => copyToClipboard(list.id)}
                           aria-label="Copy task list ID"
                         >
                           <CopyIcon />
-                        </IconButton>
+                        </Button>
                       </Table.Cell>
                     </Table.Row>
                   ))}

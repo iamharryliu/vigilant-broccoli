@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Dialog, IconButton } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { EmailMessageForm } from './EmailMessageForm';
 
@@ -23,9 +24,9 @@ export const EmailModalComponent = ({
     <Dialog.Root open={open} onOpenChange={setOpen}>
       {externalOpen === undefined && (
         <Dialog.Trigger>
-          <IconButton variant="soft" aria-label="Send email">
+          <Button size="icon" variant="secondary" aria-label="Send email">
             <EnvelopeClosedIcon />
-          </IconButton>
+          </Button>
         </Dialog.Trigger>
       )}
 

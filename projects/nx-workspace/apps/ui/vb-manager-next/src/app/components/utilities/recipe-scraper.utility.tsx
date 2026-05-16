@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, TextField, Button } from '@radix-ui/themes';
+import { Flex, Text, TextField } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 
@@ -64,7 +65,6 @@ export const RecipeScraperUtilityContent = () => {
         <Button
           onClick={handleScrapeRecipe}
           disabled={recipeLoading || !recipeUrl.trim()}
-          size="2"
         >
           {recipeLoading ? 'Scraping...' : 'Download'}
         </Button>

@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, Button } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect, useRef } from 'react';
 
 const STORAGE_KEY = 'vb-manager-timer-state';
@@ -263,14 +264,13 @@ export const TimerUtilityContent = () => {
           )}
           <Flex gap="2">
             <Button
-              size="2"
-              variant="soft"
+              variant="secondary"
               onClick={handleTimerStop}
               disabled={!timerRunning}
             >
               Stop
             </Button>
-            <Button size="2" variant="outline" onClick={handleTimerReset}>
+            <Button variant="outline" onClick={handleTimerReset}>
               Reset
             </Button>
           </Flex>
@@ -331,7 +331,7 @@ export const TimerUtilityContent = () => {
               />
             </Flex>
           </Flex>
-          <Button size="2" variant="soft" onClick={handleTimerStart}>
+          <Button variant="secondary" onClick={handleTimerStart}>
             Start Timer
           </Button>
         </Flex>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Button, Flex, Callout, Dialog } from '@radix-ui/themes';
+import { Flex, Callout, Dialog } from '@radix-ui/themes';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
+import { Button } from '@vigilant-broccoli/react-lib';
 
 export const ErrorDemo = () => {
   const [showAlert, setShowAlert] = useState(false);
@@ -27,10 +28,10 @@ export const ErrorDemo = () => {
       )}
 
       <Flex gap="2">
-        <Button color="red" onClick={displayNotification}>
+        <Button variant="destructive" onClick={displayNotification}>
           Error Notification
         </Button>
-        <Button color="red" onClick={displayModal}>
+        <Button variant="destructive" onClick={displayModal}>
           Error Modal
         </Button>
       </Flex>
@@ -44,12 +45,12 @@ export const ErrorDemo = () => {
 
           <Flex gap="3" mt="4" justify="end">
             <Dialog.Close>
-              <Button variant="soft" color="gray">
+              <Button variant="secondary">
                 Cancel
               </Button>
             </Dialog.Close>
             <Dialog.Close>
-              <Button color="red">Confirm</Button>
+              <Button variant="destructive">Confirm</Button>
             </Dialog.Close>
           </Flex>
         </Dialog.Content>

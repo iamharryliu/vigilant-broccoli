@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, Badge, IconButton } from '@radix-ui/themes';
+import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
@@ -228,35 +229,35 @@ export const PM2StatusComponent = () => {
                 <Flex gap="1">
                   {process.status === 'online' ? (
                     <>
-                      <IconButton
-                        size="1"
-                        variant="soft"
+                      <Button
+                        size="icon"
+                        variant="secondary"
                         onClick={() => handleRestart(process.pm_id)}
                         disabled={actionInProgress.has(process.pm_id)}
                         title="Restart process"
                       >
                         <ReloadIcon />
-                      </IconButton>
-                      <IconButton
-                        size="1"
-                        variant="soft"
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="secondary"
                         onClick={() => handleStop(process.pm_id)}
                         disabled={actionInProgress.has(process.pm_id)}
                         title="Stop process"
                       >
                         <StopIcon />
-                      </IconButton>
+                      </Button>
                     </>
                   ) : (
-                    <IconButton
-                      size="1"
-                      variant="soft"
+                    <Button
+                      size="icon"
+                      variant="secondary"
                       onClick={() => handleStart(process.pm_id)}
                       disabled={actionInProgress.has(process.pm_id)}
                       title="Start process"
                     >
                       <PlayIcon />
-                    </IconButton>
+                    </Button>
                   )}
                 </Flex>
               }

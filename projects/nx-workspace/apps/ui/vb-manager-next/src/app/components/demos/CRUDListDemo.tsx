@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { CRUDFormProps, CRUDItemList } from '@vigilant-broccoli/react-lib';
 import {
   JSONPlaceHolderPost,

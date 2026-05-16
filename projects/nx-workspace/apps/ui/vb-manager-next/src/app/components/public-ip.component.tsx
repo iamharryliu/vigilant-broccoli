@@ -1,6 +1,7 @@
 'use client';
 
-import { Card, Flex, Text, Button, Select, Tooltip } from '@radix-ui/themes';
+import { Card, Flex, Text, Select, Tooltip } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { CopyIcon, CheckIcon, InfoCircledIcon } from '@radix-ui/react-icons';
 import { Skeleton } from './skeleton.component';
@@ -286,7 +287,7 @@ export const PublicIpComponent = () => {
                 }}
               ></Text>
             </Flex>
-            <Button variant="soft" size="2" disabled>
+            <Button variant="secondary" disabled>
               <CopyIcon /> Copy
             </Button>
           </Flex>
@@ -308,7 +309,7 @@ export const PublicIpComponent = () => {
                 }}
               ></Text>
             </Flex>
-            <Button variant="soft" size="2" disabled>
+            <Button variant="secondary" disabled>
               <CopyIcon /> Copy
             </Button>
           </Flex>
@@ -319,7 +320,7 @@ export const PublicIpComponent = () => {
                 SSH Key:
               </Text>
             </Flex>
-            <Button variant="soft" size="2" disabled>
+            <Button variant="secondary" disabled>
               <CopyIcon /> Copy
             </Button>
           </Flex>
@@ -368,7 +369,7 @@ export const PublicIpComponent = () => {
             >
               {publicIp}
             </Text>
-            <Button onClick={handlePublicCopy} variant="soft" size="2">
+            <Button onClick={handlePublicCopy} variant="secondary">
               {publicCopied ? <CheckIcon /> : <CopyIcon />}
             </Button>
           </Flex>
@@ -390,7 +391,7 @@ export const PublicIpComponent = () => {
             >
               {localIp}
             </Text>
-            <Button onClick={handleLocalCopy} variant="soft" size="2">
+            <Button onClick={handleLocalCopy} variant="secondary">
               {localCopied ? <CheckIcon /> : <CopyIcon />}
             </Button>
           </Flex>
@@ -402,8 +403,7 @@ export const PublicIpComponent = () => {
           </Text>
           <Button
             onClick={handleSshCopy}
-            variant="soft"
-            size="2"
+            variant="secondary"
             disabled={!sshKey}
           >
             {sshCopied ? <CheckIcon /> : <CopyIcon />}
@@ -440,7 +440,7 @@ export const PublicIpComponent = () => {
               />
             </Tooltip>
           </Flex>
-          <Button onClick={handleGenerateSecret} variant="soft" size="2">
+          <Button onClick={handleGenerateSecret} variant="secondary">
             {secretCopied ? <CheckIcon /> : <CopyIcon />}
           </Button>
         </Flex>

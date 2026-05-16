@@ -1,6 +1,7 @@
 'use client';
 
-import { Button, Flex, Text, TextField, Switch } from '@radix-ui/themes';
+import { Flex, Text, TextField, Switch } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 
 export interface EventDraft {
@@ -175,7 +176,7 @@ export const EventDraftCard = ({
           >
             {status === 'creating' ? 'Creating...' : 'Create event'}
           </Button>
-          <Button variant="soft" onClick={onCancel} disabled={isReadOnly}>
+          <Button variant="secondary" onClick={onCancel} disabled={isReadOnly}>
             Cancel
           </Button>
         </Flex>

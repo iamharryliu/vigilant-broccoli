@@ -1,6 +1,7 @@
 'use client';
 
-import { Flex, Text, Badge, IconButton, Button } from '@radix-ui/themes';
+import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
@@ -201,15 +202,15 @@ export const DockerStatusComponent = () => {
     const buttonTitle = isRunning ? `Stop ${title}` : `Start ${title}`;
 
     return (
-      <IconButton
-        size="1"
-        variant="soft"
+      <Button
+        size="icon"
+        variant="secondary"
         onClick={() => handler(identifier, isProject)}
         disabled={actionInProgress.has(identifier)}
         title={buttonTitle}
       >
         <Icon />
-      </IconButton>
+      </Button>
     );
   };
 
@@ -245,8 +246,7 @@ export const DockerStatusComponent = () => {
           <Button
             onClick={handleOpenDocker}
             loading={isStartingDocker}
-            size="2"
-            variant="soft"
+            variant="secondary"
           >
             {isStartingDocker ? 'Starting Docker...' : 'Open Docker Desktop'}
           </Button>
@@ -260,14 +260,14 @@ export const DockerStatusComponent = () => {
       title={`Docker Containers${dockerStatus ? ` (${totalCount})` : ''}`}
       headerAction={
         !isDockerRunning ? (
-          <IconButton
-            size="1"
+          <Button
+            size="icon"
             variant="ghost"
             onClick={handleOpenDocker}
             title="Open Docker.app"
           >
             <ExternalLinkIcon />
-          </IconButton>
+          </Button>
         ) : undefined
       }
     >
