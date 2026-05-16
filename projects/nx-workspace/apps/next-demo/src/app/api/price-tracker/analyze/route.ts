@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { LLMService } from '@vigilant-broccoli/llm-tools';
+import { getEnvironmentVariable, VB_EXPRESS_ENDPOINT } from '@vigilant-broccoli/common-node';
 import { LLM_MODEL, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { createServerClient } from '../../../../../libs/supabase-server';
 
@@ -73,28 +73,37 @@ export async function POST(request: NextRequest) {
 
   const { images } = parsed.data;
 
-  const result = await LLMService.prompt({
-    prompt: {
-      userPrompt: 'Parse this receipt and extract all purchased items.',
-      systemPrompt: SYSTEM_PROMPT,
-      images: images.map((img, i) => ({
-        name: `receipt_${i}`,
-        base64: img.base64,
-        mimeType: img.mimeType,
-      })),
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.LLM}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+      },
+      body: JSON.stringify({
+        userPrompt: 'Parse this receipt and extract all purchased items.',
+        systemPrompt: SYSTEM_PROMPT,
+        model: LLM_MODEL.GPT_4O,
+        images: images.map((img, i) => ({
+          name: `receipt_${i}`,
+          base64: img.base64,
+          mimeType: img.mimeType,
+        })),
+        responseFormat: 'json',
+      }),
     },
-    modelConfig: { model: LLM_MODEL.GPT_4O, temperature: 0.1 },
-  });
+  );
 
-  const jsonMatch = (result.data as string).match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
+  if (!res.ok) {
     return Response.json(
       { error: 'Failed to parse LLM response' },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 
-  const validated = AnalyzeResponseSchema.safeParse(JSON.parse(jsonMatch[0]));
+  const { outputs } = await res.json();
+  const validated = AnalyzeResponseSchema.safeParse(outputs?.[0]);
   if (!validated.success) {
     return Response.json(
       { error: 'Unexpected LLM response shape' },
