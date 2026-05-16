@@ -5,10 +5,10 @@ import {
   Flex,
   Text,
   Checkbox,
-  Button,
   TextField,
   Select,
 } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import {
@@ -617,7 +617,7 @@ const AddTaskForm = memo(
   }) => {
     if (!showAddTask) {
       return (
-        <Button onClick={onShowForm} size="2" variant="soft">
+        <Button onClick={onShowForm} variant="secondary">
           + Add Task
         </Button>
       );
@@ -638,13 +638,12 @@ const AddTaskForm = memo(
         />
         <Button
           onClick={onSubmit}
-          size="2"
           disabled={isLoading}
           loading={isLoading}
         >
           Add
         </Button>
-        <Button onClick={onCancel} size="2" variant="soft" disabled={isLoading}>
+        <Button onClick={onCancel} variant="secondary" disabled={isLoading}>
           Cancel
         </Button>
       </Flex>
@@ -845,7 +844,7 @@ const UnauthenticatedView = memo(() => (
         <Text size="5" weight="bold">
           Tasks
         </Text>
-        <Button onClick={() => signIn('google')} size="2">
+        <Button onClick={async () => { await signIn('google'); }}>
           Sign in with Google
         </Button>
       </Flex>

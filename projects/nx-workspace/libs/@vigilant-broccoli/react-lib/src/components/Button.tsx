@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Loader2 } from 'lucide-react';
-import { ButtonHTMLAttributes, forwardRef, useState } from 'react';
+import React, { ButtonHTMLAttributes, forwardRef, useState } from 'react';
 import { cn } from '../utils/cn';
 
 export const buttonVariants = cva(
@@ -31,7 +31,6 @@ export const buttonVariants = cva(
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
-    onClick?: () => Promise<void> | void;
     loading?: boolean;
   };
 
@@ -39,13 +38,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, onClick, loading, disabled, children, ...props }, ref) => {
     const [asyncLoading, setAsyncLoading] = useState(false);
 
-    const handleClick = async () => {
+    const handleClick: React.MouseEventHandler<HTMLButtonElement> = e => {
       if (!onClick) return;
-      const result = onClick();
+      const result = (onClick as (e: React.MouseEvent<HTMLButtonElement>) => Promise<void> | void)(e);
       if (result instanceof Promise) {
         setAsyncLoading(true);
-        await result;
-        setAsyncLoading(false);
+        result.finally(() => setAsyncLoading(false));
       }
     };
 

@@ -4,12 +4,11 @@ import {
   Card,
   Flex,
   Text,
-  Button,
   Select,
-  IconButton,
   TextField,
   Dialog,
 } from '@radix-ui/themes';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
@@ -323,14 +322,11 @@ const SortableBoard = ({
         {showDeleteButton && (
           <ConfirmDeleteDialog
             trigger={
-              <IconButton
-                size="1"
-                variant="ghost"
-                color="gray"
-                onClick={e => e.stopPropagation()}
-              >
-                <X size={14} />
-              </IconButton>
+              <span onClick={e => e.stopPropagation()}>
+                <Button size="icon" variant="ghost">
+                  <X size={14} />
+                </Button>
+              </span>
             }
             title="Delete Board"
             description={`Are you sure you want to delete "${board.name}"? This action cannot be undone.`}
@@ -412,14 +408,13 @@ const SortableLane = ({
             )}
           </Text>
         </div>
-        <IconButton
-          size="1"
-          variant="soft"
-          color="red"
+        <Button
+          size="icon"
+          variant="destructive"
           onClick={() => onRemove(boardId, lane.id)}
         >
           <X size={14} />
-        </IconButton>
+        </Button>
       </Flex>
       <div className="flex-1 overflow-y-auto min-h-0">
         <GoogleTasksComponent
@@ -918,9 +913,9 @@ export const KanbanComponent = () => {
                     }}
                   >
                     <Dialog.Trigger>
-                      <IconButton size="1" variant="ghost">
+                      <Button size="icon" variant="ghost">
                         <Menu size={14} />
-                      </IconButton>
+                      </Button>
                     </Dialog.Trigger>
                     <Dialog.Content>
                       <Dialog.Title>Manage Task Lists</Dialog.Title>
@@ -967,8 +962,8 @@ export const KanbanComponent = () => {
                             )}
                             <Flex gap="2">
                               {editingListId !== list.id && (
-                                <IconButton
-                                  size="1"
+                                <Button
+                                  size="icon"
                                   variant="ghost"
                                   onClick={() => {
                                     setEditingListId(list.id);
@@ -976,17 +971,16 @@ export const KanbanComponent = () => {
                                   }}
                                 >
                                   <Pencil size={14} />
-                                </IconButton>
+                                </Button>
                               )}
                               <ConfirmDeleteDialog
                                 trigger={
-                                  <IconButton
-                                    size="1"
+                                  <Button
+                                    size="icon"
                                     variant="ghost"
-                                    color="red"
                                   >
                                     <Trash2 size={14} />
-                                  </IconButton>
+                                  </Button>
                                 }
                                 title="Delete Task List"
                                 description={`Delete "${list.title}" and all its tasks? This cannot be undone.`}
@@ -1003,7 +997,7 @@ export const KanbanComponent = () => {
                       </Flex>
                       <Flex justify="end" mt="4">
                         <Dialog.Close>
-                          <Button variant="soft">Close</Button>
+                          <Button variant="secondary">Close</Button>
                         </Dialog.Close>
                       </Flex>
                     </Dialog.Content>
@@ -1013,9 +1007,9 @@ export const KanbanComponent = () => {
                     onOpenChange={setShowNewBoardForm}
                   >
                     <Dialog.Trigger>
-                      <IconButton size="1" variant="ghost">
+                      <Button size="icon" variant="ghost">
                         <Plus size={14} />
-                      </IconButton>
+                      </Button>
                     </Dialog.Trigger>
                     <Dialog.Content>
                       <Dialog.Title>Add Board</Dialog.Title>
@@ -1032,7 +1026,7 @@ export const KanbanComponent = () => {
                         />
                         <Flex gap="3" justify="end">
                           <Dialog.Close>
-                            <Button variant="soft">Cancel</Button>
+                            <Button variant="secondary">Cancel</Button>
                           </Dialog.Close>
                           <Button
                             onClick={handleAddBoard}
@@ -1077,8 +1071,8 @@ export const KanbanComponent = () => {
         <div className="flex-1 overflow-hidden">
           <Flex direction="column" gap="4" className="w-full h-full p-4">
             <Flex align="center" gap="2">
-              <IconButton
-                size="2"
+              <Button
+                size="icon"
                 variant="ghost"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
               >
@@ -1087,7 +1081,7 @@ export const KanbanComponent = () => {
                 ) : (
                   <ChevronRight size={16} />
                 )}
-              </IconButton>
+              </Button>
               <Text size="4" weight="bold">
                 {activeBoard.name}
               </Text>
@@ -1132,7 +1126,6 @@ export const KanbanComponent = () => {
                     <Dialog.Trigger>
                       <Button
                         variant="ghost"
-                        size="2"
                         className="w-80 h-12 flex-shrink-0 border-2 border-dashed"
                       >
                         <Text size="3">+ Add Lane</Text>
@@ -1156,14 +1149,14 @@ export const KanbanComponent = () => {
                             />
                             <Flex gap="2">
                               <Button
-                                size="1"
-                                variant="soft"
+                                size="sm"
+                                variant="secondary"
                                 onClick={() => setShowCreateList(false)}
                               >
                                 Back
                               </Button>
                               <Button
-                                size="1"
+                                size="sm"
                                 onClick={handleCreateList}
                                 disabled={!newListName.trim() || creatingList}
                               >
@@ -1193,7 +1186,7 @@ export const KanbanComponent = () => {
                               </Select.Content>
                             </Select.Root>
                             <Button
-                              size="1"
+                              size="sm"
                               variant="ghost"
                               onClick={() => setShowCreateList(true)}
                             >
@@ -1203,7 +1196,7 @@ export const KanbanComponent = () => {
                         )}
                         <Flex gap="3" justify="end">
                           <Dialog.Close>
-                            <Button variant="soft">Cancel</Button>
+                            <Button variant="secondary">Cancel</Button>
                           </Dialog.Close>
                           {!showCreateList && (
                             <Button
