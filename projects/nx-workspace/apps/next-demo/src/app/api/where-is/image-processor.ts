@@ -40,18 +40,18 @@ export const validateImageCount = (images: RawImage[]) => {
     );
 };
 
-export const compressForLlm = async (base64: string): Promise<{ base64: string; mimeType: 'image/jpeg' }> => {
-  const buffer = Buffer.from(base64, 'base64');
+export const compressForLlm = async (
+  input: string | Buffer,
+): Promise<{ base64: string; mimeType: 'image/jpeg' }> => {
+  const buffer =
+    typeof input === 'string' ? Buffer.from(input, 'base64') : input;
   const compressed = await sharp(buffer)
-    .resize({ width: LLM_MAX_DIMENSION, height: LLM_MAX_DIMENSION, fit: 'inside', withoutEnlargement: true })
-    .jpeg({ quality: LLM_JPEG_QUALITY })
-    .toBuffer();
-  return { base64: compressed.toString('base64'), mimeType: 'image/jpeg' };
-};
-
-export const compressBufferForLlm = async (buffer: Buffer): Promise<{ base64: string; mimeType: 'image/jpeg' }> => {
-  const compressed = await sharp(buffer)
-    .resize({ width: LLM_MAX_DIMENSION, height: LLM_MAX_DIMENSION, fit: 'inside', withoutEnlargement: true })
+    .resize({
+      width: LLM_MAX_DIMENSION,
+      height: LLM_MAX_DIMENSION,
+      fit: 'inside',
+      withoutEnlargement: true,
+    })
     .jpeg({ quality: LLM_JPEG_QUALITY })
     .toBuffer();
   return { base64: compressed.toString('base64'), mimeType: 'image/jpeg' };

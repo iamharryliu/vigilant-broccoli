@@ -1,32 +1,19 @@
 'use client';
 
-import { useState, useEffect, useRef, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
-import {
-  Button,
-  CRUDItemList,
-  CRUDFormProps,
-} from '@vigilant-broccoli/react-lib';
+import { CRUDItemList, StackedImages } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { WhereIsItem } from '../../lib/types';
 import { ROUTES } from '../../lib/routes';
-
-interface PreviewImage {
-  base64: string;
-  mimeType: string;
-  dataUrl: string;
-}
-
-type WhereIsFormValues = {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  images: PreviewImage[];
-};
+import {
+  WhereIsFormComponent,
+  WhereIsFormValues,
+  PreviewImage,
+} from './where-is-form';
 
 const DEFAULT_FORM: WhereIsFormValues = {
   id: '',
@@ -65,14 +52,8 @@ const WhereIsListItem = ({
   ellipsis?: ReactNode;
 }) => (
   <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-    {item.imageUrls?.[0] && (
-      <div className="shrink-0">
-        <img
-          src={item.imageUrls?.[0]}
-          alt={item.title}
-          className="w-16 h-16 object-cover rounded"
-        />
-      </div>
+    {item.imageUrls?.length > 0 && (
+      <StackedImages urls={item.imageUrls} alt={item.title} />
     )}
     <Box className="flex-1 min-w-0">
       <Text weight="bold" size="2" as="p">
@@ -92,161 +73,6 @@ const WhereIsListItem = ({
     {ellipsis}
   </div>
 );
-
-const WhereIsFormComponent = ({
-  formType,
-  initialFormValues,
-  submitHandler,
-}: CRUDFormProps<WhereIsFormValues>) => {
-  const [title, setTitle] = useState(initialFormValues.title);
-  const [description, setDescription] = useState(initialFormValues.description);
-  const [tags, setTags] = useState<string[]>(initialFormValues.tags);
-  const [tagInput, setTagInput] = useState('');
-  const [previews, setPreviews] = useState<PreviewImage[]>(
-    initialFormValues.images,
-  );
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const isUpdate = formType === FORM_TYPE.UPDATE;
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
-    if (!files.length) return;
-    Promise.all(
-      files.map(
-        file =>
-          new Promise<PreviewImage>(resolve => {
-            const reader = new FileReader();
-            reader.onload = ev => {
-              const dataUrl = ev.target?.result as string;
-              resolve({
-                base64: dataUrl.split(',')[1],
-                mimeType: file.type,
-                dataUrl,
-              });
-            };
-            reader.readAsDataURL(file);
-          }),
-      ),
-    ).then(newPreviews => setPreviews(prev => [...prev, ...newPreviews]));
-  };
-
-  const addTag = () => {
-    const t = tagInput.trim().toLowerCase();
-    if (t && !tags.includes(t)) setTags(prev => [...prev, t]);
-    setTagInput('');
-  };
-
-  const handleTagKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addTag();
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!title.trim()) return;
-    if (!isUpdate && !previews.length) return;
-    await submitHandler(
-      { ...initialFormValues, title, description, tags, images: previews },
-      formType,
-    );
-  };
-
-  return (
-    <Flex direction="column" gap="3" mt="3">
-      <div>
-        <Text size="1" weight="medium" as="p" mb="1">
-          Title
-        </Text>
-        <TextField.Root
-          placeholder="e.g. Kitchen cabinet above sink"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-        />
-      </div>
-      <div>
-        <Text size="1" weight="medium" as="p" mb="1">
-          Description
-        </Text>
-        <TextField.Root
-          placeholder="Brief description of contents"
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-        />
-      </div>
-
-      <div>
-        <Text size="1" weight="medium" as="p" mb="1">
-          Tags
-        </Text>
-        <Flex gap="2">
-          <TextField.Root
-            placeholder="Add tag..."
-            value={tagInput}
-            onChange={e => setTagInput(e.target.value)}
-            onKeyDown={handleTagKeyDown}
-            className="flex-1"
-          />
-          <Button onClick={async () => addTag()}>Add</Button>
-        </Flex>
-        <Flex gap="2" mt="2" wrap="wrap">
-          {tags.map(tag => (
-            <Badge
-              key={tag}
-              variant="soft"
-              size="1"
-              className="cursor-pointer"
-              onClick={() => setTags(prev => prev.filter(t => t !== tag))}
-            >
-              {tag} ✕
-            </Badge>
-          ))}
-        </Flex>
-      </div>
-
-      {!isUpdate && (
-        <>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleFileSelect}
-            className="text-sm"
-          />
-          {previews.length > 0 && (
-            <Flex gap="2" wrap="wrap">
-              {previews.map((p, i) => (
-                <div key={i} className="relative">
-                  <img
-                    src={p.dataUrl}
-                    alt={`preview ${i + 1}`}
-                    className="h-24 w-24 object-cover rounded"
-                  />
-                  <button
-                    onClick={() =>
-                      setPreviews(prev => prev.filter((_, j) => j !== i))
-                    }
-                    className="absolute top-0.5 right-0.5 bg-black/60 text-white border-none rounded-full w-5 h-5 cursor-pointer text-xs leading-5 text-center"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </Flex>
-          )}
-        </>
-      )}
-
-      <Button onClick={handleSubmit}>
-        {isUpdate
-          ? 'Save'
-          : `Upload & Analyze${previews.length > 1 ? ` (${previews.length} images)` : ''}`}
-      </Button>
-    </Flex>
-  );
-};
 
 export default function WhereIsPage() {
   const router = useRouter();
@@ -272,17 +98,7 @@ export default function WhereIsPage() {
   const createItem = async (
     form: WhereIsFormValues,
   ): Promise<WhereIsFormValues> => {
-    const analyzeRes = await fetch('/api/where-is/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        images: form.images.map(p => ({
-          base64: p.base64,
-          mimeType: p.mimeType,
-        })),
-      }),
-    });
-    const { description, tags } = await analyzeRes.json();
+    const { description, tags } = form;
 
     await fetch('/api/where-is', {
       method: 'POST',

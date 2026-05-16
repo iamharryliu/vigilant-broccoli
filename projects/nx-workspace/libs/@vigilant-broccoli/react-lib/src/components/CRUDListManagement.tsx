@@ -297,7 +297,7 @@ export const DeleteItemConfirmationDialog = ({
   );
 };
 
-const CRUDItemFormDialog = <T,>({
+export const CRUDItemFormDialog = <T,>({
   formType,
   initialFormValues,
   FormComponent,

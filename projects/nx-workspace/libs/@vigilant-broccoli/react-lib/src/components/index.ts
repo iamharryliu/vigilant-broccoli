@@ -9,3 +9,4 @@ export * from './Button';
 export * from './ServiceLinksTable';
 export * from './SocialSigninButton';
 export * from './GithubActionsBadges';
+export * from './StackedImages';
