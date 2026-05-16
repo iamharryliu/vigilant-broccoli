@@ -11,6 +11,8 @@ const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB raw base64 decoded
 const MAX_IMAGES_PER_UPLOAD = 10;
 const MAX_DIMENSION = 1920;
 const JPEG_QUALITY = 85;
+const LLM_MAX_DIMENSION = 512;
+const LLM_JPEG_QUALITY = 60;
 
 export interface ProcessedImage {
   buffer: Buffer;
@@ -36,6 +38,23 @@ export const validateImageCount = (images: RawImage[]) => {
     throw new ImageValidationError(
       `Maximum ${MAX_IMAGES_PER_UPLOAD} images per upload.`,
     );
+};
+
+export const compressForLlm = async (base64: string): Promise<{ base64: string; mimeType: 'image/jpeg' }> => {
+  const buffer = Buffer.from(base64, 'base64');
+  const compressed = await sharp(buffer)
+    .resize({ width: LLM_MAX_DIMENSION, height: LLM_MAX_DIMENSION, fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: LLM_JPEG_QUALITY })
+    .toBuffer();
+  return { base64: compressed.toString('base64'), mimeType: 'image/jpeg' };
+};
+
+export const compressBufferForLlm = async (buffer: Buffer): Promise<{ base64: string; mimeType: 'image/jpeg' }> => {
+  const compressed = await sharp(buffer)
+    .resize({ width: LLM_MAX_DIMENSION, height: LLM_MAX_DIMENSION, fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: LLM_JPEG_QUALITY })
+    .toBuffer();
+  return { base64: compressed.toString('base64'), mimeType: 'image/jpeg' };
 };
 
 export const processImage = async (

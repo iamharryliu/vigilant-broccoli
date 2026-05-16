@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Button, Flex, Spinner, Text } from '@radix-ui/themes';
 import { useAuth } from '../../providers/auth-provider';
 import { WhereIsItem } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
@@ -12,6 +12,7 @@ export default function WhereIsDetailPage() {
   const { id } = useParams<{ id: string }>();
   const session = useAuth();
   const [item, setItem] = useState<WhereIsItem | null>(null);
+  const [reanalyzing, setReanalyzing] = useState(false);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -22,6 +23,26 @@ export default function WhereIsDetailPage() {
       .then(setItem);
   }, [id, session?.access_token]);
 
+  const handleReanalyze = async () => {
+    if (!item || !session?.access_token) return;
+    setReanalyzing(true);
+    try {
+      const res = await fetch('/api/where-is/reanalyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ id: item.id }),
+      });
+      if (!res.ok) return;
+      const { description, tags } = await res.json();
+      setItem(prev => prev ? { ...prev, description, tags } : prev);
+    } finally {
+      setReanalyzing(false);
+    }
+  };
+
   if (!item) return null;
 
   return (
@@ -30,7 +51,12 @@ export default function WhereIsDetailPage() {
         ← Back
       </Link>
 
-      <Text size="6" weight="bold" as="p">{item.title}</Text>
+      <Flex align="center" justify="between">
+        <Text size="6" weight="bold">{item.title}</Text>
+        <Button variant="soft" onClick={handleReanalyze} disabled={reanalyzing}>
+          {reanalyzing ? <Spinner /> : 'Re-analyze'}
+        </Button>
+      </Flex>
 
       {item.description && (
         <Text size="3" color="gray" as="p">{item.description}</Text>
