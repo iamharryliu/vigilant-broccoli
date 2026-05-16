@@ -1,9 +1,9 @@
 'use client';
 
 import { Flex, Text, Badge } from '@radix-ui/themes';
-import { Button, buttonVariants } from '@vigilant-broccoli/react-lib';
+import { buttonVariants } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import { ExternalLinkIcon, CopyIcon, CheckIcon } from '@radix-ui/react-icons';
+import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { ExpandableListItem } from './expandable-list-item.component';
@@ -46,14 +46,6 @@ interface AwsProfile {
   ssoExpired: boolean;
 }
 
-interface ProfileItemProps {
-  profile: AwsProfile;
-  isExpanded: boolean;
-  onToggle: (name: string) => void;
-  copiedExport: string | null;
-  onCopyExportCommand: (name: string) => void;
-}
-
 const PROFILE_BORDER_STYLES = {
   ssoExpired:
     'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600',
@@ -85,9 +77,11 @@ const ProfileItem = ({
   profile,
   isExpanded,
   onToggle,
-  copiedExport,
-  onCopyExportCommand,
-}: ProfileItemProps) => (
+}: {
+  profile: AwsProfile;
+  isExpanded: boolean;
+  onToggle: (name: string) => void;
+}) => (
   <ExpandableListItem
     label={profile.name}
     isExpanded={isExpanded}
@@ -97,21 +91,6 @@ const ProfileItem = ({
     }
     badges={
       <ProfileBadge ssoExpired={profile.ssoExpired} isSso={profile.isSso} />
-    }
-    actions={
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onCopyExportCommand(profile.name)}
-        title="Copy export command"
-      >
-        export AWS_PROFILE
-        {copiedExport === profile.name ? (
-          <CheckIcon width="12" height="12" />
-        ) : (
-          <CopyIcon width="12" height="12" />
-        )}
-      </Button>
     }
   >
     {profile.region && (
@@ -147,10 +126,7 @@ const ProfileItem = ({
 
 export const AwsManagementComponent = () => {
   const [profiles, setProfiles] = useState<AwsProfile[]>([]);
-  const [expandedProfiles, setExpandedProfiles] = useState<Set<string>>(
-    new Set(),
-  );
-  const [copiedExport, setCopiedExport] = useState<string | null>(null);
+  const [expandedProfiles, setExpandedProfiles] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -184,12 +160,6 @@ export const AwsManagementComponent = () => {
     });
   };
 
-  const copyExportCommand = (name: string) => {
-    navigator.clipboard.writeText(`export AWS_PROFILE=${name}`);
-    setCopiedExport(name);
-    setTimeout(() => setCopiedExport(null), 2000);
-  };
-
   if (loading) return <CardSkeleton title="AWS Management" rows={3} />;
 
   if (error) {
@@ -213,8 +183,6 @@ export const AwsManagementComponent = () => {
               profile={profile}
               isExpanded={expandedProfiles.has(profile.name)}
               onToggle={toggleProfile}
-              copiedExport={copiedExport}
-              onCopyExportCommand={copyExportCommand}
             />
           ))}
         </Flex>

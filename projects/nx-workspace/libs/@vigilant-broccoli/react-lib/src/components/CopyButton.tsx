@@ -8,13 +8,14 @@ export const CopyButton = ({
   text,
   disabled,
 }: {
-  text: string;
+  text: string | (() => Promise<string>);
   disabled?: boolean;
 }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(text);
+    const value = typeof text === 'function' ? await text() : text;
+    await navigator.clipboard.writeText(value);
     setCopied(true);
     setTimeout(() => setCopied(false), COPY_RESET_MS);
   };

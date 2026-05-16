@@ -1,9 +1,9 @@
 'use client';
 
 import { Card, Flex, Text, Select, Tooltip } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { CopyButton } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import { CopyIcon, CheckIcon, InfoCircledIcon } from '@radix-ui/react-icons';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -111,10 +111,6 @@ export const PublicIpComponent = () => {
   const [diskLoading, setDiskLoading] = useState(true);
   const [speedLoading, setSpeedLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [publicCopied, setPublicCopied] = useState(false);
-  const [localCopied, setLocalCopied] = useState(false);
-  const [sshCopied, setSshCopied] = useState(false);
-  const [secretCopied, setSecretCopied] = useState(false);
   const [secretType, setSecretType] = useState<SecretType>('hex');
 
   useEffect(() => {
@@ -220,51 +216,6 @@ export const PublicIpComponent = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handlePublicCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(publicIp);
-      setPublicCopied(true);
-      setTimeout(() => setPublicCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  const handleLocalCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(localIp);
-      setLocalCopied(true);
-      setTimeout(() => setLocalCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  const handleSshCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(sshKey);
-      setSshCopied(true);
-      setTimeout(() => setSshCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  const handleGenerateSecret = async () => {
-    try {
-      const response = await fetch(
-        `${API_ENDPOINTS.GENERATE_SECRET}?type=${secretType}`,
-      );
-      const data = await response.json();
-      if (data.success) {
-        await navigator.clipboard.writeText(data.secret);
-        setSecretCopied(true);
-        setTimeout(() => setSecretCopied(false), 2000);
-      }
-    } catch (err) {
-      console.error('Failed to generate secret:', err);
-    }
-  };
 
   if (loading) {
     return (
@@ -287,9 +238,7 @@ export const PublicIpComponent = () => {
                 }}
               ></Text>
             </Flex>
-            <Button variant="secondary" disabled>
-              <CopyIcon /> Copy
-            </Button>
+            <CopyButton text="" disabled />
           </Flex>
 
           <Flex justify="between" align="center" gap="3">
@@ -309,20 +258,25 @@ export const PublicIpComponent = () => {
                 }}
               ></Text>
             </Flex>
-            <Button variant="secondary" disabled>
-              <CopyIcon /> Copy
-            </Button>
+            <CopyButton text="" disabled />
           </Flex>
 
           <Flex justify="between" align="center" gap="3">
             <Flex align="center" gap="2">
               <Text size="5" weight="bold">
-                SSH Key:
+                Public SSH Key:
               </Text>
             </Flex>
-            <Button variant="secondary" disabled>
-              <CopyIcon /> Copy
-            </Button>
+            <CopyButton text="" disabled />
+          </Flex>
+
+          <Flex justify="between" align="center" gap="3">
+            <Flex align="center" gap="2">
+              <Text size="5" weight="bold">
+                Secret Gen:
+              </Text>
+            </Flex>
+            <CopyButton text="" disabled />
           </Flex>
 
           <LocalMachineStats
@@ -369,9 +323,7 @@ export const PublicIpComponent = () => {
             >
               {publicIp}
             </Text>
-            <Button onClick={handlePublicCopy} variant="secondary">
-              {publicCopied ? <CheckIcon /> : <CopyIcon />}
-            </Button>
+            <CopyButton text={publicIp} />
           </Flex>
         </Flex>
 
@@ -391,23 +343,15 @@ export const PublicIpComponent = () => {
             >
               {localIp}
             </Text>
-            <Button onClick={handleLocalCopy} variant="secondary">
-              {localCopied ? <CheckIcon /> : <CopyIcon />}
-            </Button>
+            <CopyButton text={localIp} />
           </Flex>
         </Flex>
 
         <Flex justify="between" align="center" gap="3">
           <Text size="5" weight="bold">
-            SSH Key:
+            Public SSH Key:
           </Text>
-          <Button
-            onClick={handleSshCopy}
-            variant="secondary"
-            disabled={!sshKey}
-          >
-            {sshCopied ? <CheckIcon /> : <CopyIcon />}
-          </Button>
+          <CopyButton text={sshKey} disabled={!sshKey} />
         </Flex>
 
         <Flex justify="between" align="center" gap="3">
@@ -440,9 +384,15 @@ export const PublicIpComponent = () => {
               />
             </Tooltip>
           </Flex>
-          <Button onClick={handleGenerateSecret} variant="secondary">
-            {secretCopied ? <CheckIcon /> : <CopyIcon />}
-          </Button>
+          <CopyButton
+            text={async () => {
+              const response = await fetch(
+                `${API_ENDPOINTS.GENERATE_SECRET}?type=${secretType}`,
+              );
+              const data = await response.json();
+              return data.success ? data.secret : '';
+            }}
+          />
         </Flex>
 
         <LocalMachineStats
