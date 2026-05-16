@@ -64,7 +64,11 @@ function vercelEnvClear(environment: string) {
   }
 }
 
-async function vercelEnvAdd(key: string, value: string, environment: string) {
+async function vercelEnvAdd(
+  key: string,
+  value: string,
+  environment: string,
+): Promise<boolean> {
   try {
     execSync(`npx vercel env add ${key} ${environment}`, {
       input: value,
@@ -72,8 +76,10 @@ async function vercelEnvAdd(key: string, value: string, environment: string) {
       env: vercelEnv,
     });
     console.log(`✓ ${key}`);
+    return true;
   } catch (e) {
     console.error(`✗ ${key}: failed to deploy`, (e as Error).message);
+    return false;
   }
 }
 
@@ -149,11 +155,16 @@ async function main() {
   vercelEnvClear(environment);
 
   console.log('Deploying secrets...');
-  await Promise.all(
+  const results = await Promise.all(
     Object.entries(allSecrets).map(([key, value]) =>
       vercelEnvAdd(key, value, environment),
     ),
   );
+
+  const failures = results.filter(r => !r).length;
+  if (failures > 0) {
+    throw new Error(`${failures} secret(s) failed to deploy.`);
+  }
 
   console.log('\nDone!');
 }
