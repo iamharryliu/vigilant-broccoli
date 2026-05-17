@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Dialog, TextField, Text, Flex } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  ButtonList,
+  ButtonConfig,
+  moveQuickLinkFocusByDirection,
+  WINDOW_OPEN_FEATURES,
+  type Direction,
+} from '@vigilant-broccoli/react-lib';
 import {
   MagnifyingGlassIcon,
   DashboardIcon,
@@ -11,10 +18,6 @@ import {
 import { QUICK_LINKS, type QuickLink } from '../constants/quick-links';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import {
-  moveQuickLinkFocusByDirection,
-  type Direction,
-} from '../utils/focus-navigation.utils';
 
 const LOCAL_STORAGE_KEY = 'quick-links-grouped-state';
 
@@ -108,7 +111,7 @@ const openLink = (
   ) {
     handleShellExecute(link.type, link.target, link.args);
   } else {
-    window.open(link.target, '_blank', 'noopener,noreferrer');
+    window.open(link.target, '_blank', WINDOW_OPEN_FEATURES);
   }
 };
 
@@ -221,112 +224,46 @@ export function SearchDialogComponent({
     }
   };
 
-  const handleLinkKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      e.currentTarget.click();
-      return;
-    }
-
-    if (
-      e.key !== 'ArrowDown' &&
-      e.key !== 'ArrowUp' &&
-      e.key !== 'ArrowRight' &&
-      e.key !== 'ArrowLeft'
-    ) {
-      return;
-    }
-
-    e.preventDefault();
-    const direction: Direction =
-      e.key === 'ArrowDown'
-        ? 'down'
-        : e.key === 'ArrowUp'
-          ? 'up'
-          : e.key === 'ArrowRight'
-            ? 'right'
-            : 'left';
-    moveQuickLinkFocusByDirection({
-      contentRoot: contentRef.current,
-      searchInput: searchInputRef.current,
-      currentElement: e.currentTarget,
-      direction,
-    });
-  };
-
-  const renderLink = (link: QuickLink, index: number) => {
-    const baseClass =
-      'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-[transform,background-color] duration-150 ease-out focus-visible:scale-110';
-    const uniqueKey = `${link.label}-${link.target}-${index}`;
-
-    if (
-      NON_BROWSER_TYPES.includes(
-        link.type as (typeof NON_BROWSER_TYPES)[number],
-      )
-    ) {
-      return (
-        <button
-          key={uniqueKey}
-          onClick={() => handleShellExecute(link.type, link.target, link.args)}
-          onKeyDown={handleLinkKeyDown}
-          className={`${baseClass} cursor-pointer`}
-          data-quick-link-item="true"
-        >
-          {link.label}
-        </button>
-      );
-    }
-
-    return (
-      <a
-        key={uniqueKey}
-        href={link.target}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={baseClass}
-        onKeyDown={handleLinkKeyDown}
-        data-quick-link-item="true"
-      >
-        {link.label}
-      </a>
-    );
-  };
-
-  const renderGroupedLinks = () => (
-    <>
-      {itemsWithoutSubgroup.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {itemsWithoutSubgroup.map((link, index) => renderLink(link, index))}
-        </div>
-      )}
-
-      {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
-        <div key={subgroupName}>
-          <Text size="3" weight="medium" className="mb-2">
-            {subgroupName}
-          </Text>
-          <div className="flex flex-wrap gap-2">
-            {subgroupLinks.map((link, index) => renderLink(link, index))}
-          </div>
-        </div>
-      ))}
-    </>
-  );
+  const toLinkButtonConfig = (link: QuickLink): ButtonConfig => ({
+    label: link.label,
+    onClick: NON_BROWSER_TYPES.includes(
+      link.type as (typeof NON_BROWSER_TYPES)[number],
+    )
+      ? () => handleShellExecute(link.type, link.target, link.args)
+      : () => window.open(link.target, '_blank', WINDOW_OPEN_FEATURES),
+    isExternal: !NON_BROWSER_TYPES.includes(
+      link.type as (typeof NON_BROWSER_TYPES)[number],
+    ),
+  });
 
   const renderContent = () =>
     isGrouped ? (
-      renderGroupedLinks()
+      <>
+        {itemsWithoutSubgroup.length > 0 && (
+          <ButtonList buttons={itemsWithoutSubgroup.map(toLinkButtonConfig)} />
+        )}
+        {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
+          <div key={subgroupName}>
+            <Text size="3" weight="medium" className="mb-2">
+              {subgroupName}
+            </Text>
+            <ButtonList buttons={subgroupLinks.map(toLinkButtonConfig)} />
+          </div>
+        ))}
+      </>
     ) : (
-      <div className="flex flex-wrap gap-2">
-        {sortedLinks.map((link, index) => renderLink(link, index))}
-      </div>
+      <ButtonList buttons={sortedLinks.map(toLinkButtonConfig)} />
     );
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       {externalOpen === undefined && (
         <Dialog.Trigger>
-          <Button size="icon" variant="secondary" aria-label="Search Quick Links">
+          <Button
+            size="icon"
+            variant="secondary"
+            aria-label="Search Quick Links"
+          >
             <MagnifyingGlassIcon />
           </Button>
         </Dialog.Trigger>

@@ -1,13 +1,14 @@
 'use client';
 
-import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import {
-  buttonVariants,
+  ButtonList,
+  ButtonConfig,
   StatusCardList,
   StatusCardListItem,
+  WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -87,20 +88,15 @@ const toItem = (profile: AwsProfile): StatusCardListItem => ({
           ARN: {profile.identity.arn}
         </Text>
       )}
-      <Flex gap="2" wrap="wrap">
-        {Object.entries(getProfileUrls(profile.region)).map(([key, url]) => (
-          <a
-            key={key}
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-          >
-            {CONSOLE_LABELS[key]}
-            <ExternalLinkIcon width="12" height="12" />
-          </a>
-        ))}
-      </Flex>
+      <ButtonList
+        buttons={Object.entries(getProfileUrls(profile.region)).map(
+          ([key, url]): ButtonConfig => ({
+            label: CONSOLE_LABELS[key],
+            onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
+            isExternal: true,
+          }),
+        )}
+      />
     </>
   ),
 });

@@ -1,5 +1,14 @@
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
+export const ARROW_KEYS = [
+  'ArrowDown',
+  'ArrowUp',
+  'ArrowRight',
+  'ArrowLeft',
+] as const;
+export const QUICK_LINK_ITEM_SELECTOR = '[data-quick-link-item="true"]';
+export const QUICK_LINK_ITEM_ATTR = 'data-quick-link-item';
+
 type FocusNode = { element: HTMLElement; centerX: number; centerY: number };
 
 type MoveFocusByDirectionOptions = {
@@ -11,7 +20,7 @@ type MoveFocusByDirectionOptions = {
   itemSelector?: string;
 };
 
-const DEFAULT_ITEM_SELECTOR = '[data-quick-link-item="true"]';
+const DEFAULT_ITEM_SELECTOR = QUICK_LINK_ITEM_SELECTOR;
 const DEFAULT_ROW_TOLERANCE = 14;
 
 const getFocusableLinks = (

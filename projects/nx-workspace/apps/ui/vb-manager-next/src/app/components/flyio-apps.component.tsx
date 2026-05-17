@@ -2,9 +2,11 @@
 
 import { Badge, Flex, Link } from '@radix-ui/themes';
 import {
-  buttonVariants,
+  ButtonList,
+  ButtonConfig,
   StatusCardList,
   StatusCardListItem,
+  WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { ExternalLinkIcon } from '@radix-ui/react-icons';
@@ -47,6 +49,14 @@ const dashboardLink = (
   </Link>
 );
 
+const FLY_BASE = 'https://fly.io/apps';
+
+const getAppUrls = (appName: string) => ({
+  App: `${FLY_BASE}/${appName}`,
+  Secrets: `${FLY_BASE}/${appName}/secrets`,
+  Monitoring: `${FLY_BASE}/${appName}/monitoring`,
+});
+
 const toItem = (app: FlyApp): StatusCardListItem => ({
   id: app.name,
   label: app.name,
@@ -56,15 +66,15 @@ const toItem = (app: FlyApp): StatusCardListItem => ({
     </Badge>
   ),
   children: (
-    <a
-      href={`https://fly.io/apps/${app.name}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-    >
-      fly.io/apps/{app.name}
-      <ExternalLinkIcon width="12" height="12" />
-    </a>
+    <ButtonList
+      buttons={Object.entries(getAppUrls(app.name)).map(
+        ([label, url]): ButtonConfig => ({
+          label,
+          onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
+          isExternal: true,
+        }),
+      )}
+    />
   ),
 });
 

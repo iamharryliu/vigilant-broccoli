@@ -1,16 +1,19 @@
 'use client';
 
 import { Text, TextField, Flex } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  ButtonList,
+  ButtonConfig,
+  moveQuickLinkFocusByDirection,
+  WINDOW_OPEN_FEATURES,
+  type Direction,
+} from '@vigilant-broccoli/react-lib';
 import { useRef, useState } from 'react';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { CardContainer } from './card-container.component';
 import { DashboardIcon, ListBulletIcon } from '@radix-ui/react-icons';
-import {
-  moveQuickLinkFocusByDirection,
-  type Direction,
-} from '../utils/focus-navigation.utils';
 
 interface LinkItem {
   label: string;
@@ -151,89 +154,32 @@ export function LinkGroupComponent({
     });
   };
 
-  const handleLinkKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      e.currentTarget.click();
-      return;
-    }
-
-    if (
-      e.key !== 'ArrowDown' &&
-      e.key !== 'ArrowUp' &&
-      e.key !== 'ArrowRight' &&
-      e.key !== 'ArrowLeft'
-    ) {
-      return;
-    }
-
-    e.preventDefault();
-    const direction: Direction =
-      e.key === 'ArrowDown'
-        ? 'down'
-        : e.key === 'ArrowUp'
-          ? 'up'
-          : e.key === 'ArrowRight'
-            ? 'right'
-            : 'left';
-    moveQuickLinkFocusByDirection({
-      contentRoot: contentRef.current,
-      searchInput: searchInputRef.current,
-      currentElement: e.currentTarget,
-      direction,
-    });
-  };
-
-  const renderLink = (link: LinkItem, index: number) => {
-    const baseClass =
-      'inline-flex justify-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-medium w-fit transition-[transform,background-color] duration-150 ease-out focus-visible:scale-110';
-    const uniqueKey = `${link.label}-${link.target}-${index}`;
-
+  const toLinkButtonConfig = (link: LinkItem): ButtonConfig => {
     if (
       link.type === OPEN_TYPE.MAC_APPLICATION ||
       link.type === OPEN_TYPE.VSCODE ||
       link.type === OPEN_TYPE.FILE_SYSTEM
     ) {
-      return (
-        <button
-          key={uniqueKey}
-          onClick={() => handleShellExecute(link.type, link.target, link.args)}
-          className={`${baseClass} cursor-pointer`}
-          onKeyDown={handleLinkKeyDown}
-          data-quick-link-item="true"
-        >
-          {link.label}
-        </button>
-      );
+      return {
+        label: link.label,
+        onClick: () => handleShellExecute(link.type, link.target, link.args),
+      };
     }
 
     if (link.type === OPEN_TYPE.INTERNAL) {
-      return (
-        <a
-          key={uniqueKey}
-          href={link.target}
-          className={baseClass}
-          onKeyDown={handleLinkKeyDown}
-          data-quick-link-item="true"
-        >
-          {link.label}
-        </a>
-      );
+      return {
+        label: link.label,
+        onClick: () => {
+          window.location.href = link.target;
+        },
+      };
     }
 
-    return (
-      <a
-        key={uniqueKey}
-        href={link.target}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={baseClass}
-        onKeyDown={handleLinkKeyDown}
-        data-quick-link-item="true"
-      >
-        {link.label}
-      </a>
-    );
+    return {
+      label: link.label,
+      onClick: () => window.open(link.target, '_blank', WINDOW_OPEN_FEATURES),
+      isExternal: true,
+    };
   };
 
   return (
@@ -266,11 +212,9 @@ export function LinkGroupComponent({
         {isGrouped ? (
           <div className="flex flex-col gap-4">
             {itemsWithoutSubgroup.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {itemsWithoutSubgroup.map((link, index) =>
-                  renderLink(link, index),
-                )}
-              </div>
+              <ButtonList
+                buttons={itemsWithoutSubgroup.map(toLinkButtonConfig)}
+              />
             )}
 
             {subgroupEntries.map(([subgroupName, subgroupLinks]) => (
@@ -278,16 +222,12 @@ export function LinkGroupComponent({
                 <Text size="3" weight="medium" className="mb-2">
                   {subgroupName}
                 </Text>
-                <div className="flex flex-wrap gap-2">
-                  {subgroupLinks.map((link, index) => renderLink(link, index))}
-                </div>
+                <ButtonList buttons={subgroupLinks.map(toLinkButtonConfig)} />
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-wrap gap-2">
-            {sortedLinks.map((link, index) => renderLink(link, index))}
-          </div>
+          <ButtonList buttons={sortedLinks.map(toLinkButtonConfig)} />
         )}
       </div>
 

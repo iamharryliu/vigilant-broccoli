@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Box, Heading, Switch, Text } from '@radix-ui/themes';
+import { Box, Heading, Switch, Text, Flex, Theme } from '@radix-ui/themes';
+import { Moon, Sun } from 'lucide-react';
 import { ButtonDemo } from './components/demos/ButtonDemo';
 import { CollapsibleListItemDemo } from './components/demos/CollapsibleListItemDemo';
 import { CRUDListNoImagesDemo } from './components/demos/CRUDListNoImagesDemo';
@@ -121,21 +122,31 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
 ];
 
 export function App() {
+  const [dark, setDark] = useState(false);
+  const appearance = dark ? 'dark' : 'light';
+
   return (
-    <Box className="w-full min-h-screen">
-      <div className="p-6 max-w-4xl mx-auto">
-        <Heading size="8" mb="2">
-          Component Sandbox
-        </Heading>
-        <Text color="gray" size="4" mb="6">
-          Interactive component showcase and testing playground
-        </Text>
-        <CollapsibleList
-          items={COMPONENT_SECTIONS}
-          storageKeyPrefix={STORAGE_KEY}
-        />
-      </div>
-    </Box>
+    <Theme appearance={appearance}>
+      <Box className={`${appearance} w-full min-h-screen`}>
+        <div className="p-6 max-w-4xl mx-auto">
+          <Flex justify="between" align="center" mb="2">
+            <Heading size="8">Component Sandbox</Heading>
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <Sun size={14} />
+              <Switch checked={dark} onCheckedChange={setDark} />
+              <Moon size={14} />
+            </label>
+          </Flex>
+          <Text color="gray" size="4" mb="6">
+            Interactive component showcase and testing playground
+          </Text>
+          <CollapsibleList
+            items={COMPONENT_SECTIONS}
+            storageKeyPrefix={STORAGE_KEY}
+          />
+        </div>
+      </Box>
+    </Theme>
   );
 }
 

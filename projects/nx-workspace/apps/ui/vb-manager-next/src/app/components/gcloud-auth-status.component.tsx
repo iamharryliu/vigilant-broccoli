@@ -4,13 +4,14 @@ import { Flex, Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
   Button,
-  buttonVariants,
+  ButtonList,
+  ButtonConfig,
   MonospaceText,
   StatusCardList,
   StatusCardListItem,
+  WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -159,20 +160,15 @@ const toProjectItem = (
     </Button>
   ) : undefined,
   children: (
-    <Flex gap="2" wrap="wrap">
-      {Object.entries(getProjectUrls(project.projectId)).map(([key, url]) => (
-        <a
-          key={key}
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-        >
-          {BUTTON_LABELS[key]}
-          <ExternalLinkIcon width="12" height="12" />
-        </a>
-      ))}
-    </Flex>
+    <ButtonList
+      buttons={Object.entries(getProjectUrls(project.projectId)).map(
+        ([key, url]): ButtonConfig => ({
+          label: BUTTON_LABELS[key],
+          onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
+          isExternal: true,
+        }),
+      )}
+    />
   ),
 });
 

@@ -1,18 +1,16 @@
 'use client';
 
 import { Box, Text, Callout, Flex } from '@radix-ui/themes';
-import { Button, buttonVariants } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  ButtonList,
+  ButtonConfig,
+  WINDOW_OPEN_FEATURES,
+} from '@vigilant-broccoli/react-lib';
 import { Skeleton } from './skeleton.component';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  AlertCircle,
-  ChevronRight,
-  Users,
-  ExternalLink,
-  List,
-  Rows3,
-} from 'lucide-react';
+import { AlertCircle, ChevronRight, Users, List, Rows3 } from 'lucide-react';
 import { CardContainer } from './card-container.component';
 import { GithubOrgBasic } from '@vigilant-broccoli/common-js';
 
@@ -150,25 +148,20 @@ const OrganizationItem = ({
       </Box>
       <ChevronRight size={16} style={{ opacity: 0.3 }} />
     </Box>
-    <Flex
-      gap="2"
-      wrap="wrap"
+    <div
       className={`quick-links ${detailedView ? 'expanded' : ''}`}
+      onClick={e => e.stopPropagation()}
     >
-      {Object.entries(getOrgUrls(organization.login)).map(([key, url]) => (
-        <a
-          key={key}
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-          onClick={e => e.stopPropagation()}
-        >
-          {BUTTON_LABELS[key]}
-          <ExternalLink size={12} />
-        </a>
-      ))}
-    </Flex>
+      <ButtonList
+        buttons={Object.entries(getOrgUrls(organization.login)).map(
+          ([key, url]): ButtonConfig => ({
+            label: BUTTON_LABELS[key],
+            onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
+            isExternal: true,
+          }),
+        )}
+      />
+    </div>
   </Box>
 );
 

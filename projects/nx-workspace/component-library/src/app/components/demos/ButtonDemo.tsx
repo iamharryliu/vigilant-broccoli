@@ -4,18 +4,46 @@ import {
   Mail,
   Search,
   Moon,
-  Calendar,
   Trash2,
-  Play,
-  Square,
+  ExternalLink,
+  ArrowRight,
 } from 'lucide-react';
 import {
   Button,
+  ButtonList,
+  ButtonConfig,
   CopyButton,
   MonospaceText,
   GoogleSigninButton,
   MicrosoftSigninButton,
 } from '@vigilant-broccoli/react-lib';
+
+const BUTTON_LIST_BUTTONS: ButtonConfig[] = [
+  'GitHub',
+  'Google',
+  'YouTube',
+  'LinkedIn',
+  'Spotify',
+  'Notion',
+  'Figma',
+  'Vercel',
+  'Slack',
+  'Discord',
+  'Twitch',
+  'Reddit',
+  'Twitter',
+  'Instagram',
+  'Facebook',
+  'TikTok',
+  'AWS',
+  'GCP',
+  'Azure',
+  'Cloudflare',
+  'Heroku',
+  'Railway',
+  'Supabase',
+  'Firebase',
+].map(label => ({ label, onClick: () => alert(label) }));
 
 export function ButtonDemo() {
   return (
@@ -39,6 +67,7 @@ export function ButtonDemo() {
           Sizes
         </Heading>
         <Flex gap="3" align="center">
+          <Button size="xs">XSmall</Button>
           <Button size="sm">Small</Button>
           <Button size="default">Default</Button>
           <Button size="lg">Large</Button>
@@ -83,34 +112,21 @@ export function ButtonDemo() {
 
       <div>
         <Heading size="4" mb="3">
-          Controls
+          Inline Icons
         </Heading>
         <Flex gap="3" align="center">
-          <Button size="icon" variant="ghost" title="Play">
-            <Play size={14} />
+          <Button>
+            <ArrowRight size={14} className="shrink-0" />
+            inline-start
           </Button>
-          <Button size="icon" variant="ghost" title="Stop">
-            <Square size={14} />
+          <Button>
+            inline-end
+            <ExternalLink size={14} className="shrink-0" />
           </Button>
-          <Button size="icon" variant="ghost" disabled title="Disabled">
-            <Play size={14} />
-          </Button>
-        </Flex>
-      </div>
-
-      <div>
-        <Heading size="4" mb="3">
-          Calendar
-        </Heading>
-        <Flex gap="3" align="center">
-          <Button size="icon" variant="outline" title="Calendar sm">
-            <Calendar size={14} />
-          </Button>
-          <Button size="icon" variant="outline" title="Calendar md">
-            <Calendar size={16} />
-          </Button>
-          <Button size="icon" variant="outline" title="Calendar lg">
-            <Calendar size={20} />
+          <Button variant="secondary">
+            <ArrowRight size={14} className="shrink-0" />
+            Both
+            <ExternalLink size={14} className="shrink-0" />
           </Button>
         </Flex>
       </div>
@@ -153,6 +169,13 @@ export function ButtonDemo() {
           <GoogleSigninButton />
           <MicrosoftSigninButton />
         </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Button List
+        </Heading>
+        <ButtonList buttons={BUTTON_LIST_BUTTONS} />
       </div>
     </Flex>
   );

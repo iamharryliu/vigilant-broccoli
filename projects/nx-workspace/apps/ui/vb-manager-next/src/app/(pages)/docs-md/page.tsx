@@ -136,7 +136,7 @@ function DocsPageContent() {
   const isSearchMode = searchQuery.trim().length > 0;
 
   return (
-    <div className="h-[calc(100vh-120px)] flex gap-4">
+    <div className="h-full flex gap-4">
       {/* File Tree / Search Results Sidebar */}
       <Card className="w-80 flex-shrink-0 overflow-hidden flex flex-col">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -212,7 +212,7 @@ export default function DocsPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center h-[calc(100vh-120px)] text-gray-500">
+        <div className="flex items-center justify-center h-full text-gray-500">
           Loading...
         </div>
       }
