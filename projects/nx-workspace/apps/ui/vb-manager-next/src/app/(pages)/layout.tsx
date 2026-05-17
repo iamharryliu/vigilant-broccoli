@@ -36,6 +36,7 @@ type KeyboardHandlers = {
   setNotepadDialogOpen: (open: boolean) => void;
   setWeatherDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
+  setUtilitiesDialogOpen: (open: boolean) => void;
   toggleTheme: () => void;
 };
 
@@ -74,6 +75,9 @@ const processKeyboardInput = (
         return true;
       }
       return false;
+    case 'u':
+      handlers.setUtilitiesDialogOpen(true);
+      return true;
     case 'd':
       handlers.toggleTheme();
       return true;
@@ -106,6 +110,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [notepadDialogOpen, setNotepadDialogOpen] = useState(false);
   const [weatherDialogOpen, setWeatherDialogOpen] = useState(false);
   const [pomodoroDialogOpen, setPomodoroDialogOpen] = useState(false);
+  const [utilitiesDialogOpen, setUtilitiesDialogOpen] = useState(false);
 
   const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
   const dropdownRoutes = allRoutes.filter(
@@ -127,6 +132,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         setNotepadDialogOpen,
         setWeatherDialogOpen,
         setPomodoroDialogOpen,
+        setUtilitiesDialogOpen,
         toggleTheme,
       });
     };
@@ -179,7 +185,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             ) : (
               <Button
                 variant="secondary"
-                onClick={() => { signIn('google'); }}
+                onClick={() => {
+                  signIn('google');
+                }}
                 style={{ cursor: 'pointer' }}
               >
                 Sign In
@@ -214,6 +222,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         setWeatherDialogOpen={setWeatherDialogOpen}
         pomodoroDialogOpen={pomodoroDialogOpen}
         setPomodoroDialogOpen={setPomodoroDialogOpen}
+        utilitiesDialogOpen={utilitiesDialogOpen}
+        setUtilitiesDialogOpen={setUtilitiesDialogOpen}
       />
     </div>
   );

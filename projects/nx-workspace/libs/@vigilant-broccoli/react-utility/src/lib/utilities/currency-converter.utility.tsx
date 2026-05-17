@@ -78,7 +78,7 @@ export const CurrencyConverterUtilityContent = () => {
 
     setLoading(true);
     const response = await fetch(
-      `${API_BASE_URL}/latest?base=${fromCurrency}&currencies=${toCurrency}`
+      `${API_BASE_URL}/latest?base=${fromCurrency}&currencies=${toCurrency}`,
     );
     const data = await response.json();
 
@@ -112,19 +112,20 @@ export const CurrencyConverterUtilityContent = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    convertCurrency().then((convertedValue) => {
-      saveToHistory(convertedValue);
-    });
+    convertCurrency().then(saveToHistory);
   };
 
   return (
     <Flex direction="column" gap="2">
       <form onSubmit={handleSubmit}>
         <Flex gap="2" align="center">
-          <Select.Root value={fromCurrency} onValueChange={handleFromCurrencyChange}>
+          <Select.Root
+            value={fromCurrency}
+            onValueChange={handleFromCurrencyChange}
+          >
             <Select.Trigger />
             <Select.Content>
-              {POPULAR_CURRENCIES.map((currency) => (
+              {POPULAR_CURRENCIES.map(currency => (
                 <Select.Item key={currency.code} value={currency.code}>
                   {currency.code}
                 </Select.Item>
@@ -140,10 +141,13 @@ export const CurrencyConverterUtilityContent = () => {
             step="0.01"
             style={{ flex: 1 }}
           />
-          <Select.Root value={toCurrency} onValueChange={handleToCurrencyChange}>
+          <Select.Root
+            value={toCurrency}
+            onValueChange={handleToCurrencyChange}
+          >
             <Select.Trigger />
             <Select.Content>
-              {POPULAR_CURRENCIES.map((currency) => (
+              {POPULAR_CURRENCIES.map(currency => (
                 <Select.Item key={currency.code} value={currency.code}>
                   {currency.code}
                 </Select.Item>
@@ -174,8 +178,14 @@ export const CurrencyConverterUtilityContent = () => {
           </Flex>
           <ScrollArea style={{ maxHeight: '200px' }}>
             <Flex direction="column" gap="1">
-              {history.map((entry) => (
-                <Flex key={entry.timestamp} justify="between" align="center" py="1" style={{ borderBottom: '1px solid var(--gray-a5)' }}>
+              {history.map(entry => (
+                <Flex
+                  key={entry.timestamp}
+                  justify="between"
+                  align="center"
+                  py="1"
+                  style={{ borderBottom: '1px solid var(--gray-a5)' }}
+                >
                   <Text size="1" color="gray">
                     {entry.amount} {entry.fromCurrency} → {entry.toCurrency}
                   </Text>

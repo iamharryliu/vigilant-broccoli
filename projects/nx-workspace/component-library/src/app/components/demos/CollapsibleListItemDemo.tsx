@@ -5,23 +5,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '../ui/accordion';
+import { CollapsibleList } from '@vigilant-broccoli/react-lib';
 
 export const CollapsibleListItemDemo = () => (
   <Flex direction="column" gap="6">
-    <div>
-      <Heading size="4" mb="3">
-        Basic Usage
-      </Heading>
-      <Accordion type="single" collapsible>
-        <AccordionItem value="basic">
-          <AccordionTrigger>Simple Collapsible</AccordionTrigger>
-          <AccordionContent>
-            <Text>This is the content inside the collapsible item.</Text>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
-
     <div>
       <Heading size="4" mb="3">
         With Rich Content
@@ -77,6 +64,32 @@ export const CollapsibleListItemDemo = () => (
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+    </div>
+    <div>
+      <Heading size="4" mb="3">
+        Chevron Left
+      </Heading>
+      <CollapsibleList
+        chevronPosition="left"
+        items={[
+          {
+            id: 'a',
+            title: 'Item A',
+            content: <Text>Content for item A</Text>,
+          },
+          {
+            id: 'b',
+            title: 'Item B',
+            content: <Text>Content for item B</Text>,
+            defaultOpen: true,
+          },
+          {
+            id: 'c',
+            title: 'Item C',
+            content: <Text>Content for item C</Text>,
+          },
+        ]}
+      />
     </div>
   </Flex>
 );

@@ -1,13 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  Button,
-  Flex,
-  ScrollArea,
-  Text,
-  TextField,
-} from '@radix-ui/themes';
+import { Badge, Flex, ScrollArea, Text, TextField } from '@radix-ui/themes';
+import { Button, Progress } from '@vigilant-broccoli/react-lib';
 import { useEffect, useRef, useState } from 'react';
 
 const STORAGE_KEY = 'vb-manager-alarms';
@@ -219,7 +213,7 @@ export const AlarmUtilityContent = () => {
           <Text size="2" color="orange">
             Enable notifications for alarm alerts
           </Text>
-          <Button size="1" onClick={requestNotificationPermission}>
+          <Button size="sm" onClick={requestNotificationPermission}>
             Enable Notifications
           </Button>
         </Flex>
@@ -255,7 +249,7 @@ export const AlarmUtilityContent = () => {
               }}
             />
           </Flex>
-          <Button size="3" onClick={handleAddAlarm} disabled={!newTime}>
+          <Button onClick={handleAddAlarm} disabled={!newTime}>
             Add
           </Button>
         </Flex>
@@ -295,8 +289,8 @@ export const AlarmUtilityContent = () => {
                     <Flex gap="2">
                       {alarm.triggered ? (
                         <Button
-                          size="1"
-                          color="red"
+                          size="sm"
+                          variant="destructive"
                           onClick={() => handleDeleteAlarm(alarm.id)}
                         >
                           Stop Alarm
@@ -304,16 +298,15 @@ export const AlarmUtilityContent = () => {
                       ) : (
                         <>
                           <Button
-                            size="1"
-                            variant={alarm.enabled ? 'soft' : 'outline'}
+                            size="sm"
+                            variant={alarm.enabled ? 'secondary' : 'outline'}
                             onClick={() => handleToggleAlarm(alarm.id)}
                           >
                             {alarm.enabled ? 'Disable' : 'Enable'}
                           </Button>
                           <Button
-                            size="1"
-                            color="red"
-                            variant="soft"
+                            size="sm"
+                            variant="destructive"
                             onClick={() => handleDeleteAlarm(alarm.id)}
                           >
                             Delete
@@ -324,24 +317,7 @@ export const AlarmUtilityContent = () => {
                   </Flex>
                   {alarm.enabled && !alarm.triggered && (
                     <Flex direction="column" gap="1">
-                      <div
-                        style={{
-                          width: '100%',
-                          height: '4px',
-                          backgroundColor: 'var(--gray-5)',
-                          borderRadius: '2px',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: `${progress}%`,
-                            height: '100%',
-                            backgroundColor: 'var(--accent-9)',
-                            transition: 'width 0.3s ease',
-                          }}
-                        />
-                      </div>
+                      <Progress value={progress} />
                       <Text size="1" color="gray">
                         {Math.round(progress)}% complete
                       </Text>

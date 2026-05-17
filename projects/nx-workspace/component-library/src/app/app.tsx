@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Box, Heading, Switch, Text, Flex, Theme } from '@radix-ui/themes';
+import { Box, Heading, Text, Flex, Theme } from '@radix-ui/themes';
+import { Switch } from '@vigilant-broccoli/react-lib';
 import { Moon, Sun } from 'lucide-react';
 import { ButtonDemo } from './components/demos/ButtonDemo';
 import { CollapsibleListItemDemo } from './components/demos/CollapsibleListItemDemo';
@@ -8,16 +9,32 @@ import { CRUDListWithImagesDemo } from './components/demos/CRUDListWithImagesDem
 import { SelectDemo } from './components/demos/SelectDemo';
 import { ErrorDemo } from './components/demos/ErrorDemo';
 import { StatusCardListDemo } from './components/demos/StatusCardListDemo';
+import { TabsDemo } from './components/demos/TabsDemo';
+import { SwitchDemo } from './components/demos/SwitchDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
 } from '@vigilant-broccoli/react-lib';
+import {
+  AlarmUtilityContent,
+  CalculatorUtilityContent,
+  CookingConversionsUtilityContent,
+  CurrencyConverterUtilityContent,
+  StopwatchUtilityContent,
+  TimerUtilityContent,
+} from '@vigilant-broccoli/react-utility';
 
 const STORAGE_KEY = 'component-sandbox';
+const STORAGE_KEY_UTILITIES = `${STORAGE_KEY}-utilities`;
 const CRUD_STORAGE_KEYS = {
   IS_CARDS: `${STORAGE_KEY}-crud-is-cards`,
   SHOW_ELLIPSIS: `${STORAGE_KEY}-crud-show-ellipsis`,
 };
+const TAB = { COMPONENTS: 'components', UTILITIES: 'utilities' } as const;
 
 const CRUDListSection = () => {
   const [isCards, setIsCards] = useState(false);
@@ -93,32 +110,36 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
     content: <ErrorDemo />,
   },
   {
-    id: 'collapsible-list-chevron-left',
-    title: 'Collapsible List (Chevron Left)',
-    content: (
-      <CollapsibleList
-        chevronPosition="left"
-        items={[
-          {
-            id: 'a',
-            title: 'Item A',
-            content: <span>Content for item A</span>,
-          },
-          {
-            id: 'b',
-            title: 'Item B',
-            content: <span>Content for item B</span>,
-            defaultOpen: true,
-          },
-          {
-            id: 'c',
-            title: 'Item C',
-            content: <span>Content for item C</span>,
-          },
-        ]}
-      />
-    ),
+    id: 'tabs',
+    title: 'Tabs',
+    content: <TabsDemo />,
   },
+  {
+    id: 'switch',
+    title: 'Switch',
+    content: <SwitchDemo />,
+  },
+];
+
+const UTILITY_SECTIONS: CollapsibleListItemConfig[] = [
+  {
+    id: 'calculator',
+    title: 'Calculator',
+    content: <CalculatorUtilityContent />,
+  },
+  {
+    id: 'currency-converter',
+    title: 'Currency Converter',
+    content: <CurrencyConverterUtilityContent />,
+  },
+  {
+    id: 'cooking-conversions',
+    title: 'Cooking Conversions',
+    content: <CookingConversionsUtilityContent />,
+  },
+  { id: 'stopwatch', title: 'Stopwatch', content: <StopwatchUtilityContent /> },
+  { id: 'timer', title: 'Timer', content: <TimerUtilityContent /> },
+  { id: 'alarm', title: 'Alarm', content: <AlarmUtilityContent /> },
 ];
 
 export function App() {
@@ -140,10 +161,24 @@ export function App() {
           <Text color="gray" size="4" mb="6">
             Interactive component showcase and testing playground
           </Text>
-          <CollapsibleList
-            items={COMPONENT_SECTIONS}
-            storageKeyPrefix={STORAGE_KEY}
-          />
+          <Tabs defaultValue={TAB.COMPONENTS}>
+            <TabsList className="mb-4">
+              <TabsTrigger value={TAB.COMPONENTS}>Components</TabsTrigger>
+              <TabsTrigger value={TAB.UTILITIES}>Utilities</TabsTrigger>
+            </TabsList>
+            <TabsContent value={TAB.COMPONENTS}>
+              <CollapsibleList
+                items={COMPONENT_SECTIONS}
+                storageKeyPrefix={STORAGE_KEY}
+              />
+            </TabsContent>
+            <TabsContent value={TAB.UTILITIES}>
+              <CollapsibleList
+                items={UTILITY_SECTIONS}
+                storageKeyPrefix={STORAGE_KEY_UTILITIES}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </Box>
     </Theme>

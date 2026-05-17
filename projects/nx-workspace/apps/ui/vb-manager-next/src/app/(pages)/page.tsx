@@ -1,7 +1,6 @@
 'use client';
 
 import { TaskListSelectorComponent } from '../components/task-list-selector.component';
-import { UtilitiesComponent } from '../components/utilities.component';
 import { NotepadEditorComponent } from '../components/notepad-editor.component';
 import { useAppMode, APP_MODE } from '../app-mode-context';
 import { ModeTransitionWrapper } from '../components/mode-transition-wrapper.component';
@@ -80,7 +79,7 @@ export default function Page() {
   const { appMode } = useAppMode();
 
   return (
-    <div className="grid grid-cols-4 gap-4 h-full mb-4">
+    <div className="grid grid-cols-3 gap-4 h-full mb-4">
       <div className="flex flex-col h-full">
         <ModeTransitionWrapper modeKey={appMode} className="h-full">
           {appMode === APP_MODE.PERSONAL ? (
@@ -116,11 +115,6 @@ export default function Page() {
         >
           <NotepadEditorComponent style={{ flex: 1 }} />
         </div>
-      </div>
-      <div className="flex flex-col gap-4">
-        <ModeTransitionWrapper modeKey={appMode}>
-          <UtilitiesComponent />
-        </ModeTransitionWrapper>
       </div>
     </div>
   );

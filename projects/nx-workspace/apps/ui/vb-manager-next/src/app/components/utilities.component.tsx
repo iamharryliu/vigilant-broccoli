@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { CardContainer } from './card-container.component';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -14,10 +13,10 @@ import {
   AlarmUtilityContent,
   CalculatorUtilityContent,
   CookingConversionsUtilityContent,
+  CurrencyConverterUtilityContent,
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
-import { CurrencyConverterUtilityContent } from './utilities/currency-converter.utility';
 
 export const UtilitiesComponent = () => {
   const { appMode } = useAppMode();
@@ -80,9 +79,5 @@ export const UtilitiesComponent = () => {
     return items;
   }, [appMode]);
 
-  return (
-    <CardContainer title="Utilities" gap="3">
-      <CollapsibleList items={utilityItems} storageKeyPrefix="utilities" />
-    </CardContainer>
-  );
+  return <CollapsibleList items={utilityItems} storageKeyPrefix="utilities" />;
 };

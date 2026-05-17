@@ -9,6 +9,7 @@ import { CalendarDialog } from './calendar-dialog.component';
 import { NotepadDialog } from './notepad-dialog.component';
 import { WeatherDialog } from './weather-dialog.component';
 import { PomodoroDialog } from './pomodoro-dialog.component';
+import { UtilitiesDialog } from './utilities-dialog.component';
 import { usePomodoro } from '../hooks/usePomodoro';
 import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
@@ -38,6 +39,8 @@ interface FloatingIslandProps {
   setWeatherDialogOpen?: (open: boolean) => void;
   pomodoroDialogOpen?: boolean;
   setPomodoroDialogOpen?: (open: boolean) => void;
+  utilitiesDialogOpen?: boolean;
+  setUtilitiesDialogOpen?: (open: boolean) => void;
 }
 
 const isWeekPlanningVisible = (): boolean => {
@@ -102,6 +105,8 @@ export const FloatingIslandComponent = ({
   setWeatherDialogOpen: externalSetWeatherOpen,
   pomodoroDialogOpen: externalPomodoroOpen,
   setPomodoroDialogOpen: externalSetPomodoroOpen,
+  utilitiesDialogOpen: externalUtilitiesOpen,
+  setUtilitiesDialogOpen: externalSetUtilitiesOpen,
 }: FloatingIslandProps = {}) => {
   const { appMode, setAppMode } = useAppMode();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -118,6 +123,8 @@ export const FloatingIslandComponent = ({
   const [internalWeatherDialogOpen, setInternalWeatherDialogOpen] =
     useState(false);
   const [internalPomodoroDialogOpen, setInternalPomodoroDialogOpen] =
+    useState(false);
+  const [internalUtilitiesDialogOpen, setInternalUtilitiesDialogOpen] =
     useState(false);
   const pomodoro = usePomodoro();
   const { weatherData, loading: weatherLoading } = useWeather();
@@ -224,6 +231,12 @@ export const FloatingIslandComponent = ({
   );
   const setPomodoroDialogOpen =
     externalSetPomodoroOpen ?? setInternalPomodoroDialogOpen;
+  const utilitiesDialogOpen = getDialogState(
+    externalUtilitiesOpen,
+    internalUtilitiesDialogOpen,
+  );
+  const setUtilitiesDialogOpen =
+    externalSetUtilitiesOpen ?? setInternalUtilitiesDialogOpen;
 
   return (
     <>
@@ -387,6 +400,10 @@ export const FloatingIslandComponent = ({
         open={pomodoroDialogOpen}
         onOpenChange={setPomodoroDialogOpen}
         pomodoro={pomodoro}
+      />
+      <UtilitiesDialog
+        open={utilitiesDialogOpen}
+        onOpenChange={setUtilitiesDialogOpen}
       />
     </>
   );

@@ -14,3 +14,6 @@ export * from './StackedImages';
 export * from './CollapsibleList';
 export * from './MonospaceText';
 export * from './StatusCardList';
+export * from './Tabs';
+export * from './Progress';
+export * from './Switch';

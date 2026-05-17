@@ -3,3 +3,4 @@ export * from './lib/utilities/cooking-conversions.utility';
 export * from './lib/utilities/stopwatch.utility';
 export * from './lib/utilities/timer.utility';
 export * from './lib/utilities/alarm.utility';
+export * from './lib/utilities/currency-converter.utility';
