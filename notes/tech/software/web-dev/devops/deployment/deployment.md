@@ -1,34 +1,32 @@
 # Deployment
 
 - [PM2](./pm2.md)
-- Deployment options
-  - VM Instance
-    - Manual
-    - Bootstrap scripts
-    - Managed instances
+- [Docker](../docker.md)
+- [Docker Compose](../docker.md#docker-compose)
+- [Terraform](../provision/terraform/terraform.md)
 
-```
-pm2 list
-sudo systemctl stop pm2-USER
-sudo systemctl start pm2-USER
+## Cloud Deployment Platforms
 
-sudo systemctl enable caddy
-systemctl is-enabled caddy
-sudo systemctl status caddy
-sudo systemctl restart caddy
+| Service                                                                     | Best For                                   | Backend Support           | Runtime Model               | Main Strengths                                                          | Main Tradeoffs                               |
+| --------------------------------------------------------------------------- | ------------------------------------------ | ------------------------- | --------------------------- | ----------------------------------------------------------------------- | -------------------------------------------- |
+| [Vercel](https://vercel.com?utm_source=chatgpt.com)                         | React/Next.js fullstack apps               | Yes                       | Serverless + edge functions | Excellent DX, preview deploys, easy CI/CD, optimized frontend workflows | Usage costs can rise with scale              |
+| [Fly.io](https://fly.io?utm_source=chatgpt.com)                             | Full apps, APIs, sockets, workers          | Yes                       | Long-running containers/VMs | Flexible infra, Docker-native, persistent services, global deployment   | More operational complexity                  |
+| [Cloudflare Pages](https://pages.cloudflare.com?utm_source=chatgpt.com)     | Static sites with light backend logic      | Limited/Yes via Functions | Edge/serverless             | Fast CDN, generous free tier, simple deployment                         | Not ideal for heavy backend workloads        |
+| [Cloudflare Workers](https://workers.cloudflare.com?utm_source=chatgpt.com) | Edge APIs, middleware, lightweight compute | Yes                       | Edge isolates               | Very low latency, scalable edge execution, good platform primitives     | Runtime constraints compared to full servers |
+| [GitHub Pages](https://pages.github.com?utm_source=chatgpt.com)             | Static sites, docs, portfolios             | No                        | Static hosting              | Extremely simple, free, integrated with GitHub repos                    | No server-side execution or dynamic backend  |
 
-docker ps
-sudo systemctl stop docker
-sudo systemctl start docker
+## Deployment compute models
 
-sudo systemctl stop docker
-sudo systemctl restart pm2-root
+| Model                                                 | Typical Products                                                                                                                                       | Execution Unit                 | State                                    | Scaling Model                                 | Primary Use Cases                                 | Key Tradeoffs                                                    |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ | ---------------------------------------- | --------------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
+| **Serverless Functions (FaaS)**                       | [Vercel Functions](https://vercel.com?utm_source=chatgpt.com), [Cloudflare Workers](https://workers.cloudflare.com?utm_source=chatgpt.com), AWS Lambda | Single function invocation     | Stateless                                | Event/request-driven auto-scale               | APIs, webhooks, auth, lightweight backend logic   | Cold starts, runtime limits, not suited for long-lived processes |
+| **Serverless Containers (CaaS / managed containers)** | [Fly.io](https://fly.io?utm_source=chatgpt.com), Cloud Run, AWS Fargate                                                                                | Container instance (Docker)    | Semi-stateful (externalized persistence) | Scale-to-zero or horizontal container scaling | Web apps, APIs, WebSockets, background workers    | More overhead than FaaS, still platform constraints              |
+| **Virtual Machines (IaaS)**                           | AWS EC2, GCE, DigitalOcean, Hetzner                                                                                                                    | Full VM (OS-level machine)     | Fully stateful                           | Manual or autoscaling groups                  | Databases, long-running services, custom infra    | Highest operational burden (patching, scaling, networking)       |
+| **Edge Compute (specialized FaaS subset)**            | [Cloudflare Workers](https://workers.cloudflare.com?utm_source=chatgpt.com), Deno Deploy                                                               | Function/runtime at edge nodes | Stateless                                | Global distributed auto-scale                 | Ultra-low latency APIs, middleware, routing, auth | Limited CPU/memory/runtime, constrained execution environment    |
 
-sudo systemctl status docker
-??
-sudo systemctl enable docker
-sudo systemctl start docker
+## Application runtime management
 
-pm2 startup
-pm2 save
-```
+| Tool                                                    | Layer             | Primary Abstraction                                | Scope                                 | Isolation                                      | Typical Use Case                                                           | Key Strengths                                                        | Key Limitations                                                            |
+| ------------------------------------------------------- | ----------------- | -------------------------------------------------- | ------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [PM2](https://pm2.keymetrics.io?utm_source=chatgpt.com) | Process manager   | Node.js / OS process lifecycle management          | Single machine                        | None (shared OS process space)                 | Running Node.js apps, keeping processes alive, clustering, log management  | Very simple, minimal overhead, fast setup for Node workloads         | No isolation, not portable across environments, weaker security boundary   |
+| [Docker](https://www.docker.com?utm_source=chatgpt.com) | Container runtime | Packaged application environment (container image) | Single machine or distributed systems | Strong OS-level isolation (namespaces/cgroups) | Shipping apps, microservices, reproducible deployments, environment parity | Strong isolation, portability, industry standard, works across infra | More complexity, build/image lifecycle required, overhead vs raw processes |

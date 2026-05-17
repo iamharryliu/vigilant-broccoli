@@ -2,11 +2,14 @@
 
 ```
 # SETUP
-npm install -g pm2
-pm2 startup
-pm2 startup launchd
-pm2 unstartup
-pm2 unstartup launchd
+npm install -g pm2        # installs PM2 globally (Node.js process manager)
+
+pm2 startup               # configures PM2 to auto-start on boot using your OS init system
+pm2 unstartup            # removes PM2 auto-start configuration from the system
+pm2 startup launchd      # sets up PM2 auto-start on macOS using launchd
+pm2 unstartup launchd    # removes PM2 auto-start setup from macOS launchd
+
+pm2 save                  # saves current running processes so they restart after reboot
 
 # CREATE
 pm2 start app.js # Start a file with default settings
