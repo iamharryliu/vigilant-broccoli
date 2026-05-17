@@ -64,4 +64,6 @@ export const VB_EXPRESS_ENDPOINT = {
   TEXT_TO_SPEECH: 'api/text-to-speech',
   VOICE_LIST: 'api/voice-list',
   LLM: 'api/llm',
+  CALENDAR_PARSE: 'api/calendar/parse',
+  TASKS_PARSE_IMAGE: 'api/tasks/parse-image',
 };

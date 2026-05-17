@@ -3,6 +3,7 @@
 import { Text } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { DATE_CONST, getISOWeekNumber } from '@vigilant-broccoli/common-js';
+import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
 
 interface ClockBlockProps {
   type: 'time' | 'info';
@@ -28,20 +29,21 @@ export const ClockComponent = ({ type = 'time' }: ClockBlockProps) => {
       const day = now.getDate().toString().padStart(2, '0');
       setCurrentDate(`${year}-${month}-${day}`);
 
-      const days = DATE_CONST.DAY
+      const days = DATE_CONST.DAY;
       setDayOfWeek(days[now.getDay()]);
 
       const weekNo = getISOWeekNumber(now);
       setWeekNumber(weekNo.toString());
 
-      const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timezoneName = getLocalTimeZone();
       const offsetMinutes = -now.getTimezoneOffset();
       const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
       const offsetMins = Math.abs(offsetMinutes) % 60;
       const offsetSign = offsetMinutes >= 0 ? '+' : '-';
-      const offsetString = offsetMins > 0
-        ? `UTC${offsetSign}${offsetHours}:${offsetMins.toString().padStart(2, '0')}`
-        : `UTC${offsetSign}${offsetHours}`;
+      const offsetString =
+        offsetMins > 0
+          ? `UTC${offsetSign}${offsetHours}:${offsetMins.toString().padStart(2, '0')}`
+          : `UTC${offsetSign}${offsetHours}`;
       setTimezone(`${timezoneName} (${offsetString})`);
     };
 
@@ -59,7 +61,14 @@ export const ClockComponent = ({ type = 'time' }: ClockBlockProps) => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'center' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.25rem',
+        textAlign: 'center',
+      }}
+    >
       <Text size="2" color="gray" className="font-mono">
         Week {weekNumber}, {dayOfWeek}, {currentDate}
       </Text>

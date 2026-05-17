@@ -36,6 +36,7 @@ import {
   EventDraftCard,
   EventDraftStatus,
 } from './event-draft-card.component';
+import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
 
 interface MessageImage {
   data: string;
@@ -830,7 +831,7 @@ export const ChatbotDialog = ({
         body: JSON.stringify({
           text: inputSnapshot,
           images: imagesSnapshot.length > 0 ? imagesSnapshot : undefined,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          timeZone: getLocalTimeZone(),
         }),
       });
 

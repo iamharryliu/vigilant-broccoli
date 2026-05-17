@@ -7,6 +7,7 @@ import {
 } from '../providers/auth-provider';
 import { GOOGLE_TOKEN_EXPIRED } from '../../../libs/api-errors';
 import { useVoiceRecorder } from '../hooks/use-voice-recorder';
+import { resizeImage } from '../utils/image.utils';
 
 type Phase = 'input' | 'analyzing' | 'preview' | 'creating' | 'done';
 
@@ -82,20 +83,9 @@ export const TasksInput = () => {
     load();
   }, [googleToken]);
 
-  const addImageFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const result = e.target?.result as string;
-      setImages(prev => [
-        ...prev,
-        {
-          base64: result.split(',')[1],
-          mimeType: file.type,
-          previewUrl: result,
-        },
-      ]);
-    };
-    reader.readAsDataURL(file);
+  const addImageFile = async (file: File) => {
+    const { base64, mimeType, previewUrl } = await resizeImage(file);
+    setImages(prev => [...prev, { base64, mimeType, previewUrl }]);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

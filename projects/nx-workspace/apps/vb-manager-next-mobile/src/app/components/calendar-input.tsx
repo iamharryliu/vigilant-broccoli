@@ -1,6 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
+import { resizeImage } from '../utils/image.utils';
 import {
   EventDraftCard,
   EventDraft,
@@ -38,17 +40,9 @@ export const CalendarInput = () => {
       setText(prev => (prev ? `${prev}\n${transcript}` : transcript)),
   );
 
-  const addImageFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const result = e.target?.result as string;
-      const base64 = result.split(',')[1];
-      setImages(prev => [
-        ...prev,
-        { data: base64, mimeType: file.type, previewUrl: result },
-      ]);
-    };
-    reader.readAsDataURL(file);
+  const addImageFile = async (file: File) => {
+    const { base64, mimeType, previewUrl } = await resizeImage(file);
+    setImages(prev => [...prev, { data: base64, mimeType, previewUrl }]);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,7 +78,7 @@ export const CalendarInput = () => {
             images.length > 0
               ? images.map(i => ({ data: i.data, mimeType: i.mimeType }))
               : undefined,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          timeZone: getLocalTimeZone(),
         }),
       });
       const data = await res.json();

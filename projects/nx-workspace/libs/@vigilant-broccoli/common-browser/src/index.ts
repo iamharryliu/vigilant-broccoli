@@ -1,4 +1,5 @@
 export * from './location/location.service';
+export * from './locale/locale.utils';
 export * from './tailwind/tailwind.const';
 // Google Calendar
 export * from './google-calendar/google-calendar.models';
