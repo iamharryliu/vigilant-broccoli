@@ -7,18 +7,18 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const CONTENT_TYPE = 'content-type';
+const MULTIPART = 'multipart/form-data';
+const APPLICATION_JSON = 'application/json';
+
 export async function POST(request: NextRequest) {
-  const contentType = request.headers.get('content-type') ?? '';
-  const isMultipart = contentType.includes('multipart/form-data');
+  const requestContentType = request.headers.get(CONTENT_TYPE) ?? '';
+  const isMultipart = requestContentType.includes(MULTIPART);
 
   const headers: Record<string, string> = {
     'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+    [CONTENT_TYPE]: isMultipart ? requestContentType : APPLICATION_JSON,
   };
-  if (isMultipart) {
-    headers['content-type'] = contentType;
-  } else {
-    headers['content-type'] = 'application/json';
-  }
 
   const res = await fetch(
     `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.VOICE_LIST}`,
@@ -31,6 +31,13 @@ export async function POST(request: NextRequest) {
     },
   );
 
+  const responseContentType = res.headers.get(CONTENT_TYPE) ?? '';
+  if (!responseContentType.includes(APPLICATION_JSON)) {
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
+  }
   const data = await res.json();
   return NextResponse.json(data, { status: res.status });
 }

@@ -4,6 +4,8 @@ import { Box, Heading, Text } from '@radix-ui/themes';
 import { BucketDemo } from '../demos/BucketDemo';
 import { StripeDemo } from '../demos/StripeDemo';
 import { MessagingPage } from './MessagingPage';
+import { SpeechToText } from '../llm/SpeechToText';
+import { VoiceListGenerator } from '../llm/VoiceListGenerator';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -12,6 +14,21 @@ import {
 const STORAGE_KEY = 'feature-sandbox';
 
 const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
+  {
+    id: 'speech-to-text',
+    title: 'Speech to Text (Streaming)',
+    content: <SpeechToText />,
+  },
+  {
+    id: 'audio-transcriber',
+    title: 'Speech to Text (Complete)',
+    content: <SpeechToText mode="complete" />,
+  },
+  {
+    id: 'voice-list-generator',
+    title: 'Voice List Generator',
+    content: <VoiceListGenerator />,
+  },
   {
     id: 'bucket-demo',
     title: 'Bucket Demo',

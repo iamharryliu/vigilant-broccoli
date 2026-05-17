@@ -1,91 +1,79 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Flex, Text, Spinner } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Flex, Text } from '@radix-ui/themes';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
+import { AUDIO_MIME_TYPE, AUDIO_FILENAME } from '../../constants/audio';
+import { SpeechToTextButton } from './SpeechToTextButton';
 
-const AUDIO_MIME_TYPE = 'audio/webm';
-
-type Status = 'idle' | 'recording' | 'processing';
+const ERROR_GENERATE_LIST = 'Failed to generate list.';
 
 export const VoiceListGenerator = () => {
-  const [status, setStatus] = useState<Status>('idle');
+  const [isRecording, setIsRecording] = useState(false);
   const [items, setItems] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const startRecording = async () => {
     setError(null);
     setItems([]);
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    streamRef.current = stream;
     const mediaRecorder = new MediaRecorder(stream);
     mediaRecorderRef.current = mediaRecorder;
     chunksRef.current = [];
 
     mediaRecorder.ondataavailable = e => chunksRef.current.push(e.data);
-    mediaRecorder.onstop = async () => {
-      stream.getTracks().forEach(t => t.stop());
-      await processRecording();
-    };
-
     mediaRecorder.start();
-    setStatus('recording');
+    setIsRecording(true);
   };
 
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
-    setStatus('processing');
-  };
+  const stopAndProcess = () =>
+    new Promise<void>(resolve => {
+      const mediaRecorder = mediaRecorderRef.current;
+      if (!mediaRecorder) return resolve();
 
-  const processRecording = async () => {
-    const audioBlob = new Blob(chunksRef.current, { type: AUDIO_MIME_TYPE });
-    const formData = new FormData();
-    formData.append('audio', audioBlob, 'recording.webm');
+      mediaRecorder.onstop = async () => {
+        streamRef.current?.getTracks().forEach(t => t.stop());
+        setIsRecording(false);
 
-    const res = await fetch(API_ENDPOINTS.VOICE_LIST, {
-      method: 'POST',
-      body: formData,
+        const audioBlob = new Blob(chunksRef.current, {
+          type: AUDIO_MIME_TYPE,
+        });
+        const formData = new FormData();
+        formData.append('audio', audioBlob, AUDIO_FILENAME);
+
+        const res = await fetch(API_ENDPOINTS.VOICE_LIST, {
+          method: 'POST',
+          body: formData,
+        });
+        const { items: parsed, error: listError } = await res.json();
+
+        if (listError || !parsed) {
+          setError(ERROR_GENERATE_LIST);
+        } else {
+          setItems(parsed);
+        }
+        resolve();
+      };
+
+      mediaRecorder.stop();
     });
-    const { items: parsed, error: listError } = await res.json();
-
-    if (listError || !parsed) {
-      setError('Failed to generate list.');
-    } else {
-      setItems(parsed);
-    }
-    setStatus('idle');
-  };
 
   return (
     <Flex direction="column" gap="4">
-      <Text size="4" weight="bold">
-        Voice List Generator
-      </Text>
       <Text size="2" color="gray">
         Press record, describe what list you want, then stop to generate.
       </Text>
 
       <Flex gap="3" align="center">
-        {status === 'idle' && (
-          <Button onClick={startRecording} size="lg">
-            🎙 Start Recording
-          </Button>
-        )}
-        {status === 'recording' && (
-          <Button onClick={stopRecording} size="lg" variant="destructive">
-            ⏹ Stop Recording
-          </Button>
-        )}
-        {status === 'processing' && (
-          <Flex gap="2" align="center">
-            <Spinner />
-            <Text size="2" color="gray">
-              Processing...
-            </Text>
-          </Flex>
-        )}
+        <SpeechToTextButton
+          isRecording={isRecording}
+          onToggle={startRecording}
+          onStopComplete={stopAndProcess}
+        />
       </Flex>
 
       {error && (

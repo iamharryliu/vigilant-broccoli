@@ -19,9 +19,8 @@ import {
   RotateCcw,
   Image,
   Trash2,
-  Mic,
-  Square,
 } from 'lucide-react';
+import { SpeechToTextButton } from './llm/SpeechToTextButton';
 import {
   LLM_MODEL,
   LLM_MODELS,
@@ -401,15 +400,11 @@ const InputControls = ({
     >
       <Image size={16} />
     </Button>
-    <Button
-      onClick={onToggleRecording}
-      variant="soft"
-      disabled={isStreaming || isProcessing}
-      color={isRecording ? 'red' : undefined}
-      aria-label={isRecording ? 'Stop recording' : 'Start recording'}
-    >
-      {isRecording ? <Square size={16} /> : <Mic size={16} />}
-    </Button>
+    <SpeechToTextButton
+      isRecording={isRecording}
+      isDisabled={isStreaming || isProcessing}
+      onToggle={onToggleRecording}
+    />
     <TextField.Root
       ref={textInputRef}
       placeholder={getInputPlaceholder(isRecording, isProcessing)}

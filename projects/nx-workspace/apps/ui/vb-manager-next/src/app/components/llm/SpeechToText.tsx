@@ -1,126 +1,57 @@
 'use client';
 
 import { Box, Flex, Text, TextArea } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
-import { useState, useRef } from 'react';
-import { Mic, Square, X } from 'lucide-react';
+import { useState } from 'react';
+import { useSpeechToText } from '../../hooks/useSpeechToText';
+import { SpeechToTextButton } from './SpeechToTextButton';
 
-export const SpeechToText = () => {
-  const [isRecording, setIsRecording] = useState(false);
+const PLACEHOLDER_STREAMING = 'Click the microphone to start recording...';
+const PLACEHOLDER_COMPLETE =
+  'Record audio, then transcription will appear here...';
+const TEXT_TRANSCRIBING = 'Transcribing...';
+
+type SpeechToTextMode = 'streaming' | 'complete';
+
+interface SpeechToTextProps {
+  mode?: SpeechToTextMode;
+  onTranscript?: (transcript: string) => void;
+}
+
+export const SpeechToText = ({
+  mode = 'streaming',
+  onTranscript,
+}: SpeechToTextProps = {}) => {
   const [transcript, setTranscript] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
+  const isStreaming = mode === 'streaming';
 
-  const startRecording = async () => {
-    setError(null);
-
-    const stream = await navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .catch(() => {
-        setError('Failed to access microphone');
-        return null;
-      });
-
-    if (!stream) return;
-
-    const mediaRecorder = new MediaRecorder(stream);
-    mediaRecorderRef.current = mediaRecorder;
-    audioChunksRef.current = [];
-
-    mediaRecorder.ondataavailable = event => {
-      if (event.data.size > 0) {
-        audioChunksRef.current.push(event.data);
-      }
-    };
-
-    mediaRecorder.onstop = async () => {
-      const audioBlob = new Blob(audioChunksRef.current, {
-        type: 'audio/webm',
-      });
-      await transcribeAudio(audioBlob);
-      stream.getTracks().forEach(track => track.stop());
-    };
-
-    mediaRecorder.start();
-    setIsRecording(true);
+  const update = (text: string) => {
+    setTranscript(text);
+    onTranscript?.(text);
   };
 
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  const transcribeAudio = async (audioBlob: Blob) => {
-    setIsProcessing(true);
-    setError(null);
-
-    const formData = new FormData();
-    formData.append('audio', audioBlob);
-
-    const response = await fetch('/api/speech-to-text', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response
-        .json()
-        .catch(() => ({ error: 'Failed to transcribe audio' }));
-      setError(errorData.error || 'Failed to transcribe audio');
-      setIsProcessing(false);
-      return;
-    }
-
-    const data = await response.json();
-    setTranscript(prev => prev + (prev ? ' ' : '') + data.transcript);
-    setIsProcessing(false);
-  };
-
-  const toggleRecording = () => {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
-  };
-
-  const clearTranscript = () => {
-    setTranscript('');
-  };
+  const { isRecording, isProcessing, error, toggleRecording } = useSpeechToText(
+    isStreaming
+      ? { streaming: true, onTranscriptUpdate: update }
+      : {
+          onTranscriptComplete: text => {
+            const updated = transcript ? `${transcript} ${text}` : text;
+            update(updated);
+          },
+        },
+  );
 
   return (
     <Flex direction="column" gap="4">
-      <Text size="5" weight="bold">
-        Speech to Text
-      </Text>
-
       <Flex gap="2" align="center">
-        <Button
-          size="icon"
-          onClick={toggleRecording}
-          disabled={isProcessing}
-        >
-          {isRecording ? <Square size={16} /> : <Mic size={16} />}
-        </Button>
-
-        {transcript && (
-          <Button
-            size="icon"
-            variant="secondary"
-            onClick={clearTranscript}
-            disabled={isRecording || isProcessing}
-          >
-            <X size={16} />
-          </Button>
-        )}
+        <SpeechToTextButton
+          isRecording={isRecording}
+          isDisabled={isProcessing}
+          onToggle={toggleRecording}
+        />
 
         {isProcessing && (
           <Text size="2" color="gray">
-            Processing...
+            {TEXT_TRANSCRIBING}
           </Text>
         )}
 
@@ -134,8 +65,13 @@ export const SpeechToText = () => {
       <Box>
         <TextArea
           value={transcript}
-          onChange={e => setTranscript(e.target.value)}
-          placeholder="Click the microphone to start recording..."
+          onChange={e => {
+            setTranscript(e.target.value);
+            onTranscript?.(e.target.value);
+          }}
+          placeholder={
+            isStreaming ? PLACEHOLDER_STREAMING : PLACEHOLDER_COMPLETE
+          }
           rows={8}
           className="w-full"
         />
