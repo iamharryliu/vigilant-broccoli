@@ -5,9 +5,6 @@
   - Secret Manager
   - Database
   - Service Account/Auth
-- CI
-  - API apps
-  - UI apps
 
 ```mermaid
 flowchart TB
@@ -18,13 +15,17 @@ subgraph APPLICATION_LAYER[Application Layer]
   LIBRARIES[Libraries]
   FRAMEWORKS[Frameworks]
   RUNTIME[Runtime Environment]
-  APP_CONTAINER[App Container]
+  BUILD_FILES[Build Files]
+  IMAGE[Image]
+  STATIC_FILES[Static Files]
 end
 
 subgraph INFRASTRUCTURE_LAYER[Infrastructure Layer]
-  APP_CONTAINERS[App Containers]
-  EXTERNAL_SERVICES[Provisioned Services<br/>Databases, Queues, Cache]
-  INFRASTRUCTURE[Infrastructure<br/>Compute, Network, Storage]
+    APP_CONTAINERS[App Containers]
+    INFRASTRUCTURE_LAYER_CDN[Content Delivery Network]
+    INFRASTRUCTURE_LAYER_DATABASE[Databases]
+    INFRASTRUCTURE_LAYER_STORAGE[Storage]
+    INFRASTRUCTURE_LAYER_NETWORKING[Networking]
 end
 SOFTWARE_SOLUTION[Software Solution]
 
@@ -32,19 +33,13 @@ CODE --> |Typescript|DATA_STRUCTURES
 DATA_STRUCTURES --> |Arrays, Hashmaps, etc..| LIBRARIES
 LIBRARIES -->|npm Library| FRAMEWORKS
 FRAMEWORKS -->|React, Express| RUNTIME
-RUNTIME -->|Node.js| APP_CONTAINER
-APP_CONTAINER --> |Docker Image| APP_CONTAINERS
-  -->  INFRASTRUCTURE
-EXTERNAL_SERVICES --> INFRASTRUCTURE
-INFRASTRUCTURE --> |Terraform + CI|SOFTWARE_SOLUTION
-```
+RUNTIME -->|Node.js| BUILD_FILES
 
-CI Options
-Jobs
-Serverless functions
-Serverless containers
-VMs
-K8s Cluster
+STATIC_FILES --> INFRASTRUCTURE_LAYER_CDN
+BUILD_FILES --> |Docker Image| IMAGE--> APP_CONTAINERS
+BUILD_FILES --> STATIC_FILES
+INFRASTRUCTURE_LAYER --> |Terraform + CI|SOFTWARE_SOLUTION
+```
 
 Implementation
 Scaling
