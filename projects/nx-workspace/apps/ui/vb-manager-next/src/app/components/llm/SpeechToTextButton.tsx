@@ -1,15 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Mic, Square } from 'lucide-react';
-import { Button } from '@vigilant-broccoli/react-lib';
-
-const ARIA_STOP = 'Stop recording';
-const ARIA_START = 'Start recording';
+import { SpeechToTextButton as BaseSpeechToTextButton } from '@vigilant-broccoli/react-lib';
 
 interface SpeechToTextButtonProps {
   isRecording: boolean;
   isDisabled?: boolean;
+  isProcessing?: boolean;
   onToggle: () => void;
   onStopComplete?: () => Promise<void>;
 }
@@ -17,6 +14,7 @@ interface SpeechToTextButtonProps {
 export const SpeechToTextButton = ({
   isRecording,
   isDisabled = false,
+  isProcessing: externalProcessing = false,
   onToggle,
   onStopComplete,
 }: SpeechToTextButtonProps) => {
@@ -27,7 +25,7 @@ export const SpeechToTextButton = ({
     if (!isProcessing) setLocalRecording(isRecording);
   }, [isRecording, isProcessing]);
 
-  const handleClick = async () => {
+  const handleToggle = async () => {
     if (isRecording && onStopComplete) {
       setLocalRecording(false);
       setIsProcessing(true);
@@ -40,15 +38,11 @@ export const SpeechToTextButton = ({
   };
 
   return (
-    <Button
-      size="icon"
-      onClick={handleClick}
-      variant={localRecording ? 'destructive' : 'outline'}
-      disabled={isDisabled}
-      loading={isProcessing}
-      aria-label={localRecording ? ARIA_STOP : ARIA_START}
-    >
-      {localRecording ? <Square size={16} /> : <Mic size={16} />}
-    </Button>
+    <BaseSpeechToTextButton
+      isRecording={localRecording}
+      isDisabled={isDisabled}
+      isProcessing={externalProcessing || isProcessing}
+      onToggle={handleToggle}
+    />
   );
 };

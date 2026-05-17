@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Flex, Heading } from '@radix-ui/themes';
 import {
   MessageCircle,
@@ -16,6 +17,7 @@ import {
   MonospaceText,
   GoogleSigninButton,
   MicrosoftSigninButton,
+  SpeechToTextButton,
 } from '@vigilant-broccoli/react-lib';
 
 const BUTTON_LIST_BUTTONS: ButtonConfig[] = [
@@ -173,10 +175,51 @@ export function ButtonDemo() {
 
       <div>
         <Heading size="4" mb="3">
+          Speech To Text Button
+        </Heading>
+        <SpeechToTextButtonDemo />
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
           Button List
         </Heading>
         <ButtonList buttons={BUTTON_LIST_BUTTONS} />
       </div>
+    </Flex>
+  );
+}
+
+const MOCK_PROCESS_DELAY_MS = 1500;
+
+function SpeechToTextButtonDemo() {
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleToggle = async () => {
+    if (isRecording) {
+      setIsProcessing(true);
+      await new Promise(r => setTimeout(r, MOCK_PROCESS_DELAY_MS));
+      setIsProcessing(false);
+      setIsRecording(false);
+    } else {
+      setIsRecording(true);
+    }
+  };
+
+  return (
+    <Flex gap="3" align="center">
+      <SpeechToTextButton
+        isRecording={isRecording}
+        isProcessing={isProcessing}
+        onToggle={handleToggle}
+      />
+      <SpeechToTextButton isRecording={false} isDisabled onToggle={() => {}} />
+      <SpeechToTextButton
+        isRecording={false}
+        isProcessing
+        onToggle={() => {}}
+      />
     </Flex>
   );
 }

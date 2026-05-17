@@ -17,3 +17,4 @@ export * from './StatusCardList';
 export * from './Tabs';
 export * from './Progress';
 export * from './Switch';
+export * from './SpeechToTextButton';

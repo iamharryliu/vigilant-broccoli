@@ -8,7 +8,6 @@ import { SpeechToTextButton } from './SpeechToTextButton';
 const PLACEHOLDER_STREAMING = 'Click the microphone to start recording...';
 const PLACEHOLDER_COMPLETE =
   'Record audio, then transcription will appear here...';
-const TEXT_TRANSCRIBING = 'Transcribing...';
 
 type SpeechToTextMode = 'streaming' | 'complete';
 
@@ -45,15 +44,9 @@ export const SpeechToText = ({
       <Flex gap="2" align="center">
         <SpeechToTextButton
           isRecording={isRecording}
-          isDisabled={isProcessing}
+          isProcessing={isProcessing}
           onToggle={toggleRecording}
         />
-
-        {isProcessing && (
-          <Text size="2" color="gray">
-            {TEXT_TRANSCRIBING}
-          </Text>
-        )}
 
         {error && (
           <Text size="2" color="red">
