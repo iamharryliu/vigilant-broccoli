@@ -90,7 +90,10 @@ export const AudioService = {
 
     if (!res.ok) {
       const data = await res.json();
-      throw new Error(data.detail ?? 'Text to speech failed');
+      const detail = data.detail;
+      const message =
+        typeof detail === 'string' ? detail : JSON.stringify(detail);
+      throw new Error(message ?? 'Text to speech failed');
     }
 
     return res.body as ReadableStream;

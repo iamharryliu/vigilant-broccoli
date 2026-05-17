@@ -6,6 +6,8 @@ import { StripeDemo } from '../demos/StripeDemo';
 import { MessagingPage } from './MessagingPage';
 import { SpeechToText } from '../llm/SpeechToText';
 import { VoiceListGenerator } from '../llm/VoiceListGenerator';
+import { TextToSpeechVoices } from '../llm/TextToSpeechVoices';
+import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -28,6 +30,16 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'voice-list-generator',
     title: 'Voice List Generator',
     content: <VoiceListGenerator />,
+  },
+  {
+    id: 'text-to-speech-voices',
+    title: 'Text to Speech',
+    content: <TextToSpeechVoices />,
+  },
+  {
+    id: 'llm-prompt-tester',
+    title: 'LLM Prompt Tester',
+    content: <LLMSimplePromptTester />,
   },
   {
     id: 'bucket-demo',

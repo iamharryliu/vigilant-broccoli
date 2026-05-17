@@ -19,6 +19,9 @@ export const OPEN_TYPE = {
 
 export type OpenType = (typeof OPEN_TYPE)[keyof typeof OPEN_TYPE];
 
+// Audio
+export * from './lib/audio/audio.consts';
+
 // LLM
 export * from './lib/llm/llm.consts';
 export * from './lib/llm/llm.types';

@@ -6,6 +6,7 @@ import { toNodeHandler } from 'better-auth/node';
 import tasksRouter from './routes/tasks';
 import tasksParseRouter from './routes/tasks-parse';
 import llmRouter from './routes/llm';
+import chatRouter from './routes/chat';
 import calendarRouter from './routes/calendar';
 import messagingRouter from './routes/messaging';
 import voiceListRouter from './routes/voice-list';
@@ -54,6 +55,7 @@ const createApp = () => {
   app.use('/api/tasks', tasksRouter);
   app.use('/api/tasks', tasksParseRouter);
   app.use('/api/llm', llmRouter);
+  app.use('/api/chat', chatRouter);
   app.use('/api/calendar', calendarRouter);
   app.use('/api/voice-list', voiceListRouter);
   app.use('/api/speech-to-text', speechToTextRouter);
