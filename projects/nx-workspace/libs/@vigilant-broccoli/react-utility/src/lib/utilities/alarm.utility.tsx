@@ -3,11 +3,14 @@
 import { Badge, Flex, ScrollArea, Text, TextField } from '@radix-ui/themes';
 import { Button, Progress } from '@vigilant-broccoli/react-lib';
 import { useEffect, useRef, useState } from 'react';
+import { createSoundAlert } from '../audio';
 
 const STORAGE_KEY = 'vb-manager-alarms';
-const CHECK_INTERVAL_MS = 1000;
-const BEEP_DURATION_MS = 500;
-const BEEP_INTERVAL_MS = 1000;
+const ALARM_EVENT = 'vb-alarm-state';
+const ALARM_COMMAND_EVENT = 'vb-alarm-command';
+const CMD_ADD = 'add';
+const CMD_TOGGLE = 'toggle';
+const CMD_DELETE = 'delete';
 
 interface Alarm {
   id: string;
@@ -18,70 +21,142 @@ interface Alarm {
   createdAt: number;
 }
 
+const readStoredAlarms = (): Alarm[] => {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (!stored) return [];
+  const now = Date.now();
+  return JSON.parse(stored).map((a: Alarm) => ({
+    ...a,
+    createdAt: a.createdAt || now,
+  }));
+};
+
+const emitAlarmState = (alarms: Alarm[]) => {
+  window.dispatchEvent(new CustomEvent(ALARM_EVENT, { detail: alarms }));
+};
+
+// AlarmEngine: mount once at app level, never unmounts
+export const AlarmEngine = () => {
+  const alertsRef = useRef<Map<string, ReturnType<typeof createSoundAlert>>>(
+    new Map(),
+  );
+  const alarmsRef = useRef<Alarm[]>([]);
+
+  const saveAndEmit = (alarms: Alarm[]) => {
+    alarmsRef.current = alarms;
+    if (alarms.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(alarms));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    emitAlarmState(alarms);
+  };
+
+  const startAlarmRinging = (alarmId: string) => {
+    if (alertsRef.current.has(alarmId)) return;
+    const alert = createSoundAlert();
+    alert.start();
+    alertsRef.current.set(alarmId, alert);
+  };
+
+  const stopAlarmRinging = (alarmId: string) => {
+    alertsRef.current.get(alarmId)?.stop();
+    alertsRef.current.delete(alarmId);
+  };
+
+  useEffect(() => {
+    alarmsRef.current = readStoredAlarms();
+    emitAlarmState(alarmsRef.current);
+
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      let changed = false;
+      const updated = alarmsRef.current.map(alarm => {
+        if (alarm.enabled && alarm.time === currentTime && !alarm.triggered) {
+          startAlarmRinging(alarm.id);
+          changed = true;
+          return { ...alarm, triggered: true };
+        }
+        if (alarm.triggered && alarm.time !== currentTime) {
+          stopAlarmRinging(alarm.id);
+          changed = true;
+          return { ...alarm, triggered: false };
+        }
+        return alarm;
+      });
+
+      if (changed) saveAndEmit(updated);
+      else emitAlarmState(alarmsRef.current); // tick for progress bars
+    }, 1000);
+
+    const onUICommand = (e: Event) => {
+      const { command, payload } = (e as CustomEvent).detail;
+
+      if (command === CMD_ADD) {
+        saveAndEmit([...alarmsRef.current, payload as Alarm]);
+      }
+
+      if (command === CMD_TOGGLE) {
+        const alarm = alarmsRef.current.find(a => a.id === payload);
+        if (alarm?.triggered) stopAlarmRinging(payload);
+        saveAndEmit(
+          alarmsRef.current.map(a =>
+            a.id === payload
+              ? { ...a, enabled: !a.enabled, triggered: false }
+              : a,
+          ),
+        );
+      }
+
+      if (command === CMD_DELETE) {
+        const alarm = alarmsRef.current.find(a => a.id === payload);
+        if (alarm?.triggered) stopAlarmRinging(payload);
+        saveAndEmit(alarmsRef.current.filter(a => a.id !== payload));
+      }
+    };
+
+    window.addEventListener(ALARM_COMMAND_EVENT, onUICommand);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener(ALARM_COMMAND_EVENT, onUICommand);
+      alertsRef.current.forEach(a => a.stop());
+      alertsRef.current.clear();
+    };
+  }, []);
+
+  return null;
+};
+
+const sendCommand = (command: string, payload?: unknown) => {
+  window.dispatchEvent(
+    new CustomEvent(ALARM_COMMAND_EVENT, { detail: { command, payload } }),
+  );
+};
+
 export const AlarmUtilityContent = () => {
   const [alarms, setAlarms] = useState<Alarm[]>([]);
   const [newTime, setNewTime] = useState('');
   const [newLabel, setNewLabel] = useState('');
   const [notificationPermission, setNotificationPermission] =
     useState<NotificationPermission>('default');
-  const [, setTick] = useState(0);
-  const ringingIntervalsRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsedAlarms = JSON.parse(stored);
-      const now = Date.now();
-      const alarmsWithCreatedAt = parsedAlarms.map((alarm: Alarm) => ({
-        ...alarm,
-        createdAt: alarm.createdAt || now,
-      }));
-      setAlarms(alarmsWithCreatedAt);
-    }
+    setAlarms(readStoredAlarms());
 
     if ('Notification' in window) {
       setNotificationPermission(Notification.permission);
     }
-  }, []);
 
-  useEffect(() => {
-    if (alarms.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(alarms));
-    }
-  }, [alarms]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(
-        now.getMinutes(),
-      ).padStart(2, '0')}`;
-
-      setTick(prev => prev + 1);
-
-      setAlarms(prevAlarms =>
-        prevAlarms.map(alarm => {
-          if (alarm.enabled && alarm.time === currentTime && !alarm.triggered) {
-            startAlarmRinging(alarm.id);
-            showNotification(alarm);
-            return { ...alarm, triggered: true };
-          }
-          if (alarm.time !== currentTime && alarm.triggered) {
-            stopAlarmRinging(alarm.id);
-            return { ...alarm, triggered: false };
-          }
-          return alarm;
-        }),
-      );
-    }, CHECK_INTERVAL_MS);
-
-    return () => {
-      clearInterval(interval);
-      ringingIntervalsRef.current.forEach(intervalId =>
-        clearInterval(intervalId),
-      );
-      ringingIntervalsRef.current.clear();
-    };
+    const onState = (e: Event) => setAlarms((e as CustomEvent<Alarm[]>).detail);
+    window.addEventListener(ALARM_EVENT, onState);
+    return () => window.removeEventListener(ALARM_EVENT, onState);
   }, []);
 
   const requestNotificationPermission = async () => {
@@ -91,119 +166,33 @@ export const AlarmUtilityContent = () => {
     }
   };
 
-  const playBeep = () => {
-    const audioContext = new AudioContext();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(
-      0.01,
-      audioContext.currentTime + BEEP_DURATION_MS / 1000,
-    );
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + BEEP_DURATION_MS / 1000);
-  };
-
-  const startAlarmRinging = (alarmId: string) => {
-    if (ringingIntervalsRef.current.has(alarmId)) return;
-
-    playBeep();
-    const interval = setInterval(() => {
-      playBeep();
-    }, BEEP_INTERVAL_MS);
-
-    ringingIntervalsRef.current.set(alarmId, interval);
-  };
-
-  const stopAlarmRinging = (alarmId: string) => {
-    const interval = ringingIntervalsRef.current.get(alarmId);
-    if (interval) {
-      clearInterval(interval);
-      ringingIntervalsRef.current.delete(alarmId);
-    }
-
-    setAlarms(prev =>
-      prev.map(alarm =>
-        alarm.id === alarmId ? { ...alarm, triggered: false } : alarm,
-      ),
-    );
-  };
-
-  const showNotification = (alarm: Alarm) => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('Alarm', {
-        body: alarm.label || `Alarm at ${alarm.time}`,
-        icon: '/favicon.ico',
-      });
-    }
-  };
-
   const calculateProgress = (alarm: Alarm): number => {
     const now = Date.now();
     const [hours, minutes] = alarm.time.split(':').map(Number);
-
     const alarmDateTime = new Date();
     alarmDateTime.setHours(hours, minutes, 0, 0);
-
     if (alarmDateTime.getTime() < alarm.createdAt) {
       alarmDateTime.setDate(alarmDateTime.getDate() + 1);
     }
-
     const totalDuration = alarmDateTime.getTime() - alarm.createdAt;
     const elapsed = now - alarm.createdAt;
-
     if (elapsed >= totalDuration) return 100;
     if (elapsed <= 0) return 0;
-
     return (elapsed / totalDuration) * 100;
   };
 
   const handleAddAlarm = () => {
     if (!newTime) return;
-
-    const alarm: Alarm = {
+    sendCommand(CMD_ADD, {
       id: Date.now().toString(),
       time: newTime,
       label: newLabel,
       enabled: true,
       triggered: false,
       createdAt: Date.now(),
-    };
-
-    setAlarms(prev => [...prev, alarm]);
+    });
     setNewTime('');
     setNewLabel('');
-  };
-
-  const handleToggleAlarm = (id: string) => {
-    const alarm = alarms.find(a => a.id === id);
-    if (alarm?.triggered) {
-      stopAlarmRinging(id);
-    }
-    setAlarms(prev =>
-      prev.map(alarm =>
-        alarm.id === id ? { ...alarm, enabled: !alarm.enabled } : alarm,
-      ),
-    );
-  };
-
-  const handleDeleteAlarm = (id: string) => {
-    const alarm = alarms.find(a => a.id === id);
-    if (alarm?.triggered) {
-      stopAlarmRinging(id);
-    }
-    setAlarms(prev => prev.filter(alarm => alarm.id !== id));
-    if (alarms.length === 1) {
-      localStorage.removeItem(STORAGE_KEY);
-    }
   };
 
   return (
@@ -291,7 +280,7 @@ export const AlarmUtilityContent = () => {
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => handleDeleteAlarm(alarm.id)}
+                          onClick={() => sendCommand(CMD_DELETE, alarm.id)}
                         >
                           Stop Alarm
                         </Button>
@@ -300,14 +289,14 @@ export const AlarmUtilityContent = () => {
                           <Button
                             size="sm"
                             variant={alarm.enabled ? 'secondary' : 'outline'}
-                            onClick={() => handleToggleAlarm(alarm.id)}
+                            onClick={() => sendCommand(CMD_TOGGLE, alarm.id)}
                           >
                             {alarm.enabled ? 'Disable' : 'Enable'}
                           </Button>
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => handleDeleteAlarm(alarm.id)}
+                            onClick={() => sendCommand(CMD_DELETE, alarm.id)}
                           >
                             Delete
                           </Button>

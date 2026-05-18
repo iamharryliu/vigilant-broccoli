@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { playBeep } from '@vigilant-broccoli/react-utility';
 
 const DEFAULT_FOCUS_MINUTES = 25;
 const DEFAULT_BREAK_MINUTES = 10;
@@ -15,32 +16,13 @@ const TICK_INTERVAL_MS = 250;
 export type PomodoroPhase = 'task' | 'break';
 export type AlertMode = 'timed' | 'persistent';
 
-let audioCtx: AudioContext | null = null;
-const getAudioContext = (): AudioContext => {
-  if (!audioCtx || audioCtx.state === 'closed') {
-    audioCtx = new AudioContext();
-  }
-  return audioCtx;
-};
-
 const playNotificationSound = (): void => {
-  const ctx = getAudioContext();
-  if (ctx.state === 'suspended') {
-    ctx.resume();
-  }
-  for (let i = 0; i < NOTIFICATION_BEEP_COUNT; i++) {
-    const oscillator = ctx.createOscillator();
-    const gain = ctx.createGain();
-    oscillator.connect(gain);
-    gain.connect(ctx.destination);
-    oscillator.frequency.value = NOTIFICATION_FREQUENCY;
-    oscillator.type = 'sine';
-    const start = ctx.currentTime + i * NOTIFICATION_BEEP_GAP;
-    gain.gain.setValueAtTime(0.3, start);
-    gain.gain.exponentialRampToValueAtTime(0.01, start + NOTIFICATION_DURATION);
-    oscillator.start(start);
-    oscillator.stop(start + NOTIFICATION_DURATION);
-  }
+  playBeep({
+    frequency: NOTIFICATION_FREQUENCY,
+    duration: NOTIFICATION_DURATION,
+    count: NOTIFICATION_BEEP_COUNT,
+    gap: NOTIFICATION_BEEP_GAP,
+  });
 };
 
 export const usePomodoro = () => {
