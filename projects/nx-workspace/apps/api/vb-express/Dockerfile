@@ -13,6 +13,6 @@ RUN chown -R vb-express:vb-express .
 
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.
-RUN corepack enable && corepack prepare pnpm@latest --activate && pnpm --prefix vb-express --prod --ignore-scripts install
+RUN corepack enable && corepack prepare pnpm@11.1.2 --activate && pnpm --prefix vb-express --prod --ignore-scripts install
 
 CMD [ "node", "vb-express" ]
