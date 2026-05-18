@@ -7,18 +7,18 @@
     "format": "nx format:write",
     "test:all": "nx run-many -t test",
     "lint:commit": "nx affected -t lint",
-    "format:commit": "npm run format",
+    "format:commit": "pnpm run format",
     "test:commit": "nx affected -t test",
     "build:all": "nx run-many -t=build --skip-nx-cache"
   },
   "lint-staged": {
     "*.ts": [
-      "npm run lint:commit",
-      "npm run format:commit",
-      "npm run test:commit"
+      "pnpm run lint:commit",
+      "pnpm run format:commit",
+      "pnpm run test:commit"
     ],
     "*.{json,md}": [
-      "npm run format:commit"
+      "pnpm run format:commit"
     ]
   },
   "private": true,
@@ -124,9 +124,6 @@
     "vitest": "^4.1.0",
     "wrangler": "^4.78.0"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "dependencies": {
     "@angular/animations": "21.2.6",
     "@angular/common": "21.2.6",

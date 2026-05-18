@@ -4,7 +4,7 @@
   "dependencies": {
     "openai": "^4.26.0",
     "tslib": "^2.3.0",
-    "@vigilant-broccoli/common-js": "*",
+    "@vigilant-broccoli/common-js": "workspace:*",
     "@anthropic-ai/sdk": "^0.53.0",
     "zod": "*"
   },

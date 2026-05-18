@@ -1,10 +1,18 @@
+const path = require('path');
+
+const WORKSPACE_ROOT = path.resolve(__dirname, '../../..');
+const NODE_INTERPRETER =
+  process.env.NODE_INTERPRETER || '/opt/homebrew/bin/node';
+
 module.exports = {
   apps: [
     {
       name: 'vb-manager-next',
-      script: './node_modules/.bin/next',
+      script: path.join(WORKSPACE_ROOT, 'node_modules/next/dist/bin/next'),
       args: 'start --port 1337',
-      cwd: './dist/apps/ui/vb-manager-next',
+      cwd: path.join(WORKSPACE_ROOT, 'dist/apps/ui/vb-manager-next'),
+      exec_mode: 'fork',
+      interpreter: NODE_INTERPRETER,
       env: {
         NODE_ENV: 'production',
         PORT: 1337,

@@ -8,8 +8,8 @@
     "tslib": "^2.3.0",
     "@slack/types": "*",
     "@slack/web-api": "^7.10.0",
-    "@vigilant-broccoli/common-node": "*",
-    "@vigilant-broccoli/common-js": "*"
+    "@vigilant-broccoli/common-node": "workspace:*",
+    "@vigilant-broccoli/common-js": "workspace:*"
   },
   "repository": {
     "type": "git",

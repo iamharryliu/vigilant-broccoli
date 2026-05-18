@@ -2,7 +2,7 @@
   "name": "@vigilant-broccoli/common-node",
   "version": "0.0.22",
   "dependencies": {
-    "@vigilant-broccoli/common-js": "*",
+    "@vigilant-broccoli/common-js": "workspace:*",
     "archiver": "^7.0.1",
     "nodemailer": "^8.0.4",
     "tslib": "^2.3.0",

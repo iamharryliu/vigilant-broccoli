@@ -86,7 +86,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./scripts/node/download-resume
-        run: npm ci
+        run: npm install
 
       - name: Run script
         working-directory: ./scripts/node/download-resume

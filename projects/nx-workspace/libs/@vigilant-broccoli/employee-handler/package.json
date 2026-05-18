@@ -3,8 +3,8 @@
   "version": "0.0.17",
   "dependencies": {
     "@swc/helpers": "0.5.19",
-    "@vigilant-broccoli/common-node": "*",
-    "@vigilant-broccoli/google-workspace": "*",
+    "@vigilant-broccoli/common-node": "workspace:*",
+    "@vigilant-broccoli/google-workspace": "workspace:*",
     "nodemailer": "^8.0.4"
   },
   "publishConfig": {

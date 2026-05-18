@@ -5,8 +5,8 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
-    "@vigilant-broccoli/common-js": "*",
-    "@vigilant-broccoli/common-node": "*",
+    "@vigilant-broccoli/common-js": "workspace:*",
+    "@vigilant-broccoli/common-node": "workspace:*",
     "tslib": "^2.3.0"
   },
   "publishConfig": {

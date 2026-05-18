@@ -1,0 +1,17 @@
+packages:
+  - 'apps/*'
+  - 'libs/**'
+  - 'packages/*'
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  better-sqlite3: true
+  core-js-pure: true
+  esbuild: true
+  less: true
+  lmdb: true
+  msgpackr-extract: true
+  nx: true
+  sharp: true
+  unrs-resolver: true
+  workerd: true
