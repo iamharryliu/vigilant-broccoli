@@ -1,0 +1,24 @@
+{
+  "name": "next-demo",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/client-s3": "*",
+    "@fullcalendar/core": "*",
+    "@fullcalendar/daygrid": "*",
+    "@fullcalendar/interaction": "*",
+    "@fullcalendar/react": "*",
+    "@fullcalendar/timegrid": "*",
+    "@radix-ui/themes": "*",
+    "@supabase/supabase-js": "*",
+    "@vigilant-broccoli/common-js": "workspace:*",
+    "@vigilant-broccoli/common-node": "workspace:*",
+    "@vigilant-broccoli/react-lib": "workspace:*",
+    "lucide-react": "*",
+    "next": "*",
+    "react": "*",
+    "recharts": "*",
+    "sharp": "*",
+    "zod": "*"
+  }
+}
