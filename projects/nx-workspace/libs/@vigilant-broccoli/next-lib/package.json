@@ -1,6 +1,11 @@
 {
   "name": "@vigilant-broccoli/next-lib",
   "version": "0.0.1",
+  "dependencies": {
+    "@radix-ui/themes": "*",
+    "next": "*",
+    "react": "*"
+  },
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {

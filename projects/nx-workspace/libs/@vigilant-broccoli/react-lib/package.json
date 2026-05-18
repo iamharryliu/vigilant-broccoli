@@ -1,6 +1,19 @@
 {
   "name": "@vigilant-broccoli/react-lib",
   "version": "0.0.1",
+  "dependencies": {
+    "@radix-ui/react-accordion": "*",
+    "@radix-ui/react-avatar": "*",
+    "@radix-ui/react-progress": "*",
+    "@radix-ui/react-tabs": "*",
+    "@radix-ui/themes": "*",
+    "@vigilant-broccoli/common-js": "workspace:*",
+    "class-variance-authority": "*",
+    "clsx": "*",
+    "lucide-react": "*",
+    "react": "*",
+    "tailwind-merge": "*"
+  },
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {
