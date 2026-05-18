@@ -42,6 +42,15 @@ export const playBeep = async ({
   }
 };
 
+export const createRepeatingBeep = (
+  intervalMs: number = DEFAULT_BEEP_INTERVAL_MS,
+  options?: BeepOptions,
+): (() => void) => {
+  playBeep(options);
+  const interval = setInterval(() => playBeep(options), intervalMs);
+  return () => clearInterval(interval);
+};
+
 export const createSoundAlert = (
   autoStopMs?: number,
   options?: BeepOptions,
@@ -60,18 +69,9 @@ export const createSoundAlert = (
 
   const start = () => {
     stop();
-    stopRepeat = createRepeatingBeep(DEFAULT_BEEP_INTERVAL_MS, options);
+    stopRepeat = createRepeatingBeep(undefined, options);
     if (autoStopMs) stopTimeout = setTimeout(stop, autoStopMs);
   };
 
   return { start, stop };
-};
-
-export const createRepeatingBeep = (
-  intervalMs: number = DEFAULT_BEEP_INTERVAL_MS,
-  options?: BeepOptions,
-): (() => void) => {
-  playBeep(options);
-  const interval = setInterval(() => playBeep(options), intervalMs);
-  return () => clearInterval(interval);
 };
