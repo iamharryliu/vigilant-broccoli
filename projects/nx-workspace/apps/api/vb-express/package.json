@@ -1,0 +1,18 @@
+{
+  "name": "vb-express",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@vigilant-broccoli/common-js": "workspace:*",
+    "@vigilant-broccoli/common-node": "workspace:*",
+    "@vigilant-broccoli/express": "workspace:*",
+    "@vigilant-broccoli/llm-tools": "workspace:*",
+    "@vigilant-broccoli/personal-common-js": "workspace:*",
+    "better-auth": "*",
+    "cors": "*",
+    "express": "*",
+    "formidable": "*",
+    "googleapis": "*",
+    "zod": "*"
+  }
+}
