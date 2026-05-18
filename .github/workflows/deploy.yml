@@ -34,7 +34,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: 'pnpm'
           cache-dependency-path: ./projects/nx-workspace/pnpm-lock.yaml
           registry-url: 'https://registry.npmjs.org'
@@ -95,7 +95,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: 'pnpm'
           cache-dependency-path: ./projects/nx-workspace/pnpm-lock.yaml
 
