@@ -163,6 +163,9 @@ importers:
       fastify-plugin:
         specifier: 5.0.1
         version: 5.0.1
+      formidable:
+        specifier: ^3.5.4
+        version: 3.5.4
       fuse.js:
         specifier: ^7.1.0
         version: 7.3.0
@@ -398,6 +401,9 @@ importers:
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.25
+      '@types/formidable':
+        specifier: ^3.5.1
+        version: 3.5.1
       '@types/jest':
         specifier: 30.0.0
         version: 30.0.0
@@ -9354,6 +9360,12 @@ packages:
         integrity: sha512-dVd04UKsfpINUnK0yBoYHDF3xu7xVH4BuDotC/xGuycx4CgbP48X/KF/586bcObxT0HENHXEU8Nqtu6NR+eKhw==,
       }
 
+  '@types/formidable@3.5.1':
+    resolution:
+      {
+        integrity: sha512-aFQijSGbD8JCeEST2LEbwR7faHynbt43lojLIcTM/QhB2U06h41ZVRFVEql+Z1xdL+aKGIzm69V/P/uSW9N6XA==,
+      }
+
   '@types/hast@3.0.4':
     resolution:
       {
@@ -14372,6 +14384,13 @@ packages:
       {
         integrity: sha512-Oz5Hwvwak/DCaXVVUtPn4oLMLLy1CdclLKO1LFgU7XzDpVMUU5UjlSLpGMocyQNNk8F6IJW9M/YdooSn2MRI+Q==,
       }
+
+  formidable@3.5.4:
+    resolution:
+      {
+        integrity: sha512-YikH+7CUTOtP44ZTnUhR7Ic2UASBPOqmaRkRKxRbywPTe5VxF7RRCck4af9wutiZ/QKM5nME9Bie2fFaPz5Gug==,
+      }
+    engines: { node: '>=14.0.0' }
 
   forwarded@0.2.0:
     resolution:
@@ -30038,6 +30057,10 @@ snapshots:
       '@types/qs': 6.15.1
       '@types/serve-static': 1.15.10
 
+  '@types/formidable@3.5.1':
+    dependencies:
+      '@types/node': 20.19.41
+
   '@types/hast@3.0.4':
     dependencies:
       '@types/unist': 3.0.3
@@ -33656,6 +33679,12 @@ snapshots:
       dezalgo: 1.0.4
       once: 1.4.0
       qs: 6.15.2
+
+  formidable@3.5.4:
+    dependencies:
+      '@paralleldrive/cuid2': 2.3.1
+      dezalgo: 1.0.4
+      once: 1.4.0
 
   forwarded@0.2.0: {}
 
