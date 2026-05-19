@@ -1,0 +1,44 @@
+{
+  "name": "cloud8skate-sanity",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "{projectRoot}",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node_modules/.bin/sanity dev",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "node_modules/.bin/sanity build",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node_modules/.bin/sanity start",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node_modules/.bin/sanity deploy",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "deploy-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node_modules/.bin/sanity graphql deploy",
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
+}
