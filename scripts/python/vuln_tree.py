@@ -16,6 +16,7 @@ SEVERITY_COLORS = {
     "info": "\033[0;37m",
     "pip": "\033[1;36m",
 }
+COLOR_GREEN = "\033[0;32m"
 RESET = "\033[0m"
 BOLD = "\033[1m"
 
@@ -32,6 +33,16 @@ SKIP_DIRS = {
     ".venv",
 }
 
+COUNTS_KEY = "__counts__"
+PACKAGE_JSON = "package.json"
+LOCK_FILE_PM = {
+    "pnpm-lock.yaml": "pnpm",
+    "yarn.lock": "yarn",
+}
+DEFAULT_PM = "npm"
+AUDIT_CMD = "audit"
+AUDIT_JSON_FLAG = "--json"
+VULN_KEYS = ("vulnerabilities", "advisories")
 PIP_AUDIT_CMD = shutil.which("pip-audit") or "pipx run pip-audit"
 
 
@@ -42,7 +53,7 @@ def walk_repo(root):
 
 
 def find_package_json_dirs(root):
-    return [d for d, files in walk_repo(root) if "package.json" in files]
+    return [d for d, files in walk_repo(root) if PACKAGE_JSON in files]
 
 
 def find_requirements_files(root):
@@ -54,10 +65,18 @@ def find_requirements_files(root):
     ]
 
 
+def detect_package_manager(pkg_dir):
+    for lock_file, pm in LOCK_FILE_PM.items():
+        if os.path.exists(os.path.join(pkg_dir, lock_file)):
+            return pm
+    return DEFAULT_PM
+
+
 def run_npm_audit(pkg_dir):
     try:
+        pm = detect_package_manager(pkg_dir)
         result = subprocess.run(
-            ["npm", "audit", "--json"],
+            [pm, AUDIT_CMD, AUDIT_JSON_FLAG],
             cwd=pkg_dir,
             capture_output=True,
             text=True,
@@ -65,8 +84,9 @@ def run_npm_audit(pkg_dir):
         )
         data = json.loads(result.stdout)
         counts = defaultdict(int)
-        for v in data.get("vulnerabilities", {}).values():
-            counts[v["severity"]] += 1
+        for key in VULN_KEYS:
+            for v in data.get(key, {}).values():
+                counts[v["severity"]] += 1
         return dict(counts)
     except Exception:
         return {}
@@ -110,7 +130,7 @@ def build_tree(root, paths):
 def annotate_tree(tree, root, current_path, dir_counts):
     total = {}
     for key, subtree in tree.items():
-        if key == "__counts__":
+        if key == COUNTS_KEY:
             continue
         child_total = annotate_tree(
             subtree, root, os.path.join(current_path, key), dir_counts
@@ -118,7 +138,7 @@ def annotate_tree(tree, root, current_path, dir_counts):
         total = merge_counts(total, child_total)
     abs_path = os.path.join(root, current_path) if current_path else root
     total = merge_counts(total, dir_counts.get(abs_path, {}))
-    tree["__counts__"] = total
+    tree[COUNTS_KEY] = total
     return total
 
 
@@ -128,11 +148,11 @@ def format_counts(counts):
         for sev in SEVERITY_ORDER
         if counts.get(sev)
     ]
-    return ", ".join(parts) if parts else f"\033[0;32m0 vulns{RESET}"
+    return ", ".join(parts) if parts else f"{COLOR_GREEN}0 vulns{RESET}"
 
 
 def print_tree(tree, label, prefix="", is_last=True):
-    counts = tree.get("__counts__", {})
+    counts = tree.get(COUNTS_KEY, {})
     if not sum(counts.values()):
         return
     connector = "└── " if is_last else "├── "
@@ -142,9 +162,9 @@ def print_tree(tree, label, prefix="", is_last=True):
         [
             (k, v)
             for k, v in tree.items()
-            if k != "__counts__" and sum(v.get("__counts__", {}).values())
+            if k != COUNTS_KEY and sum(v.get(COUNTS_KEY, {}).values())
         ],
-        key=lambda x: -sum(x[1]["__counts__"].values()),
+        key=lambda x: -sum(x[1][COUNTS_KEY].values()),
     )
     for i, (key, subtree) in enumerate(children):
         print_tree(subtree, key, child_prefix, i == len(children) - 1)
@@ -180,14 +200,14 @@ def main():
     annotate_tree(tree, root, "", dir_counts)
 
     root_name = os.path.basename(root) or root
-    print(f"{BOLD}{root_name}{RESET}  [{format_counts(tree.get('__counts__', {}))}]")
+    print(f"{BOLD}{root_name}{RESET}  [{format_counts(tree.get(COUNTS_KEY, {}))}]")
     children = sorted(
         [
             (k, v)
             for k, v in tree.items()
-            if k != "__counts__" and sum(v.get("__counts__", {}).values())
+            if k != COUNTS_KEY and sum(v.get(COUNTS_KEY, {}).values())
         ],
-        key=lambda x: -sum(x[1]["__counts__"].values()),
+        key=lambda x: -sum(x[1][COUNTS_KEY].values()),
     )
     for i, (key, subtree) in enumerate(children):
         print_tree(subtree, key, "", i == len(children) - 1)
