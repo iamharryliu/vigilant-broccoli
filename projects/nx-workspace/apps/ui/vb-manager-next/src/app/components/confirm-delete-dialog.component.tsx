@@ -3,7 +3,9 @@ import { Button } from '@vigilant-broccoli/react-lib';
 import { ReactNode } from 'react';
 
 interface ConfirmDeleteDialogProps {
-  trigger: ReactNode;
+  trigger?: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   title?: string;
   description: string;
   confirmLabel?: string;
@@ -13,14 +15,16 @@ interface ConfirmDeleteDialogProps {
 
 export const ConfirmDeleteDialog = ({
   trigger,
+  open,
+  onOpenChange,
   title = 'Confirm Delete',
   description,
   confirmLabel = 'Delete',
   onConfirm,
   loading = false,
 }: ConfirmDeleteDialogProps) => (
-  <AlertDialog.Root>
-    <AlertDialog.Trigger>{trigger}</AlertDialog.Trigger>
+  <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
+    {trigger && <AlertDialog.Trigger>{trigger}</AlertDialog.Trigger>}
     <AlertDialog.Content maxWidth="400px">
       <AlertDialog.Title>{title}</AlertDialog.Title>
       <AlertDialog.Description>{description}</AlertDialog.Description>

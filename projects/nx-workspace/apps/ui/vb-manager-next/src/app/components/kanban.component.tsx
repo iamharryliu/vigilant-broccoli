@@ -7,6 +7,7 @@ import {
   Select,
   TextField,
   Dialog,
+  DropdownMenu,
 } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
@@ -36,6 +37,7 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
+  MoreHorizontal,
 } from 'lucide-react';
 import { GoogleTasksComponent } from './google-tasks.component';
 import { Skeleton } from './skeleton.component';
@@ -83,6 +85,10 @@ const QUADRANT_OVERLAY_COLORS: Record<string, string> = {
   Q3: 'border-l-4 border-l-yellow-500',
   Q4: 'border-l-4 border-l-green-500',
 } as const;
+
+const DELETE_BOARD_TITLE = 'Delete Board';
+const getDeleteBoardDescription = (name: string) =>
+  `Are you sure you want to delete "${name}"? This action cannot be undone.`;
 
 const getQuadrantFromTitle = (title: string): string | null => {
   const match = title.match(/^(Q[1-4])[\s:]/i);
@@ -226,14 +232,12 @@ interface SortableBoardProps {
   board: Board;
   isActive: boolean;
   onSelect: (boardId: string) => void;
-  onRemove: (boardId: string) => void;
   editingBoardId: string | null;
   editingBoardName: string;
   onStartEdit: (boardId: string, name: string) => void;
   onSaveEdit: () => void;
   onEditNameChange: (name: string) => void;
   onCancelEdit: () => void;
-  showDeleteButton: boolean;
 }
 
 interface DragOverTask {
@@ -257,14 +261,12 @@ const SortableBoard = ({
   board,
   isActive,
   onSelect,
-  onRemove,
   editingBoardId,
   editingBoardName,
   onStartEdit,
   onSaveEdit,
   onEditNameChange,
   onCancelEdit,
-  showDeleteButton,
 }: SortableBoardProps) => {
   const {
     attributes,
@@ -318,20 +320,6 @@ const SortableBoard = ({
               {board.name}
             </Text>
           </div>
-        )}
-        {showDeleteButton && (
-          <ConfirmDeleteDialog
-            trigger={
-              <span onClick={e => e.stopPropagation()}>
-                <Button size="icon" variant="ghost">
-                  <X size={14} />
-                </Button>
-              </span>
-            }
-            title="Delete Board"
-            description={`Are you sure you want to delete "${board.name}"? This action cannot be undone.`}
-            onConfirm={() => onRemove(board.id)}
-          />
         )}
       </Flex>
     </div>
@@ -542,6 +530,7 @@ export const KanbanComponent = () => {
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [editingListName, setEditingListName] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showDeleteBoardDialog, setShowDeleteBoardDialog] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -1049,7 +1038,6 @@ export const KanbanComponent = () => {
                       board={board}
                       isActive={activeBoardId === board.id}
                       onSelect={setActiveBoardId}
-                      onRemove={removeBoard}
                       editingBoardId={editingBoardId}
                       editingBoardName={editingBoardName}
                       onStartEdit={handleStartEditBoard}
@@ -1059,7 +1047,6 @@ export const KanbanComponent = () => {
                         setEditingBoardId(null);
                         setEditingBoardName('');
                       }}
-                      showDeleteButton={boards.length > 1}
                     />
                   ))}
                 </div>
@@ -1085,6 +1072,32 @@ export const KanbanComponent = () => {
               <Text size="4" weight="bold">
                 {activeBoard.name}
               </Text>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <Button size="icon" variant="ghost">
+                    <MoreHorizontal size={16} />
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <DropdownMenu.Item
+                    color="red"
+                    disabled={boards.length <= 1}
+                    onSelect={() => setShowDeleteBoardDialog(true)}
+                  >
+                    Delete
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+              <ConfirmDeleteDialog
+                open={showDeleteBoardDialog}
+                onOpenChange={setShowDeleteBoardDialog}
+                title={DELETE_BOARD_TITLE}
+                description={getDeleteBoardDescription(activeBoard.name)}
+                onConfirm={() => {
+                  removeBoard(activeBoard.id);
+                  setShowDeleteBoardDialog(false);
+                }}
+              />
             </Flex>
             <SortableContext
               items={(draggingLanes ?? activeBoard?.lanes ?? []).map(l => l.id)}
