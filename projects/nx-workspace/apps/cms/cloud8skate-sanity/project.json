@@ -26,7 +26,7 @@
         "cwd": "{projectRoot}"
       }
     },
-    "deploy": {
+    "manual:deploy": {
       "executor": "nx:run-commands",
       "options": {
         "command": "node_modules/.bin/sanity deploy",
