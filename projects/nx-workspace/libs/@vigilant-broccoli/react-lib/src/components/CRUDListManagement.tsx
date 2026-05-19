@@ -1,4 +1,4 @@
-import { Ellipsis, EllipsisVertical, Plus } from 'lucide-react';
+import { EllipsisVertical, MoreHorizontal, Plus } from 'lucide-react';
 import {
   ComponentType,
   Dispatch,
@@ -10,8 +10,8 @@ import {
   AlertDialog,
   Card,
   Dialog,
+  DropdownMenu,
   Heading,
-  Popover,
 } from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import { Button } from './Button';
@@ -217,40 +217,57 @@ const EllipsisOptions = <T extends CRUDItem>({
   );
 };
 
+const DEFAULT_DELETE_DESCRIPTION = 'Are you sure you want to delete this item?';
+
+export const ELLIPSIS_ICON = {
+  HORIZONTAL: 'horizontal',
+  VERTICAL: 'vertical',
+} as const;
+export type EllipsisIcon = (typeof ELLIPSIS_ICON)[keyof typeof ELLIPSIS_ICON];
+
+const ELLIPSIS_ICON_SIZE = 16;
+
 export const EllipsisCTA = ({
   onUpdate,
   onDelete,
+  deleteDisabled = false,
+  confirmDescription,
+  icon = ELLIPSIS_ICON.HORIZONTAL,
 }: {
-  onUpdate: () => void;
+  onUpdate?: () => void;
   onDelete: () => void | Promise<void>;
+  deleteDisabled?: boolean;
+  confirmDescription?: string;
+  icon?: EllipsisIcon;
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const TriggerIcon =
+    icon === ELLIPSIS_ICON.VERTICAL ? EllipsisVertical : MoreHorizontal;
   return (
     <div onClick={e => e.stopPropagation()}>
-      <Popover.Root>
-        <Popover.Trigger>
-          <Button variant="ghost">
-            <EllipsisVertical className="sm:hidden" />
-            <Ellipsis className="hidden sm:block" />
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <Button size="icon" variant="ghost">
+            <TriggerIcon size={ELLIPSIS_ICON_SIZE} />
           </Button>
-        </Popover.Trigger>
-        <Popover.Content align="end" className="w-min">
-          <div className="flex flex-col">
-            <Button variant="ghost" onClick={onUpdate}>
-              Update
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => setConfirmDelete(true)}
-            >
-              Delete
-            </Button>
-          </div>
-        </Popover.Content>
-      </Popover.Root>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          {onUpdate && (
+            <DropdownMenu.Item onSelect={onUpdate}>Update</DropdownMenu.Item>
+          )}
+          <DropdownMenu.Item
+            color="red"
+            disabled={deleteDisabled}
+            onSelect={() => setConfirmDelete(true)}
+          >
+            Delete
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
       <DeleteItemConfirmationDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
+        description={confirmDescription}
         deleteItem={async () => {
           await onDelete();
         }}
@@ -263,10 +280,12 @@ export const DeleteItemConfirmationDialog = ({
   deleteItem,
   open,
   onOpenChange,
+  description = DEFAULT_DELETE_DESCRIPTION,
 }: {
   deleteItem: () => Promise<void>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  description?: string;
 }) => (
   <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
     {open === undefined && (
@@ -278,9 +297,7 @@ export const DeleteItemConfirmationDialog = ({
     )}
     <AlertDialog.Content className="sm:max-w-[425px]">
       <AlertDialog.Title>Delete Item</AlertDialog.Title>
-      <AlertDialog.Description>
-        Are you sure you want to delete this item?
-      </AlertDialog.Description>
+      <AlertDialog.Description>{description}</AlertDialog.Description>
       <Button variant="destructive" onClick={deleteItem}>
         Delete
       </Button>

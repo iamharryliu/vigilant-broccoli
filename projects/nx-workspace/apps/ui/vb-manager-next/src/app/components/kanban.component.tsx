@@ -7,9 +7,8 @@ import {
   Select,
   TextField,
   Dialog,
-  DropdownMenu,
 } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
@@ -37,7 +36,6 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
-  MoreHorizontal,
 } from 'lucide-react';
 import { GoogleTasksComponent } from './google-tasks.component';
 import { Skeleton } from './skeleton.component';
@@ -86,7 +84,6 @@ const QUADRANT_OVERLAY_COLORS: Record<string, string> = {
   Q4: 'border-l-4 border-l-green-500',
 } as const;
 
-const DELETE_BOARD_TITLE = 'Delete Board';
 const getDeleteBoardDescription = (name: string) =>
   `Are you sure you want to delete "${name}"? This action cannot be undone.`;
 
@@ -530,7 +527,6 @@ export const KanbanComponent = () => {
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [editingListName, setEditingListName] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [showDeleteBoardDialog, setShowDeleteBoardDialog] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -1072,31 +1068,10 @@ export const KanbanComponent = () => {
               <Text size="4" weight="bold">
                 {activeBoard.name}
               </Text>
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <Button size="icon" variant="ghost">
-                    <MoreHorizontal size={16} />
-                  </Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  <DropdownMenu.Item
-                    color="red"
-                    disabled={boards.length <= 1}
-                    onSelect={() => setShowDeleteBoardDialog(true)}
-                  >
-                    Delete
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-              <ConfirmDeleteDialog
-                open={showDeleteBoardDialog}
-                onOpenChange={setShowDeleteBoardDialog}
-                title={DELETE_BOARD_TITLE}
-                description={getDeleteBoardDescription(activeBoard.name)}
-                onConfirm={() => {
-                  removeBoard(activeBoard.id);
-                  setShowDeleteBoardDialog(false);
-                }}
+              <EllipsisCTA
+                deleteDisabled={boards.length <= 1}
+                confirmDescription={getDeleteBoardDescription(activeBoard.name)}
+                onDelete={() => removeBoard(activeBoard.id)}
               />
             </Flex>
             <SortableContext
