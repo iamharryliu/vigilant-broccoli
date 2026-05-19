@@ -3,7 +3,7 @@
 import { Badge, Flex, Link, Text } from '@radix-ui/themes';
 import {
   Button,
-  buttonVariants,
+  ButtonList,
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
@@ -13,6 +13,8 @@ import { CardContainer } from './card-container.component';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { ExternalLinkIcon, TrashIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+
+const CF_ACCOUNT_ID = '26d066ec62c4d27b8da5e9aebac17293';
 
 interface WranglerProject {
   name: string;
@@ -104,9 +106,6 @@ export const WranglerPagesComponent = () => {
 
   const toItem = (project: WranglerProject): StatusCardListItem => {
     const primaryDomain = project.domains[0];
-    const url = primaryDomain.includes('.')
-      ? `https://${primaryDomain}`
-      : `https://${primaryDomain}.pages.dev`;
 
     return {
       id: project.name,
@@ -118,15 +117,6 @@ export const WranglerPagesComponent = () => {
       ),
       actions: (
         <Flex gap="1" align="center">
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonVariants({ variant: 'ghost', size: 'icon' })}
-            title="Open site"
-          >
-            <ExternalLinkIcon />
-          </a>
           <ConfirmDeleteDialog
             trigger={
               <Button size="icon" variant="destructive" title="Delete project">
@@ -141,21 +131,60 @@ export const WranglerPagesComponent = () => {
         </Flex>
       ),
       children: (
-        <>
-          {project.domains.map(domain => (
-            <Link
-              key={domain}
-              href={domain.startsWith('http') ? domain : `https://${domain}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              size="2"
-            >
-              <Text size="2" color="gray">
-                {domain}
-              </Text>
-            </Link>
-          ))}
-        </>
+        <Flex direction="column" gap="2">
+          <ButtonList
+            buttons={[
+              {
+                label: 'Cloudflare',
+                onClick: () =>
+                  window.open(
+                    `https://dash.cloudflare.com/${CF_ACCOUNT_ID}/pages/view/${project.name}`,
+                    '_blank',
+                  ),
+                isExternal: true,
+              },
+              {
+                label: 'DNS',
+                onClick: () =>
+                  window.open(
+                    `https://dash.cloudflare.com/${CF_ACCOUNT_ID}/${primaryDomain}/dns/records`,
+                    '_blank',
+                  ),
+                isExternal: true,
+              },
+              {
+                label: 'SSL/TLS',
+                onClick: () =>
+                  window.open(
+                    `https://dash.cloudflare.com/${CF_ACCOUNT_ID}/${primaryDomain}/ssl-tls`,
+                    '_blank',
+                  ),
+                isExternal: true,
+              },
+              {
+                label: 'Settings',
+                onClick: () =>
+                  window.open(
+                    `https://dash.cloudflare.com/${CF_ACCOUNT_ID}/pages/view/${project.name}/settings`,
+                    '_blank',
+                  ),
+                isExternal: true,
+              },
+            ]}
+          />
+          <Text size="1" color="gray" weight="bold">Domains</Text>
+          <ButtonList
+            buttons={project.domains.map(domain => ({
+              label: domain,
+              onClick: () =>
+                window.open(
+                  domain.startsWith('http') ? domain : `https://${domain}`,
+                  '_blank',
+                ),
+              isExternal: true,
+            }))}
+          />
+        </Flex>
       ),
     };
   };
