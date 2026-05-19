@@ -15,6 +15,9 @@ import { ExternalLinkIcon, TrashIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const CF_ACCOUNT_ID = '26d066ec62c4d27b8da5e9aebac17293';
+const CF_DASH = `https://dash.cloudflare.com/${CF_ACCOUNT_ID}`;
+const PAGES_DEV_SUFFIX = '.pages.dev';
+const TITLE = 'Wrangler Pages';
 
 interface WranglerProject {
   name: string;
@@ -106,6 +109,10 @@ export const WranglerPagesComponent = () => {
 
   const toItem = (project: WranglerProject): StatusCardListItem => {
     const primaryDomain = project.domains[0];
+    const customDomain =
+      project.domains.find(d => !d.endsWith(PAGES_DEV_SUFFIX)) ?? primaryDomain;
+
+    const open = (url: string) => window.open(url, '_blank');
 
     return {
       id: project.name,
@@ -116,19 +123,17 @@ export const WranglerPagesComponent = () => {
         </Badge>
       ),
       actions: (
-        <Flex gap="1" align="center">
-          <ConfirmDeleteDialog
-            trigger={
-              <Button size="icon" variant="destructive" title="Delete project">
-                <TrashIcon />
-              </Button>
-            }
-            title="Delete Wrangler Pages Project"
-            description={`Are you sure you want to delete "${project.name}"? This action cannot be undone.`}
-            onConfirm={() => handleDelete(project.name)}
-            loading={deletingProject === project.name}
-          />
-        </Flex>
+        <ConfirmDeleteDialog
+          trigger={
+            <Button size="icon" variant="destructive" title="Delete project">
+              <TrashIcon />
+            </Button>
+          }
+          title="Delete Wrangler Pages Project"
+          description={`Are you sure you want to delete "${project.name}"? This action cannot be undone.`}
+          onConfirm={() => handleDelete(project.name)}
+          loading={deletingProject === project.name}
+        />
       ),
       children: (
         <Flex direction="column" gap="2">
@@ -136,38 +141,23 @@ export const WranglerPagesComponent = () => {
             buttons={[
               {
                 label: 'Cloudflare',
-                onClick: () =>
-                  window.open(
-                    `https://dash.cloudflare.com/${CF_ACCOUNT_ID}/pages/view/${project.name}`,
-                    '_blank',
-                  ),
+                onClick: () => open(`${CF_DASH}/pages/view/${project.name}`),
                 isExternal: true,
               },
               {
                 label: 'DNS',
-                onClick: () =>
-                  window.open(
-                    `https://dash.cloudflare.com/${CF_ACCOUNT_ID}/${primaryDomain}/dns/records`,
-                    '_blank',
-                  ),
+                onClick: () => open(`${CF_DASH}/${customDomain}/dns/records`),
                 isExternal: true,
               },
               {
                 label: 'SSL/TLS',
-                onClick: () =>
-                  window.open(
-                    `https://dash.cloudflare.com/${CF_ACCOUNT_ID}/${primaryDomain}/ssl-tls`,
-                    '_blank',
-                  ),
+                onClick: () => open(`${CF_DASH}/${customDomain}/ssl-tls`),
                 isExternal: true,
               },
               {
                 label: 'Settings',
                 onClick: () =>
-                  window.open(
-                    `https://dash.cloudflare.com/${CF_ACCOUNT_ID}/pages/view/${project.name}/settings`,
-                    '_blank',
-                  ),
+                  open(`${CF_DASH}/pages/view/${project.name}/settings`),
                 isExternal: true,
               },
             ]}
@@ -177,10 +167,7 @@ export const WranglerPagesComponent = () => {
             buttons={project.domains.map(domain => ({
               label: domain,
               onClick: () =>
-                window.open(
-                  domain.startsWith('http') ? domain : `https://${domain}`,
-                  '_blank',
-                ),
+                open(domain.startsWith('http') ? domain : `https://${domain}`),
               isExternal: true,
             }))}
           />
@@ -189,15 +176,11 @@ export const WranglerPagesComponent = () => {
     };
   };
 
-  if (loading) return <CardSkeleton title="Wrangler Pages" rows={5} />;
+  if (loading) return <CardSkeleton title={TITLE} rows={5} />;
 
   if (error) {
     return (
-      <CardContainer
-        title="Wrangler Pages"
-        gap="3"
-        headerAction={dashboardLink}
-      >
+      <CardContainer title={TITLE} gap="3" headerAction={dashboardLink}>
         <Button onClick={handleLogin} loading={loggingIn} variant="secondary">
           Wrangler Login
         </Button>
@@ -206,7 +189,7 @@ export const WranglerPagesComponent = () => {
   }
 
   return (
-    <CardContainer title="Wrangler Pages" gap="3" headerAction={dashboardLink}>
+    <CardContainer title={TITLE} gap="3" headerAction={dashboardLink}>
       <StatusCardList
         items={projectsData.map(toItem)}
         emptyMessage="No projects found"
