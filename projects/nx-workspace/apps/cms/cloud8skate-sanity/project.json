@@ -26,6 +26,13 @@
         "cwd": "{projectRoot}"
       }
     },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'TODO: implement Sanity ci deploy'",
+        "cwd": "{projectRoot}"
+      }
+    },
     "manual:deploy": {
       "executor": "nx:run-commands",
       "options": {
