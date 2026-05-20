@@ -238,6 +238,9 @@ importers:
       rxjs:
         specifier: ~7.8.2
         version: 7.8.2
+      sharp:
+        specifier: '*'
+        version: 0.34.5
       stripe:
         specifier: ^20.4.1
         version: 20.4.1(@types/node@20.19.41)
