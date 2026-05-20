@@ -18,7 +18,6 @@
     "next": "*",
     "react": "*",
     "recharts": "*",
-    "sharp": "*",
     "zod": "*"
   }
 }

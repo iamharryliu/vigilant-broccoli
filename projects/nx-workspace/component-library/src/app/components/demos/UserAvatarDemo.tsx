@@ -20,7 +20,7 @@ const SECTION_HEADING_PROPS = {
 } as const;
 const ROW_FLEX_PROPS = { align: 'center', gap: '4' } as const;
 const NAMES = ['Alice', 'Bob', 'Carol'];
-const INITIALS_NAMES = ['Alice Anderson', 'Bob Brown', 'Carol'];
+const INITIALS_NAMES = ['Alice Anderson', 'Alice'];
 
 type UrlState = string | undefined;
 type UrlSetter = (url: UrlState) => void;
@@ -60,7 +60,6 @@ export const UserAvatarDemo = () => {
           {NAMES.map(name => (
             <UserAvatar key={name} name={name} />
           ))}
-          <UserAvatar />
         </Flex>
       </div>
 
@@ -74,7 +73,6 @@ export const UserAvatarDemo = () => {
               variant={USER_AVATAR_VARIANT.INITIALS}
             />
           ))}
-          <UserAvatar variant={USER_AVATAR_VARIANT.INITIALS} />
         </Flex>
       </div>
 
@@ -82,6 +80,7 @@ export const UserAvatarDemo = () => {
         <Text {...SECTION_HEADING_PROPS}>With upload (click avatar)</Text>
         <Flex {...ROW_FLEX_PROPS}>
           <UserAvatar
+            name={SAMPLE_NAME}
             avatarUrl={emptyUrl}
             upload={makeUploadConfig(emptyUrl, setEmptyUrl)}
           />

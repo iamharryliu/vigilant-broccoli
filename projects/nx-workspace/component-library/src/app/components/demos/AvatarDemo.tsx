@@ -3,13 +3,12 @@ import {
   Avatar,
   AvatarSize,
   BoringAvatarVariant,
+  FALLBACK_TYPE,
   USER_AVATAR_COLORS,
 } from '@vigilant-broccoli/react-lib';
 import { Pencil } from 'lucide-react';
 
 const SAMPLE_NAME = 'Harry Liu';
-const CHARACTER = 'character' as const;
-const BORING_AVATAR = 'boringAvatar' as const;
 
 const SECTION_HEADING_PROPS = {
   as: 'p',
@@ -46,7 +45,10 @@ export const AvatarDemo = () => (
           <Avatar
             key={size}
             size={size}
-            fallback={{ type: CHARACTER, value: SIZE_LABELS[size] }}
+            fallback={{
+              type: FALLBACK_TYPE.CHARACTER,
+              value: SIZE_LABELS[size],
+            }}
           />
         ))}
       </Flex>
@@ -55,8 +57,8 @@ export const AvatarDemo = () => (
     <div>
       <Text {...SECTION_HEADING_PROPS}>Character fallback</Text>
       <Flex {...ROW_FLEX_PROPS}>
-        <Avatar fallback={{ type: CHARACTER, value: 'A' }} />
-        <Avatar fallback={{ type: CHARACTER, value: 'HL' }} />
+        <Avatar fallback={{ type: FALLBACK_TYPE.CHARACTER, value: 'A' }} />
+        <Avatar fallback={{ type: FALLBACK_TYPE.CHARACTER, value: 'HL' }} />
       </Flex>
     </div>
 
@@ -67,7 +69,7 @@ export const AvatarDemo = () => (
           <Avatar
             key={variant}
             fallback={{
-              type: BORING_AVATAR,
+              type: FALLBACK_TYPE.BORING_AVATAR,
               name: `${SAMPLE_NAME}-${variant}`,
               variant,
               colors: USER_AVATAR_COLORS,
@@ -80,7 +82,10 @@ export const AvatarDemo = () => (
     <div>
       <Text {...SECTION_HEADING_PROPS}>With badge</Text>
       <Flex {...ROW_FLEX_PROPS}>
-        <Avatar badge={{ icon: Pencil }} />
+        <Avatar
+          fallback={{ type: FALLBACK_TYPE.CHARACTER, value: 'A' }}
+          badge={{ icon: Pencil }}
+        />
       </Flex>
     </div>
   </Flex>

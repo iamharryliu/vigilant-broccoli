@@ -13,14 +13,15 @@ import {
 } from './Dialog';
 import { Input } from './Input';
 import { ImageCropDialog } from './ImageCropDialog';
-import { getCroppedImageBlob } from '../utils/cropImage';
+import { DEFAULT_OUTPUT_TYPE, getCroppedImageBlob } from '../utils/cropImage';
 
 const ACTION_TITLE = 'Update image';
 const ACTION_DESCRIPTION = 'Upload a new image or remove the current one.';
 const UPLOAD_LABEL = 'Upload';
 const REMOVE_LABEL = 'Remove';
 const CANCEL_LABEL = 'Cancel';
-const DEFAULT_OUTPUT_TYPE = 'image/webp';
+const FILE_INPUT_TYPE = 'file';
+const FILE_INPUT_ACCEPT = 'image/*';
 
 interface AvatarUploadHandlerProps {
   ariaLabel: string;
@@ -115,8 +116,8 @@ export function AvatarUploadHandler({
       {renderTrigger({ isBusy, openActionDialog })}
       <Input
         ref={fileInputRef}
-        type="file"
-        accept="image/*"
+        type={FILE_INPUT_TYPE}
+        accept={FILE_INPUT_ACCEPT}
         className="hidden"
         onChange={handleFileChange}
         aria-label={ariaLabel}

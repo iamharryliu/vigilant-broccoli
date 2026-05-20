@@ -6,7 +6,7 @@ const MAX_SIZE = 1_000_000;
 const MIN_QUALITY = 0.1;
 const QUALITY_STEP = 0.1;
 const SCALE_FACTOR = 0.75;
-const DEFAULT_OUTPUT_TYPE = 'image/webp';
+export const DEFAULT_OUTPUT_TYPE = 'image/webp';
 const DEFAULT_QUALITY = 0.9;
 const DEFAULT_MAX_OUTPUT_SIZE = 512;
 

@@ -1,5 +1,10 @@
 import { FC } from 'react';
-import { Avatar, AvatarSize, AvatarUploadConfig } from './Avatar';
+import {
+  Avatar,
+  AvatarSize,
+  AvatarUploadConfig,
+  FALLBACK_TYPE,
+} from './Avatar';
 
 export const USER_AVATAR_COLORS = [
   '#92A1C6',
@@ -17,44 +22,44 @@ export const USER_AVATAR_VARIANT = {
 export type UserAvatarVariant =
   (typeof USER_AVATAR_VARIANT)[keyof typeof USER_AVATAR_VARIANT];
 
-const FALLBACK_CHARACTER = '?';
-const CHARACTER_FALLBACK_TYPE = 'character' as const;
-const BORING_AVATAR_FALLBACK_TYPE = 'boringAvatar' as const;
 const BORING_AVATAR_STYLE = 'beam' as const;
 const MAX_INITIALS = 2;
+const WHITESPACE_REGEX = /\s+/;
 
 function initialsFromName(name: string): string {
-  const tokens = name.trim().split(/\s+/).filter(Boolean);
-  if (tokens.length === 0) return FALLBACK_CHARACTER;
-  return tokens
+  return name
+    .trim()
+    .split(WHITESPACE_REGEX)
+    .filter(Boolean)
     .slice(0, MAX_INITIALS)
     .map(token => token[0]!.toUpperCase())
     .join('');
 }
 
 function resolveFallback(name: string | undefined, variant: UserAvatarVariant) {
-  if (!name) return FALLBACK_CHARACTER;
+  if (!name) return undefined;
 
   if (variant === USER_AVATAR_VARIANT.INITIALS) {
-    return { type: CHARACTER_FALLBACK_TYPE, value: initialsFromName(name) };
+    return { type: FALLBACK_TYPE.CHARACTER, value: initialsFromName(name) };
   }
 
   return {
-    type: BORING_AVATAR_FALLBACK_TYPE,
+    type: FALLBACK_TYPE.BORING_AVATAR,
     name,
     variant: BORING_AVATAR_STYLE,
     colors: USER_AVATAR_COLORS,
   };
 }
 
-interface UserAvatarProps {
-  avatarUrl?: string;
-  name?: string;
+interface UserAvatarBaseProps {
   className?: string;
   size?: AvatarSize;
   upload?: AvatarUploadConfig;
   variant?: UserAvatarVariant;
 }
+
+type UserAvatarProps = UserAvatarBaseProps &
+  ({ avatarUrl: string; name?: string } | { avatarUrl?: string; name: string });
 
 export const UserAvatar: FC<UserAvatarProps> = ({
   avatarUrl,
@@ -63,12 +68,14 @@ export const UserAvatar: FC<UserAvatarProps> = ({
   size,
   upload,
   variant = USER_AVATAR_VARIANT.BORING,
-}) => (
-  <Avatar
-    avatarUrl={avatarUrl}
-    className={className}
-    size={size}
-    fallback={resolveFallback(name, variant)}
-    upload={upload}
-  />
-);
+}) => {
+  const fallback = resolveFallback(name, variant);
+  const sharedProps = { className, size, upload };
+
+  if (fallback) {
+    return (
+      <Avatar avatarUrl={avatarUrl} fallback={fallback} {...sharedProps} />
+    );
+  }
+  return <Avatar avatarUrl={avatarUrl!} {...sharedProps} />;
+};

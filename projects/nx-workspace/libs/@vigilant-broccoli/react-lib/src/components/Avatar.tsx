@@ -21,15 +21,15 @@ export type BoringAvatarVariant =
   | 'sunset'
   | 'pixel';
 
-const FALLBACK_TYPE = {
+export const FALLBACK_TYPE = {
   CHARACTER: 'character',
   BORING_AVATAR: 'boringAvatar',
 } as const;
 
 const DEFAULT_SIZE: AvatarSize = 'medium';
 const AVATAR_ALT = 'Avatar';
-const NO_AVATAR_KEY = 'no-avatar';
 const BORING_AVATAR_SIZE = '100%';
+const BADGE_ICON_SIZE = '1em';
 
 interface CharacterFallbackConfig {
   type: typeof FALLBACK_TYPE.CHARACTER;
@@ -64,14 +64,18 @@ export interface AvatarUploadConfig {
   cropDialogDescription?: string;
 }
 
-interface AvatarProps {
-  avatarUrl?: string;
+interface AvatarBaseProps {
   className?: string;
   size?: AvatarSize;
-  fallback?: FallbackConfig;
   badge?: AvatarBadgeConfig;
   upload?: AvatarUploadConfig;
 }
+
+type AvatarProps = AvatarBaseProps &
+  (
+    | { avatarUrl: string; fallback?: FallbackConfig }
+    | { avatarUrl?: string; fallback: FallbackConfig }
+  );
 
 const SIZE_CLASSES: Record<AvatarSize, string> = {
   xsmall: 'h-6 w-6',
@@ -131,7 +135,7 @@ function renderAvatarBadge(
   const Icon = badge.icon;
   return (
     <AvatarBadge size={badgeSize} variant={badge.variant}>
-      <Icon size="1em" />
+      <Icon size={BADGE_ICON_SIZE} />
     </AvatarBadge>
   );
 }
@@ -150,7 +154,7 @@ export const Avatar: FC<AvatarProps> = ({
 
   const avatarEl = (
     <AvatarRoot
-      key={avatarUrl ?? NO_AVATAR_KEY}
+      key={avatarUrl}
       className={cn(SIZE_CLASSES[resolvedSize], className)}
     >
       {avatarUrl && (
