@@ -1,7 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
+import {
+  Sidebar,
+  SidebarCTA,
+  useTheme,
+} from '@vigilant-broccoli/react-lib';
 import {
   MessageCircle,
   Mail,
@@ -12,7 +16,11 @@ import {
   StickyNote,
   Timer,
 } from 'lucide-react';
-import { useTheme } from '../theme-context';
+
+const LIGHT = 'light';
+const DARK_MODE_LABEL = 'Dark mode';
+const LIGHT_MODE_LABEL = 'Light mode';
+const THEME_SHORTCUT = ' (D)';
 
 type Props = {
   setChatbotDialogOpen: (open: boolean) => void;
@@ -32,6 +40,8 @@ export const RightSidebar = ({
   setSearchDialogOpen,
 }: Props) => {
   const { appearance, toggleTheme } = useTheme();
+  const isLight = appearance === LIGHT;
+  const themeLabel = isLight ? DARK_MODE_LABEL : LIGHT_MODE_LABEL;
 
   const items: SidebarCTA[] = [
     {
@@ -71,9 +81,9 @@ export const RightSidebar = ({
       onClick: () => setSearchDialogOpen(true),
     },
     {
-      label: appearance === 'light' ? 'Dark mode' : 'Light mode',
-      icon: appearance === 'light' ? Moon : Sun,
-      title: appearance === 'light' ? 'Dark mode (D)' : 'Light mode (D)',
+      label: themeLabel,
+      icon: isLight ? Moon : Sun,
+      title: themeLabel + THEME_SHORTCUT,
       onClick: toggleTheme,
     },
   ];

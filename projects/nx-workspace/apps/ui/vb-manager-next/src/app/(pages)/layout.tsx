@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { APP_ROUTE } from '../app.const';
-import { useTheme } from '../theme-context';
+import { useTheme } from '@vigilant-broccoli/react-lib';
 import { FloatingIslandComponent } from '../components/floating-island.component';
 import { RightSidebar } from '../components/right-sidebar.component';
 

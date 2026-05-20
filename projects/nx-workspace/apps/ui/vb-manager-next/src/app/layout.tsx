@@ -4,7 +4,7 @@ import '@radix-ui/themes/styles.css';
 import { Theme } from '@radix-ui/themes';
 import './global.css';
 import { SessionProvider } from 'next-auth/react';
-import { ThemeProvider, useTheme } from './theme-context';
+import { ThemeProvider, useTheme } from '@vigilant-broccoli/react-lib';
 import { AppModeProvider } from './app-mode-context';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {

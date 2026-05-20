@@ -1,9 +1,9 @@
 import '@radix-ui/themes/styles.css';
-import { Theme } from '@radix-ui/themes';
 import './global.css';
 import AuthProvider from './providers/auth-provider';
 import HomeProvider from './providers/home-provider';
 import AppLayout from './components/AppLayout';
+import { RootThemeWrapper } from './components/RootThemeWrapper';
 
 export const metadata = {
   title: 'next-demo',
@@ -18,13 +18,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Theme>
+        <RootThemeWrapper>
           <AuthProvider>
             <HomeProvider>
               <AppLayout>{children}</AppLayout>
             </HomeProvider>
           </AuthProvider>
-        </Theme>
+        </RootThemeWrapper>
       </body>
     </html>
   );
