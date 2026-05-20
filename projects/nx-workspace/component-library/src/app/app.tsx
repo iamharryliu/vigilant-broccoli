@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Box, Heading, Text, Flex, Theme } from '@radix-ui/themes';
 import { Switch } from '@vigilant-broccoli/react-lib';
 import { Moon, Sun } from 'lucide-react';
+import { AvatarDemo } from './components/demos/AvatarDemo';
+import { UserAvatarDemo } from './components/demos/UserAvatarDemo';
 import { ButtonDemo } from './components/demos/ButtonDemo';
 import { CollapsibleListItemDemo } from './components/demos/CollapsibleListItemDemo';
 import { CRUDListNoImagesDemo } from './components/demos/CRUDListNoImagesDemo';
@@ -83,6 +85,16 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
     title: 'Buttons',
     content: <ButtonDemo />,
     defaultOpen: true,
+  },
+  {
+    id: 'avatar',
+    title: 'Avatar',
+    content: <AvatarDemo />,
+  },
+  {
+    id: 'user-avatar',
+    title: 'User Avatar',
+    content: <UserAvatarDemo />,
   },
   {
     id: 'status-card-list',

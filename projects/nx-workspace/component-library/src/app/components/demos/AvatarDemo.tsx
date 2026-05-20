@@ -1,0 +1,87 @@
+import { Flex, Text } from '@radix-ui/themes';
+import {
+  Avatar,
+  AvatarSize,
+  BoringAvatarVariant,
+  USER_AVATAR_COLORS,
+} from '@vigilant-broccoli/react-lib';
+import { Pencil } from 'lucide-react';
+
+const SAMPLE_NAME = 'Harry Liu';
+const CHARACTER = 'character' as const;
+const BORING_AVATAR = 'boringAvatar' as const;
+
+const SECTION_HEADING_PROPS = {
+  as: 'p',
+  size: '2',
+  weight: 'bold',
+  mb: '2',
+} as const;
+
+const ROW_FLEX_PROPS = { align: 'center', gap: '4' } as const;
+
+const SIZE_LABELS: Record<AvatarSize, string> = {
+  xsmall: 'xs',
+  small: 'sm',
+  medium: 'md',
+  large: 'lg',
+};
+
+const SIZES: AvatarSize[] = ['xsmall', 'small', 'medium', 'large'];
+const VARIANTS: BoringAvatarVariant[] = [
+  'beam',
+  'bauhaus',
+  'marble',
+  'ring',
+  'sunset',
+  'pixel',
+];
+
+export const AvatarDemo = () => (
+  <Flex direction="column" gap="6">
+    <div>
+      <Text {...SECTION_HEADING_PROPS}>Sizes</Text>
+      <Flex {...ROW_FLEX_PROPS}>
+        {SIZES.map(size => (
+          <Avatar
+            key={size}
+            size={size}
+            fallback={{ type: CHARACTER, value: SIZE_LABELS[size] }}
+          />
+        ))}
+      </Flex>
+    </div>
+
+    <div>
+      <Text {...SECTION_HEADING_PROPS}>Character fallback</Text>
+      <Flex {...ROW_FLEX_PROPS}>
+        <Avatar fallback={{ type: CHARACTER, value: 'A' }} />
+        <Avatar fallback={{ type: CHARACTER, value: 'HL' }} />
+      </Flex>
+    </div>
+
+    <div>
+      <Text {...SECTION_HEADING_PROPS}>BoringAvatar fallback (variants)</Text>
+      <Flex {...ROW_FLEX_PROPS}>
+        {VARIANTS.map(variant => (
+          <Avatar
+            key={variant}
+            fallback={{
+              type: BORING_AVATAR,
+              name: `${SAMPLE_NAME}-${variant}`,
+              variant,
+              colors: USER_AVATAR_COLORS,
+            }}
+          />
+        ))}
+      </Flex>
+    </div>
+
+    <div>
+      <Text {...SECTION_HEADING_PROPS}>With badge</Text>
+      <Flex {...ROW_FLEX_PROPS}>
+        <Avatar badge={{ icon: Pencil }} />
+      </Flex>
+    </div>
+  </Flex>
+);

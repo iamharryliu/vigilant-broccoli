@@ -4,14 +4,17 @@
   "dependencies": {
     "@radix-ui/react-accordion": "*",
     "@radix-ui/react-avatar": "*",
+    "@radix-ui/react-dialog": "*",
     "@radix-ui/react-progress": "*",
     "@radix-ui/react-tabs": "*",
     "@radix-ui/themes": "*",
     "@vigilant-broccoli/common-js": "workspace:*",
+    "boring-avatars": "*",
     "class-variance-authority": "*",
     "clsx": "*",
     "lucide-react": "*",
     "react": "*",
+    "react-easy-crop": "*",
     "tailwind-merge": "*"
   },
   "main": "./index.js",

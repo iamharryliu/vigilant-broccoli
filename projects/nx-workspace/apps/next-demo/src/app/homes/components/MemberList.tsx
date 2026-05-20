@@ -6,8 +6,8 @@ import { Button } from '@vigilant-broccoli/react-lib';
 import {
   CRUDItemList,
   CRUDFormProps,
-  Avatar,
-  AvatarFallback,
+  UserAvatar,
+  USER_AVATAR_VARIANT,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
@@ -110,9 +110,7 @@ const MemberListItem = ({
   return (
     <Flex align="center" justify="between" width="100%">
       <Flex align="center" gap="2">
-        <Avatar>
-          <AvatarFallback>{item.email[0]?.toUpperCase() ?? '?'}</AvatarFallback>
-        </Avatar>
+        <UserAvatar name={item.email} variant={USER_AVATAR_VARIANT.INITIALS} />
         <Text size="2">{item.email}</Text>
         {!isItemOwner && item.status === 'pending' && (
           <Badge variant="soft" color="orange" size="1">

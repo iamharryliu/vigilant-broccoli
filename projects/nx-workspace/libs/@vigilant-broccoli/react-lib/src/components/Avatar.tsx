@@ -1,49 +1,208 @@
 'use client';
 
-import * as React from 'react';
-import * as AvatarPrimitive from '@radix-ui/react-avatar';
+import React, { FC, ReactNode } from 'react';
+import BoringAvatar from 'boring-avatars';
+import { Camera, LucideIcon } from 'lucide-react';
+import { AvatarRoot, AvatarImage, AvatarFallback } from './AvatarPrimitive';
+import {
+  AvatarBadge,
+  AvatarBadgeSize,
+  AvatarBadgeVariant,
+} from './AvatarBadge';
+import { AvatarUploadHandler } from './AvatarUploadHandler';
 import { cn } from '../utils/cn';
 
-const Avatar = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Root
-    ref={ref}
-    className={cn(
-      'relative flex h-8 w-8 shrink-0 overflow-hidden rounded-full',
-      className,
-    )}
-    {...props}
-  />
-));
-Avatar.displayName = AvatarPrimitive.Root.displayName;
+export type AvatarSize = 'xsmall' | 'small' | 'medium' | 'large';
+export type BoringAvatarVariant =
+  | 'beam'
+  | 'bauhaus'
+  | 'marble'
+  | 'ring'
+  | 'sunset'
+  | 'pixel';
 
-const AvatarImage = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Image>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Image
-    ref={ref}
-    className={cn('aspect-square h-full w-full', className)}
-    {...props}
-  />
-));
-AvatarImage.displayName = AvatarPrimitive.Image.displayName;
+const FALLBACK_TYPE = {
+  CHARACTER: 'character',
+  BORING_AVATAR: 'boringAvatar',
+} as const;
 
-const AvatarFallback = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Fallback>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Fallback
-    ref={ref}
-    className={cn(
-      'flex h-full w-full items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600',
-      className,
-    )}
-    {...props}
-  />
-));
-AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
+const DEFAULT_SIZE: AvatarSize = 'medium';
+const AVATAR_ALT = 'Avatar';
+const NO_AVATAR_KEY = 'no-avatar';
+const BORING_AVATAR_SIZE = '100%';
 
-export { Avatar, AvatarImage, AvatarFallback };
+interface CharacterFallbackConfig {
+  type: typeof FALLBACK_TYPE.CHARACTER;
+  value: string;
+}
+
+interface BoringAvatarFallbackConfig {
+  type: typeof FALLBACK_TYPE.BORING_AVATAR;
+  name: string;
+  variant: BoringAvatarVariant;
+  colors: string[];
+}
+
+type FallbackConfigObject =
+  | CharacterFallbackConfig
+  | BoringAvatarFallbackConfig;
+type FallbackConfig = FallbackConfigObject | ReactNode;
+
+export interface AvatarBadgeConfig {
+  icon: LucideIcon;
+  size?: AvatarBadgeSize;
+  variant?: AvatarBadgeVariant;
+}
+
+export interface AvatarUploadConfig {
+  label: string;
+  hasImage: boolean;
+  fileName: string;
+  onUpload: (blob: Blob) => Promise<void>;
+  onRemove?: () => Promise<void>;
+  cropDialogTitle?: string;
+  cropDialogDescription?: string;
+}
+
+interface AvatarProps {
+  avatarUrl?: string;
+  className?: string;
+  size?: AvatarSize;
+  fallback?: FallbackConfig;
+  badge?: AvatarBadgeConfig;
+  upload?: AvatarUploadConfig;
+}
+
+const SIZE_CLASSES: Record<AvatarSize, string> = {
+  xsmall: 'h-6 w-6',
+  small: 'h-8 w-8',
+  medium: 'h-10 w-10',
+  large: 'h-14 w-14',
+};
+
+const TEXT_SIZE_CLASSES: Record<AvatarSize, string> = {
+  xsmall: 'text-xs',
+  small: 'text-sm',
+  medium: 'text-base',
+  large: 'text-lg',
+};
+
+const DEFAULT_BADGE_SIZE: Record<AvatarSize, AvatarBadgeSize> = {
+  xsmall: 'small',
+  small: 'small',
+  medium: 'small',
+  large: 'medium',
+};
+
+const resolveFallbackContent = (fallback?: FallbackConfig): ReactNode => {
+  if (!fallback) return null;
+
+  if (
+    typeof fallback === 'object' &&
+    !React.isValidElement(fallback) &&
+    'type' in fallback
+  ) {
+    const config = fallback as FallbackConfigObject;
+
+    if (config.type === FALLBACK_TYPE.CHARACTER) {
+      return config.value;
+    }
+
+    if (config.type === FALLBACK_TYPE.BORING_AVATAR) {
+      return (
+        <BoringAvatar
+          name={config.name}
+          variant={config.variant}
+          size={BORING_AVATAR_SIZE}
+          colors={config.colors}
+        />
+      );
+    }
+  }
+
+  return fallback as ReactNode;
+};
+
+function renderAvatarBadge(
+  badge: AvatarBadgeConfig,
+  avatarSize: AvatarSize = DEFAULT_SIZE,
+) {
+  const badgeSize = badge.size ?? DEFAULT_BADGE_SIZE[avatarSize];
+  const Icon = badge.icon;
+  return (
+    <AvatarBadge size={badgeSize} variant={badge.variant}>
+      <Icon size="1em" />
+    </AvatarBadge>
+  );
+}
+
+export const Avatar: FC<AvatarProps> = ({
+  avatarUrl,
+  className,
+  size,
+  fallback,
+  badge,
+  upload,
+}) => {
+  const resolvedSize = size ?? DEFAULT_SIZE;
+  const fallbackContent = resolveFallbackContent(fallback);
+  const resolvedBadge = badge ?? (upload ? { icon: Camera } : undefined);
+
+  const avatarEl = (
+    <AvatarRoot
+      key={avatarUrl ?? NO_AVATAR_KEY}
+      className={cn(SIZE_CLASSES[resolvedSize], className)}
+    >
+      {avatarUrl && (
+        <AvatarImage
+          className="block h-full w-full object-cover"
+          src={avatarUrl}
+          alt={AVATAR_ALT}
+        />
+      )}
+      <AvatarFallback className={cn(TEXT_SIZE_CLASSES[resolvedSize])}>
+        {fallbackContent}
+      </AvatarFallback>
+    </AvatarRoot>
+  );
+
+  if (upload) {
+    return (
+      <AvatarUploadHandler
+        ariaLabel={upload.label}
+        hasImage={upload.hasImage}
+        fileName={upload.fileName}
+        onUpload={upload.onUpload}
+        onRemove={upload.onRemove}
+        title={upload.cropDialogTitle}
+        description={upload.cropDialogDescription}
+        renderTrigger={({ isBusy, openActionDialog }) => (
+          <button
+            type="button"
+            onClick={openActionDialog}
+            disabled={isBusy}
+            className="relative inline-flex cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:scale-[1.03] transition-transform"
+            aria-label={upload.label}
+          >
+            {avatarEl}
+            {isBusy && (
+              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-background/70 text-[10px] font-semibold">
+                ...
+              </span>
+            )}
+            {resolvedBadge && renderAvatarBadge(resolvedBadge, resolvedSize)}
+          </button>
+        )}
+      />
+    );
+  }
+
+  if (!resolvedBadge) return avatarEl;
+
+  return (
+    <div className="relative inline-flex">
+      {avatarEl}
+      {renderAvatarBadge(resolvedBadge, resolvedSize)}
+    </div>
+  );
+};

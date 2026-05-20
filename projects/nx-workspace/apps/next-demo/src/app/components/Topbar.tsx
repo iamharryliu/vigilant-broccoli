@@ -7,12 +7,7 @@ import { supabase } from '../../../libs/supabase';
 import { useHome } from '../providers/home-provider';
 import { useAuth } from '../providers/auth-provider';
 import { ROUTES } from '../../lib/routes';
-import { Avatar, AvatarFallback } from '@vigilant-broccoli/react-lib';
-
-function initials(email: string | undefined): string {
-  if (!email) return '?';
-  return email[0].toUpperCase();
-}
+import { UserAvatar, USER_AVATAR_VARIANT } from '@vigilant-broccoli/react-lib';
 
 export default function Topbar() {
   const { homes, selectedHomeId, setSelectedHomeId } = useHome();
@@ -43,9 +38,10 @@ export default function Topbar() {
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <button className="cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400">
-            <Avatar>
-              <AvatarFallback>{initials(session?.user.email)}</AvatarFallback>
-            </Avatar>
+            <UserAvatar
+              name={session?.user.email}
+              variant={USER_AVATAR_VARIANT.INITIALS}
+            />
           </button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end" size="1">
