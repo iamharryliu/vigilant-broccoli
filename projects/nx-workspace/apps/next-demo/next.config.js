@@ -10,6 +10,9 @@ const path = require('path');
 const nextConfig = {
   nx: {},
   outputFileTracingRoot: path.join(__dirname, '../..'),
+  outputFileTracingIncludes: {
+    '/api/where-is': ['./node_modules/sharp/**/*', './node_modules/@img/**/*'],
+  },
   transpilePackages: [
     '@fullcalendar/core',
     '@fullcalendar/react',
