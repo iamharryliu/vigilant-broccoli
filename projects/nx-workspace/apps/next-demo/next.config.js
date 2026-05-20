@@ -2,6 +2,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require('@nx/next');
+const path = require('path');
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
@@ -9,6 +10,7 @@ const { composePlugins, withNx } = require('@nx/next');
 const nextConfig = {
   nx: {},
   serverExternalPackages: ['sharp'],
+  outputFileTracingRoot: path.join(__dirname, '../../..'),
   transpilePackages: [
     '@fullcalendar/core',
     '@fullcalendar/react',
