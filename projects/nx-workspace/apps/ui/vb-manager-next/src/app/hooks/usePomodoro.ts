@@ -113,7 +113,12 @@ export const usePomodoro = () => {
       setPhase(nextPhase);
       const duration = getDuration(nextPhase);
       setSecondsLeft(duration);
-      endTimeRef.current = Date.now() + duration * 1000;
+      if (autoTransition) {
+        setIsRunning(false);
+        endTimeRef.current = null;
+      } else {
+        endTimeRef.current = Date.now() + duration * 1000;
+      }
     },
     [startBeepLoop, getDuration],
   );
