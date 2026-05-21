@@ -13,14 +13,12 @@ import {
 } from '@radix-ui/themes';
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { Trash2 } from 'lucide-react';
 import {
-  Maximize2,
-  Minimize2,
-  X,
-  RotateCcw,
-  Image,
-  Trash2,
-} from 'lucide-react';
+  CloseButton,
+  IconButton,
+  UserAvatar,
+} from '@vigilant-broccoli/react-lib';
 import { SpeechToTextButton } from './llm/SpeechToTextButton';
 import {
   LLM_MODEL,
@@ -64,9 +62,27 @@ interface Message {
   taskCreatedSummary?: string;
 }
 
-const CALENDAR_SUGGESTION_TITLE = 'Create calendar event';
-const TASKS_FROM_TEXT_SUGGESTION_TITLE = 'Tasks from text';
-const TASKS_FROM_IMAGE_SUGGESTION_TITLE = 'Tasks from image';
+const COMMAND_NAME = {
+  HELP: 'help',
+  CALENDAR: 'calendar',
+  TASKS_TEXT: 'tasks-text',
+  TASKS_IMAGE: 'tasks-image',
+} as const;
+
+const COMMAND_LABEL = {
+  [COMMAND_NAME.HELP]: 'Show available commands',
+  [COMMAND_NAME.CALENDAR]: 'Create calendar event',
+  [COMMAND_NAME.TASKS_TEXT]: 'Tasks from text',
+  [COMMAND_NAME.TASKS_IMAGE]: 'Tasks from image',
+} as const;
+
+interface ChatCommand {
+  name: string;
+  label: string;
+  description: string;
+  showInSuggestions: boolean;
+  handler: () => Promise<void> | void;
+}
 
 interface ChatSuggestion {
   title: string;
@@ -88,6 +104,8 @@ const CONST_ERROR_MESSAGE = 'Error: Failed to get response';
 const CONST_STREAM_UPDATE_INTERVAL = 50;
 const DEFAULT_CHAT_MODEL = LLM_MODEL.GPT_4O;
 
+const ASSISTANT_NAME = 'Jarvis';
+
 const TASKS_PARSING_MESSAGE = 'Parsing tasks...';
 const TASKS_PARSE_ERROR_MESSAGE = 'Failed to parse tasks';
 const TASKS_CREATE_ERROR_MESSAGE = 'Failed to create tasks';
@@ -99,6 +117,23 @@ const TASKS_API_PATH = '/api/tasks';
 const TASKS_LISTS_API_PATH = '/api/tasks/lists';
 const TASKS_PARSE_TEXT_API_PATH = '/api/tasks/parse-text';
 const TASKS_PARSE_IMAGE_API_PATH = '/api/tasks/parse-image';
+
+const KEY = {
+  ARROW_DOWN: 'ArrowDown',
+  ARROW_UP: 'ArrowUp',
+  ENTER: 'Enter',
+  TAB: 'Tab',
+  ESCAPE: 'Escape',
+} as const;
+
+const HELP_HEADING = '**Available commands**';
+const HELP_COMMAND_DESCRIPTION = 'List the available slash commands.';
+const CALENDAR_COMMAND_DESCRIPTION =
+  'Parse text/images from the input into a calendar event draft.';
+const TASKS_TEXT_COMMAND_DESCRIPTION =
+  'Extract a Google Tasks list from the input text.';
+const TASKS_IMAGE_COMMAND_DESCRIPTION =
+  'Extract a Google Tasks list from attached images.';
 const CHAT_MODELS = LLM_MODELS.filter(
   model => !modelSupportsImageOutput(model),
 );
@@ -186,18 +221,25 @@ const DialogHeader = ({
   onToggleFullscreen: () => void;
 }) => (
   <Flex justify="between" align="center" style={{ minHeight: '2.5rem' }}>
-    <Dialog.Title style={{ margin: 0 }}>Jarvis</Dialog.Title>
+    <Flex gap="2" align="center">
+      <UserAvatar name={ASSISTANT_NAME} />
+      <Dialog.Title style={{ margin: 0 }}>{ASSISTANT_NAME}</Dialog.Title>
+    </Flex>
     <Flex gap="6" align="center">
-      <Button onClick={onClear} variant="ghost" size="3">
-        <RotateCcw size={16} />
-      </Button>
-      <Button onClick={onToggleFullscreen} variant="ghost" size="3">
-        {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-      </Button>
+      <IconButton
+        icon="rotate-ccw"
+        variant="ghost"
+        onClick={onClear}
+        aria-label="Clear conversation"
+      />
+      <IconButton
+        icon={isFullscreen ? 'minimize' : 'maximize'}
+        variant="ghost"
+        onClick={onToggleFullscreen}
+        aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+      />
       <Dialog.Close>
-        <Button variant="ghost" size="3">
-          <X size={16} />
-        </Button>
+        <CloseButton aria-label="Close" />
       </Dialog.Close>
     </Flex>
   </Flex>
@@ -335,24 +377,99 @@ const MessagesArea = ({
 );
 
 const SuggestionsBar = ({
-  suggestions,
-  onSuggestionClick,
+  commands,
+  onCommandRun,
 }: {
-  suggestions: ChatSuggestion[];
-  onSuggestionClick: (suggestion: ChatSuggestion) => void;
+  commands: ChatCommand[];
+  onCommandRun: (name: string) => void;
 }) => (
   <Flex direction="row" gap="2" wrap="wrap" align="center">
-    {suggestions.map((suggestion, index) => (
+    {commands.map(command => (
       <Button
-        key={index}
-        onClick={() => onSuggestionClick(suggestion)}
+        key={command.name}
+        onClick={() => onCommandRun(command.name)}
         variant="soft"
         size="2"
       >
-        {suggestion.title}
+        {command.label}
       </Button>
     ))}
   </Flex>
+);
+
+const SLASH_PREFIX = '/';
+
+const parseSlashQuery = (input: string): string | null => {
+  if (!input.startsWith(SLASH_PREFIX)) return null;
+  const firstSpace = input.indexOf(' ');
+  if (firstSpace !== -1) return null;
+  return input.slice(SLASH_PREFIX.length);
+};
+
+const filterCommandsByQuery = (
+  commands: ChatCommand[],
+  query: string,
+): ChatCommand[] => {
+  const lower = query.toLowerCase();
+  return commands.filter(
+    c =>
+      c.name.toLowerCase().startsWith(lower) ||
+      c.label.toLowerCase().includes(lower),
+  );
+};
+
+const SlashMenu = ({
+  commands,
+  highlightedIndex,
+  onSelect,
+}: {
+  commands: ChatCommand[];
+  highlightedIndex: number;
+  onSelect: (name: string) => void;
+}) => (
+  <div
+    style={{
+      border: '1px solid var(--gray-6)',
+      borderRadius: '0.5rem',
+      backgroundColor: 'var(--color-panel-solid)',
+      padding: '0.25rem',
+      maxHeight: '12rem',
+      overflowY: 'auto',
+    }}
+  >
+    {commands.map((command, index) => (
+      <button
+        key={command.name}
+        type="button"
+        onMouseDown={e => {
+          e.preventDefault();
+          onSelect(command.name);
+        }}
+        style={{
+          display: 'block',
+          width: '100%',
+          textAlign: 'left',
+          padding: '0.375rem 0.5rem',
+          borderRadius: '0.375rem',
+          border: 'none',
+          cursor: 'pointer',
+          backgroundColor:
+            index === highlightedIndex ? 'var(--accent-3)' : 'transparent',
+        }}
+      >
+        <Text size="2" weight="medium">
+          /{command.name}
+        </Text>
+        <Text
+          size="1"
+          color="gray"
+          style={{ display: 'block', marginTop: '0.125rem' }}
+        >
+          {command.description}
+        </Text>
+      </button>
+    ))}
+  </div>
 );
 
 const ImagePreviewList = ({
@@ -437,14 +554,13 @@ const InputControls = ({
       onChange={e => onImageUpload(e.target.files)}
       style={{ display: 'none' }}
     />
-    <Button
+    <IconButton
+      icon="image"
+      variant="outline"
       onClick={() => fileInputRef.current?.click()}
-      variant="soft"
       disabled={isStreaming || isRecording}
       aria-label="Upload image"
-    >
-      <Image size={16} />
-    </Button>
+    />
     <SpeechToTextButton
       isRecording={isRecording}
       isDisabled={isStreaming || isProcessing}
@@ -474,18 +590,23 @@ const InputControls = ({
         ))}
       </Select.Content>
     </Select.Root>
-    <Button
+    <IconButton
+      icon="send-horizontal"
+      variant="outline"
       onClick={onSend}
+      loading={isStreaming}
       disabled={isSendDisabled(isStreaming, input, uploadedImages.length)}
-    >
-      {isStreaming ? 'Sending...' : 'Send'}
-    </Button>
+      aria-label="Send message"
+    />
   </Flex>
 );
 
 const InputArea = ({
   messages,
-  suggestions,
+  suggestionCommands,
+  slashMenuCommands,
+  slashMenuHighlightedIndex,
+  onSlashMenuSelect,
   uploadedImages,
   input,
   isStreaming,
@@ -493,7 +614,7 @@ const InputArea = ({
   modelOptions,
   fileInputRef,
   textInputRef,
-  onSuggestionClick,
+  onCommandRun,
   onImageRemove,
   onImageUpload,
   onModelChange,
@@ -506,7 +627,10 @@ const InputArea = ({
   onToggleRecording,
 }: {
   messages: Message[];
-  suggestions: ChatSuggestion[];
+  suggestionCommands: ChatCommand[];
+  slashMenuCommands: ChatCommand[] | null;
+  slashMenuHighlightedIndex: number;
+  onSlashMenuSelect: (name: string) => void;
   uploadedImages: MessageImage[];
   input: string;
   isStreaming: boolean;
@@ -514,7 +638,7 @@ const InputArea = ({
   modelOptions: LLMModel[];
   fileInputRef: React.RefObject<HTMLInputElement>;
   textInputRef: React.RefObject<HTMLTextAreaElement>;
-  onSuggestionClick: (suggestion: ChatSuggestion) => void;
+  onCommandRun: (name: string) => void;
   onImageRemove: (index: number) => void;
   onImageUpload: (files: FileList | null) => void;
   onModelChange: (model: LLMModel) => void;
@@ -527,10 +651,17 @@ const InputArea = ({
   onToggleRecording: () => void;
 }) => (
   <Flex direction="column" gap="2" style={{ flexShrink: 0 }}>
-    {messages.length === 0 && suggestions.length > 0 && (
+    {messages.length === 0 && suggestionCommands.length > 0 && (
       <SuggestionsBar
-        suggestions={suggestions}
-        onSuggestionClick={onSuggestionClick}
+        commands={suggestionCommands}
+        onCommandRun={onCommandRun}
+      />
+    )}
+    {slashMenuCommands && slashMenuCommands.length > 0 && (
+      <SlashMenu
+        commands={slashMenuCommands}
+        highlightedIndex={slashMenuHighlightedIndex}
+        onSelect={onSlashMenuSelect}
       />
     )}
     {uploadedImages.length > 0 && (
@@ -623,6 +754,7 @@ export const ChatbotDialog = ({
   const [isDragging, setIsDragging] = useState(false);
   const [selectedModel, setSelectedModel] =
     useState<LLMModel>(DEFAULT_CHAT_MODEL);
+  const [slashMenuHighlightedIndex, setSlashMenuHighlightedIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -809,6 +941,7 @@ export const ChatbotDialog = ({
     const textToSend = messageText || input;
     if ((!textToSend.trim() && uploadedImages.length === 0) || isStreaming)
       return;
+    if (!messageText && parseSlashQuery(input) !== null) return;
 
     const userMessage: Message = {
       role: 'user',
@@ -837,15 +970,14 @@ export const ChatbotDialog = ({
 
   const handleParseEvent = async () => {
     if (isStreaming) return;
-    if (!input.trim() && uploadedImages.length === 0) return;
-
-    const inputSnapshot = input;
+    const inputSnapshot = parseSlashQuery(input) !== null ? '' : input;
     const imagesSnapshot = uploadedImages;
+    if (!inputSnapshot.trim() && imagesSnapshot.length === 0) return;
 
     const userMessage: Message = {
       role: 'user',
       content: inputSnapshot,
-      displayContent: CALENDAR_SUGGESTION_TITLE,
+      displayContent: COMMAND_LABEL[COMMAND_NAME.CALENDAR],
       images: imagesSnapshot.length > 0 ? imagesSnapshot : undefined,
     };
     const pendingAssistant: Message = {
@@ -1068,12 +1200,11 @@ export const ChatbotDialog = ({
 
   const handleParseTasksFromText = async () => {
     if (isStreaming) return;
-    if (!input.trim()) return;
-
-    const transcriptSnapshot = input;
+    const transcriptSnapshot = parseSlashQuery(input) !== null ? '' : input;
+    if (!transcriptSnapshot.trim()) return;
 
     await runParseTasks(
-      TASKS_FROM_TEXT_SUGGESTION_TITLE,
+      COMMAND_LABEL[COMMAND_NAME.TASKS_TEXT],
       async () => {
         const response = await fetch(TASKS_PARSE_TEXT_API_PATH, {
           method: 'POST',
@@ -1097,10 +1228,10 @@ export const ChatbotDialog = ({
     if (uploadedImages.length === 0) return;
 
     const imagesSnapshot = uploadedImages;
-    const inputSnapshot = input;
+    const inputSnapshot = parseSlashQuery(input) !== null ? '' : input;
 
     await runParseTasks(
-      TASKS_FROM_IMAGE_SUGGESTION_TITLE,
+      COMMAND_LABEL[COMMAND_NAME.TASKS_IMAGE],
       async () => {
         const response = await fetch(TASKS_PARSE_IMAGE_API_PATH, {
           method: 'POST',
@@ -1237,24 +1368,7 @@ export const ChatbotDialog = ({
     });
   };
 
-  const handleSuggestionClick = async (suggestion: ChatSuggestion) => {
-    if (isStreaming) return;
-
-    if (suggestion.title === CALENDAR_SUGGESTION_TITLE) {
-      await handleParseEvent();
-      return;
-    }
-
-    if (suggestion.title === TASKS_FROM_TEXT_SUGGESTION_TITLE) {
-      await handleParseTasksFromText();
-      return;
-    }
-
-    if (suggestion.title === TASKS_FROM_IMAGE_SUGGESTION_TITLE) {
-      await handleParseTasksFromImage();
-      return;
-    }
-
+  const handleSuggestionAsChat = async (suggestion: ChatSuggestion) => {
     let promptToUse = suggestion.prompt;
 
     if (suggestion.onClick) {
@@ -1292,6 +1406,85 @@ export const ChatbotDialog = ({
     await sendChatRequest(compactedMessages, selectedModel);
   };
 
+  const builtInCommands: ChatCommand[] = [
+    {
+      name: COMMAND_NAME.HELP,
+      label: COMMAND_LABEL[COMMAND_NAME.HELP],
+      description: HELP_COMMAND_DESCRIPTION,
+      showInSuggestions: false,
+      handler: () => {
+        const helpBody = commands
+          .map(c => `- \`/${c.name}\` — ${c.description}`)
+          .join('\n');
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: `${HELP_HEADING}\n\n${helpBody}`,
+            isStreaming: false,
+          },
+        ]);
+      },
+    },
+    {
+      name: COMMAND_NAME.CALENDAR,
+      label: COMMAND_LABEL[COMMAND_NAME.CALENDAR],
+      description: CALENDAR_COMMAND_DESCRIPTION,
+      showInSuggestions: true,
+      handler: handleParseEvent,
+    },
+    {
+      name: COMMAND_NAME.TASKS_TEXT,
+      label: COMMAND_LABEL[COMMAND_NAME.TASKS_TEXT],
+      description: TASKS_TEXT_COMMAND_DESCRIPTION,
+      showInSuggestions: true,
+      handler: handleParseTasksFromText,
+    },
+    {
+      name: COMMAND_NAME.TASKS_IMAGE,
+      label: COMMAND_LABEL[COMMAND_NAME.TASKS_IMAGE],
+      description: TASKS_IMAGE_COMMAND_DESCRIPTION,
+      showInSuggestions: true,
+      handler: handleParseTasksFromImage,
+    },
+  ];
+
+  const suggestionAsCommand = (suggestion: ChatSuggestion): ChatCommand => ({
+    name: suggestion.title,
+    label: suggestion.title,
+    description: suggestion.title,
+    showInSuggestions: true,
+    handler: () => handleSuggestionAsChat(suggestion),
+  });
+
+  const commands: ChatCommand[] = [
+    ...builtInCommands,
+    ...suggestions.map(suggestionAsCommand),
+  ];
+
+  const suggestionCommands = commands.filter(c => c.showInSuggestions);
+
+  const slashQuery = parseSlashQuery(input);
+  const slashMenuCommands =
+    slashQuery !== null ? filterCommandsByQuery(commands, slashQuery) : null;
+
+  useEffect(() => {
+    setSlashMenuHighlightedIndex(0);
+  }, [slashQuery]);
+
+  const runCommand = async (name: string) => {
+    if (isStreaming) return;
+    const command = commands.find(c => c.name === name);
+    if (!command) return;
+    await command.handler();
+  };
+
+  const handleSlashMenuSelect = async (name: string) => {
+    setInput('');
+    textInputRef.current?.focus();
+    await runCommand(name);
+  };
+
   const handleClear = () => {
     stop();
     setMessages([]);
@@ -1299,7 +1492,36 @@ export const ChatbotDialog = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (slashMenuCommands && slashMenuCommands.length > 0) {
+      if (e.key === KEY.ARROW_DOWN) {
+        e.preventDefault();
+        setSlashMenuHighlightedIndex(
+          (slashMenuHighlightedIndex + 1) % slashMenuCommands.length,
+        );
+        return;
+      }
+      if (e.key === KEY.ARROW_UP) {
+        e.preventDefault();
+        setSlashMenuHighlightedIndex(
+          (slashMenuHighlightedIndex - 1 + slashMenuCommands.length) %
+            slashMenuCommands.length,
+        );
+        return;
+      }
+      if (e.key === KEY.ENTER || e.key === KEY.TAB) {
+        e.preventDefault();
+        const selected = slashMenuCommands[slashMenuHighlightedIndex];
+        if (selected) handleSlashMenuSelect(selected.name);
+        return;
+      }
+      if (e.key === KEY.ESCAPE) {
+        e.preventDefault();
+        setInput('');
+        return;
+      }
+    }
+
+    if (e.key === KEY.ENTER && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -1350,12 +1572,10 @@ export const ChatbotDialog = ({
 
           <InputArea
             messages={messages}
-            suggestions={[
-              { title: CALENDAR_SUGGESTION_TITLE },
-              { title: TASKS_FROM_TEXT_SUGGESTION_TITLE },
-              { title: TASKS_FROM_IMAGE_SUGGESTION_TITLE },
-              ...suggestions,
-            ]}
+            suggestionCommands={suggestionCommands}
+            slashMenuCommands={slashMenuCommands}
+            slashMenuHighlightedIndex={slashMenuHighlightedIndex}
+            onSlashMenuSelect={handleSlashMenuSelect}
             uploadedImages={uploadedImages}
             input={input}
             isStreaming={isStreaming}
@@ -1363,7 +1583,7 @@ export const ChatbotDialog = ({
             modelOptions={availableModels}
             fileInputRef={fileInputRef}
             textInputRef={textInputRef}
-            onSuggestionClick={handleSuggestionClick}
+            onCommandRun={runCommand}
             onImageRemove={index =>
               setUploadedImages(prev => prev.filter((_, i) => i !== index))
             }
