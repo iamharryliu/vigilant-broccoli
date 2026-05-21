@@ -1,17 +1,10 @@
 # Crispiest Roast Potatoes
 
-- Peel and cut potatoes into chunks.
-- Boil potatoes for 10 minutes with baking soda and salt
-- Drain water. Add semolina, salt and oil to the pot and mix around. You can add grated parmesan at this point too.
-- Roast in airfryer or oven until evenly crispy.
-
-## Crispy Roasted Potatoes
-
-### Ingredients
+## Ingredients
 
 - 3 pounds russet potatoes, peeled and cut into 1½- to 2-inch chunks.
 
-### Instructions
+## Instructions
 
 - Boil potatoes
   - ½ tsp baking soda.
@@ -30,4 +23,5 @@
 
 ## Reference
 
-[Kenji’s Secrets for the Crispiest Roast Potatoes | NYT Cooking](https://www.youtube.com/watch?v=fS93o6RFPDg)
+- [Kenji’s Secrets for the Crispiest Roast Potatoes | NYT Cooking](https://www.youtube.com/watch?v=fS93o6RFPDg)
+- [Extra-Crispy Parmesan-Crusted Roasted Potatoes](https://cooking.nytimes.com/recipes/1020633-extra-crispy-parmesan-crusted-roasted-potatoes)
