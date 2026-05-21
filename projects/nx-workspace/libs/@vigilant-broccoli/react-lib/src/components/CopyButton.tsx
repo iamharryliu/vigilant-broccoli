@@ -1,6 +1,5 @@
-import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from './Button';
+import { IconButton } from './IconButton';
 
 const COPY_RESET_MS = 1000;
 
@@ -21,8 +20,11 @@ export const CopyButton = ({
   };
 
   return (
-    <Button variant="ghost" size="icon" onClick={handleCopy} disabled={disabled}>
-      {copied ? <Check size={16} /> : <Copy size={16} />}
-    </Button>
+    <IconButton
+      variant="ghost"
+      icon={copied ? 'check' : 'copy'}
+      onClick={handleCopy}
+      disabled={disabled}
+    />
   );
 };

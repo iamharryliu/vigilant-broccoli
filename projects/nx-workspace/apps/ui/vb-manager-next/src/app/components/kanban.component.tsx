@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  Card,
-  Flex,
-  Text,
-  Select,
-  TextField,
-  Dialog,
-} from '@radix-ui/themes';
-import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
+import { Card, Flex, Text, Select, TextField, Dialog } from '@radix-ui/themes';
+import { Button, CloseButton, EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
@@ -29,7 +22,6 @@ import { SortableContext, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import {
-  X,
   Menu,
   Pencil,
   Trash2,
@@ -393,13 +385,7 @@ const SortableLane = ({
             )}
           </Text>
         </div>
-        <Button
-          size="icon"
-          variant="destructive"
-          onClick={() => onRemove(boardId, lane.id)}
-        >
-          <X size={14} />
-        </Button>
+        <CloseButton onClick={() => onRemove(boardId, lane.id)} />
       </Flex>
       <div className="flex-1 overflow-y-auto min-h-0">
         <GoogleTasksComponent
@@ -960,10 +946,7 @@ export const KanbanComponent = () => {
                               )}
                               <ConfirmDeleteDialog
                                 trigger={
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                  >
+                                  <Button size="icon" variant="ghost">
                                     <Trash2 size={14} />
                                   </Button>
                                 }

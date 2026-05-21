@@ -1,4 +1,4 @@
-import { EllipsisVertical, MoreHorizontal, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import {
   ComponentType,
   Dispatch,
@@ -15,6 +15,7 @@ import {
 } from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import { Button } from './Button';
+import { IconButton, type IconButtonIcon } from './IconButton';
 
 type CRUDItem = {
   id: string | number;
@@ -219,20 +220,14 @@ const EllipsisOptions = <T extends CRUDItem>({
 
 const DEFAULT_DELETE_DESCRIPTION = 'Are you sure you want to delete this item?';
 
-export const ELLIPSIS_ICON = {
-  HORIZONTAL: 'horizontal',
-  VERTICAL: 'vertical',
-} as const;
-export type EllipsisIcon = (typeof ELLIPSIS_ICON)[keyof typeof ELLIPSIS_ICON];
-
-const ELLIPSIS_ICON_SIZE = 16;
+type EllipsisIcon = Extract<IconButtonIcon, `ellipsis-${string}`>;
 
 export const EllipsisCTA = ({
   onUpdate,
   onDelete,
   deleteDisabled = false,
   confirmDescription,
-  icon = ELLIPSIS_ICON.HORIZONTAL,
+  icon = 'ellipsis-horizontal',
 }: {
   onUpdate?: () => void;
   onDelete: () => void | Promise<void>;
@@ -241,15 +236,11 @@ export const EllipsisCTA = ({
   icon?: EllipsisIcon;
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const TriggerIcon =
-    icon === ELLIPSIS_ICON.VERTICAL ? EllipsisVertical : MoreHorizontal;
   return (
     <div onClick={e => e.stopPropagation()}>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <Button size="icon" variant="ghost">
-            <TriggerIcon size={ELLIPSIS_ICON_SIZE} />
-          </Button>
+          <IconButton variant="ghost" icon={icon} />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
           {onUpdate && (

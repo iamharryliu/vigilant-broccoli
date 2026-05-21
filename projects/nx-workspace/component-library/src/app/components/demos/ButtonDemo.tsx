@@ -1,19 +1,13 @@
 import { useState } from 'react';
 import { Flex, Heading } from '@radix-ui/themes';
-import {
-  MessageCircle,
-  Mail,
-  Search,
-  Moon,
-  Trash2,
-  ExternalLink,
-  ArrowRight,
-} from 'lucide-react';
+import { ExternalLink, ArrowRight } from 'lucide-react';
 import {
   Button,
   ButtonList,
   ButtonConfig,
+  CloseButton,
   CopyButton,
+  IconButton,
   MonospaceText,
   GoogleSigninButton,
   MicrosoftSigninButton,
@@ -81,21 +75,14 @@ export function ButtonDemo() {
           Icon Buttons
         </Heading>
         <Flex gap="3" align="center">
-          <Button size="icon" title="Message">
-            <MessageCircle size={16} />
-          </Button>
-          <Button size="icon" variant="outline" title="Mail">
-            <Mail size={16} />
-          </Button>
-          <Button size="icon" variant="ghost" title="Search">
-            <Search size={16} />
-          </Button>
-          <Button size="icon" variant="secondary" title="Moon">
-            <Moon size={16} />
-          </Button>
-          <Button size="icon" variant="destructive" title="Delete">
-            <Trash2 size={16} />
-          </Button>
+          <IconButton icon="x" title="Close" />
+          <IconButton icon="filter" variant="outline" title="Filter" />
+          <IconButton icon="search" variant="ghost" title="Search" />
+          <IconButton icon="plus" variant="secondary" title="Add" />
+          <IconButton icon="minus" variant="secondary" title="Remove" />
+          <IconButton icon="light" variant="ghost" title="Light mode" />
+          <IconButton icon="dark" variant="ghost" title="Dark mode" />
+          <IconButton icon="trash" variant="destructive" title="Delete" />
         </Flex>
       </div>
 
@@ -130,6 +117,15 @@ export function ButtonDemo() {
             Both
             <ExternalLink size={14} className="shrink-0" />
           </Button>
+        </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Close Button
+        </Heading>
+        <Flex gap="3" align="center">
+          <CloseButton title="Close" />
         </Flex>
       </div>
 

@@ -1,5 +1,4 @@
-import { Mic, Square } from 'lucide-react';
-import { Button } from './Button';
+import { IconButton } from './IconButton';
 
 const ARIA_STOP = 'Stop recording';
 const ARIA_START = 'Start recording';
@@ -17,14 +16,12 @@ export const SpeechToTextButton = ({
   isProcessing = false,
   onToggle,
 }: SpeechToTextButtonProps) => (
-  <Button
-    size="icon"
+  <IconButton
+    icon={isRecording ? 'stop' : 'mic'}
     onClick={onToggle}
     variant={isRecording && !isProcessing ? 'destructive' : 'outline'}
     disabled={isDisabled}
     loading={isProcessing}
     aria-label={isRecording ? ARIA_STOP : ARIA_START}
-  >
-    {isRecording ? <Square size={16} /> : <Mic size={16} />}
-  </Button>
+  />
 );

@@ -1,6 +1,13 @@
 'use client';
 
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  Suspense,
+  KeyboardEvent,
+} from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, TextField } from '@radix-ui/themes';
 import { Search } from 'lucide-react';
@@ -9,7 +16,11 @@ import { MarkdownViewer } from '../../components/docs/markdown-viewer.component'
 import {
   SearchResults,
   SearchResult,
+  SEARCH_RESULT_ITEM_ATTR,
 } from '../../components/docs/search-results.component';
+
+const KEY_ARROW_DOWN = 'ArrowDown';
+const KEY_ARROW_UP = 'ArrowUp';
 
 // eslint-disable-next-line complexity
 function DocsPageContent() {
@@ -26,6 +37,8 @@ function DocsPageContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const resultsContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch file structure on mount
   useEffect(() => {
@@ -96,13 +109,6 @@ function DocsPageContent() {
 
   // Debounced search function
   const performSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      setIsSearching(false);
-      return;
-    }
-
-    setIsSearching(true);
     try {
       const response = await fetch(
         `/api/docs/search?q=${encodeURIComponent(query)}`,
@@ -124,8 +130,16 @@ function DocsPageContent() {
     }
   }, []);
 
-  // Debounce search input
+  // Debounce search input — mark searching immediately so the UI doesn't
+  // flash "No results found" during the debounce window.
   useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
     const timer = setTimeout(() => {
       performSearch(searchQuery);
     }, 300);
@@ -135,6 +149,39 @@ function DocsPageContent() {
 
   const isSearchMode = searchQuery.trim().length > 0;
 
+  const focusResultAt = useCallback((index: number) => {
+    const root = resultsContainerRef.current;
+    if (!root) return;
+    const items = root.querySelectorAll<HTMLElement>(
+      `[${SEARCH_RESULT_ITEM_ATTR}]`,
+    );
+    if (items.length === 0) return;
+    const clamped = Math.max(0, Math.min(index, items.length - 1));
+    items[clamped]?.focus();
+  }, []);
+
+  const handleSearchInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== KEY_ARROW_DOWN) return;
+    event.preventDefault();
+    focusResultAt(0);
+  };
+
+  const handleResultsKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== KEY_ARROW_DOWN && event.key !== KEY_ARROW_UP) return;
+    const target = event.target as HTMLElement;
+    const indexAttr = target.getAttribute(SEARCH_RESULT_ITEM_ATTR);
+    if (indexAttr === null) return;
+    event.preventDefault();
+    const currentIndex = Number(indexAttr);
+    if (event.key === KEY_ARROW_DOWN) {
+      focusResultAt(currentIndex + 1);
+    } else if (currentIndex === 0) {
+      searchInputRef.current?.focus();
+    } else {
+      focusResultAt(currentIndex - 1);
+    }
+  };
+
   return (
     <div className="h-full flex gap-4">
       {/* File Tree / Search Results Sidebar */}
@@ -142,9 +189,11 @@ function DocsPageContent() {
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-semibold mb-3">Notes</h2>
           <TextField.Root
+            ref={searchInputRef}
             placeholder="Search files..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchInputKeyDown}
           >
             <TextField.Slot>
               <Search className="w-4 h-4" />
@@ -154,7 +203,11 @@ function DocsPageContent() {
         <div className="flex-1 overflow-auto">
           {isSearchMode ? (
             // Search Results
-            <div className="p-2">
+            <div
+              ref={resultsContainerRef}
+              className="p-2"
+              onKeyDown={handleResultsKeyDown}
+            >
               {isSearching ? (
                 <div className="text-gray-500 text-center py-4">
                   Searching...
