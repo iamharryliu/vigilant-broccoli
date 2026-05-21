@@ -12,7 +12,7 @@ export interface SearchResult {
 }
 
 export const SEARCH_RESULT_ITEM_ATTR = 'data-search-result-index';
-const MATCH_TYPE_FILENAME = 'filename';
+const MATCH_TYPE_FILENAME: SearchResult['matchType'] = 'filename';
 
 interface SearchResultsProps {
   results: SearchResult[];
@@ -40,7 +40,7 @@ export function SearchResults({
           <button
             key={result.path}
             type="button"
-            {...{ [SEARCH_RESULT_ITEM_ATTR]: index }}
+            data-search-result-index={index}
             className={`w-full text-left flex flex-col gap-1 px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded border-b border-gray-200 dark:border-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 ${
               isSelected ? 'bg-blue-100 dark:bg-blue-900' : ''
             }`}

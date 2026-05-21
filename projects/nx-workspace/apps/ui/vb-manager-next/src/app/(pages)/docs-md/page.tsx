@@ -21,6 +21,7 @@ import {
 
 const KEY_ARROW_DOWN = 'ArrowDown';
 const KEY_ARROW_UP = 'ArrowUp';
+const SEARCH_DEBOUNCE_MS = 300;
 
 // eslint-disable-next-line complexity
 function DocsPageContent() {
@@ -142,7 +143,7 @@ function DocsPageContent() {
     setIsSearching(true);
     const timer = setTimeout(() => {
       performSearch(searchQuery);
-    }, 300);
+    }, SEARCH_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
   }, [searchQuery, performSearch]);
