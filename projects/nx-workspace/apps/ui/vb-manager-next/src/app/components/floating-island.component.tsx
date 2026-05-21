@@ -10,8 +10,11 @@ import { NotepadDialog } from './notepad-dialog.component';
 import { WeatherDialog } from './weather-dialog.component';
 import { PomodoroDialog } from './pomodoro-dialog.component';
 import { UtilitiesDialog } from './utilities-dialog.component';
-import { AlarmEngine, TimerEngine } from '@vigilant-broccoli/react-utility';
-import { usePomodoro } from '../hooks/usePomodoro';
+import {
+  AlarmEngine,
+  PomodoroEngine,
+  TimerEngine,
+} from '@vigilant-broccoli/react-utility';
 import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { ClockComponent } from './clock.component';
@@ -127,7 +130,6 @@ export const FloatingIslandComponent = ({
     useState(false);
   const [internalUtilitiesDialogOpen, setInternalUtilitiesDialogOpen] =
     useState(false);
-  const pomodoro = usePomodoro();
   const { weatherData, loading: weatherLoading } = useWeather();
   const dayData = useDayAnalysisSuggestions();
 
@@ -400,7 +402,6 @@ export const FloatingIslandComponent = ({
       <PomodoroDialog
         open={pomodoroDialogOpen}
         onOpenChange={setPomodoroDialogOpen}
-        pomodoro={pomodoro}
       />
       <UtilitiesDialog
         open={utilitiesDialogOpen}
@@ -408,6 +409,7 @@ export const FloatingIslandComponent = ({
       />
       <AlarmEngine />
       <TimerEngine />
+      <PomodoroEngine />
     </>
   );
 };
