@@ -1,264 +1,96 @@
 'use client';
 
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-  Suspense,
-  KeyboardEvent,
-} from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Card, TextField } from '@radix-ui/themes';
-import { Search } from 'lucide-react';
-import { FileTree, FileNode } from '../../components/docs/file-tree.component';
+  DocsExplorer,
+  DocsExplorerUrlSync,
+  DocsNode,
+  DocsSearchResult,
+} from '@vigilant-broccoli/react-lib';
 import { MarkdownViewer } from '../../components/docs/markdown-viewer.component';
-import {
-  SearchResults,
-  SearchResult,
-  SEARCH_RESULT_ITEM_ATTR,
-} from '../../components/docs/search-results.component';
 
-const KEY_ARROW_DOWN = 'ArrowDown';
-const KEY_ARROW_UP = 'ArrowUp';
-const SEARCH_DEBOUNCE_MS = 300;
+const FILE_PARAM = 'file';
 
-// eslint-disable-next-line complexity
+const fetchStructure = async (): Promise<DocsNode[]> => {
+  const response = await fetch('/api/docs/structure');
+  const data = await response.json();
+  if (!data.success) throw new Error(data.error || 'Failed to load structure');
+  return data.data as DocsNode[];
+};
+
+const fetchContent = async (path: string): Promise<string> => {
+  const response = await fetch(
+    `/api/docs/content?path=${encodeURIComponent(path)}`,
+  );
+  const data = await response.json();
+  if (!data.success) throw new Error(data.error || 'Failed to load content');
+  return data.content as string;
+};
+
+const searchDocs = async (query: string): Promise<DocsSearchResult[]> => {
+  const response = await fetch(
+    `/api/docs/search?q=${encodeURIComponent(query)}`,
+  );
+  const data = await response.json();
+  if (!data.success) throw new Error(data.error || 'Failed to search');
+  return data.results as DocsSearchResult[];
+};
+
+const renderMarkdown = (content: string) => (
+  <MarkdownViewer content={content} />
+);
+
 function DocsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [fileTree, setFileTree] = useState<FileNode[]>([]);
-  const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
-  const [fileContent, setFileContent] = useState<string>('');
+  const [nodes, setNodes] = useState<DocsNode[]>([]);
+  const [treeError, setTreeError] = useState<string | null>(null);
   const [isLoadingTree, setIsLoadingTree] = useState(true);
-  const [isLoadingContent, setIsLoadingContent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Search state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const resultsContainerRef = useRef<HTMLDivElement>(null);
-
-  // Fetch file structure on mount
   useEffect(() => {
-    const fetchFileTree = async () => {
-      try {
-        setIsLoadingTree(true);
-        const response = await fetch('/api/docs/structure');
-        const data = await response.json();
-
-        if (data.success) {
-          setFileTree(data.data);
-        } else {
-          setError(data.error || 'Failed to load file structure');
-        }
-      } catch (err) {
-        setError('Failed to fetch file structure');
-        console.error(err);
-      } finally {
-        setIsLoadingTree(false);
-      }
-    };
-
-    fetchFileTree();
+    fetchStructure()
+      .then(setNodes)
+      .catch(err => setTreeError(err.message))
+      .finally(() => setIsLoadingTree(false));
   }, []);
 
-  // Fetch file content when a file is selected
-  const handleFileSelect = useCallback(
-    async (path: string) => {
-      setSelectedFilePath(path);
-      setIsLoadingContent(true);
-      setError(null);
-
-      // Update URL with selected file
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('file', path);
-      router.push(`?${params.toString()}`, { scroll: false });
-
-      try {
-        const response = await fetch(
-          `/api/docs/content?path=${encodeURIComponent(path)}`,
-        );
-        const data = await response.json();
-
-        if (data.success) {
-          setFileContent(data.content);
-        } else {
-          setError(data.error || 'Failed to load file content');
-          setFileContent('');
-        }
-      } catch (err) {
-        setError('Failed to fetch file content');
-        setFileContent('');
-        console.error(err);
-      } finally {
-        setIsLoadingContent(false);
-      }
-    },
+  const urlSync = useMemo<DocsExplorerUrlSync>(
+    () => ({
+      get: () => searchParams.get(FILE_PARAM),
+      set: path => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set(FILE_PARAM, path);
+        router.push(`?${params.toString()}`, { scroll: false });
+      },
+    }),
     [searchParams, router],
   );
 
-  // Load file from URL parameter on mount
-  useEffect(() => {
-    const fileParam = searchParams.get('file');
-    if (fileParam && !selectedFilePath) {
-      handleFileSelect(fileParam);
-    }
-  }, [searchParams, handleFileSelect, selectedFilePath]);
-
-  // Debounced search function
-  const performSearch = useCallback(async (query: string) => {
-    try {
-      const response = await fetch(
-        `/api/docs/search?q=${encodeURIComponent(query)}`,
-      );
-      const data = await response.json();
-
-      if (data.success) {
-        setSearchResults(data.results);
-      } else {
-        setError(data.error || 'Failed to search');
-        setSearchResults([]);
-      }
-    } catch (err) {
-      setError('Failed to perform search');
-      setSearchResults([]);
-      console.error(err);
-    } finally {
-      setIsSearching(false);
-    }
-  }, []);
-
-  // Debounce search input — mark searching immediately so the UI doesn't
-  // flash "No results found" during the debounce window.
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      setIsSearching(false);
-      return;
-    }
-
-    setIsSearching(true);
-    const timer = setTimeout(() => {
-      performSearch(searchQuery);
-    }, SEARCH_DEBOUNCE_MS);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery, performSearch]);
-
-  const isSearchMode = searchQuery.trim().length > 0;
-
-  const focusResultAt = useCallback((index: number) => {
-    const root = resultsContainerRef.current;
-    if (!root) return;
-    const items = root.querySelectorAll<HTMLElement>(
-      `[${SEARCH_RESULT_ITEM_ATTR}]`,
+  if (isLoadingTree) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500">
+        Loading file structure...
+      </div>
     );
-    if (items.length === 0) return;
-    const clamped = Math.max(0, Math.min(index, items.length - 1));
-    items[clamped]?.focus();
-  }, []);
-
-  const handleSearchInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== KEY_ARROW_DOWN) return;
-    event.preventDefault();
-    focusResultAt(0);
-  };
-
-  const handleResultsKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== KEY_ARROW_DOWN && event.key !== KEY_ARROW_UP) return;
-    const target = event.target as HTMLElement;
-    const indexAttr = target.getAttribute(SEARCH_RESULT_ITEM_ATTR);
-    if (indexAttr === null) return;
-    event.preventDefault();
-    const currentIndex = Number(indexAttr);
-    if (event.key === KEY_ARROW_DOWN) {
-      focusResultAt(currentIndex + 1);
-    } else if (currentIndex === 0) {
-      searchInputRef.current?.focus();
-    } else {
-      focusResultAt(currentIndex - 1);
-    }
-  };
+  }
+  if (treeError) {
+    return (
+      <div className="flex items-center justify-center h-full text-red-500">
+        {treeError}
+      </div>
+    );
+  }
 
   return (
-    <div className="h-full flex gap-4">
-      {/* File Tree / Search Results Sidebar */}
-      <Card className="w-80 flex-shrink-0 overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold mb-3">Notes</h2>
-          <TextField.Root
-            ref={searchInputRef}
-            placeholder="Search files..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            onKeyDown={handleSearchInputKeyDown}
-          >
-            <TextField.Slot>
-              <Search className="w-4 h-4" />
-            </TextField.Slot>
-          </TextField.Root>
-        </div>
-        <div className="flex-1 overflow-auto">
-          {isSearchMode ? (
-            // Search Results
-            <div
-              ref={resultsContainerRef}
-              className="p-2"
-              onKeyDown={handleResultsKeyDown}
-            >
-              {isSearching ? (
-                <div className="text-gray-500 text-center py-4">
-                  Searching...
-                </div>
-              ) : (
-                <SearchResults
-                  results={searchResults}
-                  onResultClick={handleFileSelect}
-                  selectedPath={selectedFilePath || undefined}
-                />
-              )}
-            </div>
-          ) : (
-            // File Tree
-            <div className="p-4">
-              {isLoadingTree ? (
-                <div className="text-gray-500">Loading file structure...</div>
-              ) : error && fileTree.length === 0 ? (
-                <div className="text-red-500">{error}</div>
-              ) : (
-                <FileTree
-                  nodes={fileTree}
-                  onFileSelect={handleFileSelect}
-                  selectedPath={selectedFilePath || undefined}
-                />
-              )}
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Markdown Viewer */}
-      <Card className="flex-1 overflow-hidden">
-        {!selectedFilePath ? (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Select a markdown file to view its contents
-          </div>
-        ) : isLoadingContent ? (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Loading file content...
-          </div>
-        ) : error ? (
-          <div className="flex items-center justify-center h-full text-red-500">
-            {error}
-          </div>
-        ) : (
-          <MarkdownViewer content={fileContent} />
-        )}
-      </Card>
-    </div>
+    <DocsExplorer
+      nodes={nodes}
+      getContent={fetchContent}
+      renderContent={renderMarkdown}
+      search={searchDocs}
+      urlSync={urlSync}
+      emptyMessage="Select a markdown file to view its contents"
+    />
   );
 }
 

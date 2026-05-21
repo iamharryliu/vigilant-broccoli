@@ -16,6 +16,7 @@ export * from './Button';
 export * from './ButtonList';
 export * from './IconButton';
 export * from './CloseButton';
+export * from './DocsExplorer';
 export * from './ServiceLinksTable';
 export * from './SocialSigninButton';
 export * from './GithubActionsBadges';

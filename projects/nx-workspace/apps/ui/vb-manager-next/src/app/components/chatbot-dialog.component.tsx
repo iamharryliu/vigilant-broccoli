@@ -6,6 +6,7 @@ import {
   Text,
   Button,
   TextField,
+  TextArea,
   ScrollArea,
   Card,
   Select,
@@ -35,6 +36,11 @@ import {
   EventDraftCard,
   EventDraftStatus,
 } from './event-draft-card.component';
+import {
+  TaskDraftItem,
+  TaskListDraftCard,
+  TaskListDraftStatus,
+} from './task-list-draft-card.component';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
 
 interface MessageImage {
@@ -52,9 +58,15 @@ interface Message {
   eventStatus?: EventDraftStatus;
   eventError?: string;
   eventLink?: string;
+  taskDrafts?: TaskDraftItem[];
+  taskStatus?: TaskListDraftStatus;
+  taskError?: string;
+  taskCreatedSummary?: string;
 }
 
 const CALENDAR_SUGGESTION_TITLE = 'Create calendar event';
+const TASKS_FROM_TEXT_SUGGESTION_TITLE = 'Tasks from text';
+const TASKS_FROM_IMAGE_SUGGESTION_TITLE = 'Tasks from image';
 
 interface ChatSuggestion {
   title: string;
@@ -75,6 +87,18 @@ const MAX_MESSAGES = 20;
 const CONST_ERROR_MESSAGE = 'Error: Failed to get response';
 const CONST_STREAM_UPDATE_INTERVAL = 50;
 const DEFAULT_CHAT_MODEL = LLM_MODEL.GPT_4O;
+
+const TASKS_PARSING_MESSAGE = 'Parsing tasks...';
+const TASKS_PARSE_ERROR_MESSAGE = 'Failed to parse tasks';
+const TASKS_CREATE_ERROR_MESSAGE = 'Failed to create tasks';
+const TASKS_CREATE_LIST_ERROR_MESSAGE = 'Failed to create task list';
+const TASKS_CANCELLED_MESSAGE = 'Tasks cancelled.';
+const EVENT_CANCELLED_MESSAGE = 'Event cancelled.';
+
+const TASKS_API_PATH = '/api/tasks';
+const TASKS_LISTS_API_PATH = '/api/tasks/lists';
+const TASKS_PARSE_TEXT_API_PATH = '/api/tasks/parse-text';
+const TASKS_PARSE_IMAGE_API_PATH = '/api/tasks/parse-image';
 const CHAT_MODELS = LLM_MODELS.filter(
   model => !modelSupportsImageOutput(model),
 );
@@ -188,6 +212,8 @@ const MessagesArea = ({
   onDrop,
   onEventCreate,
   onEventCancel,
+  onTasksCreate,
+  onTasksCancel,
 }: {
   messages: Message[];
   isDragging: boolean;
@@ -197,6 +223,15 @@ const MessagesArea = ({
   onDrop: (e: React.DragEvent) => void;
   onEventCreate: (messageIndex: number, draft: EventDraft) => void;
   onEventCancel: (messageIndex: number) => void;
+  onTasksCreate: (
+    messageIndex: number,
+    params: {
+      tasks: TaskDraftItem[];
+      targetListId?: string;
+      newListTitle?: string;
+    },
+  ) => void;
+  onTasksCancel: (messageIndex: number) => void;
 }) => (
   <div
     onDragOver={onDragOver}
@@ -280,6 +315,16 @@ const MessagesArea = ({
                 eventLink={message.eventLink}
                 onCreate={draft => onEventCreate(index, draft)}
                 onCancel={() => onEventCancel(index)}
+              />
+            )}
+            {message.taskDrafts && (
+              <TaskListDraftCard
+                drafts={message.taskDrafts}
+                status={message.taskStatus || 'draft'}
+                errorMessage={message.taskError}
+                createdSummary={message.taskCreatedSummary}
+                onCreate={params => onTasksCreate(index, params)}
+                onCancel={() => onTasksCancel(index)}
               />
             )}
           </Card>
@@ -368,7 +413,7 @@ const InputControls = ({
   onSend,
 }: {
   fileInputRef: React.RefObject<HTMLInputElement>;
-  textInputRef: React.RefObject<HTMLInputElement>;
+  textInputRef: React.RefObject<HTMLTextAreaElement>;
   input: string;
   isStreaming: boolean;
   isRecording: boolean;
@@ -383,7 +428,7 @@ const InputControls = ({
   onKeyDown: (e: React.KeyboardEvent) => void;
   onSend: () => void;
 }) => (
-  <Flex gap="2" align="center">
+  <Flex gap="2" align="end">
     <input
       ref={fileInputRef}
       type="file"
@@ -405,14 +450,15 @@ const InputControls = ({
       isDisabled={isStreaming || isProcessing}
       onToggle={onToggleRecording}
     />
-    <TextField.Root
+    <TextArea
       ref={textInputRef}
       placeholder={getInputPlaceholder(isRecording, isProcessing)}
       value={input}
       onChange={e => onInputChange(e.target.value)}
       onKeyDown={onKeyDown}
       disabled={isInputDisabled(isStreaming, isRecording, isProcessing)}
-      style={{ flex: 1 }}
+      rows={1}
+      style={{ flex: 1, minHeight: '2.25rem', maxHeight: '12rem' }}
     />
     <Select.Root
       value={selectedModel}
@@ -467,7 +513,7 @@ const InputArea = ({
   selectedModel: LLMModel;
   modelOptions: LLMModel[];
   fileInputRef: React.RefObject<HTMLInputElement>;
-  textInputRef: React.RefObject<HTMLInputElement>;
+  textInputRef: React.RefObject<HTMLTextAreaElement>;
   onSuggestionClick: (suggestion: ChatSuggestion) => void;
   onImageRemove: (index: number) => void;
   onImageUpload: (files: FileList | null) => void;
@@ -580,7 +626,7 @@ export const ChatbotDialog = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const textInputRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLTextAreaElement>(null);
   const initialPromptProcessedRef = useRef(false);
 
   const {
@@ -631,14 +677,7 @@ export const ChatbotDialog = ({
   useEffect(() => {
     if (open) {
       const focusInput = () => {
-        if (textInputRef.current) {
-          const inputElement = textInputRef.current.querySelector('input');
-          if (inputElement) {
-            inputElement.focus();
-          } else {
-            textInputRef.current.focus();
-          }
-        }
+        textInputRef.current?.focus();
       };
 
       setTimeout(focusInput, 150);
@@ -952,6 +991,238 @@ export const ChatbotDialog = ({
     }
   };
 
+  const runParseTasks = async (
+    suggestionTitle: string,
+    fetchItems: () => Promise<{
+      ok: boolean;
+      items?: string[];
+      error?: string;
+    }>,
+    contentSnapshot: string,
+    imagesSnapshot: MessageImage[],
+  ) => {
+    const userMessage: Message = {
+      role: 'user',
+      content: contentSnapshot,
+      displayContent: suggestionTitle,
+      images: imagesSnapshot.length > 0 ? imagesSnapshot : undefined,
+    };
+    const pendingAssistant: Message = {
+      role: 'assistant',
+      content: TASKS_PARSING_MESSAGE,
+      isStreaming: true,
+    };
+
+    setMessages(prev => [...prev, userMessage, pendingAssistant]);
+    setInput('');
+    setUploadedImages([]);
+
+    try {
+      const { ok, items, error } = await fetchItems();
+
+      if (!ok || !items || items.length === 0) {
+        setMessages(prev => {
+          const updated = [...prev];
+          const last = updated[updated.length - 1];
+          updated[updated.length - 1] = {
+            ...last,
+            content: error || TASKS_PARSE_ERROR_MESSAGE,
+            isStreaming: false,
+          };
+          return updated;
+        });
+        return;
+      }
+
+      const tasks: TaskDraftItem[] = items.map(title => ({ title }));
+      const headerContent = `Review the ${tasks.length} task${
+        tasks.length === 1 ? '' : 's'
+      } below and pick a Google Tasks list.`;
+
+      setMessages(prev => {
+        const withoutPending = prev.slice(0, -1);
+        return [
+          ...withoutPending,
+          {
+            role: 'assistant',
+            content: headerContent,
+            isStreaming: false,
+            taskDrafts: tasks,
+            taskStatus: 'draft',
+          },
+        ];
+      });
+    } catch (err) {
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          role: 'assistant',
+          content:
+            err instanceof Error ? err.message : TASKS_PARSE_ERROR_MESSAGE,
+          isStreaming: false,
+        };
+        return updated;
+      });
+    }
+  };
+
+  const handleParseTasksFromText = async () => {
+    if (isStreaming) return;
+    if (!input.trim()) return;
+
+    const transcriptSnapshot = input;
+
+    await runParseTasks(
+      TASKS_FROM_TEXT_SUGGESTION_TITLE,
+      async () => {
+        const response = await fetch(TASKS_PARSE_TEXT_API_PATH, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transcript: transcriptSnapshot }),
+        });
+        const payload = await response.json();
+        return {
+          ok: response.ok,
+          items: payload.items,
+          error: payload.error,
+        };
+      },
+      transcriptSnapshot,
+      [],
+    );
+  };
+
+  const handleParseTasksFromImage = async () => {
+    if (isStreaming) return;
+    if (uploadedImages.length === 0) return;
+
+    const imagesSnapshot = uploadedImages;
+    const inputSnapshot = input;
+
+    await runParseTasks(
+      TASKS_FROM_IMAGE_SUGGESTION_TITLE,
+      async () => {
+        const response = await fetch(TASKS_PARSE_IMAGE_API_PATH, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            images: imagesSnapshot.map(img => ({
+              base64: img.data,
+              mimeType: img.mimeType,
+            })),
+          }),
+        });
+        const payload = await response.json();
+        return {
+          ok: response.ok,
+          items: payload.items,
+          error: payload.error,
+        };
+      },
+      inputSnapshot,
+      imagesSnapshot,
+    );
+  };
+
+  const handleTasksCreate = async (
+    messageIndex: number,
+    params: {
+      tasks: TaskDraftItem[];
+      targetListId?: string;
+      newListTitle?: string;
+    },
+  ) => {
+    setMessages(prev => {
+      const updated = [...prev];
+      updated[messageIndex] = {
+        ...updated[messageIndex],
+        taskDrafts: params.tasks,
+        taskStatus: 'creating',
+        taskError: undefined,
+      };
+      return updated;
+    });
+
+    try {
+      let listId = params.targetListId;
+      let listTitle: string | undefined;
+
+      if (!listId) {
+        const createListRes = await fetch(TASKS_LISTS_API_PATH, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: params.newListTitle }),
+        });
+        const createListPayload = await createListRes.json();
+        if (!createListRes.ok) {
+          throw new Error(
+            createListPayload.error || TASKS_CREATE_LIST_ERROR_MESSAGE,
+          );
+        }
+        listId = createListPayload.taskList?.id;
+        listTitle = createListPayload.taskList?.title;
+        if (!listId) throw new Error(TASKS_CREATE_LIST_ERROR_MESSAGE);
+      }
+
+      for (const task of params.tasks) {
+        const res = await fetch(TASKS_API_PATH, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ taskListId: listId, title: task.title }),
+        });
+        if (!res.ok) {
+          const payload = await res.json().catch(() => ({}));
+          throw new Error(
+            payload.error || `Failed to create task: ${task.title}`,
+          );
+        }
+      }
+
+      const summary = listTitle
+        ? `Created ${params.tasks.length} task${
+            params.tasks.length === 1 ? '' : 's'
+          } in new list "${listTitle}".`
+        : `Created ${params.tasks.length} task${
+            params.tasks.length === 1 ? '' : 's'
+          }.`;
+
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[messageIndex] = {
+          ...updated[messageIndex],
+          taskStatus: 'created',
+          taskCreatedSummary: summary,
+        };
+        return updated;
+      });
+    } catch (error) {
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[messageIndex] = {
+          ...updated[messageIndex],
+          taskStatus: 'error',
+          taskError:
+            error instanceof Error ? error.message : TASKS_CREATE_ERROR_MESSAGE,
+        };
+        return updated;
+      });
+    }
+  };
+
+  const handleTasksCancel = (messageIndex: number) => {
+    setMessages(prev => {
+      const updated = [...prev];
+      updated[messageIndex] = {
+        ...updated[messageIndex],
+        taskDrafts: undefined,
+        taskStatus: undefined,
+        taskError: undefined,
+        content: TASKS_CANCELLED_MESSAGE,
+      };
+      return updated;
+    });
+  };
+
   const handleEventCancel = (messageIndex: number) => {
     setMessages(prev => {
       const updated = [...prev];
@@ -960,7 +1231,7 @@ export const ChatbotDialog = ({
         eventDraft: undefined,
         eventStatus: undefined,
         eventError: undefined,
-        content: 'Event cancelled.',
+        content: EVENT_CANCELLED_MESSAGE,
       };
       return updated;
     });
@@ -971,6 +1242,16 @@ export const ChatbotDialog = ({
 
     if (suggestion.title === CALENDAR_SUGGESTION_TITLE) {
       await handleParseEvent();
+      return;
+    }
+
+    if (suggestion.title === TASKS_FROM_TEXT_SUGGESTION_TITLE) {
+      await handleParseTasksFromText();
+      return;
+    }
+
+    if (suggestion.title === TASKS_FROM_IMAGE_SUGGESTION_TITLE) {
+      await handleParseTasksFromImage();
       return;
     }
 
@@ -1063,11 +1344,18 @@ export const ChatbotDialog = ({
             onDrop={handleDrop}
             onEventCreate={handleEventCreate}
             onEventCancel={handleEventCancel}
+            onTasksCreate={handleTasksCreate}
+            onTasksCancel={handleTasksCancel}
           />
 
           <InputArea
             messages={messages}
-            suggestions={[{ title: CALENDAR_SUGGESTION_TITLE }, ...suggestions]}
+            suggestions={[
+              { title: CALENDAR_SUGGESTION_TITLE },
+              { title: TASKS_FROM_TEXT_SUGGESTION_TITLE },
+              { title: TASKS_FROM_IMAGE_SUGGESTION_TITLE },
+              ...suggestions,
+            ]}
             uploadedImages={uploadedImages}
             input={input}
             isStreaming={isStreaming}

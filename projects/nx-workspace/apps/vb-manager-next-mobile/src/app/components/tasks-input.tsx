@@ -102,7 +102,7 @@ export const TasksInput = () => {
       });
   };
 
-  const handleParseText = () => {
+  const handleParseMarkdownList = () => {
     const parsed = parseMarkdownList(textInput);
     if (!parsed.length) {
       setError('No list items found. Use markdown list format (- item).');
@@ -113,11 +113,11 @@ export const TasksInput = () => {
     setPhase('preview');
   };
 
-  const handleParseVoice = async () => {
+  const handleParseText = async () => {
     if (!textInput.trim()) return;
     setPhase('analyzing');
     setError(null);
-    const res = await fetch('/api/tasks/parse-voice', {
+    const res = await fetch('/api/tasks/parse-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ transcript: textInput }),
@@ -323,14 +323,14 @@ export const TasksInput = () => {
           ) : (
             <div className="flex gap-2">
               <button
-                onClick={handleParseText}
+                onClick={handleParseMarkdownList}
                 disabled={!textInput.trim()}
                 className="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
                 Parse list
               </button>
               <button
-                onClick={handleParseVoice}
+                onClick={handleParseText}
                 disabled={!textInput.trim()}
                 className="flex-1 bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
               >
