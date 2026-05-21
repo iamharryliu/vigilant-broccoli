@@ -1,6 +1,4 @@
-# Potatoes
-
-# Crispy Potatoes
+# Crispiest Roast Potatoes
 
 - Peel and cut potatoes into chunks.
 - Boil potatoes for 10 minutes with baking soda and salt
@@ -32,4 +30,4 @@
 
 ## Reference
 
-[Kenji's Crispy Roasted Potatoes](https://www.youtube.com/watch?v=fS93o6RFPDg&t=249s)
+[Kenji’s Secrets for the Crispiest Roast Potatoes | NYT Cooking](https://www.youtube.com/watch?v=fS93o6RFPDg)
