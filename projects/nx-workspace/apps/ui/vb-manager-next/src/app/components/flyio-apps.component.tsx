@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Flex, Link } from '@radix-ui/themes';
+import { Badge, Button, Flex, Link, Text } from '@radix-ui/themes';
 import {
   ButtonList,
   ButtonConfig,
@@ -8,7 +8,7 @@ import {
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
@@ -23,7 +23,12 @@ interface FlyAppsResponse {
   success: boolean;
   apps?: FlyApp[];
   error?: string;
+  authRequired?: boolean;
 }
+
+const FETCH_ERROR_MSG = 'Failed to fetch Fly.io apps';
+const FLY_BASE = 'https://fly.io/apps';
+const POLL_INTERVAL_MS = 60000;
 
 const getStatusColor = (
   status: string,
@@ -48,8 +53,6 @@ const dashboardLink = (
     </Flex>
   </Link>
 );
-
-const FLY_BASE = 'https://fly.io/apps';
 
 const getAppUrls = (appName: string) => ({
   App: `${FLY_BASE}/${appName}`,
@@ -82,36 +85,64 @@ export const FlyIoAppsComponent = () => {
   const [appsData, setAppsData] = useState<FlyApp[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [authRequired, setAuthRequired] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
+
+  const fetchFlyApps = useCallback(async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.FLYIO_APPS);
+      const data: FlyAppsResponse = await response.json();
+      if (!data.success || !data.apps) {
+        setAuthRequired(!!data.authRequired);
+        setError(data.error || FETCH_ERROR_MSG);
+        setLoading(false);
+        return;
+      }
+      setAuthRequired(false);
+      setError(null);
+      setAppsData(data.apps);
+      setLoading(false);
+    } catch {
+      setError(FETCH_ERROR_MSG);
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchFlyApps = async () => {
-      try {
-        const response = await fetch(API_ENDPOINTS.FLYIO_APPS);
-        const data: FlyAppsResponse = await response.json();
-        if (!data.success || !data.apps)
-          throw new Error(data.error || 'Failed to fetch Fly.io apps');
-        setAppsData(data.apps);
-        setLoading(false);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to fetch Fly.io apps',
-        );
-        setLoading(false);
-        console.error('Fly.io apps fetch error:', err);
-      }
-    };
-
     fetchFlyApps();
-    const interval = setInterval(fetchFlyApps, 60000);
+    const interval = setInterval(fetchFlyApps, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchFlyApps]);
+
+  const handleLogin = async () => {
+    setLoggingIn(true);
+    await fetch(API_ENDPOINTS.FLYIO_AUTH_LOGIN, { method: 'POST' });
+    setLoggingIn(false);
+    setLoading(true);
+    await fetchFlyApps();
+  };
 
   if (loading) return <CardSkeleton title="Fly.io Apps" rows={5} />;
 
   if (error) {
     return (
       <CardContainer title="Fly.io Apps" gap="3" headerAction={dashboardLink}>
-        <Badge color="red">{error}</Badge>
+        {authRequired ? (
+          <Flex direction="column" gap="2" align="start">
+            <Text size="2">Not logged in to Fly.io.</Text>
+            <Button
+              size="2"
+              variant="soft"
+              color="blue"
+              loading={loggingIn}
+              onClick={handleLogin}
+            >
+              Login to Fly.io
+            </Button>
+          </Flex>
+        ) : (
+          <Badge color="red">{error}</Badge>
+        )}
       </CardContainer>
     );
   }

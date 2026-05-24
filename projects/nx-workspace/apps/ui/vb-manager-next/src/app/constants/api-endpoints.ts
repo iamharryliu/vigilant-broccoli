@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
 
   // Fly.io
   FLYIO_APPS: '/api/flyio/apps',
+  FLYIO_AUTH_LOGIN: '/api/flyio/auth/login',
 
   // Wrangler
   WRANGLER_PAGES: '/api/wrangler/pages',
