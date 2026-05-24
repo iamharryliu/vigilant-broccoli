@@ -185,7 +185,7 @@ jobs:
 
       - name: Import Secrets from Vault
         if: steps.check.outputs.has_deployments == 'true'
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@v4
         with:
           url: https://127.0.0.1:8200
           caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
