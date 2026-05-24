@@ -34,7 +34,7 @@ jobs:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           package_json_file: ./projects/nx-workspace/package.json
 
@@ -88,7 +88,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           package_json_file: ./projects/nx-workspace/package.json
 
