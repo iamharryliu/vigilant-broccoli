@@ -85,9 +85,9 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        working-directory: ./scripts/node/download-resume
+        working-directory: ./projects/nx-workspace
         run: npm install
 
       - name: Run script
-        working-directory: ./scripts/node/download-resume
-        run: npx tsx download-resume-pdf-sa.ts
+        working-directory: ./projects/nx-workspace
+        run: npx tsx scripts/download-resume-pdf-sa.ts
