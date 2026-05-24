@@ -51,7 +51,10 @@ jobs:
         id: check
         working-directory: ./projects/nx-workspace
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} 2>/dev/null || echo "")
+          DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             PROJECTS_COMMA=$(pnpm exec nx show projects --withTarget=publish-package | tr '\n' ',' | sed 's/,$//')
             if [[ -n "$PROJECTS_COMMA" ]]; then
               echo "has_packages=true" >> $GITHUB_OUTPUT
@@ -111,7 +114,10 @@ jobs:
         id: check
         working-directory: ./projects/nx-workspace
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} 2>/dev/null || echo "")
+          DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
             echo "deploy_cmd=pnpm exec nx run-many -t deploy" >> $GITHUB_OUTPUT
           else
