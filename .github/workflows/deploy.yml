@@ -75,12 +75,12 @@ jobs:
       - name: Build affected packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
-        run: pnpm exec nx run-many -t build --projects="${{ steps.check.outputs.affected_projects }}"
+        run: npx nx run-many -t build --projects="${{ steps.check.outputs.affected_projects }}"
 
       - name: Publish npm packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
-        run: pnpm exec nx run-many -t publish-package --projects="${{ steps.check.outputs.affected_projects }}"
+        run: npx nx run-many -t publish-package --projects="${{ steps.check.outputs.affected_projects }}"
 
   main:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
