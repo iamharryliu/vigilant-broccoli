@@ -1,4 +1,4 @@
-import { WranglerService } from '@vigilant-broccoli/common-node';
+import { WranglerService } from '@vigilant-broccoli/ci';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request: Request) {

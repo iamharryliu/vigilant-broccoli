@@ -44,8 +44,6 @@ export * from './lib/bucket/providers/gcs.provider';
 
 // Audio
 export * from './lib/audio/audio.service';
-// Wrangler
-export * from './lib/wrangler/wrangler.service';
 
 export const QUEUE = {
   EMAIL: 'EMAIL',

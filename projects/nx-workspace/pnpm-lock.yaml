@@ -621,6 +621,15 @@ importers:
         specifier: '*'
         version: 3.25.76
 
+  libs/@vigilant-broccoli/ci:
+    dependencies:
+      '@vigilant-broccoli/common-node':
+        specifier: workspace:*
+        version: link:../common-node
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
   libs/@vigilant-broccoli/common-browser:
     dependencies:
       '@vigilant-broccoli/common-js':
