@@ -1,6 +1,5 @@
 import { execSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
-import 'dotenv/config';
 
 const REPLICATION_POLICY = 'automatic';
 

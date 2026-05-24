@@ -1,7 +1,6 @@
 import { execSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
-import 'dotenv/config';
 import { getVaultToken } from './gcp-vault-token';
 
 const VAULT_CA_CERT_PATH = './scripts/vault-ca.crt';

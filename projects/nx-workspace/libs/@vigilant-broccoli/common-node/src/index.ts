@@ -1,5 +1,3 @@
-import 'dotenv-defaults/config';
-
 export * from './lib/utils';
 // Date
 export * from './lib/date/date.consts';

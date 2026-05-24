@@ -2,7 +2,6 @@ import { readFileSync } from 'fs';
 import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import 'dotenv/config';
 import { getVaultToken } from './gcp-vault-token';
 
 const VAULT_ADDR = 'https://10.0.1.1:8200';

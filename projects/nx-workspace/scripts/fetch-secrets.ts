@@ -3,7 +3,6 @@ import { existsSync, readFileSync } from 'fs';
 import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import 'dotenv/config';
 import { getVaultToken } from './gcp-vault-token';
 
 function parseEnvFileKeys(filePath: string): Set<string> {

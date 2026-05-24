@@ -1,4 +1,3 @@
-import 'dotenv-defaults/config';
 import { Location } from '@vigilant-broccoli/common-js';
 import { logger } from '../logging/logger.service';
 import { getEnvironmentVariable } from '../utils';
@@ -52,7 +51,6 @@ export interface WeatherForecastData {
 
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
-
 export const OpenWeatherService = {
   /**
    * Get weather forecast for a location
@@ -72,7 +70,9 @@ export const OpenWeatherService = {
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(`OpenWeather API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `OpenWeather API error: ${response.status} ${response.statusText}`,
+        );
       }
 
       const data: OpenWeatherForecastResponse = await response.json();
@@ -102,7 +102,9 @@ export const OpenWeatherService = {
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(`OpenWeather API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `OpenWeather API error: ${response.status} ${response.statusText}`,
+        );
       }
 
       return await response.json();
