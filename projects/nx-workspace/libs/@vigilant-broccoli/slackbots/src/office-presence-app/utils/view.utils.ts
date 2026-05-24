@@ -1,6 +1,5 @@
 import { AppHomeOpenedEvent, View, KnownBlock } from '@slack/types';
-import { loadAllPresences, loadAllEvents } from './db.utils';
-import { INPUT_MAX_LENGTH } from '../consts/data.consts';
+import { loadAllPresences, loadAllEvents, loadUserSettings } from './db.utils';
 import {
   AppConfig,
   PRESENCE_TIME,
@@ -55,16 +54,27 @@ export function buildModalDateOptionSlackBlocks(dates: Date[]): {
 
 function getHomeView(userId: string, appConfig: AppConfig): View {
   const { copy } = appConfig;
+  const userSettings = loadUserSettings(userId);
+
+  const showWeekdaysOnly =
+    userSettings.showWeekdaysOnly ?? appConfig.defaultShowWeekdaysOnly;
+  const showTeamCount =
+    userSettings.showTeamCount ?? appConfig.defaultShowTeamCount;
+  const weeksAhead = userSettings.weeksAhead ?? appConfig.defaultWeeksAhead;
+
+  const includeWeekends = !showWeekdaysOnly;
+
   const userPresences = loadAllPresences();
   if (!userPresences[userId]) {
     userPresences[userId] = {};
   }
   const selected = Object.keys(userPresences[userId]);
-  const dates = getUpcomingWeekdays(
+  const checkboxDates = getUpcomingWeekdays(
     appConfig.daysAhead ?? 14,
-    appConfig.includeWeekends,
-  );
-  const options = buildModalDateOptionSlackBlocks(dates);
+    includeWeekends,
+  ).slice(0, 10);
+  const presenceDates = getUpcomingWeekdays(weeksAhead * 7, includeWeekends);
+  const options = buildModalDateOptionSlackBlocks(checkboxDates);
   const initial = options.filter(opt => selected.includes(opt.value));
   const today = formatISODateLocal(new Date());
   const isCheckedInToday = selected.includes(today);
@@ -76,32 +86,18 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
       SlackViewBuilder.generateMarkdownSection(
         copy.getAppDescription(appConfig.APP_NAME),
       ),
-      ...(isCheckedInToday
-        ? [
-            {
-              type: 'actions',
-              elements: [
-                {
-                  type: 'button',
-                  text: SlackViewBuilder.generatePlainText(
-                    copy.HOME_VIEW.ASK_LUNCH_BUTTON,
-                  ),
-                  action_id: APP_ACTION.OPEN_ASK_LUNCH_MODAL,
-                  style: 'primary',
-                },
-                {
-                  type: 'button',
-                  text: SlackViewBuilder.generatePlainText(
-                    copy.HOME_VIEW.CHECKOUT_BUTTON,
-                  ),
-                  action_id: APP_ACTION.SUBMIT_CHECKOUT,
-                  style: 'primary',
-                },
-              ],
-            },
-            SlackViewBuilder.DIVIDER,
-          ]
-        : []),
+      {
+        type: 'actions',
+        elements: [
+          {
+            type: 'button',
+            text: SlackViewBuilder.generatePlainText(
+              copy.HOME_VIEW.USER_SETTINGS_BUTTON,
+            ),
+            action_id: APP_ACTION.OPEN_SETTINGS_MODAL,
+          },
+        ],
+      },
       {
         ...SlackViewBuilder.generateMarkdownSection(
           copy.HOME_VIEW.SELECT_OFFICE_DAYS_MARKDOWN,
@@ -130,10 +126,36 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
             ),
             action_id: APP_ACTION.OPEN_CREATE_EVENT_MODAL,
           },
+          ...(isCheckedInToday
+            ? [
+                {
+                  type: 'button' as const,
+                  text: SlackViewBuilder.generatePlainText(
+                    copy.HOME_VIEW.ASK_LUNCH_BUTTON,
+                  ),
+                  action_id: APP_ACTION.OPEN_ASK_LUNCH_MODAL,
+                  style: 'primary' as const,
+                },
+                {
+                  type: 'button' as const,
+                  text: SlackViewBuilder.generatePlainText(
+                    copy.HOME_VIEW.CHECKOUT_BUTTON,
+                  ),
+                  action_id: APP_ACTION.SUBMIT_CHECKOUT,
+                  style: 'primary' as const,
+                },
+              ]
+            : []),
         ],
       },
       SlackViewBuilder.DIVIDER,
-      ...buildPresenceBlocks(dates, userPresences, userId, copy),
+      ...buildPresenceBlocks(
+        presenceDates,
+        userPresences,
+        userId,
+        copy,
+        showTeamCount,
+      ),
     ],
   } as View;
 }
@@ -143,6 +165,7 @@ function buildPresenceBlocks(
   userPresences: UserPresences,
   currentUserId: string,
   copy: AppCopy,
+  showTeamCount: boolean,
 ): KnownBlock[] {
   const blocks: KnownBlock[] = [
     SlackViewBuilder.generateMarkdownSection(
@@ -171,6 +194,7 @@ function buildPresenceBlocks(
       dayPresences.map(({ presence }) => presence),
       formattedPresences,
       copy,
+      showTeamCount,
     );
 
     blocks.push(
@@ -178,7 +202,7 @@ function buildPresenceBlocks(
     );
 
     if (eventsForDay.length > 0) {
-      blocks.push(...buildEventBlocks(eventsForDay, currentUserId));
+      blocks.push(...buildEventBlocks(eventsForDay, currentUserId, copy));
     }
   });
 
@@ -188,6 +212,7 @@ function buildPresenceBlocks(
 function buildEventBlocks(
   events: OfficeEvent[],
   currentUserId: string,
+  copy: AppCopy,
 ): KnownBlock[] {
   const blocks: KnownBlock[] = [];
 
@@ -223,38 +248,33 @@ function buildEventBlocks(
         elements: [
           {
             type: 'button',
-            text: {
-              type: 'plain_text',
-              text: 'Edit',
-            },
+            text: SlackViewBuilder.generatePlainText(
+              copy.HOME_VIEW.EDIT_EVENT_BUTTON,
+            ),
             action_id: `${APP_ACTION.EDIT_EVENT}_${event.id}`,
             style: 'primary',
           },
           {
             type: 'button',
-            text: {
-              type: 'plain_text',
-              text: 'Delete',
-            },
+            text: SlackViewBuilder.generatePlainText(
+              copy.HOME_VIEW.DELETE_EVENT_BUTTON,
+            ),
             action_id: `${APP_ACTION.DELETE_EVENT}_${event.id}`,
             style: 'danger',
             confirm: {
-              title: {
-                type: 'plain_text',
-                text: 'Delete event?',
-              },
+              title: SlackViewBuilder.generatePlainText(
+                copy.HOME_VIEW.DELETE_EVENT_CONFIRM_TITLE,
+              ),
               text: {
                 type: 'mrkdwn',
                 text: `Delete *${event.name}* on ${event.date} at ${event.time}?`,
               },
-              confirm: {
-                type: 'plain_text',
-                text: 'Delete',
-              },
-              deny: {
-                type: 'plain_text',
-                text: 'Cancel',
-              },
+              confirm: SlackViewBuilder.generatePlainText(
+                copy.HOME_VIEW.DELETE_EVENT_BUTTON,
+              ),
+              deny: SlackViewBuilder.generatePlainText(
+                copy.HOME_VIEW.DELETE_EVENT_CONFIRM_DENY,
+              ),
             },
           },
         ],
@@ -270,15 +290,18 @@ function buildDaySectionText(
   presences: UserPresence[],
   formattedPresences: string[],
   copy: AppCopy,
+  showTeamCount: boolean,
 ): string {
   const count = presences.length;
   if (count === 0) {
     return `${datePrefix} - _${copy.HOME_VIEW.NO_ONE_SCHEDULED}_`;
   }
-  const peopleLabel = count === 1 ? 'person' : 'people';
-  const officeBreakdown = buildOfficeBreakdown(presences);
+  const countLabel = showTeamCount
+    ? ` - *${count} ${count === 1 ? copy.HOME_VIEW.PERSON : copy.HOME_VIEW.PEOPLE}*`
+    : '';
+  const officeBreakdown = showTeamCount ? buildOfficeBreakdown(presences) : '';
   const breakdownLine = officeBreakdown ? `\n_${officeBreakdown}_` : '';
-  return `${datePrefix} - *${count} ${peopleLabel}*\n${formattedPresences.join('\n')}${breakdownLine}`;
+  return `${datePrefix}${countLabel}\n${formattedPresences.join('\n')}${breakdownLine}`;
 }
 
 function buildOfficeBreakdown(presences: UserPresence[]): string {

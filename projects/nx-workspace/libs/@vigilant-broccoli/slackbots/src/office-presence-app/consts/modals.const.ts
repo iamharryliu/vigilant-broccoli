@@ -2,10 +2,14 @@ import { KnownBlock, ModalView, View } from '@slack/types';
 import { AppConfig, PRESENCE_TIME } from '../types';
 import { SlackViewBuilder } from '@vigilant-broccoli/slack-workspace';
 import { APP_ACTION } from './app.consts';
-import { loadAllPresences, loadEventById } from '../utils/db.utils';
+import {
+  loadAllPresences,
+  loadEventById,
+  loadUserSettings,
+} from '../utils/db.utils';
 import { getUpcomingWeekdays, formatISODateLocal } from '../utils/date.utils';
 import { buildModalDateOptionSlackBlocks } from '../utils/view.utils';
-import { INPUT_MAX_LENGTH } from './data.consts';
+import { ACTION_ID, BLOCK_ID, INPUT_MAX_LENGTH } from './data.consts';
 
 const chunkArray = <T>(arr: T[], size: number): T[][] => {
   const chunks: T[][] = [];
@@ -16,13 +20,20 @@ const chunkArray = <T>(arr: T[], size: number): T[][] => {
 };
 
 export function createInputScheduleModal(appConfig: AppConfig) {
-  return function getInputScheduleModal() {
+  return function getInputScheduleModal(userId: string) {
     const { copy } = appConfig;
     const dates = getUpcomingWeekdays(10);
     const options = buildModalDateOptionSlackBlocks(dates);
-    const initialOptions = [options[0]];
     const officeBlocks =
-      appConfig.OFFICES.length > 0 ? [buildOfficeBlock(appConfig)] : [];
+      appConfig.OFFICES.length > 0
+        ? [
+            buildOfficeBlock(
+              appConfig,
+              BLOCK_ID.OFFICE,
+              loadUserSettings(userId).defaultOffice,
+            ),
+          ]
+        : [];
 
     return {
       type: 'modal',
@@ -33,12 +44,12 @@ export function createInputScheduleModal(appConfig: AppConfig) {
       blocks: [
         {
           type: 'input',
-          block_id: 'date_block',
+          block_id: BLOCK_ID.DATE,
           element: {
             type: 'checkboxes',
-            action_id: 'date',
+            action_id: ACTION_ID.DATE,
             options,
-            initial_options: initialOptions,
+            initial_options: [options[0]],
           },
           label: SlackViewBuilder.generatePlainText(
             copy.PRESENCE_MODAL.SELECT_DAYS_LABEL,
@@ -47,10 +58,10 @@ export function createInputScheduleModal(appConfig: AppConfig) {
         ...officeBlocks,
         {
           type: 'input',
-          block_id: 'presence_block',
+          block_id: BLOCK_ID.PRESENCE,
           element: {
             type: 'radio_buttons',
-            action_id: 'presence',
+            action_id: ACTION_ID.PRESENCE,
             initial_option: {
               text: SlackViewBuilder.generatePlainText(
                 copy.PRESENCE_MODAL.UNDECIDED,
@@ -91,14 +102,14 @@ export function createInputScheduleModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'dog_block',
+          block_id: BLOCK_ID.DOG,
           element: {
             type: 'checkboxes',
-            action_id: 'dog',
+            action_id: ACTION_ID.DOG,
             options: [
               {
                 text: SlackViewBuilder.generatePlainText(copy.COMMON.YES),
-                value: 'dog',
+                value: ACTION_ID.DOG,
               },
             ],
           },
@@ -109,10 +120,10 @@ export function createInputScheduleModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'message_block',
+          block_id: BLOCK_ID.MESSAGE,
           element: {
             type: 'plain_text_input',
-            action_id: 'message',
+            action_id: ACTION_ID.MESSAGE,
             multiline: true,
             max_length: INPUT_MAX_LENGTH,
           },
@@ -126,16 +137,19 @@ export function createInputScheduleModal(appConfig: AppConfig) {
   };
 }
 
+type OfficeOption = {
+  text: { type: 'plain_text'; text: string };
+  value: string;
+};
+
 type OfficeBlock = {
   type: 'input';
   block_id: string;
   element: {
     type: 'radio_buttons';
     action_id: string;
-    options: {
-      text: { type: 'plain_text'; text: string };
-      value: string;
-    }[];
+    options: OfficeOption[];
+    initial_option?: OfficeOption;
   };
   label: { type: 'plain_text'; text: string };
   optional: boolean;
@@ -143,24 +157,158 @@ type OfficeBlock = {
 
 function buildOfficeBlock(
   appConfig: AppConfig,
-  blockId = 'office_block',
+  blockId = BLOCK_ID.OFFICE,
+  initialOffice?: string,
 ): OfficeBlock {
+  const options = appConfig.OFFICES.map(office => ({
+    text: { type: 'plain_text' as const, text: office },
+    value: office,
+  }));
+  const initialOption = initialOffice
+    ? options.find(o => o.value === initialOffice)
+    : undefined;
   return {
     type: 'input',
     block_id: blockId,
     element: {
       type: 'radio_buttons',
-      action_id: 'office',
-      options: appConfig.OFFICES.map(office => ({
-        text: { type: 'plain_text', text: office },
-        value: office,
-      })),
+      action_id: ACTION_ID.OFFICE,
+      options,
+      ...(initialOption && { initial_option: initialOption }),
     },
     label: {
       type: 'plain_text',
       text: appConfig.copy.PRESENCE_MODAL.OFFICE_LABEL,
     },
     optional: true,
+  };
+}
+
+export function createUserSettingsModal(appConfig: AppConfig) {
+  return function getUserSettingsModal(userId: string) {
+    const { copy } = appConfig;
+    const settings = loadUserSettings(userId);
+
+    const effectiveShowWeekdaysOnly =
+      settings.showWeekdaysOnly ?? appConfig.defaultShowWeekdaysOnly;
+    const effectiveShowTeamCount =
+      settings.showTeamCount ?? appConfig.defaultShowTeamCount;
+    const effectiveWeeksAhead =
+      settings.weeksAhead ?? appConfig.defaultWeeksAhead;
+
+    const officeBlocks: KnownBlock[] =
+      appConfig.OFFICES.length > 0
+        ? [
+            (() => {
+              const options = appConfig.OFFICES.map(office => ({
+                text: { type: 'plain_text' as const, text: office },
+                value: office,
+              }));
+              const initialOption = settings.defaultOffice
+                ? options.find(o => o.value === settings.defaultOffice)
+                : undefined;
+              return {
+                type: 'input' as const,
+                block_id: BLOCK_ID.DEFAULT_OFFICE,
+                element: {
+                  type: 'static_select' as const,
+                  action_id: ACTION_ID.DEFAULT_OFFICE,
+                  options,
+                  placeholder: {
+                    type: 'plain_text' as const,
+                    text: copy.SETTINGS_MODAL.DEFAULT_OFFICE_PLACEHOLDER,
+                  },
+                  ...(initialOption && { initial_option: initialOption }),
+                },
+                label: {
+                  type: 'plain_text' as const,
+                  text: copy.SETTINGS_MODAL.DEFAULT_OFFICE_LABEL,
+                },
+                optional: true,
+              };
+            })(),
+          ]
+        : [];
+
+    const weekdaysOnlyOption = {
+      text: SlackViewBuilder.generatePlainText(
+        copy.SETTINGS_MODAL.SHOW_WEEKDAYS_ONLY_OPTION,
+      ),
+      value: ACTION_ID.SHOW_WEEKDAYS_ONLY,
+    };
+
+    const teamCountOption = {
+      text: SlackViewBuilder.generatePlainText(
+        copy.SETTINGS_MODAL.SHOW_TEAM_COUNT_OPTION,
+      ),
+      value: ACTION_ID.SHOW_TEAM_COUNT,
+    };
+
+    const weeksAheadOptions = [1, 2, 3, 4].map(n => ({
+      text: SlackViewBuilder.generatePlainText(String(n)),
+      value: String(n),
+    }));
+
+    const modal: ModalView = {
+      type: 'modal',
+      callback_id: APP_ACTION.SUBMIT_SETTINGS,
+      title: { type: 'plain_text', text: copy.SETTINGS_MODAL.TITLE },
+      submit: { type: 'plain_text', text: copy.COMMON.SAVE },
+      close: { type: 'plain_text', text: copy.COMMON.CANCEL },
+      blocks: [
+        ...officeBlocks,
+        {
+          type: 'input',
+          block_id: BLOCK_ID.SHOW_WEEKDAYS_ONLY,
+          element: {
+            type: 'checkboxes',
+            action_id: ACTION_ID.SHOW_WEEKDAYS_ONLY,
+            options: [weekdaysOnlyOption],
+            ...(effectiveShowWeekdaysOnly && {
+              initial_options: [weekdaysOnlyOption],
+            }),
+          },
+          label: SlackViewBuilder.generatePlainText(
+            copy.SETTINGS_MODAL.SHOW_WEEKDAYS_ONLY_LABEL,
+          ),
+          optional: true,
+        },
+        {
+          type: 'input',
+          block_id: BLOCK_ID.SHOW_TEAM_COUNT,
+          element: {
+            type: 'checkboxes',
+            action_id: ACTION_ID.SHOW_TEAM_COUNT,
+            options: [teamCountOption],
+            ...(effectiveShowTeamCount && {
+              initial_options: [teamCountOption],
+            }),
+          },
+          label: SlackViewBuilder.generatePlainText(
+            copy.SETTINGS_MODAL.SHOW_TEAM_COUNT_LABEL,
+          ),
+          optional: true,
+        },
+        {
+          type: 'input',
+          block_id: BLOCK_ID.WEEKS_AHEAD,
+          element: {
+            type: 'static_select',
+            action_id: ACTION_ID.WEEKS_AHEAD,
+            options: weeksAheadOptions,
+            initial_option:
+              weeksAheadOptions.find(
+                o => o.value === String(effectiveWeeksAhead),
+              ) ?? weeksAheadOptions[1],
+          },
+          label: SlackViewBuilder.generatePlainText(
+            copy.SETTINGS_MODAL.WEEKS_AHEAD_LABEL,
+          ),
+        },
+      ],
+    };
+
+    return modal;
   };
 }
 
@@ -201,7 +349,6 @@ export function createAskLunchModal(appConfig: AppConfig) {
       blocks = userChunks.map((chunk, index) => ({
         type: 'section',
         block_id: `users_select_block_${index}`,
-
         text: {
           type: 'mrkdwn',
           text: index === 0 ? copy.ASK_LUNCH_MODAL.SELECT_USERS_MARKDOWN : ' ',
@@ -261,10 +408,10 @@ export function createCreateEventModal(appConfig: AppConfig) {
       blocks: [
         {
           type: 'input',
-          block_id: 'event_name_block',
+          block_id: BLOCK_ID.EVENT_NAME,
           element: {
             type: 'plain_text_input',
-            action_id: 'event_name',
+            action_id: ACTION_ID.EVENT_NAME,
             max_length: INPUT_MAX_LENGTH,
           },
           label: SlackViewBuilder.generatePlainText(
@@ -273,10 +420,10 @@ export function createCreateEventModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'event_date_block',
+          block_id: BLOCK_ID.EVENT_DATE,
           element: {
             type: 'static_select',
-            action_id: 'event_date',
+            action_id: ACTION_ID.EVENT_DATE,
             options,
             ...(initialOptions.length > 0 && {
               initial_option: initialOptions[0],
@@ -288,10 +435,10 @@ export function createCreateEventModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'event_time_hour_block',
+          block_id: BLOCK_ID.EVENT_TIME_HOUR,
           element: {
             type: 'static_select',
-            action_id: 'event_time_hour',
+            action_id: ACTION_ID.EVENT_TIME_HOUR,
             options: hourOptions,
             initial_option: hourOptions[12],
           },
@@ -301,10 +448,10 @@ export function createCreateEventModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'event_time_minute_block',
+          block_id: BLOCK_ID.EVENT_TIME_MINUTE,
           element: {
             type: 'static_select',
-            action_id: 'event_time_minute',
+            action_id: ACTION_ID.EVENT_TIME_MINUTE,
             options: minuteOptions,
             initial_option: minuteOptions[0],
           },
@@ -314,10 +461,10 @@ export function createCreateEventModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'event_description_block',
+          block_id: BLOCK_ID.EVENT_DESCRIPTION,
           element: {
             type: 'plain_text_input',
-            action_id: 'event_description',
+            action_id: ACTION_ID.EVENT_DESCRIPTION,
             multiline: true,
             max_length: INPUT_MAX_LENGTH,
           },
@@ -370,10 +517,10 @@ export function createEditEventModal(appConfig: AppConfig) {
       blocks: [
         {
           type: 'input',
-          block_id: 'event_name_block',
+          block_id: BLOCK_ID.EVENT_NAME,
           element: {
             type: 'plain_text_input',
-            action_id: 'event_name',
+            action_id: ACTION_ID.EVENT_NAME,
             initial_value: event.name,
             max_length: INPUT_MAX_LENGTH,
           },
@@ -383,10 +530,10 @@ export function createEditEventModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'event_date_block',
+          block_id: BLOCK_ID.EVENT_DATE,
           element: {
             type: 'static_select',
-            action_id: 'event_date',
+            action_id: ACTION_ID.EVENT_DATE,
             options,
             ...(initialDateOption && { initial_option: initialDateOption }),
           },
@@ -396,10 +543,10 @@ export function createEditEventModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'event_time_hour_block',
+          block_id: BLOCK_ID.EVENT_TIME_HOUR,
           element: {
             type: 'static_select',
-            action_id: 'event_time_hour',
+            action_id: ACTION_ID.EVENT_TIME_HOUR,
             options: hourOptions,
             initial_option: initialHourOption || hourOptions[12],
           },
@@ -409,10 +556,10 @@ export function createEditEventModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'event_time_minute_block',
+          block_id: BLOCK_ID.EVENT_TIME_MINUTE,
           element: {
             type: 'static_select',
-            action_id: 'event_time_minute',
+            action_id: ACTION_ID.EVENT_TIME_MINUTE,
             options: minuteOptions,
             initial_option: initialMinuteOption || minuteOptions[0],
           },
@@ -422,10 +569,10 @@ export function createEditEventModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'event_description_block',
+          block_id: BLOCK_ID.EVENT_DESCRIPTION,
           element: {
             type: 'plain_text_input',
-            action_id: 'event_description',
+            action_id: ACTION_ID.EVENT_DESCRIPTION,
             multiline: true,
             max_length: INPUT_MAX_LENGTH,
             ...(event.description && { initial_value: event.description }),
@@ -437,10 +584,10 @@ export function createEditEventModal(appConfig: AppConfig) {
         },
         {
           type: 'input',
-          block_id: 'event_attendees_block',
+          block_id: BLOCK_ID.EVENT_ATTENDEES,
           element: {
             type: 'multi_users_select',
-            action_id: 'event_attendees',
+            action_id: ACTION_ID.EVENT_ATTENDEES,
             ...(event.attendees &&
               event.attendees.length > 0 && {
                 initial_users: event.attendees,

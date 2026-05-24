@@ -10,13 +10,16 @@ import {
   deletePresence,
   saveEvent,
   loadEventById,
+  loadUserSettings,
   updateEventAttendees,
   deleteEvent,
   updateEvent,
+  saveUserSettings,
 } from './db.utils';
-import { UserPresence, OfficeEvent } from '../types';
+import { UserPresence, OfficeEvent, UserSettings } from '../types';
 import { WebClient } from '@slack/web-api';
 import { AppCopy } from '../consts/app-copy.const';
+import { ACTION_ID, BLOCK_ID } from '../consts/data.consts';
 import { validateInput } from './input-validation.utils';
 
 export function handleCheckboxAction(body: BlockAction) {
@@ -30,14 +33,14 @@ export function handleCheckboxAction(body: BlockAction) {
     userPresences[body.user.id] = {};
   }
 
+  const { defaultOffice } = loadUserSettings(body.user.id);
+
   for (const date of selectedDates) {
     savePresence(
       body.user.id,
       date,
       userPresences[body.user.id][date] ||
-        ({
-          isWholeDay: true,
-        } as UserPresence),
+        ({ office: defaultOffice } as UserPresence),
     );
   }
   for (const date of Object.keys(userPresences[body.user.id])) {
@@ -53,19 +56,23 @@ export function handleScheduleModalSubmit(
   view: ViewOutput,
 ) {
   const userId = body.user.id;
-  const dateOptions = view.state.values.date_block.date.selected_options || [];
+  const dateOptions =
+    view.state.values[BLOCK_ID.DATE][ACTION_ID.DATE].selected_options || [];
   const selectedDates = dateOptions.map(opt => opt.value);
 
-  const office = view.state.values.office_block?.office.selected_option?.value;
+  const office =
+    view.state.values[BLOCK_ID.OFFICE]?.[ACTION_ID.OFFICE].selected_option
+      ?.value;
   const presenceTime =
-    view.state.values.presence_block.presence.selected_option?.value;
+    view.state.values[BLOCK_ID.PRESENCE][ACTION_ID.PRESENCE].selected_option
+      ?.value;
   const isBringingDog =
     (
-      view.state.values.dog_block.dog
+      view.state.values[BLOCK_ID.DOG][ACTION_ID.DOG]
         .selected_options as ViewStateSelectedOption[]
     ).length > 0;
   const message = validateInput(
-    view.state.values.message_block.message.value || '',
+    view.state.values[BLOCK_ID.MESSAGE][ACTION_ID.MESSAGE].value || '',
   );
 
   const userPresence: UserPresence = {
@@ -75,7 +82,6 @@ export function handleScheduleModalSubmit(
     message,
   };
 
-  // Save for each selected date
   selectedDates.forEach(date => {
     savePresence(userId, date, userPresence);
   });
@@ -110,28 +116,59 @@ export async function handleAskLunchAction(
   });
 }
 
+export function handleSettingsModalSubmit(
+  body: SlackViewAction,
+  view: ViewOutput,
+) {
+  const userId = body.user.id;
+  const defaultOffice =
+    view.state.values[BLOCK_ID.DEFAULT_OFFICE]?.[ACTION_ID.DEFAULT_OFFICE]
+      .selected_option?.value;
+  const showWeekdaysOnly =
+    (
+      view.state.values[BLOCK_ID.SHOW_WEEKDAYS_ONLY]?.[
+        ACTION_ID.SHOW_WEEKDAYS_ONLY
+      ].selected_options as ViewStateSelectedOption[] | undefined
+    )?.some(o => o.value === ACTION_ID.SHOW_WEEKDAYS_ONLY) ?? false;
+  const showTeamCount =
+    (
+      view.state.values[BLOCK_ID.SHOW_TEAM_COUNT]?.[ACTION_ID.SHOW_TEAM_COUNT]
+        .selected_options as ViewStateSelectedOption[] | undefined
+    )?.some(o => o.value === ACTION_ID.SHOW_TEAM_COUNT) ?? false;
+  const weeksAheadStr =
+    view.state.values[BLOCK_ID.WEEKS_AHEAD]?.[ACTION_ID.WEEKS_AHEAD]
+      .selected_option?.value;
+  const weeksAhead = weeksAheadStr ? parseInt(weeksAheadStr, 10) : undefined;
+  const settings: UserSettings = {
+    defaultOffice,
+    showWeekdaysOnly,
+    showTeamCount,
+    weeksAhead,
+  };
+  saveUserSettings(userId, settings);
+}
+
 export function handleCreateEventSubmit(
   body: SlackViewAction,
   view: ViewOutput,
 ) {
   const userId = body.user.id;
   const eventName = validateInput(
-    view.state.values.event_name_block.event_name.value || '',
+    view.state.values[BLOCK_ID.EVENT_NAME][ACTION_ID.EVENT_NAME].value || '',
   );
   const eventDate =
-    view.state.values.event_date_block.event_date.selected_option?.value || '';
+    view.state.values[BLOCK_ID.EVENT_DATE][ACTION_ID.EVENT_DATE].selected_option
+      ?.value || '';
   const eventHour =
-    view.state.values.event_time_hour_block.event_time_hour.selected_option
-      ?.value || '12';
+    view.state.values[BLOCK_ID.EVENT_TIME_HOUR][ACTION_ID.EVENT_TIME_HOUR]
+      .selected_option?.value || '12';
   const eventMinute =
-    view.state.values.event_time_minute_block.event_time_minute.selected_option
-      ?.value || '0';
-  const eventTime = `${eventHour.padStart(2, '0')}:${eventMinute.padStart(
-    2,
-    '0',
-  )}`;
+    view.state.values[BLOCK_ID.EVENT_TIME_MINUTE][ACTION_ID.EVENT_TIME_MINUTE]
+      .selected_option?.value || '0';
+  const eventTime = `${eventHour.padStart(2, '0')}:${eventMinute.padStart(2, '0')}`;
   const eventDescription = validateInput(
-    view.state.values.event_description_block.event_description.value || '',
+    view.state.values[BLOCK_ID.EVENT_DESCRIPTION][ACTION_ID.EVENT_DESCRIPTION]
+      .value || '',
   );
 
   const event: OfficeEvent = {
@@ -198,26 +235,25 @@ export function handleEditEventSubmit(
   view: ViewOutput,
 ) {
   const eventName = validateInput(
-    view.state.values.event_name_block.event_name.value || '',
+    view.state.values[BLOCK_ID.EVENT_NAME][ACTION_ID.EVENT_NAME].value || '',
   );
   const eventDate =
-    view.state.values.event_date_block.event_date.selected_option?.value || '';
+    view.state.values[BLOCK_ID.EVENT_DATE][ACTION_ID.EVENT_DATE].selected_option
+      ?.value || '';
   const eventHour =
-    view.state.values.event_time_hour_block.event_time_hour.selected_option
-      ?.value || '12';
+    view.state.values[BLOCK_ID.EVENT_TIME_HOUR][ACTION_ID.EVENT_TIME_HOUR]
+      .selected_option?.value || '12';
   const eventMinute =
-    view.state.values.event_time_minute_block.event_time_minute.selected_option
-      ?.value || '0';
-  const eventTime = `${eventHour.padStart(2, '0')}:${eventMinute.padStart(
-    2,
-    '0',
-  )}`;
+    view.state.values[BLOCK_ID.EVENT_TIME_MINUTE][ACTION_ID.EVENT_TIME_MINUTE]
+      .selected_option?.value || '0';
+  const eventTime = `${eventHour.padStart(2, '0')}:${eventMinute.padStart(2, '0')}`;
   const eventDescription = validateInput(
-    view.state.values.event_description_block.event_description.value || '',
+    view.state.values[BLOCK_ID.EVENT_DESCRIPTION][ACTION_ID.EVENT_DESCRIPTION]
+      .value || '',
   );
   const selectedUsers =
-    view.state.values.event_attendees_block.event_attendees.selected_users ||
-    [];
+    view.state.values[BLOCK_ID.EVENT_ATTENDEES][ACTION_ID.EVENT_ATTENDEES]
+      .selected_users || [];
 
   const event: OfficeEvent = {
     name: eventName,

@@ -4,6 +4,8 @@ import {
   UserPresences,
   OfficeEvent,
   OfficeEventRow,
+  UserSettings,
+  UserSettingsRow,
 } from '../types';
 import Database from 'better-sqlite3';
 import { formatISODateLocal } from './date.utils';
@@ -37,6 +39,32 @@ db.prepare(
   )
 `,
 ).run();
+
+db.prepare(
+  `
+  CREATE TABLE IF NOT EXISTS user_settings (
+    user_id TEXT PRIMARY KEY,
+    default_office TEXT,
+    show_weekdays_only INTEGER,
+    show_team_count INTEGER,
+    weeks_ahead INTEGER
+  )
+`,
+).run();
+
+const userSettingsColumns = (
+  db.prepare(`PRAGMA table_info(user_settings)`).all() as { name: string }[]
+).map(r => r.name);
+
+for (const [col, type] of [
+  ['show_weekdays_only', 'INTEGER'],
+  ['show_team_count', 'INTEGER'],
+  ['weeks_ahead', 'INTEGER'],
+] as [string, string][]) {
+  if (!userSettingsColumns.includes(col)) {
+    db.prepare(`ALTER TABLE user_settings ADD COLUMN ${col} ${type}`).run();
+  }
+}
 
 export function loadAllPresences(): UserPresences {
   const rows = db
@@ -176,6 +204,43 @@ export function updateEventAttendees(eventId: number, attendees: string[]) {
 
 export function deleteEvent(eventId: number) {
   db.prepare('DELETE FROM office_events WHERE id = ?').run(eventId);
+}
+
+export function loadUserSettings(userId: string): UserSettings {
+  const row = db
+    .prepare('SELECT * FROM user_settings WHERE user_id = ?')
+    .get(userId) as UserSettingsRow | undefined;
+  if (!row) return {};
+  return {
+    defaultOffice: row.default_office,
+    showWeekdaysOnly:
+      row.show_weekdays_only != null ? !!row.show_weekdays_only : undefined,
+    showTeamCount:
+      row.show_team_count != null ? !!row.show_team_count : undefined,
+    weeksAhead: row.weeks_ahead ?? undefined,
+  };
+}
+
+export function saveUserSettings(userId: string, settings: UserSettings) {
+  db.prepare(
+    `
+    INSERT INTO user_settings (user_id, default_office, show_weekdays_only, show_team_count, weeks_ahead)
+    VALUES (@user_id, @default_office, @show_weekdays_only, @show_team_count, @weeks_ahead)
+    ON CONFLICT(user_id) DO UPDATE SET
+      default_office=excluded.default_office,
+      show_weekdays_only=excluded.show_weekdays_only,
+      show_team_count=excluded.show_team_count,
+      weeks_ahead=excluded.weeks_ahead
+  `,
+  ).run({
+    user_id: userId,
+    default_office: settings.defaultOffice ?? null,
+    show_weekdays_only:
+      settings.showWeekdaysOnly != null ? +settings.showWeekdaysOnly : null,
+    show_team_count:
+      settings.showTeamCount != null ? +settings.showTeamCount : null,
+    weeks_ahead: settings.weeksAhead ?? null,
+  });
 }
 
 export function updateEvent(eventId: number, event: OfficeEvent) {

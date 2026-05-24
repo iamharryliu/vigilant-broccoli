@@ -5,6 +5,9 @@ export type AppConfig = {
   OFFICES: string[];
   includeWeekends?: boolean;
   daysAhead?: number;
+  defaultShowWeekdaysOnly: boolean;
+  defaultShowTeamCount: boolean;
+  defaultWeeksAhead: number;
   copy: AppCopy;
 };
 
@@ -51,4 +54,19 @@ export type OfficeEventRow = {
   creator_id: string;
   description?: string;
   attendees?: string;
+};
+
+export type UserSettings = {
+  defaultOffice?: string;
+  showWeekdaysOnly?: boolean;
+  showTeamCount?: boolean;
+  weeksAhead?: number;
+};
+
+export type UserSettingsRow = {
+  user_id: string;
+  default_office?: string;
+  show_weekdays_only?: number;
+  show_team_count?: number;
+  weeks_ahead?: number;
 };

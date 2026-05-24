@@ -12,11 +12,13 @@ import {
   createInputScheduleModal,
   createCreateEventModal,
   createEditEventModal,
+  createUserSettingsModal,
 } from './consts/modals.const';
 import {
   handleAskLunchAction,
   handleCheckboxAction,
   handleScheduleModalSubmit,
+  handleSettingsModalSubmit,
   handleCreateEventSubmit,
   handleEventAttendanceToggle,
   handleDeleteEvent,
@@ -38,6 +40,9 @@ export type OfficePresenceAppRunConfig = {
   enableReminders?: boolean;
   includeWeekends?: boolean;
   daysAhead?: number;
+  defaultShowWeekdaysOnly?: boolean;
+  defaultShowTeamCount?: boolean;
+  defaultWeeksAhead?: number;
   copy?: AppCopyOverrides;
 };
 
@@ -46,22 +51,39 @@ const DEFAULT_REMINDER_CRON = '0 8 * * 1';
 const DEFAULT_REMINDER_TIMEZONE = 'Europe/Stockholm';
 const DEFAULT_APP_NAME = 'OK-IN';
 const DEFAULT_OFFICES: string[] = [];
+const DEFAULT_SHOW_WEEKDAYS_ONLY = true;
+const DEFAULT_SHOW_TEAM_COUNT = true;
+const DEFAULT_WEEKS_AHEAD = 2;
 
 // eslint-disable-next-line complexity
 export async function runOfficePresenceApp(
   config: OfficePresenceAppRunConfig = {},
 ) {
-  const { APP_NAME, OFFICES, includeWeekends, daysAhead, copy } = config;
+  const {
+    APP_NAME,
+    OFFICES,
+    includeWeekends,
+    daysAhead,
+    defaultShowWeekdaysOnly,
+    defaultShowTeamCount,
+    defaultWeeksAhead,
+    copy,
+  } = config;
   const appConfig: AppConfig = {
     APP_NAME: APP_NAME ?? DEFAULT_APP_NAME,
     OFFICES: OFFICES ?? DEFAULT_OFFICES,
     includeWeekends,
     daysAhead,
+    defaultShowWeekdaysOnly:
+      defaultShowWeekdaysOnly ?? DEFAULT_SHOW_WEEKDAYS_ONLY,
+    defaultShowTeamCount: defaultShowTeamCount ?? DEFAULT_SHOW_TEAM_COUNT,
+    defaultWeeksAhead: defaultWeeksAhead ?? DEFAULT_WEEKS_AHEAD,
     copy: resolveAppCopy(copy),
   };
   const publishHomeView = createPublishHomeView(appConfig);
   const getInputScheduleModal = createInputScheduleModal(appConfig);
   const getAskLunchModal = createAskLunchModal(appConfig);
+  const getUserSettingsModal = createUserSettingsModal(appConfig);
   const getCreateEventModal = createCreateEventModal(appConfig);
   const getEditEventModal = createEditEventModal(appConfig);
   const sendReminders = createReminderSender(appConfig);
@@ -90,8 +112,19 @@ export async function runOfficePresenceApp(
 
   app.action<BlockAction>(
     APP_ACTION.OPEN_SCHEDULE_MODAL,
-    SlackModalUtils.createModalHandler(getInputScheduleModal),
+    SlackModalUtils.createModalHandlerWithUserId(getInputScheduleModal),
   );
+
+  app.action<BlockAction>(
+    APP_ACTION.OPEN_SETTINGS_MODAL,
+    SlackModalUtils.createModalHandlerWithUserId(getUserSettingsModal),
+  );
+
+  app.view(APP_ACTION.SUBMIT_SETTINGS, async ({ ack, body, view, client }) => {
+    await ack();
+    handleSettingsModalSubmit(body, view);
+    await publishHomeView(client, body);
+  });
 
   app.action<BlockAction>(
     APP_ACTION.OPEN_ASK_LUNCH_MODAL,
