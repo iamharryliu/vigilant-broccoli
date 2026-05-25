@@ -363,6 +363,44 @@ resource "google_storage_bucket_iam_member" "github_actions_backup" {
   member = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
+resource "google_storage_bucket" "storage_buckets" {
+  name          = "vb-storage-bucket"
+  location      = var.region
+  storage_class = "STANDARD"
+  force_destroy = false
+}
+
+resource "google_service_account" "gcs_manager" {
+  account_id   = "gcs-manager"
+  display_name = "GCS Manager"
+  description  = "Service account for managing GCS buckets"
+}
+
+resource "google_storage_bucket_iam_member" "gcs_manager" {
+  bucket = google_storage_bucket.storage_buckets.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.gcs_manager.email}"
+}
+
+resource "google_service_account_key" "gcs_manager" {
+  service_account_id = google_service_account.gcs_manager.name
+}
+
+resource "google_secret_manager_secret" "gcs_credentials_json" {
+  secret_id = "GCS_CREDENTIALS_JSON"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "gcs_credentials_json" {
+  secret      = google_secret_manager_secret.gcs_credentials_json.id
+  secret_data = google_service_account_key.gcs_manager.private_key
+}
+
 resource "cloudflare_r2_bucket" "vigilant_broccoli" {
   account_id = var.cloudflare_account_id
   name       = "vigilant-broccoli"

@@ -9,24 +9,27 @@ export class GcsBucketProvider implements IBucketProvider {
 
   constructor(config?: GcsBucketConfig) {
     const projectId =
-      config?.projectId || getEnvironmentVariable('GCS_PROJECT_ID');
+      config?.projectId || getEnvironmentVariable('GOOGLE_GCS_PROJECT_ID');
     this.bucketName =
-      config?.bucketName || getEnvironmentVariable('GCS_BUCKET_NAME');
-    const keyFilePath =
-      config?.keyFilePath ||
-      getEnvironmentVariable('GCS_KEY_FILE_PATH') ||
-      getEnvironmentVariable('GOOGLE_APPLICATION_CREDENTIALS');
+      config?.bucketName || getEnvironmentVariable('GOOGLE_GCS_BUCKET_NAME');
 
     if (!projectId || !this.bucketName) {
-      console.error('GcsBucketProvider is not configured properly.');
       throw new Error('Missing Google Cloud Storage configuration');
     }
 
-    const storageOptions: { projectId: string; keyFilename?: string } = {
-      projectId,
-    };
-    if (keyFilePath) {
-      storageOptions.keyFilename = keyFilePath;
+    const credentialsJson =
+      config?.credentialsJson || process.env['GOOGLE_GCS_SA_CREDENTIALS'];
+
+    const storageOptions: {
+      projectId: string;
+      keyFilename?: string;
+      credentials?: object;
+    } = { projectId };
+
+    if (credentialsJson) {
+      storageOptions.credentials = JSON.parse(
+        Buffer.from(credentialsJson, 'base64').toString('utf-8'),
+      );
     }
 
     this.storage = new Storage(storageOptions);

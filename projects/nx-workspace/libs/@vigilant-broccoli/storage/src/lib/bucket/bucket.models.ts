@@ -26,7 +26,7 @@ export interface AwsBucketConfig {
 export interface GcsBucketConfig {
   projectId?: string;
   bucketName?: string;
-  keyFilePath?: string;
+  credentialsJson?: string;
 }
 
 export type BucketConfig =
