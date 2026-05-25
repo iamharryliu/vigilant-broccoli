@@ -6,7 +6,7 @@ import { DropdownMenu } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { APP_ROUTE } from '../app.const';
 import { useTheme } from '@vigilant-broccoli/react-lib';
 import { FloatingIslandComponent } from '../components/floating-island.component';
@@ -174,25 +174,6 @@ export default function Layout({ children }: { children: ReactNode }) {
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
             ))}
-            {session ? (
-              <Button
-                variant="secondary"
-                onClick={() => signOut()}
-                style={{ cursor: 'pointer' }}
-              >
-                Sign Out
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  signIn('google');
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                Sign In
-              </Button>
-            )}
           </div>
         }
       />

@@ -6,6 +6,7 @@ import {
   SidebarCTA,
   useTheme,
 } from '@vigilant-broccoli/react-lib';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import {
   MessageCircle,
   Mail,
@@ -15,6 +16,8 @@ import {
   Calendar,
   StickyNote,
   Timer,
+  LogOut,
+  LogIn,
 } from 'lucide-react';
 
 const LIGHT = 'light';
@@ -40,6 +43,7 @@ export const RightSidebar = ({
   setSearchDialogOpen,
 }: Props) => {
   const { appearance, toggleTheme } = useTheme();
+  const { data: session } = useSession();
   const isLight = appearance === LIGHT;
   const themeLabel = isLight ? DARK_MODE_LABEL : LIGHT_MODE_LABEL;
 
@@ -86,6 +90,23 @@ export const RightSidebar = ({
       title: themeLabel + THEME_SHORTCUT,
       onClick: toggleTheme,
     },
+    ...(session
+      ? [
+          {
+            label: 'Sign Out',
+            icon: LogOut,
+            title: 'Sign Out',
+            onClick: () => signOut(),
+          },
+        ]
+      : [
+          {
+            label: 'Sign In',
+            icon: LogIn,
+            title: 'Sign In',
+            onClick: () => signIn('google'),
+          },
+        ]),
   ];
 
   return <Sidebar items={items} side="right" align="space-evenly" />;
