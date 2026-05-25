@@ -38,6 +38,12 @@ export const secretsMapping: SecretsMapping = {
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
+  'bucket-service': {
+    flyAppName: 'vb-storage-service',
+    appPath: './bucket-service',
+    vaultPath: COMMON_VAULT_PATH,
+    excludeEnvVars: COMMON_EXCLUDED_VARS,
+  },
   'vb-manager-next-mobile': {
     flyAppName: 'vb-manager-next-mobile',
     appPath: './apps/vb-manager-next-mobile',

@@ -1,0 +1,107 @@
+{
+  "name": "bucket-service",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "bucket-service/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/bucket-service",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "bucket-service/src/main.ts",
+        "tsConfig": "bucket-service/tsconfig.app.json",
+        "assets": ["bucket-service/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "generateLockfile": true,
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "prune-lockfile": {
+      "dependsOn": ["build"],
+      "cache": true,
+      "inputs": ["default", "{projectRoot}/package.json"],
+      "executor": "@nx/js:prune-lockfile",
+      "outputs": [
+        "{workspaceRoot}/dist/bucket-service/package.json",
+        "{workspaceRoot}/dist/bucket-service/pnpm-lock.yaml"
+      ],
+      "options": {
+        "buildTarget": "build"
+      }
+    },
+    "copy-workspace-modules": {
+      "dependsOn": ["build"],
+      "cache": true,
+      "inputs": ["default", "{projectRoot}/package.json"],
+      "outputs": ["{workspaceRoot}/dist/bucket-service/workspace_modules"],
+      "executor": "@nx/js:copy-workspace-modules",
+      "options": {
+        "buildTarget": "build"
+      }
+    },
+    "prune": {
+      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+      "executor": "nx:noop"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "bucket-service:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "bucket-service:build:development"
+        },
+        "production": {
+          "buildTarget": "bucket-service:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "docker:build": {
+      "dependsOn": ["build", "prune"]
+    },
+    "deploy-container": {
+      "dependsOn": ["docker:build"],
+      "command": "docker buildx build --platform linux/amd64 -f bucket-service/Dockerfile -t iamharryliu/bucket-service:latest -t iamharryliu/bucket-service:${COMMIT_SHA:-latest} --push dist/bucket-service"
+    },
+    "deploy:secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts bucket-service"
+      }
+    },
+    "deploy": {
+      "dependsOn": ["deploy-container", "deploy:secrets"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/bucket-service.toml"
+    }
+  }
+}
