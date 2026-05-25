@@ -7,6 +7,7 @@ import {
   ButtonConfig,
   CloseButton,
   CopyButton,
+  DeleteIconButton,
   IconButton,
   MonospaceText,
   GoogleSigninButton,
@@ -82,7 +83,15 @@ export function ButtonDemo() {
           <IconButton icon="minus" variant="secondary" title="Remove" />
           <IconButton icon="light" variant="ghost" title="Light mode" />
           <IconButton icon="dark" variant="ghost" title="Dark mode" />
-          <IconButton icon="trash" variant="destructive" title="Delete" />
+        </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Delete Icon Button
+        </Heading>
+        <Flex gap="3" align="center">
+          <DeleteIconButton title="Delete" />
         </Flex>
       </div>
 

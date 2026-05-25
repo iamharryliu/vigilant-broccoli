@@ -4,6 +4,7 @@ import { Badge, Flex, Link, Text } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
+  DeleteIconButton,
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
@@ -11,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
-import { ExternalLinkIcon, TrashIcon } from '@radix-ui/react-icons';
+import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const CF_ACCOUNT_ID = '26d066ec62c4d27b8da5e9aebac17293';
@@ -124,11 +125,7 @@ export const WranglerPagesComponent = () => {
       ),
       actions: (
         <ConfirmDeleteDialog
-          trigger={
-            <Button size="icon" variant="destructive" title="Delete project">
-              <TrashIcon />
-            </Button>
-          }
+          trigger={<DeleteIconButton title="Delete project" />}
           title="Delete Wrangler Pages Project"
           description={`Are you sure you want to delete "${project.name}"? This action cannot be undone.`}
           onConfirm={() => handleDelete(project.name)}
@@ -162,7 +159,9 @@ export const WranglerPagesComponent = () => {
               },
             ]}
           />
-          <Text size="1" color="gray" weight="bold">Domains</Text>
+          <Text size="1" color="gray" weight="bold">
+            Domains
+          </Text>
           <ButtonList
             buttons={project.domains.map(domain => ({
               label: domain,
