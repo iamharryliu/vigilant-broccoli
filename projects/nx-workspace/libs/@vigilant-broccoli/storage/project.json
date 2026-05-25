@@ -1,0 +1,35 @@
+{
+  "name": "@vigilant-broccoli/storage",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/storage/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": ["dist/{projectRoot}"],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:swc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/storage",
+        "tsConfig": "libs/@vigilant-broccoli/storage/tsconfig.lib.json",
+        "packageJson": "libs/@vigilant-broccoli/storage/package.json",
+        "main": "libs/@vigilant-broccoli/storage/src/index.ts",
+        "assets": ["libs/@vigilant-broccoli/storage/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

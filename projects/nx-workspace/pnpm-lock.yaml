@@ -643,12 +643,6 @@ importers:
 
   libs/@vigilant-broccoli/common-node:
     dependencies:
-      '@aws-sdk/client-s3':
-        specifier: ^3.907.0
-        version: 3.1048.0
-      '@google-cloud/storage':
-        specifier: ^7.18.0
-        version: 7.19.0(encoding@0.1.13)
       '@vigilant-broccoli/common-js':
         specifier: workspace:*
         version: link:../common-js
@@ -874,6 +868,21 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
+
+  libs/@vigilant-broccoli/storage:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.907.0
+        version: 3.1053.0
+      '@google-cloud/storage':
+        specifier: ^7.18.0
+        version: 7.19.0(encoding@0.1.13)
+      '@swc/helpers':
+        specifier: ~0.5.18
+        version: 0.5.19
+      '@vigilant-broccoli/common-node':
+        specifier: workspace:*
+        version: link:../common-node
 
   libs/@vigilant-broccoli/vercel-workspace:
     dependencies:

@@ -1,12 +1,17 @@
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { createBucketService, BucketProvider, IBucketProvider } from '@vigilant-broccoli/common-node';
+import {
+  createBucketService,
+  BucketProvider,
+  IBucketProvider,
+} from '@vigilant-broccoli/storage';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Helper function to get bucket service based on provider type
 function getBucketService(provider?: string): IBucketProvider {
-  const bucketProvider = provider === BucketProvider.CLOUDFLARE_R2
-    ? BucketProvider.CLOUDFLARE_R2
-    : BucketProvider.LOCAL;
+  const bucketProvider =
+    provider === BucketProvider.CLOUDFLARE_R2
+      ? BucketProvider.CLOUDFLARE_R2
+      : BucketProvider.LOCAL;
   return createBucketService(bucketProvider);
 }
 
@@ -30,7 +35,7 @@ export async function GET(req: NextRequest) {
     } catch (error) {
       return NextResponse.json(
         { error: 'File not found' },
-        { status: HTTP_STATUS_CODES.INVALID_PATH }
+        { status: HTTP_STATUS_CODES.INVALID_PATH },
       );
     }
   }
@@ -42,7 +47,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to list files' },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }
@@ -57,28 +62,28 @@ export async function POST(req: NextRequest) {
     if (files.length === 0 || !files.every(f => f instanceof Blob)) {
       return NextResponse.json(
         { error: 'No valid files provided' },
-        { status: HTTP_STATUS_CODES.BAD_REQUEST }
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }
 
     const uploadResults = await Promise.all(
-      files.map(async (file) => {
+      files.map(async file => {
         const arrayBuffer = await (file as File).arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
         const filename = (file as File).name;
         await bucket.upload(filename, buffer);
         return filename;
-      })
+      }),
     );
 
     return NextResponse.json({
       message: `${uploadResults.length} file(s) uploaded successfully`,
-      files: uploadResults
+      files: uploadResults,
     });
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to upload files' },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }
@@ -92,7 +97,7 @@ export async function DELETE(req: NextRequest) {
   if (!fileName) {
     return NextResponse.json(
       { error: 'fileName query parameter is required' },
-      { status: HTTP_STATUS_CODES.BAD_REQUEST }
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
 
@@ -102,7 +107,7 @@ export async function DELETE(req: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to delete file' },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

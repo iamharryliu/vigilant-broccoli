@@ -1,7 +1,11 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { IBucketProvider, LocalBucketConfig, BucketFile } from '../bucket.models';
-import { getEnvironmentVariable } from '../../utils';
+import {
+  IBucketProvider,
+  LocalBucketConfig,
+  BucketFile,
+} from '../bucket.models';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 const DEFAULT_BUCKET_PATH = 'storage-buckets';
 
@@ -39,14 +43,14 @@ export class LocalBucketProvider implements IBucketProvider {
     try {
       const filePaths = await this.readDirRecursive(this.bucketPath);
       const filesWithStats = await Promise.all(
-        filePaths.map(async (filePath) => {
+        filePaths.map(async filePath => {
           const stats = await fs.stat(filePath);
           return {
             name: path.relative(this.bucketPath, filePath),
             size: stats.size,
             updatedAt: stats.mtime,
           };
-        })
+        }),
       );
       return filesWithStats;
     } catch (error) {
@@ -71,10 +75,12 @@ export class LocalBucketProvider implements IBucketProvider {
   private async readDirRecursive(dir: string): Promise<string[]> {
     const entries = await fs.readdir(dir, { withFileTypes: true });
     const files = await Promise.all(
-      entries.map((entry) => {
+      entries.map(entry => {
         const fullPath = path.join(dir, entry.name);
-        return entry.isDirectory() ? this.readDirRecursive(fullPath) : [fullPath];
-      })
+        return entry.isDirectory()
+          ? this.readDirRecursive(fullPath)
+          : [fullPath];
+      }),
     );
     return files.flat();
   }

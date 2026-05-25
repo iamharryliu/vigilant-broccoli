@@ -76,6 +76,9 @@
       "@vigilant-broccoli/ci": ["libs/@vigilant-broccoli/ci/src/index.ts"],
       "@vigilant-broccoli/messaging": [
         "./libs/@vigilant-broccoli/messaging/src/index.ts"
+      ],
+      "@vigilant-broccoli/storage": [
+        "./libs/@vigilant-broccoli/storage/src/index.ts"
       ]
     }
   },

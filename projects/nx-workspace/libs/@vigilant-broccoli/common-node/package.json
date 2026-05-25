@@ -7,8 +7,6 @@
     "tslib": "^2.3.0",
     "winston": "^3.11.0",
     "stripe": "^20.1.0",
-    "@aws-sdk/client-s3": "^3.907.0",
-    "@google-cloud/storage": "^7.18.0",
     "express": "^5.2.1"
   },
   "publishConfig": {

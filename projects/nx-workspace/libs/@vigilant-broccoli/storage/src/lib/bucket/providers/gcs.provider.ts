@@ -1,6 +1,6 @@
 import { Storage, Bucket } from '@google-cloud/storage';
 import { IBucketProvider, GcsBucketConfig, BucketFile } from '../bucket.models';
-import { getEnvironmentVariable } from '../../utils';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 export class GcsBucketProvider implements IBucketProvider {
   private storage: Storage;

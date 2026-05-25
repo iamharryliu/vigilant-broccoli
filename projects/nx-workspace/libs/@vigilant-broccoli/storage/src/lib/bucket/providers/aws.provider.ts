@@ -7,7 +7,7 @@ import {
   HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { IBucketProvider, AwsBucketConfig, BucketFile } from '../bucket.models';
-import { getEnvironmentVariable } from '../../utils';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { promises as fs } from 'fs';
 import { Readable } from 'stream';
 
@@ -16,11 +16,15 @@ export class AwsBucketProvider implements IBucketProvider {
   private bucketName: string;
 
   constructor(config?: AwsBucketConfig) {
-    const region = config?.region || getEnvironmentVariable('AWS_REGION') || 'us-east-1';
-    const accessKeyId = config?.accessKeyId || getEnvironmentVariable('AWS_ACCESS_KEY_ID');
+    const region =
+      config?.region || getEnvironmentVariable('AWS_REGION') || 'us-east-1';
+    const accessKeyId =
+      config?.accessKeyId || getEnvironmentVariable('AWS_ACCESS_KEY_ID');
     const secretAccessKey =
-      config?.secretAccessKey || getEnvironmentVariable('AWS_SECRET_ACCESS_KEY');
-    this.bucketName = config?.bucketName || getEnvironmentVariable('AWS_BUCKET_NAME');
+      config?.secretAccessKey ||
+      getEnvironmentVariable('AWS_SECRET_ACCESS_KEY');
+    this.bucketName =
+      config?.bucketName || getEnvironmentVariable('AWS_BUCKET_NAME');
 
     if (!accessKeyId || !secretAccessKey || !this.bucketName) {
       console.error('AwsBucketProvider is not configured properly.');
@@ -42,7 +46,7 @@ export class AwsBucketProvider implements IBucketProvider {
         Bucket: this.bucketName,
         Key: destinationName,
         Body: buffer,
-      })
+      }),
     );
   }
 
@@ -51,7 +55,7 @@ export class AwsBucketProvider implements IBucketProvider {
       new GetObjectCommand({
         Bucket: this.bucketName,
         Key: fileName,
-      })
+      }),
     );
 
     if (!response.Body) {
@@ -73,7 +77,7 @@ export class AwsBucketProvider implements IBucketProvider {
       new DeleteObjectCommand({
         Bucket: this.bucketName,
         Key: fileName,
-      })
+      }),
     );
   }
 
@@ -81,11 +85,11 @@ export class AwsBucketProvider implements IBucketProvider {
     const response = await this.client.send(
       new ListObjectsV2Command({
         Bucket: this.bucketName,
-      })
+      }),
     );
 
     return (
-      response.Contents?.map((item) => ({
+      response.Contents?.map(item => ({
         name: item.Key || '',
         size: item.Size,
         updatedAt: item.LastModified,
@@ -99,7 +103,7 @@ export class AwsBucketProvider implements IBucketProvider {
         new HeadObjectCommand({
           Bucket: this.bucketName,
           Key: fileName,
-        })
+        }),
       );
       return true;
     } catch {
@@ -112,7 +116,7 @@ export class AwsBucketProvider implements IBucketProvider {
       new GetObjectCommand({
         Bucket: this.bucketName,
         Key: fileName,
-      })
+      }),
     );
 
     if (!response.Body) {

@@ -13,7 +13,7 @@ import {
   CloudflareBucketConfig,
   BucketFile,
 } from '../bucket.models';
-import { getEnvironmentVariable } from '../../utils';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { promises as fs } from 'fs';
 import { Readable } from 'stream';
 

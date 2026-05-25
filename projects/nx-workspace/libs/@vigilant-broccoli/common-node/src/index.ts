@@ -27,14 +27,6 @@ export * from './lib/recaptcha/recaptcha.service';
 export * from './lib/weather/openweather.service';
 // Stripe
 export * from './lib/stripe/stripe.service';
-// Bucket
-export * from './lib/bucket/bucket.models';
-export * from './lib/bucket/bucket.service';
-export * from './lib/bucket/providers/local.provider';
-export * from './lib/bucket/providers/cloudflare.provider';
-export * from './lib/bucket/providers/aws.provider';
-export * from './lib/bucket/providers/gcs.provider';
-
 // Audio
 export * from './lib/audio/audio.service';
 
