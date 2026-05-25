@@ -20,3 +20,7 @@ alias finddotenv='find . -type f -name ".env" -exec realpath {} \;'
 alias findclaude='find ~ -type d -name ".claude" -exec realpath {} \; 2>/dev/null'
 alias fuzzyfinddotenv='find . -type f -name ".env*" -exec realpath {} \;'
 alias gitleaksreport='gitleaks detect --report-path gitleaks-report.json'
+
+quickzip() {
+  zip -r "${1%/}.zip" "$1"
+}
