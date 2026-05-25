@@ -121,6 +121,9 @@ importers:
       '@types/amqplib':
         specifier: ^0.10.8
         version: 0.10.8
+      '@types/multer':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@vercel/sdk':
         specifier: ^1.21.7
         version: 1.21.7
@@ -181,6 +184,9 @@ importers:
       marked:
         specifier: ^12.0.2
         version: 12.0.2
+      multer:
+        specifier: ^2.1.1
+        version: 2.1.1
       next:
         specifier: 16.1.7
         version: 16.1.7(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.100.0)
@@ -9696,6 +9702,12 @@ packages:
         integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==,
       }
 
+  '@types/multer@2.1.0':
+    resolution:
+      {
+        integrity: sha512-zYZb0+nJhOHtPpGDb3vqPjwpdeGlGC157VpkqNQL+UU2qwoacoQ7MpsAmUptI/0Oa127X32JzWDqQVEXp2RcIA==,
+      }
+
   '@types/node-fetch@2.6.13':
     resolution:
       {
@@ -11071,6 +11083,12 @@ packages:
       }
     engines: { node: '>=8' }
 
+  append-field@1.0.0:
+    resolution:
+      {
+        integrity: sha512-klpgFSWLW1ZEs8svjfb7g4qWY0YS5imI82dTg+QahUvJ8YqAY0P10Uk8tTyh9ZGuYEZEMaeJYCF5BFuX552hsw==,
+      }
+
   arch@3.0.0:
     resolution:
       {
@@ -11931,6 +11949,13 @@ packages:
       }
     engines: { node: '>=18' }
 
+  busboy@1.6.0:
+    resolution:
+      {
+        integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==,
+      }
+    engines: { node: '>=10.16.0' }
+
   bytes@3.1.2:
     resolution:
       {
@@ -12464,6 +12489,13 @@ packages:
       {
         integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==,
       }
+
+  concat-stream@2.0.0:
+    resolution:
+      {
+        integrity: sha512-MWufYdFw53ccGjCA+Ol7XJYpAlW6/prSMzuPOTRnJGcGzuhLn4Scrz7qf6o8bROZ514ltazcIFJZevcfbo0x7A==,
+      }
+    engines: { '0': node >= 6.0 }
 
   concat-with-sourcemaps@1.1.0:
     resolution:
@@ -17910,6 +17942,13 @@ packages:
         integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==,
       }
 
+  multer@2.1.1:
+    resolution:
+      {
+        integrity: sha512-mo+QTzKlx8R7E5ylSXxWzGoXoZbOsRMpyitcht8By2KHvMbf3tjwosZ/Mu/XYU6UuJ3VZnODIrak5ZrPiPyB6A==,
+      }
+    engines: { node: '>= 10.16.0' }
+
   multicast-dns@7.2.5:
     resolution:
       {
@@ -21424,6 +21463,13 @@ packages:
         integrity: sha512-76ORR0DO1o1hlKwTbi/DM3EXWGf3ZJYO8cXX5RJwnul2DEg2oyoZyjLNoQM8WsvZiFKCRfC1O0J7iCvie3RZmQ==,
       }
 
+  streamsearch@1.1.0:
+    resolution:
+      {
+        integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==,
+      }
+    engines: { node: '>=10.0.0' }
+
   streamx@2.25.0:
     resolution:
       {
@@ -22405,6 +22451,12 @@ packages:
     resolution:
       {
         integrity: sha512-KNNZtayBCtmnNmbo5mG47p1XsCyrx6iVqomjcZnec/1Y5GGARaxPs6r49RnSPeUP3YjNYiU9sQHAtY4BBvnZwg==,
+      }
+
+  typedarray@0.0.6:
+    resolution:
+      {
+        integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==,
       }
 
   typescript-eslint@8.59.4:
@@ -30491,6 +30543,10 @@ snapshots:
 
   '@types/ms@2.1.0': {}
 
+  '@types/multer@2.1.0':
+    dependencies:
+      '@types/express': 4.17.25
+
   '@types/node-fetch@2.6.13':
     dependencies:
       '@types/node': 20.19.41
@@ -31547,6 +31603,8 @@ snapshots:
 
   apache-md5@1.1.8: {}
 
+  append-field@1.0.0: {}
+
   arch@3.0.0: {}
 
   archiver-utils@5.0.2:
@@ -32153,6 +32211,10 @@ snapshots:
     dependencies:
       run-applescript: 7.1.0
 
+  busboy@1.6.0:
+    dependencies:
+      streamsearch: 1.1.0
+
   bytes@3.1.2: {}
 
   bytestreamjs@2.0.1: {}
@@ -32429,6 +32491,13 @@ snapshots:
       - supports-color
 
   concat-map@0.0.1: {}
+
+  concat-stream@2.0.0:
+    dependencies:
+      buffer-from: 1.1.2
+      inherits: 2.0.4
+      readable-stream: 3.6.2
+      typedarray: 0.0.6
 
   concat-with-sourcemaps@1.1.0:
     dependencies:
@@ -36547,6 +36616,13 @@ snapshots:
 
   muggle-string@0.4.1: {}
 
+  multer@2.1.1:
+    dependencies:
+      append-field: 1.0.0
+      busboy: 1.6.0
+      concat-stream: 2.0.0
+      type-is: 1.6.18
+
   multicast-dns@7.2.5:
     dependencies:
       dns-packet: 5.6.1
@@ -39014,6 +39090,8 @@ snapshots:
 
   stream-shift@1.0.3: {}
 
+  streamsearch@1.1.0: {}
+
   streamx@2.25.0:
     dependencies:
       events-universal: 1.0.1
@@ -39707,6 +39785,8 @@ snapshots:
       reflect.getprototypeof: 1.0.10
 
   typed-assert@1.0.9: {}
+
+  typedarray@0.0.6: {}
 
   typescript-eslint@8.59.4(eslint@9.27.0(jiti@2.4.2))(typescript@5.9.3):
     dependencies:

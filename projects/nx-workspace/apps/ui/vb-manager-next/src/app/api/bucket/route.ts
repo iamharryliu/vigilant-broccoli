@@ -1,98 +1,78 @@
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import {
-  createBucketService,
-  BucketProvider,
-  IBucketProvider,
-} from '@vigilant-broccoli/storage';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Helper function to get bucket service based on provider type
-function getBucketService(provider?: string): IBucketProvider {
-  const bucketProvider =
-    provider === BucketProvider.CLOUDFLARE_R2
-      ? BucketProvider.CLOUDFLARE_R2
-      : BucketProvider.LOCAL;
-  return createBucketService(bucketProvider);
+const VB_EXPRESS_URL = process.env['VB_EXPRESS_URL'];
+const VB_EXPRESS_API_KEY = process.env['VB_EXPRESS_API_KEY'];
+
+const BUCKET_API = `${VB_EXPRESS_URL}/api/bucket`;
+const API_KEY_HEADER = 'x-api-key';
+const CONTENT_TYPE_OCTET_STREAM = 'application/octet-stream';
+
+const apiHeaders = { [API_KEY_HEADER]: VB_EXPRESS_API_KEY ?? '' };
+
+function bucketUrl(fileName?: string | null) {
+  return fileName
+    ? `${BUCKET_API}/${encodeURIComponent(fileName)}`
+    : BUCKET_API;
+}
+
+function providerParams(provider: string | null) {
+  const params = new URLSearchParams();
+  if (provider) params.set('provider', provider);
+  return params;
 }
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const fileName = searchParams.get('fileName');
-  const provider = searchParams.get('provider') || undefined;
-  const bucket = getBucketService(provider);
+  const params = providerParams(searchParams.get('provider'));
 
-  // Download specific file
   if (fileName) {
-    try {
-      const fileBuffer = await bucket.read(fileName);
-      // Convert Buffer to Uint8Array for NextResponse
-      return new NextResponse(new Uint8Array(fileBuffer), {
-        headers: {
-          'Content-Disposition': `attachment; filename="${fileName}"`,
-          'Content-Type': 'application/octet-stream',
-        },
-      });
-    } catch (error) {
+    const response = await fetch(`${bucketUrl(fileName)}?${params}`, {
+      headers: apiHeaders,
+    });
+    if (!response.ok) {
       return NextResponse.json(
         { error: 'File not found' },
         { status: HTTP_STATUS_CODES.INVALID_PATH },
       );
     }
+    return new NextResponse(await response.arrayBuffer(), {
+      headers: {
+        'Content-Disposition': `attachment; filename="${fileName}"`,
+        'Content-Type': CONTENT_TYPE_OCTET_STREAM,
+      },
+    });
   }
 
-  // List all files
-  try {
-    const files = await bucket.list();
-    return NextResponse.json(files);
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to list files' },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
-    );
-  }
+  const response = await fetch(`${bucketUrl()}?${params}`, {
+    headers: apiHeaders,
+  });
+  return NextResponse.json(await response.json());
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const formData = await req.formData();
-    const files = formData.getAll('files');
-    const provider = formData.get('provider') as string | null;
-    const bucket = getBucketService(provider || undefined);
+  const formData = await req.formData();
+  const files = formData.getAll('files');
 
-    if (files.length === 0 || !files.every(f => f instanceof Blob)) {
-      return NextResponse.json(
-        { error: 'No valid files provided' },
-        { status: HTTP_STATUS_CODES.BAD_REQUEST },
-      );
-    }
-
-    const uploadResults = await Promise.all(
-      files.map(async file => {
-        const arrayBuffer = await (file as File).arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const filename = (file as File).name;
-        await bucket.upload(filename, buffer);
-        return filename;
-      }),
-    );
-
-    return NextResponse.json({
-      message: `${uploadResults.length} file(s) uploaded successfully`,
-      files: uploadResults,
-    });
-  } catch (error) {
+  if (files.length === 0 || !files.every(f => f instanceof Blob)) {
     return NextResponse.json(
-      { error: 'Failed to upload files' },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+      { error: 'No valid files provided' },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
+
+  const response = await fetch(bucketUrl(), {
+    method: 'POST',
+    headers: apiHeaders,
+    body: formData,
+  });
+  return NextResponse.json(await response.json(), { status: response.status });
 }
 
 export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const fileName = searchParams.get('fileName');
-  const provider = searchParams.get('provider') || undefined;
-  const bucket = getBucketService(provider);
 
   if (!fileName) {
     return NextResponse.json(
@@ -101,13 +81,10 @@ export async function DELETE(req: NextRequest) {
     );
   }
 
-  try {
-    await bucket.delete(fileName);
-    return NextResponse.json({ message: 'File deleted successfully' });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to delete file' },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
-    );
-  }
+  const params = providerParams(searchParams.get('provider'));
+  const response = await fetch(`${bucketUrl(fileName)}?${params}`, {
+    method: 'DELETE',
+    headers: apiHeaders,
+  });
+  return NextResponse.json(await response.json(), { status: response.status });
 }
