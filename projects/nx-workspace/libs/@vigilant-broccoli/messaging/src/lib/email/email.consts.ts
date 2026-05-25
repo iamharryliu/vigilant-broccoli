@@ -1,6 +1,6 @@
 import path from 'path';
 import { EjsTemplate } from './email.models';
-import { getEnvironmentVariable } from '../utils';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 export function getDefaultEmailRequest() {
   return {

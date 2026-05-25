@@ -2,11 +2,11 @@ import express, { Request, Response, NextFunction } from 'express';
 import amqplib, { ConfirmChannel } from 'amqplib';
 import { createClient } from '@supabase/supabase-js';
 import {
-  Email,
   EMAIL_SERVICE_ENDPOINT,
   QUEUE,
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
+import { Email } from '@vigilant-broccoli/messaging';
 
 const HOST = process.env.HOST ?? 'localhost';
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;

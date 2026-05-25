@@ -1,4 +1,4 @@
-import { getEnvironmentVariable } from '../utils';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 export const DEFAULT_TEXT_MESSAGE = {
   body: 'Default text message',

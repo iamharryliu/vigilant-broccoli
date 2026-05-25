@@ -11,11 +11,6 @@ export * from './lib/file-system/file-system.consts';
 export * from './lib/file-system/file-system.utils';
 // HTTP
 export * from './lib/http/http.utils';
-// Email
-export * from './lib/email/email.consts';
-export * from './lib/email/email.models';
-export * from './lib/email/email.service';
-export * from './lib/email/email.utils';
 // Logger
 export * from './lib/logger/logger';
 export * from './lib/logger/logger.model';
@@ -26,8 +21,6 @@ export * from './lib/logging/logger.service';
 export * from './lib/middleware/request-logger.middleware';
 // Encryption
 export * from './lib/encryption/encryption.service';
-// Text Message
-export * from './lib/text-message/text-message.service';
 // Google Recaptcha
 export * from './lib/recaptcha/recaptcha.service';
 // Weather

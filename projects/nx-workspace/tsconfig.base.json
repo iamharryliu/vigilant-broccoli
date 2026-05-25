@@ -73,7 +73,10 @@
       "@vigilant-broccoli/slackbots": [
         "libs/@vigilant-broccoli/slackbots/src/index.ts"
       ],
-      "@vigilant-broccoli/ci": ["libs/@vigilant-broccoli/ci/src/index.ts"]
+      "@vigilant-broccoli/ci": ["libs/@vigilant-broccoli/ci/src/index.ts"],
+      "@vigilant-broccoli/messaging": [
+        "./libs/@vigilant-broccoli/messaging/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

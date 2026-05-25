@@ -1,9 +1,6 @@
 import { Twilio } from 'twilio';
-import {
-  MessageInstance,
-} from 'twilio/lib/rest/api/v2010/account/message';
-import { logger } from '../logging/logger.service';
-import { getEnvironmentVariable } from '../../index';
+import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
+import { logger, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 export class TextMessageService {
   private client: Twilio;
@@ -17,13 +14,11 @@ export class TextMessageService {
     this.client = new Twilio(accountSid, authToken);
   }
 
-  sendTextMessage(
-    textMessage: {
-      body: string,
-      from: string,
-      to: string,
-    },
-  ): Promise<MessageInstance> {
+  sendTextMessage(textMessage: {
+    body: string;
+    from: string;
+    to: string;
+  }): Promise<MessageInstance> {
     return this.client.messages.create(textMessage);
   }
 }
