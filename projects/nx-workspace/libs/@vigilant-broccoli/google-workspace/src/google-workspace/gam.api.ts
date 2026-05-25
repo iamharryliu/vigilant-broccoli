@@ -1,3 +1,5 @@
+import { RecurrenceRule } from './google.consts';
+
 // helper to format yyyy-mm-dd
 function formatDate(dateStr: string) {
   const date = new Date(dateStr);
@@ -58,6 +60,16 @@ function createCalendarEvent(
   allday?: boolean,
 ) {
   return `gam calendar ${calendarId} add event${buildCalendarEventParams(name, startDate, endDate, attendees, allday)}`;
+}
+
+function createRecurringCalendarEvent(
+  calendarId: string,
+  name: string,
+  startDate: string,
+  recurrenceRule: RecurrenceRule,
+  attendees: string[],
+) {
+  return `gam calendar ${calendarId} add event summary "${name}" start allday "${startDate}" end allday "${startDate}" recurrence "${recurrenceRule}" selectattendees ${attendees.join(',')}`;
 }
 
 function updateCalendarEvent(
@@ -153,6 +165,7 @@ export const GamCommand = {
   },
   createCalendar,
   createCalendarEvent,
+  createRecurringCalendarEvent,
   updateCalendarEvent,
   deleteCalendarEvent,
   getUserCalendars: (email: string) => {

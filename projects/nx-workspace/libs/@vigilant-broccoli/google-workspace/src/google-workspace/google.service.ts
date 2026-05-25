@@ -19,6 +19,7 @@ import {
   ShellUtils,
   TMP_PATH,
 } from '@vigilant-broccoli/common-node';
+import { RecurrenceRule } from './google.consts';
 
 const getEmailBackupFilepath = (email: string): string => {
   return path.resolve(EMAIL_BACKUP_DIRECTORY, email);
@@ -358,6 +359,32 @@ async function createCalendarEvent(
   return calendarEventId;
 }
 
+async function createRecurringCalendarEvent(
+  calendarId: string,
+  eventTitle: string,
+  startDate: string,
+  recurrenceRule: RecurrenceRule,
+  attendees: string[],
+): Promise<string> {
+  function parseEventId(logLine: string): string | null {
+    const match = logLine.match(/Event:\s*([a-zA-Z0-9]+)/);
+    return match ? match[1] : null;
+  }
+  const command = GamCommand.createRecurringCalendarEvent(
+    calendarId,
+    eventTitle,
+    startDate,
+    recurrenceRule,
+    attendees,
+  );
+  const res = await runGamReadCommand(command);
+  const calendarEventId = parseEventId(res);
+  if (!calendarEventId) {
+    throw new Error('Failed to extract calendar event ID from response');
+  }
+  return calendarEventId;
+}
+
 async function batchCreateCalendarEvent(
   events: WorkspaceCalendarEvent[],
 ): Promise<GoogleBatchCommandPayload> {
@@ -442,6 +469,7 @@ export const GoogleService = {
   // CREATE
   createCalendar,
   createCalendarEvent,
+  createRecurringCalendarEvent,
   getBatchCreateCalendarCommands,
   getBatchCreateCalendarEventCommands,
   // READ
