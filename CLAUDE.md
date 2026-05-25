@@ -20,3 +20,5 @@
 - [Projects](./projects/) - Software projects.
   - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects
     - [vb-manager-next](./projects/nx-workspace/apps/ui/vb-manager-next) - Next.js management dashboard app (Tailwind, NextAuth, PM2 deployed)
+    - [cloud8skate-sanity](./projects/nx-workspace/apps/cms/cloud8skate-sanity) - Sanity Studio CMS for cloud8skate (manual deploy only via `nx manual:deploy cloud8skate-sanity`)
+  - Note: `sharp` must remain in the workspace root `dependencies` (`projects/nx-workspace/package.json`) — required for Vercel serverless bundling of the `next-demo` `/api/where-is` route.
