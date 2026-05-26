@@ -101,7 +101,7 @@ jobs:
           SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          cat > /tmp/round-trip.mjs <<'EOF'
+          cat > "$GITHUB_WORKSPACE/round-trip.mjs" <<'EOF'
           import { io } from 'socket.io-client';
 
           const URL = process.env.SOCKET_SERVER_URL;
@@ -143,4 +143,4 @@ jobs:
             receiver.close();
           }
           EOF
-          node /tmp/round-trip.mjs
+          node "$GITHUB_WORKSPACE/round-trip.mjs"
