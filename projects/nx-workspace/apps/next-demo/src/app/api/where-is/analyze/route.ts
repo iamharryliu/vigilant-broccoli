@@ -1,12 +1,17 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import {
+  getEnvironmentVariable,
+  VB_EXPRESS_ENDPOINT,
+} from '@vigilant-broccoli/common-node';
 import { createServerClient } from '../../../../../libs/supabase-server';
 import { compressForLlm } from '../image-processor';
-import { analyzeImages } from '../llm';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const IMAGE_NAME_PREFIX = 'storage_';
 
 const RequestSchema = z.object({
   images: z
@@ -38,10 +43,28 @@ export async function POST(request: NextRequest) {
   const images = await Promise.all(
     parsed.data.images.map(async (img, i) => {
       const compressed = await compressForLlm(img.base64);
-      return { name: `storage_${i}`, ...compressed };
+      return { name: `${IMAGE_NAME_PREFIX}${i}`, ...compressed };
     }),
   );
 
-  const result = await analyzeImages(images);
-  return Response.json(result);
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.WHERE_IS_ANALYZE}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+      },
+      body: JSON.stringify({ images }),
+    },
+  );
+
+  if (!res.ok) {
+    return Response.json(
+      { error: 'Failed to analyze images' },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+
+  return Response.json(await res.json());
 }

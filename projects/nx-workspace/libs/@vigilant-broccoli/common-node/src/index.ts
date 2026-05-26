@@ -46,4 +46,6 @@ export const VB_EXPRESS_ENDPOINT = {
   CHAT: 'api/chat',
   CALENDAR_PARSE: 'api/calendar/parse',
   TASKS_PARSE_IMAGE: 'api/tasks/parse-image',
+  WHERE_IS_ANALYZE: 'api/where-is/analyze',
+  PRICE_TRACKER_ANALYZE: 'api/price-tracker/analyze',
 };

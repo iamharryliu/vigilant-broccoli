@@ -1,10 +1,13 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import {
+  getEnvironmentVariable,
+  VB_EXPRESS_ENDPOINT,
+} from '@vigilant-broccoli/common-node';
 import { createServerClient } from '../../../../../libs/supabase-server';
 import { getImageUrl } from '../r2';
 import { compressForLlm } from '../image-processor';
-import { analyzeImages } from '../llm';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -60,12 +63,31 @@ export async function POST(request: NextRequest) {
     }),
   );
 
-  const { description, tags: newTags } = await analyzeImages(
-    images,
-    existingTags,
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.WHERE_IS_ANALYZE}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+      },
+      body: JSON.stringify({ images, existingTags }),
+    },
   );
+
+  if (!res.ok) {
+    return Response.json(
+      { error: 'Failed to analyze images' },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+
+  const { description, tags: newTags } = await res.json();
   const mergedTags = existingTags
-    ? [...existingTags, ...newTags.filter(t => !existingTags.includes(t))]
+    ? [
+        ...existingTags,
+        ...newTags.filter((t: string) => !existingTags.includes(t)),
+      ]
     : newTags;
   return Response.json({ description, tags: mergedTags });
 }
