@@ -3,9 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../providers/auth-provider';
-import { isWhitelisted } from '../../lib/whitelist';
 import { ROUTES } from '../../lib/routes';
-import { supabase } from '../../../libs/supabase';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
 
@@ -20,12 +18,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!session && !isPublic) {
-      router.replace(ROUTES.LOGIN);
-      return;
-    }
-
-    if (session && !isWhitelisted(session.user.email)) {
-      supabase.auth.signOut();
       router.replace(ROUTES.LOGIN);
       return;
     }
