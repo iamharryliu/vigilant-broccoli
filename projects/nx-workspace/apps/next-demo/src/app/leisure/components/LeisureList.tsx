@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
 import { Badge, Dialog, Flex, Text } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
-import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
+import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, LeisureActivity } from '../../../lib/types';
 import {
   LeisureActivityForm,
@@ -124,34 +123,22 @@ export function LeisureList({
               onClick={onItemClick ? () => onItemClick(activity) : undefined}
             >
               <div className="flex items-center gap-2 min-w-0">
-                <Badge
-                  color={CATEGORY_COLORS[activity.category] as never}
-                  variant="soft"
-                  size="1"
-                >
+                <Badge color={CATEGORY_COLORS[activity.category] as never} variant="soft" size="1">
                   {activity.category}
                 </Badge>
                 <div className="min-w-0">
-                  <Text size="2" weight="medium" className="truncate block">
-                    {activity.title}
-                  </Text>
+                  <Text size="2" weight="medium" className="truncate block">{activity.title}</Text>
                   {activity.description && (
-                    <Text size="1" color="gray" className="truncate block">
-                      {activity.description}
-                    </Text>
+                    <Text size="1" color="gray" className="truncate block">{activity.description}</Text>
                   )}
                   {activity.createdByEmail && (
-                    <Text size="1" color="gray" className="truncate block">
-                      {activity.createdByEmail}
-                    </Text>
+                    <Text size="1" color="gray" className="truncate block">{activity.createdByEmail}</Text>
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2 ml-2 shrink-0">
+              <div className="flex items-center gap-2 ml-2 shrink-0" onClick={e => e.stopPropagation()}>
                 {count > 0 && (
-                  <Badge color="gray" variant="surface" size="1">
-                    {count} scheduled
-                  </Badge>
+                  <Badge color="gray" variant="surface" size="1">{count} scheduled</Badge>
                 )}
                 <EllipsisCTA
                   onUpdate={() => setModal({ type: 'edit', activity })}

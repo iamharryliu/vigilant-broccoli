@@ -37,15 +37,9 @@ const COPY = {
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium' });
 
-const RuleListItem = ({
-  item,
-  ellipsis,
-}: {
-  item: HouseholdRule;
-  ellipsis?: React.ReactNode;
-}) => (
-  <div className="flex items-center justify-between gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
-    <div className="flex items-start gap-3 min-w-0">
+const RuleListItem = ({ item }: { item: HouseholdRule }) => (
+  <div className="flex items-center gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+    <div className="flex items-start gap-3 min-w-0 flex-1">
       <Text size="1" color="gray" className="shrink-0 pt-0.5">
         #{item.position}
       </Text>
@@ -63,7 +57,6 @@ const RuleListItem = ({
         </Text>
       </div>
     </div>
-    {ellipsis}
   </div>
 );
 

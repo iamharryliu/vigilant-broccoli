@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
 import { Badge, Dialog, Flex, Text } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
-import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
+import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, Meal } from '../../../lib/types';
 import { MealForm, MealFormData } from './MealForm';
 
@@ -117,34 +116,22 @@ export function MealList({
               onClick={onItemClick ? () => onItemClick(meal) : undefined}
             >
               <div className="flex items-center gap-2 min-w-0">
-                <Badge
-                  color={CATEGORY_COLORS[meal.category] as never}
-                  variant="soft"
-                  size="1"
-                >
+                <Badge color={CATEGORY_COLORS[meal.category] as never} variant="soft" size="1">
                   {meal.category}
                 </Badge>
                 <div className="min-w-0">
-                  <Text size="2" weight="medium" className="truncate block">
-                    {meal.title}
-                  </Text>
+                  <Text size="2" weight="medium" className="truncate block">{meal.title}</Text>
                   {meal.servings && (
-                    <Text size="1" color="gray" className="truncate block">
-                      {meal.servings} servings
-                    </Text>
+                    <Text size="1" color="gray" className="truncate block">{meal.servings} servings</Text>
                   )}
                   {meal.createdByEmail && (
-                    <Text size="1" color="gray" className="truncate block">
-                      {meal.createdByEmail}
-                    </Text>
+                    <Text size="1" color="gray" className="truncate block">{meal.createdByEmail}</Text>
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2 ml-2 shrink-0">
+              <div className="flex items-center gap-2 ml-2 shrink-0" onClick={e => e.stopPropagation()}>
                 {count > 0 && (
-                  <Badge color="gray" variant="surface" size="1">
-                    {count} planned
-                  </Badge>
+                  <Badge color="gray" variant="surface" size="1">{count} planned</Badge>
                 )}
                 <EllipsisCTA
                   onUpdate={() => setModal({ type: 'edit', meal })}

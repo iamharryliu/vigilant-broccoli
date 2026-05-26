@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
-import { CRUDItemList, StackedImages } from '@vigilant-broccoli/react-lib';
+import { CRUDItemList } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -44,34 +44,16 @@ const fuzzyMatch = (query: string, item: WhereIsItem): boolean => {
   return q.split(' ').every(word => searchText.includes(word));
 };
 
-const WhereIsListItem = ({
-  item,
-  ellipsis,
-}: {
-  item: WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'>;
-  ellipsis?: ReactNode;
-}) => (
-  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-    {item.imageUrls?.length > 0 && (
-      <StackedImages urls={item.imageUrls} alt={item.title} />
-    )}
-    <Box className="flex-1 min-w-0">
-      <Text weight="bold" size="2" as="p">
-        {item.title}
-      </Text>
-      <Text size="1" color="gray" as="p">
-        {item.description}
-      </Text>
-      <Flex wrap="wrap" gap="1" mt="1">
-        {item.tags.map(tag => (
-          <Badge key={tag} variant="soft" size="1">
-            {tag}
-          </Badge>
-        ))}
-      </Flex>
-    </Box>
-    {ellipsis}
-  </div>
+const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => (
+  <Box className="min-w-0">
+    <Text weight="bold" size="2" as="p">{item.title}</Text>
+    <Text size="1" color="gray" as="p">{item.description}</Text>
+    <Flex wrap="wrap" gap="1" mt="1">
+      {item.tags.map(tag => (
+        <Badge key={tag} variant="soft" size="1">{tag}</Badge>
+      ))}
+    </Flex>
+  </Box>
 );
 
 export default function WhereIsPage() {
@@ -198,6 +180,8 @@ export default function WhereIsPage() {
             FormComponent={WhereIsFormComponent as never}
             ListItemComponent={WhereIsListItem as never}
             copy={COPY}
+            getItemImages={(item: { imageUrls?: string[] }) => item.imageUrls}
+            getItemTitle={(item: { title: string }) => item.title}
             onItemClick={(item: { id: string }) =>
               router.push(ROUTES.WHERE_IS_DETAIL(item.id))
             }

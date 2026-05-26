@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { Badge, Flex, Select, Text, TextField } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import {
@@ -99,31 +99,20 @@ const MemberFormComponent = ({
   );
 };
 
-const MemberListItem = ({
-  item,
-  ellipsis,
-}: {
-  item: HomeMember;
-  ellipsis?: ReactNode;
-}) => {
+const MemberListItem = ({ item }: { item: HomeMember }) => {
   const isItemOwner = item.role === HOME_ROLE.OWNER;
   return (
-    <Flex align="center" justify="between" width="100%">
-      <Flex align="center" gap="2">
-        <UserAvatar name={item.email} variant={USER_AVATAR_VARIANT.INITIALS} />
-        <Text size="2">{item.email}</Text>
-        {!isItemOwner && item.status === 'pending' && (
-          <Badge variant="soft" color="orange" size="1">
-            pending
-          </Badge>
-        )}
-      </Flex>
-      <Flex align="center" gap="2">
-        <Badge variant="soft" color={isItemOwner ? 'blue' : 'gray'} size="1">
-          {ROLE_LABEL[item.role] ?? item.role}
+    <Flex align="center" gap="2" width="100%">
+      <UserAvatar name={item.email} variant={USER_AVATAR_VARIANT.INITIALS} />
+      <Text size="2" className="flex-1 min-w-0 truncate">{item.email}</Text>
+      {!isItemOwner && item.status === 'pending' && (
+        <Badge variant="soft" color="orange" size="1">
+          pending
         </Badge>
-        {!isItemOwner && ellipsis}
-      </Flex>
+      )}
+      <Badge variant="soft" color={isItemOwner ? 'blue' : 'gray'} size="1">
+        {ROLE_LABEL[item.role] ?? item.role}
+      </Badge>
     </Flex>
   );
 };
@@ -161,10 +150,9 @@ export const MemberList = ({
     }
     deleteItem={isOwner ? onDelete : undefined}
     FormComponent={MemberFormComponent}
-    ListItemComponent={({ item, ellipsis }) => (
-      <MemberListItem item={item} ellipsis={ellipsis} />
-    )}
+    ListItemComponent={({ item }) => <MemberListItem item={item} />}
     copy={MEMBER_COPY}
     showEllipsis={isOwner}
+    canShowEllipsis={(item: HomeMember) => item.role !== HOME_ROLE.OWNER}
   />
 );

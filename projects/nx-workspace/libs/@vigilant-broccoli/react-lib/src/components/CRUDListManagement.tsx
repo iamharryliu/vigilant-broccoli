@@ -16,6 +16,9 @@ import {
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import { Button } from './Button';
 import { IconButton, type IconButtonIcon } from './IconButton';
+import { StackedImages } from './StackedImages';
+
+const FULL_WIDTH_IMAGE_CLASS = 'w-full h-48 object-cover rounded';
 
 type CRUDItem = {
   id: string | number;
@@ -66,7 +69,6 @@ type CRUDFormComponent<T> = ComponentType<CRUDFormProps<T>>;
 type ListItemComponentProps<T> = ComponentType<{
   item: T;
   items: T[];
-  ellipsis?: ReactNode;
 }>;
 
 export const CRUDItemList = <T extends CRUDItem>({
@@ -84,6 +86,10 @@ export const CRUDItemList = <T extends CRUDItem>({
   copy = DEFAULT_COPY,
   isCards,
   showEllipsis = true,
+  canShowEllipsis,
+  getItemImages,
+  getItemTitle,
+  fullWidthImage = false,
 }: {
   items: T[];
   setItems: Dispatch<SetStateAction<T[]>>;
@@ -99,6 +105,10 @@ export const CRUDItemList = <T extends CRUDItem>({
   copy?: ListManagementCopy;
   isCards?: boolean;
   showEllipsis?: boolean;
+  canShowEllipsis?: (item: T) => boolean;
+  getItemImages?: (item: T) => string[] | undefined;
+  getItemTitle?: (item: T) => string;
+  fullWidthImage?: boolean;
 }) => {
   async function submitHandler(item: T, formType: FormType) {
     if (formType === FORM_TYPE.CREATE && createItem) {
@@ -116,8 +126,8 @@ export const CRUDItemList = <T extends CRUDItem>({
     setItems(prev => prev.filter(item => item.id !== id));
   }
 
-  const renderEllipsis = (item: T) =>
-    showEllipsis && FormComponent ? (
+  const renderItem = (item: T) => {
+    const ellipsis = showEllipsis && FormComponent && (canShowEllipsis ? canShowEllipsis(item) : true) ? (
       <div onClick={e => e.stopPropagation()}>
         <EllipsisOptions
           item={item}
@@ -127,18 +137,40 @@ export const CRUDItemList = <T extends CRUDItem>({
           submitHandler={submitHandler}
         />
       </div>
-    ) : undefined;
+    ) : null;
 
-  const renderItem = (item: T) =>
-    ListItemComponent ? (
-      <ListItemComponent
-        item={item}
-        items={items}
-        ellipsis={renderEllipsis(item)}
-      />
+    const imageUrls = getItemImages?.(item) ?? [];
+    const title = getItemTitle?.(item);
+
+    const content = ListItemComponent ? (
+      <ListItemComponent item={item} items={items} />
     ) : (
       JSON.stringify(item)
     );
+
+    const contentWithEllipsis = (alignClass: string) => (
+      <div className={`flex-1 min-w-0 flex justify-between gap-2 ${alignClass}`}>
+        <div className="flex-1 min-w-0">{content}</div>
+        {ellipsis && <div className="shrink-0">{ellipsis}</div>}
+      </div>
+    );
+
+    if (fullWidthImage && imageUrls.length > 0) {
+      return (
+        <div className="flex flex-col gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <img src={imageUrls[0]} alt={title} className={FULL_WIDTH_IMAGE_CLASS} />
+          {contentWithEllipsis('items-start')}
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-start sm:items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+        {imageUrls.length > 0 && <StackedImages urls={imageUrls} alt={title} />}
+        {contentWithEllipsis('items-start sm:items-center')}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-4">

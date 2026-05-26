@@ -1,4 +1,4 @@
-import { useRef, useState, ReactNode } from 'react';
+import { useRef, useState } from 'react';
 import { Badge, Flex, Text, TextField } from '@radix-ui/themes';
 import {
   Button,
@@ -22,6 +22,10 @@ type ImageItemForm = {
   tags: string[];
   imageDataUrl: string;
 };
+
+type ImageItemFormWithUrl = ImageItemForm & { imageUrl?: string };
+
+const FULL_WIDTH_IMAGE_CLASS = 'w-full h-48 object-cover rounded';
 
 const DEFAULT_FORM: ImageItemForm = {
   id: 0,
@@ -69,42 +73,19 @@ const SEED_ITEMS: ImageItem[] = [
 
 const ImageListItem = ({
   item,
-  ellipsis,
 }: {
-  item: ImageItemForm & { imageUrl?: string };
-  ellipsis?: ReactNode;
-}) => {
-  const src = item.imageDataUrl || item.imageUrl;
-  return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-      {src && (
-        <img
-          src={src}
-          alt={item.title}
-          className="w-full h-48 object-cover rounded sm:w-16 sm:h-16 sm:shrink-0"
-        />
-      )}
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-center">
-          <Text weight="bold" size="2">
-            {item.title}
-          </Text>
-          {ellipsis}
-        </div>
-        <Text size="1" color="gray" as="p">
-          {item.description}
-        </Text>
-        <Flex wrap="wrap" gap="1" mt="1">
-          {item.tags.map(tag => (
-            <Badge key={tag} variant="soft" size="1">
-              {tag}
-            </Badge>
-          ))}
-        </Flex>
-      </div>
-    </div>
-  );
-};
+  item: ImageItemFormWithUrl;
+}) => (
+  <div className="min-w-0">
+    <Text weight="bold" size="2" as="p">{item.title}</Text>
+    <Text size="1" color="gray" as="p">{item.description}</Text>
+    <Flex wrap="wrap" gap="1" mt="1">
+      {item.tags.map(tag => (
+        <Badge key={tag} variant="soft" size="1">{tag}</Badge>
+      ))}
+    </Flex>
+  </div>
+);
 
 const ImageItemFormComponent = ({
   formType,
@@ -208,11 +189,7 @@ const ImageItemFormComponent = ({
             className="text-sm"
           />
           {imageDataUrl && (
-            <img
-              src={imageDataUrl}
-              alt="preview"
-              className="w-full h-48 object-cover rounded"
-            />
+            <img src={imageDataUrl} alt="preview" className={FULL_WIDTH_IMAGE_CLASS} />
           )}
         </>
       )}
@@ -224,9 +201,11 @@ const ImageItemFormComponent = ({
 export const CRUDListWithImagesDemo = ({
   isCards,
   showEllipsis,
+  fullWidthImage,
 }: {
   isCards?: boolean;
   showEllipsis?: boolean;
+  fullWidthImage?: boolean;
 }) => {
   const [items, setItems] = useState<ImageItemForm[]>(
     SEED_ITEMS.map(item => ({ ...item, imageDataUrl: '' })),
@@ -252,6 +231,12 @@ export const CRUDListWithImagesDemo = ({
       FormComponent={ImageItemFormComponent as never}
       ListItemComponent={ImageListItem as never}
       copy={COPY}
+      getItemImages={(item: ImageItemFormWithUrl) => {
+        const src = item.imageDataUrl || item.imageUrl;
+        return src ? [src] : [];
+      }}
+      getItemTitle={(item: ImageItemForm) => item.title}
+      fullWidthImage={fullWidthImage}
       isCards={isCards}
       showEllipsis={showEllipsis}
     />

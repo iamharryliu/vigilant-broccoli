@@ -35,17 +35,28 @@ const STORAGE_KEY_UTILITIES = `${STORAGE_KEY}-utilities`;
 const CRUD_STORAGE_KEYS = {
   IS_CARDS: `${STORAGE_KEY}-crud-is-cards`,
   SHOW_ELLIPSIS: `${STORAGE_KEY}-crud-show-ellipsis`,
+  FULL_WIDTH_IMAGE: `${STORAGE_KEY}-crud-full-width-image`,
 };
+
+const CRUD_SWITCH_LABEL = {
+  CARDS: 'Cards',
+  ELLIPSIS: 'Ellipsis',
+  FULL_WIDTH_IMAGE: 'Full-width image',
+} as const;
 const TAB = { COMPONENTS: 'components', UTILITIES: 'utilities' } as const;
 
 const CRUDListSection = () => {
   const [isCards, setIsCards] = useState(false);
   const [showEllipsis, setShowEllipsis] = useState(true);
+  const [fullWidthImage, setFullWidthImage] = useState(false);
 
   useEffect(() => {
     setIsCards(localStorage.getItem(CRUD_STORAGE_KEYS.IS_CARDS) === 'true');
     setShowEllipsis(
       localStorage.getItem(CRUD_STORAGE_KEYS.SHOW_ELLIPSIS) !== 'false',
+    );
+    setFullWidthImage(
+      localStorage.getItem(CRUD_STORAGE_KEYS.FULL_WIDTH_IMAGE) === 'true',
     );
   }, []);
 
@@ -60,7 +71,7 @@ const CRUDListSection = () => {
               localStorage.setItem(CRUD_STORAGE_KEYS.IS_CARDS, String(v));
             }}
           />
-          Cards
+          {CRUD_SWITCH_LABEL.CARDS}
         </label>
         <label className="flex items-center gap-2 text-sm cursor-pointer">
           <Switch
@@ -70,11 +81,25 @@ const CRUDListSection = () => {
               localStorage.setItem(CRUD_STORAGE_KEYS.SHOW_ELLIPSIS, String(v));
             }}
           />
-          Ellipsis
+          {CRUD_SWITCH_LABEL.ELLIPSIS}
+        </label>
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <Switch
+            checked={fullWidthImage}
+            onCheckedChange={v => {
+              setFullWidthImage(v);
+              localStorage.setItem(CRUD_STORAGE_KEYS.FULL_WIDTH_IMAGE, String(v));
+            }}
+          />
+          {CRUD_SWITCH_LABEL.FULL_WIDTH_IMAGE}
         </label>
       </div>
       <CRUDListNoImagesDemo isCards={isCards} showEllipsis={showEllipsis} />
-      <CRUDListWithImagesDemo isCards={isCards} showEllipsis={showEllipsis} />
+      <CRUDListWithImagesDemo
+        isCards={isCards}
+        showEllipsis={showEllipsis}
+        fullWidthImage={fullWidthImage}
+      />
     </div>
   );
 };

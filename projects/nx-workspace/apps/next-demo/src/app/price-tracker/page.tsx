@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, ReactNode } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
 import {
@@ -73,20 +73,14 @@ const latestPrice = (item: PriceItem) =>
     ? item.entries.reduce((a, b) => (a.purchasedAt > b.purchasedAt ? a : b))
     : null;
 
-const PriceItemListItem = ({
-  item,
-  ellipsis,
-}: {
-  item: PriceItem;
-  ellipsis?: ReactNode;
-}) => {
+const PriceItemListItem = ({ item }: { item: PriceItem }) => {
   const latest = latestPrice(item);
   const prices = item.entries.map(e => e.price);
   const minPrice = prices.length ? Math.min(...prices) : null;
   const maxPrice = prices.length ? Math.max(...prices) : null;
 
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+    <div className="flex items-center gap-3 p-3">
       <Box className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <Text weight="bold" size="2">
@@ -117,7 +111,6 @@ const PriceItemListItem = ({
           </Text>
         )}
       </Box>
-      {ellipsis}
     </div>
   );
 };

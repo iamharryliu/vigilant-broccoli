@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
 import { Badge, Dialog, Flex, Text } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
-import { EllipsisCTA } from '@vigilant-broccoli/react-lib';
+import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { Resource, ResourceBooking } from '../../../lib/types';
 import { ResourceForm, ResourceFormData } from './ResourceForm';
 
@@ -122,40 +121,27 @@ export function ResourceList({
               onClick={onItemClick ? () => onItemClick(resource) : undefined}
             >
               <div className="flex items-center gap-2 min-w-0">
-                <Badge
-                  color={CATEGORY_COLORS[resource.category] as never}
-                  variant="soft"
-                  size="1"
-                >
+                <Badge color={CATEGORY_COLORS[resource.category] as never} variant="soft" size="1">
                   {resource.category}
                 </Badge>
                 <div className="min-w-0">
                   <Text size="2" weight="medium" className="truncate block">
                     {resource.name}
                     {resource.quantity > 1 && (
-                      <Text size="1" color="gray">
-                        {' '}
-                        ×{resource.quantity}
-                      </Text>
+                      <Text size="1" color="gray"> ×{resource.quantity}</Text>
                     )}
                   </Text>
                   {resource.description && (
-                    <Text size="1" color="gray" className="truncate block">
-                      {resource.description}
-                    </Text>
+                    <Text size="1" color="gray" className="truncate block">{resource.description}</Text>
                   )}
                   {resource.createdByEmail && (
-                    <Text size="1" color="gray" className="truncate block">
-                      Added by {resource.createdByEmail}
-                    </Text>
+                    <Text size="1" color="gray" className="truncate block">Added by {resource.createdByEmail}</Text>
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2 ml-2 shrink-0">
+              <div className="flex items-center gap-2 ml-2 shrink-0" onClick={e => e.stopPropagation()}>
                 {count > 0 && (
-                  <Badge color="gray" variant="surface" size="1">
-                    {count} booked
-                  </Badge>
+                  <Badge color="gray" variant="surface" size="1">{count} booked</Badge>
                 )}
                 <EllipsisCTA
                   onUpdate={() => setModal({ type: 'edit', resource })}
