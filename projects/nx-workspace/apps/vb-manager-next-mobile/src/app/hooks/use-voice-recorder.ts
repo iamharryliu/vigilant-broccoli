@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { buildAuthHeaders } from '../providers/auth-provider';
 
 type RecordingState = 'idle' | 'recording' | 'transcribing';
 
@@ -35,6 +36,7 @@ export const useVoiceRecorder = (onTranscript: (text: string) => void) => {
       formData.append('audio', blob, 'recording.webm');
       const res = await fetch('/api/transcribe', {
         method: 'POST',
+        headers: await buildAuthHeaders(),
         body: formData,
       });
       const data = await res.json();

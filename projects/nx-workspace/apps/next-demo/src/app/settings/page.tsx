@@ -97,12 +97,14 @@ export default function SettingsPage() {
     if (selected.has('where-is')) {
       await fetch('/api/where-is/import', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify({
           importData,
           homeId: selectedHomeId,
           userId: session.user.id,
-          accessToken: session.access_token,
         }),
       });
     }

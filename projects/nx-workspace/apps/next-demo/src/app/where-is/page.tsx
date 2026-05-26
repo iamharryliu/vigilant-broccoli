@@ -46,11 +46,17 @@ const fuzzyMatch = (query: string, item: WhereIsItem): boolean => {
 
 const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => (
   <Box className="min-w-0">
-    <Text weight="bold" size="2" as="p">{item.title}</Text>
-    <Text size="1" color="gray" as="p">{item.description}</Text>
+    <Text weight="bold" size="2" as="p">
+      {item.title}
+    </Text>
+    <Text size="1" color="gray" as="p">
+      {item.description}
+    </Text>
     <Flex wrap="wrap" gap="1" mt="1">
       {item.tags.map(tag => (
-        <Badge key={tag} variant="soft" size="1">{tag}</Badge>
+        <Badge key={tag} variant="soft" size="1">
+          {tag}
+        </Badge>
       ))}
     </Flex>
   </Box>
@@ -84,14 +90,16 @@ export default function WhereIsPage() {
 
     await fetch('/api/where-is', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token ?? ''}`,
+      },
       body: JSON.stringify({
         title: form.title,
         description,
         tags,
         homeId: selectedHomeId,
         userId: session?.user.id,
-        accessToken: session?.access_token,
         images: form.images.map(p => ({
           base64: p.base64,
           mimeType: p.mimeType,
@@ -122,7 +130,10 @@ export default function WhereIsPage() {
     );
     await fetch('/api/where-is', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token ?? ''}`,
+      },
       body: JSON.stringify({
         id: form.id,
         title: form.title,
@@ -133,7 +144,6 @@ export default function WhereIsPage() {
           base64: p.base64,
           mimeType: p.mimeType,
         })),
-        accessToken: session?.access_token,
       }),
     });
   };
@@ -141,8 +151,11 @@ export default function WhereIsPage() {
   const deleteItem = async (id: string | number) => {
     await fetch('/api/where-is', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, accessToken: session?.access_token }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token ?? ''}`,
+      },
+      body: JSON.stringify({ id }),
     });
   };
 

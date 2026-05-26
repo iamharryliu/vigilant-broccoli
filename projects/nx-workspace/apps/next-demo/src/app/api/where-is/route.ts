@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
-import { createServerClient } from '../../../../libs/supabase-server';
+import {
+  createServerClient,
+  getBearerToken,
+} from '../../../../libs/supabase-server';
 import { uploadImage, deleteImage, getImageUrl } from './r2';
 import {
   processImage,
@@ -12,6 +15,7 @@ import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 export const runtime = 'nodejs';
 
 const MAX_REQUEST_BYTES = 50 * 1024 * 1024; // 50MB — 10 images × ~5MB each
+const ERROR_REQUEST_TOO_LARGE = 'Request too large.';
 
 const makeR2Key = (itemId: string) =>
   `where-is/${itemId}/${crypto.randomUUID()}.jpg`;
@@ -20,9 +24,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const homeId = searchParams.get('homeId');
   const id = searchParams.get('id');
-  const accessToken =
-    request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
-  const supabase = createServerClient(accessToken);
+  const supabase = createServerClient(getBearerToken(request));
 
   let query = supabase
     .from('where_is_items')
@@ -54,10 +56,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const contentLength = Number(request.headers.get('content-length') ?? 0);
   if (contentLength > MAX_REQUEST_BYTES) {
-    return Response.json({ error: 'Request too large.' }, { status: 413 });
+    return Response.json({ error: ERROR_REQUEST_TOO_LARGE }, { status: 413 });
   }
 
-  const { title, description, tags, images, homeId, userId, accessToken } =
+  const { title, description, tags, images, homeId, userId } =
     (await request.json()) as {
       title: string;
       description: string;
@@ -65,9 +67,8 @@ export async function POST(request: NextRequest) {
       images: RawImage[];
       homeId: number;
       userId: string;
-      accessToken: string;
     };
-  const supabase = createServerClient(accessToken);
+  const supabase = createServerClient(getBearerToken(request));
 
   try {
     validateImageCount(images);
@@ -123,27 +124,19 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   const contentLength = Number(request.headers.get('content-length') ?? 0);
   if (contentLength > MAX_REQUEST_BYTES) {
-    return Response.json({ error: 'Request too large.' }, { status: 413 });
+    return Response.json({ error: ERROR_REQUEST_TOO_LARGE }, { status: 413 });
   }
 
-  const {
-    id,
-    title,
-    description,
-    tags,
-    removedImageUrls,
-    newImages,
-    accessToken,
-  } = (await request.json()) as {
-    id: string;
-    title: string;
-    description: string;
-    tags: string[];
-    removedImageUrls: string[];
-    newImages: RawImage[];
-    accessToken: string;
-  };
-  const supabase = createServerClient(accessToken);
+  const { id, title, description, tags, removedImageUrls, newImages } =
+    (await request.json()) as {
+      id: string;
+      title: string;
+      description: string;
+      tags: string[];
+      removedImageUrls: string[];
+      newImages: RawImage[];
+    };
+  const supabase = createServerClient(getBearerToken(request));
 
   const { error } = await supabase
     .from('where_is_items')
@@ -222,8 +215,8 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const { id, accessToken } = await request.json();
-  const supabase = createServerClient(accessToken ?? '');
+  const { id } = await request.json();
+  const supabase = createServerClient(getBearerToken(request));
 
   const { data: images } = await supabase
     .from('where_is_images')

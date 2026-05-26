@@ -1,4 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
+import {
+  AUTHORIZATION_HEADER,
+  BEARER_PREFIX,
+} from '@vigilant-broccoli/common-js';
+
+export const getBearerToken = (request: Request) =>
+  request.headers.get(AUTHORIZATION_HEADER)?.replace(BEARER_PREFIX, '') ?? '';
 
 export const createServerClient = (accessToken: string) =>
   createClient(
@@ -6,7 +13,7 @@ export const createServerClient = (accessToken: string) =>
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string,
     {
       global: {
-        headers: { Authorization: `Bearer ${accessToken}` },
+        headers: { Authorization: `${BEARER_PREFIX}${accessToken}` },
       },
     },
   );

@@ -1,5 +1,11 @@
 export const LOCALHOST = 'localhost';
 
+export const AUTHORIZATION_HEADER = 'Authorization';
+export const GOOGLE_TOKEN_HEADER = 'x-google-token';
+export const CONTENT_TYPE_HEADER = 'Content-Type';
+export const JSON_CONTENT_TYPE = 'application/json';
+export const BEARER_PREFIX = 'Bearer ';
+
 export const HTTP_METHOD = {
   GET: 'GET',
   POST: 'POST',

@@ -5,7 +5,10 @@ import {
   getEnvironmentVariable,
   VB_EXPRESS_ENDPOINT,
 } from '@vigilant-broccoli/common-node';
-import { createServerClient } from '../../../../../libs/supabase-server';
+import {
+  createServerClient,
+  getBearerToken,
+} from '../../../../../libs/supabase-server';
 import { getImageUrl } from '../r2';
 import { compressForLlm } from '../image-processor';
 
@@ -21,9 +24,7 @@ const RequestSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const accessToken =
-    request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
-  const supabase = createServerClient(accessToken);
+  const supabase = createServerClient(getBearerToken(request));
   const {
     data: { user },
   } = await supabase.auth.getUser();

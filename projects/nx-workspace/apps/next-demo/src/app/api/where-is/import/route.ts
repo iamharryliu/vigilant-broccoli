@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
-import { createServerClient } from '../../../../../libs/supabase-server';
+import {
+  createServerClient,
+  getBearerToken,
+} from '../../../../../libs/supabase-server';
 import { uploadImage } from '../r2';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
@@ -25,14 +28,12 @@ interface WhereIsImport {
 }
 
 export async function POST(request: NextRequest) {
-  const { importData, homeId, userId, accessToken } =
-    (await request.json()) as {
-      importData: WhereIsImport;
-      homeId: number;
-      userId: string;
-      accessToken: string;
-    };
-  const supabase = createServerClient(accessToken);
+  const { importData, homeId, userId } = (await request.json()) as {
+    importData: WhereIsImport;
+    homeId: number;
+    userId: string;
+  };
+  const supabase = createServerClient(getBearerToken(request));
 
   const MAX_IMPORT_ITEMS = 500;
 

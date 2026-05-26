@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
-import { createServerClient } from '../../../../../libs/supabase-server';
+import {
+  createServerClient,
+  getBearerToken,
+} from '../../../../../libs/supabase-server';
 import { getImageUrl } from '../r2';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
@@ -23,9 +26,7 @@ export interface WhereIsExport {
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const homeId = searchParams.get('homeId');
-  const accessToken =
-    request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
-  const supabase = createServerClient(accessToken);
+  const supabase = createServerClient(getBearerToken(request));
 
   if (!homeId) {
     return Response.json(

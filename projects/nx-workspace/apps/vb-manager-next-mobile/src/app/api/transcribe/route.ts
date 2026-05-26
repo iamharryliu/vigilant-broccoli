@@ -3,11 +3,15 @@ import {
   getEnvironmentVariable,
   VB_EXPRESS_ENDPOINT,
 } from '@vigilant-broccoli/common-node';
+import { requireAuth } from '../../../../libs/api-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (auth instanceof NextResponse) return auth;
+
   const contentType = request.headers.get('content-type') ?? '';
 
   const res = await fetch(

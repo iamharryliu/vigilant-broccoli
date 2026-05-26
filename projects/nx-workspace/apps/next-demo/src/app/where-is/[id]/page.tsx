@@ -42,13 +42,15 @@ export default function WhereIsDetailPage() {
   const handleUpdate = async (form: WhereIsFormValues) => {
     await fetch('/api/where-is', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token ?? ''}`,
+      },
       body: JSON.stringify({
         id: form.id,
         title: form.title,
         description: form.description,
         tags: form.tags,
-        accessToken: session?.access_token,
       }),
     });
     setItem(prev =>
@@ -67,8 +69,11 @@ export default function WhereIsDetailPage() {
     if (!item || !session?.access_token) return;
     await fetch('/api/where-is', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: item.id, accessToken: session.access_token }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ id: item.id }),
     });
     router.push(ROUTES.WHERE_IS);
   };

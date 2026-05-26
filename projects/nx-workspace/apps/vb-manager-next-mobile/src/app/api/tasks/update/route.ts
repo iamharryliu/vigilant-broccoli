@@ -5,11 +5,11 @@ import {
   isExpiredError,
   GOOGLE_TOKEN_EXPIRED,
 } from '@vigilant-broccoli/google-workspace';
+import { requireAuth } from '../../../../../libs/api-auth';
 
 export const runtime = 'nodejs';
 
 const RequestSchema = z.object({
-  googleToken: z.string().min(1),
   taskListId: z.string().default('@default'),
   taskId: z.string().min(1),
   title: z.string().optional(),
@@ -17,6 +17,9 @@ const RequestSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(request, { requireGoogleToken: true });
+  if (auth instanceof NextResponse) return auth;
+
   const parsed = RequestSchema.safeParse(await request.json());
   if (!parsed.success) {
     return NextResponse.json(
@@ -25,13 +28,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { googleToken, taskListId, taskId, title, status } = parsed.data;
+  const { taskListId, taskId, title, status } = parsed.data;
 
   try {
-    const task = await updateTask(googleToken, taskListId, taskId, {
-      title,
-      status,
-    });
+    const task = await updateTask(
+      auth.googleToken as string,
+      taskListId,
+      taskId,
+      { title, status },
+    );
     return NextResponse.json({ task });
   } catch (error) {
     if (isExpiredError(error)) {

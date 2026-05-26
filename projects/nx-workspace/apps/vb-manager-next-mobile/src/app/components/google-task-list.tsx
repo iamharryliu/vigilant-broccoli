@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import {
+  buildAuthHeaders,
   getGoogleToken,
   signOutDueToExpiredToken,
 } from '../providers/auth-provider';
@@ -19,11 +20,11 @@ type TaskList = { id: string; title: string };
 
 const STORAGE_KEY = 'google-tasks-selected-list-id';
 
-const fetchTaskLists = async (googleToken: string): Promise<TaskList[]> => {
+const fetchTaskLists = async (): Promise<TaskList[]> => {
   const res = await fetch('/api/tasks/lists', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ googleToken }),
+    headers: await buildAuthHeaders({ includeGoogleToken: true, json: true }),
+    body: JSON.stringify({}),
   });
   const data = await res.json();
   if (data.error === GOOGLE_TOKEN_EXPIRED) {
@@ -33,14 +34,11 @@ const fetchTaskLists = async (googleToken: string): Promise<TaskList[]> => {
   return data.lists ?? [];
 };
 
-const fetchTasks = async (
-  googleToken: string,
-  taskListId: string,
-): Promise<Task[]> => {
+const fetchTasks = async (taskListId: string): Promise<Task[]> => {
   const res = await fetch('/api/tasks/items', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ googleToken, taskListId }),
+    headers: await buildAuthHeaders({ includeGoogleToken: true, json: true }),
+    body: JSON.stringify({ taskListId }),
   });
   const data = await res.json();
   if (data.error === GOOGLE_TOKEN_EXPIRED) {
@@ -51,15 +49,14 @@ const fetchTasks = async (
 };
 
 const updateTask = async (
-  googleToken: string,
   taskListId: string,
   taskId: string,
   patch: { title?: string; status?: 'needsAction' | 'completed' },
 ) => {
   const res = await fetch('/api/tasks/update', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ googleToken, taskListId, taskId, ...patch }),
+    headers: await buildAuthHeaders({ includeGoogleToken: true, json: true }),
+    body: JSON.stringify({ taskListId, taskId, ...patch }),
   });
   const data = await res.json();
   if (data.error === GOOGLE_TOKEN_EXPIRED) {
@@ -68,14 +65,13 @@ const updateTask = async (
 };
 
 const createTask = async (
-  googleToken: string,
   taskListId: string,
   title: string,
 ): Promise<Task | null> => {
   const res = await fetch('/api/tasks/create', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items: [title], googleToken, taskListId }),
+    headers: await buildAuthHeaders({ includeGoogleToken: true, json: true }),
+    body: JSON.stringify({ items: [title], taskListId }),
   });
   const data = await res.json();
   if (data.error === GOOGLE_TOKEN_EXPIRED) {
@@ -108,7 +104,7 @@ export const GoogleTaskList = () => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) setSelectedListId(stored);
 
-    fetchTaskLists(token).then(lists => {
+    fetchTaskLists().then(lists => {
       setTaskLists(lists);
       if (!stored && lists.length) setSelectedListId(lists[0].id ?? '@default');
     });
@@ -117,7 +113,7 @@ export const GoogleTaskList = () => {
   useEffect(() => {
     if (!googleToken) return;
     setLoading(true);
-    fetchTasks(googleToken, selectedListId)
+    fetchTasks(selectedListId)
       .then(setTasks)
       .finally(() => setLoading(false));
     localStorage.setItem(STORAGE_KEY, selectedListId);
@@ -128,9 +124,7 @@ export const GoogleTaskList = () => {
     setTasks(prev =>
       prev.map(t => (t.id === task.id ? { ...t, status: 'completed' } : t)),
     );
-    await updateTask(googleToken, selectedListId, task.id, {
-      status: 'completed',
-    });
+    await updateTask(selectedListId, task.id, { status: 'completed' });
     setTasks(prev => prev.filter(t => t.id !== task.id));
   };
 
@@ -144,9 +138,7 @@ export const GoogleTaskList = () => {
       setTasks(prev =>
         prev.map(t => (t.id === editingId ? { ...t, title: editingTitle } : t)),
       );
-      await updateTask(googleToken, selectedListId, editingId, {
-        title: editingTitle,
-      });
+      await updateTask(selectedListId, editingId, { title: editingTitle });
     }
     setEditingId(null);
     setEditingTitle('');
@@ -154,11 +146,7 @@ export const GoogleTaskList = () => {
 
   const handleAddTask = async () => {
     if (!googleToken || !newTaskTitle.trim()) return;
-    const task = await createTask(
-      googleToken,
-      selectedListId,
-      newTaskTitle.trim(),
-    );
+    const task = await createTask(selectedListId, newTaskTitle.trim());
     if (task) setTasks(prev => [task, ...prev]);
     setNewTaskTitle('');
     setShowAddTask(false);

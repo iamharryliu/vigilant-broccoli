@@ -9,7 +9,7 @@ import {
   EventDraftStatus,
 } from './event-draft-card';
 import {
-  getGoogleToken,
+  buildAuthHeaders,
   signOutDueToExpiredToken,
 } from '../providers/auth-provider';
 import { useVoiceRecorder } from '../hooks/use-voice-recorder';
@@ -71,7 +71,7 @@ export const CalendarInput = () => {
     try {
       const res = await fetch('/api/calendar/parse', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await buildAuthHeaders({ json: true }),
         body: JSON.stringify({
           text: text.trim() || undefined,
           images:
@@ -102,13 +102,12 @@ export const CalendarInput = () => {
       prev.map((s, i) => (i === index ? { ...s, status: 'creating' } : s)),
     );
 
-    const token = getGoogleToken();
     const res = await fetch('/api/calendar/events', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: await buildAuthHeaders({
+        includeGoogleToken: true,
+        json: true,
+      }),
       body: JSON.stringify(draft),
     });
 

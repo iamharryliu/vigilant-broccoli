@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
+  buildAuthHeaders,
   getGoogleToken,
   signOutDueToExpiredToken,
 } from '../providers/auth-provider';
@@ -56,8 +57,11 @@ export const TasksInput = () => {
       try {
         const r = await fetch('/api/tasks/lists', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ googleToken }),
+          headers: await buildAuthHeaders({
+            includeGoogleToken: true,
+            json: true,
+          }),
+          body: JSON.stringify({}),
         });
         const data = await r.json();
         if (data.error === GOOGLE_TOKEN_EXPIRED) {
@@ -100,7 +104,7 @@ export const TasksInput = () => {
     setError(null);
     const res = await fetch('/api/tasks/parse-image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: await buildAuthHeaders({ json: true }),
       body: JSON.stringify({
         text: textInput.trim() || undefined,
         images: images.length
@@ -132,8 +136,11 @@ export const TasksInput = () => {
     setError(null);
     const res = await fetch('/api/tasks/create', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items, googleToken, taskListId: selectedListId }),
+      headers: await buildAuthHeaders({
+        includeGoogleToken: true,
+        json: true,
+      }),
+      body: JSON.stringify({ items, taskListId: selectedListId }),
     });
     if (!res.ok) {
       const data = await res.json();
