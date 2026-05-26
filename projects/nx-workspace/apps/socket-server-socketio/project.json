@@ -1,0 +1,70 @@
+{
+  "name": "socket-server-socketio",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/socket-server-socketio/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/socket-server-socketio",
+        "format": ["cjs"],
+        "bundle": true,
+        "thirdParty": true,
+        "main": "apps/socket-server-socketio/src/main.ts",
+        "tsConfig": "apps/socket-server-socketio/tsconfig.app.json",
+        "assets": ["apps/socket-server-socketio/src/assets"],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "socket-server-socketio:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "socket-server-socketio:build:development"
+        },
+        "production": {
+          "buildTarget": "socket-server-socketio:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "deploy-container": {
+      "dependsOn": ["build"],
+      "command": "docker buildx build --platform linux/amd64 -f apps/socket-server-socketio/Dockerfile -t iamharryliu/socket-server-socketio:latest -t iamharryliu/socket-server-socketio:${COMMIT_SHA:-latest} --push dist/apps/socket-server-socketio"
+    },
+    "deploy": {
+      "dependsOn": ["deploy-container"],
+      "executor": "nx:noop"
+    }
+  }
+}
