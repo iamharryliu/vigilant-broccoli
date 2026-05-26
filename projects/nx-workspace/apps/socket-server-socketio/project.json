@@ -60,7 +60,7 @@
     },
     "deploy-container": {
       "dependsOn": ["build"],
-      "command": "docker buildx build --platform linux/amd64 -f apps/socket-server-socketio/Dockerfile -t iamharryliu/socket-server-socketio:latest -t iamharryliu/socket-server-socketio:${COMMIT_SHA:-latest} --push dist/apps/socket-server-socketio"
+      "command": "docker buildx build --platform linux/amd64,linux/arm64 -f apps/socket-server-socketio/Dockerfile -t iamharryliu/socket-server-socketio:latest -t iamharryliu/socket-server-socketio:${COMMIT_SHA:-latest} --push dist/apps/socket-server-socketio"
     },
     "deploy": {
       "dependsOn": ["deploy-container"],
