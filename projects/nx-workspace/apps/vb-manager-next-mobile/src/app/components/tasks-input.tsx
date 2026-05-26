@@ -110,6 +110,7 @@ export const TasksInput = () => {
         images: images.length
           ? images.map(i => ({ base64: i.base64, mimeType: i.mimeType }))
           : undefined,
+        availableLists: taskLists,
       }),
     });
     if (!res.ok) {
@@ -124,6 +125,12 @@ export const TasksInput = () => {
       return;
     }
     setItems(data.items);
+    if (
+      data.suggestedListId &&
+      taskLists.some(l => l.id === data.suggestedListId)
+    ) {
+      setSelectedListId(data.suggestedListId);
+    }
     setPhase('preview');
   };
 
