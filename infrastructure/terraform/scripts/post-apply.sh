@@ -31,6 +31,7 @@ sync_secrets_to_vault() {
   rabbitmq_user=$(echo "$state_json" | jq -r '.variables.rabbitmq_user.value // "admin"' 2>/dev/null)
   rabbitmq_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "rabbitmq_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
   email_api_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "email_service_api_key") | .instances[0].attributes.result' 2>/dev/null || echo "")
+  gcs_sa_credentials=$(echo "$state_json" | jq -r '.resources[] | select(.type == "google_service_account_key" and .name == "gcs_manager") | .instances[0].attributes.private_key' 2>/dev/null || echo "")
 
   if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
@@ -60,17 +61,19 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
   vault kv patch kv/secrets \
     RABBITMQ_CA_CERT='${ca_cert_b64}' \
     RABBITMQ_CONNECTION_STRING='${conn_str}' \
-    EMAIL_SERVICE_API_KEY='${email_api_key}'
+    EMAIL_SERVICE_API_KEY='${email_api_key}' \
+    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT='${ca_cert_b64}' \
     RABBITMQ_CONNECTION_STRING='${conn_str}' \
-    EMAIL_SERVICE_API_KEY='${email_api_key}'
+    EMAIL_SERVICE_API_KEY='${email_api_key}' \
+    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}'
 fi
 
 echo 'Secrets synced to Vault'
 "
-  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, and EMAIL_SERVICE_API_KEY to kv/data/secrets"
+  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, and GOOGLE_GCS_SA_CREDENTIALS to kv/data/secrets"
 }
 
 if [ "$NEW_IP" = "$CURRENT_IP" ]; then

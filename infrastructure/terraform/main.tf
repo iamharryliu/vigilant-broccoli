@@ -386,8 +386,8 @@ resource "google_service_account_key" "gcs_manager" {
   service_account_id = google_service_account.gcs_manager.name
 }
 
-resource "google_secret_manager_secret" "gcs_credentials_json" {
-  secret_id = "GCS_CREDENTIALS_JSON"
+resource "google_secret_manager_secret" "google_gcs_sa_credentials" {
+  secret_id = "GOOGLE_GCS_SA_CREDENTIALS"
 
   replication {
     auto {}
@@ -396,8 +396,8 @@ resource "google_secret_manager_secret" "gcs_credentials_json" {
   depends_on = [google_project_service.secretmanager]
 }
 
-resource "google_secret_manager_secret_version" "gcs_credentials_json" {
-  secret      = google_secret_manager_secret.gcs_credentials_json.id
+resource "google_secret_manager_secret_version" "google_gcs_sa_credentials" {
+  secret      = google_secret_manager_secret.google_gcs_sa_credentials.id
   secret_data = google_service_account_key.gcs_manager.private_key
 }
 

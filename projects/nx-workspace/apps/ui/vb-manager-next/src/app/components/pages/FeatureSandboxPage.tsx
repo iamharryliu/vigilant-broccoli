@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Heading, Text } from '@radix-ui/themes';
-import { BucketDemo } from '../demos/BucketDemo';
+import { StorageDemo } from '../demos/StorageDemo';
 import { StripeDemo } from '../demos/StripeDemo';
 import { MessagingPage } from './MessagingPage';
 import { SpeechToText } from '../llm/SpeechToText';
@@ -43,8 +43,8 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
   },
   {
     id: 'bucket-demo',
-    title: 'Bucket Demo',
-    content: <BucketDemo />,
+    title: 'Storage Demo',
+    content: <StorageDemo />,
     defaultOpen: true,
   },
   {
