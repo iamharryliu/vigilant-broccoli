@@ -25,8 +25,6 @@ export * from './lib/encryption/encryption.service';
 export * from './lib/recaptcha/recaptcha.service';
 // Weather
 export * from './lib/weather/openweather.service';
-// Stripe
-export * from './lib/stripe/stripe.service';
 // Audio
 export * from './lib/audio/audio.service';
 

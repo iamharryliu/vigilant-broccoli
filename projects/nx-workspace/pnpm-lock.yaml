@@ -658,9 +658,6 @@ importers:
       express:
         specifier: ^5.2.1
         version: 5.2.1
-      stripe:
-        specifier: ^20.1.0
-        version: 20.4.1(@types/node@20.19.41)
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -763,6 +760,18 @@ importers:
       twilio:
         specifier: ^4.21.0
         version: 4.23.0
+
+  libs/@vigilant-broccoli/money-movement:
+    dependencies:
+      '@swc/helpers':
+        specifier: ~0.5.18
+        version: 0.5.19
+      '@vigilant-broccoli/common-node':
+        specifier: workspace:*
+        version: link:../common-node
+      stripe:
+        specifier: ^20.1.0
+        version: 20.4.1(@types/node@20.19.41)
 
   libs/@vigilant-broccoli/next-lib:
     dependencies:

@@ -6,7 +6,6 @@
     "archiver": "^7.0.1",
     "tslib": "^2.3.0",
     "winston": "^3.11.0",
-    "stripe": "^20.1.0",
     "express": "^5.2.1"
   },
   "publishConfig": {

@@ -79,6 +79,9 @@
       ],
       "@vigilant-broccoli/storage": [
         "./libs/@vigilant-broccoli/storage/src/index.ts"
+      ],
+      "@vigilant-broccoli/money-movement": [
+        "./libs/@vigilant-broccoli/money-movement/src/index.ts"
       ]
     }
   },

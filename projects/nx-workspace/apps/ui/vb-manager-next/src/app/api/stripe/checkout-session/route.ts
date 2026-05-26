@@ -1,4 +1,4 @@
-import { StripeService } from '@vigilant-broccoli/common-node';
+import { StripeService } from '@vigilant-broccoli/money-movement';
 import { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {

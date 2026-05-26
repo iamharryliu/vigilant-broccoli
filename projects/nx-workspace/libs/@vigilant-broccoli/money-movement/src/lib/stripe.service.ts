@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { getEnvironmentVariable } from '../utils';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 export const StripeService = {
   getClient: () => {
