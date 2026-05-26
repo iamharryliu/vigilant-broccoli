@@ -14,14 +14,6 @@ type Phase = 'input' | 'analyzing' | 'preview' | 'creating' | 'done';
 type TaskResult = { title: string; success: boolean; error?: string };
 type TaskList = { id: string; title: string };
 
-const ITEM_REGEX = /^\s*[-*]\s+(.+)/;
-
-const parseMarkdownList = (text: string): string[] =>
-  text
-    .split('\n')
-    .map(line => line.match(ITEM_REGEX)?.[1]?.trim())
-    .filter((item): item is string => !!item);
-
 interface ImagePreview {
   base64: string;
   mimeType: string;
@@ -102,55 +94,28 @@ export const TasksInput = () => {
       });
   };
 
-  const handleParseMarkdownList = () => {
-    const parsed = parseMarkdownList(textInput);
-    if (!parsed.length) {
-      setError('No list items found. Use markdown list format (- item).');
-      return;
-    }
-    setError(null);
-    setItems(parsed);
-    setPhase('preview');
-  };
-
-  const handleParseText = async () => {
-    if (!textInput.trim()) return;
-    setPhase('analyzing');
-    setError(null);
-    const res = await fetch('/api/tasks/parse-text', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ transcript: textInput }),
-    });
-    const data = await res.json();
-    if (!res.ok || !data.items?.length) {
-      setError('Failed to parse list.');
-      setPhase('input');
-      return;
-    }
-    setItems(data.items);
-    setPhase('preview');
-  };
-
-  const handleParseImage = async () => {
-    if (!images.length) return;
+  const handleParse = async () => {
+    if (!textInput.trim() && !images.length) return;
     setPhase('analyzing');
     setError(null);
     const res = await fetch('/api/tasks/parse-image', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        images: images.map(i => ({ base64: i.base64, mimeType: i.mimeType })),
+        text: textInput.trim() || undefined,
+        images: images.length
+          ? images.map(i => ({ base64: i.base64, mimeType: i.mimeType }))
+          : undefined,
       }),
     });
     if (!res.ok) {
-      setError('Failed to analyze image. Please try again.');
+      setError('Failed to extract tasks. Please try again.');
       setPhase('input');
       return;
     }
     const data = await res.json();
     if (!data.items?.length) {
-      setError('No list items found in the image.');
+      setError('No tasks found in the provided input.');
       setPhase('input');
       return;
     }
@@ -210,9 +175,7 @@ export const TasksInput = () => {
             value={textInput}
             onChange={e => setTextInput(e.target.value)}
             onPaste={handlePaste}
-            placeholder={
-              'Paste a list here, or upload an image...\n- Buy groceries\n- Call dentist'
-            }
+            placeholder={'Add a list, extra context for an image, or notes...'}
             rows={5}
             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-white"
           />
@@ -313,31 +276,13 @@ export const TasksInput = () => {
                   : 'Voice'}
             </button>
           </div>
-          {images.length > 0 ? (
-            <button
-              onClick={handleParseImage}
-              className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 transition-colors"
-            >
-              Extract from image
-            </button>
-          ) : (
-            <div className="flex gap-2">
-              <button
-                onClick={handleParseMarkdownList}
-                disabled={!textInput.trim()}
-                className="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors"
-              >
-                Parse list
-              </button>
-              <button
-                onClick={handleParseText}
-                disabled={!textInput.trim()}
-                className="flex-1 bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
-              >
-                AI Parse
-              </button>
-            </div>
-          )}
+          <button
+            onClick={handleParse}
+            disabled={!textInput.trim() && !images.length}
+            className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
+          >
+            Extract tasks
+          </button>
 
           {voiceError && (
             <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
@@ -387,7 +332,7 @@ export const TasksInput = () => {
           </svg>
           <p className="text-sm text-gray-600">
             {phase === 'analyzing'
-              ? 'Analyzing image...'
+              ? 'Extracting tasks...'
               : `Creating ${items.length} task${items.length !== 1 ? 's' : ''}...`}
           </p>
         </div>

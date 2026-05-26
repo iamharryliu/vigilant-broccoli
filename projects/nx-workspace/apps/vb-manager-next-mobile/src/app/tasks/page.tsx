@@ -8,7 +8,7 @@ export default function TasksPage() {
         <header className="bg-white border-b border-gray-100 px-4 py-4 safe-top">
           <h1 className="text-lg font-semibold text-gray-800">Tasks</h1>
           <p className="text-xs text-gray-500 mt-0.5">
-            Paste text or an image to create tasks
+            Combine text and images to create tasks
           </p>
         </header>
         <div className="px-4 py-5 pb-24">

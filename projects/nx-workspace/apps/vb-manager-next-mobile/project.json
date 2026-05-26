@@ -23,7 +23,10 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.local.example 'cd apps/vb-manager-next-mobile && next dev --port 4200'"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.example 'cd apps/vb-manager-next-mobile && next dev --port 4200'",
+        "env": {
+          "VB_EXPRESS_URL": "https://vb-express.fly.dev"
+        }
       }
     },
     "serve:no-vault": {

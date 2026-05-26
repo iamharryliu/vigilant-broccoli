@@ -4,14 +4,16 @@ import { proxyToExpress } from '../../../utils/express.utils';
 
 export const runtime = 'nodejs';
 
-interface ParseImageRequest {
-  images: { base64: string; mimeType: string }[];
+interface ParseRequest {
+  text?: string;
+  images?: { base64: string; mimeType: string }[];
 }
 
 export async function POST(request: NextRequest) {
-  const { images } = (await request.json()) as ParseImageRequest;
+  const { text, images } = (await request.json()) as ParseRequest;
 
   return proxyToExpress(VB_EXPRESS_ENDPOINT.TASKS_PARSE_IMAGE, {
-    images: images.map(img => ({ name: 'image', ...img })),
+    text,
+    images: (images ?? []).map(img => ({ name: 'image', ...img })),
   });
 }
