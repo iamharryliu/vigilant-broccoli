@@ -1,0 +1,146 @@
+name: test-e2e-socket-server-socketio
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['deploy']
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: vault-iap-tunnel
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  GCP_ZONE: us-central1-a
+  VM_NAME: vb-free-vm
+  VAULT_ROLE: github-actions-role
+  VAULT_AUDIENCE: https://github.com/iamharryliu/vigilant-broccoli
+
+jobs:
+  test-socket-server:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install socket.io-client
+        run: npm install --no-save socket.io-client@4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Vault CA Certificate
+        run: |
+          CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
+          echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
+
+      - name: Open IAP Tunnel to Vault
+        run: |
+          gcloud compute ssh ${{ env.VM_NAME }} \
+            --zone=${{ env.GCP_ZONE }} \
+            --tunnel-through-iap \
+            --ssh-flag="-N" \
+            --ssh-flag="-L 8200:127.0.0.1:8200" \
+            --ssh-flag="-o ServerAliveInterval=30" \
+            --ssh-flag="-o ServerAliveCountMax=3" &
+          echo "Waiting for tunnel to establish..."
+          for i in {1..30}; do
+            if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
+              echo "Tunnel established successfully"
+              exit 0
+            fi
+            echo "Attempt $i: Tunnel not ready yet..."
+            sleep 2
+          done
+          echo "ERROR: IAP tunnel to Vault failed to establish after 30 attempts"
+          exit 1
+
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: https://127.0.0.1:8200
+          caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
+          method: jwt
+          role: ${{ env.VAULT_ROLE }}
+          jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
+          secrets: |
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
+
+      - name: Health check
+        run: |
+          STATUS=$(curl -sk -o /tmp/health.json -w '%{http_code}' --max-time 10 "${SOCKET_SERVER_URL}/health")
+          echo "Health status: $STATUS"
+          cat /tmp/health.json
+          if [ "$STATUS" != "200" ]; then
+            echo "✗ Health check failed"
+            exit 1
+          fi
+        env:
+          SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
+
+      - name: Socket round-trip test
+        env:
+          SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          cat > /tmp/round-trip.mjs <<'EOF'
+          import { io } from 'socket.io-client';
+
+          const URL = process.env.SOCKET_SERVER_URL;
+          const TOKEN = process.env.SHARED_APP_TOKEN;
+          const APP = 'ci';
+          const RECEIVER_ID = `ci-${Date.now()}`;
+          const EXPECTED = { hello: 'from-ci', ts: Date.now() };
+          const TIMEOUT_MS = 10000;
+
+          const tlsOpts = { rejectUnauthorized: false };
+          const sender = io(URL, { auth: { token: TOKEN }, transports: ['websocket'], ...tlsOpts });
+          const receiver = io(URL, { transports: ['websocket'], ...tlsOpts });
+
+          const awaitEvent = (s, event) =>
+            new Promise((resolve, reject) => {
+              const t = setTimeout(() => reject(new Error(`timeout waiting for ${event}`)), TIMEOUT_MS);
+              s.once(event, (...args) => { clearTimeout(t); resolve(args); });
+            });
+
+          try {
+            await Promise.all([awaitEvent(sender, 'connect'), awaitEvent(receiver, 'connect')]);
+            const messagePromise = awaitEvent(receiver, 'message');
+            receiver.emit('subscribe', { app: APP, receiverId: RECEIVER_ID });
+            await new Promise((r) => setTimeout(r, 300));
+            sender.emit('publish', { app: APP, receiverId: RECEIVER_ID, payload: EXPECTED });
+            const [msg] = await messagePromise;
+            const got = JSON.stringify(msg.payload);
+            const want = JSON.stringify(EXPECTED);
+            if (got !== want) {
+              console.error(`FAIL: payload mismatch.\n  got:  ${got}\n  want: ${want}`);
+              process.exit(1);
+            }
+            console.log('PASS: round-trip delivered');
+          } catch (err) {
+            console.error('FAIL:', err.message);
+            process.exit(1);
+          } finally {
+            sender.close();
+            receiver.close();
+          }
+          EOF
+          node /tmp/round-trip.mjs

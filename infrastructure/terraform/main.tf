@@ -315,6 +315,11 @@ resource "random_password" "email_service_api_key" {
   special = true
 }
 
+resource "random_password" "shared_app_token" {
+  length  = 48
+  special = false
+}
+
 resource "tls_private_key" "rabbitmq" {
   algorithm = "RSA"
   rsa_bits  = 2048
@@ -328,6 +333,27 @@ resource "tls_self_signed_cert" "rabbitmq" {
   }
 
   validity_period_hours = 87600 # 10 years
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+}
+
+resource "tls_private_key" "socket_server" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "tls_self_signed_cert" "socket_server" {
+  private_key_pem = tls_private_key.socket_server.private_key_pem
+
+  subject {
+    common_name = "socket-server"
+  }
+
+  validity_period_hours = 87600
 
   allowed_uses = [
     "key_encipherment",

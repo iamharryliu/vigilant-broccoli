@@ -32,8 +32,10 @@ sync_secrets_to_vault() {
   rabbitmq_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "rabbitmq_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
   email_api_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "email_service_api_key") | .instances[0].attributes.result' 2>/dev/null || echo "")
   gcs_sa_credentials=$(echo "$state_json" | jq -r '.resources[] | select(.type == "google_service_account_key" and .name == "gcs_manager") | .instances[0].attributes.private_key' 2>/dev/null || echo "")
+  shared_app_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "shared_app_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
+  socket_server_ca_cert=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_self_signed_cert" and .name == "socket_server") | .instances[0].attributes.cert_pem' 2>/dev/null || echo "")
 
-  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ]; then
+  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$shared_app_token" ] || [ -z "$socket_server_ca_cert" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
     return
   fi
@@ -48,6 +50,8 @@ sync_secrets_to_vault() {
 
   local conn_str="amqps://${rabbitmq_user}:${rabbitmq_password}@${rabbitmq_ip}:5671"
   local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
+  local socket_server_url="https://${rabbitmq_ip}:3443"
+  local socket_server_ca_cert_b64=$(echo "$socket_server_ca_cert" | base64 -w 0)
 
   gcloud compute ssh "${vm_name}" \
     --zone="${vm_zone}" \
@@ -62,18 +66,24 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     RABBITMQ_CA_CERT='${ca_cert_b64}' \
     RABBITMQ_CONNECTION_STRING='${conn_str}' \
     EMAIL_SERVICE_API_KEY='${email_api_key}' \
-    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}'
+    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
+    SHARED_APP_TOKEN='${shared_app_token}' \
+    SOCKET_SERVER_URL='${socket_server_url}' \
+    SOCKET_SERVER_CA_CERT='${socket_server_ca_cert_b64}'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT='${ca_cert_b64}' \
     RABBITMQ_CONNECTION_STRING='${conn_str}' \
     EMAIL_SERVICE_API_KEY='${email_api_key}' \
-    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}'
+    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
+    SHARED_APP_TOKEN='${shared_app_token}' \
+    SOCKET_SERVER_URL='${socket_server_url}' \
+    SOCKET_SERVER_CA_CERT='${socket_server_ca_cert_b64}'
 fi
 
 echo 'Secrets synced to Vault'
 "
-  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, and GOOGLE_GCS_SA_CREDENTIALS to kv/data/secrets"
+  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, SHARED_APP_TOKEN, SOCKET_SERVER_URL, SOCKET_SERVER_CA_CERT to kv/data/secrets"
 }
 
 if [ "$NEW_IP" = "$CURRENT_IP" ]; then
