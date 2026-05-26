@@ -22,8 +22,6 @@
   - Breakback -> server turn -> shadow double turn ->break back -> waist grab, prep, turn -> hook turn catch -> hook turn into men’s hammerlock -> reverse turn into shadow -> trailing back turn -> double -> comb and crossbody lead
   - Handplay - double hand turn -> break back -> shoulder nudge turn -> men's half turn -> bring arms down -> throw hands overshoulder -> body wave -> cross body -> back to back -> prep -> release -> wrist pull -> Coca Cola
   - Coca Cola shadow - Crossbody -> shoulder turn -> shoulder check -> wind -> spin -> Coca Cola -> shadow position -> crossbody -> titanic -> double turn -> hand switch -> cuddle position -> side dip -> 2 sin
-  - [Levels of the Famous TITANIC Salsa Combo](https://www.youtube.com/watch?v=W0J03PmRms4)
-  - [3 Levels of the Famous YoYo Salsa Combo](https://www.youtube.com/watch?v=1h4e7bN6jB4&t=366s)
 - **Double Turns** - Breakback to doubles, spider turns, etc.
 - **Walk Around** - breakback->walk around->open waist->step back->open waist->crossbody turn
 - **Power Entries**
