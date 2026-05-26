@@ -134,6 +134,10 @@ export default function WhereIsPage() {
   };
 
   const updateItem = async (form: WhereIsFormValues): Promise<void> => {
+    const original = items.find(i => i.id === form.id);
+    const removedImageUrls = (original?.imageUrls ?? []).filter(
+      url => !(form.imageUrls ?? []).includes(url),
+    );
     await fetch('/api/where-is', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -142,6 +146,11 @@ export default function WhereIsPage() {
         title: form.title,
         description: form.description,
         tags: form.tags,
+        removedImageUrls,
+        newImages: form.images.map(p => ({
+          base64: p.base64,
+          mimeType: p.mimeType,
+        })),
         accessToken: session?.access_token,
       }),
     });

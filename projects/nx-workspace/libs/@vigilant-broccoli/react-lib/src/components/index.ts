@@ -6,6 +6,7 @@ export * from './AvatarUploadHandler';
 export * from './Dialog';
 export * from './ImageCropDialog';
 export * from './Input';
+export * from './Textarea';
 export * from './UserAvatar';
 export * from './CopyButton';
 export * from './CopyPastable';

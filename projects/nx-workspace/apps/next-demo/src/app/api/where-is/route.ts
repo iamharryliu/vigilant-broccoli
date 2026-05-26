@@ -13,6 +13,9 @@ export const runtime = 'nodejs';
 
 const MAX_REQUEST_BYTES = 50 * 1024 * 1024; // 50MB — 10 images × ~5MB each
 
+const makeR2Key = (itemId: string) =>
+  `where-is/${itemId}/${crypto.randomUUID()}.jpg`;
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const homeId = searchParams.get('homeId');
@@ -103,7 +106,7 @@ export async function POST(request: NextRequest) {
 
   await Promise.all(
     processedImages.map(async (img, index) => {
-      const r2Key = `where-is/${item.id}/${crypto.randomUUID()}.jpg`;
+      const r2Key = makeR2Key(item.id);
       await uploadImage(r2Key, img.buffer, img.mimeType);
       await supabase.from('where_is_images').insert({
         item_id: item.id,
@@ -118,14 +121,28 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const { id, title, description, tags, accessToken } =
-    (await request.json()) as {
-      id: string;
-      title: string;
-      description: string;
-      tags: string[];
-      accessToken: string;
-    };
+  const contentLength = Number(request.headers.get('content-length') ?? 0);
+  if (contentLength > MAX_REQUEST_BYTES) {
+    return Response.json({ error: 'Request too large.' }, { status: 413 });
+  }
+
+  const {
+    id,
+    title,
+    description,
+    tags,
+    removedImageUrls,
+    newImages,
+    accessToken,
+  } = (await request.json()) as {
+    id: string;
+    title: string;
+    description: string;
+    tags: string[];
+    removedImageUrls: string[];
+    newImages: RawImage[];
+    accessToken: string;
+  };
   const supabase = createServerClient(accessToken);
 
   const { error } = await supabase
@@ -137,6 +154,67 @@ export async function PATCH(request: NextRequest) {
     return Response.json(
       { error: error.message },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+
+  if (removedImageUrls?.length) {
+    const { data: allImages } = await supabase
+      .from('where_is_images')
+      .select('id, r2_key')
+      .eq('item_id', id);
+
+    const toRemove = (allImages ?? []).filter(img =>
+      removedImageUrls.some(url => url.endsWith(img.r2_key)),
+    );
+
+    if (toRemove.length) {
+      await supabase
+        .from('where_is_images')
+        .delete()
+        .in(
+          'id',
+          toRemove.map(img => img.id),
+        );
+      await Promise.allSettled(toRemove.map(img => deleteImage(img.r2_key)));
+    }
+  }
+
+  if (newImages?.length) {
+    let processedImages: Awaited<ReturnType<typeof processImage>>[];
+    try {
+      validateImageCount(newImages);
+      processedImages = await Promise.all(newImages.map(processImage));
+    } catch (e) {
+      if (e instanceof ImageValidationError) {
+        return Response.json(
+          { error: (e as Error).message },
+          { status: HTTP_STATUS_CODES.BAD_REQUEST },
+        );
+      }
+      throw e;
+    }
+
+    const { data: existingImages } = await supabase
+      .from('where_is_images')
+      .select('sort_order')
+      .eq('item_id', id)
+      .order('sort_order', { ascending: false })
+      .limit(1);
+
+    const nextSortOrder =
+      ((existingImages?.[0]?.sort_order ?? -1) as number) + 1;
+
+    await Promise.all(
+      processedImages.map(async (img, index) => {
+        const r2Key = makeR2Key(id);
+        await uploadImage(r2Key, img.buffer, img.mimeType);
+        await supabase.from('where_is_images').insert({
+          item_id: id,
+          r2_key: r2Key,
+          mime_type: img.mimeType,
+          sort_order: nextSortOrder + index,
+        });
+      }),
     );
   }
 

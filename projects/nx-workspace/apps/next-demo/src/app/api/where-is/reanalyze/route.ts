@@ -15,6 +15,9 @@ export const dynamic = 'force-dynamic';
 const RequestSchema = z.object({
   id: z.string(),
   existingTags: z.array(z.string()).optional(),
+  additionalImages: z
+    .array(z.object({ base64: z.string(), mimeType: z.string() }))
+    .optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -39,7 +42,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { id, existingTags } = parsed.data;
+  const { id, existingTags, additionalImages } = parsed.data;
 
   const { data: imageRows } = await supabase
     .from('where_is_images')
@@ -54,7 +57,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const images = await Promise.all(
+  const storedImages = await Promise.all(
     imageRows.map(async row => {
       const res = await fetch(getImageUrl(row.r2_key));
       const buffer = Buffer.from(await res.arrayBuffer());
@@ -62,6 +65,18 @@ export async function POST(request: NextRequest) {
       return { name: row.r2_key, ...compressed };
     }),
   );
+
+  const newImages = additionalImages?.length
+    ? await Promise.all(
+        additionalImages.map(async (img, i) => {
+          const buffer = Buffer.from(img.base64, 'base64');
+          const compressed = await compressForLlm(buffer);
+          return { name: `new-${i}`, ...compressed };
+        }),
+      )
+    : [];
+
+  const images = [...storedImages, ...newImages];
 
   const res = await fetch(
     `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.WHERE_IS_ANALYZE}`,
