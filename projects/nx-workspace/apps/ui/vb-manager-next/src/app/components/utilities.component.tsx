@@ -1,11 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
 } from '@vigilant-broccoli/react-lib';
-import { useAppMode, APP_MODE } from '../app-mode-context';
 import { RecipeScraperUtilityContent } from './utilities/recipe-scraper.utility';
 import { DjMusicUtilityContent } from './utilities/dj-music.utility';
 import { Metronome } from '@vigilant-broccoli/react-music-lib';
@@ -18,66 +16,54 @@ import {
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
 
+const UTILITY_ITEMS: CollapsibleListItemConfig[] = [
+  {
+    id: 'calculator',
+    title: 'Calculator',
+    content: <CalculatorUtilityContent />,
+  },
+  {
+    id: 'currency-converter',
+    title: 'Currency Converter',
+    content: <CurrencyConverterUtilityContent />,
+  },
+  {
+    id: 'cooking-conversions',
+    title: 'Cooking Conversions',
+    content: <CookingConversionsUtilityContent />,
+  },
+  {
+    id: 'recipe-scraper',
+    title: 'Recipe Scraper',
+    content: <RecipeScraperUtilityContent />,
+  },
+  {
+    id: 'dj-music',
+    title: 'DJ Music',
+    content: <DjMusicUtilityContent />,
+  },
+  {
+    id: 'stopwatch',
+    title: 'Stopwatch',
+    content: <StopwatchUtilityContent />,
+  },
+  {
+    id: 'timer',
+    title: 'Timer',
+    content: <TimerUtilityContent />,
+  },
+  {
+    id: 'alarm',
+    title: 'Alarm',
+    content: <AlarmUtilityContent />,
+  },
+  {
+    id: 'metronome',
+    title: 'Metronome',
+    content: <Metronome />,
+  },
+];
+
 export const UtilitiesComponent = () => {
-  const { appMode } = useAppMode();
-
-  const utilityItems = useMemo<CollapsibleListItemConfig[]>(() => {
-    const items: CollapsibleListItemConfig[] = [
-      {
-        id: 'calculator',
-        title: 'Calculator',
-        content: <CalculatorUtilityContent />,
-      },
-      {
-        id: 'currency-converter',
-        title: 'Currency Converter',
-        content: <CurrencyConverterUtilityContent />,
-      },
-      {
-        id: 'cooking-conversions',
-        title: 'Cooking Conversions',
-        content: <CookingConversionsUtilityContent />,
-      },
-      {
-        id: 'recipe-scraper',
-        title: 'Recipe Scraper',
-        content: <RecipeScraperUtilityContent />,
-      },
-    ];
-
-    if (appMode === APP_MODE.PERSONAL) {
-      items.push({
-        id: 'dj-music',
-        title: 'DJ Music',
-        content: <DjMusicUtilityContent />,
-      });
-    }
-
-    items.push(
-      {
-        id: 'stopwatch',
-        title: 'Stopwatch',
-        content: <StopwatchUtilityContent />,
-      },
-      {
-        id: 'timer',
-        title: 'Timer',
-        content: <TimerUtilityContent />,
-      },
-      {
-        id: 'alarm',
-        title: 'Alarm',
-        content: <AlarmUtilityContent />,
-      },
-      {
-        id: 'metronome',
-        title: 'Metronome',
-        content: <Metronome />,
-      },
-    );
-
-    return items;
-  }, [appMode]);
-
-  return <CollapsibleList items={utilityItems} storageKeyPrefix="utilities" />;
+  return <CollapsibleList items={UTILITY_ITEMS} storageKeyPrefix="utilities" />;
 };

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Select } from '@radix-ui/themes';
 import { ChatbotDialog } from './chatbot-dialog.component';
 import { EmailModalComponent } from './email-modal.component';
 import { SearchDialogComponent } from './search-dialog.component';
@@ -15,7 +14,6 @@ import {
   PomodoroEngine,
   TimerEngine,
 } from '@vigilant-broccoli/react-utility';
-import { useAppMode } from '../app-mode-context';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { ClockComponent } from './clock.component';
 import { useDrag } from '../hooks/useDrag';
@@ -112,7 +110,6 @@ export const FloatingIslandComponent = ({
   utilitiesDialogOpen: externalUtilitiesOpen,
   setUtilitiesDialogOpen: externalSetUtilitiesOpen,
 }: FloatingIslandProps = {}) => {
-  const { appMode, setAppMode } = useAppMode();
   const containerRef = useRef<HTMLDivElement>(null);
   const { position, isDragging, handlePointerDown } = useDrag(containerRef);
   const [internalChatbotDialogOpen, setInternalChatbotDialogOpen] =
@@ -352,24 +349,6 @@ export const FloatingIslandComponent = ({
               </div>
             </>
           )}
-        </div>
-        <div
-          style={{
-            width: '1px',
-            height: '60px',
-            backgroundColor: 'var(--gray-6)',
-          }}
-        />
-
-        {/* Block 4: Mode Select */}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Select.Root value={appMode} onValueChange={setAppMode}>
-            <Select.Trigger placeholder="Select mode" />
-            <Select.Content>
-              <Select.Item value="personal">Personal</Select.Item>
-              <Select.Item value="work">Work</Select.Item>
-            </Select.Content>
-          </Select.Root>
         </div>
       </div>
 
