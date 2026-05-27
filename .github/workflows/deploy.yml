@@ -11,6 +11,7 @@ permissions:
   actions: read
   contents: read
   id-token: write
+  pages: write
 
 env:
   GCP_PROJECT: vigilant-broccoli
@@ -225,3 +226,79 @@ jobs:
           VAULT_ADDR: https://127.0.0.1:8200
           NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/projects/nx-workspace/scripts/vault-ca.crt
         run: ${{ steps.check.outputs.deploy_cmd }}
+
+  deploy-github-pages:
+    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: ./projects/nx-workspace/package.json
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: ./projects/nx-workspace/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: ./projects/nx-workspace
+        run: pnpm install --frozen-lockfile
+
+      - name: Check if pages deployment needed
+        id: check
+        working-directory: ./projects/nx-workspace
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} 2>/dev/null || echo "")
+          DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
+            echo "has_deployments=true" >> $GITHUB_OUTPUT
+            echo "deploy_cmd=pnpm exec nx run-many -t deploy-github-pages" >> $GITHUB_OUTPUT
+          else
+            BASE="${{ github.event.before }}"
+            if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+              echo "BASE commit $BASE not found, falling back to origin/main"
+              BASE="origin/main"
+            fi
+
+            AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=deploy-github-pages --base=$BASE --head=${{ github.sha }} | tr '\n' ',' | sed 's/,$//')
+            if [[ -n "$AFFECTED_COMMA" ]]; then
+              echo "has_deployments=true" >> $GITHUB_OUTPUT
+              echo "deploy_cmd=pnpm exec nx run-many -t deploy-github-pages --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
+            else
+              echo "has_deployments=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Stage Pages artifact
+        if: steps.check.outputs.has_deployments == 'true'
+        working-directory: ./projects/nx-workspace
+        env:
+          VITE_BASE_PATH: /vigilant-broccoli/react-component-library/
+        run: ${{ steps.check.outputs.deploy_cmd }}
+
+      - name: Setup Pages
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'projects/nx-workspace/_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: actions/deploy-pages@v4
