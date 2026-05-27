@@ -43,6 +43,7 @@ export const API_ENDPOINTS = {
   TASKS: '/api/tasks',
   TASKS_LISTS: '/api/tasks/lists',
   TASKS_MOVE: '/api/tasks/move',
+  TASKS_PARSE_TEXT: '/api/tasks/parse-text',
 
   // Calendar
   CALENDAR_EVENTS: '/api/calendar/events',

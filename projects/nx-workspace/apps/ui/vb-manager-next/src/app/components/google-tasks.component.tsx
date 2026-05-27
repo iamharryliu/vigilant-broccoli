@@ -27,6 +27,8 @@ import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { getCommitType } from '../utils/commit-type.utils';
+import { useSpeechToText } from '../hooks/useSpeechToText';
+import { SpeechToTextButton } from './llm/SpeechToTextButton';
 
 const ANIMATION_STYLES = `
   @keyframes slideInAndFadeIn {
@@ -597,6 +599,50 @@ const TaskHeader = memo(
 
 TaskHeader.displayName = 'TaskHeader';
 
+const VOICE_PARSE_ERROR = 'Failed to extract tasks from voice input';
+
+const useVoiceAddTasks = (createTasks: (titles: string[]) => Promise<void>) => {
+  const [isParsing, setIsParsing] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+
+  const handleTranscript = useCallback(
+    async (transcript: string) => {
+      if (!transcript?.trim()) return;
+      setIsParsing(true);
+      setVoiceError(null);
+      try {
+        const res = await fetch(API_ENDPOINTS.TASKS_PARSE_TEXT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transcript }),
+        });
+        const data = await res.json();
+        if (!res.ok || !Array.isArray(data.items) || !data.items.length) {
+          setVoiceError(data.error || VOICE_PARSE_ERROR);
+          return;
+        }
+        await createTasks(data.items);
+      } catch (err) {
+        setVoiceError(err instanceof Error ? err.message : VOICE_PARSE_ERROR);
+      } finally {
+        setIsParsing(false);
+      }
+    },
+    [createTasks],
+  );
+
+  const { isRecording, isProcessing, error, toggleRecording } = useSpeechToText(
+    { onTranscriptComplete: handleTranscript },
+  );
+
+  return {
+    isRecording,
+    isProcessing: isProcessing || isParsing,
+    error: voiceError || error,
+    toggleRecording,
+  };
+};
+
 const AddTaskForm = memo(
   ({
     showAddTask,
@@ -606,6 +652,10 @@ const AddTaskForm = memo(
     onCancel,
     onShowForm,
     isLoading = false,
+    voiceRecording,
+    voiceProcessing,
+    voiceError,
+    onVoiceToggle,
   }: {
     showAddTask: boolean;
     newTaskTitle: string;
@@ -614,38 +664,64 @@ const AddTaskForm = memo(
     onCancel: () => void;
     onShowForm: () => void;
     isLoading?: boolean;
+    voiceRecording: boolean;
+    voiceProcessing: boolean;
+    voiceError: string | null;
+    onVoiceToggle: () => void;
   }) => {
     if (!showAddTask) {
       return (
-        <Button onClick={onShowForm} variant="secondary">
-          + Add Task
-        </Button>
+        <Flex gap="2" align="center">
+          <Button onClick={onShowForm} variant="secondary">
+            + Add Task
+          </Button>
+          <SpeechToTextButton
+            isRecording={voiceRecording}
+            isProcessing={voiceProcessing}
+            isDisabled={isLoading}
+            onToggle={onVoiceToggle}
+          />
+          {voiceError && (
+            <Text size="1" color="red">
+              {voiceError}
+            </Text>
+          )}
+        </Flex>
       );
     }
 
     return (
-      <Flex gap="2" align="end">
-        <TextField.Root
-          placeholder="Add a task, or use * item1 > item2 for multiple..."
-          value={newTaskTitle}
-          onChange={e => onTitleChange(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && !isLoading) onSubmit();
-            else if (e.key === 'Escape') onCancel();
-          }}
-          className="flex-1"
-          disabled={isLoading}
-        />
-        <Button
-          onClick={onSubmit}
-          disabled={isLoading}
-          loading={isLoading}
-        >
-          Add
-        </Button>
-        <Button onClick={onCancel} variant="secondary" disabled={isLoading}>
-          Cancel
-        </Button>
+      <Flex direction="column" gap="2">
+        <Flex gap="2" align="end">
+          <TextField.Root
+            placeholder="Add a task, or use * item1 > item2 for multiple..."
+            value={newTaskTitle}
+            onChange={e => onTitleChange(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !isLoading) onSubmit();
+              else if (e.key === 'Escape') onCancel();
+            }}
+            className="flex-1"
+            disabled={isLoading}
+          />
+          <SpeechToTextButton
+            isRecording={voiceRecording}
+            isProcessing={voiceProcessing}
+            isDisabled={isLoading}
+            onToggle={onVoiceToggle}
+          />
+          <Button onClick={onSubmit} disabled={isLoading} loading={isLoading}>
+            Add
+          </Button>
+          <Button onClick={onCancel} variant="secondary" disabled={isLoading}>
+            Cancel
+          </Button>
+        </Flex>
+        {voiceError && (
+          <Text size="1" color="red">
+            {voiceError}
+          </Text>
+        )}
       </Flex>
     );
   },
@@ -844,7 +920,11 @@ const UnauthenticatedView = memo(() => (
         <Text size="5" weight="bold">
           Tasks
         </Text>
-        <Button onClick={async () => { await signIn('google'); }}>
+        <Button
+          onClick={async () => {
+            await signIn('google');
+          }}
+        >
           Sign in with Google
         </Button>
       </Flex>
@@ -971,6 +1051,22 @@ export const GoogleTasksComponent = ({
     setNewTaskTitle('');
   }, []);
 
+  const createTasksFromVoice = useCallback(
+    async (titles: string[]) => {
+      for (const title of [...titles].reverse()) {
+        await createTask(title);
+      }
+    },
+    [createTask],
+  );
+
+  const {
+    isRecording: voiceRecording,
+    isProcessing: voiceProcessing,
+    error: voiceError,
+    toggleRecording: toggleVoice,
+  } = useVoiceAddTasks(createTasksFromVoice);
+
   const handleStartEdit = useCallback((task: Task) => {
     setEditingTaskId(task.id);
     setEditingTaskTitle(task.title);
@@ -1074,6 +1170,10 @@ export const GoogleTasksComponent = ({
           onCancel={handleCancelAddTask}
           onShowForm={() => setShowAddTask(true)}
           isLoading={isCreatingTask}
+          voiceRecording={voiceRecording}
+          voiceProcessing={voiceProcessing}
+          voiceError={voiceError}
+          onVoiceToggle={toggleVoice}
         />
 
         <div className="flex-1 overflow-y-auto min-h-0 px-2 -mx-2">
