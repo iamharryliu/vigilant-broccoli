@@ -44,16 +44,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build component-library
+      - name: Deploy component-library to staging dir
         env:
           VITE_BASE_PATH: /vigilant-broccoli/react-component-library/
-        run: pnpm exec nx build component-library
-
-      - name: Stage site
-        working-directory: ${{ github.workspace }}
-        run: |
-          mkdir -p _site/react-component-library
-          cp -r projects/nx-workspace/dist/component-library/. _site/react-component-library/
+        run: pnpm exec nx deploy-github-pages component-library
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -61,7 +55,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '_site'
+          path: 'projects/nx-workspace/_site'
 
       - name: Deploy to GitHub Pages
         id: deployment

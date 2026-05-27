@@ -64,6 +64,19 @@
         "buildTarget": "component-library:build",
         "spa": true
       }
+    },
+    "deploy-github-pages": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "commands": [
+          "rm -rf ../_site/react-component-library",
+          "mkdir -p ../_site/react-component-library",
+          "cp -R ../dist/component-library/. ../_site/react-component-library/"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      }
     }
   }
 }
