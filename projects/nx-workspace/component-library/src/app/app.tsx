@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Box, Heading, Text, Flex, Theme } from '@radix-ui/themes';
-import { Switch } from '@vigilant-broccoli/react-lib';
-import { Moon, Sun } from 'lucide-react';
+import { DarkModeIconButton, Switch } from '@vigilant-broccoli/react-lib';
 import { AvatarDemo } from './components/demos/AvatarDemo';
 import { UserAvatarDemo } from './components/demos/UserAvatarDemo';
 import { ButtonDemo } from './components/demos/ButtonDemo';
@@ -88,7 +87,10 @@ const CRUDListSection = () => {
             checked={fullWidthImage}
             onCheckedChange={v => {
               setFullWidthImage(v);
-              localStorage.setItem(CRUD_STORAGE_KEYS.FULL_WIDTH_IMAGE, String(v));
+              localStorage.setItem(
+                CRUD_STORAGE_KEYS.FULL_WIDTH_IMAGE,
+                String(v),
+              );
             }}
           />
           {CRUD_SWITCH_LABEL.FULL_WIDTH_IMAGE}
@@ -189,11 +191,7 @@ export function App() {
         <div className="p-6 max-w-4xl mx-auto">
           <Flex justify="between" align="center" mb="2">
             <Heading size="8">Component Sandbox</Heading>
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <Sun size={14} />
-              <Switch checked={dark} onCheckedChange={setDark} />
-              <Moon size={14} />
-            </label>
+            <DarkModeIconButton dark={dark} onToggle={setDark} />
           </Flex>
           <Text color="gray" size="4" mb="6">
             Interactive component showcase and testing playground

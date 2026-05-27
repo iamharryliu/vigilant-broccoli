@@ -7,6 +7,7 @@ import {
   ButtonConfig,
   CloseButton,
   CopyButton,
+  DarkModeIconButton,
   DeleteIconButton,
   IconButton,
   MonospaceText,
@@ -43,6 +44,8 @@ const BUTTON_LIST_BUTTONS: ButtonConfig[] = [
 ].map(label => ({ label, onClick: () => alert(label) }));
 
 export function ButtonDemo() {
+  const [dark, setDark] = useState(false);
+
   return (
     <Flex direction="column" gap="6">
       <div>
@@ -73,6 +76,19 @@ export function ButtonDemo() {
 
       <div>
         <Heading size="4" mb="3">
+          States
+        </Heading>
+        <Flex gap="3">
+          <Button onClick={async () => new Promise(r => setTimeout(r, 1500))}>
+            Click to Load
+          </Button>
+          <Button disabled>Disabled</Button>
+          <Button loading>Loading</Button>
+        </Flex>
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
           Icon Buttons
         </Heading>
         <Flex gap="3" align="center">
@@ -81,8 +97,6 @@ export function ButtonDemo() {
           <IconButton icon="search" variant="ghost" title="Search" />
           <IconButton icon="plus" variant="secondary" title="Add" />
           <IconButton icon="minus" variant="secondary" title="Remove" />
-          <IconButton icon="light" variant="ghost" title="Light mode" />
-          <IconButton icon="dark" variant="ghost" title="Dark mode" />
         </Flex>
       </div>
 
@@ -97,14 +111,10 @@ export function ButtonDemo() {
 
       <div>
         <Heading size="4" mb="3">
-          States
+          Dark Mode Icon Button
         </Heading>
-        <Flex gap="3">
-          <Button onClick={async () => new Promise(r => setTimeout(r, 1500))}>
-            Click to Load
-          </Button>
-          <Button disabled>Disabled</Button>
-          <Button loading>Loading</Button>
+        <Flex gap="3" align="center">
+          <DarkModeIconButton dark={dark} onToggle={setDark} />
         </Flex>
       </div>
 

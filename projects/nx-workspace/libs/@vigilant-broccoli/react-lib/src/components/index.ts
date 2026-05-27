@@ -32,3 +32,4 @@ export * from './Switch';
 export * from './SpeechToTextButton';
 export * from './Sidebar';
 export * from './ThemeProvider';
+export * from './DarkModeIconButton';
