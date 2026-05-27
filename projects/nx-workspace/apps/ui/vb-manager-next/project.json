@@ -6,6 +6,12 @@
   "tags": [],
   "targets": {
     "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'nx run vb-manager-next:build:next'"
+      }
+    },
+    "build:next": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
@@ -24,7 +30,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example 'cd apps/ui/vb-manager-next && next dev --webpack'",
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'cd apps/ui/vb-manager-next && next dev --webpack'",
         "env": {
           "NEXTAUTH_SECRET": "NEXTAUTH_SECRET",
           "NEXTAUTH_URL": "http://localhost:3000",

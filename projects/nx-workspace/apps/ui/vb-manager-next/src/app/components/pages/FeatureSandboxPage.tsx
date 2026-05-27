@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Heading, Text } from '@radix-ui/themes';
+import { ChatDemo } from '../demos/ChatDemo';
 import { StorageDemo } from '../demos/StorageDemo';
 import { StripeDemo } from '../demos/StripeDemo';
 import { MessagingPage } from './MessagingPage';
@@ -56,6 +57,11 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'messaging',
     title: 'Messaging Demo',
     content: <MessagingPage />,
+  },
+  {
+    id: 'chat',
+    title: 'Chat Demo (Socket.IO)',
+    content: <ChatDemo />,
   },
 ];
 

@@ -244,6 +244,9 @@ importers:
       socket.io:
         specifier: ^4.8.3
         version: 4.8.3
+      socket.io-client:
+        specifier: ^4.8.3
+        version: 4.8.3
       stripe:
         specifier: ^20.4.1
         version: 20.4.1(@types/node@20.19.41)
@@ -545,9 +548,6 @@ importers:
       sass:
         specifier: ^1.100.0
         version: 1.100.0
-      socket.io-client:
-        specifier: ^4.8.3
-        version: 4.8.3
       swc-loader:
         specifier: 0.1.15
         version: 0.1.15(@swc/core@1.15.8(@swc/helpers@0.5.19))(webpack@5.107.1(@swc/core@1.15.8(@swc/helpers@0.5.19))(esbuild@0.25.12)(postcss@8.5.15))

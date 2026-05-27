@@ -4,6 +4,7 @@ import { readFileSync } from 'fs';
 import express from 'express';
 import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
+import { SOCKET_EVENTS } from '@vigilant-broccoli/common-js';
 
 const DEFAULT_PORT = '3000';
 const DEFAULT_HOST = '0.0.0.0';
@@ -15,15 +16,6 @@ const HOST = process.env.HOST ?? DEFAULT_HOST;
 const SENDER_TOKEN = process.env.SENDER_TOKEN;
 const TLS_CERT_PATH = process.env.TLS_CERT_PATH;
 const TLS_KEY_PATH = process.env.TLS_KEY_PATH;
-
-const EVENTS = {
-  CONNECTION: 'connection',
-  DISCONNECT: 'disconnect',
-  SUBSCRIBE: 'subscribe',
-  UNSUBSCRIBE: 'unsubscribe',
-  PUBLISH: 'publish',
-  MESSAGE: 'message',
-} as const;
 
 const LOG = {
   LISTENING: 'listening',
@@ -102,13 +94,17 @@ const handleSubscribe = (socket: Socket, raw: unknown, join: boolean) => {
   }
 };
 
-io.on(EVENTS.CONNECTION, socket => {
+io.on(SOCKET_EVENTS.CONNECTION, socket => {
   log(LOG.CONNECT, { socketId: socket.id, role: socket.data.role });
 
-  socket.on(EVENTS.SUBSCRIBE, data => handleSubscribe(socket, data, true));
-  socket.on(EVENTS.UNSUBSCRIBE, data => handleSubscribe(socket, data, false));
+  socket.on(SOCKET_EVENTS.SUBSCRIBE, data =>
+    handleSubscribe(socket, data, true),
+  );
+  socket.on(SOCKET_EVENTS.UNSUBSCRIBE, data =>
+    handleSubscribe(socket, data, false),
+  );
 
-  socket.on(EVENTS.PUBLISH, async raw => {
+  socket.on(SOCKET_EVENTS.PUBLISH, async raw => {
     if (socket.data.role !== ROLE_SENDER) {
       log(LOG.PUBLISH_FORBIDDEN, { socketId: socket.id });
       return;
@@ -123,7 +119,7 @@ io.on(EVENTS.CONNECTION, socket => {
     }
     const room = roomFor(parsed.data.app, parsed.data.receiverId);
     const sockets = await io.in(room).fetchSockets();
-    io.to(room).emit(EVENTS.MESSAGE, {
+    io.to(room).emit(SOCKET_EVENTS.MESSAGE, {
       app: parsed.data.app,
       receiverId: parsed.data.receiverId,
       payload: parsed.data.payload,
@@ -131,7 +127,7 @@ io.on(EVENTS.CONNECTION, socket => {
     log(LOG.PUBLISH, { room, receivers: sockets.length });
   });
 
-  socket.on(EVENTS.DISCONNECT, reason => {
+  socket.on(SOCKET_EVENTS.DISCONNECT, reason => {
     log(LOG.DISCONNECT, { socketId: socket.id, reason });
   });
 });

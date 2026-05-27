@@ -19,17 +19,25 @@ function parseEnvFileKeys(filePath: string): Set<string> {
 
 function parseArgs(argv: string[]) {
   const envFiles: string[] = [];
+  const mappings: Array<{ from: string; to: string }> = [];
   const rest: string[] = [];
 
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--env-file' && i + 1 < argv.length) {
       envFiles.push(argv[++i]);
+    } else if (argv[i] === '--map' && i + 1 < argv.length) {
+      const [from, to] = argv[++i].split(':');
+      if (!from || !to) {
+        console.error(`Error: --map expects SOURCE:TARGET, got "${argv[i]}"`);
+        process.exit(1);
+      }
+      mappings.push({ from, to });
     } else {
       rest.push(argv[i]);
     }
   }
 
-  return { envFiles, command: rest };
+  return { envFiles, mappings, command: rest };
 }
 
 async function fetchSecrets(
@@ -37,6 +45,7 @@ async function fetchSecrets(
   secretPath: string,
   certs?: string,
   allowedKeys?: Set<string>,
+  mappings?: Array<{ from: string; to: string }>,
 ) {
   const vaultToken = getVaultToken();
 
@@ -69,6 +78,19 @@ async function fetchSecrets(
     injected++;
   }
 
+  if (mappings && mappings.length > 0) {
+    for (const { from, to } of mappings) {
+      const value = (secrets as Record<string, unknown>)[from];
+      if (typeof value !== 'string') {
+        console.warn(`⚠ --map skipped: "${from}" not found in secrets`);
+        continue;
+      }
+      process.env[to] = value;
+      injected++;
+      console.log(`✓ Mapped ${from} → ${to}`);
+    }
+  }
+
   console.log(`✓ Secrets fetched successfully`);
   console.log(
     `✓ Injected ${injected}/${Object.keys(secrets).length} secrets${allowedKeys ? ` (filtered by env file)` : ''}`,
@@ -85,7 +107,7 @@ async function fetchSecretsAndServe() {
     'vault-ca.crt',
   );
 
-  const { envFiles, command } = parseArgs(process.argv.slice(2));
+  const { envFiles, mappings, command } = parseArgs(process.argv.slice(2));
 
   let allowedKeys: Set<string> | undefined;
   if (envFiles.length > 0) {
@@ -97,12 +119,13 @@ async function fetchSecretsAndServe() {
       }
       for (const key of parseEnvFileKeys(envFile)) allowedKeys.add(key);
     }
+    for (const { from } of mappings) allowedKeys.add(from);
     console.log(
       `Using env files: ${envFiles.join(', ')} (${allowedKeys.size} keys)`,
     );
   }
 
-  await fetchSecrets(vaultAddr, secretPath, certs, allowedKeys);
+  await fetchSecrets(vaultAddr, secretPath, certs, allowedKeys, mappings);
 
   if (command.length > 0) {
     console.log(`\nStarting: ${command.join(' ')}\n`);

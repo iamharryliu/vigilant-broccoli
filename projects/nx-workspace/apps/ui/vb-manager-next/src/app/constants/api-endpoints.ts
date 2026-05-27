@@ -71,4 +71,7 @@ export const API_ENDPOINTS = {
 
   // Recipe
   RECIPE_SCRAPE: '/api/recipe/scrape',
+
+  // Chat
+  CHAT_PUBLISH: '/api/chat/publish',
 } as const;
