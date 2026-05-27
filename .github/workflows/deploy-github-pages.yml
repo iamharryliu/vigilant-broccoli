@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'docs/**'
-      - '.github/workflows/pages.yml'
+      - 'projects/nx-workspace/component-library/**'
+      - '.github/workflows/deploy-github-pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -24,9 +24,36 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/nx-workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build component-library
+        env:
+          VITE_BASE_PATH: /vigilant-broccoli/react-component-library/
+        run: pnpm exec nx build component-library
+
+      - name: Stage site
+        working-directory: ${{ github.workspace }}
+        run: |
+          mkdir -p _site/react-component-library
+          cp -r projects/nx-workspace/dist/component-library/. _site/react-component-library/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -34,7 +61,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'docs'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
