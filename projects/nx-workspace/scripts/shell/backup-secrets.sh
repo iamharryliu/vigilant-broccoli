@@ -23,39 +23,14 @@ if [ ! -f "$ADC_FILE" ] || ! grep -q '"authorized_user"' "$ADC_FILE" 2>/dev/null
 fi
 
 TIMESTAMP=$(date -u +%Y-%m-%d)
-FOLDER_NAME="vb-vault-secrets"
-ITEM_NAME="vb-vault-secrets-$TIMESTAMP"
+VAULT_FOLDER_NAME="vb-vault-secrets"
 
 export BITWARDEN_PASSWORD=$(gcloud secrets versions access latest --secret="BITWARDEN_PASSWORD")
 export BW_SESSION=$(bw unlock --passwordenv BITWARDEN_PASSWORD --raw)
 bw sync > /dev/null
 
-# Fetch vault secrets directly to variable (no local file)
 cd "$NX_DIR"
 NOTES=$(NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/backup-vault-secrets.ts)
-
-# Get or create folder
-FOLDER_ID=$(bw list folders | jq -r ".[] | select(.name == \"$FOLDER_NAME\") | .id")
-if [ -z "$FOLDER_ID" ]; then
-  FOLDER_ID=$(jq -n --arg name "$FOLDER_NAME" '{name: $name}' | bw encode | bw create folder | jq -r '.id')
-  echo "✓ Created Bitwarden folder: $FOLDER_NAME"
-fi
-
-# Create or update timestamped secure note in folder
-BW_ITEMS=$(bw list items --search "$ITEM_NAME" --folderid "$FOLDER_ID" 2>/dev/null || echo "[]")
-EXISTING_ID=$(echo "$BW_ITEMS" | jq -r ".[] | select(.name == \"$ITEM_NAME\") | .id")
-if [ -n "$EXISTING_ID" ]; then
-  bw get item "$EXISTING_ID" | jq --arg notes "$NOTES" '.notes = $notes' | bw encode | bw edit item "$EXISTING_ID" > /dev/null
-  echo "✓ Updated Bitwarden secure note: $ITEM_NAME"
-else
-  ITEM_JSON=$(jq -n \
-    --arg name "$ITEM_NAME" \
-    --arg notes "$NOTES" \
-    --arg folderId "$FOLDER_ID" \
-    '{type: 2, secureNote: {type: 0}, name: $name, notes: $notes, folderId: $folderId}')
-  echo "$ITEM_JSON" | bw encode | bw create item > /dev/null
-  echo "✓ Created Bitwarden secure note: $ITEM_NAME"
-fi
 
 MAX_NOTE_LENGTH=5000
 
@@ -80,6 +55,37 @@ upsert_bw_note() {
   fi
 }
 
+get_or_create_folder() {
+  local folder_name="$1"
+  local folder_id
+  folder_id=$(bw list folders | jq -r ".[] | select(.name == \"$folder_name\") | .id")
+  if [ -z "$folder_id" ]; then
+    folder_id=$(jq -n --arg name "$folder_name" '{name: $name}' | bw encode | bw create folder | jq -r '.id')
+    echo "✓ Created Bitwarden folder: $folder_name" >&2
+  fi
+  echo "$folder_id"
+}
+
+upsert_chunked_note() {
+  local base_name="$1"
+  local contents="$2"
+  local folder_id="$3"
+
+  local total_length=${#contents}
+  if [ "$total_length" -le "$MAX_NOTE_LENGTH" ]; then
+    upsert_bw_note "$base_name-$TIMESTAMP" "$contents" "$folder_id"
+  else
+    local part=1
+    local offset=0
+    while [ "$offset" -lt "$total_length" ]; do
+      local chunk="${contents:$offset:$MAX_NOTE_LENGTH}"
+      upsert_bw_note "$base_name-$TIMESTAMP-part$part" "$chunk" "$folder_id"
+      offset=$((offset + MAX_NOTE_LENGTH))
+      part=$((part + 1))
+    done
+  fi
+}
+
 backup_csv_to_bitwarden() {
   local file="$1"
   local base_name="$2"
@@ -92,26 +98,13 @@ backup_csv_to_bitwarden() {
   csv_contents=$(cat "$file")
 
   local csv_folder_id
-  csv_folder_id=$(bw list folders | jq -r ".[] | select(.name == \"$base_name\") | .id")
-  if [ -z "$csv_folder_id" ]; then
-    csv_folder_id=$(jq -n --arg name "$base_name" '{name: $name}' | bw encode | bw create folder | jq -r '.id')
-    echo "✓ Created Bitwarden folder: $base_name"
-  fi
+  csv_folder_id=$(get_or_create_folder "$base_name")
 
-  local total_length=${#csv_contents}
-  if [ "$total_length" -le "$MAX_NOTE_LENGTH" ]; then
-    upsert_bw_note "$base_name-$TIMESTAMP" "$csv_contents" "$csv_folder_id"
-  else
-    local part=1
-    local offset=0
-    while [ "$offset" -lt "$total_length" ]; do
-      local chunk="${csv_contents:$offset:$MAX_NOTE_LENGTH}"
-      upsert_bw_note "$base_name-$TIMESTAMP-part$part" "$chunk" "$csv_folder_id"
-      offset=$((offset + MAX_NOTE_LENGTH))
-      part=$((part + 1))
-    done
-  fi
+  upsert_chunked_note "$base_name" "$csv_contents" "$csv_folder_id"
 }
+
+VAULT_FOLDER_ID=$(get_or_create_folder "$VAULT_FOLDER_NAME")
+upsert_chunked_note "$VAULT_FOLDER_NAME" "$NOTES" "$VAULT_FOLDER_ID"
 
 backup_csv_to_bitwarden "$HOME/Desktop/Passwords.csv" "apple-passwords"
 backup_csv_to_bitwarden "$HOME/Desktop/Chrome Passwords.csv" "chrome-passwords"
