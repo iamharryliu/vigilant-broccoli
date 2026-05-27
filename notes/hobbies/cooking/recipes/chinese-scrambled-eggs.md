@@ -12,6 +12,7 @@
 - cornstarch slurry
 - knobs of butter
 - green onion
+- ketchup
 
 ## Instructions
 
