@@ -5,11 +5,9 @@ import { Theme } from '@radix-ui/themes';
 import './global.css';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider, useTheme, Toaster } from '@vigilant-broccoli/react-lib';
-import { useDeployNotifications } from './hooks/useDeployNotifications';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const { appearance } = useTheme();
-  useDeployNotifications();
   return (
     <Theme appearance={appearance} scaling="90%">
       {children}

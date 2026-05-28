@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { NextNavBar, NextNavRoute } from '@vigilant-broccoli/next-lib';
 import { DropdownMenu } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
@@ -11,6 +11,8 @@ import { APP_ROUTE } from '../app.const';
 import { useTheme } from '@vigilant-broccoli/react-lib';
 import { FloatingIslandComponent } from '../components/floating-island.component';
 import { RightSidebar } from '../components/right-sidebar.component';
+import { useDeployNotifications } from '../hooks/useDeployNotifications';
+import { useNotificationHistory } from '../hooks/useNotificationHistory';
 
 type ExtendedNavRoute = {
   title: string;
@@ -103,6 +105,17 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { appearance, toggleTheme } = useTheme();
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { notifications, unreadCount, add, markAllRead, clear } =
+    useNotificationHistory();
+  useDeployNotifications(add);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const handleSetNotificationsOpen = useCallback(
+    (open: boolean) => {
+      setNotificationsOpen(open);
+      if (open) markAllRead();
+    },
+    [markAllRead],
+  );
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [chatbotDialogOpen, setChatbotDialogOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
@@ -186,6 +199,11 @@ export default function Layout({ children }: { children: ReactNode }) {
           setNotepadDialogOpen={setNotepadDialogOpen}
           setPomodoroDialogOpen={setPomodoroDialogOpen}
           setSearchDialogOpen={setSearchDialogOpen}
+          notificationsOpen={notificationsOpen}
+          setNotificationsOpen={handleSetNotificationsOpen}
+          unreadCount={unreadCount}
+          notifications={notifications}
+          onClearNotifications={clear}
         />
       </div>
       <FloatingIslandComponent
