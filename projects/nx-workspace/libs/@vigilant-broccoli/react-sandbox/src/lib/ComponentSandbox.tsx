@@ -29,6 +29,7 @@ import { ErrorDemo } from './demos/ErrorDemo';
 import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
+import { ToasterDemo } from './demos/ToasterDemo';
 
 const STORAGE_KEY = 'component-sandbox';
 const STORAGE_KEY_UTILITIES = `${STORAGE_KEY}-utilities`;
@@ -139,6 +140,7 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
   { id: 'error', title: 'Error Handling', content: <ErrorDemo /> },
   { id: 'tabs', title: 'Tabs', content: <TabsDemo /> },
   { id: 'switch', title: 'Switch', content: <SwitchDemo /> },
+  { id: 'toaster', title: 'Toaster', content: <ToasterDemo /> },
 ];
 
 const UTILITY_SECTIONS: CollapsibleListItemConfig[] = [

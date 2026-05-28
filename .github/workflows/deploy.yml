@@ -138,6 +138,22 @@ jobs:
             fi
           fi
 
+      - name: Install socket.io-client
+        if: steps.check.outputs.has_deployments == 'true'
+        run: npm install --no-save socket.io-client@4
+
+      - name: Notify deploy started
+        if: steps.check.outputs.has_deployments == 'true'
+        env:
+          SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          SOCKET_SERVER_CA_CERT: ${{ env.SOCKET_SERVER_CA_CERT }}
+          DEPLOY_STATUS: started
+          DEPLOY_COMMIT: ${{ github.sha }}
+          DEPLOY_WORKFLOW: ${{ github.workflow }}
+          DEPLOY_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node ${{ github.workspace }}/.github/scripts/deploy-notify.mjs || true
+
       - name: Set up QEMU
         if: steps.check.outputs.has_deployments == 'true'
         uses: docker/setup-qemu-action@v4
@@ -206,6 +222,9 @@ jobs:
             kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
             kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
+            kv/data/secrets SOCKET_SERVER_CA_CERT | SOCKET_SERVER_CA_CERT ;
 
       - name: Log in to Docker Hub
         if: steps.check.outputs.has_deployments == 'true'
@@ -226,6 +245,30 @@ jobs:
           VAULT_ADDR: https://127.0.0.1:8200
           NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/projects/nx-workspace/scripts/vault-ca.crt
         run: ${{ steps.check.outputs.deploy_cmd }}
+
+      - name: Notify deploy succeeded
+        if: steps.check.outputs.has_deployments == 'true' && success()
+        env:
+          SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          SOCKET_SERVER_CA_CERT: ${{ env.SOCKET_SERVER_CA_CERT }}
+          DEPLOY_STATUS: success
+          DEPLOY_COMMIT: ${{ github.sha }}
+          DEPLOY_WORKFLOW: ${{ github.workflow }}
+          DEPLOY_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node ${{ github.workspace }}/.github/scripts/deploy-notify.mjs || true
+
+      - name: Notify deploy failed
+        if: steps.check.outputs.has_deployments == 'true' && failure()
+        env:
+          SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          SOCKET_SERVER_CA_CERT: ${{ env.SOCKET_SERVER_CA_CERT }}
+          DEPLOY_STATUS: failure
+          DEPLOY_COMMIT: ${{ github.sha }}
+          DEPLOY_WORKFLOW: ${{ github.workflow }}
+          DEPLOY_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node ${{ github.workspace }}/.github/scripts/deploy-notify.mjs || true
 
   deploy-github-pages:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}

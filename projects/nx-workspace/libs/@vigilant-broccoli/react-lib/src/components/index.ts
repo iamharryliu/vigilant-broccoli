@@ -33,3 +33,4 @@ export * from './SpeechToTextButton';
 export * from './Sidebar';
 export * from './ThemeProvider';
 export * from './DarkModeIconButton';
+export * from './Toaster';
