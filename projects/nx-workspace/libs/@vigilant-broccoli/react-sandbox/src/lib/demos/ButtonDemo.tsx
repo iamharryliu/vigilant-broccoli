@@ -43,6 +43,37 @@ const BUTTON_LIST_BUTTONS: ButtonConfig[] = [
   'Firebase',
 ].map(label => ({ label, onClick: () => alert(label) }));
 
+const MOCK_PROCESS_DELAY_MS = 1500;
+const noop = () => undefined;
+
+function SpeechToTextButtonDemo() {
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleToggle = async () => {
+    if (isRecording) {
+      setIsProcessing(true);
+      await new Promise(r => setTimeout(r, MOCK_PROCESS_DELAY_MS));
+      setIsProcessing(false);
+      setIsRecording(false);
+    } else {
+      setIsRecording(true);
+    }
+  };
+
+  return (
+    <Flex gap="3" align="center">
+      <SpeechToTextButton
+        isRecording={isRecording}
+        isProcessing={isProcessing}
+        onToggle={handleToggle}
+      />
+      <SpeechToTextButton isRecording={false} isDisabled onToggle={noop} />
+      <SpeechToTextButton isRecording={false} isProcessing onToggle={noop} />
+    </Flex>
+  );
+}
+
 export function ButtonDemo() {
   const [dark, setDark] = useState(false);
 
@@ -201,40 +232,6 @@ export function ButtonDemo() {
         </Heading>
         <ButtonList buttons={BUTTON_LIST_BUTTONS} />
       </div>
-    </Flex>
-  );
-}
-
-const MOCK_PROCESS_DELAY_MS = 1500;
-
-function SpeechToTextButtonDemo() {
-  const [isRecording, setIsRecording] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handleToggle = async () => {
-    if (isRecording) {
-      setIsProcessing(true);
-      await new Promise(r => setTimeout(r, MOCK_PROCESS_DELAY_MS));
-      setIsProcessing(false);
-      setIsRecording(false);
-    } else {
-      setIsRecording(true);
-    }
-  };
-
-  return (
-    <Flex gap="3" align="center">
-      <SpeechToTextButton
-        isRecording={isRecording}
-        isProcessing={isProcessing}
-        onToggle={handleToggle}
-      />
-      <SpeechToTextButton isRecording={false} isDisabled onToggle={() => {}} />
-      <SpeechToTextButton
-        isRecording={false}
-        isProcessing
-        onToggle={() => {}}
-      />
     </Flex>
   );
 }

@@ -71,17 +71,19 @@ const SEED_ITEMS: ImageItem[] = [
   },
 ];
 
-const ImageListItem = ({
-  item,
-}: {
-  item: ImageItemFormWithUrl;
-}) => (
+const ImageListItem = ({ item }: { item: ImageItemFormWithUrl }) => (
   <div className="min-w-0">
-    <Text weight="bold" size="2" as="p">{item.title}</Text>
-    <Text size="1" color="gray" as="p">{item.description}</Text>
+    <Text weight="bold" size="2" as="p">
+      {item.title}
+    </Text>
+    <Text size="1" color="gray" as="p">
+      {item.description}
+    </Text>
     <Flex wrap="wrap" gap="1" mt="1">
       {item.tags.map(tag => (
-        <Badge key={tag} variant="soft" size="1">{tag}</Badge>
+        <Badge key={tag} variant="soft" size="1">
+          {tag}
+        </Badge>
       ))}
     </Flex>
   </div>
@@ -189,7 +191,11 @@ const ImageItemFormComponent = ({
             className="text-sm"
           />
           {imageDataUrl && (
-            <img src={imageDataUrl} alt="preview" className={FULL_WIDTH_IMAGE_CLASS} />
+            <img
+              src={imageDataUrl}
+              alt="preview"
+              className={FULL_WIDTH_IMAGE_CLASS}
+            />
           )}
         </>
       )}

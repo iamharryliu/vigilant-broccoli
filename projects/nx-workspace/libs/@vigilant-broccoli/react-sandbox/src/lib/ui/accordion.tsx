@@ -1,10 +1,7 @@
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { ChevronDownIcon } from 'lucide-react';
 import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-const cn = (...inputs: Parameters<typeof clsx>) => twMerge(clsx(inputs));
+import { cn } from '@vigilant-broccoli/react-lib';
 
 const Accordion = AccordionPrimitive.Root;
 

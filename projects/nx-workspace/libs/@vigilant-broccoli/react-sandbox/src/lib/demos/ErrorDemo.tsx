@@ -45,9 +45,7 @@ export const ErrorDemo = () => {
 
           <Flex gap="3" mt="4" justify="end">
             <Dialog.Close>
-              <Button variant="secondary">
-                Cancel
-              </Button>
+              <Button variant="secondary">Cancel</Button>
             </Dialog.Close>
             <Dialog.Close>
               <Button variant="destructive">Confirm</Button>
