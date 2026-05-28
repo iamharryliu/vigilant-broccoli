@@ -138,7 +138,7 @@ export const AwsManagementComponent = () => {
   }
 
   return (
-    <CardContainer title={`AWS Management (${profiles.length})`}>
+    <CardContainer title="AWS Management">
       <StatusCardList
         items={profiles.map(toItem)}
         emptyMessage="No AWS profiles found"
