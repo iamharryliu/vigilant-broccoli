@@ -10,6 +10,7 @@ const TIMEOUT_MS = 10000;
 
 const payload = {
   status: process.env.DEPLOY_STATUS,
+  job: process.env.DEPLOY_JOB,
   commit: process.env.DEPLOY_COMMIT,
   workflow: process.env.DEPLOY_WORKFLOW,
   run_url: process.env.DEPLOY_RUN_URL,

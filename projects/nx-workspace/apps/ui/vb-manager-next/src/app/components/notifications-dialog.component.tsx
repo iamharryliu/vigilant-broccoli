@@ -77,7 +77,7 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
                 </span>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-500 dark:text-gray-400 text-xs truncate">
-                    {n.payload.workflow}
+                    {n.payload.job}
                   </span>
                   <a
                     href={n.payload.run_url}

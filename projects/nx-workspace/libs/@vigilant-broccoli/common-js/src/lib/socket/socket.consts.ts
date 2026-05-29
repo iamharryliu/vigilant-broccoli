@@ -25,6 +25,7 @@ export type DeployStatus = (typeof DEPLOY_STATUS)[keyof typeof DEPLOY_STATUS];
 
 export interface DeployPayload {
   status: DeployStatus;
+  job: string;
   commit: string;
   workflow: string;
   run_url: string;

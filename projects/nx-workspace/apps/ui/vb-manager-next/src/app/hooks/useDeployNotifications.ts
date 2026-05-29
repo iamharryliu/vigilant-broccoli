@@ -16,7 +16,7 @@ const TOAST_DURATION_MS = 8000;
 const VIEW_RUN_LABEL = 'View run';
 
 const description = (p: DeployPayload) =>
-  `${p.workflow} · ${p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}`;
+  `${p.job} · ${p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}`;
 
 const viewRunAction = (p: DeployPayload) => ({
   label: VIEW_RUN_LABEL,

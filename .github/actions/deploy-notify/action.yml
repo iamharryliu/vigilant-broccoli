@@ -1,0 +1,40 @@
+name: Deploy Notify
+description: Emit a deploy status notification to the socket server.
+
+inputs:
+  status:
+    description: 'started | success | failure'
+    required: true
+  job:
+    description: Human-readable job name (e.g. main, deploy-npm-packages)
+    required: true
+  socket_server_url:
+    description: Socket server URL
+    required: true
+  shared_app_token:
+    description: Sender token for the socket server
+    required: true
+  socket_server_ca_cert:
+    description: Base64-encoded CA cert (optional)
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Install socket.io-client
+      shell: bash
+      run: npm install --no-save socket.io-client@4
+
+    - name: Send notification
+      shell: bash
+      env:
+        SOCKET_SERVER_URL: ${{ inputs.socket_server_url }}
+        SHARED_APP_TOKEN: ${{ inputs.shared_app_token }}
+        SOCKET_SERVER_CA_CERT: ${{ inputs.socket_server_ca_cert }}
+        DEPLOY_STATUS: ${{ inputs.status }}
+        DEPLOY_JOB: ${{ inputs.job }}
+        DEPLOY_COMMIT: ${{ github.sha }}
+        DEPLOY_WORKFLOW: ${{ github.workflow }}
+        DEPLOY_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: node ${{ github.action_path }}/../../scripts/deploy-notify.mjs || true
