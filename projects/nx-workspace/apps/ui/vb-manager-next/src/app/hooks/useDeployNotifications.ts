@@ -23,7 +23,7 @@ const DEPLOY_TOAST_LABEL = {
 } as const;
 
 const description = (p: DeployPayload) =>
-  `${p.job} · ${p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}`;
+  `${p.job} · ${p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}${p.commit_message ? ` – ${p.commit_message}` : ''}`;
 
 const viewRunAction = (p: DeployPayload) => ({
   label: VIEW_RUN_LABEL,

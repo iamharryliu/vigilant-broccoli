@@ -12,6 +12,7 @@ const payload = {
   status: process.env.DEPLOY_STATUS,
   job: process.env.DEPLOY_JOB,
   commit: process.env.DEPLOY_COMMIT,
+  commit_message: process.env.DEPLOY_COMMIT_MESSAGE,
   workflow: process.env.DEPLOY_WORKFLOW,
   run_url: process.env.DEPLOY_RUN_URL,
 };

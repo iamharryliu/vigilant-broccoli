@@ -14,6 +14,7 @@ export interface DeployPayload {
   status: DeployStatus;
   job: string;
   commit: string;
+  commit_message?: string;
   workflow: string;
   run_url: string;
 }

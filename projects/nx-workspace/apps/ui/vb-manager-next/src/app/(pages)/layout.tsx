@@ -13,6 +13,7 @@ import { FloatingIslandComponent } from '../components/floating-island.component
 import { RightSidebar } from '../components/right-sidebar.component';
 import { useDeployNotifications } from '../hooks/useDeployNotifications';
 import { useNotificationHistory } from '../hooks/useNotificationHistory';
+import { NotificationContext } from '../context/NotificationContext';
 
 type ExtendedNavRoute = {
   title: string;
@@ -155,75 +156,77 @@ export default function Layout({ children }: { children: ReactNode }) {
   }, [toggleTheme]);
 
   return (
-    <div className="w-full h-screen flex flex-col overflow-hidden">
-      <NextNavBar
-        routes={tabRoutes}
-        isDark={appearance === 'dark'}
-        rightContent={
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {dropdownRoutes.map(obj => (
-              <DropdownMenu.Root key={obj.title}>
-                <DropdownMenu.Trigger>
-                  <Button
-                    variant="ghost"
-                    style={{
-                      cursor: 'pointer',
-                      color: isActiveDropdown(obj.children)
-                        ? 'var(--accent-9)'
-                        : 'inherit',
-                      fontWeight: isActiveDropdown(obj.children) ? 500 : 400,
-                    }}
-                  >
-                    {obj.title}
-                    <DropdownMenu.TriggerIcon />
-                  </Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  {obj.children?.map(child => (
-                    <DropdownMenu.Item key={child.path} asChild>
-                      <Link href={child.path ?? '#'}>{child.title}</Link>
-                    </DropdownMenu.Item>
-                  ))}
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            ))}
-          </div>
-        }
-      />
-      <div className="flex flex-1 overflow-hidden">
-        <main className="flex-1 p-4 min-w-0 overflow-y-auto">{children}</main>
-        <RightSidebar
-          setChatbotDialogOpen={setChatbotDialogOpen}
-          setEmailDialogOpen={setEmailDialogOpen}
-          setCalendarDialogOpen={setCalendarDialogOpen}
-          setNotepadDialogOpen={setNotepadDialogOpen}
-          setPomodoroDialogOpen={setPomodoroDialogOpen}
+    <NotificationContext.Provider value={add}>
+      <div className="w-full h-screen flex flex-col overflow-hidden">
+        <NextNavBar
+          routes={tabRoutes}
+          isDark={appearance === 'dark'}
+          rightContent={
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {dropdownRoutes.map(obj => (
+                <DropdownMenu.Root key={obj.title}>
+                  <DropdownMenu.Trigger>
+                    <Button
+                      variant="ghost"
+                      style={{
+                        cursor: 'pointer',
+                        color: isActiveDropdown(obj.children)
+                          ? 'var(--accent-9)'
+                          : 'inherit',
+                        fontWeight: isActiveDropdown(obj.children) ? 500 : 400,
+                      }}
+                    >
+                      {obj.title}
+                      <DropdownMenu.TriggerIcon />
+                    </Button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content>
+                    {obj.children?.map(child => (
+                      <DropdownMenu.Item key={child.path} asChild>
+                        <Link href={child.path ?? '#'}>{child.title}</Link>
+                      </DropdownMenu.Item>
+                    ))}
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              ))}
+            </div>
+          }
+        />
+        <div className="flex flex-1 overflow-hidden">
+          <main className="flex-1 p-4 min-w-0 overflow-y-auto">{children}</main>
+          <RightSidebar
+            setChatbotDialogOpen={setChatbotDialogOpen}
+            setEmailDialogOpen={setEmailDialogOpen}
+            setCalendarDialogOpen={setCalendarDialogOpen}
+            setNotepadDialogOpen={setNotepadDialogOpen}
+            setPomodoroDialogOpen={setPomodoroDialogOpen}
+            setSearchDialogOpen={setSearchDialogOpen}
+            notificationsOpen={notificationsOpen}
+            setNotificationsOpen={handleSetNotificationsOpen}
+            unreadCount={unreadCount}
+            notifications={notifications}
+            onClearNotifications={clear}
+          />
+        </div>
+        <FloatingIslandComponent
+          searchDialogOpen={searchDialogOpen}
           setSearchDialogOpen={setSearchDialogOpen}
-          notificationsOpen={notificationsOpen}
-          setNotificationsOpen={handleSetNotificationsOpen}
-          unreadCount={unreadCount}
-          notifications={notifications}
-          onClearNotifications={clear}
+          chatbotDialogOpen={chatbotDialogOpen}
+          setChatbotDialogOpen={setChatbotDialogOpen}
+          emailDialogOpen={emailDialogOpen}
+          setEmailDialogOpen={setEmailDialogOpen}
+          calendarDialogOpen={calendarDialogOpen}
+          setCalendarDialogOpen={setCalendarDialogOpen}
+          notepadDialogOpen={notepadDialogOpen}
+          setNotepadDialogOpen={setNotepadDialogOpen}
+          weatherDialogOpen={weatherDialogOpen}
+          setWeatherDialogOpen={setWeatherDialogOpen}
+          pomodoroDialogOpen={pomodoroDialogOpen}
+          setPomodoroDialogOpen={setPomodoroDialogOpen}
+          utilitiesDialogOpen={utilitiesDialogOpen}
+          setUtilitiesDialogOpen={setUtilitiesDialogOpen}
         />
       </div>
-      <FloatingIslandComponent
-        searchDialogOpen={searchDialogOpen}
-        setSearchDialogOpen={setSearchDialogOpen}
-        chatbotDialogOpen={chatbotDialogOpen}
-        setChatbotDialogOpen={setChatbotDialogOpen}
-        emailDialogOpen={emailDialogOpen}
-        setEmailDialogOpen={setEmailDialogOpen}
-        calendarDialogOpen={calendarDialogOpen}
-        setCalendarDialogOpen={setCalendarDialogOpen}
-        notepadDialogOpen={notepadDialogOpen}
-        setNotepadDialogOpen={setNotepadDialogOpen}
-        weatherDialogOpen={weatherDialogOpen}
-        setWeatherDialogOpen={setWeatherDialogOpen}
-        pomodoroDialogOpen={pomodoroDialogOpen}
-        setPomodoroDialogOpen={setPomodoroDialogOpen}
-        utilitiesDialogOpen={utilitiesDialogOpen}
-        setUtilitiesDialogOpen={setUtilitiesDialogOpen}
-      />
-    </div>
+    </NotificationContext.Provider>
   );
 }
