@@ -35,7 +35,7 @@ runs:
         DEPLOY_STATUS: ${{ inputs.status }}
         DEPLOY_JOB: ${{ inputs.job }}
         DEPLOY_COMMIT: ${{ github.sha }}
-        DEPLOY_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        DEPLOY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.workflow_run.head_commit.message }}
         DEPLOY_WORKFLOW: ${{ github.workflow }}
         DEPLOY_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
       run: node ${{ github.action_path }}/../../scripts/deploy-notify.mjs || true

@@ -74,9 +74,9 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
                     {formatTime(n.ts)}
                   </span>
                 </div>
-                <span className="text-gray-700 dark:text-gray-300 font-mono text-xs break-words">
+                <span className="text-gray-700 dark:text-gray-300 font-mono text-xs truncate">
                   {n.payload.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}
-                  {n.payload.commit_message && ` – ${n.payload.commit_message}`}
+                  {n.payload.commit_message && ` · ${n.payload.commit_message}`}
                 </span>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-500 dark:text-gray-400 text-xs truncate">
