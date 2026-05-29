@@ -85,6 +85,9 @@
       ],
       "@vigilant-broccoli/money-movement": [
         "./libs/@vigilant-broccoli/money-movement/src/index.ts"
+      ],
+      "@vigilant-broccoli/deployment": [
+        "./libs/@vigilant-broccoli/deployment/src/index.ts"
       ]
     }
   },

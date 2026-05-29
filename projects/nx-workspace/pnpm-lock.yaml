@@ -680,6 +680,12 @@ importers:
         specifier: ^3.11.0
         version: 3.19.0
 
+  libs/@vigilant-broccoli/deployment:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
   libs/@vigilant-broccoli/employee-handler:
     dependencies:
       '@swc/helpers':

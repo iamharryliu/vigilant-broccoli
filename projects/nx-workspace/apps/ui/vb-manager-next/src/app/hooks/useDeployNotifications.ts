@@ -3,40 +3,47 @@
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { toast } from '@vigilant-broccoli/react-lib';
+import { SOCKET_EVENTS } from '@vigilant-broccoli/common-js';
 import {
-  SOCKET_EVENTS,
   DEPLOY_APP,
   DEPLOY_RECEIVER_ID,
   DEPLOY_STATUS,
   DEPLOY_COMMIT_SHORT_LENGTH,
   DeployPayload,
-} from '@vigilant-broccoli/common-js';
+} from '@vigilant-broccoli/deployment';
 
 const TOAST_DURATION_MS = 8000;
 const VIEW_RUN_LABEL = 'View run';
+const WINDOW_TARGET_BLANK = '_blank';
+
+const DEPLOY_TOAST_LABEL = {
+  STARTED: 'Deploy started',
+  SUCCESS: 'Deploy succeeded',
+  FAILURE: 'Deploy failed',
+} as const;
 
 const description = (p: DeployPayload) =>
   `${p.job} · ${p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}`;
 
 const viewRunAction = (p: DeployPayload) => ({
   label: VIEW_RUN_LABEL,
-  onClick: () => window.open(p.run_url, '_blank'),
+  onClick: () => window.open(p.run_url, WINDOW_TARGET_BLANK),
 });
 
 const DEPLOY_TOAST = {
   [DEPLOY_STATUS.STARTED]: (p: DeployPayload) =>
-    toast.info('Deploy started', {
+    toast.info(DEPLOY_TOAST_LABEL.STARTED, {
       description: description(p),
       duration: TOAST_DURATION_MS,
     }),
   [DEPLOY_STATUS.SUCCESS]: (p: DeployPayload) =>
-    toast.success('Deploy succeeded', {
+    toast.success(DEPLOY_TOAST_LABEL.SUCCESS, {
       description: description(p),
       duration: TOAST_DURATION_MS,
       action: viewRunAction(p),
     }),
   [DEPLOY_STATUS.FAILURE]: (p: DeployPayload) =>
-    toast.error('Deploy failed', {
+    toast.error(DEPLOY_TOAST_LABEL.FAILURE, {
       description: description(p),
       duration: TOAST_DURATION_MS,
       action: viewRunAction(p),

@@ -5,9 +5,11 @@ import { Button } from '@vigilant-broccoli/react-lib';
 import {
   DEPLOY_STATUS,
   DEPLOY_COMMIT_SHORT_LENGTH,
-} from '@vigilant-broccoli/common-js';
+} from '@vigilant-broccoli/deployment';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 
+const NOTIFICATIONS_TITLE = 'Notifications';
+const EMPTY_LABEL = 'No notifications yet.';
 const CLEAR_ALL_LABEL = 'Clear all';
 
 const STATUS_STYLES: Record<string, string> = {
@@ -36,7 +38,7 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 shrink-0">
-        <span className="font-semibold text-sm">Notifications</span>
+        <span className="font-semibold text-sm">{NOTIFICATIONS_TITLE}</span>
         {notifications.length > 0 && (
           <Button
             variant="ghost"
@@ -45,7 +47,7 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
             title={CLEAR_ALL_LABEL}
           >
             <Trash2 size={14} />
-            Clear
+            {CLEAR_ALL_LABEL}
           </Button>
         )}
       </div>
@@ -53,7 +55,7 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
       <div className="flex-1 overflow-y-auto">
         {notifications.length === 0 ? (
           <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-8">
-            No notifications yet.
+            {EMPTY_LABEL}
           </p>
         ) : (
           <ul className="flex flex-col divide-y divide-gray-100 dark:divide-gray-800">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { DeployPayload } from '@vigilant-broccoli/common-js';
+import { DeployPayload } from '@vigilant-broccoli/deployment';
 
 export interface NotificationRecord {
   id: string;

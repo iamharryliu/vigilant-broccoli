@@ -82,6 +82,9 @@
   },
   "neverConnectToCloud": true,
   "generators": {
+    "@nx/js:library": {
+      "useFlatConfig": false
+    },
     "@nx/angular:application": {
       "linter": "eslint",
       "style": "scss",
