@@ -22,23 +22,72 @@ env:
   DOCKERHUB_USERNAME: iamharryliu
 
 jobs:
-  notify-workflow-start:
+  notify-start:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
-      - uses: ./.github/actions/deploy-notify
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Setup Vault CA Certificate
+        run: |
+          CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
+          echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
+
+      - name: Open IAP Tunnel to Vault
+        run: |
+          gcloud compute ssh ${{ env.VM_NAME }} \
+            --zone=${{ env.GCP_ZONE }} \
+            --tunnel-through-iap \
+            --ssh-flag="-N" \
+            --ssh-flag="-L 8200:127.0.0.1:8200" \
+            --ssh-flag="-o ServerAliveInterval=30" \
+            --ssh-flag="-o ServerAliveCountMax=3" &
+          echo "Waiting for tunnel to establish..."
+          for i in {1..30}; do
+            if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
+              echo "Tunnel established successfully"
+              exit 0
+            fi
+            echo "Attempt $i: Tunnel not ready yet..."
+            sleep 2
+          done
+          echo "ERROR: IAP tunnel to Vault failed to establish after 30 attempts"
+          exit 1
+
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: https://127.0.0.1:8200
+          caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
+          method: jwt
+          role: ${{ env.VAULT_ROLE }}
+          jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
+          secrets: |
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
+            kv/data/secrets SOCKET_SERVER_CA_CERT | SOCKET_SERVER_CA_CERT ;
+
+      - name: Notify started
+        uses: ./.github/actions/deploy-notify
         with:
           status: started
           job: deploy
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
+          socket_server_url: ${{ env.SOCKET_SERVER_URL }}
+          shared_app_token: ${{ env.SHARED_APP_TOKEN }}
+          socket_server_ca_cert: ${{ env.SOCKET_SERVER_CA_CERT }}
 
   deploy-npm-packages:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
-    needs: notify-workflow-start
+    needs: notify-start
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -94,16 +143,6 @@ jobs:
             fi
           fi
 
-      - name: Notify started
-        if: steps.check.outputs.has_packages == 'true'
-        uses: ./.github/actions/deploy-notify
-        with:
-          status: started
-          job: deploy-npm-packages
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
-
       - name: Build affected packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
@@ -114,29 +153,9 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: npx nx run-many -t publish-package --projects="${{ steps.check.outputs.affected_projects }}"
 
-      - name: Notify succeeded
-        if: steps.check.outputs.has_packages == 'true' && success()
-        uses: ./.github/actions/deploy-notify
-        with:
-          status: success
-          job: deploy-npm-packages
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
-
-      - name: Notify failed
-        if: steps.check.outputs.has_packages == 'true' && failure()
-        uses: ./.github/actions/deploy-notify
-        with:
-          status: failure
-          job: deploy-npm-packages
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
-
   main:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
-    needs: notify-workflow-start
+    needs: notify-start
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -183,16 +202,6 @@ jobs:
               echo "has_deployments=false" >> $GITHUB_OUTPUT
             fi
           fi
-
-      - name: Notify started
-        if: steps.check.outputs.has_deployments == 'true'
-        uses: ./.github/actions/deploy-notify
-        with:
-          status: started
-          job: main
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
 
       - name: Set up QEMU
         if: steps.check.outputs.has_deployments == 'true'
@@ -283,29 +292,9 @@ jobs:
           NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/projects/nx-workspace/scripts/vault-ca.crt
         run: ${{ steps.check.outputs.deploy_cmd }}
 
-      - name: Notify succeeded
-        if: steps.check.outputs.has_deployments == 'true' && success()
-        uses: ./.github/actions/deploy-notify
-        with:
-          status: success
-          job: main
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
-
-      - name: Notify failed
-        if: steps.check.outputs.has_deployments == 'true' && failure()
-        uses: ./.github/actions/deploy-notify
-        with:
-          status: failure
-          job: main
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
-
   deploy-github-pages:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
-    needs: notify-workflow-start
+    needs: notify-start
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -358,16 +347,6 @@ jobs:
             fi
           fi
 
-      - name: Notify started
-        if: steps.check.outputs.has_deployments == 'true'
-        uses: ./.github/actions/deploy-notify
-        with:
-          status: started
-          job: deploy-github-pages
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
-
       - name: Stage Pages artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
@@ -389,23 +368,3 @@ jobs:
         id: deployment
         if: steps.check.outputs.has_deployments == 'true'
         uses: actions/deploy-pages@v5
-
-      - name: Notify succeeded
-        if: steps.check.outputs.has_deployments == 'true' && success()
-        uses: ./.github/actions/deploy-notify
-        with:
-          status: success
-          job: deploy-github-pages
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
-
-      - name: Notify failed
-        if: steps.check.outputs.has_deployments == 'true' && failure()
-        uses: ./.github/actions/deploy-notify
-        with:
-          status: failure
-          job: deploy-github-pages
-          socket_server_url: ${{ secrets.SOCKET_SERVER_URL }}
-          shared_app_token: ${{ secrets.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ secrets.SOCKET_SERVER_CA_CERT }}
