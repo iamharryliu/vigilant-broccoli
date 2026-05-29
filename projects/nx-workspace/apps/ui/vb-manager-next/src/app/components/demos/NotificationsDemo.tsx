@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Flex, Text } from '@radix-ui/themes';
+import { Button, Flex, Heading, Text } from '@radix-ui/themes';
 import { toast } from '@vigilant-broccoli/react-lib';
 import {
   DEPLOY_STATUS,
@@ -64,21 +64,35 @@ export function NotificationsDemo() {
     });
   };
 
+  const triggerHello = () =>
+    toast('Hello World', { duration: TOAST_DURATION_MS });
+
   return (
-    <Flex direction="column" gap="3">
-      <Text size="2" color="gray">
-        Trigger mock deploy notifications matching the format from deploy.yml.
-      </Text>
-      <Flex gap="2" wrap="wrap">
-        <Button variant="soft" color="blue" onClick={triggerStarted}>
-          Started
-        </Button>
-        <Button variant="soft" color="green" onClick={triggerSuccess}>
-          Success
-        </Button>
-        <Button variant="soft" color="red" onClick={triggerFailure}>
-          Failure
-        </Button>
+    <Flex direction="column" gap="4">
+      <Flex direction="column" gap="2">
+        <Heading size="2">General</Heading>
+        <Flex gap="2" wrap="wrap">
+          <Button variant="soft" color="gray" onClick={triggerHello}>
+            Hello World
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="2">
+        <Heading size="2">GitHub Deploy</Heading>
+        <Text size="2" color="gray">
+          Trigger mock deploy notifications matching the format from deploy.yml.
+        </Text>
+        <Flex gap="2" wrap="wrap">
+          <Button variant="soft" color="blue" onClick={triggerStarted}>
+            Started
+          </Button>
+          <Button variant="soft" color="green" onClick={triggerSuccess}>
+            Success
+          </Button>
+          <Button variant="soft" color="red" onClick={triggerFailure}>
+            Failure
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   );

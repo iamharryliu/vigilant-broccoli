@@ -74,7 +74,7 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
                     {formatTime(n.ts)}
                   </span>
                 </div>
-                <span className="text-gray-700 dark:text-gray-300 font-mono text-xs truncate">
+                <span className="text-gray-700 dark:text-gray-300 font-mono text-xs break-words">
                   {n.payload.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}
                   {n.payload.commit_message && ` – ${n.payload.commit_message}`}
                 </span>
