@@ -32,7 +32,8 @@
         "{workspaceRoot}/.eslintrc.json",
         "{workspaceRoot}/.eslintignore",
         "{workspaceRoot}/eslint.config.js",
-        "{workspaceRoot}/tools/eslint-rules/**/*"
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        "{workspaceRoot}/eslint.config.mjs"
       ]
     },
     "@angular-devkit/build-angular:application": {
@@ -82,9 +83,6 @@
   },
   "neverConnectToCloud": true,
   "generators": {
-    "@nx/js:library": {
-      "useFlatConfig": false
-    },
     "@nx/angular:application": {
       "linter": "eslint",
       "style": "scss",
