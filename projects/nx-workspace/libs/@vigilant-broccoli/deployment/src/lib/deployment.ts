@@ -17,4 +17,6 @@ export interface DeployPayload {
   commit_message?: string;
   workflow: string;
   run_url: string;
+  duration_s?: number;
+  affected_projects?: string;
 }

@@ -22,8 +22,19 @@ const DEPLOY_TOAST_LABEL = {
   FAILURE: 'Deploy failed',
 } as const;
 
+const formatDuration = (s: number) =>
+  s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`;
+
 const description = (p: DeployPayload) =>
-  `${p.job} · ${p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}${p.commit_message ? ` · ${p.commit_message}` : ''}`;
+  [
+    p.job,
+    p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH),
+    p.commit_message,
+    p.duration_s != null ? formatDuration(p.duration_s) : undefined,
+    p.affected_projects,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
 const viewRunAction = (p: DeployPayload) => ({
   label: VIEW_RUN_LABEL,

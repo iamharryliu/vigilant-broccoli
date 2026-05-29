@@ -312,6 +312,86 @@ export function createUserSettingsModal(appConfig: AppConfig) {
   };
 }
 
+const mockButton = (label: string): KnownBlock => ({
+  type: 'actions',
+  elements: [
+    {
+      type: 'button',
+      text: { type: 'plain_text', text: label },
+      action_id: APP_ACTION.HELP_MOCK_BUTTON,
+    },
+  ],
+});
+
+export function createHelpModal(appConfig: AppConfig) {
+  return function getHelpModal() {
+    const { copy } = appConfig;
+    const h = copy.HELP_MODAL;
+    const hv = copy.HOME_VIEW;
+
+    const modal: ModalView = {
+      type: 'modal',
+      title: { type: 'plain_text', text: h.TITLE },
+      close: { type: 'plain_text', text: copy.COMMON.CLOSE },
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*${h.OVERVIEW_HEADER}*\n${h.OVERVIEW_TEXT}`,
+          },
+        },
+        SlackViewBuilder.DIVIDER,
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*${h.OFFICE_DAYS_HEADER}*\n${h.OFFICE_DAYS_TEXT}`,
+          },
+        },
+        SlackViewBuilder.DIVIDER,
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*${h.VISIT_DETAILS_HEADER}*\n${h.VISIT_DETAILS_TEXT}`,
+          },
+        },
+        mockButton(hv.ADD_VISIT_DETAILS_BUTTON),
+        SlackViewBuilder.DIVIDER,
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*${h.EVENTS_HEADER}*\n${h.EVENTS_TEXT}`,
+          },
+        },
+        mockButton(hv.CREATE_EVENT_BUTTON),
+        SlackViewBuilder.DIVIDER,
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*${h.LUNCH_HEADER}*\n${h.LUNCH_TEXT}`,
+          },
+        },
+        mockButton(hv.ASK_LUNCH_BUTTON),
+        SlackViewBuilder.DIVIDER,
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*${h.SETTINGS_HEADER}*\n${h.SETTINGS_TEXT}`,
+          },
+        },
+        mockButton(hv.USER_SETTINGS_BUTTON),
+      ] as KnownBlock[],
+    };
+
+    return modal;
+  };
+}
+
 export function createAskLunchModal(appConfig: AppConfig) {
   return function getAskLunchModal(userId: string) {
     const { copy } = appConfig;

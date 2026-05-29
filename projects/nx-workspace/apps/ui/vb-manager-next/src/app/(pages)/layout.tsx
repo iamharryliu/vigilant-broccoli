@@ -13,6 +13,8 @@ import { FloatingIslandComponent } from '../components/floating-island.component
 import { RightSidebar } from '../components/right-sidebar.component';
 import { useDeployNotifications } from '../hooks/useDeployNotifications';
 import { useNotificationHistory } from '../hooks/useNotificationHistory';
+import { useBrowserNotifications } from '../hooks/useBrowserNotifications';
+import { useUnreadDocumentTitle } from '../hooks/useUnreadDocumentTitle';
 import { NotificationContext } from '../context/NotificationContext';
 
 type ExtendedNavRoute = {
@@ -108,7 +110,12 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
   const { notifications, unreadCount, add, markAllRead, clear } =
     useNotificationHistory();
-  useDeployNotifications(add);
+  const { notify: browserNotify } = useBrowserNotifications();
+  useDeployNotifications(payload => {
+    add(payload);
+    browserNotify(payload);
+  });
+  useUnreadDocumentTitle(unreadCount);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const handleSetNotificationsOpen = useCallback(
     (open: boolean) => {

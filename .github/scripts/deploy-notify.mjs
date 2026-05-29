@@ -8,6 +8,10 @@ const DEPLOY_APP = 'vb-manager-next';
 const DEPLOY_RECEIVER_ID = 'deploy';
 const TIMEOUT_MS = 10000;
 
+const startedAtRaw = process.env.DEPLOY_STARTED_AT;
+const startedAtMs = startedAtRaw ? new Date(startedAtRaw).getTime() : undefined;
+const durationS = startedAtMs && !isNaN(startedAtMs) ? Math.round((Date.now() - startedAtMs) / 1000) : undefined;
+
 const payload = {
   status: process.env.DEPLOY_STATUS,
   job: process.env.DEPLOY_JOB,
@@ -15,6 +19,8 @@ const payload = {
   commit_message: process.env.DEPLOY_COMMIT_MESSAGE,
   workflow: process.env.DEPLOY_WORKFLOW,
   run_url: process.env.DEPLOY_RUN_URL,
+  duration_s: durationS,
+  affected_projects: process.env.DEPLOY_AFFECTED_PROJECTS || undefined,
 };
 
 const tlsOpts = CA_B64

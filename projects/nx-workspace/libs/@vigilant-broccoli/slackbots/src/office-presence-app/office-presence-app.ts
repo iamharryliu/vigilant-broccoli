@@ -9,6 +9,7 @@ import { SlackModalUtils } from '../lib/utils/modal.utils';
 import { SlackUtils } from '../lib/utils/utils';
 import {
   createAskLunchModal,
+  createHelpModal,
   createInputScheduleModal,
   createCreateEventModal,
   createEditEventModal,
@@ -84,6 +85,7 @@ export async function runOfficePresenceApp(
   const getInputScheduleModal = createInputScheduleModal(appConfig);
   const getAskLunchModal = createAskLunchModal(appConfig);
   const getUserSettingsModal = createUserSettingsModal(appConfig);
+  const getHelpModal = createHelpModal(appConfig);
   const getCreateEventModal = createCreateEventModal(appConfig);
   const getEditEventModal = createEditEventModal(appConfig);
   const sendReminders = createReminderSender(appConfig);
@@ -119,6 +121,15 @@ export async function runOfficePresenceApp(
     APP_ACTION.OPEN_SETTINGS_MODAL,
     SlackModalUtils.createModalHandlerWithUserId(getUserSettingsModal),
   );
+
+  app.action<BlockAction>(
+    APP_ACTION.OPEN_HELP_MODAL,
+    SlackModalUtils.createModalHandler(getHelpModal),
+  );
+
+  app.action<BlockAction>(APP_ACTION.HELP_MOCK_BUTTON, async ({ ack }) => {
+    await ack();
+  });
 
   app.view(APP_ACTION.SUBMIT_SETTINGS, async ({ ack, body, view, client }) => {
     await ack();

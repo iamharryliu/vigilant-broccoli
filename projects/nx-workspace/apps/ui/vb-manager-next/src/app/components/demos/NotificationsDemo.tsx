@@ -8,6 +8,7 @@ import {
   DeployPayload,
 } from '@vigilant-broccoli/deployment';
 import { useAddNotification } from '../../context/NotificationContext';
+import { useBrowserNotifications } from '../../hooks/useBrowserNotifications';
 
 const TOAST_DURATION_MS = 8000;
 const VIEW_RUN_LABEL = 'View run';
@@ -20,10 +21,23 @@ const MOCK_PAYLOAD: DeployPayload = {
   commit_message: 'feat: mock notification',
   workflow: 'Deploy',
   run_url: MOCK_RUN_URL,
+  duration_s: 272,
+  affected_projects: 'vb-manager-next',
 };
 
+const formatDuration = (s: number) =>
+  s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`;
+
 const description = (p: DeployPayload) =>
-  `${p.job} · ${p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}${p.commit_message ? ` · ${p.commit_message}` : ''}`;
+  [
+    p.job,
+    p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH),
+    p.commit_message,
+    p.duration_s != null ? formatDuration(p.duration_s) : undefined,
+    p.affected_projects,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
 const viewRunAction = () => ({
   label: VIEW_RUN_LABEL,
@@ -32,6 +46,7 @@ const viewRunAction = () => ({
 
 export function NotificationsDemo() {
   const add = useAddNotification();
+  const { permission, requestPermission } = useBrowserNotifications();
 
   const fire = (payload: DeployPayload) => {
     add(payload);
@@ -74,6 +89,20 @@ export function NotificationsDemo() {
         <Flex gap="2" wrap="wrap">
           <Button variant="soft" color="gray" onClick={triggerHello}>
             Hello World
+          </Button>
+          <Button
+            variant="soft"
+            color={
+              permission === 'granted'
+                ? 'green'
+                : permission === 'denied'
+                  ? 'red'
+                  : 'gray'
+            }
+            onClick={requestPermission}
+            disabled={permission === 'granted' || permission === 'denied'}
+          >
+            Browser notifications: {permission}
           </Button>
         </Flex>
       </Flex>

@@ -18,6 +18,14 @@ inputs:
     description: Base64-encoded CA cert (optional)
     required: false
     default: ''
+  started_at:
+    description: Unix epoch seconds when the deploy started (for duration calculation)
+    required: false
+    default: ''
+  affected_projects:
+    description: Comma-separated list of affected nx projects
+    required: false
+    default: ''
 
 runs:
   using: composite
@@ -38,4 +46,6 @@ runs:
         DEPLOY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.workflow_run.head_commit.message }}
         DEPLOY_WORKFLOW: ${{ github.workflow }}
         DEPLOY_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        DEPLOY_STARTED_AT: ${{ inputs.started_at }}
+        DEPLOY_AFFECTED_PROJECTS: ${{ inputs.affected_projects }}
       run: node ${{ github.action_path }}/../../scripts/deploy-notify.mjs || true

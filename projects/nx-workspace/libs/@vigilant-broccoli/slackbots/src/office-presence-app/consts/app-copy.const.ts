@@ -47,6 +47,7 @@ export const DEFAULT_APP_COPY = {
     CHECKOUT_BUTTON: 'Check out 🏃💨',
     ADMIN_SETTINGS_BUTTON: 'Admin Settings ⚙️',
     USER_SETTINGS_BUTTON: 'User Settings ⚙️',
+    HELP_BUTTON: 'Help ❓',
     SELECT_OFFICE_DAYS_MARKDOWN: '*Select your office days:*',
     ADD_VISIT_DETAILS_BUTTON: 'Add visit details. 🐶🏢🕐💬',
     CREATE_EVENT_BUTTON: 'Create Office Event 📅',
@@ -104,6 +105,27 @@ export const DEFAULT_APP_COPY = {
   },
   EDIT_EVENT_MODAL: {
     TITLE: 'Edit Office Event',
+  },
+  HELP_MODAL: {
+    TITLE: 'Help',
+    OVERVIEW_HEADER: 'Overview',
+    OVERVIEW_TEXT:
+      'Mark which days you plan to be in the office, add visit details (office location, time of day, dog, message), and see who else will be in.',
+    OFFICE_DAYS_HEADER: 'Selecting Office Days',
+    OFFICE_DAYS_TEXT:
+      'Check the days you plan to come in using the *Select your office days* checkboxes. Your selections are saved automatically.',
+    VISIT_DETAILS_HEADER: 'Adding Visit Details',
+    VISIT_DETAILS_TEXT:
+      "Click *Add visit details* to set your office location, whether you'll be there in the morning, afternoon, or all day, whether you're bringing a dog, and an optional message.",
+    EVENTS_HEADER: 'Office Events',
+    EVENTS_TEXT:
+      'Use *Create Office Event* to schedule a shared event. Other users can RSVP by checking the event checkbox next to their day.',
+    LUNCH_HEADER: 'Ask About Lunch',
+    LUNCH_TEXT:
+      "When you're checked in for today, an *Ask about lunch* button appears. Use it to send a lunch invite to others in the office.",
+    SETTINGS_HEADER: 'User Settings',
+    SETTINGS_TEXT:
+      'Click *User Settings* to set your default office, toggle weekends, toggle team count display, and choose how many weeks ahead to show.',
   },
   ACTIONS: {
     CHECKED_OUT_MESSAGE: 'has left the building!',

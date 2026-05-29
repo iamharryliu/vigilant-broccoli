@@ -78,6 +78,23 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
                   {n.payload.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH)}
                   {n.payload.commit_message && ` · ${n.payload.commit_message}`}
                 </span>
+                {(n.payload.duration_s != null ||
+                  n.payload.affected_projects) && (
+                  <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                    {n.payload.duration_s != null && (
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        {n.payload.duration_s >= 60
+                          ? `${Math.floor(n.payload.duration_s / 60)}m ${n.payload.duration_s % 60}s`
+                          : `${n.payload.duration_s}s`}
+                      </span>
+                    )}
+                    {n.payload.affected_projects && (
+                      <span className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                        {n.payload.affected_projects}
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-gray-500 dark:text-gray-400 text-xs truncate">
                     {n.payload.job}

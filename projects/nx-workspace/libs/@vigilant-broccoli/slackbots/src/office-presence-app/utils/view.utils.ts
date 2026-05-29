@@ -96,6 +96,13 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
             ),
             action_id: APP_ACTION.OPEN_SETTINGS_MODAL,
           },
+          {
+            type: 'button',
+            text: SlackViewBuilder.generatePlainText(
+              copy.HOME_VIEW.HELP_BUTTON,
+            ),
+            action_id: APP_ACTION.OPEN_HELP_MODAL,
+          },
         ],
       },
       {
