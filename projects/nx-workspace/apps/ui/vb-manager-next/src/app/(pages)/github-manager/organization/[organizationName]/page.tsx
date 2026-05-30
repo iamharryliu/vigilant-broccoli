@@ -18,6 +18,7 @@ import {
   Grid,
   Button,
   Dialog,
+  Flex,
 } from '@radix-ui/themes';
 import {
   Users,
@@ -29,11 +30,14 @@ import {
 } from 'lucide-react';
 import { CardContainer } from '../../../../components/card-container.component';
 import {
+  ButtonConfig,
+  ButtonList,
   CollapsibleList,
   CollapsibleListItemConfig,
+  StatusCardList,
+  StatusCardListItem,
+  WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
-import { LinkList } from '../../../../components/link-list.component';
-import { LinkListItemConfig } from '../../../../components/link-list-item.component';
 
 export default function Page({
   params,
@@ -196,6 +200,42 @@ const GithubUserLink = ({ member }: { member: GithubTeamMember }) => {
   );
 };
 
+const getRepoUrls = (repoUrl: string) => ({
+  Code: repoUrl,
+  Issues: `${repoUrl}/issues`,
+  PRs: `${repoUrl}/pulls`,
+  Actions: `${repoUrl}/actions`,
+  Settings: `${repoUrl}/settings`,
+});
+
+const repoToItem = (repo: GithubOrgRepository): StatusCardListItem => ({
+  id: repo.name,
+  label: repo.name,
+  badges: (
+    <Badge color={repo.private ? 'gray' : 'green'} size="1">
+      {repo.private ? 'Private' : 'Public'}
+    </Badge>
+  ),
+  children: (
+    <Flex direction="column" gap="2">
+      {repo.description && (
+        <Text size="1" color="gray">
+          {repo.description}
+        </Text>
+      )}
+      <ButtonList
+        buttons={Object.entries(getRepoUrls(repo.html_url)).map(
+          ([label, url]): ButtonConfig => ({
+            label,
+            onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
+            isExternal: true,
+          }),
+        )}
+      />
+    </Flex>
+  ),
+});
+
 const RepositoriesList = ({
   repositories,
   searchQuery,
@@ -206,38 +246,26 @@ const RepositoriesList = ({
   organizationName: string;
 }) => {
   const filteredRepositories = useMemo(() => {
-    if (!searchQuery.trim()) return repositories;
+    const sorted = [...repositories].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    );
+    if (!searchQuery.trim()) return sorted;
     const query = searchQuery.toLowerCase();
-    return repositories.filter(
+    return sorted.filter(
       repo =>
         repo.name.toLowerCase().includes(query) ||
         repo.description?.toLowerCase().includes(query),
     );
   }, [repositories, searchQuery]);
 
-  const linkItems = useMemo<LinkListItemConfig[]>(() => {
-    return filteredRepositories.map(repo => ({
-      text: repo.name,
-      url: repo.html_url,
-      badge: {
-        text: repo.private ? 'Private' : 'Public',
-      },
-    }));
-  }, [filteredRepositories]);
-
   return (
     <CardContainer
-      title={`Repositories (${filteredRepositories.length})`}
-      headerAction={
-        <Link
-          href={`https://github.com/orgs/${organizationName}/repositories`}
-          target="_blank"
-        >
-          <Text size="2" color="gray" style={{ cursor: 'pointer' }}>
-            View on GitHub →
-          </Text>
-        </Link>
-      }
+      title="Repositories"
+      gap="3"
+      headerLink={{
+        href: `https://github.com/orgs/${organizationName}/repositories`,
+        label: 'View on GitHub',
+      }}
     >
       {filteredRepositories.length === 0 && searchQuery ? (
         <Box style={{ textAlign: 'center', padding: '2rem' }}>
@@ -247,7 +275,10 @@ const RepositoriesList = ({
           </Text>
         </Box>
       ) : (
-        <LinkList items={linkItems} emptyMessage="No repositories found" />
+        <StatusCardList
+          items={filteredRepositories.map(repoToItem)}
+          emptyMessage="No repositories found"
+        />
       )}
     </CardContainer>
   );
@@ -323,7 +354,7 @@ const MembersList = ({
   return (
     <>
       <CardContainer
-        title={`Members (${filteredMembers.length})`}
+        title="Members"
         headerAction={
           <Box style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Button
@@ -526,7 +557,7 @@ const TeamsList = ({
 
   return (
     <CardContainer
-      title={`Teams (${structure.teams.length})`}
+      title="Teams"
       headerAction={
         <Link
           href={`https://github.com/orgs/${structure.organizationName}/teams`}
