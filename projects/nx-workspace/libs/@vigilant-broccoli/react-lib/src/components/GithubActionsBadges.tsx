@@ -9,6 +9,17 @@ type Badge = {
   src: string;
 };
 
+export const GithubActionsBadgeLink = ({ badge }: { badge: Badge }) => (
+  <a
+    href={badge.href || '#'}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-block origin-left transition-transform duration-200 ease-out hover:scale-105 hover:-translate-y-0.5 hover:drop-shadow-md"
+  >
+    <img src={badge.src} alt={badge.alt} className="max-w-full h-auto" />
+  </a>
+);
+
 function toActionsWorkflowUrl(blobUrl: string): string | null {
   const url = new URL(blobUrl);
   if (url.hostname !== 'github.com') return null;
@@ -70,15 +81,7 @@ export const GithubActionsBadges = ({
   return (
     <>
       {badges.map(badge => (
-        <a
-          key={badge.alt}
-          href={badge.href || '#'}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:opacity-80 transition-opacity"
-        >
-          <img src={badge.src} alt={badge.alt} className="max-w-full h-auto" />
-        </a>
+        <GithubActionsBadgeLink key={badge.alt} badge={badge} />
       ))}
     </>
   );

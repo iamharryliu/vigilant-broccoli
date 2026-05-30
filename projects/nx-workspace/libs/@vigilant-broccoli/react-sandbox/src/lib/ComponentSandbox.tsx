@@ -26,6 +26,7 @@ import { CRUDListNoImagesDemo } from './demos/CRUDListNoImagesDemo';
 import { CRUDListWithImagesDemo } from './demos/CRUDListWithImagesDemo';
 import { SelectDemo } from './demos/SelectDemo';
 import { ErrorDemo } from './demos/ErrorDemo';
+import { GithubActionsBadgesDemo } from './demos/GithubActionsBadgesDemo';
 import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
@@ -141,6 +142,11 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
   { id: 'tabs', title: 'Tabs', content: <TabsDemo /> },
   { id: 'switch', title: 'Switch', content: <SwitchDemo /> },
   { id: 'toaster', title: 'Toaster', content: <ToasterDemo /> },
+  {
+    id: 'github-actions-badges',
+    title: 'GitHub Actions Badges',
+    content: <GithubActionsBadgesDemo />,
+  },
 ];
 
 const UTILITY_SECTIONS: CollapsibleListItemConfig[] = [
