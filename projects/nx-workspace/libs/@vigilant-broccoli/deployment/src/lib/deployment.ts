@@ -10,6 +10,15 @@ export const DEPLOY_STATUS = {
 
 export type DeployStatus = (typeof DEPLOY_STATUS)[keyof typeof DEPLOY_STATUS];
 
+export const DEPLOY_TOAST_LABEL: Record<DeployStatus, string> = {
+  [DEPLOY_STATUS.STARTED]: 'Deploy started',
+  [DEPLOY_STATUS.SUCCESS]: 'Deploy succeeded',
+  [DEPLOY_STATUS.FAILURE]: 'Deploy failed',
+};
+
+export const formatDuration = (s: number) =>
+  s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`;
+
 export interface DeployPayload {
   status: DeployStatus;
   job: string;

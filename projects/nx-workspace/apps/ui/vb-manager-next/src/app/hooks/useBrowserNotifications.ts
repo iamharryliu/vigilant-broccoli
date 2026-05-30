@@ -1,13 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { DEPLOY_STATUS, DeployPayload } from '@vigilant-broccoli/deployment';
-
-const DEPLOY_BROWSER_NOTIFICATION_TITLE = {
-  [DEPLOY_STATUS.STARTED]: 'Deploy started',
-  [DEPLOY_STATUS.SUCCESS]: 'Deploy succeeded',
-  [DEPLOY_STATUS.FAILURE]: 'Deploy failed',
-} as const;
+import {
+  DEPLOY_TOAST_LABEL,
+  DeployPayload,
+} from '@vigilant-broccoli/deployment';
 
 export function useBrowserNotifications() {
   const [permission, setPermission] =
@@ -31,7 +28,7 @@ export function useBrowserNotifications() {
       Notification.permission !== 'granted'
     )
       return;
-    const title = DEPLOY_BROWSER_NOTIFICATION_TITLE[payload.status];
+    const title = DEPLOY_TOAST_LABEL[payload.status];
     const body = [payload.job, payload.commit_message]
       .filter(Boolean)
       .join(' · ');

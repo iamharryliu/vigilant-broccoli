@@ -5,6 +5,7 @@ import { Button } from '@vigilant-broccoli/react-lib';
 import {
   DEPLOY_STATUS,
   DEPLOY_COMMIT_SHORT_LENGTH,
+  formatDuration,
 } from '@vigilant-broccoli/deployment';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 
@@ -83,9 +84,7 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
                   <div className="flex flex-wrap gap-x-2 gap-y-0.5">
                     {n.payload.duration_s != null && (
                       <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {n.payload.duration_s >= 60
-                          ? `${Math.floor(n.payload.duration_s / 60)}m ${n.payload.duration_s % 60}s`
-                          : `${n.payload.duration_s}s`}
+                        {formatDuration(n.payload.duration_s)}
                       </span>
                     )}
                     {n.payload.affected_projects && (

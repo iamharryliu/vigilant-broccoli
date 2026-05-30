@@ -111,10 +111,14 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { notifications, unreadCount, add, markAllRead, clear } =
     useNotificationHistory();
   const { notify: browserNotify } = useBrowserNotifications();
-  useDeployNotifications(payload => {
-    add(payload);
-    browserNotify(payload);
-  });
+  const handleNotification = useCallback(
+    (payload: Parameters<typeof browserNotify>[0]) => {
+      add(payload);
+      browserNotify(payload);
+    },
+    [add, browserNotify],
+  );
+  useDeployNotifications(handleNotification);
   useUnreadDocumentTitle(unreadCount);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const handleSetNotificationsOpen = useCallback(

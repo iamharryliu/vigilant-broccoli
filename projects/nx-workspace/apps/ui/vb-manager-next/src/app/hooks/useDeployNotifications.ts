@@ -9,21 +9,14 @@ import {
   DEPLOY_RECEIVER_ID,
   DEPLOY_STATUS,
   DEPLOY_COMMIT_SHORT_LENGTH,
+  DEPLOY_TOAST_LABEL,
+  formatDuration,
   DeployPayload,
 } from '@vigilant-broccoli/deployment';
 
 const TOAST_DURATION_MS = 8000;
 const VIEW_RUN_LABEL = 'View run';
 const WINDOW_TARGET_BLANK = '_blank';
-
-const DEPLOY_TOAST_LABEL = {
-  STARTED: 'Deploy started',
-  SUCCESS: 'Deploy succeeded',
-  FAILURE: 'Deploy failed',
-} as const;
-
-const formatDuration = (s: number) =>
-  s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`;
 
 const description = (p: DeployPayload) =>
   [
@@ -43,18 +36,18 @@ const viewRunAction = (p: DeployPayload) => ({
 
 const DEPLOY_TOAST = {
   [DEPLOY_STATUS.STARTED]: (p: DeployPayload) =>
-    toast.info(DEPLOY_TOAST_LABEL.STARTED, {
+    toast.info(DEPLOY_TOAST_LABEL[DEPLOY_STATUS.STARTED], {
       description: description(p),
       duration: TOAST_DURATION_MS,
     }),
   [DEPLOY_STATUS.SUCCESS]: (p: DeployPayload) =>
-    toast.success(DEPLOY_TOAST_LABEL.SUCCESS, {
+    toast.success(DEPLOY_TOAST_LABEL[DEPLOY_STATUS.SUCCESS], {
       description: description(p),
       duration: TOAST_DURATION_MS,
       action: viewRunAction(p),
     }),
   [DEPLOY_STATUS.FAILURE]: (p: DeployPayload) =>
-    toast.error(DEPLOY_TOAST_LABEL.FAILURE, {
+    toast.error(DEPLOY_TOAST_LABEL[DEPLOY_STATUS.FAILURE], {
       description: description(p),
       duration: TOAST_DURATION_MS,
       action: viewRunAction(p),
