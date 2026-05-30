@@ -11,12 +11,17 @@ import {
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
+import { GCP_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const GCP_CONSOLE_BASE = 'https://console.cloud.google.com';
+const GCP_CONSOLE_LINK = {
+  href: GCP_LINK.CONSOLE.URL,
+  label: 'Console',
+};
 
 const BUTTON_LABELS: Record<string, string> = {
   dashboard: 'Dashboard',
@@ -301,7 +306,7 @@ export const GcloudAuthStatusComponent = () => {
 
   if (error) {
     return (
-      <CardContainer title="GCP Management">
+      <CardContainer title="GCP Management" headerLink={GCP_CONSOLE_LINK}>
         <Text color="red">{error}</Text>
       </CardContainer>
     );
@@ -320,7 +325,7 @@ export const GcloudAuthStatusComponent = () => {
   });
 
   return (
-    <CardContainer title="GCP Management">
+    <CardContainer title="GCP Management" headerLink={GCP_CONSOLE_LINK}>
       {authStatus?.activeAccount ? (
         <Flex direction="column" gap="3">
           {sortedAccounts.length > 0 && (

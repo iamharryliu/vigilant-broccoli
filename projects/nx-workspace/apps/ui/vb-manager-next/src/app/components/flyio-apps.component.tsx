@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Button, Flex, Link, Text } from '@radix-ui/themes';
+import { Badge, Button, Flex, Text } from '@radix-ui/themes';
 import {
   ButtonList,
   ButtonConfig,
@@ -8,8 +8,8 @@ import {
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
+import { FLYIO_LINK } from '@vigilant-broccoli/links';
 import { useCallback, useEffect, useState } from 'react';
-import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -40,19 +40,10 @@ const getStatusColor = (
   return 'red';
 };
 
-const dashboardLink = (
-  <Link
-    href="https://fly.io/dashboard"
-    target="_blank"
-    rel="noopener noreferrer"
-    size="2"
-  >
-    <Flex align="center" gap="1">
-      Dashboard
-      <ExternalLinkIcon width="12" height="12" />
-    </Flex>
-  </Link>
-);
+const DASHBOARD_LINK = {
+  href: FLYIO_LINK.DASHBOARD.URL,
+  label: 'Dashboard',
+};
 
 const getAppUrls = (appName: string) => ({
   App: `${FLY_BASE}/${appName}`,
@@ -126,7 +117,7 @@ export const FlyIoAppsComponent = () => {
 
   if (error) {
     return (
-      <CardContainer title="Fly.io Apps" gap="3" headerAction={dashboardLink}>
+      <CardContainer title="Fly.io Apps" gap="3" headerLink={DASHBOARD_LINK}>
         {authRequired ? (
           <Flex direction="column" gap="2" align="start">
             <Text size="2">Not logged in to Fly.io.</Text>
@@ -148,7 +139,7 @@ export const FlyIoAppsComponent = () => {
   }
 
   return (
-    <CardContainer title="Fly.io Apps" gap="3" headerAction={dashboardLink}>
+    <CardContainer title="Fly.io Apps" gap="3" headerLink={DASHBOARD_LINK}>
       <StatusCardList
         items={appsData.map(toItem)}
         emptyMessage="No apps found"

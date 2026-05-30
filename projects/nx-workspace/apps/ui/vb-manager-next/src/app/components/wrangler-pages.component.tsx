@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Flex, Link, Text } from '@radix-ui/themes';
+import { Badge, Flex, Text } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
@@ -8,11 +8,11 @@ import {
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
+import { CLOUDFLARE_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
-import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const CF_ACCOUNT_ID = '26d066ec62c4d27b8da5e9aebac17293';
@@ -31,19 +31,10 @@ interface WranglerPagesResponse {
   error?: string;
 }
 
-const dashboardLink = (
-  <Link
-    href="https://dash.cloudflare.com"
-    target="_blank"
-    rel="noopener noreferrer"
-    size="2"
-  >
-    <Flex align="center" gap="1">
-      Dashboard
-      <ExternalLinkIcon width="12" height="12" />
-    </Flex>
-  </Link>
-);
+const DASHBOARD_LINK = {
+  href: CLOUDFLARE_LINK.DASHBOARD.URL,
+  label: 'Dashboard',
+};
 
 export const WranglerPagesComponent = () => {
   const [projectsData, setProjectsData] = useState<WranglerProject[]>([]);
@@ -179,7 +170,7 @@ export const WranglerPagesComponent = () => {
 
   if (error) {
     return (
-      <CardContainer title={TITLE} gap="3" headerAction={dashboardLink}>
+      <CardContainer title={TITLE} gap="3" headerLink={DASHBOARD_LINK}>
         <Button onClick={handleLogin} loading={loggingIn} variant="secondary">
           Wrangler Login
         </Button>
@@ -188,7 +179,7 @@ export const WranglerPagesComponent = () => {
   }
 
   return (
-    <CardContainer title={TITLE} gap="3" headerAction={dashboardLink}>
+    <CardContainer title={TITLE} gap="3" headerLink={DASHBOARD_LINK}>
       <StatusCardList
         items={projectsData.map(toItem)}
         emptyMessage="No projects found"

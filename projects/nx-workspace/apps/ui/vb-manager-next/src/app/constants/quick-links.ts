@@ -18,7 +18,7 @@ import {
   TERRAFORM_LINK,
   TWILIO_LINK,
   UTILITY_URL,
-} from '@vigilant-broccoli/common-js';
+} from '@vigilant-broccoli/links';
 import {
   JOURNAL_PATH,
   MAC_OS_APP,

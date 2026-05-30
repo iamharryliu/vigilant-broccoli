@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Flex, Link, Text } from '@radix-ui/themes';
+import { Badge, Flex, Text } from '@radix-ui/themes';
 import {
   ButtonList,
   StatusCardList,
@@ -9,7 +9,6 @@ import {
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
-import { ExternalLinkIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const TITLE = 'GitHub Pages';
@@ -17,7 +16,6 @@ const GH_BASE = 'https://github.com';
 const GH_SETTINGS_PAGES_URL = `${GH_BASE}/settings/pages`;
 const POLL_INTERVAL_MS = 60000;
 const TARGET_BLANK = '_blank';
-const REL_NOOPENER = 'noopener noreferrer';
 
 const STATUS = {
   BUILT: 'built',
@@ -64,19 +62,10 @@ const repoSettingsPagesUrl = (repoUrl: string) => `${repoUrl}/settings/pages`;
 
 const openExternal = (url: string) => window.open(url, TARGET_BLANK);
 
-const settingsLink = (
-  <Link
-    href={GH_SETTINGS_PAGES_URL}
-    target={TARGET_BLANK}
-    rel={REL_NOOPENER}
-    size="2"
-  >
-    <Flex align="center" gap="1">
-      {LABEL.SETTINGS}
-      <ExternalLinkIcon width="12" height="12" />
-    </Flex>
-  </Link>
-);
+const SETTINGS_LINK = {
+  href: GH_SETTINGS_PAGES_URL,
+  label: LABEL.SETTINGS,
+};
 
 const toItem = (site: GithubPagesSite): StatusCardListItem => ({
   id: site.fullName,
@@ -148,7 +137,7 @@ export const GithubPagesComponent = () => {
 
   if (error) {
     return (
-      <CardContainer title={TITLE} gap="3" headerAction={settingsLink}>
+      <CardContainer title={TITLE} gap="3" headerLink={SETTINGS_LINK}>
         <Text size="2" color="red">
           {error}
         </Text>
@@ -157,7 +146,7 @@ export const GithubPagesComponent = () => {
   }
 
   return (
-    <CardContainer title={TITLE} gap="3" headerAction={settingsLink}>
+    <CardContainer title={TITLE} gap="3" headerLink={SETTINGS_LINK}>
       <StatusCardList items={sites.map(toItem)} emptyMessage={MESSAGE.EMPTY} />
     </CardContainer>
   );

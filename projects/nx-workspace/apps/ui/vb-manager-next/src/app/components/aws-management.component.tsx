@@ -8,12 +8,17 @@ import {
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
+import { AWS_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const AWS_CONSOLE_BASE = 'https://console.aws.amazon.com';
+const AWS_CONSOLE_LINK = {
+  href: AWS_LINK.CONSOLE.URL,
+  label: 'Console',
+};
 
 const getProfileUrls = (region: string | null) => {
   const regionParam = region ? `?region=${region}` : '';
@@ -131,14 +136,14 @@ export const AwsManagementComponent = () => {
 
   if (error) {
     return (
-      <CardContainer title="AWS Management">
+      <CardContainer title="AWS Management" headerLink={AWS_CONSOLE_LINK}>
         <Text color="red">{error}</Text>
       </CardContainer>
     );
   }
 
   return (
-    <CardContainer title="AWS Management">
+    <CardContainer title="AWS Management" headerLink={AWS_CONSOLE_LINK}>
       <StatusCardList
         items={profiles.map(toItem)}
         emptyMessage="No AWS profiles found"

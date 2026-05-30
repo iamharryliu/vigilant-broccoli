@@ -1,8 +1,7 @@
 'use client';
 
 import { GithubActionsBadges } from '@vigilant-broccoli/react-lib';
-import { Flex, Text } from '@radix-ui/themes';
-import Link from 'next/link';
+import { Flex } from '@radix-ui/themes';
 import { useState } from 'react';
 import { CardContainer } from './card-container.component';
 import { CardSkeleton } from './skeleton.component';
@@ -20,13 +19,7 @@ export const GithubRepoActionStatusBadges = ({
       <div style={{ display: loading ? 'none' : undefined }}>
         <CardContainer
           title="GitHub Actions"
-          headerAction={
-            <Link href={`${repoUrl}/actions`} target="_blank">
-              <Text size="2" className="text-blue-600 hover:text-blue-800">
-                View All →
-              </Text>
-            </Link>
-          }
+          headerLink={{ href: `${repoUrl}/actions`, label: 'View All' }}
         >
           <Flex direction="column" gap="2">
             <GithubActionsBadges

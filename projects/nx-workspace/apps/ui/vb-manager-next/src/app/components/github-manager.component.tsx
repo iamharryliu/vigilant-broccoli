@@ -15,9 +15,14 @@ import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronRight, Users } from 'lucide-react';
 import { CardContainer } from './card-container.component';
 import { GithubOrgBasic } from '@vigilant-broccoli/common-js';
+import { GITHUB_LINK } from '@vigilant-broccoli/links';
 
 const TITLE = 'Github Organizations';
 const GITHUB_BASE = 'https://github.com';
+const ORGANIZATIONS_SETTINGS_LINK = {
+  href: GITHUB_LINK.ORGANIZATIONS_SETTINGS.URL,
+  label: 'Settings',
+};
 
 export const API_ROUTES = {
   ORGANIZATION_STRUCTURE: '/api/github/organization-structure',
@@ -132,13 +137,13 @@ export const GithubTeamManager = () => {
 
   if (loading) return <CardSkeleton title={TITLE} rows={5} />;
 
-  const title = `${TITLE}${
-    organizations.length ? ` (${organizations.length})` : ''
-  }`;
-
   if (error) {
     return (
-      <CardContainer title={title} gap="3">
+      <CardContainer
+        title={TITLE}
+        gap="3"
+        headerLink={ORGANIZATIONS_SETTINGS_LINK}
+      >
         <ErrorState error={error} />
       </CardContainer>
     );
@@ -146,14 +151,22 @@ export const GithubTeamManager = () => {
 
   if (organizations.length === 0) {
     return (
-      <CardContainer title={title} gap="3">
+      <CardContainer
+        title={TITLE}
+        gap="3"
+        headerLink={ORGANIZATIONS_SETTINGS_LINK}
+      >
         <EmptyState />
       </CardContainer>
     );
   }
 
   return (
-    <CardContainer title={title} gap="3">
+    <CardContainer
+      title={TITLE}
+      gap="3"
+      headerLink={ORGANIZATIONS_SETTINGS_LINK}
+    >
       <StatusCardList
         items={organizations.map(org => toItem(org, handleOrgClick))}
         emptyMessage="No organizations found"
