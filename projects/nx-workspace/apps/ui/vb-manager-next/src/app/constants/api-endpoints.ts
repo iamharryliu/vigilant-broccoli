@@ -27,6 +27,9 @@ export const API_ENDPOINTS = {
   WRANGLER_PAGES: '/api/wrangler/pages',
   WRANGLER_LOGIN: '/api/wrangler/login',
 
+  // GitHub
+  GITHUB_PAGES: '/api/github/pages',
+
   // WireGuard
   WIREGUARD_STATUS: '/api/wireguard/status',
 

@@ -11,6 +11,7 @@ import {
   GithubOrganizationTeamStructure,
   toSlug,
 } from '@vigilant-broccoli/common-js';
+import { GithubPagesSite } from './github.models';
 
 async function getOwnedOrganizations(): Promise<GithubOrgBasic[]> {
   const res = await ShellUtils.runShellCommand(
@@ -203,6 +204,39 @@ async function deleteAllTeams(organizationName: string) {
   );
 }
 
+async function listPagesSites(): Promise<GithubPagesSite[]> {
+  const reposOutput = (await ShellUtils.runShellCommand(
+    GithubCLICommand.listPagesRepos(),
+    true,
+  )) as string;
+
+  if (!reposOutput) return [];
+
+  const repos = reposOutput
+    .split('\n')
+    .filter(line => line.trim())
+    .map(line => JSON.parse(line) as { full_name: string; html_url: string });
+
+  const sites = await Promise.all(
+    repos.map(async repo => {
+      const pagesOutput = (await ShellUtils.runShellCommand(
+        GithubCLICommand.getRepoPages(repo.full_name),
+        true,
+      )) as string;
+      const pages = JSON.parse(pagesOutput);
+      return {
+        fullName: repo.full_name,
+        repoUrl: repo.html_url,
+        pagesUrl: pages.html_url,
+        status: pages.status,
+        cname: pages.cname,
+      };
+    }),
+  );
+
+  return sites;
+}
+
 async function addOrgMember(organizationName: string, username: string) {
   return await ShellUtils.runShellCommand(
     GithubCLICommand.addOrgMember(organizationName, username),
@@ -244,6 +278,7 @@ export const GithubService = {
   getOrgRepositories,
   getTeamMemberMembership,
   getTeamAndDescendants,
+  listPagesSites,
   // UPDATE
   updateTeamRepositories,
   updateTeamMembers,

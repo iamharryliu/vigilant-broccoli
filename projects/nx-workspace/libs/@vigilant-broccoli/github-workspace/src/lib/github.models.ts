@@ -5,3 +5,11 @@ export interface GithubUser {
   id: number;
   role?: GithubUserRole;
 }
+
+export interface GithubPagesSite {
+  fullName: string;
+  repoUrl: string;
+  pagesUrl: string;
+  status: string | null;
+  cname: string | null;
+}

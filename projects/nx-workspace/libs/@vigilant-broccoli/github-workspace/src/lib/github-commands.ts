@@ -51,4 +51,7 @@ export const GithubCLICommand = {
     `gh api -X PUT /orgs/${organizationName}/memberships/${username} -f role=member > /dev/null`,
   removeOrgMember: (organizationName: string, username: string) =>
     `gh api -X DELETE /orgs/${organizationName}/members/${username} > /dev/null`,
+  listPagesRepos: () =>
+    `gh api user/repos --paginate --jq '.[] | select(.has_pages == true) | {full_name, html_url}'`,
+  getRepoPages: (fullName: string) => `gh api repos/${fullName}/pages`,
 };
