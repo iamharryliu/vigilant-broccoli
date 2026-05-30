@@ -3,7 +3,8 @@
 - **Walking**
   - Headlamp
   - Harness
-  - Lead
+  - leash
+  - cooling neck scarf
 - **Consumables**
   - Food(enough dog food for travel duration)
   - Chew toys
@@ -18,9 +19,13 @@
   - Portable Water Bowl
 - **Utility**
   - Doggy Towel
-- **Vehicle**
-  - Car Harness
-  - Carrier
-  - Car cover
 - **Camping**
-  - Dog Leash Stake
+  - dog stake
+
+## Vehicle Travel
+
+- dog cover
+- car harness
+- chew bone
+- dog bed
+- carrier

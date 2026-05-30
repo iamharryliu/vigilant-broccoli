@@ -1,5 +1,6 @@
 # Toiletry Packlist
 
+- handsoap
 - Dental
   - Toothbrush
   - Floss wands
@@ -7,8 +8,10 @@
 - Optical
   - Contact lenses
   - Glasses
-- Nail Clippers
 - Razor
 - Towel
 - Laundry Bag
 - Night guard
+- bath
+  - shampoo, conditioner, soap
+- nail clippers

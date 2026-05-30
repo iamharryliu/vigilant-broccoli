@@ -5,8 +5,4 @@
 - Paper towels
 - Napkins
 - Sunglasses
-- Conditional
-  - With dog:
-    - car cover
-    - car harness and safety buckle
-    - bone
+- [With Dog](./dog-packlist.md#vehicle-travel)

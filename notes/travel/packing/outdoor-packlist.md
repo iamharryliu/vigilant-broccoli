@@ -47,6 +47,9 @@
   - Optional:
     - Thermos
     - Cooler
+    - dishwasher soap
+    - collapsable wash buckets
+    - water tank
 - **Utility**
   - [Travel Packlist Utility](./packlist.md#utility)
   - Swedish Dish Cloths (Wettex)

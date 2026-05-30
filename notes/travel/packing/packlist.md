@@ -21,6 +21,7 @@
 - Overnight
   - [Toiletry](./toiletry-packlist)
   - Slides
+  - Ipren/ibuprofen
 - [Dog Packlist](./dog-packlist.md)
 - [Car Packlist](./car-packlist.md)
 - [Outdoor Packlist](./outdoor-packlist.md)
@@ -29,6 +30,7 @@
 
 ## Utility
 
+- trash bags
 - Power
   - Universal adapter
   - Power bank
@@ -38,13 +40,13 @@
 - Light
   - Headlamp
   - Flash Light
-- Shoehorn
 
 ## Footwear
 
 - sneakers
 - boots
 - sandals
+- shoehorn
 
 ## Nice to have
 
