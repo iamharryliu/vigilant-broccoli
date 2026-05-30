@@ -330,9 +330,12 @@ const MembersList = ({
   const [isAdding, setIsAdding] = useState(false);
 
   const filteredMembers = useMemo(() => {
-    if (!searchQuery.trim()) return members;
+    const sorted = [...members].sort((a, b) =>
+      a.login.localeCompare(b.login, undefined, { sensitivity: 'base' }),
+    );
+    if (!searchQuery.trim()) return sorted;
     const query = searchQuery.toLowerCase();
-    return members.filter(member => member.login.toLowerCase().includes(query));
+    return sorted.filter(member => member.login.toLowerCase().includes(query));
   }, [members, searchQuery]);
 
   const handleDeleteClick = (username: string) => {
