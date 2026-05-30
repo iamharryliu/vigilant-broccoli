@@ -333,7 +333,6 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             ALL_PROJECTS=$(pnpm exec nx show projects --withTarget=deploy-github-pages | tr '\n' ',' | sed 's/,$//')
             echo "has_deployments=true" >> $GITHUB_OUTPUT
-            echo "has_pages_index=true" >> $GITHUB_OUTPUT
             echo "affected_projects=$ALL_PROJECTS" >> $GITHUB_OUTPUT
           else
             BASE="${{ github.event.before }}"
@@ -343,10 +342,8 @@ jobs:
             fi
 
             AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=deploy-github-pages --base=$BASE --head=${{ github.sha }} | tr '\n' ',' | sed 's/,$//')
-            HAS_PAGES_INDEX=$([[ "$PAGES_INDEX_CHANGED" -gt 0 ]] && echo "true" || echo "false")
-            echo "has_pages_index=$HAS_PAGES_INDEX" >> $GITHUB_OUTPUT
 
-            if [[ -n "$AFFECTED_COMMA" || "$HAS_PAGES_INDEX" == "true" ]]; then
+            if [[ -n "$AFFECTED_COMMA" || "$PAGES_INDEX_CHANGED" -gt 0 ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
               echo "affected_projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
             else
@@ -369,7 +366,7 @@ jobs:
         run: pnpm exec nx run docs-md:deploy-github-pages
 
       - name: Stage pages-index landing artifact
-        if: steps.check.outputs.has_pages_index == 'true'
+        if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         run: |
           mkdir -p _site

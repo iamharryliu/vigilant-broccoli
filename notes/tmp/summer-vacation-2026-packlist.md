@@ -178,3 +178,4 @@
 - Folding shovel
 - Hammocks
 - Matches + long lighter
+- Fly swatter
