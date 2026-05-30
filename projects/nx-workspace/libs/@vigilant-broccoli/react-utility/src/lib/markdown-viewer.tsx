@@ -3,7 +3,7 @@ import { marked } from 'marked';
 
 const CLS = {
   ROOT: 'w-full h-full overflow-auto',
-  PROSE: 'prose dark:prose-invert max-w-none px-6 py-4',
+  PROSE: 'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4',
 } as const;
 
 interface MarkdownViewerProps {

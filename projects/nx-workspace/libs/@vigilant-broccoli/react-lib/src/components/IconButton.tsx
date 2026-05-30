@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   Check,
   Copy,
   EllipsisVertical,
@@ -26,6 +27,7 @@ import { Button } from './Button';
 
 export const ICON_BUTTON_ICONS = {
   x: X,
+  'arrow-left': ArrowLeft,
   filter: Filter,
   plus: Plus,
   minus: Minus,

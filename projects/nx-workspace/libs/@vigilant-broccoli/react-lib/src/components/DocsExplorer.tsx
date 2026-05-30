@@ -72,6 +72,7 @@ const COPY = {
   LOADING_CONTENT: 'Loading file content...',
   LOAD_CONTENT_ERROR: 'Failed to load file content',
   COPY_MARKDOWN: 'Copy markdown',
+  BACK_TO_FILES: 'Back to files',
 } as const;
 
 export const DocsExplorer = ({
@@ -93,12 +94,17 @@ export const DocsExplorer = ({
   const [searchResults, setSearchResults] = useState<DocsSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  const [mobilePanel, setMobilePanel] = useState<'sidebar' | 'content'>(
+    'sidebar',
+  );
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultsContainerRef = useRef<HTMLDivElement>(null);
 
   const selectFile = useCallback(
     async (path: string) => {
       setSelectedPath(path);
+      setMobilePanel('content');
       urlSync?.set(path);
       setIsLoadingContent(true);
       setContentError(null);
@@ -123,6 +129,8 @@ export const DocsExplorer = ({
       selectFile(initial);
     }
   }, [urlSync, selectedPath, selectFile]);
+
+  const showSidebarOnMobile = () => setMobilePanel('sidebar');
 
   useEffect(() => {
     if (!search) return;
@@ -202,9 +210,16 @@ export const DocsExplorer = ({
     }
   };
 
+  const sidebarVisibilityCls =
+    mobilePanel === 'sidebar' ? 'flex' : 'hidden md:flex';
+  const contentVisibilityCls =
+    mobilePanel === 'content' ? 'flex' : 'hidden md:flex';
+
   return (
-    <div className="h-full flex gap-4">
-      <Card className="w-80 flex-shrink-0 overflow-hidden flex flex-col">
+    <div className="h-full flex gap-2 md:gap-4">
+      <Card
+        className={`${sidebarVisibilityCls} w-full md:w-80 md:flex-shrink-0 overflow-hidden flex-col`}
+      >
         <div className="px-3 pt-3 pb-2">
           <h2 className="text-sm font-semibold mb-1.5">{sidebarTitle}</h2>
           {search && (
@@ -264,7 +279,9 @@ export const DocsExplorer = ({
         </div>
       </Card>
 
-      <Card className="flex-1 overflow-hidden">
+      <Card
+        className={`${contentVisibilityCls} flex-1 overflow-hidden flex-col`}
+      >
         {!selectedPath ? (
           <CenteredMessage>{emptyMessage}</CenteredMessage>
         ) : isLoadingContent ? (
@@ -273,6 +290,14 @@ export const DocsExplorer = ({
           <CenteredMessage tone="error">{contentError}</CenteredMessage>
         ) : (
           <div className="relative w-full h-full overflow-auto">
+            <div className="absolute top-2 left-2 z-10 md:hidden">
+              <IconButton
+                variant="ghost"
+                icon="arrow-left"
+                onClick={showSidebarOnMobile}
+                aria-label={COPY.BACK_TO_FILES}
+              />
+            </div>
             <div className="absolute top-2 right-2 z-10">
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
@@ -294,7 +319,7 @@ export const DocsExplorer = ({
             {renderContent ? (
               renderContent(content)
             ) : (
-              <pre className="whitespace-pre-wrap px-6 py-4 text-sm">
+              <pre className="whitespace-pre-wrap px-4 sm:px-6 py-4 text-sm">
                 {content}
               </pre>
             )}

@@ -24,7 +24,7 @@ const MODE_LABEL: Record<ViewMode, string> = {
 
 const CLS = {
   TOOLBAR:
-    'flex items-center gap-1 px-6 pt-3 pb-2 border-b border-gray-200 dark:border-gray-700',
+    'flex items-center gap-1 pl-12 pr-12 sm:pl-6 sm:pr-12 md:pl-6 pt-3 pb-2 border-b border-gray-200 dark:border-gray-700',
   MODE_BTN_BASE: 'px-3 py-1 text-xs rounded',
   MODE_BTN_ACTIVE:
     'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100',
