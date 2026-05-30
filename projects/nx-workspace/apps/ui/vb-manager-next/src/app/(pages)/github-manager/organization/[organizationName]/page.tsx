@@ -2,7 +2,7 @@
 import { use, useEffect, useState, useMemo } from 'react';
 import { API_ROUTES } from '../../../../components/github-manager.component';
 import {
-  GithubOrganizationTeamStructure,
+  GithubTeam,
   GithubTeamMember,
   GithubOrgMember,
   GithubOrgRepository,
@@ -29,6 +29,7 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { CardContainer } from '../../../../components/card-container.component';
+import { CardSkeleton } from '../../../../components/skeleton.component';
 import {
   ButtonConfig,
   ButtonList,
@@ -39,65 +40,72 @@ import {
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 
+interface OrgMeta {
+  organizationName: string;
+  avatar_url: string;
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(res.statusText);
+  return res.json();
+}
+
 export default function Page({
   params,
 }: {
   params: Promise<{ organizationName: string }>;
 }) {
   const { organizationName } = use(params);
-  const [organizationStructure, setOrganizationStructure] =
-    useState<GithubOrganizationTeamStructure>();
+  const [meta, setMeta] = useState<OrgMeta>();
+  const [members, setMembers] = useState<GithubOrgMember[]>();
+  const [repositories, setRepositories] = useState<GithubOrgRepository[]>();
+  const [teams, setTeams] = useState<GithubTeam[]>();
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    async function init() {
-      try {
-        setError(null);
-        const res = await fetch(
-          `${API_ROUTES.ORGANIZATION_STRUCTURE}?organization=${organizationName}`,
-        );
+    setError(null);
+    setMeta(undefined);
+    setMembers(undefined);
+    setRepositories(undefined);
+    setTeams(undefined);
 
-        if (!res.ok) {
-          throw new Error(
-            `Failed to fetch organization structure: ${res.statusText}`,
-          );
-        }
+    const qs = `?organization=${organizationName}`;
+    const fail = (label: string) => (err: unknown) =>
+      setError(
+        err instanceof Error
+          ? `Failed to load ${label}: ${err.message}`
+          : `Failed to load ${label}`,
+      );
 
-        const structure = await res.json();
-        setOrganizationStructure(structure);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Failed to load organization structure',
-        );
-      }
-    }
-    init();
+    fetchJson<OrgMeta>(`${API_ROUTES.ORGANIZATION_META}${qs}`)
+      .then(setMeta)
+      .catch(fail('organization'));
+    fetchJson<GithubOrgMember[]>(`${API_ROUTES.ORGANIZATION_MEMBERS}${qs}`)
+      .then(setMembers)
+      .catch(fail('members'));
+    fetchJson<GithubOrgRepository[]>(
+      `${API_ROUTES.ORGANIZATION_REPOSITORIES}${qs}`,
+    )
+      .then(setRepositories)
+      .catch(fail('repositories'));
+    fetchJson<GithubTeam[]>(`${API_ROUTES.ORGANIZATION_TEAMS}${qs}`)
+      .then(setTeams)
+      .catch(fail('teams'));
   }, [organizationName]);
 
-  // Filter teams based on search query
-  const filteredStructure = useMemo(() => {
-    if (!organizationStructure || !searchQuery.trim())
-      return organizationStructure;
-
+  const filteredTeams = useMemo(() => {
+    if (!teams) return undefined;
+    if (!searchQuery.trim()) return teams;
     const query = searchQuery.toLowerCase();
-    const filteredTeams = organizationStructure.teams.filter(team => {
-      // Search in team name
+    return teams.filter(team => {
       if (team.name.toLowerCase().includes(query)) return true;
-
-      // Search in member usernames
       return team.members.some(member =>
         member.username.toLowerCase().includes(query),
       );
     });
-
-    return {
-      ...organizationStructure,
-      teams: filteredTeams,
-    };
-  }, [organizationStructure, searchQuery]);
+  }, [teams, searchQuery]);
 
   if (error) {
     return (
@@ -110,19 +118,19 @@ export default function Page({
     );
   }
 
-  if (!organizationStructure) return null;
-
   return (
     <>
       <Box mb="3">
         <Heading size="7" mb="1">
           <Box style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <img
-              src={organizationStructure.avatar_url}
-              alt={organizationStructure.organizationName}
-              style={{ width: '24px', height: '24px', borderRadius: '4px' }}
-            />
-            {organizationStructure.organizationName}
+            {meta && (
+              <img
+                src={meta.avatar_url}
+                alt={meta.organizationName}
+                style={{ width: '24px', height: '24px', borderRadius: '4px' }}
+              />
+            )}
+            {meta?.organizationName ?? organizationName}
           </Box>
         </Heading>
         <Box
@@ -134,10 +142,13 @@ export default function Page({
           }}
         >
           <Text size="1" color="gray">
-            {organizationStructure.memberCount} member
-            {organizationStructure.memberCount !== 1 ? 's' : ''} ·{' '}
-            {organizationStructure.teams.length} team
-            {organizationStructure.teams.length !== 1 ? 's' : ''}
+            {members
+              ? `${members.length} member${members.length !== 1 ? 's' : ''}`
+              : '… members'}
+            {' · '}
+            {teams
+              ? `${teams.length} team${teams.length !== 1 ? 's' : ''}`
+              : '… teams'}
           </Text>
         </Box>
       </Box>
@@ -156,20 +167,36 @@ export default function Page({
       </Box>
 
       <Grid columns="3" gap="3">
-        <RepositoriesList
-          repositories={organizationStructure.repositories}
-          searchQuery={searchQuery}
-          organizationName={organizationStructure.organizationName}
-        />
-        <MembersList
-          members={organizationStructure.members}
-          searchQuery={searchQuery}
-          organizationName={organizationStructure.organizationName}
-        />
-        <TeamsList
-          structure={filteredStructure || organizationStructure}
-          searchQuery={searchQuery}
-        />
+        {repositories ? (
+          <RepositoriesList
+            repositories={repositories}
+            searchQuery={searchQuery}
+            organizationName={organizationName}
+          />
+        ) : (
+          <CardSkeleton title="Repositories" rows={5} />
+        )}
+        {members ? (
+          <MembersList
+            members={members}
+            searchQuery={searchQuery}
+            organizationName={organizationName}
+            onMemberRemoved={username =>
+              setMembers(prev => prev?.filter(m => m.login !== username))
+            }
+          />
+        ) : (
+          <CardSkeleton title="Members" rows={5} />
+        )}
+        {filteredTeams ? (
+          <TeamsList
+            teams={filteredTeams}
+            organizationName={organizationName}
+            searchQuery={searchQuery}
+          />
+        ) : (
+          <CardSkeleton title="Teams" rows={5} />
+        )}
       </Grid>
     </>
   );
@@ -288,12 +315,13 @@ const MembersList = ({
   members,
   searchQuery,
   organizationName,
+  onMemberRemoved,
 }: {
   members: GithubOrgMember[];
   searchQuery: string;
   organizationName: string;
+  onMemberRemoved: (username: string) => void;
 }) => {
-  const [filteredMembers, setFilteredMembers] = useState<GithubOrgMember[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -301,13 +329,10 @@ const MembersList = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
-  useEffect(() => {
-    const filtered = !searchQuery.trim()
-      ? members
-      : members.filter(member =>
-          member.login.toLowerCase().includes(searchQuery.toLowerCase()),
-        );
-    setFilteredMembers(filtered);
+  const filteredMembers = useMemo(() => {
+    if (!searchQuery.trim()) return members;
+    const query = searchQuery.toLowerCase();
+    return members.filter(member => member.login.toLowerCase().includes(query));
   }, [members, searchQuery]);
 
   const handleDeleteClick = (username: string) => {
@@ -325,7 +350,7 @@ const MembersList = ({
     );
 
     if (response.ok) {
-      setFilteredMembers(prev => prev.filter(m => m.login !== memberToDelete));
+      onMemberRemoved(memberToDelete);
       setDeleteDialogOpen(false);
       setMemberToDelete(null);
     }
@@ -356,7 +381,7 @@ const MembersList = ({
       <CardContainer
         title="Members"
         headerAction={
-          <Box style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Flex align="center" gap="2">
             <Button
               size="1"
               variant="soft"
@@ -368,12 +393,16 @@ const MembersList = ({
             <Link
               href={`https://github.com/orgs/${organizationName}/people`}
               target="_blank"
+              rel="noopener noreferrer"
             >
-              <Text size="2" color="gray" style={{ cursor: 'pointer' }}>
+              <Text
+                size="2"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              >
                 View on GitHub →
               </Text>
             </Link>
-          </Box>
+          </Flex>
         }
       >
         {filteredMembers.length === 0 && searchQuery && (
@@ -505,20 +534,19 @@ const MembersList = ({
 };
 
 const TeamsList = ({
-  structure,
+  teams,
+  organizationName,
   searchQuery,
 }: {
-  structure: GithubOrganizationTeamStructure;
+  teams: GithubTeam[];
+  organizationName: string;
   searchQuery: string;
 }) => {
-  const teamItems: CollapsibleListItemConfig[] = structure.teams.map(team => ({
+  const teamItems: CollapsibleListItemConfig[] = teams.map(team => ({
     id: team.name,
     titleContent: (
       <Heading size="4">
-        <GithubTeamLink
-          organization={structure.organizationName}
-          team={team.name}
-        />
+        <GithubTeamLink organization={organizationName} team={team.name} />
       </Heading>
     ),
     headerAction: (
@@ -558,18 +586,12 @@ const TeamsList = ({
   return (
     <CardContainer
       title="Teams"
-      headerAction={
-        <Link
-          href={`https://github.com/orgs/${structure.organizationName}/teams`}
-          target="_blank"
-        >
-          <Text size="2" color="gray" style={{ cursor: 'pointer' }}>
-            View on GitHub →
-          </Text>
-        </Link>
-      }
+      headerLink={{
+        href: `https://github.com/orgs/${organizationName}/teams`,
+        label: 'View on GitHub',
+      }}
     >
-      {structure.teams.length === 0 && searchQuery && (
+      {teams.length === 0 && searchQuery && (
         <Box style={{ textAlign: 'center', padding: '2rem' }}>
           <Search size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
           <Text size="3" color="gray">
@@ -578,7 +600,7 @@ const TeamsList = ({
         </Box>
       )}
 
-      {structure.teams.length === 0 && !searchQuery && (
+      {teams.length === 0 && !searchQuery && (
         <Box style={{ textAlign: 'center', padding: '3rem 2rem' }}>
           <Users size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
           <Text size="3" color="gray" as="div" mb="1">

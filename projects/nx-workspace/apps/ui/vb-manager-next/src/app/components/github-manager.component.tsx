@@ -25,7 +25,10 @@ const ORGANIZATIONS_SETTINGS_LINK = {
 };
 
 export const API_ROUTES = {
-  ORGANIZATION_STRUCTURE: '/api/github/organization-structure',
+  ORGANIZATION_META: '/api/github/organization/meta',
+  ORGANIZATION_MEMBERS: '/api/github/organization/members',
+  ORGANIZATION_REPOSITORIES: '/api/github/organization/repositories',
+  ORGANIZATION_TEAMS: '/api/github/organization/teams',
   USER_ORGANIZATIONS: '/api/github/user/organizations',
 };
 
