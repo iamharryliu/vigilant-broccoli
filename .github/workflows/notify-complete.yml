@@ -73,7 +73,7 @@ jobs:
       - name: Notify deploy complete
         uses: ./.github/actions/deploy-notify
         with:
-          status: ${{ github.event.workflow_run.conclusion == 'success' && 'success' || 'failure' }}
+          status: ${{ (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && 'success' || 'failure' }}
           job: deploy
           socket_server_url: ${{ env.SOCKET_SERVER_URL }}
           shared_app_token: ${{ env.SHARED_APP_TOKEN }}
