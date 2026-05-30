@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "🧹 LINT & FORMAT"
+echo "  lint:all                    Lint all projects with --fix"
+echo "  format                      Format with nx format:write"
+echo "  lint:commit                 Lint affected projects"
+echo "  format:commit               Format (commit hook)"
+echo ""
+echo "🧪 TEST"
+echo "  test:all                    Run all tests"
+echo "  test:commit                 Test affected projects"
+echo ""
+echo "🏗️  BUILD"
+echo "  build:all                   Build all projects (skip cache)"
+echo ""
+echo "⬆️  MIGRATE"
+echo "  nx:migrate                  nx migrate latest"
+echo "  nx:migrate:run              nx migrate --run-migrations"

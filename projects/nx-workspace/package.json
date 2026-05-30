@@ -10,7 +10,10 @@
     "lint:commit": "nx affected -t lint",
     "format:commit": "pnpm run format",
     "test:commit": "nx affected -t test",
-    "build:all": "nx run-many -t=build --skip-nx-cache"
+    "build:all": "nx run-many -t=build --skip-nx-cache",
+    "nx:migrate": "nx migrate latest",
+    "nx:migrate:run": "nx migrate --run-migrations",
+    "scripts:help": "./scripts/shell/help.sh"
   },
   "lint-staged": {
     "*.ts": [
