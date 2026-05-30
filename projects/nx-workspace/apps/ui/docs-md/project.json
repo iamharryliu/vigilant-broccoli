@@ -1,0 +1,58 @@
+{
+  "name": "docs-md",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/docs-md/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/docs-md"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "docs-md:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "docs-md:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "docs-md:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "deploy-github-pages": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "commands": [
+          "rm -rf ../../../_site/docs-md",
+          "mkdir -p ../../../_site/docs-md",
+          "cp -R ../../../dist/docs-md/. ../../../_site/docs-md/"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
+}
