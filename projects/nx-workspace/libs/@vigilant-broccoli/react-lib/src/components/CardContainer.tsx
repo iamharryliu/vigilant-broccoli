@@ -1,5 +1,4 @@
 import { Card, Flex, Text } from '@radix-ui/themes';
-import Link from 'next/link';
 import { ReactNode } from 'react';
 
 const HEADER_LINK_CLASS =
@@ -20,7 +19,7 @@ interface CardContainerProps {
 }
 
 const HeaderLinkText = ({ href, label, external = true }: HeaderLink) => (
-  <Link
+  <a
     href={href}
     target={external ? '_blank' : undefined}
     rel={external ? 'noopener noreferrer' : undefined}
@@ -28,7 +27,7 @@ const HeaderLinkText = ({ href, label, external = true }: HeaderLink) => (
     <Text size="2" className={HEADER_LINK_CLASS}>
       {label} →
     </Text>
-  </Link>
+  </a>
 );
 
 export const CardContainer = ({

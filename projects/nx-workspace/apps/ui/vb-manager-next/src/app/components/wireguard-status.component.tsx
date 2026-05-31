@@ -3,13 +3,13 @@
 import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
+  CardContainer,
   MonospaceText,
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
-import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface WireguardConnection {

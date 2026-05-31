@@ -1,9 +1,11 @@
 'use client';
 
-import { GithubActionsBadges } from '@vigilant-broccoli/react-lib';
+import {
+  CardContainer,
+  GithubActionsBadges,
+} from '@vigilant-broccoli/react-lib';
 import { Flex } from '@radix-ui/themes';
 import { useState } from 'react';
-import { CardContainer } from './card-container.component';
 import { CardSkeleton } from './skeleton.component';
 
 export const GithubRepoActionStatusBadges = ({

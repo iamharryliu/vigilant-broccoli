@@ -28,11 +28,11 @@ import {
   Trash2,
   UserPlus,
 } from 'lucide-react';
-import { CardContainer } from '../../../../components/card-container.component';
 import { CardSkeleton } from '../../../../components/skeleton.component';
 import {
   ButtonConfig,
   ButtonList,
+  CardContainer,
   CollapsibleList,
   CollapsibleListItemConfig,
   StatusCardList,

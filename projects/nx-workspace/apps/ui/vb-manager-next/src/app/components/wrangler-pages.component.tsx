@@ -4,6 +4,7 @@ import { Badge, Flex, Text } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
+  CardContainer,
   DeleteIconButton,
   StatusCardList,
   StatusCardListItem,
@@ -11,7 +12,6 @@ import {
 import { CLOUDFLARE_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
-import { CardContainer } from './card-container.component';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 

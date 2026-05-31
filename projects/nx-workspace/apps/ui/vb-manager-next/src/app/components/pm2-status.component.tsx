@@ -4,13 +4,13 @@ import { Flex, Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
   Button,
+  CardContainer,
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { PlayIcon, StopIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
-import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface PM2Process {

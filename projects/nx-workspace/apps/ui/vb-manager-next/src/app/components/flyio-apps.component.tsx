@@ -4,6 +4,7 @@ import { Badge, Button, Flex, Text } from '@radix-ui/themes';
 import {
   ButtonList,
   ButtonConfig,
+  CardContainer,
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
@@ -11,7 +12,6 @@ import {
 import { FLYIO_LINK } from '@vigilant-broccoli/links';
 import { useCallback, useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
-import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface FlyApp {

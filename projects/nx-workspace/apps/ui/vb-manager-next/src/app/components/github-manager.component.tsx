@@ -5,6 +5,7 @@ import {
   Button,
   ButtonConfig,
   ButtonList,
+  CardContainer,
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
@@ -13,7 +14,6 @@ import { CardSkeleton } from './skeleton.component';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronRight, Users } from 'lucide-react';
-import { CardContainer } from './card-container.component';
 import { GithubOrgBasic } from '@vigilant-broccoli/common-js';
 import { GITHUB_LINK } from '@vigilant-broccoli/links';
 

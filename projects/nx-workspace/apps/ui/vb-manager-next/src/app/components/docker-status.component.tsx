@@ -4,6 +4,7 @@ import { Flex, Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
   Button,
+  CardContainer,
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
@@ -16,7 +17,6 @@ import {
 } from '@radix-ui/react-icons';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 import { CardSkeleton } from './skeleton.component';
-import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface ServiceInfo {

@@ -16,6 +16,7 @@ export * from './ConversionForm';
 export * from './Button';
 export * from './ButtonList';
 export * from './IconButton';
+export * from './CardContainer';
 export * from './CloseButton';
 export * from './DeleteIconButton';
 export * from './DocsExplorer';

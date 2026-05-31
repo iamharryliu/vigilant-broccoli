@@ -6,6 +6,7 @@ import {
   Button,
   ButtonList,
   ButtonConfig,
+  CardContainer,
   MonospaceText,
   StatusCardList,
   StatusCardListItem,
@@ -14,7 +15,6 @@ import {
 import { GCP_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
-import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const GCP_CONSOLE_BASE = 'https://console.cloud.google.com';

@@ -4,6 +4,7 @@ import { Text, Badge } from '@radix-ui/themes';
 import {
   ButtonList,
   ButtonConfig,
+  CardContainer,
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
@@ -11,7 +12,6 @@ import {
 import { AWS_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
-import { CardContainer } from './card-container.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const AWS_CONSOLE_BASE = 'https://console.aws.amazon.com';

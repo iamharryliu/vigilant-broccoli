@@ -5,6 +5,7 @@ import {
   Button,
   ButtonList,
   ButtonConfig,
+  CardContainer,
   moveQuickLinkFocusByDirection,
   WINDOW_OPEN_FEATURES,
   type Direction,
@@ -12,7 +13,6 @@ import {
 import { useRef, useState } from 'react';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { CardContainer } from './card-container.component';
 import { DashboardIcon, ListBulletIcon } from '@radix-ui/react-icons';
 
 interface LinkItem {
