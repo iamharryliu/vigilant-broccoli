@@ -33,8 +33,6 @@ import {
   ButtonConfig,
   ButtonList,
   CardContainer,
-  CollapsibleList,
-  CollapsibleListItemConfig,
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
@@ -291,7 +289,7 @@ const RepositoriesList = ({
       gap="3"
       headerLink={{
         href: `https://github.com/orgs/${organizationName}/repositories`,
-        label: 'View on GitHub',
+        label: 'View Repositories',
       }}
     >
       {filteredRepositories.length === 0 && searchQuery ? (
@@ -402,7 +400,7 @@ const MembersList = ({
                 size="2"
                 className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                View on GitHub →
+                View Members →
               </Text>
             </Link>
           </Flex>
@@ -536,6 +534,60 @@ const MembersList = ({
   );
 };
 
+const teamMemberRow = (team: GithubTeam, member: GithubTeamMember) => (
+  <Box
+    key={`${team.name}-${member.username}`}
+    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+  >
+    <img
+      src={member.avatar_url}
+      alt={member.username}
+      style={{ width: '20px', height: '20px', borderRadius: '4px' }}
+    />
+    <Box style={{ flex: 1 }}>
+      <GithubUserLink member={member} />
+    </Box>
+    <Badge
+      color={
+        member.role === 'admin'
+          ? 'red'
+          : member.role === 'maintainer'
+            ? 'blue'
+            : 'gray'
+      }
+      size="1"
+    >
+      {member.role}
+    </Badge>
+  </Box>
+);
+
+const teamToItem = (
+  team: GithubTeam,
+  organizationName: string,
+): StatusCardListItem => ({
+  id: team.name,
+  label: '',
+  badges: (
+    <Text size="2" weight="bold">
+      <GithubTeamLink organization={organizationName} team={team.name} />
+    </Text>
+  ),
+  actions: (
+    <Badge color="gray" size="1">
+      {team.members.length} member{team.members.length !== 1 ? 's' : ''}
+    </Badge>
+  ),
+  children:
+    team.members.length === 0 ? (
+      <Text size="1" color="gray">
+        No members
+      </Text>
+    ) : (
+      <>{team.members.map(member => teamMemberRow(team, member))}</>
+    ),
+});
+
 const TeamsList = ({
   teams,
   organizationName,
@@ -545,53 +597,12 @@ const TeamsList = ({
   organizationName: string;
   searchQuery: string;
 }) => {
-  const teamItems: CollapsibleListItemConfig[] = teams.map(team => ({
-    id: team.name,
-    titleContent: (
-      <Heading size="4">
-        <GithubTeamLink organization={organizationName} team={team.name} />
-      </Heading>
-    ),
-    headerAction: (
-      <Badge color="gray" size="1">
-        {team.members.length} member{team.members.length !== 1 ? 's' : ''}
-      </Badge>
-    ),
-    content: team.members.map(member => (
-      <Box
-        key={`${team.name}-${member.username}`}
-        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-      >
-        <img
-          src={member.avatar_url}
-          alt={member.username}
-          style={{ width: '20px', height: '20px', borderRadius: '4px' }}
-        />
-        <Box style={{ flex: 1 }}>
-          <GithubUserLink member={member} />
-        </Box>
-        <Badge
-          color={
-            member.role === 'admin'
-              ? 'red'
-              : member.role === 'maintainer'
-                ? 'blue'
-                : 'gray'
-          }
-          size="1"
-        >
-          {member.role}
-        </Badge>
-      </Box>
-    )),
-  }));
-
   return (
     <CardContainer
       title="Teams"
       headerLink={{
         href: `https://github.com/orgs/${organizationName}/teams`,
-        label: 'View on GitHub',
+        label: 'View Teams',
       }}
     >
       {teams.length === 0 && searchQuery && (
@@ -615,7 +626,12 @@ const TeamsList = ({
         </Box>
       )}
 
-      <CollapsibleList items={teamItems} />
+      {teams.length > 0 && (
+        <StatusCardList
+          items={teams.map(team => teamToItem(team, organizationName))}
+          emptyMessage="No teams found"
+        />
+      )}
     </CardContainer>
   );
 };
