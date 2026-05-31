@@ -21,6 +21,9 @@ import {
 } from 'react';
 import { HighlightMatch } from './HighlightMatch';
 
+const MOBILE_NO_CARD_CLS =
+  '!p-0 [&::before]:!hidden [&::after]:!hidden md:!p-3 md:[&::before]:![display:revert] md:[&::after]:![display:revert]';
+
 const KEY_ARROW_DOWN = 'ArrowDown';
 const KEY_ARROW_UP = 'ArrowUp';
 const KEY_ENTER = 'Enter';
@@ -218,7 +221,7 @@ export const DocsExplorer = ({
   return (
     <div className="h-full flex gap-2 md:gap-4">
       <Card
-        className={`${sidebarVisibilityCls} w-full md:w-80 md:flex-shrink-0 overflow-hidden flex-col`}
+        className={`${MOBILE_NO_CARD_CLS} ${sidebarVisibilityCls} w-full md:w-80 md:flex-shrink-0 overflow-hidden flex-col`}
       >
         <div className="px-3 pt-3 pb-2">
           <h2 className="text-sm font-semibold mb-1.5">{sidebarTitle}</h2>
@@ -280,7 +283,7 @@ export const DocsExplorer = ({
       </Card>
 
       <Card
-        className={`${contentVisibilityCls} flex-1 overflow-hidden flex-col`}
+        className={`${MOBILE_NO_CARD_CLS} ${contentVisibilityCls} flex-1 overflow-hidden flex-col`}
       >
         {!selectedPath ? (
           <CenteredMessage>{emptyMessage}</CenteredMessage>
