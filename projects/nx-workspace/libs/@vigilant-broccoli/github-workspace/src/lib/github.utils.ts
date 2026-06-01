@@ -1,16 +1,15 @@
-/* eslint-disable no-console */
 import { ShellUtils } from '@vigilant-broccoli/common-node';
 import { GithubService } from './github.service';
+import { toSlug } from '@vigilant-broccoli/common-js';
 import {
-  toSlug,
   GithubTeamMember,
   GithubTeamsDTO,
   GithubTeam,
   GithubTeamRepository,
-} from '@vigilant-broccoli/common-js';
+} from '@vigilant-broccoli/github-workspace-js';
 import { GithubUser } from './github.models';
 import { GithubUserRole } from './github.consts';
-import { REPOSITORY_PERMISSION } from '@vigilant-broccoli/common-js';
+import { REPOSITORY_PERMISSION } from '@vigilant-broccoli/github-workspace-js';
 
 async function getTeamMembers(
   org: string,
@@ -65,8 +64,8 @@ async function getTeamRepositories(
       repo.permissions.admin
         ? REPOSITORY_PERMISSION.ADMIN
         : repo.permissions.push || repo.permissions.maintain
-        ? REPOSITORY_PERMISSION.WRITE
-        : REPOSITORY_PERMISSION.READ;
+          ? REPOSITORY_PERMISSION.WRITE
+          : REPOSITORY_PERMISSION.READ;
     return { name: repo.name, permission };
   });
 }

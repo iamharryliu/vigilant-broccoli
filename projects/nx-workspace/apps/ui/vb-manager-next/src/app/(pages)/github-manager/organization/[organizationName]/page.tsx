@@ -6,40 +6,45 @@ import {
   GithubTeamMember,
   GithubOrgMember,
   GithubOrgRepository,
-} from '@vigilant-broccoli/common-js';
+  GITHUB_ORG_URLS,
+} from '@vigilant-broccoli/github-workspace-js';
 import {
   Heading,
   Link,
   Box,
   Text,
-  TextField,
   Callout,
   Badge,
   Grid,
-  Button,
   Dialog,
   Flex,
+  TextField,
 } from '@radix-ui/themes';
+import { AlertCircle, Plus } from 'lucide-react';
+
 import {
-  Users,
-  Search,
-  AlertCircle,
-  UserPlus,
-} from 'lucide-react';
-import { CardSkeleton } from '../../../../components/skeleton.component';
+  CardSkeleton,
+  Skeleton,
+} from '../../../../components/skeleton.component';
 import {
+  Avatar,
+  Button,
   ButtonConfig,
   ButtonList,
   CardContainer,
   EllipsisCTA,
+  SearchInput,
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 
+const ORG_MEMBER_API = '/api/github/organization-members';
+
 interface OrgMeta {
   organizationName: string;
   avatar_url: string;
+  isOrgAdmin: boolean;
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -59,7 +64,6 @@ export default function Page({
   const [repositories, setRepositories] = useState<GithubOrgRepository[]>();
   const [teams, setTeams] = useState<GithubTeam[]>();
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setError(null);
@@ -92,18 +96,6 @@ export default function Page({
       .catch(fail('teams'));
   }, [organizationName]);
 
-  const filteredTeams = useMemo(() => {
-    if (!teams) return undefined;
-    if (!searchQuery.trim()) return teams;
-    const query = searchQuery.toLowerCase();
-    return teams.filter(team => {
-      if (team.name.toLowerCase().includes(query)) return true;
-      return team.members.some(member =>
-        member.username.toLowerCase().includes(query),
-      );
-    });
-  }, [teams, searchQuery]);
-
   if (error) {
     return (
       <Callout.Root color="red">
@@ -117,58 +109,54 @@ export default function Page({
 
   return (
     <>
-      <Box mb="3">
-        <Heading size="7" mb="1">
-          <Box style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {meta && (
-              <img
-                src={meta.avatar_url}
-                alt={meta.organizationName}
-                style={{ width: '24px', height: '24px', borderRadius: '4px' }}
-              />
-            )}
+      <Flex align="center" gap="3" mb="4">
+        <Avatar
+          avatarUrl={meta?.avatar_url}
+          fallback={organizationName[0].toUpperCase()}
+          size="large"
+        />
+        <Box>
+          <Heading size="6">
             {meta?.organizationName ?? organizationName}
-          </Box>
-        </Heading>
-        <Box
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <Text size="1" color="gray">
-            {members
-              ? `${members.length} member${members.length !== 1 ? 's' : ''}`
-              : '… members'}
-            {' · '}
-            {teams
-              ? `${teams.length} team${teams.length !== 1 ? 's' : ''}`
-              : '… teams'}
-          </Text>
+          </Heading>
+          <Flex align="center" gap="2">
+            {repositories ? (
+              <Text size="2" color="gray">
+                {repositories.length} repo{repositories.length !== 1 ? 's' : ''}
+              </Text>
+            ) : (
+              <Skeleton className="h-4 w-12" />
+            )}
+            <Text size="2" color="gray">
+              ·
+            </Text>
+            {members ? (
+              <Text size="2" color="gray">
+                {members.length} member{members.length !== 1 ? 's' : ''}
+              </Text>
+            ) : (
+              <Skeleton className="h-4 w-16" />
+            )}
+            <Text size="2" color="gray">
+              ·
+            </Text>
+            {teams ? (
+              <Text size="2" color="gray">
+                {teams.length} team{teams.length !== 1 ? 's' : ''}
+              </Text>
+            ) : (
+              <Skeleton className="h-4 w-12" />
+            )}
+          </Flex>
         </Box>
-      </Box>
-
-      <Box mb="3">
-        <TextField.Root
-          placeholder="Search teams or members..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          size="2"
-        >
-          <TextField.Slot>
-            <Search size={16} />
-          </TextField.Slot>
-        </TextField.Root>
-      </Box>
+      </Flex>
 
       <Grid columns="3" gap="3">
         {repositories ? (
           <RepositoriesList
             repositories={repositories}
-            searchQuery={searchQuery}
             organizationName={organizationName}
+            isOrgAdmin={meta?.isOrgAdmin ?? false}
           />
         ) : (
           <CardSkeleton title="Repositories" rows={5} />
@@ -176,7 +164,6 @@ export default function Page({
         {members ? (
           <MembersList
             members={members}
-            searchQuery={searchQuery}
             organizationName={organizationName}
             onMemberRemoved={username =>
               setMembers(prev => prev?.filter(m => m.login !== username))
@@ -185,12 +172,8 @@ export default function Page({
         ) : (
           <CardSkeleton title="Members" rows={5} />
         )}
-        {filteredTeams ? (
-          <TeamsList
-            teams={filteredTeams}
-            organizationName={organizationName}
-            searchQuery={searchQuery}
-          />
+        {teams ? (
+          <TeamsList teams={teams} organizationName={organizationName} />
         ) : (
           <CardSkeleton title="Teams" rows={5} />
         )}
@@ -205,24 +188,17 @@ const GithubTeamLink = ({
 }: {
   organization: string;
   team: string;
-}) => {
-  return (
-    <Link
-      href={`https://github.com/orgs/${organization}/teams/${team}`}
-      target="_blank"
-    >
-      {team}
-    </Link>
-  );
-};
+}) => (
+  <Link href={GITHUB_ORG_URLS.team(organization, team)} target="_blank">
+    {team}
+  </Link>
+);
 
-const GithubUserLink = ({ member }: { member: GithubTeamMember }) => {
-  return (
-    <Link href={`https://github.com/${member.username}`} target="_blank">
-      {member.username}
-    </Link>
-  );
-};
+const GithubUserLink = ({ member }: { member: GithubTeamMember }) => (
+  <Link href={GITHUB_ORG_URLS.member(member.username)} target="_blank">
+    {member.username}
+  </Link>
+);
 
 const getRepoUrls = (repoUrl: string) => ({
   Code: repoUrl,
@@ -232,7 +208,69 @@ const getRepoUrls = (repoUrl: string) => ({
   Settings: `${repoUrl}/settings`,
 });
 
-const repoToItem = (repo: GithubOrgRepository): StatusCardListItem => ({
+const memberToItem = (
+  member: GithubOrgMember,
+  organizationName: string,
+  onMemberRemoved: (username: string) => void,
+): StatusCardListItem => ({
+  id: String(member.id),
+  label: member.login,
+  badges: (
+    <Flex align="center" gap="2">
+      {member.role && (
+        <Badge color={member.role === 'admin' ? 'red' : 'gray'} size="1">
+          {member.role}
+        </Badge>
+      )}
+      <Avatar avatarUrl={member.avatar_url} size="xsmall" />
+    </Flex>
+  ),
+  actions: (
+    <EllipsisCTA
+      onDelete={async () => {
+        const response = await fetch(
+          `${ORG_MEMBER_API}?organization=${organizationName}&username=${member.login}`,
+          { method: 'DELETE' },
+        );
+        if (response.ok) onMemberRemoved(member.login);
+      }}
+      confirmDescription={`Remove ${member.login} from the organization?`}
+    />
+  ),
+  children: (
+    <ButtonList
+      buttons={[
+        {
+          label: 'Profile',
+          onClick: () =>
+            window.open(
+              GITHUB_ORG_URLS.member(member.login),
+              '_blank',
+              WINDOW_OPEN_FEATURES,
+            ),
+          isExternal: true,
+        },
+        {
+          label: 'Repos',
+          onClick: () =>
+            window.open(
+              GITHUB_ORG_URLS.memberRepos(member.login),
+              '_blank',
+              WINDOW_OPEN_FEATURES,
+            ),
+          isExternal: true,
+        },
+      ]}
+    />
+  ),
+});
+
+const repoToItem = (
+  repo: GithubOrgRepository,
+  organizationName: string,
+  onRepoDeleted: (repoName: string) => void,
+  isOrgAdmin: boolean,
+): StatusCardListItem => ({
   id: repo.name,
   label: repo.name,
   badges: (
@@ -240,6 +278,18 @@ const repoToItem = (repo: GithubOrgRepository): StatusCardListItem => ({
       {repo.private ? 'Private' : 'Public'}
     </Badge>
   ),
+  actions: isOrgAdmin ? (
+    <EllipsisCTA
+      onDelete={async () => {
+        const response = await fetch(
+          `${API_ROUTES.ORGANIZATION_REPOSITORIES}?organization=${organizationName}&repo=${repo.name}`,
+          { method: 'DELETE' },
+        );
+        if (response.ok) onRepoDeleted(repo.name);
+      }}
+      confirmDescription={`Delete repository "${repo.name}"? This cannot be undone.`}
+    />
+  ) : undefined,
   children: (
     <Flex direction="column" gap="2">
       {repo.description && (
@@ -260,15 +310,85 @@ const repoToItem = (repo: GithubOrgRepository): StatusCardListItem => ({
   ),
 });
 
+const NoResults = ({ query, label }: { query: string; label: string }) => (
+  <Box style={{ textAlign: 'center', padding: '2rem' }}>
+    <Text size="3" color="gray">
+      No {label} match &ldquo;{query}&rdquo;
+    </Text>
+  </Box>
+);
+
+const AddItemDialog = ({
+  title,
+  placeholder,
+  buttonLabel,
+  onAdd,
+}: {
+  title: string;
+  placeholder: string;
+  buttonLabel: string;
+  onAdd: (value: string) => Promise<void>;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAdd = async () => {
+    if (!value.trim()) return;
+    setIsAdding(true);
+    await onAdd(value.trim());
+    setValue('');
+    setIsAdding(false);
+    setOpen(false);
+  };
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger>
+        <Button size="sm" variant="outline" className="w-full">
+          <Plus size={12} />
+          {buttonLabel}
+        </Button>
+      </Dialog.Trigger>
+      <Dialog.Content style={{ maxWidth: 400 }}>
+        <Dialog.Title>{title}</Dialog.Title>
+        <TextField.Root
+          placeholder={placeholder}
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleAdd()}
+          size="2"
+          mt="3"
+        />
+        <Flex gap="2" justify="end" mt="3">
+          <Dialog.Close>
+            <Button variant="ghost">Cancel</Button>
+          </Dialog.Close>
+          <Button
+            onClick={handleAdd}
+            disabled={!value.trim()}
+            loading={isAdding}
+          >
+            {buttonLabel}
+          </Button>
+        </Flex>
+      </Dialog.Content>
+    </Dialog.Root>
+  );
+};
+
 const RepositoriesList = ({
-  repositories,
-  searchQuery,
+  repositories: initialRepositories,
   organizationName,
+  isOrgAdmin,
 }: {
   repositories: GithubOrgRepository[];
-  searchQuery: string;
   organizationName: string;
+  isOrgAdmin: boolean;
 }) => {
+  const [repositories, setRepositories] = useState(initialRepositories);
+  const [searchQuery, setSearchQuery] = useState('');
+
   const filteredRepositories = useMemo(() => {
     const sorted = [...repositories].sort((a, b) =>
       a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
@@ -287,20 +407,57 @@ const RepositoriesList = ({
       title="Repositories"
       gap="3"
       headerLink={{
-        href: `https://github.com/orgs/${organizationName}/repositories`,
+        href: GITHUB_ORG_URLS.repositories(organizationName),
         label: 'View Repositories',
       }}
     >
+      <Box mb="2">
+        <SearchInput
+          placeholder="Search repositories..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
+      </Box>
+      <AddItemDialog
+        title="Create Repository"
+        placeholder="Repository name..."
+        buttonLabel="Create Repository"
+        onAdd={async repoName => {
+          const response = await fetch(API_ROUTES.ORGANIZATION_REPOSITORIES, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ organization: organizationName, repoName }),
+          });
+          if (response.ok)
+            setRepositories(prev => [
+              ...prev,
+              {
+                name: repoName,
+                html_url: `https://github.com/${organizationName}/${repoName}`,
+                description: null,
+                private: true,
+                fork: false,
+                archived: false,
+                stargazers_count: 0,
+                language: null,
+                updated_at: new Date().toISOString(),
+              },
+            ]);
+        }}
+      />
       {filteredRepositories.length === 0 && searchQuery ? (
-        <Box style={{ textAlign: 'center', padding: '2rem' }}>
-          <Search size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-          <Text size="3" color="gray">
-            No repositories match &ldquo;{searchQuery}&rdquo;
-          </Text>
-        </Box>
+        <NoResults query={searchQuery} label="repositories" />
       ) : (
         <StatusCardList
-          items={filteredRepositories.map(repoToItem)}
+          items={filteredRepositories.map(repo =>
+            repoToItem(
+              repo,
+              organizationName,
+              name =>
+                setRepositories(prev => prev.filter(r => r.name !== name)),
+              isOrgAdmin,
+            ),
+          )}
           emptyMessage="No repositories found"
         />
       )}
@@ -310,18 +467,14 @@ const RepositoriesList = ({
 
 const MembersList = ({
   members,
-  searchQuery,
   organizationName,
   onMemberRemoved,
 }: {
   members: GithubOrgMember[];
-  searchQuery: string;
   organizationName: string;
   onMemberRemoved: (username: string) => void;
 }) => {
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [newUsername, setNewUsername] = useState('');
-  const [isAdding, setIsAdding] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const filteredMembers = useMemo(() => {
     const sorted = [...members].sort((a, b) => {
@@ -333,179 +486,45 @@ const MembersList = ({
     return sorted.filter(member => member.login.toLowerCase().includes(query));
   }, [members, searchQuery]);
 
-  const handleAddMember = async () => {
-    if (!newUsername.trim()) return;
-
-    setIsAdding(true);
-    const response = await fetch('/api/github/organization-members', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        organization: organizationName,
-        username: newUsername.trim(),
-      }),
-    });
-
-    if (response.ok) {
-      window.location.reload();
-    }
-    setIsAdding(false);
-  };
-
   return (
-    <>
-      <CardContainer
-        title="Members"
-        headerAction={
-          <Flex align="center" gap="2">
-            <Button
-              size="1"
-              variant="soft"
-              onClick={() => setAddDialogOpen(true)}
-            >
-              <UserPlus size={14} />
-              Add
-            </Button>
-            <Link
-              href={`https://github.com/orgs/${organizationName}/people`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Text
-                size="2"
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-              >
-                View Members →
-              </Text>
-            </Link>
-          </Flex>
-        }
-      >
-        {filteredMembers.length === 0 && searchQuery ? (
-          <Box style={{ textAlign: 'center', padding: '2rem' }}>
-            <Search size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-            <Text size="3" color="gray">
-              No members match &ldquo;{searchQuery}&rdquo;
-            </Text>
-          </Box>
-        ) : (
-          <StatusCardList
-            items={filteredMembers.map(
-              (member): StatusCardListItem => ({
-                id: String(member.id),
-                label: '',
-                badges: (
-                  <Flex align="center" gap="2">
-                    <img
-                      src={member.avatar_url}
-                      alt={member.login}
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '4px',
-                      }}
-                    />
-                    <Link href={member.html_url} target="_blank">
-                      <Text size="2">{member.login}</Text>
-                    </Link>
-                  </Flex>
-                ),
-                children: (
-                  <Flex direction="column" gap="2">
-                    <ButtonList
-                      buttons={[
-                        {
-                          label: 'Profile',
-                          onClick: () =>
-                            window.open(
-                              member.html_url,
-                              '_blank',
-                              WINDOW_OPEN_FEATURES,
-                            ),
-                          isExternal: true,
-                        },
-                        {
-                          label: 'Repos',
-                          onClick: () =>
-                            window.open(
-                              `${member.html_url}?tab=repositories`,
-                              '_blank',
-                              WINDOW_OPEN_FEATURES,
-                            ),
-                          isExternal: true,
-                        },
-                      ]}
-                    />
-                  </Flex>
-                ),
-                actions: (
-                  <Flex align="center" gap="2">
-                    {member.role && (
-                      <Badge
-                        color={member.role === 'admin' ? 'red' : 'gray'}
-                        size="1"
-                      >
-                        {member.role}
-                      </Badge>
-                    )}
-                    <EllipsisCTA
-                      onDelete={async () => {
-                        const response = await fetch(
-                          `/api/github/organization-members?organization=${organizationName}&username=${member.login}`,
-                          { method: 'DELETE' },
-                        );
-                        if (response.ok) onMemberRemoved(member.login);
-                      }}
-                      confirmDescription={`Remove ${member.login} from the organization?`}
-                    />
-                  </Flex>
-                ),
-              }),
-            )}
-            emptyMessage="No members found"
-          />
-        )}
-      </CardContainer>
-
-      <Dialog.Root open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-        <Dialog.Content style={{ maxWidth: 450 }}>
-          <Dialog.Title>Add Member</Dialog.Title>
-          <Dialog.Description size="2" mb="4">
-            Enter the GitHub username of the person you want to invite to the
-            organization.
-          </Dialog.Description>
-
-          <TextField.Root
-            placeholder="GitHub username"
-            value={newUsername}
-            onChange={e => setNewUsername(e.target.value)}
-            size="2"
-          />
-
-          <Box
-            style={{
-              display: 'flex',
-              gap: '0.5rem',
-              justifyContent: 'flex-end',
-              marginTop: '1rem',
-            }}
-          >
-            <Dialog.Close>
-              <Button variant="soft" color="gray">
-                Cancel
-              </Button>
-            </Dialog.Close>
-            <Button
-              variant="solid"
-              onClick={handleAddMember}
-              disabled={isAdding || !newUsername.trim()}
-            >
-              {isAdding ? 'Adding...' : 'Add Member'}
-            </Button>
-          </Box>
-        </Dialog.Content>
-      </Dialog.Root>
-    </>
+    <CardContainer
+      title="Members"
+      headerLink={{
+        href: GITHUB_ORG_URLS.people(organizationName),
+        label: 'View Members',
+      }}
+    >
+      <Box mb="2">
+        <SearchInput
+          placeholder="Search members..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
+      </Box>
+      <AddItemDialog
+        title="Add Member"
+        placeholder="GitHub username..."
+        buttonLabel="Add Member"
+        onAdd={async username => {
+          await fetch(ORG_MEMBER_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ organization: organizationName, username }),
+          });
+          window.location.reload();
+        }}
+      />
+      {filteredMembers.length === 0 && searchQuery ? (
+        <NoResults query={searchQuery} label="members" />
+      ) : (
+        <StatusCardList
+          items={filteredMembers.map(member =>
+            memberToItem(member, organizationName, onMemberRemoved),
+          )}
+          emptyMessage="No members found"
+        />
+      )}
+    </CardContainer>
   );
 };
 
@@ -514,11 +533,7 @@ const teamMemberRow = (team: GithubTeam, member: GithubTeamMember) => (
     key={`${team.name}-${member.username}`}
     style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
   >
-    <img
-      src={member.avatar_url}
-      alt={member.username}
-      style={{ width: '20px', height: '20px', borderRadius: '4px' }}
-    />
+    <Avatar avatarUrl={member.avatar_url} size="xsmall" />
     <Box style={{ flex: 1 }}>
       <GithubUserLink member={member} />
     </Box>
@@ -540,70 +555,104 @@ const teamMemberRow = (team: GithubTeam, member: GithubTeamMember) => (
 const teamToItem = (
   team: GithubTeam,
   organizationName: string,
+  onTeamDeleted: (teamName: string) => void,
 ): StatusCardListItem => ({
   id: team.name,
-  label: '',
+  label: team.name,
   badges: (
     <Text size="2" weight="bold">
       <GithubTeamLink organization={organizationName} team={team.name} />
     </Text>
   ),
   actions: (
-    <Badge color="gray" size="1">
-      {team.members.length} member{team.members.length !== 1 ? 's' : ''}
-    </Badge>
+    <EllipsisCTA
+      onDelete={async () => {
+        const response = await fetch(
+          `/api/github/organization/teams?organization=${organizationName}&team=${encodeURIComponent(team.name)}`,
+          { method: 'DELETE' },
+        );
+        if (response.ok) onTeamDeleted(team.name);
+      }}
+      confirmDescription={`Delete team "${team.name}" from the organization?`}
+    />
   ),
-  children:
-    team.members.length === 0 ? (
-      <Text size="1" color="gray">
-        No members
-      </Text>
-    ) : (
-      <>{team.members.map(member => teamMemberRow(team, member))}</>
-    ),
+  children: (
+    <Flex direction="column" gap="2">
+      <Badge color="gray" size="1" style={{ alignSelf: 'flex-start' }}>
+        {team.members.length} member{team.members.length !== 1 ? 's' : ''}
+      </Badge>
+      {team.members.length === 0 ? (
+        <Text size="1" color="gray">
+          No members
+        </Text>
+      ) : (
+        team.members.map(member => teamMemberRow(team, member))
+      )}
+    </Flex>
+  ),
 });
 
 const TeamsList = ({
-  teams,
+  teams: initialTeams,
   organizationName,
-  searchQuery,
 }: {
   teams: GithubTeam[];
   organizationName: string;
-  searchQuery: string;
 }) => {
+  const [teams, setTeams] = useState(initialTeams);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredTeams = useMemo(() => {
+    if (!searchQuery.trim()) return teams;
+    const query = searchQuery.toLowerCase();
+    return teams.filter(
+      team =>
+        team.name.toLowerCase().includes(query) ||
+        team.members.some(m => m.username.toLowerCase().includes(query)),
+    );
+  }, [teams, searchQuery]);
+
   return (
     <CardContainer
       title="Teams"
       headerLink={{
-        href: `https://github.com/orgs/${organizationName}/teams`,
+        href: GITHUB_ORG_URLS.teams(organizationName),
         label: 'View Teams',
       }}
     >
-      {teams.length === 0 && searchQuery && (
-        <Box style={{ textAlign: 'center', padding: '2rem' }}>
-          <Search size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-          <Text size="3" color="gray">
-            No teams match &ldquo;{searchQuery}&rdquo;
-          </Text>
-        </Box>
-      )}
-
-      {teams.length === 0 && !searchQuery && (
-        <Box style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-          <Users size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-          <Text size="3" color="gray" as="div" mb="1">
-            No teams found
-          </Text>
-          <Text size="2" color="gray">
-            This organization doesn&apos;t have any teams yet.
-          </Text>
-        </Box>
-      )}
-
-      {teams.length > 0 && (
+      <Box mb="2">
+        <SearchInput
+          placeholder="Search teams..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
+      </Box>
+      <AddItemDialog
+        title="Create Team"
+        placeholder="Team name..."
+        buttonLabel="Create Team"
+        onAdd={async teamName => {
+          const response = await fetch(API_ROUTES.ORGANIZATION_TEAMS, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ organization: organizationName, teamName }),
+          });
+          if (response.ok)
+            setTeams(prev => [
+              ...prev,
+              { name: teamName, members: [], repositories: [], teams: [] },
+            ]);
+        }}
+      />
+      {filteredTeams.length === 0 && searchQuery ? (
+        <NoResults query={searchQuery} label="teams" />
+      ) : (
         <StatusCardList
-          items={teams.map(team => teamToItem(team, organizationName))}
+          items={filteredTeams.map(team =>
+            teamToItem(team, organizationName, name =>
+              setTeams(prev => prev.filter(t => t.name !== name)),
+            ),
+          )}
           emptyMessage="No teams found"
         />
       )}

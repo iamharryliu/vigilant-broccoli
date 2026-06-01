@@ -5,14 +5,13 @@ import {
   Button,
   ButtonList,
   CardContainer,
-  DeleteIconButton,
+  EllipsisCTA,
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
 import { CLOUDFLARE_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
-import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const CF_ACCOUNT_ID = '26d066ec62c4d27b8da5e9aebac17293';
@@ -41,7 +40,6 @@ export const WranglerPagesComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loggingIn, setLoggingIn] = useState(false);
-  const [deletingProject, setDeletingProject] = useState<string | null>(null);
 
   const fetchWranglerPages = async () => {
     try {
@@ -61,20 +59,13 @@ export const WranglerPagesComponent = () => {
   };
 
   const handleDelete = async (projectName: string) => {
-    setDeletingProject(projectName);
-    try {
-      const response = await fetch(API_ENDPOINTS.WRANGLER_PAGES, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectName }),
-      });
-      if (!response.ok) throw new Error('Failed to delete project');
+    const response = await fetch(API_ENDPOINTS.WRANGLER_PAGES, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectName }),
+    });
+    if (response.ok)
       setProjectsData(prev => prev.filter(p => p.name !== projectName));
-    } catch (err) {
-      console.error('Failed to delete project:', err);
-    } finally {
-      setDeletingProject(null);
-    }
   };
 
   const handleLogin = async () => {
@@ -115,12 +106,9 @@ export const WranglerPagesComponent = () => {
         </Badge>
       ),
       actions: (
-        <ConfirmDeleteDialog
-          trigger={<DeleteIconButton title="Delete project" />}
-          title="Delete Wrangler Pages Project"
-          description={`Are you sure you want to delete "${project.name}"? This action cannot be undone.`}
-          onConfirm={() => handleDelete(project.name)}
-          loading={deletingProject === project.name}
+        <EllipsisCTA
+          onDelete={() => handleDelete(project.name)}
+          confirmDescription={`Delete "${project.name}"? This action cannot be undone.`}
         />
       ),
       children: (

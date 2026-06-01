@@ -14,7 +14,7 @@ import { CardSkeleton } from './skeleton.component';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronRight, Users } from 'lucide-react';
-import { GithubOrgBasic } from '@vigilant-broccoli/common-js';
+import { GithubOrgBasic } from '@vigilant-broccoli/github-workspace-js';
 import { GITHUB_LINK } from '@vigilant-broccoli/links';
 
 const TITLE = 'Github Organizations';

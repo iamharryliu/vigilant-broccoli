@@ -36,8 +36,6 @@ export * from './lib/utils/env.utils';
 export * from './lib/utils/string.utils';
 export * from './lib/utils/date.utils';
 
-export * from './lib/github/github.types';
-
 export function downloadJson(data: unknown, filename: string) {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
     type: 'application/json',

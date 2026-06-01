@@ -1,4 +1,4 @@
-import { GithubTeamMember } from '@vigilant-broccoli/common-js';
+import { GithubTeamMember } from '@vigilant-broccoli/github-workspace-js';
 
 export const GithubCLICommand = {
   createTeam: (
@@ -47,8 +47,14 @@ export const GithubCLICommand = {
   getOrgAdmins: (organizationName: string) =>
     `gh api orgs/${organizationName}/members?role=admin --paginate`,
   getOrgData: (organizationName: string) => `gh api orgs/${organizationName}`,
+  getOrgMembershipRole: (organizationName: string) =>
+    `gh api user/memberships/orgs/${organizationName} --jq '.role'`,
   getOrgRepositories: (organizationName: string) =>
     `gh api orgs/${organizationName}/repos --paginate`,
+  createOrgRepo: (organizationName: string, repoName: string) =>
+    `gh api -X POST /orgs/${organizationName}/repos -f name="${repoName}" -f private=true > /dev/null`,
+  deleteOrgRepo: (organizationName: string, repoName: string) =>
+    `gh api -X DELETE /repos/${organizationName}/${repoName}`,
   addOrgMember: (organizationName: string, username: string) =>
     `gh api -X PUT /orgs/${organizationName}/memberships/${username} -f role=member > /dev/null`,
   removeOrgMember: (organizationName: string, username: string) =>

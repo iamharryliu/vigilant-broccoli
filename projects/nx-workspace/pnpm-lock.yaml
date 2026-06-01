@@ -736,6 +736,15 @@ importers:
       '@vigilant-broccoli/common-node':
         specifier: workspace:*
         version: link:../common-node
+      '@vigilant-broccoli/github-workspace-js':
+        specifier: workspace:*
+        version: link:../github-workspace-js
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  libs/@vigilant-broccoli/github-workspace-js:
+    dependencies:
       tslib:
         specifier: ^2.3.0
         version: 2.8.1

@@ -9,8 +9,8 @@ import {
   GithubOrgBasic,
   GithubOrgRepository,
   GithubOrganizationTeamStructure,
-  toSlug,
-} from '@vigilant-broccoli/common-js';
+} from '@vigilant-broccoli/github-workspace-js';
+import { toSlug } from '@vigilant-broccoli/common-js';
 import { GithubPagesSite } from './github.models';
 
 async function getOwnedOrganizations(): Promise<GithubOrgBasic[]> {
@@ -79,6 +79,14 @@ async function getOrgData(org: string): Promise<{ avatar_url: string }> {
   return JSON.parse(orgData);
 }
 
+async function getOrgMembershipRole(org: string): Promise<'admin' | 'member'> {
+  const role = (await ShellUtils.runShellCommand(
+    GithubCLICommand.getOrgMembershipRole(org),
+    true,
+  )) as string;
+  return role.trim().replace(/^"|"$/g, '') as 'admin' | 'member';
+}
+
 async function getOrgMembers(org: string): Promise<GithubOrgMember[]> {
   const [membersData, adminsData] = await Promise.all([
     ShellUtils.runShellCommand(
@@ -90,11 +98,13 @@ async function getOrgMembers(org: string): Promise<GithubOrgMember[]> {
       true,
     ) as Promise<string>,
   ]);
-  const members: GithubOrgMember[] = Array.isArray(JSON.parse(membersData))
-    ? JSON.parse(membersData)
+  const parsedMembers = JSON.parse(membersData);
+  const parsedAdmins = JSON.parse(adminsData);
+  const members: GithubOrgMember[] = Array.isArray(parsedMembers)
+    ? parsedMembers
     : [];
   const adminLogins = new Set<string>(
-    (Array.isArray(JSON.parse(adminsData)) ? JSON.parse(adminsData) : []).map(
+    (Array.isArray(parsedAdmins) ? parsedAdmins : []).map(
       (a: GithubOrgMember) => a.login,
     ),
   );
@@ -206,6 +216,13 @@ async function removeMembersNotInConfig(
     }
   }
 }
+async function deleteTeam(organizationName: string, teamName: string) {
+  const teamSlug = toSlug(teamName);
+  await ShellUtils.runShellCommand(
+    GithubCLICommand.deleteTeam(organizationName, teamSlug),
+  );
+}
+
 async function deleteAllTeams(organizationName: string) {
   const teamsData = await GithubService.getTeamsData(organizationName);
   console.log('Deleting all teams for organization:', organizationName);
@@ -253,6 +270,24 @@ async function listPagesSites(): Promise<GithubPagesSite[]> {
   return sites;
 }
 
+async function createOrgTeam(organizationName: string, teamName: string) {
+  await ShellUtils.runShellCommand(
+    GithubCLICommand.createTeam(organizationName, teamName),
+  );
+}
+
+async function createOrgRepo(organizationName: string, repoName: string) {
+  await ShellUtils.runShellCommand(
+    GithubCLICommand.createOrgRepo(organizationName, repoName),
+  );
+}
+
+async function deleteOrgRepo(organizationName: string, repoName: string) {
+  await ShellUtils.runShellCommand(
+    GithubCLICommand.deleteOrgRepo(organizationName, repoName),
+  );
+}
+
 async function addOrgMember(organizationName: string, username: string) {
   return await ShellUtils.runShellCommand(
     GithubCLICommand.addOrgMember(organizationName, username),
@@ -287,6 +322,7 @@ export const GithubService = {
   getOwnedOrganizations,
   getOrgStructure,
   getOrgData,
+  getOrgMembershipRole,
   getTeamsData,
   getTeamMembers,
   getOrgMembers,
@@ -298,10 +334,14 @@ export const GithubService = {
   // UPDATE
   updateTeamRepositories,
   updateTeamMembers,
+  createOrgTeam,
+  createOrgRepo,
+  deleteOrgRepo,
   addOrgMember,
   // DELETE
   removeMembersNotInConfig,
   removeOrgMember,
+  deleteTeam,
   deleteAllTeams,
   // SECRETS
   setSecret,

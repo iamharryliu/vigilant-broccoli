@@ -1,4 +1,4 @@
-import { GithubOrganizationTeamStructure } from '@vigilant-broccoli/common-js';
+import { GithubOrganizationTeamStructure } from '@vigilant-broccoli/github-workspace-js';
 
 export type GithubConfigFile = {
   config: GithubOrganizationTeamStructure;
