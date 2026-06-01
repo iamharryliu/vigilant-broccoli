@@ -9,6 +9,7 @@ export type GithubOrgMember = {
   html_url: string;
   avatar_url: string;
   repos_url: string;
+  role?: 'admin' | 'member';
 };
 
 export type GithubOrgRepository = {

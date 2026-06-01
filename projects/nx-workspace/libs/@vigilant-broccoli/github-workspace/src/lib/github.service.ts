@@ -80,12 +80,28 @@ async function getOrgData(org: string): Promise<{ avatar_url: string }> {
 }
 
 async function getOrgMembers(org: string): Promise<GithubOrgMember[]> {
-  const membersData = (await ShellUtils.runShellCommand(
-    GithubCLICommand.getOrgMembers(org),
-    true,
-  )) as string;
-  const members = JSON.parse(membersData);
-  return Array.isArray(members) ? members : [];
+  const [membersData, adminsData] = await Promise.all([
+    ShellUtils.runShellCommand(
+      GithubCLICommand.getOrgMembers(org),
+      true,
+    ) as Promise<string>,
+    ShellUtils.runShellCommand(
+      GithubCLICommand.getOrgAdmins(org),
+      true,
+    ) as Promise<string>,
+  ]);
+  const members: GithubOrgMember[] = Array.isArray(JSON.parse(membersData))
+    ? JSON.parse(membersData)
+    : [];
+  const adminLogins = new Set<string>(
+    (Array.isArray(JSON.parse(adminsData)) ? JSON.parse(adminsData) : []).map(
+      (a: GithubOrgMember) => a.login,
+    ),
+  );
+  return members.map(m => ({
+    ...m,
+    role: adminLogins.has(m.login) ? 'admin' : 'member',
+  }));
 }
 
 async function getOrgMembersCount(org: string): Promise<number> {

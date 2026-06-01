@@ -44,6 +44,8 @@ export const GithubCLICommand = {
     `gh api -X DELETE /orgs/${organizationName}/teams/${teamSlug}`,
   getOrgMembers: (organizationName: string) =>
     `gh api orgs/${organizationName}/members --paginate`,
+  getOrgAdmins: (organizationName: string) =>
+    `gh api orgs/${organizationName}/members?role=admin --paginate`,
   getOrgData: (organizationName: string) => `gh api orgs/${organizationName}`,
   getOrgRepositories: (organizationName: string) =>
     `gh api orgs/${organizationName}/repos --paginate`,

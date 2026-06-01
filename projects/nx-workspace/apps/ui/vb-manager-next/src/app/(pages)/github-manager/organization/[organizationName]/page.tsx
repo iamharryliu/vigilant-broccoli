@@ -437,6 +437,11 @@ const MembersList = ({
               />
               <Text size="2">{member.login}</Text>
             </Link>
+            {member.role && (
+              <Badge color={member.role === 'admin' ? 'red' : 'gray'} size="1">
+                {member.role}
+              </Badge>
+            )}
             <Link
               href={`${member.html_url}?tab=repositories`}
               target="_blank"
