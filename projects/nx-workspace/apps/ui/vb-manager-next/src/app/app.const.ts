@@ -12,6 +12,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Home',
     path: '/',
   },
+  CHATBOT: {
+    title: 'Chatbot',
+    path: '/chatbot',
+  },
   KANBAN: {
     title: 'Kanban',
     path: '/kanban',

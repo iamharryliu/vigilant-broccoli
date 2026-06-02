@@ -11,7 +11,7 @@ import {
   Card,
   Select,
 } from '@radix-ui/themes';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Trash2 } from 'lucide-react';
 import {
@@ -65,15 +65,13 @@ interface Message {
 const COMMAND_NAME = {
   HELP: 'help',
   CALENDAR: 'calendar',
-  TASKS_TEXT: 'tasks-text',
-  TASKS_IMAGE: 'tasks-image',
+  TASKS: 'tasks',
 } as const;
 
 const COMMAND_LABEL = {
   [COMMAND_NAME.HELP]: 'Show available commands',
   [COMMAND_NAME.CALENDAR]: 'Create calendar event',
-  [COMMAND_NAME.TASKS_TEXT]: 'Tasks from text',
-  [COMMAND_NAME.TASKS_IMAGE]: 'Tasks from image',
+  [COMMAND_NAME.TASKS]: 'Create tasks',
 } as const;
 
 interface ChatCommand {
@@ -98,6 +96,17 @@ interface ChatbotDialogProps {
   suggestions?: ChatSuggestion[];
 }
 
+interface ChatbotPanelProps {
+  initialPrompt?: string;
+  systemPrompt?: string;
+  suggestions?: ChatSuggestion[];
+  variant?: 'dialog' | 'page';
+  isOpen?: boolean;
+  onClose?: () => void;
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
+}
+
 const MAX_MESSAGES = 20;
 
 const CONST_ERROR_MESSAGE = 'Error: Failed to get response';
@@ -115,8 +124,7 @@ const EVENT_CANCELLED_MESSAGE = 'Event cancelled.';
 
 const TASKS_API_PATH = '/api/tasks';
 const TASKS_LISTS_API_PATH = '/api/tasks/lists';
-const TASKS_PARSE_TEXT_API_PATH = '/api/tasks/parse-text';
-const TASKS_PARSE_IMAGE_API_PATH = '/api/tasks/parse-image';
+const TASKS_PARSE_API_PATH = '/api/tasks/parse-image';
 
 const KEY = {
   ARROW_DOWN: 'ArrowDown',
@@ -130,10 +138,8 @@ const HELP_HEADING = '**Available commands**';
 const HELP_COMMAND_DESCRIPTION = 'List the available slash commands.';
 const CALENDAR_COMMAND_DESCRIPTION =
   'Parse text/images from the input into a calendar event draft.';
-const TASKS_TEXT_COMMAND_DESCRIPTION =
-  'Extract a Google Tasks list from the input text.';
-const TASKS_IMAGE_COMMAND_DESCRIPTION =
-  'Extract a Google Tasks list from attached images.';
+const TASKS_COMMAND_DESCRIPTION =
+  'Extract a Google Tasks list from the input text and/or attached images.';
 const CHAT_MODELS = LLM_MODELS.filter(
   model => !modelSupportsImageOutput(model),
 );
@@ -211,11 +217,13 @@ const ImagePreview = ({
   </div>
 );
 
-const DialogHeader = ({
+const PanelHeader = ({
+  variant,
   isFullscreen,
   onClear,
   onToggleFullscreen,
 }: {
+  variant: 'dialog' | 'page';
   isFullscreen: boolean;
   onClear: () => void;
   onToggleFullscreen: () => void;
@@ -223,7 +231,13 @@ const DialogHeader = ({
   <Flex justify="between" align="center" style={{ minHeight: '2.5rem' }}>
     <Flex gap="2" align="center">
       <UserAvatar name={ASSISTANT_NAME} />
-      <Dialog.Title style={{ margin: 0 }}>{ASSISTANT_NAME}</Dialog.Title>
+      {variant === 'dialog' ? (
+        <Dialog.Title style={{ margin: 0 }}>{ASSISTANT_NAME}</Dialog.Title>
+      ) : (
+        <Text size="5" weight="bold">
+          {ASSISTANT_NAME}
+        </Text>
+      )}
     </Flex>
     <Flex gap="6" align="center">
       <IconButton
@@ -232,15 +246,19 @@ const DialogHeader = ({
         onClick={onClear}
         aria-label="Clear conversation"
       />
-      <IconButton
-        icon={isFullscreen ? 'minimize' : 'maximize'}
-        variant="ghost"
-        onClick={onToggleFullscreen}
-        aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-      />
-      <Dialog.Close>
-        <CloseButton aria-label="Close" />
-      </Dialog.Close>
+      {variant === 'dialog' && (
+        <>
+          <IconButton
+            icon={isFullscreen ? 'minimize' : 'maximize'}
+            variant="ghost"
+            onClick={onToggleFullscreen}
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+          />
+          <Dialog.Close>
+            <CloseButton aria-label="Close" />
+          </Dialog.Close>
+        </>
+      )}
     </Flex>
   </Flex>
 );
@@ -739,17 +757,27 @@ const finalizeMessage = (
   });
 };
 
-export const ChatbotDialog = ({
-  open,
-  onOpenChange,
+export const ChatbotPanel = ({
   initialPrompt,
   systemPrompt,
   suggestions = [],
-}: ChatbotDialogProps) => {
+  variant = 'dialog',
+  isOpen = true,
+  isFullscreen: externalFullscreen,
+  onToggleFullscreen,
+}: ChatbotPanelProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [internalFullscreen, setInternalFullscreen] = useState(false);
+  const isFullscreen = externalFullscreen ?? internalFullscreen;
+  const toggleFullscreen = useCallback(() => {
+    if (onToggleFullscreen) {
+      onToggleFullscreen();
+    } else {
+      setInternalFullscreen(prev => !prev);
+    }
+  }, [onToggleFullscreen]);
   const [uploadedImages, setUploadedImages] = useState<MessageImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedModel, setSelectedModel] =
@@ -775,18 +803,18 @@ export const ChatbotDialog = ({
   const { error: textToSpeechError, speak, stop } = useTextToSpeech();
 
   useEffect(() => {
-    if (open && initialPrompt && !initialPromptProcessedRef.current) {
+    if (isOpen && initialPrompt && !initialPromptProcessedRef.current) {
       initialPromptProcessedRef.current = true;
       handleSend(initialPrompt);
     }
-    if (!open) {
+    if (!isOpen) {
       initialPromptProcessedRef.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialPrompt, open]);
+  }, [initialPrompt, isOpen]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!isOpen || variant !== 'dialog') return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const hasModifier = e.ctrlKey || e.metaKey;
@@ -798,23 +826,23 @@ export const ChatbotDialog = ({
 
       if (e.key.toLowerCase() === 'f' && !hasModifier && !isTypingTarget) {
         e.preventDefault();
-        setIsFullscreen(!isFullscreen);
+        toggleFullscreen();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, isFullscreen]);
+  }, [isOpen, variant, toggleFullscreen]);
 
   useEffect(() => {
-    if (open) {
+    if (isOpen) {
       const focusInput = () => {
         textInputRef.current?.focus();
       };
 
       setTimeout(focusInput, 150);
     }
-  }, [open]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -834,10 +862,10 @@ export const ChatbotDialog = ({
   }, [availableModels, selectedModel]);
 
   useEffect(() => {
-    if (!open) {
+    if (!isOpen) {
       stop();
     }
-  }, [open, stop]);
+  }, [isOpen, stop]);
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -1198,49 +1226,27 @@ export const ChatbotDialog = ({
     }
   };
 
-  const handleParseTasksFromText = async () => {
+  const handleParseTasks = async () => {
     if (isStreaming) return;
-    const transcriptSnapshot = parseSlashQuery(input) !== null ? '' : input;
-    if (!transcriptSnapshot.trim()) return;
-
-    await runParseTasks(
-      COMMAND_LABEL[COMMAND_NAME.TASKS_TEXT],
-      async () => {
-        const response = await fetch(TASKS_PARSE_TEXT_API_PATH, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transcript: transcriptSnapshot }),
-        });
-        const payload = await response.json();
-        return {
-          ok: response.ok,
-          items: payload.items,
-          error: payload.error,
-        };
-      },
-      transcriptSnapshot,
-      [],
-    );
-  };
-
-  const handleParseTasksFromImage = async () => {
-    if (isStreaming) return;
-    if (uploadedImages.length === 0) return;
-
-    const imagesSnapshot = uploadedImages;
     const inputSnapshot = parseSlashQuery(input) !== null ? '' : input;
+    const imagesSnapshot = uploadedImages;
+    if (!inputSnapshot.trim() && imagesSnapshot.length === 0) return;
 
     await runParseTasks(
-      COMMAND_LABEL[COMMAND_NAME.TASKS_IMAGE],
+      COMMAND_LABEL[COMMAND_NAME.TASKS],
       async () => {
-        const response = await fetch(TASKS_PARSE_IMAGE_API_PATH, {
+        const response = await fetch(TASKS_PARSE_API_PATH, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            images: imagesSnapshot.map(img => ({
-              base64: img.data,
-              mimeType: img.mimeType,
-            })),
+            text: inputSnapshot.trim() || undefined,
+            images:
+              imagesSnapshot.length > 0
+                ? imagesSnapshot.map(img => ({
+                    base64: img.data,
+                    mimeType: img.mimeType,
+                  }))
+                : undefined,
           }),
         });
         const payload = await response.json();
@@ -1430,22 +1436,15 @@ export const ChatbotDialog = ({
       name: COMMAND_NAME.CALENDAR,
       label: COMMAND_LABEL[COMMAND_NAME.CALENDAR],
       description: CALENDAR_COMMAND_DESCRIPTION,
-      showInSuggestions: true,
+      showInSuggestions: false,
       handler: handleParseEvent,
     },
     {
-      name: COMMAND_NAME.TASKS_TEXT,
-      label: COMMAND_LABEL[COMMAND_NAME.TASKS_TEXT],
-      description: TASKS_TEXT_COMMAND_DESCRIPTION,
-      showInSuggestions: true,
-      handler: handleParseTasksFromText,
-    },
-    {
-      name: COMMAND_NAME.TASKS_IMAGE,
-      label: COMMAND_LABEL[COMMAND_NAME.TASKS_IMAGE],
-      description: TASKS_IMAGE_COMMAND_DESCRIPTION,
-      showInSuggestions: true,
-      handler: handleParseTasksFromImage,
+      name: COMMAND_NAME.TASKS,
+      label: COMMAND_LABEL[COMMAND_NAME.TASKS],
+      description: TASKS_COMMAND_DESCRIPTION,
+      showInSuggestions: false,
+      handler: handleParseTasks,
     },
   ];
 
@@ -1528,6 +1527,87 @@ export const ChatbotDialog = ({
   };
 
   return (
+    <Flex
+      direction="column"
+      style={{
+        height: '100%',
+        width: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      <div style={{ padding: '1.5rem 1.5rem 0 1.5rem' }}>
+        <PanelHeader
+          variant={variant}
+          isFullscreen={isFullscreen}
+          onClear={handleClear}
+          onToggleFullscreen={toggleFullscreen}
+        />
+      </div>
+
+      <Flex
+        direction="column"
+        gap="3"
+        style={{
+          flex: 1,
+          overflow: 'hidden',
+          padding: '1rem 1.5rem 1.5rem 1.5rem',
+        }}
+      >
+        <MessagesArea
+          messages={messages}
+          isDragging={isDragging}
+          scrollRef={scrollRef}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onEventCreate={handleEventCreate}
+          onEventCancel={handleEventCancel}
+          onTasksCreate={handleTasksCreate}
+          onTasksCancel={handleTasksCancel}
+        />
+
+        <InputArea
+          messages={messages}
+          suggestionCommands={suggestionCommands}
+          slashMenuCommands={slashMenuCommands}
+          slashMenuHighlightedIndex={slashMenuHighlightedIndex}
+          onSlashMenuSelect={handleSlashMenuSelect}
+          uploadedImages={uploadedImages}
+          input={input}
+          isStreaming={isStreaming}
+          selectedModel={selectedModel}
+          modelOptions={availableModels}
+          fileInputRef={fileInputRef}
+          textInputRef={textInputRef}
+          onCommandRun={runCommand}
+          onImageRemove={index =>
+            setUploadedImages(prev => prev.filter((_, i) => i !== index))
+          }
+          onImageUpload={handleImageUpload}
+          onModelChange={setSelectedModel}
+          onInputChange={setInput}
+          onKeyDown={handleKeyDown}
+          onSend={() => handleSend()}
+          isRecording={isRecording}
+          isProcessing={isProcessing}
+          speechError={transcriptionError || textToSpeechError}
+          onToggleRecording={toggleRecording}
+        />
+      </Flex>
+    </Flex>
+  );
+};
+
+export const ChatbotDialog = ({
+  open,
+  onOpenChange,
+  initialPrompt,
+  systemPrompt,
+  suggestions = [],
+}: ChatbotDialogProps) => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content
         style={{
@@ -1540,64 +1620,15 @@ export const ChatbotDialog = ({
           transition: 'max-width 0.3s ease, height 0.3s ease',
         }}
       >
-        <div style={{ padding: '1.5rem 1.5rem 0 1.5rem' }}>
-          <DialogHeader
-            isFullscreen={isFullscreen}
-            onClear={handleClear}
-            onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
-          />
-        </div>
-
-        <Flex
-          direction="column"
-          gap="3"
-          style={{
-            flex: 1,
-            overflow: 'hidden',
-            padding: '1rem 1.5rem 1.5rem 1.5rem',
-          }}
-        >
-          <MessagesArea
-            messages={messages}
-            isDragging={isDragging}
-            scrollRef={scrollRef}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onEventCreate={handleEventCreate}
-            onEventCancel={handleEventCancel}
-            onTasksCreate={handleTasksCreate}
-            onTasksCancel={handleTasksCancel}
-          />
-
-          <InputArea
-            messages={messages}
-            suggestionCommands={suggestionCommands}
-            slashMenuCommands={slashMenuCommands}
-            slashMenuHighlightedIndex={slashMenuHighlightedIndex}
-            onSlashMenuSelect={handleSlashMenuSelect}
-            uploadedImages={uploadedImages}
-            input={input}
-            isStreaming={isStreaming}
-            selectedModel={selectedModel}
-            modelOptions={availableModels}
-            fileInputRef={fileInputRef}
-            textInputRef={textInputRef}
-            onCommandRun={runCommand}
-            onImageRemove={index =>
-              setUploadedImages(prev => prev.filter((_, i) => i !== index))
-            }
-            onImageUpload={handleImageUpload}
-            onModelChange={setSelectedModel}
-            onInputChange={setInput}
-            onKeyDown={handleKeyDown}
-            onSend={() => handleSend()}
-            isRecording={isRecording}
-            isProcessing={isProcessing}
-            speechError={transcriptionError || textToSpeechError}
-            onToggleRecording={toggleRecording}
-          />
-        </Flex>
+        <ChatbotPanel
+          variant="dialog"
+          isOpen={open}
+          initialPrompt={initialPrompt}
+          systemPrompt={systemPrompt}
+          suggestions={suggestions}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={() => setIsFullscreen(prev => !prev)}
+        />
       </Dialog.Content>
     </Dialog.Root>
   );
