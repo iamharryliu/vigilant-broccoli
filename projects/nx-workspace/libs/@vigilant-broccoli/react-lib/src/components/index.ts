@@ -31,6 +31,7 @@ export * from './Tabs';
 export * from './Progress';
 export * from './Switch';
 export * from './SpeechToTextButton';
+export * from './ChatSendButton';
 export * from './Sidebar';
 export * from './ThemeProvider';
 export * from './DarkModeIconButton';

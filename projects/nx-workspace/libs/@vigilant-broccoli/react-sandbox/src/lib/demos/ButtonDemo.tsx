@@ -5,6 +5,7 @@ import {
   Button,
   ButtonList,
   ButtonConfig,
+  ChatSendButton,
   CloseButton,
   CopyButton,
   DarkModeIconButton,
@@ -44,7 +45,44 @@ const BUTTON_LIST_BUTTONS: ButtonConfig[] = [
 ].map(label => ({ label, onClick: () => alert(label) }));
 
 const MOCK_PROCESS_DELAY_MS = 1500;
+const MOCK_STREAM_DELAY_MS = 2500;
+const CHAT_INPUT_PLACEHOLDER = 'Type a message...';
 const noop = () => undefined;
+
+function ChatSendButtonDemo() {
+  const [input, setInput] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    setIsStreaming(true);
+    setTimeout(() => setIsStreaming(false), MOCK_STREAM_DELAY_MS);
+  };
+
+  const handleStop = () => setIsStreaming(false);
+
+  return (
+    <Flex gap="3" align="center">
+      <input
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        placeholder={CHAT_INPUT_PLACEHOLDER}
+        style={{
+          padding: '0.5rem 0.75rem',
+          borderRadius: '0.375rem',
+          border: '1px solid var(--gray-6)',
+          minWidth: '14rem',
+        }}
+      />
+      <ChatSendButton
+        isStreaming={isStreaming}
+        isDisabled={!input.trim()}
+        onSend={handleSend}
+        onStop={handleStop}
+      />
+    </Flex>
+  );
+}
 
 function SpeechToTextButtonDemo() {
   const [isRecording, setIsRecording] = useState(false);
@@ -224,6 +262,13 @@ export function ButtonDemo() {
           Speech To Text Button
         </Heading>
         <SpeechToTextButtonDemo />
+      </div>
+
+      <div>
+        <Heading size="4" mb="3">
+          Chat Send Button
+        </Heading>
+        <ChatSendButtonDemo />
       </div>
 
       <div>

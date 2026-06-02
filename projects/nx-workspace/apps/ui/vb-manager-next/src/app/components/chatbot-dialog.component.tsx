@@ -8,13 +8,14 @@ import {
   TextField,
   TextArea,
   ScrollArea,
-  Card,
   Select,
+  Spinner,
 } from '@radix-ui/themes';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Trash2 } from 'lucide-react';
 import {
+  ChatSendButton,
   CloseButton,
   IconButton,
   UserAvatar,
@@ -41,12 +42,12 @@ import {
 } from './task-list-draft-card.component';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
 
-interface MessageImage {
+export interface MessageImage {
   data: string;
   mimeType: string;
 }
 
-interface Message {
+export interface Message {
   role: 'user' | 'assistant';
   content: string;
   isStreaming?: boolean;
@@ -105,6 +106,8 @@ interface ChatbotPanelProps {
   onClose?: () => void;
   isFullscreen?: boolean;
   onToggleFullscreen?: () => void;
+  initialMessages?: Message[];
+  onMessagesChange?: (messages: Message[]) => void;
 }
 
 const MAX_MESSAGES = 20;
@@ -150,6 +153,17 @@ const formatModelLabel = (model: string) =>
     .map(part => part.toUpperCase())
     .join(' ');
 
+const TYPING_LABEL = 'Thinking';
+
+const TypingIndicator = () => (
+  <Flex gap="2" align="center" style={{ padding: '0.25rem 0' }}>
+    <Spinner size="1" />
+    <Text size="2" color="gray">
+      {TYPING_LABEL}
+    </Text>
+  </Flex>
+);
+
 const MessageContent = ({ message }: { message: Message }) => {
   if (message.role === 'user') {
     return (
@@ -160,6 +174,9 @@ const MessageContent = ({ message }: { message: Message }) => {
   }
 
   if (message.isStreaming) {
+    if (!message.content) {
+      return <TypingIndicator />;
+    }
     return (
       <Text size="2" style={{ whiteSpace: 'pre-wrap' }}>
         {message.content}
@@ -218,12 +235,10 @@ const ImagePreview = ({
 );
 
 const PanelHeader = ({
-  variant,
   isFullscreen,
   onClear,
   onToggleFullscreen,
 }: {
-  variant: 'dialog' | 'page';
   isFullscreen: boolean;
   onClear: () => void;
   onToggleFullscreen: () => void;
@@ -231,13 +246,7 @@ const PanelHeader = ({
   <Flex justify="between" align="center" style={{ minHeight: '2.5rem' }}>
     <Flex gap="2" align="center">
       <UserAvatar name={ASSISTANT_NAME} />
-      {variant === 'dialog' ? (
-        <Dialog.Title style={{ margin: 0 }}>{ASSISTANT_NAME}</Dialog.Title>
-      ) : (
-        <Text size="5" weight="bold">
-          {ASSISTANT_NAME}
-        </Text>
-      )}
+      <Dialog.Title style={{ margin: 0 }}>{ASSISTANT_NAME}</Dialog.Title>
     </Flex>
     <Flex gap="6" align="center">
       <IconButton
@@ -246,19 +255,15 @@ const PanelHeader = ({
         onClick={onClear}
         aria-label="Clear conversation"
       />
-      {variant === 'dialog' && (
-        <>
-          <IconButton
-            icon={isFullscreen ? 'minimize' : 'maximize'}
-            variant="ghost"
-            onClick={onToggleFullscreen}
-            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-          />
-          <Dialog.Close>
-            <CloseButton aria-label="Close" />
-          </Dialog.Close>
-        </>
-      )}
+      <IconButton
+        icon={isFullscreen ? 'minimize' : 'maximize'}
+        variant="ghost"
+        onClick={onToggleFullscreen}
+        aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+      />
+      <Dialog.Close>
+        <CloseButton aria-label="Close" />
+      </Dialog.Close>
     </Flex>
   </Flex>
 );
@@ -331,64 +336,63 @@ const MessagesArea = ({
         height: '100%',
       }}
     >
-      <Flex direction="column" gap="2" style={{ padding: '0.5rem 1rem' }}>
-        {messages.map((message, index) => (
-          <Card
-            key={index}
-            style={{
-              maxWidth: '85%',
-              alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
-            }}
-          >
-            <Text
-              size="1"
-              weight="medium"
-              color={message.role === 'user' ? 'blue' : 'gray'}
+      <Flex direction="column" gap="3" style={{ padding: '0.5rem 1rem' }}>
+        {messages.map((message, index) => {
+          const isUser = message.role === 'user';
+          return (
+            <div
+              key={index}
+              style={{
+                maxWidth: '85%',
+                alignSelf: isUser ? 'flex-end' : 'flex-start',
+                padding: isUser ? '0.5rem 0.875rem' : 0,
+                borderRadius: isUser ? '1rem' : 0,
+                backgroundColor: isUser ? 'var(--accent-3)' : 'transparent',
+              }}
             >
-              {message.role === 'user' ? 'You' : 'Assistant'}
-            </Text>
-            {message.images && message.images.length > 0 && (
-              <Flex gap="2" wrap="wrap" style={{ marginTop: '0.5rem' }}>
-                {message.images.map((img, imgIndex) => (
-                  <img
-                    key={imgIndex}
-                    src={`data:${img.mimeType};base64,${img.data}`}
-                    alt={`Uploaded ${imgIndex + 1}`}
-                    style={{
-                      maxWidth: '200px',
-                      maxHeight: '200px',
-                      borderRadius: '0.5rem',
-                      objectFit: 'cover',
-                    }}
-                  />
-                ))}
-              </Flex>
-            )}
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <MessageContent message={message} />
+              {message.images && message.images.length > 0 && (
+                <Flex gap="2" wrap="wrap" style={{ marginBottom: '0.5rem' }}>
+                  {message.images.map((img, imgIndex) => (
+                    <img
+                      key={imgIndex}
+                      src={`data:${img.mimeType};base64,${img.data}`}
+                      alt={`Uploaded ${imgIndex + 1}`}
+                      style={{
+                        maxWidth: '200px',
+                        maxHeight: '200px',
+                        borderRadius: '0.5rem',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  ))}
+                </Flex>
+              )}
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <MessageContent message={message} />
+              </div>
+              {message.eventDraft && (
+                <EventDraftCard
+                  draft={message.eventDraft}
+                  status={message.eventStatus || 'draft'}
+                  errorMessage={message.eventError}
+                  eventLink={message.eventLink}
+                  onCreate={draft => onEventCreate(index, draft)}
+                  onCancel={() => onEventCancel(index)}
+                />
+              )}
+              {message.taskDrafts && (
+                <TaskListDraftCard
+                  drafts={message.taskDrafts}
+                  status={message.taskStatus || 'draft'}
+                  errorMessage={message.taskError}
+                  createdSummary={message.taskCreatedSummary}
+                  onCreate={params => onTasksCreate(index, params)}
+                  onCancel={() => onTasksCancel(index)}
+                />
+              )}
             </div>
-            {message.eventDraft && (
-              <EventDraftCard
-                draft={message.eventDraft}
-                status={message.eventStatus || 'draft'}
-                errorMessage={message.eventError}
-                eventLink={message.eventLink}
-                onCreate={draft => onEventCreate(index, draft)}
-                onCancel={() => onEventCancel(index)}
-              />
-            )}
-            {message.taskDrafts && (
-              <TaskListDraftCard
-                drafts={message.taskDrafts}
-                status={message.taskStatus || 'draft'}
-                errorMessage={message.taskError}
-                createdSummary={message.taskCreatedSummary}
-                onCreate={params => onTasksCreate(index, params)}
-                onCancel={() => onTasksCancel(index)}
-              />
-            )}
-          </Card>
-        ))}
+          );
+        })}
       </Flex>
     </ScrollArea>
   </div>
@@ -519,10 +523,9 @@ const getInputPlaceholder = (
 };
 
 const isInputDisabled = (
-  isStreaming: boolean,
   isRecording: boolean,
   isProcessing: boolean,
-): boolean => isStreaming || isRecording || isProcessing;
+): boolean => isRecording || isProcessing;
 
 const isSendDisabled = (
   isStreaming: boolean,
@@ -546,6 +549,7 @@ const InputControls = ({
   onInputChange,
   onKeyDown,
   onSend,
+  onStop,
 }: {
   fileInputRef: React.RefObject<HTMLInputElement>;
   textInputRef: React.RefObject<HTMLTextAreaElement>;
@@ -562,6 +566,7 @@ const InputControls = ({
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   onSend: () => void;
+  onStop: () => void;
 }) => (
   <Flex gap="2" align="end">
     <input
@@ -590,7 +595,7 @@ const InputControls = ({
       value={input}
       onChange={e => onInputChange(e.target.value)}
       onKeyDown={onKeyDown}
-      disabled={isInputDisabled(isStreaming, isRecording, isProcessing)}
+      disabled={isInputDisabled(isRecording, isProcessing)}
       rows={1}
       style={{ flex: 1, minHeight: '2.25rem', maxHeight: '12rem' }}
     />
@@ -608,13 +613,11 @@ const InputControls = ({
         ))}
       </Select.Content>
     </Select.Root>
-    <IconButton
-      icon="send-horizontal"
-      variant="outline"
-      onClick={onSend}
-      loading={isStreaming}
-      disabled={isSendDisabled(isStreaming, input, uploadedImages.length)}
-      aria-label="Send message"
+    <ChatSendButton
+      isStreaming={isStreaming}
+      isDisabled={isSendDisabled(false, input, uploadedImages.length)}
+      onSend={onSend}
+      onStop={onStop}
     />
   </Flex>
 );
@@ -639,6 +642,7 @@ const InputArea = ({
   onInputChange,
   onKeyDown,
   onSend,
+  onStop,
   isRecording,
   isProcessing,
   speechError,
@@ -663,6 +667,7 @@ const InputArea = ({
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   onSend: () => void;
+  onStop: () => void;
   isRecording: boolean;
   isProcessing: boolean;
   speechError: string | null;
@@ -701,6 +706,7 @@ const InputArea = ({
       onInputChange={onInputChange}
       onKeyDown={onKeyDown}
       onSend={onSend}
+      onStop={onStop}
     />
     {speechError && (
       <Text size="2" color="red">
@@ -765,8 +771,22 @@ export const ChatbotPanel = ({
   isOpen = true,
   isFullscreen: externalFullscreen,
   onToggleFullscreen,
+  initialMessages,
+  onMessagesChange,
 }: ChatbotPanelProps) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages ?? []);
+  const onMessagesChangeRef = useRef(onMessagesChange);
+  useEffect(() => {
+    onMessagesChangeRef.current = onMessagesChange;
+  }, [onMessagesChange]);
+  const hasMountedRef = useRef(false);
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+    onMessagesChangeRef.current?.(messages);
+  }, [messages]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [internalFullscreen, setInternalFullscreen] = useState(false);
@@ -913,6 +933,9 @@ export const ChatbotPanel = ({
     handleImageUpload(e.dataTransfer.files);
   };
 
+  const isAbortError = (err: unknown): boolean =>
+    err instanceof DOMException && err.name === 'AbortError';
+
   const processStreamResponse = async (
     responseBody: ReadableStream<Uint8Array>,
   ) => {
@@ -920,49 +943,64 @@ export const ChatbotPanel = ({
     const decoder = new TextDecoder();
     let accumulatedContent = '';
     let lastUpdate = Date.now();
+    let aborted = false;
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+    try {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      accumulatedContent += chunk;
+        const chunk = decoder.decode(value, { stream: true });
+        accumulatedContent += chunk;
 
-      const now = Date.now();
-      if (now - lastUpdate > CONST_STREAM_UPDATE_INTERVAL) {
-        updateMessageContent(setMessages, accumulatedContent);
-        lastUpdate = now;
+        const now = Date.now();
+        if (now - lastUpdate > CONST_STREAM_UPDATE_INTERVAL) {
+          updateMessageContent(setMessages, accumulatedContent);
+          lastUpdate = now;
+        }
       }
+    } catch (err) {
+      if (!isAbortError(err)) throw err;
+      aborted = true;
     }
 
     finalizeMessage(setMessages, accumulatedContent);
     setIsStreaming(false);
-    await speak(accumulatedContent);
+    if (!aborted) await speak(accumulatedContent);
   };
 
   const sendChatRequest = async (
     compactedMessages: Message[],
     model: LLMModel,
   ) => {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: compactedMessages,
-        systemPrompt,
-        model,
-      }),
-      signal: abortControllerRef.current?.signal,
-    });
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: compactedMessages,
+          systemPrompt,
+          model,
+        }),
+        signal: abortControllerRef.current?.signal,
+      });
 
-    if (!response.ok || !response.body) {
+      if (!response.ok || !response.body) {
+        setErrorMessage(setMessages);
+        setIsStreaming(false);
+        return;
+      }
+
+      await processStreamResponse(response.body);
+    } catch (err) {
+      if (isAbortError(err)) {
+        setIsStreaming(false);
+        return;
+      }
       setErrorMessage(setMessages);
       setIsStreaming(false);
-      return;
     }
-
-    await processStreamResponse(response.body);
   };
 
   const handleSend = async (messageText?: string) => {
@@ -1490,6 +1528,21 @@ export const ChatbotPanel = ({
     setInput('');
   };
 
+  const handleStop = () => {
+    abortControllerRef.current?.abort();
+    stop();
+    setMessages(prev => {
+      if (prev.length === 0) return prev;
+      const updated = [...prev];
+      const last = updated[updated.length - 1];
+      if (last.role === 'assistant' && last.isStreaming) {
+        updated[updated.length - 1] = { ...last, isStreaming: false };
+      }
+      return updated;
+    });
+    setIsStreaming(false);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (slashMenuCommands && slashMenuCommands.length > 0) {
       if (e.key === KEY.ARROW_DOWN) {
@@ -1535,14 +1588,15 @@ export const ChatbotPanel = ({
         overflow: 'hidden',
       }}
     >
-      <div style={{ padding: '1.5rem 1.5rem 0 1.5rem' }}>
-        <PanelHeader
-          variant={variant}
-          isFullscreen={isFullscreen}
-          onClear={handleClear}
-          onToggleFullscreen={toggleFullscreen}
-        />
-      </div>
+      {variant === 'dialog' && (
+        <div style={{ padding: '1.5rem 1.5rem 0 1.5rem' }}>
+          <PanelHeader
+            isFullscreen={isFullscreen}
+            onClear={handleClear}
+            onToggleFullscreen={toggleFullscreen}
+          />
+        </div>
+      )}
 
       <Flex
         direction="column"
@@ -1550,7 +1604,10 @@ export const ChatbotPanel = ({
         style={{
           flex: 1,
           overflow: 'hidden',
-          padding: '1rem 1.5rem 1.5rem 1.5rem',
+          padding:
+            variant === 'dialog'
+              ? '1rem 1.5rem 1.5rem 1.5rem'
+              : '1.5rem 1.5rem 1.5rem 1.5rem',
         }}
       >
         <MessagesArea
@@ -1588,6 +1645,7 @@ export const ChatbotPanel = ({
           onInputChange={setInput}
           onKeyDown={handleKeyDown}
           onSend={() => handleSend()}
+          onStop={handleStop}
           isRecording={isRecording}
           isProcessing={isProcessing}
           speechError={transcriptionError || textToSpeechError}
