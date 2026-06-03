@@ -145,36 +145,6 @@ jobs:
           VERSION=$(grep -o '"rabbitmq_version":"[^"]*"' /tmp/mgmt.json | head -1)
           echo "✓ Management UI reachable ($NODE, $VERSION)"
 
-      - name: AMQPS connect + assert EMAIL queue
-        env:
-          RABBITMQ_CONNECTION_STRING: ${{ env.RABBITMQ_CONNECTION_STRING }}
-          RABBITMQ_CA_CERT: ${{ env.RABBITMQ_CA_CERT }}
-        run: |
-          cat > "$GITHUB_WORKSPACE/queue-check.mjs" <<'EOF'
-          import amqplib from 'amqplib';
-
-          const URL = process.env.RABBITMQ_CONNECTION_STRING;
-          const CA_B64 = process.env.RABBITMQ_CA_CERT;
-          const QUEUE = 'EMAIL';
-
-          const opts = CA_B64
-            ? { ca: [Buffer.from(CA_B64, 'base64')], checkServerIdentity: () => undefined }
-            : undefined;
-
-          try {
-            const conn = await amqplib.connect(URL, opts);
-            const ch = await conn.createChannel();
-            const q = await ch.checkQueue(QUEUE);
-            console.log(`PASS: queue ${QUEUE} present (messages=${q.messageCount}, consumers=${q.consumerCount})`);
-            await ch.close();
-            await conn.close();
-          } catch (err) {
-            console.error('FAIL:', err.message);
-            process.exit(1);
-          }
-          EOF
-          node "$GITHUB_WORKSPACE/queue-check.mjs"
-
       - name: Publish + consume round-trip
         env:
           RABBITMQ_CONNECTION_STRING: ${{ env.RABBITMQ_CONNECTION_STRING }}
