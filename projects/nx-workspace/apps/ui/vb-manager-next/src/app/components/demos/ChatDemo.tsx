@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
@@ -12,6 +11,7 @@ import {
   ChatStatus,
   SOCKET_EVENTS,
 } from '../../constants/chat';
+import { useSocketWithCertTrustPrompt } from '../../hooks/useSocketWithCertTrustPrompt';
 
 const LOG_PREFIX = '[ChatDemo]';
 const SENDER_PREFIX = 'user-';
@@ -48,13 +48,15 @@ export function ChatDemo() {
     setSender(randomSender());
   }, []);
 
+  const url = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
+  const socket = useSocketWithCertTrustPrompt(url, { reconnection: true });
+
   useEffect(() => {
-    const url = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
     if (!url) {
       setStatus(CHAT_STATUS.CLOSED);
       return;
     }
-    const socket = io(url, { reconnection: true });
+    if (!socket) return;
     socket.on(SOCKET_EVENTS.CONNECT, () => {
       setStatus(CHAT_STATUS.OPEN);
       socket.emit(SOCKET_EVENTS.SUBSCRIBE, {
@@ -70,9 +72,12 @@ export function ChatDemo() {
       setMessages(prev => [...prev, msg.payload]);
     });
     return () => {
-      socket.close();
+      socket.off(SOCKET_EVENTS.CONNECT);
+      socket.off(SOCKET_EVENTS.DISCONNECT);
+      socket.off(SOCKET_EVENTS.CONNECT_ERROR);
+      socket.off(SOCKET_EVENTS.MESSAGE);
     };
-  }, []);
+  }, [url, socket]);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });

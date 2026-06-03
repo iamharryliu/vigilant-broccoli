@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { io } from 'socket.io-client';
 import { toast } from '@vigilant-broccoli/react-lib';
 import { SOCKET_EVENTS } from '@vigilant-broccoli/common-js';
 import {
@@ -13,6 +12,7 @@ import {
   formatDuration,
   DeployPayload,
 } from '@vigilant-broccoli/deployment';
+import { useSocketWithCertTrustPrompt } from './useSocketWithCertTrustPrompt';
 
 const TOAST_DURATION_MS = 8000;
 const VIEW_RUN_LABEL = 'View run';
@@ -57,11 +57,11 @@ const DEPLOY_TOAST = {
 export function useDeployNotifications(
   onNotification?: (payload: DeployPayload) => void,
 ) {
-  useEffect(() => {
-    const url = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
-    if (!url) return;
+  const url = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
+  const socket = useSocketWithCertTrustPrompt(url, { reconnection: true });
 
-    const socket = io(url, { reconnection: true });
+  useEffect(() => {
+    if (!socket) return;
 
     socket.on(SOCKET_EVENTS.CONNECT, () => {
       socket.emit(SOCKET_EVENTS.SUBSCRIBE, {
@@ -79,7 +79,8 @@ export function useDeployNotifications(
     });
 
     return () => {
-      socket.close();
+      socket.off(SOCKET_EVENTS.CONNECT);
+      socket.off(SOCKET_EVENTS.MESSAGE);
     };
-  }, [onNotification]);
+  }, [socket, onNotification]);
 }
