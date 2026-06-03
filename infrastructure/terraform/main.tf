@@ -320,19 +320,52 @@ resource "random_password" "shared_app_token" {
   special = false
 }
 
+resource "tls_private_key" "rabbitmq_ca" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "tls_self_signed_cert" "rabbitmq_ca" {
+  private_key_pem = tls_private_key.rabbitmq_ca.private_key_pem
+
+  subject {
+    common_name  = "vigilant-broccoli-rabbitmq-ca"
+    organization = "vigilant-broccoli"
+  }
+
+  validity_period_hours = 87600 # 10 years
+  is_ca_certificate     = true
+
+  allowed_uses = [
+    "cert_signing",
+    "crl_signing",
+    "key_encipherment",
+    "digital_signature",
+  ]
+}
+
 resource "tls_private_key" "rabbitmq" {
   algorithm = "RSA"
   rsa_bits  = 2048
 }
 
-resource "tls_self_signed_cert" "rabbitmq" {
+resource "tls_cert_request" "rabbitmq" {
   private_key_pem = tls_private_key.rabbitmq.private_key_pem
 
   subject {
     common_name = "rabbitmq"
   }
 
-  validity_period_hours = 87600 # 10 years
+  dns_names    = ["rabbitmq", "localhost"]
+  ip_addresses = ["127.0.0.1"]
+}
+
+resource "tls_locally_signed_cert" "rabbitmq" {
+  cert_request_pem   = tls_cert_request.rabbitmq.cert_request_pem
+  ca_private_key_pem = tls_private_key.rabbitmq_ca.private_key_pem
+  ca_cert_pem        = tls_self_signed_cert.rabbitmq_ca.cert_pem
+
+  validity_period_hours = 8760 # 1 year
 
   allowed_uses = [
     "key_encipherment",
@@ -341,19 +374,52 @@ resource "tls_self_signed_cert" "rabbitmq" {
   ]
 }
 
+resource "tls_private_key" "socket_server_ca" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "tls_self_signed_cert" "socket_server_ca" {
+  private_key_pem = tls_private_key.socket_server_ca.private_key_pem
+
+  subject {
+    common_name  = "vigilant-broccoli-socket-server-ca"
+    organization = "vigilant-broccoli"
+  }
+
+  validity_period_hours = 87600
+  is_ca_certificate     = true
+
+  allowed_uses = [
+    "cert_signing",
+    "crl_signing",
+    "key_encipherment",
+    "digital_signature",
+  ]
+}
+
 resource "tls_private_key" "socket_server" {
   algorithm = "RSA"
   rsa_bits  = 2048
 }
 
-resource "tls_self_signed_cert" "socket_server" {
+resource "tls_cert_request" "socket_server" {
   private_key_pem = tls_private_key.socket_server.private_key_pem
 
   subject {
     common_name = "socket-server"
   }
 
-  validity_period_hours = 87600
+  dns_names    = ["socket-server", "localhost"]
+  ip_addresses = ["127.0.0.1"]
+}
+
+resource "tls_locally_signed_cert" "socket_server" {
+  cert_request_pem   = tls_cert_request.socket_server.cert_request_pem
+  ca_private_key_pem = tls_private_key.socket_server_ca.private_key_pem
+  ca_cert_pem        = tls_self_signed_cert.socket_server_ca.cert_pem
+
+  validity_period_hours = 8760
 
   allowed_uses = [
     "key_encipherment",

@@ -60,7 +60,7 @@ resource "oci_core_security_list" "rabbitmq_sl" {
     source   = "0.0.0.0/0"
     tcp_options {
       min = 5671
-      max = 5672
+      max = 5671
     }
   }
 
@@ -69,7 +69,7 @@ resource "oci_core_security_list" "rabbitmq_sl" {
     source   = "0.0.0.0/0"
     tcp_options {
       min = 15671
-      max = 15672
+      max = 15671
     }
   }
 
@@ -119,13 +119,14 @@ resource "oci_core_instance" "rabbitmq" {
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
     user_data = base64encode(templatefile("${path.module}/cloud-init-rabbitmq.yaml", {
-      rabbitmq_user              = var.rabbitmq_user
-      rabbitmq_password          = random_password.rabbitmq_password.result
-      rabbitmq_tls_key           = tls_private_key.rabbitmq.private_key_pem
-      rabbitmq_tls_cert          = tls_self_signed_cert.rabbitmq.cert_pem
-      shared_app_token           = random_password.shared_app_token.result
-      socket_server_tls_key      = tls_private_key.socket_server.private_key_pem
-      socket_server_tls_cert     = tls_self_signed_cert.socket_server.cert_pem
+      rabbitmq_user          = var.rabbitmq_user
+      rabbitmq_password      = random_password.rabbitmq_password.result
+      rabbitmq_tls_key       = tls_private_key.rabbitmq.private_key_pem
+      rabbitmq_tls_cert      = tls_locally_signed_cert.rabbitmq.cert_pem
+      rabbitmq_ca_cert       = tls_self_signed_cert.rabbitmq_ca.cert_pem
+      shared_app_token       = random_password.shared_app_token.result
+      socket_server_tls_key  = tls_private_key.socket_server.private_key_pem
+      socket_server_tls_cert = tls_locally_signed_cert.socket_server.cert_pem
     }))
   }
 }
