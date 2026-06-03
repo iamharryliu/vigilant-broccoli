@@ -107,11 +107,15 @@ jobs:
           echo "CA subject:"
           openssl x509 -in /tmp/rabbitmq-ca.crt -noout -subject -issuer -ext basicConstraints
           echo ""
-          echo "Leaf cert from broker:5671:"
-          OUTPUT=$(echo | openssl s_client -connect "${RMQ_HOST}:5671" -CAfile /tmp/rabbitmq-ca.crt -servername rabbitmq 2>&1 </dev/null)
-          echo "$OUTPUT" | grep -E "subject=|issuer=|Verify return code"
+          echo "Leaf cert from broker:5671 (verifying chain + SAN against 'rabbitmq'):"
+          OUTPUT=$(echo | openssl s_client \
+            -connect "${RMQ_HOST}:5671" \
+            -servername rabbitmq \
+            -verify_hostname rabbitmq \
+            -CAfile /tmp/rabbitmq-ca.crt 2>&1 </dev/null)
+          echo "$OUTPUT" | grep -E "subject=|issuer=|Verify return code|Verification"
           if echo "$OUTPUT" | grep -q "Verify return code: 0 (ok)"; then
-            echo "✓ TLS chain verified against CA"
+            echo "✓ TLS chain + SAN verified against CA"
           else
             echo "✗ TLS chain verification failed"
             echo "$OUTPUT" | tail -20
@@ -128,8 +132,9 @@ jobs:
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
           STATUS=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 10 \
             --cacert /tmp/rabbitmq-ca.crt \
+            --resolve "rabbitmq:15671:${RMQ_HOST}" \
             -u "${RMQ_USER}:${RMQ_PASS}" \
-            "https://${RMQ_HOST}:15671/api/overview")
+            "https://rabbitmq:15671/api/overview")
           echo "Management /api/overview status: $STATUS"
           if [ "$STATUS" != "200" ]; then
             echo "✗ Management UI check failed"
