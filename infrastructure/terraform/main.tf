@@ -31,6 +31,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.0"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.11"
+    }
   }
 }
 
@@ -474,8 +478,16 @@ resource "google_storage_bucket_iam_member" "gcs_manager" {
   member = "serviceAccount:${google_service_account.gcs_manager.email}"
 }
 
+resource "time_rotating" "gcs_manager_key" {
+  rotation_days = 30
+}
+
 resource "google_service_account_key" "gcs_manager" {
   service_account_id = google_service_account.gcs_manager.name
+
+  keepers = {
+    rotation_time = time_rotating.gcs_manager_key.rotation_rfc3339
+  }
 }
 
 resource "google_secret_manager_secret" "google_gcs_sa_credentials" {

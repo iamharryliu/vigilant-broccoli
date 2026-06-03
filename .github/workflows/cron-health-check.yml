@@ -78,13 +78,6 @@ jobs:
             kv/data/secrets RABBITMQ_CA_CERT | RABBITMQ_CA_CERT ;
             kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
 
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version: 20
-
-      - name: Install amqplib
-        run: npm install amqplib --no-save > /dev/null 2>&1
-
       - name: Run health checks
         env:
           RABBITMQ_CONNECTION_STRING: ${{ env.RABBITMQ_CONNECTION_STRING }}
@@ -159,28 +152,25 @@ jobs:
           fi
 
           echo ""
-          echo "[OCI VM — RabbitMQ Connection]"
-          RMQ_RESULT=$(node -e "
-            const amqplib = require('amqplib');
-            const caCert = process.env.RABBITMQ_CA_CERT;
-            const socketOptions = caCert
-              ? { ca: [Buffer.from(caCert, 'base64')], checkServerIdentity: () => undefined, servername: 'rabbitmq' }
-              : undefined;
-            (async () => {
-              const conn = await amqplib.connect(process.env.RABBITMQ_CONNECTION_STRING, socketOptions);
-              const ch = await conn.createChannel();
-              const q = await ch.checkQueue('EMAIL');
-              console.log('ok:' + q.messageCount + ':' + q.consumerCount);
-              await conn.close();
-            })().catch(e => console.log('fail:' + e.message));
-          ") || RMQ_RESULT="fail:node error"
-          if echo "$RMQ_RESULT" | grep -q "^ok:"; then
-            MSG_COUNT=$(echo "$RMQ_RESULT" | cut -d: -f2)
-            CONSUMER_COUNT=$(echo "$RMQ_RESULT" | cut -d: -f3)
-            check "rabbitmq broker (messages: $MSG_COUNT, consumers: $CONSUMER_COUNT)" "ok"
+          echo "[OCI VM — RabbitMQ Management]"
+          PROTO_STRIPPED="${RABBITMQ_CONNECTION_STRING#amqps://}"
+          USER_PASS="${PROTO_STRIPPED%@*}"
+          HOST_PORT="${PROTO_STRIPPED##*@}"
+          RMQ_USER="${USER_PASS%%:*}"
+          RMQ_PASS="${USER_PASS#*:}"
+          RMQ_HOST="${HOST_PORT%%:*}"
+          echo "::add-mask::$RMQ_PASS"
+          echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
+          RMQ_CODE=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 15 \
+            --cacert /tmp/rabbitmq-ca.crt \
+            --resolve "rabbitmq:15671:${RMQ_HOST}" \
+            -u "${RMQ_USER}:${RMQ_PASS}" \
+            "https://rabbitmq:15671/api/overview" 2>/dev/null) || RMQ_CODE="timeout"
+          if [ "$RMQ_CODE" = "200" ]; then
+            VERSION=$(grep -o '"rabbitmq_version":"[^"]*"' /tmp/mgmt.json | cut -d'"' -f4)
+            check "rabbitmq broker (version: $VERSION)" "ok"
           else
-            ERR=$(echo "$RMQ_RESULT" | cut -d: -f2-)
-            check "rabbitmq broker" "$ERR"
+            check "rabbitmq broker" "HTTP $RMQ_CODE (expected 200)"
           fi
 
           echo ""
