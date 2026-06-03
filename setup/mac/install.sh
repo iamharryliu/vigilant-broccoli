@@ -1,4 +1,5 @@
 source $HOME/vigilant-broccoli/setup/dotfiles/common/aliases/aliases.sh
+source $HOME/vigilant-broccoli/setup/dotfiles/macos/aliases/aliases.sh
 
 if ask "Install Brew dependencies?"; then
     brewinit
