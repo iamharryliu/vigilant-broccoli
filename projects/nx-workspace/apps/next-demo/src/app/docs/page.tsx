@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
-import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
+import { Badge, Dialog, Flex, Text } from '@radix-ui/themes';
+import { Button, EllipsisCTA, Input } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';
@@ -133,7 +133,7 @@ export default function DocsPage() {
       </Flex>
 
       <Flex gap="2" wrap="wrap">
-        <TextField.Root
+        <Input
           placeholder="Search documents..."
           value={query}
           onChange={e => setQuery(e.target.value)}
@@ -172,13 +172,21 @@ export default function DocsPage() {
             <Flex justify="between" align="center" gap="3">
               <div className="flex-1 min-w-0">
                 <Flex align="center" gap="2" wrap="wrap" mb="1">
-                  <Text weight="bold" size="3">{doc.name}</Text>
-                  <Badge color={CATEGORY_COLORS[doc.category] as never} variant="soft" size="1">
+                  <Text weight="bold" size="3">
+                    {doc.name}
+                  </Text>
+                  <Badge
+                    color={CATEGORY_COLORS[doc.category] as never}
+                    variant="soft"
+                    size="1"
+                  >
                     {doc.category}
                   </Badge>
                 </Flex>
                 {doc.description && (
-                  <Text size="2" color="gray" as="p" mb="2">{doc.description}</Text>
+                  <Text size="2" color="gray" as="p" mb="2">
+                    {doc.description}
+                  </Text>
                 )}
                 {doc.files.length > 0 && (
                   <Flex gap="2" wrap="wrap">
@@ -193,7 +201,9 @@ export default function DocsPage() {
                       >
                         <span>{FILE_ICONS[f.mimeType] ?? '📎'}</span>
                         <span className="max-w-32 truncate">{f.name}</span>
-                        <span className="text-gray-400 text-xs">({formatBytes(f.sizeBytes)})</span>
+                        <span className="text-gray-400 text-xs">
+                          ({formatBytes(f.sizeBytes)})
+                        </span>
                       </a>
                     ))}
                   </Flex>
@@ -205,7 +215,9 @@ export default function DocsPage() {
                   onDelete={async () => {
                     await fetch('/api/docs', {
                       method: 'DELETE',
-                      headers: authHeader({ 'Content-Type': 'application/json' }),
+                      headers: authHeader({
+                        'Content-Type': 'application/json',
+                      }),
                       body: JSON.stringify({ id: doc.id }),
                     });
                     fetchDocs();

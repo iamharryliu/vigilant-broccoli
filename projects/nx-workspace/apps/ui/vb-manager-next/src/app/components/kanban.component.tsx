@@ -10,7 +10,7 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import {
   DndContext,
   DragOverlay,
@@ -836,18 +836,8 @@ export const KanbanComponent = () => {
   );
 
   if (status === 'unauthenticated') {
-    return (
-      <Card className="w-full">
-        <Flex direction="column" gap="4" p="4">
-          <Text size="5" weight="bold">
-            Swimlanes
-          </Text>
-          <Text size="2" color="gray">
-            Sign in to view your Google Tasks swimlanes
-          </Text>
-        </Flex>
-      </Card>
-    );
+    signIn('google');
+    return null;
   }
 
   if (!activeBoard) {

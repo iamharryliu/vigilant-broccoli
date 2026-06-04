@@ -1,7 +1,7 @@
 'use client';
 
-import { Flex, Text, TextField } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Input } from '@vigilant-broccoli/react-lib';
 
 type Props = {
   name: string;
@@ -27,7 +27,7 @@ export const HomeForm = ({
       <Text size="1" weight="medium" as="p" mb="1">
         Name
       </Text>
-      <TextField.Root
+      <Input
         value={name}
         onChange={e => onNameChange(e.target.value)}
         placeholder="Home name"
@@ -38,7 +38,7 @@ export const HomeForm = ({
       <Text size="1" weight="medium" as="p" mb="1">
         Description
       </Text>
-      <TextField.Root
+      <Input
         value={description}
         onChange={e => onDescriptionChange(e.target.value)}
         placeholder="Description"

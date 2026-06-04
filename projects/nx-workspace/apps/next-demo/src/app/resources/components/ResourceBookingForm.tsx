@@ -1,14 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Button,
-  Flex,
-  Select,
-  Text,
-  TextArea,
-  TextField,
-} from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import { Resource } from '../../../lib/types';
 
 export interface ResourceBookingFormData {
@@ -66,26 +60,22 @@ export function ResourceBookingForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Resource
           </Text>
-          <Select.Root value={resourceId} onValueChange={setResourceId}>
-            <Select.Trigger
-              placeholder="Select a resource"
-              style={{ width: '100%' }}
-            />
-            <Select.Content>
-              {resources.map(r => (
-                <Select.Item key={r.id} value={r.id}>
-                  {r.name}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
+          <Select
+            selectedOption={resources.find(r => r.id === resourceId)}
+            setValue={r => setResourceId(r.id)}
+            options={resources}
+            optionIdenfifier="id"
+            optionDisplayKey="name"
+            placeholder="Select a resource"
+            triggerClassName="w-full"
+          />
         </div>
 
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Title
           </Text>
-          <TextField.Root
+          <Input
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="e.g. Team offsite, Weekend trip"
@@ -97,7 +87,7 @@ export function ResourceBookingForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Notes
           </Text>
-          <TextArea
+          <Textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="Optional notes"
@@ -136,32 +126,16 @@ export function ResourceBookingForm({
         <Flex justify="between" gap="2" pt="2">
           <div>
             {isEdit && onDelete && (
-              <Button
-                type="button"
-                color="red"
-                variant="soft"
-                onClick={onDelete}
-                className="cursor-pointer"
-              >
+              <Button type="button" variant="destructive" onClick={onDelete}>
                 Delete
               </Button>
             )}
           </div>
           <Flex gap="2">
-            <Button
-              type="button"
-              variant="soft"
-              color="gray"
-              onClick={onCancel}
-              className="cursor-pointer"
-            >
+            <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={!resourceId}
-              className="cursor-pointer"
-            >
+            <Button type="submit" disabled={!resourceId}>
               {isEdit ? 'Save' : 'Book'}
             </Button>
           </Flex>

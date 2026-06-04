@@ -1,8 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Flex, Text, TextField, Badge } from '@radix-ui/themes';
-import { Button, CRUDFormProps, Textarea } from '@vigilant-broccoli/react-lib';
+import { Flex, Text, Badge } from '@radix-ui/themes';
+import {
+  Button,
+  CRUDFormProps,
+  Input,
+  Textarea,
+} from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 
@@ -220,7 +225,7 @@ export const WhereIsFormComponent = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Title
         </Text>
-        <TextField.Root
+        <Input
           placeholder="e.g. Kitchen cabinet above sink"
           value={title}
           onChange={e => setTitle(e.target.value)}
@@ -242,7 +247,7 @@ export const WhereIsFormComponent = ({
           Tags
         </Text>
         <Flex gap="2">
-          <TextField.Root
+          <Input
             placeholder="Add tag..."
             value={tagInput}
             onChange={e => setTagInput(e.target.value)}

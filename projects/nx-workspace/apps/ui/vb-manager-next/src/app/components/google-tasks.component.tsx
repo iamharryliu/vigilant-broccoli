@@ -1,7 +1,7 @@
 'use client';
 
-import { Card, Flex, Text, Checkbox } from '@radix-ui/themes';
-import { Button, Input, Select } from '@vigilant-broccoli/react-lib';
+import { Card, Flex, Text } from '@radix-ui/themes';
+import { Button, Checkbox, Input, Select } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import {
@@ -687,8 +687,12 @@ const AddTaskForm = memo(
               if (e.key === 'Enter' && !isLoading) onSubmit();
               else if (e.key === 'Escape') onCancel();
             }}
+            onBlur={() => {
+              if (!newTaskTitle.trim()) onCancel();
+            }}
             className="flex-1"
             disabled={isLoading}
+            autoFocus
           />
           <SpeechToTextButton
             isRecording={voiceRecording}
@@ -696,12 +700,6 @@ const AddTaskForm = memo(
             isDisabled={isLoading}
             onToggle={onVoiceToggle}
           />
-          <Button onClick={onSubmit} disabled={isLoading} loading={isLoading}>
-            Add
-          </Button>
-          <Button onClick={onCancel} variant="secondary" disabled={isLoading}>
-            Cancel
-          </Button>
         </Flex>
         {voiceError && (
           <Text size="1" color="red">

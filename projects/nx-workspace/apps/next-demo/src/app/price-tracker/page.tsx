@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
+import { Box, Flex, Text, Badge } from '@radix-ui/themes';
 import {
   Button,
   CRUDItemList,
   CRUDFormProps,
+  Input,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
@@ -238,16 +239,13 @@ const PriceItemForm = ({
           <Text size="1" weight="medium" as="p" mb="1">
             Name
           </Text>
-          <TextField.Root
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
+          <Input value={name} onChange={e => setName(e.target.value)} />
         </div>
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Category
           </Text>
-          <TextField.Root
+          <Input
             placeholder="e.g. Produce, Dairy"
             value={category}
             onChange={e => setCategory(e.target.value)}
@@ -257,7 +255,7 @@ const PriceItemForm = ({
           <Text size="1" weight="medium" as="p" mb="1">
             Unit
           </Text>
-          <TextField.Root
+          <Input
             placeholder="e.g. kg, each, L"
             value={unit}
             onChange={e => setUnit(e.target.value)}
@@ -289,7 +287,7 @@ const PriceItemForm = ({
           <Text size="1" weight="medium" as="p" mb="1">
             Store
           </Text>
-          <TextField.Root
+          <Input
             placeholder="Store name"
             value={receiptStore}
             onChange={e => setReceiptStore(e.target.value)}
@@ -299,7 +297,7 @@ const PriceItemForm = ({
           <Text size="1" weight="medium" as="p" mb="1">
             Purchase Date
           </Text>
-          <TextField.Root
+          <Input
             type="date"
             value={receiptDate}
             onChange={e => setReceiptDate(e.target.value)}
@@ -438,7 +436,7 @@ const PriceItemForm = ({
             <Text size="1" weight="medium" as="p" mb="1">
               Item Name
             </Text>
-            <TextField.Root
+            <Input
               placeholder="e.g. Organic Whole Milk 1L"
               value={name}
               onChange={e => setName(e.target.value)}
@@ -448,7 +446,7 @@ const PriceItemForm = ({
             <Text size="1" weight="medium" as="p" mb="1">
               Price
             </Text>
-            <TextField.Root
+            <Input
               type="number"
               min="0"
               step="0.01"
@@ -461,7 +459,7 @@ const PriceItemForm = ({
             <Text size="1" weight="medium" as="p" mb="1">
               Category (optional)
             </Text>
-            <TextField.Root
+            <Input
               placeholder="e.g. Dairy, Produce"
               value={category}
               onChange={e => setCategory(e.target.value)}
@@ -471,7 +469,7 @@ const PriceItemForm = ({
             <Text size="1" weight="medium" as="p" mb="1">
               Unit (optional)
             </Text>
-            <TextField.Root
+            <Input
               placeholder="e.g. kg, each, L"
               value={unit}
               onChange={e => setUnit(e.target.value)}
@@ -481,7 +479,7 @@ const PriceItemForm = ({
             <Text size="1" weight="medium" as="p" mb="1">
               Store (optional)
             </Text>
-            <TextField.Root
+            <Input
               placeholder="e.g. Costco"
               value={manualStore}
               onChange={e => setManualStore(e.target.value)}
@@ -491,7 +489,7 @@ const PriceItemForm = ({
             <Text size="1" weight="medium" as="p" mb="1">
               Purchase Date
             </Text>
-            <TextField.Root
+            <Input
               type="date"
               value={manualDate}
               onChange={e => setManualDate(e.target.value)}
@@ -649,11 +647,10 @@ export default function PriceTrackerPage() {
     <div className="max-w-3xl mx-auto p-2 sm:p-6 space-y-6">
       {loaded && (
         <>
-          <TextField.Root
+          <Input
             placeholder="Search items..."
             value={query}
             onChange={e => setQuery(e.target.value)}
-            size="3"
           />
           <CRUDItemList
             items={formItems as never}

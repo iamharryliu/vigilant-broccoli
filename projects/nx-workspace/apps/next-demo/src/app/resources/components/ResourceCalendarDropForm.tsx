@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Flex, Text, TextField, TextArea } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
 import { toDateLocal } from '../../../lib/date-utils';
 import { ResourceBookingFormData } from './ResourceBookingForm';
 
@@ -44,7 +44,7 @@ export function ResourceCalendarDropForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Booking Title
           </Text>
-          <TextField.Root
+          <Input
             value={title}
             onChange={e => setTitle(e.target.value)}
             required
@@ -55,7 +55,7 @@ export function ResourceCalendarDropForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Notes
           </Text>
-          <TextArea
+          <Textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
             rows={2}

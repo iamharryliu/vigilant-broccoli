@@ -1,14 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Button,
-  TextField,
-  TextArea,
-  Flex,
-  Text,
-  Select,
-} from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import { toDatetimeLocal, toDateLocal } from '../../../lib/date-utils';
 
 export interface CalendarEventFormData {
@@ -121,7 +115,7 @@ export function CalendarEventForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Title
           </Text>
-          <TextField.Root
+          <Input
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="Event title"
@@ -133,7 +127,7 @@ export function CalendarEventForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Description
           </Text>
-          <TextArea
+          <Textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="Optional description"
@@ -184,58 +178,45 @@ export function CalendarEventForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Color
           </Text>
-          <Select.Root value={color} onValueChange={setColor}>
-            <Select.Trigger placeholder="Default" />
-            <Select.Content>
-              {EVENT_COLORS.map(c => (
-                <Select.Item key={c.value} value={c.value}>
-                  <Flex align="center" gap="2">
-                    {c.value !== NO_COLOR && (
-                      <span
-                        style={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: '50%',
-                          background: c.value,
-                          display: 'inline-block',
-                        }}
-                      />
-                    )}
-                    {c.label}
-                  </Flex>
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
+          <Select
+            selectedOption={EVENT_COLORS.find(c => c.value === color)}
+            setValue={c => setColor(c.value)}
+            options={EVENT_COLORS}
+            optionIdenfifier="value"
+            optionDisplayKey="label"
+            placeholder="Default"
+            renderItem={c => (
+              <Flex align="center" gap="2">
+                {c.value !== NO_COLOR && (
+                  <span
+                    style={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      background: c.value,
+                      display: 'inline-block',
+                    }}
+                  />
+                )}
+                {c.label}
+              </Flex>
+            )}
+          />
         </div>
 
         <Flex justify="between" gap="2" pt="2">
           <div>
             {isEdit && onDelete && (
-              <Button
-                type="button"
-                color="red"
-                variant="soft"
-                onClick={onDelete}
-                className="cursor-pointer"
-              >
+              <Button type="button" variant="destructive" onClick={onDelete}>
                 Delete
               </Button>
             )}
           </div>
           <Flex gap="2">
-            <Button
-              type="button"
-              variant="soft"
-              color="gray"
-              onClick={onCancel}
-              className="cursor-pointer"
-            >
+            <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit" className="cursor-pointer">
-              {isEdit ? 'Save' : 'Create'}
-            </Button>
+            <Button type="submit">{isEdit ? 'Save' : 'Create'}</Button>
           </Flex>
         </Flex>
       </Flex>

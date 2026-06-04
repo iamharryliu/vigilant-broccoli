@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Flex, Text, TextField, Badge } from '@radix-ui/themes';
-import { CRUDItemList } from '@vigilant-broccoli/react-lib';
+import { Box, Flex, Text, Badge } from '@radix-ui/themes';
+import { CRUDItemList, Input } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -177,11 +177,10 @@ export default function WhereIsPage() {
     <div className="max-w-5xl mx-auto p-2 sm:p-6 space-y-6">
       {loaded && (
         <>
-          <TextField.Root
+          <Input
             placeholder="Search items (e.g. scissors, batteries)..."
             value={query}
             onChange={e => setQuery(e.target.value)}
-            size="3"
           />
           <CRUDItemList
             items={formItems as never}

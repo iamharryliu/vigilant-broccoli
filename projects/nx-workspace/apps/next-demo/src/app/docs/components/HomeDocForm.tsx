@@ -1,14 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import {
-  Button,
-  Flex,
-  Select,
-  Text,
-  TextArea,
-  TextField,
-} from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import { DOC_CATEGORIES, DocCategory } from '../../../lib/types';
 
 export interface HomeDocFormData {
@@ -87,7 +81,7 @@ export function HomeDocForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Name
           </Text>
-          <TextField.Root
+          <Input
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="e.g. Home Insurance Policy 2025"
@@ -99,7 +93,7 @@ export function HomeDocForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Description
           </Text>
-          <TextArea
+          <Textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="Optional notes"
@@ -111,19 +105,11 @@ export function HomeDocForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Category
           </Text>
-          <Select.Root
-            value={category}
-            onValueChange={v => setCategory(v as DocCategory)}
-          >
-            <Select.Trigger />
-            <Select.Content>
-              {DOC_CATEGORIES.map(c => (
-                <Select.Item key={c} value={c}>
-                  {c}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
+          <Select
+            selectedOption={category}
+            setValue={setCategory}
+            options={DOC_CATEGORIES as unknown as DocCategory[]}
+          />
         </div>
 
         {!isEdit && (
@@ -133,9 +119,8 @@ export function HomeDocForm({
             </Text>
             <Button
               type="button"
-              variant="soft"
+              variant="secondary"
               onClick={() => fileInputRef.current?.click()}
-              className="cursor-pointer"
             >
               + Add Files
             </Button>
@@ -178,32 +163,16 @@ export function HomeDocForm({
         <Flex justify="between" gap="2" pt="2">
           <div>
             {isEdit && onDelete && (
-              <Button
-                type="button"
-                color="red"
-                variant="soft"
-                onClick={onDelete}
-                className="cursor-pointer"
-              >
+              <Button type="button" variant="destructive" onClick={onDelete}>
                 Delete
               </Button>
             )}
           </div>
           <Flex gap="2">
-            <Button
-              type="button"
-              variant="soft"
-              color="gray"
-              onClick={onCancel}
-              className="cursor-pointer"
-            >
+            <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="cursor-pointer"
-            >
+            <Button type="submit" disabled={submitting}>
               {submitting ? 'Saving...' : isEdit ? 'Save' : 'Upload'}
             </Button>
           </Flex>

@@ -1,8 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Text, Checkbox } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Text } from '@radix-ui/themes';
+import { Button, Checkbox } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { HomeDetailView } from '../homes/components/HomeDetailView';

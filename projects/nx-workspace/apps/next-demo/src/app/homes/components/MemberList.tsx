@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Badge, Flex, Select, Text, TextField } from '@radix-ui/themes';
+import { Badge, Flex, Text } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import {
   CRUDItemList,
   CRUDFormProps,
+  Input,
+  Select,
   UserAvatar,
   USER_AVATAR_VARIANT,
 } from '@vigilant-broccoli/react-lib';
@@ -17,6 +19,8 @@ const ROLE_LABEL: Record<string, string> = {
   [HOME_ROLE.ADMIN]: 'Admin',
   [HOME_ROLE.MEMBER]: 'Member',
 };
+
+const ASSIGNABLE_ROLE_OPTIONS: HomeRole[] = [HOME_ROLE.MEMBER, HOME_ROLE.ADMIN];
 
 const MEMBER_COPY = {
   LIST: { TITLE: 'Members', EMPTY_MESSAGE: 'No members yet.' },
@@ -57,7 +61,7 @@ const MemberFormComponent = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Email
         </Text>
-        <TextField.Root
+        <Input
           placeholder="member@example.com"
           value={email}
           onChange={e => setEmail(e.target.value)}
@@ -69,21 +73,12 @@ const MemberFormComponent = ({
           <Text size="1" weight="medium" as="p" mb="1">
             Role
           </Text>
-          <Select.Root
-            value={role}
-            onValueChange={v => setRole(v as HomeRole)}
-            size="2"
-          >
-            <Select.Trigger />
-            <Select.Content>
-              <Select.Item value={HOME_ROLE.MEMBER}>
-                {ROLE_LABEL[HOME_ROLE.MEMBER]}
-              </Select.Item>
-              <Select.Item value={HOME_ROLE.ADMIN}>
-                {ROLE_LABEL[HOME_ROLE.ADMIN]}
-              </Select.Item>
-            </Select.Content>
-          </Select.Root>
+          <Select
+            selectedOption={role}
+            setValue={setRole}
+            options={ASSIGNABLE_ROLE_OPTIONS}
+            displayMapper={ROLE_LABEL}
+          />
         </div>
       )}
       {formType === FORM_TYPE.CREATE && (
@@ -104,7 +99,9 @@ const MemberListItem = ({ item }: { item: HomeMember }) => {
   return (
     <Flex align="center" gap="2" width="100%">
       <UserAvatar name={item.email} variant={USER_AVATAR_VARIANT.INITIALS} />
-      <Text size="2" className="flex-1 min-w-0 truncate">{item.email}</Text>
+      <Text size="2" className="flex-1 min-w-0 truncate">
+        {item.email}
+      </Text>
       {!isItemOwner && item.status === 'pending' && (
         <Badge variant="soft" color="orange" size="1">
           pending

@@ -1,14 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Button,
-  Flex,
-  Select,
-  Text,
-  TextArea,
-  TextField,
-} from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import { RESOURCE_CATEGORIES, ResourceCategory } from '../../../lib/types';
 
 export interface ResourceFormData {
@@ -54,7 +48,7 @@ export function ResourceForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Name
           </Text>
-          <TextField.Root
+          <Input
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="e.g. Conference Room A, Company Car"
@@ -66,7 +60,7 @@ export function ResourceForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Description
           </Text>
-          <TextArea
+          <Textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="Optional notes about this resource"
@@ -79,26 +73,19 @@ export function ResourceForm({
             <Text size="1" weight="medium" as="p" mb="1">
               Category
             </Text>
-            <Select.Root
-              value={category}
-              onValueChange={v => setCategory(v as ResourceCategory)}
-            >
-              <Select.Trigger style={{ width: '100%' }} />
-              <Select.Content>
-                {RESOURCE_CATEGORIES.map(c => (
-                  <Select.Item key={c} value={c}>
-                    {c}
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Root>
+            <Select
+              selectedOption={category}
+              setValue={setCategory}
+              options={RESOURCE_CATEGORIES as unknown as ResourceCategory[]}
+              triggerClassName="w-full"
+            />
           </div>
 
           <div style={{ width: '110px' }}>
             <Text size="1" weight="medium" as="p" mb="1">
               Quantity
             </Text>
-            <TextField.Root
+            <Input
               type="number"
               min="1"
               value={quantity.toString()}
@@ -112,30 +99,16 @@ export function ResourceForm({
         <Flex justify="between" gap="2" pt="2">
           <div>
             {isEdit && onDelete && (
-              <Button
-                type="button"
-                color="red"
-                variant="soft"
-                onClick={onDelete}
-                className="cursor-pointer"
-              >
+              <Button type="button" variant="destructive" onClick={onDelete}>
                 Delete
               </Button>
             )}
           </div>
           <Flex gap="2">
-            <Button
-              type="button"
-              variant="soft"
-              color="gray"
-              onClick={onCancel}
-              className="cursor-pointer"
-            >
+            <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit" className="cursor-pointer">
-              {isEdit ? 'Save' : 'Add'}
-            </Button>
+            <Button type="submit">{isEdit ? 'Save' : 'Add'}</Button>
           </Flex>
         </Flex>
       </Flex>

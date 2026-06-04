@@ -1,20 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Card, Flex, Box, Text, Table, Badge, Dialog } from '@radix-ui/themes';
 import {
-  Card,
-  Flex,
-  Box,
-  Text,
   Button,
-  TextField,
-  TextArea,
-  Select,
   Checkbox,
-  Table,
-  Badge,
-  Dialog,
-} from '@radix-ui/themes';
+  Input,
+  Select,
+  Textarea,
+} from '@vigilant-broccoli/react-lib';
 
 interface Chore {
   id: string;
@@ -27,6 +21,14 @@ interface Chore {
   completions: string[];
   createdAt: string;
 }
+
+type Recurrence = Chore['recurrence'];
+const RECURRENCE_OPTIONS: Recurrence[] = ['daily', 'weekly', 'monthly'];
+const RECURRENCE_LABELS: Record<Recurrence, string> = {
+  daily: 'Daily',
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+};
 
 interface Todo {
   choreId: string;
@@ -396,7 +398,7 @@ export default function ChoresPage() {
                           {choreTodos.map(todo => (
                             <Checkbox
                               key={todo.instanceNumber}
-                              size="3"
+                              className="h-5 w-5"
                               checked={todo.isCompleted}
                               onCheckedChange={checked => {
                                 if (checked && !todo.isCompleted)
@@ -435,7 +437,7 @@ export default function ChoresPage() {
                       <Text as="label" size="2" weight="medium" mb="1">
                         Name
                       </Text>
-                      <TextField.Root
+                      <Input
                         placeholder="e.g., Clean kitchen"
                         value={formData.name}
                         onChange={e =>
@@ -447,7 +449,7 @@ export default function ChoresPage() {
                       <Text as="label" size="2" weight="medium" mb="1">
                         Description
                       </Text>
-                      <TextArea
+                      <Textarea
                         placeholder="Optional details"
                         value={formData.description}
                         onChange={e =>
@@ -464,28 +466,20 @@ export default function ChoresPage() {
                         <Text as="label" size="2" weight="medium" mb="1">
                           Recurrence
                         </Text>
-                        <Select.Root
-                          value={formData.recurrence}
-                          onValueChange={value =>
-                            setFormData({
-                              ...formData,
-                              recurrence: value as Chore['recurrence'],
-                            })
+                        <Select
+                          selectedOption={formData.recurrence}
+                          setValue={recurrence =>
+                            setFormData({ ...formData, recurrence })
                           }
-                        >
-                          <Select.Trigger />
-                          <Select.Content>
-                            <Select.Item value="daily">Daily</Select.Item>
-                            <Select.Item value="weekly">Weekly</Select.Item>
-                            <Select.Item value="monthly">Monthly</Select.Item>
-                          </Select.Content>
-                        </Select.Root>
+                          options={RECURRENCE_OPTIONS}
+                          displayMapper={RECURRENCE_LABELS}
+                        />
                       </Box>
                       <Box style={{ width: '120px' }}>
                         <Text as="label" size="2" weight="medium" mb="1">
                           Multiplier
                         </Text>
-                        <TextField.Root
+                        <Input
                           type="number"
                           min="1"
                           max="10"
@@ -534,7 +528,7 @@ export default function ChoresPage() {
                     </Flex>
                     <Flex gap="2" justify="end" mt="4">
                       <Dialog.Close>
-                        <Button variant="soft" color="gray" onClick={resetForm}>
+                        <Button variant="secondary" onClick={resetForm}>
                           Cancel
                         </Button>
                       </Dialog.Close>
@@ -624,16 +618,15 @@ export default function ChoresPage() {
                         <Table.Cell>
                           <Flex gap="2">
                             <Button
-                              size="1"
-                              variant="soft"
+                              size="sm"
+                              variant="secondary"
                               onClick={() => handleEdit(chore)}
                             >
                               Edit
                             </Button>
                             <Button
-                              size="1"
-                              variant="soft"
-                              color="red"
+                              size="sm"
+                              variant="destructive"
                               onClick={() => handleDelete(chore.id)}
                             >
                               Delete

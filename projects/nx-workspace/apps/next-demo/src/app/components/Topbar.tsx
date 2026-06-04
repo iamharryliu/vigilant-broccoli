@@ -1,13 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { Select, DropdownMenu } from '@radix-ui/themes';
+import { DropdownMenu } from '@radix-ui/themes';
 import { Home } from 'lucide-react';
 import { supabase } from '../../../libs/supabase';
 import { useHome } from '../providers/home-provider';
 import { useAuth } from '../providers/auth-provider';
 import { ROUTES } from '../../lib/routes';
-import { UserAvatar, USER_AVATAR_VARIANT } from '@vigilant-broccoli/react-lib';
+import {
+  Select,
+  UserAvatar,
+  USER_AVATAR_VARIANT,
+} from '@vigilant-broccoli/react-lib';
 
 export default function Topbar() {
   const { homes, selectedHomeId, setSelectedHomeId } = useHome();
@@ -20,20 +24,13 @@ export default function Topbar() {
       {homes.length > 0 && (
         <div className="flex items-center gap-1.5 text-gray-500">
           <Home size={14} />
-          <Select.Root
-            size="1"
-            value={selectedHomeId?.toString() ?? ''}
-            onValueChange={val => setSelectedHomeId(Number(val))}
-          >
-            <Select.Trigger variant="ghost" />
-            <Select.Content>
-              {homes.map(home => (
-                <Select.Item key={home.id} value={home.id.toString()}>
-                  {home.name}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
+          <Select
+            selectedOption={homes.find(h => h.id === selectedHomeId)}
+            setValue={home => setSelectedHomeId(home.id)}
+            options={homes}
+            optionIdenfifier="id"
+            optionDisplayKey="name"
+          />
         </div>
       )}
 

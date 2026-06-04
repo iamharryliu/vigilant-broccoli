@@ -2,11 +2,13 @@
 
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Flex, Text, TextField, TextArea } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
   CRUDItemList,
+  Input,
+  Textarea,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { HouseholdRule } from '../../../lib/types';
@@ -77,7 +79,7 @@ const RuleForm = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Name
         </Text>
-        <TextField.Root
+        <Input
           placeholder="Rule name"
           value={name}
           onChange={e => setName(e.target.value)}
@@ -87,7 +89,7 @@ const RuleForm = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Description
         </Text>
-        <TextArea
+        <Textarea
           placeholder="Optional description"
           value={description}
           onChange={e => setDescription(e.target.value)}
@@ -98,7 +100,7 @@ const RuleForm = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Position
         </Text>
-        <TextField.Root
+        <Input
           type="number"
           min="0"
           value={position.toString()}

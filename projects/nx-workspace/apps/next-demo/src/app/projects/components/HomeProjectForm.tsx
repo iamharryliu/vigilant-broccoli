@@ -1,14 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Button,
-  TextField,
-  TextArea,
-  Flex,
-  Text,
-  Select,
-} from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import {
   PROJECT_CATEGORIES,
   PROJECT_STATUSES,
@@ -61,7 +55,7 @@ export function HomeProjectForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Title
           </Text>
-          <TextField.Root
+          <Input
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="e.g. Build shelf in garage"
@@ -73,7 +67,7 @@ export function HomeProjectForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Description
           </Text>
-          <TextArea
+          <Textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="Optional notes"
@@ -85,67 +79,37 @@ export function HomeProjectForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Category
           </Text>
-          <Select.Root
-            value={category}
-            onValueChange={v => setCategory(v as ProjectCategory)}
-          >
-            <Select.Trigger />
-            <Select.Content>
-              {PROJECT_CATEGORIES.map(c => (
-                <Select.Item key={c} value={c}>
-                  {c}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
+          <Select
+            selectedOption={category}
+            setValue={setCategory}
+            options={PROJECT_CATEGORIES as unknown as ProjectCategory[]}
+          />
         </div>
 
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Status
           </Text>
-          <Select.Root
-            value={status}
-            onValueChange={v => setStatus(v as ProjectStatus)}
-          >
-            <Select.Trigger />
-            <Select.Content>
-              {PROJECT_STATUSES.map(s => (
-                <Select.Item key={s} value={s}>
-                  {s}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
+          <Select
+            selectedOption={status}
+            setValue={setStatus}
+            options={PROJECT_STATUSES as unknown as ProjectStatus[]}
+          />
         </div>
 
         <Flex justify="between" gap="2" pt="2">
           <div>
             {isEdit && onDelete && (
-              <Button
-                type="button"
-                color="red"
-                variant="soft"
-                onClick={onDelete}
-                className="cursor-pointer"
-              >
+              <Button type="button" variant="destructive" onClick={onDelete}>
                 Delete
               </Button>
             )}
           </div>
           <Flex gap="2">
-            <Button
-              type="button"
-              variant="soft"
-              color="gray"
-              onClick={onCancel}
-              className="cursor-pointer"
-            >
+            <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit" className="cursor-pointer">
-              {isEdit ? 'Save' : 'Add'}
-            </Button>
+            <Button type="submit">{isEdit ? 'Save' : 'Add'}</Button>
           </Flex>
         </Flex>
       </Flex>

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Flex, Text, TextField, TextArea } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
 import { CalendarEventFormData } from '../../calendar/components/CalendarEventForm';
 import { toDatetimeLocal, toDateLocal } from '../../../lib/date-utils';
 
@@ -79,7 +79,7 @@ export function LeisureCalendarDropForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Title
           </Text>
-          <TextField.Root
+          <Input
             value={title}
             onChange={e => setTitle(e.target.value)}
             required
@@ -90,7 +90,7 @@ export function LeisureCalendarDropForm({
           <Text size="1" weight="medium" as="p" mb="1">
             Notes
           </Text>
-          <TextArea
+          <Textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
             rows={2}

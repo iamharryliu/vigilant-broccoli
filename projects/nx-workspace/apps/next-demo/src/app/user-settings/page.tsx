@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Text, TextField } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Text } from '@radix-ui/themes';
+import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { supabase } from '../../../libs/supabase';
 
@@ -69,8 +69,7 @@ export default function UserSettingsPage() {
               Display Name
             </Text>
             <div className="flex items-center gap-2">
-              <TextField.Root
-                size="2"
+              <Input
                 value={displayName}
                 onChange={e => setDisplayName(e.target.value)}
                 placeholder="Enter display name"
