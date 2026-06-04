@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import { DOC_CATEGORIES, DocCategory } from '../../../lib/types';
 
@@ -76,7 +76,7 @@ export function HomeDocForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Flex direction="column" gap="3" mt="2">
+      <div className="flex flex-col gap-3 mt-2">
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Name
@@ -133,14 +133,9 @@ export function HomeDocForm({
               className="hidden"
             />
             {pendingFiles.length > 0 && (
-              <Flex direction="column" gap="1" mt="2">
+              <div className="flex flex-col gap-1 mt-2">
                 {pendingFiles.map((f, i) => (
-                  <Flex
-                    key={i}
-                    align="center"
-                    justify="between"
-                    className="text-sm"
-                  >
+                  <div className="flex items-center justify-between text-sm" key={i}>
                     <Text size="1" className="truncate flex-1">
                       {f.name}
                     </Text>
@@ -153,14 +148,14 @@ export function HomeDocForm({
                     >
                       ✕
                     </button>
-                  </Flex>
+                  </div>
                 ))}
-              </Flex>
+              </div>
             )}
           </div>
         )}
 
-        <Flex justify="between" gap="2" pt="2">
+        <div className="flex justify-between gap-2 pt-2">
           <div>
             {isEdit && onDelete && (
               <Button type="button" variant="destructive" onClick={onDelete}>
@@ -168,16 +163,16 @@ export function HomeDocForm({
               </Button>
             )}
           </div>
-          <Flex gap="2">
+          <div className="flex gap-2">
             <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
             <Button type="submit" disabled={submitting}>
               {submitting ? 'Saving...' : isEdit ? 'Save' : 'Upload'}
             </Button>
-          </Flex>
-        </Flex>
-      </Flex>
+          </div>
+        </div>
+      </div>
     </form>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
@@ -55,7 +55,7 @@ export const RecipeScraperUtilityContent = () => {
 
   return (
     <>
-      <Flex gap="2" align="end">
+      <div className="flex gap-2 items-end">
         <Input
           placeholder="Enter recipe URL..."
           value={recipeUrl}
@@ -70,7 +70,7 @@ export const RecipeScraperUtilityContent = () => {
         >
           {recipeLoading ? 'Scraping...' : 'Download'}
         </Button>
-      </Flex>
+      </div>
 
       {recipeMessage && (
         <Text

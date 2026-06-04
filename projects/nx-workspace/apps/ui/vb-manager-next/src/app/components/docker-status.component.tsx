@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
   Button,
@@ -193,7 +193,7 @@ export const DockerStatusComponent = () => {
       children: (
         <>
           {project.services.map(service => (
-            <Flex key={service.name} align="center" gap="2">
+            <div className="flex items-center gap-2" key={service.name}>
               <Badge color="blue" variant="soft" size="1">
                 {service.name}
               </Badge>
@@ -202,7 +202,7 @@ export const DockerStatusComponent = () => {
                   {service.ports}
                 </Text>
               )}
-            </Flex>
+            </div>
           ))}
         </>
       ),

@@ -1,7 +1,7 @@
 'use client';
 
 import { CSSProperties } from 'react';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { useNotepad } from '../hooks/useNotepad';
 
 interface NotepadEditorProps {
@@ -12,12 +12,8 @@ export const NotepadEditorComponent = ({ style }: NotepadEditorProps) => {
   const { content, setContent, isSaving, lastSaved } = useNotepad();
 
   return (
-    <Flex
-      direction="column"
-      gap="2"
-      style={{ display: 'flex', flexDirection: 'column', ...style }}
-    >
-      <Flex justify="between" align="center">
+    <div className="flex flex-col gap-2" style={{ display: 'flex', flexDirection: 'column', ...style }}>
+      <div className="flex justify-between items-center">
         <Text size="2" weight="bold">
           Notepad
         </Text>
@@ -28,7 +24,7 @@ export const NotepadEditorComponent = ({ style }: NotepadEditorProps) => {
               ? `Saved ${lastSaved.toLocaleTimeString()}`
               : ''}
         </Text>
-      </Flex>
+      </div>
       <textarea
         value={content}
         onChange={e => setContent(e.target.value)}
@@ -48,6 +44,6 @@ export const NotepadEditorComponent = ({ style }: NotepadEditorProps) => {
           minHeight: '200px',
         }}
       />
-    </Flex>
+    </div>
   );
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
@@ -120,7 +120,7 @@ export const FlyIoAppsComponent = () => {
     return (
       <CardContainer title="Fly.io Apps" gap="3" headerLink={DASHBOARD_LINK}>
         {authRequired ? (
-          <Flex direction="column" gap="2" align="start">
+          <div className="flex flex-col gap-2 items-start">
             <Text size="2">Not logged in to Fly.io.</Text>
             <Button
               variant="secondary"
@@ -129,7 +129,7 @@ export const FlyIoAppsComponent = () => {
             >
               Login to Fly.io
             </Button>
-          </Flex>
+          </div>
         ) : (
           <Badge color="red">{error}</Badge>
         )}

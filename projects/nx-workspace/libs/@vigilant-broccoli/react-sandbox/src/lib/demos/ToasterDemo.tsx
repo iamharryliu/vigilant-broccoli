@@ -1,18 +1,18 @@
-import { Flex, Heading } from '@radix-ui/themes';
+import { Heading } from '@radix-ui/themes';
 import { toast, Toaster, Button } from '@vigilant-broccoli/react-lib';
 
 const DEMO_DURATION_MS = 3000;
 
 export function ToasterDemo() {
   return (
-    <Flex direction="column" gap="6">
+    <div className="flex flex-col gap-6">
       <Toaster richColors duration={DEMO_DURATION_MS} />
 
       <div>
         <Heading size="4" mb="3">
           Toast Types
         </Heading>
-        <Flex gap="3" wrap="wrap">
+        <div className="flex gap-3 flex-wrap">
           <Button onClick={() => toast('Default toast message')}>
             Default
           </Button>
@@ -30,14 +30,14 @@ export function ToasterDemo() {
           <Button onClick={() => toast.info('Here is some information')}>
             Info
           </Button>
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           With Description
         </Heading>
-        <Flex gap="3" wrap="wrap">
+        <div className="flex gap-3 flex-wrap">
           <Button
             onClick={() =>
               toast('Event created', {
@@ -56,14 +56,14 @@ export function ToasterDemo() {
           >
             Success + Description
           </Button>
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           With Action
         </Heading>
-        <Flex gap="3" wrap="wrap">
+        <div className="flex gap-3 flex-wrap">
           <Button
             onClick={() =>
               toast('Item deleted', {
@@ -76,14 +76,14 @@ export function ToasterDemo() {
           >
             With Undo Action
           </Button>
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Promise
         </Heading>
-        <Flex gap="3" wrap="wrap">
+        <div className="flex gap-3 flex-wrap">
           <Button
             onClick={() =>
               toast.promise(new Promise(r => setTimeout(r, 2000)), {
@@ -95,8 +95,8 @@ export function ToasterDemo() {
           >
             Promise Toast
           </Button>
-        </Flex>
+        </div>
       </div>
-    </Flex>
+    </div>
   );
 }

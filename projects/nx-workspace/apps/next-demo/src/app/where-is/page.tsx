@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Flex, Text, Badge } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import { CRUDItemList, Input } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
@@ -45,21 +45,21 @@ const fuzzyMatch = (query: string, item: WhereIsItem): boolean => {
 };
 
 const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => (
-  <Box className="min-w-0">
+  <div className="min-w-0">
     <Text weight="bold" size="2" as="p">
       {item.title}
     </Text>
     <Text size="1" color="gray" as="p">
       {item.description}
     </Text>
-    <Flex wrap="wrap" gap="1" mt="1">
+    <div className="flex flex-wrap gap-1 mt-1">
       {item.tags.map(tag => (
         <Badge key={tag} variant="soft" size="1">
           {tag}
         </Badge>
       ))}
-    </Flex>
-  </Box>
+    </div>
+  </div>
 );
 
 export default function WhereIsPage() {

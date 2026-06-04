@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text, Select } from '@radix-ui/themes';
+import { Text, Select } from '@radix-ui/themes';
 import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -113,14 +113,14 @@ export const TaskListDraftCard = ({
     (selectedListId !== NEW_LIST_VALUE || newListTitle.trim().length > 0);
 
   return (
-    <Flex direction="column" gap="2" style={{ marginTop: '0.5rem' }}>
+    <div className="flex flex-col gap-2" style={{ marginTop: '0.5rem' }}>
       <Text size="2" weight="medium">
         Google Tasks
       </Text>
 
-      <Flex direction="column" gap="1">
+      <div className="flex flex-col gap-1">
         {items.map((item, index) => (
-          <Flex key={index} gap="2" align="center">
+          <div className="flex gap-2 items-center" key={index}>
             <Input
               placeholder="Task title"
               value={item.title}
@@ -136,16 +136,16 @@ export const TaskListDraftCard = ({
             >
               <Trash2 size={14} />
             </Button>
-          </Flex>
+          </div>
         ))}
         {items.length === 0 && (
           <Text size="1" color="gray">
             No tasks remaining.
           </Text>
         )}
-      </Flex>
+      </div>
 
-      <Flex direction="column" gap="1" style={{ marginTop: '0.5rem' }}>
+      <div className="flex flex-col gap-1" style={{ marginTop: '0.5rem' }}>
         <Text size="1" color="gray">
           Task list
         </Text>
@@ -179,7 +179,7 @@ export const TaskListDraftCard = ({
             {listsError}
           </Text>
         )}
-      </Flex>
+      </div>
 
       {status === 'error' && errorMessage && (
         <Text size="1" color="red">
@@ -194,15 +194,15 @@ export const TaskListDraftCard = ({
       )}
 
       {status !== 'created' && (
-        <Flex gap="2">
+        <div className="flex gap-2">
           <Button onClick={handleCreate} disabled={!canCreate}>
             {status === 'creating' ? 'Creating...' : 'Create tasks'}
           </Button>
           <Button variant="secondary" onClick={onCancel} disabled={isReadOnly}>
             Cancel
           </Button>
-        </Flex>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };

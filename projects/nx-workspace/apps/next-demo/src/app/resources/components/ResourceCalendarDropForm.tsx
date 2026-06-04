@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
 import { toDateLocal } from '../../../lib/date-utils';
 import { ResourceBookingFormData } from './ResourceBookingForm';
@@ -39,7 +39,7 @@ export function ResourceCalendarDropForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Flex direction="column" gap="3" mt="2">
+      <div className="flex flex-col gap-3 mt-2">
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Booking Title
@@ -62,7 +62,7 @@ export function ResourceCalendarDropForm({
           />
         </div>
 
-        <Flex gap="3">
+        <div className="flex gap-3">
           <div style={{ flex: 1 }}>
             <Text size="1" weight="medium" as="p" mb="1">
               Start Date
@@ -88,9 +88,9 @@ export function ResourceCalendarDropForm({
               style={inputStyle}
             />
           </div>
-        </Flex>
+        </div>
 
-        <Flex justify="end" gap="2" pt="2">
+        <div className="flex justify-end gap-2 pt-2">
           <Button
             type="button"
             variant="secondary"
@@ -102,8 +102,8 @@ export function ResourceCalendarDropForm({
           <Button type="submit" className="cursor-pointer">
             Book Resource
           </Button>
-        </Flex>
-      </Flex>
+        </div>
+      </div>
     </form>
   );
 }

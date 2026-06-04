@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { useSpeechToText } from '../../hooks/useSpeechToText';
@@ -41,8 +41,8 @@ export const SpeechToText = ({
   );
 
   return (
-    <Flex direction="column" gap="4">
-      <Flex gap="2" align="center">
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-2 items-center">
         <SpeechToTextButton
           isRecording={isRecording}
           isProcessing={isProcessing}
@@ -54,9 +54,9 @@ export const SpeechToText = ({
             {error}
           </Text>
         )}
-      </Flex>
+      </div>
 
-      <Box>
+      <div>
         <Textarea
           value={transcript}
           onChange={e => {
@@ -69,7 +69,7 @@ export const SpeechToText = ({
           rows={8}
           className="w-full"
         />
-      </Box>
-    </Flex>
+      </div>
+    </div>
   );
 };

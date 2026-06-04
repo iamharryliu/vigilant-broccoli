@@ -8,17 +8,7 @@ import {
   GithubOrgRepository,
   GITHUB_ORG_URLS,
 } from '@vigilant-broccoli/github-workspace-js';
-import {
-  Heading,
-  Link,
-  Box,
-  Text,
-  Callout,
-  Badge,
-  Grid,
-  Dialog,
-  Flex,
-} from '@radix-ui/themes';
+import { Heading, Link, Text, Callout, Badge, Dialog } from '@radix-ui/themes';
 import { AlertCircle, Plus } from 'lucide-react';
 
 import {
@@ -109,17 +99,17 @@ export default function Page({
 
   return (
     <>
-      <Flex align="center" gap="3" mb="4">
+      <div className="flex items-center gap-3 mb-4">
         <Avatar
           avatarUrl={meta?.avatar_url}
           fallback={organizationName[0].toUpperCase()}
           size="large"
         />
-        <Box>
+        <div>
           <Heading size="6">
             {meta?.organizationName ?? organizationName}
           </Heading>
-          <Flex align="center" gap="2">
+          <div className="flex items-center gap-2">
             {repositories ? (
               <Text size="2" color="gray">
                 {repositories.length} repo{repositories.length !== 1 ? 's' : ''}
@@ -147,11 +137,11 @@ export default function Page({
             ) : (
               <Skeleton className="h-4 w-12" />
             )}
-          </Flex>
-        </Box>
-      </Flex>
+          </div>
+        </div>
+      </div>
 
-      <Grid columns="3" gap="3">
+      <div className="grid grid-cols-3 gap-3">
         {repositories ? (
           <RepositoriesList
             repositories={repositories}
@@ -177,7 +167,7 @@ export default function Page({
         ) : (
           <CardSkeleton title="Teams" rows={5} />
         )}
-      </Grid>
+      </div>
     </>
   );
 }
@@ -216,14 +206,14 @@ const memberToItem = (
   id: String(member.id),
   label: member.login,
   badges: (
-    <Flex align="center" gap="2">
+    <div className="flex items-center gap-2">
       {member.role && (
         <Badge color={member.role === 'admin' ? 'red' : 'gray'} size="1">
           {member.role}
         </Badge>
       )}
       <Avatar avatarUrl={member.avatar_url} size="xsmall" />
-    </Flex>
+    </div>
   ),
   actions: (
     <EllipsisCTA
@@ -291,7 +281,7 @@ const repoToItem = (
     />
   ) : undefined,
   children: (
-    <Flex direction="column" gap="2">
+    <div className="flex flex-col gap-2">
       {repo.description && (
         <Text size="1" color="gray">
           {repo.description}
@@ -306,16 +296,16 @@ const repoToItem = (
           }),
         )}
       />
-    </Flex>
+    </div>
   ),
 });
 
 const NoResults = ({ query, label }: { query: string; label: string }) => (
-  <Box style={{ textAlign: 'center', padding: '2rem' }}>
+  <div style={{ textAlign: 'center', padding: '2rem' }}>
     <Text size="3" color="gray">
       No {label} match &ldquo;{query}&rdquo;
     </Text>
-  </Box>
+  </div>
 );
 
 const AddItemDialog = ({
@@ -359,7 +349,7 @@ const AddItemDialog = ({
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
           className="mt-3"
         />
-        <Flex gap="2" justify="end" mt="3">
+        <div className="flex gap-2 justify-end mt-3">
           <Dialog.Close>
             <Button variant="ghost">Cancel</Button>
           </Dialog.Close>
@@ -370,7 +360,7 @@ const AddItemDialog = ({
           >
             {buttonLabel}
           </Button>
-        </Flex>
+        </div>
       </Dialog.Content>
     </Dialog.Root>
   );
@@ -410,13 +400,13 @@ const RepositoriesList = ({
         label: 'View Repositories',
       }}
     >
-      <Box mb="2">
+      <div className="mb-2">
         <SearchInput
           placeholder="Search repositories..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />
-      </Box>
+      </div>
       <AddItemDialog
         title="Create Repository"
         placeholder="Repository name..."
@@ -493,13 +483,13 @@ const MembersList = ({
         label: 'View Members',
       }}
     >
-      <Box mb="2">
+      <div className="mb-2">
         <SearchInput
           placeholder="Search members..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />
-      </Box>
+      </div>
       <AddItemDialog
         title="Add Member"
         placeholder="GitHub username..."
@@ -528,14 +518,11 @@ const MembersList = ({
 };
 
 const teamMemberRow = (team: GithubTeam, member: GithubTeamMember) => (
-  <Box
-    key={`${team.name}-${member.username}`}
-    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-  >
+  <div key={`${team.name}-${member.username}`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
     <Avatar avatarUrl={member.avatar_url} size="xsmall" />
-    <Box style={{ flex: 1 }}>
+    <div style={{ flex: 1 }}>
       <GithubUserLink member={member} />
-    </Box>
+    </div>
     <Badge
       color={
         member.role === 'admin'
@@ -548,7 +535,7 @@ const teamMemberRow = (team: GithubTeam, member: GithubTeamMember) => (
     >
       {member.role}
     </Badge>
-  </Box>
+  </div>
 );
 
 const teamToItem = (
@@ -576,7 +563,7 @@ const teamToItem = (
     />
   ),
   children: (
-    <Flex direction="column" gap="2">
+    <div className="flex flex-col gap-2">
       <Badge color="gray" size="1" style={{ alignSelf: 'flex-start' }}>
         {team.members.length} member{team.members.length !== 1 ? 's' : ''}
       </Badge>
@@ -587,7 +574,7 @@ const teamToItem = (
       ) : (
         team.members.map(member => teamMemberRow(team, member))
       )}
-    </Flex>
+    </div>
   ),
 });
 
@@ -619,13 +606,13 @@ const TeamsList = ({
         label: 'View Teams',
       }}
     >
-      <Box mb="2">
+      <div className="mb-2">
         <SearchInput
           placeholder="Search teams..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />
-      </Box>
+      </div>
       <AddItemDialog
         title="Create Team"
         placeholder="Team name..."

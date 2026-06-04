@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Text, Flex, Spinner } from '@radix-ui/themes';
+import { Text, Spinner } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { DATE_CONST } from '@vigilant-broccoli/common-js';
 
@@ -135,9 +135,9 @@ export const WeatherComponent = () => {
 
   if (loading) {
     return (
-      <Flex justify="center" align="center" p="4">
+      <div className="flex justify-center items-center p-4">
         <Spinner size="3" />
-      </Flex>
+      </div>
     );
   }
 
@@ -146,10 +146,10 @@ export const WeatherComponent = () => {
   }
 
   return (
-    <Box>
+    <div>
       {weatherData.map(cityWeather => {
         return (
-          <Box key={cityWeather.city}>
+          <div key={cityWeather.city}>
             <div className="grid grid-cols-4 gap-4 mb-3">
               <div className="flex flex-col justify-start pt-6">
                 <Text size="1" weight="bold" className="text-gray-700">
@@ -189,9 +189,9 @@ export const WeatherComponent = () => {
                 </div>
               ))}
             </div>
-          </Box>
+          </div>
         );
       })}
-    </Box>
+    </div>
   );
 };

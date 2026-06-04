@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import {
   ELEVENLABS_FREE_VOICE_OPTIONS,
@@ -30,7 +30,7 @@ export const TextToSpeechVoices = () => {
   const { audioUrl, error, isLoading, speak } = useTextToSpeech();
 
   return (
-    <Flex direction="column" gap="4">
+    <div className="flex flex-col gap-4">
       <Textarea
         value={text}
         onChange={e => setText(e.target.value)}
@@ -39,7 +39,7 @@ export const TextToSpeechVoices = () => {
         className="w-full"
       />
 
-      <Flex gap="2" align="center">
+      <div className="flex gap-2 items-center">
         <Select
           options={ELEVENLABS_FREE_VOICE_OPTIONS as unknown as VoiceOption[]}
           selectedOption={voice}
@@ -57,7 +57,7 @@ export const TextToSpeechVoices = () => {
           <Volume2 size={16} />
           {isLoading ? LABEL_GENERATING : LABEL_SPEAK}
         </Button>
-      </Flex>
+      </div>
 
       {error && (
         <Text size="2" color="red">
@@ -70,6 +70,6 @@ export const TextToSpeechVoices = () => {
           <source src={audioUrl} type={AUDIO_TYPE} />
         </audio>
       )}
-    </Flex>
+    </div>
   );
 };

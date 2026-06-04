@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Badge, Dialog, Flex, Text } from '@radix-ui/themes';
+import { Badge, Dialog, Text } from '@radix-ui/themes';
 import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, Meal } from '../../../lib/types';
 import { MealForm, MealFormData } from './MealForm';
@@ -79,7 +79,7 @@ export function MealList({
 
   return (
     <div className="flex flex-col gap-3">
-      <Flex justify="between" align="center">
+      <div className="flex justify-between items-center">
         <Text size="4" weight="bold">
           Meal List
         </Text>
@@ -89,7 +89,7 @@ export function MealList({
         >
           + Add
         </Button>
-      </Flex>
+      </div>
 
       {!hideDragHint && (
         <Text size="1" color="gray">

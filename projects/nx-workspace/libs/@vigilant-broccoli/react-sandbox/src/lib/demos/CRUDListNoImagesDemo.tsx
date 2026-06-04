@@ -1,5 +1,5 @@
 import { useRef, useState, ReactNode } from 'react';
-import { Badge, Flex, Text, TextField } from '@radix-ui/themes';
+import { Badge, Text, TextField } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
@@ -66,13 +66,13 @@ const TextListItem = ({
     <Text size="1" color="gray" as="p">
       {item.description}
     </Text>
-    <Flex wrap="wrap" gap="1" mt="1">
+    <div className="flex flex-wrap gap-1 mt-1">
       {item.tags.map(tag => (
         <Badge key={tag} variant="soft" size="1">
           {tag}
         </Badge>
       ))}
-    </Flex>
+    </div>
   </div>
 );
 
@@ -93,7 +93,7 @@ const TextItemForm = ({
   };
 
   return (
-    <Flex direction="column" gap="3" mt="3">
+    <div className="flex flex-col gap-3 mt-3">
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
           Title
@@ -118,7 +118,7 @@ const TextItemForm = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Tags
         </Text>
-        <Flex gap="2">
+        <div className="flex gap-2">
           <TextField.Root
             placeholder="Add tag..."
             value={tagInput}
@@ -132,8 +132,8 @@ const TextItemForm = ({
             className="flex-1"
           />
           <Button onClick={async () => addTag()}>Add</Button>
-        </Flex>
-        <Flex gap="2" mt="2" wrap="wrap">
+        </div>
+        <div className="flex gap-2 mt-2 flex-wrap">
           {tags.map(tag => (
             <Badge
               key={tag}
@@ -145,7 +145,7 @@ const TextItemForm = ({
               {tag} ✕
             </Badge>
           ))}
-        </Flex>
+        </div>
       </div>
       <Button
         onClick={async () =>
@@ -157,7 +157,7 @@ const TextItemForm = ({
       >
         {formType === FORM_TYPE.UPDATE ? 'Save' : 'Add Item'}
       </Button>
-    </Flex>
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text, ScrollArea } from '@radix-ui/themes';
+import { Text, ScrollArea } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
@@ -58,9 +58,9 @@ export const StopwatchUtilityContent = () => {
   };
 
   return (
-    <Flex direction="column" gap="4">
-      <Flex align="center" justify="between" gap="3">
-        <Flex gap="2">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex gap-2">
           <Button variant="secondary" onClick={handleStopwatchToggle}>
             {stopwatchRunning ? 'Pause' : 'Start'}
           </Button>
@@ -74,43 +74,38 @@ export const StopwatchUtilityContent = () => {
           <Button variant="outline" onClick={handleStopwatchReset}>
             Reset
           </Button>
-        </Flex>
+        </div>
         <Text size="6" weight="bold" className="font-mono">
           {formatStopwatchTime(stopwatchTime)}
         </Text>
-      </Flex>
+      </div>
 
       {laps.length > 0 && (
-        <Flex direction="column" gap="2">
+        <div className="flex flex-col gap-2">
           <Text size="2" weight="bold" color="gray">
             Laps
           </Text>
           <ScrollArea style={{ maxHeight: '200px' }}>
-            <Flex direction="column" gap="1">
+            <div className="flex flex-col gap-1">
               {laps.map(lap => (
-                <Flex
-                  key={lap.lapNumber}
-                  justify="between"
-                  align="center"
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md"
-                >
+                <div className="flex justify-between items-center px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md" key={lap.lapNumber}>
                   <Text size="2" weight="medium">
                     Lap {lap.lapNumber}
                   </Text>
-                  <Flex gap="4">
+                  <div className="flex gap-4">
                     <Text size="2" className="font-mono" color="gray">
                       +{formatStopwatchTime(lap.lapTime)}
                     </Text>
                     <Text size="2" className="font-mono" weight="medium">
                       {formatStopwatchTime(lap.totalTime)}
                     </Text>
-                  </Flex>
-                </Flex>
+                  </div>
+                </div>
               ))}
-            </Flex>
+            </div>
           </ScrollArea>
-        </Flex>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };

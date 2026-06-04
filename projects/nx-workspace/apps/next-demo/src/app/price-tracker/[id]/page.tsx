@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import {
   LineChart,
   Line,
@@ -97,7 +97,7 @@ export default function PriceTrackerDetailPage() {
       </Link>
 
       <div>
-        <Flex align="center" gap="2" wrap="wrap" mb="1">
+        <div className="flex items-center gap-2 flex-wrap mb-1">
           <Text size="6" weight="bold">
             {item.name}
           </Text>
@@ -111,7 +111,7 @@ export default function PriceTrackerDetailPage() {
               {item.unit}
             </Badge>
           )}
-        </Flex>
+        </div>
         {minPrice !== null && maxPrice !== null && prices.length > 1 && (
           <Text size="2" color="gray">
             Range: {formatPrice(minPrice)} – {formatPrice(maxPrice)} (

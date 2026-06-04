@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import { useAuth } from '../../providers/auth-provider';
 import { Resource, ResourceBooking } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
@@ -48,7 +48,7 @@ export default function ResourceDetailPage() {
         ← Back
       </Link>
 
-      <Flex align="center" gap="3" wrap="wrap">
+      <div className="flex items-center gap-3 flex-wrap">
         <Text size="6" weight="bold">{resource.name}</Text>
         <Badge
           color={CATEGORY_COLORS[resource.category] as never}
@@ -60,7 +60,7 @@ export default function ResourceDetailPage() {
         {resource.quantity > 1 && (
           <Badge variant="outline" size="2">×{resource.quantity}</Badge>
         )}
-      </Flex>
+      </div>
 
       {resource.description && (
         <Text size="3" color="gray" as="p">{resource.description}</Text>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Flex, ScrollArea, Text, TextField } from '@radix-ui/themes';
+import { Badge, ScrollArea, Text, TextField } from '@radix-ui/themes';
 import { Button, Progress } from '@vigilant-broccoli/react-lib';
 import { useEffect, useRef, useState } from 'react';
 import { createSoundAlert } from '../audio';
@@ -196,21 +196,21 @@ export const AlarmUtilityContent = () => {
   };
 
   return (
-    <Flex direction="column" gap="3">
+    <div className="flex flex-col gap-3">
       {notificationPermission !== 'granted' && (
-        <Flex direction="column" gap="2">
+        <div className="flex flex-col gap-2">
           <Text size="2" color="orange">
             Enable notifications for alarm alerts
           </Text>
           <Button size="sm" onClick={requestNotificationPermission}>
             Enable Notifications
           </Button>
-        </Flex>
+        </div>
       )}
 
-      <Flex direction="column" gap="2">
-        <Flex gap="2" align="end">
-          <Flex direction="column" gap="1" style={{ flex: 1 }}>
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2 items-end">
+          <div className="flex flex-col gap-1" style={{ flex: 1 }}>
             <Text size="1" color="gray">
               Time
             </Text>
@@ -223,8 +223,8 @@ export const AlarmUtilityContent = () => {
                 if (e.key === 'Enter') handleAddAlarm();
               }}
             />
-          </Flex>
-          <Flex direction="column" gap="1" style={{ flex: 2 }}>
+          </div>
+          <div className="flex flex-col gap-1" style={{ flex: 2 }}>
             <Text size="1" color="gray">
               Label
             </Text>
@@ -237,45 +237,39 @@ export const AlarmUtilityContent = () => {
                 if (e.key === 'Enter') handleAddAlarm();
               }}
             />
-          </Flex>
+          </div>
           <Button onClick={handleAddAlarm} disabled={!newTime}>
             Add
           </Button>
-        </Flex>
-      </Flex>
+        </div>
+      </div>
 
       {alarms.length > 0 && (
         <ScrollArea style={{ maxHeight: '300px' }}>
-          <Flex direction="column" gap="2">
+          <div className="flex flex-col gap-2">
             {alarms.map(alarm => {
               const progress = calculateProgress(alarm);
               return (
-                <Flex
-                  key={alarm.id}
-                  direction="column"
-                  gap="2"
-                  p="2"
-                  style={{
+                <div className="flex flex-col gap-2 p-2" key={alarm.id} style={{
                     border: '1px solid var(--gray-6)',
                     borderRadius: '4px',
-                  }}
-                >
-                  <Flex align="center" justify="between">
-                    <Flex direction="column" gap="1">
-                      <Flex align="center" gap="2">
+                  }}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
                         <Text size="3" weight="bold">
                           {alarm.time}
                         </Text>
                         {!alarm.enabled && <Badge color="gray">Disabled</Badge>}
                         {alarm.triggered && <Badge color="red">Ringing!</Badge>}
-                      </Flex>
+                      </div>
                       {alarm.label && (
                         <Text size="2" color="gray">
                           {alarm.label}
                         </Text>
                       )}
-                    </Flex>
-                    <Flex gap="2">
+                    </div>
+                    <div className="flex gap-2">
                       {alarm.triggered ? (
                         <Button
                           size="sm"
@@ -302,20 +296,20 @@ export const AlarmUtilityContent = () => {
                           </Button>
                         </>
                       )}
-                    </Flex>
-                  </Flex>
+                    </div>
+                  </div>
                   {alarm.enabled && !alarm.triggered && (
-                    <Flex direction="column" gap="1">
+                    <div className="flex flex-col gap-1">
                       <Progress value={progress} />
                       <Text size="1" color="gray">
                         {Math.round(progress)}% complete
                       </Text>
-                    </Flex>
+                    </div>
                   )}
-                </Flex>
+                </div>
               );
             })}
-          </Flex>
+          </div>
         </ScrollArea>
       )}
 
@@ -324,6 +318,6 @@ export const AlarmUtilityContent = () => {
           No alarms set
         </Text>
       )}
-    </Flex>
+    </div>
   );
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import { toDatetimeLocal, toDateLocal } from '../../../lib/date-utils';
 
@@ -110,7 +110,7 @@ export function CalendarEventForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Flex direction="column" gap="3" mt="2">
+      <div className="flex flex-col gap-3 mt-2">
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Title
@@ -135,7 +135,7 @@ export function CalendarEventForm({
           />
         </div>
 
-        <Flex align="center" gap="2">
+        <div className="flex items-center gap-2">
           <input
             type="checkbox"
             id="allDay"
@@ -145,9 +145,9 @@ export function CalendarEventForm({
           <Text size="2" asChild>
             <label htmlFor="allDay">All day</label>
           </Text>
-        </Flex>
+        </div>
 
-        <Flex gap="3">
+        <div className="flex gap-3">
           <div style={{ flex: 1 }}>
             <Text size="1" weight="medium" as="p" mb="1">
               Start
@@ -172,7 +172,7 @@ export function CalendarEventForm({
               style={inputStyle}
             />
           </div>
-        </Flex>
+        </div>
 
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
@@ -186,7 +186,7 @@ export function CalendarEventForm({
             optionDisplayKey="label"
             placeholder="Default"
             renderItem={c => (
-              <Flex align="center" gap="2">
+              <div className="flex items-center gap-2">
                 {c.value !== NO_COLOR && (
                   <span
                     style={{
@@ -199,12 +199,12 @@ export function CalendarEventForm({
                   />
                 )}
                 {c.label}
-              </Flex>
+              </div>
             )}
           />
         </div>
 
-        <Flex justify="between" gap="2" pt="2">
+        <div className="flex justify-between gap-2 pt-2">
           <div>
             {isEdit && onDelete && (
               <Button type="button" variant="destructive" onClick={onDelete}>
@@ -212,14 +212,14 @@ export function CalendarEventForm({
               </Button>
             )}
           </div>
-          <Flex gap="2">
+          <div className="flex gap-2">
             <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
             <Button type="submit">{isEdit ? 'Save' : 'Create'}</Button>
-          </Flex>
-        </Flex>
-      </Flex>
+          </div>
+        </div>
+      </div>
     </form>
   );
 }

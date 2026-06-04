@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Flex, Callout, Dialog } from '@radix-ui/themes';
+import { Callout, Dialog } from '@radix-ui/themes';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Button } from '@vigilant-broccoli/react-lib';
 
@@ -17,7 +17,7 @@ export const ErrorDemo = () => {
   };
 
   return (
-    <Flex direction="column" gap="4">
+    <div className="flex flex-col gap-4">
       {showAlert && (
         <Callout.Root color="red">
           <Callout.Icon>
@@ -27,14 +27,14 @@ export const ErrorDemo = () => {
         </Callout.Root>
       )}
 
-      <Flex gap="2">
+      <div className="flex gap-2">
         <Button variant="destructive" onClick={displayNotification}>
           Error Notification
         </Button>
         <Button variant="destructive" onClick={displayModal}>
           Error Modal
         </Button>
-      </Flex>
+      </div>
 
       <Dialog.Root open={showModal} onOpenChange={setShowModal}>
         <Dialog.Content style={{ maxWidth: 450 }}>
@@ -43,16 +43,16 @@ export const ErrorDemo = () => {
             Error modal description.
           </Dialog.Description>
 
-          <Flex gap="3" mt="4" justify="end">
+          <div className="flex gap-3 mt-4 justify-end">
             <Dialog.Close>
               <Button variant="secondary">Cancel</Button>
             </Dialog.Close>
             <Dialog.Close>
               <Button variant="destructive">Confirm</Button>
             </Dialog.Close>
-          </Flex>
+          </div>
         </Dialog.Content>
       </Dialog.Root>
-    </Flex>
+    </div>
   );
 };

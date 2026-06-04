@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
@@ -91,7 +91,7 @@ export const DjMusicUtilityContent = () => {
 
   return (
     <>
-        <Flex gap="2" justify="between">
+        <div className="flex gap-2 justify-between">
           <Button
             onClick={handleDjDownload}
             disabled={djLoading}
@@ -106,7 +106,7 @@ export const DjMusicUtilityContent = () => {
           >
             Open RekordBox
           </Button>
-        </Flex>
+        </div>
 
         {djMessage && (
           <Text size="2" color="green">{djMessage}</Text>
@@ -121,46 +121,40 @@ export const DjMusicUtilityContent = () => {
           variant="secondary"
           style={{ justifyContent: 'space-between' }}
         >
-          <Flex align="center" gap="2">
+          <div className="flex items-center gap-2">
             <Text>Downloaded Playlists</Text>
             {playlists.length > 0 && (
               <Badge color="blue" variant="solid">
                 {playlists.length} {playlists.length === 1 ? 'Playlist' : 'Playlists'}, {totalSongs} {totalSongs === 1 ? 'song' : 'songs'}
               </Badge>
             )}
-          </Flex>
+          </div>
           {playlistsExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
         </Button>
 
         {playlistsExpanded && (
-          <Flex direction="column" gap="2">
+          <div className="flex flex-col gap-2">
             {loadingPlaylists ? (
               <Text size="2" color="gray">Loading playlists...</Text>
             ) : playlists.length === 0 ? (
               <Text size="2" color="gray">No playlists found</Text>
             ) : (
               playlists.map((playlist) => (
-                <Flex
-                  key={playlist.name}
-                  align="center"
-                  justify="between"
-                  p="2"
-                  style={{
+                <div className="flex items-center justify-between p-2" key={playlist.name} style={{
                     backgroundColor: 'var(--gray-a2)',
                     borderRadius: 'var(--radius-2)',
-                  }}
-                >
-                  <Flex direction="column" gap="1">
+                  }}>
+                  <div className="flex flex-col gap-1">
                     <Text size="2" weight="medium">{playlist.name}</Text>
                     <Text size="1" color="gray">{playlist.formattedSize}</Text>
-                  </Flex>
+                  </div>
                   <Badge color="green" variant="soft">
                     {playlist.songCount} {playlist.songCount === 1 ? 'song' : 'songs'}
                   </Badge>
-                </Flex>
+                </div>
               ))
             )}
-          </Flex>
+          </div>
         )}
     </>
   );

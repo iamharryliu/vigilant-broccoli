@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
   Button,
@@ -143,7 +143,7 @@ export const PM2StatusComponent = () => {
       </Badge>
     ),
     actions: (
-      <Flex gap="1">
+      <div className="flex gap-1">
         {process.status === 'online' ? (
           <>
             <Button
@@ -176,10 +176,10 @@ export const PM2StatusComponent = () => {
             <PlayIcon />
           </Button>
         )}
-      </Flex>
+      </div>
     ),
     children: (
-      <Flex gap="3" wrap="wrap">
+      <div className="flex gap-3 flex-wrap">
         <Text size="1" color="gray">
           CPU: <Text className="font-mono">{process.cpu.toFixed(1)}%</Text>
         </Text>
@@ -194,7 +194,7 @@ export const PM2StatusComponent = () => {
         <Text size="1" color="gray">
           Restarts: <Text className="font-mono">{process.restarts}</Text>
         </Text>
-      </Flex>
+      </div>
     ),
   });
 

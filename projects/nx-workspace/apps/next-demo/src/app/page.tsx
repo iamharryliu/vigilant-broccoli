@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { useAuth } from './providers/auth-provider';
 
@@ -52,20 +52,15 @@ export default function HomePage() {
             Pending invites
           </Text>
           {invites.map(invite => (
-            <Flex
-              key={invite.id}
-              justify="between"
-              align="center"
-              className="rounded border px-3 py-2"
-            >
-              <Flex align="center" gap="2">
+            <div className="flex justify-between items-center rounded border px-3 py-2" key={invite.id}>
+              <div className="flex items-center gap-2">
                 <Text size="2">
                   Invited by {invite.invited_by_email ?? 'unknown'}
                 </Text>
                 <Badge variant="soft" color="orange" size="1">
                   pending
                 </Badge>
-              </Flex>
+              </div>
               <Button
                 size="sm"
                 variant="secondary"
@@ -74,7 +69,7 @@ export default function HomePage() {
               >
                 Accept
               </Button>
-            </Flex>
+            </div>
           ))}
         </div>
       )}

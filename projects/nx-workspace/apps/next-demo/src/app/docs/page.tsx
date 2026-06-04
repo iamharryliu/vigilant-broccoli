@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Dialog, Flex, Text } from '@radix-ui/themes';
+import { Badge, Dialog, Text } from '@radix-ui/themes';
 import { Button, EllipsisCTA, Input } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -120,7 +120,7 @@ export default function DocsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-2 sm:p-6 space-y-6">
-      <Flex justify="between" align="center" wrap="wrap" gap="3">
+      <div className="flex justify-between items-center flex-wrap gap-3">
         <Text size="6" weight="bold">
           Home Documents
         </Text>
@@ -130,9 +130,9 @@ export default function DocsPage() {
         >
           + Add Document
         </Button>
-      </Flex>
+      </div>
 
-      <Flex gap="2" wrap="wrap">
+      <div className="flex gap-2 flex-wrap">
         <Input
           placeholder="Search documents..."
           value={query}
@@ -154,7 +154,7 @@ export default function DocsPage() {
             </button>
           ))}
         </div>
-      </Flex>
+      </div>
 
       {loaded && filtered.length === 0 && (
         <Text color="gray" size="2">
@@ -169,9 +169,9 @@ export default function DocsPage() {
             className="p-4 rounded-lg border border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
             onClick={() => router.push(ROUTES.DOCS_DETAIL(doc.id))}
           >
-            <Flex justify="between" align="center" gap="3">
+            <div className="flex justify-between items-center gap-3">
               <div className="flex-1 min-w-0">
-                <Flex align="center" gap="2" wrap="wrap" mb="1">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
                   <Text weight="bold" size="3">
                     {doc.name}
                   </Text>
@@ -182,14 +182,14 @@ export default function DocsPage() {
                   >
                     {doc.category}
                   </Badge>
-                </Flex>
+                </div>
                 {doc.description && (
                   <Text size="2" color="gray" as="p" mb="2">
                     {doc.description}
                   </Text>
                 )}
                 {doc.files.length > 0 && (
-                  <Flex gap="2" wrap="wrap">
+                  <div className="flex gap-2 flex-wrap">
                     {doc.files.map(f => (
                       <a
                         key={f.id}
@@ -206,7 +206,7 @@ export default function DocsPage() {
                         </span>
                       </a>
                     ))}
-                  </Flex>
+                  </div>
                 )}
               </div>
               <div onClick={e => e.stopPropagation()}>
@@ -224,7 +224,7 @@ export default function DocsPage() {
                   }}
                 />
               </div>
-            </Flex>
+            </div>
           </div>
         ))}
       </div>

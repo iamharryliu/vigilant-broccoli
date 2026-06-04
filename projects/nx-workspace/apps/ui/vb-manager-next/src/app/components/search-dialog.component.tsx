@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Dialog, Text, Flex } from '@radix-ui/themes';
+import { Dialog, Text } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
@@ -281,7 +281,7 @@ export function SearchDialogComponent({
         <div>
           <Dialog.Title>Quick Links</Dialog.Title>
 
-          <Flex gap="2" align="center" mb="4">
+          <div className="flex gap-2 items-center mb-4">
             <Input
               ref={searchInputRef}
               placeholder="Search..."
@@ -298,7 +298,7 @@ export function SearchDialogComponent({
             >
               {isGrouped ? <ListBulletIcon /> : <DashboardIcon />}
             </Button>
-          </Flex>
+          </div>
         </div>
 
         {hasNoResults ? (

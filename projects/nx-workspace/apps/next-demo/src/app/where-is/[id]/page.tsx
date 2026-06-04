@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import {
   CRUDItemFormDialog,
   EllipsisCTA,
@@ -90,7 +90,7 @@ export default function WhereIsDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <Flex align="center" justify="between">
+      <div className="flex items-center justify-between">
         <Text size="6" weight="bold">
           {item.title}
         </Text>
@@ -98,7 +98,7 @@ export default function WhereIsDetailPage() {
           onUpdate={() => setUpdateOpen(true)}
           onDelete={handleDelete}
         />
-      </Flex>
+      </div>
 
       <CRUDItemFormDialog
         open={updateOpen}
@@ -117,13 +117,13 @@ export default function WhereIsDetailPage() {
       )}
 
       {item.tags.length > 0 && (
-        <Flex gap="2" wrap="wrap">
+        <div className="flex gap-2 flex-wrap">
           {item.tags.map(tag => (
             <Badge key={tag} variant="soft" size="2">
               {tag}
             </Badge>
           ))}
-        </Flex>
+        </div>
       )}
 
       {item.imageUrls.length > 0 && (

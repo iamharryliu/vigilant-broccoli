@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import { LEISURE_CATEGORIES, LeisureCategory } from '../../../lib/types';
 
@@ -41,7 +41,7 @@ export function LeisureActivityForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Flex direction="column" gap="3" mt="2">
+      <div className="flex flex-col gap-3 mt-2">
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Title
@@ -77,7 +77,7 @@ export function LeisureActivityForm({
           />
         </div>
 
-        <Flex justify="between" gap="2" pt="2">
+        <div className="flex justify-between gap-2 pt-2">
           <div>
             {isEdit && onDelete && (
               <Button type="button" variant="destructive" onClick={onDelete}>
@@ -85,14 +85,14 @@ export function LeisureActivityForm({
               </Button>
             )}
           </div>
-          <Flex gap="2">
+          <div className="flex gap-2">
             <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
             <Button type="submit">{isEdit ? 'Save' : 'Add'}</Button>
-          </Flex>
-        </Flex>
-      </Flex>
+          </div>
+        </div>
+      </div>
     </form>
   );
 }

@@ -2,7 +2,7 @@
 
 import { use, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dialog, Flex, Text } from '@radix-ui/themes';
+import { Dialog, Text } from '@radix-ui/themes';
 import { useAuth } from '../../../providers/auth-provider';
 import { ROUTES } from '../../../../lib/routes';
 import { CalendarEvent } from '../../../../lib/types';
@@ -96,7 +96,7 @@ export default function HomeCalendarPage({
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-4">
-      <Flex align="center" gap="4">
+      <div className="flex items-center gap-4">
         <button
           onClick={() => router.push(`${ROUTES.HOMES}/${id}`)}
           className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
@@ -106,7 +106,7 @@ export default function HomeCalendarPage({
         <Text size="6" weight="bold">
           Calendar
         </Text>
-      </Flex>
+      </div>
 
       <CalendarView
         events={events}

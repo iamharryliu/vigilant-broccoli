@@ -1,6 +1,6 @@
 'use client';
 
-import { Text, Flex } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
@@ -188,7 +188,7 @@ export function LinkGroupComponent({
       title={title}
       gap="3"
       headerAction={
-        <Flex gap="2" align="center">
+        <div className="flex gap-2 items-center">
           <Button
             size="icon"
             variant="secondary"
@@ -205,7 +205,7 @@ export function LinkGroupComponent({
             onKeyDown={handleInputKeyDown}
             className="w-[150px]"
           />
-        </Flex>
+        </div>
       }
     >
       <div ref={contentRef}>

@@ -1,4 +1,4 @@
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { ReactNode } from 'react';
 
 interface ExpandableListItemProps {
@@ -22,12 +22,8 @@ export const ExpandableListItem = ({
   actions,
   children,
 }: ExpandableListItemProps) => (
-  <Flex
-    direction="column"
-    gap="2"
-    className={`p-2 rounded border ${borderClassName}`}
-  >
-    <Flex align="center" gap="2" wrap="wrap">
+  <div className={`flex flex-col gap-2 ${`p-2 rounded border ${borderClassName}`}`}>
+    <div className="flex items-center gap-2 flex-wrap">
       <Text size="2" className="cursor-pointer" onClick={onToggle}>
         {isExpanded ? '▼' : '▶'}
       </Text>
@@ -41,15 +37,11 @@ export const ExpandableListItem = ({
         {label}
       </Text>
       {actions}
-    </Flex>
+    </div>
     {isExpanded && children && (
-      <Flex
-        direction="column"
-        gap="2"
-        className="pl-6 pt-1 border-t border-gray-200 dark:border-gray-700"
-      >
+      <div className="flex flex-col gap-2 pl-6 pt-1 border-t border-gray-200 dark:border-gray-700">
         {children}
-      </Flex>
+      </div>
     )}
-  </Flex>
+  </div>
 );

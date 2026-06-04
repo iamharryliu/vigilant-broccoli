@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Heading, Text } from '@radix-ui/themes';
+import { Heading, Text } from '@radix-ui/themes';
 import { ChatDemo } from '../demos/ChatDemo';
 import { NotificationsDemo } from '../demos/NotificationsDemo';
 import { StorageDemo } from '../demos/StorageDemo';
@@ -73,7 +73,7 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
 
 export function FeatureSandboxPage() {
   return (
-    <Box className="w-full min-h-screen">
+    <div className="w-full min-h-screen">
       <div className="p-6 max-w-4xl mx-auto">
         <Heading size="8" mb="2">
           Feature Sandbox
@@ -86,6 +86,6 @@ export function FeatureSandboxPage() {
           storageKeyPrefix={STORAGE_KEY}
         />
       </div>
-    </Box>
+    </div>
   );
 }

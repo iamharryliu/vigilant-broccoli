@@ -1,4 +1,4 @@
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { GithubActionsBadgeLink } from '@vigilant-broccoli/react-lib';
 
 const MOCK_REPO = 'iamharryliu/vigilant-broccoli';
@@ -11,14 +11,14 @@ const MOCK_BADGES = MOCK_WORKFLOWS.map(workflow => ({
 }));
 
 export const GithubActionsBadgesDemo = () => (
-  <Flex direction="column" gap="3">
+  <div className="flex flex-col gap-3">
     <Text size="2" color="gray">
       Hover a badge to see the lift + scale + shadow animation.
     </Text>
-    <Flex direction="column" gap="2">
+    <div className="flex flex-col gap-2">
       {MOCK_BADGES.map(badge => (
         <GithubActionsBadgeLink key={badge.alt} badge={badge} />
       ))}
-    </Flex>
-  </Flex>
+    </div>
+  </div>
 );

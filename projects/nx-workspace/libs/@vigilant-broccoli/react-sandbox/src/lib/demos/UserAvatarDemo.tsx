@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import {
   AvatarUploadConfig,
   UserAvatar,
@@ -53,19 +53,19 @@ export const UserAvatarDemo = () => {
   const [preloadedUrl, setPreloadedUrl] = useState<UrlState>(SAMPLE_IMAGE);
 
   return (
-    <Flex direction="column" gap="6">
+    <div className="flex flex-col gap-6">
       <div>
         <Text {...SECTION_HEADING_PROPS}>Boring avatar fallback (default)</Text>
-        <Flex {...ROW_FLEX_PROPS}>
+        <div className="flex" {...ROW_FLEX_PROPS}>
           {NAMES.map(name => (
             <UserAvatar key={name} name={name} />
           ))}
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Text {...SECTION_HEADING_PROPS}>Initials fallback</Text>
-        <Flex {...ROW_FLEX_PROPS}>
+        <div className="flex" {...ROW_FLEX_PROPS}>
           {INITIALS_NAMES.map(name => (
             <UserAvatar
               key={name}
@@ -73,12 +73,12 @@ export const UserAvatarDemo = () => {
               variant={USER_AVATAR_VARIANT.INITIALS}
             />
           ))}
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Text {...SECTION_HEADING_PROPS}>With upload (click avatar)</Text>
-        <Flex {...ROW_FLEX_PROPS}>
+        <div className="flex" {...ROW_FLEX_PROPS}>
           <UserAvatar
             name={SAMPLE_NAME}
             avatarUrl={emptyUrl}
@@ -89,8 +89,8 @@ export const UserAvatarDemo = () => {
             avatarUrl={preloadedUrl}
             upload={makeUploadConfig(preloadedUrl, setPreloadedUrl)}
           />
-        </Flex>
+        </div>
       </div>
-    </Flex>
+    </div>
   );
 };

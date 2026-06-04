@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Callout, Flex, Text } from '@radix-ui/themes';
+import { Callout, Text } from '@radix-ui/themes';
 import {
   Button,
   ButtonConfig,
@@ -51,12 +51,12 @@ const ErrorState = ({ error }: { error: string }) => (
 );
 
 const EmptyState = () => (
-  <Box style={{ textAlign: 'center', padding: '2rem' }}>
+  <div style={{ textAlign: 'center', padding: '2rem' }}>
     <Users size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
     <Text size="3" color="gray">
       No organizations found
     </Text>
-  </Box>
+  </div>
 );
 
 const useOrganizations = () => {
@@ -88,7 +88,7 @@ const useOrganizations = () => {
 };
 
 const orgLabel = (organization: GithubOrgBasic) => (
-  <Flex align="center" gap="2">
+  <div className="flex items-center gap-2">
     <img
       src={organization.avatar_url}
       alt={organization.login}
@@ -97,7 +97,7 @@ const orgLabel = (organization: GithubOrgBasic) => (
     <Text size="2" weight="bold">
       {organization.login}
     </Text>
-  </Flex>
+  </div>
 );
 
 const toItem = (

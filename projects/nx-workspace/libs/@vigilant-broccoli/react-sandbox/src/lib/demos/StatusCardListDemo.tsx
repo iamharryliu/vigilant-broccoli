@@ -1,4 +1,4 @@
-import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import {
   Button,
   MonospaceText,
@@ -8,7 +8,7 @@ import {
 import { TrashIcon, ExternalLinkIcon } from '@radix-ui/react-icons';
 
 export const StatusCardListDemo = () => (
-  <Flex direction="column" gap="5">
+  <div className="flex flex-col gap-5">
     <div>
       <Text size="2" weight="bold" mb="2">
         Flat items
@@ -65,12 +65,12 @@ export const StatusCardListDemo = () => (
               </Button>
             ),
             children: (
-              <Flex direction="column" gap="1">
+              <div className="flex flex-col gap-1">
                 <Text size="1" color="gray">
                   Domain: web-app.example.com
                 </Text>
                 <MonospaceText text="192.168.1.100" />
-              </Flex>
+              </div>
             ),
           },
           {
@@ -87,14 +87,14 @@ export const StatusCardListDemo = () => (
               </Button>
             ),
             children: (
-              <Flex direction="column" gap="1">
+              <div className="flex flex-col gap-1">
                 <Text size="1" color="gray">
                   Domain: api.example.com
                 </Text>
                 <Text size="1" color="gray">
                   Port: 8080
                 </Text>
-              </Flex>
+              </div>
             ),
           },
         ]}
@@ -107,5 +107,5 @@ export const StatusCardListDemo = () => (
       </Text>
       <StatusCardList items={[]} emptyMessage="No services found" />
     </div>
-  </Flex>
+  </div>
 );

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
@@ -51,7 +51,7 @@ const ImageGrid = ({
   onRemoveUrl: (url: string) => void;
   onRemovePreview: (index: number) => void;
 }) => (
-  <Flex gap="2" wrap="wrap">
+  <div className="flex gap-2 flex-wrap">
     {imageUrls.map((url, i) => (
       <div key={url} className="relative">
         <img
@@ -76,7 +76,7 @@ const ImageGrid = ({
         </button>
       </div>
     ))}
-  </Flex>
+  </div>
 );
 
 export const WhereIsFormComponent = ({
@@ -220,7 +220,7 @@ export const WhereIsFormComponent = ({
       : `Analyze${previews.length > 1 ? ` (${previews.length} images)` : ''}`;
 
   return (
-    <Flex direction="column" gap="3" mt="3">
+    <div className="flex flex-col gap-3 mt-3">
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
           Title
@@ -246,7 +246,7 @@ export const WhereIsFormComponent = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Tags
         </Text>
-        <Flex gap="2">
+        <div className="flex gap-2">
           <Input
             placeholder="Add tag..."
             value={tagInput}
@@ -255,8 +255,8 @@ export const WhereIsFormComponent = ({
             className="flex-1"
           />
           <Button onClick={addTag}>Add</Button>
-        </Flex>
-        <Flex gap="2" mt="2" wrap="wrap">
+        </div>
+        <div className="flex gap-2 mt-2 flex-wrap">
           {tags.map(tag => (
             <Badge
               key={tag}
@@ -268,7 +268,7 @@ export const WhereIsFormComponent = ({
               {tag} ✕
             </Badge>
           ))}
-        </Flex>
+        </div>
       </div>
 
       <ImageGrid
@@ -300,6 +300,6 @@ export const WhereIsFormComponent = ({
       <Button onClick={handleSubmit} disabled={analyzing}>
         {submitLabel}
       </Button>
-    </Flex>
+    </div>
   );
 };

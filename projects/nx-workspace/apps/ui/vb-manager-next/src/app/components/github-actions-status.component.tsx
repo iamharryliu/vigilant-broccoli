@@ -4,7 +4,7 @@ import {
   CardContainer,
   GithubActionsBadges,
 } from '@vigilant-broccoli/react-lib';
-import { Flex } from '@radix-ui/themes';
+
 import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 
@@ -23,12 +23,12 @@ export const GithubRepoActionStatusBadges = ({
           title="GitHub Actions"
           headerLink={{ href: `${repoUrl}/actions`, label: 'View All' }}
         >
-          <Flex direction="column" gap="2">
+          <div className="flex flex-col gap-2">
             <GithubActionsBadges
               repoUrl={repoUrl}
               onLoadingChange={setLoading}
             />
-          </Flex>
+          </div>
         </CardContainer>
       </div>
     </>

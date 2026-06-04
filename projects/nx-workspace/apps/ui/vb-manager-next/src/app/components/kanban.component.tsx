@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Flex, Text, Dialog } from '@radix-ui/themes';
+import { Card, Text, Dialog } from '@radix-ui/themes';
 import {
   Button,
   CloseButton,
@@ -283,13 +283,9 @@ const SortableBoard = ({
 
   return (
     <div ref={setNodeRef} style={style}>
-      <Flex
-        justify="between"
-        align="center"
-        className={`py-1 px-2 rounded hover:bg-[var(--gray-a3)] transition-colors ${
+      <div className={`flex justify-between items-center ${`py-1 px-2 rounded hover:bg-[var(--gray-a3)] transition-colors ${
           isActive ? 'border-l-2 border-blue-500 bg-[var(--gray-a3)]' : ''
-        }`}
-      >
+        }`}`}>
         {editingBoardId === board.id ? (
           <Input
             value={editingBoardName}
@@ -315,7 +311,7 @@ const SortableBoard = ({
             </Text>
           </div>
         )}
-      </Flex>
+      </div>
     </div>
   );
 };
@@ -371,7 +367,7 @@ const SortableLane = ({
       style={style}
       className={`flex flex-col gap-2 w-80 flex-shrink-0 rounded-lg transition-all duration-150 h-full overflow-hidden ${laneHighlight}`}
     >
-      <Flex justify="between" align="center" className="px-2 flex-shrink-0">
+      <div className="flex justify-between items-center px-2 flex-shrink-0">
         <div
           {...attributes}
           {...listeners}
@@ -391,7 +387,7 @@ const SortableLane = ({
           </Text>
         </div>
         <CloseButton onClick={() => onRemove(boardId, lane.id)} />
-      </Flex>
+      </div>
       <div className="flex-1 overflow-y-auto min-h-0">
         <GoogleTasksComponent
           taskListId={lane.taskListId}
@@ -419,19 +415,19 @@ const TaskDragOverlay = ({
     <div
       className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} p-3 max-w-72 rotate-2 ${quadrantClass}`}
     >
-      <Flex direction="column" gap="1">
-        <Flex align="center" gap="2">
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
           <DragHandleDots2Icon className="opacity-60 flex-shrink-0" />
           <Text size="2" weight="medium" className="line-clamp-2">
             {task.title}
           </Text>
-        </Flex>
+        </div>
         {task.notes && (
           <Text size="1" color="gray" className="ml-5 line-clamp-1">
             {task.notes}
           </Text>
         )}
-        <Flex gap="2" align="center" className="ml-5">
+        <div className="flex gap-2 items-center ml-5">
           {task.due && (
             <Text size="1" color="blue">
               {new Date(task.due).toLocaleDateString()}
@@ -442,8 +438,8 @@ const TaskDragOverlay = ({
               {commitType}
             </span>
           )}
-        </Flex>
-      </Flex>
+        </div>
+      </div>
     </div>
   );
 };
@@ -452,12 +448,12 @@ const LaneDragOverlay = ({ title }: { title: string }) => (
   <div
     className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} p-3 w-80 rotate-1`}
   >
-    <Flex align="center" gap="2">
+    <div className="flex items-center gap-2">
       <DragHandleDots2Icon className="opacity-60 flex-shrink-0" />
       <Text size="3" weight="bold">
         {title ? title : <Skeleton className="w-32 h-5" />}
       </Text>
-    </Flex>
+    </div>
     <div className="mt-2 space-y-1.5">
       {Array.from({ length: 3 }).map((_, i) => (
         <div
@@ -863,11 +859,11 @@ export const KanbanComponent = () => {
         >
           {sidebarOpen && (
             <>
-              <Flex justify="between" align="center">
+              <div className="flex justify-between items-center">
                 <Text size="4" weight="bold">
                   Boards
                 </Text>
-                <Flex gap="1">
+                <div className="flex gap-1">
                   <Dialog.Root
                     open={showManageLists}
                     onOpenChange={open => {
@@ -885,14 +881,9 @@ export const KanbanComponent = () => {
                     </Dialog.Trigger>
                     <Dialog.Content>
                       <Dialog.Title>Manage Task Lists</Dialog.Title>
-                      <Flex direction="column" gap="2">
+                      <div className="flex flex-col gap-2">
                         {taskLists.map(list => (
-                          <Flex
-                            key={list.id}
-                            justify="between"
-                            align="center"
-                            className="py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                          >
+                          <div className="flex justify-between items-center py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800" key={list.id}>
                             {editingListId === list.id ? (
                               <Input
                                 value={editingListName}
@@ -925,7 +916,7 @@ export const KanbanComponent = () => {
                                 {list.title}
                               </Text>
                             )}
-                            <Flex gap="2">
+                            <div className="flex gap-2">
                               {editingListId !== list.id && (
                                 <Button
                                   size="icon"
@@ -948,20 +939,20 @@ export const KanbanComponent = () => {
                                 description={`Delete "${list.title}" and all its tasks? This cannot be undone.`}
                                 onConfirm={() => handleDeleteList(list.id)}
                               />
-                            </Flex>
-                          </Flex>
+                            </div>
+                          </div>
                         ))}
                         {taskLists.length === 0 && (
                           <Text size="2" color="gray">
                             No task lists found
                           </Text>
                         )}
-                      </Flex>
-                      <Flex justify="end" mt="4">
+                      </div>
+                      <div className="flex justify-end mt-4">
                         <Dialog.Close>
                           <Button variant="secondary">Close</Button>
                         </Dialog.Close>
-                      </Flex>
+                      </div>
                     </Dialog.Content>
                   </Dialog.Root>
                   <Dialog.Root
@@ -975,7 +966,7 @@ export const KanbanComponent = () => {
                     </Dialog.Trigger>
                     <Dialog.Content>
                       <Dialog.Title>Add Board</Dialog.Title>
-                      <Flex direction="column" gap="3">
+                      <div className="flex flex-col gap-3">
                         <Input
                           placeholder="Board name..."
                           value={newBoardName}
@@ -985,7 +976,7 @@ export const KanbanComponent = () => {
                           }}
                           autoFocus
                         />
-                        <Flex gap="3" justify="end">
+                        <div className="flex gap-3 justify-end">
                           <Dialog.Close>
                             <Button variant="secondary">Cancel</Button>
                           </Dialog.Close>
@@ -995,12 +986,12 @@ export const KanbanComponent = () => {
                           >
                             Add Board
                           </Button>
-                        </Flex>
-                      </Flex>
+                        </div>
+                      </div>
                     </Dialog.Content>
                   </Dialog.Root>
-                </Flex>
-              </Flex>
+                </div>
+              </div>
 
               <SortableContext items={boards.map(b => b.id)}>
                 <div className="flex flex-col gap-1">
@@ -1028,8 +1019,8 @@ export const KanbanComponent = () => {
         </div>
 
         <div className="flex-1 overflow-hidden">
-          <Flex direction="column" gap="4" className="w-full h-full p-4">
-            <Flex align="center" gap="2">
+          <div className="flex flex-col gap-4 w-full h-full p-4">
+            <div className="flex items-center gap-2">
               <Button
                 size="icon"
                 variant="ghost"
@@ -1049,7 +1040,7 @@ export const KanbanComponent = () => {
                 confirmDescription={getDeleteBoardDescription(activeBoard.name)}
                 onDelete={() => removeBoard(activeBoard.id)}
               />
-            </Flex>
+            </div>
             <SortableContext
               items={(draggingLanes ?? activeBoard?.lanes ?? []).map(l => l.id)}
             >
@@ -1097,9 +1088,9 @@ export const KanbanComponent = () => {
                     </Dialog.Trigger>
                     <Dialog.Content>
                       <Dialog.Title>Add Lane</Dialog.Title>
-                      <Flex direction="column" gap="3">
+                      <div className="flex flex-col gap-3">
                         {showCreateList ? (
-                          <Flex direction="column" gap="2">
+                          <div className="flex flex-col gap-2">
                             <Input
                               placeholder="New list name..."
                               value={newListName}
@@ -1111,7 +1102,7 @@ export const KanbanComponent = () => {
                               }}
                               autoFocus
                             />
-                            <Flex gap="2">
+                            <div className="flex gap-2">
                               <Button
                                 size="sm"
                                 variant="secondary"
@@ -1126,8 +1117,8 @@ export const KanbanComponent = () => {
                               >
                                 {creatingList ? 'Creating...' : 'Create List'}
                               </Button>
-                            </Flex>
-                          </Flex>
+                            </div>
+                          </div>
                         ) : (
                           <>
                             <Select
@@ -1153,7 +1144,7 @@ export const KanbanComponent = () => {
                             </Button>
                           </>
                         )}
-                        <Flex gap="3" justify="end">
+                        <div className="flex gap-3 justify-end">
                           <Dialog.Close>
                             <Button variant="secondary">Cancel</Button>
                           </Dialog.Close>
@@ -1165,14 +1156,14 @@ export const KanbanComponent = () => {
                               Add Lane
                             </Button>
                           )}
-                        </Flex>
-                      </Flex>
+                        </div>
+                      </div>
                     </Dialog.Content>
                   </Dialog.Root>
                 </div>
               </div>
             </SortableContext>
-          </Flex>
+          </div>
         </div>
       </div>
 

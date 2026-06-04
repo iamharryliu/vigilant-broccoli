@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { Box, Heading, Text, Flex, Theme } from '@radix-ui/themes';
+import { Heading, Text, Theme } from '@radix-ui/themes';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -192,10 +192,10 @@ const SandboxBody = ({
   showThemeToggle,
 }: SandboxBodyProps) => (
   <div className="p-6 max-w-4xl mx-auto">
-    <Flex justify="between" align="center" mb="2">
+    <div className="flex justify-between items-center mb-2">
       <Heading size="8">{title}</Heading>
       {showThemeToggle && <DarkModeIconButton dark={dark} onToggle={setDark} />}
-    </Flex>
+    </div>
     <Text color="gray" size="4" mb="6">
       {subtitle}
     </Text>
@@ -242,7 +242,7 @@ export function ComponentSandbox({
   const appearance = dark ? 'dark' : 'light';
   return (
     <Theme appearance={appearance}>
-      <Box className={`${appearance} w-full min-h-screen`}>
+      <div className={`${appearance} w-full min-h-screen`}>
         <SandboxBody
           title={title}
           subtitle={subtitle}
@@ -250,7 +250,7 @@ export function ComponentSandbox({
           setDark={setDark}
           showThemeToggle
         />
-      </Box>
+      </div>
     </Theme>
   );
 }

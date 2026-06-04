@@ -1,4 +1,4 @@
-import { Flex, Heading, Text, Box } from '@radix-ui/themes';
+import { Heading, Text } from '@radix-ui/themes';
 import {
   Accordion,
   AccordionContent,
@@ -8,7 +8,7 @@ import {
 import { CollapsibleList } from '@vigilant-broccoli/react-lib';
 
 export const CollapsibleListItemDemo = () => (
-  <Flex direction="column" gap="6">
+  <div className="flex flex-col gap-6">
     <div>
       <Heading size="4" mb="3">
         With Rich Content
@@ -17,24 +17,24 @@ export const CollapsibleListItemDemo = () => (
         <AccordionItem value="rich">
           <AccordionTrigger>Rich Content Example</AccordionTrigger>
           <AccordionContent>
-            <Flex direction="column" gap="2">
-              <Box>
+            <div className="flex flex-col gap-2">
+              <div>
                 <Text weight="bold">Section 1</Text>
                 <Text as="p">
                   Content for the first section with multiple paragraphs.
                 </Text>
-              </Box>
-              <Box>
+              </div>
+              <div>
                 <Text weight="bold">Section 2</Text>
                 <Text as="p">More content demonstrating the animation.</Text>
-              </Box>
-              <Box>
+              </div>
+              <div>
                 <Text weight="bold">Section 3</Text>
                 <Text as="p">
                   Additional content to show smooth transitions.
                 </Text>
-              </Box>
-            </Flex>
+              </div>
+            </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -91,5 +91,5 @@ export const CollapsibleListItemDemo = () => (
         ]}
       />
     </div>
-  </Flex>
+  </div>
 );

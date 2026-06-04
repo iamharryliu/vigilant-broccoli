@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Flex, Text } from '@radix-ui/themes';
+import { Card, Text } from '@radix-ui/themes';
 import { Button, Checkbox, Input, Select } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
@@ -386,7 +386,7 @@ const TaskItemContent = memo(
     onCancelEdit: () => void;
     sortMode?: SortMode;
   }) => (
-    <Flex direction="column" gap="1" className="flex-1">
+    <div className="flex flex-col gap-1 flex-1">
       {isEditing ? (
         <Input
           value={editingTitle}
@@ -428,7 +428,7 @@ const TaskItemContent = memo(
             Created: {new Date(task.updated).toLocaleDateString()}
           </Text>
         )}
-    </Flex>
+    </div>
   ),
 );
 
@@ -541,8 +541,8 @@ const TaskHeader = memo(
     );
 
     return (
-      <Flex direction="column" gap="3">
-        <Flex justify="between" align="center">
+      <div className="flex flex-col gap-3">
+        <div className="flex justify-between items-center">
           {selectedTaskList ? (
             <Text size="5" weight="bold">
               {selectedTaskList.title}
@@ -550,7 +550,7 @@ const TaskHeader = memo(
           ) : (
             <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-32 rounded" />
           )}
-          <Flex gap="2" align="center">
+          <div className="flex gap-2 items-center">
             <Text size="2" color="gray">
               Sort:
             </Text>
@@ -561,10 +561,10 @@ const TaskHeader = memo(
               displayMapper={SORT_MODE_LABELS}
               placeholder="Sort by..."
             />
-          </Flex>
-        </Flex>
+          </div>
+        </div>
         {showSelector && taskLists.length > 0 && (
-          <Flex gap="2" align="center">
+          <div className="flex gap-2 items-center">
             <Text size="2" color="gray">
               List:
             </Text>
@@ -576,9 +576,9 @@ const TaskHeader = memo(
               optionDisplayKey="title"
               placeholder="Select task list..."
             />
-          </Flex>
+          </div>
         )}
-      </Flex>
+      </div>
     );
   },
 );
@@ -657,7 +657,7 @@ const AddTaskForm = memo(
   }) => {
     if (!showAddTask) {
       return (
-        <Flex gap="2" align="center">
+        <div className="flex gap-2 items-center">
           <Button onClick={onShowForm} variant="secondary">
             + Add Task
           </Button>
@@ -672,13 +672,13 @@ const AddTaskForm = memo(
               {voiceError}
             </Text>
           )}
-        </Flex>
+        </div>
       );
     }
 
     return (
-      <Flex direction="column" gap="2">
-        <Flex gap="2" align="end">
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2 items-end">
           <Input
             placeholder="Add a task, or use * item1 > item2 for multiple..."
             value={newTaskTitle}
@@ -700,13 +700,13 @@ const AddTaskForm = memo(
             isDisabled={isLoading}
             onToggle={onVoiceToggle}
           />
-        </Flex>
+        </div>
         {voiceError && (
           <Text size="1" color="red">
             {voiceError}
           </Text>
         )}
-      </Flex>
+      </div>
     );
   },
 );
@@ -802,14 +802,14 @@ const TaskList = memo(
     });
     if (loading) {
       return (
-        <Flex direction="column" gap="2">
+        <div className="flex flex-col gap-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
               className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 rounded"
             />
           ))}
-        </Flex>
+        </div>
       );
     }
 
@@ -845,7 +845,7 @@ const TaskList = memo(
           items={sortableIds}
           strategy={verticalListSortingStrategy}
         >
-          <Flex direction="column" gap="2">
+          <div className="flex flex-col gap-2">
             {activeTasks.length === 0 && !showPlaceholder && (
               <Text size="2" color="gray">
                 No tasks to display
@@ -875,7 +875,7 @@ const TaskList = memo(
                 taskListId={taskListId}
               />
             )}
-          </Flex>
+          </div>
         </SortableContext>
       </div>
     );
@@ -899,8 +899,8 @@ TaskList.displayName = 'TaskList';
 
 const UnauthenticatedView = memo(() => (
   <Card className="w-full">
-    <Flex direction="column" gap="3" p="4">
-      <Flex justify="between" align="center">
+    <div className="flex flex-col gap-3 p-4">
+      <div className="flex justify-between items-center">
         <Text size="5" weight="bold">
           Tasks
         </Text>
@@ -911,11 +911,11 @@ const UnauthenticatedView = memo(() => (
         >
           Sign in with Google
         </Button>
-      </Flex>
+      </div>
       <Text size="2" color="gray">
         Sign in to view your Google Tasks
       </Text>
-    </Flex>
+    </div>
   </Card>
 ));
 
@@ -1136,7 +1136,7 @@ export const GoogleTasksComponent = ({
 
   const content = (
     <Card className="w-full h-full flex flex-col overflow-hidden">
-      <Flex direction="column" gap="3" p="4" className="h-full">
+      <div className="flex flex-col gap-3 p-4 h-full">
         <TaskHeader
           taskLists={taskLists}
           selectedTaskListId={taskListId}
@@ -1178,7 +1178,7 @@ export const GoogleTasksComponent = ({
             sortMode={sortMode}
           />
         </div>
-      </Flex>
+      </div>
     </Card>
   );
 

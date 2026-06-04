@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Flex, Text, Badge } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import {
   Button,
   CRUDItemList,
@@ -82,7 +82,7 @@ const PriceItemListItem = ({ item }: { item: PriceItem }) => {
 
   return (
     <div className="flex items-center gap-3 p-3">
-      <Box className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <Text weight="bold" size="2">
             {item.name}
@@ -111,7 +111,7 @@ const PriceItemListItem = ({ item }: { item: PriceItem }) => {
             {prices.length} entries)
           </Text>
         )}
-      </Box>
+      </div>
     </div>
   );
 };
@@ -234,7 +234,7 @@ const PriceItemForm = ({
 
   if (isUpdate) {
     return (
-      <Flex direction="column" gap="3" mt="3">
+      <div className="flex flex-col gap-3 mt-3">
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Name
@@ -276,13 +276,13 @@ const PriceItemForm = ({
         >
           Save
         </Button>
-      </Flex>
+      </div>
     );
   }
 
   if (pendingItems.length > 0) {
     return (
-      <Flex direction="column" gap="3" mt="3">
+      <div className="flex flex-col gap-3 mt-3">
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Store
@@ -307,7 +307,7 @@ const PriceItemForm = ({
           Confirm Items ({pendingItems.filter(i => i.confirmed).length}{' '}
           selected)
         </Text>
-        <Flex direction="column" gap="2">
+        <div className="flex flex-col gap-2">
           {pendingItems.map((item, i) => (
             <div
               key={i}
@@ -346,8 +346,8 @@ const PriceItemForm = ({
               </Text>
             </div>
           ))}
-        </Flex>
-        <Flex gap="2">
+        </div>
+        <div className="flex gap-2">
           <Button
             onClick={handleSubmitReceipt}
             disabled={!pendingItems.some(i => i.confirmed)}
@@ -363,14 +363,14 @@ const PriceItemForm = ({
           >
             Back
           </Button>
-        </Flex>
-      </Flex>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Flex direction="column" gap="3" mt="3">
-      <Flex gap="2">
+    <div className="flex flex-col gap-3 mt-3">
+      <div className="flex gap-2">
         <Button
           variant={!manualEntry ? 'default' : 'secondary'}
           onClick={() => setManualEntry(false)}
@@ -383,7 +383,7 @@ const PriceItemForm = ({
         >
           Manual Entry
         </Button>
-      </Flex>
+      </div>
 
       {!manualEntry ? (
         <>
@@ -396,7 +396,7 @@ const PriceItemForm = ({
             className="text-sm"
           />
           {previews.length > 0 && (
-            <Flex gap="2" wrap="wrap">
+            <div className="flex gap-2 flex-wrap">
               {previews.map((p, i) => (
                 <div key={i} className="relative">
                   <img
@@ -414,7 +414,7 @@ const PriceItemForm = ({
                   </button>
                 </div>
               ))}
-            </Flex>
+            </div>
           )}
           {analyzeError && (
             <Text size="1" color="red">
@@ -498,7 +498,7 @@ const PriceItemForm = ({
           <Button onClick={handleSubmitManual}>Save Item</Button>
         </>
       )}
-    </Flex>
+    </div>
   );
 };
 

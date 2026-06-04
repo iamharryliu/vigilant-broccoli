@@ -1,4 +1,4 @@
-import { Card, Flex, Text } from '@radix-ui/themes';
+import { Card, Text } from '@radix-ui/themes';
 import { ReactNode } from 'react';
 
 const HEADER_LINK_CLASS =
@@ -45,21 +45,21 @@ export const CardContainer = ({
 
   return (
     <Card className="w-full">
-      <Flex direction="column" gap={gap} p="4">
+      <div className={`flex flex-col p-4 gap-${gap}`}>
         {trailing ? (
-          <Flex justify="between" align="center">
+          <div className="flex justify-between items-center">
             <Text size="5" weight="bold">
               {title}
             </Text>
             {trailing}
-          </Flex>
+          </div>
         ) : (
           <Text size="5" weight="bold">
             {title}
           </Text>
         )}
         {children}
-      </Flex>
+      </div>
     </Card>
   );
 };

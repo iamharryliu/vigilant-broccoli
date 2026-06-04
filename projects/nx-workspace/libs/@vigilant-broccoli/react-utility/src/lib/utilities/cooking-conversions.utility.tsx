@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text, TextField } from '@radix-ui/themes';
+import { Text, TextField } from '@radix-ui/themes';
 import { useState } from 'react';
 
 export const CookingConversionsUtilityContent = () => {
@@ -202,8 +202,8 @@ export const CookingConversionsUtilityContent = () => {
   return (
     <>
       {/* Weight: kg, lb */}
-      <Flex gap="2">
-        <Flex direction="column" gap="1" className="flex-1">
+      <div className="flex gap-2">
+        <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             kg
           </Text>
@@ -214,8 +214,8 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-        <Flex direction="column" gap="1" className="flex-1">
+        </div>
+        <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             lb
           </Text>
@@ -226,12 +226,12 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-      </Flex>
+        </div>
+      </div>
 
       {/* Weight: g, ounce */}
-      <Flex gap="2">
-        <Flex direction="column" gap="1" className="flex-1">
+      <div className="flex gap-2">
+        <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             g
           </Text>
@@ -242,8 +242,8 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-        <Flex direction="column" gap="1" className="flex-1">
+        </div>
+        <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             oz
           </Text>
@@ -254,12 +254,12 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-      </Flex>
+        </div>
+      </div>
 
       {/* Volume: ml, tsp, tbsp, cup */}
       <div className="grid grid-cols-2 gap-2">
-        <Flex direction="column" gap="1">
+        <div className="flex flex-col gap-1">
           <Text size="1" color="gray">
             ml
           </Text>
@@ -270,8 +270,8 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-        <Flex direction="column" gap="1">
+        </div>
+        <div className="flex flex-col gap-1">
           <Text size="1" color="gray">
             tsp
           </Text>
@@ -282,8 +282,8 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-        <Flex direction="column" gap="1">
+        </div>
+        <div className="flex flex-col gap-1">
           <Text size="1" color="gray">
             tbsp
           </Text>
@@ -294,8 +294,8 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-        <Flex direction="column" gap="1">
+        </div>
+        <div className="flex flex-col gap-1">
           <Text size="1" color="gray">
             cup
           </Text>
@@ -306,12 +306,12 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
+        </div>
       </div>
 
       {/* Length: mm, cm, inch */}
-      <Flex gap="2">
-        <Flex direction="column" gap="1" className="flex-1">
+      <div className="flex gap-2">
+        <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             mm
           </Text>
@@ -322,8 +322,8 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-        <Flex direction="column" gap="1" className="flex-1">
+        </div>
+        <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             cm
           </Text>
@@ -334,8 +334,8 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-        <Flex direction="column" gap="1" className="flex-1">
+        </div>
+        <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             inch
           </Text>
@@ -346,12 +346,12 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-      </Flex>
+        </div>
+      </div>
 
       {/* Temperature: Fahrenheit, Celsius */}
-      <Flex gap="2">
-        <Flex direction="column" gap="1" className="flex-1">
+      <div className="flex gap-2">
+        <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             °F
           </Text>
@@ -362,8 +362,8 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-        <Flex direction="column" gap="1" className="flex-1">
+        </div>
+        <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             °C
           </Text>
@@ -374,8 +374,8 @@ export const CookingConversionsUtilityContent = () => {
             placeholder="0"
             size="1"
           />
-        </Flex>
-      </Flex>
+        </div>
+      </div>
     </>
   );
 };

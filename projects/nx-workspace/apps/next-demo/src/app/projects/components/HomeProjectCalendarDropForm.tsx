@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
 import { CalendarEventFormData } from '../../calendar/components/CalendarEventForm';
 import { toDatetimeLocal, toDateLocal } from '../../../lib/date-utils';
@@ -73,7 +73,7 @@ export function HomeProjectCalendarDropForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Flex direction="column" gap="3" mt="2">
+      <div className="flex flex-col gap-3 mt-2">
         <div>
           <Text size="1" weight="medium" as="p" mb="1">
             Title
@@ -96,7 +96,7 @@ export function HomeProjectCalendarDropForm({
           />
         </div>
 
-        <Flex align="center" gap="2">
+        <div className="flex items-center gap-2">
           <input
             type="checkbox"
             id="allDayDrop"
@@ -106,9 +106,9 @@ export function HomeProjectCalendarDropForm({
           <Text size="2" asChild>
             <label htmlFor="allDayDrop">All day</label>
           </Text>
-        </Flex>
+        </div>
 
-        <Flex gap="3">
+        <div className="flex gap-3">
           <div style={{ flex: 1 }}>
             <Text size="1" weight="medium" as="p" mb="1">
               Start
@@ -133,9 +133,9 @@ export function HomeProjectCalendarDropForm({
               style={inputStyle}
             />
           </div>
-        </Flex>
+        </div>
 
-        <Flex justify="end" gap="2" pt="2">
+        <div className="flex justify-end gap-2 pt-2">
           <Button
             type="button"
             variant="secondary"
@@ -147,8 +147,8 @@ export function HomeProjectCalendarDropForm({
           <Button type="submit" className="cursor-pointer">
             Add to Calendar
           </Button>
-        </Flex>
-      </Flex>
+        </div>
+      </div>
     </form>
   );
 }

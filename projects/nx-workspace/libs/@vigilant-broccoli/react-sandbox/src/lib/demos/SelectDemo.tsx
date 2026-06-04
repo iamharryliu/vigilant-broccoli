@@ -1,6 +1,6 @@
 import { Select } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
-import { Flex, Heading } from '@radix-ui/themes';
+import { Heading } from '@radix-ui/themes';
 
 interface Person {
   id: number;
@@ -24,7 +24,7 @@ export const SelectDemo = () => {
   ];
 
   return (
-    <Flex direction="column" gap="6">
+    <div className="flex flex-col gap-6">
       <div className="flex items-start gap-4">
         <div className="w-32 shrink-0 pt-2">
           <Heading size="3">Simple String</Heading>
@@ -118,6 +118,6 @@ export const SelectDemo = () => {
           )}
         </div>
       </div>
-    </Flex>
+    </div>
   );
 };

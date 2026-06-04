@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { CollapsibleList, CollapsibleListItemConfig } from './CollapsibleList';
 
 export interface StatusCardListItem {
@@ -26,12 +26,12 @@ const itemClassName = (item: StatusCardListItem) =>
   `rounded border mb-2 pl-2 ${item.borderClassName ?? DEFAULT_BORDER}`;
 
 const itemTitleContent = (item: StatusCardListItem) => (
-  <Flex align="start" gap={item.badges ? '2' : '0'} className="flex-1">
+  <div className={`flex items-start flex-1 ${item.badges ? 'gap-2' : 'gap-0'}`}>
     {item.badges}
     <Text size="2" weight={item.labelWeight ?? 'bold'}>
       {item.label}
     </Text>
-  </Flex>
+  </div>
 );
 
 const toCollapsibleItem = (
@@ -45,14 +45,10 @@ const toCollapsibleItem = (
 });
 
 const FlatItem = ({ item }: { item: StatusCardListItem }) => (
-  <Flex
-    align="center"
-    className={`${itemClassName(item)} min-h-[36px]`}
-    gap="2"
-  >
+  <div className={`flex items-center gap-2 ${`${itemClassName(item)} min-h-[36px]`}`}>
     {itemTitleContent(item)}
     {item.actions}
-  </Flex>
+  </div>
 );
 
 export const StatusCardList = ({

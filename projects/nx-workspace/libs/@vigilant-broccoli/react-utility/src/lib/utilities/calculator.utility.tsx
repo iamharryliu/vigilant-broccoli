@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  Flex,
-  Text,
-  TextField,
-  Button,
-  ScrollArea,
-  Card,
-} from '@radix-ui/themes';
+import { Text, TextField, Button, ScrollArea, Card } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
 
 const HISTORY_STORAGE_KEY = 'calculator-history';
@@ -107,7 +100,7 @@ export const CalculatorUtilityContent = () => {
   };
 
   return (
-    <Flex direction="column" gap="2">
+    <div className="flex flex-col gap-2">
       <form onSubmit={handleSubmit}>
         <TextField.Root
           value={input}
@@ -122,37 +115,31 @@ export const CalculatorUtilityContent = () => {
         </Text>
       )}
       {history.length > 0 && (
-        <Flex direction="column" gap="1" mt="2">
-          <Flex justify="between" align="center">
+        <div className="flex flex-col gap-1 mt-2">
+          <div className="flex justify-between items-center">
             <Text size="1" weight="bold" color="gray">
               History
             </Text>
             <Button size="1" variant="ghost" color="red" onClick={clearHistory}>
               Clear
             </Button>
-          </Flex>
+          </div>
           <ScrollArea style={{ maxHeight: '200px' }}>
-            <Flex direction="column" gap="1">
+            <div className="flex flex-col gap-1">
               {history.map(entry => (
-                <Flex
-                  key={entry.timestamp}
-                  justify="between"
-                  align="center"
-                  py="1"
-                  style={{ borderBottom: '1px solid var(--gray-a5)' }}
-                >
+                <div className="flex justify-between items-center py-1" key={entry.timestamp} style={{ borderBottom: '1px solid var(--gray-a5)' }}>
                   <Text size="1" color="gray">
                     {entry.equation}
                   </Text>
                   <Text size="1" weight="bold" color="blue">
                     = {entry.result}
                   </Text>
-                </Flex>
+                </div>
               ))}
-            </Flex>
+            </div>
           </ScrollArea>
-        </Flex>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };

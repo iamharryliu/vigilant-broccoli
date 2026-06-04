@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import { useAuth } from '../../providers/auth-provider';
 import { LeisureActivity } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
@@ -41,7 +41,7 @@ export default function LeisureDetailPage() {
         ← Back
       </Link>
 
-      <Flex align="center" gap="3" wrap="wrap">
+      <div className="flex items-center gap-3 flex-wrap">
         <Text size="6" weight="bold">{activity.title}</Text>
         <Badge
           color={CATEGORY_COLORS[activity.category] as never}
@@ -50,7 +50,7 @@ export default function LeisureDetailPage() {
         >
           {activity.category}
         </Badge>
-      </Flex>
+      </div>
 
       {activity.description && (
         <Text size="3" color="gray" as="p">{activity.description}</Text>

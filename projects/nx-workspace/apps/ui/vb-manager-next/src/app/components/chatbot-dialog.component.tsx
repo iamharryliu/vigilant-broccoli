@@ -1,6 +1,6 @@
 'use client';
 
-import { Dialog, Flex, Text, Spinner } from '@radix-ui/themes';
+import { Dialog, Text, Spinner } from '@radix-ui/themes';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Trash2 } from 'lucide-react';
@@ -150,12 +150,12 @@ const formatModelLabel = (model: string) =>
 const TYPING_LABEL = 'Thinking';
 
 const TypingIndicator = () => (
-  <Flex gap="2" align="center" style={{ padding: '0.25rem 0' }}>
+  <div className="flex gap-2 items-center" style={{ padding: '0.25rem 0' }}>
     <Spinner size="1" />
     <Text size="2" color="gray">
       {TYPING_LABEL}
     </Text>
-  </Flex>
+  </div>
 );
 
 const MessageContent = ({ message }: { message: Message }) => {
@@ -228,12 +228,12 @@ const PanelHeader = ({
   onClear: () => void;
   onToggleFullscreen: () => void;
 }) => (
-  <Flex justify="between" align="center" style={{ minHeight: '2.5rem' }}>
-    <Flex gap="2" align="center">
+  <div className="flex justify-between items-center" style={{ minHeight: '2.5rem' }}>
+    <div className="flex gap-2 items-center">
       <UserAvatar name={ASSISTANT_NAME} />
       <Dialog.Title style={{ margin: 0 }}>{ASSISTANT_NAME}</Dialog.Title>
-    </Flex>
-    <Flex gap="6" align="center">
+    </div>
+    <div className="flex gap-6 items-center">
       <IconButton
         icon="rotate-ccw"
         variant="ghost"
@@ -249,8 +249,8 @@ const PanelHeader = ({
       <Dialog.Close>
         <CloseButton aria-label="Close" />
       </Dialog.Close>
-    </Flex>
-  </Flex>
+    </div>
+  </div>
 );
 
 const MessagesArea = ({
@@ -316,7 +316,7 @@ const MessagesArea = ({
       </div>
     )}
     <ScrollArea viewportRef={scrollRef} className="h-full">
-      <Flex direction="column" gap="3" style={{ padding: '0.5rem 1rem' }}>
+      <div className="flex flex-col gap-3" style={{ padding: '0.5rem 1rem' }}>
         {messages.map((message, index) => {
           const isUser = message.role === 'user';
           return (
@@ -331,7 +331,7 @@ const MessagesArea = ({
               }}
             >
               {message.images && message.images.length > 0 && (
-                <Flex gap="2" wrap="wrap" style={{ marginBottom: '0.5rem' }}>
+                <div className="flex gap-2 flex-wrap" style={{ marginBottom: '0.5rem' }}>
                   {message.images.map((img, imgIndex) => (
                     <img
                       key={imgIndex}
@@ -345,7 +345,7 @@ const MessagesArea = ({
                       }}
                     />
                   ))}
-                </Flex>
+                </div>
               )}
               <div className="prose prose-sm dark:prose-invert max-w-none">
                 <MessageContent message={message} />
@@ -373,7 +373,7 @@ const MessagesArea = ({
             </div>
           );
         })}
-      </Flex>
+      </div>
     </ScrollArea>
   </div>
 );
@@ -385,7 +385,7 @@ const SuggestionsBar = ({
   commands: ChatCommand[];
   onCommandRun: (name: string) => void;
 }) => (
-  <Flex direction="row" gap="2" wrap="wrap" align="center">
+  <div className="flex gap-2 flex-wrap items-center">
     {commands.map(command => (
       <Button
         key={command.name}
@@ -395,7 +395,7 @@ const SuggestionsBar = ({
         {command.label}
       </Button>
     ))}
-  </Flex>
+  </div>
 );
 
 const SLASH_PREFIX = '/';
@@ -480,7 +480,7 @@ const ImagePreviewList = ({
   images: MessageImage[];
   onImageRemove: (index: number) => void;
 }) => (
-  <Flex gap="2" wrap="wrap" align="center">
+  <div className="flex gap-2 flex-wrap items-center">
     {images.map((img, index) => (
       <ImagePreview
         key={index}
@@ -489,7 +489,7 @@ const ImagePreviewList = ({
         onRemove={() => onImageRemove(index)}
       />
     ))}
-  </Flex>
+  </div>
 );
 
 const getInputPlaceholder = (
@@ -547,7 +547,7 @@ const InputControls = ({
   onSend: () => void;
   onStop: () => void;
 }) => (
-  <Flex gap="2" align="end">
+  <div className="flex gap-2 items-end">
     <input
       ref={fileInputRef}
       type="file"
@@ -592,7 +592,7 @@ const InputControls = ({
       onSend={onSend}
       onStop={onStop}
     />
-  </Flex>
+  </div>
 );
 
 const InputArea = ({
@@ -646,7 +646,7 @@ const InputArea = ({
   speechError: string | null;
   onToggleRecording: () => void;
 }) => (
-  <Flex direction="column" gap="2" style={{ flexShrink: 0 }}>
+  <div className="flex flex-col gap-2" style={{ flexShrink: 0 }}>
     {messages.length === 0 && suggestionCommands.length > 0 && (
       <SuggestionsBar
         commands={suggestionCommands}
@@ -686,7 +686,7 @@ const InputArea = ({
         {speechError}
       </Text>
     )}
-  </Flex>
+  </div>
 );
 
 const compactConversation = (messages: Message[]): Message[] => {
@@ -1553,14 +1553,11 @@ export const ChatbotPanel = ({
   };
 
   return (
-    <Flex
-      direction="column"
-      style={{
+    <div className="flex flex-col" style={{
         height: '100%',
         width: '100%',
         overflow: 'hidden',
-      }}
-    >
+      }}>
       {variant === 'dialog' && (
         <div style={{ padding: '1.5rem 1.5rem 0 1.5rem' }}>
           <PanelHeader
@@ -1571,18 +1568,14 @@ export const ChatbotPanel = ({
         </div>
       )}
 
-      <Flex
-        direction="column"
-        gap="3"
-        style={{
+      <div className="flex flex-col gap-3" style={{
           flex: 1,
           overflow: 'hidden',
           padding:
             variant === 'dialog'
               ? '1rem 1.5rem 1.5rem 1.5rem'
               : '1.5rem 1.5rem 1.5rem 1.5rem',
-        }}
-      >
+        }}>
         <MessagesArea
           messages={messages}
           isDragging={isDragging}
@@ -1624,8 +1617,8 @@ export const ChatbotPanel = ({
           speechError={transcriptionError || textToSpeechError}
           onToggleRecording={toggleRecording}
         />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

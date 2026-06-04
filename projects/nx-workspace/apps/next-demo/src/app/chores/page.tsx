@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, Flex, Box, Text, Table, Badge, Dialog } from '@radix-ui/themes';
+import { Card, Text, Table, Badge, Dialog } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
@@ -355,26 +355,26 @@ export default function ChoresPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-2 sm:p-6 space-y-6">
-      <Flex direction="column" gap="4">
+      <div className="flex flex-col gap-4">
         <Card>
-          <Flex direction="column" gap="4">
+          <div className="flex flex-col gap-4">
             <Text size="5" weight="bold">
               Active Todos
             </Text>
             {Object.keys(grouped).length === 0 ? (
-              <Box py="8">
+              <div className="py-8">
                 <Text align="center" color="gray" size="3">
                   No todos due yet!
                 </Text>
-              </Box>
+              </div>
             ) : (
-              <Flex direction="column" gap="2">
+              <div className="flex flex-col gap-2">
                 {Object.entries(grouped).map(([choreId, choreTodos]) => {
                   const first = choreTodos[0];
                   return (
                     <Card key={choreId} variant="surface">
-                      <Flex justify="between" align="center" gap="4">
-                        <Flex gap="2" align="center" flexGrow="1">
+                      <div className="flex justify-between items-center gap-4">
+                        <div className="flex gap-2 items-center grow">
                           <Text size="3" weight="medium">
                             {first.choreName}
                           </Text>
@@ -393,8 +393,8 @@ export default function ChoresPage() {
                               ? '• Due today'
                               : `• ${first.daysOverdue}d overdue`}
                           </Text>
-                        </Flex>
-                        <Flex gap="3" align="center">
+                        </div>
+                        <div className="flex gap-3 items-center">
                           {choreTodos.map(todo => (
                             <Checkbox
                               key={todo.instanceNumber}
@@ -408,19 +408,19 @@ export default function ChoresPage() {
                               }}
                             />
                           ))}
-                        </Flex>
-                      </Flex>
+                        </div>
+                      </div>
                     </Card>
                   );
                 })}
-              </Flex>
+              </div>
             )}
-          </Flex>
+          </div>
         </Card>
 
         <Card>
-          <Flex direction="column" gap="4">
-            <Flex justify="between" align="center">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center">
               <Text size="5" weight="bold">
                 Chores
               </Text>
@@ -432,8 +432,8 @@ export default function ChoresPage() {
                   <Dialog.Title>
                     {editingChore ? 'Edit Chore' : 'New Chore'}
                   </Dialog.Title>
-                  <Flex direction="column" gap="4" mt="4">
-                    <Box>
+                  <div className="flex flex-col gap-4 mt-4">
+                    <div>
                       <Text as="label" size="2" weight="medium" mb="1">
                         Name
                       </Text>
@@ -444,8 +444,8 @@ export default function ChoresPage() {
                           setFormData({ ...formData, name: e.target.value })
                         }
                       />
-                    </Box>
-                    <Box>
+                    </div>
+                    <div>
                       <Text as="label" size="2" weight="medium" mb="1">
                         Description
                       </Text>
@@ -460,9 +460,9 @@ export default function ChoresPage() {
                         }
                         rows={3}
                       />
-                    </Box>
-                    <Flex gap="4">
-                      <Box style={{ flex: 1 }}>
+                    </div>
+                    <div className="flex gap-4">
+                      <div style={{ flex: 1 }}>
                         <Text as="label" size="2" weight="medium" mb="1">
                           Recurrence
                         </Text>
@@ -474,8 +474,8 @@ export default function ChoresPage() {
                           options={RECURRENCE_OPTIONS}
                           displayMapper={RECURRENCE_LABELS}
                         />
-                      </Box>
-                      <Box style={{ width: '120px' }}>
+                      </div>
+                      <div style={{ width: '120px' }}>
                         <Text as="label" size="2" weight="medium" mb="1">
                           Multiplier
                         </Text>
@@ -494,11 +494,11 @@ export default function ChoresPage() {
                             })
                           }
                         />
-                      </Box>
-                    </Flex>
-                    <Flex gap="4">
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
                       <Text as="label" size="2">
-                        <Flex gap="2" align="center">
+                        <div className="flex gap-2 items-center">
                           <Checkbox
                             checked={formData.isUrgent}
                             onCheckedChange={checked =>
@@ -509,10 +509,10 @@ export default function ChoresPage() {
                             }
                           />
                           Urgent
-                        </Flex>
+                        </div>
                       </Text>
                       <Text as="label" size="2">
-                        <Flex gap="2" align="center">
+                        <div className="flex gap-2 items-center">
                           <Checkbox
                             checked={formData.isImportant}
                             onCheckedChange={checked =>
@@ -523,10 +523,10 @@ export default function ChoresPage() {
                             }
                           />
                           Important
-                        </Flex>
+                        </div>
                       </Text>
-                    </Flex>
-                    <Flex gap="2" justify="end" mt="4">
+                    </div>
+                    <div className="flex gap-2 justify-end mt-4">
                       <Dialog.Close>
                         <Button variant="secondary" onClick={resetForm}>
                           Cancel
@@ -538,18 +538,18 @@ export default function ChoresPage() {
                       >
                         {editingChore ? 'Update' : 'Create'}
                       </Button>
-                    </Flex>
-                  </Flex>
+                    </div>
+                  </div>
                 </Dialog.Content>
               </Dialog.Root>
-            </Flex>
+            </div>
 
             {chores.length === 0 ? (
-              <Box py="8">
+              <div className="py-8">
                 <Text align="center" color="gray" size="3">
                   No chores created yet
                 </Text>
-              </Box>
+              </div>
             ) : (
               <Table.Root variant="surface">
                 <Table.Header>
@@ -587,7 +587,7 @@ export default function ChoresPage() {
                           <Text size="2">{chore.multiplier}x</Text>
                         </Table.Cell>
                         <Table.Cell>
-                          <Flex gap="1">
+                          <div className="flex gap-1">
                             {chore.isUrgent && (
                               <Badge color="red" size="1">
                                 U
@@ -601,7 +601,7 @@ export default function ChoresPage() {
                             {!chore.isUrgent && !chore.isImportant && (
                               <Text color="gray">-</Text>
                             )}
-                          </Flex>
+                          </div>
                         </Table.Cell>
                         <Table.Cell>
                           <Text
@@ -616,7 +616,7 @@ export default function ChoresPage() {
                           </Text>
                         </Table.Cell>
                         <Table.Cell>
-                          <Flex gap="2">
+                          <div className="flex gap-2">
                             <Button
                               size="sm"
                               variant="secondary"
@@ -631,7 +631,7 @@ export default function ChoresPage() {
                             >
                               Delete
                             </Button>
-                          </Flex>
+                          </div>
                         </Table.Cell>
                       </Table.Row>
                     );
@@ -639,9 +639,9 @@ export default function ChoresPage() {
                 </Table.Body>
               </Table.Root>
             )}
-          </Flex>
+          </div>
         </Card>
-      </Flex>
+      </div>
     </div>
   );
 }

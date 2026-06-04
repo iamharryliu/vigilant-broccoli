@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button, Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { Volume2 } from 'lucide-react';
@@ -15,12 +15,12 @@ export const TextToSpeech = () => {
   };
 
   return (
-    <Flex direction="column" gap="4">
+    <div className="flex flex-col gap-4">
       <Text size="5" weight="bold">
         Text to Speech
       </Text>
 
-      <Box>
+      <div>
         <Textarea
           value={text}
           onChange={e => setText(e.target.value)}
@@ -28,9 +28,9 @@ export const TextToSpeech = () => {
           rows={8}
           className="w-full"
         />
-      </Box>
+      </div>
 
-      <Flex align="center" gap="2">
+      <div className="flex items-center gap-2">
         <Button onClick={handleSpeak} disabled={isLoading || !text.trim()}>
           <Volume2 size={16} />
           {isLoading ? 'Generating...' : 'Speak'}
@@ -41,7 +41,7 @@ export const TextToSpeech = () => {
             {error}
           </Text>
         )}
-      </Flex>
+      </div>
 
       {audioUrl && (
         <audio key={audioUrl} controls autoPlay className="w-full">
@@ -49,6 +49,6 @@ export const TextToSpeech = () => {
           Your browser does not support audio playback.
         </audio>
       )}
-    </Flex>
+    </div>
   );
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button, Input } from '@vigilant-broccoli/react-lib';
 
 type Props = {
@@ -22,7 +22,7 @@ export const HomeForm = ({
   saving,
   disabled = false,
 }: Props) => (
-  <Flex direction="column" gap="3">
+  <div className="flex flex-col gap-3">
     <div>
       <Text size="1" weight="medium" as="p" mb="1">
         Name
@@ -54,5 +54,5 @@ export const HomeForm = ({
         Save
       </Button>
     )}
-  </Flex>
+  </div>
 );

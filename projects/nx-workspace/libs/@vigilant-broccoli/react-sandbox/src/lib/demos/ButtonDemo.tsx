@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Flex, Heading } from '@radix-ui/themes';
+import { Heading } from '@radix-ui/themes';
 import { ExternalLink, ArrowRight } from 'lucide-react';
 import {
   Button,
@@ -62,7 +62,7 @@ function ChatSendButtonDemo() {
   const handleStop = () => setIsStreaming(false);
 
   return (
-    <Flex gap="3" align="center">
+    <div className="flex gap-3 items-center">
       <input
         value={input}
         onChange={e => setInput(e.target.value)}
@@ -80,7 +80,7 @@ function ChatSendButtonDemo() {
         onSend={handleSend}
         onStop={handleStop}
       />
-    </Flex>
+    </div>
   );
 }
 
@@ -100,7 +100,7 @@ function SpeechToTextButtonDemo() {
   };
 
   return (
-    <Flex gap="3" align="center">
+    <div className="flex gap-3 items-center">
       <SpeechToTextButton
         isRecording={isRecording}
         isProcessing={isProcessing}
@@ -108,7 +108,7 @@ function SpeechToTextButtonDemo() {
       />
       <SpeechToTextButton isRecording={false} isDisabled onToggle={noop} />
       <SpeechToTextButton isRecording={false} isProcessing onToggle={noop} />
-    </Flex>
+    </div>
   );
 }
 
@@ -116,82 +116,82 @@ export function ButtonDemo() {
   const [dark, setDark] = useState(false);
 
   return (
-    <Flex direction="column" gap="6">
+    <div className="flex flex-col gap-6">
       <div>
         <Heading size="4" mb="3">
           Variants
         </Heading>
-        <Flex gap="3" wrap="wrap">
+        <div className="flex gap-3 flex-wrap">
           <Button>Default</Button>
           <Button variant="secondary">Secondary</Button>
           <Button variant="outline">Outline</Button>
           <Button variant="ghost">Ghost</Button>
           <Button variant="destructive">Destructive</Button>
           <Button variant="link">Link</Button>
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Sizes
         </Heading>
-        <Flex gap="3" align="center">
+        <div className="flex gap-3 items-center">
           <Button size="xs">XSmall</Button>
           <Button size="sm">Small</Button>
           <Button size="default">Default</Button>
           <Button size="lg">Large</Button>
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           States
         </Heading>
-        <Flex gap="3">
+        <div className="flex gap-3">
           <Button onClick={async () => new Promise(r => setTimeout(r, 1500))}>
             Click to Load
           </Button>
           <Button disabled>Disabled</Button>
           <Button loading>Loading</Button>
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Icon Buttons
         </Heading>
-        <Flex gap="3" align="center">
+        <div className="flex gap-3 items-center">
           <IconButton icon="x" title="Close" />
           <IconButton icon="filter" variant="outline" title="Filter" />
           <IconButton icon="search" variant="ghost" title="Search" />
           <IconButton icon="plus" variant="secondary" title="Add" />
           <IconButton icon="minus" variant="secondary" title="Remove" />
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Delete Icon Button
         </Heading>
-        <Flex gap="3" align="center">
+        <div className="flex gap-3 items-center">
           <DeleteIconButton title="Delete" />
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Dark Mode Icon Button
         </Heading>
-        <Flex gap="3" align="center">
+        <div className="flex gap-3 items-center">
           <DarkModeIconButton dark={dark} onToggle={setDark} />
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Inline Icons
         </Heading>
-        <Flex gap="3" align="center">
+        <div className="flex gap-3 items-center">
           <Button>
             <ArrowRight size={14} className="shrink-0" />
             inline-start
@@ -205,23 +205,23 @@ export function ButtonDemo() {
             Both
             <ExternalLink size={14} className="shrink-0" />
           </Button>
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Close Button
         </Heading>
-        <Flex gap="3" align="center">
+        <div className="flex gap-3 items-center">
           <CloseButton title="Close" />
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Copy Button
         </Heading>
-        <Flex gap="3" align="center">
+        <div className="flex gap-3 items-center">
           <CopyButton text="hello copy pastable" />
           <CopyButton
             text={async () => {
@@ -229,14 +229,14 @@ export function ButtonDemo() {
               return 'async result';
             }}
           />
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Monospace Text
         </Heading>
-        <Flex direction="column" gap="3">
+        <div className="flex flex-col gap-3">
           <MonospaceText text="192.168.1.1" />
           <MonospaceText text="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3very long ssh key content that should be truncated" />
           <MonospaceText
@@ -244,17 +244,17 @@ export function ButtonDemo() {
             truncate={false}
           />
           <MonospaceText text="loading skeleton" loading />
-        </Flex>
+        </div>
       </div>
 
       <div>
         <Heading size="4" mb="3">
           Social Signin Buttons
         </Heading>
-        <Flex direction="column" gap="3" style={{ maxWidth: 300 }}>
+        <div className="flex flex-col gap-3" style={{ maxWidth: 300 }}>
           <GoogleSigninButton />
           <MicrosoftSigninButton />
-        </Flex>
+        </div>
       </div>
 
       <div>
@@ -277,6 +277,6 @@ export function ButtonDemo() {
         </Heading>
         <ButtonList buttons={BUTTON_LIST_BUTTONS} />
       </div>
-    </Flex>
+    </div>
   );
 }

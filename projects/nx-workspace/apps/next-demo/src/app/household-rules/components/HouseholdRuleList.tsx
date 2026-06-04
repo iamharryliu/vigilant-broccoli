@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
@@ -74,7 +74,7 @@ const RuleForm = ({
   const [position, setPosition] = useState(initialFormValues.position);
 
   return (
-    <Flex direction="column" gap="3" mt="3">
+    <div className="flex flex-col gap-3 mt-3">
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
           Name
@@ -124,7 +124,7 @@ const RuleForm = ({
       >
         {formType === FORM_TYPE.UPDATE ? 'Save' : 'Add Rule'}
       </Button>
-    </Flex>
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text, TextField, ScrollArea, Select } from '@radix-ui/themes';
+import { Text, TextField, ScrollArea, Select } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
@@ -116,9 +116,9 @@ export const CurrencyConverterUtilityContent = () => {
   };
 
   return (
-    <Flex direction="column" gap="2">
+    <div className="flex flex-col gap-2">
       <form onSubmit={handleSubmit}>
-        <Flex gap="2" align="center">
+        <div className="flex gap-2 items-center">
           <Select.Root
             value={fromCurrency}
             onValueChange={handleFromCurrencyChange}
@@ -154,7 +154,7 @@ export const CurrencyConverterUtilityContent = () => {
               ))}
             </Select.Content>
           </Select.Root>
-        </Flex>
+        </div>
       </form>
       {result && !loading && (
         <Text size="5" weight="bold" align="right">
@@ -167,37 +167,31 @@ export const CurrencyConverterUtilityContent = () => {
         </Text>
       )}
       {history.length > 0 && (
-        <Flex direction="column" gap="1" mt="2">
-          <Flex justify="between" align="center">
+        <div className="flex flex-col gap-1 mt-2">
+          <div className="flex justify-between items-center">
             <Text size="1" weight="bold" color="gray">
               History
             </Text>
             <Button size="sm" variant="destructive" onClick={clearHistory}>
               Clear
             </Button>
-          </Flex>
+          </div>
           <ScrollArea style={{ maxHeight: '200px' }}>
-            <Flex direction="column" gap="1">
+            <div className="flex flex-col gap-1">
               {history.map(entry => (
-                <Flex
-                  key={entry.timestamp}
-                  justify="between"
-                  align="center"
-                  py="1"
-                  style={{ borderBottom: '1px solid var(--gray-a5)' }}
-                >
+                <div className="flex justify-between items-center py-1" key={entry.timestamp} style={{ borderBottom: '1px solid var(--gray-a5)' }}>
                   <Text size="1" color="gray">
                     {entry.amount} {entry.fromCurrency} → {entry.toCurrency}
                   </Text>
                   <Text size="1" weight="bold" color="blue">
                     {entry.result} {entry.toCurrency}
                   </Text>
-                </Flex>
+                </div>
               ))}
-            </Flex>
+            </div>
           </ScrollArea>
-        </Flex>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Badge, Dialog, Flex, Text } from '@radix-ui/themes';
+import { Badge, Dialog, Text } from '@radix-ui/themes';
 import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { Resource, ResourceBooking } from '../../../lib/types';
 import { ResourceForm, ResourceFormData } from './ResourceForm';
@@ -84,7 +84,7 @@ export function ResourceList({
 
   return (
     <div className="flex flex-col gap-3">
-      <Flex justify="between" align="center">
+      <div className="flex justify-between items-center">
         <Text size="4" weight="bold">
           Resources
         </Text>
@@ -94,7 +94,7 @@ export function ResourceList({
         >
           + Add
         </Button>
-      </Flex>
+      </div>
 
       {!hideDragHint && (
         <Text size="1" color="gray">

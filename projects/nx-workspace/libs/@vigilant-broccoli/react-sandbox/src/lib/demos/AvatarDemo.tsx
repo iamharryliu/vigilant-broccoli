@@ -1,4 +1,4 @@
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import {
   Avatar,
   AvatarSize,
@@ -37,10 +37,10 @@ const VARIANTS: BoringAvatarVariant[] = [
 ];
 
 export const AvatarDemo = () => (
-  <Flex direction="column" gap="6">
+  <div className="flex flex-col gap-6">
     <div>
       <Text {...SECTION_HEADING_PROPS}>Sizes</Text>
-      <Flex {...ROW_FLEX_PROPS}>
+      <div className="flex" {...ROW_FLEX_PROPS}>
         {SIZES.map(size => (
           <Avatar
             key={size}
@@ -51,20 +51,20 @@ export const AvatarDemo = () => (
             }}
           />
         ))}
-      </Flex>
+      </div>
     </div>
 
     <div>
       <Text {...SECTION_HEADING_PROPS}>Character fallback</Text>
-      <Flex {...ROW_FLEX_PROPS}>
+      <div className="flex" {...ROW_FLEX_PROPS}>
         <Avatar fallback={{ type: FALLBACK_TYPE.CHARACTER, value: 'A' }} />
         <Avatar fallback={{ type: FALLBACK_TYPE.CHARACTER, value: 'HL' }} />
-      </Flex>
+      </div>
     </div>
 
     <div>
       <Text {...SECTION_HEADING_PROPS}>BoringAvatar fallback (variants)</Text>
-      <Flex {...ROW_FLEX_PROPS}>
+      <div className="flex" {...ROW_FLEX_PROPS}>
         {VARIANTS.map(variant => (
           <Avatar
             key={variant}
@@ -76,17 +76,17 @@ export const AvatarDemo = () => (
             }}
           />
         ))}
-      </Flex>
+      </div>
     </div>
 
     <div>
       <Text {...SECTION_HEADING_PROPS}>With badge</Text>
-      <Flex {...ROW_FLEX_PROPS}>
+      <div className="flex" {...ROW_FLEX_PROPS}>
         <Avatar
           fallback={{ type: FALLBACK_TYPE.CHARACTER, value: 'A' }}
           badge={{ icon: Pencil }}
         />
-      </Flex>
+      </div>
     </div>
-  </Flex>
+  </div>
 );

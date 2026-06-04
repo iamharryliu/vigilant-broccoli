@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect, useRef } from 'react';
 import { createSoundAlert } from '../audio';
@@ -240,7 +240,7 @@ export const TimerUtilityContent = () => {
   return (
     <>
       {active ? (
-        <Flex direction="column" align="center" gap="2">
+        <div className="flex flex-col items-center gap-2">
           <Text size="6" weight="bold" className="font-mono">
             {formatTime(remaining)}
           </Text>
@@ -249,7 +249,7 @@ export const TimerUtilityContent = () => {
               Repetition {currentRepetition} of {totalRepetitions}
             </Text>
           )}
-          <Flex gap="2">
+          <div className="flex gap-2">
             <Button
               variant="secondary"
               onClick={() => sendTimerCommand(CMD_STOP)}
@@ -263,16 +263,12 @@ export const TimerUtilityContent = () => {
             >
               Reset
             </Button>
-          </Flex>
-        </Flex>
+          </div>
+        </div>
       ) : (
-        <Flex direction="column" gap="2">
-          <Flex gap="2" align="end">
-            <Flex
-              direction="column"
-              gap="1"
-              style={{ flex: '1 1 0', minWidth: 0 }}
-            >
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2 items-end">
+            <div className="flex flex-col gap-1" style={{ flex: '1 1 0', minWidth: 0 }}>
               <Text size="1" color="gray">
                 Minutes
               </Text>
@@ -284,12 +280,8 @@ export const TimerUtilityContent = () => {
                 placeholder="0"
                 className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
               />
-            </Flex>
-            <Flex
-              direction="column"
-              gap="1"
-              style={{ flex: '1 1 0', minWidth: 0 }}
-            >
+            </div>
+            <div className="flex flex-col gap-1" style={{ flex: '1 1 0', minWidth: 0 }}>
               <Text size="1" color="gray">
                 Seconds
               </Text>
@@ -302,12 +294,8 @@ export const TimerUtilityContent = () => {
                 placeholder="0"
                 className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
               />
-            </Flex>
-            <Flex
-              direction="column"
-              gap="1"
-              style={{ flex: '1 1 0', minWidth: 0 }}
-            >
+            </div>
+            <div className="flex flex-col gap-1" style={{ flex: '1 1 0', minWidth: 0 }}>
               <Text size="1" color="gray">
                 Repeat
               </Text>
@@ -319,12 +307,12 @@ export const TimerUtilityContent = () => {
                 placeholder="1"
                 className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
               />
-            </Flex>
-          </Flex>
+            </div>
+          </div>
           <Button variant="secondary" onClick={handleStart}>
             Start Timer
           </Button>
-        </Flex>
+        </div>
       )}
     </>
   );

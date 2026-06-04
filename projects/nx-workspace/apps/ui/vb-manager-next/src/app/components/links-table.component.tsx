@@ -1,6 +1,6 @@
 'use client';
 
-import { Table, Flex, Text } from '@radix-ui/themes';
+import { Table, Text } from '@radix-ui/themes';
 
 const FIELD_ICONS: Record<
   string,
@@ -145,12 +145,12 @@ export const LinksTable = () => {
             </Table.ColumnHeaderCell>
             {Object.values(FIELD_ICONS).map(({ label, icon }) => (
               <Table.ColumnHeaderCell key={label}>
-                <Flex align="center" gap="1">
+                <div className="flex items-center gap-1">
                   <span className="text-base">{icon}</span>
                   <Text size="2" weight="bold">
                     {label}
                   </Text>
-                </Flex>
+                </div>
               </Table.ColumnHeaderCell>
             ))}
           </Table.Row>

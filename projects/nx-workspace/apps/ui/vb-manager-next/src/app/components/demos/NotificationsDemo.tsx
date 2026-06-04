@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Heading, Text } from '@radix-ui/themes';
+import { Heading, Text } from '@radix-ui/themes';
 import { Button, toast } from '@vigilant-broccoli/react-lib';
 import {
   DEPLOY_STATUS,
@@ -90,10 +90,10 @@ export function NotificationsDemo() {
     toast(HELLO_WORLD_LABEL, { duration: TOAST_DURATION_MS });
 
   return (
-    <Flex direction="column" gap="4">
-      <Flex direction="column" gap="2">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         <Heading size="2">{GENERAL_HEADING}</Heading>
-        <Flex gap="2" wrap="wrap">
+        <div className="flex gap-2 flex-wrap">
           <Button variant="secondary" onClick={triggerHello}>
             {HELLO_WORLD_LABEL}
           </Button>
@@ -104,14 +104,14 @@ export function NotificationsDemo() {
           >
             {BROWSER_NOTIFICATIONS_LABEL}: {permission}
           </Button>
-        </Flex>
-      </Flex>
-      <Flex direction="column" gap="2">
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
         <Heading size="2">{GITHUB_DEPLOY_HEADING}</Heading>
         <Text size="2" color="gray">
           {GITHUB_DEPLOY_DESCRIPTION}
         </Text>
-        <Flex gap="2" wrap="wrap">
+        <div className="flex gap-2 flex-wrap">
           <Button variant="secondary" onClick={triggerStarted}>
             {STARTED_LABEL}
           </Button>
@@ -121,8 +121,8 @@ export function NotificationsDemo() {
           <Button variant="destructive" onClick={triggerFailure}>
             {FAILURE_LABEL}
           </Button>
-        </Flex>
-      </Flex>
-    </Flex>
+        </div>
+      </div>
+    </div>
   );
 }

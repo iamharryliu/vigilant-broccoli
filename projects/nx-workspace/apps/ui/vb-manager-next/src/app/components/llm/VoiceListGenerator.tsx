@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { AUDIO_MIME_TYPE, AUDIO_FILENAME } from '../../constants/audio';
 import { SpeechToTextButton } from './SpeechToTextButton';
@@ -63,18 +63,18 @@ export const VoiceListGenerator = () => {
     });
 
   return (
-    <Flex direction="column" gap="4">
+    <div className="flex flex-col gap-4">
       <Text size="2" color="gray">
         Press record, describe what list you want, then stop to generate.
       </Text>
 
-      <Flex gap="3" align="center">
+      <div className="flex gap-3 items-center">
         <SpeechToTextButton
           isRecording={isRecording}
           onToggle={startRecording}
           onStopComplete={stopAndProcess}
         />
-      </Flex>
+      </div>
 
       {error && (
         <Text size="2" color="red">
@@ -83,15 +83,15 @@ export const VoiceListGenerator = () => {
       )}
 
       {items.length > 0 && (
-        <Flex direction="column" gap="2">
+        <div className="flex flex-col gap-2">
           <Text size="3" weight="medium">
             Result
           </Text>
           <Text size="2" className="font-mono whitespace-pre-wrap">
             {JSON.stringify(items, null, 2)}
           </Text>
-        </Flex>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };

@@ -1,4 +1,4 @@
-import { AlertDialog, Flex } from '@radix-ui/themes';
+import { AlertDialog } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { ReactNode } from 'react';
 
@@ -28,7 +28,7 @@ export const ConfirmDeleteDialog = ({
     <AlertDialog.Content maxWidth="400px">
       <AlertDialog.Title>{title}</AlertDialog.Title>
       <AlertDialog.Description>{description}</AlertDialog.Description>
-      <Flex gap="3" mt="4" justify="end">
+      <div className="flex gap-3 mt-4 justify-end">
         <AlertDialog.Cancel>
           <Button variant="secondary">
             Cancel
@@ -43,7 +43,7 @@ export const ConfirmDeleteDialog = ({
             {confirmLabel}
           </Button>
         </AlertDialog.Action>
-      </Flex>
+      </div>
     </AlertDialog.Content>
   </AlertDialog.Root>
 );

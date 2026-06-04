@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Flex, Text, Tooltip } from '@radix-ui/themes';
+import { Card, Text, Tooltip } from '@radix-ui/themes';
 import {
   CopyButton,
   MonospaceText,
@@ -28,16 +28,12 @@ const LocalMachineStats = ({
   downloadSpeed,
   uploadSpeed,
 }: LocalMachineStatsProps) => (
-  <Flex
-    direction="column"
-    gap="2"
-    style={{
+  <div className="flex flex-col gap-2" style={{
       borderTop: '1px solid var(--gray-5)',
       paddingTop: '12px',
       marginTop: '8px',
-    }}
-  >
-    <Flex align="center" gap="2">
+    }}>
+    <div className="flex items-center gap-2">
       <Text size="2" weight="bold">
         Available disk space:
       </Text>
@@ -46,9 +42,9 @@ const LocalMachineStats = ({
       ) : (
         <Text size="2">{diskAvailable}</Text>
       )}
-    </Flex>
-    <Flex align="center" gap="4">
-      <Flex align="center" gap="2">
+    </div>
+    <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <Text size="2" weight="bold">
           Download:
         </Text>
@@ -57,8 +53,8 @@ const LocalMachineStats = ({
         ) : (
           <Text size="2">{downloadSpeed}</Text>
         )}
-      </Flex>
-      <Flex align="center" gap="2">
+      </div>
+      <div className="flex items-center gap-2">
         <Text size="2" weight="bold">
           Upload:
         </Text>
@@ -67,9 +63,9 @@ const LocalMachineStats = ({
         ) : (
           <Text size="2">{uploadSpeed}</Text>
         )}
-      </Flex>
-    </Flex>
-  </Flex>
+      </div>
+    </div>
+  </div>
 );
 
 const SECRET_TYPE_OPTIONS: {
@@ -223,42 +219,42 @@ export const PublicIpComponent = () => {
   if (error) {
     return (
       <Card className="w-full">
-        <Flex direction="column" gap="4" p="4">
+        <div className="flex flex-col gap-4 p-4">
           <Text size="5" weight="bold">
             IP Addresses
           </Text>
           <Text color="red">{error}</Text>
-        </Flex>
+        </div>
       </Card>
     );
   }
 
   return (
     <Card className="w-full">
-      <Flex direction="column" gap="3" p="4">
-        <Flex justify="between" align="center" gap="3">
+      <div className="flex flex-col gap-3 p-4">
+        <div className="flex justify-between items-center gap-3">
           <Text size="5" weight="bold">
             Public IP:
           </Text>
           <MonospaceText text={publicIp} loading={loading} />
-        </Flex>
+        </div>
 
-        <Flex justify="between" align="center" gap="3">
+        <div className="flex justify-between items-center gap-3">
           <Text size="5" weight="bold">
             Local IP:
           </Text>
           <MonospaceText text={localIp} loading={loading} />
-        </Flex>
+        </div>
 
-        <Flex justify="between" align="center" gap="3">
+        <div className="flex justify-between items-center gap-3">
           <Text size="5" weight="bold">
             Public SSH Key:
           </Text>
           <MonospaceText text={sshKey} loading={loading} disabled={!sshKey} />
-        </Flex>
+        </div>
 
-        <Flex justify="between" align="center" gap="3">
-          <Flex align="center" gap="2">
+        <div className="flex justify-between items-center gap-3">
+          <div className="flex items-center gap-2">
             <Text size="5" weight="bold">
               Secret Gen:
             </Text>
@@ -283,7 +279,7 @@ export const PublicIpComponent = () => {
                 style={{ cursor: 'help', color: 'var(--gray-10)' }}
               />
             </Tooltip>
-          </Flex>
+          </div>
           <CopyButton
             disabled={loading}
             text={async () => {
@@ -294,7 +290,7 @@ export const PublicIpComponent = () => {
               return data.success ? data.secret : '';
             }}
           />
-        </Flex>
+        </div>
 
         <LocalMachineStats
           diskLoading={diskLoading}
@@ -303,7 +299,7 @@ export const PublicIpComponent = () => {
           downloadSpeed={downloadSpeed}
           uploadSpeed={uploadSpeed}
         />
-      </Flex>
+      </div>
     </Card>
   );
 };

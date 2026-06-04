@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Badge, Flex, Text, TextField } from '@radix-ui/themes';
+import { Badge, Text, TextField } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
@@ -79,13 +79,13 @@ const ImageListItem = ({ item }: { item: ImageItemFormWithUrl }) => (
     <Text size="1" color="gray" as="p">
       {item.description}
     </Text>
-    <Flex wrap="wrap" gap="1" mt="1">
+    <div className="flex flex-wrap gap-1 mt-1">
       {item.tags.map(tag => (
         <Badge key={tag} variant="soft" size="1">
           {tag}
         </Badge>
       ))}
-    </Flex>
+    </div>
   </div>
 );
 
@@ -127,7 +127,7 @@ const ImageItemFormComponent = ({
   };
 
   return (
-    <Flex direction="column" gap="3" mt="3">
+    <div className="flex flex-col gap-3 mt-3">
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
           Title
@@ -152,7 +152,7 @@ const ImageItemFormComponent = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Tags
         </Text>
-        <Flex gap="2">
+        <div className="flex gap-2">
           <TextField.Root
             placeholder="Add tag..."
             value={tagInput}
@@ -166,8 +166,8 @@ const ImageItemFormComponent = ({
             className="flex-1"
           />
           <Button onClick={async () => addTag()}>Add</Button>
-        </Flex>
-        <Flex gap="2" mt="2" wrap="wrap">
+        </div>
+        <div className="flex gap-2 mt-2 flex-wrap">
           {tags.map(tag => (
             <Badge
               key={tag}
@@ -179,7 +179,7 @@ const ImageItemFormComponent = ({
               {tag} ✕
             </Badge>
           ))}
-        </Flex>
+        </div>
       </div>
       {!isUpdate && (
         <>
@@ -200,7 +200,7 @@ const ImageItemFormComponent = ({
         </>
       )}
       <Button onClick={handleSubmit}>{isUpdate ? 'Save' : 'Add Item'}</Button>
-    </Flex>
+    </div>
   );
 };
 

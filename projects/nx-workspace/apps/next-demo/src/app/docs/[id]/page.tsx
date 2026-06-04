@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import { useAuth } from '../../providers/auth-provider';
 import { HomeDoc } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
@@ -42,10 +42,10 @@ export default function DocDetailPage() {
         ← Back
       </Link>
 
-      <Flex align="center" gap="3" wrap="wrap">
+      <div className="flex items-center gap-3 flex-wrap">
         <Text size="6" weight="bold">{doc.name}</Text>
         <Badge variant="soft" size="2">{doc.category}</Badge>
-      </Flex>
+      </div>
 
       {doc.description && (
         <Text size="3" color="gray" as="p">{doc.description}</Text>

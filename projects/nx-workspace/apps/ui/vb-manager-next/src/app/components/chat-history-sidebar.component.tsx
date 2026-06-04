@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { Plus } from 'lucide-react';
 import {
   Button,
@@ -83,7 +83,7 @@ const ChatRow = ({
       if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
     }}
   >
-    <Flex direction="column" style={{ flex: 1, minWidth: 0 }}>
+    <div className="flex flex-col" style={{ flex: 1, minWidth: 0 }}>
       <Text
         size="2"
         weight={isActive ? 'medium' : 'regular'}
@@ -98,7 +98,7 @@ const ChatRow = ({
       <Text size="1" color="gray">
         {formatTimestamp(chat.updatedAt)}
       </Text>
-    </Flex>
+    </div>
     <DeleteIconButton
       aria-label={DELETE_CHAT_LABEL}
       onClick={e => {
@@ -116,16 +116,13 @@ export const ChatHistorySidebar = ({
   onNewChat,
   onDeleteChat,
 }: ChatHistorySidebarProps) => (
-  <Flex
-    direction="column"
-    style={{
+  <div className="flex flex-col" style={{
       width: '16rem',
       flexShrink: 0,
       height: '100%',
       borderRight: '1px solid var(--gray-5)',
       backgroundColor: 'var(--color-panel-solid)',
-    }}
-  >
+    }}>
     <div style={{ padding: '1rem 0.75rem 0.5rem 0.75rem' }}>
       <Button
         onClick={onNewChat}
@@ -137,11 +134,7 @@ export const ChatHistorySidebar = ({
       </Button>
     </div>
     <ScrollArea className="flex-1 min-h-0">
-      <Flex
-        direction="column"
-        gap="1"
-        style={{ padding: '0.25rem 0.5rem 0.75rem 0.5rem' }}
-      >
+      <div className="flex flex-col gap-1" style={{ padding: '0.25rem 0.5rem 0.75rem 0.5rem' }}>
         {chats.length === 0 ? (
           <Text size="1" color="gray" style={{ padding: '0.5rem 0.625rem' }}>
             {EMPTY_HISTORY_LABEL}
@@ -157,7 +150,7 @@ export const ChatHistorySidebar = ({
             />
           ))
         )}
-      </Flex>
+      </div>
     </ScrollArea>
-  </Flex>
+  </div>
 );

@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text, Switch } from '@radix-ui/themes';
+import { Text, Switch } from '@radix-ui/themes';
 import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 
@@ -70,7 +70,7 @@ export const EventDraftCard = ({
   };
 
   return (
-    <Flex direction="column" gap="2" style={{ marginTop: '0.5rem' }}>
+    <div className="flex flex-col gap-2" style={{ marginTop: '0.5rem' }}>
       <Text size="2" weight="medium">
         Calendar event
       </Text>
@@ -84,7 +84,7 @@ export const EventDraftCard = ({
         disabled={isReadOnly}
       />
 
-      <Flex gap="2" align="center">
+      <div className="flex gap-2 items-center">
         <Text size="1" color="gray" style={{ minWidth: '3rem' }}>
           Start
         </Text>
@@ -100,9 +100,9 @@ export const EventDraftCard = ({
           disabled={isReadOnly}
           style={{ flex: 1, padding: '0.25rem 0.5rem' }}
         />
-      </Flex>
+      </div>
 
-      <Flex gap="2" align="center">
+      <div className="flex gap-2 items-center">
         <Text size="1" color="gray" style={{ minWidth: '3rem' }}>
           End
         </Text>
@@ -118,9 +118,9 @@ export const EventDraftCard = ({
           disabled={isReadOnly}
           style={{ flex: 1, padding: '0.25rem 0.5rem' }}
         />
-      </Flex>
+      </div>
 
-      <Flex gap="2" align="center">
+      <div className="flex gap-2 items-center">
         <Text size="1" color="gray">
           All day
         </Text>
@@ -129,7 +129,7 @@ export const EventDraftCard = ({
           onCheckedChange={handleAllDayChange}
           disabled={isReadOnly}
         />
-      </Flex>
+      </div>
 
       <Input
         placeholder="Location"
@@ -167,7 +167,7 @@ export const EventDraftCard = ({
       )}
 
       {status !== 'created' && (
-        <Flex gap="2">
+        <div className="flex gap-2">
           <Button
             onClick={() => onCreate(editable)}
             disabled={
@@ -179,8 +179,8 @@ export const EventDraftCard = ({
           <Button variant="secondary" onClick={onCancel} disabled={isReadOnly}>
             Cancel
           </Button>
-        </Flex>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };

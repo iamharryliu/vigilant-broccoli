@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useRef } from 'react';
 import { CopyPastable, Select, Textarea } from '@vigilant-broccoli/react-lib';
@@ -160,12 +160,12 @@ export const LLMSimplePromptTester = () => {
   const outputJson = testResults ? JSON.stringify(testResults, null, 2) : '';
 
   return (
-    <Flex direction="column" gap="4">
+    <div className="flex flex-col gap-4">
       <Text size="5" weight="bold">
         LLM Prompt Tester
       </Text>
 
-      <Box>
+      <div>
         <Text size="2" weight="medium" mb="2" className="block">
           System Prompt
         </Text>
@@ -176,10 +176,10 @@ export const LLMSimplePromptTester = () => {
           rows={3}
           className="w-full"
         />
-      </Box>
+      </div>
 
-      <Flex gap="3">
-        <Box className="flex-1">
+      <div className="flex gap-3">
+        <div className="flex-1">
           <Text size="2" weight="medium" mb="2" className="block">
             Expected Output Type
           </Text>
@@ -189,9 +189,9 @@ export const LLMSimplePromptTester = () => {
             options={OUTPUT_TYPE_OPTIONS}
             displayMapper={OUTPUT_TYPE_LABELS}
           />
-        </Box>
+        </div>
 
-        <Box className="flex-1">
+        <div className="flex-1">
           <Text size="2" weight="medium" mb="2" className="block">
             Number of Outputs
           </Text>
@@ -200,10 +200,10 @@ export const LLMSimplePromptTester = () => {
             setValue={setNumOutputs}
             options={NUM_OUTPUT_OPTIONS}
           />
-        </Box>
-      </Flex>
+        </div>
+      </div>
 
-      <Box>
+      <div>
         <Text size="2" weight="medium" mb="2" className="block">
           User Prompt
         </Text>
@@ -214,9 +214,9 @@ export const LLMSimplePromptTester = () => {
           rows={4}
           className="w-full"
         />
-      </Box>
+      </div>
 
-      <Box>
+      <div>
         <Text size="2" weight="medium" mb="2" className="block">
           Images (Optional)
         </Text>
@@ -232,9 +232,9 @@ export const LLMSimplePromptTester = () => {
           Upload Images
         </Button>
         {uploadedImages.length > 0 && (
-          <Flex gap="2" wrap="wrap" mt="3">
+          <div className="flex gap-2 flex-wrap mt-3">
             {uploadedImages.map((img, idx) => (
-              <Box key={idx} className="relative group">
+              <div className="relative group" key={idx}>
                 <div className="relative w-24 h-24 border rounded overflow-hidden">
                   <Image
                     src={`data:${img.mimeType};base64,${img.base64}`}
@@ -251,17 +251,17 @@ export const LLMSimplePromptTester = () => {
                 >
                   ✕
                 </Badge>
-              </Box>
+              </div>
             ))}
-          </Flex>
+          </div>
         )}
-      </Box>
+      </div>
 
-      <Box>
+      <div>
         <Text size="2" weight="medium" mb="2" className="block">
           Selected Models ({selectedModels.length})
         </Text>
-        <Flex gap="2" wrap="wrap" mb="3">
+        <div className="flex gap-2 flex-wrap mb-3">
           {selectedModels.length === 0 ? (
             <Text size="2" color="gray">
               Click models below to add them
@@ -279,14 +279,14 @@ export const LLMSimplePromptTester = () => {
               </Badge>
             ))
           )}
-        </Flex>
+        </div>
 
         {availableModels.length > 0 && (
-          <Box>
+          <div>
             <Text size="2" weight="medium" mb="2" className="block">
               Available Models
             </Text>
-            <Flex gap="2" wrap="wrap">
+            <div className="flex gap-2 flex-wrap">
               {availableModels.map(model => (
                 <Badge
                   key={model}
@@ -298,102 +298,99 @@ export const LLMSimplePromptTester = () => {
                   {model} +
                 </Badge>
               ))}
-            </Flex>
-          </Box>
+            </div>
+          </div>
         )}
-      </Box>
+      </div>
 
       <Button onClick={handleSubmit} loading={isLoading} size="lg">
         Test Prompts
       </Button>
 
       {testResults && (
-        <Box>
-          <Flex justify="between" align="center" mb="4">
+        <div>
+          <div className="flex justify-between items-center mb-4">
             <Text size="4" weight="bold">
               Results
             </Text>
-          </Flex>
+          </div>
 
-          <Flex direction="column" gap="6">
+          <div className="flex flex-col gap-6">
             {Object.entries(testResults.results).map(([model, outputs]) => {
               const isImageOutput = modelSupportsImageOutput(model as LLMModel);
 
               return (
-                <Box key={model} className="border rounded-lg p-4">
+                <div className="border rounded-lg p-4" key={model}>
                   <Text size="3" weight="bold" mb="3" className="block">
                     {model}
                   </Text>
 
                   {testResults.systemPrompt && (
-                    <Box mb="3">
+                    <div className="mb-3">
                       <Text size="2" weight="medium" className="block mb-1">
                         System Prompt:
                       </Text>
                       <Text size="2" color="gray" className="block">
                         {testResults.systemPrompt}
                       </Text>
-                    </Box>
+                    </div>
                   )}
 
-                  <Box mb="3">
+                  <div className="mb-3">
                     <Text size="2" weight="medium" className="block mb-1">
                       User Prompt:
                     </Text>
                     <Text size="2" color="gray" className="block">
                       {testResults.userPrompt}
                     </Text>
-                  </Box>
+                  </div>
 
                   {isImageOutput ? (
-                    <Box>
+                    <div>
                       <Text size="2" weight="medium" className="block mb-2">
                         Generated Images:
                       </Text>
-                      <Flex gap="3" wrap="wrap">
+                      <div className="flex gap-3 flex-wrap">
                         {outputs.map((imageUrl, index) => (
-                          <Box
-                            key={index}
-                            className="border rounded overflow-hidden"
-                          >
+                          <div className="border rounded overflow-hidden" key={index}>
                             <img
                               src={imageUrl}
                               alt={`${model} output ${index + 1}`}
                               className="w-64 h-64 object-contain"
                             />
-                          </Box>
+                          </div>
                         ))}
-                      </Flex>
-                    </Box>
+                      </div>
+                    </div>
                   ) : (
-                    <Box>
+                    <div>
                       <Text size="2" weight="medium" className="block mb-2">
                         Output{outputs.length > 1 ? 's' : ''}:
                       </Text>
-                      <Flex direction="column" gap="2">
+                      <div className="flex flex-col gap-2">
                         {outputs.map((output, index) => (
-                          <Box key={index} className="p-3 rounded">
+                          <div className="p-3 rounded" key={index}>
                             <Text size="2" className="whitespace-pre-wrap">
                               {output}
                             </Text>
-                          </Box>
+                          </div>
                         ))}
-                      </Flex>
-                    </Box>
+                      </div>
+                    </div>
                   )}
-                </Box>
+                </div>
               );
             })}
-          </Flex>
+          </div>
 
-          <Box mt="4">
+          <div className="mt-4">
             <Text size="2" weight="medium" mb="2" className="block">
               Raw JSON Output
             </Text>
             <CopyPastable text={outputJson} />
-          </Box>
-        </Box>
+          </div>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };

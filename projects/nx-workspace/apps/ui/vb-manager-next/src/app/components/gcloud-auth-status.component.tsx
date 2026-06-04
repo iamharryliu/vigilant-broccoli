@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text, Badge } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
   Button,
@@ -116,12 +116,7 @@ const AccountItem = ({
   switchingProject,
   onSwitchAccount,
 }: AccountItemProps) => (
-  <Flex
-    align="center"
-    gap="2"
-    wrap="wrap"
-    className={`p-2 rounded border ${getAccountBorderStyle(isActive, needsAuth)}`}
-  >
+  <div className={`flex items-center gap-2 flex-wrap ${`p-2 rounded border ${getAccountBorderStyle(isActive, needsAuth)}`}`}>
     <AccountBadge isActive={isActive} needsAuth={needsAuth} />
     <Text size="2" weight={isActive ? 'bold' : 'regular'} className="flex-1">
       {account.account}
@@ -137,7 +132,7 @@ const AccountItem = ({
         {switchingProject === account.account ? 'Switching...' : 'Select'}
       </Button>
     )}
-  </Flex>
+  </div>
 );
 
 const toProjectItem = (
@@ -327,13 +322,13 @@ export const GcloudAuthStatusComponent = () => {
   return (
     <CardContainer title="GCP Management" headerLink={GCP_CONSOLE_LINK}>
       {authStatus?.activeAccount ? (
-        <Flex direction="column" gap="3">
+        <div className="flex flex-col gap-3">
           {sortedAccounts.length > 0 && (
-            <Flex direction="column" gap="2">
+            <div className="flex flex-col gap-2">
               <Text size="1" weight="bold">
                 Accounts ({sortedAccounts.length}):
               </Text>
-              <Flex direction="column" gap="1">
+              <div className="flex flex-col gap-1">
                 {sortedAccounts.map((acc, idx) => (
                   <AccountItem
                     key={idx}
@@ -348,12 +343,12 @@ export const GcloudAuthStatusComponent = () => {
                     onSwitchAccount={switchAccount}
                   />
                 ))}
-              </Flex>
-            </Flex>
+              </div>
+            </div>
           )}
 
           {sortedProjects.length > 0 && (
-            <Flex direction="column" gap="2">
+            <div className="flex flex-col gap-2">
               <Text size="1" weight="bold">
                 All Projects ({sortedProjects.length}):
               </Text>
@@ -369,18 +364,18 @@ export const GcloudAuthStatusComponent = () => {
                   )}
                 />
               </div>
-            </Flex>
+            </div>
           )}
-        </Flex>
+        </div>
       ) : (
-        <Flex align="center" gap="2">
+        <div className="flex items-center gap-2">
           <Badge color="red" size="2">
             Not Authenticated
           </Badge>
           <Text size="2" className="text-gray-500">
             No active gcloud account
           </Text>
-        </Flex>
+        </div>
       )}
     </CardContainer>
   );

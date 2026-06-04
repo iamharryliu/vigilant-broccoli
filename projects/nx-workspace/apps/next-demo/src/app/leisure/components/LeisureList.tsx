@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Badge, Dialog, Flex, Text } from '@radix-ui/themes';
+import { Badge, Dialog, Text } from '@radix-ui/themes';
 import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, LeisureActivity } from '../../../lib/types';
 import {
@@ -86,7 +86,7 @@ export function LeisureList({
 
   return (
     <div className="flex flex-col gap-3">
-      <Flex justify="between" align="center">
+      <div className="flex justify-between items-center">
         <Text size="4" weight="bold">
           Activity List
         </Text>
@@ -96,7 +96,7 @@ export function LeisureList({
         >
           + Add
         </Button>
-      </Flex>
+      </div>
 
       {!hideDragHint && (
         <Text size="1" color="gray">

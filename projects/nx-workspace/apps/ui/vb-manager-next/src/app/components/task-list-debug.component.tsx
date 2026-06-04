@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Flex, Text, Table, Code } from '@radix-ui/themes';
+import { Card, Text, Table, Code } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -60,13 +60,13 @@ export const TaskListDebugComponent = () => {
 
   return (
     <Card className="w-full">
-      <Flex direction="column" gap="3" p="4">
-        <Flex justify="between" align="center">
+      <div className="flex flex-col gap-3 p-4">
+        <div className="flex justify-between items-center">
           <Text size="3" weight="medium" color="gray">Task Lists Info</Text>
           <Button onClick={handleToggle} size="sm" variant="secondary">
             {isExpanded ? 'Hide' : 'Show'} Task Lists
           </Button>
-        </Flex>
+        </div>
 
         {isExpanded && (
           <>
@@ -113,7 +113,7 @@ export const TaskListDebugComponent = () => {
             )}
           </>
         )}
-      </Flex>
+      </div>
     </Card>
   );
 };

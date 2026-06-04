@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import {
   CRUDItemList,
@@ -56,7 +56,7 @@ const MemberFormComponent = ({
   };
 
   return (
-    <Flex direction="column" gap="3" mt="3">
+    <div className="flex flex-col gap-3 mt-3">
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
           Email
@@ -90,14 +90,14 @@ const MemberFormComponent = ({
           Send Invite
         </Button>
       )}
-    </Flex>
+    </div>
   );
 };
 
 const MemberListItem = ({ item }: { item: HomeMember }) => {
   const isItemOwner = item.role === HOME_ROLE.OWNER;
   return (
-    <Flex align="center" gap="2" width="100%">
+    <div className="flex items-center gap-2 w-full">
       <UserAvatar name={item.email} variant={USER_AVATAR_VARIANT.INITIALS} />
       <Text size="2" className="flex-1 min-w-0 truncate">
         {item.email}
@@ -110,7 +110,7 @@ const MemberListItem = ({ item }: { item: HomeMember }) => {
       <Badge variant="soft" color={isItemOwner ? 'blue' : 'gray'} size="1">
         {ROLE_LABEL[item.role] ?? item.role}
       </Badge>
-    </Flex>
+    </div>
   );
 };
 

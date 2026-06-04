@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
@@ -112,7 +112,7 @@ export const WranglerPagesComponent = () => {
         />
       ),
       children: (
-        <Flex direction="column" gap="2">
+        <div className="flex flex-col gap-2">
           <ButtonList
             buttons={[
               {
@@ -149,7 +149,7 @@ export const WranglerPagesComponent = () => {
               isExternal: true,
             }))}
           />
-        </Flex>
+        </div>
       ),
     };
   };

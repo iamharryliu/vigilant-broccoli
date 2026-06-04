@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Flex, Text } from '@radix-ui/themes';
+import { Badge, Text } from '@radix-ui/themes';
 import {
   ButtonList,
   CardContainer,
@@ -71,7 +71,7 @@ const toItem = (site: GithubPagesSite): StatusCardListItem => ({
   id: site.fullName,
   label: site.fullName,
   badges: (
-    <Flex gap="1">
+    <div className="flex gap-1">
       <Badge color={STATUS_COLOR[site.status ?? ''] ?? 'gray'} size="1">
         {site.status ?? LABEL.UNKNOWN_STATUS}
       </Badge>
@@ -80,10 +80,10 @@ const toItem = (site: GithubPagesSite): StatusCardListItem => ({
           {site.cname}
         </Badge>
       )}
-    </Flex>
+    </div>
   ),
   children: (
-    <Flex direction="column" gap="2">
+    <div className="flex flex-col gap-2">
       <ButtonList
         buttons={[
           {
@@ -103,7 +103,7 @@ const toItem = (site: GithubPagesSite): StatusCardListItem => ({
           },
         ]}
       />
-    </Flex>
+    </div>
   ),
 });
 
