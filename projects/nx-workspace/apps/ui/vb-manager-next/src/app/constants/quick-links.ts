@@ -15,6 +15,7 @@ import {
   OPENWEATHER_LINK,
   ROBOFLOW_LINK,
   STRIPE_LINK,
+  TAILSCALE_LINK,
   TERRAFORM_LINK,
   TWILIO_LINK,
   UTILITY_URL,
@@ -746,6 +747,30 @@ const DEV_LINKS = [
   {
     label: 'Docker Hub Repositories',
     target: 'https://hub.docker.com/repositories',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: TAILSCALE_LINK.ADMIN.NAME,
+    target: TAILSCALE_LINK.ADMIN.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: TAILSCALE_LINK.KEYS.NAME,
+    target: TAILSCALE_LINK.KEYS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: TAILSCALE_LINK.DNS.NAME,
+    target: TAILSCALE_LINK.DNS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: TAILSCALE_LINK.ACLS.NAME,
+    target: TAILSCALE_LINK.ACLS.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },

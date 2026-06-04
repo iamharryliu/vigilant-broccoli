@@ -398,6 +398,25 @@ export const TERRAFORM_LINK = {
   },
 } as const;
 
+export const TAILSCALE_LINK = {
+  ADMIN: {
+    NAME: 'Tailscale Admin',
+    URL: 'https://login.tailscale.com/admin/machines',
+  },
+  KEYS: {
+    NAME: 'Tailscale Auth Keys',
+    URL: 'https://login.tailscale.com/admin/settings/keys',
+  },
+  DNS: {
+    NAME: 'Tailscale DNS',
+    URL: 'https://login.tailscale.com/admin/dns',
+  },
+  ACLS: {
+    NAME: 'Tailscale ACLs',
+    URL: 'https://login.tailscale.com/admin/acls',
+  },
+} as const;
+
 export const ROBOFLOW_LINK = {
   DASHBOARD: {
     NAME: 'Roboflow Dashboard',
