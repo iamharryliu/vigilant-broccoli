@@ -1,7 +1,7 @@
 'use client';
 
-import { Box, Flex, Text, TextArea } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Box, Flex, Text } from '@radix-ui/themes';
+import { Button, Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import { useTextToSpeech } from '../../hooks/useTextToSpeech';
@@ -21,7 +21,7 @@ export const TextToSpeech = () => {
       </Text>
 
       <Box>
-        <TextArea
+        <Textarea
           value={text}
           onChange={e => setText(e.target.value)}
           placeholder="Type text, then click Speak..."

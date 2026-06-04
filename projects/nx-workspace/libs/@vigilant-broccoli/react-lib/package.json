@@ -6,6 +6,8 @@
     "@radix-ui/react-avatar": "*",
     "@radix-ui/react-dialog": "*",
     "@radix-ui/react-progress": "*",
+    "@radix-ui/react-scroll-area": "*",
+    "@radix-ui/react-select": "*",
     "@radix-ui/react-tabs": "*",
     "@radix-ui/themes": "*",
     "@vigilant-broccoli/common-js": "workspace:*",

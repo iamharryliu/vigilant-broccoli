@@ -1,7 +1,7 @@
 'use client';
 
-import { Flex, Text, TextField, Select } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Flex, Text, Select } from '@radix-ui/themes';
+import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -121,12 +121,12 @@ export const TaskListDraftCard = ({
       <Flex direction="column" gap="1">
         {items.map((item, index) => (
           <Flex key={index} gap="2" align="center">
-            <TextField.Root
+            <Input
               placeholder="Task title"
               value={item.title}
               onChange={e => handleTitleChange(index, e.target.value)}
               disabled={isReadOnly}
-              style={{ flex: 1 }}
+              className="flex-1"
             />
             <Button
               variant="secondary"
@@ -167,7 +167,7 @@ export const TaskListDraftCard = ({
           </Select.Content>
         </Select.Root>
         {selectedListId === NEW_LIST_VALUE && (
-          <TextField.Root
+          <Input
             placeholder="New list name"
             value={newListTitle}
             onChange={e => setNewListTitle(e.target.value)}

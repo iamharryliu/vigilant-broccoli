@@ -1,7 +1,7 @@
 'use client';
 
-import { Button, Flex, Heading, Text } from '@radix-ui/themes';
-import { toast } from '@vigilant-broccoli/react-lib';
+import { Flex, Heading, Text } from '@radix-ui/themes';
+import { Button, toast } from '@vigilant-broccoli/react-lib';
 import {
   DEPLOY_STATUS,
   DEPLOY_TOAST_LABEL,
@@ -22,6 +22,9 @@ const GITHUB_DEPLOY_HEADING = 'GitHub Deploy';
 const GITHUB_DEPLOY_DESCRIPTION =
   'Trigger mock deploy notifications matching the format from deploy.yml.';
 const BROWSER_NOTIFICATIONS_LABEL = 'Browser notifications';
+const STARTED_LABEL = 'Started';
+const SUCCESS_LABEL = 'Success';
+const FAILURE_LABEL = 'Failure';
 
 const MOCK_PAYLOAD: DeployPayload = {
   status: DEPLOY_STATUS.STARTED,
@@ -86,24 +89,16 @@ export function NotificationsDemo() {
   const triggerHello = () =>
     toast(HELLO_WORLD_LABEL, { duration: TOAST_DURATION_MS });
 
-  const browserNotificationColor =
-    permission === 'granted'
-      ? 'green'
-      : permission === 'denied'
-        ? 'red'
-        : 'gray';
-
   return (
     <Flex direction="column" gap="4">
       <Flex direction="column" gap="2">
         <Heading size="2">{GENERAL_HEADING}</Heading>
         <Flex gap="2" wrap="wrap">
-          <Button variant="soft" color="gray" onClick={triggerHello}>
+          <Button variant="secondary" onClick={triggerHello}>
             {HELLO_WORLD_LABEL}
           </Button>
           <Button
-            variant="soft"
-            color={browserNotificationColor}
+            variant="secondary"
             onClick={requestPermission}
             disabled={permission === 'granted' || permission === 'denied'}
           >
@@ -117,14 +112,14 @@ export function NotificationsDemo() {
           {GITHUB_DEPLOY_DESCRIPTION}
         </Text>
         <Flex gap="2" wrap="wrap">
-          <Button variant="soft" color="blue" onClick={triggerStarted}>
-            Started
+          <Button variant="secondary" onClick={triggerStarted}>
+            {STARTED_LABEL}
           </Button>
-          <Button variant="soft" color="green" onClick={triggerSuccess}>
-            Success
+          <Button variant="secondary" onClick={triggerSuccess}>
+            {SUCCESS_LABEL}
           </Button>
-          <Button variant="soft" color="red" onClick={triggerFailure}>
-            Failure
+          <Button variant="destructive" onClick={triggerFailure}>
+            {FAILURE_LABEL}
           </Button>
         </Flex>
       </Flex>

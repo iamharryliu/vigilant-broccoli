@@ -1,11 +1,12 @@
 'use client';
 
-import { Text, TextField, Flex } from '@radix-ui/themes';
+import { Text, Flex } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
   ButtonConfig,
   CardContainer,
+  Input,
   moveQuickLinkFocusByDirection,
   WINDOW_OPEN_FEATURES,
   type Direction,
@@ -196,14 +197,13 @@ export function LinkGroupComponent({
           >
             {isGrouped ? <ListBulletIcon /> : <DashboardIcon />}
           </Button>
-          <TextField.Root
+          <Input
             ref={searchInputRef}
             placeholder="Search..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             onKeyDown={handleInputKeyDown}
-            size="1"
-            style={{ width: '150px' }}
+            className="w-[150px]"
           />
         </Flex>
       }

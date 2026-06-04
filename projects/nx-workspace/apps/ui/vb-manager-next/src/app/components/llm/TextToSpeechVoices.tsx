@@ -1,7 +1,7 @@
 'use client';
 
-import { Flex, Text, TextArea } from '@radix-ui/themes';
-import { Button, Select } from '@vigilant-broccoli/react-lib';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import {
   ELEVENLABS_FREE_VOICE_OPTIONS,
   DEFAULT_VOICE_ID,
@@ -31,7 +31,7 @@ export const TextToSpeechVoices = () => {
 
   return (
     <Flex direction="column" gap="4">
-      <TextArea
+      <Textarea
         value={text}
         onChange={e => setText(e.target.value)}
         placeholder={PLACEHOLDER_TEXT}

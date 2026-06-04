@@ -1,7 +1,6 @@
 'use client';
 
-import { TextField, TextArea } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 
 const API_BASE_URL = '';
@@ -72,7 +71,7 @@ export const EmailMessageForm = ({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm mb-1">From (optional)</label>
-          <TextField.Root
+          <Input
             value={from}
             onChange={e => setFrom(e.target.value)}
             placeholder="sender@example.com"
@@ -80,7 +79,7 @@ export const EmailMessageForm = ({
         </div>
         <div>
           <label className="block text-sm mb-1">To</label>
-          <TextField.Root
+          <Input
             value={to}
             onChange={e => setTo(e.target.value)}
             placeholder="receiver@example.com"
@@ -89,7 +88,7 @@ export const EmailMessageForm = ({
       </div>
       <div>
         <label className="block text-sm mb-1">Subject</label>
-        <TextField.Root
+        <Input
           value={subject}
           onChange={e => setSubject(e.target.value)}
           placeholder="Email subject"
@@ -97,7 +96,7 @@ export const EmailMessageForm = ({
       </div>
       <div>
         <label className="block text-sm mb-1">Text (optional)</label>
-        <TextArea
+        <Textarea
           value={text}
           onChange={e => setText(e.target.value)}
           placeholder="Plain text message"
@@ -106,7 +105,7 @@ export const EmailMessageForm = ({
       </div>
       <div>
         <label className="block text-sm mb-1">HTML (optional)</label>
-        <TextArea
+        <Textarea
           value={html}
           onChange={e => setHtml(e.target.value)}
           placeholder="<p>HTML message</p>"

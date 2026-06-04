@@ -1,23 +1,17 @@
 'use client';
 
-import {
-  Dialog,
-  Flex,
-  Text,
-  Button,
-  TextField,
-  TextArea,
-  ScrollArea,
-  Select,
-  Spinner,
-} from '@radix-ui/themes';
+import { Dialog, Flex, Text, Spinner } from '@radix-ui/themes';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Trash2 } from 'lucide-react';
 import {
+  Button,
   ChatSendButton,
   CloseButton,
   IconButton,
+  ScrollArea,
+  Select,
+  Textarea,
   UserAvatar,
 } from '@vigilant-broccoli/react-lib';
 import { SpeechToTextButton } from './llm/SpeechToTextButton';
@@ -215,19 +209,10 @@ const ImagePreview = ({
       }}
     />
     <Button
-      size="1"
-      variant="solid"
-      color="red"
+      variant="destructive"
+      size="icon"
       onClick={onRemove}
-      style={{
-        position: 'absolute',
-        top: '-8px',
-        right: '-8px',
-        minWidth: '24px',
-        minHeight: '24px',
-        padding: '4px',
-        borderRadius: '50%',
-      }}
+      className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-1"
     >
       <Trash2 size={12} />
     </Button>
@@ -330,12 +315,7 @@ const MessagesArea = ({
         </Text>
       </div>
     )}
-    <ScrollArea
-      ref={scrollRef}
-      style={{
-        height: '100%',
-      }}
-    >
+    <ScrollArea viewportRef={scrollRef} className="h-full">
       <Flex direction="column" gap="3" style={{ padding: '0.5rem 1rem' }}>
         {messages.map((message, index) => {
           const isUser = message.role === 'user';
@@ -410,8 +390,7 @@ const SuggestionsBar = ({
       <Button
         key={command.name}
         onClick={() => onCommandRun(command.name)}
-        variant="soft"
-        size="2"
+        variant="secondary"
       >
         {command.label}
       </Button>
@@ -589,7 +568,7 @@ const InputControls = ({
       isDisabled={isStreaming || isProcessing}
       onToggle={onToggleRecording}
     />
-    <TextArea
+    <Textarea
       ref={textInputRef}
       placeholder={getInputPlaceholder(isRecording, isProcessing)}
       value={input}
@@ -597,22 +576,16 @@ const InputControls = ({
       onKeyDown={onKeyDown}
       disabled={isInputDisabled(isRecording, isProcessing)}
       rows={1}
-      style={{ flex: 1, minHeight: '2.25rem', maxHeight: '12rem' }}
+      className="flex-1 min-h-[2.25rem] max-h-48"
     />
-    <Select.Root
-      value={selectedModel}
-      onValueChange={value => onModelChange(value as LLMModel)}
+    <Select
+      selectedOption={selectedModel}
+      setValue={value => onModelChange(value as LLMModel)}
+      options={modelOptions}
       disabled={isStreaming}
-    >
-      <Select.Trigger style={{ minWidth: '10rem' }} />
-      <Select.Content>
-        {modelOptions.map(model => (
-          <Select.Item key={model} value={model}>
-            {formatModelLabel(model)}
-          </Select.Item>
-        ))}
-      </Select.Content>
-    </Select.Root>
+      triggerClassName="min-w-40"
+      renderItem={formatModelLabel}
+    />
     <ChatSendButton
       isStreaming={isStreaming}
       isDisabled={isSendDisabled(false, input, uploadedImages.length)}

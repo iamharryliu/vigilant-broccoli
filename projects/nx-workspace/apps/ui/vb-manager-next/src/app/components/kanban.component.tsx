@@ -1,7 +1,13 @@
 'use client';
 
-import { Card, Flex, Text, Select, TextField, Dialog } from '@radix-ui/themes';
-import { Button, CloseButton, EllipsisCTA } from '@vigilant-broccoli/react-lib';
+import { Card, Flex, Text, Dialog } from '@radix-ui/themes';
+import {
+  Button,
+  CloseButton,
+  EllipsisCTA,
+  Input,
+  Select,
+} from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
@@ -285,7 +291,7 @@ const SortableBoard = ({
         }`}
       >
         {editingBoardId === board.id ? (
-          <TextField.Root
+          <Input
             value={editingBoardName}
             onChange={e => onEditNameChange(e.target.value)}
             onKeyDown={e => {
@@ -293,7 +299,6 @@ const SortableBoard = ({
               else if (e.key === 'Escape') onCancelEdit();
             }}
             onBlur={onSaveEdit}
-            size="1"
             className="flex-1"
             autoFocus
           />
@@ -899,7 +904,7 @@ export const KanbanComponent = () => {
                             className="py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
                           >
                             {editingListId === list.id ? (
-                              <TextField.Root
+                              <Input
                                 value={editingListName}
                                 onChange={e =>
                                   setEditingListName(e.target.value)
@@ -915,7 +920,6 @@ export const KanbanComponent = () => {
                                 onBlur={() =>
                                   handleRenameList(list.id, editingListName)
                                 }
-                                size="1"
                                 className="flex-1"
                                 autoFocus
                               />
@@ -982,14 +986,13 @@ export const KanbanComponent = () => {
                     <Dialog.Content>
                       <Dialog.Title>Add Board</Dialog.Title>
                       <Flex direction="column" gap="3">
-                        <TextField.Root
+                        <Input
                           placeholder="Board name..."
                           value={newBoardName}
                           onChange={e => setNewBoardName(e.target.value)}
                           onKeyDown={e => {
                             if (e.key === 'Enter') handleAddBoard();
                           }}
-                          size="2"
                           autoFocus
                         />
                         <Flex gap="3" justify="end">
@@ -1107,7 +1110,7 @@ export const KanbanComponent = () => {
                       <Flex direction="column" gap="3">
                         {showCreateList ? (
                           <Flex direction="column" gap="2">
-                            <TextField.Root
+                            <Input
                               placeholder="New list name..."
                               value={newListName}
                               onChange={e => setNewListName(e.target.value)}
@@ -1137,25 +1140,20 @@ export const KanbanComponent = () => {
                           </Flex>
                         ) : (
                           <>
-                            <Select.Root
-                              value={selectedTaskListId}
-                              onValueChange={setSelectedTaskListId}
-                            >
-                              <Select.Trigger
-                                placeholder={
-                                  availableTaskLists.length === 0
-                                    ? 'No task lists available'
-                                    : 'Select task list...'
-                                }
-                              />
-                              <Select.Content>
-                                {availableTaskLists.map(list => (
-                                  <Select.Item key={list.id} value={list.id}>
-                                    {list.title}
-                                  </Select.Item>
-                                ))}
-                              </Select.Content>
-                            </Select.Root>
+                            <Select
+                              selectedOption={availableTaskLists.find(
+                                l => l.id === selectedTaskListId,
+                              )}
+                              setValue={list => setSelectedTaskListId(list.id)}
+                              options={availableTaskLists}
+                              optionIdenfifier="id"
+                              optionDisplayKey="title"
+                              placeholder={
+                                availableTaskLists.length === 0
+                                  ? 'No task lists available'
+                                  : 'Select task list...'
+                              }
+                            />
                             <Button
                               size="sm"
                               variant="ghost"

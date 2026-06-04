@@ -1,6 +1,6 @@
-import { Card, TextArea, Heading, Text } from '@radix-ui/themes';
+import { Card, Heading, Text } from '@radix-ui/themes';
 import { EnvUtils } from '@vigilant-broccoli/common-js';
-import { ConversionForm } from '@vigilant-broccoli/react-lib';
+import { ConversionForm, Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { countWords } from '@vigilant-broccoli/common-js';
 
@@ -137,11 +137,10 @@ const CharacterCounter = () => {
       </Heading>
       <div className="flex space-x-4">
         <div className="w-1/2">
-          <TextArea
+          <Textarea
             value={text}
             onChange={e => setText(e.target.value)}
             placeholder="Enter text.."
-            size="3"
             className="h-full resize-y"
           />
         </div>

@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Dialog, TextField, Text, Flex } from '@radix-ui/themes';
+import { Dialog, Text, Flex } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
   ButtonConfig,
+  Input,
   moveQuickLinkFocusByDirection,
   WINDOW_OPEN_FEATURES,
   type Direction,
@@ -281,14 +282,13 @@ export function SearchDialogComponent({
           <Dialog.Title>Quick Links</Dialog.Title>
 
           <Flex gap="2" align="center" mb="4">
-            <TextField.Root
+            <Input
               ref={searchInputRef}
               placeholder="Search..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              size="2"
-              style={{ flex: 1 }}
+              className="flex-1"
             />
             <Button
               size="icon"

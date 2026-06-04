@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  Card,
-  Flex,
-  Text,
-  Checkbox,
-  TextField,
-  Select,
-} from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Card, Flex, Text, Checkbox } from '@radix-ui/themes';
+import { Button, Input, Select } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import {
@@ -75,6 +68,16 @@ const SORT_MODE = {
 } as const;
 
 type SortMode = (typeof SORT_MODE)[keyof typeof SORT_MODE];
+
+const SORT_MODE_OPTIONS = Object.values(SORT_MODE);
+
+const SORT_MODE_LABELS: Record<SortMode, string> = {
+  [SORT_MODE.DEFAULT]: 'Default',
+  [SORT_MODE.EISENHOWER]: 'Eisenhower Matrix',
+  [SORT_MODE.COMMIT_TYPE]: 'Commit Type',
+  [SORT_MODE.DATE_CREATED_NEWEST]: 'Date Created (Newest)',
+  [SORT_MODE.DATE_CREATED_OLDEST]: 'Date Created (Oldest)',
+};
 
 const STORAGE_KEY_SELECTED_TASK_LIST = 'google-tasks-selected-list-id';
 
@@ -385,7 +388,7 @@ const TaskItemContent = memo(
   }) => (
     <Flex direction="column" gap="1" className="flex-1">
       {isEditing ? (
-        <TextField.Root
+        <Input
           value={editingTitle}
           onChange={e => onEditChange(e.target.value)}
           onKeyDown={e => {
@@ -394,7 +397,6 @@ const TaskItemContent = memo(
           }}
           onBlur={onSaveEdit}
           autoFocus
-          size="2"
         />
       ) : (
         <Text
@@ -552,24 +554,13 @@ const TaskHeader = memo(
             <Text size="2" color="gray">
               Sort:
             </Text>
-            <Select.Root value={sortMode} onValueChange={onSortChange}>
-              <Select.Trigger placeholder="Sort by..." />
-              <Select.Content>
-                <Select.Item value={SORT_MODE.DEFAULT}>Default</Select.Item>
-                <Select.Item value={SORT_MODE.EISENHOWER}>
-                  Eisenhower Matrix
-                </Select.Item>
-                <Select.Item value={SORT_MODE.COMMIT_TYPE}>
-                  Commit Type
-                </Select.Item>
-                <Select.Item value={SORT_MODE.DATE_CREATED_NEWEST}>
-                  Date Created (Newest)
-                </Select.Item>
-                <Select.Item value={SORT_MODE.DATE_CREATED_OLDEST}>
-                  Date Created (Oldest)
-                </Select.Item>
-              </Select.Content>
-            </Select.Root>
+            <Select
+              selectedOption={sortMode}
+              setValue={onSortChange}
+              options={SORT_MODE_OPTIONS}
+              displayMapper={SORT_MODE_LABELS}
+              placeholder="Sort by..."
+            />
           </Flex>
         </Flex>
         {showSelector && taskLists.length > 0 && (
@@ -577,19 +568,14 @@ const TaskHeader = memo(
             <Text size="2" color="gray">
               List:
             </Text>
-            <Select.Root
-              value={selectedTaskListId}
-              onValueChange={onTaskListChange}
-            >
-              <Select.Trigger placeholder="Select task list..." />
-              <Select.Content>
-                {taskLists.map(list => (
-                  <Select.Item key={list.id} value={list.id}>
-                    {list.title}
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Root>
+            <Select
+              selectedOption={taskLists.find(l => l.id === selectedTaskListId)}
+              setValue={list => onTaskListChange(list.id)}
+              options={taskLists}
+              optionIdenfifier="id"
+              optionDisplayKey="title"
+              placeholder="Select task list..."
+            />
           </Flex>
         )}
       </Flex>
@@ -693,7 +679,7 @@ const AddTaskForm = memo(
     return (
       <Flex direction="column" gap="2">
         <Flex gap="2" align="end">
-          <TextField.Root
+          <Input
             placeholder="Add a task, or use * item1 > item2 for multiple..."
             value={newTaskTitle}
             onChange={e => onTitleChange(e.target.value)}

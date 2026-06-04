@@ -1,7 +1,7 @@
-import { Badge, Box, Flex, Text, TextArea, Select as RadixSelect } from '@radix-ui/themes';
+import { Badge, Box, Flex, Text } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { useState, useRef } from 'react';
-import { CopyPastable, Select } from '@vigilant-broccoli/react-lib';
+import { CopyPastable, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import {
   HTTP_HEADERS,
   HTTP_METHOD,
@@ -14,6 +14,14 @@ import Image from 'next/image';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 
 type OutputType = 'text' | 'image';
+
+const OUTPUT_TYPE_OPTIONS: OutputType[] = ['text', 'image'];
+const OUTPUT_TYPE_LABELS: Record<OutputType, string> = {
+  text: 'Text',
+  image: 'Image',
+};
+
+const NUM_OUTPUT_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 type TestResults = {
   userPrompt: string;
@@ -28,7 +36,9 @@ type UploadedImage = {
 };
 
 export const LLMSimplePromptTester = () => {
-  const [userPrompt, setUserPrompt] = useState('Who is the Prime Minister of Canada?');
+  const [userPrompt, setUserPrompt] = useState(
+    'Who is the Prime Minister of Canada?',
+  );
   const [systemPrompt, setSystemPrompt] = useState('');
   const [selectedModels, setSelectedModels] = useState<LLMModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -85,8 +95,8 @@ export const LLMSimplePromptTester = () => {
       if (!file.type.startsWith('image/')) continue;
 
       const reader = new FileReader();
-      const imagePromise = new Promise<UploadedImage>((resolve) => {
-        reader.onload = (e) => {
+      const imagePromise = new Promise<UploadedImage>(resolve => {
+        reader.onload = e => {
           const base64 = e.target?.result as string;
           // Remove the data URL prefix to get just the base64 string
           const base64Data = base64.split(',')[1];
@@ -159,7 +169,7 @@ export const LLMSimplePromptTester = () => {
         <Text size="2" weight="medium" mb="2" className="block">
           System Prompt
         </Text>
-        <TextArea
+        <Textarea
           placeholder="Enter system prompt (optional)..."
           value={systemPrompt}
           onChange={e => setSystemPrompt(e.target.value)}
@@ -173,13 +183,12 @@ export const LLMSimplePromptTester = () => {
           <Text size="2" weight="medium" mb="2" className="block">
             Expected Output Type
           </Text>
-          <RadixSelect.Root value={outputType} onValueChange={(value) => handleOutputTypeChange(value as OutputType)}>
-            <RadixSelect.Trigger />
-            <RadixSelect.Content>
-              <RadixSelect.Item value="text">Text</RadixSelect.Item>
-              <RadixSelect.Item value="image">Image</RadixSelect.Item>
-            </RadixSelect.Content>
-          </RadixSelect.Root>
+          <Select
+            selectedOption={outputType}
+            setValue={handleOutputTypeChange}
+            options={OUTPUT_TYPE_OPTIONS}
+            displayMapper={OUTPUT_TYPE_LABELS}
+          />
         </Box>
 
         <Box className="flex-1">
@@ -189,7 +198,7 @@ export const LLMSimplePromptTester = () => {
           <Select
             selectedOption={numOutputs}
             setValue={setNumOutputs}
-            options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+            options={NUM_OUTPUT_OPTIONS}
           />
         </Box>
       </Flex>
@@ -198,7 +207,7 @@ export const LLMSimplePromptTester = () => {
         <Text size="2" weight="medium" mb="2" className="block">
           User Prompt
         </Text>
-        <TextArea
+        <Textarea
           placeholder="Enter user prompt..."
           value={userPrompt}
           onChange={e => setUserPrompt(e.target.value)}
@@ -219,10 +228,7 @@ export const LLMSimplePromptTester = () => {
           className="hidden"
           onChange={handleFileSelect}
         />
-        <Button
-          variant="outline"
-          onClick={() => fileInputRef.current?.click()}
-        >
+        <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
           Upload Images
         </Button>
         {uploadedImages.length > 0 && (
@@ -346,7 +352,10 @@ export const LLMSimplePromptTester = () => {
                       </Text>
                       <Flex gap="3" wrap="wrap">
                         {outputs.map((imageUrl, index) => (
-                          <Box key={index} className="border rounded overflow-hidden">
+                          <Box
+                            key={index}
+                            className="border rounded overflow-hidden"
+                          >
                             <img
                               src={imageUrl}
                               alt={`${model} output ${index + 1}`}

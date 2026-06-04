@@ -1,8 +1,12 @@
 'use client';
 
-import { Button, Flex, ScrollArea, Text } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import { Plus } from 'lucide-react';
-import { DeleteIconButton } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  DeleteIconButton,
+  ScrollArea,
+} from '@vigilant-broccoli/react-lib';
 import type { Chat } from '../hooks/useChatHistory';
 
 interface ChatHistorySidebarProps {
@@ -125,15 +129,14 @@ export const ChatHistorySidebar = ({
     <div style={{ padding: '1rem 0.75rem 0.5rem 0.75rem' }}>
       <Button
         onClick={onNewChat}
-        variant="soft"
-        size="2"
-        style={{ width: '100%', justifyContent: 'flex-start', gap: '0.5rem' }}
+        variant="secondary"
+        className="w-full justify-start"
       >
         <Plus size={16} />
         {NEW_CHAT_LABEL}
       </Button>
     </div>
-    <ScrollArea style={{ flex: 1, minHeight: 0 }}>
+    <ScrollArea className="flex-1 min-h-0">
       <Flex
         direction="column"
         gap="1"

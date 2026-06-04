@@ -1,7 +1,7 @@
 'use client';
 
-import { Flex, Text, TextField } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Flex, Text } from '@radix-ui/themes';
+import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 
@@ -40,7 +40,10 @@ export const RecipeScraperUtilityContent = () => {
       return;
     }
     setRecipeUrl('');
-    setRecipeMessage({ type: 'success', text: 'Recipe downloaded successfully!' });
+    setRecipeMessage({
+      type: 'success',
+      text: 'Recipe downloaded successfully!',
+    });
     setRecipeLoading(false);
   };
 
@@ -53,14 +56,13 @@ export const RecipeScraperUtilityContent = () => {
   return (
     <>
       <Flex gap="2" align="end">
-        <TextField.Root
+        <Input
           placeholder="Enter recipe URL..."
           value={recipeUrl}
           onChange={e => setRecipeUrl(e.target.value)}
           onKeyDown={handleRecipeKeyDown}
           disabled={recipeLoading}
-          size="2"
-          style={{ flex: 1 }}
+          className="flex-1"
         />
         <Button
           onClick={handleScrapeRecipe}
@@ -71,7 +73,10 @@ export const RecipeScraperUtilityContent = () => {
       </Flex>
 
       {recipeMessage && (
-        <Text size="2" color={recipeMessage.type === 'success' ? 'green' : 'red'}>
+        <Text
+          size="2"
+          color={recipeMessage.type === 'success' ? 'green' : 'red'}
+        >
           {recipeMessage.text}
         </Text>
       )}

@@ -1,7 +1,7 @@
 'use client';
 
-import { Flex, Text, TextField, Switch } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Flex, Text, Switch } from '@radix-ui/themes';
+import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 
 export interface EventDraft {
@@ -75,7 +75,7 @@ export const EventDraftCard = ({
         Calendar event
       </Text>
 
-      <TextField.Root
+      <Input
         placeholder="Title"
         value={editable.summary}
         onChange={e =>
@@ -131,7 +131,7 @@ export const EventDraftCard = ({
         />
       </Flex>
 
-      <TextField.Root
+      <Input
         placeholder="Location"
         value={editable.location}
         onChange={e =>
@@ -140,7 +140,7 @@ export const EventDraftCard = ({
         disabled={isReadOnly}
       />
 
-      <TextField.Root
+      <Input
         placeholder="Description"
         value={editable.description}
         onChange={e =>

@@ -1,7 +1,11 @@
 'use client';
 
-import { Card, Flex, Text, Select, Tooltip } from '@radix-ui/themes';
-import { CopyButton, MonospaceText } from '@vigilant-broccoli/react-lib';
+import { Card, Flex, Text, Tooltip } from '@radix-ui/themes';
+import {
+  CopyButton,
+  MonospaceText,
+  Select,
+} from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Skeleton } from './skeleton.component';
@@ -258,19 +262,16 @@ export const PublicIpComponent = () => {
             <Text size="5" weight="bold">
               Secret Gen:
             </Text>
-            <Select.Root
-              value={secretType}
-              onValueChange={value => setSecretType(value as SecretType)}
-            >
-              <Select.Trigger style={{ width: '100px' }} />
-              <Select.Content>
-                {SECRET_TYPE_OPTIONS.map(option => (
-                  <Select.Item key={option.value} value={option.value}>
-                    {option.label}
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Root>
+            <Select
+              selectedOption={SECRET_TYPE_OPTIONS.find(
+                o => o.value === secretType,
+              )}
+              setValue={opt => setSecretType(opt.value)}
+              options={SECRET_TYPE_OPTIONS}
+              optionIdenfifier="value"
+              optionDisplayKey="label"
+              triggerClassName="w-[100px]"
+            />
             <Tooltip
               content={
                 SECRET_TYPE_OPTIONS.find(o => o.value === secretType)?.tooltip

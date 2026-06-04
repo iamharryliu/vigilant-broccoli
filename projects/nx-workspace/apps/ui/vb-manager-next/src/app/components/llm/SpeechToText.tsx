@@ -1,6 +1,7 @@
 'use client';
 
-import { Box, Flex, Text, TextArea } from '@radix-ui/themes';
+import { Box, Flex, Text } from '@radix-ui/themes';
+import { Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { useSpeechToText } from '../../hooks/useSpeechToText';
 import { SpeechToTextButton } from './SpeechToTextButton';
@@ -56,7 +57,7 @@ export const SpeechToText = ({
       </Flex>
 
       <Box>
-        <TextArea
+        <Textarea
           value={transcript}
           onChange={e => {
             setTranscript(e.target.value);

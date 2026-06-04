@@ -18,7 +18,6 @@ import {
   Grid,
   Dialog,
   Flex,
-  TextField,
 } from '@radix-ui/themes';
 import { AlertCircle, Plus } from 'lucide-react';
 
@@ -33,6 +32,7 @@ import {
   ButtonList,
   CardContainer,
   EllipsisCTA,
+  Input,
   SearchInput,
   StatusCardList,
   StatusCardListItem,
@@ -352,13 +352,12 @@ const AddItemDialog = ({
       </Dialog.Trigger>
       <Dialog.Content style={{ maxWidth: 400 }}>
         <Dialog.Title>{title}</Dialog.Title>
-        <TextField.Root
+        <Input
           placeholder={placeholder}
           value={value}
           onChange={e => setValue(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
-          size="2"
-          mt="3"
+          className="mt-3"
         />
         <Flex gap="2" justify="end" mt="3">
           <Dialog.Close>

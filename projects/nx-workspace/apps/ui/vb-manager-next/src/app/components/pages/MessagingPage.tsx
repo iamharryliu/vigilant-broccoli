@@ -1,7 +1,7 @@
 'use client';
 
-import { Card, Heading, TextField, TextArea } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Card, Heading } from '@radix-ui/themes';
+import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { EmailMessageForm } from '../EmailMessageForm';
 
@@ -58,31 +58,34 @@ const TextMessageForm = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm mb-1">From</label>
-            <TextField.Root
+            <Input
               value={from}
-              onChange={(e) => setFrom(e.target.value)}
+              onChange={e => setFrom(e.target.value)}
               placeholder="+1234567890"
             />
           </div>
           <div>
             <label className="block text-sm mb-1">To</label>
-            <TextField.Root
+            <Input
               value={to}
-              onChange={(e) => setTo(e.target.value)}
+              onChange={e => setTo(e.target.value)}
               placeholder="+1234567890"
             />
           </div>
         </div>
         <div>
           <label className="block text-sm mb-1">Message Body</label>
-          <TextArea
+          <Textarea
             value={body}
-            onChange={(e) => setBody(e.target.value)}
+            onChange={e => setBody(e.target.value)}
             placeholder="Your message"
             rows={3}
           />
         </div>
-        <Button onClick={handleSubmit} disabled={loading || !body || !from || !to}>
+        <Button
+          onClick={handleSubmit}
+          disabled={loading || !body || !from || !to}
+        >
           {loading ? 'Sending...' : 'Send Text Message'}
         </Button>
         {result && (

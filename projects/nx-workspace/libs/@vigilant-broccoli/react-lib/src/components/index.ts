@@ -29,6 +29,7 @@ export * from './MonospaceText';
 export * from './StatusCardList';
 export * from './Tabs';
 export * from './Progress';
+export * from './ScrollArea';
 export * from './Switch';
 export * from './SpeechToTextButton';
 export * from './ChatSendButton';
