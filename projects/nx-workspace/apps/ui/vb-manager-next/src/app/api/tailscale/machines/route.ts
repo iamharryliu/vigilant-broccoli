@@ -1,5 +1,9 @@
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { exec } from 'child_process';
 import { NextResponse } from 'next/server';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 const TAILNET = 'echidna-rohu.ts.net';
 const TAILSCALE_API_BASE = 'https://api.tailscale.com/api/v2';
@@ -8,6 +12,7 @@ const NOT_AVAILABLE = 'N/A';
 const ENV_KEY = 'TAILSCALE_API_KEY';
 const ERR_NOT_CONFIGURED = `${ENV_KEY} not configured`;
 const ERR_FETCH_FAILED = 'Failed to fetch Tailscale machines';
+const TAILSCALE_IP_CMD = 'tailscale ip -4';
 
 interface TailscaleDevice {
   id: string;
@@ -31,12 +36,29 @@ interface TailscaleMachine {
   online: boolean;
   authorized: boolean;
   clientVersion: string;
+  isCurrent: boolean;
 }
 
 const isOnline = (lastSeen: string): boolean =>
   Date.now() - new Date(lastSeen).getTime() < ONLINE_THRESHOLD_MS;
 
-const toMachine = (d: TailscaleDevice): TailscaleMachine => ({
+const getLocalTailscaleIps = async (): Promise<string[]> => {
+  try {
+    const { stdout } = await execAsync(TAILSCALE_IP_CMD);
+    return stdout
+      .trim()
+      .split('\n')
+      .map(s => s.trim())
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+};
+
+const toMachine = (
+  d: TailscaleDevice,
+  localIps: string[],
+): TailscaleMachine => ({
   id: d.id,
   name: d.name.split('.')[0],
   hostname: d.hostname,
@@ -46,6 +68,7 @@ const toMachine = (d: TailscaleDevice): TailscaleMachine => ({
   online: d.online ?? isOnline(d.lastSeen),
   authorized: d.authorized,
   clientVersion: d.clientVersion,
+  isCurrent: (d.addresses ?? []).some(addr => localIps.includes(addr)),
 });
 
 export async function GET() {
@@ -71,12 +94,17 @@ export async function GET() {
       );
     }
 
-    const data = (await response.json()) as { devices: TailscaleDevice[] };
+    const [data, localIps] = await Promise.all([
+      response.json() as Promise<{ devices: TailscaleDevice[] }>,
+      getLocalTailscaleIps(),
+    ]);
     const machines = (data.devices ?? [])
-      .map(toMachine)
+      .map(d => toMachine(d, localIps))
       .sort(
         (a, b) =>
-          Number(b.online) - Number(a.online) || a.name.localeCompare(b.name),
+          Number(b.isCurrent) - Number(a.isCurrent) ||
+          Number(b.online) - Number(a.online) ||
+          a.name.localeCompare(b.name),
       );
 
     return NextResponse.json({ machines });

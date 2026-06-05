@@ -21,6 +21,7 @@ interface TailscaleMachine {
   online: boolean;
   authorized: boolean;
   clientVersion: string;
+  isCurrent: boolean;
 }
 
 const REFRESH_MS = 15000;
@@ -52,6 +53,11 @@ const toItem = (m: TailscaleMachine): StatusCardListItem => ({
       <Badge color="blue" size="1">
         {m.os}
       </Badge>
+      {m.isCurrent && (
+        <Badge color="purple" size="1">
+          This machine
+        </Badge>
+      )}
       {!m.authorized && (
         <Badge color="red" size="1">
           Unauthorized
