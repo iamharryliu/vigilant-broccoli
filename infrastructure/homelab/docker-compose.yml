@@ -1,0 +1,48 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: homelab-caddy
+    ports:
+      - "22100:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy-data:/data
+      - ./caddy-config:/config
+    depends_on:
+      - gitea
+    restart: unless-stopped
+
+  gitea-db:
+    image: postgres:16-alpine
+    container_name: homelab-gitea-db
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=gitea
+      - POSTGRES_DB=gitea
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  gitea:
+    image: gitea/gitea:latest
+    container_name: homelab-gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=postgres
+      - GITEA__database__HOST=gitea-db:5432
+      - GITEA__database__NAME=gitea
+      - GITEA__database__USER=gitea
+      - GITEA__database__PASSWD=gitea
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__SSH_PORT=22122
+      - GITEA__server__DOMAIN=harry-elva11-mbp.echidna-rohu.ts.net
+      - GITEA__server__ROOT_URL=http://harry-elva11-mbp.echidna-rohu.ts.net/gitea/
+      - GITEA__server__SSH_DOMAIN=harry-elva11-mbp.echidna-rohu.ts.net
+    ports:
+      - "22122:22"
+    volumes:
+      - ./gitea-data:/data
+    depends_on:
+      - gitea-db
+    restart: unless-stopped

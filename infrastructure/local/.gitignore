@@ -3,3 +3,4 @@ immich/
 .env
 loki/data/
 grafana/data/
+gitea/data/

@@ -1,0 +1,7 @@
+:80 {
+	handle_path /gitea/* {
+		reverse_proxy gitea:3000
+	}
+
+	redir / /gitea/ 302
+}
