@@ -13,79 +13,78 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
     "paths": {
       "@vigilant-broccoli/vibecheck-lite": [
-        "libs/@vigilant-broccoli/vibecheck-lite/src/index.ts"
+        "./libs/@vigilant-broccoli/vibecheck-lite/src/index.ts"
       ],
       "@vigilant-broccoli/common-browser": [
-        "libs/@vigilant-broccoli/common-browser/src/index.ts"
+        "./libs/@vigilant-broccoli/common-browser/src/index.ts"
       ],
       "@vigilant-broccoli/common-js": [
-        "libs/@vigilant-broccoli/common-js/src/index.ts"
+        "./libs/@vigilant-broccoli/common-js/src/index.ts"
       ],
       "@vigilant-broccoli/common-node": [
-        "libs/@vigilant-broccoli/common-node/src/index.ts"
+        "./libs/@vigilant-broccoli/common-node/src/index.ts"
       ],
       "@vigilant-broccoli/employee-handler": [
-        "libs/@vigilant-broccoli/employee-handler/src/index.ts"
+        "./libs/@vigilant-broccoli/employee-handler/src/index.ts"
       ],
       "@vigilant-broccoli/express": [
-        "libs/@vigilant-broccoli/express/src/index.ts"
+        "./libs/@vigilant-broccoli/express/src/index.ts"
       ],
       "@vigilant-broccoli/google-workspace": [
-        "libs/@vigilant-broccoli/google-workspace/src/index.ts"
+        "./libs/@vigilant-broccoli/google-workspace/src/index.ts"
       ],
       "@vigilant-broccoli/next-lib": [
-        "libs/@vigilant-broccoli/next-lib/src/index.ts"
+        "./libs/@vigilant-broccoli/next-lib/src/index.ts"
       ],
       "@vigilant-broccoli/next-lib/server": [
-        "libs/@vigilant-broccoli/next-lib/src/server.ts"
+        "./libs/@vigilant-broccoli/next-lib/src/server.ts"
       ],
       "@vigilant-broccoli/react-lib": [
-        "libs/@vigilant-broccoli/react-lib/src/index.ts"
+        "./libs/@vigilant-broccoli/react-lib/src/index.ts"
       ],
-      "general-components": ["libs/angular/general-components/src/index.ts"],
+      "general-components": ["./libs/angular/general-components/src/index.ts"],
       "@vigilant-broccoli/personal-common-js": [
-        "libs/@vigilant-broccoli/personal-common-js/src/index.ts"
+        "./libs/@vigilant-broccoli/personal-common-js/src/index.ts"
       ],
       "@vigilant-broccoli/slack-workspace": [
-        "libs/@vigilant-broccoli/slack-workspace/src/index.ts"
+        "./libs/@vigilant-broccoli/slack-workspace/src/index.ts"
       ],
       "@vigilant-broccoli/vercel-workspace": [
-        "/libs/@vigilant-broccoli/vercel-workspace/src/index.ts"
+        "./libs/@vigilant-broccoli/vercel-workspace/src/index.ts"
       ],
       "@vigilant-broccoli/github-workspace": [
-        "libs/@vigilant-broccoli/github-workspace/src/index.ts"
+        "./libs/@vigilant-broccoli/github-workspace/src/index.ts"
       ],
       "@vigilant-broccoli/github-workspace-js": [
-        "libs/@vigilant-broccoli/github-workspace-js/src/index.ts"
+        "./libs/@vigilant-broccoli/github-workspace-js/src/index.ts"
       ],
       "@vigilant-broccoli/links": [
-        "libs/@vigilant-broccoli/links/src/index.ts"
+        "./libs/@vigilant-broccoli/links/src/index.ts"
       ],
       "@vigilant-broccoli/llm-tools": [
-        "libs/@vigilant-broccoli/llm-tools/src/index.ts"
+        "./libs/@vigilant-broccoli/llm-tools/src/index.ts"
       ],
       "@vigilant-broccoli/llm-schemas": [
-        "libs/@vigilant-broccoli/llm-schemas/src/index.ts"
+        "./libs/@vigilant-broccoli/llm-schemas/src/index.ts"
       ],
       "@vigilant-broccoli/react-music-lib": [
-        "libs/@vigilant-broccoli/react-music-lib/src/index.ts"
+        "./libs/@vigilant-broccoli/react-music-lib/src/index.ts"
       ],
       "@vigilant-broccoli/react-sandbox": [
-        "libs/@vigilant-broccoli/react-sandbox/src/index.ts"
+        "./libs/@vigilant-broccoli/react-sandbox/src/index.ts"
       ],
       "@vigilant-broccoli/react-utility": [
-        "libs/@vigilant-broccoli/react-utility/src/index.ts"
+        "./libs/@vigilant-broccoli/react-utility/src/index.ts"
       ],
       "@vigilant-broccoli/office-presence": [
-        "libs/@vigilant-broccoli/office-presence/src/index.ts"
+        "./libs/@vigilant-broccoli/office-presence/src/index.ts"
       ],
       "@vigilant-broccoli/slackbots": [
-        "libs/@vigilant-broccoli/slackbots/src/index.ts"
+        "./libs/@vigilant-broccoli/slackbots/src/index.ts"
       ],
-      "@vigilant-broccoli/ci": ["libs/@vigilant-broccoli/ci/src/index.ts"],
+      "@vigilant-broccoli/ci": ["./libs/@vigilant-broccoli/ci/src/index.ts"],
       "@vigilant-broccoli/messaging": [
         "./libs/@vigilant-broccoli/messaging/src/index.ts"
       ],
