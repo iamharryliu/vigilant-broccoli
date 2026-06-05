@@ -1,12 +1,8 @@
 name: cron-health-check
 
 on:
-  push:
-    paths:
-      - .github/workflows/cron-health-check.yml
   schedule:
     - cron: '0 0 * * *'
-  workflow_dispatch:
 
 permissions:
   actions: read
