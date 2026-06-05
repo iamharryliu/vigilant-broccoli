@@ -42,6 +42,7 @@ const COPY = {
 export interface DocsViewerProps {
   getStructure: () => Promise<DocsNode[]>;
   getContent: (path: string) => Promise<string>;
+  saveContent?: (path: string, content: string) => Promise<void>;
   search?: (query: string) => Promise<DocsSearchResult[]>;
   urlSync?: DocsExplorerUrlSync;
 }
@@ -49,6 +50,7 @@ export interface DocsViewerProps {
 export function DocsViewer({
   getStructure,
   getContent,
+  saveContent,
   search,
   urlSync,
 }: DocsViewerProps) {
@@ -109,7 +111,11 @@ export function DocsViewer({
         {viewMode === VIEW_MODE.CHECKLIST ? (
           <ChecklistViewer content={content} filePath={activeFile} />
         ) : (
-          <MarkdownViewer content={content} />
+          <MarkdownViewer
+            content={content}
+            filePath={activeFile}
+            saveContent={saveContent}
+          />
         )}
       </div>
     </div>

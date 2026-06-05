@@ -1,42 +1,90 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { homedir } from 'os';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+
+const NOTES_DIR = join(homedir(), 'vigilant-broccoli', 'notes');
+const ENCODING = 'utf-8';
+
+const ERROR = {
+  PATH_REQUIRED: 'File path is required',
+  INVALID_PATH: 'Invalid file path',
+  CONTENT_REQUIRED: 'File content is required',
+  FETCH_FAILED: 'Failed to fetch file content',
+  SAVE_FAILED: 'Failed to save file content',
+} as const;
+
+const resolveNotePath = (filePath: string | null) => {
+  if (!filePath) {
+    return {
+      error: ERROR.PATH_REQUIRED,
+      status: HTTP_STATUS_CODES.BAD_REQUEST,
+    } as const;
+  }
+  if (filePath.includes('..') || filePath.startsWith('/')) {
+    return {
+      error: ERROR.INVALID_PATH,
+      status: HTTP_STATUS_CODES.BAD_REQUEST,
+    } as const;
+  }
+  return { fullPath: join(NOTES_DIR, filePath), filePath } as const;
+};
+
+const errorResponse = (err: unknown, fallback: string) => {
+  console.error(fallback, err);
+  return NextResponse.json(
+    { error: err instanceof Error ? err.message : fallback },
+    { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+  );
+};
 
 export async function GET(req: NextRequest) {
   try {
-    const filePath = req.nextUrl.searchParams.get('path');
-
-    if (!filePath) {
+    const resolved = resolveNotePath(req.nextUrl.searchParams.get('path'));
+    if ('error' in resolved) {
       return NextResponse.json(
-        { error: 'File path is required' },
-        { status: 400 }
+        { error: resolved.error },
+        { status: resolved.status },
       );
     }
 
-    // Security: ensure the path doesn't escape the notes directory
-    if (filePath.includes('..') || filePath.startsWith('/')) {
-      return NextResponse.json(
-        { error: 'Invalid file path' },
-        { status: 400 }
-      );
-    }
-
-    const fullPath = join(homedir(), 'vigilant-broccoli', 'notes', filePath);
-    const content = await readFile(fullPath, 'utf-8');
+    const content = await readFile(resolved.fullPath, ENCODING);
 
     return NextResponse.json({
       success: true,
       content,
-      path: filePath,
+      path: resolved.filePath,
     });
   } catch (error) {
-    console.error('Error fetching file content:', error);
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : 'Failed to fetch file content'
-      },
-      { status: 500 }
-    );
+    return errorResponse(error, ERROR.FETCH_FAILED);
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const resolved = resolveNotePath(body?.path ?? null);
+    if ('error' in resolved) {
+      return NextResponse.json(
+        { error: resolved.error },
+        { status: resolved.status },
+      );
+    }
+    if (typeof body?.content !== 'string') {
+      return NextResponse.json(
+        { error: ERROR.CONTENT_REQUIRED },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
+    await writeFile(resolved.fullPath, body.content, ENCODING);
+
+    return NextResponse.json({
+      success: true,
+      path: resolved.filePath,
+    });
+  } catch (error) {
+    return errorResponse(error, ERROR.SAVE_FAILED);
   }
 }
