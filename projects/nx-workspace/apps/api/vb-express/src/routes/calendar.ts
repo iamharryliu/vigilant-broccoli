@@ -1,25 +1,14 @@
 import { Router, Request, Response } from 'express';
-import { z } from 'zod';
-import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import {
+  calendarParseSchema,
+  CalendarParseResult,
+} from '@vigilant-broccoli/llm-schemas';
+import { callLlm } from '../libs/llm-service.client';
 
 const router = Router();
 
 const DEFAULT_TIME_ZONE = 'America/New_York';
-
-const eventSchema = z.object({
-  summary: z.string(),
-  description: z.string(),
-  location: z.string(),
-  start: z.string(),
-  end: z.string(),
-  timeZone: z.string(),
-  allDay: z.boolean(),
-});
-
-const responseSchema = z.object({ events: z.array(eventSchema) });
-
-type ParsedResponse = z.infer<typeof responseSchema>;
 
 const buildSystemPrompt = (timeZone: string) => {
   const now = new Date();
@@ -60,13 +49,15 @@ router.post('/parse', async (req: Request, res: Response) => {
     ? `Extract the calendar event from the following content:\n\n${text.trim()}`
     : 'Extract the calendar event from the attached image(s).';
 
-  const result = await LLMService.prompt<ParsedResponse>({
-    prompt: { userPrompt, systemPrompt: buildSystemPrompt(timeZone), images },
-    modelConfig: { model: LLM_MODEL.GPT_4O, temperature: 0 },
-    responseFormat: { zod: responseSchema },
+  const { outputs } = await callLlm<{ outputs: CalendarParseResult[] }>({
+    userPrompt,
+    systemPrompt: buildSystemPrompt(timeZone),
+    images,
+    model: LLM_MODEL.GPT_4O,
+    jsonSchema: calendarParseSchema,
   });
 
-  const events = result.data.events.filter(e => e.summary && e.start);
+  const events = outputs[0].events.filter(e => e.summary && e.start);
   if (events.length === 0) {
     return res
       .status(422)

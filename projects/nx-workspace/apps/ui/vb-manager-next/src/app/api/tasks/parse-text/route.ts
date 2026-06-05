@@ -4,12 +4,13 @@ import {
   VB_EXPRESS_ENDPOINT,
 } from '@vigilant-broccoli/common-node';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
-import { z } from 'zod';
+import {
+  tasksParseTextSchema,
+  TasksParseTextResult,
+} from '@vigilant-broccoli/llm-schemas';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-const ResponseSchema = z.object({ items: z.array(z.string()) });
 
 const SYSTEM_PROMPT = `You are a list extraction assistant. The user will describe what they want a list of.
 Extract the items and return a JSON object with an "items" key containing an array of strings.
@@ -34,20 +35,11 @@ export async function POST(request: NextRequest) {
         userPrompt: transcript,
         systemPrompt: SYSTEM_PROMPT,
         model: LLM_MODEL.GPT_4O_MINI,
-        responseFormat: 'json',
+        jsonSchema: tasksParseTextSchema,
       }),
     },
   );
 
-  const { outputs } = await res.json();
-  const validated = ResponseSchema.safeParse(outputs?.[0]);
-
-  if (!validated.success) {
-    return NextResponse.json(
-      { error: 'Failed to generate list.' },
-      { status: 422 },
-    );
-  }
-
-  return NextResponse.json(validated.data);
+  const { outputs } = (await res.json()) as { outputs: TasksParseTextResult[] };
+  return NextResponse.json(outputs[0]);
 }

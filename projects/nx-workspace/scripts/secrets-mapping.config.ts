@@ -20,6 +20,12 @@ export const secretsMapping: SecretsMapping = {
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
+  'llm-service': {
+    flyAppName: 'vb-llm-service',
+    appPath: './apps/api/llm-service',
+    vaultPath: COMMON_VAULT_PATH,
+    excludeEnvVars: COMMON_EXCLUDED_VARS,
+  },
   'personal-website-backend': {
     flyAppName: 'harryliu-personal-website-backend',
     appPath: './apps/personal-website/personal-website-backend',

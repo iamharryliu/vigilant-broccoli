@@ -38,6 +38,11 @@ export const EMAIL_SERVICE_ENDPOINT = {
   SEND_EMAIL: 'send-email',
 };
 
+export const LLM_SERVICE_ENDPOINT = {
+  LLM: 'api/llm',
+  CHAT: 'api/chat',
+};
+
 export const VB_EXPRESS_ENDPOINT = {
   SPEECH_TO_TEXT: 'api/speech-to-text',
   TEXT_TO_SPEECH: 'api/text-to-speech',

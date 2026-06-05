@@ -35,3 +35,8 @@ export type LLMPrompt = {
   systemPrompt?: string;
   images?: LLMImage[];
 };
+
+export type LLMJsonSchema = {
+  name: string;
+  schema: Record<string, unknown>;
+};

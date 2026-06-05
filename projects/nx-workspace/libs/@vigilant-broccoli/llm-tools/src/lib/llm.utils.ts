@@ -129,9 +129,20 @@ function formatPromptParams<T>(request: LLMPromptRequest<T>, stream = false) {
         content: userContent,
       },
     ],
-    ...(responseFormat && responseFormat.zod
-      ? { response_format: zodResponseFormat(responseFormat.zod, 'answer') }
-      : {}),
+    ...(responseFormat?.jsonSchema
+      ? {
+          response_format: {
+            type: 'json_schema',
+            json_schema: {
+              name: responseFormat.jsonSchema.name,
+              schema: responseFormat.jsonSchema.schema,
+              strict: true,
+            },
+          },
+        }
+      : responseFormat && responseFormat.zod
+        ? { response_format: zodResponseFormat(responseFormat.zod, 'answer') }
+        : {}),
     stream,
   } as
     | OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming

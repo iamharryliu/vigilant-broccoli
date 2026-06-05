@@ -1,7 +1,10 @@
 import { Router, Request, Response } from 'express';
-import { z } from 'zod';
-import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import {
+  tasksParseSchema,
+  TasksParseResult,
+} from '@vigilant-broccoli/llm-schemas';
+import { callLlm } from '../libs/llm-service.client';
 
 const router = Router();
 
@@ -12,13 +15,6 @@ type ParseImageRequest = {
   images?: { name: string; base64: string; mimeType: string }[];
   availableLists?: TaskListRef[];
 };
-
-const responseSchema = z.object({
-  items: z.array(z.string()),
-  suggestedListId: z.string().nullable(),
-});
-
-type ParsedResponse = z.infer<typeof responseSchema>;
 
 const ERROR_NO_INPUT = 'Provide text or at least one image';
 
@@ -75,19 +71,22 @@ router.post('/parse-image', async (req: Request, res: Response) => {
   const lists = availableLists ?? [];
   const userPrompt = `${buildBaseUserPrompt(trimmedText, hasImages)}${buildListsBlock(lists)}`;
 
-  const result = await LLMService.prompt<ParsedResponse>({
-    prompt: { userPrompt, systemPrompt: SYSTEM_PROMPT, images },
-    modelConfig: { model: LLM_MODEL.GPT_4O, temperature: 0 },
-    responseFormat: { zod: responseSchema },
+  const { outputs } = await callLlm<{ outputs: TasksParseResult[] }>({
+    userPrompt,
+    systemPrompt: SYSTEM_PROMPT,
+    images,
+    model: LLM_MODEL.GPT_4O,
+    jsonSchema: tasksParseSchema,
   });
+  const data = outputs[0];
 
   const validIds = new Set(lists.map(l => l.id));
   const suggestedListId =
-    result.data.suggestedListId && validIds.has(result.data.suggestedListId)
-      ? result.data.suggestedListId
+    data.suggestedListId && validIds.has(data.suggestedListId)
+      ? data.suggestedListId
       : null;
 
-  return res.json({ items: result.data.items, suggestedListId });
+  return res.json({ items: data.items, suggestedListId });
 });
 
 export default router;

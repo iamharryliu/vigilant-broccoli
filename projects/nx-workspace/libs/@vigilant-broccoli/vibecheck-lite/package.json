@@ -6,6 +6,6 @@
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/llm-tools": "workspace:*",
-    "zod": "^3.25.56"
+    "@vigilant-broccoli/llm-schemas": "workspace:*"
   }
 }

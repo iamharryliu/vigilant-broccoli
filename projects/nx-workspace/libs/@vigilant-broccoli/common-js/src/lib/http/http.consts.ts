@@ -2,6 +2,7 @@ export const LOCALHOST = 'localhost';
 
 export const AUTHORIZATION_HEADER = 'Authorization';
 export const GOOGLE_TOKEN_HEADER = 'x-google-token';
+export const API_KEY_HEADER = 'x-api-key';
 export const CONTENT_TYPE_HEADER = 'Content-Type';
 export const JSON_CONTENT_TYPE = 'application/json';
 export const BEARER_PREFIX = 'Bearer ';
@@ -25,6 +26,7 @@ const HTTP_ERROR_CODE = {
   FORBIDDEN: 403,
   INVALID_PATH: 404,
   INTERNAL_SERVER_ERROR: 500,
+  BAD_GATEWAY: 502,
 };
 
 export const HTTP_STATUS_CODES = {

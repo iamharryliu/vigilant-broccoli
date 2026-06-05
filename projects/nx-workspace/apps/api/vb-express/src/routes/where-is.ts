@@ -1,27 +1,21 @@
 import { Router, Request, Response } from 'express';
-import { z } from 'zod';
-import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import {
+  whereIsAnalyzeSchema,
+  WhereIsAnalyzeResult,
+} from '@vigilant-broccoli/llm-schemas';
+import { callLlm } from '../libs/llm-service.client';
 
 const router = Router();
 
-const imageSchema = z.object({
-  name: z.string(),
-  base64: z.string(),
-  mimeType: z.string(),
-});
+type AnalyzeImage = { name: string; base64: string; mimeType: string };
 
-const analyzeRequestSchema = z.object({
-  images: z.array(imageSchema),
-  existingTags: z.array(z.string()).optional(),
-});
+type AnalyzeRequest = {
+  images: AnalyzeImage[];
+  existingTags?: string[];
+};
 
-const analyzeResponseSchema = z.object({
-  description: z.string(),
-  tags: z.array(z.string()),
-});
-
-type AnalyzeResponse = z.infer<typeof analyzeResponseSchema>;
+const ERROR_MISSING_IMAGES = 'images is required';
 
 const SYSTEM_PROMPT = `You are a household item identifier. Given one or more images of a storage area (drawer, shelf, cabinet, box, etc.), identify all visible items across all images.
 
@@ -42,24 +36,20 @@ const buildUserPrompt = (existingTags?: string[]) =>
     : USER_PROMPT;
 
 router.post('/analyze', async (req: Request, res: Response) => {
-  const parsed = analyzeRequestSchema.safeParse(req.body);
-  if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.flatten() });
+  const { images, existingTags } = req.body as AnalyzeRequest;
+  if (!images || !images.length) {
+    return res.status(400).json({ error: ERROR_MISSING_IMAGES });
   }
 
-  const { images, existingTags } = parsed.data;
-
-  const result = await LLMService.prompt<AnalyzeResponse>({
-    prompt: {
-      userPrompt: buildUserPrompt(existingTags),
-      systemPrompt: SYSTEM_PROMPT,
-      images: images as { name: string; base64: string; mimeType: string }[],
-    },
-    modelConfig: { model: LLM_MODEL.GPT_4O },
-    responseFormat: { zod: analyzeResponseSchema },
+  const { outputs } = await callLlm<{ outputs: WhereIsAnalyzeResult[] }>({
+    userPrompt: buildUserPrompt(existingTags),
+    systemPrompt: SYSTEM_PROMPT,
+    images,
+    model: LLM_MODEL.GPT_4O,
+    jsonSchema: whereIsAnalyzeSchema,
   });
 
-  return res.json(result.data);
+  return res.json(outputs[0]);
 });
 
 export default router;

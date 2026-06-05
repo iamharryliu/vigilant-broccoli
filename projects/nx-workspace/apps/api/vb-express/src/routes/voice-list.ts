@@ -1,18 +1,18 @@
 import { Router, Request, Response } from 'express';
-import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { AudioService } from '@vigilant-broccoli/common-node';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
-import { z } from 'zod';
+import {
+  tasksParseTextSchema,
+  TasksParseTextResult,
+} from '@vigilant-broccoli/llm-schemas';
 import formidable from 'formidable';
 import { createReadStream } from 'fs';
+import { callLlm } from '../libs/llm-service.client';
 
 const router = Router();
 
 const ERROR_NO_AUDIO = 'No audio file provided';
 const ERROR_INTERNAL = 'Internal server error';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const itemsSchema = z.object({ items: z.string().array() }) as any;
 
 const buildSystemPrompt = (context?: string) =>
   `You are a list extraction assistant. The user will describe what they want a list of.
@@ -48,15 +48,13 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const { file, context } = await parseForm(req);
     const transcript = await transcribeAudio(file);
-    const result = await LLMService.prompt<{ items: string[] }>({
-      prompt: {
-        userPrompt: transcript,
-        systemPrompt: buildSystemPrompt(context),
-      },
-      modelConfig: { model: LLM_MODEL.GPT_4O_MINI, temperature: 0.3 },
-      responseFormat: { zod: itemsSchema },
+    const { outputs } = await callLlm<{ outputs: TasksParseTextResult[] }>({
+      userPrompt: transcript,
+      systemPrompt: buildSystemPrompt(context),
+      model: LLM_MODEL.GPT_4O_MINI,
+      jsonSchema: tasksParseTextSchema,
     });
-    return res.json({ items: result.data.items });
+    return res.json({ items: outputs[0].items });
   } catch (error) {
     const message = error instanceof Error ? error.message : ERROR_INTERNAL;
     const status = message === ERROR_NO_AUDIO ? 400 : 500;

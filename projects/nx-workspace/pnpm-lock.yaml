@@ -193,6 +193,9 @@ importers:
       googleapis:
         specifier: ^154.1.0
         version: 154.1.0
+      json-schema-to-ts:
+        specifier: ^3.1.1
+        version: 3.1.1
       lucide-react:
         specifier: ^0.513.0
         version: 0.513.0(react@18.3.1)
@@ -776,6 +779,15 @@ importers:
         specifier: ^2.3.0
         version: 2.8.1
 
+  libs/@vigilant-broccoli/llm-schemas:
+    dependencies:
+      json-schema-to-ts:
+        specifier: ^3.1.1
+        version: 3.1.1
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
   libs/@vigilant-broccoli/llm-tools:
     dependencies:
       '@anthropic-ai/sdk':
@@ -982,15 +994,15 @@ importers:
       '@vigilant-broccoli/common-node':
         specifier: workspace:*
         version: link:../common-node
+      '@vigilant-broccoli/llm-schemas':
+        specifier: workspace:*
+        version: link:../llm-schemas
       '@vigilant-broccoli/llm-tools':
         specifier: workspace:*
         version: link:../llm-tools
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
-      zod:
-        specifier: ^3.25.56
-        version: 3.25.76
 
 packages:
   '@algolia/abtesting@1.14.1':
@@ -17168,6 +17180,13 @@ packages:
         integrity: sha512-hOrZIVL5jyYFjzk7+y7n5JDzGlU8rfWDuYyHwGa2WA8/pcmMHezp2xsVwxrebD/Q9t8Nc5DboieySDpCp4WG4A==,
       }
 
+  json-schema-to-ts@3.1.1:
+    resolution:
+      {
+        integrity: sha512-+DWg8jCJG2TEnpy7kOm/7/AxaYoaRbjVB4LFZLySZlWn8exGs3A4OLJR966cVvU26N7X9TWxl+Jsw7dzAqKT6g==,
+      }
+    engines: { node: '>=16' }
+
   json-schema-traverse@0.4.1:
     resolution:
       {
@@ -22680,6 +22699,12 @@ packages:
     resolution:
       {
         integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==,
+      }
+
+  ts-algebra@2.0.0:
+    resolution:
+      {
+        integrity: sha512-FPAhNPFMrkwz76P7cdjdmiShwMynZYN6SgOujD1urY4oNm80Ou9oMdmbR45LotcKOXoy7wSmHkRFE6Mxbrhefw==,
       }
 
   ts-api-utils@2.5.0:
@@ -37164,6 +37189,11 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
+  json-schema-to-ts@3.1.1:
+    dependencies:
+      '@babel/runtime': 7.29.7
+      ts-algebra: 2.0.0
+
   json-schema-traverse@0.4.1: {}
 
   json-schema-traverse@1.0.0: {}
@@ -41052,6 +41082,8 @@ snapshots:
   triple-beam@1.4.1: {}
 
   trough@2.2.0: {}
+
+  ts-algebra@2.0.0: {}
 
   ts-api-utils@2.5.0(typescript@5.9.3):
     dependencies:

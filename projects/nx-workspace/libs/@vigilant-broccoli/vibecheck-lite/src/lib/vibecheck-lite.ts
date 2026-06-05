@@ -1,25 +1,12 @@
 import { Location, LLM_MODEL } from '@vigilant-broccoli/common-js';
 import { OpenWeatherService } from '@vigilant-broccoli/common-node';
 import { LLMService } from '@vigilant-broccoli/llm-tools';
-import { z } from 'zod';
+import {
+  vibecheckOutfitSchema,
+  VibecheckOutfitResult,
+} from '@vigilant-broccoli/llm-schemas';
 
-// Zod schema for outfit recommendation
-const OutfitRecommendationSchema = z.object({
-  recommendations: z.array(
-    z.object({
-      localTime: z.string().describe('Time in format HH:mm with timezone'),
-      temperature: z.number().describe('Temperature in Celsius'),
-      weather: z.string().describe('Weather description'),
-      recommendation: z
-        .string()
-        .describe(
-          'Complete outfit recommendation with specific clothing items',
-        ),
-    }),
-  ),
-});
-
-type OutfitRecommendation = z.infer<typeof OutfitRecommendationSchema>;
+type OutfitRecommendation = VibecheckOutfitResult;
 
 // Helper function to get weather data for outfit recommendation
 async function getWeatherDataForOutfitRecommendation(
@@ -103,7 +90,7 @@ async function getOutfitRecommendation(location: Location): Promise<string> {
       model: LLM_MODEL.GPT_4O_MINI,
     },
     responseFormat: {
-      zod: OutfitRecommendationSchema,
+      jsonSchema: vibecheckOutfitSchema,
     },
   });
 
@@ -131,7 +118,7 @@ async function getOutfitRecommendationStream(
       model: LLM_MODEL.GPT_4O_MINI,
     },
     responseFormat: {
-      zod: OutfitRecommendationSchema,
+      jsonSchema: vibecheckOutfitSchema,
     },
   });
 

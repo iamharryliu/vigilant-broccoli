@@ -3,8 +3,15 @@ import { LLMPromptRequest, LLMPromptResult } from './llm.types';
 import { LLMUtils } from './llm.utils';
 import * as fs from 'fs';
 import { CompletionUsage } from 'openai/resources/completions';
-import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import { LLM_MODEL, LLMJsonSchema } from '@vigilant-broccoli/common-js';
 import Anthropic from '@anthropic-ai/sdk';
+
+type AnthropicToolSchema = {
+  type: 'object';
+  properties?: Record<string, unknown>;
+  required?: string[];
+  [key: string]: unknown;
+};
 
 function buildAnthropicContent(request: LLMPromptRequest<unknown>) {
   const { prompt: promptData } = request;
@@ -37,8 +44,19 @@ function buildAnthropicContent(request: LLMPromptRequest<unknown>) {
 
 function parseAnthropicResponse<T>(
   msg: Anthropic.Message,
-  responseFormat?: { example?: string; zod?: { parse: (v: unknown) => T } },
+  responseFormat?: {
+    example?: string;
+    zod?: { parse: (v: unknown) => T };
+    jsonSchema?: LLMJsonSchema;
+  },
 ): T | string {
+  if (responseFormat?.jsonSchema) {
+    const toolUse = msg.content.find(
+      (b): b is Anthropic.ToolUseBlock => b.type === 'tool_use',
+    );
+    if (!toolUse) throw new Error('Anthropic returned no tool_use block.');
+    return toolUse.input as T;
+  }
   const textContent = msg.content[0] as Anthropic.TextBlock;
   if (!responseFormat) return textContent.text;
   const parsed = JSON.parse(textContent.text);
@@ -50,6 +68,17 @@ async function promptAnthropic<T>(
 ): Promise<LLMPromptResult<T>> {
   const { modelConfig, responseFormat, prompt: promptData } = request;
   const client = LLMUtils.getLLMClient(modelConfig) as Anthropic;
+
+  const jsonSchema = responseFormat?.jsonSchema;
+  const tools: Anthropic.Tool[] | undefined = jsonSchema
+    ? [
+        {
+          name: jsonSchema.name,
+          description: `Return the structured ${jsonSchema.name} result.`,
+          input_schema: jsonSchema.schema as AnthropicToolSchema,
+        },
+      ]
+    : undefined;
 
   const msg = await client.messages.create({
     model: modelConfig?.model || LLM_MODEL.CLAUDE_4_SONNET,
@@ -63,6 +92,9 @@ async function promptAnthropic<T>(
         content: buildAnthropicContent(request),
       },
     ],
+    ...(tools
+      ? { tools, tool_choice: { type: 'tool', name: jsonSchema!.name } }
+      : {}),
   });
 
   const { input_tokens, output_tokens } = msg.usage;
@@ -94,7 +126,8 @@ async function promptOpenAI<T>(
     throw new Error('LLM returned no content.');
   }
 
-  const parsed = responseFormat ? JSON.parse(message.content) : message.content;
+  const wantsJson = !!(responseFormat?.zod || responseFormat?.jsonSchema);
+  const parsed = wantsJson ? JSON.parse(message.content) : message.content;
   const data = responseFormat?.zod ? responseFormat.zod.parse(parsed) : parsed;
 
   return {

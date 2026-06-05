@@ -1,4 +1,5 @@
 import {
+  LLMJsonSchema,
   LLMModel,
   LLMModelConfig,
   LLMPrompt,
@@ -11,12 +12,12 @@ export type LLMPromptRequest<T> = {
   responseFormat?: {
     example?: string;
     zod?: ZodType<T>;
+    jsonSchema?: LLMJsonSchema;
   };
 };
 
 export type LLMPromptResult<T = string> = {
   data: T;
-  // meta?
   model: LLMModel;
   tokens: {
     prompt: number;

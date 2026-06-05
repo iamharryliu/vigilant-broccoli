@@ -1,35 +1,20 @@
 import { Router, Request, Response } from 'express';
-import { z } from 'zod';
-import { LLMService } from '@vigilant-broccoli/llm-tools';
 import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import {
+  priceTrackerAnalyzeSchema,
+  PriceTrackerAnalyzeResult,
+} from '@vigilant-broccoli/llm-schemas';
+import { callLlm } from '../libs/llm-service.client';
 
 const router = Router();
 
-const imageSchema = z.object({
-  name: z.string(),
-  base64: z.string(),
-  mimeType: z.string(),
-});
+type AnalyzeImage = { name: string; base64: string; mimeType: string };
 
-const lineItemSchema = z.object({
-  name: z.string(),
-  price: z.number(),
-  quantity: z.number().optional().default(1),
-  unit: z.string().nullable().optional().default(null),
-  category: z.string().nullable().optional().default(null),
-});
+type AnalyzeRequest = {
+  images: AnalyzeImage[];
+};
 
-const analyzeRequestSchema = z.object({
-  images: z.array(imageSchema),
-});
-
-const analyzeResponseSchema = z.object({
-  store: z.string().nullable(),
-  purchasedAt: z.string().nullable(),
-  items: z.array(lineItemSchema),
-});
-
-type AnalyzeResponse = z.infer<typeof analyzeResponseSchema>;
+const ERROR_MISSING_IMAGES = 'images is required';
 
 const USER_PROMPT = 'Parse this receipt and extract all purchased items.';
 
@@ -57,24 +42,20 @@ Rules:
 - name should be human-readable (e.g. "Organic Whole Milk 1L" not "ORG WHL MLK 1L")`;
 
 router.post('/analyze', async (req: Request, res: Response) => {
-  const parsed = analyzeRequestSchema.safeParse(req.body);
-  if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.flatten() });
+  const { images } = req.body as AnalyzeRequest;
+  if (!images || !images.length) {
+    return res.status(400).json({ error: ERROR_MISSING_IMAGES });
   }
 
-  const { images } = parsed.data;
-
-  const result = await LLMService.prompt<AnalyzeResponse>({
-    prompt: {
-      userPrompt: USER_PROMPT,
-      systemPrompt: SYSTEM_PROMPT,
-      images: images as { name: string; base64: string; mimeType: string }[],
-    },
-    modelConfig: { model: LLM_MODEL.GPT_4O },
-    responseFormat: { zod: analyzeResponseSchema },
+  const { outputs } = await callLlm<{ outputs: PriceTrackerAnalyzeResult[] }>({
+    userPrompt: USER_PROMPT,
+    systemPrompt: SYSTEM_PROMPT,
+    images,
+    model: LLM_MODEL.GPT_4O,
+    jsonSchema: priceTrackerAnalyzeSchema,
   });
 
-  return res.json(result.data);
+  return res.json(outputs[0]);
 });
 
 export default router;
