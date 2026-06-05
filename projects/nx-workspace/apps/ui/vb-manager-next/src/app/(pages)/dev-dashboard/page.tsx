@@ -9,6 +9,7 @@ import { GithubTeamManager } from '../../components/github-manager.component';
 import { GithubPagesComponent } from '../../components/github-pages.component';
 import { PM2StatusComponent } from '../../components/pm2-status.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
+import { TailscaleMachinesComponent } from '../../components/tailscale-machines.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
 import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
 
@@ -18,6 +19,7 @@ export default function Page() {
       <div className="flex flex-col gap-4">
         <PublicIpComponent />
         <WireguardStatusComponent />
+        <TailscaleMachinesComponent />
         <PM2StatusComponent />
         <DockerStatusComponent />
       </div>

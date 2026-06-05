@@ -33,6 +33,9 @@ export const API_ENDPOINTS = {
   // WireGuard
   WIREGUARD_STATUS: '/api/wireguard/status',
 
+  // Tailscale
+  TAILSCALE_MACHINES: '/api/tailscale/machines',
+
   // Network
   PUBLIC_IP: '/api/public-ip',
   LOCAL_IP: '/api/local-ip',
