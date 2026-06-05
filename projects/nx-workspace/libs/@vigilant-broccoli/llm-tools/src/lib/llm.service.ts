@@ -13,7 +13,7 @@ type AnthropicToolSchema = {
   [key: string]: unknown;
 };
 
-function buildAnthropicContent(request: LLMPromptRequest<unknown>) {
+function buildAnthropicContent(request: LLMPromptRequest) {
   const { prompt: promptData } = request;
   const content: Anthropic.MessageParam['content'] = [
     {
@@ -44,11 +44,7 @@ function buildAnthropicContent(request: LLMPromptRequest<unknown>) {
 
 function parseAnthropicResponse<T>(
   msg: Anthropic.Message,
-  responseFormat?: {
-    example?: string;
-    zod?: { parse: (v: unknown) => T };
-    jsonSchema?: LLMJsonSchema;
-  },
+  responseFormat?: { example?: string; jsonSchema?: LLMJsonSchema },
 ): T | string {
   if (responseFormat?.jsonSchema) {
     const toolUse = msg.content.find(
@@ -58,13 +54,11 @@ function parseAnthropicResponse<T>(
     return toolUse.input as T;
   }
   const textContent = msg.content[0] as Anthropic.TextBlock;
-  if (!responseFormat) return textContent.text;
-  const parsed = JSON.parse(textContent.text);
-  return responseFormat.zod ? responseFormat.zod.parse(parsed) : parsed;
+  return textContent.text;
 }
 
 async function promptAnthropic<T>(
-  request: LLMPromptRequest<T>,
+  request: LLMPromptRequest,
 ): Promise<LLMPromptResult<T>> {
   const { modelConfig, responseFormat, prompt: promptData } = request;
   const client = LLMUtils.getLLMClient(modelConfig) as Anthropic;
@@ -110,7 +104,7 @@ async function promptAnthropic<T>(
 }
 
 async function promptOpenAI<T>(
-  request: LLMPromptRequest<T>,
+  request: LLMPromptRequest,
 ): Promise<LLMPromptResult<T>> {
   const { modelConfig, responseFormat } = request;
   const client = LLMUtils.getLLMClient(modelConfig) as OpenAI;
@@ -126,9 +120,9 @@ async function promptOpenAI<T>(
     throw new Error('LLM returned no content.');
   }
 
-  const wantsJson = !!(responseFormat?.zod || responseFormat?.jsonSchema);
-  const parsed = wantsJson ? JSON.parse(message.content) : message.content;
-  const data = responseFormat?.zod ? responseFormat.zod.parse(parsed) : parsed;
+  const data = responseFormat?.jsonSchema
+    ? JSON.parse(message.content)
+    : message.content;
 
   return {
     model: modelConfig?.model || LLM_MODEL.GPT_4O,
@@ -141,8 +135,8 @@ async function promptOpenAI<T>(
   };
 }
 
-async function promptOpenAIStream<T>(
-  request: LLMPromptRequest<T>,
+async function promptOpenAIStream(
+  request: LLMPromptRequest,
 ): Promise<AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>> {
   const { modelConfig } = request;
   const client = LLMUtils.getLLMClient(modelConfig) as OpenAI;
@@ -153,20 +147,20 @@ async function promptOpenAIStream<T>(
 }
 
 async function prompt<T>(
-  request: LLMPromptRequest<T>,
+  request: LLMPromptRequest,
 ): Promise<LLMPromptResult<T>> {
   const { modelConfig } = request;
   const client = LLMUtils.getLLMClient(modelConfig);
 
   if (client instanceof Anthropic) {
-    return promptAnthropic(request);
+    return promptAnthropic<T>(request);
   }
 
-  return promptOpenAI(request);
+  return promptOpenAI<T>(request);
 }
 
-async function promptStream<T>(
-  request: LLMPromptRequest<T>,
+async function promptStream(
+  request: LLMPromptRequest,
 ): Promise<AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>> {
   const { modelConfig } = request;
   const client = LLMUtils.getLLMClient(modelConfig);
@@ -216,8 +210,8 @@ async function editImage(filenames: string[], prompt: string) {
   return `data:image/png;base64,${response.data[0].b64_json}`;
 }
 
-async function generateMultipleOutputs<T>(
-  request: LLMPromptRequest<T>,
+async function generateMultipleOutputs(
+  request: LLMPromptRequest,
   numOutputs: number,
   isImageModel: boolean,
 ): Promise<string[]> {
@@ -231,8 +225,8 @@ async function generateMultipleOutputs<T>(
 
   const outputs = await Promise.all(
     Array.from({ length: numOutputs }, async () => {
-      const result = (await prompt(request)) as LLMPromptResult<T>;
-      return result.data as string;
+      const result = await prompt<string>(request);
+      return result.data;
     }),
   );
   return outputs;

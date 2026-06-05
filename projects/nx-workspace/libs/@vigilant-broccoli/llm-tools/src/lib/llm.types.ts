@@ -4,16 +4,16 @@ import {
   LLMModelConfig,
   LLMPrompt,
 } from '@vigilant-broccoli/common-js';
-import { ZodType } from 'zod';
 
-export type LLMPromptRequest<T> = {
+export type LLMResponseFormat = {
+  example?: string;
+  jsonSchema?: LLMJsonSchema;
+};
+
+export type LLMPromptRequest = {
   prompt: LLMPrompt;
   modelConfig?: LLMModelConfig;
-  responseFormat?: {
-    example?: string;
-    zod?: ZodType<T>;
-    jsonSchema?: LLMJsonSchema;
-  };
+  responseFormat?: LLMResponseFormat;
 };
 
 export type LLMPromptResult<T = string> = {

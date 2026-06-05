@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { zodResponseFormat } from 'openai/helpers/zod.mjs';
 import {
   ANTHROPIC_MODELS,
   AnthropicModel,
@@ -90,7 +89,7 @@ function getOpenAIClient({
   });
 }
 
-function formatPromptParams<T>(request: LLMPromptRequest<T>, stream = false) {
+function formatPromptParams(request: LLMPromptRequest, stream = false) {
   const { prompt, modelConfig, responseFormat } = request;
   const { userPrompt, systemPrompt, images } = prompt;
 
@@ -140,9 +139,7 @@ function formatPromptParams<T>(request: LLMPromptRequest<T>, stream = false) {
             },
           },
         }
-      : responseFormat && responseFormat.zod
-        ? { response_format: zodResponseFormat(responseFormat.zod, 'answer') }
-        : {}),
+      : {}),
     stream,
   } as
     | OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
