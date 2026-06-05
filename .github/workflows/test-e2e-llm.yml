@@ -18,9 +18,10 @@ env:
   VM_NAME: vb-free-vm
   VAULT_ROLE: github-actions-role
   VAULT_AUDIENCE: https://github.com/iamharryliu/vigilant-broccoli
+  LLM_SERVICE_URL: https://vb-llm-service.fly.dev
 
 jobs:
-  test-vb-express:
+  test-llm-service:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
@@ -70,11 +71,12 @@ jobs:
           role: ${{ env.VAULT_ROLE }}
           jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
           secrets: |
-            kv/data/secrets VB_EXPRESS_API_KEY | VB_EXPRESS_API_KEY ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
 
       - name: Run e2e tests
         env:
-          VB_EXPRESS_API_KEY: ${{ env.VB_EXPRESS_API_KEY }}
+          LLM_SERVICE_URL: ${{ env.LLM_SERVICE_URL }}
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
         run: |
           chmod +x scripts/shell/test-llm-e2e.sh
           scripts/shell/test-llm-e2e.sh

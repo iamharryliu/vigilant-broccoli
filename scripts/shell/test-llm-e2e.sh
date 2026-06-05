@@ -2,7 +2,7 @@
 
 set -e
 
-VB_EXPRESS_URL="https://vb-express.fly.dev"
+LLM_SERVICE_URL="${LLM_SERVICE_URL:-https://vb-llm-service.fly.dev}"
 PASS=0
 FAIL=0
 
@@ -18,14 +18,15 @@ check() {
   fi
 }
 
-echo "=== vb-express e2e tests ==="
+echo "=== llm-service e2e tests ==="
+echo "Target: $LLM_SERVICE_URL"
 echo ""
 
-# --- /api/llm ---
-echo "Testing /api/llm..."
-LLM_RESPONSE=$(curl -s -X POST "${VB_EXPRESS_URL}/api/llm" \
+# --- /api/llm — plain prompt ---
+echo "Testing /api/llm (plain)..."
+LLM_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: ${VB_EXPRESS_API_KEY}" \
+  -H "x-api-key: ${SHARED_APP_TOKEN}" \
   -d '{
     "userPrompt": "What planet do humans live on? Reply with only the planet name, nothing else.",
     "model": "gpt-4o-mini"
@@ -35,6 +36,51 @@ echo "Response: $LLM_RESPONSE"
 
 ANSWER=$(echo "$LLM_RESPONSE" | jq -r '.outputs[0]' | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
 check "llm returns expected answer (earth)" "$([ "$ANSWER" = "earth" ] && echo true || echo false)"
+
+# --- /api/llm — structured output via jsonSchema (Wizard of Oz characters) ---
+echo ""
+echo "Testing /api/llm (jsonSchema, Wizard of Oz characters)..."
+WIZARD_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: ${SHARED_APP_TOKEN}" \
+  -d '{
+    "userPrompt": "Extract the main characters from the Wizard of Oz. Include Dorothy, Scarecrow, Tin Man, Cowardly Lion, and the Wizard. For each, provide name, species, and one defining trait.",
+    "model": "gpt-4o-mini",
+    "jsonSchema": {
+      "name": "wizard_of_oz_characters",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["characters"],
+        "properties": {
+          "characters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "species", "trait"],
+              "properties": {
+                "name": { "type": "string" },
+                "species": { "type": "string" },
+                "trait": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }')
+
+echo "Response: $WIZARD_RESPONSE"
+
+CHAR_COUNT=$(echo "$WIZARD_RESPONSE" | jq -r '.outputs[0].characters | length' 2>/dev/null || echo "0")
+check "jsonSchema returns >= 5 characters" "$([ "$CHAR_COUNT" -ge 5 ] && echo true || echo false)"
+
+HAS_DOROTHY=$(echo "$WIZARD_RESPONSE" | jq -r '.outputs[0].characters[] | select(.name | ascii_downcase | contains("dorothy")) | .name' 2>/dev/null | head -1)
+check "jsonSchema includes Dorothy" "$([ -n "$HAS_DOROTHY" ] && echo true || echo false)"
+
+ALL_FIELDS_PRESENT=$(echo "$WIZARD_RESPONSE" | jq -r '[.outputs[0].characters[] | (has("name") and has("species") and has("trait"))] | all' 2>/dev/null || echo "false")
+check "every character has name/species/trait" "$ALL_FIELDS_PRESENT"
 
 # --- Summary ---
 echo ""
