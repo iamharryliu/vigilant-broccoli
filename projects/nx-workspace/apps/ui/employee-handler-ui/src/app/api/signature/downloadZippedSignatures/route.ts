@@ -1,15 +1,21 @@
+import fs from 'fs';
+import { promisify } from 'util';
+import { NextRequest, NextResponse } from 'next/server';
 import {
   EmployeeHandlerService,
   EMPLOYEE_HANDLER_CONFIG_MOCK,
   ZIPPED_GENERATED_SIGNATURES_FILEPATH,
 } from '@vigilant-broccoli/employee-handler';
-import { NextResponse } from 'next/server';
-import fs from 'fs';
-import { promisify } from 'util';
+import {
+  hasUpstream,
+  forwardToUpstream,
+} from '../../../../lib/handler-backend';
 
 const access = promisify(fs.access);
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (hasUpstream()) return forwardToUpstream(request);
+
   await EmployeeHandlerService.generateLocalSignatures(
     EMPLOYEE_HANDLER_CONFIG_MOCK,
   );

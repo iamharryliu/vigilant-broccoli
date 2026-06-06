@@ -14,9 +14,26 @@ const UPDATE_ENDPOINT = '/api/signature/updateEmailSignatures';
 const DOWNLOAD_ENDPOINT = '/api/signature/downloadZippedSignatures';
 const EMAIL_ENDPOINT = '/api/signature/emailZippedSignatures';
 
+const PAGE_HEADING = 'Signatures';
 const SUCCESS_UPDATE = 'Email signatures updated';
 const SUCCESS_DOWNLOAD = 'Signatures downloaded';
 const SUCCESS_EMAIL = 'Signatures emailed';
+
+const UPDATE_CARD_TITLE = 'Update email signatures';
+const UPDATE_CARD_DESCRIPTION =
+  'Regenerates and pushes email signatures for all active employees.';
+const ACTION_UPDATE = 'Update Email Signatures';
+
+const DOWNLOAD_CARD_TITLE = 'Download zipped signatures';
+const DOWNLOAD_CARD_DESCRIPTION =
+  'Downloads a zip of all current employee signatures.';
+const ACTION_DOWNLOAD = 'Download Zipped Signatures';
+
+const EMAIL_CARD_TITLE = 'Email zipped signatures';
+const EMAIL_CARD_DESCRIPTION =
+  'Send the signature zip to one or more email addresses. Comma-separated.';
+const EMAIL_PLACEHOLDER = 'alice@example.com, bob@example.com';
+const ACTION_EMAIL = 'Email Signatures';
 
 const ZIP_FILENAME = 'signatures.zip';
 const PAGE_CONTAINER = 'max-w-3xl mx-auto p-8 space-y-6';
@@ -61,44 +78,43 @@ export default function SignaturesPage() {
   return (
     <div className={PAGE_CONTAINER}>
       <Text size="6" weight="bold">
-        Signatures
+        {PAGE_HEADING}
       </Text>
 
       <SignaturePreviewer />
 
-      <CardContainer title="Update email signatures">
+      <CardContainer title={UPDATE_CARD_TITLE}>
         <Text size="2" color="gray">
-          Regenerates and pushes email signatures for all active employees.
+          {UPDATE_CARD_DESCRIPTION}
         </Text>
         <div>
-          <Button onClick={updateSignatures}>Update Email Signatures</Button>
+          <Button onClick={updateSignatures}>{ACTION_UPDATE}</Button>
         </div>
       </CardContainer>
 
-      <CardContainer title="Download zipped signatures">
+      <CardContainer title={DOWNLOAD_CARD_TITLE}>
         <Text size="2" color="gray">
-          Downloads a zip of all current employee signatures.
+          {DOWNLOAD_CARD_DESCRIPTION}
         </Text>
         <div>
           <Button variant="outline" onClick={downloadZipped}>
-            Download Zipped Signatures
+            {ACTION_DOWNLOAD}
           </Button>
         </div>
       </CardContainer>
 
-      <CardContainer title="Email zipped signatures">
+      <CardContainer title={EMAIL_CARD_TITLE}>
         <Text size="2" color="gray">
-          Send the signature zip to one or more email addresses.
-          Comma-separated.
+          {EMAIL_CARD_DESCRIPTION}
         </Text>
         <Textarea
-          placeholder="alice@example.com, bob@example.com"
+          placeholder={EMAIL_PLACEHOLDER}
           value={emailInput}
           onChange={e => setEmailInput(e.target.value)}
           rows={3}
         />
         <div>
-          <Button onClick={emailZipped}>Email Signatures</Button>
+          <Button onClick={emailZipped}>{ACTION_EMAIL}</Button>
         </div>
       </CardContainer>
     </div>

@@ -3,8 +3,6 @@ export const ROUTES = {
   LOGIN: '/login',
   AUTH_CALLBACK: '/auth/callback',
   DASHBOARD: '/dashboard',
-  ONBOARDING: '/dashboard/onboarding',
-  OFFBOARDING: '/dashboard/offboarding',
+  EMPLOYEES: '/dashboard/employees',
   SIGNATURES: '/dashboard/signatures',
-  SYNC: '/dashboard/sync',
 } as const;

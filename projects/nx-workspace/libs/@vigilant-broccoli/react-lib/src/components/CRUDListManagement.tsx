@@ -127,17 +127,20 @@ export const CRUDItemList = <T extends CRUDItem>({
   }
 
   const renderItem = (item: T) => {
-    const ellipsis = showEllipsis && FormComponent && (canShowEllipsis ? canShowEllipsis(item) : true) ? (
-      <div onClick={e => e.stopPropagation()}>
-        <EllipsisOptions
-          item={item}
-          FormComponent={FormComponent}
-          deleteItem={handleDelete}
-          copy={copy}
-          submitHandler={submitHandler}
-        />
-      </div>
-    ) : null;
+    const ellipsis =
+      showEllipsis &&
+      FormComponent &&
+      (canShowEllipsis ? canShowEllipsis(item) : true) ? (
+        <div onClick={e => e.stopPropagation()}>
+          <EllipsisOptions
+            item={item}
+            FormComponent={FormComponent}
+            deleteItem={handleDelete}
+            copy={copy}
+            submitHandler={submitHandler}
+          />
+        </div>
+      ) : null;
 
     const imageUrls = getItemImages?.(item) ?? [];
     const title = getItemTitle?.(item);
@@ -149,7 +152,9 @@ export const CRUDItemList = <T extends CRUDItem>({
     );
 
     const contentWithEllipsis = (alignClass: string) => (
-      <div className={`flex-1 min-w-0 flex justify-between gap-2 ${alignClass}`}>
+      <div
+        className={`flex-1 min-w-0 flex justify-between gap-2 ${alignClass}`}
+      >
         <div className="flex-1 min-w-0">{content}</div>
         {ellipsis && <div className="shrink-0">{ellipsis}</div>}
       </div>
@@ -158,7 +163,11 @@ export const CRUDItemList = <T extends CRUDItem>({
     if (fullWidthImage && imageUrls.length > 0) {
       return (
         <div className="flex flex-col gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
-          <img src={imageUrls[0]} alt={title} className={FULL_WIDTH_IMAGE_CLASS} />
+          <img
+            src={imageUrls[0]}
+            alt={title}
+            className={FULL_WIDTH_IMAGE_CLASS}
+          />
           {contentWithEllipsis('items-start')}
         </div>
       );
@@ -250,24 +259,80 @@ const EllipsisOptions = <T extends CRUDItem>({
   );
 };
 
+const DEFAULT_DELETE_LABEL = 'Delete';
+const DEFAULT_UPDATE_LABEL = 'Update';
+const DEFAULT_DELETE_TITLE = 'Delete Item';
 const DEFAULT_DELETE_DESCRIPTION = 'Are you sure you want to delete this item?';
 
 type EllipsisIcon = Extract<IconButtonIcon, `ellipsis-${string}`>;
+
+type EllipsisActionColor = 'red' | 'green' | 'blue' | 'gray' | 'amber';
+
+export type EllipsisAction = {
+  label: string;
+  onSelect: () => void | Promise<void>;
+  color?: EllipsisActionColor;
+  disabled?: boolean;
+  confirm?: {
+    title?: string;
+    description?: string;
+    confirmLabel?: string;
+  };
+};
 
 export const EllipsisCTA = ({
   onUpdate,
   onDelete,
   deleteDisabled = false,
   confirmDescription,
+  confirmTitle,
+  updateLabel = DEFAULT_UPDATE_LABEL,
+  deleteLabel = DEFAULT_DELETE_LABEL,
+  actions,
   icon = 'ellipsis-horizontal',
 }: {
   onUpdate?: () => void;
-  onDelete: () => void | Promise<void>;
+  onDelete?: () => void | Promise<void>;
   deleteDisabled?: boolean;
   confirmDescription?: string;
+  confirmTitle?: string;
+  updateLabel?: string;
+  deleteLabel?: string;
+  actions?: EllipsisAction[];
   icon?: EllipsisIcon;
 }) => {
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [pendingConfirm, setPendingConfirm] = useState<EllipsisAction | null>(
+    null,
+  );
+
+  const resolvedActions: EllipsisAction[] =
+    actions ??
+    ([
+      onUpdate && {
+        label: updateLabel,
+        onSelect: onUpdate,
+      },
+      onDelete && {
+        label: deleteLabel,
+        color: 'red' as const,
+        disabled: deleteDisabled,
+        onSelect: onDelete,
+        confirm: {
+          title: confirmTitle,
+          description: confirmDescription,
+          confirmLabel: deleteLabel,
+        },
+      },
+    ].filter(Boolean) as EllipsisAction[]);
+
+  const handleSelect = (action: EllipsisAction) => {
+    if (action.confirm) {
+      setPendingConfirm(action);
+      return;
+    }
+    void action.onSelect();
+  };
+
   return (
     <div onClick={e => e.stopPropagation()}>
       <DropdownMenu.Root>
@@ -275,24 +340,32 @@ export const EllipsisCTA = ({
           <IconButton variant="ghost" icon={icon} />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
-          {onUpdate && (
-            <DropdownMenu.Item onSelect={onUpdate}>Update</DropdownMenu.Item>
-          )}
-          <DropdownMenu.Item
-            color="red"
-            disabled={deleteDisabled}
-            onSelect={() => setConfirmDelete(true)}
-          >
-            Delete
-          </DropdownMenu.Item>
+          {resolvedActions.map((action, idx) => (
+            <DropdownMenu.Item
+              key={`${action.label}-${idx}`}
+              color={action.color}
+              disabled={action.disabled}
+              onSelect={() => handleSelect(action)}
+            >
+              {action.label}
+            </DropdownMenu.Item>
+          ))}
         </DropdownMenu.Content>
       </DropdownMenu.Root>
       <DeleteItemConfirmationDialog
-        open={confirmDelete}
-        onOpenChange={setConfirmDelete}
-        description={confirmDescription}
+        open={pendingConfirm !== null}
+        onOpenChange={open => {
+          if (!open) setPendingConfirm(null);
+        }}
+        title={pendingConfirm?.confirm?.title}
+        description={pendingConfirm?.confirm?.description}
+        confirmLabel={
+          pendingConfirm?.confirm?.confirmLabel ?? pendingConfirm?.label
+        }
         deleteItem={async () => {
-          await onDelete();
+          if (!pendingConfirm) return;
+          await pendingConfirm.onSelect();
+          setPendingConfirm(null);
         }}
       />
     </div>
@@ -303,26 +376,30 @@ export const DeleteItemConfirmationDialog = ({
   deleteItem,
   open,
   onOpenChange,
+  title = DEFAULT_DELETE_TITLE,
   description = DEFAULT_DELETE_DESCRIPTION,
+  confirmLabel = DEFAULT_DELETE_LABEL,
 }: {
   deleteItem: () => Promise<void>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  title?: string;
   description?: string;
+  confirmLabel?: string;
 }) => (
   <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
     {open === undefined && (
       <AlertDialog.Trigger>
         <Button className="w-min" variant="destructive">
-          Delete
+          {confirmLabel}
         </Button>
       </AlertDialog.Trigger>
     )}
     <AlertDialog.Content className="sm:max-w-[425px]">
-      <AlertDialog.Title>Delete Item</AlertDialog.Title>
+      <AlertDialog.Title>{title}</AlertDialog.Title>
       <AlertDialog.Description>{description}</AlertDialog.Description>
       <Button variant="destructive" onClick={deleteItem}>
-        Delete
+        {confirmLabel}
       </Button>
     </AlertDialog.Content>
   </AlertDialog.Root>

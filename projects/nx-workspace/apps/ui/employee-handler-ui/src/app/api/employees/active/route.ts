@@ -7,7 +7,7 @@ import {
 
 export async function GET(request: NextRequest) {
   if (hasUpstream()) return forwardToUpstream(request);
-  const signatures =
+  const employees =
     await EMPLOYEE_HANDLER_CONFIG_MOCK.activeMaintenanceUtilities.fetchEmailSignatures();
-  return NextResponse.json({ signatures });
+  return NextResponse.json({ employees });
 }

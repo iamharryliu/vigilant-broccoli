@@ -13,6 +13,7 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "baseUrl": ".",
     "paths": {
       "@vigilant-broccoli/vibecheck-lite": [
         "./libs/@vigilant-broccoli/vibecheck-lite/src/index.ts"
