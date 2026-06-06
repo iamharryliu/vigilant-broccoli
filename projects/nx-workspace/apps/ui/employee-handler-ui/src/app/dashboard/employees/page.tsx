@@ -4,82 +4,71 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
-  CardContainer,
+  Checkbox,
   CopyButton,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   EllipsisCTA,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-  Textarea,
   type EllipsisAction,
 } from '@vigilant-broccoli/react-lib';
-import { Text } from '@radix-ui/themes';
-import {
-  ERR_NO_EMAILS,
-  parseEmails,
-  postEmails,
-} from '../../../lib/api-helpers';
+import { Card, DropdownMenu, Text } from '@radix-ui/themes';
+import { ERR_NO_EMAILS, postEmails } from '../../../lib/api-helpers';
 
 const INCOMING_ENDPOINT = '/api/employees/incoming';
 const ACTIVE_ENDPOINT = '/api/employees/active';
 const INACTIVE_ENDPOINT = '/api/employees/inactive';
 const MANUAL_OFFBOARD_ENDPOINT = '/api/offboard/manualOffboard';
+const MANUAL_ONBOARD_ENDPOINT = '/api/onboard/manualOnboard';
 const RECOVER_ENDPOINT = '/api/recover';
-const ONBOARD_ENDPOINT = '/api/onboard';
-const OFFBOARD_ENDPOINT = '/api/offboard';
 const POST_RETENTION_ENDPOINT = '/api/postRetentionCleanup';
 const SYNC_ENDPOINT = '/api/sync';
 
-const ONBOARD_CARD_TITLE = 'Onboard incoming employees';
-const ONBOARD_CARD_DESCRIPTION =
-  'Provisions accounts for new employees based on the configured roster.';
-const ACTION_ONBOARD = 'Onboard Incoming Employees';
-const SUCCESS_ONBOARD = 'Onboarded incoming employees';
-
+const TAB_QUERY_KEY = 'tab';
 const TAB_INCOMING = 'incoming';
 const TAB_ACTIVE = 'active';
 const TAB_INACTIVE = 'inactive';
 
-const LABEL_INCOMING = 'Incoming';
-const LABEL_ACTIVE = 'Active';
-const LABEL_INACTIVE = 'Inactive';
+const LABEL_INCOMING = 'Incoming Employees';
+const LABEL_ACTIVE = 'Active Employees';
+const LABEL_INACTIVE = 'Inactive Employees';
 
-const PAGE_HEADING = 'Employees';
 const LOADING_TEXT = 'Loading...';
 const EMPTY_TEXT = 'No employees';
+const BULK_ACTIONS_LABEL = 'Actions';
+const SELECT_ALL_LABEL = 'Select all';
+const SELECT_ROW_LABEL = 'Select row';
+
 const COL_NAME = 'Name';
 const COL_EMAIL = 'Email';
 const COL_ACTIONS = 'Actions';
+
 const ACTION_OFFBOARD = 'Offboard';
 const ACTION_RECOVER = 'Recover account';
+const ACTION_ONBOARD_ONE = 'Onboard';
+const ACTION_OFFBOARD_SELECTED = 'Offboard Selected';
+const ACTION_ONBOARD_SELECTED = 'Onboard Selected';
+const ACTION_RETENTION = 'Post-Retention Cleanup';
+const ACTION_SYNC = 'Sync Data';
+
 const CONFIRM_OFFBOARD_TITLE = 'Offboard employee';
+const CONFIRM_ONBOARD_TITLE = 'Onboard employee';
+
+const SUCCESS_OFFBOARD_ONE = 'Employee offboarded';
+const SUCCESS_ONBOARD_ONE = 'Employee onboarded';
+const SUCCESS_RECOVER = 'Account recovered';
+const SUCCESS_OFFBOARD_SELECTED = 'Offboarded selected employees';
+const SUCCESS_ONBOARD_SELECTED = 'Onboarded selected employees';
+const SUCCESS_RETENTION = 'Post-retention cleanup complete';
+const SUCCESS_SYNC = 'Sync complete';
+
 const offboardConfirmDescription = (email: string) =>
   `Offboard ${email}? This will deactivate the account.`;
 const recoverConfirmDescription = (email: string) =>
   `Recover the account for ${email}?`;
-const SUCCESS_OFFBOARD_ONE = 'Employee offboarded';
-const SUCCESS_RECOVER = 'Account recovered';
-const SUCCESS_OFFBOARD_INACTIVE = 'Offboarded inactive employees';
-const SUCCESS_MANUAL = 'Manually offboarded employees';
-const SUCCESS_RETENTION = 'Post-retention cleanup complete';
-
-const ACTION_MANUAL_OFFBOARD = 'Manual Offboard';
-const MANUAL_OFFBOARD_TITLE = 'Manual offboard';
-const MANUAL_OFFBOARD_DESCRIPTION =
-  'Offboard specific employees by email. Comma-separated.';
-const MANUAL_OFFBOARD_PLACEHOLDER = 'alice@example.com, bob@example.com';
-const ACTION_CANCEL = 'Cancel';
-
-const ACTION_OFFBOARD_INACTIVE = 'Offboard Inactive Employees';
-const ACTION_RETENTION = 'Post-Retention Cleanup';
-const ACTION_SYNC = 'Sync Data';
-const SUCCESS_SYNC = 'Sync complete';
+const onboardConfirmDescription = (email: string) =>
+  `Onboard ${email}? This will activate the account.`;
 
 const PAGE_CONTAINER = 'max-w-5xl mx-auto p-8 space-y-6';
 const TABLE_WRAPPER = 'overflow-x-auto';
@@ -131,12 +120,18 @@ type EmployeeTableProps = {
   employees: Employee[];
   loading: boolean;
   buildActions?: (employee: Employee) => EllipsisAction[];
+  selection?: {
+    selectedEmails: Set<string>;
+    toggleEmail: (email: string) => void;
+    toggleAll: () => void;
+  };
 };
 
 const EmployeeTable = ({
   employees,
   loading,
   buildActions,
+  selection,
 }: EmployeeTableProps) => {
   if (loading) {
     return (
@@ -153,11 +148,25 @@ const EmployeeTable = ({
     );
   }
 
+  const allSelected =
+    !!selection &&
+    employees.length > 0 &&
+    employees.every(emp => selection.selectedEmails.has(emp.email));
+
   return (
     <div className={TABLE_WRAPPER}>
       <table className={TABLE_CLASS}>
         <thead>
           <tr>
+            {selection && (
+              <th className={TH_CLASS}>
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={() => selection.toggleAll()}
+                  aria-label={SELECT_ALL_LABEL}
+                />
+              </th>
+            )}
             <th className={TH_CLASS}>{COL_NAME}</th>
             <th className={TH_CLASS}>{COL_EMAIL}</th>
             <th className={TH_CLASS}>{COL_ACTIONS}</th>
@@ -166,8 +175,18 @@ const EmployeeTable = ({
         <tbody>
           {employees.map(emp => {
             const actions = buildActions?.(emp);
+            const isChecked = selection?.selectedEmails.has(emp.email) ?? false;
             return (
               <tr key={emp.email}>
+                {selection && (
+                  <td className={TD_CLASS}>
+                    <Checkbox
+                      checked={isChecked}
+                      onCheckedChange={() => selection.toggleEmail(emp.email)}
+                      aria-label={SELECT_ROW_LABEL}
+                    />
+                  </td>
+                )}
                 <td className={TD_CLASS}>{displayName(emp)}</td>
                 <td className={TD_CLASS}>
                   <div className="flex items-center gap-1">
@@ -199,73 +218,54 @@ const requireEmail = (email: string) => {
   return true;
 };
 
-type ManualOffboardModalProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
-};
-
-const ManualOffboardModal = ({
-  open,
-  onOpenChange,
-  onSuccess,
-}: ManualOffboardModalProps) => {
-  const [emailInput, setEmailInput] = useState('');
-
-  const handleSubmit = async () => {
-    const emails = parseEmails(emailInput);
-    if (emails.length === 0) {
-      alert(ERR_NO_EMAILS);
-      return;
-    }
-    await postEmails(MANUAL_OFFBOARD_ENDPOINT, emails);
-    alert(SUCCESS_MANUAL);
-    setEmailInput('');
-    onOpenChange(false);
-    onSuccess();
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{MANUAL_OFFBOARD_TITLE}</DialogTitle>
-        </DialogHeader>
-        <Text size="2" color="gray">
-          {MANUAL_OFFBOARD_DESCRIPTION}
-        </Text>
-        <Textarea
-          placeholder={MANUAL_OFFBOARD_PLACEHOLDER}
-          value={emailInput}
-          onChange={e => setEmailInput(e.target.value)}
-          rows={3}
-        />
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {ACTION_CANCEL}
-          </Button>
-          <Button variant="destructive" onClick={handleSubmit}>
-            {ACTION_MANUAL_OFFBOARD}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
 export default function EmployeesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tab = searchParams.get('tab') ?? TAB_ACTIVE;
+  const tab = searchParams.get(TAB_QUERY_KEY) ?? TAB_ACTIVE;
 
   const incoming = useEmployeesTab(INCOMING_ENDPOINT);
   const active = useEmployeesTab(ACTIVE_ENDPOINT);
   const inactive = useEmployeesTab(INACTIVE_ENDPOINT);
-  const [manualOffboardOpen, setManualOffboardOpen] = useState(false);
+  const [selectedIncoming, setSelectedIncoming] = useState<Set<string>>(
+    new Set(),
+  );
+  const [selectedActive, setSelectedActive] = useState<Set<string>>(new Set());
+  const [selectedInactive, setSelectedInactive] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const makeSelectionHandlers = (
+    setSelected: React.Dispatch<React.SetStateAction<Set<string>>>,
+    getEmails: () => string[],
+  ) => ({
+    toggleEmail: (email: string) =>
+      setSelected(prev => {
+        const next = new Set(prev);
+        if (next.has(email)) next.delete(email);
+        else next.add(email);
+        return next;
+      }),
+    toggleAll: () =>
+      setSelected(prev => {
+        const allEmails = getEmails();
+        const allSelected = allEmails.every(e => prev.has(e));
+        return allSelected ? new Set() : new Set(allEmails);
+      }),
+  });
+
+  const incomingSelection = makeSelectionHandlers(setSelectedIncoming, () =>
+    incoming.data.map(e => e.email),
+  );
+  const activeSelection = makeSelectionHandlers(setSelectedActive, () =>
+    active.data.map(e => e.email),
+  );
+  const inactiveSelection = makeSelectionHandlers(setSelectedInactive, () =>
+    inactive.data.map(e => e.email),
+  );
 
   const onTabChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', value);
+    params.set(TAB_QUERY_KEY, value);
     router.replace(`?${params.toString()}`);
   };
 
@@ -285,9 +285,10 @@ export default function EmployeesPage() {
     inactive.reload();
   };
 
-  const onboardAll = async () => {
-    await fetch(ONBOARD_ENDPOINT);
-    alert(SUCCESS_ONBOARD);
+  const onboardOne = async (email: string) => {
+    if (!requireEmail(email)) return;
+    await postEmails(MANUAL_ONBOARD_ENDPOINT, [email]);
+    alert(SUCCESS_ONBOARD_ONE);
     incoming.reload();
     active.reload();
   };
@@ -298,11 +299,34 @@ export default function EmployeesPage() {
     active.reload();
   };
 
-  const offboardInactive = async () => {
-    await fetch(OFFBOARD_ENDPOINT);
-    alert(SUCCESS_OFFBOARD_INACTIVE);
+  const offboardSelected = async () => {
+    const emails = Array.from(selectedInactive);
+    if (emails.length === 0) return;
+    await postEmails(MANUAL_OFFBOARD_ENDPOINT, emails);
+    alert(SUCCESS_OFFBOARD_SELECTED);
+    setSelectedInactive(new Set());
     active.reload();
     inactive.reload();
+  };
+
+  const offboardSelectedActive = async () => {
+    const emails = Array.from(selectedActive);
+    if (emails.length === 0) return;
+    await postEmails(MANUAL_OFFBOARD_ENDPOINT, emails);
+    alert(SUCCESS_OFFBOARD_SELECTED);
+    setSelectedActive(new Set());
+    active.reload();
+    inactive.reload();
+  };
+
+  const onboardSelected = async () => {
+    const emails = Array.from(selectedIncoming);
+    if (emails.length === 0) return;
+    await postEmails(MANUAL_ONBOARD_ENDPOINT, emails);
+    alert(SUCCESS_ONBOARD_SELECTED);
+    setSelectedIncoming(new Set());
+    incoming.reload();
+    active.reload();
   };
 
   const postRetentionCleanup = async () => {
@@ -322,6 +346,18 @@ export default function EmployeesPage() {
     },
   ];
 
+  const buildIncomingActions = (emp: Employee): EllipsisAction[] => [
+    {
+      label: ACTION_ONBOARD_ONE,
+      color: 'green',
+      onSelect: () => onboardOne(emp.email),
+      confirm: {
+        title: CONFIRM_ONBOARD_TITLE,
+        description: onboardConfirmDescription(emp.email),
+      },
+    },
+  ];
+
   const buildInactiveActions = (emp: Employee): EllipsisAction[] => [
     {
       label: ACTION_RECOVER,
@@ -336,9 +372,6 @@ export default function EmployeesPage() {
 
   return (
     <div className={PAGE_CONTAINER}>
-      <Text size="6" weight="bold">
-        {PAGE_HEADING}
-      </Text>
       <Tabs value={tab} onValueChange={onTabChange}>
         <TabsList>
           <TabsTrigger value={TAB_INCOMING}>{LABEL_INCOMING}</TabsTrigger>
@@ -346,75 +379,125 @@ export default function EmployeesPage() {
           <TabsTrigger value={TAB_INACTIVE}>{LABEL_INACTIVE}</TabsTrigger>
         </TabsList>
         <TabsContent value={TAB_INCOMING}>
-          <div className="space-y-4">
-            {!incoming.loading && incoming.data.length > 0 && (
-              <CardContainer title={ONBOARD_CARD_TITLE}>
-                <Text size="2" color="gray">
-                  {ONBOARD_CARD_DESCRIPTION}
-                </Text>
-                <div>
-                  <Button onClick={onboardAll}>{ACTION_ONBOARD}</Button>
+          <Card>
+            <div className="space-y-4 p-4">
+              {!incoming.loading && incoming.data.length > 0 && (
+                <div className="flex justify-end">
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                      <Button
+                        variant="outline"
+                        disabled={selectedIncoming.size === 0}
+                      >
+                        {BULK_ACTIONS_LABEL}
+                      </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item
+                        onSelect={() => void onboardSelected()}
+                      >
+                        {ACTION_ONBOARD_SELECTED}
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
                 </div>
-              </CardContainer>
-            )}
-            <EmployeeTable
-              employees={incoming.data}
-              loading={incoming.loading}
-            />
-          </div>
+              )}
+              <EmployeeTable
+                employees={incoming.data}
+                loading={incoming.loading}
+                buildActions={buildIncomingActions}
+                selection={{
+                  selectedEmails: selectedIncoming,
+                  toggleEmail: incomingSelection.toggleEmail,
+                  toggleAll: incomingSelection.toggleAll,
+                }}
+              />
+            </div>
+          </Card>
         </TabsContent>
         <TabsContent value={TAB_ACTIVE}>
-          <div className="space-y-4">
-            <Button variant="outline" onClick={syncData}>
-              {ACTION_SYNC}
-            </Button>
-            {!active.loading && active.data.length === 0 ? (
-              <Text size="2" color="gray">
-                {EMPTY_TEXT}
-              </Text>
-            ) : (
-              <EmployeeTable
-                employees={active.data}
-                loading={active.loading}
-                buildActions={buildActiveActions}
-              />
-            )}
-          </div>
+          <Card>
+            <div className="space-y-4 p-4">
+              {!active.loading && active.data.length > 0 && (
+                <div className="flex justify-end">
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                      <Button variant="outline">{BULK_ACTIONS_LABEL}</Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item
+                        color="red"
+                        disabled={selectedActive.size === 0}
+                        onSelect={() => void offboardSelectedActive()}
+                      >
+                        {ACTION_OFFBOARD_SELECTED}
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item onSelect={() => void syncData()}>
+                        {ACTION_SYNC}
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                </div>
+              )}
+              {!active.loading && active.data.length === 0 ? (
+                <Text size="2" color="gray">
+                  {EMPTY_TEXT}
+                </Text>
+              ) : (
+                <EmployeeTable
+                  employees={active.data}
+                  loading={active.loading}
+                  buildActions={buildActiveActions}
+                  selection={{
+                    selectedEmails: selectedActive,
+                    toggleEmail: activeSelection.toggleEmail,
+                    toggleAll: activeSelection.toggleAll,
+                  }}
+                />
+              )}
+            </div>
+          </Card>
         </TabsContent>
         <TabsContent value={TAB_INACTIVE}>
-          <div className="space-y-4">
-            {!inactive.loading && inactive.data.length > 0 && (
-              <div className="flex gap-2">
-                <Button onClick={offboardInactive}>
-                  {ACTION_OFFBOARD_INACTIVE}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setManualOffboardOpen(true)}
-                >
-                  {ACTION_MANUAL_OFFBOARD}
-                </Button>
-                <Button variant="destructive" onClick={postRetentionCleanup}>
-                  {ACTION_RETENTION}
-                </Button>
-              </div>
-            )}
-            <EmployeeTable
-              employees={inactive.data}
-              loading={inactive.loading}
-              buildActions={buildInactiveActions}
-            />
-          </div>
+          <Card>
+            <div className="space-y-4 p-4">
+              {!inactive.loading && inactive.data.length > 0 && (
+                <div className="flex justify-end">
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                      <Button variant="outline">{BULK_ACTIONS_LABEL}</Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item
+                        disabled={selectedInactive.size === 0}
+                        onSelect={() => void offboardSelected()}
+                      >
+                        {ACTION_OFFBOARD_SELECTED}
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        color="red"
+                        onSelect={() => void postRetentionCleanup()}
+                      >
+                        {ACTION_RETENTION}
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                </div>
+              )}
+              <EmployeeTable
+                employees={inactive.data}
+                loading={inactive.loading}
+                buildActions={buildInactiveActions}
+                selection={{
+                  selectedEmails: selectedInactive,
+                  toggleEmail: inactiveSelection.toggleEmail,
+                  toggleAll: inactiveSelection.toggleAll,
+                }}
+              />
+            </div>
+          </Card>
         </TabsContent>
       </Tabs>
-      <ManualOffboardModal
-        open={manualOffboardOpen}
-        onOpenChange={setManualOffboardOpen}
-        onSuccess={() => {
-          active.reload();
-          inactive.reload();
-        }}
-      />
     </div>
   );
 }

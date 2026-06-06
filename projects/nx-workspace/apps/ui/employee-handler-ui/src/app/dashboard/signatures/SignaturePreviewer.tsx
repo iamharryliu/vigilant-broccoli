@@ -2,325 +2,126 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  EllipsisCTA,
-  Select,
-  Textarea,
-  type EllipsisAction,
+  CopyButton,
+  DownloadButton,
+  SearchInput,
+  type DownloadAction,
 } from '@vigilant-broccoli/react-lib';
-import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { Text } from '@radix-ui/themes';
+import { DEMO_SIGNATURE, renderTemplate, Signature } from './signatures.shared';
 
 const LIST_ENDPOINT = '/api/signature/list';
-const UPDATE_ENDPOINT = '/api/signature/update';
-const FRAME_TITLE = 'Email signature preview';
 const LOADING_TEXT = 'Loading...';
-const DEMO_EMAIL = 'demo@example.com';
 
-const VIEW_AS_LABEL = 'Preview as:';
-const CUSTOM_PLACEHOLDER = 'Paste signature HTML here...';
-const APPLY_LABEL = 'Apply';
-const PRESETS_LABEL = 'Presets';
-const EDIT_HTML_LABEL = 'Edit HTML';
-const APPLY_PRESET_LABEL = 'Apply Preset';
-const CANCEL_LABEL = 'Cancel';
-const PRESET_MODAL_TITLE = 'Select a preset';
-const ACTION_DOWNLOAD = 'Download HTML';
-const ACTION_COPY = 'Copy HTML';
+const FILTER_PLACEHOLDER = 'Filter employees...';
+const NO_MATCH_TEXT = 'No employees match your filter';
+const ACTION_DOWNLOAD_HTML = 'Download Employee Signature';
+const ACTION_DOWNLOAD_ZIP = 'Download All Employee Signatures';
 const DOWNLOAD_FILENAME = 'signature.html';
 const MIME_TYPE_HTML = 'text/html';
-
-const MODE_PRESETS = 'presets' as const;
-const MODE_CUSTOM = 'custom' as const;
-
-const FRAME_CLASS =
-  'w-full min-h-[180px] bg-white border border-border rounded-md';
-
-type Signature = {
-  email: string;
-  signatureString: string;
-  firstName?: string;
-  lastName?: string;
-};
-
-const COMPANY_NAME = 'Company Name';
-const COMPANY_WEBSITE = 'https://www.company.com';
-
-const DEMO_SIGNATURE: Signature = {
-  email: DEMO_EMAIL,
-  firstName: 'Demo',
-  lastName: 'User',
-  signatureString: '',
-};
-
-const sigName = (sig: Signature) =>
-  [sig.firstName, sig.lastName].filter(Boolean).join(' ').trim() || sig.email;
-
-const PLACEHOLDER_NAME = '{{name}}';
-const PLACEHOLDER_EMAIL = '{{email}}';
-
-type DefaultTemplate = {
-  label: string;
-  template: string;
-};
-
-const renderTemplate = (template: string, sig: Signature) =>
-  template
-    .replaceAll(PLACEHOLDER_NAME, sigName(sig))
-    .replaceAll(PLACEHOLDER_EMAIL, sig.email);
-
-const DEFAULT_TEMPLATES: DefaultTemplate[] = [
-  {
-    label: 'Minimal',
-    template: `<div style="font-family: Arial, sans-serif; color: #333; font-size: 13px;">
-  <strong>{{name}}</strong><br/>
-  <a href="mailto:{{email}}" style="color: #0073e6; text-decoration: none;">{{email}}</a>
-</div>`,
-  },
-  {
-    label: 'Standard',
-    template: `<div style="font-family: Arial, sans-serif; color: #333;">
-  <p style="margin: 0; font-size: 16px;"><strong>{{name}}</strong></p>
-  <p style="margin: 4px 0; font-size: 13px;">
-    <a href="mailto:{{email}}" style="color: #0073e6; text-decoration: none;">{{email}}</a>
-  </p>
-  <p style="margin: 4px 0; font-size: 13px; color: #666;">${COMPANY_NAME} | <a href="${COMPANY_WEBSITE}" style="color: #0073e6; text-decoration: none;">${COMPANY_WEBSITE.replace(/^https?:\/\//, '')}</a></p>
-</div>`,
-  },
-  {
-    label: 'Bold',
-    template: `<div style="font-family: Georgia, serif; color: #111; border-left: 3px solid #0073e6; padding-left: 10px;">
-  <p style="margin: 0; font-size: 15px; font-weight: bold;">{{name}}</p>
-  <p style="margin: 3px 0; font-size: 13px;">
-    <a href="mailto:{{email}}" style="color: #0073e6; text-decoration: none;">{{email}}</a>
-  </p>
-  <p style="margin: 3px 0; font-size: 12px; color: #777;">${COMPANY_NAME}</p>
-</div>`,
-  },
-];
+const ZIP_FILENAME = 'signatures.zip';
+const DOWNLOAD_ZIP_ENDPOINT = '/api/signature/downloadZippedSignatures';
 
 const displayName = (sig: Signature) => {
   const name = [sig.firstName, sig.lastName].filter(Boolean).join(' ').trim();
   return name ? `${name} (${sig.email})` : sig.email;
 };
 
-const toSrcDoc = (html: string) =>
-  `<!doctype html><html><body style="margin:16px;">${html}</body></html>`;
+const triggerDownload = (blob: Blob, filename: string) => {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
 
-type Mode = typeof MODE_PRESETS | typeof MODE_CUSTOM;
-
-export const SignaturePreviewer = () => {
+export const SignaturePreviewer = ({
+  activeTemplate,
+}: {
+  activeTemplate: string;
+}) => {
   const [signatures, setSignatures] = useState<Signature[]>([]);
-  const [selected, setSelected] = useState<Signature>(DEMO_SIGNATURE);
   const [loading, setLoading] = useState(true);
-  const [mode, setMode] = useState<Mode>(MODE_PRESETS);
-  const [selectedPreset, setSelectedPreset] = useState<DefaultTemplate>(
-    DEFAULT_TEMPLATES[1],
-  );
-  const [pendingPreset, setPendingPreset] = useState<DefaultTemplate>(
-    DEFAULT_TEMPLATES[1],
-  );
-  const [customHtml, setCustomHtml] = useState('');
-  const [appliedCustomHtml, setAppliedCustomHtml] = useState('');
-  const [presetModalOpen, setPresetModalOpen] = useState(false);
-  const [customModalOpen, setCustomModalOpen] = useState(false);
+  const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
     fetch(LIST_ENDPOINT)
       .then(res => res.json())
       .then((data: { signatures: Signature[] }) => {
-        const sigs = data.signatures ?? [];
-        setSignatures(sigs);
-        const first = sigs[0];
-        if (first?.signatureString) {
-          setSelected(first);
-          setCustomHtml(first.signatureString);
-          setAppliedCustomHtml(first.signatureString);
-          setMode(MODE_CUSTOM);
-        }
+        setSignatures(data.signatures ?? []);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  const options = useMemo<Signature[]>(
+  const allSignatures = useMemo<Signature[]>(
     () => [DEMO_SIGNATURE, ...signatures],
     [signatures],
   );
 
-  const onSelectEmployee = (sig: Signature) => {
-    setSelected(sig);
-    if (sig.signatureString) {
-      setCustomHtml(sig.signatureString);
-      setAppliedCustomHtml(sig.signatureString);
-      setMode(MODE_CUSTOM);
-    } else {
-      setMode(MODE_PRESETS);
-    }
+  const filteredSignatures = useMemo<Signature[]>(() => {
+    const needle = filterText.trim().toLowerCase();
+    if (!needle) return allSignatures;
+    return allSignatures.filter(sig =>
+      displayName(sig).toLowerCase().includes(needle),
+    );
+  }, [allSignatures, filterText]);
+
+  const downloadHtmlFor = (sig: Signature) => () => {
+    const html = renderTemplate(activeTemplate, sig);
+    triggerDownload(
+      new Blob([html], { type: MIME_TYPE_HTML }),
+      DOWNLOAD_FILENAME,
+    );
   };
 
-  const pushSignature = (email: string, template: string) => {
-    if (email === DEMO_EMAIL) return;
-    fetch(UPDATE_ENDPOINT, {
-      method: HTTP_METHOD.POST,
-      headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
-      body: JSON.stringify({ email, template }),
-    });
+  const downloadZipped = async () => {
+    const res = await fetch(DOWNLOAD_ZIP_ENDPOINT);
+    const blob = await res.blob();
+    triggerDownload(blob, ZIP_FILENAME);
   };
-
-  const openPresetModal = () => {
-    setPendingPreset(selectedPreset);
-    setPresetModalOpen(true);
-  };
-
-  const confirmPreset = () => {
-    setSelectedPreset(pendingPreset);
-    setCustomHtml(pendingPreset.template);
-    setAppliedCustomHtml(pendingPreset.template);
-    setMode(MODE_CUSTOM);
-    setPresetModalOpen(false);
-    pushSignature(selected.email, pendingPreset.template);
-  };
-
-  const openCustomModal = () => {
-    if (!customHtml) setCustomHtml(selectedPreset.template);
-    setAppliedCustomHtml(customHtml || selectedPreset.template);
-    setCustomModalOpen(true);
-  };
-
-  const applyCustom = () => {
-    setAppliedCustomHtml(customHtml);
-    setMode(MODE_CUSTOM);
-    setCustomModalOpen(false);
-    pushSignature(selected.email, customHtml);
-  };
-
-  const downloadHtml = () => {
-    const blob = new Blob([previewHtml], { type: MIME_TYPE_HTML });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = DOWNLOAD_FILENAME;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const copyHtml = () => navigator.clipboard.writeText(previewHtml);
-
-  const previewActions: EllipsisAction[] = [
-    { label: PRESETS_LABEL, onSelect: openPresetModal },
-    { label: EDIT_HTML_LABEL, onSelect: openCustomModal },
-  ];
-
-  const exportActions: EllipsisAction[] = [
-    { label: ACTION_COPY, onSelect: copyHtml },
-    { label: ACTION_DOWNLOAD, onSelect: downloadHtml },
-  ];
-
-  const previewHtml = useMemo(() => {
-    const template =
-      mode === MODE_CUSTOM ? appliedCustomHtml : selectedPreset.template;
-    return renderTemplate(template, selected);
-  }, [mode, selectedPreset, selected, appliedCustomHtml]);
-
-  const modalPreviewHtml = useMemo(
-    () => renderTemplate(pendingPreset.template, selected),
-    [pendingPreset, selected],
-  );
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Text size="2" color="gray">
-            {VIEW_AS_LABEL}
-          </Text>
-          {loading ? (
-            <Text size="2" color="gray">
-              {LOADING_TEXT}
-            </Text>
-          ) : (
-            <Select<Signature>
-              options={options}
-              selectedOption={selected}
-              setValue={onSelectEmployee}
-              optionIdenfifier="email"
-              renderItem={displayName}
-            />
-          )}
-        </div>
-        <EllipsisCTA actions={previewActions} />
-      </div>
+      <SearchInput
+        placeholder={FILTER_PLACEHOLDER}
+        value={filterText}
+        onChange={e => setFilterText(e.target.value)}
+      />
 
-      <div className="relative">
-        <iframe
-          title={FRAME_TITLE}
-          srcDoc={toSrcDoc(previewHtml)}
-          className={FRAME_CLASS}
-          sandbox=""
-        />
-        <div className="absolute top-2 right-2">
-          <EllipsisCTA actions={exportActions} />
-        </div>
-      </div>
-
-      <Dialog open={presetModalOpen} onOpenChange={setPresetModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{PRESET_MODAL_TITLE}</DialogTitle>
-          </DialogHeader>
-          <div className="flex gap-2 flex-wrap">
-            {DEFAULT_TEMPLATES.map(t => (
-              <Button
-                key={t.label}
-                size="sm"
-                variant={
-                  pendingPreset.label === t.label ? 'default' : 'outline'
-                }
-                onClick={() => setPendingPreset(t)}
+      {loading ? (
+        <Text size="2" color="gray">
+          {LOADING_TEXT}
+        </Text>
+      ) : filteredSignatures.length === 0 ? (
+        <Text size="2" color="gray">
+          {NO_MATCH_TEXT}
+        </Text>
+      ) : (
+        <div className="space-y-6">
+          {filteredSignatures.map(sig => {
+            const html = renderTemplate(activeTemplate, sig);
+            const downloadActions: DownloadAction[] = [
+              { label: ACTION_DOWNLOAD_HTML, onSelect: downloadHtmlFor(sig) },
+              { label: ACTION_DOWNLOAD_ZIP, onSelect: downloadZipped },
+            ];
+            return (
+              <div
+                key={sig.email}
+                className="flex items-start justify-between gap-2"
               >
-                {t.label}
-              </Button>
-            ))}
-          </div>
-          <iframe
-            title={FRAME_TITLE}
-            srcDoc={toSrcDoc(modalPreviewHtml)}
-            className={FRAME_CLASS}
-            sandbox=""
-          />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPresetModalOpen(false)}>
-              {CANCEL_LABEL}
-            </Button>
-            <Button onClick={confirmPreset}>{APPLY_PRESET_LABEL}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={customModalOpen} onOpenChange={setCustomModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{EDIT_HTML_LABEL}</DialogTitle>
-          </DialogHeader>
-          <Textarea
-            placeholder={CUSTOM_PLACEHOLDER}
-            value={customHtml}
-            onChange={e => setCustomHtml(e.target.value)}
-            rows={6}
-          />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCustomModalOpen(false)}>
-              {CANCEL_LABEL}
-            </Button>
-            <Button onClick={applyCustom}>{APPLY_LABEL}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                <div dangerouslySetInnerHTML={{ __html: html }} />
+                <div className="flex gap-1 shrink-0">
+                  <CopyButton text={html} />
+                  <DownloadButton actions={downloadActions} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

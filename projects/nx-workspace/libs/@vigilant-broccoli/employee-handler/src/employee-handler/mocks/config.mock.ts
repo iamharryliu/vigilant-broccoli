@@ -103,7 +103,14 @@ const buildSignature = (employee: MockEmployee): string =>
   <p style="margin: 4px 0; font-size: 13px; color: #666;">${COMPANY_NAME} | <a href="${COMPANY_WEBSITE}" style="color: #0073e6; text-decoration: none;">${COMPANY_WEBSITE.replace(/^https?:\/\//, '')}</a></p>
 </div>`;
 
-const signatureTemplateOverrides = new Map<string, string>();
+const GLOBAL_OVERRIDES_KEY = '__employeeHandlerSignatureOverrides__';
+type GlobalWithOverrides = typeof globalThis & {
+  [GLOBAL_OVERRIDES_KEY]?: Map<string, string>;
+};
+const globalScope = globalThis as GlobalWithOverrides;
+const signatureTemplateOverrides: Map<string, string> =
+  globalScope[GLOBAL_OVERRIDES_KEY] ??
+  (globalScope[GLOBAL_OVERRIDES_KEY] = new Map<string, string>());
 
 const generateMockSignatures = (employees: MockEmployee[]) =>
   employees.map(employee => {
