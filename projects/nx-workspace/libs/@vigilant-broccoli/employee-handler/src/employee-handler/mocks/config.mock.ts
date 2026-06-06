@@ -110,11 +110,10 @@ const generateMockSignatures = (employees: MockEmployee[]) =>
     const template = signatureTemplateOverrides.get(employee.email);
     const signatureString = template
       ? template
-          .replaceAll(
-            '{{name}}',
-            `${employee.firstName} ${employee.lastName}`.trim(),
-          )
-          .replaceAll('{{email}}', employee.email)
+          .split('{{name}}')
+          .join(`${employee.firstName} ${employee.lastName}`.trim())
+          .split('{{email}}')
+          .join(employee.email)
       : buildSignature(employee);
     return { ...employee, signatureString };
   });

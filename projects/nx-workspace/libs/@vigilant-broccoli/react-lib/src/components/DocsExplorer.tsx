@@ -64,6 +64,7 @@ interface DocsExplorerProps {
   sidebarTitle?: string;
   searchPlaceholder?: string;
   emptyMessage?: string;
+  onEdit?: () => void;
 }
 
 const COPY = {
@@ -75,6 +76,8 @@ const COPY = {
   LOADING_CONTENT: 'Loading file content...',
   LOAD_CONTENT_ERROR: 'Failed to load file content',
   COPY_MARKDOWN: 'Copy markdown',
+  EDIT: 'Edit',
+  DOCUMENT_ACTIONS: 'Document actions',
   BACK_TO_FILES: 'Back to files',
 } as const;
 
@@ -87,6 +90,7 @@ export const DocsExplorer = ({
   sidebarTitle = COPY.SIDEBAR_TITLE,
   searchPlaceholder = COPY.SEARCH_PLACEHOLDER,
   emptyMessage = COPY.EMPTY_MESSAGE,
+  onEdit,
 }: DocsExplorerProps) => {
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [content, setContent] = useState('');
@@ -307,10 +311,15 @@ export const DocsExplorer = ({
                   <IconButton
                     variant="ghost"
                     icon="ellipsis-horizontal"
-                    aria-label="Document actions"
+                    aria-label={COPY.DOCUMENT_ACTIONS}
                   />
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
+                  {onEdit && (
+                    <DropdownMenu.Item onSelect={onEdit}>
+                      {COPY.EDIT}
+                    </DropdownMenu.Item>
+                  )}
                   <DropdownMenu.Item
                     onSelect={() => navigator.clipboard.writeText(content)}
                   >

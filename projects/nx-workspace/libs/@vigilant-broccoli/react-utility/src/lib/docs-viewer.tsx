@@ -59,6 +59,7 @@ export function DocsViewer({
   const [isLoadingTree, setIsLoadingTree] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>(VIEW_MODE.MARKDOWN);
   const [activeFile, setActiveFile] = useState<string>(urlSync?.get() ?? '');
+  const [editTrigger, setEditTrigger] = useState(0);
 
   useEffect(() => {
     getStructure()
@@ -93,6 +94,8 @@ export function DocsViewer({
     [urlSync],
   );
 
+  const canEdit = Boolean(saveContent && activeFile);
+
   const renderContent = (content: string) => (
     <div className="flex flex-col h-full">
       <div className={CLS.TOOLBAR}>
@@ -115,6 +118,7 @@ export function DocsViewer({
             content={content}
             filePath={activeFile}
             saveContent={saveContent}
+            editTrigger={editTrigger}
           />
         )}
       </div>
@@ -136,6 +140,7 @@ export function DocsViewer({
       search={search}
       urlSync={wrappedUrlSync}
       emptyMessage={COPY.EMPTY}
+      onEdit={canEdit ? () => setEditTrigger(t => t + 1) : undefined}
     />
   );
 }

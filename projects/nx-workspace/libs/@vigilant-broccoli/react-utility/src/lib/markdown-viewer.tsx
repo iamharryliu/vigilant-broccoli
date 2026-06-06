@@ -18,7 +18,6 @@ const CLS = {
 } as const;
 
 const COPY = {
-  EDIT: 'Edit',
   SAVE: 'Save',
   SAVING: 'Saving...',
   CANCEL: 'Cancel',
@@ -29,12 +28,14 @@ interface MarkdownViewerProps {
   content: string;
   filePath?: string;
   saveContent?: (path: string, content: string) => Promise<void>;
+  editTrigger?: number;
 }
 
 export function MarkdownViewer({
   content,
   filePath,
   saveContent,
+  editTrigger,
 }: MarkdownViewerProps) {
   const [html, setHtml] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -46,13 +47,17 @@ export function MarkdownViewer({
     marked.parse(content, { async: true }).then(setHtml);
   }, [content]);
 
+  const canEdit = Boolean(saveContent && filePath);
+
   useEffect(() => {
     setIsEditing(false);
     setError(null);
     setDraft(content);
   }, [content, filePath]);
 
-  const canEdit = Boolean(saveContent && filePath);
+  useEffect(() => {
+    if (editTrigger && canEdit) startEdit();
+  }, [editTrigger]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const startEdit = () => {
     setDraft(content);
@@ -113,21 +118,8 @@ export function MarkdownViewer({
   }
 
   return (
-    <div className={CLS.EDITOR_WRAP}>
-      {canEdit && (
-        <div className={CLS.TOOLBAR}>
-          <button
-            type="button"
-            onClick={startEdit}
-            className={`${CLS.BTN_BASE} ${CLS.BTN_SECONDARY}`}
-          >
-            {COPY.EDIT}
-          </button>
-        </div>
-      )}
-      <div className={CLS.ROOT}>
-        <div className={CLS.PROSE} dangerouslySetInnerHTML={{ __html: html }} />
-      </div>
+    <div className={CLS.ROOT}>
+      <div className={CLS.PROSE} dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   );
 }
