@@ -21,6 +21,12 @@
       }
     },
     "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 nx run employee-handler-ui:serve:dev"
+      }
+    },
+    "serve:dev": {
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
       "options": {

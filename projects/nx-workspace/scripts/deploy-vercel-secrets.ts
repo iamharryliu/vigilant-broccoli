@@ -111,10 +111,16 @@ async function main() {
       NEXT_PUBLIC_APP_URL: 'https://vb-next-demo.vercel.app/',
       VB_EXPRESS_URL: 'https://vb-express.fly.dev',
     },
+    'employee-handler-ui': {
+      NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+        'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
+    },
   };
 
   const projectEnvExamples: Record<string, string> = {
     'next-demo': 'apps/next-demo/.env.local.example',
+    'employee-handler-ui': 'apps/ui/employee-handler-ui/.env.example',
   };
 
   const hardcoded = hardcodedSecrets[projectName];
