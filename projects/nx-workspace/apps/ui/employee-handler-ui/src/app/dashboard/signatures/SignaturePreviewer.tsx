@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
-  CardContainer,
   Dialog,
   DialogContent,
   DialogFooter,
@@ -19,7 +18,6 @@ import { Text } from '@radix-ui/themes';
 
 const LIST_ENDPOINT = '/api/signature/list';
 const UPDATE_ENDPOINT = '/api/signature/update';
-const PREVIEW_TITLE = 'Signature previewer';
 const FRAME_TITLE = 'Email signature preview';
 const LOADING_TEXT = 'Loading...';
 const DEMO_EMAIL = 'demo@example.com';
@@ -35,6 +33,10 @@ const PRESET_MODAL_TITLE = 'Select a preset';
 const ACTION_DOWNLOAD = 'Download HTML';
 const ACTION_COPY = 'Copy HTML';
 const DOWNLOAD_FILENAME = 'signature.html';
+const MIME_TYPE_HTML = 'text/html';
+
+const MODE_PRESETS = 'presets' as const;
+const MODE_CUSTOM = 'custom' as const;
 
 const FRAME_CLASS =
   'w-full min-h-[180px] bg-white border border-border rounded-md';
@@ -110,13 +112,13 @@ const displayName = (sig: Signature) => {
 const toSrcDoc = (html: string) =>
   `<!doctype html><html><body style="margin:16px;">${html}</body></html>`;
 
-type Mode = 'presets' | 'custom';
+type Mode = typeof MODE_PRESETS | typeof MODE_CUSTOM;
 
 export const SignaturePreviewer = () => {
   const [signatures, setSignatures] = useState<Signature[]>([]);
   const [selected, setSelected] = useState<Signature>(DEMO_SIGNATURE);
   const [loading, setLoading] = useState(true);
-  const [mode, setMode] = useState<Mode>('presets');
+  const [mode, setMode] = useState<Mode>(MODE_PRESETS);
   const [selectedPreset, setSelectedPreset] = useState<DefaultTemplate>(
     DEFAULT_TEMPLATES[1],
   );
@@ -139,7 +141,7 @@ export const SignaturePreviewer = () => {
           setSelected(first);
           setCustomHtml(first.signatureString);
           setAppliedCustomHtml(first.signatureString);
-          setMode('custom');
+          setMode(MODE_CUSTOM);
         }
       })
       .finally(() => setLoading(false));
@@ -155,9 +157,9 @@ export const SignaturePreviewer = () => {
     if (sig.signatureString) {
       setCustomHtml(sig.signatureString);
       setAppliedCustomHtml(sig.signatureString);
-      setMode('custom');
+      setMode(MODE_CUSTOM);
     } else {
-      setMode('presets');
+      setMode(MODE_PRESETS);
     }
   };
 
@@ -179,7 +181,7 @@ export const SignaturePreviewer = () => {
     setSelectedPreset(pendingPreset);
     setCustomHtml(pendingPreset.template);
     setAppliedCustomHtml(pendingPreset.template);
-    setMode('custom');
+    setMode(MODE_CUSTOM);
     setPresetModalOpen(false);
     pushSignature(selected.email, pendingPreset.template);
   };
@@ -192,13 +194,13 @@ export const SignaturePreviewer = () => {
 
   const applyCustom = () => {
     setAppliedCustomHtml(customHtml);
-    setMode('custom');
+    setMode(MODE_CUSTOM);
     setCustomModalOpen(false);
     pushSignature(selected.email, customHtml);
   };
 
   const downloadHtml = () => {
-    const blob = new Blob([previewHtml], { type: 'text/html' });
+    const blob = new Blob([previewHtml], { type: MIME_TYPE_HTML });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -221,7 +223,7 @@ export const SignaturePreviewer = () => {
 
   const previewHtml = useMemo(() => {
     const template =
-      mode === 'custom' ? appliedCustomHtml : selectedPreset.template;
+      mode === MODE_CUSTOM ? appliedCustomHtml : selectedPreset.template;
     return renderTemplate(template, selected);
   }, [mode, selectedPreset, selected, appliedCustomHtml]);
 
@@ -231,7 +233,7 @@ export const SignaturePreviewer = () => {
   );
 
   return (
-    <CardContainer title={PREVIEW_TITLE}>
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Text size="2" color="gray">
@@ -319,6 +321,6 @@ export const SignaturePreviewer = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </CardContainer>
+    </div>
   );
 };

@@ -9,8 +9,7 @@ import {
   useTheme,
 } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';
-import { APP_LABEL, NAV_LINKS } from '../app.consts';
-import { ROUTES } from '../../lib/routes';
+import { NAV_LINKS } from '../app.consts';
 
 const LIGHT_MODE_LABEL = 'Light mode';
 const DARK_MODE_LABEL = 'Dark mode';
@@ -50,7 +49,6 @@ export default function Sidebar() {
     <SharedSidebar
       items={items}
       LinkComponent={Link}
-      branding={{ label: APP_LABEL, href: ROUTES.DASHBOARD }}
       className={SIDEBAR_POSITION}
     />
   );

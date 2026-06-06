@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, CardContainer, Textarea } from '@vigilant-broccoli/react-lib';
+import { Button, Textarea } from '@vigilant-broccoli/react-lib';
 import { Text } from '@radix-ui/themes';
 import { SignaturePreviewer } from './SignaturePreviewer';
 import {
@@ -14,7 +14,7 @@ const UPDATE_ENDPOINT = '/api/signature/updateEmailSignatures';
 const DOWNLOAD_ENDPOINT = '/api/signature/downloadZippedSignatures';
 const EMAIL_ENDPOINT = '/api/signature/emailZippedSignatures';
 
-const PAGE_HEADING = 'Signatures';
+const PREVIEW_TITLE = 'Signature previewer';
 const SUCCESS_UPDATE = 'Email signatures updated';
 const SUCCESS_DOWNLOAD = 'Signatures downloaded';
 const SUCCESS_EMAIL = 'Signatures emailed';
@@ -77,46 +77,38 @@ export default function SignaturesPage() {
 
   return (
     <div className={PAGE_CONTAINER}>
-      <Text size="6" weight="bold">
-        {PAGE_HEADING}
-      </Text>
-
+<Text size="3" weight="medium">{PREVIEW_TITLE}</Text>
       <SignaturePreviewer />
 
-      <CardContainer title={UPDATE_CARD_TITLE}>
-        <Text size="2" color="gray">
-          {UPDATE_CARD_DESCRIPTION}
-        </Text>
-        <div>
-          <Button onClick={updateSignatures}>{ACTION_UPDATE}</Button>
-        </div>
-      </CardContainer>
+      <hr className="border-border" />
 
-      <CardContainer title={DOWNLOAD_CARD_TITLE}>
-        <Text size="2" color="gray">
-          {DOWNLOAD_CARD_DESCRIPTION}
-        </Text>
-        <div>
-          <Button variant="outline" onClick={downloadZipped}>
-            {ACTION_DOWNLOAD}
-          </Button>
-        </div>
-      </CardContainer>
+      <div className="space-y-2">
+        <Text size="3" weight="medium">{UPDATE_CARD_TITLE}</Text>
+        <Text size="2" color="gray" as="div">{UPDATE_CARD_DESCRIPTION}</Text>
+        <Button onClick={updateSignatures}>{ACTION_UPDATE}</Button>
+      </div>
 
-      <CardContainer title={EMAIL_CARD_TITLE}>
-        <Text size="2" color="gray">
-          {EMAIL_CARD_DESCRIPTION}
-        </Text>
+      <hr className="border-border" />
+
+      <div className="space-y-2">
+        <Text size="3" weight="medium">{DOWNLOAD_CARD_TITLE}</Text>
+        <Text size="2" color="gray" as="div">{DOWNLOAD_CARD_DESCRIPTION}</Text>
+        <Button variant="outline" onClick={downloadZipped}>{ACTION_DOWNLOAD}</Button>
+      </div>
+
+      <hr className="border-border" />
+
+      <div className="space-y-2">
+        <Text size="3" weight="medium">{EMAIL_CARD_TITLE}</Text>
+        <Text size="2" color="gray" as="div">{EMAIL_CARD_DESCRIPTION}</Text>
         <Textarea
           placeholder={EMAIL_PLACEHOLDER}
           value={emailInput}
           onChange={e => setEmailInput(e.target.value)}
           rows={3}
         />
-        <div>
-          <Button onClick={emailZipped}>{ACTION_EMAIL}</Button>
-        </div>
-      </CardContainer>
+        <Button onClick={emailZipped}>{ACTION_EMAIL}</Button>
+      </div>
     </div>
   );
 }

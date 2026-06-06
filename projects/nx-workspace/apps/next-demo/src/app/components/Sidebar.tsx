@@ -11,7 +11,6 @@ import {
 import { NAV_LINKS } from '../app.consts';
 import { ROUTES } from '../../lib/routes';
 
-const APP_LABEL = 'next-demo';
 const LIGHT_MODE_LABEL = 'Light mode';
 const DARK_MODE_LABEL = 'Dark mode';
 const DARK = 'dark';
@@ -59,7 +58,6 @@ export default function Sidebar() {
       items={items}
       LinkComponent={Link}
       searchable
-      branding={{ label: APP_LABEL, href: ROUTES.HOME }}
       className={SIDEBAR_POSITION}
     />
   );
