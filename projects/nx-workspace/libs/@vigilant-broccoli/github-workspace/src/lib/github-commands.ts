@@ -42,6 +42,8 @@ export const GithubCLICommand = {
     `gh api -X PUT /orgs/${organizationName}/teams/${teamSlug}/repos/${organizationName}/${repoName} -f permission=${permission} > /dev/null`,
   deleteTeam: (organizationName: string, teamSlug: string) =>
     `gh api -X DELETE /orgs/${organizationName}/teams/${teamSlug}`,
+  getUserData: (username: string) =>
+    `gh api users/${username} --jq '.public_repos'`,
   getOrgMembers: (organizationName: string) =>
     `gh api orgs/${organizationName}/members --paginate`,
   getOrgAdmins: (organizationName: string) =>

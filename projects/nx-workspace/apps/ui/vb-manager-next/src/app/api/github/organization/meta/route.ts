@@ -12,5 +12,6 @@ export async function GET(request: NextRequest) {
     organizationName: organization,
     avatar_url: orgData.avatar_url,
     isOrgAdmin: role === 'admin',
+    repoCount: orgData.public_repos + orgData.total_private_repos,
   });
 }

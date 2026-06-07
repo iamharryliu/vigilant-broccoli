@@ -71,7 +71,11 @@ async function getTeamsData(
   return JSON.parse(teamsData) as GithubTeamsDTO[];
 }
 
-async function getOrgData(org: string): Promise<{ avatar_url: string }> {
+async function getOrgData(org: string): Promise<{
+  avatar_url: string;
+  public_repos: number;
+  total_private_repos: number;
+}> {
   const orgData = (await ShellUtils.runShellCommand(
     GithubCLICommand.getOrgData(org),
     true,
@@ -108,9 +112,20 @@ async function getOrgMembers(org: string): Promise<GithubOrgMember[]> {
       (a: GithubOrgMember) => a.login,
     ),
   );
-  return members.map(m => ({
+  const membersWithRoles = members.map(m => ({
     ...m,
-    role: adminLogins.has(m.login) ? 'admin' : 'member',
+    role: (adminLogins.has(m.login) ? 'admin' : 'member') as 'admin' | 'member',
+  }));
+  const repoCounts = await Promise.all(
+    membersWithRoles.map(m =>
+      ShellUtils.runShellCommand(GithubCLICommand.getUserData(m.login), true)
+        .then(res => parseInt(res as string, 10))
+        .catch(() => undefined),
+    ),
+  );
+  return membersWithRoles.map((m, i) => ({
+    ...m,
+    public_repos: repoCounts[i],
   }));
 }
 

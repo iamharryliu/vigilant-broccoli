@@ -35,6 +35,7 @@ interface OrgMeta {
   organizationName: string;
   avatar_url: string;
   isOrgAdmin: boolean;
+  repoCount: number;
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -110,9 +111,9 @@ export default function Page({
             {meta?.organizationName ?? organizationName}
           </Heading>
           <div className="flex items-center gap-2">
-            {repositories ? (
+            {meta ? (
               <Text size="2" color="gray">
-                {repositories.length} repo{repositories.length !== 1 ? 's' : ''}
+                {meta.repoCount} repo{meta.repoCount !== 1 ? 's' : ''}
               </Text>
             ) : (
               <Skeleton className="h-4 w-12" />
@@ -207,6 +208,11 @@ const memberToItem = (
   label: member.login,
   badges: (
     <div className="flex items-center gap-2">
+      {member.public_repos !== undefined && (
+        <Badge color="blue" size="1">
+          {member.public_repos} repos
+        </Badge>
+      )}
       {member.role && (
         <Badge color={member.role === 'admin' ? 'red' : 'gray'} size="1">
           {member.role}
@@ -518,7 +524,10 @@ const MembersList = ({
 };
 
 const teamMemberRow = (team: GithubTeam, member: GithubTeamMember) => (
-  <div key={`${team.name}-${member.username}`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+  <div
+    key={`${team.name}-${member.username}`}
+    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+  >
     <Avatar avatarUrl={member.avatar_url} size="xsmall" />
     <div style={{ flex: 1 }}>
       <GithubUserLink member={member} />
