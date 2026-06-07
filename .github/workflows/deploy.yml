@@ -356,14 +356,14 @@ jobs:
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/react-component-library/
-        run: pnpm exec nx run component-library:deploy-github-pages
+        run: pnpm exec nx run component-library:deploy-github-pages --skip-nx-cache
 
       - name: Stage docs-md pages artifact
         if: steps.check.outputs.has_deployments == 'true' && contains(steps.check.outputs.affected_projects, 'docs-md')
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/docs-md/
-        run: pnpm exec nx run docs-md:deploy-github-pages
+        run: pnpm exec nx run docs-md:deploy-github-pages --skip-nx-cache
 
       - name: Stage pages-index landing artifact
         if: steps.check.outputs.has_deployments == 'true'
