@@ -14,15 +14,25 @@ interface VercelProject {
 
 export async function GET() {
   try {
-    const { stdout } = await execAsync(VercelCommand.listProjects);
-    const parsed = JSON.parse(stdout);
-    const raw: VercelProject[] = parsed.projects ?? parsed;
+    const [projectsOut, teamsOut] = await Promise.all([
+      execAsync(VercelCommand.listProjects),
+      execAsync(VercelCommand.listTeams),
+    ]);
+
+    const parsedProjects = JSON.parse(projectsOut.stdout);
+    const raw: VercelProject[] = parsedProjects.projects ?? parsedProjects;
     const projects = raw.map(p => ({
       id: p.id,
       name: p.name,
       url: p.latestProductionUrl ?? null,
     }));
-    return NextResponse.json({ success: true, projects });
+
+    const parsedTeams = JSON.parse(teamsOut.stdout);
+    const org =
+      parsedTeams.teams?.find((t: { current: boolean }) => t.current)?.slug ??
+      null;
+
+    return NextResponse.json({ success: true, projects, org });
   } catch (error) {
     console.error('Error fetching Vercel projects:', error);
     return NextResponse.json(

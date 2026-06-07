@@ -22,31 +22,58 @@ interface VercelProject {
 interface VercelProjectsResponse {
   success: boolean;
   projects?: VercelProject[];
+  org?: string | null;
   error?: string;
 }
 
 const TITLE = 'Vercel Apps';
-const VERCEL_DASH = 'https://vercel.com';
+const VERCEL_BASE = 'https://vercel.com';
 const POLL_INTERVAL_MS = 60000;
 const FETCH_ERROR_MSG = 'Failed to fetch Vercel projects';
 
-const DASHBOARD_LINK = {
-  href: VERCEL_LINK.DASHBOARD.URL,
-  label: 'Dashboard',
-};
+const HEADER_LINK_CLASS =
+  'text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm';
 
-const getProjectButtons = (project: VercelProject): ButtonConfig[] => {
+const OrgLinks = () => (
+  <a
+    href={VERCEL_LINK.DASHBOARD.URL}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={HEADER_LINK_CLASS}
+  >
+    Dashboard →
+  </a>
+);
+
+const projectBase = (org: string, name: string) =>
+  `${VERCEL_BASE}/${org}/${name}`;
+
+const getProjectButtons = (
+  org: string,
+  project: VercelProject,
+): ButtonConfig[] => {
   const open = (url: string) =>
     window.open(url, '_blank', WINDOW_OPEN_FEATURES);
+  const base = projectBase(org, project.name);
   const buttons: ButtonConfig[] = [
     {
       label: 'Deployments',
-      onClick: () => open(`${VERCEL_DASH}/${project.name}`),
+      onClick: () => open(base),
+      isExternal: true,
+    },
+    {
+      label: 'Env Vars',
+      onClick: () => open(`${base}/settings/environment-variables`),
+      isExternal: true,
+    },
+    {
+      label: 'Logs',
+      onClick: () => open(`${base}/logs`),
       isExternal: true,
     },
     {
       label: 'Settings',
-      onClick: () => open(`${VERCEL_DASH}/${project.name}/settings`),
+      onClick: () => open(`${base}/settings`),
       isExternal: true,
     },
   ];
@@ -60,14 +87,15 @@ const getProjectButtons = (project: VercelProject): ButtonConfig[] => {
   return buttons;
 };
 
-const toItem = (project: VercelProject): StatusCardListItem => ({
+const toItem = (org: string, project: VercelProject): StatusCardListItem => ({
   id: project.id,
   label: project.name,
-  children: <ButtonList buttons={getProjectButtons(project)} />,
+  children: <ButtonList buttons={getProjectButtons(org, project)} />,
 });
 
 export const VercelAppsComponent = () => {
   const [projects, setProjects] = useState<VercelProject[]>([]);
+  const [org, setOrg] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,6 +110,7 @@ export const VercelAppsComponent = () => {
       }
       setError(null);
       setProjects(data.projects);
+      setOrg(data.org ?? null);
       setLoading(false);
     } catch {
       setError(FETCH_ERROR_MSG);
@@ -99,16 +128,16 @@ export const VercelAppsComponent = () => {
 
   if (error) {
     return (
-      <CardContainer title={TITLE} gap="3" headerLink={DASHBOARD_LINK}>
+      <CardContainer title={TITLE} gap="3" headerAction={<OrgLinks />}>
         <p className="text-sm text-red-500">{error}</p>
       </CardContainer>
     );
   }
 
   return (
-    <CardContainer title={TITLE} gap="3" headerLink={DASHBOARD_LINK}>
+    <CardContainer title={TITLE} gap="3" headerAction={<OrgLinks />}>
       <StatusCardList
-        items={projects.map(toItem)}
+        items={projects.map(p => toItem(org ?? '', p))}
         emptyMessage="No projects found"
       />
     </CardContainer>
