@@ -49,7 +49,7 @@ const CALENDAR_CONFIG: CalendarConfig = {
 
 export default function Page() {
   return (
-    <div className="grid grid-cols-2 gap-4 h-full mb-4">
+    <div className="grid grid-cols-2 gap-4 h-full overflow-hidden">
       <div className="flex flex-col h-full">
         <TaskListSelectorComponent />
       </div>
