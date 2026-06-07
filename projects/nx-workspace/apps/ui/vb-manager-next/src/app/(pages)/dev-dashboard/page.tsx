@@ -12,6 +12,7 @@ import { PublicIpComponent } from '../../components/public-ip.component';
 import { TailscaleMachinesComponent } from '../../components/tailscale-machines.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
 import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
+import { VercelAppsComponent } from '../../components/vercel-apps.component';
 
 export default function Page() {
   return (
@@ -27,6 +28,7 @@ export default function Page() {
         <GcloudAuthStatusComponent />
         <AwsManagementComponent />
         <FlyIoAppsComponent />
+        <VercelAppsComponent />
         <WranglerPagesComponent />
         <GithubPagesComponent />
       </div>

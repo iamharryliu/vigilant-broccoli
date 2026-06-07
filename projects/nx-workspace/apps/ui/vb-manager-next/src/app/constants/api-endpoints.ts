@@ -19,6 +19,9 @@ export const API_ENDPOINTS = {
   GCLOUD_SET_PROJECT: '/api/gcloud/set-project',
   GCLOUD_SET_ACCOUNT: '/api/gcloud/set-account',
 
+  // Vercel
+  VERCEL_PROJECTS: '/api/vercel/projects',
+
   // Fly.io
   FLYIO_APPS: '/api/flyio/apps',
   FLYIO_AUTH_LOGIN: '/api/flyio/auth/login',

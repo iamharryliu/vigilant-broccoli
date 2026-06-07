@@ -321,6 +321,13 @@ export const FLYIO_LINK = {
   },
 } as const;
 
+export const VERCEL_LINK = {
+  DASHBOARD: {
+    NAME: 'Vercel Dashboard',
+    URL: 'https://vercel.com/dashboard',
+  },
+} as const;
+
 export const GCP_LINK = {
   DASHBOARD: {
     NAME: 'GCP Dashboard',
