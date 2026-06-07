@@ -62,7 +62,6 @@
   - Headlight
   - Flashlight
 - Weather Dependent
-
   - Rain Clothes
   - Umbrella
 
@@ -107,15 +106,22 @@
 - Water tank
 - Thermos
 - Food Containers
+- utensils for day trek
 - Kitchen towels
 - Clever Dripper + coffee filter
 - spice rack
 - drink electrolytes
+- plastic egg container
+- foldable cups
 
 ## Food
 
 - Sandwiches
 - Noodles
+- eggs
+- ketchup
+- bread
+- spices: salt, pepper,
 
 ## Snacks
 
@@ -130,6 +136,7 @@
 - Energy drinks
 - ground coffee
 - tea leaves
+- milk
 
 ## Leisure
 
@@ -179,3 +186,5 @@
 - Hammocks
 - Matches + long lighter
 - Fly swatter
+- Trekking towel
+- [Leukutape](https://www.google.com/search?q=leuku+tape&oq=leuku+tape&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQABiABDIJCAIQABgKGIAEMg8IAxAuGAoYrwEYxwEYgAQyCQgEEAAYChiABDIJCAUQABgKGIAEMgkIBhAAGAoYgAQyCQgHEAAYChiABDIJCAgQABgKGIAEMgkICRAAGAoYgATSAQgxNjk5ajBqMagCALACAA&sourceid=chrome&ie=UTF-8)

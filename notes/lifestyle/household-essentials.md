@@ -16,6 +16,8 @@
 - [Tea Ball Strainer](https://www.google.com/search?q=tea+ball+strainer)
 - [Slotted Tablespoons](https://www.google.com/search?q=slotted+tablespoon)
 - [Spaghetti Spoon](https://www.google.com/search?q=spagetti+spoon) - Interestingly enough, the hole in the middle is used for measuring a serving!
+- [Spider skimmer](https://www.google.com/search?q=spider+straine)
+- [Balloon Whisk](https://www.google.com/search?q=balloon+whisk)
 - Water Spray Bottle
 
 ## Documentation

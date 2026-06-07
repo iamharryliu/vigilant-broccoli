@@ -31,10 +31,12 @@
   - Tent
   - Stakes
   - Mallet
-  - Duct Tape
   - Hanging Lights
   - Clothing Pins
   - Tarp
+  - Repair kit
+    - Thread and needle
+    - Duct Tape
 - **Sleeping**
   - Pillow
   - Sleeping Bag/Blanket
@@ -43,7 +45,9 @@
   - Toilet Paper
 - **Food and Water**
   - Food and Water
-  - Water Bottle
+  - Drinkware
+  - Water bottle
+  - Utensils
   - Optional:
     - Thermos
     - Cooler
