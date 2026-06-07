@@ -66,7 +66,7 @@
       "options": {
         "command": "echo 'Vercel deployment is triggered automatically on push. Running secrets sync only.'"
       },
-      "dependsOn": ["deploy:secrets"]
+      "dependsOn": ["deploy:secrets", "deploy-container"]
     },
     "lint": {
       "executor": "@nx/eslint:lint"
