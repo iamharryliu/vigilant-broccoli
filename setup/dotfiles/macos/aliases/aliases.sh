@@ -56,7 +56,7 @@ alertinterval() {
 # Homebrew
 alias brewinit="brew bundle --file $MAC_SETUP_DIR/Brewfile"
 alias brewup="brew update && brew upgrade && brew cleanup --prune=all --prune=all"
-alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP_DIR/Brewfile"
+alias brewdump="rm $MAC_SETUP_DIR/Brewfile && brew bundle dump --file=$MAC_SETUP_DIR/Brewfile && grep -v '^npm ' $MAC_SETUP_DIR/Brewfile > $MAC_SETUP_DIR/Brewfile.tmp && mv $MAC_SETUP_DIR/Brewfile.tmp $MAC_SETUP_DIR/Brewfile"
 alias pushbrew="cdvb && git add $MAC_SETUP_DIR/Brewfile && gc feat brew 'Update Brewfile.' && gpush"
 
 # npm global
