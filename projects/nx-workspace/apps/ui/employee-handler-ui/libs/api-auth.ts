@@ -4,6 +4,7 @@ import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
   GOOGLE_TOKEN_HEADER,
+  HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
 
 const ERROR_MISSING_BEARER = 'Missing bearer token';
@@ -16,7 +17,10 @@ const supabase = createClient(
 );
 
 const unauthorized = (message: string) =>
-  NextResponse.json({ error: message }, { status: 401 });
+  NextResponse.json(
+    { error: message },
+    { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+  );
 
 export const requireAuth = async (
   request: NextRequest,

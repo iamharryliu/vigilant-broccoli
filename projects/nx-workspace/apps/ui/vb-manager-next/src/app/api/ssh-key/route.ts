@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { homedir } from 'os';
@@ -10,15 +11,15 @@ export async function GET(_req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      key: sshKey.trim()
+      key: sshKey.trim(),
     });
   } catch (error) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to read SSH key. Make sure ~/.ssh/id_rsa.pub exists.'
+        error: 'Failed to read SSH key. Make sure ~/.ssh/id_rsa.pub exists.',
       },
-      { status: 500 }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

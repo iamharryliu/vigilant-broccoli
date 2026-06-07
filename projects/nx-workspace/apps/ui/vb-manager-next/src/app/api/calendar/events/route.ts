@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
@@ -66,7 +67,7 @@ export async function GET(req: NextRequest) {
         error:
           error instanceof Error ? error.message : 'Failed to fetch events',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }
@@ -106,7 +107,7 @@ export async function POST(req: NextRequest) {
         error:
           error instanceof Error ? error.message : 'Failed to create event',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

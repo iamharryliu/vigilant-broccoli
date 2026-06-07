@@ -1,5 +1,5 @@
 'use client';
-
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
@@ -116,7 +116,9 @@ const AccountItem = ({
   switchingProject,
   onSwitchAccount,
 }: AccountItemProps) => (
-  <div className={`flex items-center gap-2 flex-wrap ${`p-2 rounded border ${getAccountBorderStyle(isActive, needsAuth)}`}`}>
+  <div
+    className={`flex items-center gap-2 flex-wrap ${`p-2 rounded border ${getAccountBorderStyle(isActive, needsAuth)}`}`}
+  >
     <AccountBadge isActive={isActive} needsAuth={needsAuth} />
     <Text size="2" weight={isActive ? 'bold' : 'regular'} className="flex-1">
       {account.account}
@@ -198,8 +200,8 @@ export const GcloudAuthStatusComponent = () => {
     setSwitchingProject(projectId);
     try {
       const response = await fetch(API_ENDPOINTS.GCLOUD_SET_PROJECT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ projectId }),
       });
 
@@ -222,8 +224,8 @@ export const GcloudAuthStatusComponent = () => {
     setSwitchingProject(account);
     try {
       const response = await fetch(API_ENDPOINTS.GCLOUD_SET_ACCOUNT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ account }),
       });
 

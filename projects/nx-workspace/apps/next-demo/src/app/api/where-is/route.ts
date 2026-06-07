@@ -56,7 +56,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const contentLength = Number(request.headers.get('content-length') ?? 0);
   if (contentLength > MAX_REQUEST_BYTES) {
-    return Response.json({ error: ERROR_REQUEST_TOO_LARGE }, { status: 413 });
+    return Response.json(
+      { error: ERROR_REQUEST_TOO_LARGE },
+      { status: HTTP_STATUS_CODES.PAYLOAD_TOO_LARGE },
+    );
   }
 
   const { title, description, tags, images, homeId, userId } =
@@ -124,7 +127,10 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   const contentLength = Number(request.headers.get('content-length') ?? 0);
   if (contentLength > MAX_REQUEST_BYTES) {
-    return Response.json({ error: ERROR_REQUEST_TOO_LARGE }, { status: 413 });
+    return Response.json(
+      { error: ERROR_REQUEST_TOO_LARGE },
+      { status: HTTP_STATUS_CODES.PAYLOAD_TOO_LARGE },
+    );
   }
 
   const { id, title, description, tags, removedImageUrls, newImages } =

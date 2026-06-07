@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { readdir, stat } from 'fs/promises';
 import { join } from 'path';
 import { homedir } from 'os';
@@ -31,7 +32,9 @@ export async function GET() {
 
         try {
           const files = await readdir(playlistPath);
-          const mp3Files = files.filter(file => file.toLowerCase().endsWith('.mp3'));
+          const mp3Files = files.filter(file =>
+            file.toLowerCase().endsWith('.mp3'),
+          );
 
           let totalSize = 0;
           for (const file of mp3Files) {
@@ -44,7 +47,7 @@ export async function GET() {
             name: entry.name,
             songCount: mp3Files.length,
             totalSize: totalSize,
-            formattedSize: formatBytes(totalSize)
+            formattedSize: formatBytes(totalSize),
           });
         } catch (error) {
           console.error(`Error reading playlist ${entry.name}:`, error);
@@ -59,7 +62,7 @@ export async function GET() {
     console.error('Error fetching playlists:', error);
     return NextResponse.json(
       { error: 'Failed to fetch playlists' },
-      { status: 500 }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

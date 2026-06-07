@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import { LLM_MODEL, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   calendarParseSchema,
   CalendarParseResult,
@@ -41,7 +41,7 @@ router.post('/parse', async (req: Request, res: Response) => {
 
   if (!text?.trim() && (!images || images.length === 0)) {
     return res
-      .status(400)
+      .status(HTTP_STATUS_CODES.BAD_REQUEST)
       .json({ error: 'Provide text or at least one image' });
   }
 
@@ -60,7 +60,7 @@ router.post('/parse', async (req: Request, res: Response) => {
   const events = outputs[0].events.filter(e => e.summary && e.start);
   if (events.length === 0) {
     return res
-      .status(422)
+      .status(HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY)
       .json({ error: 'Could not extract any events from input' });
   }
 

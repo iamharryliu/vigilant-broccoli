@@ -1,5 +1,5 @@
 'use client';
-
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Badge, Text } from '@radix-ui/themes';
 import {
   Button,
@@ -60,8 +60,8 @@ export const WranglerPagesComponent = () => {
 
   const handleDelete = async (projectName: string) => {
     const response = await fetch(API_ENDPOINTS.WRANGLER_PAGES, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      method: HTTP_METHOD.DELETE,
+      headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
       body: JSON.stringify({ projectName }),
     });
     if (response.ok)
@@ -70,7 +70,7 @@ export const WranglerPagesComponent = () => {
 
   const handleLogin = async () => {
     setLoggingIn(true);
-    await fetch(API_ENDPOINTS.WRANGLER_LOGIN, { method: 'POST' });
+    await fetch(API_ENDPOINTS.WRANGLER_LOGIN, { method: HTTP_METHOD.POST });
     const poll = setInterval(async () => {
       const response = await fetch(API_ENDPOINTS.WRANGLER_PAGES);
       const data: WranglerPagesResponse = await response.json();

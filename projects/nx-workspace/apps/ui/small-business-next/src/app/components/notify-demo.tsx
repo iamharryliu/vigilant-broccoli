@@ -1,4 +1,5 @@
 'use client';
+import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 
 import { useEffect, useState } from 'react';
 import type { Service, Subscription } from '../types/subscription.types';
@@ -35,8 +36,8 @@ export const NotifyDemo = ({ services, subscriptions }: Props) => {
     setResult(null);
     try {
       const res = await fetch('/api/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
           service: selectedService.name,
           emails: targets.map(s => s.email),

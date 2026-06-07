@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { readdir, stat } from 'fs/promises';
 import { join } from 'path';
 import { homedir } from 'os';
@@ -76,7 +77,7 @@ export async function GET(_req: NextRequest) {
             ? error.message
             : 'Failed to fetch file structure',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

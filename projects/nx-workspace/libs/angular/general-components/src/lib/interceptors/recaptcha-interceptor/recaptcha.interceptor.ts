@@ -8,8 +8,7 @@ import {
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { RecaptchaV3Service } from '../../services/recaptcha-v3.service';
-
-const POST = 'POST';
+import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 
 @Injectable()
 export class RecaptchaInterceptor implements HttpInterceptor {
@@ -19,7 +18,7 @@ export class RecaptchaInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
-    if (request.method !== POST) {
+    if (request.method !== HTTP_METHOD.POST) {
       return next.handle(request);
     }
 

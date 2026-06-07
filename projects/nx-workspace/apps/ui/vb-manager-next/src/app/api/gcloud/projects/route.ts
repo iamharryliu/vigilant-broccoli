@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { exec } from 'child_process';
 
 interface GcloudProject {
@@ -17,7 +18,7 @@ export async function GET() {
             return resolve(
               NextResponse.json(
                 { error: 'Failed to fetch gcloud projects' },
-                { status: 500 },
+                { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
               ),
             );
           }
@@ -40,7 +41,7 @@ export async function GET() {
           resolve(
             NextResponse.json(
               { error: 'Failed to parse gcloud projects' },
-              { status: 500 },
+              { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
             ),
           );
         }

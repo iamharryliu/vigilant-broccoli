@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { io } from 'socket.io-client';
 import {
   CHAT_APP,
@@ -17,7 +18,10 @@ export async function POST(req: NextRequest) {
   const url = process.env.SOCKET_SERVER_URL;
   const token = process.env.SHARED_APP_TOKEN;
   if (!url || !token) {
-    return NextResponse.json({ error: ERR_NOT_CONFIGURED }, { status: 500 });
+    return NextResponse.json(
+      { error: ERR_NOT_CONFIGURED },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
   }
 
   const body = await req.json().catch(() => null);
@@ -26,7 +30,10 @@ export async function POST(req: NextRequest) {
     typeof body.text !== 'string' ||
     typeof body.sender !== 'string'
   ) {
-    return NextResponse.json({ error: ERR_BAD_BODY }, { status: 400 });
+    return NextResponse.json(
+      { error: ERR_BAD_BODY },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
   }
 
   const caCert = process.env.SOCKET_SERVER_CA_CERT;
@@ -71,7 +78,7 @@ export async function POST(req: NextRequest) {
     console.error(`${LOG_PREFIX} failed:`, err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : ERR_PUBLISH_FAILED },
-      { status: 502 },
+      { status: HTTP_STATUS_CODES.BAD_GATEWAY },
     );
   } finally {
     socket.close();

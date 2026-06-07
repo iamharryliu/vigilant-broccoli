@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   getEnvironmentVariable,
   VB_EXPRESS_ENDPOINT,
@@ -44,7 +45,9 @@ export async function POST(request: NextRequest) {
   };
 
   if (!messages || messages.length === 0) {
-    return new Response('Missing messages', { status: 400 });
+    return new Response('Missing messages', {
+      status: HTTP_STATUS_CODES.BAD_REQUEST,
+    });
   }
 
   const selectedModel =

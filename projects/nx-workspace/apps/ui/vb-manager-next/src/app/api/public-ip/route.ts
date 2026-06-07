@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 // GET - Fetch public IP address
 export async function GET(_req: NextRequest) {
@@ -17,7 +18,7 @@ export async function GET(_req: NextRequest) {
         success: false,
         error: 'Failed to fetch public IP address',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

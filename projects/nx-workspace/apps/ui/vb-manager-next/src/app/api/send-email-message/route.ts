@@ -1,3 +1,4 @@
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   EMAIL_SERVICE_ENDPOINT,
   getEnvironmentVariable,
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
   if (!to || !subject) {
     return NextResponse.json(
       { error: 'to and subject are required' },
-      { status: 400 },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
 

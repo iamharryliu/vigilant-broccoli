@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
 import {
@@ -25,13 +26,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, tasks });
   } catch (error) {
     if (isExpiredError(error)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+      );
     }
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : 'Failed to fetch tasks',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }
@@ -48,13 +52,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, task });
   } catch (error) {
     if (isExpiredError(error)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+      );
     }
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : 'Failed to create task',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }
@@ -67,20 +74,23 @@ export async function DELETE(req: NextRequest) {
     if (!taskId) {
       return NextResponse.json(
         { error: 'taskId is required' },
-        { status: 400 },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }
     await deleteTask(accessToken, taskListId, taskId);
     return NextResponse.json({ success: true });
   } catch (error) {
     if (isExpiredError(error)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+      );
     }
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : 'Failed to delete task',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }
@@ -103,13 +113,16 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ success: true, task });
   } catch (error) {
     if (isExpiredError(error)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+      );
     }
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : 'Failed to update task',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

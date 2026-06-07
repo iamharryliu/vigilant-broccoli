@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -11,7 +12,7 @@ export async function POST(request: Request) {
     if (!projectId) {
       return NextResponse.json(
         { error: 'projectId is required' },
-        { status: 400 },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }
 
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     console.error('Error setting gcloud project:', error);
     return NextResponse.json(
       { error: 'Failed to set gcloud project' },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

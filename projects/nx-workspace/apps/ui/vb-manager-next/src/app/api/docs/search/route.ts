@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { readdir, stat, readFile } from 'fs/promises';
 import { join } from 'path';
 import { homedir } from 'os';
@@ -18,7 +19,10 @@ interface SearchResult {
   excerpt?: string;
 }
 
-async function getAllMarkdownFiles(dirPath: string, relativePath = ''): Promise<SearchableFile[]> {
+async function getAllMarkdownFiles(
+  dirPath: string,
+  relativePath = '',
+): Promise<SearchableFile[]> {
   const files: SearchableFile[] = [];
 
   try {
@@ -57,7 +61,11 @@ async function getAllMarkdownFiles(dirPath: string, relativePath = ''): Promise<
   return files;
 }
 
-function getExcerpt(content: string, searchTerm: string, contextLength = 100): string {
+function getExcerpt(
+  content: string,
+  searchTerm: string,
+  contextLength = 100,
+): string {
   const lowerContent = content.toLowerCase();
   const lowerSearch = searchTerm.toLowerCase();
   const index = lowerContent.indexOf(lowerSearch);
@@ -68,7 +76,10 @@ function getExcerpt(content: string, searchTerm: string, contextLength = 100): s
   }
 
   const start = Math.max(0, index - contextLength / 2);
-  const end = Math.min(content.length, index + searchTerm.length + contextLength / 2);
+  const end = Math.min(
+    content.length,
+    index + searchTerm.length + contextLength / 2,
+  );
 
   let excerpt = content.substring(start, end);
   if (start > 0) excerpt = '...' + excerpt;
@@ -109,7 +120,7 @@ export async function GET(req: NextRequest) {
     const contentResults = contentFuse.search(query);
 
     // Process filename matches
-    const filenameMatches: SearchResult[] = filenameResults.map((result) => ({
+    const filenameMatches: SearchResult[] = filenameResults.map(result => ({
       name: result.item.name,
       path: result.item.path,
       matchType: 'filename' as const,
@@ -117,10 +128,10 @@ export async function GET(req: NextRequest) {
     }));
 
     // Process content matches (exclude files already matched by filename)
-    const filenameMatchPaths = new Set(filenameMatches.map((m) => m.path));
+    const filenameMatchPaths = new Set(filenameMatches.map(m => m.path));
     const contentMatches: SearchResult[] = contentResults
-      .filter((result) => !filenameMatchPaths.has(result.item.path))
-      .map((result) => ({
+      .filter(result => !filenameMatchPaths.has(result.item.path))
+      .map(result => ({
         name: result.item.name,
         path: result.item.path,
         matchType: 'content' as const,
@@ -143,9 +154,10 @@ export async function GET(req: NextRequest) {
     console.error('Error searching files:', error);
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : 'Failed to search files'
+        error:
+          error instanceof Error ? error.message : 'Failed to search files',
       },
-      { status: 500 }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

@@ -3,6 +3,7 @@
   "version": "0.0.17",
   "dependencies": {
     "@swc/helpers": "0.5.19",
+    "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/google-workspace": "workspace:*",
     "express": "^5.2.1",

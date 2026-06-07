@@ -1,5 +1,5 @@
 'use client';
-
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
@@ -111,24 +111,24 @@ export const PM2StatusComponent = () => {
   const handleStart = (id: number) =>
     withAction(id, () =>
       fetch(API_ENDPOINTS.PM2_START, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ processId: id }),
       }),
     );
   const handleStop = (id: number) =>
     withAction(id, () =>
       fetch(API_ENDPOINTS.PM2_STOP, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ processId: id }),
       }),
     );
   const handleRestart = (id: number) =>
     withAction(id, () =>
       fetch(API_ENDPOINTS.PM2_RESTART, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ processId: id }),
       }),
     );

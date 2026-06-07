@@ -1,5 +1,5 @@
 'use client';
-
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
@@ -111,8 +111,8 @@ export const DockerStatusComponent = () => {
     setIsStartingDocker(true);
     try {
       await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
           type: OPEN_TYPE.MAC_APPLICATION,
           target: 'Docker',
@@ -146,8 +146,8 @@ export const DockerStatusComponent = () => {
   const handleStart = (identifier: string, isProject: boolean) =>
     withAction(identifier, () =>
       fetch(API_ENDPOINTS.DOCKER_START, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify(
           isProject ? { projectName: identifier } : { containerId: identifier },
         ),
@@ -156,8 +156,8 @@ export const DockerStatusComponent = () => {
   const handleStop = (identifier: string, isProject: boolean) =>
     withAction(identifier, () =>
       fetch(API_ENDPOINTS.DOCKER_STOP, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify(
           isProject ? { projectName: identifier } : { containerId: identifier },
         ),

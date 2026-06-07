@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { OpenWeatherService } from '@vigilant-broccoli/common-node';
 
 export const runtime = 'nodejs';
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
   if (!lat || !lon) {
     return NextResponse.json(
       { success: false, error: 'Missing lat or lon parameters' },
-      { status: 400 }
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
 
@@ -32,7 +33,10 @@ export async function GET(request: NextRequest) {
 
     // Fetch both current weather and forecast in parallel with metric units
     const [current, forecast] = await Promise.all([
-      OpenWeatherService.getCurrentWeather(location, 'metric') as Promise<CurrentWeatherResponse>,
+      OpenWeatherService.getCurrentWeather(
+        location,
+        'metric',
+      ) as Promise<CurrentWeatherResponse>,
       OpenWeatherService.getForecast(location, 40, 'metric'), // Get more forecast data for processing
     ]);
 
@@ -48,7 +52,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: 'Failed to fetch weather data',
       },
-      { status: 500 }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

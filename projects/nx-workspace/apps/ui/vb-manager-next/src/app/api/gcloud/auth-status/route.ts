@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -18,7 +19,9 @@ interface GcloudAuthStatus {
 export async function GET() {
   try {
     // Get list of authenticated accounts
-    const { stdout: accountsOutput } = await execAsync('gcloud auth list --format="value(account,status)"');
+    const { stdout: accountsOutput } = await execAsync(
+      'gcloud auth list --format="value(account,status)"',
+    );
 
     const accounts: GcloudAccount[] = accountsOutput
       .trim()
@@ -31,16 +34,19 @@ export async function GET() {
         // Status is '*' for active account, empty for inactive
         return {
           account,
-          status: status === '*' ? 'ACTIVE' : 'INACTIVE'
+          status: status === '*' ? 'ACTIVE' : 'INACTIVE',
         };
       });
 
-    const activeAccount = accounts.find(acc => acc.status === 'ACTIVE')?.account || null;
+    const activeAccount =
+      accounts.find(acc => acc.status === 'ACTIVE')?.account || null;
 
     // Get current project
     let currentProject: string | null = null;
     try {
-      const { stdout: projectOutput } = await execAsync('gcloud config get-value project 2>/dev/null');
+      const { stdout: projectOutput } = await execAsync(
+        'gcloud config get-value project 2>/dev/null',
+      );
       currentProject = projectOutput.trim() || null;
     } catch {
       // If no project is set, that's okay
@@ -58,7 +64,7 @@ export async function GET() {
     console.error('Error fetching gcloud auth status:', error);
     return NextResponse.json(
       { error: 'Failed to fetch gcloud auth status' },
-      { status: 500 }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

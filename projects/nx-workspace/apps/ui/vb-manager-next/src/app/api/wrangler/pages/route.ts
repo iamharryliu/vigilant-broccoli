@@ -1,4 +1,5 @@
 import { WranglerService } from '@vigilant-broccoli/ci';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request: Request) {
@@ -7,7 +8,7 @@ export async function DELETE(request: Request) {
     if (!projectName || typeof projectName !== 'string') {
       return NextResponse.json(
         { success: false, error: 'Missing projectName' },
-        { status: 400 },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }
 
@@ -18,7 +19,7 @@ export async function DELETE(request: Request) {
     console.error('Error deleting Wrangler pages project:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete project' },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }
@@ -38,7 +39,7 @@ export async function GET() {
         success: false,
         error: 'Failed to fetch Wrangler pages',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

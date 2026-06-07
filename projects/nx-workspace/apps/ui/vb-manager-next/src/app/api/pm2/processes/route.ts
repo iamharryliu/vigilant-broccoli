@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -39,7 +40,7 @@ export async function GET() {
     console.error('Error fetching PM2 processes:', error);
     return NextResponse.json(
       { error: 'Failed to fetch PM2 processes' },
-      { status: 500 }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

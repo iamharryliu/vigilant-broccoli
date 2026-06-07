@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   getEnvironmentVariable,
   VB_EXPRESS_ENDPOINT,
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
   if (!userPrompt || !models || models.length === 0) {
     return NextResponse.json(
       { error: 'Missing required fields: userPrompt and models' },
-      { status: 400 },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
 

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
     if (!containerId && !projectName) {
       return NextResponse.json(
         { error: 'Either containerId or projectName is required' },
-        { status: 400 }
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }
 
@@ -20,15 +21,18 @@ export async function POST(request: Request) {
     if (projectName) {
       // For compose projects, find and stop all containers with the project label
       const { stdout } = await execAsync(
-        `docker ps -a --filter "label=com.docker.compose.project=${projectName}" --format "{{.ID}}"`
+        `docker ps -a --filter "label=com.docker.compose.project=${projectName}" --format "{{.ID}}"`,
       );
 
-      const containerIds = stdout.trim().split('\n').filter(id => id.trim());
+      const containerIds = stdout
+        .trim()
+        .split('\n')
+        .filter(id => id.trim());
 
       if (containerIds.length === 0) {
         return NextResponse.json(
           { error: `No containers found for project: ${projectName}` },
-          { status: 404 }
+          { status: HTTP_STATUS_CODES.INVALID_PATH },
         );
       }
 
@@ -37,7 +41,7 @@ export async function POST(request: Request) {
 
       return NextResponse.json({
         success: true,
-        message: `Stopped ${containerIds.length} container(s) for project: ${projectName}`
+        message: `Stopped ${containerIds.length} container(s) for project: ${projectName}`,
       });
     } else if (containerId) {
       // Stop a single container
@@ -45,14 +49,17 @@ export async function POST(request: Request) {
 
       return NextResponse.json({
         success: true,
-        message: `Stopped container: ${containerId}`
+        message: `Stopped container: ${containerId}`,
       });
     }
   } catch (error) {
     console.error('Error stopping Docker container:', error);
     return NextResponse.json(
-      { error: 'Failed to stop Docker container', details: error instanceof Error ? error.message : String(error) },
-      { status: 500 }
+      {
+        error: 'Failed to stop Docker container',
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

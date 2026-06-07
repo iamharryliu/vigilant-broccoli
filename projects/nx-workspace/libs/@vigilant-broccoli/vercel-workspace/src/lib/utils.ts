@@ -1,6 +1,7 @@
 import { Vercel } from '@vercel/sdk';
 import { VercelUser } from './types.js';
 import { Team } from '@vercel/sdk/esm/models/team.js';
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 
 const vercel = new Vercel({
   bearerToken: process.env.VERCEL_API_TOKEN,
@@ -41,8 +42,8 @@ export async function inviteVercelUser(
 export async function fetchTeamMembers(teamId: string): Promise<VercelUser[]> {
   const url = `https://api.vercel.com/v3/teams/${teamId}/members`;
   const options = {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${process.env.VERCEL_API_TOKEN}` },
+    method: HTTP_METHOD.GET,
+    headers: HTTP_HEADERS.AUTHORIZATION(process.env.VERCEL_API_TOKEN || ''),
     body: undefined,
   };
 
@@ -58,8 +59,8 @@ export async function removeTeamMembers(
   for (const user of usersToRemove) {
     const url = `https://api.vercel.com/v1/teams/${teamId}/members/${user.uid}`;
     const options = {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${process.env.VERCEL_API_TOKEN}` },
+      method: HTTP_METHOD.DELETE,
+      headers: HTTP_HEADERS.AUTHORIZATION(process.env.VERCEL_API_TOKEN || ''),
       body: undefined,
     };
 
@@ -88,10 +89,10 @@ export async function updateTeamMembers(
       continue;
     }
     const options = {
-      method: 'PATCH',
+      method: HTTP_METHOD.PATCH,
       headers: {
-        Authorization: `Bearer ${process.env.VERCEL_API_TOKEN}`,
-        'Content-Type': 'application/json',
+        ...HTTP_HEADERS.AUTHORIZATION(process.env.VERCEL_API_TOKEN || ''),
+        ...HTTP_HEADERS.CONTENT_TYPE.JSON,
       },
       body: JSON.stringify({ role: foundUser.role }),
     };

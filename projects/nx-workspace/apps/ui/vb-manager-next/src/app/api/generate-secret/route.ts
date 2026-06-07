@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { randomBytes } from 'crypto';
 
 type SecretType = 'hex' | 'base64' | 'url-safe' | 'uuid';
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
             GENERATORS,
           ).join(', ')}`,
         },
-        { status: 400 },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }
 
@@ -51,7 +52,7 @@ export async function GET(request: Request) {
         success: false,
         error: 'Failed to generate secret',
       },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import {
@@ -21,11 +22,14 @@ export async function GET() {
     return NextResponse.json({ taskLists });
   } catch (error) {
     if (isExpiredError(error)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+      );
     }
     return NextResponse.json(
       { error: 'Failed to fetch task lists from Google' },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }
@@ -33,7 +37,10 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.accessToken) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
   }
 
   const { title } = await request.json();
@@ -62,7 +69,10 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.accessToken) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
   }
 
   const taskListId = new URL(request.url).searchParams.get('taskListId');
@@ -87,7 +97,10 @@ export async function DELETE(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.accessToken) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
   }
 
   const taskListId = new URL(request.url).searchParams.get('taskListId');

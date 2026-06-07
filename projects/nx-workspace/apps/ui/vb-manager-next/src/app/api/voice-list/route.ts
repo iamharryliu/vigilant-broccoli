@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   getEnvironmentVariable,
   VB_EXPRESS_ENDPOINT,
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
   if (!responseContentType.includes(APPLICATION_JSON)) {
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
   const data = await res.json();

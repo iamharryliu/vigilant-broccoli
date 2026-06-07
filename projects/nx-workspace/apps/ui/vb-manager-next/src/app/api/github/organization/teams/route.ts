@@ -3,6 +3,7 @@ import {
   GithubUtils,
 } from '@vigilant-broccoli/github-workspace';
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -23,5 +24,5 @@ export async function DELETE(request: NextRequest) {
   const organization = searchParams.get('organization') as string;
   const team = searchParams.get('team') as string;
   await GithubService.deleteTeam(organization, team);
-  return new NextResponse(null, { status: 204 });
+  return new NextResponse(null, { status: HTTP_STATUS_CODES.NO_CONTENT });
 }

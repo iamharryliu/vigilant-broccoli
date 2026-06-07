@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import { moveTask, isExpiredError } from '@vigilant-broccoli/google-workspace';
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (!taskId) {
       return NextResponse.json(
         { error: 'taskId is required' },
-        { status: 400 },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }
 
@@ -33,11 +34,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, task });
   } catch (error) {
     if (isExpiredError(error)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+      );
     }
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to move task' },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

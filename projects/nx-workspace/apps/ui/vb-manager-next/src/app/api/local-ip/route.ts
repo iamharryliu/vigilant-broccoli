@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { networkInterfaces } from 'os';
 
 // GET - Fetch local IP address
@@ -25,15 +26,15 @@ export async function GET(_req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      ip: localIp
+      ip: localIp,
     });
   } catch (error) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to get local IP address'
+        error: 'Failed to get local IP address',
       },
-      { status: 500 }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

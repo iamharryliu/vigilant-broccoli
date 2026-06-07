@@ -1,5 +1,5 @@
 'use client';
-
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Card, Text } from '@radix-ui/themes';
 import { Button, Checkbox, Input, Select } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
@@ -157,8 +157,8 @@ const useTasks = (taskListId: string) => {
     if (!title.trim()) return;
     try {
       const response = await fetch(API_ENDPOINTS.TASKS, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ taskListId, title }),
       });
       const data = await response.json();
@@ -200,8 +200,8 @@ const useTasks = (taskListId: string) => {
 
     try {
       const response = await fetch(API_ENDPOINTS.TASKS, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.PATCH,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
           taskListId,
           taskId: task.id,
@@ -228,8 +228,8 @@ const useTasks = (taskListId: string) => {
     if (!title.trim()) return;
     try {
       const response = await fetch(API_ENDPOINTS.TASKS, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.PATCH,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ taskListId, taskId, title }),
       });
       const data = await response.json();
@@ -245,8 +245,8 @@ const useTasks = (taskListId: string) => {
   const moveTask = async (taskId: string, previousTaskId: string | null) => {
     try {
       const response = await fetch(API_ENDPOINTS.TASKS_MOVE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
           taskListId,
           taskId,
@@ -598,8 +598,8 @@ const useVoiceAddTasks = (createTasks: (titles: string[]) => Promise<void>) => {
       setVoiceError(null);
       try {
         const res = await fetch(API_ENDPOINTS.TASKS_PARSE_TEXT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: HTTP_METHOD.POST,
+          headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({ transcript }),
         });
         const data = await res.json();

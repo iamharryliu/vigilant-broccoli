@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { readFile } from 'fs/promises';
@@ -31,7 +32,9 @@ async function extractAddressFromConfig(configPath: string): Promise<string> {
 }
 
 // Find interface by IP address and check if it's active
-async function findActiveInterface(address: string): Promise<{ interfaceName: string; isActive: boolean }> {
+async function findActiveInterface(
+  address: string,
+): Promise<{ interfaceName: string; isActive: boolean }> {
   if (!address) {
     return { interfaceName: '', isActive: false };
   }
@@ -39,7 +42,7 @@ async function findActiveInterface(address: string): Promise<{ interfaceName: st
   try {
     // Check all utun interfaces for matching IP
     const { stdout: ifconfigOutput } = await execAsync(
-      `ifconfig | grep -B1 "inet ${address} " | grep "^utun" | awk '{print $1}' | tr -d ':'`
+      `ifconfig | grep -B1 "inet ${address} " | grep "^utun" | awk '{print $1}' | tr -d ':'`,
     );
 
     const matchingIface = ifconfigOutput.trim();
@@ -47,10 +50,11 @@ async function findActiveInterface(address: string): Promise<{ interfaceName: st
     if (matchingIface) {
       // Check if interface is UP and RUNNING
       const { stdout: flagsOutput } = await execAsync(
-        `ifconfig ${matchingIface} | grep "flags="`
+        `ifconfig ${matchingIface} | grep "flags="`,
       );
 
-      const isActive = flagsOutput.includes('UP') && flagsOutput.includes('RUNNING');
+      const isActive =
+        flagsOutput.includes('UP') && flagsOutput.includes('RUNNING');
       return { interfaceName: matchingIface, isActive };
     }
   } catch {
@@ -61,7 +65,9 @@ async function findActiveInterface(address: string): Promise<{ interfaceName: st
 }
 
 // Process a single WireGuard config file
-async function processConfigFile(configFile: string): Promise<WireguardConnection> {
+async function processConfigFile(
+  configFile: string,
+): Promise<WireguardConnection> {
   const configPath = `/opt/homebrew/etc/wireguard/${configFile}`;
 
   const address = await extractAddressFromConfig(configPath);
@@ -79,7 +85,7 @@ export async function GET() {
   try {
     // Get list of WireGuard configurations
     const { stdout: configsOutput } = await execAsync(
-      'ls -1 /opt/homebrew/etc/wireguard/*.conf 2>/dev/null || echo ""'
+      'ls -1 /opt/homebrew/etc/wireguard/*.conf 2>/dev/null || echo ""',
     );
 
     const configFiles = configsOutput
@@ -93,9 +99,7 @@ export async function GET() {
     }
 
     // Build connection list using the same logic as wgls
-    const connections = await Promise.all(
-      configFiles.map(processConfigFile)
-    );
+    const connections = await Promise.all(configFiles.map(processConfigFile));
 
     const status: WireguardStatus = {
       connections,
@@ -106,7 +110,7 @@ export async function GET() {
     console.error('Error fetching WireGuard status:', error);
     return NextResponse.json(
       { error: 'Failed to fetch WireGuard status' },
-      { status: 500 }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

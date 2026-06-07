@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { VibecheckLite } from '@vigilant-broccoli/vibecheck-lite';
 
 export const runtime = 'nodejs';
@@ -10,7 +11,9 @@ export async function GET(request: NextRequest) {
   const lon = Number(searchParams.get('lon'));
 
   if (!lat || !lon) {
-    return new Response('Missing lat or lon parameters', { status: 400 });
+    return new Response('Missing lat or lon parameters', {
+      status: HTTP_STATUS_CODES.BAD_REQUEST,
+    });
   }
 
   try {
@@ -45,6 +48,8 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error in outfit-recommendation API:', error);
-    return new Response('Internal server error', { status: 500 });
+    return new Response('Internal server error', {
+      status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+    });
   }
 }

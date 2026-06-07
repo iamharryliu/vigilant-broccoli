@@ -1,4 +1,5 @@
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { exec } from 'child_process';
 import { NextResponse } from 'next/server';
 import { promisify } from 'util';
@@ -75,7 +76,10 @@ export async function GET() {
   const apiKey = getEnvironmentVariable(ENV_KEY);
 
   if (!apiKey) {
-    return NextResponse.json({ error: ERR_NOT_CONFIGURED }, { status: 500 });
+    return NextResponse.json(
+      { error: ERR_NOT_CONFIGURED },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
   }
 
   try {
@@ -110,6 +114,9 @@ export async function GET() {
     return NextResponse.json({ machines });
   } catch (error) {
     console.error(ERR_FETCH_FAILED, error);
-    return NextResponse.json({ error: ERR_FETCH_FAILED }, { status: 500 });
+    return NextResponse.json(
+      { error: ERR_FETCH_FAILED },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
   }
 }

@@ -38,6 +38,7 @@ import {
 import { GoogleTasksComponent } from './google-tasks.component';
 import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 
 interface TaskList {
   id: string;
@@ -283,9 +284,11 @@ const SortableBoard = ({
 
   return (
     <div ref={setNodeRef} style={style}>
-      <div className={`flex justify-between items-center ${`py-1 px-2 rounded hover:bg-[var(--gray-a3)] transition-colors ${
+      <div
+        className={`flex justify-between items-center ${`py-1 px-2 rounded hover:bg-[var(--gray-a3)] transition-colors ${
           isActive ? 'border-l-2 border-blue-500 bg-[var(--gray-a3)]' : ''
-        }`}`}>
+        }`}`}
+      >
         {editingBoardId === board.id ? (
           <Input
             value={editingBoardName}
@@ -578,8 +581,8 @@ export const KanbanComponent = () => {
       const response = await fetch(
         `${API_ENDPOINTS.TASKS_LISTS}?taskListId=${taskListId}`,
         {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          method: HTTP_METHOD.PATCH,
+          headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
           body: JSON.stringify({ title }),
         },
       );
@@ -597,8 +600,8 @@ export const KanbanComponent = () => {
     if (!newListName.trim()) return;
     setCreatingList(true);
     const response = await fetch(API_ENDPOINTS.TASKS_LISTS, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: HTTP_METHOD.POST,
+      headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
       body: JSON.stringify({ title: newListName.trim() }),
     });
     const data = await response.json();
@@ -715,8 +718,8 @@ export const KanbanComponent = () => {
       const previousTaskId = newIndex > 0 ? reordered[newIndex - 1].id : null;
 
       await fetch(API_ENDPOINTS.TASKS_MOVE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
         body: JSON.stringify({
           taskListId,
           taskId,
@@ -732,8 +735,8 @@ export const KanbanComponent = () => {
   const handleTaskCrossListMove = useCallback(
     async (taskData: any, sourceListId: string, targetListId: string) => {
       const createResponse = await fetch(API_ENDPOINTS.TASKS, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
         body: JSON.stringify({
           taskListId: targetListId,
           title: taskData.task.title,
@@ -883,7 +886,10 @@ export const KanbanComponent = () => {
                       <Dialog.Title>Manage Task Lists</Dialog.Title>
                       <div className="flex flex-col gap-2">
                         {taskLists.map(list => (
-                          <div className="flex justify-between items-center py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800" key={list.id}>
+                          <div
+                            className="flex justify-between items-center py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                            key={list.id}
+                          >
                             {editingListId === list.id ? (
                               <Input
                                 value={editingListName}

@@ -1,6 +1,10 @@
 import { ShellUtils } from '@vigilant-broccoli/common-node';
 import { GithubService } from './github.service';
-import { toSlug } from '@vigilant-broccoli/common-js';
+import {
+  toSlug,
+  HTTP_METHOD,
+  HTTP_HEADERS,
+} from '@vigilant-broccoli/common-js';
 import {
   GithubTeamMember,
   GithubTeamsDTO,
@@ -119,9 +123,9 @@ async function fetchOrgMembers(
 ): Promise<GithubUser[]> {
   const url = `https://api.github.com/orgs/${org}/members`;
   const options = {
-    method: 'GET',
+    method: HTTP_METHOD.GET,
     headers: {
-      Authorization: `Bearer ${token}`,
+      ...HTTP_HEADERS.AUTHORIZATION(token),
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
     },
@@ -164,12 +168,12 @@ async function addOrgMember(
 ): Promise<void> {
   const url = `https://api.github.com/orgs/${org}/memberships/${username}`;
   const options = {
-    method: 'PUT',
+    method: HTTP_METHOD.PUT,
     headers: {
-      Authorization: `Bearer ${token}`,
+      ...HTTP_HEADERS.AUTHORIZATION(token),
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
-      'Content-Type': 'application/json',
+      ...HTTP_HEADERS.CONTENT_TYPE.JSON,
     },
     body: JSON.stringify({ role }),
   };
@@ -194,9 +198,9 @@ async function removeOrgMember(
 ): Promise<void> {
   const url = `https://api.github.com/orgs/${org}/members/${username}`;
   const options = {
-    method: 'DELETE',
+    method: HTTP_METHOD.DELETE,
     headers: {
-      Authorization: `Bearer ${token}`,
+      ...HTTP_HEADERS.AUTHORIZATION(token),
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
     },

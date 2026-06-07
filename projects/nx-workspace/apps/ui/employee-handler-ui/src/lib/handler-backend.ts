@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 const ENV_KEY = 'EMPLOYEE_HANDLER_URL';
 
@@ -37,7 +38,7 @@ export const forwardToUpstream = async (
   if (!upstream) {
     return NextResponse.json(
       { error: `${ENV_KEY} is not configured` },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 
@@ -50,7 +51,7 @@ export const forwardToUpstream = async (
     redirect: 'manual',
   };
 
-  if (request.method !== 'GET' && request.method !== 'HEAD') {
+  if (request.method !== HTTP_METHOD.GET && request.method !== 'HEAD') {
     init.body = await request.arrayBuffer();
   }
 

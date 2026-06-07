@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EMPLOYEE_HANDLER_CONFIG_MOCK } from '@vigilant-broccoli/employee-handler';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   hasUpstream,
   forwardToUpstream,
@@ -11,5 +12,5 @@ export async function POST(request: NextRequest) {
   await EMPLOYEE_HANDLER_CONFIG_MOCK.activeMaintenanceUtilities.processEmailSignatures(
     [{ email, signatureString: template }],
   );
-  return new NextResponse(null, { status: 204 });
+  return new NextResponse(null, { status: HTTP_STATUS_CODES.NO_CONTENT });
 }

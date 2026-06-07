@@ -1,5 +1,5 @@
 'use client';
-
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Text } from '@radix-ui/themes';
 import {
   Button,
@@ -113,9 +113,9 @@ export function LinkGroupComponent({
   ) => {
     try {
       const response = await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
-        method: 'POST',
+        method: HTTP_METHOD.POST,
         headers: {
-          'Content-Type': 'application/json',
+          ...HTTP_HEADERS.CONTENT_TYPE.JSON,
         },
         body: JSON.stringify({ type, target, args }),
       });

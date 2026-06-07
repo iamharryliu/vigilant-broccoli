@@ -1,5 +1,6 @@
 import { logger } from '../logging/logger.service';
 import { getEnvironmentVariable } from '../utils';
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 export class RecaptchaService {
   secretKey: string;
 
@@ -13,8 +14,8 @@ export class RecaptchaService {
 
   async isTrustedRequest(token: string): Promise<boolean> {
     return fetch(`https://www.google.com/recaptcha/api/siteverify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      method: HTTP_METHOD.POST,
+      headers: HTTP_HEADERS.CONTENT_TYPE.FORM,
       body: `secret=${this.secretKey}&response=${token}`,
     })
       .then(response => response.json())

@@ -1,5 +1,5 @@
 'use client';
-
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Dialog, Text, Spinner } from '@radix-ui/themes';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -228,7 +228,10 @@ const PanelHeader = ({
   onClear: () => void;
   onToggleFullscreen: () => void;
 }) => (
-  <div className="flex justify-between items-center" style={{ minHeight: '2.5rem' }}>
+  <div
+    className="flex justify-between items-center"
+    style={{ minHeight: '2.5rem' }}
+  >
     <div className="flex gap-2 items-center">
       <UserAvatar name={ASSISTANT_NAME} />
       <Dialog.Title style={{ margin: 0 }}>{ASSISTANT_NAME}</Dialog.Title>
@@ -331,7 +334,10 @@ const MessagesArea = ({
               }}
             >
               {message.images && message.images.length > 0 && (
-                <div className="flex gap-2 flex-wrap" style={{ marginBottom: '0.5rem' }}>
+                <div
+                  className="flex gap-2 flex-wrap"
+                  style={{ marginBottom: '0.5rem' }}
+                >
                   {message.images.map((img, imgIndex) => (
                     <img
                       key={imgIndex}
@@ -949,8 +955,8 @@ export const ChatbotPanel = ({
   ) => {
     try {
       const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
           messages: compactedMessages,
           systemPrompt,
@@ -1031,8 +1037,8 @@ export const ChatbotPanel = ({
 
     try {
       const response = await fetch('/api/calendar/parse', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
           text: inputSnapshot,
           images: imagesSnapshot.length > 0 ? imagesSnapshot : undefined,
@@ -1109,8 +1115,8 @@ export const ChatbotPanel = ({
 
     try {
       const response = await fetch('/api/calendar/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
           summary: draft.summary,
           description: draft.description,
@@ -1247,8 +1253,8 @@ export const ChatbotPanel = ({
       COMMAND_LABEL[COMMAND_NAME.TASKS],
       async () => {
         const response = await fetch(TASKS_PARSE_API_PATH, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: HTTP_METHOD.POST,
+          headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({
             text: inputSnapshot.trim() || undefined,
             images:
@@ -1297,8 +1303,8 @@ export const ChatbotPanel = ({
 
       if (!listId) {
         const createListRes = await fetch(TASKS_LISTS_API_PATH, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: HTTP_METHOD.POST,
+          headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({ title: params.newListTitle }),
         });
         const createListPayload = await createListRes.json();
@@ -1314,8 +1320,8 @@ export const ChatbotPanel = ({
 
       for (const task of params.tasks) {
         const res = await fetch(TASKS_API_PATH, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: HTTP_METHOD.POST,
+          headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({ taskListId: listId, title: task.title }),
         });
         if (!res.ok) {
@@ -1553,11 +1559,14 @@ export const ChatbotPanel = ({
   };
 
   return (
-    <div className="flex flex-col" style={{
+    <div
+      className="flex flex-col"
+      style={{
         height: '100%',
         width: '100%',
         overflow: 'hidden',
-      }}>
+      }}
+    >
       {variant === 'dialog' && (
         <div style={{ padding: '1.5rem 1.5rem 0 1.5rem' }}>
           <PanelHeader
@@ -1568,14 +1577,17 @@ export const ChatbotPanel = ({
         </div>
       )}
 
-      <div className="flex flex-col gap-3" style={{
+      <div
+        className="flex flex-col gap-3"
+        style={{
           flex: 1,
           overflow: 'hidden',
           padding:
             variant === 'dialog'
               ? '1rem 1.5rem 1.5rem 1.5rem'
               : '1.5rem 1.5rem 1.5rem 1.5rem',
-        }}>
+        }}
+      >
         <MessagesArea
           messages={messages}
           isDragging={isDragging}

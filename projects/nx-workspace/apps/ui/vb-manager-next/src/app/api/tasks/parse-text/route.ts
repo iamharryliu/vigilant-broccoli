@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   getEnvironmentVariable,
   VB_EXPRESS_ENDPOINT,
@@ -20,7 +21,10 @@ export async function POST(request: NextRequest) {
   const { transcript } = await request.json();
 
   if (!transcript) {
-    return NextResponse.json({ error: 'Missing transcript' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing transcript' },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
   }
 
   const res = await fetch(

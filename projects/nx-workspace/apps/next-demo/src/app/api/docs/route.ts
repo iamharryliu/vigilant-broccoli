@@ -67,7 +67,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const contentLength = Number(req.headers.get('content-length') ?? 0);
   if (contentLength > MAX_REQUEST_BYTES)
-    return Response.json({ error: 'Request too large.' }, { status: 413 });
+    return Response.json(
+      { error: 'Request too large.' },
+      { status: HTTP_STATUS_CODES.PAYLOAD_TOO_LARGE },
+    );
 
   const supabase = getSupabase(req);
   const { name, description, category, homeId, files } = (await req.json()) as {

@@ -13,14 +13,10 @@ import {
   createSignatureTemplatesStore,
   SignatureTemplate,
 } from '../employee-handler/signature-templates/signature-templates.store';
-
-const API_KEY_HEADER = 'x-api-key';
-const STATUS_CREATED = 201;
-const STATUS_NO_CONTENT = 204;
-const STATUS_BAD_REQUEST = 400;
-const STATUS_UNAUTHORIZED = 401;
-const STATUS_NOT_FOUND = 404;
-const STATUS_INTERNAL_ERROR = 500;
+import {
+  API_KEY_HEADER,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
 
 export type EmployeeHandlerAppOptions = {
   apiKey?: string;
@@ -46,7 +42,9 @@ export const createEmployeeHandlerApp = (
   if (apiKey) {
     app.use((req, res, next) => {
       if (req.headers[API_KEY_HEADER] !== apiKey) {
-        res.status(STATUS_UNAUTHORIZED).json({ error: 'Unauthorized' });
+        res
+          .status(HTTP_STATUS_CODES.UNAUTHORIZED)
+          .json({ error: 'Unauthorized' });
         return;
       }
       next();
@@ -84,7 +82,7 @@ export const createEmployeeHandlerApp = (
     '/onboard',
     asyncRoute(async (_req, res) => {
       await EmployeeHandlerService.onboardIncomingEmployees(config);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -93,7 +91,9 @@ export const createEmployeeHandlerApp = (
     asyncRoute(async (req, res) => {
       const { emails } = (req.body ?? {}) as { emails?: string[] };
       if (!Array.isArray(emails)) {
-        res.status(STATUS_BAD_REQUEST).json({ error: 'emails array required' });
+        res
+          .status(HTTP_STATUS_CODES.BAD_REQUEST)
+          .json({ error: 'emails array required' });
         return;
       }
       type ProcessIncomingArgs = Parameters<
@@ -101,7 +101,7 @@ export const createEmployeeHandlerApp = (
       >[0];
       const users = emails.map(email => ({ email })) as ProcessIncomingArgs;
       await config.onboardUtilities.processIncomingEmployees(users);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -109,7 +109,7 @@ export const createEmployeeHandlerApp = (
     '/offboard',
     asyncRoute(async (_req, res) => {
       await EmployeeHandlerService.offboardInactiveEmployees(config);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -118,11 +118,13 @@ export const createEmployeeHandlerApp = (
     asyncRoute(async (req, res) => {
       const { emails } = (req.body ?? {}) as { emails?: string[] };
       if (!Array.isArray(emails)) {
-        res.status(STATUS_BAD_REQUEST).json({ error: 'emails array required' });
+        res
+          .status(HTTP_STATUS_CODES.BAD_REQUEST)
+          .json({ error: 'emails array required' });
         return;
       }
       await EmployeeHandlerService.manualOffboardEmails(config, emails);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -131,11 +133,13 @@ export const createEmployeeHandlerApp = (
     asyncRoute(async (req, res) => {
       const { emails } = (req.body ?? {}) as { emails?: string[] };
       if (!Array.isArray(emails)) {
-        res.status(STATUS_BAD_REQUEST).json({ error: 'emails array required' });
+        res
+          .status(HTTP_STATUS_CODES.BAD_REQUEST)
+          .json({ error: 'emails array required' });
         return;
       }
       await config.activeMaintenanceUtilities.recoverUsers(emails);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -143,7 +147,7 @@ export const createEmployeeHandlerApp = (
     '/sync',
     asyncRoute(async (_req, res) => {
       await EmployeeHandlerService.syncData(config);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -151,7 +155,7 @@ export const createEmployeeHandlerApp = (
     '/postRetentionCleanup',
     asyncRoute(async (_req, res) => {
       await EmployeeHandlerService.postRetentionCleanup(config);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -173,14 +177,14 @@ export const createEmployeeHandlerApp = (
       };
       if (!email || typeof template !== 'string') {
         res
-          .status(STATUS_BAD_REQUEST)
+          .status(HTTP_STATUS_CODES.BAD_REQUEST)
           .json({ error: 'email and template required' });
         return;
       }
       await config.activeMaintenanceUtilities.processEmailSignatures([
         { email, signatureString: template },
       ]);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -189,7 +193,9 @@ export const createEmployeeHandlerApp = (
     asyncRoute(async (req, res) => {
       const { template } = (req.body ?? {}) as { template?: string };
       if (typeof template !== 'string') {
-        res.status(STATUS_BAD_REQUEST).json({ error: 'template required' });
+        res
+          .status(HTTP_STATUS_CODES.BAD_REQUEST)
+          .json({ error: 'template required' });
         return;
       }
       const signatures =
@@ -197,7 +203,7 @@ export const createEmployeeHandlerApp = (
       await config.activeMaintenanceUtilities.processEmailSignatures(
         signatures.map(sig => ({ ...sig, signatureString: template })),
       );
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -205,7 +211,7 @@ export const createEmployeeHandlerApp = (
     '/signature/updateEmailSignatures',
     asyncRoute(async (_req, res) => {
       await EmployeeHandlerService.updateEmailSignatures(config);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -214,11 +220,13 @@ export const createEmployeeHandlerApp = (
     asyncRoute(async (req, res) => {
       const { emails } = (req.body ?? {}) as { emails?: string[] };
       if (!Array.isArray(emails)) {
-        res.status(STATUS_BAD_REQUEST).json({ error: 'emails array required' });
+        res
+          .status(HTTP_STATUS_CODES.BAD_REQUEST)
+          .json({ error: 'emails array required' });
         return;
       }
       await EmployeeHandlerService.emailZippedSignatures(config, emails);
-      res.status(STATUS_NO_CONTENT).end();
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );
 
@@ -228,7 +236,7 @@ export const createEmployeeHandlerApp = (
       await EmployeeHandlerService.generateLocalSignatures(config);
       if (!fs.existsSync(ZIPPED_GENERATED_SIGNATURES_FILEPATH)) {
         res
-          .status(STATUS_INTERNAL_ERROR)
+          .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
           .json({ error: 'Failed to generate signatures zip' });
         return;
       }
@@ -253,12 +261,12 @@ export const createEmployeeHandlerApp = (
       typeof body.template !== 'string'
     ) {
       res
-        .status(STATUS_BAD_REQUEST)
+        .status(HTTP_STATUS_CODES.BAD_REQUEST)
         .json({ error: 'id, label, template required' });
       return;
     }
     const created = store.create(body);
-    res.status(STATUS_CREATED).json(created);
+    res.status(HTTP_STATUS_CODES.CREATED).json(created);
   });
 
   api.patch('/signature-templates/:id', (req, res) => {
@@ -266,7 +274,7 @@ export const createEmployeeHandlerApp = (
     const body = req.body as Partial<SignatureTemplate>;
     const updated = store.update(id, body);
     if (!updated) {
-      res.status(STATUS_NOT_FOUND).end();
+      res.status(HTTP_STATUS_CODES.INVALID_PATH).end();
       return;
     }
     res.json(updated);
@@ -276,10 +284,10 @@ export const createEmployeeHandlerApp = (
     const { id } = req.params;
     const deleted = store.delete(id);
     if (!deleted) {
-      res.status(STATUS_NOT_FOUND).end();
+      res.status(HTTP_STATUS_CODES.INVALID_PATH).end();
       return;
     }
-    res.status(STATUS_NO_CONTENT).end();
+    res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
   });
 
   app.use('/api', api);

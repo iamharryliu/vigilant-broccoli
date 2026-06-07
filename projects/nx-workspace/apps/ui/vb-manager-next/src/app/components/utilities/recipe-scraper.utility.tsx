@@ -1,5 +1,5 @@
 'use client';
-
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Text } from '@radix-ui/themes';
 import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
@@ -23,9 +23,9 @@ export const RecipeScraperUtilityContent = () => {
     setRecipeMessage(null);
 
     const response = await fetch(API_ENDPOINTS.RECIPE_SCRAPE, {
-      method: 'POST',
+      method: HTTP_METHOD.POST,
       headers: {
-        'Content-Type': 'application/json',
+        ...HTTP_HEADERS.CONTENT_TYPE.JSON,
       },
       body: JSON.stringify({ url: recipeUrl }),
     });

@@ -1,14 +1,15 @@
 import { JSON_PLACEHOLDER_URL } from './jsonplaceholder.consts';
 import { JSONPlaceHolderPost } from './jsonplaceholder.types';
+import { HTTP_METHOD, HTTP_HEADERS } from '../http/http.consts';
 
 async function createTodo(
   item: JSONPlaceHolderPost,
   existingItems: JSONPlaceHolderPost[],
 ): Promise<JSONPlaceHolderPost> {
   const response = await fetch(JSON_PLACEHOLDER_URL.POST, {
-    method: 'POST',
+    method: HTTP_METHOD.POST,
     body: JSON.stringify(item),
-    headers: { 'Content-type': 'application/json; charset=UTF-8' },
+    headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
   });
   const data = await response.json();
 
@@ -26,15 +27,15 @@ async function getTodos(limit: number): Promise<JSONPlaceHolderPost[]> {
 
 async function updateTodo(item: JSONPlaceHolderPost): Promise<void> {
   await fetch(`${JSON_PLACEHOLDER_URL.POST}/${item.id}`, {
-    method: 'PUT',
+    method: HTTP_METHOD.PUT,
     body: JSON.stringify(item),
-    headers: { 'Content-type': 'application/json; charset=UTF-8' },
+    headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
   });
 }
 
 async function deleteTodo(id: number): Promise<void> {
   await fetch(`${JSON_PLACEHOLDER_URL.POST}/${id}`, {
-    method: 'DELETE',
+    method: HTTP_METHOD.DELETE,
   });
 }
 

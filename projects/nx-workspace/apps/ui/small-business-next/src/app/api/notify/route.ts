@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 
 const EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev/send-email';
 const FROM = 'Harry Liu <contact@harryliu.dev>';
@@ -9,7 +10,7 @@ export const POST = async (req: NextRequest) => {
   if (!service || !emails?.length) {
     return NextResponse.json(
       { error: 'service and emails are required' },
-      { status: 400 },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
 
@@ -17,16 +18,16 @@ export const POST = async (req: NextRequest) => {
   if (!apiKey) {
     return NextResponse.json(
       { error: 'Email service not configured' },
-      { status: 500 },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 
   const results = await Promise.allSettled(
     emails.map(async (to: string) => {
       const res = await fetch(EMAIL_SERVICE_URL, {
-        method: 'POST',
+        method: HTTP_METHOD.POST,
         headers: {
-          'Content-Type': 'application/json',
+          ...HTTP_HEADERS.CONTENT_TYPE.JSON,
           'x-api-key': apiKey,
         },
         body: JSON.stringify({

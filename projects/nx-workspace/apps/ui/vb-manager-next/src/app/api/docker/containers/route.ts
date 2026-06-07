@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -25,12 +26,28 @@ interface StandaloneContainer {
   id: string;
   name: string;
   status: string;
-  state: 'running' | 'paused' | 'exited' | 'created' | 'restarting' | 'removing' | 'dead';
+  state:
+    | 'running'
+    | 'paused'
+    | 'exited'
+    | 'created'
+    | 'restarting'
+    | 'removing'
+    | 'dead';
   ports: string;
 }
 
 // Parse Docker status string to determine container state
-function parseContainerState(status: string): 'running' | 'paused' | 'exited' | 'created' | 'restarting' | 'removing' | 'dead' {
+function parseContainerState(
+  status: string,
+):
+  | 'running'
+  | 'paused'
+  | 'exited'
+  | 'created'
+  | 'restarting'
+  | 'removing'
+  | 'dead' {
   const lowerStatus = status.toLowerCase();
   if (lowerStatus.includes('up')) return 'running';
   if (lowerStatus.includes('paused')) return 'paused';
@@ -51,10 +68,12 @@ function extractLocalPorts(portsString: string): string {
   const portMatches = portsString.match(/0\.0\.0\.0:(\d+)->/g);
   if (!portMatches) return '';
 
-  const ports = portMatches.map(match => {
-    const portMatch = match.match(/0\.0\.0\.0:(\d+)->/);
-    return portMatch ? portMatch[1] : '';
-  }).filter(port => port);
+  const ports = portMatches
+    .map(match => {
+      const portMatch = match.match(/0\.0\.0\.0:(\d+)->/);
+      return portMatch ? portMatch[1] : '';
+    })
+    .filter(port => port);
 
   // Remove duplicates and join with comma
   return [...new Set(ports)].join(', ');
@@ -67,10 +86,13 @@ export async function GET() {
 
     // Get list of all Docker containers with compose labels and ports
     const { stdout: containersOutput } = await execAsync(
-      'docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Label \\"com.docker.compose.project\\"}}\t{{.Label \\"com.docker.compose.service\\"}}\t{{.Ports}}"'
+      'docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Label \\"com.docker.compose.project\\"}}\t{{.Label \\"com.docker.compose.service\\"}}\t{{.Ports}}"',
     );
 
-    const projectMap = new Map<string, { states: Set<string>; services: Map<string, string>; count: number }>();
+    const projectMap = new Map<
+      string,
+      { states: Set<string>; services: Map<string, string>; count: number }
+    >();
     const standaloneContainers: StandaloneContainer[] = [];
 
     containersOutput
@@ -91,7 +113,11 @@ export async function GET() {
         // Group by compose project if it exists
         if (project) {
           if (!projectMap.has(project)) {
-            projectMap.set(project, { states: new Set(), services: new Map(), count: 0 });
+            projectMap.set(project, {
+              states: new Set(),
+              services: new Map(),
+              count: 0,
+            });
           }
           const projectData = projectMap.get(project)!;
           projectData.states.add(state);
@@ -110,28 +136,30 @@ export async function GET() {
       });
 
     // Convert project map to array
-    const projects: DockerProject[] = Array.from(projectMap.entries()).map(([name, data]) => {
-      // Determine overall project state
-      let projectState: 'running' | 'paused' | 'exited' | 'mixed' = 'exited';
-      if (data.states.has('running') && data.states.size === 1) {
-        projectState = 'running';
-      } else if (data.states.has('paused') && data.states.size === 1) {
-        projectState = 'paused';
-      } else if (data.states.has('exited') && data.states.size === 1) {
-        projectState = 'exited';
-      } else if (data.states.size > 1) {
-        projectState = 'mixed';
-      }
+    const projects: DockerProject[] = Array.from(projectMap.entries()).map(
+      ([name, data]) => {
+        // Determine overall project state
+        let projectState: 'running' | 'paused' | 'exited' | 'mixed' = 'exited';
+        if (data.states.has('running') && data.states.size === 1) {
+          projectState = 'running';
+        } else if (data.states.has('paused') && data.states.size === 1) {
+          projectState = 'paused';
+        } else if (data.states.has('exited') && data.states.size === 1) {
+          projectState = 'exited';
+        } else if (data.states.size > 1) {
+          projectState = 'mixed';
+        }
 
-      return {
-        name,
-        state: projectState,
-        containerCount: data.count,
-        services: Array.from(data.services.entries())
-          .map(([name, ports]) => ({ name, ports }))
-          .sort((a, b) => a.name.localeCompare(b.name)),
-      };
-    });
+        return {
+          name,
+          state: projectState,
+          containerCount: data.count,
+          services: Array.from(data.services.entries())
+            .map(([name, ports]) => ({ name, ports }))
+            .sort((a, b) => a.name.localeCompare(b.name)),
+        };
+      },
+    );
 
     const dockerStatus: DockerStatus = {
       projects,
@@ -143,7 +171,7 @@ export async function GET() {
     console.error('Error fetching Docker container status:', error);
     return NextResponse.json(
       { error: 'Failed to fetch Docker container status' },
-      { status: 500 }
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
     if (!containerId && !projectName) {
       return NextResponse.json(
         { error: 'Either containerId or projectName is required' },
-        { status: 400 }
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }
 
@@ -21,15 +22,18 @@ export async function POST(request: Request) {
       // For compose projects, we need to find the directory and run docker-compose up
       // For now, we'll start all containers with the project label
       const { stdout } = await execAsync(
-        `docker ps -a --filter "label=com.docker.compose.project=${projectName}" --format "{{.ID}}"`
+        `docker ps -a --filter "label=com.docker.compose.project=${projectName}" --format "{{.ID}}"`,
       );
 
-      const containerIds = stdout.trim().split('\n').filter(id => id.trim());
+      const containerIds = stdout
+        .trim()
+        .split('\n')
+        .filter(id => id.trim());
 
       if (containerIds.length === 0) {
         return NextResponse.json(
           { error: `No containers found for project: ${projectName}` },
-          { status: 404 }
+          { status: HTTP_STATUS_CODES.INVALID_PATH },
         );
       }
 
@@ -38,7 +42,7 @@ export async function POST(request: Request) {
 
       return NextResponse.json({
         success: true,
-        message: `Started ${containerIds.length} container(s) for project: ${projectName}`
+        message: `Started ${containerIds.length} container(s) for project: ${projectName}`,
       });
     } else if (containerId) {
       // Start a single container
@@ -46,14 +50,17 @@ export async function POST(request: Request) {
 
       return NextResponse.json({
         success: true,
-        message: `Started container: ${containerId}`
+        message: `Started container: ${containerId}`,
       });
     }
   } catch (error) {
     console.error('Error starting Docker container:', error);
     return NextResponse.json(
-      { error: 'Failed to start Docker container', details: error instanceof Error ? error.message : String(error) },
-      { status: 500 }
+      {
+        error: 'Failed to start Docker container',
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 }

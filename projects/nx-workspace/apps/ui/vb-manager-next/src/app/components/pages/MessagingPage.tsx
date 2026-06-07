@@ -1,5 +1,5 @@
 'use client';
-
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Card, Heading } from '@radix-ui/themes';
 import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
@@ -33,9 +33,9 @@ const TextMessageForm = () => {
     setResult('');
 
     const response = await fetch(`${API_BASE_URL}/api/send-text-message`, {
-      method: 'POST',
+      method: HTTP_METHOD.POST,
       headers: {
-        'Content-Type': 'application/json',
+        ...HTTP_HEADERS.CONTENT_TYPE.JSON,
       },
       body: JSON.stringify({
         body,
