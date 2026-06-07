@@ -10,6 +10,7 @@ import { SpeechToText } from '../llm/SpeechToText';
 import { VoiceListGenerator } from '../llm/VoiceListGenerator';
 import { TextToSpeechVoices } from '../llm/TextToSpeechVoices';
 import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
+import { QRCodeGenerator } from '../demos/QRCodeGenerator';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -18,6 +19,11 @@ import {
 const STORAGE_KEY = 'feature-sandbox';
 
 const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
+  {
+    id: 'qr-code-generator',
+    title: 'QR Code Generator',
+    content: <QRCodeGenerator />,
+  },
   {
     id: 'speech-to-text',
     title: 'Speech to Text (Streaming)',

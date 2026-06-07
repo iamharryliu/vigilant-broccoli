@@ -27,6 +27,8 @@ export * from './lib/recaptcha/recaptcha.service';
 export * from './lib/weather/openweather.service';
 // Audio
 export * from './lib/audio/audio.service';
+// QR Code
+export * from './lib/qr-code/qr-code.service';
 
 export const QUEUE = {
   EMAIL: 'EMAIL',
