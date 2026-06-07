@@ -9,7 +9,7 @@ import { Email, EmailService } from '@vigilant-broccoli/messaging';
 
 const HOST = process.env.HOST ?? 'localhost';
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
-const API_KEY = process.env.EMAIL_SERVICE_API_KEY;
+const API_KEY = process.env.SHARED_APP_TOKEN;
 const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING;
 const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
 const RECONNECT_DELAY_MS = 5000;

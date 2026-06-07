@@ -16,7 +16,7 @@ import {
 const router = Router();
 const textMessageService = new TextMessageService();
 const EMAIL_SERVICE_URL = getEnvironmentVariable('EMAIL_SERVICE_URL');
-const EMAIL_SERVICE_API_KEY = getEnvironmentVariable('EMAIL_SERVICE_API_KEY');
+const SHARED_APP_TOKEN = getEnvironmentVariable('SHARED_APP_TOKEN');
 
 const APP_EMAIL_CONFIG: Record<string, { from: string; to: string }> = {
   [APP_NAME.HARRYLIU_DESIGN]: {
@@ -86,7 +86,7 @@ router.post(
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': EMAIL_SERVICE_API_KEY,
+            'x-api-key': SHARED_APP_TOKEN,
           },
           body: JSON.stringify(emails),
         },

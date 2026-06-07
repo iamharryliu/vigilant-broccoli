@@ -9,7 +9,7 @@ const EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev/send-email';
 const SENDER_EMAIL = 'home.management@harryliu.dev';
 
 async function sendEmail(to: string, subject: string, html: string) {
-  const apiKey = process.env.EMAIL_SERVICE_API_KEY;
+  const apiKey = process.env.SHARED_APP_TOKEN;
   const res = await fetch(EMAIL_SERVICE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey ?? '' },

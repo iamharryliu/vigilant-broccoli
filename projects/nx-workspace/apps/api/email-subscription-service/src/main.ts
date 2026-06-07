@@ -10,11 +10,11 @@ import { Email } from '@vigilant-broccoli/messaging';
 
 const HOST = process.env.HOST ?? 'localhost';
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
-const API_KEY = process.env.EMAIL_SUBSCRIPTION_SERVICE_API_KEY;
+const API_KEY = process.env.SHARED_APP_TOKEN;
 const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING;
 const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
 const EMAIL_SERVICE_URL = process.env.EMAIL_SERVICE_URL;
-const EMAIL_SERVICE_API_KEY = process.env.EMAIL_SERVICE_API_KEY;
+const SHARED_APP_TOKEN = process.env.SHARED_APP_TOKEN;
 const EMAIL_FROM = 'Vigilant Broccoli <contact@harryliu.dev>';
 const RECONNECT_DELAY_MS = 5000;
 const SEND_EMAIL_TIMEOUT_MS = 30000;
@@ -73,7 +73,7 @@ async function sendEmail(email: Email): Promise<void> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': EMAIL_SERVICE_API_KEY!,
+        'x-api-key': SHARED_APP_TOKEN!,
       },
       body: JSON.stringify(email),
       signal: AbortSignal.timeout(SEND_EMAIL_TIMEOUT_MS),

@@ -14,7 +14,7 @@ export const POST = async (req: NextRequest) => {
     );
   }
 
-  const apiKey = process.env.EMAIL_SERVICE_API_KEY;
+  const apiKey = process.env.SHARED_APP_TOKEN;
   if (!apiKey) {
     return NextResponse.json(
       { error: 'Email service not configured' },

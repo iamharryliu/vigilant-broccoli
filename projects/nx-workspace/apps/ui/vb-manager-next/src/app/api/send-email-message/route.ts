@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': getEnvironmentVariable('EMAIL_SERVICE_API_KEY'),
+        'x-api-key': getEnvironmentVariable('SHARED_APP_TOKEN'),
       },
       body: JSON.stringify({ from, to, subject, text, html }),
     },
