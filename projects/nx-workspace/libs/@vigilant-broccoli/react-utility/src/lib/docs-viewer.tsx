@@ -23,13 +23,6 @@ const MODE_LABEL: Record<ViewMode, string> = {
 };
 
 const CLS = {
-  TOOLBAR:
-    'flex items-center gap-1 pl-12 pr-12 sm:pl-6 sm:pr-12 md:pl-6 pt-3 pb-2 border-b border-gray-200 dark:border-gray-700',
-  MODE_BTN_BASE: 'px-3 py-1 text-xs rounded',
-  MODE_BTN_ACTIVE:
-    'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-  MODE_BTN_INACTIVE:
-    'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300',
   CENTERED_MSG: 'flex items-center justify-center h-full text-gray-500',
   CENTERED_ERR: 'flex items-center justify-center h-full text-red-500',
 } as const;
@@ -96,20 +89,13 @@ export function DocsViewer({
 
   const canEdit = Boolean(saveContent && activeFile);
 
+  const viewModeOptions = (Object.values(VIEW_MODE) as ViewMode[]).map(mode => ({
+    label: MODE_LABEL[mode],
+    value: mode,
+  }));
+
   const renderContent = (content: string) => (
     <div className="flex flex-col h-full">
-      <div className={CLS.TOOLBAR}>
-        {(Object.values(VIEW_MODE) as ViewMode[]).map(mode => (
-          <button
-            key={mode}
-            type="button"
-            onClick={() => updateViewMode(mode)}
-            className={`${CLS.MODE_BTN_BASE} ${viewMode === mode ? CLS.MODE_BTN_ACTIVE : CLS.MODE_BTN_INACTIVE}`}
-          >
-            {MODE_LABEL[mode]}
-          </button>
-        ))}
-      </div>
       <div className="flex-1 min-h-0">
         {viewMode === VIEW_MODE.CHECKLIST ? (
           <ChecklistViewer content={content} filePath={activeFile} />
@@ -141,6 +127,9 @@ export function DocsViewer({
       urlSync={wrappedUrlSync}
       emptyMessage={COPY.EMPTY}
       onEdit={canEdit ? () => setEditTrigger(t => t + 1) : undefined}
+      viewModes={viewModeOptions}
+      onViewModeChange={updateViewMode}
+      currentViewMode={viewMode}
     />
   );
 }

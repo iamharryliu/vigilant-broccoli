@@ -19,10 +19,10 @@ const CLS = {
   ROOT: 'w-full h-full overflow-auto',
   PROSE: 'prose dark:prose-invert max-w-none px-6 py-4',
   HEADER:
-    'flex items-center justify-between not-prose mb-4 pb-2 border-b border-gray-200 dark:border-gray-700',
+    'flex items-center gap-1 not-prose mb-4 pb-2 border-b border-gray-200 dark:border-gray-700',
   HEADER_TEXT: 'text-sm text-gray-600 dark:text-gray-400',
   RESET_BTN:
-    'text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 underline',
+    'text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300',
   LIST: 'not-prose pl-0',
   NESTED_LIST: 'ml-6 border-l border-gray-200 dark:border-gray-700 pl-3',
   ROW_LABEL: 'flex items-start gap-2 py-1 cursor-pointer group',
@@ -242,6 +242,7 @@ export function ChecklistViewer({ content, filePath }: ChecklistViewerProps) {
             <span className={CLS.HEADER_TEXT}>
               {done} / {total} {COPY.CHECKED_SUFFIX}
             </span>
+            <span className="text-gray-300 dark:text-gray-600">|</span>
             <button type="button" onClick={reset} className={CLS.RESET_BTN}>
               {COPY.RESET}
             </button>

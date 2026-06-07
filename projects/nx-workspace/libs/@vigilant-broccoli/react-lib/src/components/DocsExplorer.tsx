@@ -55,6 +55,11 @@ export interface DocsExplorerUrlSync {
   set: (path: string) => void;
 }
 
+export interface ViewModeOption {
+  label: string;
+  value: string;
+}
+
 interface DocsExplorerProps {
   nodes: DocsNode[];
   getContent: (path: string) => Promise<string>;
@@ -65,6 +70,9 @@ interface DocsExplorerProps {
   searchPlaceholder?: string;
   emptyMessage?: string;
   onEdit?: () => void;
+  viewModes?: ViewModeOption[];
+  onViewModeChange?: (mode: string) => void;
+  currentViewMode?: string;
 }
 
 const COPY = {
@@ -91,6 +99,9 @@ export const DocsExplorer = ({
   searchPlaceholder = COPY.SEARCH_PLACEHOLDER,
   emptyMessage = COPY.EMPTY_MESSAGE,
   onEdit,
+  viewModes,
+  onViewModeChange,
+  currentViewMode,
 }: DocsExplorerProps) => {
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [content, setContent] = useState('');
@@ -316,6 +327,20 @@ export const DocsExplorer = ({
                   />
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
+                  {viewModes && viewModes.length > 0 && (
+                    <>
+                      {viewModes.map(mode => (
+                        <DropdownMenu.Item
+                          key={mode.value}
+                          onSelect={() => onViewModeChange?.(mode.value)}
+                          className={currentViewMode === mode.value ? 'font-semibold' : ''}
+                        >
+                          {mode.label}
+                        </DropdownMenu.Item>
+                      ))}
+                      <DropdownMenu.Separator />
+                    </>
+                  )}
                   {onEdit && (
                     <DropdownMenu.Item onSelect={onEdit}>
                       {COPY.EDIT}
