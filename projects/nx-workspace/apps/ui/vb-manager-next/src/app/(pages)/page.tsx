@@ -1,7 +1,6 @@
 'use client';
 
 import { TaskListSelectorComponent } from '../components/task-list-selector.component';
-import { NotepadEditorComponent } from '../components/notepad-editor.component';
 import {
   buildCalendarUrl,
   CalendarConfig,
@@ -50,7 +49,7 @@ const CALENDAR_CONFIG: CalendarConfig = {
 
 export default function Page() {
   return (
-    <div className="grid grid-cols-3 gap-4 h-full mb-4">
+    <div className="grid grid-cols-2 gap-4 h-full mb-4">
       <div className="flex flex-col h-full">
         <TaskListSelectorComponent />
       </div>
@@ -61,14 +60,6 @@ export default function Page() {
             className="w-full h-full dark:invert dark:hue-rotate-180"
             style={{ minHeight: '400px' }}
           />
-        </div>
-      </div>
-      <div className="flex flex-col gap-4">
-        <div
-          className="border border-gray-300 dark:border-gray-700 rounded-lg p-4 flex flex-col"
-          style={{ height: '100%' }}
-        >
-          <NotepadEditorComponent style={{ flex: 1 }} />
         </div>
       </div>
     </div>

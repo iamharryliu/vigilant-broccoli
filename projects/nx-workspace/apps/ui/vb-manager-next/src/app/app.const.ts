@@ -28,6 +28,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Text Tools',
     path: '/text-tools',
   },
+  NOTEPAD: {
+    title: 'Notepad',
+    path: '/notepad',
+  },
   DOCS_MD: {
     title: 'DocsMD',
     path: '/docs-md',
