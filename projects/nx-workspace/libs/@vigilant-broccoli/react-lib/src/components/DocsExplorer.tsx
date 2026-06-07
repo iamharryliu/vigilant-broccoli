@@ -101,10 +101,9 @@ export const DocsExplorer = ({
   const [searchResults, setSearchResults] = useState<DocsSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const [mobilePanel, setMobilePanel] = useState<'sidebar' | 'content'>(() => {
-    const initial = urlSync?.get();
-    return initial ? 'content' : 'sidebar';
-  });
+  const [mobilePanel, setMobilePanel] = useState<'sidebar' | 'content'>(
+    'sidebar',
+  );
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultsContainerRef = useRef<HTMLDivElement>(null);
@@ -135,6 +134,7 @@ export const DocsExplorer = ({
     const initial = urlSync?.get();
     if (initial && !selectedPath) {
       selectFile(initial);
+      setMobilePanel('content');
     }
   }, [urlSync, selectedPath, selectFile]);
 
