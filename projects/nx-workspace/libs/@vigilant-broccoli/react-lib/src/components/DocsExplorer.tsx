@@ -71,7 +71,7 @@ interface DocsExplorerProps {
   emptyMessage?: string;
   onEdit?: () => void;
   viewModes?: ViewModeOption[];
-  onViewModeChange?: (mode: string) => void;
+  onViewModeChange?: (mode: string | undefined) => void;
   currentViewMode?: string;
 }
 

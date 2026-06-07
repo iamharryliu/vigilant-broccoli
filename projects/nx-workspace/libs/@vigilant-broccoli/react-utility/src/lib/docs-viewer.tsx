@@ -128,7 +128,7 @@ export function DocsViewer({
       emptyMessage={COPY.EMPTY}
       onEdit={canEdit ? () => setEditTrigger(t => t + 1) : undefined}
       viewModes={viewModeOptions}
-      onViewModeChange={updateViewMode}
+      onViewModeChange={(mode) => updateViewMode(mode as ViewMode)}
       currentViewMode={viewMode}
     />
   );
