@@ -14,6 +14,7 @@ import {
   renderTemplate,
   SignatureTemplate,
 } from './signatures.shared';
+import { sanitizeSignatureHtml } from './sanitize-signature';
 
 const COPY = {
   LIST: { TITLE: 'Signatures', EMPTY_MESSAGE: 'No signatures yet.' },
@@ -99,7 +100,9 @@ const SignatureListItem = ({ item, selectedId }: SignatureListItemProps) => {
       </div>
       <div
         dangerouslySetInnerHTML={{
-          __html: renderTemplate(item.template, DEMO_SIGNATURE),
+          __html: sanitizeSignatureHtml(
+            renderTemplate(item.template, DEMO_SIGNATURE),
+          ),
         }}
       />
     </div>

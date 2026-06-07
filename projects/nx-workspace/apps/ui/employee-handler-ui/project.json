@@ -26,6 +26,12 @@
         "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 nx run employee-handler-ui:serve:dev"
       }
     },
+    "serve:mock:e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "concurrently -n service,ui -c blue,green \"nx serve mock-employee-handler-service\" \"EMPLOYEE_HANDLER_URL=http://localhost:3000 nx run employee-handler-ui:serve\""
+      }
+    },
     "serve:dev": {
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
@@ -44,6 +50,10 @@
           "dev": false
         }
       }
+    },
+    "deploy-container": {
+      "dependsOn": ["build"],
+      "command": "docker buildx build --platform linux/amd64 -f apps/ui/employee-handler-ui/Dockerfile -t iamharryliu/employee-handler-next:latest -t iamharryliu/employee-handler-next:${COMMIT_SHA:-latest} --push ."
     },
     "deploy:secrets": {
       "executor": "nx:run-commands",

@@ -194,6 +194,7 @@
     "formidable": "^3.5.4",
     "fuse.js": "^7.4.1",
     "gapi-script": "^1.2.0",
+    "isomorphic-dompurify": "^2.16.0",
     "googleapis": "^154.1.0",
     "json-schema-to-ts": "^3.1.1",
     "lucide-react": "^0.513.0",

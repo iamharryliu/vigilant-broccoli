@@ -5,6 +5,7 @@
     "@swc/helpers": "0.5.19",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/google-workspace": "workspace:*",
+    "express": "^5.2.1",
     "nodemailer": "^8.0.4"
   },
   "publishConfig": {

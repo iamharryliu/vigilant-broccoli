@@ -14,7 +14,7 @@ import {
   type EllipsisAction,
 } from '@vigilant-broccoli/react-lib';
 import { Card, DropdownMenu, Text } from '@radix-ui/themes';
-import { ERR_NO_EMAILS, postEmails } from '../../../lib/api-helpers';
+import { authFetch, ERR_NO_EMAILS, postEmails } from '../../../lib/api-helpers';
 
 const INCOMING_ENDPOINT = '/api/employees/incoming';
 const ACTIVE_ENDPOINT = '/api/employees/active';
@@ -102,7 +102,7 @@ const useEmployeesTab = (endpoint: string) => {
 
   const reload = () => {
     setLoading(true);
-    fetch(endpoint)
+    authFetch(endpoint)
       .then(res => res.json())
       .then(json => setData(normalizeList(json)))
       .finally(() => setLoading(false));
@@ -294,7 +294,7 @@ export default function EmployeesPage() {
   };
 
   const syncData = async () => {
-    await fetch(SYNC_ENDPOINT);
+    await authFetch(SYNC_ENDPOINT);
     alert(SUCCESS_SYNC);
     active.reload();
   };
@@ -330,7 +330,7 @@ export default function EmployeesPage() {
   };
 
   const postRetentionCleanup = async () => {
-    await fetch(POST_RETENTION_ENDPOINT);
+    await authFetch(POST_RETENTION_ENDPOINT);
     alert(SUCCESS_RETENTION);
   };
 

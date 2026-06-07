@@ -16,6 +16,7 @@ import {
   TEMPLATES_ENDPOINT,
   UPDATE_ALL_ENDPOINT,
 } from './signatures.shared';
+import { authFetch } from '../../../lib/api-helpers';
 
 const PAGE_CONTAINER = 'max-w-3xl mx-auto p-8 space-y-6';
 
@@ -36,7 +37,7 @@ const SignaturesTabs = () => {
   const [selectedId, setSelectedId] = useState<string>('');
 
   useEffect(() => {
-    fetch(TEMPLATES_ENDPOINT)
+    authFetch(TEMPLATES_ENDPOINT)
       .then(res => res.json())
       .then((data: { templates: SignatureTemplate[] }) => {
         const list = data.templates ?? [];
@@ -50,7 +51,7 @@ const SignaturesTabs = () => {
 
   const selectTemplate = async (template: SignatureTemplate) => {
     setSelectedId(template.id);
-    await fetch(UPDATE_ALL_ENDPOINT, {
+    await authFetch(UPDATE_ALL_ENDPOINT, {
       method: HTTP_METHOD.POST,
       headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
       body: JSON.stringify({ template: template.template }),
@@ -64,7 +65,7 @@ const SignaturesTabs = () => {
       ...form,
       id: `${NEW_TEMPLATE_PREFIX}${Date.now()}`,
     };
-    const res = await fetch(TEMPLATES_ENDPOINT, {
+    const res = await authFetch(TEMPLATES_ENDPOINT, {
       method: HTTP_METHOD.POST,
       headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
       body: JSON.stringify(newTemplate),
@@ -73,7 +74,7 @@ const SignaturesTabs = () => {
   };
 
   const updateTemplate = async (item: SignatureTemplate): Promise<void> => {
-    await fetch(`${TEMPLATES_ENDPOINT}/${item.id}`, {
+    await authFetch(`${TEMPLATES_ENDPOINT}/${item.id}`, {
       method: HTTP_METHOD.PATCH,
       headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
       body: JSON.stringify({ label: item.label, template: item.template }),
@@ -81,7 +82,9 @@ const SignaturesTabs = () => {
   };
 
   const deleteTemplate = async (id: string | number): Promise<void> => {
-    await fetch(`${TEMPLATES_ENDPOINT}/${id}`, { method: HTTP_METHOD.DELETE });
+    await authFetch(`${TEMPLATES_ENDPOINT}/${id}`, {
+      method: HTTP_METHOD.DELETE,
+    });
   };
 
   const onTabChange = (value: string) => {

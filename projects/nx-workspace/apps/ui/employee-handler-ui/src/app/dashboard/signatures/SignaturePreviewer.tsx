@@ -9,6 +9,8 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { Text } from '@radix-ui/themes';
 import { DEMO_SIGNATURE, renderTemplate, Signature } from './signatures.shared';
+import { sanitizeSignatureHtml } from './sanitize-signature';
+import { authFetch } from '../../../lib/api-helpers';
 
 const LIST_ENDPOINT = '/api/signature/list';
 const LOADING_TEXT = 'Loading...';
@@ -48,7 +50,7 @@ export const SignaturePreviewer = ({
   const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
-    fetch(LIST_ENDPOINT)
+    authFetch(LIST_ENDPOINT)
       .then(res => res.json())
       .then((data: { signatures: Signature[] }) => {
         setSignatures(data.signatures ?? []);
@@ -78,7 +80,7 @@ export const SignaturePreviewer = ({
   };
 
   const downloadZipped = async () => {
-    const res = await fetch(DOWNLOAD_ZIP_ENDPOINT);
+    const res = await authFetch(DOWNLOAD_ZIP_ENDPOINT);
     const blob = await res.blob();
     triggerDownload(blob, ZIP_FILENAME);
   };
@@ -103,6 +105,7 @@ export const SignaturePreviewer = ({
         <div className="space-y-6">
           {filteredSignatures.map(sig => {
             const html = renderTemplate(activeTemplate, sig);
+            const safeHtml = sanitizeSignatureHtml(html);
             const downloadActions: DownloadAction[] = [
               { label: ACTION_DOWNLOAD_HTML, onSelect: downloadHtmlFor(sig) },
               { label: ACTION_DOWNLOAD_ZIP, onSelect: downloadZipped },
@@ -112,7 +115,7 @@ export const SignaturePreviewer = ({
                 key={sig.email}
                 className="flex items-start justify-between gap-2"
               >
-                <div dangerouslySetInnerHTML={{ __html: html }} />
+                <div dangerouslySetInnerHTML={{ __html: safeHtml }} />
                 <div className="flex gap-1 shrink-0">
                   <CopyButton text={html} />
                   <DownloadButton actions={downloadActions} />
