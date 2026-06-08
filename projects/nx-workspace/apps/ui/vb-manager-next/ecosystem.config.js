@@ -9,7 +9,7 @@ module.exports = {
     {
       name: 'vb-manager-next',
       script: path.join(WORKSPACE_ROOT, 'node_modules/next/dist/bin/next'),
-      args: 'start --port 1337',
+      args: 'start --port 1337 --hostname 127.0.0.1',
       cwd: path.join(WORKSPACE_ROOT, 'dist/apps/ui/vb-manager-next'),
       exec_mode: 'fork',
       interpreter: NODE_INTERPRETER,
