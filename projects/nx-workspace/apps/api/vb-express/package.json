@@ -2,6 +2,7 @@
   "name": "vb-express",
   "version": "0.0.1",
   "private": true,
+  "main": "main.js",
   "dependencies": {
     "@aws-sdk/client-s3": "*",
     "@google-cloud/storage": "7.19.0",

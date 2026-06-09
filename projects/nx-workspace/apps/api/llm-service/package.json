@@ -2,6 +2,7 @@
   "name": "llm-service",
   "version": "0.0.1",
   "private": true,
+  "main": "main.js",
   "dependencies": {
     "@anthropic-ai/sdk": "*",
     "@vigilant-broccoli/common-js": "workspace:*",
