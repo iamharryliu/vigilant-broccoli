@@ -1,0 +1,31 @@
+{
+  "name": "vb-express",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/client-s3": "*",
+    "@google-cloud/storage": "*",
+    "@vigilant-broccoli/common-js": "workspace:*",
+    "@vigilant-broccoli/common-node": "workspace:*",
+    "@vigilant-broccoli/express": "workspace:*",
+    "@vigilant-broccoli/llm-schemas": "workspace:*",
+    "@vigilant-broccoli/messaging": "workspace:*",
+    "@vigilant-broccoli/personal-common-js": "workspace:*",
+    "@vigilant-broccoli/storage": "workspace:*",
+    "archiver": "*",
+    "better-auth": "*",
+    "cors": "*",
+    "ejs": "*",
+    "express": "*",
+    "formidable": "*",
+    "googleapis": "*",
+    "json-schema-to-ts": "*",
+    "multer": "*",
+    "nodemailer": "*",
+    "qrcode": "*",
+    "resend": "*",
+    "tslib": "*",
+    "twilio": "*",
+    "winston": "*"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "llm-service",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@anthropic-ai/sdk": "*",
+    "@vigilant-broccoli/common-js": "workspace:*",
+    "@vigilant-broccoli/common-node": "workspace:*",
+    "@vigilant-broccoli/express": "workspace:*",
+    "@vigilant-broccoli/llm-tools": "workspace:*",
+    "archiver": "*",
+    "cors": "*",
+    "express": "*",
+    "openai": "*",
+    "qrcode": "*",
+    "tslib": "*",
+    "winston": "*"
+  }
+}
