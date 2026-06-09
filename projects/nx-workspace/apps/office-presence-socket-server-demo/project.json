@@ -98,6 +98,10 @@
         ],
         "parallel": false
       }
+    },
+    "deploy": {
+      "dependsOn": ["deploy-container"],
+      "executor": "nx:noop"
     }
   }
 }
