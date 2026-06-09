@@ -42,6 +42,7 @@ export const API_ENDPOINTS = {
   // Network
   PUBLIC_IP: '/api/public-ip',
   LOCAL_IP: '/api/local-ip',
+  LOCAL_SERVICES: '/api/local-services',
 
   // System
   LOCAL_MACHINE: '/api/local-machine',

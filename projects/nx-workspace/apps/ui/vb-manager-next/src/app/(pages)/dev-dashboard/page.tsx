@@ -13,6 +13,7 @@ import { TailscaleMachinesComponent } from '../../components/tailscale-machines.
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
 import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
 import { VercelAppsComponent } from '../../components/vercel-apps.component';
+import { LocalServicesComponent } from '../../components/local-services.component';
 
 export default function Page() {
   return (
@@ -23,6 +24,7 @@ export default function Page() {
         <TailscaleMachinesComponent />
         <PM2StatusComponent />
         <DockerStatusComponent />
+        <LocalServicesComponent />
       </div>
       <div className="flex flex-col gap-4">
         <GcloudAuthStatusComponent />
