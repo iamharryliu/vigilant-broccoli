@@ -1,5 +1,6 @@
 'use client';
 
+import { Tabs } from '@radix-ui/themes';
 import { AwsManagementComponent } from '../../components/aws-management.component';
 import { DockerStatusComponent } from '../../components/docker-status.component';
 import { FlyIoAppsComponent } from '../../components/flyio-apps.component';
@@ -15,29 +16,56 @@ import { WranglerPagesComponent } from '../../components/wrangler-pages.componen
 import { VercelAppsComponent } from '../../components/vercel-apps.component';
 import { LocalServicesComponent } from '../../components/local-services.component';
 
+const TAB = {
+  LOCAL: 'local',
+  CLOUD: 'cloud',
+} as const;
+
 export default function Page() {
   return (
-    <div className="grid grid-cols-3 gap-4 h-full">
-      <div className="flex flex-col gap-4">
-        <PublicIpComponent />
-        <WireguardStatusComponent />
-        <TailscaleMachinesComponent />
-        <PM2StatusComponent />
-        <DockerStatusComponent />
-        <LocalServicesComponent />
-      </div>
-      <div className="flex flex-col gap-4">
-        <GcloudAuthStatusComponent />
-        <AwsManagementComponent />
-        <FlyIoAppsComponent />
-        <VercelAppsComponent />
-        <WranglerPagesComponent />
-        <GithubPagesComponent />
-      </div>
-      <div className="flex flex-col gap-4">
-        <GithubTeamManager />
-        <GithubRepoActionStatusBadges repoUrl="https://github.com/iamharryliu/vigilant-broccoli" />
-      </div>
-    </div>
+    <Tabs.Root defaultValue={TAB.LOCAL} className="h-full flex flex-col">
+      <Tabs.List>
+        <Tabs.Trigger value={TAB.LOCAL}>Local</Tabs.Trigger>
+        <Tabs.Trigger value={TAB.CLOUD}>Cloud</Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
+        <div className="grid grid-cols-4 gap-4">
+          <div className="flex flex-col gap-4">
+            <PublicIpComponent />
+          </div>
+          <div className="flex flex-col gap-4">
+            <WireguardStatusComponent />
+            <TailscaleMachinesComponent />
+          </div>
+          <div className="flex flex-col gap-4">
+            <LocalServicesComponent />
+          </div>
+          <div className="flex flex-col gap-4">
+            <DockerStatusComponent />
+            <PM2StatusComponent />
+          </div>
+        </div>
+      </Tabs.Content>
+      <Tabs.Content value={TAB.CLOUD} className="pt-4 flex-1 min-h-0">
+        <div className="grid grid-cols-4 gap-4">
+          <div className="flex flex-col gap-4">
+            <GcloudAuthStatusComponent />
+            <AwsManagementComponent />
+          </div>
+          <div className="flex flex-col gap-4">
+            <FlyIoAppsComponent />
+          </div>
+          <div className="flex flex-col gap-4">
+            <VercelAppsComponent />
+            <WranglerPagesComponent />
+            <GithubPagesComponent />
+          </div>
+          <div className="flex flex-col gap-4">
+            <GithubTeamManager />
+            <GithubRepoActionStatusBadges repoUrl="https://github.com/iamharryliu/vigilant-broccoli" />
+          </div>
+        </div>
+      </Tabs.Content>
+    </Tabs.Root>
   );
 }
