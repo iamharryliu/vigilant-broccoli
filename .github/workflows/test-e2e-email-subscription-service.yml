@@ -73,11 +73,11 @@ jobs:
           role: ${{ env.VAULT_ROLE }}
           jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
           secrets: |
-            kv/data/secrets EMAIL_SUBSCRIPTION_SERVICE_API_KEY | EMAIL_SUBSCRIPTION_SERVICE_API_KEY ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
 
       - name: Test subscribe
         env:
-          API_KEY: ${{ env.EMAIL_SUBSCRIPTION_SERVICE_API_KEY }}
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
             -X POST ${{ env.SERVICE_URL }}/subscribe \
@@ -95,7 +95,7 @@ jobs:
 
       - name: Test notify (subscriber should receive email)
         env:
-          API_KEY: ${{ env.EMAIL_SUBSCRIPTION_SERVICE_API_KEY }}
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
             -X POST ${{ env.SERVICE_URL }}/notify \
@@ -114,7 +114,7 @@ jobs:
 
       - name: Test unsubscribe
         env:
-          API_KEY: ${{ env.EMAIL_SUBSCRIPTION_SERVICE_API_KEY }}
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
             -X POST ${{ env.SERVICE_URL }}/unsubscribe \
@@ -132,7 +132,7 @@ jobs:
 
       - name: Test notify after unsubscribe (should queue 0 emails)
         env:
-          API_KEY: ${{ env.EMAIL_SUBSCRIPTION_SERVICE_API_KEY }}
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
             -X POST ${{ env.SERVICE_URL }}/notify \

@@ -70,16 +70,16 @@ jobs:
           role: ${{ env.VAULT_ROLE }}
           jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
           secrets: |
-            kv/data/secrets EMAIL_SERVICE_API_KEY | EMAIL_SERVICE_API_KEY ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
 
       - name: Test email service
         env:
-          EMAIL_SERVICE_API_KEY: ${{ env.EMAIL_SERVICE_API_KEY }}
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
             -X POST https://vb-email-service.fly.dev/queue-emails \
             -H 'Content-Type: application/json' \
-            -H "x-api-key: ${EMAIL_SERVICE_API_KEY}" \
+            -H "x-api-key: ${SHARED_APP_TOKEN}" \
             -d '[{"from":"Harry Liu <ci-test@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"ci-test: Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')
           echo "Response status: $STATUS"
           cat /tmp/response.json
