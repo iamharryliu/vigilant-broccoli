@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@aws-sdk/client-s3": "*",
-    "@google-cloud/storage": "*",
+    "@google-cloud/storage": "7.19.0",
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/express": "workspace:*",
