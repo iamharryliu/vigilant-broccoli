@@ -40,7 +40,6 @@ export type OfficePresenceAppRunConfig = {
   reminderTimezone?: string;
   enableReminders?: boolean;
   includeWeekends?: boolean;
-  daysAhead?: number;
   defaultShowWeekdaysOnly?: boolean;
   defaultShowTeamCount?: boolean;
   defaultWeeksAhead?: number;
@@ -54,7 +53,7 @@ const DEFAULT_APP_NAME = 'OK-IN';
 const DEFAULT_OFFICES: string[] = [];
 const DEFAULT_SHOW_WEEKDAYS_ONLY = true;
 const DEFAULT_SHOW_TEAM_COUNT = true;
-const DEFAULT_WEEKS_AHEAD = 2;
+const DEFAULT_WEEKS_AHEAD = 3;
 
 // eslint-disable-next-line complexity
 export async function runOfficePresenceApp(
@@ -64,7 +63,6 @@ export async function runOfficePresenceApp(
     APP_NAME,
     OFFICES,
     includeWeekends,
-    daysAhead,
     defaultShowWeekdaysOnly,
     defaultShowTeamCount,
     defaultWeeksAhead,
@@ -74,7 +72,6 @@ export async function runOfficePresenceApp(
     APP_NAME: APP_NAME ?? DEFAULT_APP_NAME,
     OFFICES: OFFICES ?? DEFAULT_OFFICES,
     includeWeekends,
-    daysAhead,
     defaultShowWeekdaysOnly:
       defaultShowWeekdaysOnly ?? DEFAULT_SHOW_WEEKDAYS_ONLY,
     defaultShowTeamCount: defaultShowTeamCount ?? DEFAULT_SHOW_TEAM_COUNT,

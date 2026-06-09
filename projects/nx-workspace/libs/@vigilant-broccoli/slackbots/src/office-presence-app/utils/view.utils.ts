@@ -60,7 +60,6 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
     userSettings.showWeekdaysOnly ?? appConfig.defaultShowWeekdaysOnly;
   const showTeamCount =
     userSettings.showTeamCount ?? appConfig.defaultShowTeamCount;
-  const weeksAhead = userSettings.weeksAhead ?? appConfig.defaultWeeksAhead;
 
   const includeWeekends = !showWeekdaysOnly;
 
@@ -69,11 +68,11 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
     userPresences[userId] = {};
   }
   const selected = Object.keys(userPresences[userId]);
-  const checkboxDates = getUpcomingWeekdays(
-    appConfig.daysAhead ?? 14,
+  const checkboxDates = getUpcomingWeekdays(14, includeWeekends).slice(0, 10);
+  const presenceDates = getUpcomingWeekdays(
+    appConfig.defaultWeeksAhead * 7,
     includeWeekends,
-  ).slice(0, 10);
-  const presenceDates = getUpcomingWeekdays(weeksAhead * 7, includeWeekends);
+  );
   const options = buildModalDateOptionSlackBlocks(checkboxDates);
   const initial = options.filter(opt => selected.includes(opt.value));
   const today = formatISODateLocal(new Date());

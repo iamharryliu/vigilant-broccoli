@@ -193,8 +193,6 @@ export function createUserSettingsModal(appConfig: AppConfig) {
       settings.showWeekdaysOnly ?? appConfig.defaultShowWeekdaysOnly;
     const effectiveShowTeamCount =
       settings.showTeamCount ?? appConfig.defaultShowTeamCount;
-    const effectiveWeeksAhead =
-      settings.weeksAhead ?? appConfig.defaultWeeksAhead;
 
     const officeBlocks: KnownBlock[] =
       appConfig.OFFICES.length > 0
@@ -244,11 +242,6 @@ export function createUserSettingsModal(appConfig: AppConfig) {
       value: ACTION_ID.SHOW_TEAM_COUNT,
     };
 
-    const weeksAheadOptions = [1, 2, 3, 4].map(n => ({
-      text: SlackViewBuilder.generatePlainText(String(n)),
-      value: String(n),
-    }));
-
     const modal: ModalView = {
       type: 'modal',
       callback_id: APP_ACTION.SUBMIT_SETTINGS,
@@ -288,22 +281,6 @@ export function createUserSettingsModal(appConfig: AppConfig) {
             copy.SETTINGS_MODAL.SHOW_TEAM_COUNT_LABEL,
           ),
           optional: true,
-        },
-        {
-          type: 'input',
-          block_id: BLOCK_ID.WEEKS_AHEAD,
-          element: {
-            type: 'static_select',
-            action_id: ACTION_ID.WEEKS_AHEAD,
-            options: weeksAheadOptions,
-            initial_option:
-              weeksAheadOptions.find(
-                o => o.value === String(effectiveWeeksAhead),
-              ) ?? weeksAheadOptions[1],
-          },
-          label: SlackViewBuilder.generatePlainText(
-            copy.SETTINGS_MODAL.WEEKS_AHEAD_LABEL,
-          ),
         },
       ],
     };

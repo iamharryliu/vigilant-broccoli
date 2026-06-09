@@ -86,7 +86,6 @@ export const DEFAULT_APP_COPY = {
     SHOW_WEEKDAYS_ONLY_OPTION: 'Show weekdays only',
     SHOW_TEAM_COUNT_LABEL: 'Show team count',
     SHOW_TEAM_COUNT_OPTION: 'Show team count',
-    WEEKS_AHEAD_LABEL: 'Weeks ahead to display',
   },
   ASK_LUNCH_MODAL: {
     NO_USERS_MARKDOWN: 'No other users are in the office today for lunch 😢',
@@ -125,7 +124,7 @@ export const DEFAULT_APP_COPY = {
       "When you're checked in for today, an *Ask about lunch* button appears. Use it to send a lunch invite to others in the office.",
     SETTINGS_HEADER: 'User Settings',
     SETTINGS_TEXT:
-      'Click *User Settings* to set your default office, toggle weekends, toggle team count display, and choose how many weeks ahead to show.',
+      'Click *User Settings* to set your default office, toggle weekends, and toggle team count display.',
   },
   ACTIONS: {
     CHECKED_OUT_MESSAGE: 'has left the building!',

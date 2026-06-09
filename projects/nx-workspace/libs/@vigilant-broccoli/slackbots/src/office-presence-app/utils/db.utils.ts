@@ -46,8 +46,7 @@ db.prepare(
     user_id TEXT PRIMARY KEY,
     default_office TEXT,
     show_weekdays_only INTEGER,
-    show_team_count INTEGER,
-    weeks_ahead INTEGER
+    show_team_count INTEGER
   )
 `,
 ).run();
@@ -59,7 +58,6 @@ const userSettingsColumns = (
 for (const [col, type] of [
   ['show_weekdays_only', 'INTEGER'],
   ['show_team_count', 'INTEGER'],
-  ['weeks_ahead', 'INTEGER'],
 ] as [string, string][]) {
   if (!userSettingsColumns.includes(col)) {
     db.prepare(`ALTER TABLE user_settings ADD COLUMN ${col} ${type}`).run();
@@ -217,20 +215,18 @@ export function loadUserSettings(userId: string): UserSettings {
       row.show_weekdays_only != null ? !!row.show_weekdays_only : undefined,
     showTeamCount:
       row.show_team_count != null ? !!row.show_team_count : undefined,
-    weeksAhead: row.weeks_ahead ?? undefined,
   };
 }
 
 export function saveUserSettings(userId: string, settings: UserSettings) {
   db.prepare(
     `
-    INSERT INTO user_settings (user_id, default_office, show_weekdays_only, show_team_count, weeks_ahead)
-    VALUES (@user_id, @default_office, @show_weekdays_only, @show_team_count, @weeks_ahead)
+    INSERT INTO user_settings (user_id, default_office, show_weekdays_only, show_team_count)
+    VALUES (@user_id, @default_office, @show_weekdays_only, @show_team_count)
     ON CONFLICT(user_id) DO UPDATE SET
       default_office=excluded.default_office,
       show_weekdays_only=excluded.show_weekdays_only,
-      show_team_count=excluded.show_team_count,
-      weeks_ahead=excluded.weeks_ahead
+      show_team_count=excluded.show_team_count
   `,
   ).run({
     user_id: userId,
@@ -239,7 +235,6 @@ export function saveUserSettings(userId: string, settings: UserSettings) {
       settings.showWeekdaysOnly != null ? +settings.showWeekdaysOnly : null,
     show_team_count:
       settings.showTeamCount != null ? +settings.showTeamCount : null,
-    weeks_ahead: settings.weeksAhead ?? null,
   });
 }
 

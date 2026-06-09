@@ -135,15 +135,10 @@ export function handleSettingsModalSubmit(
       view.state.values[BLOCK_ID.SHOW_TEAM_COUNT]?.[ACTION_ID.SHOW_TEAM_COUNT]
         .selected_options as ViewStateSelectedOption[] | undefined
     )?.some(o => o.value === ACTION_ID.SHOW_TEAM_COUNT) ?? false;
-  const weeksAheadStr =
-    view.state.values[BLOCK_ID.WEEKS_AHEAD]?.[ACTION_ID.WEEKS_AHEAD]
-      .selected_option?.value;
-  const weeksAhead = weeksAheadStr ? parseInt(weeksAheadStr, 10) : undefined;
   const settings: UserSettings = {
     defaultOffice,
     showWeekdaysOnly,
     showTeamCount,
-    weeksAhead,
   };
   saveUserSettings(userId, settings);
 }
