@@ -60,6 +60,7 @@ class SpotifyToMp3Service:
         try:
             output = f"{self.output}/{playlist_name}"
             output = os.path.expanduser(output)
+            logger.info(f"Downloading '{playlist_name}'...")
             subprocess.run(
                 ["spotdl", "download", playlist["url"], "--output", f"{output}"],
                 check=True,
@@ -70,13 +71,8 @@ class SpotifyToMp3Service:
             logger.info(f"Successfully downloaded playlist '{playlist_name}'")
 
         except subprocess.CalledProcessError as e:
-            error_msg = e.stderr if e.stderr else str(e)
-            logger.error(f"Failed to download playlist '{playlist_name}': {error_msg}")
-
-        except Exception as e:
-            logger.error(
-                f"Unexpected error downloading playlist '{playlist_name}': {type(e).__name__}: {e}"
-            )
+            output = e.stderr or e.stdout or str(e)
+            logger.error(f"Failed '{playlist_name}': {output}")
 
     @staticmethod
     def convert_to_slug_case(text):
