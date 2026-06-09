@@ -5,14 +5,17 @@ ENV PORT=3000
 
 WORKDIR /app
 
+RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
+
 RUN addgroup --system vb-express && \
-          adduser --system -G vb-express vb-express
+          adduser --system --home /home/vb-express --shell /sbin/nologin -G vb-express vb-express && \
+          mkdir -p /home/vb-express
 
 COPY dist/apps/api/vb-express vb-express/
-RUN chown -R vb-express:vb-express .
+RUN chown -R vb-express:vb-express /app /home/vb-express
 
-# You can remove this install step if you build with `--bundle` option.
-# The bundled output will include external dependencies.
-RUN npm --prefix vb-express --omit=dev --ignore-scripts install
+USER vb-express
+
+RUN cd vb-express && pnpm install --frozen-lockfile --prod --ignore-scripts
 
 CMD [ "node", "vb-express" ]

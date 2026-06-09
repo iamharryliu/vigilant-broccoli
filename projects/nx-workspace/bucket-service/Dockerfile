@@ -3,12 +3,15 @@ FROM docker.io/node:lts-alpine
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
 
 WORKDIR /app
+RUN chown node:node /app
 
-COPY . .
+COPY --chown=node:node . .
 
-RUN pnpm install
+USER node
+
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 CMD [ "node", "main.js" ]
