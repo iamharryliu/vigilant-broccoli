@@ -9,6 +9,7 @@ import {
   FolderItem,
   LinkComponent,
   FileService,
+  FILE_STRUCTURE_PATHS,
 } from 'general-components';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -30,17 +31,15 @@ export class LeetCodePageComponent implements OnInit {
   indexLink = { ...LINKS.INDEX_PAGE, text: 'Go to harryliu.dev' };
   fileContent$: Observable<FolderItem>;
 
+  public fileService = inject(FileService);
+  public appService = inject(AppService);
+  public pageService = inject(LeetCodePageService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-    public fileService= inject(FileService);
-    public appService= inject(AppService);
-    public pageService= inject(LeetCodePageService);
-    private route= inject(ActivatedRoute);
-    private router= inject(Router);
-
-  constructor(
-  ) {
+  constructor() {
     this.fileContent$ = this.fileService.getFolderStructure(
-      'assets/grind-75/grind-75.json',
+      FILE_STRUCTURE_PATHS.LEET_CODE,
     );
   }
 

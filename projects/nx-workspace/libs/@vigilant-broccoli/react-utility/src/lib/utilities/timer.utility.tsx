@@ -237,83 +237,85 @@ export const TimerUtilityContent = () => {
   const { remaining, isRunning, currentRepetition, totalRepetitions } = uiState;
   const active = remaining > 0 || currentRepetition > 0;
 
-  return (
-    <>
-      {active ? (
-        <div className="flex flex-col items-center gap-2">
-          <Text size="6" weight="bold" className="font-mono">
-            {formatTime(remaining)}
-          </Text>
-          {totalRepetitions > 1 && (
-            <Text size="2" color="gray">
-              Repetition {currentRepetition} of {totalRepetitions}
-            </Text>
-          )}
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => sendTimerCommand(CMD_STOP)}
-              disabled={!isRunning}
-            >
-              Stop
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => sendTimerCommand(CMD_RESET)}
-            >
-              Reset
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2 items-end">
-            <div className="flex flex-col gap-1" style={{ flex: '1 1 0', minWidth: 0 }}>
-              <Text size="1" color="gray">
-                Minutes
-              </Text>
-              <input
-                type="number"
-                min="0"
-                value={timerMinutes}
-                onChange={e => setTimerMinutes(e.target.value)}
-                placeholder="0"
-                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
-              />
-            </div>
-            <div className="flex flex-col gap-1" style={{ flex: '1 1 0', minWidth: 0 }}>
-              <Text size="1" color="gray">
-                Seconds
-              </Text>
-              <input
-                type="number"
-                min="0"
-                max="59"
-                value={timerSeconds}
-                onChange={e => setTimerSeconds(e.target.value)}
-                placeholder="0"
-                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
-              />
-            </div>
-            <div className="flex flex-col gap-1" style={{ flex: '1 1 0', minWidth: 0 }}>
-              <Text size="1" color="gray">
-                Repeat
-              </Text>
-              <input
-                type="number"
-                min="1"
-                value={timerRepeat}
-                onChange={e => setTimerRepeat(e.target.value)}
-                placeholder="1"
-                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
-              />
-            </div>
-          </div>
-          <Button variant="secondary" onClick={handleStart}>
-            Start Timer
-          </Button>
-        </div>
+  return active ? (
+    <div className="flex flex-col items-center gap-2">
+      <Text size="6" weight="bold" className="font-mono">
+        {formatTime(remaining)}
+      </Text>
+      {totalRepetitions > 1 && (
+        <Text size="2" color="gray">
+          Repetition {currentRepetition} of {totalRepetitions}
+        </Text>
       )}
-    </>
+      <div className="flex gap-2">
+        <Button
+          variant="secondary"
+          onClick={() => sendTimerCommand(CMD_STOP)}
+          disabled={!isRunning}
+        >
+          Stop
+        </Button>
+        <Button variant="outline" onClick={() => sendTimerCommand(CMD_RESET)}>
+          Reset
+        </Button>
+      </div>
+    </div>
+  ) : (
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2 items-end">
+        <div
+          className="flex flex-col gap-1"
+          style={{ flex: '1 1 0', minWidth: 0 }}
+        >
+          <Text size="1" color="gray">
+            Minutes
+          </Text>
+          <input
+            type="number"
+            min="0"
+            value={timerMinutes}
+            onChange={e => setTimerMinutes(e.target.value)}
+            placeholder="0"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
+          />
+        </div>
+        <div
+          className="flex flex-col gap-1"
+          style={{ flex: '1 1 0', minWidth: 0 }}
+        >
+          <Text size="1" color="gray">
+            Seconds
+          </Text>
+          <input
+            type="number"
+            min="0"
+            max="59"
+            value={timerSeconds}
+            onChange={e => setTimerSeconds(e.target.value)}
+            placeholder="0"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
+          />
+        </div>
+        <div
+          className="flex flex-col gap-1"
+          style={{ flex: '1 1 0', minWidth: 0 }}
+        >
+          <Text size="1" color="gray">
+            Repeat
+          </Text>
+          <input
+            type="number"
+            min="1"
+            value={timerRepeat}
+            onChange={e => setTimerRepeat(e.target.value)}
+            placeholder="1"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent w-full"
+          />
+        </div>
+      </div>
+      <Button variant="secondary" onClick={handleStart}>
+        Start Timer
+      </Button>
+    </div>
   );
 };

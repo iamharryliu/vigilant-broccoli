@@ -20,7 +20,7 @@ export const HighlightMatch = ({
   markClassName = DEFAULT_MARK_CLASS,
 }: HighlightMatchProps) => {
   const trimmed = query.trim();
-  if (!trimmed) return <>{text}</>;
+  if (!trimmed) return text;
   const parts = text.split(
     new RegExp(`(${escapeRegExp(trimmed)})`, REGEX_FLAGS),
   );

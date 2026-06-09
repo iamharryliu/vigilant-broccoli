@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FolderItem } from '../models';
 
-const FILE_STRUCTURE_PATHS = {
+export const FILE_STRUCTURE_PATHS = {
   MD_LIBRARY: 'assets/md-library/md-library.json',
   LEET_CODE: 'assets/grind-75/grind-75.json',
 } as const;

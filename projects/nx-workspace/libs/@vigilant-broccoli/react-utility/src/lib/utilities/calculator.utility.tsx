@@ -11,6 +11,103 @@ interface HistoryEntry {
   timestamp: number;
 }
 
+const OP_PRECEDENCE: Record<string, number> = {
+  '+': 1,
+  '-': 1,
+  '*': 2,
+  '/': 2,
+};
+
+const applyOp = (op: string, b: number, a: number): number => {
+  if (op === '+') return a + b;
+  if (op === '-') return a - b;
+  if (op === '*') return a * b;
+  return a / b;
+};
+
+const evaluateMathExpression = (expr: string): number | null => {
+  const values: number[] = [];
+  const ops: string[] = [];
+  let i = 0;
+  let expectOperand = true;
+
+  while (i < expr.length) {
+    const ch = expr[i];
+    if (ch === ' ') {
+      i++;
+      continue;
+    }
+    if (ch >= '0' && ch <= '9') {
+      let j = i;
+      while (
+        j < expr.length &&
+        (expr[j] === '.' || (expr[j] >= '0' && expr[j] <= '9'))
+      )
+        j++;
+      const num = Number(expr.slice(i, j));
+      if (Number.isNaN(num)) return null;
+      values.push(num);
+      i = j;
+      expectOperand = false;
+      continue;
+    }
+    if (ch === '(') {
+      ops.push(ch);
+      i++;
+      expectOperand = true;
+      continue;
+    }
+    if (ch === ')') {
+      while (ops.length && ops[ops.length - 1] !== '(') {
+        const b = values.pop();
+        const a = values.pop();
+        const op = ops.pop();
+        if (b === undefined || a === undefined || op === undefined) return null;
+        values.push(applyOp(op, b, a));
+      }
+      if (!ops.length) return null;
+      ops.pop();
+      i++;
+      expectOperand = false;
+      continue;
+    }
+    if (ch === '+' || ch === '-' || ch === '*' || ch === '/') {
+      if (expectOperand && (ch === '+' || ch === '-')) {
+        values.push(0);
+      } else if (expectOperand) {
+        return null;
+      }
+      while (
+        ops.length &&
+        ops[ops.length - 1] !== '(' &&
+        OP_PRECEDENCE[ops[ops.length - 1]] >= OP_PRECEDENCE[ch]
+      ) {
+        const b = values.pop();
+        const a = values.pop();
+        const op = ops.pop();
+        if (b === undefined || a === undefined || op === undefined) return null;
+        values.push(applyOp(op, b, a));
+      }
+      ops.push(ch);
+      i++;
+      expectOperand = true;
+      continue;
+    }
+    return null;
+  }
+
+  while (ops.length) {
+    const b = values.pop();
+    const a = values.pop();
+    const op = ops.pop();
+    if (op === '(' || b === undefined || a === undefined || op === undefined)
+      return null;
+    values.push(applyOp(op, b, a));
+  }
+
+  return values.length === 1 ? values[0] : null;
+};
+
 export const CalculatorUtilityContent = () => {
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
@@ -42,48 +139,16 @@ export const CalculatorUtilityContent = () => {
     localStorage.removeItem(HISTORY_STORAGE_KEY);
   };
 
-  // eslint-disable-next-line complexity
   const evaluateExpression = (expression: string) => {
-    if (!expression.trim()) {
+    const sanitized = expression.replace(/[^0-9+\-*/().]/g, '');
+    if (!sanitized) {
       setResult('');
       return;
     }
-
-    try {
-      const sanitized = expression.replace(/[^0-9+\-*/().]/g, '');
-
-      if (!sanitized) {
-        setResult('');
-        return;
-      }
-
-      let openParens = 0;
-      for (const char of sanitized) {
-        if (char === '(') openParens++;
-        if (char === ')') openParens--;
-        if (openParens < 0) {
-          setResult('');
-          return;
-        }
-      }
-
-      if (openParens !== 0) {
-        setResult('');
-        return;
-      }
-
-      const evaluated = Function(`'use strict'; return (${sanitized})`)();
-
-      if (
-        typeof evaluated === 'number' &&
-        !isNaN(evaluated) &&
-        isFinite(evaluated)
-      ) {
-        setResult(evaluated.toString());
-      } else {
-        setResult('');
-      }
-    } catch (_error) {
+    const evaluated = evaluateMathExpression(sanitized);
+    if (evaluated !== null && isFinite(evaluated)) {
+      setResult(evaluated.toString());
+    } else {
       setResult('');
     }
   };

@@ -1,5 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { FileService, FolderItem } from 'general-components';
+import {
+  FileService,
+  FILE_STRUCTURE_PATHS,
+  FolderItem,
+} from 'general-components';
 import { Observable } from 'rxjs';
 
 const DEFAULT_MD_FILE = 'assets/docs-md.md';
@@ -11,12 +15,10 @@ export class DocsMdPageService {
   isFileSelected = true;
   selectedFilepath = '';
 
-  private fileService =  inject(FileService);
+  private fileService = inject(FileService);
 
   getFileContent(): Observable<FolderItem> {
-    return this.fileService.getFolderStructure(
-      'assets/md-library/md-library.json',
-    );
+    return this.fileService.getFolderStructure(FILE_STRUCTURE_PATHS.MD_LIBRARY);
   }
 
   get getFilepath(): string {
