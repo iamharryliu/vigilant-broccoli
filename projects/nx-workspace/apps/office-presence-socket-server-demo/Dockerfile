@@ -9,12 +9,10 @@ WORKDIR /app
 COPY . .
 
 RUN apk add --no-cache --virtual .build-deps python3 make g++ \
-    && corepack enable \
-    && corepack prepare pnpm@11.1.2 --activate \
-    && pnpm init \
-    && pnpm add better-sqlite3@${BETTER_SQLITE3_VERSION} \
+    && npm install --no-package-lock --no-save better-sqlite3@${BETTER_SQLITE3_VERSION} \
     && mkdir -p /app/build/Release \
     && cp /app/node_modules/better-sqlite3/build/Release/better_sqlite3.node /app/build/Release/ \
+    && rm -rf /app/node_modules \
     && apk del .build-deps \
     && chown -R node:node /app
 
