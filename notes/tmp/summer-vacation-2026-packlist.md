@@ -91,6 +91,7 @@
 - Trash bags
 - Paper towels/napkins
 - Waterproof bags/cases
+- Dustpan and brush
 
 ## Electric Utility
 

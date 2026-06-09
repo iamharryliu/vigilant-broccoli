@@ -34,6 +34,7 @@
   - Hanging Lights
   - Clothing Pins
   - Tarp
+  - Dustpan and brush
   - Repair kit
     - Thread and needle
     - Duct Tape
