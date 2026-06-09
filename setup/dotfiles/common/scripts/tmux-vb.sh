@@ -8,42 +8,36 @@ tmux has-session -t "$SESSION" 2>/dev/null && tmux attach -t "$SESSION" && exit 
 tmux new-session -d -s "$SESSION"
 
 #################################
-# Window 1: yazi
+# Window 1: neovim
 #################################
-tmux rename-window -t "$SESSION:1" yazi
-tmux send-keys -t "$SESSION:1.1" "yazi" C-m
+tmux rename-window -t "$SESSION:1" neovim
+tmux send-keys -t "$SESSION:1.1" "neovidetmuxvb" C-m
 
 #################################
-# Window 2: btop
+# Window 2: yazi
+#################################
+tmux new-window -t "$SESSION" -n yazi
+tmux send-keys -t "$SESSION:2.1" "yazi" C-m
+
+#################################
+# Window 3: btop
 #################################
 tmux new-window -t "$SESSION" -n btop
-tmux send-keys -t "$SESSION:2.1" "btop" C-m
+tmux send-keys -t "$SESSION:3.1" "btop" C-m
 
 #################################
-# Window 3: dev (4 panes)
+# Window 4: vb (2 panes)
 #################################
-tmux new-window -t "$SESSION" -n dev -c "$PROJECT"
+tmux new-window -t "$SESSION" -n vb -c "$PROJECT"
 
-DEV_PANE=$(tmux display-message -t "$SESSION:dev" -p '#{pane_id}')
+DEV_PANE=$(tmux display-message -t "$SESSION:vb" -p '#{pane_id}')
 tmux split-window -h -t "$DEV_PANE" -c "$PROJECT"
 
 tmux send-keys -t "$DEV_PANE" "cd $PROJECT && claude" C-m
 tmux select-pane -t "$DEV_PANE"
 
 #################################
-# Window 4: other
-#################################
-tmux new-window -t "$SESSION" -n other
-tmux send-keys -t "$SESSION:4.1" "" C-m
-
-#################################
-# Window 5: neovide
-#################################
-tmux new-window -t "$SESSION" -n neovide
-tmux send-keys -t "$SESSION:5.1" "neovidetmuxvb" C-m
-
-#################################
 # Focus
 #################################
-tmux select-window -t "$SESSION:3"
+tmux select-window -t "$SESSION:vb"
 tmux attach -t "$SESSION"
