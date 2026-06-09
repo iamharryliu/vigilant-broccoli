@@ -1,6 +1,6 @@
 {
   "name": "@vigilant-broccoli/employee-handler",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "dependencies": {
     "@swc/helpers": "0.5.19",
     "@vigilant-broccoli/common-js": "workspace:*",

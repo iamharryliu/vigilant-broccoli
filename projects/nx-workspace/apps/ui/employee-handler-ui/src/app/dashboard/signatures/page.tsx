@@ -35,6 +35,7 @@ const SignaturesTabs = () => {
 
   const [templates, setTemplates] = useState<SignatureTemplate[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
+  const [templatesLoaded, setTemplatesLoaded] = useState(false);
 
   useEffect(() => {
     authFetch(TEMPLATES_ENDPOINT)
@@ -42,12 +43,21 @@ const SignaturesTabs = () => {
       .then((data: { templates: SignatureTemplate[] }) => {
         const list = data.templates ?? [];
         setTemplates(list);
-        if (list[0]) setSelectedId(list[0].id);
-      });
+      })
+      .finally(() => setTemplatesLoaded(true));
   }, []);
 
-  const activeTemplate =
-    templates.find(t => t.id === selectedId)?.template ?? '';
+  useEffect(() => {
+    if (
+      templatesLoaded &&
+      tab === TAB_PREVIEW &&
+      (!templates.length || !selectedId)
+    ) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(TAB_QUERY_KEY, TAB_MANAGER);
+      router.replace(`?${params.toString()}`);
+    }
+  }, [templatesLoaded, tab, templates.length, selectedId]);
 
   const selectTemplate = async (template: SignatureTemplate) => {
     setSelectedId(template.id);
@@ -97,7 +107,9 @@ const SignaturesTabs = () => {
     <Tabs value={tab} onValueChange={onTabChange}>
       <TabsList>
         <TabsTrigger value={TAB_MANAGER}>{LABEL_MANAGER}</TabsTrigger>
-        <TabsTrigger value={TAB_PREVIEW}>{LABEL_PREVIEW}</TabsTrigger>
+        <TabsTrigger value={TAB_PREVIEW} disabled={!selectedId}>
+          {LABEL_PREVIEW}
+        </TabsTrigger>
       </TabsList>
       <TabsContent value={TAB_MANAGER}>
         <SignatureManager
@@ -111,7 +123,7 @@ const SignaturesTabs = () => {
         />
       </TabsContent>
       <TabsContent value={TAB_PREVIEW}>
-        <SignaturePreviewer activeTemplate={activeTemplate} />
+        <SignaturePreviewer templates={templates} selectedId={selectedId} />
       </TabsContent>
     </Tabs>
   );
