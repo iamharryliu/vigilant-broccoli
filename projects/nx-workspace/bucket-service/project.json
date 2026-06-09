@@ -86,11 +86,8 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
-    "docker:build": {
-      "dependsOn": ["build", "prune"]
-    },
     "deploy-container": {
-      "dependsOn": ["docker:build"],
+      "dependsOn": ["build", "prune"],
       "command": "docker buildx build --platform linux/amd64 -f bucket-service/Dockerfile -t iamharryliu/bucket-service:latest -t iamharryliu/bucket-service:${COMMIT_SHA:-latest} --push dist/bucket-service"
     },
     "deploy:secrets": {
@@ -101,7 +98,7 @@
     },
     "deploy": {
       "dependsOn": ["deploy-container", "deploy:secrets"],
-      "command": "flyctl deploy --config ./deployment-configs/fly-configs/bucket-service.toml"
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/bucket-service.toml --image iamharryliu/bucket-service:${COMMIT_SHA:-latest}"
     }
   }
 }
