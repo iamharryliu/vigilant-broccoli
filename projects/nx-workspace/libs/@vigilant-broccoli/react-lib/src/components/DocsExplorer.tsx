@@ -230,9 +230,9 @@ export const DocsExplorer = ({
   };
 
   const sidebarVisibilityCls =
-    mobilePanel === 'sidebar' ? 'flex' : 'hidden md:flex';
+    mobilePanel === 'sidebar' ? 'flex' : '!hidden md:!flex';
   const contentVisibilityCls =
-    mobilePanel === 'content' ? 'flex' : 'hidden md:flex';
+    mobilePanel === 'content' ? 'flex' : '!hidden md:!flex';
 
   return (
     <div className="h-full flex gap-2 md:gap-4">
@@ -350,6 +350,13 @@ export const DocsExplorer = ({
                     onSelect={() => navigator.clipboard.writeText(content)}
                   >
                     {COPY.COPY_MARKDOWN}
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Separator className="md:hidden" />
+                  <DropdownMenu.Item
+                    onSelect={showSidebarOnMobile}
+                    className="md:hidden"
+                  >
+                    {COPY.BACK_TO_FILES}
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
