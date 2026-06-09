@@ -120,7 +120,7 @@ export const useSpeechToText = ({
       try {
         recognitionRef.current.start();
         setIsRecording(true);
-      } catch (err) {
+      } catch (_err) {
         setError(ERROR_RECOGNITION_START);
       }
       return;

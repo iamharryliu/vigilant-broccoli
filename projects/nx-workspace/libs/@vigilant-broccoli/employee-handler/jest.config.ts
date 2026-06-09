@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: '@vigilant-broccoli/employee-handler',
   preset: '../../../jest.preset.js',

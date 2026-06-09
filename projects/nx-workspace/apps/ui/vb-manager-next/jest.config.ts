@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'vb-manager-next',
   preset: '../../../jest.preset.js',

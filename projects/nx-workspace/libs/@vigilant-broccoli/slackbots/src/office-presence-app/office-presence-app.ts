@@ -234,7 +234,6 @@ export async function runOfficePresenceApp(
   });
 
   await app.start(config.port ?? DEFAULT_PORT);
-  // eslint-disable-next-line no-console
   console.log(`⚡️ ${appConfig.APP_NAME} is running!`);
 
   if (config.enableReminders ?? true) {

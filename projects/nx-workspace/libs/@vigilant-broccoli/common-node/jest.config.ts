@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: '@vigilant-broccoli/common-node',
   preset: '../../../jest.preset.js',

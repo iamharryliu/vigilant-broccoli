@@ -107,7 +107,7 @@ const handleKeyboardShortcut = (
 export default function Layout({ children }: { children: ReactNode }) {
   const { appearance, toggleTheme } = useTheme();
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: _session } = useSession();
   const { notifications, unreadCount, add, markAllRead, clear } =
     useNotificationHistory();
   const { notify: browserNotify } = useBrowserNotifications();

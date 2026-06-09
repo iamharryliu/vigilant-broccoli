@@ -46,7 +46,7 @@ export async function GET(request: Request) {
       secret,
       type,
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       {
         success: false,

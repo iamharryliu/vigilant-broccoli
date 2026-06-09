@@ -39,7 +39,6 @@ async function postMessage(
   try {
     await client.chat.postMessage({ channel, text });
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Error posting message:', error);
   }
 }

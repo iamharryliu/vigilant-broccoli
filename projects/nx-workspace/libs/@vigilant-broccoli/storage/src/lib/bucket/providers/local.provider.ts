@@ -53,7 +53,7 @@ export class LocalBucketProvider implements IBucketProvider {
         }),
       );
       return filesWithStats;
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   }

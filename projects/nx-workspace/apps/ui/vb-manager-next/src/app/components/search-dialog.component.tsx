@@ -9,7 +9,6 @@ import {
   Input,
   moveQuickLinkFocusByDirection,
   WINDOW_OPEN_FEATURES,
-  type Direction,
 } from '@vigilant-broccoli/react-lib';
 import {
   MagnifyingGlassIcon,

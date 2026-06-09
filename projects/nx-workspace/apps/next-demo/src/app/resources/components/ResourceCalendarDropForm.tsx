@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Text } from '@radix-ui/themes';
 import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
-import { toDateLocal } from '../../../lib/date-utils';
 import { ResourceBookingFormData } from './ResourceBookingForm';
 
 const inputStyle: React.CSSProperties = {

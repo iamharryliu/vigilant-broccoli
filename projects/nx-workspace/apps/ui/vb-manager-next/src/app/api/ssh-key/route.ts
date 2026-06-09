@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest) {
       success: true,
       key: sshKey.trim(),
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       {
         success: false,

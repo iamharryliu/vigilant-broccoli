@@ -15,8 +15,6 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const STORES = ['Costco', 'Walmart', 'Loblaws', 'Metro', 'FreshCo'];
-
 function daysAgo(n: number) {
   const d = new Date();
   d.setDate(d.getDate() - n);

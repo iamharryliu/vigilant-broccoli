@@ -1,6 +1,6 @@
 'use client';
 
-import { Text, TextField, Button, ScrollArea, Card } from '@radix-ui/themes';
+import { Text, TextField, Button, ScrollArea } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
 
 const HISTORY_STORAGE_KEY = 'calculator-history';
@@ -83,7 +83,7 @@ export const CalculatorUtilityContent = () => {
       } else {
         setResult('');
       }
-    } catch (error) {
+    } catch (_error) {
       setResult('');
     }
   };
@@ -127,7 +127,11 @@ export const CalculatorUtilityContent = () => {
           <ScrollArea style={{ maxHeight: '200px' }}>
             <div className="flex flex-col gap-1">
               {history.map(entry => (
-                <div className="flex justify-between items-center py-1" key={entry.timestamp} style={{ borderBottom: '1px solid var(--gray-a5)' }}>
+                <div
+                  className="flex justify-between items-center py-1"
+                  key={entry.timestamp}
+                  style={{ borderBottom: '1px solid var(--gray-a5)' }}
+                >
                   <Text size="1" color="gray">
                     {entry.equation}
                   </Text>

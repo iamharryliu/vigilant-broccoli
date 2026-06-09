@@ -105,7 +105,7 @@ export async function GET() {
     );
 
     return NextResponse.json({ profiles: enriched });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to fetch AWS profiles' },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },

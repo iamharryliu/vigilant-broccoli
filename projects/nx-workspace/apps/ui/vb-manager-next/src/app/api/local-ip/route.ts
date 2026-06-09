@@ -28,7 +28,7 @@ export async function GET(_req: NextRequest) {
       success: true,
       ip: localIp,
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       {
         success: false,

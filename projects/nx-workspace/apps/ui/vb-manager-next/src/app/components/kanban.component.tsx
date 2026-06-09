@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Text, Dialog } from '@radix-ui/themes';
+import { Text, Dialog } from '@radix-ui/themes';
 import {
   Button,
   CloseButton,

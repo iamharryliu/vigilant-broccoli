@@ -128,7 +128,7 @@ export const MemberList = ({
   members,
   setMembers,
   isOwner,
-  isAdmin,
+  isAdmin: _isAdmin,
   onInvite,
   onDelete,
   onRoleChange,

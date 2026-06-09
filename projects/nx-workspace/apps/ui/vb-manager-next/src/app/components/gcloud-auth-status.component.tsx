@@ -213,7 +213,7 @@ export const GcloudAuthStatusComponent = () => {
       if (authResponse.ok) {
         setAuthStatus(await authResponse.json());
       }
-    } catch (err) {
+    } catch (_err) {
       // Error switching project
     } finally {
       setSwitchingProject(null);
@@ -252,7 +252,7 @@ export const GcloudAuthStatusComponent = () => {
         setReauthStatus(reauthData);
         setProjects(await fetchProjectsIfNeeded(reauthData.needsReauth));
       }
-    } catch (err) {
+    } catch (_err) {
       // Error switching account
     } finally {
       setSwitchingProject(null);

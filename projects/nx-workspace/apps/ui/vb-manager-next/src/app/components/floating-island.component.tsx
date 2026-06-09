@@ -153,8 +153,7 @@ export const FloatingIslandComponent = ({
       }
 
       return text;
-    } catch (err) {
-      // Error fetching outfit recommendation
+    } catch (_err) {
       return null;
     }
   };

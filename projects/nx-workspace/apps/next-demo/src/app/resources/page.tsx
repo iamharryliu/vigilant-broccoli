@@ -126,7 +126,6 @@ export default function ResourcesPage() {
     fetchBookings();
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEventDrop = async (
     id: string,
     start: string,

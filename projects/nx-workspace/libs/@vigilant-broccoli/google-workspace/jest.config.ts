@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: '@vigilant-broccoli/google-workspace',
   preset: '../../../jest.preset.js',

@@ -37,7 +37,7 @@ export async function GET() {
             });
 
           resolve(NextResponse.json(projects));
-        } catch (parseError) {
+        } catch (_parseError) {
           resolve(
             NextResponse.json(
               { error: 'Failed to parse gcloud projects' },
