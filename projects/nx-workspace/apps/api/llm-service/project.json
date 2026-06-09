@@ -88,7 +88,7 @@
     },
     "deploy": {
       "command": "flyctl deploy --dockerfile ./apps/api/llm-service/Dockerfile --config ./deployment-configs/fly-configs/llm-service.toml",
-      "dependsOn": ["build", "lint", "deploy:secrets"]
+      "dependsOn": ["build", "lint", "prune", "deploy:secrets"]
     }
   }
 }
