@@ -60,7 +60,7 @@
       }
     },
     "ensure-cf-project": {
-      "command": "npx wrangler pages project list | grep -q '^harryliu-dev-react ' || npx wrangler pages project create harryliu-dev-react --production-branch main"
+      "command": "npx wrangler pages project list 2>&1 | grep -qw harryliu-dev-react || npx wrangler pages project create harryliu-dev-react --production-branch main"
     },
     "deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name harryliu-dev-react",
