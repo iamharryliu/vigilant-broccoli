@@ -1,0 +1,197 @@
+name: test-e2e-storage-service
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["deploy"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  GCP_ZONE: us-central1-a
+  VM_NAME: vb-free-vm
+  VAULT_ROLE: github-actions-role
+  VAULT_AUDIENCE: https://github.com/iamharryliu/vigilant-broccoli
+  SERVICE_URL: https://vb-storage-service.fly.dev
+
+jobs:
+  test-storage-service:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [gcs, cloudflare-r2]
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Setup Vault CA Certificate
+        run: |
+          CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
+          echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
+
+      - name: Open IAP Tunnel to Vault
+        run: |
+          gcloud compute ssh ${{ env.VM_NAME }} \
+            --zone=${{ env.GCP_ZONE }} \
+            --tunnel-through-iap \
+            --ssh-flag="-N" \
+            --ssh-flag="-L 8200:127.0.0.1:8200" \
+            --ssh-flag="-o ServerAliveInterval=30" \
+            --ssh-flag="-o ServerAliveCountMax=3" &
+          echo "Waiting for tunnel to establish..."
+          for i in {1..30}; do
+            if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
+              echo "Tunnel established successfully"
+              exit 0
+            fi
+            echo "Attempt $i: Tunnel not ready yet..."
+            sleep 2
+          done
+          echo "ERROR: IAP tunnel to Vault failed to establish after 30 attempts"
+          exit 1
+
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4
+        with:
+          url: https://127.0.0.1:8200
+          caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
+          method: jwt
+          role: ${{ env.VAULT_ROLE }}
+          jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
+          secrets: |
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+
+      - name: Prepare test fixture
+        id: fixture
+        run: |
+          FILE_NAME="ci-test-${{ matrix.provider }}-${{ github.run_id }}-${{ github.run_attempt }}.txt"
+          FILE_PATH="/tmp/${FILE_NAME}"
+          FILE_CONTENT="ci-test ${{ matrix.provider }} run=${{ github.run_id }} attempt=${{ github.run_attempt }} sha=${{ github.sha }}"
+          printf '%s' "${FILE_CONTENT}" > "${FILE_PATH}"
+          echo "file_name=${FILE_NAME}" >> $GITHUB_OUTPUT
+          echo "file_path=${FILE_PATH}" >> $GITHUB_OUTPUT
+          echo "file_content=${FILE_CONTENT}" >> $GITHUB_OUTPUT
+          echo "Fixture: ${FILE_PATH}"
+          cat "${FILE_PATH}"
+          echo ""
+
+      - name: Upload (POST /api/bucket)
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
+            -X POST "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}" \
+            -F "files=@${{ steps.fixture.outputs.file_path }}")
+          echo "Response status: $STATUS"
+          cat /tmp/response.json; echo
+          if [ "$STATUS" != "200" ]; then
+            echo "✗ Upload failed"
+            exit 1
+          fi
+          if ! grep -q "${{ steps.fixture.outputs.file_name }}" /tmp/response.json; then
+            echo "✗ Upload response missing uploaded file name"
+            exit 1
+          fi
+          echo "✓ Upload passed"
+
+      - name: List (GET /api/bucket) — fixture must be present
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/list.json -w '%{http_code}' \
+            -X GET "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}")
+          echo "Response status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            cat /tmp/list.json; echo
+            echo "✗ List failed"
+            exit 1
+          fi
+          if ! jq -e --arg name "${{ steps.fixture.outputs.file_name }}" 'any(.[]; .name == $name)' /tmp/list.json > /dev/null; then
+            echo "✗ Uploaded file not found in list"
+            jq '.[].name' /tmp/list.json | head -20
+            exit 1
+          fi
+          echo "✓ List passed"
+
+      - name: Read (GET /api/bucket/:fileName) — content must match
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/download.bin -w '%{http_code}' \
+            -X GET "${{ env.SERVICE_URL }}/api/bucket/${{ steps.fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}")
+          echo "Response status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            cat /tmp/download.bin; echo
+            echo "✗ Read failed"
+            exit 1
+          fi
+          DOWNLOADED=$(cat /tmp/download.bin)
+          EXPECTED='${{ steps.fixture.outputs.file_content }}'
+          if [ "$DOWNLOADED" != "$EXPECTED" ]; then
+            echo "✗ Read content mismatch"
+            echo "expected: $EXPECTED"
+            echo "got:      $DOWNLOADED"
+            exit 1
+          fi
+          echo "✓ Read passed"
+
+      - name: Delete (DELETE /api/bucket/:fileName)
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
+            -X DELETE "${{ env.SERVICE_URL }}/api/bucket/${{ steps.fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}")
+          echo "Response status: $STATUS"
+          cat /tmp/response.json; echo
+          if [ "$STATUS" != "200" ]; then
+            echo "✗ Delete failed"
+            exit 1
+          fi
+          echo "✓ Delete passed"
+
+      - name: Verify deletion — fixture must be absent from list
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/list.json -w '%{http_code}' \
+            -X GET "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}")
+          if [ "$STATUS" != "200" ]; then
+            cat /tmp/list.json; echo
+            echo "✗ Post-delete list failed"
+            exit 1
+          fi
+          if jq -e --arg name "${{ steps.fixture.outputs.file_name }}" 'any(.[]; .name == $name)' /tmp/list.json > /dev/null; then
+            echo "✗ Deleted file still present in list"
+            exit 1
+          fi
+          echo "✓ Post-delete verification passed"
+
+      - name: Cleanup on failure
+        if: failure()
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          curl -s -o /dev/null -w 'cleanup status: %{http_code}\n' \
+            -X DELETE "${{ env.SERVICE_URL }}/api/bucket/${{ steps.fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}" || true
