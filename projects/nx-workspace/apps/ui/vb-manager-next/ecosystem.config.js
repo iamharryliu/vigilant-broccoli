@@ -21,6 +21,7 @@ module.exports = {
         VB_EXPRESS_URL: 'https://vb-express.fly.dev',
         VB_STORAGE_SERVICE_URL: 'https://vb-storage-service.fly.dev',
         EMAIL_SERVICE_URL: 'https://vb-email-service.fly.dev',
+        LLM_SERVICE_URL: 'https://vb-llm-service.fly.dev',
         ...process.env,
       },
       instances: 1,
