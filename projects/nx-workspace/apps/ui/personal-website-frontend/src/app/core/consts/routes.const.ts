@@ -13,7 +13,7 @@ import { CalendarPageComponent } from '../../components/pages/calendar-page/cale
 import { URLS } from './urls.const';
 
 export const DEFAULT_DESCRIPTION =
-  'Harry Liu - Software developer, designer, and creator. Explore my portfolio, projects, and blog.';
+  'Harry Liu - Software developer, designer, and creator. Explore my portfolio and projects.';
 
 export const INDEX_ROUTE: Route = {
   path: '',
