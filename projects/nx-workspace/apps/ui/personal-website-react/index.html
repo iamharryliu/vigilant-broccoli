@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <title>design by harry</title>
-    <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
@@ -11,7 +10,7 @@
     />
     <meta name="theme-color" content="#18181b" />
     <link rel="canonical" href="https://harryliu.dev/" />
-    <link rel="icon" type="image/x-icon" href="assets/cheese.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/cheese.png" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content="design by harry" />
@@ -28,8 +27,14 @@
       name="twitter:description"
       content="Harry Liu - Software developer, designer, and creator. Explore my portfolio and projects."
     />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
   </head>
   <body class="bg-white text-gray-700 dark:bg-zinc-900 dark:text-zinc-200">
-    <app-root></app-root>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
