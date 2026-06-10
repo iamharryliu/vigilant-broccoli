@@ -11,7 +11,6 @@ import messagingRouter from './routes/messaging';
 import voiceListRouter from './routes/voice-list';
 import speechToTextRouter from './routes/speech-to-text';
 import textToSpeechRouter from './routes/text-to-speech';
-import bucketRouter from './routes/bucket';
 import whereIsRouter from './routes/where-is';
 import priceTrackerRouter from './routes/price-tracker';
 import {
@@ -62,7 +61,6 @@ const createApp = () => {
   app.use('/api/voice-list', voiceListRouter);
   app.use('/api/speech-to-text', speechToTextRouter);
   app.use('/api/text-to-speech', textToSpeechRouter);
-  app.use('/api/bucket', bucketRouter);
   app.use('/api/where-is', whereIsRouter);
   app.use('/api/price-tracker', priceTrackerRouter);
   return app;

@@ -1,7 +1,7 @@
 {
   "name": "bucket-service",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "bucket-service/src",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/bucket-service/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -14,9 +14,9 @@
         "outputPath": "dist/bucket-service",
         "format": ["cjs"],
         "bundle": false,
-        "main": "bucket-service/src/main.ts",
-        "tsConfig": "bucket-service/tsconfig.app.json",
-        "assets": ["bucket-service/src/assets"],
+        "main": "apps/api/bucket-service/src/main.ts",
+        "tsConfig": "apps/api/bucket-service/tsconfig.app.json",
+        "assets": ["apps/api/bucket-service/src/assets"],
         "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,
@@ -88,7 +88,7 @@
     },
     "deploy-container": {
       "dependsOn": ["build", "prune"],
-      "command": "docker buildx build --platform linux/amd64 -f bucket-service/Dockerfile -t iamharryliu/bucket-service:latest -t iamharryliu/bucket-service:${COMMIT_SHA:-latest} --push dist/bucket-service"
+      "command": "docker buildx build --platform linux/amd64 -f apps/api/bucket-service/Dockerfile -t iamharryliu/bucket-service:latest -t iamharryliu/bucket-service:${COMMIT_SHA:-latest} --push dist/bucket-service"
     },
     "deploy:secrets": {
       "executor": "nx:run-commands",

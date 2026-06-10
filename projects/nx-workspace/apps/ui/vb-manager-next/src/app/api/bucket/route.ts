@@ -1,14 +1,25 @@
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import {
+  API_KEY_HEADER,
+  CONTENT_TYPE_HEADER,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const VB_EXPRESS_URL = process.env['VB_EXPRESS_URL'];
-const VB_EXPRESS_API_KEY = process.env['VB_EXPRESS_API_KEY'];
+const VB_STORAGE_SERVICE_URL = process.env['VB_STORAGE_SERVICE_URL'];
+const SHARED_APP_TOKEN = process.env['SHARED_APP_TOKEN'];
 
-const BUCKET_API = `${VB_EXPRESS_URL}/api/bucket`;
-const API_KEY_HEADER = 'x-api-key';
+const BUCKET_API = `${VB_STORAGE_SERVICE_URL}/api/bucket`;
+const CONTENT_DISPOSITION_HEADER = 'Content-Disposition';
 const CONTENT_TYPE_OCTET_STREAM = 'application/octet-stream';
+const FILE_NAME_PARAM = 'fileName';
+const PROVIDER_PARAM = 'provider';
+const FILES_FIELD = 'files';
+const ERROR_FILE_NOT_FOUND = 'File not found';
+const ERROR_NO_FILES = 'No valid files provided';
+const ERROR_FILENAME_REQUIRED = 'fileName query parameter is required';
 
-const apiHeaders = { [API_KEY_HEADER]: VB_EXPRESS_API_KEY ?? '' };
+const apiHeaders = { [API_KEY_HEADER]: SHARED_APP_TOKEN ?? '' };
 
 function bucketUrl(fileName?: string | null) {
   return fileName
@@ -18,14 +29,14 @@ function bucketUrl(fileName?: string | null) {
 
 function providerParams(provider: string | null) {
   const params = new URLSearchParams();
-  if (provider) params.set('provider', provider);
+  if (provider) params.set(PROVIDER_PARAM, provider);
   return params;
 }
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const fileName = searchParams.get('fileName');
-  const params = providerParams(searchParams.get('provider'));
+  const fileName = searchParams.get(FILE_NAME_PARAM);
+  const params = providerParams(searchParams.get(PROVIDER_PARAM));
 
   if (fileName) {
     const response = await fetch(`${bucketUrl(fileName)}?${params}`, {
@@ -33,14 +44,14 @@ export async function GET(req: NextRequest) {
     });
     if (!response.ok) {
       return NextResponse.json(
-        { error: 'File not found' },
+        { error: ERROR_FILE_NOT_FOUND },
         { status: HTTP_STATUS_CODES.INVALID_PATH },
       );
     }
     return new NextResponse(await response.arrayBuffer(), {
       headers: {
-        'Content-Disposition': `attachment; filename="${fileName}"`,
-        'Content-Type': CONTENT_TYPE_OCTET_STREAM,
+        [CONTENT_DISPOSITION_HEADER]: `attachment; filename="${fileName}"`,
+        [CONTENT_TYPE_HEADER]: CONTENT_TYPE_OCTET_STREAM,
       },
     });
   }
@@ -53,17 +64,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
-  const files = formData.getAll('files');
+  const files = formData.getAll(FILES_FIELD);
 
   if (files.length === 0 || !files.every(f => f instanceof Blob)) {
     return NextResponse.json(
-      { error: 'No valid files provided' },
+      { error: ERROR_NO_FILES },
       { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
 
   const response = await fetch(bucketUrl(), {
-    method: 'POST',
+    method: HTTP_METHOD.POST,
     headers: apiHeaders,
     body: formData,
   });
@@ -72,18 +83,18 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const fileName = searchParams.get('fileName');
+  const fileName = searchParams.get(FILE_NAME_PARAM);
 
   if (!fileName) {
     return NextResponse.json(
-      { error: 'fileName query parameter is required' },
+      { error: ERROR_FILENAME_REQUIRED },
       { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
 
-  const params = providerParams(searchParams.get('provider'));
+  const params = providerParams(searchParams.get(PROVIDER_PARAM));
   const response = await fetch(`${bucketUrl(fileName)}?${params}`, {
-    method: 'DELETE',
+    method: HTTP_METHOD.DELETE,
     headers: apiHeaders,
   });
   return NextResponse.json(await response.json(), { status: response.status });

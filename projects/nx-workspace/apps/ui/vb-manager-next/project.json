@@ -35,6 +35,7 @@
           "NEXTAUTH_SECRET": "NEXTAUTH_SECRET",
           "NEXTAUTH_URL": "http://localhost:3000",
           "VB_EXPRESS_URL": "https://vb-express.fly.dev",
+          "VB_STORAGE_SERVICE_URL": "https://vb-storage-service.fly.dev",
           "EMAIL_SERVICE_URL": "https://vb-email-service.fly.dev"
         }
       }

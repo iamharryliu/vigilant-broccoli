@@ -7,6 +7,9 @@ primary_region = 'yyz'
 [env]
   PORT = '3000'
   HOST = '0.0.0.0'
+  CLOUDFLARE_BUCKET_NAME = 'storage-buckets'
+  GOOGLE_GCS_PROJECT_ID = 'vigilant-broccoli'
+  GOOGLE_GCS_BUCKET_NAME = 'vb-storage-bucket'
 
 [http_service]
   internal_port = 3000

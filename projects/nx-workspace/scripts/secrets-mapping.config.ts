@@ -46,7 +46,7 @@ export const secretsMapping: SecretsMapping = {
   },
   'bucket-service': {
     flyAppName: 'vb-storage-service',
-    appPath: './bucket-service',
+    appPath: './apps/api/bucket-service',
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
