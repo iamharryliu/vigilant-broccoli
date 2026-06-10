@@ -219,24 +219,26 @@ export default function Layout({ children }: { children: ReactNode }) {
             onClearNotifications={clear}
           />
         </div>
-        <FloatingIslandComponent
-          searchDialogOpen={searchDialogOpen}
-          setSearchDialogOpen={setSearchDialogOpen}
-          chatbotDialogOpen={chatbotDialogOpen}
-          setChatbotDialogOpen={setChatbotDialogOpen}
-          emailDialogOpen={emailDialogOpen}
-          setEmailDialogOpen={setEmailDialogOpen}
-          calendarDialogOpen={calendarDialogOpen}
-          setCalendarDialogOpen={setCalendarDialogOpen}
-          notepadDialogOpen={notepadDialogOpen}
-          setNotepadDialogOpen={setNotepadDialogOpen}
-          weatherDialogOpen={weatherDialogOpen}
-          setWeatherDialogOpen={setWeatherDialogOpen}
-          pomodoroDialogOpen={pomodoroDialogOpen}
-          setPomodoroDialogOpen={setPomodoroDialogOpen}
-          utilitiesDialogOpen={utilitiesDialogOpen}
-          setUtilitiesDialogOpen={setUtilitiesDialogOpen}
-        />
+        <div style={{ display: 'none' }} aria-hidden="true">
+          <FloatingIslandComponent
+            searchDialogOpen={searchDialogOpen}
+            setSearchDialogOpen={setSearchDialogOpen}
+            chatbotDialogOpen={chatbotDialogOpen}
+            setChatbotDialogOpen={setChatbotDialogOpen}
+            emailDialogOpen={emailDialogOpen}
+            setEmailDialogOpen={setEmailDialogOpen}
+            calendarDialogOpen={calendarDialogOpen}
+            setCalendarDialogOpen={setCalendarDialogOpen}
+            notepadDialogOpen={notepadDialogOpen}
+            setNotepadDialogOpen={setNotepadDialogOpen}
+            weatherDialogOpen={weatherDialogOpen}
+            setWeatherDialogOpen={setWeatherDialogOpen}
+            pomodoroDialogOpen={pomodoroDialogOpen}
+            setPomodoroDialogOpen={setPomodoroDialogOpen}
+            utilitiesDialogOpen={utilitiesDialogOpen}
+            setUtilitiesDialogOpen={setUtilitiesDialogOpen}
+          />
+        </div>
       </div>
     </NotificationContext.Provider>
   );
