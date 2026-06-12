@@ -422,13 +422,16 @@ export const CRUDItemFormDialog = <T,>({
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = open !== undefined;
+  const setOpen = isControlled ? onOpenChange : setInternalOpen;
   async function dialogSubmitHandler(item: T, formType: FormType) {
     await submitHandler(item, formType);
-    onOpenChange?.(false);
+    setOpen?.(false);
   }
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      {open === undefined && (
+    <Dialog.Root open={isControlled ? open : internalOpen} onOpenChange={setOpen}>
+      {!isControlled && (
         <Dialog.Trigger>
           <Button variant="ghost">
             {formType === FORM_TYPE.CREATE ? <Plus /> : 'Update'}

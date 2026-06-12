@@ -111,13 +111,13 @@ const SignatureForm = ({
                 key={preset.id}
                 type="button"
                 onClick={() => selectPreset(preset)}
-                className={`text-left border rounded-md p-3 transition-colors cursor-pointer ${
+                className={`flex items-center justify-between gap-3 text-left border rounded-md p-3 transition-colors cursor-pointer ${
                   preset.id === selectedPresetId
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-400'
                 }`}
               >
-                <Text size="1" weight="medium" as="p" mb="1">
+                <Text size="1" weight="medium">
                   {preset.label}
                 </Text>
                 <SignatureHtml template={preset.template} />
