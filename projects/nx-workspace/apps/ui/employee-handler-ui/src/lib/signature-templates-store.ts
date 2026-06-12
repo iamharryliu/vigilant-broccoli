@@ -1,7 +1,6 @@
 import { createSignatureTemplatesStore } from '@vigilant-broccoli/employee-handler';
-import { DEFAULT_TEMPLATES } from '../app/dashboard/signatures/signatures.shared';
 
-const store = createSignatureTemplatesStore(DEFAULT_TEMPLATES);
+const store = createSignatureTemplatesStore([]);
 
 export const listTemplates = store.list;
 export const createTemplate = store.create;

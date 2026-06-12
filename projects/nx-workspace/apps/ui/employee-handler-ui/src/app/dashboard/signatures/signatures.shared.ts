@@ -34,7 +34,7 @@ export const renderTemplate = (template: string, sig: Signature) =>
 const COMPANY_NAME = 'Company Name';
 const COMPANY_WEBSITE = 'https://www.company.com';
 
-export const DEFAULT_TEMPLATES: SignatureTemplate[] = [
+export const PRESET_TEMPLATES: SignatureTemplate[] = [
   {
     id: 'standard',
     label: 'Standard',

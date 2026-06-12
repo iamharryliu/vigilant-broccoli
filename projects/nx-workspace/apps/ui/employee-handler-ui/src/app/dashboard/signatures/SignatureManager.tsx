@@ -6,11 +6,16 @@ import {
   Button,
   CRUDFormProps,
   CRUDItemList,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import {
   DEMO_SIGNATURE,
+  PRESET_TEMPLATES,
   renderTemplate,
   SignatureTemplate,
 } from './signatures.shared';
@@ -20,7 +25,7 @@ const COPY = {
   LIST: { TITLE: 'Signatures', EMPTY_MESSAGE: 'No signatures yet.' },
   [FORM_TYPE.CREATE]: {
     TITLE: 'Add Signature',
-    DESCRIPTION: 'Add a new signature template.',
+    DESCRIPTION: 'Choose a preset signature or paste custom HTML.',
   },
   [FORM_TYPE.UPDATE]: {
     TITLE: 'Update Signature',
@@ -29,13 +34,33 @@ const COPY = {
 };
 
 const LABEL_FIELD = 'Label';
-const TEMPLATE_FIELD = 'HTML Template';
 const TEMPLATE_PLACEHOLDER = 'Paste signature HTML here...';
 const SAVE_LABEL = 'Save';
 const ADD_LABEL = 'Add Signature';
 const SELECTED_BADGE = 'Selected';
 
+const FORM_TAB_PRESET = 'preset';
+const FORM_TAB_CUSTOM = 'custom';
+const PRESET_TAB_LABEL = 'Preset';
+const CUSTOM_TAB_LABEL = 'Custom HTML';
+const PREVIEW_LABEL = 'Preview';
+const PREVIEW_EMPTY_MESSAGE = 'Choose a preset or enter HTML to see a preview.';
+
 const DEFAULT_FORM: SignatureTemplate = { id: '', label: '', template: '' };
+
+const SignatureHtml = ({ template }: { template: string }) => (
+  <div
+    dangerouslySetInnerHTML={{
+      __html: sanitizeSignatureHtml(renderTemplate(template, DEMO_SIGNATURE)),
+    }}
+  />
+);
+
+const findPresetByTemplate = (template: string) =>
+  PRESET_TEMPLATES.find(preset => preset.template === template);
+
+const isPresetLabel = (label: string) =>
+  PRESET_TEMPLATES.some(preset => preset.label === label);
 
 const SignatureForm = ({
   formType,
@@ -44,6 +69,19 @@ const SignatureForm = ({
 }: CRUDFormProps<SignatureTemplate>) => {
   const [label, setLabel] = useState(initialFormValues.label);
   const [template, setTemplate] = useState(initialFormValues.template);
+  const [formTab, setFormTab] = useState(
+    initialFormValues.template &&
+      !findPresetByTemplate(initialFormValues.template)
+      ? FORM_TAB_CUSTOM
+      : FORM_TAB_PRESET,
+  );
+
+  const selectedPresetId = findPresetByTemplate(template)?.id;
+
+  const selectPreset = (preset: SignatureTemplate) => {
+    setTemplate(preset.template);
+    if (!label.trim() || isPresetLabel(label)) setLabel(preset.label);
+  };
 
   return (
     <div className="flex flex-col gap-3 mt-3">
@@ -57,18 +95,61 @@ const SignatureForm = ({
           onChange={e => setLabel(e.target.value)}
         />
       </div>
+      <Tabs value={formTab} onValueChange={setFormTab}>
+        <TabsList className="w-full">
+          <TabsTrigger className="flex-1" value={FORM_TAB_PRESET}>
+            {PRESET_TAB_LABEL}
+          </TabsTrigger>
+          <TabsTrigger className="flex-1" value={FORM_TAB_CUSTOM}>
+            {CUSTOM_TAB_LABEL}
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value={FORM_TAB_PRESET}>
+          <div className="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
+            {PRESET_TEMPLATES.map(preset => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => selectPreset(preset)}
+                className={`text-left border rounded-md p-3 transition-colors cursor-pointer ${
+                  preset.id === selectedPresetId
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-400'
+                }`}
+              >
+                <Text size="1" weight="medium" as="p" mb="1">
+                  {preset.label}
+                </Text>
+                <SignatureHtml template={preset.template} />
+              </button>
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value={FORM_TAB_CUSTOM}>
+          <Textarea
+            placeholder={TEMPLATE_PLACEHOLDER}
+            value={template}
+            onChange={e => setTemplate(e.target.value)}
+            rows={8}
+          />
+        </TabsContent>
+      </Tabs>
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
-          {TEMPLATE_FIELD}
+          {PREVIEW_LABEL}
         </Text>
-        <Textarea
-          placeholder={TEMPLATE_PLACEHOLDER}
-          value={template}
-          onChange={e => setTemplate(e.target.value)}
-          rows={8}
-        />
+        <div className="border border-gray-200 rounded-md p-4 min-h-16">
+          {template.trim() ? (
+            <SignatureHtml template={template} />
+          ) : (
+            <Text size="1" color="gray">
+              {PREVIEW_EMPTY_MESSAGE}
+            </Text>
+          )}
+        </div>
       </div>
       <Button
+        disabled={!label.trim() || !template.trim()}
         onClick={async () =>
           submitHandler({ ...initialFormValues, label, template }, formType)
         }
@@ -98,13 +179,7 @@ const SignatureListItem = ({ item, selectedId }: SignatureListItemProps) => {
           </Text>
         )}
       </div>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: sanitizeSignatureHtml(
-            renderTemplate(item.template, DEMO_SIGNATURE),
-          ),
-        }}
-      />
+      <SignatureHtml template={item.template} />
     </div>
   );
 };
