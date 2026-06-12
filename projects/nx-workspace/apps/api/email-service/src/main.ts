@@ -7,7 +7,7 @@ import {
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
 import { Email, EmailService } from '@vigilant-broccoli/messaging';
-import { DOCS_PATH } from '@vigilant-broccoli/express';
+import { DOCS_PATH, swaggerUiCdnOptions } from '@vigilant-broccoli/express';
 import { swaggerSpec } from './swagger';
 
 const SERVICE_NAME = 'email-service';
@@ -31,7 +31,11 @@ const app = express();
 
 app.use(express.json());
 app.use(requestLoggerMiddleware);
-app.use(DOCS_PATH, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  DOCS_PATH,
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, swaggerUiCdnOptions),
+);
 
 let publishChannel: ConfirmChannel | null = null;
 

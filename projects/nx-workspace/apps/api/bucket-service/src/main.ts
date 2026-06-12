@@ -7,7 +7,11 @@ import {
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
 import { createApiKeyMiddleware } from './libs/middlewares/api-key.middleware';
-import { createCorsOptions, DOCS_PATH } from '@vigilant-broccoli/express';
+import {
+  createCorsOptions,
+  DOCS_PATH,
+  swaggerUiCdnOptions,
+} from '@vigilant-broccoli/express';
 import { swaggerSpec } from './libs/swagger';
 
 const SERVICE_NAME = 'bucket-service';
@@ -39,7 +43,11 @@ const createApp = () => {
   app.get('/', (_, response) => {
     response.json({ service: SERVICE_NAME, docs: DOCS_PATH });
   });
-  app.use(DOCS_PATH, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use(
+    DOCS_PATH,
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, swaggerUiCdnOptions),
+  );
   app.use(createApiKeyMiddleware(API_KEY));
   app.use('/api/bucket', bucketRouter);
   return app;
