@@ -371,6 +371,7 @@ jobs:
         run: |
           mkdir -p _site
           cp pages-index/index.html _site/index.html
+          cp pages-index/api-docs.html _site/api-docs.html
 
       - name: Setup Pages
         if: steps.check.outputs.has_deployments == 'true'
