@@ -1,0 +1,41 @@
+name: deploy-github-profile
+
+on:
+  push:
+    branches: ['main']
+    paths:
+      - 'projects/github-profile/**'
+      - '.github/workflows/deploy-github-profile.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PROFILE_REPO: git@github.com:iamharryliu/iamharryliu.git
+
+jobs:
+  sync-profile-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      - name: Push README to profile repo
+        env:
+          DEPLOY_KEY: ${{ secrets.PROFILE_REPO_DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git clone "$PROFILE_REPO" profile-repo
+          cp projects/github-profile/README.md profile-repo/README.md
+          cd profile-repo
+          if git diff --quiet; then
+            echo "README unchanged, nothing to sync"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -am "docs: sync profile README from vigilant-broccoli"
+          git push
