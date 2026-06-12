@@ -7,6 +7,15 @@ source "${SCRIPT_DIR}/../../config.sh"
 BW_FOLDER="vb-vault-secrets"
 BW_LOGIN_EMAIL="harryliu1995@gmail.com"
 
+TF_HOST="app.terraform.io"
+TF_CREDENTIALS_FILE="${HOME}/.terraform.d/credentials.tfrc.json"
+
+TF_TOKEN=$(jq -r --arg host "$TF_HOST" '.credentials[$host].token // empty' "$TF_CREDENTIALS_FILE" 2>/dev/null)
+if [ -z "${TF_TOKEN_app_terraform_io:-}" ] && [ -z "$TF_TOKEN" ]; then
+  echo "Terraform CLI is not logged in. Run: terraform login" >&2
+  exit 1
+fi
+
 BW_STATUS=$(bw status | jq -r '.status')
 if [ "$BW_STATUS" = "unauthenticated" ]; then
   echo "Bitwarden CLI is not logged in. Run: bw login ${BW_LOGIN_EMAIL}" >&2
