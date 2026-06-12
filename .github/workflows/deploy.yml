@@ -14,11 +14,6 @@ permissions:
   pages: write
 
 env:
-  GCP_PROJECT: vigilant-broccoli
-  GCP_ZONE: us-central1-a
-  VM_NAME: vb-free-vm
-  VAULT_ROLE: github-actions-role
-  VAULT_AUDIENCE: https://github.com/iamharryliu/vigilant-broccoli
   DOCKERHUB_USERNAME: iamharryliu
 
 jobs:
@@ -28,49 +23,11 @@ jobs:
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-
-      - name: Setup Cloud SDK
-        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
-
-      - name: Setup Vault CA Certificate
-        run: |
-          CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
-          echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
-
-      - name: Open IAP Tunnel to Vault
-        run: |
-          gcloud compute ssh ${{ env.VM_NAME }} \
-            --zone=${{ env.GCP_ZONE }} \
-            --tunnel-through-iap \
-            --ssh-flag="-N" \
-            --ssh-flag="-L 8200:127.0.0.1:8200" \
-            --ssh-flag="-o ServerAliveInterval=30" \
-            --ssh-flag="-o ServerAliveCountMax=3" &
-          echo "Waiting for tunnel to establish..."
-          for i in {1..30}; do
-            if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
-              echo "Tunnel established successfully"
-              exit 0
-            fi
-            echo "Attempt $i: Tunnel not ready yet..."
-            sleep 2
-          done
-          echo "ERROR: IAP tunnel to Vault failed to establish after 30 attempts"
-          exit 1
-
-      - name: Import Secrets from Vault
-        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4
-        with:
-          url: https://127.0.0.1:8200
-          caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
-          method: jwt
-          role: ${{ env.VAULT_ROLE }}
-          jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
             kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
@@ -95,6 +52,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # v4
+        with:
+          main-branch-name: main
+
       - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           package_json_file: ./projects/nx-workspace/package.json
@@ -117,42 +78,31 @@ jobs:
         id: check
         working-directory: ./projects/nx-workspace
         run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} 2>/dev/null || echo "")
+          CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             PROJECTS_COMMA=$(pnpm exec nx show projects --withTarget=publish-package | tr '\n' ',' | sed 's/,$//')
-            if [[ -n "$PROJECTS_COMMA" ]]; then
-              echo "has_packages=true" >> $GITHUB_OUTPUT
-              echo "affected_projects=$PROJECTS_COMMA" >> $GITHUB_OUTPUT
-            else
-              echo "has_packages=false" >> $GITHUB_OUTPUT
-            fi
           else
-            BASE="${{ github.event.before }}"
-            if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
-              echo "BASE commit $BASE not found, falling back to origin/main"
-              BASE="origin/main"
-            fi
+            PROJECTS_COMMA=$(pnpm exec nx show projects --affected --withTarget=publish-package --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
+          fi
 
-            AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=publish-package --base=$BASE --head=${{ github.sha }} | tr '\n' ',' | sed 's/,$//')
-            if [[ -n "$AFFECTED_COMMA" ]]; then
-              echo "has_packages=true" >> $GITHUB_OUTPUT
-              echo "affected_projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
-            else
-              echo "has_packages=false" >> $GITHUB_OUTPUT
-            fi
+          if [[ -n "$PROJECTS_COMMA" ]]; then
+            echo "has_packages=true" >> $GITHUB_OUTPUT
+            echo "affected_projects=$PROJECTS_COMMA" >> $GITHUB_OUTPUT
+          else
+            echo "has_packages=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Build affected packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
-        run: npx nx run-many -t build --projects="${{ steps.check.outputs.affected_projects }}"
+        run: pnpm exec nx run-many -t build --projects="${{ steps.check.outputs.affected_projects }}"
 
       - name: Publish npm packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
-        run: npx nx run-many -t publish-package --projects="${{ steps.check.outputs.affected_projects }}"
+        run: pnpm exec nx run-many -t publish-package --projects="${{ steps.check.outputs.affected_projects }}"
 
   main:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
@@ -162,6 +112,10 @@ jobs:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
           fetch-depth: 0
+
+      - uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # v4
+        with:
+          main-branch-name: main
 
       - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
@@ -181,21 +135,14 @@ jobs:
         id: check
         working-directory: ./projects/nx-workspace
         run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} 2>/dev/null || echo "")
+          CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
             echo "deploy_cmd=pnpm exec nx run-many -t deploy" >> $GITHUB_OUTPUT
           else
-            BASE="${{ github.event.before }}"
-
-            if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
-              echo "BASE commit $BASE not found, falling back to origin/main"
-              BASE="origin/main"
-            fi
-
-            AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=deploy --base=$BASE --head=${{ github.sha }} | tr '\n' ',' | sed 's/,$//')
+            AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=deploy --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
             if [[ -n "$AFFECTED_COMMA" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
               echo "deploy_cmd=pnpm exec nx run-many -t deploy --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
@@ -212,60 +159,13 @@ jobs:
         if: steps.check.outputs.has_deployments == 'true'
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4
 
-      - name: Authenticate to Google Cloud
+      - name: Import Secrets from Vault
         if: steps.check.outputs.has_deployments == 'true'
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        uses: ./.github/actions/vault-secrets
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-
-      - name: Setup Cloud SDK
-        if: steps.check.outputs.has_deployments == 'true'
-        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
-
-      - name: Setup Vault CA Certificate
-        if: steps.check.outputs.has_deployments == 'true'
-        run: |
-          CA_CERT_BASE64=$(cat projects/nx-workspace/scripts/vault-ca.crt | base64 -w 0)
-          echo "VAULT_CA_CERT_BASE64=$CA_CERT_BASE64" >> $GITHUB_ENV
-
-      - name: Open IAP Tunnel to Vault
-        if: steps.check.outputs.has_deployments == 'true'
-        run: |
-          gcloud compute ssh ${{ env.VM_NAME }} \
-            --zone=${{ env.GCP_ZONE }} \
-            --tunnel-through-iap \
-            --ssh-flag="-N" \
-            --ssh-flag="-L 8200:127.0.0.1:8200" \
-            --ssh-flag="-o ServerAliveInterval=30" \
-            --ssh-flag="-o ServerAliveCountMax=3" &
-
-          SSH_PID=$!
-          echo "SSH_PID=$SSH_PID" >> $GITHUB_ENV
-
-          echo "Waiting for tunnel to establish..."
-          for i in {1..60}; do
-            if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
-              echo "Tunnel established successfully"
-              curl -k -s https://127.0.0.1:8200/v1/sys/health | jq .
-              exit 0
-            fi
-            echo "Attempt $i: Tunnel not ready yet..."
-            sleep 2
-          done
-          echo "ERROR: IAP tunnel to Vault failed to establish after 30 attempts"
-          exit 1
-
-      - name: Import Secrets from Vault
-        if: steps.check.outputs.has_deployments == 'true'
-        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4
-        with:
-          url: https://127.0.0.1:8200
-          caCertificate: ${{ env.VAULT_CA_CERT_BASE64 }}
-          method: jwt
-          role: ${{ env.VAULT_ROLE }}
-          jwtGithubAudience: ${{ env.VAULT_AUDIENCE }}
-          exportToken: true
+          export_token: 'true'
           secrets: |
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ID ;
@@ -308,6 +208,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # v4
+        with:
+          main-branch-name: main
+
       - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           package_json_file: ./projects/nx-workspace/package.json
@@ -326,40 +230,30 @@ jobs:
         id: check
         working-directory: ./projects/nx-workspace
         run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} 2>/dev/null || echo "")
+          CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
           PAGES_INDEX_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^projects/nx-workspace/pages-index/" || true)
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
-            ALL_PROJECTS=$(pnpm exec nx show projects --withTarget=deploy-github-pages | tr '\n' ',' | sed 's/,$//')
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 || "$PAGES_INDEX_CHANGED" -gt 0 ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
-            echo "affected_projects=$ALL_PROJECTS" >> $GITHUB_OUTPUT
           else
-            BASE="${{ github.event.before }}"
-            if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
-              echo "BASE commit $BASE not found, falling back to origin/main"
-              BASE="origin/main"
-            fi
-
-            AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=deploy-github-pages --base=$BASE --head=${{ github.sha }} | tr '\n' ',' | sed 's/,$//')
-
-            if [[ -n "$AFFECTED_COMMA" || "$PAGES_INDEX_CHANGED" -gt 0 ]]; then
+            AFFECTED=$(pnpm exec nx show projects --affected --withTarget=deploy-github-pages --base=$NX_BASE --head=$NX_HEAD)
+            if [[ -n "$AFFECTED" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
-              echo "affected_projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
             else
               echo "has_deployments=false" >> $GITHUB_OUTPUT
             fi
           fi
 
       - name: Stage component-library pages artifact
-        if: steps.check.outputs.has_deployments == 'true' && contains(steps.check.outputs.affected_projects, 'component-library')
+        if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/react-component-library/
         run: pnpm exec nx run component-library:deploy-github-pages --skip-nx-cache
 
       - name: Stage docs-md pages artifact
-        if: steps.check.outputs.has_deployments == 'true' && contains(steps.check.outputs.affected_projects, 'docs-md')
+        if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/docs-md/
