@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import amqplib, { ConfirmChannel } from 'amqplib';
 import swaggerUi from 'swagger-ui-express';
 import {
@@ -7,7 +7,12 @@ import {
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
 import { Email, EmailService } from '@vigilant-broccoli/messaging';
-import { DOCS_PATH, swaggerUiCdnOptions } from '@vigilant-broccoli/express';
+import {
+  createApiKeyMiddleware,
+  DOCS_PATH,
+  pingRouter,
+  swaggerUiCdnOptions,
+} from '@vigilant-broccoli/express';
 import { swaggerSpec } from './swagger';
 
 const SERVICE_NAME = 'email-service';
@@ -36,6 +41,11 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec, swaggerUiCdnOptions),
 );
+app.get('/', (_req, res) => {
+  res.json({ status: 'ok', service: SERVICE_NAME, docs: DOCS_PATH });
+});
+app.use('/api', createApiKeyMiddleware(API_KEY));
+app.use('/api', pingRouter);
 
 let publishChannel: ConfirmChannel | null = null;
 
@@ -100,19 +110,6 @@ async function startConsumer() {
   );
 }
 
-const validateApiKey = (req: Request, res: Response, next: NextFunction) => {
-  const key = req.headers['x-api-key'];
-  if (!API_KEY || key !== API_KEY) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
-  }
-  next();
-};
-
-app.get('/', (_req, res) => {
-  res.json({ status: 'ok', service: SERVICE_NAME, docs: DOCS_PATH });
-});
-
 const queueEmails = async (emails: Email[]): Promise<void> => {
   const ch = await getPublishChannel();
   for (const email of emails) {
@@ -125,7 +122,6 @@ const queueEmails = async (emails: Email[]): Promise<void> => {
 
 app.post(
   `/${EMAIL_SERVICE_ENDPOINT.SEND_EMAIL}`,
-  validateApiKey,
   async (req: Request, res: Response) => {
     const email: Email = req.body;
     if (!email.to || !email.subject) {
@@ -145,7 +141,6 @@ app.post(
 
 app.post(
   `/${EMAIL_SERVICE_ENDPOINT.QUEUE_EMAILS}`,
-  validateApiKey,
   async (req: Request, res: Response) => {
     const emails: Email[] = req.body;
     if (!Array.isArray(emails) || emails.length === 0) {

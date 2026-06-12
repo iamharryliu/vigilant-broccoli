@@ -7,7 +7,7 @@ import tasksParseRouter from './routes/tasks-parse';
 import llmRouter from './routes/llm';
 import chatRouter from './routes/chat';
 import calendarRouter from './routes/calendar';
-import messagingRouter from './routes/messaging';
+import { contactRouter, messagingRouter } from './routes/messaging';
 import voiceListRouter from './routes/voice-list';
 import speechToTextRouter from './routes/speech-to-text';
 import textToSpeechRouter from './routes/text-to-speech';
@@ -17,8 +17,11 @@ import {
   getEnvironmentVariable,
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
-import { createApiKeyMiddleware } from './libs/middlewares/api-key.middleware';
-import { createCorsOptions } from '@vigilant-broccoli/express';
+import {
+  createApiKeyMiddleware,
+  createCorsOptions,
+  pingRouter,
+} from '@vigilant-broccoli/express';
 
 const APP_PORT = getEnvironmentVariable('PORT') || 3333;
 const APP_HOST = getEnvironmentVariable('HOST') || '127.0.0.1';
@@ -51,8 +54,10 @@ const createApp = () => {
     response.send('vb-express');
   });
   app.all('/api/auth/{*path}', toNodeHandler(auth));
+  app.use('/contact', contactRouter);
   app.use(createApiKeyMiddleware(API_KEY));
-  app.use(messagingRouter);
+  app.use('/api', pingRouter);
+  app.use('/api/messaging', messagingRouter);
   app.use('/api/tasks', tasksRouter);
   app.use('/api/tasks', tasksParseRouter);
   app.use('/api/llm', llmRouter);

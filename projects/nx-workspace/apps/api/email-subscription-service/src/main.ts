@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import amqplib, { ConfirmChannel } from 'amqplib';
 import swaggerUi from 'swagger-ui-express';
 import { createClient } from '@supabase/supabase-js';
@@ -8,7 +8,12 @@ import {
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
 import { Email } from '@vigilant-broccoli/messaging';
-import { DOCS_PATH, swaggerUiCdnOptions } from '@vigilant-broccoli/express';
+import {
+  createApiKeyMiddleware,
+  DOCS_PATH,
+  pingRouter,
+  swaggerUiCdnOptions,
+} from '@vigilant-broccoli/express';
 import { swaggerSpec } from './swagger';
 
 const SERVICE_NAME = 'email-subscription-service';
@@ -45,6 +50,11 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec, swaggerUiCdnOptions),
 );
+app.get('/', (_req, res) => {
+  res.json({ status: 'ok', service: SERVICE_NAME, docs: DOCS_PATH });
+});
+app.use('/api', createApiKeyMiddleware(API_KEY));
+app.use('/api', pingRouter);
 
 let publishChannel: ConfirmChannel | null = null;
 
@@ -135,20 +145,7 @@ async function startConsumer() {
   );
 }
 
-const validateApiKey = (req: Request, res: Response, next: NextFunction) => {
-  const key = req.headers['x-api-key'];
-  if (!API_KEY || key !== API_KEY) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
-  }
-  next();
-};
-
-app.get('/', (_req, res) => {
-  res.json({ status: 'ok', service: SERVICE_NAME, docs: DOCS_PATH });
-});
-
-app.post('/subscribe', validateApiKey, async (req: Request, res: Response) => {
+app.post('/api/subscribe', async (req: Request, res: Response) => {
   const { email, subscriptionName } = req.body;
   if (!email || !subscriptionName) {
     res.status(400).json({ error: 'email and subscriptionName are required' });
@@ -185,35 +182,29 @@ app.post('/subscribe', validateApiKey, async (req: Request, res: Response) => {
   res.json({ success: true });
 });
 
-app.post(
-  '/unsubscribe',
-  validateApiKey,
-  async (req: Request, res: Response) => {
-    const { email, subscriptionName } = req.body;
-    if (!email || !subscriptionName) {
-      res
-        .status(400)
-        .json({ error: 'email and subscriptionName are required' });
-      return;
-    }
+app.post('/api/unsubscribe', async (req: Request, res: Response) => {
+  const { email, subscriptionName } = req.body;
+  if (!email || !subscriptionName) {
+    res.status(400).json({ error: 'email and subscriptionName are required' });
+    return;
+  }
 
-    const { error } = await supabase
-      .from(TABLE)
-      .delete()
-      .eq('email', email)
-      .eq('subscription_name', subscriptionName);
+  const { error } = await supabase
+    .from(TABLE)
+    .delete()
+    .eq('email', email)
+    .eq('subscription_name', subscriptionName);
 
-    if (error) {
-      console.error('Failed to remove subscription:', error.message);
-      res.status(500).json({ error: 'Failed to remove subscription' });
-      return;
-    }
+  if (error) {
+    console.error('Failed to remove subscription:', error.message);
+    res.status(500).json({ error: 'Failed to remove subscription' });
+    return;
+  }
 
-    res.json({ success: true });
-  },
-);
+  res.json({ success: true });
+});
 
-app.post('/notify', validateApiKey, async (req: Request, res: Response) => {
+app.post('/api/notify', async (req: Request, res: Response) => {
   const { subscriptionName, message } = req.body;
   if (!subscriptionName || !message) {
     res

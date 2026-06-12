@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   }
 
   const response = await fetch(
-    `${getEnvironmentVariable('VB_EXPRESS_URL')}/api/send-text-message`,
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/api/messaging/send-text-message`,
     {
       method: 'POST',
       headers: {

@@ -1,0 +1,44 @@
+name: test-security-api
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["deploy"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  security-check:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: vb-express
+            url: https://vb-express.fly.dev
+          - name: vb-llm-service
+            url: https://vb-llm-service.fly.dev
+          - name: vb-storage-service
+            url: https://vb-storage-service.fly.dev
+          - name: vb-email-service
+            url: https://vb-email-service.fly.dev
+          - name: email-subscription-service
+            url: https://email-subscription-service.fly.dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      - name: Run security check for ${{ matrix.name }}
+        run: |
+          chmod +x scripts/shell/test-api-ping-security.sh
+          scripts/shell/test-api-ping-security.sh "${{ matrix.name }}" "${{ matrix.url }}"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Security check failed for ${{ matrix.name }}! /api/* may be accepting unauthorized requests."
+          exit 1

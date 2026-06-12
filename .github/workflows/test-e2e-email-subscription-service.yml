@@ -80,7 +80,7 @@ jobs:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
-            -X POST ${{ env.SERVICE_URL }}/subscribe \
+            -X POST ${{ env.SERVICE_URL }}/api/subscribe \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${API_KEY}" \
             -d '{"email":"${{ env.TEST_EMAIL }}","subscriptionName":"${{ env.TEST_SUBSCRIPTION }}"}')
@@ -98,7 +98,7 @@ jobs:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
-            -X POST ${{ env.SERVICE_URL }}/notify \
+            -X POST ${{ env.SERVICE_URL }}/api/notify \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${API_KEY}" \
             -d '{"subscriptionName":"${{ env.TEST_SUBSCRIPTION }}","message":"<p>[CI] Test notification — you are subscribed.</p>"}')
@@ -117,7 +117,7 @@ jobs:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
-            -X POST ${{ env.SERVICE_URL }}/unsubscribe \
+            -X POST ${{ env.SERVICE_URL }}/api/unsubscribe \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${API_KEY}" \
             -d '{"email":"${{ env.TEST_EMAIL }}","subscriptionName":"${{ env.TEST_SUBSCRIPTION }}"}')
@@ -135,7 +135,7 @@ jobs:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
-            -X POST ${{ env.SERVICE_URL }}/notify \
+            -X POST ${{ env.SERVICE_URL }}/api/notify \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${API_KEY}" \
             -d '{"subscriptionName":"${{ env.TEST_SUBSCRIPTION }}","message":"<p>[CI] This should not be delivered.</p>"}')

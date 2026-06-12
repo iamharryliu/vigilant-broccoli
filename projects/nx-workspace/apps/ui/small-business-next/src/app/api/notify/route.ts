@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 
-const EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev/send-email';
+const EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev/api/send-email';
 const FROM = 'Harry Liu <contact@harryliu.dev>';
 
 export const POST = async (req: NextRequest) => {

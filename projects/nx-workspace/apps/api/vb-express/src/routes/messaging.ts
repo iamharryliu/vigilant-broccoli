@@ -13,7 +13,6 @@ import {
   checkRecaptchaToken,
 } from '@vigilant-broccoli/express';
 
-const router = Router();
 const textMessageService = new TextMessageService();
 const EMAIL_SERVICE_URL = getEnvironmentVariable('EMAIL_SERVICE_URL');
 const SHARED_APP_TOKEN = getEnvironmentVariable('SHARED_APP_TOKEN');
@@ -29,6 +28,14 @@ const APP_EMAIL_CONFIG: Record<string, { from: string; to: string }> = {
   },
 };
 
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
 const buildEmails = (
   name: string,
   email: string,
@@ -37,43 +44,47 @@ const buildEmails = (
 ): Email[] => {
   const config =
     APP_EMAIL_CONFIG[appName] ?? APP_EMAIL_CONFIG[APP_NAME.HARRYLIU_DESIGN];
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeMessage = escapeHtml(message);
   return [
     {
       from: config.from,
       to: config.to,
-      subject: `Contact form message from ${name}`,
-      html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Message:</strong></p><p>${message}</p>`,
-    },
-    {
-      from: config.from,
-      to: email,
-      subject: `Thanks for reaching out, ${name}!`,
-      html: `<p>Hi ${name},</p><p>Thanks for your message! I've received it and will get back to you soon.</p><p>- Harry</p>`,
+      subject: `Contact form message from ${safeName}`,
+      html: `<p><strong>Name:</strong> ${safeName}</p><p><strong>Email:</strong> ${safeEmail}</p><p><strong>Message:</strong></p><p>${safeMessage}</p>`,
     },
   ];
 };
 
-router.post('/send-text-message', async (req: Request, res: Response) => {
-  const { body, from, to } = req.body;
+export const messagingRouter = Router();
 
-  if (!body || !from || !to) {
-    return res.status(400).json({ error: 'body, from, and to are required' });
-  }
+messagingRouter.post(
+  '/send-text-message',
+  async (req: Request, res: Response) => {
+    const { body, from, to } = req.body;
 
-  const result = await textMessageService.sendTextMessage({
-    body,
-    from,
-    to,
-  });
+    if (!body || !from || !to) {
+      return res.status(400).json({ error: 'body, from, and to are required' });
+    }
 
-  return res.json({
-    success: true,
-    sid: result.sid,
-  });
-});
+    const result = await textMessageService.sendTextMessage({
+      body,
+      from,
+      to,
+    });
 
-router.post(
-  '/contact/send-message',
+    return res.json({
+      success: true,
+      sid: result.sid,
+    });
+  },
+);
+
+export const contactRouter = Router();
+
+contactRouter.post(
+  '/send-message',
   requireJsonContent,
   checkRecaptchaToken,
   async (req: Request, res: Response) => {
@@ -102,5 +113,3 @@ router.post(
     }
   },
 );
-
-export default router;

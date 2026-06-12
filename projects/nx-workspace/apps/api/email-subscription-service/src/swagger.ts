@@ -2,7 +2,7 @@ import { API_KEY_SCHEME, createSwaggerSpec } from '@vigilant-broccoli/express';
 
 const SERVICE_TITLE = 'email-subscription-service';
 const SERVICE_DESCRIPTION =
-  'Email subscription management and broadcast. Requires x-api-key header on /subscribe, /unsubscribe, and /notify.';
+  'Email subscription management and broadcast. Requires x-api-key header on /api/subscribe, /api/unsubscribe, and /api/notify.';
 
 const subscriptionRefSchema = {
   type: 'object',
@@ -25,7 +25,7 @@ export const swaggerSpec = createSwaggerSpec({
         responses: { '200': { description: 'Status ok and docs link' } },
       },
     },
-    '/subscribe': {
+    '/api/subscribe': {
       post: {
         summary: 'Subscribe an email to a named subscription',
         security: apiKeySecurity,
@@ -41,7 +41,7 @@ export const swaggerSpec = createSwaggerSpec({
         },
       },
     },
-    '/unsubscribe': {
+    '/api/unsubscribe': {
       post: {
         summary: 'Remove an email from a named subscription',
         security: apiKeySecurity,
@@ -57,7 +57,7 @@ export const swaggerSpec = createSwaggerSpec({
         },
       },
     },
-    '/notify': {
+    '/api/notify': {
       post: {
         summary: 'Queue a broadcast email to all subscribers of a subscription',
         security: apiKeySecurity,

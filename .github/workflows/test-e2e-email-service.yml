@@ -77,7 +77,7 @@ jobs:
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
-            -X POST https://vb-email-service.fly.dev/queue-emails \
+            -X POST https://vb-email-service.fly.dev/api/queue-emails \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${SHARED_APP_TOKEN}" \
             -d '[{"from":"Harry Liu <ci-test@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"ci-test: Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')

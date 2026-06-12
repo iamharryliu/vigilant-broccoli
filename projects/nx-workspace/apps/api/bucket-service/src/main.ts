@@ -6,10 +6,11 @@ import {
   getEnvironmentVariable,
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
-import { createApiKeyMiddleware } from './libs/middlewares/api-key.middleware';
 import {
+  createApiKeyMiddleware,
   createCorsOptions,
   DOCS_PATH,
+  pingRouter,
   swaggerUiCdnOptions,
 } from '@vigilant-broccoli/express';
 import { swaggerSpec } from './libs/swagger';
@@ -49,6 +50,7 @@ const createApp = () => {
     swaggerUi.setup(swaggerSpec, swaggerUiCdnOptions),
   );
   app.use(createApiKeyMiddleware(API_KEY));
+  app.use('/api', pingRouter);
   app.use('/api/bucket', bucketRouter);
   return app;
 };

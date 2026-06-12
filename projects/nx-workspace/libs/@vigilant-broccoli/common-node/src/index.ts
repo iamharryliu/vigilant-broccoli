@@ -36,8 +36,8 @@ export const QUEUE = {
 };
 
 export const EMAIL_SERVICE_ENDPOINT = {
-  QUEUE_EMAILS: 'queue-emails',
-  SEND_EMAIL: 'send-email',
+  QUEUE_EMAILS: 'api/queue-emails',
+  SEND_EMAIL: 'api/send-email',
 };
 
 export const LLM_SERVICE_ENDPOINT = {

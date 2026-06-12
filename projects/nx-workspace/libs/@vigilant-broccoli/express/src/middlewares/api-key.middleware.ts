@@ -1,4 +1,4 @@
-import express from 'express';
+import { Request, Response, NextFunction } from 'express';
 import {
   API_KEY_HEADER,
   HTTP_STATUS_CODES,
@@ -7,11 +7,7 @@ import {
 const ERROR_UNAUTHORIZED = 'Unauthorized';
 
 export const createApiKeyMiddleware = (apiKey?: string) => {
-  return (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     const providedKey = req.headers[API_KEY_HEADER];
     if (!apiKey || providedKey === apiKey) {
       return next();
