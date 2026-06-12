@@ -26,6 +26,10 @@ inputs:
     description: Comma-separated list of affected nx projects
     required: false
     default: ''
+  run_url:
+    description: URL of the run to link in the notification (defaults to the current run)
+    required: false
+    default: ''
 
 runs:
   using: composite
@@ -45,7 +49,7 @@ runs:
         DEPLOY_COMMIT: ${{ github.sha }}
         DEPLOY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.workflow_run.head_commit.message }}
         DEPLOY_WORKFLOW: ${{ github.workflow }}
-        DEPLOY_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        DEPLOY_RUN_URL: ${{ inputs.run_url || format('https://github.com/{0}/actions/runs/{1}', github.repository, github.run_id) }}
         DEPLOY_STARTED_AT: ${{ inputs.started_at }}
         DEPLOY_AFFECTED_PROJECTS: ${{ inputs.affected_projects }}
       run: node ${{ github.action_path }}/../../scripts/deploy-notify.mjs || true

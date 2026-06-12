@@ -35,3 +35,4 @@ jobs:
           shared_app_token: ${{ env.SHARED_APP_TOKEN }}
           socket_server_ca_cert: ${{ env.SOCKET_SERVER_CA_CERT }}
           started_at: ${{ github.event.workflow_run.run_started_at }}
+          run_url: ${{ github.event.workflow_run.html_url }}
