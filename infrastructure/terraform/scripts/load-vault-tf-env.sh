@@ -5,6 +5,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../config.sh"
 
 BW_FOLDER="vb-vault-secrets"
+BW_LOGIN_EMAIL="harryliu1995@gmail.com"
+
+BW_STATUS=$(bw status | jq -r '.status')
+if [ "$BW_STATUS" = "unauthenticated" ]; then
+  echo "Bitwarden CLI is not logged in. Run: bw login ${BW_LOGIN_EMAIL}" >&2
+  exit 1
+fi
 
 export BITWARDEN_PASSWORD
 BITWARDEN_PASSWORD=$(gcloud secrets versions access latest \
