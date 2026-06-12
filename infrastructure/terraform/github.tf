@@ -1,7 +1,7 @@
 resource "github_repository" "vigilant_broccoli" {
   name        = var.github_repo
-  description = "Personal monorepo for projects and utilities"
-  homepage_url = "https://vb-next-demo.vercel.app"
+  description = "idek"
+  homepage_url = "https://iamharryliu.github.io/vigilant-broccoli/"
   visibility   = "public"
 
   has_issues      = true

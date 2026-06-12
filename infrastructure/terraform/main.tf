@@ -279,6 +279,26 @@ resource "google_secret_manager_secret" "wg_elva11_mbp_public_key" {
   depends_on = [google_project_service.secretmanager]
 }
 
+resource "google_secret_manager_secret_version" "wg_elva11_mbp_public_key" {
+  secret      = google_secret_manager_secret.wg_elva11_mbp_public_key.id
+  secret_data = "A0lCJdY3IdYgvT+0flLDi6N1YpcOE6s07M6wB2RMiQw="
+}
+
+resource "google_secret_manager_secret" "wg_personal_mbp_public_key" {
+  secret_id = "VB_VM_WG_PERSONAL_MBP_PUBLIC_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "wg_personal_mbp_public_key" {
+  secret      = google_secret_manager_secret.wg_personal_mbp_public_key.id
+  secret_data = "zV7buy0SHw1W4XozJzPdtixRec8Y44XxoX5pKSkNbFc="
+}
+
 resource "google_secret_manager_secret" "vault_unseal_keys" {
   secret_id = "VB_VM_VAULT_UNSEAL_KEYS"
 
