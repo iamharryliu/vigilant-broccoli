@@ -38,36 +38,19 @@ const vercelEnv = { ...process.env };
 delete vercelEnv.NODE_EXTRA_CA_CERTS;
 delete vercelEnv.FORCE_COLOR;
 
-function vercelEnvClear(environment: string) {
-  const awkScript = '/^[[:space:]]+[A-Z_][A-Z0-9_]+[[:space:]]/ {print $1}';
-  const output = execSync(
-    `npx vercel env ls ${environment} 2>/dev/null | awk '${awkScript}'`,
-    { shell: '/bin/bash', env: vercelEnv },
-  ).toString();
-  const keys = output
-    .split('\n')
-    .map(k => k.trim())
-    .filter(Boolean);
-  if (!keys.length) return;
-  console.log(`Removing ${keys.length} existing secrets...`);
-  for (const key of keys) {
-    try {
-      execSync(`npx vercel env rm ${key} ${environment} --yes`, {
-        stdio: 'pipe',
-        env: vercelEnv,
-      });
-      console.log(`  - ${key}`);
-    } catch (e) {
-      console.warn(`  ⚠ ${key}: ${(e as Error).message}`);
-    }
-  }
-}
-
 async function vercelEnvAdd(
   key: string,
   value: string,
   environment: string,
 ): Promise<boolean> {
+  try {
+    execSync(`npx vercel env rm ${key} ${environment} --yes`, {
+      stdio: 'pipe',
+      env: vercelEnv,
+    });
+  } catch {
+    // variable does not exist yet
+  }
   try {
     execSync(`npx vercel env add ${key} ${environment}`, {
       input: value,
@@ -157,8 +140,6 @@ async function main() {
       }
     }
   }
-
-  vercelEnvClear(environment);
 
   console.log('Deploying secrets...');
   const results = await Promise.all(
