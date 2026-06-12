@@ -54,16 +54,17 @@
   - Dog Water Bottle
   - Portable Food Bowl
   - Portable Water Bowl
-- **Utility**
-  - Doggy Towel
-  - fan
 - **Vehicle**
   - Car Harness and safety buckle
   - Carrier
   - Car cover (blanket)
 - **Camping**
   - Dog Stake
+- Doggy Towel
+- Toothbrush + toothpaste
 - Dog bed
+- Dog first aid kit
+- Coconut oil
 
 ## Clothes
 
@@ -98,10 +99,17 @@
 - Extra bags/totes
 - Large Sitting Blanket
 - Trash bags
+- Kleenex
 - Paper towels/napkins
 - Waterproof bags/cases
 - Dustpan and brush
 - Fly swatter
+- Clothesline
+- Shovel
+- Plastic bags
+- Fan
+- Utility gloves
+- Scissors
 
 ## Electric Utility
 
