@@ -60,10 +60,6 @@ if ask "Configure terminal theme?"; then
     p10k configure
 fi
 
-if ask "Setup vigilant-broccoli VSCode themes?"; then
-    ln -s $HOME/vigilant-broccoli/vscode-themes ~/.vscode/extensions/vigilant-broccoli-vscode-themes
-fi
-
 if ask "Setup git hooks?"; then
     git config --unset-all core.hooksPath
     pip3 install pre-commit && pre-commit install
