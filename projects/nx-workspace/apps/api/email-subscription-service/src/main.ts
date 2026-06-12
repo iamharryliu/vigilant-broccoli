@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import amqplib, { ConfirmChannel } from 'amqplib';
+import swaggerUi from 'swagger-ui-express';
 import { createClient } from '@supabase/supabase-js';
 import {
   EMAIL_SERVICE_ENDPOINT,
@@ -7,6 +8,10 @@ import {
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
 import { Email } from '@vigilant-broccoli/messaging';
+import { DOCS_PATH } from '@vigilant-broccoli/express';
+import { swaggerSpec } from './swagger';
+
+const SERVICE_NAME = 'email-subscription-service';
 
 const HOST = process.env.HOST ?? 'localhost';
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -35,6 +40,7 @@ const supabase = createClient(
 const app = express();
 app.use(express.json());
 app.use(requestLoggerMiddleware);
+app.use(DOCS_PATH, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 let publishChannel: ConfirmChannel | null = null;
 
@@ -135,7 +141,7 @@ const validateApiKey = (req: Request, res: Response, next: NextFunction) => {
 };
 
 app.get('/', (_req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', service: SERVICE_NAME, docs: DOCS_PATH });
 });
 
 app.post('/subscribe', validateApiKey, async (req: Request, res: Response) => {

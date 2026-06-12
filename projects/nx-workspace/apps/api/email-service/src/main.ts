@@ -1,11 +1,16 @@
 import express, { Request, Response, NextFunction } from 'express';
 import amqplib, { ConfirmChannel } from 'amqplib';
+import swaggerUi from 'swagger-ui-express';
 import {
   EMAIL_SERVICE_ENDPOINT,
   QUEUE,
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
 import { Email, EmailService } from '@vigilant-broccoli/messaging';
+import { DOCS_PATH } from '@vigilant-broccoli/express';
+import { swaggerSpec } from './swagger';
+
+const SERVICE_NAME = 'email-service';
 
 const HOST = process.env.HOST ?? 'localhost';
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -26,6 +31,7 @@ const app = express();
 
 app.use(express.json());
 app.use(requestLoggerMiddleware);
+app.use(DOCS_PATH, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 let publishChannel: ConfirmChannel | null = null;
 
@@ -100,7 +106,7 @@ const validateApiKey = (req: Request, res: Response, next: NextFunction) => {
 };
 
 app.get('/', (_req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', service: SERVICE_NAME, docs: DOCS_PATH });
 });
 
 const queueEmails = async (emails: Email[]): Promise<void> => {

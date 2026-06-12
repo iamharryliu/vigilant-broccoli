@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
 import llmRouter from './routes/llm';
 import chatRouter from './routes/chat';
 import {
@@ -7,7 +8,10 @@ import {
   requestLoggerMiddleware,
 } from '@vigilant-broccoli/common-node';
 import { createApiKeyMiddleware } from './libs/middlewares/api-key.middleware';
-import { createCorsOptions } from '@vigilant-broccoli/express';
+import { createCorsOptions, DOCS_PATH } from '@vigilant-broccoli/express';
+import { swaggerSpec } from './libs/swagger';
+
+const SERVICE_NAME = 'llm-service';
 
 const APP_PORT = getEnvironmentVariable('PORT') || 3333;
 const APP_HOST = getEnvironmentVariable('HOST') || '127.0.0.1';
@@ -21,8 +25,9 @@ const createApp = () => {
   app.use(express.json({ limit: '10mb' }));
   app.use(requestLoggerMiddleware);
   app.get('/', (_, response) => {
-    response.send('llm-service');
+    response.json({ service: SERVICE_NAME, docs: DOCS_PATH });
   });
+  app.use(DOCS_PATH, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.use(createApiKeyMiddleware(API_KEY));
   app.use('/api/llm', llmRouter);
   app.use('/api/chat', chatRouter);

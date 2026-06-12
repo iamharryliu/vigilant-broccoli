@@ -14,6 +14,7 @@
     "express": "*",
     "multer": "*",
     "qrcode": "*",
+    "swagger-ui-express": "*",
     "tslib": "*",
     "winston": "*"
   }
