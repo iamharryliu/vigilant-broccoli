@@ -11,6 +11,8 @@ brew "btop"
 brew "glib"
 # Vector graphics library with cross-device output support
 brew "cairo"
+# Fix common misspellings in source code and text files
+brew "codespell"
 # Tool for managing dock items
 brew "dockutil"
 # Perl lib for reading and writing EXIF metadata

@@ -62,14 +62,10 @@ if ask "Configure terminal theme?"; then
 fi
 
 if ask "Setup git hooks?"; then
-    git config --unset-all core.hooksPath
-    pip3 install pre-commit && pre-commit install
+    git config --unset-all core.hooksPath 2>/dev/null || true
+    pre-commit install
 fi
 
 if ask "Install Node Packages?"; then
     npminit
-fi
-
-if ask "Install Python packages?"; then
-    pip3 install codespell
 fi
