@@ -11,7 +11,7 @@ load_aliases() {
   done
 }
 
-BASE_DIR=~/shell-common/aliases
+BASE_DIR=$COMMON_DOTFILES_DIR/aliases
 for SUB_DIR in os devops network; do
   load_aliases "$BASE_DIR/$SUB_DIR"
 done

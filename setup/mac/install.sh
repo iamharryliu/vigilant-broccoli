@@ -32,6 +32,7 @@ if ask "Symlink dotfiles?"; then
     create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc"
     mkdir -p "$HOME/.config"
     create_symlink "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
+    mkdir -p "$HOME/.claude"
     create_symlink "$CLAUDE_COMMANDS_DIR" "$HOME/.claude/commands"
     create_symlink "$CLAUDE_SKILLS_DIR" "$HOME/.claude/skills"
     create_symlink "$WORKSPACES_DIR" "$HOME/Workspaces"
@@ -66,12 +67,7 @@ if ask "Setup git hooks?"; then
 fi
 
 if ask "Install Node Packages?"; then
-    brew link node@20
-    npm install -g yarn
-    npm install -g ts-node
-    npm install -g tsx
-    npm install -g @angular/cli
-    npm add --global nx@latest
+    npminit
 fi
 
 if ask "Install Python packages?"; then
