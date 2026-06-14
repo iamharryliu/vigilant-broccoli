@@ -17,6 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: upptime/graphs@v1
+      - uses: upptime/graphs@master
         with:
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
