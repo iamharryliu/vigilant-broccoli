@@ -12,6 +12,7 @@
     "@vigilant-broccoli/llm-tools": "workspace:*",
     "archiver": "*",
     "fastify": "*",
+    "fastify-plugin": "*",
     "openai": "*",
     "qrcode": "*",
     "tslib": "*",
