@@ -20,5 +20,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: upptime/status-page@master
         with:
-          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           command: 'summary'
+        env:
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}

@@ -19,5 +19,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: upptime/uptime-monitor@master
-        with:
+        env:
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
