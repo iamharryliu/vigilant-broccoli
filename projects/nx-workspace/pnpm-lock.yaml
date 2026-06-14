@@ -662,6 +662,9 @@ importers:
       fastify:
         specifier: '*'
         version: 5.8.5
+      fastify-plugin:
+        specifier: '*'
+        version: 5.1.0
       qrcode:
         specifier: '*'
         version: 1.5.4
@@ -698,6 +701,9 @@ importers:
       fastify:
         specifier: '*'
         version: 5.8.5
+      fastify-plugin:
+        specifier: '*'
+        version: 5.1.0
       openai:
         specifier: '*'
         version: 4.104.0(encoding@0.1.13)(ws@8.21.0)(zod@3.25.76)
