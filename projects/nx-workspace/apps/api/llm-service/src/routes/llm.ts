@@ -1,12 +1,11 @@
-import { Router, Request, Response } from 'express';
+import { FastifyPluginAsync } from 'fastify';
 import { LLMService } from '@vigilant-broccoli/llm-tools';
 import {
+  HTTP_STATUS_CODES,
   LLMJsonSchema,
   LLMModel,
   modelSupportsImageOutput,
 } from '@vigilant-broccoli/common-js';
-
-const router = Router();
 
 const ERROR_MISSING_FIELDS = 'Missing required fields: userPrompt and model';
 
@@ -16,48 +15,54 @@ type UploadedImage = {
   mimeType: string;
 };
 
-router.post('/', async (req: Request, res: Response) => {
-  const {
-    userPrompt,
-    systemPrompt,
-    model,
-    images,
-    numOutputs = 1,
-    responseFormat,
-    jsonSchema,
-  } = req.body as {
-    userPrompt: string;
-    systemPrompt?: string;
-    model: LLMModel;
-    images?: UploadedImage[];
-    numOutputs?: number;
-    responseFormat?: 'json';
-    jsonSchema?: LLMJsonSchema;
-  };
+type LlmBody = {
+  userPrompt: string;
+  systemPrompt?: string;
+  model: LLMModel;
+  images?: UploadedImage[];
+  numOutputs?: number;
+  responseFormat?: 'json';
+  jsonSchema?: LLMJsonSchema;
+};
 
-  if (!userPrompt || !model) {
-    return res.status(400).json({ error: ERROR_MISSING_FIELDS });
-  }
+const llmRoutes: FastifyPluginAsync = async app => {
+  app.post('/', async (req, reply) => {
+    const {
+      userPrompt,
+      systemPrompt,
+      model,
+      images,
+      numOutputs = 1,
+      responseFormat,
+      jsonSchema,
+    } = req.body as LlmBody;
 
-  if (jsonSchema) {
-    const result = await LLMService.prompt({
-      prompt: { userPrompt, systemPrompt, images },
-      modelConfig: { model },
-      responseFormat: { jsonSchema },
-    });
-    return res.json({ outputs: [result.data] });
-  }
+    if (!userPrompt || !model) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_MISSING_FIELDS });
+    }
 
-  const outputs = await LLMService.generateMultipleOutputs(
-    { prompt: { userPrompt, systemPrompt, images }, modelConfig: { model } },
-    numOutputs,
-    modelSupportsImageOutput(model),
-  );
+    if (jsonSchema) {
+      const result = await LLMService.prompt({
+        prompt: { userPrompt, systemPrompt, images },
+        modelConfig: { model },
+        responseFormat: { jsonSchema },
+      });
+      return reply.send({ outputs: [result.data] });
+    }
 
-  const parsed =
-    responseFormat === 'json' ? outputs.map(o => JSON.parse(o)) : outputs;
+    const outputs = await LLMService.generateMultipleOutputs(
+      { prompt: { userPrompt, systemPrompt, images }, modelConfig: { model } },
+      numOutputs,
+      modelSupportsImageOutput(model),
+    );
 
-  return res.json({ outputs: parsed });
-});
+    const parsed =
+      responseFormat === 'json' ? outputs.map(o => JSON.parse(o)) : outputs;
 
-export default router;
+    return reply.send({ outputs: parsed });
+  });
+};
+
+export default llmRoutes;

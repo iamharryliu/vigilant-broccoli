@@ -1,4 +1,4 @@
-import { createSwaggerSpec } from '@vigilant-broccoli/express';
+import { createSwaggerSpec } from '@vigilant-broccoli/fastify';
 
 const SERVICE_TITLE = 'bucket-service';
 const SERVICE_DESCRIPTION =

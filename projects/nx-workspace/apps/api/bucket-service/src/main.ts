@@ -1,23 +1,22 @@
-import express from 'express';
-import cors from 'cors';
-import swaggerUi from 'swagger-ui-express';
-import bucketRouter from './routes/bucket';
+import Fastify from 'fastify';
+import cors from '@fastify/cors';
+import multipart from '@fastify/multipart';
+import bucketRoutes from './routes/bucket';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import {
-  getEnvironmentVariable,
-  requestLoggerMiddleware,
-} from '@vigilant-broccoli/common-node';
-import {
-  createApiKeyMiddleware,
+  createApiKeyPlugin,
   createCorsOptions,
+  createDocsPlugin,
   DOCS_PATH,
-  pingRouter,
-  swaggerUiCdnOptions,
-} from '@vigilant-broccoli/express';
+  pingPlugin,
+  requestLoggerPlugin,
+} from '@vigilant-broccoli/fastify';
 import { swaggerSpec } from './libs/swagger';
 
 const SERVICE_NAME = 'bucket-service';
+const BODY_LIMIT_BYTES = 10 * 1024 * 1024;
 
-const APP_PORT = getEnvironmentVariable('PORT') || 3000;
+const APP_PORT = Number(getEnvironmentVariable('PORT') || 3000);
 const APP_HOST = getEnvironmentVariable('HOST') || '127.0.0.1';
 const API_KEY = getEnvironmentVariable('SHARED_APP_TOKEN');
 
@@ -36,32 +35,35 @@ const ALLOWED_ORIGINS = [
   'https://www.cloud8skate.com',
 ];
 
-const createApp = () => {
-  const app = express();
-  app.use(cors(createCorsOptions(ALLOWED_ORIGINS)));
-  app.use(express.json({ limit: '10mb' }));
-  app.use(requestLoggerMiddleware);
-  app.get('/', (_, response) => {
-    response.json({ service: SERVICE_NAME, docs: DOCS_PATH });
-  });
-  app.use(
-    DOCS_PATH,
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerSpec, swaggerUiCdnOptions),
+const buildApp = async () => {
+  const app = Fastify({ bodyLimit: BODY_LIMIT_BYTES, logger: false });
+
+  await app.register(cors, createCorsOptions(ALLOWED_ORIGINS));
+  await app.register(multipart);
+  await app.register(requestLoggerPlugin);
+  await app.register(createDocsPlugin(swaggerSpec, SERVICE_NAME));
+
+  app.get('/', async () => ({ service: SERVICE_NAME, docs: DOCS_PATH }));
+
+  await app.register(
+    async api => {
+      await api.register(createApiKeyPlugin(API_KEY));
+      await api.register(pingPlugin);
+      await api.register(bucketRoutes, { prefix: '/bucket' });
+    },
+    { prefix: '/api' },
   );
-  app.use(createApiKeyMiddleware(API_KEY));
-  app.use('/api', pingRouter);
-  app.use('/api/bucket', bucketRouter);
+
   return app;
 };
 
-const app = createApp();
-
-app.listen(APP_PORT as number, APP_HOST, () => {
+const start = async () => {
+  const app = await buildApp();
+  await app.listen({ port: APP_PORT, host: APP_HOST });
   console.log('');
   console.log(`Server running at http://${APP_HOST}:${APP_PORT}`);
   console.log('Ctrl-c to stop');
   console.log('');
-});
+};
 
-export { app };
+start();

@@ -26,12 +26,6 @@ export const secretsMapping: SecretsMapping = {
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
-  'personal-website-backend': {
-    flyAppName: 'harryliu-personal-website-backend',
-    appPath: './apps/personal-website/personal-website-backend',
-    vaultPath: COMMON_VAULT_PATH,
-    excludeEnvVars: COMMON_EXCLUDED_VARS,
-  },
   'email-service': {
     flyAppName: 'vb-email-service',
     appPath: './apps/api/email-service',

@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import {
   createBucketService,
   BucketProvider,
@@ -7,15 +7,10 @@ import {
   CONTENT_TYPE_HEADER,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
-import multer from 'multer';
-
-const router = Router();
-const upload = multer({ storage: multer.memoryStorage() });
 
 const CONTENT_TYPE_OCTET_STREAM = 'application/octet-stream';
 const CONTENT_DISPOSITION_HEADER = 'Content-Disposition';
 const PROVIDER_PARAM = 'provider';
-const FILES_FIELD = 'files';
 const ERROR_PROVIDER_REQUIRED = 'provider query parameter is required';
 const ERROR_NO_FILES = 'No valid files provided';
 const MESSAGE_FILE_DELETED = 'File deleted successfully';
@@ -28,69 +23,80 @@ function getBucketService(provider: string) {
   return createBucketService(provider as BucketProvider);
 }
 
-function resolveProvider(req: Request, res: Response): string | null {
-  const provider = (req.query[PROVIDER_PARAM] ??
-    req.body?.[PROVIDER_PARAM]) as string;
+function resolveProvider(
+  req: FastifyRequest,
+  reply: FastifyReply,
+): string | null {
+  const query = req.query as Record<string, string | undefined>;
+  const body = req.body as Record<string, unknown> | undefined;
+  const provider = (query[PROVIDER_PARAM] ??
+    (body?.[PROVIDER_PARAM] as string | undefined)) as string | undefined;
   if (!provider) {
-    res
-      .status(HTTP_STATUS_CODES.BAD_REQUEST)
-      .json({ error: ERROR_PROVIDER_REQUIRED });
+    reply
+      .code(HTTP_STATUS_CODES.BAD_REQUEST)
+      .send({ error: ERROR_PROVIDER_REQUIRED });
     return null;
   }
   return provider;
 }
 
-router.get('/', async (req: Request, res: Response) => {
-  const provider = resolveProvider(req, res);
-  if (!provider) return;
-  const files = await getBucketService(provider).list();
-  res.json(files);
-});
-
-router.get('/:fileName', async (req: Request, res: Response) => {
-  const provider = resolveProvider(req, res);
-  if (!provider) return;
-  const { fileName } = req.params;
-  const buffer = await getBucketService(provider).read(fileName);
-  res.setHeader(
-    CONTENT_DISPOSITION_HEADER,
-    `attachment; filename="${fileName}"`,
-  );
-  res.setHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_OCTET_STREAM);
-  res.send(buffer);
-});
-
-router.post(
-  '/',
-  upload.array(FILES_FIELD),
-  async (req: Request, res: Response) => {
-    const provider = resolveProvider(req, res);
+const bucketRoutes: FastifyPluginAsync = async app => {
+  app.get('/', async (req, reply) => {
+    const provider = resolveProvider(req, reply);
     if (!provider) return;
-    const files = req.files as Express.Multer.File[];
-    if (!files || files.length === 0) {
-      res.status(HTTP_STATUS_CODES.BAD_REQUEST).json({ error: ERROR_NO_FILES });
-      return;
+    const files = await getBucketService(provider).list();
+    return reply.send(files);
+  });
+
+  app.get('/:fileName', async (req, reply) => {
+    const provider = resolveProvider(req, reply);
+    if (!provider) return;
+    const { fileName } = req.params as { fileName: string };
+    const buffer = await getBucketService(provider).read(fileName);
+    reply.header(
+      CONTENT_DISPOSITION_HEADER,
+      `attachment; filename="${fileName}"`,
+    );
+    reply.header(CONTENT_TYPE_HEADER, CONTENT_TYPE_OCTET_STREAM);
+    return reply.send(buffer);
+  });
+
+  app.post('/', async (req, reply) => {
+    const provider = resolveProvider(req, reply);
+    if (!provider) return;
+    const parts = req.files();
+    const collected: { filename: string; buffer: Buffer }[] = [];
+    for await (const part of parts) {
+      collected.push({
+        filename: part.filename,
+        buffer: await part.toBuffer(),
+      });
+    }
+    if (collected.length === 0) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_NO_FILES });
     }
     const bucket = getBucketService(provider);
     const uploaded = await Promise.all(
-      files.map(async file => {
-        await bucket.upload(file.originalname, file.buffer);
-        return file.originalname;
+      collected.map(async file => {
+        await bucket.upload(file.filename, file.buffer);
+        return file.filename;
       }),
     );
-    res.json({
+    return reply.send({
       message: `${uploaded.length} file(s) uploaded successfully`,
       files: uploaded,
     });
-  },
-);
+  });
 
-router.delete('/:fileName', async (req: Request, res: Response) => {
-  const provider = resolveProvider(req, res);
-  if (!provider) return;
-  const { fileName } = req.params;
-  await getBucketService(provider).delete(fileName);
-  res.json({ message: MESSAGE_FILE_DELETED });
-});
+  app.delete('/:fileName', async (req, reply) => {
+    const provider = resolveProvider(req, reply);
+    if (!provider) return;
+    const { fileName } = req.params as { fileName: string };
+    await getBucketService(provider).delete(fileName);
+    return reply.send({ message: MESSAGE_FILE_DELETED });
+  });
+};
 
-export default router;
+export default bucketRoutes;

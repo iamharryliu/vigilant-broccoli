@@ -1,4 +1,4 @@
-import { API_KEY_SCHEME, createSwaggerSpec } from '@vigilant-broccoli/express';
+import { API_KEY_SCHEME, createSwaggerSpec } from '@vigilant-broccoli/fastify';
 
 const SERVICE_TITLE = 'email-subscription-service';
 const SERVICE_DESCRIPTION =

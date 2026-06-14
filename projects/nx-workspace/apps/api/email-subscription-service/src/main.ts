@@ -1,19 +1,22 @@
-import express, { Request, Response } from 'express';
+import Fastify from 'fastify';
 import amqplib, { ConfirmChannel } from 'amqplib';
-import swaggerUi from 'swagger-ui-express';
 import { createClient } from '@supabase/supabase-js';
 import {
-  EMAIL_SERVICE_ENDPOINT,
-  QUEUE,
-  requestLoggerMiddleware,
-} from '@vigilant-broccoli/common-node';
+  API_KEY_HEADER,
+  CONTENT_TYPE_HEADER,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+  JSON_CONTENT_TYPE,
+} from '@vigilant-broccoli/common-js';
+import { EMAIL_SERVICE_ENDPOINT, QUEUE } from '@vigilant-broccoli/common-node';
 import { Email } from '@vigilant-broccoli/messaging';
 import {
-  createApiKeyMiddleware,
+  createApiKeyPlugin,
+  createDocsPlugin,
   DOCS_PATH,
-  pingRouter,
-  swaggerUiCdnOptions,
-} from '@vigilant-broccoli/express';
+  pingPlugin,
+  requestLoggerPlugin,
+} from '@vigilant-broccoli/fastify';
 import { swaggerSpec } from './swagger';
 
 const SERVICE_NAME = 'email-subscription-service';
@@ -29,6 +32,15 @@ const EMAIL_FROM = 'Vigilant Broccoli <contact@harryliu.dev>';
 const RECONNECT_DELAY_MS = 5000;
 const SEND_EMAIL_TIMEOUT_MS = 30000;
 const TABLE = 'email_subscriptions';
+const API_PREFIX = '/api';
+
+const ERROR_EMAIL_AND_NAME_REQUIRED = 'email and subscriptionName are required';
+const ERROR_NAME_AND_MESSAGE_REQUIRED =
+  'subscriptionName and message are required';
+const ERROR_FAILED_SAVE_SUBSCRIPTION = 'Failed to save subscription';
+const ERROR_FAILED_REMOVE_SUBSCRIPTION = 'Failed to remove subscription';
+const ERROR_FAILED_FETCH_SUBSCRIBERS = 'Failed to fetch subscribers';
+const ERROR_EMAIL_SERVICE_REQUEST_FAILED = 'Email service request failed';
 
 const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   ? {
@@ -41,20 +53,6 @@ const supabase = createClient(
   'https://jrdosjjgmsoodpjmjqxx.supabase.co',
   process.env.SUPABASE_SECRET_KEY as string,
 );
-
-const app = express();
-app.use(express.json());
-app.use(requestLoggerMiddleware);
-app.use(
-  DOCS_PATH,
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, swaggerUiCdnOptions),
-);
-app.get('/', (_req, res) => {
-  res.json({ status: 'ok', service: SERVICE_NAME, docs: DOCS_PATH });
-});
-app.use('/api', createApiKeyMiddleware(API_KEY));
-app.use('/api', pingRouter);
 
 let publishChannel: ConfirmChannel | null = null;
 
@@ -90,10 +88,10 @@ async function sendEmail(email: Email): Promise<void> {
   const response = await fetch(
     `${EMAIL_SERVICE_URL}/${EMAIL_SERVICE_ENDPOINT.SEND_EMAIL}`,
     {
-      method: 'POST',
+      method: HTTP_METHOD.POST,
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': SHARED_APP_TOKEN!,
+        [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE,
+        [API_KEY_HEADER]: SHARED_APP_TOKEN!,
       },
       body: JSON.stringify(email),
       signal: AbortSignal.timeout(SEND_EMAIL_TIMEOUT_MS),
@@ -101,7 +99,7 @@ async function sendEmail(email: Email): Promise<void> {
   );
   if (!response.ok) {
     const body = await response.json();
-    throw new Error(body.error || 'Email service request failed');
+    throw new Error(body.error || ERROR_EMAIL_SERVICE_REQUEST_FAILED);
   }
 }
 
@@ -145,121 +143,156 @@ async function startConsumer() {
   );
 }
 
-app.post('/api/subscribe', async (req: Request, res: Response) => {
-  const { email, subscriptionName } = req.body;
-  if (!email || !subscriptionName) {
-    res.status(400).json({ error: 'email and subscriptionName are required' });
-    return;
-  }
+type SubscriptionBody = { email?: string; subscriptionName?: string };
+type NotifyBody = { subscriptionName?: string; message?: string };
 
-  const { error } = await supabase
-    .from(TABLE)
-    .upsert(
-      { email, subscription_name: subscriptionName },
-      { onConflict: 'email,subscription_name' },
-    );
+const buildApp = async () => {
+  const app = Fastify({ logger: false });
 
-  if (error) {
-    console.error('Failed to save subscription:', error.message);
-    res.status(500).json({ error: 'Failed to save subscription' });
-    return;
-  }
+  await app.register(requestLoggerPlugin);
+  await app.register(createDocsPlugin(swaggerSpec, SERVICE_NAME));
 
-  try {
-    await queueEmail({
-      from: EMAIL_FROM,
-      to: email,
-      subject: `You're subscribed to ${subscriptionName}`,
-      html: `<p>Hi,</p><p>You've successfully subscribed to <strong>${subscriptionName}</strong>. You'll receive updates here.</p>`,
-    });
-  } catch (err) {
-    console.error(
-      'Failed to queue confirmation email:',
-      (err as Error).message,
-    );
-  }
+  app.get('/', async () => ({
+    status: 'ok',
+    service: SERVICE_NAME,
+    docs: DOCS_PATH,
+  }));
 
-  res.json({ success: true });
-});
+  await app.register(
+    async api => {
+      await api.register(createApiKeyPlugin(API_KEY));
+      await api.register(pingPlugin);
 
-app.post('/api/unsubscribe', async (req: Request, res: Response) => {
-  const { email, subscriptionName } = req.body;
-  if (!email || !subscriptionName) {
-    res.status(400).json({ error: 'email and subscriptionName are required' });
-    return;
-  }
+      api.post('/subscribe', async (req, reply) => {
+        const { email, subscriptionName } = (req.body ||
+          {}) as SubscriptionBody;
+        if (!email || !subscriptionName) {
+          return reply
+            .code(HTTP_STATUS_CODES.BAD_REQUEST)
+            .send({ error: ERROR_EMAIL_AND_NAME_REQUIRED });
+        }
 
-  const { error } = await supabase
-    .from(TABLE)
-    .delete()
-    .eq('email', email)
-    .eq('subscription_name', subscriptionName);
+        const { error } = await supabase
+          .from(TABLE)
+          .upsert(
+            { email, subscription_name: subscriptionName },
+            { onConflict: 'email,subscription_name' },
+          );
 
-  if (error) {
-    console.error('Failed to remove subscription:', error.message);
-    res.status(500).json({ error: 'Failed to remove subscription' });
-    return;
-  }
+        if (error) {
+          console.error('Failed to save subscription:', error.message);
+          return reply
+            .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+            .send({ error: ERROR_FAILED_SAVE_SUBSCRIPTION });
+        }
 
-  res.json({ success: true });
-});
+        try {
+          await queueEmail({
+            from: EMAIL_FROM,
+            to: email,
+            subject: `You're subscribed to ${subscriptionName}`,
+            html: `<p>Hi,</p><p>You've successfully subscribed to <strong>${subscriptionName}</strong>. You'll receive updates here.</p>`,
+          });
+        } catch (err) {
+          console.error(
+            'Failed to queue confirmation email:',
+            (err as Error).message,
+          );
+        }
 
-app.post('/api/notify', async (req: Request, res: Response) => {
-  const { subscriptionName, message } = req.body;
-  if (!subscriptionName || !message) {
-    res
-      .status(400)
-      .json({ error: 'subscriptionName and message are required' });
-    return;
-  }
-
-  const { data: subscribers, error } = await supabase
-    .from(TABLE)
-    .select('email')
-    .eq('subscription_name', subscriptionName);
-
-  if (error) {
-    console.error('Failed to fetch subscribers:', error.message);
-    res.status(500).json({ error: 'Failed to fetch subscribers' });
-    return;
-  }
-
-  if (!subscribers?.length) {
-    res.json({ success: true, queued: 0 });
-    return;
-  }
-
-  let queued = 0;
-  for (const { email } of subscribers) {
-    try {
-      await queueEmail({
-        from: EMAIL_FROM,
-        to: email,
-        subject: `New update from ${subscriptionName}`,
-        html: `<p>${message}</p>`,
+        return reply.send({ success: true });
       });
-      queued++;
-    } catch (err) {
-      console.error(
-        `Failed to queue email for ${email}:`,
-        (err as Error).message,
-      );
-    }
-  }
 
-  console.log(
-    `📤 Queued ${queued}/${subscribers.length} emails for ${subscriptionName}`,
+      api.post('/unsubscribe', async (req, reply) => {
+        const { email, subscriptionName } = (req.body ||
+          {}) as SubscriptionBody;
+        if (!email || !subscriptionName) {
+          return reply
+            .code(HTTP_STATUS_CODES.BAD_REQUEST)
+            .send({ error: ERROR_EMAIL_AND_NAME_REQUIRED });
+        }
+
+        const { error } = await supabase
+          .from(TABLE)
+          .delete()
+          .eq('email', email)
+          .eq('subscription_name', subscriptionName);
+
+        if (error) {
+          console.error('Failed to remove subscription:', error.message);
+          return reply
+            .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+            .send({ error: ERROR_FAILED_REMOVE_SUBSCRIPTION });
+        }
+
+        return reply.send({ success: true });
+      });
+
+      api.post('/notify', async (req, reply) => {
+        const { subscriptionName, message } = (req.body || {}) as NotifyBody;
+        if (!subscriptionName || !message) {
+          return reply
+            .code(HTTP_STATUS_CODES.BAD_REQUEST)
+            .send({ error: ERROR_NAME_AND_MESSAGE_REQUIRED });
+        }
+
+        const { data: subscribers, error } = await supabase
+          .from(TABLE)
+          .select('email')
+          .eq('subscription_name', subscriptionName);
+
+        if (error) {
+          console.error('Failed to fetch subscribers:', error.message);
+          return reply
+            .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+            .send({ error: ERROR_FAILED_FETCH_SUBSCRIBERS });
+        }
+
+        if (!subscribers?.length) {
+          return reply.send({ success: true, queued: 0 });
+        }
+
+        let queued = 0;
+        for (const { email } of subscribers) {
+          try {
+            await queueEmail({
+              from: EMAIL_FROM,
+              to: email,
+              subject: `New update from ${subscriptionName}`,
+              html: `<p>${message}</p>`,
+            });
+            queued++;
+          } catch (err) {
+            console.error(
+              `Failed to queue email for ${email}:`,
+              (err as Error).message,
+            );
+          }
+        }
+
+        console.log(
+          `📤 Queued ${queued}/${subscribers.length} emails for ${subscriptionName}`,
+        );
+        return reply.send({ success: true, queued });
+      });
+    },
+    { prefix: API_PREFIX },
   );
-  res.json({ success: true, queued });
-});
 
-app.listen(PORT, HOST, () => {
+  return app;
+};
+
+const start = async () => {
+  const app = await buildApp();
+  await app.listen({ port: PORT, host: HOST });
   console.log(`[ ready ] http://${HOST}:${PORT}`);
-});
 
-if (RABBITMQ_CONNECTION_STRING) {
-  startConsumer().catch(err => {
-    console.error('Failed to start consumer:', err.message);
-    setTimeout(startConsumer, RECONNECT_DELAY_MS);
-  });
-}
+  if (RABBITMQ_CONNECTION_STRING) {
+    startConsumer().catch(err => {
+      console.error('Failed to start consumer:', err.message);
+      setTimeout(startConsumer, RECONNECT_DELAY_MS);
+    });
+  }
+};
+
+start();

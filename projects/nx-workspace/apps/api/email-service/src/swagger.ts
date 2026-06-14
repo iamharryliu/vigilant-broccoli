@@ -1,5 +1,5 @@
 import { EMAIL_SERVICE_ENDPOINT } from '@vigilant-broccoli/common-node';
-import { API_KEY_SCHEME, createSwaggerSpec } from '@vigilant-broccoli/express';
+import { API_KEY_SCHEME, createSwaggerSpec } from '@vigilant-broccoli/fastify';
 
 const SERVICE_TITLE = 'email-service';
 const SERVICE_DESCRIPTION =

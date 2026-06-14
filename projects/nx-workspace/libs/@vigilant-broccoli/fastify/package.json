@@ -1,0 +1,15 @@
+{
+  "name": "@vigilant-broccoli/fastify",
+  "version": "0.0.1",
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "fastify": "*",
+    "fastify-plugin": "*",
+    "@fastify/cors": "*",
+    "@vigilant-broccoli/common-js": "workspace:*",
+    "@vigilant-broccoli/common-node": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

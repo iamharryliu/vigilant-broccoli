@@ -5,16 +5,15 @@
   "main": "main.js",
   "dependencies": {
     "@anthropic-ai/sdk": "*",
+    "@fastify/cors": "*",
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
-    "@vigilant-broccoli/express": "workspace:*",
+    "@vigilant-broccoli/fastify": "workspace:*",
     "@vigilant-broccoli/llm-tools": "workspace:*",
     "archiver": "*",
-    "cors": "*",
-    "express": "*",
+    "fastify": "*",
     "openai": "*",
     "qrcode": "*",
-    "swagger-ui-express": "*",
     "tslib": "*",
     "winston": "*"
   }

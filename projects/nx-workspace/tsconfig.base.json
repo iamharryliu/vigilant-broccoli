@@ -33,6 +33,9 @@
       "@vigilant-broccoli/express": [
         "./libs/@vigilant-broccoli/express/src/index.ts"
       ],
+      "@vigilant-broccoli/fastify": [
+        "./libs/@vigilant-broccoli/fastify/src/index.ts"
+      ],
       "@vigilant-broccoli/google-workspace": [
         "./libs/@vigilant-broccoli/google-workspace/src/index.ts"
       ],

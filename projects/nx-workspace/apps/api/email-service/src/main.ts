@@ -1,18 +1,15 @@
-import express, { Request, Response } from 'express';
+import Fastify from 'fastify';
 import amqplib, { ConfirmChannel } from 'amqplib';
-import swaggerUi from 'swagger-ui-express';
-import {
-  EMAIL_SERVICE_ENDPOINT,
-  QUEUE,
-  requestLoggerMiddleware,
-} from '@vigilant-broccoli/common-node';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { EMAIL_SERVICE_ENDPOINT, QUEUE } from '@vigilant-broccoli/common-node';
 import { Email, EmailService } from '@vigilant-broccoli/messaging';
 import {
-  createApiKeyMiddleware,
+  createApiKeyPlugin,
+  createDocsPlugin,
   DOCS_PATH,
-  pingRouter,
-  swaggerUiCdnOptions,
-} from '@vigilant-broccoli/express';
+  pingPlugin,
+  requestLoggerPlugin,
+} from '@vigilant-broccoli/fastify';
 import { swaggerSpec } from './swagger';
 
 const SERVICE_NAME = 'email-service';
@@ -32,20 +29,6 @@ const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   : undefined;
 
 const emailService = new EmailService({ provider: 'resend' });
-const app = express();
-
-app.use(express.json());
-app.use(requestLoggerMiddleware);
-app.use(
-  DOCS_PATH,
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, swaggerUiCdnOptions),
-);
-app.get('/', (_req, res) => {
-  res.json({ status: 'ok', service: SERVICE_NAME, docs: DOCS_PATH });
-});
-app.use('/api', createApiKeyMiddleware(API_KEY));
-app.use('/api', pingRouter);
 
 let publishChannel: ConfirmChannel | null = null;
 
@@ -120,51 +103,87 @@ const queueEmails = async (emails: Email[]): Promise<void> => {
   console.log(`📤 Queued ${emails.length} emails`);
 };
 
-app.post(
-  `/${EMAIL_SERVICE_ENDPOINT.SEND_EMAIL}`,
-  async (req: Request, res: Response) => {
-    const email: Email = req.body;
-    if (!email.to || !email.subject) {
-      res.status(400).json({ error: 'to and subject are required' });
-      return;
-    }
-    try {
-      await queueEmails([email]);
-      res.json({ success: true });
-    } catch (err) {
-      console.error('Failed to queue email:', (err as Error).message);
-      publishChannel = null;
-      res.status(500).json({ error: 'Failed to queue email' });
-    }
-  },
-);
+const API_PREFIX = '/api';
+const SEND_EMAIL_PATH = `/${EMAIL_SERVICE_ENDPOINT.SEND_EMAIL.replace(/^api\//, '')}`;
+const QUEUE_EMAILS_PATH = `/${EMAIL_SERVICE_ENDPOINT.QUEUE_EMAILS.replace(/^api\//, '')}`;
 
-app.post(
-  `/${EMAIL_SERVICE_ENDPOINT.QUEUE_EMAILS}`,
-  async (req: Request, res: Response) => {
-    const emails: Email[] = req.body;
-    if (!Array.isArray(emails) || emails.length === 0) {
-      res.status(400).json({ error: 'emails array is required' });
-      return;
-    }
-    try {
-      await queueEmails(emails);
-      res.json({ success: true });
-    } catch (err) {
-      console.error('Failed to queue emails:', (err as Error).message);
-      publishChannel = null;
-      res.status(500).json({ error: 'Failed to queue emails' });
-    }
-  },
-);
+const ERROR_TO_AND_SUBJECT_REQUIRED = 'to and subject are required';
+const ERROR_EMAILS_ARRAY_REQUIRED = 'emails array is required';
+const ERROR_FAILED_TO_QUEUE_EMAIL = 'Failed to queue email';
+const ERROR_FAILED_TO_QUEUE_EMAILS = 'Failed to queue emails';
 
-app.listen(PORT, HOST, () => {
+const buildApp = async () => {
+  const app = Fastify({ logger: false });
+
+  await app.register(requestLoggerPlugin);
+  await app.register(createDocsPlugin(swaggerSpec, SERVICE_NAME));
+
+  app.get('/', async () => ({
+    status: 'ok',
+    service: SERVICE_NAME,
+    docs: DOCS_PATH,
+  }));
+
+  await app.register(
+    async api => {
+      await api.register(createApiKeyPlugin(API_KEY));
+      await api.register(pingPlugin);
+
+      api.post(SEND_EMAIL_PATH, async (req, reply) => {
+        const email = req.body as Email;
+        if (!email.to || !email.subject) {
+          return reply
+            .code(HTTP_STATUS_CODES.BAD_REQUEST)
+            .send({ error: ERROR_TO_AND_SUBJECT_REQUIRED });
+        }
+        try {
+          await queueEmails([email]);
+          return reply.send({ success: true });
+        } catch (err) {
+          console.error('Failed to queue email:', (err as Error).message);
+          publishChannel = null;
+          return reply
+            .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+            .send({ error: ERROR_FAILED_TO_QUEUE_EMAIL });
+        }
+      });
+
+      api.post(QUEUE_EMAILS_PATH, async (req, reply) => {
+        const emails = req.body as Email[];
+        if (!Array.isArray(emails) || emails.length === 0) {
+          return reply
+            .code(HTTP_STATUS_CODES.BAD_REQUEST)
+            .send({ error: ERROR_EMAILS_ARRAY_REQUIRED });
+        }
+        try {
+          await queueEmails(emails);
+          return reply.send({ success: true });
+        } catch (err) {
+          console.error('Failed to queue emails:', (err as Error).message);
+          publishChannel = null;
+          return reply
+            .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+            .send({ error: ERROR_FAILED_TO_QUEUE_EMAILS });
+        }
+      });
+    },
+    { prefix: API_PREFIX },
+  );
+
+  return app;
+};
+
+const start = async () => {
+  const app = await buildApp();
+  await app.listen({ port: PORT, host: HOST });
   console.log(`[ ready ] http://${HOST}:${PORT}`);
-});
 
-if (RABBITMQ_CONNECTION_STRING) {
-  startConsumer().catch(err => {
-    console.error('Failed to start consumer:', err.message);
-    setTimeout(startConsumer, RECONNECT_DELAY_MS);
-  });
-}
+  if (RABBITMQ_CONNECTION_STRING) {
+    startConsumer().catch(err => {
+      console.error('Failed to start consumer:', err.message);
+      setTimeout(startConsumer, RECONNECT_DELAY_MS);
+    });
+  }
+};
+
+start();

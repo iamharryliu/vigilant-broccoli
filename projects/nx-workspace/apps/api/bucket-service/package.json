@@ -4,17 +4,16 @@
   "private": true,
   "dependencies": {
     "@aws-sdk/client-s3": "*",
+    "@fastify/cors": "*",
+    "@fastify/multipart": "*",
     "@google-cloud/storage": "7.19.0",
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
-    "@vigilant-broccoli/express": "workspace:*",
+    "@vigilant-broccoli/fastify": "workspace:*",
     "@vigilant-broccoli/storage": "workspace:*",
     "archiver": "*",
-    "cors": "*",
-    "express": "*",
-    "multer": "*",
+    "fastify": "*",
     "qrcode": "*",
-    "swagger-ui-express": "*",
     "tslib": "*",
     "winston": "*"
   }

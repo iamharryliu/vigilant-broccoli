@@ -1,8 +1,12 @@
-import { Router, Request, Response } from 'express';
+import { FastifyPluginAsync } from 'fastify';
 import { LLMService } from '@vigilant-broccoli/llm-tools';
-import { LLM_MODELS, LLMModel, LLM_MODEL } from '@vigilant-broccoli/common-js';
-
-const router = Router();
+import {
+  CONTENT_TYPE_HEADER,
+  HTTP_STATUS_CODES,
+  LLM_MODEL,
+  LLM_MODELS,
+  LLMModel,
+} from '@vigilant-broccoli/common-js';
 
 const ERROR_MISSING_MESSAGES = 'Missing messages';
 const ERROR_STREAM_FAILED = 'Failed to stream response';
@@ -10,7 +14,7 @@ const ROLE_USER = 'User';
 const ROLE_ASSISTANT = 'Assistant';
 const CHAT_TEMPERATURE = 0.7;
 const STREAM_HEADERS: Record<string, string> = {
-  'Content-Type': 'text/plain; charset=utf-8',
+  [CONTENT_TYPE_HEADER]: 'text/plain; charset=utf-8',
   'Cache-Control': 'no-cache',
   Connection: 'keep-alive',
 };
@@ -20,51 +24,66 @@ interface Message {
   content: string;
 }
 
-router.post('/', async (req: Request, res: Response) => {
-  const { messages, systemPrompt, model } = req.body as {
-    messages: Message[];
-    systemPrompt?: string;
-    model?: LLMModel;
-  };
+type ChatBody = {
+  messages: Message[];
+  systemPrompt?: string;
+  model?: LLMModel;
+};
 
-  if (!messages || messages.length === 0) {
-    return res.status(400).json({ error: ERROR_MISSING_MESSAGES });
-  }
+const chatRoutes: FastifyPluginAsync = async app => {
+  app.post('/', async (req, reply) => {
+    const { messages, systemPrompt, model } = req.body as ChatBody;
 
-  const selectedModel =
-    model && LLM_MODELS.includes(model) ? model : LLM_MODEL.GPT_4O;
-
-  const latestUserMessage = messages[messages.length - 1];
-  const conversationHistory = messages
-    .slice(0, -1)
-    .map(
-      msg =>
-        `${msg.role === 'user' ? ROLE_USER : ROLE_ASSISTANT}: ${msg.content}`,
-    )
-    .join('\n\n');
-
-  const fullPrompt = conversationHistory
-    ? `Previous conversation:\n${conversationHistory}\n\nCurrent question:\n${latestUserMessage.content}`
-    : latestUserMessage.content;
-
-  try {
-    const streamResponse = await LLMService.promptStream({
-      prompt: { userPrompt: fullPrompt, systemPrompt },
-      modelConfig: { model: selectedModel, temperature: CHAT_TEMPERATURE },
-    });
-
-    for (const [k, v] of Object.entries(STREAM_HEADERS)) res.setHeader(k, v);
-
-    for await (const chunk of streamResponse) {
-      const content = chunk.choices[0]?.delta?.content || '';
-      if (content) res.write(content);
+    if (!messages || messages.length === 0) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_MISSING_MESSAGES });
     }
 
-    res.end();
-  } catch (err) {
-    const message = err instanceof Error ? err.message : ERROR_STREAM_FAILED;
-    return res.status(500).json({ error: message });
-  }
-});
+    const selectedModel =
+      model && LLM_MODELS.includes(model) ? model : LLM_MODEL.GPT_4O;
 
-export default router;
+    const latestUserMessage = messages[messages.length - 1];
+    const conversationHistory = messages
+      .slice(0, -1)
+      .map(
+        msg =>
+          `${msg.role === 'user' ? ROLE_USER : ROLE_ASSISTANT}: ${msg.content}`,
+      )
+      .join('\n\n');
+
+    const fullPrompt = conversationHistory
+      ? `Previous conversation:\n${conversationHistory}\n\nCurrent question:\n${latestUserMessage.content}`
+      : latestUserMessage.content;
+
+    try {
+      const streamResponse = await LLMService.promptStream({
+        prompt: { userPrompt: fullPrompt, systemPrompt },
+        modelConfig: { model: selectedModel, temperature: CHAT_TEMPERATURE },
+      });
+
+      reply.hijack();
+      for (const [k, v] of Object.entries(STREAM_HEADERS)) {
+        reply.raw.setHeader(k, v);
+      }
+
+      for await (const chunk of streamResponse) {
+        const content = chunk.choices[0]?.delta?.content || '';
+        if (content) reply.raw.write(content);
+      }
+
+      reply.raw.end();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : ERROR_STREAM_FAILED;
+      if (reply.sent) {
+        reply.raw.end();
+      } else {
+        return reply
+          .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+          .send({ error: message });
+      }
+    }
+  });
+};
+
+export default chatRoutes;
