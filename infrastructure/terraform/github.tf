@@ -62,12 +62,6 @@ resource "github_branch_protection" "main" {
     "/iamharryliu"
   ]
 
-  required_pull_request_reviews {
-    dismiss_stale_reviews           = true
-    require_code_owner_reviews      = false
-    required_approving_review_count = 0
-  }
-
   required_status_checks {
     strict   = false
     contexts = []
