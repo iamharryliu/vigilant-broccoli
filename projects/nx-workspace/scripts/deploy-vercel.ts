@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { getVaultToken } from './gcp-vault-token';
 
 const VAULT_CA_CERT_PATH = './scripts/vault-ca.crt';
@@ -159,7 +160,13 @@ async function main() {
     throw new Error(`${failures} secret(s) failed to deploy.`);
   }
 
-  const deployArgs = ['deploy', environment === PRODUCTION && '--prod', '--yes']
+  const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+  const deployArgs = [
+    'deploy',
+    environment === PRODUCTION && '--prod',
+    '--yes',
+    `"${repoRoot}"`,
+  ]
     .filter(Boolean)
     .join(' ');
   console.log(`\nTriggering Vercel deployment for ${projectName}...\n`);
