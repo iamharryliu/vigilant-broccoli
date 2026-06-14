@@ -5,6 +5,7 @@ import { getVaultToken } from './gcp-vault-token';
 
 const VAULT_CA_CERT_PATH = './scripts/vault-ca.crt';
 const VAULT_PATH = 'kv/data/secrets';
+const PRODUCTION = 'production';
 
 interface VaultSecrets {
   [key: string]: string;
@@ -60,7 +61,7 @@ async function vercelEnvAdd(
     console.log(`✓ ${key}`);
     return true;
   } catch (e) {
-    console.error(`✗ ${key}: failed to deploy`, (e as Error).message);
+    console.error(`✗ ${key}: failed to sync`, (e as Error).message);
     return false;
   }
 }
@@ -77,12 +78,17 @@ function parseEnvKeys(filePath: string): string[] {
 async function main() {
   const args = process.argv.slice(2);
   const projectName = args[0];
-  const environment = args[1] || 'production';
+  const environment = args[1] || PRODUCTION;
 
   if (!projectName) {
     console.error(
-      'Usage: npx tsx scripts/deploy-vercel-secrets.ts <project-name> [environment]',
+      'Usage: npx tsx scripts/deploy-vercel.ts <project-name> [environment]',
     );
+    process.exit(1);
+  }
+
+  if (!vercelEnv.VERCEL_PROJECT_ID || !vercelEnv.VERCEL_ORG_ID) {
+    console.error('VERCEL_PROJECT_ID and VERCEL_ORG_ID must be set.');
     process.exit(1);
   }
 
@@ -153,10 +159,19 @@ async function main() {
     throw new Error(`${failures} secret(s) failed to deploy.`);
   }
 
+  const deployArgs = ['deploy', environment === PRODUCTION && '--prod', '--yes']
+    .filter(Boolean)
+    .join(' ');
+  console.log(`\nTriggering Vercel deployment for ${projectName}...\n`);
+  execSync(`npx vercel ${deployArgs}`, {
+    stdio: 'inherit',
+    env: vercelEnv,
+  });
+
   console.log('\nDone!');
 }
 
 main().catch(err => {
-  console.error('Secret deployment failed.', err);
+  console.error('Deployment failed.', err);
   process.exit(1);
 });

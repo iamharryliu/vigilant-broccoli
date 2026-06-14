@@ -49,18 +49,11 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
-    "deploy:secrets": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "VERCEL_PROJECT_ID=prj_KxSfQ3e3wvKg0VK1BY5frjuuRehd VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel-secrets.ts next-demo production"
-      }
-    },
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "echo 'Vercel deployment is triggered automatically on push. Running secrets sync only.'"
-      },
-      "dependsOn": ["deploy:secrets"]
+        "command": "VERCEL_PROJECT_ID=prj_KxSfQ3e3wvKg0VK1BY5frjuuRehd VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts next-demo production"
+      }
     }
   }
 }
