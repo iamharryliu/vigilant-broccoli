@@ -56,8 +56,15 @@
         }
       }
     },
-    "deploy-container": {
+    "smoke": {
       "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bash scripts/shell/smoke-dist.sh dist/apps/api/email-subscription-service"
+      }
+    },
+    "deploy-container": {
+      "dependsOn": ["build", "smoke"],
       "command": "docker buildx build --platform linux/amd64 -f apps/api/email-subscription-service/Dockerfile -t iamharryliu/email-subscription-service:latest -t iamharryliu/email-subscription-service:${COMMIT_SHA:-latest} --push dist/apps/api/email-subscription-service"
     },
     "deploy:secrets": {

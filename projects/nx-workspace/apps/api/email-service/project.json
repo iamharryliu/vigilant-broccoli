@@ -58,8 +58,15 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
-    "deploy-container": {
+    "smoke": {
       "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bash scripts/shell/smoke-dist.sh dist/apps/api/email-service"
+      }
+    },
+    "deploy-container": {
+      "dependsOn": ["build", "smoke"],
       "command": "docker buildx build --platform linux/amd64 -f apps/api/email-service/Dockerfile -t iamharryliu/email-service:latest -t iamharryliu/email-service:${COMMIT_SHA:-latest} --push dist/apps/api/email-service"
     },
     "deploy:secrets": {

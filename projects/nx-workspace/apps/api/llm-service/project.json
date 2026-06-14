@@ -52,6 +52,13 @@
       "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
       "executor": "nx:noop"
     },
+    "smoke": {
+      "dependsOn": ["prune"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bash scripts/shell/smoke-dist.sh dist/apps/api/llm-service"
+      }
+    },
     "serve": {
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
@@ -88,7 +95,7 @@
     },
     "deploy": {
       "command": "flyctl deploy --dockerfile ./apps/api/llm-service/Dockerfile --config ./deployment-configs/fly-configs/llm-service.toml",
-      "dependsOn": ["build", "lint", "prune", "deploy:secrets"]
+      "dependsOn": ["build", "lint", "prune", "smoke", "deploy:secrets"]
     }
   }
 }

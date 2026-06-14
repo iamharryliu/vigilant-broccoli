@@ -65,6 +65,13 @@
       "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
       "executor": "nx:noop"
     },
+    "smoke": {
+      "dependsOn": ["prune"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bash scripts/shell/smoke-dist.sh dist/bucket-service"
+      }
+    },
     "serve": {
       "continuous": true,
       "executor": "@nx/js:node",
@@ -87,7 +94,7 @@
       "executor": "@nx/eslint:lint"
     },
     "deploy-container": {
-      "dependsOn": ["build", "prune"],
+      "dependsOn": ["build", "prune", "smoke"],
       "command": "docker buildx build --platform linux/amd64 -f apps/api/bucket-service/Dockerfile -t iamharryliu/bucket-service:latest -t iamharryliu/bucket-service:${COMMIT_SHA:-latest} --push dist/bucket-service"
     },
     "deploy:secrets": {
