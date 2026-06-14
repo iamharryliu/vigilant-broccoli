@@ -1,0 +1,23 @@
+name: upptime-uptime
+
+# Probe every site in .upptimerc.yml. Writes results to history/<slug>.yml and
+# history/summary.json (consumed by pages-index/status.html).
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [uptime]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: upptime/uptime-monitor@v1
+        with:
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}

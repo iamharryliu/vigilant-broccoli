@@ -1,0 +1,23 @@
+name: upptime-response-time
+
+# Aggregates per-site response time into history/response-time.yml
+# (also consumed by the status page for the latency line).
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [response-time]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: upptime/response-time-monitor@v1
+        with:
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}

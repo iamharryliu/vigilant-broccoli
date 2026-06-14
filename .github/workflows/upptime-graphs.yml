@@ -1,0 +1,22 @@
+name: upptime-graphs
+
+# Regenerates response-time SVG graphs in graphs/ (we don't render these on the
+# custom status page, but keep them around for embedding from README/issues).
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [graphs]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: upptime/graphs@v1
+        with:
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
