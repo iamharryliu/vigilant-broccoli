@@ -4,7 +4,7 @@ name: upptime-uptime
 # history/summary.json (consumed by pages-index/status.html).
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
   repository_dispatch:
     types: [uptime]
