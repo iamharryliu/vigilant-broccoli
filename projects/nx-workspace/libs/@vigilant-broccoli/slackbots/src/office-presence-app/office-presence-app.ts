@@ -19,6 +19,7 @@ import {
   handleAskLunchAction,
   handleCheckboxAction,
   handleScheduleModalSubmit,
+  handleSelectDefaultOffice,
   handleSettingsModalSubmit,
   handleCreateEventSubmit,
   handleEventAttendanceToggle,
@@ -117,6 +118,15 @@ export async function runOfficePresenceApp(
   app.action<BlockAction>(
     APP_ACTION.OPEN_SETTINGS_MODAL,
     SlackModalUtils.createModalHandlerWithUserId(getUserSettingsModal),
+  );
+
+  app.action<BlockAction>(
+    APP_ACTION.SELECT_DEFAULT_OFFICE,
+    async ({ ack, body, client }) => {
+      await ack();
+      handleSelectDefaultOffice(body);
+      await publishHomeView(client, body);
+    },
   );
 
   app.action<BlockAction>(

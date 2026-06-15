@@ -52,6 +52,27 @@ export function buildModalDateOptionSlackBlocks(dates: Date[]): {
   }));
 }
 
+function buildLocationSelect(appConfig: AppConfig, defaultOffice?: string) {
+  if (appConfig.OFFICES.length === 0) return null;
+  const { copy } = appConfig;
+  const options = appConfig.OFFICES.map(office => ({
+    text: { type: 'plain_text' as const, text: office, emoji: true },
+    value: office,
+  }));
+  const initialOption = options.find(o => o.value === defaultOffice);
+  return {
+    type: 'static_select' as const,
+    action_id: APP_ACTION.SELECT_DEFAULT_OFFICE,
+    placeholder: {
+      type: 'plain_text' as const,
+      text: copy.HOME_VIEW.LOCATION_SELECT_PLACEHOLDER,
+      emoji: true,
+    },
+    options,
+    ...(initialOption && { initial_option: initialOption }),
+  };
+}
+
 function getHomeView(userId: string, appConfig: AppConfig): View {
   const { copy } = appConfig;
   const userSettings = loadUserSettings(userId);
@@ -77,6 +98,11 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
   const initial = options.filter(opt => selected.includes(opt.value));
   const today = formatISODateLocal(new Date());
   const isCheckedInToday = selected.includes(today);
+
+  const locationSelect = buildLocationSelect(
+    appConfig,
+    userSettings.defaultOffice,
+  );
 
   return {
     type: 'home',
@@ -104,6 +130,18 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
           },
         ],
       },
+      SlackViewBuilder.DIVIDER,
+      ...(locationSelect
+        ? [
+            {
+              ...SlackViewBuilder.generateMarkdownSection(
+                copy.HOME_VIEW.LOCATION_SELECT_LABEL,
+              ),
+              accessory: locationSelect,
+            },
+            SlackViewBuilder.DIVIDER,
+          ]
+        : []),
       {
         ...SlackViewBuilder.generateMarkdownSection(
           copy.HOME_VIEW.SELECT_OFFICE_DAYS_MARKDOWN,

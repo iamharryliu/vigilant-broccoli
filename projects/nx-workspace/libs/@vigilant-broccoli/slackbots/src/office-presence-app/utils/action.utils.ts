@@ -116,6 +116,14 @@ export async function handleAskLunchAction(
   });
 }
 
+export function handleSelectDefaultOffice(body: BlockAction) {
+  const action = body.actions[0];
+  if (action.type !== 'static_select') return;
+  const defaultOffice = action.selected_option?.value || undefined;
+  const existing = loadUserSettings(body.user.id);
+  saveUserSettings(body.user.id, { ...existing, defaultOffice });
+}
+
 export function handleSettingsModalSubmit(
   body: SlackViewAction,
   view: ViewOutput,

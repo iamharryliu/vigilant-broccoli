@@ -62,6 +62,8 @@ export const DEFAULT_APP_COPY = {
     DELETE_EVENT_BUTTON: 'Delete',
     DELETE_EVENT_CONFIRM_TITLE: 'Delete event?',
     DELETE_EVENT_CONFIRM_DENY: 'Cancel',
+    LOCATION_SELECT_PLACEHOLDER: 'Select your home office',
+    LOCATION_SELECT_LABEL: '*Home Office*\nSelect your home office',
   },
   PRESENCE_MODAL: {
     TITLE: 'Schedule Office Visit',
