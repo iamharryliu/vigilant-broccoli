@@ -1,4 +1,4 @@
-name: test-e2e-email-subscription-service
+name: test-smoke-email-subscription-service
 
 on:
   schedule:

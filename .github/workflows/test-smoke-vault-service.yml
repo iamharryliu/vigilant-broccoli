@@ -1,4 +1,4 @@
-name: test-e2e-vault-service
+name: test-smoke-vault-service
 
 on:
   schedule:

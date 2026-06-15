@@ -1,4 +1,4 @@
-name: test-e2e-rabbitmq
+name: test-smoke-rabbitmq
 
 on:
   workflow_dispatch:

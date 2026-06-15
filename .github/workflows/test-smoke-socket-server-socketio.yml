@@ -1,4 +1,4 @@
-name: test-e2e-socket-server-socketio
+name: test-smoke-socket-server-socketio
 
 on:
   schedule:
