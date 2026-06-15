@@ -1,0 +1,7 @@
+# Paths Nx should skip when building its project graph.
+# The fly deploy chain (copy-workspace-modules) writes project.json files into
+# dist/<svc>/workspace_modules/@vigilant-broccoli/*/. Without this ignore, Nx
+# sees them as duplicate project definitions and refuses to build (notably hit
+# during Vercel builds, where dist/ from the prior fly step is still present).
+dist
+tmp
