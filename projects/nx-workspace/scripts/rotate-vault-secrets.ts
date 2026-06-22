@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { getVaultToken } from './gcp-vault-token';
 
-const VAULT_ADDR = 'https://10.0.1.1:8200';
+const DEFAULT_VAULT_ADDR = 'https://10.0.1.1:8200';
 const SECRET_PATH = 'kv/data/secrets';
 const CERTS = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -22,9 +22,10 @@ async function rotateVaultSecrets() {
   const vaultToken = getVaultToken();
   const nodeVault = await import('node-vault');
 
+  const vaultAddr = process.env.VAULT_ADDR || DEFAULT_VAULT_ADDR;
   const vault = nodeVault.default({
     apiVersion: 'v1',
-    endpoint: VAULT_ADDR,
+    endpoint: vaultAddr,
     token: vaultToken,
     requestOptions: {
       httpsAgent: new https.Agent({ ca: readFileSync(CERTS) }),
