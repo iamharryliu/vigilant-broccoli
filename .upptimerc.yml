@@ -22,9 +22,5 @@ sites:
 user-agent: upptime-vigilant-broccoli
 delay: 5000
 
-status-website:
-  baseUrl: /vigilant-broccoli
-  name: vigilant-broccoli status
-
 assignees:
   - iamharryliu
