@@ -80,6 +80,9 @@ vault policy write ${VAULT_ROTATE_POLICY_NAME} - <<POLICY
 path \"${VAULT_KV_PATH}/data/secrets\" {
   capabilities = [\"read\", \"update\"]
 }
+path \"${VAULT_KV_PATH}/data/test\" {
+  capabilities = [\"read\"]
+}
 POLICY
 
 echo 'Creating role ${VAULT_ROLE_NAME}...'
