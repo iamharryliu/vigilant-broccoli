@@ -1,7 +1,5 @@
 name: upptime-summary
 
-# Writes README badges and history/summary.json — the latter is what
-# pages-index/status.html fetches on page load.
 on:
   schedule:
     - cron: '0 0 * * *'

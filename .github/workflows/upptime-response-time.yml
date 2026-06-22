@@ -1,7 +1,5 @@
 name: upptime-response-time
 
-# Aggregates per-site response time into history/response-time.yml
-# (also consumed by the status page for the latency line).
 on:
   schedule:
     - cron: '0 */6 * * *'

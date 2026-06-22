@@ -1,7 +1,5 @@
 name: upptime-uptime
 
-# Probe every site in .upptimerc.yml. Writes results to history/<slug>.yml and
-# history/summary.json (consumed by pages-index/status.html).
 on:
   schedule:
     - cron: '0 * * * *'

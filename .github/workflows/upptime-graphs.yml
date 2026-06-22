@@ -1,7 +1,5 @@
 name: upptime-graphs
 
-# Regenerates response-time SVG graphs in graphs/ (we don't render these on the
-# custom status page, but keep them around for embedding from README/issues).
 on:
   schedule:
     - cron: '0 0 * * *'

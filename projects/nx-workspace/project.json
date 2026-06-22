@@ -9,6 +9,16 @@
         "config": ".verdaccio/config.yml",
         "storage": "tmp/local-registry/storage"
       }
+    },
+    "rotate-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/rotate-vault-secrets.ts",
+          "nx run-many -t deploy"
+        ],
+        "parallel": false
+      }
     }
   }
 }

@@ -1,13 +1,6 @@
-# Upptime config — https://upptime.js.org/docs/configuration
-#
-# We use Upptime's data-collection actions (uptime-monitor, response-time-monitor,
-# graphs-generator) but render the status page ourselves at pages-index/status.html
-# so it slots into the existing GitHub Pages subpath structure.
 owner: iamharryliu
 repo: vigilant-broccoli
 
-# Sites probed every UPDATE_INTERVAL minutes (workflow cron, default 5).
-# All targets serve unauthenticated GET / via the Fastify service template.
 sites:
   - name: LLM Service
     url: https://vb-llm-service.fly.dev/
@@ -26,14 +19,10 @@ sites:
     url: https://vb-express.fly.dev/
     maxResponseTime: 10000
 
-# Fly.io machines sleep under auto_stop_machines='stop'. Generous request timeout
-# so cold starts (~1–3s) don't get flagged as outages.
 user-agent: upptime-vigilant-broccoli
 delay: 5000
 
 status-website:
-  # Unused — we render via pages-index/status.html. Kept so other Upptime tooling
-  # has something well-formed to read if invoked.
   baseUrl: /vigilant-broccoli
   name: vigilant-broccoli status
 
