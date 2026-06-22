@@ -105,7 +105,7 @@ vault write auth/jwt/role/${VAULT_ROTATE_ROLE_NAME} - <<ROLE
   \"bound_claims_type\": \"glob\",
   \"bound_claims\": {
     \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
-    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-rotate-secrets.yml@*\"
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/rotate-secrets.yml@*\"
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_ROTATE_POLICY_NAME}\"],
