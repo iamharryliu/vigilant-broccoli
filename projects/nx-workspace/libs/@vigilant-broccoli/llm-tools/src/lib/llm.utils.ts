@@ -86,6 +86,7 @@ function getOpenAIClient({
   return new OpenAI({
     baseURL: getModelBaseUrl(model),
     apiKey: apiKey ? apiKey : getModelAPIKey(model),
+    fetch: globalThis.fetch,
   });
 }
 
