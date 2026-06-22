@@ -15,6 +15,10 @@ inputs:
     description: Export the Vault token as VAULT_TOKEN
     required: false
     default: 'false'
+  role:
+    description: Vault JWT role to authenticate as
+    required: false
+    default: github-actions-role
 
 runs:
   using: composite
@@ -61,7 +65,7 @@ runs:
         url: https://127.0.0.1:8200
         caCertificate: ${{ steps.ca.outputs.cert_base64 }}
         method: jwt
-        role: github-actions-role
+        role: ${{ inputs.role }}
         jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
         exportToken: ${{ inputs.export_token }}
         secrets: ${{ inputs.secrets }}

@@ -75,6 +75,13 @@ path \"${VAULT_KV_PATH}/data/test\" {
 }
 POLICY
 
+echo 'Writing policy ${VAULT_ROTATE_POLICY_NAME}...'
+vault policy write ${VAULT_ROTATE_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/secrets\" {
+  capabilities = [\"read\", \"update\"]
+}
+POLICY
+
 echo 'Creating role ${VAULT_ROLE_NAME}...'
 vault write auth/jwt/role/${VAULT_ROLE_NAME} - <<ROLE
 {
@@ -86,6 +93,22 @@ vault write auth/jwt/role/${VAULT_ROLE_NAME} - <<ROLE
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_POLICY_NAME}\"],
+  \"ttl\": \"10m\"
+}
+ROLE
+
+echo 'Creating role ${VAULT_ROTATE_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_ROTATE_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims_type\": \"glob\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-rotate-secrets.yml@*\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_ROTATE_POLICY_NAME}\"],
   \"ttl\": \"10m\"
 }
 ROLE
