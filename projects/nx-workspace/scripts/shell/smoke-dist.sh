@@ -52,6 +52,7 @@ if [ -f "$SMOKE_DIR/package.json" ] && [ ! -d "$SMOKE_DIR/node_modules" ]; then
   (
     cd "$SMOKE_DIR"
     pnpm install \
+      --frozen-lockfile \
       --prod \
       --ignore-scripts \
       --ignore-workspace \
