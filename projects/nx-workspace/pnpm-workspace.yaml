@@ -3,6 +3,8 @@ packages:
   - 'apps/api/*'
   - 'libs/**'
   - 'packages/*'
+overrides:
+  '@slack/web-api': ^7.17.0
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true

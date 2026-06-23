@@ -4,7 +4,11 @@ import { readFileSync } from 'fs';
 import express from 'express';
 import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
-import { SOCKET_EVENTS } from '@vigilant-broccoli/common-js';
+import {
+  PUBLISH_ERROR_CODES,
+  PublishAck,
+  SOCKET_EVENTS,
+} from '@vigilant-broccoli/common-js';
 
 const DEFAULT_PORT = '3000';
 const DEFAULT_HOST = '0.0.0.0';
@@ -104,15 +108,25 @@ io.on(SOCKET_EVENTS.CONNECTION, socket => {
     handleSubscribe(socket, data, false),
   );
 
-  socket.on(SOCKET_EVENTS.PUBLISH, async raw => {
+  socket.on(SOCKET_EVENTS.PUBLISH, async (raw, ack) => {
+    const reply = (result: PublishAck) => {
+      if (typeof ack === 'function') ack(result);
+    };
+
     if (socket.data.role !== ROLE_SENDER) {
       log(LOG.PUBLISH_FORBIDDEN, { socketId: socket.id });
+      reply({ ok: false, code: PUBLISH_ERROR_CODES.FORBIDDEN });
       return;
     }
     const parsed = publishSchema.safeParse(raw);
     if (!parsed.success) {
       log(LOG.PUBLISH_INVALID, {
         socketId: socket.id,
+        issues: parsed.error.issues,
+      });
+      reply({
+        ok: false,
+        code: PUBLISH_ERROR_CODES.INVALID,
         issues: parsed.error.issues,
       });
       return;
@@ -125,6 +139,7 @@ io.on(SOCKET_EVENTS.CONNECTION, socket => {
       payload: parsed.data.payload,
     });
     log(LOG.PUBLISH, { room, receivers: sockets.length });
+    reply({ ok: true });
   });
 
   socket.on(SOCKET_EVENTS.DISCONNECT, reason => {

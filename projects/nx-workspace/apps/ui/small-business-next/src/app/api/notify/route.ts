@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import {
+  HTTP_HEADERS,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
 
 const EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev/api/send-email';
 const FROM = 'Harry Liu <contact@harryliu.dev>';
