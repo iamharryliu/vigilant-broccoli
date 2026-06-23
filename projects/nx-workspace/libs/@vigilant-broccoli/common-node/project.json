@@ -17,6 +17,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/@vigilant-broccoli/common-node",
+        "outputFileName": "src/index.js",
         "tsConfig": "libs/@vigilant-broccoli/common-node/tsconfig.lib.json",
         "packageJson": "libs/@vigilant-broccoli/common-node/package.json",
         "main": "libs/@vigilant-broccoli/common-node/src/index.ts",
