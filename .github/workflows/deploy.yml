@@ -173,6 +173,7 @@ jobs:
             kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
             kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN ;
+            kv/data/secrets SANITY_AUTH_TOKEN | SANITY_AUTH_TOKEN ;
 
       - name: Log in to Docker Hub
         if: steps.check.outputs.has_deployments == 'true'

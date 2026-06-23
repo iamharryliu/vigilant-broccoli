@@ -78,12 +78,22 @@ jobs:
               s.once(event, (...args) => { clearTimeout(t); resolve(args); });
             });
 
+          const emitWithAck = (s, event, data) =>
+            new Promise((resolve, reject) => {
+              const t = setTimeout(() => reject(new Error(`timeout waiting for ack:${event}`)), TIMEOUT_MS);
+              s.emit(event, data, (res) => { clearTimeout(t); resolve(res); });
+            });
+
           try {
             await Promise.all([awaitEvent(sender, 'connect'), awaitEvent(receiver, 'connect')]);
             const messagePromise = awaitEvent(receiver, 'message');
             receiver.emit('subscribe', { app: APP, receiverId: RECEIVER_ID });
             await new Promise((r) => setTimeout(r, 300));
-            sender.emit('publish', { app: APP, receiverId: RECEIVER_ID, payload: EXPECTED });
+            const ack = await emitWithAck(sender, 'publish', { app: APP, receiverId: RECEIVER_ID, payload: EXPECTED });
+            if (!ack?.ok) {
+              console.error(`FAIL: publish rejected (code=${ack?.code})`);
+              process.exit(1);
+            }
             const [msg] = await messagePromise;
             const got = JSON.stringify(msg.payload);
             const want = JSON.stringify(EXPECTED);

@@ -11,29 +11,7 @@
         "cwd": "{projectRoot}"
       }
     },
-    "build": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "options": {
-        "command": "node_modules/.bin/sanity build",
-        "cwd": "{projectRoot}"
-      }
-    },
-    "start": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node_modules/.bin/sanity start",
-        "cwd": "{projectRoot}"
-      }
-    },
     "deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "echo 'TODO: implement Sanity ci deploy'",
-        "cwd": "{projectRoot}"
-      }
-    },
-    "manual:deploy": {
       "executor": "nx:run-commands",
       "options": {
         "command": "node_modules/.bin/sanity deploy",

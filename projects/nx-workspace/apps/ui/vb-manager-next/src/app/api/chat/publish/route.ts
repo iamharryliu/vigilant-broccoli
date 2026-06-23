@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { HTTP_STATUS_CODES, PublishAck } from '@vigilant-broccoli/common-js';
 import { io } from 'socket.io-client';
 import {
   CHAT_APP,
@@ -12,7 +12,9 @@ const LOG_PREFIX = '[chat/publish]';
 const ERR_NOT_CONFIGURED = 'Socket server not configured';
 const ERR_BAD_BODY = 'Expected { text: string, sender: string }';
 const ERR_CONNECT_TIMEOUT = 'Socket connect timeout';
+const ERR_PUBLISH_TIMEOUT = 'Publish ack timeout';
 const ERR_PUBLISH_FAILED = 'Publish failed';
+const CHAT_PUBLISH_ACK_TIMEOUT_MS = 5000;
 
 export async function POST(req: NextRequest) {
   const url = process.env.SOCKET_SERVER_URL;
@@ -67,11 +69,31 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    socket.emit(SOCKET_EVENTS.PUBLISH, {
-      app: CHAT_APP,
-      receiverId: CHAT_ROOM,
-      payload: { text: body.text, sender: body.sender, ts: Date.now() },
+    const ack = await new Promise<PublishAck>((resolve, reject) => {
+      const t = setTimeout(
+        () => reject(new Error(ERR_PUBLISH_TIMEOUT)),
+        CHAT_PUBLISH_ACK_TIMEOUT_MS,
+      );
+      socket.emit(
+        SOCKET_EVENTS.PUBLISH,
+        {
+          app: CHAT_APP,
+          receiverId: CHAT_ROOM,
+          payload: { text: body.text, sender: body.sender, ts: Date.now() },
+        },
+        (res: PublishAck) => {
+          clearTimeout(t);
+          resolve(res);
+        },
+      );
     });
+
+    if (!ack?.ok) {
+      return NextResponse.json(
+        { error: ERR_PUBLISH_FAILED, code: ack?.code },
+        { status: HTTP_STATUS_CODES.BAD_GATEWAY },
+      );
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

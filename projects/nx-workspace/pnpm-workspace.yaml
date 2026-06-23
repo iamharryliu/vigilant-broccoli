@@ -1,6 +1,7 @@
 packages:
   - 'apps/*'
   - 'apps/api/*'
+  - 'apps/cms/*'
   - 'libs/**'
   - 'packages/*'
 overrides:
