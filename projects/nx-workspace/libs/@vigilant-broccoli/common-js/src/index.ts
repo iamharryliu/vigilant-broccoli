@@ -36,22 +36,6 @@ export * from './lib/utils/env.utils';
 export * from './lib/utils/string.utils';
 export * from './lib/utils/date.utils';
 
-export function downloadJson(data: unknown, filename: string) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: 'application/json',
-  });
-  const blobUrl = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = blobUrl;
-  a.download = filename.endsWith('.json') ? filename : `${filename}.json`;
-  document.body.appendChild(a);
-  a.click();
-
-  a.remove();
-  URL.revokeObjectURL(blobUrl);
-}
-
 export const DATE_CONST = {
   DAY: [
     'Sunday',

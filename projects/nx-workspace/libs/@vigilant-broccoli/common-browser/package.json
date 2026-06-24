@@ -2,7 +2,6 @@
   "name": "@vigilant-broccoli/common-browser",
   "version": "0.0.1",
   "dependencies": {
-    "rxjs": "~7.8.0",
     "@vigilant-broccoli/common-js": "workspace:*"
   },
   "main": "./index.js",
