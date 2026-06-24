@@ -30,12 +30,12 @@ jobs:
         run: |
           TIMESTAMP=$(date -u +%Y-%m-%d)
           curl -sL -o vigilant-broccoli.zip https://github.com/iamharryliu/vigilant-broccoli/archive/refs/heads/main.zip
-          gsutil cp vigilant-broccoli.zip gs://vigilant-broccoli-backup/vigilant-broccoli-backup-$TIMESTAMP.zip
+          gsutil cp vigilant-broccoli.zip gs://vigilant-broccoli-backup/repo-backup-$TIMESTAMP.zip
 
       - name: Cleanup old backups
         run: |
           MAX_BACKUPS=7
-          BACKUPS=$(gsutil ls gs://vigilant-broccoli-backup/vigilant-broccoli-backup-*.zip | sort)
+          BACKUPS=$(gsutil ls gs://vigilant-broccoli-backup/repo-backup-*.zip | sort)
           BACKUP_COUNT=$(echo "$BACKUPS" | wc -l)
           if [ "$BACKUP_COUNT" -gt "$MAX_BACKUPS" ]; then
             DELETE_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))
