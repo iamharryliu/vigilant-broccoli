@@ -12,6 +12,6 @@ COPY --chown=node:node . .
 
 USER node
 
-RUN pnpm install --prod --ignore-scripts
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 CMD [ "node", "main.js" ]

@@ -270,7 +270,7 @@ const MessagesArea = ({
 }: {
   messages: Message[];
   isDragging: boolean;
-  scrollRef: React.RefObject<HTMLDivElement>;
+  scrollRef: React.RefObject<HTMLDivElement | null>;
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
@@ -536,8 +536,8 @@ const InputControls = ({
   onSend,
   onStop,
 }: {
-  fileInputRef: React.RefObject<HTMLInputElement>;
-  textInputRef: React.RefObject<HTMLTextAreaElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  textInputRef: React.RefObject<HTMLTextAreaElement | null>;
   input: string;
   isStreaming: boolean;
   isRecording: boolean;
@@ -637,8 +637,8 @@ const InputArea = ({
   isStreaming: boolean;
   selectedModel: LLMModel;
   modelOptions: LLMModel[];
-  fileInputRef: React.RefObject<HTMLInputElement>;
-  textInputRef: React.RefObject<HTMLTextAreaElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  textInputRef: React.RefObject<HTMLTextAreaElement | null>;
   onCommandRun: (name: string) => void;
   onImageRemove: (index: number) => void;
   onImageUpload: (files: FileList | null) => void;

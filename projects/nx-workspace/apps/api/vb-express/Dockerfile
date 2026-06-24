@@ -16,6 +16,6 @@ RUN chown -R vb-express:vb-express /app /home/vb-express
 
 USER vb-express
 
-RUN cd vb-express && pnpm install --prod --ignore-scripts
+RUN cd vb-express && pnpm install --frozen-lockfile --prod --ignore-scripts
 
 CMD [ "node", "vb-express" ]

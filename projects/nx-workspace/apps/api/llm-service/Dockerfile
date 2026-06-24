@@ -16,6 +16,6 @@ RUN chown -R llm-service:llm-service /app /home/llm-service
 
 USER llm-service
 
-RUN cd llm-service && pnpm install --prod --ignore-scripts
+RUN cd llm-service && pnpm install --frozen-lockfile --prod --ignore-scripts
 
 CMD [ "node", "llm-service" ]

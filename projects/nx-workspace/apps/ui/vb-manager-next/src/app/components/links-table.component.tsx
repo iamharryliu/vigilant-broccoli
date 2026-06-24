@@ -1,10 +1,11 @@
 'use client';
 
+import type { ReactElement } from 'react';
 import { Table, Text } from '@radix-ui/themes';
 
 const FIELD_ICONS: Record<
   string,
-  { label: string; icon: JSX.Element | string }
+  { label: string; icon: ReactElement | string }
 > = {
   DASHBOARD: { label: 'Dashboard', icon: '🌐' },
   BILLING_URL: { label: 'Billing', icon: '💳' },
