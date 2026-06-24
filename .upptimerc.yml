@@ -2,22 +2,21 @@ owner: iamharryliu
 repo: vigilant-broccoli
 
 sites:
+  - name: Harry Liu
+    url: https://harryliu.dev/
+  - name: Cloud 8 Skate
+    url: https://cloud8skate.com/
   - name: LLM Service
     url: https://vb-llm-service.fly.dev/
     icon: https://vb-llm-service.fly.dev/favicon.ico
-    maxResponseTime: 10000
   - name: Storage Service
     url: https://vb-storage-service.fly.dev/
-    maxResponseTime: 10000
   - name: Email Service
     url: https://vb-email-service.fly.dev/
-    maxResponseTime: 10000
   - name: Email Subscription Service
     url: https://email-subscription-service.fly.dev/
-    maxResponseTime: 10000
   - name: VB Express
     url: https://vb-express.fly.dev/
-    maxResponseTime: 10000
 
 user-agent: upptime-vigilant-broccoli
 delay: 5000

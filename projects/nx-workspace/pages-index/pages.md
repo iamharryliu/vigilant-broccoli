@@ -1,0 +1,21 @@
+# GitHub Pages
+
+- index.html
+  - Open Source | GitHub, Docker Hub, and npm packages. | ./open-source.html
+  - React Component Library | Showcase of reusable React components. | ./react-component-library/
+  - ui-apps.html | Collection of deployed UI apps.
+    - Harry Liu | Personal website. | https://harryliu.dev/
+    - Cloud 8 Skate | Cloud 8 Skate shop website. | https://cloud8skate.com/
+    - Docs (Markdown) | Browse markdown notes from the repo. | ./docs-md/
+    - Employee Handler UI | Employee management app deployed on Vercel. | https://employee-handler-ui.vercel.app
+  - open-source.html | GitHub, Docker Hub, and npm packages.
+    - GitHub | vigilant-broccoli repository. | https://github.com/iamharryliu/vigilant-broccoli
+    - Docker Hub | iamharryliu Docker images. | https://hub.docker.com/repositories/iamharryliu
+    - npm | vigilant-broccoli npm packages. | https://www.npmjs.com/settings/vigilant-broccoli/packages
+  - api-services.html | API docs and service health for Fly.io-deployed services.
+    - api-docs.html | Swagger docs for Fly.io-deployed services.
+      - LLM Service | vb-llm-service.fly.dev | https://vb-llm-service.fly.dev/docs
+      - Email Service | vb-email-service.fly.dev | https://vb-email-service.fly.dev/docs
+      - Email Subscription Service | email-subscription-service.fly.dev | https://email-subscription-service.fly.dev/docs
+      - Storage Service | vb-storage-service.fly.dev | https://vb-storage-service.fly.dev/docs
+    - status.html | Live health of Fly.io-deployed services. (dynamic — no editable cards)

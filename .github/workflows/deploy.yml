@@ -267,6 +267,9 @@ jobs:
         run: |
           mkdir -p _site
           cp pages-index/index.html _site/index.html
+          cp pages-index/open-source.html _site/open-source.html
+          cp pages-index/ui-apps.html _site/ui-apps.html
+          cp pages-index/api-services.html _site/api-services.html
           cp pages-index/api-docs.html _site/api-docs.html
           cp pages-index/status.html _site/status.html
 
