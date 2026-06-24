@@ -1,0 +1,89 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - docker.io
+  - docker-compose-v2
+
+write_files:
+  - path: /opt/gitea/Caddyfile
+    content: |
+      {
+        email ${acme_email}
+      }
+
+      ${gitea_domain} {
+        reverse_proxy gitea:3000
+      }
+
+  - path: /opt/gitea/docker-compose.yml
+    content: |
+      services:
+        gitea:
+          image: gitea/gitea:latest
+          container_name: gitea
+          restart: unless-stopped
+          pull_policy: always
+          environment:
+            USER_UID: "1000"
+            USER_GID: "1000"
+            GITEA__database__DB_TYPE: sqlite3
+            GITEA__server__DOMAIN: ${gitea_domain}
+            GITEA__server__ROOT_URL: https://${gitea_domain}/
+            GITEA__server__SSH_DOMAIN: ${gitea_domain}
+            GITEA__server__SSH_PORT: "2222"
+            GITEA__server__SSH_LISTEN_PORT: "22"
+            GITEA__service__DISABLE_REGISTRATION: "true"
+            GITEA__service__REQUIRE_SIGNIN_VIEW: "false"
+          volumes:
+            - gitea_data:/data
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+          ports:
+            - "2222:22"
+          labels:
+            com.centurylinklabs.watchtower.enable: "true"
+          healthcheck:
+            test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/api/healthz"]
+            interval: 30s
+            timeout: 5s
+            retries: 5
+        caddy:
+          image: caddy:2-alpine
+          container_name: caddy
+          restart: unless-stopped
+          pull_policy: always
+          ports:
+            - "80:80"
+            - "443:443"
+          volumes:
+            - /opt/gitea/Caddyfile:/etc/caddy/Caddyfile:ro
+            - caddy_data:/data
+            - caddy_config:/config
+          depends_on:
+            - gitea
+          labels:
+            com.centurylinklabs.watchtower.enable: "true"
+        watchtower:
+          image: containrrr/watchtower
+          container_name: watchtower
+          restart: unless-stopped
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+          environment:
+            WATCHTOWER_CLEANUP: "true"
+            WATCHTOWER_POLL_INTERVAL: "300"
+            WATCHTOWER_LABEL_ENABLE: "true"
+            DOCKER_API_VERSION: DOCKER_API_VERSION_PLACEHOLDER
+      volumes:
+        gitea_data:
+        caddy_data:
+        caddy_config:
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ubuntu
+  - 'DOCKER_API=$(docker version --format "{{.Server.APIVersion}}") && sed -i "s/DOCKER_API_VERSION_PLACEHOLDER/$DOCKER_API/" /opt/gitea/docker-compose.yml'
+  - docker compose -f /opt/gitea/docker-compose.yml up -d

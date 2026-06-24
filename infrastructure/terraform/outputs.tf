@@ -19,3 +19,15 @@ output "oci_vm_rabbitmq_management_url" {
 output "oci_vm_socket_server_url" {
   value = "https://${oci_core_instance.rabbitmq.public_ip}:3443"
 }
+
+output "oci_gitea_public_ip" {
+  value = oci_core_instance.gitea.public_ip
+}
+
+output "oci_gitea_url" {
+  value = "https://${var.gitea_domain}"
+}
+
+output "oci_gitea_ssh_clone_hint" {
+  value = "ssh://git@${var.gitea_domain}:2222/<owner>/<repo>.git"
+}

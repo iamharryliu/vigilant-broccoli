@@ -27,10 +27,28 @@ variable "cloudflare_account_id" {
 
 variable "ssh_public_key" {
   type    = string
-  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIISE8yIDUuc3MRphJDr212uIjQEqU+JFgwQCSL6VvHRw harryliu@Harrys-MacBook-Pro.local"
+  default = <<-EOT
+    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIISE8yIDUuc3MRphJDr212uIjQEqU+JFgwQCSL6VvHRw harryliu@Harrys-MacBook-Pro.local
+    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFmxmrbaLFOPcNsAVJwUwIMGuVosZQytQtZiKO/tK9OX harryliu1995@gmail.com
+  EOT
 }
 
 variable "rabbitmq_user" {
   type    = string
   default = "admin"
+}
+
+variable "gitea_domain" {
+  type    = string
+  default = "git.harryliu.dev"
+}
+
+variable "gitea_acme_email" {
+  type    = string
+  default = "harryliu1995@gmail.com"
+}
+
+variable "cloudflare_zone_id" {
+  type    = string
+  default = "6cb0ddc52a5da0094c589bdf7adc16ad"
 }
