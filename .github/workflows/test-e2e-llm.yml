@@ -1,4 +1,4 @@
-name: test-smoke-llm
+name: test-e2e-llm
 
 on:
   schedule:
