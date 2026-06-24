@@ -189,7 +189,6 @@
     "bootstrap": "^5.3.8",
     "boring-avatars": "^2.0.4",
     "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
     "cors": "^2.8.6",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
