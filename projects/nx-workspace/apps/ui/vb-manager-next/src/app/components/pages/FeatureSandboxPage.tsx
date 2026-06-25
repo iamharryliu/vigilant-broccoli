@@ -11,6 +11,7 @@ import { VoiceListGenerator } from '../llm/VoiceListGenerator';
 import { TextToSpeechVoices } from '../llm/TextToSpeechVoices';
 import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
 import { QRCodeGenerator } from '../demos/QRCodeGenerator';
+import { LanguageLearning } from '../demos/LanguageLearning';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -19,6 +20,12 @@ import {
 const STORAGE_KEY = 'feature-sandbox';
 
 const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
+  {
+    id: 'language-learning',
+    title: 'Language Learning',
+    content: <LanguageLearning />,
+    defaultOpen: true,
+  },
   {
     id: 'qr-code-generator',
     title: 'QR Code Generator',

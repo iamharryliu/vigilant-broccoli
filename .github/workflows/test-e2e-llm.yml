@@ -20,6 +20,21 @@ jobs:
   test-llm-service:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - provider: openai
+            model: gpt-4o-mini
+          - provider: anthropic
+            model: claude-sonnet-4-20250514
+          - provider: gemini
+            model: gemini-2.5-flash-lite
+          - provider: deepseek
+            model: deepseek-chat
+          - provider: grok
+            model: grok-3-mini
+    name: ${{ matrix.provider }}
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 
@@ -31,10 +46,11 @@ jobs:
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
 
-      - name: Run e2e tests
+      - name: Run e2e tests (${{ matrix.provider }})
         env:
           LLM_SERVICE_URL: ${{ env.LLM_SERVICE_URL }}
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          MODEL: ${{ matrix.model }}
         run: |
           chmod +x scripts/shell/test-llm-e2e.sh
           scripts/shell/test-llm-e2e.sh

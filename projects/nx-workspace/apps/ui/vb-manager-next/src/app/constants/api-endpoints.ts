@@ -85,4 +85,10 @@ export const API_ENDPOINTS = {
 
   // Chat
   CHAT_PUBLISH: '/api/chat/publish',
+
+  // Language Learning
+  LANGUAGE_LEARNING_WORDS: '/api/language-learning/words',
+  LANGUAGE_LEARNING_HISTORY: '/api/language-learning/history',
+  LANGUAGE_LEARNING_MASTERED: '/api/language-learning/mastered',
+  LANGUAGE_LEARNING_DEFINE: '/api/language-learning/define',
 } as const;

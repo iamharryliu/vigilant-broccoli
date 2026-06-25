@@ -3,6 +3,7 @@
 set -e
 
 LLM_SERVICE_URL="${LLM_SERVICE_URL:-https://vb-llm-service.fly.dev}"
+MODEL="${MODEL:-gpt-4o-mini}"
 PASS=0
 FAIL=0
 
@@ -20,6 +21,7 @@ check() {
 
 echo "=== llm-service e2e tests ==="
 echo "Target: $LLM_SERVICE_URL"
+echo "Model:  $MODEL"
 echo ""
 
 # --- /api/llm — plain prompt ---
@@ -27,10 +29,10 @@ echo "Testing /api/llm (plain)..."
 LLM_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
   -H "Content-Type: application/json" \
   -H "x-api-key: ${SHARED_APP_TOKEN}" \
-  -d '{
-    "userPrompt": "What planet do humans live on? Reply with only the planet name, nothing else.",
-    "model": "gpt-4o-mini"
-  }')
+  -d "{
+    \"userPrompt\": \"What planet do humans live on? Reply with only the planet name, nothing else.\",
+    \"model\": \"${MODEL}\"
+  }")
 
 echo "Response: $LLM_RESPONSE"
 
@@ -43,33 +45,33 @@ echo "Testing /api/llm (jsonSchema, Wizard of Oz characters)..."
 WIZARD_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
   -H "Content-Type: application/json" \
   -H "x-api-key: ${SHARED_APP_TOKEN}" \
-  -d '{
-    "userPrompt": "Extract the main characters from the Wizard of Oz. Include Dorothy, Scarecrow, Tin Man, Cowardly Lion, and the Wizard. For each, provide name, species, and one defining trait.",
-    "model": "gpt-4o-mini",
-    "jsonSchema": {
-      "name": "wizard_of_oz_characters",
-      "schema": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["characters"],
-        "properties": {
-          "characters": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["name", "species", "trait"],
-              "properties": {
-                "name": { "type": "string" },
-                "species": { "type": "string" },
-                "trait": { "type": "string" }
+  -d "{
+    \"userPrompt\": \"Extract the main characters from the Wizard of Oz. Include Dorothy, Scarecrow, Tin Man, Cowardly Lion, and the Wizard. For each, provide name, species, and one defining trait.\",
+    \"model\": \"${MODEL}\",
+    \"jsonSchema\": {
+      \"name\": \"wizard_of_oz_characters\",
+      \"schema\": {
+        \"type\": \"object\",
+        \"additionalProperties\": false,
+        \"required\": [\"characters\"],
+        \"properties\": {
+          \"characters\": {
+            \"type\": \"array\",
+            \"items\": {
+              \"type\": \"object\",
+              \"additionalProperties\": false,
+              \"required\": [\"name\", \"species\", \"trait\"],
+              \"properties\": {
+                \"name\": { \"type\": \"string\" },
+                \"species\": { \"type\": \"string\" },
+                \"trait\": { \"type\": \"string\" }
               }
             }
           }
         }
       }
     }
-  }')
+  }")
 
 echo "Response: $WIZARD_RESPONSE"
 

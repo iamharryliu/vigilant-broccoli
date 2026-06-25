@@ -11,6 +11,10 @@
 - Do not write markdown reports, summaries, or documentation unless explicitly asked.
 - Follow these guidelines unless explicitly told otherwise.
 
+## NX Workspace Conventions
+
+- For HTTP-related literals (methods, headers, status codes, common header names), prefer the shared consts in `libs/@vigilant-broccoli/common-js/src/lib/http/http.consts.ts` (`HTTP_METHOD`, `HTTP_HEADERS`, `HTTP_STATUS_CODES`, etc.) over defining local equivalents.
+
 ## Folder Structure
 
 - [Notes](./notes/) - Collection of markdown notes linked with relative file paths.

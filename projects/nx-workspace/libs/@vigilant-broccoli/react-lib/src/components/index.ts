@@ -1,4 +1,5 @@
 export * from './AudioPlayer';
+export * from './AudioButton';
 export * from './Avatar';
 export * from './AvatarBadge';
 export * from './AvatarPrimitive';

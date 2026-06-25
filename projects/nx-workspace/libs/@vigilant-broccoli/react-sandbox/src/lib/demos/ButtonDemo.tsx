@@ -16,6 +16,7 @@ import {
   MicrosoftSigninButton,
   SpeechToTextButton,
 } from '@vigilant-broccoli/react-lib';
+import { AudioButtonDemo } from './AudioButtonDemo';
 
 const BUTTON_LIST_BUTTONS: ButtonConfig[] = [
   'GitHub',
@@ -158,37 +159,6 @@ export function ButtonDemo() {
 
       <div>
         <Heading size="4" mb="3">
-          Icon Buttons
-        </Heading>
-        <div className="flex gap-3 items-center">
-          <IconButton icon="x" title="Close" />
-          <IconButton icon="filter" variant="outline" title="Filter" />
-          <IconButton icon="search" variant="ghost" title="Search" />
-          <IconButton icon="plus" variant="secondary" title="Add" />
-          <IconButton icon="minus" variant="secondary" title="Remove" />
-        </div>
-      </div>
-
-      <div>
-        <Heading size="4" mb="3">
-          Delete Icon Button
-        </Heading>
-        <div className="flex gap-3 items-center">
-          <DeleteIconButton title="Delete" />
-        </div>
-      </div>
-
-      <div>
-        <Heading size="4" mb="3">
-          Dark Mode Icon Button
-        </Heading>
-        <div className="flex gap-3 items-center">
-          <DarkModeIconButton dark={dark} onToggle={setDark} />
-        </div>
-      </div>
-
-      <div>
-        <Heading size="4" mb="3">
           Inline Icons
         </Heading>
         <div className="flex gap-3 items-center">
@@ -208,27 +178,74 @@ export function ButtonDemo() {
         </div>
       </div>
 
-      <div>
-        <Heading size="4" mb="3">
-          Close Button
-        </Heading>
-        <div className="flex gap-3 items-center">
-          <CloseButton title="Close" />
+      <div className="flex flex-col gap-3">
+        <div>
+          <Heading size="4" mb="3">
+            Icon Buttons
+          </Heading>
+          <div className="flex gap-3 items-center">
+            <IconButton icon="x" title="Close" />
+            <IconButton icon="filter" variant="outline" title="Filter" />
+            <IconButton icon="search" variant="ghost" title="Search" />
+            <IconButton icon="plus" variant="secondary" title="Add" />
+            <IconButton icon="minus" variant="secondary" title="Remove" />
+          </div>
         </div>
-      </div>
 
-      <div>
-        <Heading size="4" mb="3">
-          Copy Button
-        </Heading>
-        <div className="flex gap-3 items-center">
-          <CopyButton text="hello copy pastable" />
-          <CopyButton
-            text={async () => {
-              await new Promise(r => setTimeout(r, 1000));
-              return 'async result';
-            }}
-          />
+        <div>
+          <Heading size="4" mb="3">
+            Delete Icon Button
+          </Heading>
+          <div className="flex gap-3 items-center">
+            <DeleteIconButton title="Delete" />
+          </div>
+        </div>
+
+        <div>
+          <Heading size="4" mb="3">
+            Dark Mode Icon Button
+          </Heading>
+          <div className="flex gap-3 items-center">
+            <DarkModeIconButton dark={dark} onToggle={setDark} />
+          </div>
+        </div>
+
+        <div>
+          <Heading size="4" mb="3">
+            Close Button
+          </Heading>
+          <div className="flex gap-3 items-center">
+            <CloseButton title="Close" />
+          </div>
+        </div>
+
+        <div>
+          <Heading size="4" mb="3">
+            Copy Button
+          </Heading>
+          <div className="flex gap-3 items-center">
+            <CopyButton text="hello copy pastable" />
+            <CopyButton
+              text={async () => {
+                await new Promise(r => setTimeout(r, 1000));
+                return 'async result';
+              }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <Heading size="4" mb="3">
+            Speech To Text Button
+          </Heading>
+          <SpeechToTextButtonDemo />
+        </div>
+
+        <div>
+          <Heading size="4" mb="3">
+            Audio Button
+          </Heading>
+          <AudioButtonDemo />
         </div>
       </div>
 
@@ -255,13 +272,6 @@ export function ButtonDemo() {
           <GoogleSigninButton />
           <MicrosoftSigninButton />
         </div>
-      </div>
-
-      <div>
-        <Heading size="4" mb="3">
-          Speech To Text Button
-        </Heading>
-        <SpeechToTextButtonDemo />
       </div>
 
       <div>
