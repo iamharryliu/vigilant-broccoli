@@ -12,10 +12,10 @@
     - GitHub | vigilant-broccoli repository. | https://github.com/iamharryliu/vigilant-broccoli
     - Docker Hub | iamharryliu Docker images. | https://hub.docker.com/repositories/iamharryliu
     - npm | vigilant-broccoli npm packages. | https://www.npmjs.com/settings/vigilant-broccoli/packages
-  - api-services.html | API docs and service health for Fly.io-deployed services.
-    - api-docs.html | Swagger docs for Fly.io-deployed services.
+  - api-services.html | API docs.
+    - api-docs.html | Swagger docs for deployed services.
       - LLM Service | vb-llm-service.fly.dev | https://vb-llm-service.fly.dev/docs
       - Email Service | vb-email-service.fly.dev | https://vb-email-service.fly.dev/docs
       - Email Subscription Service | email-subscription-service.fly.dev | https://email-subscription-service.fly.dev/docs
       - Storage Service | vb-storage-service.fly.dev | https://vb-storage-service.fly.dev/docs
-    - status.html | Live health of Fly.io-deployed services. (dynamic — no editable cards)
+  - status.html | Live health of deployed services and applications. (dynamic — no editable cards)

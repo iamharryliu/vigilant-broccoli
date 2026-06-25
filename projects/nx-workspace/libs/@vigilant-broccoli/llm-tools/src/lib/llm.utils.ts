@@ -119,18 +119,18 @@ function formatPromptParams(request: LLMPromptRequest, stream = false) {
       : userPrompt;
   }
 
-  return {
-    model: LLM_MODEL.GPT_4O,
-    ...modelConfig,
-    messages: [
-      { role: 'system', content: systemPrompt || '' },
-      {
-        role: 'user',
-        content: userContent,
-      },
-    ],
-    ...(responseFormat?.jsonSchema
-      ? {
+  const isDeepSeek = DEEPSEEK_MODELS.includes(
+    modelConfig?.model as DeepSeekModel,
+  );
+  const resolvedSystemPrompt =
+    isDeepSeek && responseFormat?.jsonSchema
+      ? `${systemPrompt || ''}\nReturn a JSON object matching this schema:\n${JSON.stringify(responseFormat.jsonSchema.schema)}`.trim()
+      : systemPrompt || '';
+
+  const resolvedResponseFormat = responseFormat?.jsonSchema
+    ? isDeepSeek
+      ? { response_format: { type: 'json_object' } }
+      : {
           response_format: {
             type: 'json_schema',
             json_schema: {
@@ -140,7 +140,19 @@ function formatPromptParams(request: LLMPromptRequest, stream = false) {
             },
           },
         }
-      : {}),
+    : {};
+
+  return {
+    model: LLM_MODEL.GPT_4O,
+    ...modelConfig,
+    messages: [
+      { role: 'system', content: resolvedSystemPrompt },
+      {
+        role: 'user',
+        content: userContent,
+      },
+    ],
+    ...resolvedResponseFormat,
     stream,
   } as
     | OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming

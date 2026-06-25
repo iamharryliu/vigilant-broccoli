@@ -9,57 +9,58 @@
   <body
     class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen"
   >
-    <main class="mx-auto max-w-3xl px-6 py-8">
-      <header class="mb-6">
+    <main class="mx-auto max-w-2xl px-4 py-6">
+      <header class="mb-4">
         <a
           href="./"
           class="text-sm text-gray-500 dark:text-gray-400 hover:underline"
           >&larr; Back</a
         >
-        <h1 class="mt-2 text-3xl font-bold tracking-tight">Status</h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Fly.io service health, probed by
+        <h1 class="mt-1 text-2xl font-bold tracking-tight">Status</h1>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Service health via
           <a
             href="https://upptime.js.org"
             class="underline"
             target="_blank"
             rel="noopener"
             >Upptime</a
-          >
-          hourly.
-          <span id="updated" class="block mt-1 text-xs"></span>
+          >.
+          <span id="updated"></span>
         </p>
       </header>
 
-      <ul id="services" class="grid gap-3 sm:grid-cols-2">
-        <li class="text-sm text-gray-500 dark:text-gray-400">
-          Loading status…
-        </li>
+      <ul
+        id="services"
+        class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 text-sm"
+      >
+        <li class="px-4 py-2 text-gray-400">Loading status…</li>
       </ul>
 
-      <section class="mt-8">
-        <div class="flex items-baseline justify-between">
-          <h2 class="text-lg font-semibold">GitHub Actions</h2>
+      <section class="mt-6">
+        <div class="flex items-center justify-between mb-2">
+          <h2
+            class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+          >
+            GitHub Actions
+          </h2>
           <a
             href="https://github.com/iamharryliu/vigilant-broccoli/actions"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-gray-500 dark:text-gray-400 hover:underline"
+            class="text-xs text-gray-400 hover:underline"
+            >View all &rarr;</a
           >
-            View all &rarr;
-          </a>
         </div>
         <div
           id="badges"
-          class="mt-4 flex flex-wrap gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4"
+          class="flex flex-wrap gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3"
         >
-          <span class="text-sm text-gray-500 dark:text-gray-400"
-            >Loading workflows…</span
-          >
+          <span class="text-sm text-gray-400">Loading workflows…</span>
         </div>
       </section>
 
-      <footer class="mt-8 text-xs text-gray-500 dark:text-gray-400">
+      <footer class="mt-6 text-xs text-gray-400">
         Raw history:
         <a
           class="underline"
@@ -93,7 +94,7 @@
         unknown: {
           dot: 'bg-gray-400',
           label: 'Unknown',
-          text: 'text-gray-500 dark:text-gray-400',
+          text: 'text-gray-400',
         },
       };
 
@@ -112,32 +113,19 @@
 
       const renderService = svc => {
         const status = STATUS_COLORS[svc.status] || STATUS_COLORS.unknown;
-        const uptime = svc.uptime || '—';
-        const responseMs =
-          typeof svc.time === 'number' ? `${svc.time} ms` : '—';
+        const uptime = escapeHtml(svc.uptime || '—');
+        const responseMs = typeof svc.time === 'number' ? `${svc.time}ms` : '—';
         const name = escapeHtml(svc.name);
         const url = escapeHtml(svc.url);
         return `
           <li>
             <a href="${url}" target="_blank" rel="noopener noreferrer"
-               class="block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:border-gray-400 dark:hover:border-gray-500 transition">
-              <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold">${name}</h2>
-                <span class="flex items-center gap-2 text-sm ${status.text}">
-                  <span class="inline-block h-2.5 w-2.5 rounded-full ${status.dot}"></span>
-                  ${status.label}
-                </span>
-              </div>
-              <dl class="mt-2 grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <div>
-                  <dt class="text-xs uppercase tracking-wide">Uptime (avg)</dt>
-                  <dd class="font-mono">${escapeHtml(uptime)}</dd>
-                </div>
-                <div>
-                  <dt class="text-xs uppercase tracking-wide">Response</dt>
-                  <dd class="font-mono">${escapeHtml(responseMs)}</dd>
-                </div>
-              </dl>
+               class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+              <span class="h-2 w-2 rounded-full ${status.dot} shrink-0"></span>
+              <span class="flex-1 font-medium truncate">${name}</span>
+              <span class="shrink-0 ${status.text}">${status.label}</span>
+              <span class="shrink-0 font-mono text-gray-400 w-14 text-right">${uptime}</span>
+              <span class="shrink-0 font-mono text-gray-400 w-12 text-right">${responseMs}</span>
             </a>
           </li>
         `;
@@ -147,16 +135,15 @@
         const list = document.getElementById('services');
         if (!services.length) {
           list.innerHTML =
-            '<li class="text-sm text-gray-500 dark:text-gray-400">No services configured.</li>';
+            '<li class="px-4 py-2 text-gray-400">No services configured.</li>';
           return;
         }
         list.innerHTML = services.map(renderService).join('');
       };
 
       const renderError = msg => {
-        document.getElementById('services').innerHTML = `
-          <li class="text-sm text-red-600 dark:text-red-400">${escapeHtml(msg)}</li>
-        `;
+        document.getElementById('services').innerHTML =
+          `<li class="px-4 py-2 text-red-500">${escapeHtml(msg)}</li>`;
       };
 
       const setUpdated = isoString => {
@@ -164,7 +151,7 @@
         if (!isoString) return;
         const d = new Date(isoString);
         if (Number.isNaN(d.getTime())) return;
-        el.textContent = `Last updated ${d.toLocaleString()}`;
+        el.textContent = `Updated ${d.toLocaleString()}`;
       };
 
       (async () => {
@@ -173,9 +160,7 @@
             cache: 'no-store',
           });
           if (!res.ok) {
-            renderError(
-              `Status data not available yet (HTTP ${res.status}). The upptime workflow may not have run yet.`,
-            );
+            renderError(`Status data unavailable (HTTP ${res.status}).`);
             return;
           }
           setUpdated(res.headers.get('last-modified'));
@@ -211,25 +196,24 @@
         const container = document.getElementById('badges');
         if (!items.length) {
           container.innerHTML =
-            '<span class="text-sm text-gray-500 dark:text-gray-400">No workflows found.</span>';
+            '<span class="text-sm text-gray-400">No workflows found.</span>';
           return;
         }
         container.innerHTML = items
           .map(
             b => `
-              <a href="${escapeHtml(b.href)}" target="_blank" rel="noopener noreferrer"
-                 class="inline-block origin-left transition-transform duration-200 ease-out hover:scale-105 hover:-translate-y-0.5 hover:drop-shadow-md">
-                <img src="${escapeHtml(b.src)}" alt="${escapeHtml(b.alt)}" loading="lazy" class="max-w-full h-auto" />
-              </a>
-            `,
+            <a href="${escapeHtml(b.href)}" target="_blank" rel="noopener noreferrer"
+               class="inline-block transition-transform duration-150 hover:scale-105">
+              <img src="${escapeHtml(b.src)}" alt="${escapeHtml(b.alt)}" loading="lazy" class="h-auto" />
+            </a>
+          `,
           )
           .join('');
       };
 
       const renderBadgesError = msg => {
-        document.getElementById('badges').innerHTML = `
-          <span class="text-sm text-red-600 dark:text-red-400">${escapeHtml(msg)}</span>
-        `;
+        document.getElementById('badges').innerHTML =
+          `<span class="text-sm text-red-500">${escapeHtml(msg)}</span>`;
       };
 
       (async () => {

@@ -27,7 +27,7 @@ jobs:
           - provider: openai
             model: gpt-4o-mini
           - provider: anthropic
-            model: claude-sonnet-4-20250514
+            model: claude-haiku-4-5-20251001
           - provider: gemini
             model: gemini-2.5-flash-lite
           - provider: deepseek

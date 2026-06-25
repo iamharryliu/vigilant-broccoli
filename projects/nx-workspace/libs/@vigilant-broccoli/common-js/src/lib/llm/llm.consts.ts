@@ -16,8 +16,9 @@ export const GEMINI_MODEL = {
 export const GEMINI_MODELS = Object.values(GEMINI_MODEL);
 
 export const ANTHROPIC_MODEL = {
-  CLAUDE_4_SONNET: 'claude-sonnet-4-20250514',
-  CLAUDE_4_OPUS: 'claude-opus-4-20250514',
+  CLAUDE_4_HAIKU: 'claude-haiku-4-5-20251001',
+  CLAUDE_4_SONNET: 'claude-sonnet-4-6',
+  CLAUDE_4_OPUS: 'claude-opus-4-7',
 } as const;
 export const ANTHROPIC_MODELS = Object.values(ANTHROPIC_MODEL);
 
@@ -52,31 +53,86 @@ export type LLMModelMetadata = {
 
 export const LLM_MODEL_METADATA: Record<string, LLMModelMetadata> = {
   // OpenAI Models
-  [OPENAI_MODEL.GPT_4]: { hasImageInputSupport: false, hasImageOutputSupport: false },
-  [OPENAI_MODEL.GPT_4_TURBO]: { hasImageInputSupport: true, hasImageOutputSupport: false },
-  [OPENAI_MODEL.GPT_4O]: { hasImageInputSupport: true, hasImageOutputSupport: false },
-  [OPENAI_MODEL.GPT_4O_MINI]: { hasImageInputSupport: true, hasImageOutputSupport: false },
-  [OPENAI_MODEL.GPT_3_5_TURBO]: { hasImageInputSupport: false, hasImageOutputSupport: false },
-  [OPENAI_MODEL.O3_MINI]: { hasImageInputSupport: false, hasImageOutputSupport: false },
-  [OPENAI_MODEL.IMAGE_1]: { hasImageInputSupport: false, hasImageOutputSupport: true },
+  [OPENAI_MODEL.GPT_4]: {
+    hasImageInputSupport: false,
+    hasImageOutputSupport: false,
+  },
+  [OPENAI_MODEL.GPT_4_TURBO]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
+  [OPENAI_MODEL.GPT_4O]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
+  [OPENAI_MODEL.GPT_4O_MINI]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
+  [OPENAI_MODEL.GPT_3_5_TURBO]: {
+    hasImageInputSupport: false,
+    hasImageOutputSupport: false,
+  },
+  [OPENAI_MODEL.O3_MINI]: {
+    hasImageInputSupport: false,
+    hasImageOutputSupport: false,
+  },
+  [OPENAI_MODEL.IMAGE_1]: {
+    hasImageInputSupport: false,
+    hasImageOutputSupport: true,
+  },
 
   // Gemini Models
-  [GEMINI_MODEL.FLASH_2_5]: { hasImageInputSupport: true, hasImageOutputSupport: false },
-  [GEMINI_MODEL.FLASH_2_5_LITE]: { hasImageInputSupport: true, hasImageOutputSupport: false },
+  [GEMINI_MODEL.FLASH_2_5]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
+  [GEMINI_MODEL.FLASH_2_5_LITE]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
 
   // Anthropic Models
-  [ANTHROPIC_MODEL.CLAUDE_4_SONNET]: { hasImageInputSupport: true, hasImageOutputSupport: false },
-  [ANTHROPIC_MODEL.CLAUDE_4_OPUS]: { hasImageInputSupport: true, hasImageOutputSupport: false },
+  [ANTHROPIC_MODEL.CLAUDE_4_HAIKU]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
+  [ANTHROPIC_MODEL.CLAUDE_4_SONNET]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
+  [ANTHROPIC_MODEL.CLAUDE_4_OPUS]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
 
   // DeepSeek Models
-  [DEEPSEEK_MODEL.DEEP_SEEK]: { hasImageInputSupport: false, hasImageOutputSupport: false },
-  [DEEPSEEK_MODEL.DEEP_SEEK_REASONER]: { hasImageInputSupport: false, hasImageOutputSupport: false },
+  [DEEPSEEK_MODEL.DEEP_SEEK]: {
+    hasImageInputSupport: false,
+    hasImageOutputSupport: false,
+  },
+  [DEEPSEEK_MODEL.DEEP_SEEK_REASONER]: {
+    hasImageInputSupport: false,
+    hasImageOutputSupport: false,
+  },
 
   // Grok Models
-  [GROK_MODEL.GROK_3]: { hasImageInputSupport: false, hasImageOutputSupport: false },
-  [GROK_MODEL.GROK_3_MINI]: { hasImageInputSupport: false, hasImageOutputSupport: false },
-  [GROK_MODEL.GROK_VISION_LATEST]: { hasImageInputSupport: true, hasImageOutputSupport: false },
-  [GROK_MODEL.GROK_2_IMAGE]: { hasImageInputSupport: false, hasImageOutputSupport: true },
+  [GROK_MODEL.GROK_3]: {
+    hasImageInputSupport: false,
+    hasImageOutputSupport: false,
+  },
+  [GROK_MODEL.GROK_3_MINI]: {
+    hasImageInputSupport: false,
+    hasImageOutputSupport: false,
+  },
+  [GROK_MODEL.GROK_VISION_LATEST]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
+  [GROK_MODEL.GROK_2_IMAGE]: {
+    hasImageInputSupport: false,
+    hasImageOutputSupport: true,
+  },
 };
 
 export function modelSupportsImageInput(model: string): boolean {
