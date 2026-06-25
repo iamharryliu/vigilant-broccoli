@@ -154,6 +154,9 @@ wgupn() {
   sudo wg-quick up "$wg_name"
 }
 
+# Docker
+alias dockeropen="open -a 'Docker Desktop'"
+
 # AWS
 alias awsprofiles="code ~/.aws/credentials"
 

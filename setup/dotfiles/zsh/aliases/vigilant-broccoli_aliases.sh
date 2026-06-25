@@ -1,22 +1,3 @@
-# Code Workspaces
-vswsls() {
-    ls -1 "$WORKSPACES_DIR" | sed 's/\.code-workspace$//' | nl -ba | sed 's/^ *//;s/\t/   /'
-}
-vsws() {
-    if [ -z "$1" ]; then
-        code "$WORKSPACES_DIR"
-    elif [ -f "$WORKSPACES_DIR/$1.code-workspace" ]; then
-        code "$WORKSPACES_DIR/$1.code-workspace"
-    else
-        echo "Workspace '$1' not found"
-    fi
-}
-vswsn() {
-    local name
-    name=$(ls -1 "$WORKSPACES_DIR" | sed 's/\.code-workspace$//' | sed -n "${1}p")
-    vsws "$name"
-}
-
 # Journal
 ICLOUD_JOURNAL_DIR="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal"
 HOME_JOURNAL_DIR="$HOME/journal"
@@ -68,10 +49,6 @@ alias testgrind75="testgrind75py && testgrind75ts && testgrind75go"
 
 # Cloud8
 alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
-
-## Obsidian
-alias obsidiannotes="open 'obsidian://open?vault=notes'"
-alias obsidianjournal="open 'obsidian://open?vault=journal'"
 
 # Employee Handler
 alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
