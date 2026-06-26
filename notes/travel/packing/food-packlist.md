@@ -6,20 +6,22 @@
 
 ## Food
 
-- Sandwiches
+- sandwiches
+- noodles
+- hotdogs
+- soups
 
 ## Snacks
 
-- Dried fruits
-- Nuts and seeds
-- Pringles(fits nicely in cup holders)
-- Energy drinks
-- Cookies
-- Chips
+- dried fruits
+- nuts and seeds
+- energy drinks
+- cookies
+- chips
+  - Pringles(fits nicely in cup holders)
 
 ## Drink
 
-- Clever Dripper + coffee filter
+- electrolyte powders
 - ground coffee
 - tea leaves
-- electrolyte powders

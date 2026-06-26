@@ -176,19 +176,3 @@
 - foldable cups
 
 ## Leisure
-
-- Speaker
-- Games
-- Book Bag
-  - Book(s)
-  - Bookmark
-  - Reading Light
-- Art supplies
-
-## To purchase
-
-- Stove/grill
-- Hammocks
-- Matches + long lighter
-- Trekking towel
-- [Leukutape](https://www.google.com/search?q=leuku+tape&oq=leuku+tape&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQABiABDIJCAIQABgKGIAEMg8IAxAuGAoYrwEYxwEYgAQyCQgEEAAYChiABDIJCAUQABgKGIAEMgkIBhAAGAoYgAQyCQgHEAAYChiABDIJCAgQABgKGIAEMgkICRAAGAoYgATSAQgxNjk5ajBqMagCALACAA&sourceid=chrome&ie=UTF-8)

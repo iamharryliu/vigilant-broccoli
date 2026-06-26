@@ -11,6 +11,10 @@
 - Optional
   - Bugspray
 
+## First Aid Kit
+
+- [Leukutape](https://www.google.com/search?sca_esv=21a19fc4c0663f72&sxsrf=APpeQnvnc_TQyLQCnM4aGEaVMUjswwsEAA:1782470011133&q=leuko+tape&sa=X&ved=2ahUKEwivh9ie2qSVAxUhUlUIHcXiOLoQ7xYoAHoECA8QAQ&biw=1512&bih=823&dpr=2)
+
 ## Hiking
 
 - Hat
@@ -24,6 +28,7 @@
 - Weather Dependent
   - Rain Clothes
   - Umbrella
+- trekking towel
 
 ## Camping
 
@@ -38,6 +43,8 @@
   - Repair kit
     - Thread and needle
     - Duct Tape
+  - hammock
+  - tarp
 - **Sleeping**
   - Pillow
   - Sleeping Bag/Blanket
@@ -60,6 +67,7 @@
   - Swedish Dish Cloths (Wettex)
   - Extra bags/totes
   - Large Sitting Blanket
+  - long lighter and matches
 - **Pest Handling**
   - Bug Net Masks
   - Bug Repellent
