@@ -106,6 +106,11 @@ async function main() {
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
         'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
     },
+    findme: {
+      NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+        'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
+    },
   };
 
   const projectEnvExamples: Record<string, string> = {

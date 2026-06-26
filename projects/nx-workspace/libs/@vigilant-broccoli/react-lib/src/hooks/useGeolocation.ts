@@ -1,10 +1,10 @@
-'use client';
-
 import { useEffect, useState } from 'react';
+import { LocationService } from '@vigilant-broccoli/common-browser';
 
 const GEO_NOT_SUPPORTED = 'Geolocation not supported';
+const locationService = new LocationService();
 
-interface GeolocationState {
+export interface GeolocationState {
   lat: number | null;
   lng: number | null;
   error: string | null;
@@ -23,18 +23,12 @@ export function useGeolocation(): GeolocationState {
       return;
     }
 
-    const watchId = navigator.geolocation.watchPosition(
-      pos =>
-        setState({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          error: null,
-        }),
+    return locationService.watchLocation(
+      ({ latitude, longitude }) =>
+        setState({ lat: latitude, lng: longitude, error: null }),
       err => setState(s => ({ ...s, error: err.message })),
       { enableHighAccuracy: true },
     );
-
-    return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
   return state;

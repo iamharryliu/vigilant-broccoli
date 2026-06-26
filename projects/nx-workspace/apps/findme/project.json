@@ -1,0 +1,52 @@
+{
+  "name": "findme",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/findme",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/findme",
+        "webpack": true
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "apps/findme"
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "findme:build",
+        "dev": true,
+        "webpack": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "findme:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "findme:build:production",
+          "dev": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "VERCEL_PROJECT_ID=prj_8d9nay2sGaBw33yGpxHgqNdnmmO8 VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts findme production"
+      }
+    }
+  }
+}

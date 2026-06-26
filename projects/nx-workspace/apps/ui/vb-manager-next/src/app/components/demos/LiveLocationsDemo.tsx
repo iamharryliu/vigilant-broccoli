@@ -1,9 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Button } from '@vigilant-broccoli/react-lib';
-import { useGeolocation } from '../../hooks/useGeolocation';
+import { Button, useGeolocation } from '@vigilant-broccoli/react-lib';
 import { useLiveLocations } from '../../hooks/useLiveLocations';
 
 const LiveUserMap = dynamic(
@@ -31,7 +30,10 @@ const randomUserId = () =>
     .slice(2, 2 + USER_ID_LENGTH)}`;
 
 export function LiveLocationsDemo() {
-  const [userId] = useState(randomUserId);
+  const [userId, setUserId] = useState('');
+  useEffect(() => {
+    setUserId(randomUserId());
+  }, []);
   const [sharing, setSharing] = useState(false);
   const { lat, lng, error: geoError } = useGeolocation();
   const liveUsers = useLiveLocations(

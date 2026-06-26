@@ -13,4 +13,21 @@ export class LocationService {
       );
     });
   }
+
+  watchLocation(
+    onUpdate: (location: Location) => void,
+    onError?: (error: GeolocationPositionError) => void,
+    options?: PositionOptions,
+  ): () => void {
+    const watchId = window.navigator.geolocation.watchPosition(
+      position =>
+        onUpdate({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }),
+      onError,
+      options,
+    );
+    return () => window.navigator.geolocation.clearWatch(watchId);
+  }
 }
