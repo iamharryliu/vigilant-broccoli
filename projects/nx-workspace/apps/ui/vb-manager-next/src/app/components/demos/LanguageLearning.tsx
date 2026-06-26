@@ -66,15 +66,26 @@ const TAB = { HISTORY: 'history', MASTERED: 'mastered' } as const;
 type Tab = (typeof TAB)[keyof typeof TAB];
 
 const TAB_STORAGE_KEY = 'language-learning-tab';
+const SPEED_STORAGE_KEY = 'language-learning-speed';
 const LABEL_GET_WORDS = 'Get Words';
 const LABEL_NEW_WORDS = 'New Words';
 const LABEL_LANGUAGE = 'Language:';
+const LABEL_SPEED = 'Speed:';
 const LABEL_EXAMPLE_SENTENCE = 'Example sentence';
 const LABEL_HISTORY = 'History';
 const LABEL_MASTERED = 'Mastered';
 const LABEL_MARK_AS_MASTERED = 'Mark as mastered';
 const LABEL_NO_HISTORY = 'No history yet.';
 const LABEL_NO_MASTERED = 'No mastered words yet.';
+
+const SPEED_OPTIONS = ['0.5×', '0.75×', '1×'] as const;
+type SpeedOption = (typeof SPEED_OPTIONS)[number];
+const SPEED_RATE: Record<SpeedOption, number> = {
+  '0.5×': 0.5,
+  '0.75×': 0.75,
+  '1×': 1.0,
+};
+const DEFAULT_SPEED: SpeedOption = '0.75×';
 
 const WORD_REGEX = /([A-Za-zÀ-ÖØ-öø-ÿ]+)/;
 
@@ -154,9 +165,19 @@ function WordContent({
       {definitionLoading ? (
         <Loader2 size={16} className="animate-spin text-gray-400" />
       ) : (
-        <Text size="2" color="gray">
-          {definition}
-        </Text>
+        <div className="flex items-start gap-1">
+          <Text size="2" color="gray" className="flex-1">
+            {definition}
+          </Text>
+          {definition && (
+            <AudioButton
+              text={definition}
+              id={`${audioId}-def`}
+              activeId={activeAudioId}
+              onSpeak={onSpeak}
+            />
+          )}
+        </div>
       )}
     </>
   );
@@ -365,6 +386,7 @@ export function LanguageLearning() {
     StandaloneMasteredWord[]
   >([]);
   const [activeTab, setActiveTab] = useState<Tab>(TAB.HISTORY);
+  const [speed, setSpeed] = useState<SpeedOption>(DEFAULT_SPEED);
   const [fetching, setFetching] = useState(false);
   const [activeAudioId, setActiveAudioId] = useState<string | null>(null);
   const { speak, isLoading: isSpeaking } = useTextToSpeech();
@@ -374,8 +396,13 @@ export function LanguageLearning() {
   );
 
   useEffect(() => {
-    const stored = localStorage.getItem(TAB_STORAGE_KEY);
-    if (stored === TAB.HISTORY || stored === TAB.MASTERED) setActiveTab(stored);
+    const storedTab = localStorage.getItem(TAB_STORAGE_KEY);
+    if (storedTab === TAB.HISTORY || storedTab === TAB.MASTERED)
+      setActiveTab(storedTab);
+
+    const storedSpeed = localStorage.getItem(SPEED_STORAGE_KEY);
+    if (storedSpeed && SPEED_OPTIONS.includes(storedSpeed as SpeedOption))
+      setSpeed(storedSpeed as SpeedOption);
 
     Promise.all([
       fetch(API_ENDPOINTS.LANGUAGE_LEARNING_HISTORY).then(r => r.json()),
@@ -397,6 +424,11 @@ export function LanguageLearning() {
     localStorage.setItem(TAB_STORAGE_KEY, t);
   }
 
+  function handleSpeedChange(s: SpeedOption) {
+    setSpeed(s);
+    localStorage.setItem(SPEED_STORAGE_KEY, s);
+  }
+
   async function fetchWords() {
     setFetching(true);
     const res = await fetch(API_ENDPOINTS.LANGUAGE_LEARNING_WORDS, {
@@ -409,7 +441,9 @@ export function LanguageLearning() {
     setHistory(prev => [data, ...prev.filter(s => s.id !== data.id)]);
     setFetching(false);
     setActiveAudioId(`current-${data.id}-example`);
-    await speak(data.exampleSentence.target);
+    await speak(data.exampleSentence.target, {
+      playbackRate: SPEED_RATE[speed],
+    });
     setActiveAudioId(null);
   }
 
@@ -444,7 +478,7 @@ export function LanguageLearning() {
 
   async function handleSpeak(text: string, id: string) {
     setActiveAudioId(id);
-    await speak(text);
+    await speak(text, { playbackRate: SPEED_RATE[speed] });
     setActiveAudioId(null);
   }
 
@@ -459,15 +493,27 @@ export function LanguageLearning() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-3">
-        <Text size="2" weight="medium">
-          {LABEL_LANGUAGE}
-        </Text>
-        <Select
-          options={[...SUPPORTED_LANGUAGES]}
-          selectedOption={language}
-          setValue={setLanguage}
-        />
+      <div className="flex items-center gap-6 flex-wrap">
+        <div className="flex items-center gap-3">
+          <Text size="2" weight="medium">
+            {LABEL_LANGUAGE}
+          </Text>
+          <Select
+            options={[...SUPPORTED_LANGUAGES]}
+            selectedOption={language}
+            setValue={setLanguage}
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          <Text size="2" weight="medium">
+            {LABEL_SPEED}
+          </Text>
+          <Select
+            options={[...SPEED_OPTIONS]}
+            selectedOption={speed}
+            setValue={handleSpeedChange}
+          />
+        </div>
       </div>
 
       <Button onClick={fetchWords} loading={fetching} size="lg">

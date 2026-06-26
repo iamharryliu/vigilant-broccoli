@@ -22,6 +22,9 @@ module.exports = {
         VB_STORAGE_SERVICE_URL: 'https://vb-storage-service.fly.dev',
         EMAIL_SERVICE_URL: 'https://vb-email-service.fly.dev',
         LLM_SERVICE_URL: 'https://vb-llm-service.fly.dev',
+        NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+          'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
         ...process.env,
       },
       instances: 1,

@@ -9,6 +9,7 @@ type UseTextToSpeechOptions = {
 
 type SpeakOptions = {
   voiceId?: string;
+  playbackRate?: number;
 };
 
 export type UseTextToSpeechResult = {
@@ -97,6 +98,8 @@ export const useTextToSpeech = (
 
         if (autoPlay) {
           const audio = new Audio(nextAudioUrl);
+          if (speakOptions?.playbackRate)
+            audio.playbackRate = speakOptions.playbackRate;
           audioRef.current = audio;
           await audio.play();
         }
