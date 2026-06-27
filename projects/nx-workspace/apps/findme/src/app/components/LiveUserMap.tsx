@@ -3,7 +3,7 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { LiveUser } from '../hooks/useLiveLocations';
+import { SharingUser } from '../hooks/useLiveLocations';
 
 const icon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -23,7 +23,7 @@ const YOU_LABEL = 'You';
 const OPEN_IN_GOOGLE_MAPS = 'Open in Google Maps';
 
 interface LiveUserMapProps {
-  users: LiveUser[];
+  users: SharingUser[];
   currentUserId: string;
 }
 
