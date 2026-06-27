@@ -16,6 +16,7 @@
 - For HTTP-related literals (methods, headers, status codes, common header names), prefer the shared consts in `libs/@vigilant-broccoli/common-js/src/lib/http/http.consts.ts` (`HTTP_METHOD`, `HTTP_HEADERS`, `HTTP_STATUS_CODES`, etc.) over defining local equivalents.
 - For accessing environment variables server-side, prefer `getEnvironmentVariable` from `@vigilant-broccoli/common-node` over `process.env` directly. Exception: `NEXT_PUBLIC_` vars accessed client-side must use `process.env.NEXT_PUBLIC_*` direct property access — Next.js can only statically inline them at build time with direct access, not through a wrapper function.
 - For anything touching fly.io services in `apps/api/*` (adding/modifying a service, smoke targets, fly configs, image delivery), read `projects/nx-workspace/docs/deployment/fly-service-pattern.md` first.
+- Every deployed application must have an Upptime status check — add its public URL to `sites` in the root `.upptimerc.yml`. If it is a UI application, it must also appear as a card under "UI Apps" in `projects/nx-workspace/pages-index/ui.html` (the GitHub Pages "UI" page).
 
 ## Folder Structure
 
