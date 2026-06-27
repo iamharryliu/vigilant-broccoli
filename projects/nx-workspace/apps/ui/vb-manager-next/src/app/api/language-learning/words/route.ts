@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HTTP_STATUS_CODES, LLM_MODEL } from '@vigilant-broccoli/common-js';
+import {
+  API_KEY_HEADER,
+  HTTP_HEADERS,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+  LLM_MODEL,
+} from '@vigilant-broccoli/common-js';
 import {
   getEnvironmentVariable,
   VB_EXPRESS_ENDPOINT,
 } from '@vigilant-broccoli/common-node';
 import {
-  languageLearningSchema,
-  LanguageLearningResult,
+  languageLearningMultiSchema,
+  LanguageLearningMultiResult,
 } from '@vigilant-broccoli/llm-schemas';
 import { getMasteredWords, saveSession } from '../db';
 
@@ -14,11 +20,10 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const SYSTEM_PROMPT = `You are a language learning vocabulary assistant.
-When given a target language and a semantic category, select one common vocabulary word and one uncommon vocabulary word from that language that both relate to the category.
-Choose words that are useful for a learner growing their vocabulary — avoid very basic words (e.g. "hello", "yes", "no", numbers, days of the week).
-The common word should be everyday useful vocabulary. The uncommon word should be more advanced or nuanced.
-Provide an English definition for each word, then compose one natural example sentence in the target language that uses both words together, along with its English translation.
-You will be given a list of previously used words — do not repeat any of them.`;
+When given a list of target languages and a semantic category, first choose one common concept and one uncommon concept that both relate to the category — pick concepts that are useful for a learner growing their vocabulary (avoid very basic words like "hello", "yes", "no", numbers, days of the week). The common concept should be everyday useful vocabulary; the uncommon concept should be more advanced or nuanced.
+Then, for each target language, provide the equivalent word for both concepts (with an English definition for each) and compose one natural example sentence in that language that uses both words together, along with its English translation.
+The same two concepts must be used across every language so the words stay equivalent. If a language has no natural single-word equivalent for a concept, omit that entire language from the output rather than forcing an awkward translation.
+You will be given a list of previously used words — do not reuse any of them.`;
 
 const CATEGORIES = [
   'emotions and feelings',
@@ -43,12 +48,21 @@ const CATEGORIES = [
   'values and beliefs',
 ];
 
+const DEFAULT_LANGUAGES = ['Swedish'];
+
+function pickRandom<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
 export async function POST(request: NextRequest) {
-  const { language = 'Swedish' } = (await request.json()) as {
-    language?: string;
+  const { languages } = (await request.json()) as {
+    languages?: string[];
   };
 
-  const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+  const targetLanguages =
+    languages && languages.length > 0 ? languages : DEFAULT_LANGUAGES;
+
+  const category = pickRandom(CATEGORIES);
   const masteredWords = getMasteredWords();
 
   const previousWordsNote =
@@ -59,16 +73,16 @@ export async function POST(request: NextRequest) {
   const res = await fetch(
     `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.LLM}`,
     {
-      method: 'POST',
+      method: HTTP_METHOD.POST,
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        ...HTTP_HEADERS.CONTENT_TYPE.JSON,
+        [API_KEY_HEADER]: getEnvironmentVariable('VB_EXPRESS_API_KEY'),
       },
       body: JSON.stringify({
-        userPrompt: `Select vocabulary words for learning ${language}. Category: ${category}.${previousWordsNote}`,
+        userPrompt: `Select vocabulary words for learning these languages: ${targetLanguages.join(', ')}. Category: ${category}.${previousWordsNote}`,
         systemPrompt: SYSTEM_PROMPT,
         model: LLM_MODEL.GPT_4O,
-        jsonSchema: languageLearningSchema,
+        jsonSchema: languageLearningMultiSchema,
       }),
     },
   );
@@ -81,24 +95,27 @@ export async function POST(request: NextRequest) {
   }
 
   const { outputs } = (await res.json()) as {
-    outputs: LanguageLearningResult[];
+    outputs: LanguageLearningMultiResult[];
   };
   const result = outputs[0];
 
-  const session = saveSession(
-    language,
-    category,
-    result.words as { word: string; type: string; definition: string }[],
-    result.exampleSentence.target,
-    result.exampleSentence.english,
-  );
-
-  return NextResponse.json({
-    id: session.id,
-    language,
-    category,
-    created_at: session.created_at,
-    words: session.words,
-    exampleSentence: result.exampleSentence,
+  const sessions = result.languages.map(entry => {
+    const session = saveSession(
+      entry.language,
+      category,
+      entry.words as { word: string; type: string; definition: string }[],
+      entry.exampleSentence.target,
+      entry.exampleSentence.english,
+    );
+    return {
+      id: session.id,
+      language: entry.language,
+      category,
+      created_at: session.created_at,
+      words: session.words,
+      exampleSentence: entry.exampleSentence,
+    };
   });
+
+  return NextResponse.json({ sessions });
 }

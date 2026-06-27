@@ -11,7 +11,6 @@ import { VoiceListGenerator } from '../llm/VoiceListGenerator';
 import { TextToSpeechVoices } from '../llm/TextToSpeechVoices';
 import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
 import { QRCodeGenerator } from '../demos/QRCodeGenerator';
-import { LanguageLearning } from '../demos/LanguageLearning';
 import { LiveLocationsDemo } from '../demos/LiveLocationsDemo';
 import {
   CollapsibleList,
@@ -25,12 +24,6 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'live-locations',
     title: 'Live User Locations',
     content: <LiveLocationsDemo />,
-  },
-  {
-    id: 'language-learning',
-    title: 'Language Learning',
-    content: <LanguageLearning />,
-    defaultOpen: true,
   },
   {
     id: 'qr-code-generator',

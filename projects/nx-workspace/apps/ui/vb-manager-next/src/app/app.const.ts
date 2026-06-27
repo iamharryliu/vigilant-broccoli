@@ -36,6 +36,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'DocsMD',
     path: '/docs-md',
   },
+  LANGUAGE_LEARNING: {
+    title: 'Language Learning',
+    path: '/language-learning',
+  },
   FEATURE_SANDBOX: {
     title: 'Feature Sandbox',
     path: '/feature-sandbox',

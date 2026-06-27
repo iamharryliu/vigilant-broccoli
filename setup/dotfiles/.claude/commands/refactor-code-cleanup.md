@@ -4,3 +4,4 @@
 - Remove debug `console.log` statements left over from development.
 - Remove unnecessary comments — inline comments that just restate what the code clearly does.
 - Report if there are any critical issues with the implementation.
+- Give any recommendations that you think would significantly improve implementation if you have any.

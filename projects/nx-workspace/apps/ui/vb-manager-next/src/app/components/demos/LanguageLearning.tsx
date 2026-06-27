@@ -5,6 +5,7 @@ import { Badge, Text } from '@radix-ui/themes';
 import {
   AudioButton,
   Button,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -14,7 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
-import { GraduationCap, Loader2 } from 'lucide-react';
+import { GraduationCap, Loader2, Settings } from 'lucide-react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { useTextToSpeech } from '../../hooks/useTextToSpeech';
@@ -67,10 +68,15 @@ type Tab = (typeof TAB)[keyof typeof TAB];
 
 const TAB_STORAGE_KEY = 'language-learning-tab';
 const SPEED_STORAGE_KEY = 'language-learning-speed';
+const LANGUAGES_STORAGE_KEY = 'language-learning-languages';
 const LABEL_GET_WORDS = 'Get Words';
 const LABEL_NEW_WORDS = 'New Words';
-const LABEL_LANGUAGE = 'Language:';
-const LABEL_SPEED = 'Speed:';
+const LABEL_LANGUAGES = 'Languages';
+const LABEL_SPEED = 'Speed';
+const LABEL_SETTINGS = 'Settings';
+const LABEL_SETTINGS_HINT =
+  'Choose one or more languages — each "Get Words" generates the same concepts in every selected language (skipping any without a good equivalent).';
+const DEFAULT_LANGUAGES: SupportedLanguage[] = ['Swedish'];
 const LABEL_EXAMPLE_SENTENCE = 'Example sentence';
 const LABEL_HISTORY = 'History';
 const LABEL_MASTERED = 'Mastered';
@@ -88,6 +94,8 @@ const SPEED_RATE: Record<SpeedOption, number> = {
 const DEFAULT_SPEED: SpeedOption = '0.75×';
 
 const WORD_REGEX = /([A-Za-zÀ-ÖØ-öø-ÿ]+)/;
+
+const SESSION_COLUMN_MIN_WIDTH = '320px';
 
 function tokenizeSentence(sentence: string, vocabWords: Word[]) {
   return sentence.split(WORD_REGEX).map(part => ({
@@ -377,9 +385,74 @@ function SessionCard({
   );
 }
 
+function SettingsDialog({
+  open,
+  languages,
+  speed,
+  onToggleLanguage,
+  onSpeedChange,
+  onClose,
+}: {
+  open: boolean;
+  languages: SupportedLanguage[];
+  speed: SpeedOption;
+  onToggleLanguage: (language: SupportedLanguage) => void;
+  onSpeedChange: (speed: SpeedOption) => void;
+  onClose: () => void;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={isOpen => !isOpen && onClose()}>
+      <DialogContent>
+        <DialogTitle>{LABEL_SETTINGS}</DialogTitle>
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-3">
+            <Text size="2" weight="medium">
+              {LABEL_LANGUAGES}
+            </Text>
+            <Text size="1" color="gray">
+              {LABEL_SETTINGS_HINT}
+            </Text>
+            <div className="flex flex-col gap-2">
+              {SUPPORTED_LANGUAGES.map(lang => {
+                const checked = languages.includes(lang);
+                const isLast = checked && languages.length === 1;
+                return (
+                  <label
+                    key={lang}
+                    className={`flex items-center gap-2 ${isLast ? 'opacity-60' : 'cursor-pointer'}`}
+                  >
+                    <Checkbox
+                      checked={checked}
+                      disabled={isLast}
+                      onCheckedChange={() => onToggleLanguage(lang)}
+                    />
+                    <Text size="2">{lang}</Text>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex flex-col gap-3">
+            <Text size="2" weight="medium">
+              {LABEL_SPEED}
+            </Text>
+            <Select
+              options={[...SPEED_OPTIONS]}
+              selectedOption={speed}
+              setValue={onSpeedChange}
+            />
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function LanguageLearning() {
-  const [language, setLanguage] = useState<SupportedLanguage>('Swedish');
-  const [current, setCurrent] = useState<Session | null>(null);
+  const [languages, setLanguages] =
+    useState<SupportedLanguage[]>(DEFAULT_LANGUAGES);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [currentSessions, setCurrentSessions] = useState<Session[]>([]);
   const [history, setHistory] = useState<Session[]>([]);
   const [masteredIds, setMasteredIds] = useState<Set<number>>(new Set());
   const [standaloneMastered, setStandaloneMastered] = useState<
@@ -403,6 +476,15 @@ export function LanguageLearning() {
     const storedSpeed = localStorage.getItem(SPEED_STORAGE_KEY);
     if (storedSpeed && SPEED_OPTIONS.includes(storedSpeed as SpeedOption))
       setSpeed(storedSpeed as SpeedOption);
+
+    const storedLanguages = localStorage.getItem(LANGUAGES_STORAGE_KEY);
+    if (storedLanguages) {
+      const parsed = JSON.parse(storedLanguages).filter(
+        (l: string): l is SupportedLanguage =>
+          SUPPORTED_LANGUAGES.includes(l as SupportedLanguage),
+      );
+      if (parsed.length > 0) setLanguages(parsed);
+    }
 
     Promise.all([
       fetch(API_ENDPOINTS.LANGUAGE_LEARNING_HISTORY).then(r => r.json()),
@@ -429,19 +511,33 @@ export function LanguageLearning() {
     localStorage.setItem(SPEED_STORAGE_KEY, s);
   }
 
+  function handleToggleLanguage(language: SupportedLanguage) {
+    setLanguages(prev => {
+      const next = prev.includes(language)
+        ? prev.filter(l => l !== language)
+        : [...prev, language];
+      if (next.length === 0) return prev;
+      localStorage.setItem(LANGUAGES_STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
+
   async function fetchWords() {
     setFetching(true);
     const res = await fetch(API_ENDPOINTS.LANGUAGE_LEARNING_WORDS, {
       method: HTTP_METHOD.POST,
       headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
-      body: JSON.stringify({ language }),
+      body: JSON.stringify({ languages }),
     });
-    const data: Session = await res.json();
-    setCurrent(data);
-    setHistory(prev => [data, ...prev.filter(s => s.id !== data.id)]);
+    const { sessions }: { sessions: Session[] } = await res.json();
+    setCurrentSessions(sessions);
+    const newIds = new Set(sessions.map(s => s.id));
+    setHistory(prev => [...sessions, ...prev.filter(s => !newIds.has(s.id))]);
     setFetching(false);
-    setActiveAudioId(`current-${data.id}-example`);
-    await speak(data.exampleSentence.target, {
+    const first = sessions[0];
+    if (!first) return;
+    setActiveAudioId(`current-${first.id}-example`);
+    await speak(first.exampleSentence.target, {
       playbackRate: SPEED_RATE[speed],
     });
     setActiveAudioId(null);
@@ -483,7 +579,8 @@ export function LanguageLearning() {
   }
 
   const currentActiveId = isSpeaking ? activeAudioId : null;
-  const pastSessions = history.filter(s => s.id !== current?.id);
+  const currentIds = new Set(currentSessions.map(s => s.id));
+  const pastSessions = history.filter(s => !currentIds.has(s.id));
 
   const masteredVocabWords = history.flatMap(s =>
     s.words
@@ -493,55 +590,63 @@ export function LanguageLearning() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-6 flex-wrap">
-        <div className="flex items-center gap-3">
-          <Text size="2" weight="medium">
-            {LABEL_LANGUAGE}
-          </Text>
-          <Select
-            options={[...SUPPORTED_LANGUAGES]}
-            selectedOption={language}
-            setValue={setLanguage}
-          />
-        </div>
-        <div className="flex items-center gap-3">
-          <Text size="2" weight="medium">
-            {LABEL_SPEED}
-          </Text>
-          <Select
-            options={[...SPEED_OPTIONS]}
-            selectedOption={speed}
-            setValue={handleSpeedChange}
-          />
-        </div>
+      <div className="flex items-center gap-3 flex-wrap">
+        <Button onClick={fetchWords} loading={fetching} size="lg">
+          {currentSessions.length > 0 ? LABEL_NEW_WORDS : LABEL_GET_WORDS}
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => setSettingsOpen(true)}
+        >
+          <Settings size={16} />
+          {LABEL_SETTINGS}
+        </Button>
+        <Text size="2" color="gray">
+          {languages.join(', ')} · {speed}
+        </Text>
       </div>
 
-      <Button onClick={fetchWords} loading={fetching} size="lg">
-        {current ? LABEL_NEW_WORDS : LABEL_GET_WORDS}
-      </Button>
+      <SettingsDialog
+        open={settingsOpen}
+        languages={languages}
+        speed={speed}
+        onToggleLanguage={handleToggleLanguage}
+        onSpeedChange={handleSpeedChange}
+        onClose={() => setSettingsOpen(false)}
+      />
 
-      {current && (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <Text size="2" weight="medium">
-              {current.language}
-            </Text>
-            <Text size="1" color="gray" className="capitalize">
-              · {current.category}
-            </Text>
-            <Text size="1" color="gray">
-              · {new Date(current.created_at).toLocaleDateString()}
-            </Text>
-          </div>
-          <SessionCard
-            session={current}
-            prefix={`current-${current.id}`}
-            activeAudioId={currentActiveId}
-            masteredIds={masteredIds}
-            masteredWords={masteredWords}
-            onSpeak={handleSpeak}
-            onMaster={handleMaster}
-          />
+      {currentSessions.length > 0 && (
+        <div
+          className="grid gap-4 items-start"
+          style={{
+            gridTemplateColumns: `repeat(auto-fit, minmax(${SESSION_COLUMN_MIN_WIDTH}, 1fr))`,
+          }}
+        >
+          {currentSessions.map(session => (
+            <div key={session.id} className="flex flex-col gap-2 min-w-0">
+              <div className="flex items-center gap-2">
+                <Text size="2" weight="medium">
+                  {session.language}
+                </Text>
+                <Text size="1" color="gray" className="capitalize">
+                  · {session.category}
+                </Text>
+                <Text size="1" color="gray">
+                  · {new Date(session.created_at).toLocaleDateString()}
+                </Text>
+              </div>
+              <SessionCard
+                session={session}
+                prefix={`current-${session.id}`}
+                activeAudioId={currentActiveId}
+                masteredIds={masteredIds}
+                masteredWords={masteredWords}
+                onSpeak={handleSpeak}
+                onMaster={handleMaster}
+              />
+            </div>
+          ))}
         </div>
       )}
 
