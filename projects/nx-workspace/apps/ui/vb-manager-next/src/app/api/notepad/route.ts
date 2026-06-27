@@ -1,30 +1,72 @@
-import { NextRequest } from 'next/server';
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { homedir } from 'os';
+import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../lib/auth';
+import { supabaseAdmin } from '../../../lib/supabase-admin';
 
-const NOTEPAD_PATH = '~/resilio-sync/shared/notepad.md';
+export const runtime = 'nodejs';
 
-const getNotepadPath = (): string =>
-  resolve(NOTEPAD_PATH.replace(/^~(?=$|\/|\\)/, homedir()));
+const NOTEPAD_TABLE = 'notepad';
+const NOTEPAD_ID = 'singleton';
+
+const requireSession = async (): Promise<void> => {
+  const session = await getServerSession(authOptions);
+  if (!session) throw new Error('Not authenticated');
+};
+
+const unauthorized = () =>
+  NextResponse.json(
+    { error: 'Unauthorized' },
+    { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+  );
 
 export async function GET() {
-  const filePath = getNotepadPath();
-
-  if (!existsSync(filePath)) {
-    return Response.json({ content: '' });
+  try {
+    await requireSession();
+  } catch {
+    return unauthorized();
   }
 
-  const content = readFileSync(filePath, 'utf-8');
-  return Response.json({ content });
+  const { data, error } = await supabaseAdmin
+    .from(NOTEPAD_TABLE)
+    .select('content, updated_at')
+    .eq('id', NOTEPAD_ID)
+    .single();
+
+  if (error) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+
+  return NextResponse.json({
+    content: data.content ?? '',
+    updatedAt: data.updated_at,
+  });
 }
 
 export async function POST(request: NextRequest) {
+  try {
+    await requireSession();
+  } catch {
+    return unauthorized();
+  }
+
   const { content } = await request.json();
-  const filePath = getNotepadPath();
+  const updatedAt = new Date().toISOString();
 
-  mkdirSync(dirname(filePath), { recursive: true });
-  writeFileSync(filePath, content, 'utf-8');
+  const { error } = await supabaseAdmin
+    .from(NOTEPAD_TABLE)
+    .update({ content, updated_at: updatedAt })
+    .eq('id', NOTEPAD_ID);
 
-  return Response.json({ success: true });
+  if (error) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+
+  return NextResponse.json({ success: true, updatedAt });
 }
