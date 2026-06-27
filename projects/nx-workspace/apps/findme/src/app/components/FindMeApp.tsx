@@ -55,7 +55,7 @@ export function FindMeApp() {
   );
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-[100dvh]">
       {sharingUsers.length > 0 && (
         <div className="flex-1">
           <LiveUserMap users={sharingUsers} currentUserId={userId} />
