@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { LocationService } from '@vigilant-broccoli/common-browser';
 
 const GEO_NOT_SUPPORTED = 'Geolocation not supported';
-const GEO_TIMEOUT_MS = 15000;
-const GEO_MAX_AGE_MS = 15000;
 const locationService = new LocationService();
 
 export interface GeolocationState {
@@ -29,11 +27,7 @@ export function useGeolocation(): GeolocationState {
       ({ latitude, longitude }) =>
         setState({ lat: latitude, lng: longitude, error: null }),
       err => setState(s => ({ ...s, error: err.message })),
-      {
-        enableHighAccuracy: true,
-        timeout: GEO_TIMEOUT_MS,
-        maximumAge: GEO_MAX_AGE_MS,
-      },
+      { enableHighAccuracy: true },
     );
   }, []);
 

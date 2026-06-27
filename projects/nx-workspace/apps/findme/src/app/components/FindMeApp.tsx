@@ -19,7 +19,6 @@ const SHARE_LABEL = 'Share my location';
 const STOP_SHARING_LABEL = 'Stop sharing';
 const VIEW_ON_GOOGLE_MAPS_LABEL = 'View on Google Maps';
 const VIEWING_LABEL = 'Viewing';
-const ACQUIRING_LOCATION_LABEL = 'Acquiring location…';
 const NO_LIVE_USERS_MSG =
   'No one else is here yet. Share this page to invite others.';
 
@@ -60,6 +59,7 @@ export function FindMeApp() {
           <span className="text-sm text-gray-500">
             You: <strong className="text-gray-800">{userId}</strong>
           </span>
+          {geoError && <span className="text-sm text-red-500">{geoError}</span>}
           <button
             className={`px-4 py-2 rounded text-sm font-medium text-white transition-colors ${
               sharing
@@ -72,11 +72,6 @@ export function FindMeApp() {
             {sharing ? STOP_SHARING_LABEL : SHARE_LABEL}
           </button>
         </div>
-        {geoError ? (
-          <p className="text-sm text-red-500">{geoError}</p>
-        ) : !hasLocation ? (
-          <p className="text-sm text-gray-400">{ACQUIRING_LOCATION_LABEL}</p>
-        ) : null}
 
         <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
           {liveUsers.length === 0 ? (
