@@ -21,6 +21,14 @@ const VIEW_ON_GOOGLE_MAPS_LABEL = 'View on Google Maps';
 const VIEWING_LABEL = 'Viewing';
 const NO_LIVE_USERS_MSG =
   'No one else is here yet. Share this page to invite others.';
+const FIX_LOCATION_SETTINGS_LABEL = 'How to fix browser location settings';
+const LOCATION_HELP_STEPS = [
+  'iOS: Settings → Privacy & Security → Location Services → enable for your browser (Safari / Chrome) with Precise Location on.',
+  'iOS Safari (per site): tap "AA" in the URL bar → Website Settings → Location → Allow.',
+  'Desktop Chrome / Edge: click the lock icon next to the URL → Site settings → Location → Allow.',
+  'Desktop Safari: Safari → Settings → Websites → Location → set this site to Allow.',
+  'Reload the page after changing the setting.',
+];
 
 const randomUserId = () =>
   `${USER_PREFIX}${Math.random()
@@ -59,7 +67,6 @@ export function FindMeApp() {
           <span className="text-sm text-gray-500">
             You: <strong className="text-gray-800">{userId}</strong>
           </span>
-          {geoError && <span className="text-sm text-red-500">{geoError}</span>}
           <button
             className={`px-4 py-2 rounded text-sm font-medium text-white transition-colors ${
               sharing
@@ -72,6 +79,22 @@ export function FindMeApp() {
             {sharing ? STOP_SHARING_LABEL : SHARE_LABEL}
           </button>
         </div>
+
+        {geoError && (
+          <div className="text-sm">
+            <p className="text-red-500">{geoError}</p>
+            <details className="mt-1">
+              <summary className="text-blue-600 cursor-pointer text-xs">
+                {FIX_LOCATION_SETTINGS_LABEL}
+              </summary>
+              <ul className="mt-2 list-disc pl-5 text-gray-600 text-xs space-y-1">
+                {LOCATION_HELP_STEPS.map(step => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ul>
+            </details>
+          </div>
+        )}
 
         <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
           {liveUsers.length === 0 ? (

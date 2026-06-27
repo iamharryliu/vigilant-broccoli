@@ -40,6 +40,30 @@ const vercelEnv = { ...process.env };
 delete vercelEnv.NODE_EXTRA_CA_CERTS;
 delete vercelEnv.FORCE_COLOR;
 
+async function applyProjectSettings(
+  projectId: string,
+  teamId: string,
+  settings: Record<string, unknown>,
+  token: string,
+): Promise<void> {
+  const res = await fetch(
+    `https://api.vercel.com/v9/projects/${projectId}?teamId=${teamId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(settings),
+    },
+  );
+  if (!res.ok) {
+    console.warn(`⚠ Failed to apply project settings: ${res.status}`);
+  } else {
+    console.log('✓ Project settings applied');
+  }
+}
+
 async function vercelEnvAdd(
   key: string,
   value: string,
@@ -93,47 +117,66 @@ async function main() {
     process.exit(1);
   }
 
-  const hardcodedSecrets: Record<string, Record<string, string>> = {
+  interface ProjectConfig {
+    hardcodedSecrets?: Record<string, string>;
+    envExamplePath?: string;
+    settings?: Record<string, unknown>;
+  }
+
+  const SUPABASE_PUBLIC_SECRETS = {
+    NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+      'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
+  };
+
+  const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
+    framework: 'nextjs',
+    rootDirectory: 'projects/nx-workspace',
+    buildCommand: `nx build ${nxProject}`,
+    installCommand: 'pnpm install --frozen-lockfile',
+    outputDirectory,
+  });
+
+  const projectConfigs: Record<string, ProjectConfig> = {
     'next-demo': {
-      NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
-        'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
-      NEXT_PUBLIC_APP_URL: 'https://vb-next-demo.vercel.app/',
-      VB_EXPRESS_URL: 'https://vb-express.fly.dev',
+      hardcodedSecrets: {
+        ...SUPABASE_PUBLIC_SECRETS,
+        NEXT_PUBLIC_APP_URL: 'https://vb-next-demo.vercel.app/',
+        VB_EXPRESS_URL: 'https://vb-express.fly.dev',
+      },
+      envExamplePath: 'apps/next-demo/.env.local.example',
+      settings: NX_VERCEL_SETTINGS('next-demo', 'dist/apps/next-demo/.next'),
     },
     'employee-handler-ui': {
-      NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
-        'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
+      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
+      envExamplePath: 'apps/ui/employee-handler-ui/.env.example',
+      settings: NX_VERCEL_SETTINGS(
+        'employee-handler-ui',
+        'dist/apps/ui/employee-handler-ui/.next',
+      ),
     },
     findme: {
-      NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
-        'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
+      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
+      settings: NX_VERCEL_SETTINGS('findme', 'dist/apps/findme/.next'),
     },
   };
 
-  const projectEnvExamples: Record<string, string> = {
-    'next-demo': 'apps/next-demo/.env.local.example',
-    'employee-handler-ui': 'apps/ui/employee-handler-ui/.env.example',
-  };
+  const config = projectConfigs[projectName];
 
-  const hardcoded = hardcodedSecrets[projectName];
-  const examplePath = projectEnvExamples[projectName];
-
-  if (!hardcoded && !examplePath) {
+  if (!config) {
     console.error(`Error: No configuration found for project "${projectName}"`);
     process.exit(1);
   }
 
-  const allKeys = examplePath ? parseEnvKeys(resolve(examplePath)) : [];
-  const keysFromVault = allKeys.filter(k => !(k in (hardcoded ?? {})));
+  const { hardcodedSecrets, envExamplePath, settings } = config;
+  const allKeys = envExamplePath ? parseEnvKeys(resolve(envExamplePath)) : [];
+  const keysFromVault = allKeys.filter(k => !(k in (hardcodedSecrets ?? {})));
 
   console.log(
     `\nDeploying secrets for ${projectName} to Vercel (${environment})...\n`,
   );
 
-  const allSecrets: Record<string, string> = { ...hardcoded };
+  const allSecrets: Record<string, string> = { ...hardcodedSecrets };
 
   if (keysFromVault.length || !vercelEnv.VERCEL_TOKEN) {
     console.log('Fetching vault secrets...');
@@ -151,6 +194,15 @@ async function main() {
         console.warn(`⚠ ${key}: not found in vault, skipping`);
       }
     }
+  }
+
+  if (settings && vercelEnv.VERCEL_TOKEN) {
+    await applyProjectSettings(
+      vercelEnv.VERCEL_PROJECT_ID,
+      vercelEnv.VERCEL_ORG_ID,
+      settings,
+      vercelEnv.VERCEL_TOKEN,
+    );
   }
 
   console.log('Deploying secrets...');
