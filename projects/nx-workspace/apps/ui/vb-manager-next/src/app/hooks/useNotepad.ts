@@ -23,6 +23,7 @@ interface NotepadState {
   content: string;
   setContent: (content: string) => void;
   isSaving: boolean;
+  isLoading: boolean;
   lastSaved: Date | null;
 }
 
@@ -40,6 +41,7 @@ const writeCache = (cache: CachedNotepad): void => {
 export const useNotepad = (): NotepadState => {
   const [content, setContentState] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -104,6 +106,7 @@ export const useNotepad = (): NotepadState => {
       .catch(() => undefined)
       .finally(() => {
         isInitialized.current = true;
+        setIsLoading(false);
       });
   }, [applyRemote, saveContent]);
 
@@ -151,5 +154,5 @@ export const useNotepad = (): NotepadState => {
     [saveContent],
   );
 
-  return { content, setContent, isSaving, lastSaved };
+  return { content, setContent, isSaving, isLoading, lastSaved };
 };

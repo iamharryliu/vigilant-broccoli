@@ -9,26 +9,32 @@ interface NotepadEditorProps {
 }
 
 export const NotepadEditorComponent = ({ style }: NotepadEditorProps) => {
-  const { content, setContent, isSaving, lastSaved } = useNotepad();
+  const { content, setContent, isSaving, isLoading, lastSaved } = useNotepad();
 
   return (
-    <div className="flex flex-col gap-2" style={{ display: 'flex', flexDirection: 'column', ...style }}>
+    <div
+      className="flex flex-col gap-2"
+      style={{ display: 'flex', flexDirection: 'column', ...style }}
+    >
       <div className="flex justify-between items-center">
         <Text size="2" weight="bold">
           Notepad
         </Text>
         <Text size="1" color="gray">
-          {isSaving
-            ? 'Saving...'
-            : lastSaved
-              ? `Saved ${lastSaved.toLocaleTimeString()}`
-              : ''}
+          {isLoading
+            ? 'Loading...'
+            : isSaving
+              ? 'Saving...'
+              : lastSaved
+                ? `Saved ${lastSaved.toLocaleTimeString()}`
+                : ''}
         </Text>
       </div>
       <textarea
         value={content}
         onChange={e => setContent(e.target.value)}
-        placeholder="Quick notes..."
+        disabled={isLoading}
+        placeholder={isLoading ? 'Loading...' : 'Quick notes...'}
         style={{
           flex: 1,
           resize: 'none',
@@ -42,6 +48,8 @@ export const NotepadEditorComponent = ({ style }: NotepadEditorProps) => {
           color: 'var(--gray-12)',
           outline: 'none',
           minHeight: '200px',
+          opacity: isLoading ? 0.6 : 1,
+          cursor: isLoading ? 'wait' : 'text',
         }}
       />
     </div>
