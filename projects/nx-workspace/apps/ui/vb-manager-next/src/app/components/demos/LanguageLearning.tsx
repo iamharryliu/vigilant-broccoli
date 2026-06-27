@@ -63,6 +63,20 @@ const SUPPORTED_LANGUAGES = [
 ] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
+const LANGUAGE_FLAGS: Record<string, string> = {
+  Swedish: '🇸🇪',
+  Spanish: '🇪🇸',
+  French: '🇫🇷',
+  German: '🇩🇪',
+  Japanese: '🇯🇵',
+  Italian: '🇮🇹',
+};
+
+function languageWithFlag(language: string) {
+  const flag = LANGUAGE_FLAGS[language];
+  return flag ? `${flag} ${language}` : language;
+}
+
 const TAB = { HISTORY: 'history', MASTERED: 'mastered' } as const;
 type Tab = (typeof TAB)[keyof typeof TAB];
 
@@ -426,7 +440,7 @@ function SettingsDialog({
                       disabled={isLast}
                       onCheckedChange={() => onToggleLanguage(lang)}
                     />
-                    <Text size="2">{lang}</Text>
+                    <Text size="2">{languageWithFlag(lang)}</Text>
                   </label>
                 );
               })}
@@ -603,7 +617,7 @@ export function LanguageLearning() {
           {LABEL_SETTINGS}
         </Button>
         <Text size="2" color="gray">
-          {languages.join(', ')} · {speed}
+          {languages.map(languageWithFlag).join(', ')} · {speed}
         </Text>
       </div>
 
@@ -627,7 +641,7 @@ export function LanguageLearning() {
             <div key={session.id} className="flex flex-col gap-2 min-w-0">
               <div className="flex items-center gap-2">
                 <Text size="2" weight="medium">
-                  {session.language}
+                  {languageWithFlag(session.language)}
                 </Text>
                 <Text size="1" color="gray" className="capitalize">
                   · {session.category}
@@ -665,7 +679,7 @@ export function LanguageLearning() {
               <div key={session.id} className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <Text size="2" weight="medium">
-                    {session.language}
+                    {languageWithFlag(session.language)}
                   </Text>
                   <Text size="1" color="gray" className="capitalize">
                     · {session.category}
@@ -737,7 +751,7 @@ export function LanguageLearning() {
                   >
                     <div className="flex items-center gap-2">
                       <Text size="1" color="gray">
-                        {language}
+                        {languageWithFlag(language)}
                       </Text>
                       {mastered_at && (
                         <Text size="1" color="gray">
