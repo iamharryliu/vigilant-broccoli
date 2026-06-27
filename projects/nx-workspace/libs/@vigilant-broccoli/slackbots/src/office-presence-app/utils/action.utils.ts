@@ -18,7 +18,7 @@ import {
 } from './db.utils';
 import { UserPresence, OfficeEvent, UserSettings } from '../types';
 import { WebClient } from '@slack/web-api';
-import { AppCopy } from '../consts/app-copy.const';
+import { AppCopy, LANGUAGE, Language } from '../consts/app-copy.const';
 import { ACTION_ID, BLOCK_ID } from '../consts/data.consts';
 import { validateInput } from './input-validation.utils';
 
@@ -132,23 +132,44 @@ export function handleSettingsModalSubmit(
   const defaultOffice =
     view.state.values[BLOCK_ID.DEFAULT_OFFICE]?.[ACTION_ID.DEFAULT_OFFICE]
       .selected_option?.value;
-  const showWeekdaysOnly =
-    (
-      view.state.values[BLOCK_ID.SHOW_WEEKDAYS_ONLY]?.[
-        ACTION_ID.SHOW_WEEKDAYS_ONLY
-      ].selected_options as ViewStateSelectedOption[] | undefined
-    )?.some(o => o.value === ACTION_ID.SHOW_WEEKDAYS_ONLY) ?? false;
-  const showTeamCount =
-    (
-      view.state.values[BLOCK_ID.SHOW_TEAM_COUNT]?.[ACTION_ID.SHOW_TEAM_COUNT]
-        .selected_options as ViewStateSelectedOption[] | undefined
-    )?.some(o => o.value === ACTION_ID.SHOW_TEAM_COUNT) ?? false;
+  const showWeekdaysOnly = isCheckboxChecked(
+    view,
+    BLOCK_ID.SHOW_WEEKDAYS_ONLY,
+    ACTION_ID.SHOW_WEEKDAYS_ONLY,
+  );
+  const showTeamCount = isCheckboxChecked(
+    view,
+    BLOCK_ID.SHOW_TEAM_COUNT,
+    ACTION_ID.SHOW_TEAM_COUNT,
+  );
+  const selectedLanguage =
+    view.state.values[BLOCK_ID.LANGUAGE]?.[ACTION_ID.LANGUAGE].selected_option
+      ?.value;
+  const language = isLanguage(selectedLanguage)
+    ? selectedLanguage
+    : LANGUAGE.EN;
   const settings: UserSettings = {
     defaultOffice,
     showWeekdaysOnly,
     showTeamCount,
+    language,
   };
   saveUserSettings(userId, settings);
+}
+
+function isCheckboxChecked(
+  view: ViewOutput,
+  blockId: string,
+  actionId: string,
+): boolean {
+  const selected = view.state.values[blockId]?.[actionId].selected_options as
+    | ViewStateSelectedOption[]
+    | undefined;
+  return selected?.some(o => o.value === actionId) ?? false;
+}
+
+function isLanguage(value?: string): value is Language {
+  return Object.values(LANGUAGE).includes(value as Language);
 }
 
 export function handleCreateEventSubmit(

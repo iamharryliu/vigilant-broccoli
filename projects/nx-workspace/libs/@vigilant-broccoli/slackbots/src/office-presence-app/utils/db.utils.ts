@@ -9,6 +9,7 @@ import {
 } from '../types';
 import Database from 'better-sqlite3';
 import { formatISODateLocal } from './date.utils';
+import { Language } from '../consts/app-copy.const';
 
 const db = new Database('state.db');
 
@@ -58,6 +59,7 @@ const userSettingsColumns = (
 for (const [col, type] of [
   ['show_weekdays_only', 'INTEGER'],
   ['show_team_count', 'INTEGER'],
+  ['language', 'TEXT'],
 ] as [string, string][]) {
   if (!userSettingsColumns.includes(col)) {
     db.prepare(`ALTER TABLE user_settings ADD COLUMN ${col} ${type}`).run();
@@ -215,18 +217,20 @@ export function loadUserSettings(userId: string): UserSettings {
       row.show_weekdays_only != null ? !!row.show_weekdays_only : undefined,
     showTeamCount:
       row.show_team_count != null ? !!row.show_team_count : undefined,
+    language: (row.language as Language) ?? undefined,
   };
 }
 
 export function saveUserSettings(userId: string, settings: UserSettings) {
   db.prepare(
     `
-    INSERT INTO user_settings (user_id, default_office, show_weekdays_only, show_team_count)
-    VALUES (@user_id, @default_office, @show_weekdays_only, @show_team_count)
+    INSERT INTO user_settings (user_id, default_office, show_weekdays_only, show_team_count, language)
+    VALUES (@user_id, @default_office, @show_weekdays_only, @show_team_count, @language)
     ON CONFLICT(user_id) DO UPDATE SET
       default_office=excluded.default_office,
       show_weekdays_only=excluded.show_weekdays_only,
-      show_team_count=excluded.show_team_count
+      show_team_count=excluded.show_team_count,
+      language=excluded.language
   `,
   ).run({
     user_id: userId,
@@ -235,6 +239,7 @@ export function saveUserSettings(userId: string, settings: UserSettings) {
       settings.showWeekdaysOnly != null ? +settings.showWeekdaysOnly : null,
     show_team_count:
       settings.showTeamCount != null ? +settings.showTeamCount : null,
+    language: settings.language ?? null,
   });
 }
 

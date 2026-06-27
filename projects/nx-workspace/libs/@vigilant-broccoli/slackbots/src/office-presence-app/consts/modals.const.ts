@@ -10,6 +10,7 @@ import {
 import { getUpcomingWeekdays, formatISODateLocal } from '../utils/date.utils';
 import { buildModalDateOptionSlackBlocks } from '../utils/view.utils';
 import { ACTION_ID, BLOCK_ID, INPUT_MAX_LENGTH } from './data.consts';
+import { LANGUAGE, LANGUAGE_DISPLAY_NAME, Language } from './app-copy.const';
 
 const chunkArray = <T>(arr: T[], size: number): T[][] => {
   const chunks: T[][] = [];
@@ -21,7 +22,8 @@ const chunkArray = <T>(arr: T[], size: number): T[][] => {
 
 export function createInputScheduleModal(appConfig: AppConfig) {
   return function getInputScheduleModal(userId: string) {
-    const { copy } = appConfig;
+    const settings = loadUserSettings(userId);
+    const copy = appConfig.getCopy(settings.language);
     const dates = getUpcomingWeekdays(10);
     const options = buildModalDateOptionSlackBlocks(dates);
     const officeBlocks =
@@ -29,8 +31,9 @@ export function createInputScheduleModal(appConfig: AppConfig) {
         ? [
             buildOfficeBlock(
               appConfig,
+              copy.PRESENCE_MODAL.OFFICE_LABEL,
               BLOCK_ID.OFFICE,
-              loadUserSettings(userId).defaultOffice,
+              settings.defaultOffice,
             ),
           ]
         : [];
@@ -157,6 +160,7 @@ type OfficeBlock = {
 
 function buildOfficeBlock(
   appConfig: AppConfig,
+  officeLabel: string,
   blockId = BLOCK_ID.OFFICE,
   initialOffice?: string,
 ): OfficeBlock {
@@ -178,7 +182,7 @@ function buildOfficeBlock(
     },
     label: {
       type: 'plain_text',
-      text: appConfig.copy.PRESENCE_MODAL.OFFICE_LABEL,
+      text: officeLabel,
     },
     optional: true,
   };
@@ -186,13 +190,36 @@ function buildOfficeBlock(
 
 export function createUserSettingsModal(appConfig: AppConfig) {
   return function getUserSettingsModal(userId: string) {
-    const { copy } = appConfig;
     const settings = loadUserSettings(userId);
+    const copy = appConfig.getCopy(settings.language);
 
     const effectiveShowWeekdaysOnly =
       settings.showWeekdaysOnly ?? appConfig.defaultShowWeekdaysOnly;
     const effectiveShowTeamCount =
       settings.showTeamCount ?? appConfig.defaultShowTeamCount;
+    const effectiveLanguage = settings.language ?? LANGUAGE.EN;
+
+    const languageOption = (language: Language) => ({
+      text: SlackViewBuilder.generatePlainText(LANGUAGE_DISPLAY_NAME[language]),
+      value: language,
+    });
+    const languageOptions = Object.values(LANGUAGE).map(languageOption);
+    const languageBlock: KnownBlock = {
+      type: 'input',
+      block_id: BLOCK_ID.LANGUAGE,
+      element: {
+        type: 'static_select',
+        action_id: ACTION_ID.LANGUAGE,
+        options: languageOptions,
+        initial_option: languageOption(effectiveLanguage),
+        placeholder: SlackViewBuilder.generatePlainText(
+          copy.SETTINGS_MODAL.LANGUAGE_PLACEHOLDER,
+        ),
+      },
+      label: SlackViewBuilder.generatePlainText(
+        copy.SETTINGS_MODAL.LANGUAGE_LABEL,
+      ),
+    };
 
     const officeBlocks: KnownBlock[] =
       appConfig.OFFICES.length > 0
@@ -249,6 +276,7 @@ export function createUserSettingsModal(appConfig: AppConfig) {
       submit: { type: 'plain_text', text: copy.COMMON.SAVE },
       close: { type: 'plain_text', text: copy.COMMON.CANCEL },
       blocks: [
+        languageBlock,
         ...officeBlocks,
         {
           type: 'input',
@@ -301,8 +329,8 @@ const mockButton = (label: string): KnownBlock => ({
 });
 
 export function createHelpModal(appConfig: AppConfig) {
-  return function getHelpModal() {
-    const { copy } = appConfig;
+  return function getHelpModal(userId: string) {
+    const copy = appConfig.getCopy(loadUserSettings(userId).language);
     const h = copy.HELP_MODAL;
     const hv = copy.HOME_VIEW;
 
@@ -371,7 +399,7 @@ export function createHelpModal(appConfig: AppConfig) {
 
 export function createAskLunchModal(appConfig: AppConfig) {
   return function getAskLunchModal(userId: string) {
-    const { copy } = appConfig;
+    const copy = appConfig.getCopy(loadUserSettings(userId).language);
     const userPresences = loadAllPresences();
     const today = new Date().toISOString().split('T')[0];
 
@@ -437,8 +465,8 @@ export function createAskLunchModal(appConfig: AppConfig) {
 }
 
 export function createCreateEventModal(appConfig: AppConfig) {
-  return function getCreateEventModal() {
-    const { copy } = appConfig;
+  return function getCreateEventModal(userId: string) {
+    const copy = appConfig.getCopy(loadUserSettings(userId).language);
     const dates = getUpcomingWeekdays(10);
     const options = buildModalDateOptionSlackBlocks(dates);
     const todayISO = formatISODateLocal(new Date());
@@ -536,8 +564,8 @@ export function createCreateEventModal(appConfig: AppConfig) {
 }
 
 export function createEditEventModal(appConfig: AppConfig) {
-  return function getEditEventModal(eventId: number) {
-    const { copy } = appConfig;
+  return function getEditEventModal(eventId: number, userId: string) {
+    const copy = appConfig.getCopy(loadUserSettings(userId).language);
     const event = loadEventById(eventId);
     if (!event) return null;
 

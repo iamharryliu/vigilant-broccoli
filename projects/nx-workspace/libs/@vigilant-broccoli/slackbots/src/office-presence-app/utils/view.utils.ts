@@ -52,9 +52,12 @@ export function buildModalDateOptionSlackBlocks(dates: Date[]): {
   }));
 }
 
-function buildLocationSelect(appConfig: AppConfig, defaultOffice?: string) {
+function buildLocationSelect(
+  appConfig: AppConfig,
+  copy: AppCopy,
+  defaultOffice?: string,
+) {
   if (appConfig.OFFICES.length === 0) return null;
-  const { copy } = appConfig;
   const options = appConfig.OFFICES.map(office => ({
     text: { type: 'plain_text' as const, text: office, emoji: true },
     value: office,
@@ -74,8 +77,8 @@ function buildLocationSelect(appConfig: AppConfig, defaultOffice?: string) {
 }
 
 function getHomeView(userId: string, appConfig: AppConfig): View {
-  const { copy } = appConfig;
   const userSettings = loadUserSettings(userId);
+  const copy = appConfig.getCopy(userSettings.language);
 
   const showWeekdaysOnly =
     userSettings.showWeekdaysOnly ?? appConfig.defaultShowWeekdaysOnly;
@@ -101,6 +104,7 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
 
   const locationSelect = buildLocationSelect(
     appConfig,
+    copy,
     userSettings.defaultOffice,
   );
 

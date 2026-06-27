@@ -31,7 +31,13 @@ import { APP_ACTION, APP_COMMAND } from './consts/app.consts';
 import { loadAllPresences, savePresence } from './utils/db.utils';
 import { createReminderSender, createReminderPreviewer } from './app-reminder';
 import { AppConfig } from './types';
-import { AppCopyOverrides, resolveAppCopy } from './consts/app-copy.const';
+import {
+  AppCopyOverrides,
+  DEFAULT_LANGUAGE,
+  Language,
+  resolveAppCopyForLanguage,
+} from './consts/app-copy.const';
+import { loadUserSettings } from './utils/db.utils';
 
 export type OfficePresenceAppRunConfig = {
   APP_NAME?: string;
@@ -69,6 +75,8 @@ export async function runOfficePresenceApp(
     defaultWeeksAhead,
     copy,
   } = config;
+  const getCopy = (language?: Language) =>
+    resolveAppCopyForLanguage(language ?? DEFAULT_LANGUAGE, copy);
   const appConfig: AppConfig = {
     APP_NAME: APP_NAME ?? DEFAULT_APP_NAME,
     OFFICES: OFFICES ?? DEFAULT_OFFICES,
@@ -77,7 +85,8 @@ export async function runOfficePresenceApp(
       defaultShowWeekdaysOnly ?? DEFAULT_SHOW_WEEKDAYS_ONLY,
     defaultShowTeamCount: defaultShowTeamCount ?? DEFAULT_SHOW_TEAM_COUNT,
     defaultWeeksAhead: defaultWeeksAhead ?? DEFAULT_WEEKS_AHEAD,
-    copy: resolveAppCopy(copy),
+    copy: getCopy(DEFAULT_LANGUAGE),
+    getCopy,
   };
   const publishHomeView = createPublishHomeView(appConfig);
   const getInputScheduleModal = createInputScheduleModal(appConfig);
@@ -131,7 +140,7 @@ export async function runOfficePresenceApp(
 
   app.action<BlockAction>(
     APP_ACTION.OPEN_HELP_MODAL,
-    SlackModalUtils.createModalHandler(getHelpModal),
+    SlackModalUtils.createModalHandlerWithUserId(getHelpModal),
   );
 
   app.action<BlockAction>(APP_ACTION.HELP_MOCK_BUTTON, async ({ ack }) => {
@@ -151,7 +160,7 @@ export async function runOfficePresenceApp(
 
   app.action<BlockAction>(
     APP_ACTION.OPEN_CREATE_EVENT_MODAL,
-    SlackModalUtils.createModalHandler(getCreateEventModal),
+    SlackModalUtils.createModalHandlerWithUserId(getCreateEventModal),
   );
 
   app.view(
@@ -178,7 +187,8 @@ export async function runOfficePresenceApp(
         }
       }
     }
-    await handleAskLunchAction(userId, selectedUsers, client, appConfig.copy);
+    const copy = appConfig.getCopy(loadUserSettings(userId).language);
+    await handleAskLunchAction(userId, selectedUsers, client, copy);
   });
 
   app.action(
@@ -212,7 +222,7 @@ export async function runOfficePresenceApp(
       const eventIdStr = actionId.split('_').pop();
       if (!eventIdStr) return;
       const eventId = parseInt(eventIdStr, 10);
-      const modal = getEditEventModal(eventId);
+      const modal = getEditEventModal(eventId, body.user.id);
       if (modal) {
         await client.views.open({
           trigger_id: body.trigger_id,
@@ -273,7 +283,8 @@ function createCheckoutAction(
     const allPresences = loadAllPresences();
     const userPresences = allPresences[userId];
     const presence = userPresences[today];
-    presence.message = appConfig.copy.ACTIONS.CHECKED_OUT_MESSAGE;
+    const copy = appConfig.getCopy(loadUserSettings(userId).language);
+    presence.message = copy.ACTIONS.CHECKED_OUT_MESSAGE;
     savePresence(userId, today, presence);
     await publishHomeView(client, body);
   };

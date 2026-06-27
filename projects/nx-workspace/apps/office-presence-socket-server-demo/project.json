@@ -15,7 +15,7 @@
         "format": ["cjs"],
         "bundle": true,
         "thirdParty": true,
-        "external": ["better-sqlite3"],
+        "external": ["better-sqlite3", "node-cron"],
         "main": "apps/office-presence-socket-server-demo/src/main.ts",
         "tsConfig": "apps/office-presence-socket-server-demo/tsconfig.app.json",
         "assets": ["apps/office-presence-socket-server-demo/src/assets"],
@@ -48,14 +48,14 @@
         "parallel": false
       }
     },
-    "serve:vault": {
+    "serve": {
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'nx serve office-presence-socket-server-demo'"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'nx serve:local office-presence-socket-server-demo'"
       }
     },
-    "serve": {
+    "serve:local": {
       "continuous": true,
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",

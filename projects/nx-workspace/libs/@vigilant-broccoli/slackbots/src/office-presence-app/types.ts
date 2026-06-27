@@ -1,4 +1,4 @@
-import { AppCopy } from './consts/app-copy.const';
+import { AppCopy, Language } from './consts/app-copy.const';
 
 export type AppConfig = {
   APP_NAME: string;
@@ -8,6 +8,7 @@ export type AppConfig = {
   defaultShowTeamCount: boolean;
   defaultWeeksAhead: number;
   copy: AppCopy;
+  getCopy: (language?: Language) => AppCopy;
 };
 
 export const PRESENCE_TIME = {
@@ -59,6 +60,7 @@ export type UserSettings = {
   defaultOffice?: string;
   showWeekdaysOnly?: boolean;
   showTeamCount?: boolean;
+  language?: Language;
 };
 
 export type UserSettingsRow = {
@@ -66,4 +68,5 @@ export type UserSettingsRow = {
   default_office?: string;
   show_weekdays_only?: number;
   show_team_count?: number;
+  language?: string;
 };

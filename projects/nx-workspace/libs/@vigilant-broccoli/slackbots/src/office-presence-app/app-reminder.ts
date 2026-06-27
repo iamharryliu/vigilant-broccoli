@@ -1,6 +1,7 @@
 import { WebClient } from '@slack/web-api';
 import { SlackUtils } from '../lib/utils/utils';
 import { AppConfig } from './types';
+import { loadUserSettings } from './utils/db.utils';
 
 function getClient() {
   const token = process.env.SLACK_BOT_TOKEN;
@@ -34,7 +35,7 @@ async function postMessage(
   appConfig: AppConfig,
   botUserId?: string,
 ) {
-  const { copy } = appConfig;
+  const copy = appConfig.getCopy(loadUserSettings(channel).language);
   const text = copy.getReminderDmText(appConfig.APP_NAME, botUserId);
   try {
     await client.chat.postMessage({ channel, text });
