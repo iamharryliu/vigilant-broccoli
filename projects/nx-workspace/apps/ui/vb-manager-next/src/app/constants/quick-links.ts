@@ -808,6 +808,12 @@ const VB_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
+  {
+    label: 'Git',
+    target: 'https://git.harryliu.dev/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
 ];
 
 const UTILITY_LINKS = [

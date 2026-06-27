@@ -24,7 +24,7 @@ export function useLiveLocations(
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return;
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !userId) return;
 
     const channel = supabase.channel(CHANNEL_NAME, {
       config: { presence: { key: userId } },
