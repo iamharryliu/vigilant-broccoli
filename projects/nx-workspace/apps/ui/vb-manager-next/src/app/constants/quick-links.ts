@@ -38,6 +38,7 @@ const LINK_GROUP_SUBGROUP = {
   DEV: 'Dev',
   VIGILANT_BROCCOLI: 'vigilant-broccoli',
   MESSAGING: 'Messaging',
+  UI_APPS: 'UI Apps',
 } as const;
 
 const DEV_LINKS = [
@@ -1279,6 +1280,15 @@ const HOME_LINKS = [
   },
 ];
 
+const UI_APP_LINKS = [
+  {
+    label: 'FindMe',
+    target: 'https://findme-kohl.vercel.app/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
+  },
+];
+
 export type QuickLink = {
   label: string;
   target: string;
@@ -1289,6 +1299,7 @@ export type QuickLink = {
 
 export const QUICK_LINKS: QuickLink[] = [
   ...APP_ROUTE_QUICK_LINKS,
+  ...UI_APP_LINKS,
   ...VB_LINKS,
   ...DEV_LINKS,
   ...UTILITY_LINKS,
