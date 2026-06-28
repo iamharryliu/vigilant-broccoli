@@ -14,6 +14,10 @@ permissions:
   id-token: write
   pages: write
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   DOCKERHUB_USERNAME: iamharryliu
 
@@ -21,6 +25,7 @@ jobs:
   notify-start:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 
@@ -45,9 +50,9 @@ jobs:
 
 
   deploy-npm-packages:
-    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
     needs: notify-start
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
@@ -105,10 +110,10 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: pnpm exec nx run-many -t publish-package --projects="${{ steps.check.outputs.affected_projects }}"
 
-  main:
-    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
+  deploy-apps:
     needs: notify-start
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
@@ -196,9 +201,9 @@ jobs:
         run: ${{ steps.check.outputs.deploy_cmd }}
 
   deploy-github-pages:
-    if: ${{ !startsWith(github.event.head_commit.message, 'docs') }}
     needs: notify-start
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -266,12 +271,7 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: |
           mkdir -p _site
-          cp pages-index/index.html _site/index.html
-          cp pages-index/open-source.html _site/open-source.html
-          cp pages-index/ui.html _site/ui.html
-          cp pages-index/api-services.html _site/api-services.html
-          cp pages-index/api-docs.html _site/api-docs.html
-          cp pages-index/status.html _site/status.html
+          cp pages-index/*.html _site/
 
       - name: Setup Pages
         if: steps.check.outputs.has_deployments == 'true'
