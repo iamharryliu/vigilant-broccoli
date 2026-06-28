@@ -6,10 +6,27 @@ import { supabase } from '../../lib/supabase';
 const CHANNEL_NAME = 'live-locations';
 const PRESENCE_EVENT = 'presence';
 const SYNC_EVENT = 'sync';
-const SUBSCRIBED_STATUS = 'SUBSCRIBED';
+const PAGEHIDE_EVENT = 'pagehide';
+
+const SUBSCRIBE_STATUS = {
+  SUBSCRIBED: 'SUBSCRIBED',
+  CHANNEL_ERROR: 'CHANNEL_ERROR',
+  TIMED_OUT: 'TIMED_OUT',
+  CLOSED: 'CLOSED',
+} as const;
+
+export const CONNECTION_STATUS = {
+  CONNECTING: 'connecting',
+  CONNECTED: 'connected',
+  ERROR: 'error',
+} as const;
+
+export type ConnectionStatus =
+  (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS];
 
 export interface LiveUser {
   userId: string;
+  username: string;
   lat: number | null;
   lng: number | null;
   updatedAt: number;
@@ -21,25 +38,37 @@ export const isSharingUser = (u: LiveUser): u is SharingUser =>
   u.lat !== null && u.lng !== null;
 
 interface PresencePayload {
+  username: string;
   lat: number | null;
   lng: number | null;
   updatedAt: number;
 }
 
+export interface LiveLocationsState {
+  users: LiveUser[];
+  connectionStatus: ConnectionStatus;
+}
+
 export function useLiveLocations(
   userId: string,
+  username: string,
   lat: number | null,
   lng: number | null,
-): LiveUser[] {
+): LiveLocationsState {
   const [users, setUsers] = useState<LiveUser[]>([]);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
+    CONNECTION_STATUS.CONNECTING,
+  );
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const latRef = useRef<number | null>(lat);
   const lngRef = useRef<number | null>(lng);
+  const usernameRef = useRef<string>(username);
 
   useEffect(() => {
     latRef.current = lat;
     lngRef.current = lng;
-  }, [lat, lng]);
+    usernameRef.current = username;
+  }, [lat, lng, username]);
 
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !userId) return;
@@ -56,6 +85,7 @@ export function useLiveLocations(
         );
         return {
           userId: key,
+          username: p.username,
           lat: p.lat,
           lng: p.lng,
           updatedAt: p.updatedAt,
@@ -65,17 +95,34 @@ export function useLiveLocations(
     });
 
     channel.subscribe(status => {
-      if (status !== SUBSCRIBED_STATUS) return;
-      channel.track({
-        lat: latRef.current,
-        lng: lngRef.current,
-        updatedAt: Date.now(),
-      });
+      if (status === SUBSCRIBE_STATUS.SUBSCRIBED) {
+        setConnectionStatus(CONNECTION_STATUS.CONNECTED);
+        channel.track({
+          username: usernameRef.current,
+          lat: latRef.current,
+          lng: lngRef.current,
+          updatedAt: Date.now(),
+        });
+        return;
+      }
+      if (
+        status === SUBSCRIBE_STATUS.CHANNEL_ERROR ||
+        status === SUBSCRIBE_STATUS.TIMED_OUT
+      ) {
+        setConnectionStatus(CONNECTION_STATUS.ERROR);
+      }
     });
 
     channelRef.current = channel;
 
+    const handlePageHide = () => {
+      channel.untrack();
+    };
+    window.addEventListener(PAGEHIDE_EVENT, handlePageHide);
+
     return () => {
+      window.removeEventListener(PAGEHIDE_EVENT, handlePageHide);
+      channel.untrack();
       supabase.removeChannel(channel);
       channelRef.current = null;
     };
@@ -83,8 +130,8 @@ export function useLiveLocations(
 
   useEffect(() => {
     if (!channelRef.current) return;
-    channelRef.current.track({ lat, lng, updatedAt: Date.now() });
-  }, [lat, lng]);
+    channelRef.current.track({ username, lat, lng, updatedAt: Date.now() });
+  }, [username, lat, lng]);
 
-  return users;
+  return { users, connectionStatus };
 }

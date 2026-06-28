@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { SharingUser } from '../hooks/useLiveLocations';
+import { useTranslation } from '../i18n';
 
 const icon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -19,8 +20,6 @@ const icon = L.icon({
 const GOOGLE_MAPS_BASE = 'https://maps.google.com/?q=';
 const DEFAULT_ZOOM = 12;
 const WINDOW_TARGET_BLANK = '_blank';
-const YOU_LABEL = 'You';
-const OPEN_IN_GOOGLE_MAPS = 'Open in Google Maps';
 
 interface LiveUserMapProps {
   users: SharingUser[];
@@ -28,6 +27,7 @@ interface LiveUserMapProps {
 }
 
 export function LiveUserMap({ users, currentUserId }: LiveUserMapProps) {
+  const { t } = useTranslation();
   const center: [number, number] = users[0]
     ? [users[0].lat, users[0].lng]
     : [0, 0];
@@ -47,7 +47,9 @@ export function LiveUserMap({ users, currentUserId }: LiveUserMapProps) {
           <Popup>
             <div className="flex flex-col gap-1 text-sm">
               <span className="font-semibold">
-                {user.userId === currentUserId ? YOU_LABEL : user.userId}
+                {user.userId === currentUserId
+                  ? t('USER.YOU_LABEL')
+                  : user.username}
               </span>
               <a
                 href={`${GOOGLE_MAPS_BASE}${user.lat},${user.lng}`}
@@ -55,7 +57,7 @@ export function LiveUserMap({ users, currentUserId }: LiveUserMapProps) {
                 rel="noreferrer"
                 className="text-blue-600 underline"
               >
-                {OPEN_IN_GOOGLE_MAPS}
+                {t('SHARING.OPEN_IN_GOOGLE_MAPS')}
               </a>
             </div>
           </Popup>

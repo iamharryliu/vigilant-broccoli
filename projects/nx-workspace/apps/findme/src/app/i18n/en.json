@@ -1,0 +1,32 @@
+{
+  "USER": {
+    "YOU_LABEL": "You",
+    "YOU_FIELD": "You:",
+    "USERNAME_PLACEHOLDER": "Pick a username",
+    "RANDOMIZE": "Pick a random username"
+  },
+  "SHARING": {
+    "SHARE": "Share my location",
+    "STOP": "Stop sharing",
+    "VIEWING": "Viewing",
+    "VIEW_ON_GOOGLE_MAPS": "View on Google Maps",
+    "OPEN_IN_GOOGLE_MAPS": "Open in Google Maps"
+  },
+  "CONNECTION": {
+    "CONNECTING": "Connecting to live updates…",
+    "ERROR": "Lost connection to live updates. Retrying… check your network."
+  },
+  "USERS": {
+    "EMPTY": "No one else is here yet. Share this page to invite others."
+  },
+  "LOCATION": {
+    "FIX_SETTINGS": "How to fix browser location settings",
+    "HELP_STEPS": {
+      "IOS_SERVICES": "iOS: Settings → Privacy & Security → Location Services → enable for your browser (Safari / Chrome) with Precise Location on.",
+      "IOS_SAFARI": "iOS Safari (per site): tap \"AA\" in the URL bar → Website Settings → Location → Allow.",
+      "DESKTOP_CHROME": "Desktop Chrome / Edge: click the lock icon next to the URL → Site settings → Location → Allow.",
+      "DESKTOP_SAFARI": "Desktop Safari: Safari → Settings → Websites → Location → set this site to Allow.",
+      "RELOAD": "Reload the page after changing the setting."
+    }
+  }
+}
