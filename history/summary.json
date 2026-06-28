@@ -54,6 +54,24 @@
     "dailyMinutesDown": {}
   },
   {
+    "name": "Hearth",
+    "url": "https://vb-hearth.vercel.app/login",
+    "icon": "https://icons.duckduckgo.com/ip3/vb-hearth.vercel.app.ico",
+    "slug": "hearth",
+    "status": "up",
+    "uptime": "100.00%",
+    "uptimeDay": "100.00%",
+    "uptimeWeek": "100.00%",
+    "uptimeMonth": "100.00%",
+    "uptimeYear": "100.00%",
+    "time": 121,
+    "timeDay": 121,
+    "timeWeek": 121,
+    "timeMonth": 121,
+    "timeYear": 121,
+    "dailyMinutesDown": {}
+  },
+  {
     "name": "LLM Service",
     "url": "https://vb-llm-service.fly.dev/",
     "icon": "https://vb-llm-service.fly.dev/favicon.ico",
