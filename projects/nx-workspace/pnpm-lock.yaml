@@ -879,6 +879,9 @@ importers:
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib
+      leaflet:
+        specifier: '*'
+        version: 1.9.4
       lucide-react:
         specifier: '*'
         version: 0.513.0(react@19.2.7)
@@ -888,6 +891,9 @@ importers:
       react:
         specifier: '*'
         version: 19.2.7
+      react-leaflet:
+        specifier: '*'
+        version: 5.0.0(leaflet@1.9.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       recharts:
         specifier: '*'
         version: 3.8.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@19.2.7)(react@19.2.7)(redux@5.0.1)

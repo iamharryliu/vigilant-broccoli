@@ -48,6 +48,9 @@
       "@vigilant-broccoli/react-lib": [
         "./libs/@vigilant-broccoli/react-lib/src/index.ts"
       ],
+      "@vigilant-broccoli/react-lib/live-location-map": [
+        "./libs/@vigilant-broccoli/react-lib/src/live-location/LiveUserMap.tsx"
+      ],
       "general-components": ["./libs/angular/general-components/src/index.ts"],
       "@vigilant-broccoli/personal-common-js": [
         "./libs/@vigilant-broccoli/personal-common-js/src/index.ts"

@@ -14,9 +14,11 @@
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/react-lib": "workspace:*",
+    "leaflet": "*",
     "lucide-react": "*",
     "next": "*",
     "react": "*",
+    "react-leaflet": "*",
     "recharts": "*",
     "zod": "*"
   }

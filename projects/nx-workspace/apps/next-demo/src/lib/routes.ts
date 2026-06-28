@@ -5,6 +5,7 @@ export const ROUTES = {
   HOMES: '/homes',
   WHERE_IS: '/where-is',
   WHERE_IS_DETAIL: (id: string) => `/where-is/${id}`,
+  LOCATOR: '/locator',
   AUTH_CALLBACK: '/auth/callback',
   CALENDAR: '/calendar',
   MASTER_LIST: '/master-list',

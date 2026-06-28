@@ -1,0 +1,27 @@
+{
+  "LOCATOR": {
+    "TITLE": "Find Members",
+    "SHARE": "Share my location",
+    "STOP": "Stop sharing",
+    "VIEWING": "Viewing",
+    "VIEW_ON_GOOGLE_MAPS": "View on Google Maps",
+    "OPEN_IN_GOOGLE_MAPS": "Open in Google Maps",
+    "YOU_LABEL": "You",
+    "NO_HOME": "Select a home to find its members.",
+    "MEMBERS_EMPTY": "No home members are here yet. Ask them to open this page and share their location."
+  },
+  "CONNECTION": {
+    "CONNECTING": "Connecting to live updates…",
+    "ERROR": "Lost connection to live updates. Retrying… check your network."
+  },
+  "LOCATION": {
+    "FIX_SETTINGS": "How to fix browser location settings",
+    "HELP_STEPS": {
+      "IOS_SERVICES": "iOS: Settings → Privacy & Security → Location Services → enable for your browser (Safari / Chrome) with Precise Location on.",
+      "IOS_SAFARI": "iOS Safari (per site): tap \"AA\" in the URL bar → Website Settings → Location → Allow.",
+      "DESKTOP_CHROME": "Desktop Chrome / Edge: click the lock icon next to the URL → Site settings → Location → Allow.",
+      "DESKTOP_SAFARI": "Desktop Safari: Safari → Settings → Websites → Location → set this site to Allow.",
+      "RELOAD": "Reload the page after changing the setting."
+    }
+  }
+}

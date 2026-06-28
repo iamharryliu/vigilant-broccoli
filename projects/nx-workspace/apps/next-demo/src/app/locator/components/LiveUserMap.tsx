@@ -1,8 +1,10 @@
 'use client';
 
-import { LiveUserMap as SharedLiveUserMap } from '@vigilant-broccoli/react-lib/live-location-map';
-import { SharingUser } from '../hooks/useLiveLocations';
-import { useTranslation } from '../i18n';
+import {
+  LiveUserMap as SharedLiveUserMap,
+  SharingUser,
+} from '@vigilant-broccoli/react-lib/live-location-map';
+import { useTranslation } from '../../i18n';
 
 interface LiveUserMapProps {
   users: SharingUser[];
@@ -15,8 +17,8 @@ export function LiveUserMap({ users, currentUserId }: LiveUserMapProps) {
     <SharedLiveUserMap
       users={users}
       currentUserId={currentUserId}
-      youLabel={t('USER.YOU_LABEL')}
-      openInMapsLabel={t('SHARING.OPEN_IN_GOOGLE_MAPS')}
+      youLabel={t('LOCATOR.YOU_LABEL')}
+      openInMapsLabel={t('LOCATOR.OPEN_IN_GOOGLE_MAPS')}
     />
   );
 }
