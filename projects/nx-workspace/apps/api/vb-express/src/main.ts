@@ -13,14 +13,12 @@ import speechToTextRouter from './routes/speech-to-text';
 import textToSpeechRouter from './routes/text-to-speech';
 import whereIsRouter from './routes/where-is';
 import priceTrackerRouter from './routes/price-tracker';
-import {
-  getEnvironmentVariable,
-  requestLoggerMiddleware,
-} from '@vigilant-broccoli/common-node';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import {
   createApiKeyMiddleware,
   createCorsOptions,
   pingRouter,
+  requestLoggerMiddleware,
 } from '@vigilant-broccoli/express';
 
 const APP_PORT = getEnvironmentVariable('PORT') || 3333;

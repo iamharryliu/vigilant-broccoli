@@ -926,9 +926,6 @@ importers:
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
-      express:
-        specifier: ^5.2.1
-        version: 5.2.1
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
