@@ -138,14 +138,14 @@ async function main() {
   });
 
   const projectConfigs: Record<string, ProjectConfig> = {
-    'next-demo': {
+    hearth: {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,
         NEXT_PUBLIC_APP_URL: 'https://vb-next-demo.vercel.app/',
         VB_EXPRESS_URL: 'https://vb-express.fly.dev',
       },
-      envExamplePath: 'apps/next-demo/.env.local.example',
-      settings: NX_VERCEL_SETTINGS('next-demo', 'dist/apps/next-demo/.next'),
+      envExamplePath: 'apps/hearth/.env.local.example',
+      settings: NX_VERCEL_SETTINGS('hearth', 'dist/apps/hearth/.next'),
     },
     'employee-handler-ui': {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },

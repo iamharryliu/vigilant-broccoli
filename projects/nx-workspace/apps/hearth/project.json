@@ -1,0 +1,59 @@
+{
+  "name": "hearth",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/hearth",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/hearth",
+        "webpack": true
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "apps/hearth"
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 VB_EXPRESS_URL=https://vb-express.fly.dev NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/hearth/.env.local.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/hearth/supabase/migrations && nx serve:local hearth'"
+      }
+    },
+    "serve:local": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "hearth:build",
+        "dev": true,
+        "webpack": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "hearth:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "hearth:build:production",
+          "dev": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "VERCEL_PROJECT_ID=prj_KxSfQ3e3wvKg0VK1BY5frjuuRehd VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts hearth production"
+      }
+    }
+  }
+}
