@@ -58,27 +58,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: nrwl/nx-set-shas@afb73a62d26e41464e9254689e1fd6122ee683c1 # v5.0.1
+      - uses: ./.github/actions/setup-nx-workspace
         with:
-          main-branch-name: main
-
-      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
-        with:
-          package_json_file: ./projects/nx-workspace/package.json
-
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version: 22
-          cache: 'pnpm'
-          cache-dependency-path: ./projects/nx-workspace/pnpm-lock.yaml
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Update npm
-        run: npm install -g npm@latest
-
-      - name: Install dependencies
-        working-directory: ./projects/nx-workspace
-        run: pnpm install --frozen-lockfile
+          update-npm: 'true'
 
       - name: Check if npm publish needed
         id: check
@@ -119,23 +102,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: nrwl/nx-set-shas@afb73a62d26e41464e9254689e1fd6122ee683c1 # v5.0.1
-        with:
-          main-branch-name: main
-
-      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
-        with:
-          package_json_file: ./projects/nx-workspace/package.json
-
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version: 22
-          cache: 'pnpm'
-          cache-dependency-path: ./projects/nx-workspace/pnpm-lock.yaml
-
-      - name: Install dependencies
-        working-directory: ./projects/nx-workspace
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-nx-workspace
 
       - name: Check if deployment needed
         id: check
@@ -215,23 +182,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: nrwl/nx-set-shas@afb73a62d26e41464e9254689e1fd6122ee683c1 # v5.0.1
-        with:
-          main-branch-name: main
-
-      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
-        with:
-          package_json_file: ./projects/nx-workspace/package.json
-
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version: 22
-          cache: 'pnpm'
-          cache-dependency-path: ./projects/nx-workspace/pnpm-lock.yaml
-
-      - name: Install dependencies
-        working-directory: ./projects/nx-workspace
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-nx-workspace
 
       - name: Check if pages deployment needed
         id: check

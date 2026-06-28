@@ -1,0 +1,40 @@
+name: Setup Nx Workspace
+description: Set up nx-set-shas, pnpm, Node.js, and install dependencies for the nx workspace.
+
+inputs:
+  registry-url:
+    description: npm registry URL for setup-node (enables auth/.npmrc when set)
+    required: false
+    default: ''
+  update-npm:
+    description: Upgrade npm to latest after Node setup
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - uses: nrwl/nx-set-shas@afb73a62d26e41464e9254689e1fd6122ee683c1 # v5.0.1
+      with:
+        main-branch-name: main
+
+    - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+      with:
+        package_json_file: ./projects/nx-workspace/package.json
+
+    - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+      with:
+        node-version: 22
+        cache: 'pnpm'
+        cache-dependency-path: ./projects/nx-workspace/pnpm-lock.yaml
+        registry-url: ${{ inputs.registry-url }}
+
+    - name: Update npm
+      if: ${{ inputs.update-npm == 'true' }}
+      shell: bash
+      run: npm install -g npm@latest
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ./projects/nx-workspace
+      run: pnpm install --frozen-lockfile
