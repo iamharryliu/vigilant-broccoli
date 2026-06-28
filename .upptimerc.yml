@@ -2,14 +2,6 @@ owner: iamharryliu
 repo: vigilant-broccoli
 
 sites:
-  - name: Harry Liu
-    url: https://harryliu.dev/
-  - name: Cloud 8 Skate
-    url: https://cloud8skate.com/
-  - name: FindMe
-    url: https://findme-kohl.vercel.app/
-  - name: Hearth
-    url: https://vb-hearth.vercel.app/login
   - name: LLM Service
     url: https://vb-llm-service.fly.dev/
     icon: https://vb-llm-service.fly.dev/favicon.ico
@@ -21,9 +13,16 @@ sites:
     url: https://email-subscription-service.fly.dev/
   - name: VB Express
     url: https://vb-express.fly.dev/
+  - name: Harry Liu
+    url: https://harryliu.dev/
+  - name: Cloud 8 Skate
+    url: https://cloud8skate.com/
+  - name: FindMe
+    url: https://findme-kohl.vercel.app/
+  - name: Hearth
+    url: https://vb-hearth.vercel.app/login
 
 user-agent: upptime-vigilant-broccoli
-delay: 5000
 
 assignees:
   - iamharryliu
