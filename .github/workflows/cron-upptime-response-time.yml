@@ -40,3 +40,8 @@ jobs:
           command: 'response-time'
         env:
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+      - uses: upptime/uptime-monitor@master
+        with:
+          command: 'summary'
+        env:
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
