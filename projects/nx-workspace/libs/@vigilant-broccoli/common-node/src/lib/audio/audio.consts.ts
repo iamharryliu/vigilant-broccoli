@@ -31,6 +31,7 @@ export const ELEVENLABS_VOICES = {
 
 export const ELEVENLABS_TTS_MODELS = {
   MULTILINGUAL_V2: 'eleven_multilingual_v2',
+  TURBO_V2_5: 'eleven_turbo_v2_5',
 } as const;
 
 export const ELEVENLABS_TTS_OUTPUT_FORMATS = {
@@ -55,4 +56,5 @@ export const ELEVENLABS_LANGUAGES = {
   JAPANESE: 'ja',
   CHINESE: 'zh',
   KOREAN: 'ko',
+  SWEDISH: 'sv',
 } as const;

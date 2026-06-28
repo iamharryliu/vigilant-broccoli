@@ -8,7 +8,11 @@ const ERROR_TEXT_REQUIRED = 'Text is required';
 const ERROR_TTS_FAILED = 'Failed to generate speech';
 
 router.post('/', async (req: Request, res: Response) => {
-  const { text, voiceId } = req.body as { text?: string; voiceId?: string };
+  const { text, voiceId, languageCode } = req.body as {
+    text?: string;
+    voiceId?: string;
+    languageCode?: string;
+  };
 
   if (!text?.trim())
     return res.status(400).json({ error: ERROR_TEXT_REQUIRED });
@@ -16,6 +20,7 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const audioStream = await AudioService.streamTextToSpeech(text.trim(), {
       ...(voiceId?.trim() && { voiceId: voiceId.trim() }),
+      ...(languageCode?.trim() && { languageCode: languageCode.trim() }),
     });
 
     res.setHeader('Content-Type', 'audio/mpeg');

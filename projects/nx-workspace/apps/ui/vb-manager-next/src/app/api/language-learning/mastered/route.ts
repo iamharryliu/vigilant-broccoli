@@ -15,7 +15,12 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as
     | { wordId: number }
-    | { word: string; language: string; definition: string };
+    | {
+        word: string;
+        language: string;
+        definition: string;
+        pinyin?: string;
+      };
 
   if (!body || !Object.keys(body).length) {
     return NextResponse.json(
@@ -27,7 +32,7 @@ export async function POST(request: NextRequest) {
   if ('wordId' in body) {
     markWordAsMastered(body.wordId);
   } else {
-    addMasteredWord(body.word, body.language, body.definition);
+    addMasteredWord(body.word, body.language, body.definition, body.pinyin);
   }
 
   return NextResponse.json({ success: true });

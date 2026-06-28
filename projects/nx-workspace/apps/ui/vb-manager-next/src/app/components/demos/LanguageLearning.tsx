@@ -26,6 +26,7 @@ type Word = {
   word: string;
   type: string;
   definition: string;
+  pinyin: string | null;
   mastered: number;
   mastered_at: string | null;
 };
@@ -42,6 +43,7 @@ type StandaloneMasteredWord = {
   word: string;
   language: string;
   definition: string | null;
+  pinyin: string | null;
   created_at: string;
 };
 
@@ -51,7 +53,13 @@ type SelectedToken =
 
 type MasterAction =
   | { kind: 'vocab'; wordId: number }
-  | { kind: 'word'; word: string; language: string; definition: string };
+  | {
+      kind: 'word';
+      word: string;
+      language: string;
+      definition: string;
+      pinyin?: string;
+    };
 
 const SUPPORTED_LANGUAGES = [
   'Swedish',
@@ -60,21 +68,29 @@ const SUPPORTED_LANGUAGES = [
   'German',
   'Japanese',
   'Italian',
+  'Chinese',
 ] as const;
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
-const LANGUAGE_FLAGS: Record<string, string> = {
-  Swedish: '🇸🇪',
-  Spanish: '🇪🇸',
-  French: '🇫🇷',
-  German: '🇩🇪',
-  Japanese: '🇯🇵',
-  Italian: '🇮🇹',
+const LANGUAGES: Record<SupportedLanguage, { flag: string; code: string }> = {
+  Swedish: { flag: '🇸🇪', code: 'sv' },
+  Spanish: { flag: '🇪🇸', code: 'es' },
+  French: { flag: '🇫🇷', code: 'fr' },
+  German: { flag: '🇩🇪', code: 'de' },
+  Japanese: { flag: '🇯🇵', code: 'ja' },
+  Italian: { flag: '🇮🇹', code: 'it' },
+  Chinese: { flag: '🇨🇳', code: 'zh' },
 };
 
+const CHINESE: SupportedLanguage = 'Chinese';
+
+function languageCode(language: string): string | undefined {
+  return LANGUAGES[language as SupportedLanguage]?.code;
+}
+
 function languageWithFlag(language: string) {
-  const flag = LANGUAGE_FLAGS[language];
-  return flag ? `${flag} ${language}` : language;
+  const meta = LANGUAGES[language as SupportedLanguage];
+  return meta ? `${meta.flag} ${language}` : language;
 }
 
 const TAB = { HISTORY: 'history', MASTERED: 'mastered' } as const;
@@ -97,6 +113,7 @@ const LABEL_MASTERED = 'Mastered';
 const LABEL_MARK_AS_MASTERED = 'Mark as mastered';
 const LABEL_NO_HISTORY = 'No history yet.';
 const LABEL_NO_MASTERED = 'No mastered words yet.';
+const LABEL_PINYIN_LOADING = '…';
 
 const SPEED_OPTIONS = ['0.5×', '0.75×', '1×'] as const;
 type SpeedOption = (typeof SPEED_OPTIONS)[number];
@@ -107,18 +124,61 @@ const SPEED_RATE: Record<SpeedOption, number> = {
 };
 const DEFAULT_SPEED: SpeedOption = '0.75×';
 
-const WORD_REGEX = /([A-Za-zÀ-ÖØ-öø-ÿ]+)/;
-
 const SESSION_COLUMN_MIN_WIDTH = '320px';
 
-function tokenizeSentence(sentence: string, vocabWords: Word[]) {
-  return sentence.split(WORD_REGEX).map(part => ({
-    text: part,
-    isWord: WORD_REGEX.test(part),
-    vocabWord: vocabWords.find(
-      w => w.word.toLowerCase() === part.toLowerCase(),
-    ),
-  }));
+const segmenterCache = new Map<string, Intl.Segmenter>();
+function getSegmenter(locale: string) {
+  let segmenter = segmenterCache.get(locale);
+  if (!segmenter) {
+    segmenter = new Intl.Segmenter(locale, { granularity: 'word' });
+    segmenterCache.set(locale, segmenter);
+  }
+  return segmenter;
+}
+
+type Token = { text: string; isWord: boolean; vocabWord?: Word };
+
+function tokenizeSentence(
+  sentence: string,
+  language: string,
+  vocabWords: Word[],
+): Token[] {
+  const locale = languageCode(language) ?? 'en';
+  const segments = Array.from(getSegmenter(locale).segment(sentence));
+  const tokens: Token[] = [];
+
+  let i = 0;
+  while (i < segments.length) {
+    let bestEnd = -1;
+    let bestVocab: Word | undefined;
+    let combined = '';
+    for (let j = i; j < segments.length; j++) {
+      if (!segments[j].isWordLike) break;
+      combined += segments[j].segment;
+      const match = vocabWords.find(
+        w => w.word.toLowerCase() === combined.toLowerCase(),
+      );
+      if (match) {
+        bestEnd = j;
+        bestVocab = match;
+      }
+    }
+
+    if (bestVocab && bestEnd >= i) {
+      const text = segments
+        .slice(i, bestEnd + 1)
+        .map(s => s.segment)
+        .join('');
+      tokens.push({ text, isWord: true, vocabWord: bestVocab });
+      i = bestEnd + 1;
+    } else {
+      const seg = segments[i];
+      tokens.push({ text: seg.segment, isWord: seg.isWordLike ?? false });
+      i++;
+    }
+  }
+
+  return tokens;
 }
 
 function MasterButton({
@@ -148,8 +208,11 @@ function WordContent({
   type,
   isMastered,
   definition,
+  pinyin,
+  pinyinLoading = false,
   definitionLoading = false,
   activeAudioId,
+  targetLanguageCode,
   onSpeak,
   onMaster,
 }: {
@@ -159,9 +222,12 @@ function WordContent({
   type: string | null;
   isMastered: boolean;
   definition: string | null;
+  pinyin?: string | null;
+  pinyinLoading?: boolean;
   definitionLoading?: boolean;
   activeAudioId: string | null;
-  onSpeak: (text: string, id: string) => void;
+  targetLanguageCode?: string;
+  onSpeak: (text: string, id: string, languageCode?: string) => void;
   onMaster: () => void;
 }) {
   return (
@@ -172,7 +238,7 @@ function WordContent({
           text={word}
           id={audioId}
           activeId={activeAudioId}
-          onSpeak={onSpeak}
+          onSpeak={(text, id) => onSpeak(text, id, targetLanguageCode)}
         />
         <MasterButton mastered={isMastered} onClick={onMaster} />
         {type && (
@@ -184,6 +250,11 @@ function WordContent({
           </Badge>
         )}
       </div>
+      {(pinyin || pinyinLoading) && (
+        <Text size="2" color="gray" className="italic">
+          {pinyinLoading ? LABEL_PINYIN_LOADING : pinyin}
+        </Text>
+      )}
       {definitionLoading ? (
         <Loader2 size={16} className="animate-spin text-gray-400" />
       ) : (
@@ -220,13 +291,14 @@ function WordDialog({
   masteredIds: Set<number>;
   masteredWords: Set<string>;
   activeAudioId: string | null;
-  onSpeak: (text: string, id: string) => void;
+  onSpeak: (text: string, id: string, languageCode?: string) => void;
   onMaster: (action: MasterAction) => void;
   onClose: () => void;
 }) {
   const [lookedUpDefinition, setLookedUpDefinition] = useState<string | null>(
     null,
   );
+  const [lookedUpPinyin, setLookedUpPinyin] = useState<string | null>(null);
   const [loadingDefinition, setLoadingDefinition] = useState(false);
 
   const displayText = token.kind === 'vocab' ? token.word.word : token.text;
@@ -240,7 +312,10 @@ function WordDialog({
       body: JSON.stringify({ word: token.text, language }),
     })
       .then(r => r.json())
-      .then(data => setLookedUpDefinition(data.definition))
+      .then(data => {
+        setLookedUpDefinition(data.definition);
+        setLookedUpPinyin(data.pinyin ?? null);
+      })
       .finally(() => setLoadingDefinition(false));
   }, [token, language]);
 
@@ -252,6 +327,8 @@ function WordDialog({
   const definition =
     token.kind === 'vocab' ? token.word.definition : lookedUpDefinition;
   const wordType = token.kind === 'vocab' ? token.word.type : null;
+  const pinyin = token.kind === 'vocab' ? token.word.pinyin : lookedUpPinyin;
+  const isChinese = language === CHINESE;
 
   function handleMaster() {
     if (token.kind === 'vocab') {
@@ -262,6 +339,7 @@ function WordDialog({
         word: token.text,
         language,
         definition: lookedUpDefinition,
+        ...(lookedUpPinyin && { pinyin: lookedUpPinyin }),
       });
     }
   }
@@ -276,8 +354,13 @@ function WordDialog({
           type={wordType}
           isMastered={isMastered}
           definition={definition}
+          pinyin={pinyin}
+          pinyinLoading={
+            isChinese && token.kind === 'lookup' && loadingDefinition
+          }
           definitionLoading={loadingDefinition}
           activeAudioId={activeAudioId}
+          targetLanguageCode={languageCode(language)}
           onSpeak={onSpeak}
           onMaster={handleMaster}
         />
@@ -300,7 +383,7 @@ function SessionCard({
   activeAudioId: string | null;
   masteredIds: Set<number>;
   masteredWords: Set<string>;
-  onSpeak: (text: string, id: string) => void;
+  onSpeak: (text: string, id: string, languageCode?: string) => void;
   onMaster: (action: MasterAction) => void;
 }) {
   const [selectedToken, setSelectedToken] = useState<SelectedToken | null>(
@@ -308,13 +391,15 @@ function SessionCard({
   );
   const tokens = tokenizeSentence(
     session.exampleSentence.target,
+    session.language,
     session.words,
   );
+  const targetLanguageCode = languageCode(session.language);
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col sm:flex-row gap-3">
-        {session.words.map(({ id, word, type, definition }) => {
+        {session.words.map(({ id, word, type, definition, pinyin }) => {
           const isMastered = masteredIds.has(id);
           return (
             <div
@@ -332,7 +417,9 @@ function SessionCard({
                 type={type}
                 isMastered={isMastered}
                 definition={definition}
+                pinyin={pinyin}
                 activeAudioId={activeAudioId}
+                targetLanguageCode={targetLanguageCode}
                 onSpeak={onSpeak}
                 onMaster={() => onMaster({ kind: 'vocab', wordId: id })}
               />
@@ -350,7 +437,7 @@ function SessionCard({
             text={session.exampleSentence.target}
             id={`${prefix}-example`}
             activeId={activeAudioId}
-            onSpeak={onSpeak}
+            onSpeak={(text, id) => onSpeak(text, id, targetLanguageCode)}
           />
         </div>
         <Text size="3" asChild>
@@ -378,6 +465,11 @@ function SessionCard({
             })}
           </p>
         </Text>
+        {session.exampleSentence.pinyin && (
+          <Text size="2" color="gray" className="italic">
+            {session.exampleSentence.pinyin}
+          </Text>
+        )}
         <Text size="2" color="gray" className="italic">
           {session.exampleSentence.english}
         </Text>
@@ -543,16 +635,22 @@ export function LanguageLearning() {
       headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
       body: JSON.stringify({ languages }),
     });
-    const { sessions }: { sessions: Session[] } = await res.json();
-    setCurrentSessions(sessions);
-    const newIds = new Set(sessions.map(s => s.id));
-    setHistory(prev => [...sessions, ...prev.filter(s => !newIds.has(s.id))]);
+    const { sessions } = (await res.json()) as { sessions?: Session[] };
+    const safeSessions = sessions ?? [];
+    setCurrentSessions(safeSessions);
+    const newIds = new Set(safeSessions.map(s => s.id));
+    setHistory(prev => [
+      ...safeSessions,
+      ...prev.filter(s => !newIds.has(s.id)),
+    ]);
     setFetching(false);
-    const first = sessions[0];
+    const first = safeSessions[0];
     if (!first) return;
     setActiveAudioId(`current-${first.id}-example`);
+    const firstCode = languageCode(first.language);
     await speak(first.exampleSentence.target, {
       playbackRate: SPEED_RATE[speed],
+      ...(firstCode && { languageCode: firstCode }),
     });
     setActiveAudioId(null);
   }
@@ -568,6 +666,7 @@ export function LanguageLearning() {
               word: action.word,
               language: action.language,
               definition: action.definition,
+              ...(action.pinyin && { pinyin: action.pinyin }),
             },
       ),
     });
@@ -580,15 +679,19 @@ export function LanguageLearning() {
           word: action.word,
           language: action.language,
           definition: action.definition,
+          pinyin: action.pinyin ?? null,
           created_at: new Date().toISOString(),
         },
       ]);
     }
   }
 
-  async function handleSpeak(text: string, id: string) {
+  async function handleSpeak(text: string, id: string, languageCode?: string) {
     setActiveAudioId(id);
-    await speak(text, { playbackRate: SPEED_RATE[speed] });
+    await speak(text, {
+      playbackRate: SPEED_RATE[speed],
+      ...(languageCode && { languageCode }),
+    });
     setActiveAudioId(null);
   }
 
@@ -721,6 +824,7 @@ export function LanguageLearning() {
                 language: w.language,
                 type: w.type,
                 definition: w.definition,
+                pinyin: w.pinyin,
                 audioId: `mastered-vocab-${w.id}`,
                 mastered_at: w.mastered_at,
               })),
@@ -729,6 +833,7 @@ export function LanguageLearning() {
                 language: w.language,
                 type: null,
                 definition: w.definition,
+                pinyin: w.pinyin,
                 audioId: `mastered-standalone-${w.word}`,
                 mastered_at: w.created_at,
               })),
@@ -742,6 +847,7 @@ export function LanguageLearning() {
                   language,
                   type,
                   definition,
+                  pinyin,
                   audioId,
                   mastered_at,
                 }) => (
@@ -771,7 +877,9 @@ export function LanguageLearning() {
                       type={type}
                       isMastered
                       definition={definition}
+                      pinyin={pinyin}
                       activeAudioId={currentActiveId}
+                      targetLanguageCode={languageCode(language)}
                       onSpeak={handleSpeak}
                       onMaster={() => undefined}
                     />

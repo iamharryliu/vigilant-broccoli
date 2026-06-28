@@ -12,21 +12,23 @@ export const languageLearningSchema = {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['word', 'type', 'definition'],
+          required: ['word', 'type', 'definition', 'pinyin'],
           properties: {
             word: { type: 'string' },
             type: { type: 'string', enum: ['common', 'uncommon'] },
             definition: { type: 'string' },
+            pinyin: { type: 'string' },
           },
         },
       },
       exampleSentence: {
         type: 'object',
         additionalProperties: false,
-        required: ['target', 'english'],
+        required: ['target', 'english', 'pinyin'],
         properties: {
           target: { type: 'string' },
           english: { type: 'string' },
+          pinyin: { type: 'string' },
         },
       },
     },
@@ -57,21 +59,23 @@ export const languageLearningMultiSchema = {
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['word', 'type', 'definition'],
+                required: ['word', 'type', 'definition', 'pinyin'],
                 properties: {
                   word: { type: 'string' },
                   type: { type: 'string', enum: ['common', 'uncommon'] },
                   definition: { type: 'string' },
+                  pinyin: { type: 'string' },
                 },
               },
             },
             exampleSentence: {
               type: 'object',
               additionalProperties: false,
-              required: ['target', 'english'],
+              required: ['target', 'english', 'pinyin'],
               properties: {
                 target: { type: 'string' },
                 english: { type: 'string' },
+                pinyin: { type: 'string' },
               },
             },
           },

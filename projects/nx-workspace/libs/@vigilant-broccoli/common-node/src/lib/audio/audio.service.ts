@@ -11,9 +11,10 @@ interface TextToSpeechOptions {
   voiceId?: string;
   modelId?: string;
   outputFormat?: string;
+  languageCode?: string;
 }
 
-const DEFAULT_TTS_OPTIONS: Required<TextToSpeechOptions> = {
+const DEFAULT_TTS_OPTIONS = {
   voiceId: ELEVENLABS_VOICES.DEFAULT,
   modelId: ELEVENLABS_TTS_MODELS.MULTILINGUAL_V2,
   outputFormat: ELEVENLABS_TTS_OUTPUT_FORMATS.MP3_44100_128,
@@ -71,8 +72,10 @@ export const AudioService = {
     text: string,
     options: TextToSpeechOptions = {},
   ): Promise<ReadableStream> => {
+    const { languageCode } = options;
     const { voiceId, modelId, outputFormat } = {
       ...DEFAULT_TTS_OPTIONS,
+      ...(languageCode && { modelId: ELEVENLABS_TTS_MODELS.TURBO_V2_5 }),
       ...options,
     };
 
@@ -84,7 +87,11 @@ export const AudioService = {
           'xi-api-key': getApiKey(),
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text, model_id: modelId }),
+        body: JSON.stringify({
+          text,
+          model_id: modelId,
+          ...(languageCode && { language_code: languageCode }),
+        }),
       },
     );
 

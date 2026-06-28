@@ -18,6 +18,7 @@ db.prepare(
     category TEXT NOT NULL,
     example_target TEXT NOT NULL,
     example_english TEXT NOT NULL,
+    example_pinyin TEXT,
     created_at TEXT NOT NULL
   )
 `,
@@ -31,6 +32,7 @@ db.prepare(
     word TEXT NOT NULL,
     type TEXT NOT NULL,
     definition TEXT NOT NULL,
+    pinyin TEXT,
     mastered INTEGER NOT NULL DEFAULT 0,
     mastered_at TEXT
   )
@@ -44,13 +46,13 @@ db.prepare(
     word TEXT NOT NULL,
     language TEXT NOT NULL,
     definition TEXT,
+    pinyin TEXT,
     created_at TEXT NOT NULL,
     UNIQUE(word, language)
   )
 `,
 ).run();
 
-// Migrations: add columns to ll_words if missing
 const wordColumns = (
   db.prepare(`PRAGMA table_info(ll_words)`).all() as { name: string }[]
 ).map(r => r.name);
@@ -62,6 +64,23 @@ if (!wordColumns.includes('mastered')) {
 if (!wordColumns.includes('mastered_at')) {
   db.prepare(`ALTER TABLE ll_words ADD COLUMN mastered_at TEXT`).run();
 }
+if (!wordColumns.includes('pinyin')) {
+  db.prepare(`ALTER TABLE ll_words ADD COLUMN pinyin TEXT`).run();
+}
+
+const sessionColumns = (
+  db.prepare(`PRAGMA table_info(ll_sessions)`).all() as { name: string }[]
+).map(r => r.name);
+if (!sessionColumns.includes('example_pinyin')) {
+  db.prepare(`ALTER TABLE ll_sessions ADD COLUMN example_pinyin TEXT`).run();
+}
+
+const masteredColumns = (
+  db.prepare(`PRAGMA table_info(ll_mastered_words)`).all() as { name: string }[]
+).map(r => r.name);
+if (!masteredColumns.includes('pinyin')) {
+  db.prepare(`ALTER TABLE ll_mastered_words ADD COLUMN pinyin TEXT`).run();
+}
 
 export type WordRow = {
   id: number;
@@ -69,6 +88,7 @@ export type WordRow = {
   word: string;
   type: string;
   definition: string;
+  pinyin: string | null;
   mastered: number;
   mastered_at: string | null;
 };
@@ -79,6 +99,7 @@ export type SessionRow = {
   category: string;
   example_target: string;
   example_english: string;
+  example_pinyin: string | null;
   created_at: string;
 };
 
@@ -86,6 +107,7 @@ export type MasteredWordRow = {
   word: string;
   language: string;
   definition: string | null;
+  pinyin: string | null;
   created_at: string;
 };
 
@@ -113,19 +135,20 @@ export function addMasteredWord(
   word: string,
   language: string,
   definition: string,
+  pinyin?: string,
 ): void {
   db.prepare(
     `
-    INSERT OR IGNORE INTO ll_mastered_words (word, language, definition, created_at)
-    VALUES (?, ?, ?, ?)
+    INSERT OR IGNORE INTO ll_mastered_words (word, language, definition, pinyin, created_at)
+    VALUES (?, ?, ?, ?, ?)
   `,
-  ).run(word, language, definition, new Date().toISOString());
+  ).run(word, language, definition, pinyin ?? null, new Date().toISOString());
 }
 
 export function getStandaloneMasteredWords(): MasteredWordRow[] {
   return db
     .prepare(
-      'SELECT word, language, definition, created_at FROM ll_mastered_words',
+      'SELECT word, language, definition, pinyin, created_at FROM ll_mastered_words',
     )
     .all() as MasteredWordRow[];
 }
@@ -133,17 +156,18 @@ export function getStandaloneMasteredWords(): MasteredWordRow[] {
 export function saveSession(
   language: string,
   category: string,
-  words: { word: string; type: string; definition: string }[],
+  words: { word: string; type: string; definition: string; pinyin?: string }[],
   exampleTarget: string,
   exampleEnglish: string,
+  examplePinyin?: string,
 ): SessionWithWords {
   const createdAt = new Date().toISOString();
 
   const { lastInsertRowid } = db
     .prepare(
       `
-    INSERT INTO ll_sessions (language, category, example_target, example_english, created_at)
-    VALUES (@language, @category, @example_target, @example_english, @created_at)
+    INSERT INTO ll_sessions (language, category, example_target, example_english, example_pinyin, created_at)
+    VALUES (@language, @category, @example_target, @example_english, @example_pinyin, @created_at)
   `,
     )
     .run({
@@ -151,18 +175,25 @@ export function saveSession(
       category,
       example_target: exampleTarget,
       example_english: exampleEnglish,
+      example_pinyin: examplePinyin ?? null,
       created_at: createdAt,
     });
 
   const sessionId = lastInsertRowid as number;
 
   const insertWord = db.prepare(`
-    INSERT INTO ll_words (session_id, word, type, definition)
-    VALUES (@session_id, @word, @type, @definition)
+    INSERT INTO ll_words (session_id, word, type, definition, pinyin)
+    VALUES (@session_id, @word, @type, @definition, @pinyin)
   `);
 
   for (const w of words) {
-    insertWord.run({ session_id: sessionId, ...w });
+    insertWord.run({
+      session_id: sessionId,
+      word: w.word,
+      type: w.type,
+      definition: w.definition,
+      pinyin: w.pinyin ?? null,
+    });
   }
 
   return getSession(sessionId)!;

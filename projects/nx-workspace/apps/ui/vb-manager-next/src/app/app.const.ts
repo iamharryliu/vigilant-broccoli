@@ -24,6 +24,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Dev Dashboard',
     path: '/dev-dashboard',
   },
+  NETWORK_MONITOR: {
+    title: 'Network Monitor',
+    path: '/network-monitor',
+  },
   TEXT_TOOLS: {
     title: 'Text Tools',
     path: '/text-tools',

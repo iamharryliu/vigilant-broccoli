@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HTTP_STATUS_CODES, LLM_MODEL } from '@vigilant-broccoli/common-js';
+import {
+  API_KEY_HEADER,
+  HTTP_HEADERS,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+  LLM_MODEL,
+} from '@vigilant-broccoli/common-js';
 import {
   getEnvironmentVariable,
   VB_EXPRESS_ENDPOINT,
@@ -8,7 +14,20 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const SYSTEM_PROMPT = `You are a language learning assistant. Given a word in a target language, provide a brief English definition suitable for a language learner. Be concise — one sentence maximum.`;
+const SYSTEM_PROMPT = `You are a language learning assistant. Given a word in a target language, return a brief one-sentence English definition suitable for a language learner. For Chinese only, fill the "pinyin" field with the Hanyu Pinyin transcription using tone marks (e.g. "píngguǒ"). For every other language, set "pinyin" to an empty string "".`;
+
+const DEFINE_SCHEMA = {
+  name: 'word_definition',
+  schema: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['definition', 'pinyin'],
+    properties: {
+      definition: { type: 'string' },
+      pinyin: { type: 'string' },
+    },
+  },
+} as const;
 
 export async function POST(request: NextRequest) {
   const { word, language } = (await request.json()) as {
@@ -26,15 +45,16 @@ export async function POST(request: NextRequest) {
   const res = await fetch(
     `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.LLM}`,
     {
-      method: 'POST',
+      method: HTTP_METHOD.POST,
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        ...HTTP_HEADERS.CONTENT_TYPE.JSON,
+        [API_KEY_HEADER]: getEnvironmentVariable('VB_EXPRESS_API_KEY'),
       },
       body: JSON.stringify({
         userPrompt: `Define the ${language} word "${word}" in English for a language learner.`,
         systemPrompt: SYSTEM_PROMPT,
         model: LLM_MODEL.GPT_4O_MINI,
+        jsonSchema: DEFINE_SCHEMA,
       }),
     },
   );
@@ -46,6 +66,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { outputs } = (await res.json()) as { outputs: string[] };
-  return NextResponse.json({ definition: outputs[0] });
+  const { outputs } = (await res.json()) as {
+    outputs: { definition: string; pinyin: string }[];
+  };
+  const result = outputs[0];
+  return NextResponse.json({
+    definition: result.definition,
+    pinyin: result.pinyin || undefined,
+  });
 }

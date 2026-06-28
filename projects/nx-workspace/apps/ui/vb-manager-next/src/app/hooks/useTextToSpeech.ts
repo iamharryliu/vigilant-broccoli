@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 type UseTextToSpeechOptions = {
   autoPlay?: boolean;
@@ -10,6 +12,7 @@ type UseTextToSpeechOptions = {
 type SpeakOptions = {
   voiceId?: string;
   playbackRate?: number;
+  languageCode?: string;
 };
 
 export type UseTextToSpeechResult = {
@@ -74,12 +77,15 @@ export const useTextToSpeech = (
       requestAbortRef.current = abortController;
 
       try {
-        const response = await fetch('/api/text-to-speech', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch(API_ENDPOINTS.TEXT_TO_SPEECH, {
+          method: HTTP_METHOD.POST,
+          headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({
             text: trimmedText,
             voiceId: speakOptions?.voiceId || voiceId,
+            ...(speakOptions?.languageCode && {
+              languageCode: speakOptions.languageCode,
+            }),
           }),
           signal: abortController.signal,
         });

@@ -43,6 +43,10 @@ export const API_ENDPOINTS = {
   PUBLIC_IP: '/api/public-ip',
   LOCAL_IP: '/api/local-ip',
   LOCAL_SERVICES: '/api/local-services',
+  NETWORK_MONITOR_LAN_DEVICES: '/api/network-monitor/lan-devices',
+  NETWORK_MONITOR_OUTBOUND_CONNECTIONS:
+    '/api/network-monitor/outbound-connections',
+  NETWORK_MONITOR_SCAN_DEVICE: '/api/network-monitor/scan-device',
 
   // System
   LOCAL_MACHINE: '/api/local-machine',
@@ -69,6 +73,7 @@ export const API_ENDPOINTS = {
   // LLM
   LLM_TEST: '/api/llm-test',
   SPEECH_TO_TEXT: '/api/speech-to-text',
+  TEXT_TO_SPEECH: '/api/text-to-speech',
   VOICE_LIST: '/api/voice-list',
 
   // AWS

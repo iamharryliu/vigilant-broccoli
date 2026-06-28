@@ -23,6 +23,7 @@ const SYSTEM_PROMPT = `You are a language learning vocabulary assistant.
 When given a list of target languages and a semantic category, first choose one common concept and one uncommon concept that both relate to the category — pick concepts that are useful for a learner growing their vocabulary (avoid very basic words like "hello", "yes", "no", numbers, days of the week). The common concept should be everyday useful vocabulary; the uncommon concept should be more advanced or nuanced.
 Then, for each target language, provide the equivalent word for both concepts (with an English definition for each) and compose one natural example sentence in that language that uses both words together, along with its English translation.
 The same two concepts must be used across every language so the words stay equivalent. If a language has no natural single-word equivalent for a concept, omit that entire language from the output rather than forcing an awkward translation.
+For Chinese only, fill the "pinyin" field on each word and on the example sentence with the Hanyu Pinyin transcription using tone marks (e.g. "píngguǒ", "wǒ chī le yī gè píngguǒ"). For every other language, set "pinyin" to an empty string "".
 You will be given a list of previously used words — do not reuse any of them.`;
 
 const CATEGORIES = [
@@ -103,9 +104,15 @@ export async function POST(request: NextRequest) {
     const session = saveSession(
       entry.language,
       category,
-      entry.words as { word: string; type: string; definition: string }[],
+      entry.words.map(w => ({
+        word: w.word,
+        type: w.type,
+        definition: w.definition,
+        pinyin: w.pinyin || undefined,
+      })),
       entry.exampleSentence.target,
       entry.exampleSentence.english,
+      entry.exampleSentence.pinyin || undefined,
     );
     return {
       id: session.id,
@@ -113,7 +120,11 @@ export async function POST(request: NextRequest) {
       category,
       created_at: session.created_at,
       words: session.words,
-      exampleSentence: entry.exampleSentence,
+      exampleSentence: {
+        target: entry.exampleSentence.target,
+        english: entry.exampleSentence.english,
+        pinyin: session.example_pinyin ?? undefined,
+      },
     };
   });
 
