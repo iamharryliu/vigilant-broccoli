@@ -1,10 +1,48 @@
 # Software Breakdown
 
-- Provision
-  - Developer Access
-  - Secret Manager
-  - Database
-  - Service Account/Auth
+## Good Design
+
+- Dynamic
+- Agnostic
+- Stateless
+- Handling silent failures.
+- Performance and optimization.
+
+## Implementation
+
+Should consider the following:
+
+- Weighing alternative solutions
+- Scaling
+- Security
+
+## Provisioning Resources
+
+- Bootstrapping
+- Application Access
+  - SSH/proxy access
+  - CI access
+  - Developer access
+- Secret Manager
+- Database
+- Service Account/Auth
+
+## Infrastructure
+
+- Security
+  - HTTPS TLS/SSL
+  - Service accounts
+  - Secret manager
+  - Permission levels
+- Cloud
+  - Availability
+- Deployment
+  - Immutability
+    Dev Experience
+- Infrastructure management
+  - Start/stop resources
+  - Health checks
+  - View logs
 
 ```mermaid
 flowchart TB
@@ -41,24 +79,8 @@ BUILD_FILES --> STATIC_FILES
 INFRASTRUCTURE_LAYER --> |Terraform + CI|SOFTWARE_SOLUTION
 ```
 
-Implementation
-Scaling
-Security
-Alternatives
-
-# Good Design
-
-- Dynamic
-- Agnostic
-- Stateless
-- Avoiding silent fail
-- Performance and optimization.
-
 # Refactor
 
-- Resources
-  - Secret Manager
-  - Bootstrapping
 - Environments
 - CICD Pipeline
 - Network Security
