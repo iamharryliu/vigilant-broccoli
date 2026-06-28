@@ -803,13 +803,6 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
-    label: 'VB - GCP API Credentials',
-    target:
-      'https://console.cloud.google.com/apis/credentials?project=vigilant-broccoli',
-    type: OPEN_TYPE.BROWSER,
-    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
-  },
-  {
     label: 'Git',
     target: 'https://git.harryliu.dev/',
     type: OPEN_TYPE.BROWSER,

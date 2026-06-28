@@ -75,7 +75,7 @@ jobs:
           echo "[Websites]"
           http_check "harryliu.dev" "https://harryliu.dev"
           http_check "cloud8skate.com" "https://cloud8skate.com"
-          http_check "vb-next-demo.vercel.app" "https://vb-next-demo.vercel.app"
+          http_check "vb-hearth.vercel.app" "https://vb-hearth.vercel.app"
 
           echo ""
           echo "[GCP VM]"

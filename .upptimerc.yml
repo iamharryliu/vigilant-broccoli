@@ -8,6 +8,8 @@ sites:
     url: https://cloud8skate.com/
   - name: FindMe
     url: https://findme-kohl.vercel.app/
+  - name: Hearth
+    url: https://vb-hearth.vercel.app/login
   - name: LLM Service
     url: https://vb-llm-service.fly.dev/
     icon: https://vb-llm-service.fly.dev/favicon.ico
