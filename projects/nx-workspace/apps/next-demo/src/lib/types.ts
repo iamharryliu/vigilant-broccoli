@@ -221,3 +221,9 @@ export interface PriceItem {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Whiteboard {
+  content: string;
+  homeId: number;
+  updatedAt: string;
+}

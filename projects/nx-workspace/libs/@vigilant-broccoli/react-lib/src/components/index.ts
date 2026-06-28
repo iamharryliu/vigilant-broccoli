@@ -29,6 +29,7 @@ export * from './GithubActionsBadges';
 export * from './StackedImages';
 export * from './CollapsibleList';
 export * from './MonospaceText';
+export * from './SyncedTextEditor';
 export * from './StatusCardList';
 export * from './Tabs';
 export * from './Progress';

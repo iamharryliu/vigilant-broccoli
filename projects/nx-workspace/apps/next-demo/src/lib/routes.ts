@@ -16,6 +16,7 @@ export const ROUTES = {
   RESOURCES_DETAIL: (id: string) => `/resources/${id}`,
   HOUSEHOLD_RULES: '/household-rules',
   HOUSEHOLD_RULES_DETAIL: (id: string) => `/household-rules/${id}`,
+  WHITEBOARD: '/whiteboard',
   PRICE_TRACKER: '/price-tracker',
   PRICE_TRACKER_DETAIL: (id: string) => `/price-tracker/${id}`,
   CHORES: '/chores',
