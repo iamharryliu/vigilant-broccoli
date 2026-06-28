@@ -4,11 +4,12 @@ import { createClient } from '@supabase/supabase-js';
 import {
   API_KEY_HEADER,
   CONTENT_TYPE_HEADER,
+  EMAIL_SERVICE_ENDPOINT,
   HTTP_METHOD,
   HTTP_STATUS_CODES,
   JSON_CONTENT_TYPE,
+  QUEUE,
 } from '@vigilant-broccoli/common-js';
-import { EMAIL_SERVICE_ENDPOINT, QUEUE } from '@vigilant-broccoli/common-node';
 import { Email } from '@vigilant-broccoli/messaging';
 import {
   createApiKeyPlugin,

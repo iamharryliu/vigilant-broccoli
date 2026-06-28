@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
-  getEnvironmentVariable,
+  HTTP_STATUS_CODES,
   VB_EXPRESS_ENDPOINT,
-} from '@vigilant-broccoli/common-node';
+} from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import {
   createServerClient,
   getBearerToken,

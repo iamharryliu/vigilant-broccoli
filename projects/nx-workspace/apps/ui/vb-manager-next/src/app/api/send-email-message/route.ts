@@ -1,8 +1,8 @@
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   EMAIL_SERVICE_ENDPOINT,
-  getEnvironmentVariable,
-} from '@vigilant-broccoli/common-node';
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
-  getEnvironmentVariable,
+  HTTP_STATUS_CODES,
+  LLMModel,
   VB_EXPRESS_ENDPOINT,
-} from '@vigilant-broccoli/common-node';
-import { LLMModel } from '@vigilant-broccoli/common-js';
+} from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 export const runtime = 'nodejs';
 

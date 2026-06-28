@@ -1,12 +1,10 @@
-import {
-  getEnvironmentVariable,
-  LLM_SERVICE_ENDPOINT,
-} from '@vigilant-broccoli/common-node';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import {
   API_KEY_HEADER,
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,
   JSON_CONTENT_TYPE,
+  LLM_SERVICE_ENDPOINT,
 } from '@vigilant-broccoli/common-js';
 
 const post = (path: string, body: unknown) =>

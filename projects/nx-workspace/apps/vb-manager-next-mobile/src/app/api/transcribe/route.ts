@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  getEnvironmentVariable,
-  VB_EXPRESS_ENDPOINT,
-} from '@vigilant-broccoli/common-node';
+import { VB_EXPRESS_ENDPOINT } from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { requireAuth } from '../../../../libs/api-auth';
 
 export const runtime = 'nodejs';

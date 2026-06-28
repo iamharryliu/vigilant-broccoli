@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import {
-  getEnvironmentVariable,
+  HTTP_STATUS_CODES,
   VB_EXPRESS_ENDPOINT,
-} from '@vigilant-broccoli/common-node';
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+} from '@vigilant-broccoli/common-js';
 import { createServerClient } from '../../../../../libs/supabase-server';
 
 export const runtime = 'nodejs';

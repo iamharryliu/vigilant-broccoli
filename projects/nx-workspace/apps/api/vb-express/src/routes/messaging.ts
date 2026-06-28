@@ -1,8 +1,6 @@
 import { Router, Request, Response } from 'express';
-import {
-  EMAIL_SERVICE_ENDPOINT,
-  getEnvironmentVariable,
-} from '@vigilant-broccoli/common-node';
+import { EMAIL_SERVICE_ENDPOINT } from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { Email, TextMessageService } from '@vigilant-broccoli/messaging';
 import {
   APP_NAME,

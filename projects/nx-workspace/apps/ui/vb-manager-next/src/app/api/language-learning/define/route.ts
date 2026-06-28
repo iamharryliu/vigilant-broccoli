@@ -5,11 +5,9 @@ import {
   HTTP_METHOD,
   HTTP_STATUS_CODES,
   LLM_MODEL,
-} from '@vigilant-broccoli/common-js';
-import {
-  getEnvironmentVariable,
   VB_EXPRESS_ENDPOINT,
-} from '@vigilant-broccoli/common-node';
+} from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

@@ -1,7 +1,10 @@
 import Fastify from 'fastify';
 import amqplib, { ConfirmChannel } from 'amqplib';
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { EMAIL_SERVICE_ENDPOINT, QUEUE } from '@vigilant-broccoli/common-node';
+import {
+  EMAIL_SERVICE_ENDPOINT,
+  HTTP_STATUS_CODES,
+  QUEUE,
+} from '@vigilant-broccoli/common-js';
 import { Email, EmailService } from '@vigilant-broccoli/messaging';
 import {
   createApiKeyPlugin,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { VB_EXPRESS_ENDPOINT } from '@vigilant-broccoli/common-node';
+import { VB_EXPRESS_ENDPOINT } from '@vigilant-broccoli/common-js';
 import { proxyToExpress } from '../../../utils/express.utils';
 import { requireAuth } from '../../../../../libs/api-auth';
 
