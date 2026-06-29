@@ -59,7 +59,7 @@ interface TaskList {
 type EisenhowerQuadrant = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'none';
 
 // Sort mode constants
-const SORT_MODE = {
+export const SORT_MODE = {
   DEFAULT: 'default',
   EISENHOWER: 'eisenhower',
   COMMIT_TYPE: 'commitType',
@@ -67,7 +67,7 @@ const SORT_MODE = {
   DATE_CREATED_OLDEST: 'dateCreatedOldest',
 } as const;
 
-type SortMode = (typeof SORT_MODE)[keyof typeof SORT_MODE];
+export type SortMode = (typeof SORT_MODE)[keyof typeof SORT_MODE];
 
 const SORT_MODE_OPTIONS = Object.values(SORT_MODE);
 
@@ -315,9 +315,9 @@ const useTaskLists = (status: string) => {
   return { taskLists, authError, loading };
 };
 
-const useSortModeStorage = (taskListId: string) => {
+const useSortModeStorage = (taskListId: string, enabled = true) => {
   const [sortMode, setSortMode] = useState<SortMode>(() => {
-    if (typeof window !== 'undefined') {
+    if (enabled && typeof window !== 'undefined') {
       const saved = localStorage.getItem(getStorageKey.sortMode(taskListId));
       if (
         saved === SORT_MODE.EISENHOWER ||
@@ -332,8 +332,10 @@ const useSortModeStorage = (taskListId: string) => {
   });
 
   useEffect(() => {
-    localStorage.setItem(getStorageKey.sortMode(taskListId), sortMode);
-  }, [sortMode, taskListId]);
+    if (enabled) {
+      localStorage.setItem(getStorageKey.sortMode(taskListId), sortMode);
+    }
+  }, [sortMode, taskListId, enabled]);
 
   return [sortMode, setSortMode] as const;
 };
@@ -934,6 +936,8 @@ export const GoogleTasksComponent = ({
   refreshTrigger = 0,
   disableInternalDndContext = false,
   dragOverTask,
+  sortMode: controlledSortMode,
+  onSortModeChange,
 }: {
   taskListId?: string;
   showSelector?: boolean;
@@ -941,6 +945,8 @@ export const GoogleTasksComponent = ({
   refreshTrigger?: number;
   disableInternalDndContext?: boolean;
   dragOverTask?: DragOverTask | null;
+  sortMode?: SortMode;
+  onSortModeChange?: (taskListId: string, sortMode: SortMode) => void;
 } = {}) => {
   const { data: session, status } = useSession();
   const { taskLists, authError: titleAuthError } = useTaskLists(status);
@@ -966,7 +972,22 @@ export const GoogleTasksComponent = ({
     moveTask,
     setTasks,
   } = useTasks(taskListId);
-  const [sortMode, setSortMode] = useSortModeStorage(taskListId);
+  const isControlledSort = controlledSortMode !== undefined;
+  const [localSortMode, setLocalSortMode] = useSortModeStorage(
+    taskListId,
+    !isControlledSort,
+  );
+  const sortMode = isControlledSort ? controlledSortMode : localSortMode;
+  const setSortMode = useCallback(
+    (mode: SortMode) => {
+      if (isControlledSort) {
+        onSortModeChange?.(taskListId, mode);
+      } else {
+        setLocalSortMode(mode);
+      }
+    },
+    [isControlledSort, onSortModeChange, taskListId, setLocalSortMode],
+  );
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [showAddTask, setShowAddTask] = useState(false);
   const [isCreatingTask, setIsCreatingTask] = useState(false);

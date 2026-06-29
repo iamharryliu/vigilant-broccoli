@@ -35,7 +35,11 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { GoogleTasksComponent } from './google-tasks.component';
+import {
+  GoogleTasksComponent,
+  SortMode,
+  SORT_MODE,
+} from './google-tasks.component';
 import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
@@ -56,8 +60,76 @@ interface Board {
   lanes: Lane[];
 }
 
+interface KanbanState {
+  boards: Board[];
+  activeBoardId: string;
+  sortModes: Record<string, SortMode>;
+}
+
 const STORAGE_KEY_BOARDS = 'swimlanes-boards';
 const STORAGE_KEY_ACTIVE_BOARD = 'swimlanes-active-board';
+
+const PERSIST_DEBOUNCE_MS = 500;
+
+const DEFAULT_BOARD_NAME = 'Default Board';
+
+const SORT_MODE_KEY_PREFIX = 'google-tasks-sort-mode-';
+
+const readLocalSortModes = (): Record<string, SortMode> => {
+  const sortModes: Record<string, SortMode> = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith(SORT_MODE_KEY_PREFIX)) {
+      const taskListId = key.slice(SORT_MODE_KEY_PREFIX.length);
+      const value = localStorage.getItem(key);
+      if (value) sortModes[taskListId] = value as SortMode;
+    }
+  }
+  return sortModes;
+};
+
+const readLocalBoards = (): KanbanState | null => {
+  const storedBoards = localStorage.getItem(STORAGE_KEY_BOARDS);
+  if (!storedBoards) return null;
+  const boards: Board[] = JSON.parse(storedBoards);
+  if (boards.length === 0) return null;
+  const storedActiveBoard = localStorage.getItem(STORAGE_KEY_ACTIVE_BOARD);
+  return {
+    boards,
+    activeBoardId: storedActiveBoard || boards[0].id,
+    sortModes: readLocalSortModes(),
+  };
+};
+
+const clearLocalBoards = () => {
+  localStorage.removeItem(STORAGE_KEY_BOARDS);
+  localStorage.removeItem(STORAGE_KEY_ACTIVE_BOARD);
+  Object.keys(localStorage)
+    .filter(key => key.startsWith(SORT_MODE_KEY_PREFIX))
+    .forEach(key => localStorage.removeItem(key));
+};
+
+const createDefaultBoard = (): Board => ({
+  id: crypto.randomUUID(),
+  name: DEFAULT_BOARD_NAME,
+  lanes: [],
+});
+
+const fetchKanbanState = async (): Promise<KanbanState | null> => {
+  const response = await fetch(API_ENDPOINTS.KANBAN_BOARDS);
+  if (!response.ok) return null;
+  const data = await response.json();
+  return data.state ?? null;
+};
+
+const persistKanbanState = async (state: KanbanState): Promise<boolean> => {
+  const response = await fetch(API_ENDPOINTS.KANBAN_BOARDS, {
+    method: HTTP_METHOD.PUT,
+    headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+    body: JSON.stringify(state),
+  });
+  return response.ok;
+};
 
 const DRAG_TYPE = {
   TASK: 'task',
@@ -97,44 +169,74 @@ const getCommitTypeFromTitle = (title: string): string | null => {
   return match ? match[1].toLowerCase() : null;
 };
 
-const useBoards = () => {
+const useBoards = (isAuthenticated: boolean) => {
   const [boards, setBoards] = useState<Board[]>([]);
   const [activeBoardId, setActiveBoardId] = useState<string>('');
+  const [sortModes, setSortModes] = useState<Record<string, SortMode>>({});
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const storedBoards = localStorage.getItem(STORAGE_KEY_BOARDS);
-    const storedActiveBoard = localStorage.getItem(STORAGE_KEY_ACTIVE_BOARD);
+    if (!isAuthenticated) return;
 
-    if (storedBoards) {
-      const parsedBoards = JSON.parse(storedBoards);
-      setBoards(parsedBoards);
-      if (parsedBoards.length > 0) {
-        setActiveBoardId(storedActiveBoard || parsedBoards[0].id);
+    let cancelled = false;
+    const hydrate = async () => {
+      const remoteState = await fetchKanbanState();
+
+      if (remoteState && remoteState.boards.length > 0) {
+        if (cancelled) return;
+        setBoards(remoteState.boards);
+        setActiveBoardId(remoteState.activeBoardId || remoteState.boards[0].id);
+        setSortModes(remoteState.sortModes ?? {});
+        setHydrated(true);
+        return;
       }
-    } else {
-      const defaultBoard: Board = {
-        id: crypto.randomUUID(),
-        name: 'Default Board',
-        lanes: [],
-      };
+
+      const localState = readLocalBoards();
+      if (localState) {
+        const migrated = await persistKanbanState(localState);
+        if (migrated) clearLocalBoards();
+        if (cancelled) return;
+        setBoards(localState.boards);
+        setActiveBoardId(localState.activeBoardId);
+        setSortModes(localState.sortModes);
+        setHydrated(true);
+        return;
+      }
+
+      const defaultBoard = createDefaultBoard();
+      await persistKanbanState({
+        boards: [defaultBoard],
+        activeBoardId: defaultBoard.id,
+        sortModes: {},
+      });
+      if (cancelled) return;
       setBoards([defaultBoard]);
       setActiveBoardId(defaultBoard.id);
-    }
+      setHydrated(true);
+    };
+    hydrate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!hydrated || boards.length === 0) return;
+    const timeout = setTimeout(() => {
+      persistKanbanState({ boards, activeBoardId, sortModes });
+    }, PERSIST_DEBOUNCE_MS);
+    return () => clearTimeout(timeout);
+  }, [boards, activeBoardId, sortModes, hydrated]);
+
+  const setSortMode = useCallback((taskListId: string, sortMode: SortMode) => {
+    setSortModes(prev =>
+      prev[taskListId] === sortMode
+        ? prev
+        : { ...prev, [taskListId]: sortMode },
+    );
   }, []);
-
-  useEffect(() => {
-    if (boards.length > 0) {
-      localStorage.setItem(STORAGE_KEY_BOARDS, JSON.stringify(boards));
-    }
-  }, [boards]);
-
-  useEffect(() => {
-    if (activeBoardId) {
-      localStorage.setItem(STORAGE_KEY_ACTIVE_BOARD, activeBoardId);
-    }
-  }, [activeBoardId]);
 
   const addBoard = useCallback((name: string) => {
     const newBoard: Board = {
@@ -210,10 +312,10 @@ const useBoards = () => {
     activeBoard,
     activeBoardId,
     setActiveBoardId,
+    sortModes,
+    setSortMode,
     taskLists,
     setTaskLists,
-    loading,
-    setLoading,
     addBoard,
     removeBoard,
     renameBoard,
@@ -251,6 +353,8 @@ interface SortableLaneProps {
   isDraggingTask: boolean;
   isDraggingLane: boolean;
   dragOverTask: DragOverTask | null;
+  sortMode: SortMode | undefined;
+  onSortModeChange: (taskListId: string, sortMode: SortMode) => void;
 }
 
 const SortableBoard = ({
@@ -329,6 +433,8 @@ const SortableLane = ({
   isDraggingTask,
   isDraggingLane,
   dragOverTask,
+  sortMode,
+  onSortModeChange,
 }: SortableLaneProps) => {
   const {
     attributes,
@@ -399,6 +505,8 @@ const SortableLane = ({
           refreshTrigger={refreshTrigger}
           disableInternalDndContext={true}
           dragOverTask={dragOverTask}
+          sortMode={sortMode ?? SORT_MODE.DEFAULT}
+          onSortModeChange={onSortModeChange}
         />
       </div>
     </div>
@@ -487,9 +595,10 @@ export const KanbanComponent = () => {
     activeBoard,
     activeBoardId,
     setActiveBoardId,
+    sortModes,
+    setSortMode,
     taskLists,
     setTaskLists,
-    setLoading,
     addBoard,
     removeBoard,
     renameBoard,
@@ -497,7 +606,7 @@ export const KanbanComponent = () => {
     removeLane,
     reorderLanes,
     reorderBoards,
-  } = useBoards();
+  } = useBoards(status === 'authenticated');
   const [selectedTaskListId, setSelectedTaskListId] = useState<string>('');
   const [activeTask, setActiveTask] = useState<any>(null);
   const [activeLane, setActiveLane] = useState<Lane | null>(null);
@@ -527,10 +636,7 @@ export const KanbanComponent = () => {
   );
 
   useEffect(() => {
-    if (status !== 'authenticated') {
-      setLoading(false);
-      return;
-    }
+    if (status !== 'authenticated') return;
 
     const fetchTaskLists = async () => {
       try {
@@ -543,10 +649,8 @@ export const KanbanComponent = () => {
             setSelectedTaskListId(data.taskLists[0].id);
           }
         }
-        setLoading(false);
       } catch (err) {
         console.error('Error fetching task lists:', err);
-        setLoading(false);
       }
     };
     fetchTaskLists();
@@ -1076,6 +1180,8 @@ export const KanbanComponent = () => {
                             }
                           : null
                       }
+                      sortMode={sortModes[lane.taskListId]}
+                      onSortModeChange={setSortMode}
                     />
                   );
                 })}

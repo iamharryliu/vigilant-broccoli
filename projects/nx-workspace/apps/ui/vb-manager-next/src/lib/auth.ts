@@ -57,7 +57,8 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, profile }) {
+      const email = profile?.email ?? token.email;
       // Initial sign in
       if (account) {
         return {
@@ -67,20 +68,23 @@ export const authOptions: AuthOptions = {
             : Date.now() + 3600 * 1000,
           refreshToken: account.refresh_token,
           user: token.user,
+          email,
         };
       }
 
       // Return previous token if the access token has not expired yet
       if (Date.now() < (token.accessTokenExpires as number)) {
-        return token;
+        return { ...token, email };
       }
 
       // Access token has expired, try to refresh it
-      return refreshAccessToken(token);
+      return { ...(await refreshAccessToken(token)), email };
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       session.error = token.error as string | undefined;
+      session.userEmail =
+        (token.email as string | undefined) ?? session.user?.email ?? undefined;
       return session;
     },
   },
