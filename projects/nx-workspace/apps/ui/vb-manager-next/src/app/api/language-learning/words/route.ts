@@ -12,7 +12,14 @@ import {
   languageLearningMultiSchema,
   LanguageLearningMultiResult,
 } from '@vigilant-broccoli/llm-schemas';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../../lib/auth';
 import { getMasteredWords, saveSession } from '../db';
+
+const getUserEmail = async (): Promise<string | null> => {
+  const session = await getServerSession(authOptions);
+  return session?.userEmail ?? session?.user?.email ?? null;
+};
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -20,7 +27,7 @@ export const dynamic = 'force-dynamic';
 const SYSTEM_PROMPT = `You are a language learning vocabulary assistant.
 When given a list of target languages and a semantic category, first choose one common concept and one uncommon concept that both relate to the category — pick concepts that are useful for a learner growing their vocabulary (avoid very basic words like "hello", "yes", "no", numbers, days of the week). The common concept should be everyday useful vocabulary; the uncommon concept should be more advanced or nuanced.
 Then, for each target language, provide the equivalent word for both concepts (with an English definition for each) and compose one natural example sentence in that language that uses both words together, along with its English translation.
-The same two concepts must be used across every language so the words stay equivalent. If a language has no natural single-word equivalent for a concept, omit that entire language from the output rather than forcing an awkward translation.
+The same two concepts must be used across every language so the words stay equivalent. Only omit a language from the output if there is genuinely no usable word for a concept in that language — do not omit a language just because the translation is imperfect or the word is a loanword.
 For Chinese only, fill the "pinyin" field on each word and on the example sentence with the Hanyu Pinyin transcription using tone marks (e.g. "píngguǒ", "wǒ chī le yī gè píngguǒ"). For every other language, set "pinyin" to an empty string "".
 You will be given a list of previously used words — do not reuse any of them.`;
 
@@ -54,6 +61,14 @@ function pickRandom<T>(items: T[]): T {
 }
 
 export async function POST(request: NextRequest) {
+  const userEmail = await getUserEmail();
+  if (!userEmail) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
+  }
+
   const { languages } = (await request.json()) as {
     languages?: string[];
   };
@@ -62,7 +77,7 @@ export async function POST(request: NextRequest) {
     languages && languages.length > 0 ? languages : DEFAULT_LANGUAGES;
 
   const category = pickRandom(CATEGORIES);
-  const masteredWords = getMasteredWords();
+  const masteredWords = await getMasteredWords(userEmail);
 
   const previousWordsNote =
     masteredWords.length > 0
@@ -98,33 +113,36 @@ export async function POST(request: NextRequest) {
   };
   const result = outputs[0];
 
-  const sessions = result.languages.map(entry => {
-    const session = saveSession(
-      entry.language,
-      category,
-      entry.words.map(w => ({
-        word: w.word,
-        type: w.type,
-        definition: w.definition,
-        pinyin: w.pinyin || undefined,
-      })),
-      entry.exampleSentence.target,
-      entry.exampleSentence.english,
-      entry.exampleSentence.pinyin || undefined,
-    );
-    return {
-      id: session.id,
-      language: entry.language,
-      category,
-      created_at: session.created_at,
-      words: session.words,
-      exampleSentence: {
-        target: entry.exampleSentence.target,
-        english: entry.exampleSentence.english,
-        pinyin: session.example_pinyin ?? undefined,
-      },
-    };
-  });
+  const sessions = await Promise.all(
+    result.languages.map(async entry => {
+      const session = await saveSession(
+        userEmail,
+        entry.language,
+        category,
+        entry.words.map(w => ({
+          word: w.word,
+          type: w.type,
+          definition: w.definition,
+          pinyin: w.pinyin || undefined,
+        })),
+        entry.exampleSentence.target,
+        entry.exampleSentence.english,
+        entry.exampleSentence.pinyin || undefined,
+      );
+      return {
+        id: session.id,
+        language: entry.language,
+        category,
+        created_at: session.created_at,
+        words: session.words,
+        exampleSentence: {
+          target: entry.exampleSentence.target,
+          english: entry.exampleSentence.english,
+          pinyin: session.example_pinyin ?? undefined,
+        },
+      };
+    }),
+  );
 
   return NextResponse.json({ sessions });
 }

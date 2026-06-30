@@ -1,20 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../../lib/auth';
 import {
   markWordAsMastered,
   addMasteredWord,
   getStandaloneMasteredWords,
+  unmarkWordAsMastered,
+  removeMasteredWord,
 } from '../db';
 
 export const runtime = 'nodejs';
 
+const getUserEmail = async (): Promise<string | null> => {
+  const session = await getServerSession(authOptions);
+  return session?.userEmail ?? session?.user?.email ?? null;
+};
+
 export async function GET() {
-  return NextResponse.json(getStandaloneMasteredWords());
+  const userEmail = await getUserEmail();
+  if (!userEmail) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
+  }
+  return NextResponse.json(await getStandaloneMasteredWords(userEmail));
 }
 
 export async function POST(request: NextRequest) {
+  const userEmail = await getUserEmail();
+  if (!userEmail) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
+  }
+
   const body = (await request.json()) as
-    | { wordId: number }
+    | { wordId: string }
     | {
         word: string;
         language: string;
@@ -30,9 +54,42 @@ export async function POST(request: NextRequest) {
   }
 
   if ('wordId' in body) {
-    markWordAsMastered(body.wordId);
+    await markWordAsMastered(userEmail, body.wordId);
   } else {
-    addMasteredWord(body.word, body.language, body.definition, body.pinyin);
+    await addMasteredWord(
+      userEmail,
+      body.word,
+      body.language,
+      body.definition,
+      body.pinyin,
+    );
+  }
+
+  return NextResponse.json({ success: true });
+}
+
+export async function DELETE(request: NextRequest) {
+  const userEmail = await getUserEmail();
+  if (!userEmail) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
+  }
+
+  const body = (await request.json()) as { wordId: string } | { word: string };
+
+  if (!body || !Object.keys(body).length) {
+    return NextResponse.json(
+      { error: 'Missing body' },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+
+  if ('wordId' in body) {
+    await unmarkWordAsMastered(userEmail, body.wordId);
+  } else {
+    await removeMasteredWord(userEmail, body.word);
   }
 
   return NextResponse.json({ success: true });

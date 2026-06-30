@@ -99,4 +99,5 @@ export const API_ENDPOINTS = {
   LANGUAGE_LEARNING_HISTORY: '/api/language-learning/history',
   LANGUAGE_LEARNING_MASTERED: '/api/language-learning/mastered',
   LANGUAGE_LEARNING_DEFINE: '/api/language-learning/define',
+  LANGUAGE_LEARNING_RESET: '/api/language-learning/reset',
 } as const;

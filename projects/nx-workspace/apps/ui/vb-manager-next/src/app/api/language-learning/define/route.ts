@@ -12,7 +12,7 @@ import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const SYSTEM_PROMPT = `You are a language learning assistant. Given a word in a target language, return a brief one-sentence English definition suitable for a language learner. For Chinese only, fill the "pinyin" field with the Hanyu Pinyin transcription using tone marks (e.g. "píngguǒ"). For every other language, set "pinyin" to an empty string "".`;
+const SYSTEM_PROMPT = `You are a language learning assistant. Given a word and its target language, return a brief one-sentence English definition of that word as it exists in the specified language — never treat the word as an English word, even if it looks like one. For Chinese only, fill the "pinyin" field with the Hanyu Pinyin transcription using tone marks (e.g. "píngguǒ"). For every other language, set "pinyin" to an empty string "".`;
 
 const DEFINE_SCHEMA = {
   name: 'word_definition',
