@@ -2,13 +2,19 @@ import { Component, OnInit, inject } from '@angular/core';
 import { EXTERNAL_LINKS } from '../../../core/consts/routes.const';
 import { MarkdownPageComponent } from 'general-components';
 import { CalendarSectionComponent } from '../../features/calendar-section/calendar-section.component';
+import { SkyCanvasComponent } from '../../features/sky-canvas/sky-canvas.component';
 import { RouterModule } from '@angular/router';
 import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-home-page',
   templateUrl: './home.page.html',
-  imports: [MarkdownPageComponent, CalendarSectionComponent, RouterModule],
+  imports: [
+    MarkdownPageComponent,
+    CalendarSectionComponent,
+    SkyCanvasComponent,
+    RouterModule,
+  ],
 })
 export class HomePageComponent implements OnInit {
   private seoService = inject(SeoService);
