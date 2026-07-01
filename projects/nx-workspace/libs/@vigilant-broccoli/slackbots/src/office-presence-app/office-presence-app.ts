@@ -3,6 +3,7 @@ import {
   BlockAction,
   SlackActionMiddlewareArgs,
 } from '@slack/bolt';
+import { View } from '@slack/types';
 import * as cron from 'node-cron';
 import { SLACK_EVENT } from '../lib/consts';
 import { SlackModalUtils } from '../lib/utils/modal.utils';
@@ -143,9 +144,36 @@ export async function runOfficePresenceApp(
     SlackModalUtils.createModalHandlerWithUserId(getHelpModal),
   );
 
-  app.action<BlockAction>(APP_ACTION.HELP_MOCK_BUTTON, async ({ ack }) => {
-    await ack();
-  });
+  const pushModal =
+    (modalFactory: (userId: string) => View | null) =>
+    async ({
+      ack,
+      body,
+      client,
+    }: SlackActionMiddlewareArgs<BlockAction> & AllMiddlewareArgs) => {
+      await ack();
+      const view = modalFactory(body.user.id);
+      if (view) {
+        await client.views.push({ trigger_id: body.trigger_id, view });
+      }
+    };
+
+  app.action<BlockAction>(
+    APP_ACTION.HELP_DEMO_SCHEDULE,
+    pushModal(getInputScheduleModal),
+  );
+  app.action<BlockAction>(
+    APP_ACTION.HELP_DEMO_EVENT,
+    pushModal(getCreateEventModal),
+  );
+  app.action<BlockAction>(
+    APP_ACTION.HELP_DEMO_LUNCH,
+    pushModal(getAskLunchModal),
+  );
+  app.action<BlockAction>(
+    APP_ACTION.HELP_DEMO_SETTINGS,
+    pushModal(getUserSettingsModal),
+  );
 
   app.view(APP_ACTION.SUBMIT_SETTINGS, async ({ ack, body, view, client }) => {
     await ack();

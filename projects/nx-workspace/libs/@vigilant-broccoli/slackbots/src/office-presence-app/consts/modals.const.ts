@@ -317,13 +317,13 @@ export function createUserSettingsModal(appConfig: AppConfig) {
   };
 }
 
-const mockButton = (label: string): KnownBlock => ({
+const mockButton = (label: string, actionId: string): KnownBlock => ({
   type: 'actions',
   elements: [
     {
       type: 'button',
       text: { type: 'plain_text', text: label },
-      action_id: APP_ACTION.HELP_MOCK_BUTTON,
+      action_id: actionId,
     },
   ],
 });
@@ -362,7 +362,7 @@ export function createHelpModal(appConfig: AppConfig) {
             text: `*${h.VISIT_DETAILS_HEADER}*\n${h.VISIT_DETAILS_TEXT}`,
           },
         },
-        mockButton(hv.ADD_VISIT_DETAILS_BUTTON),
+        mockButton(hv.ADD_VISIT_DETAILS_BUTTON, APP_ACTION.HELP_DEMO_SCHEDULE),
         SlackViewBuilder.DIVIDER,
         {
           type: 'section',
@@ -371,7 +371,7 @@ export function createHelpModal(appConfig: AppConfig) {
             text: `*${h.EVENTS_HEADER}*\n${h.EVENTS_TEXT}`,
           },
         },
-        mockButton(hv.CREATE_EVENT_BUTTON),
+        mockButton(hv.CREATE_EVENT_BUTTON, APP_ACTION.HELP_DEMO_EVENT),
         SlackViewBuilder.DIVIDER,
         {
           type: 'section',
@@ -380,7 +380,7 @@ export function createHelpModal(appConfig: AppConfig) {
             text: `*${h.LUNCH_HEADER}*\n${h.LUNCH_TEXT}`,
           },
         },
-        mockButton(hv.ASK_LUNCH_BUTTON),
+        mockButton(hv.ASK_LUNCH_BUTTON, APP_ACTION.HELP_DEMO_LUNCH),
         SlackViewBuilder.DIVIDER,
         {
           type: 'section',
@@ -389,7 +389,7 @@ export function createHelpModal(appConfig: AppConfig) {
             text: `*${h.SETTINGS_HEADER}*\n${h.SETTINGS_TEXT}`,
           },
         },
-        mockButton(hv.USER_SETTINGS_BUTTON),
+        mockButton(hv.USER_SETTINGS_BUTTON, APP_ACTION.HELP_DEMO_SETTINGS),
       ] as KnownBlock[],
     };
 
