@@ -14,3 +14,5 @@
 - [Sprinkles](./spinkles.md)
 
 - Quorn - Fungus based meat alternative.
+- Deglazing is to achieve browned caramelized bits in food.
+- Cook vegetables on high heat.
