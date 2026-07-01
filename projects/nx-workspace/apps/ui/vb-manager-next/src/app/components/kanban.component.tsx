@@ -68,6 +68,7 @@ interface KanbanState {
 
 const STORAGE_KEY_BOARDS = 'swimlanes-boards';
 const STORAGE_KEY_ACTIVE_BOARD = 'swimlanes-active-board';
+const STORAGE_KEY_SIDEBAR_OPEN = 'swimlanes-sidebar-open';
 
 const PERSIST_DEBOUNCE_MS = 500;
 
@@ -495,7 +496,12 @@ const SortableLane = ({
             )}
           </Text>
         </div>
-        <CloseButton onClick={() => onRemove(boardId, lane.id)} />
+        <ConfirmDeleteDialog
+          trigger={<CloseButton />}
+          title="Remove Lane"
+          description={`Remove "${taskList?.title ?? 'this lane'}" from the board?`}
+          onConfirm={() => onRemove(boardId, lane.id)}
+        />
       </div>
       <div className="flex-1 overflow-y-auto min-h-0">
         <GoogleTasksComponent
@@ -625,7 +631,11 @@ export const KanbanComponent = () => {
   const [showManageLists, setShowManageLists] = useState(false);
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [editingListName, setEditingListName] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const stored = localStorage.getItem(STORAGE_KEY_SIDEBAR_OPEN);
+    return stored === null ? true : stored === 'true';
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -711,12 +721,13 @@ export const KanbanComponent = () => {
     const data = await response.json();
     if (response.ok && data.taskList) {
       setTaskLists(prev => [...prev, data.taskList]);
-      setSelectedTaskListId(data.taskList.id);
+      addLane(activeBoardId, data.taskList.id);
       setNewListName('');
       setShowCreateList(false);
+      setShowAddLaneDialog(false);
     }
     setCreatingList(false);
-  }, [newListName, setTaskLists]);
+  }, [newListName, setTaskLists, addLane, activeBoardId]);
 
   const handleAddBoard = useCallback(() => {
     if (newBoardName.trim()) {
@@ -1134,7 +1145,11 @@ export const KanbanComponent = () => {
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
+                onClick={() => {
+                  const next = !sidebarOpen;
+                  setSidebarOpen(next);
+                  localStorage.setItem(STORAGE_KEY_SIDEBAR_OPEN, String(next));
+                }}
               >
                 {sidebarOpen ? (
                   <ChevronLeft size={16} />
@@ -1142,10 +1157,31 @@ export const KanbanComponent = () => {
                   <ChevronRight size={16} />
                 )}
               </Button>
-              <Text size="4" weight="bold">
-                {activeBoard.name}
-              </Text>
+              {editingBoardId === activeBoard.id ? (
+                <Input
+                  value={editingBoardName}
+                  onChange={e => setEditingBoardName(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleSaveEditBoard();
+                    else if (e.key === 'Escape') {
+                      setEditingBoardId(null);
+                      setEditingBoardName('');
+                    }
+                  }}
+                  onBlur={handleSaveEditBoard}
+                  className="text-lg font-bold"
+                  autoFocus
+                />
+              ) : (
+                <Text size="4" weight="bold">
+                  {activeBoard.name}
+                </Text>
+              )}
               <EllipsisCTA
+                onUpdate={() =>
+                  handleStartEditBoard(activeBoard.id, activeBoard.name)
+                }
+                updateLabel="Rename"
                 deleteDisabled={boards.length <= 1}
                 confirmDescription={getDeleteBoardDescription(activeBoard.name)}
                 onDelete={() => removeBoard(activeBoard.id)}

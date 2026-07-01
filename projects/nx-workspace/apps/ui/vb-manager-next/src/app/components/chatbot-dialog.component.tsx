@@ -35,6 +35,10 @@ import {
   TaskListDraftStatus,
 } from './task-list-draft-card.component';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
+import {
+  CALENDAR_DRAFT_MARKER,
+  CHAT_RESPONSE_TYPE,
+} from '../constants/chatbot.consts';
 
 export interface MessageImage {
   data: string;
@@ -695,6 +699,19 @@ const InputArea = ({
   </div>
 );
 
+const serializeEventDraft = (event: EventDraft): string => {
+  const parts = [
+    `Title: ${event.summary}`,
+    `Start: ${event.start}`,
+    event.end ? `End: ${event.end}` : null,
+    event.location ? `Location: ${event.location}` : null,
+    event.description ? `Description: ${event.description}` : null,
+    event.allDay ? 'All day: yes' : null,
+    event.timeZone ? `Timezone: ${event.timeZone}` : null,
+  ].filter(Boolean);
+  return `${CALENDAR_DRAFT_MARKER}\n${parts.join('\n')}`;
+};
+
 const compactConversation = (messages: Message[]): Message[] => {
   if (messages.length <= MAX_MESSAGES) return messages;
 
@@ -948,6 +965,34 @@ export const ChatbotPanel = ({
     if (!aborted) await speak(accumulatedContent);
   };
 
+  const handleToolCallResponse = (payload: { events: EventDraft[] }) => {
+    const { events } = payload;
+    const headerContent =
+      events.length === 1
+        ? 'Review the event below before creating it.'
+        : `Review the ${events.length} events below before creating them.`;
+
+    setMessages(prev => {
+      const withoutStreaming = prev.slice(0, -1);
+      const withoutOldDrafts = withoutStreaming.filter(
+        m => !m.eventDraft || m.eventStatus !== 'draft',
+      );
+      const eventMessages: Message[] = events.map(event => ({
+        role: 'assistant',
+        content: serializeEventDraft(event),
+        isStreaming: false,
+        eventDraft: event,
+        eventStatus: 'draft' as const,
+      }));
+      return [
+        ...withoutOldDrafts,
+        { role: 'assistant', content: headerContent, isStreaming: false },
+        ...eventMessages,
+      ];
+    });
+    setIsStreaming(false);
+  };
+
   const sendChatRequest = async (
     compactedMessages: Message[],
     model: LLMModel,
@@ -960,6 +1005,7 @@ export const ChatbotPanel = ({
           messages: compactedMessages,
           systemPrompt,
           model,
+          timeZone: getLocalTimeZone(),
         }),
         signal: abortControllerRef.current?.signal,
       });
@@ -968,6 +1014,15 @@ export const ChatbotPanel = ({
         setErrorMessage(setMessages);
         setIsStreaming(false);
         return;
+      }
+
+      const contentType = response.headers.get('Content-Type') ?? '';
+      if (contentType.includes('application/json')) {
+        const payload = await response.json();
+        if (payload.type === CHAT_RESPONSE_TYPE.TOOL_CALL) {
+          handleToolCallResponse(payload);
+          return;
+        }
       }
 
       await processStreamResponse(response.body);
@@ -1071,7 +1126,7 @@ export const ChatbotPanel = ({
         const withoutPending = prev.slice(0, -1);
         const eventMessages: Message[] = events.map(event => ({
           role: 'assistant',
-          content: '',
+          content: serializeEventDraft(event),
           isStreaming: false,
           eventDraft: event,
           eventStatus: 'draft',

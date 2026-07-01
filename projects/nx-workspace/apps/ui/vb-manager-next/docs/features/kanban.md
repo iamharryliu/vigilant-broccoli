@@ -16,9 +16,10 @@
 
 ### Boards
 
-- Create, rename (double-click), delete boards
+- Create, rename (double-click in sidebar or via ellipsis → Rename), delete boards
+- Ellipsis menu on active board header: Rename, Delete (with confirmation)
 - Drag to reorder boards in sidebar
-- Sidebar collapsible
+- Sidebar collapsible; open/closed state persisted to `localStorage`
 
 ### Task Lists
 
@@ -30,8 +31,8 @@
 ### Lanes
 
 - Add lane by selecting a Google Tasks list (each list usable once per board)
-- Option to create a new Google Tasks list inline when adding a lane
-- Remove lanes
+- Creating a new list inline immediately adds it as a lane and closes the dialog
+- Remove lane via ✕ button (confirmation dialog required)
 - Drag handle in header to reorder; reorder is tracked in local state during drag and committed on drop
 - Dragging lane resolves target by `taskListId` since `over` may be a task item droppable inside the lane, not the lane itself
 
