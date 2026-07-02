@@ -85,6 +85,8 @@ brew "python@3.10"
 brew "python@3.11"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
+# Search tool like grep and The Silver Searcher
+brew "ripgrep"
 # Command-line interface for https://speedtest.net bandwidth tests
 brew "speedtest-cli"
 # OCR (Optical Character Recognition) engine
@@ -176,6 +178,7 @@ cask "wechat"
 cask "whatsapp"
 # Network protocol analyzer
 cask "wireshark-app"
+vscode "anthropic.claude-code"
 vscode "dbaeumer.vscode-eslint"
 vscode "eamodio.gitlens"
 vscode "editorconfig.editorconfig"

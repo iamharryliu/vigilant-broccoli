@@ -16,6 +16,7 @@
     "tf:post-apply": "./infrastructure/terraform/scripts/post-apply.sh",
     "tf:output": "cd infrastructure/terraform && terraform output",
     "oci:vm:ssh": "ssh -i ~/.ssh/id_ed25519 ubuntu@$(cd infrastructure/terraform && terraform output -raw oci_vm_public_ip)",
+    "oci:vm:sync-socket-token": "./infrastructure/terraform/packer/scripts/sync-socket-server-token.sh",
     "oci:gitea:ssh": "ssh -i ~/.ssh/id_ed25519 ubuntu@git.harryliu.dev",
     "oci:code-server:ssh": "ssh -i ~/.ssh/id_ed25519 ubuntu@code.harryliu.dev",
     "oci:code-server:open": "open https://code.harryliu.dev",
