@@ -1,0 +1,8 @@
+tmux
+vim
+fzf
+ripgrep
+jq
+lsof
+zip
+unzip

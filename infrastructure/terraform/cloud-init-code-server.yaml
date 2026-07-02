@@ -1,0 +1,117 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - docker.io
+  - docker-compose-v2
+
+write_files:
+  - path: /opt/code-server/Caddyfile
+    content: |
+      {
+        email ${acme_email}
+      }
+
+      ${code_server_domain} {
+        reverse_proxy code-server:8443
+      }
+
+  - path: /opt/code-server/custom-init/10-install-tools.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      set -e
+      export DEBIAN_FRONTEND=noninteractive
+
+      apt-get update
+      apt-get install -y curl git gnupg ca-certificates
+
+      if ! command -v node >/dev/null; then
+        curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+        apt-get install -y nodejs
+      fi
+
+      if ! command -v gcloud >/dev/null; then
+        curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+        echo 'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main' > /etc/apt/sources.list.d/google-cloud-sdk.list
+        apt-get update
+        apt-get install -y google-cloud-cli
+      fi
+
+      if ! command -v claude >/dev/null; then
+        npm install -g @anthropic-ai/claude-code
+      fi
+
+      if [ ! -d /config/vigilant-broccoli ]; then
+        git clone https://github.com/iamharryliu/vigilant-broccoli.git /config/vigilant-broccoli
+        chown -R abc:abc /config/vigilant-broccoli
+      else
+        HOME=/config s6-setuidgid abc git -C /config/vigilant-broccoli pull --ff-only || true
+      fi
+
+      if [ -f /config/vigilant-broccoli/setup/linux/apt-packages.txt ]; then
+        xargs apt-get install -y < /config/vigilant-broccoli/setup/linux/apt-packages.txt
+      fi
+      if [ -f /config/vigilant-broccoli/setup/linux/install.sh ]; then
+        HOME=/config s6-setuidgid abc bash /config/vigilant-broccoli/setup/linux/install.sh -y
+      fi
+
+  - path: /opt/code-server/docker-compose.yml
+    content: |
+      services:
+        code-server:
+          image: lscr.io/linuxserver/code-server:latest
+          container_name: code-server
+          restart: unless-stopped
+          pull_policy: always
+          environment:
+            PUID: "1000"
+            PGID: "1000"
+            TZ: America/Toronto
+            PASSWORD: ${code_server_password}
+            SUDO_PASSWORD: ${code_server_password}
+            DEFAULT_WORKSPACE: /config/vigilant-broccoli
+          volumes:
+            - code_server_config:/config
+            - /opt/code-server/custom-init:/custom-cont-init.d:ro
+          labels:
+            com.centurylinklabs.watchtower.enable: "true"
+        caddy:
+          image: caddy:2-alpine
+          container_name: caddy
+          restart: unless-stopped
+          pull_policy: always
+          ports:
+            - "80:80"
+            - "443:443"
+          volumes:
+            - /opt/code-server/Caddyfile:/etc/caddy/Caddyfile:ro
+            - caddy_data:/data
+            - caddy_config:/config
+          depends_on:
+            - code-server
+          labels:
+            com.centurylinklabs.watchtower.enable: "true"
+        watchtower:
+          image: containrrr/watchtower
+          container_name: watchtower
+          restart: unless-stopped
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+          environment:
+            WATCHTOWER_CLEANUP: "true"
+            WATCHTOWER_POLL_INTERVAL: "300"
+            WATCHTOWER_LABEL_ENABLE: "true"
+            DOCKER_API_VERSION: DOCKER_API_VERSION_PLACEHOLDER
+      volumes:
+        code_server_config:
+        caddy_data:
+        caddy_config:
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ubuntu
+  - 'DOCKER_API=$(docker version --format "{{.Server.APIVersion}}") && sed -i "s/DOCKER_API_VERSION_PLACEHOLDER/$DOCKER_API/" /opt/code-server/docker-compose.yml'
+  - docker compose -f /opt/code-server/docker-compose.yml up -d

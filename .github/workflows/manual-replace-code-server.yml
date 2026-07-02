@@ -1,0 +1,56 @@
+name: manual-replace-code-server
+
+on:
+  workflow_dispatch:
+    inputs:
+      rotate_password:
+        description: Also rotate the code-server password
+        type: boolean
+        default: false
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  replace-code-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets TF_CLOUD_TOKEN | TF_TOKEN_app_terraform_io ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN | CLOUDFLARE_API_TOKEN ;
+            kv/data/secrets GITHUB_TOKEN | GITHUB_TOKEN ;
+            kv/data/secrets OCI_CONFIG | OCI_CONFIG ;
+            kv/data/secrets OCI_PRIVATE_KEY | OCI_PRIVATE_KEY ;
+
+      - name: Write OCI credentials
+        run: |
+          mkdir -p ~/.oci
+          printf '%s\n' "$OCI_CONFIG" > ~/.oci/config
+          printf '%s\n' "$OCI_PRIVATE_KEY" > ~/.oci/oci_api_key.pem
+          sed -i "s|^key_file=.*|key_file=$HOME/.oci/oci_api_key.pem|" ~/.oci/config
+          chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_wrapper: false
+
+      - name: Replace code-server VM
+        run: |
+          cd infrastructure/terraform
+          terraform init -input=false
+          REPLACE_FLAGS="-replace=oci_core_instance.code_server"
+          if [ "${{ inputs.rotate_password }}" = "true" ]; then
+            REPLACE_FLAGS="$REPLACE_FLAGS -replace=random_password.code_server_password"
+          fi
+          terraform apply -input=false -auto-approve $REPLACE_FLAGS

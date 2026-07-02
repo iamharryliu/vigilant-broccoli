@@ -52,3 +52,8 @@ variable "cloudflare_zone_id" {
   type    = string
   default = "6cb0ddc52a5da0094c589bdf7adc16ad"
 }
+
+variable "code_server_domain" {
+  type    = string
+  default = "code.harryliu.dev"
+}

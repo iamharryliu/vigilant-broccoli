@@ -1,5 +1,9 @@
 # CLAUDE
 
+## GitHub Actions Conventions
+
+- Always use Node.js 24-compatible action versions to avoid deprecation warnings. Current pinned versions: `actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7`.
+
 ## Coding Conventions
 
 - Prefer simple code implementation.
@@ -25,6 +29,7 @@
 - [Setup](./setup/) - Machine setup scripts and dotfiles.
   - [dotfiles](./setup/dotfiles/) - Shell configs, aliases, and scripts (symlinked to `$HOME`).
   - [mac](./setup/mac/) - macOS setup: `install.sh` entry point, dock, dock stacks, preferences, wallpaper.
+  - [linux](./setup/linux/) - Linux setup: `install.sh` symlinks `~/vigilant-broccoli` to the repo location if cloned elsewhere, links shared dotfiles, and hooks `.rc.bash` into `~/.bashrc`. `-y` runs non-interactively (used by the code-server VM bootstrap, which clones the repo to `~/vigilant-broccoli`).
 - [Projects](./projects/) - Software projects.
   - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects
     - [vb-manager-next](./projects/nx-workspace/apps/ui/vb-manager-next) - Next.js management dashboard app (Tailwind, NextAuth, PM2 deployed)

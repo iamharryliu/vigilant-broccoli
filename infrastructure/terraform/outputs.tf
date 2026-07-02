@@ -31,3 +31,16 @@ output "oci_gitea_url" {
 output "oci_gitea_ssh_clone_hint" {
   value = "ssh://git@${var.gitea_domain}:2222/<owner>/<repo>.git"
 }
+
+output "oci_code_server_public_ip" {
+  value = oci_core_instance.code_server.public_ip
+}
+
+output "oci_code_server_url" {
+  value = "https://${var.code_server_domain}"
+}
+
+output "oci_code_server_password" {
+  value     = random_password.code_server_password.result
+  sensitive = true
+}
