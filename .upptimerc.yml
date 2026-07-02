@@ -15,6 +15,10 @@ sites:
     url: https://vb-express.fly.dev/
   - name: Harry Liu
     url: https://harryliu.dev/
+  - name: Gitea
+    url: https://git.harryliu.dev/
+  - name: Code Server
+    url: https://code.harryliu.dev/login
   - name: Cloud 8 Skate
     url: https://cloud8skate.com/
   - name: FindMe
