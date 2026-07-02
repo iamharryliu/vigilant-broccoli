@@ -33,7 +33,7 @@ jobs:
           TIMESTAMP=$(date -u +%Y-%m-%d)
           curl -sL -H "Authorization: token ${{ secrets.GITEA_TOKEN }}" \
             -o journal.zip \
-            https://git.vigilant-broccoli.app/api/v1/repos/prettydamntired/journal/archive/main.zip
+            https://git.harryliu.dev/api/v1/repos/prettydamntired/journal/archive/main.zip
           gsutil cp journal.zip gs://vigilant-broccoli-backup/journal-backup-$TIMESTAMP.zip
 
       - name: Cleanup old backups
