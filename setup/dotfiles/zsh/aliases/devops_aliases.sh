@@ -76,7 +76,11 @@ alias tfoutput="terraform output"
 
 ## WIREGUARD
 wgls() {
-  local conf_files=(/opt/homebrew/etc/wireguard/*.conf(N))
+  local conf_files=()
+  local f
+  for f in /opt/homebrew/etc/wireguard/*.conf; do
+    [ -e "$f" ] && conf_files+=("$f")
+  done
 
   if [[ ${#conf_files[@]} -eq 0 ]]; then
     echo "No WireGuard configurations found"
