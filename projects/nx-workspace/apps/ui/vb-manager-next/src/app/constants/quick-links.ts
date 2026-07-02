@@ -808,6 +808,18 @@ const VB_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
+  {
+    label: 'harryliu.dev',
+    target: 'https://harryliu.dev/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: 'Code Server',
+    target: 'https://code.harryliu.dev/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
 ];
 
 const UTILITY_LINKS = [

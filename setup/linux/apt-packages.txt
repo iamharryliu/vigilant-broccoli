@@ -1,5 +1,6 @@
 tmux
 vim
+neovim
 fzf
 ripgrep
 jq

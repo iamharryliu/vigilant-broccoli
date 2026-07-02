@@ -1,10 +1,10 @@
 {
   "private": true,
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "open:repo": "open https://github.com/iamharryliu/vigilant-broccoli",
     "open:repo:actions": "open https://github.com/iamharryliu/vigilant-broccoli/actions",
     "npm:packages": "open https://www.npmjs.com/settings/vigilant-broccoli/packages",
-    "install-all": "npm-recursive-install",
     "format": "prettier --write .",
     "format:commit": "prettier --write",
     "gcp:login": "gcloud auth login && gcloud config set project vigilant-broccoli && gcloud auth application-default login",
@@ -31,7 +31,7 @@
     "gcp:vm:start": "gcloud compute instances start vb-free-vm --zone=us-central1-a",
     "gcp:vm:image:build": "cd infrastructure/terraform/packer && make init && make build",
     "gcp:vm:post-init": "./infrastructure/terraform/packer/scripts/run-vault-post-init.sh",
-    "gcp:vm:regen-cert": "./infrastructure/terraform/packer/scripts/run-vault-regen-cert.sh && npm run gcp:vm:update-wg",
+    "gcp:vm:regen-cert": "./infrastructure/terraform/packer/scripts/run-vault-regen-cert.sh && pnpm gcp:vm:update-wg",
     "gcp:vm:update-wg": "./infrastructure/terraform/packer/scripts/run-update-wg-endpoint.sh",
     "gcp:vm:vault:test-local-connection": "gcloud compute ssh vb-free-vm --zone=us-central1-a --tunnel-through-iap --command='export VAULT_ADDR=https://127.0.0.1:8200 VAULT_SKIP_VERIFY=true && vault status && echo \"✓ Vault is accessible\"'",
     "gcp:vm:vault:unseal": "./infrastructure/terraform/packer/scripts/run-vault-unseal.sh",
@@ -74,7 +74,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,html,css,scss,md}": [
-      "npm run format:commit"
+      "pnpm format:commit"
     ]
   },
   "husky": {
