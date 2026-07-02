@@ -30,6 +30,7 @@
     "gcp:vm:vault:save-secrets-local": "./infrastructure/terraform/packer/scripts/run-vault-get-secrets.sh",
     "gcp:vm:vault:set-secrets": "./infrastructure/terraform/packer/scripts/run-vault-set-secrets.sh",
     "secret-rotation:flyio": "./infrastructure/terraform/packer/scripts/rotate-fly-token.sh",
+    "local:install:machine-setup": "if [ \"$(uname)\" = Darwin ]; then zsh -c 'source setup/mac/install.sh'; else bash setup/linux/install.sh; fi",
     "local:docker:up": "docker compose -f infrastructure/local/docker-compose.yml up -d",
     "local:docker:down": "docker compose -f infrastructure/local/docker-compose.yml down",
     "local:docker:restart": "docker compose -f infrastructure/local/docker-compose.yml restart",
