@@ -14,9 +14,10 @@ fi
 
 load_aliases() {
   local dir="$1"
-  find "$dir" -name "*.sh" | while read -r script; do
+  local script
+  while read -r script; do
     source "$script"
-  done
+  done < <(find "$dir" -name "*.sh")
 }
 
 BASE_DIR=$COMMON_DOTFILES_DIR/aliases
