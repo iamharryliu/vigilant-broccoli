@@ -43,7 +43,7 @@ variable "gitea_domain" {
   default = "git.harryliu.dev"
 }
 
-variable "gitea_acme_email" {
+variable "acme_email" {
   type    = string
   default = "harryliu1995@gmail.com"
 }

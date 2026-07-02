@@ -106,7 +106,7 @@ resource "oci_core_instance" "gitea" {
     ssh_authorized_keys = var.ssh_public_key
     user_data = base64encode(templatefile("${path.module}/cloud-init-gitea.yaml", {
       gitea_domain = var.gitea_domain
-      acme_email   = var.gitea_acme_email
+      acme_email   = var.acme_email
     }))
   }
 }

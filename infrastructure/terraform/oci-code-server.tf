@@ -103,7 +103,7 @@ resource "oci_core_instance" "code_server" {
     user_data = base64encode(templatefile("${path.module}/cloud-init-code-server.yaml", {
       code_server_domain   = var.code_server_domain
       code_server_password = random_password.code_server_password.result
-      acme_email           = var.gitea_acme_email
+      acme_email           = var.acme_email
     }))
   }
 }
