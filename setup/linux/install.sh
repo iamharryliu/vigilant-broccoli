@@ -10,7 +10,7 @@ source $HOME/vigilant-broccoli/setup/dotfiles/common/aliases/aliases.sh
 source $SETUP_DIR/common/symlinks.sh
 
 if ask "Install apt packages?"; then
-    sudo apt-get update && sudo apt-get install -y tmux vim fzf ripgrep jq
+    sudo apt-get update && sudo apt-get install -y tmux vim fzf ripgrep jq lsof zip unzip
 fi
 
 if ask "Symlink dotfiles?"; then

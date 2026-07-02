@@ -1,6 +1,10 @@
 source $HOME/vigilant-broccoli/setup/dotfiles/common/directory_variables.sh
 
-alias initsh='echo "~Shell initialized.~" && source ~/.zshrc'
+if [ "$(uname)" = "Darwin" ]; then
+    alias initsh='echo "~Shell initialized.~" && source ~/.zshrc'
+else
+    alias initsh='echo "~Shell initialized.~" && source ~/.bashrc'
+fi
 if [ "$(uname)" = "Darwin" ]; then
     alias reinstallsh="source $MAC_SETUP_DIR/install.sh"
 else
