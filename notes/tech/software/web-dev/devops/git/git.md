@@ -29,6 +29,10 @@ git push new-origin main      # Push main branch.
 git push new-origin --all     # Push all branches.
 git remote remove origin
 git remote rename new-origin origin
+
+# Remote URL - read and update
+git remote get-url origin
+git remote set-url origin NEW_REPO_URL
 ```
 
 ## Subtrees

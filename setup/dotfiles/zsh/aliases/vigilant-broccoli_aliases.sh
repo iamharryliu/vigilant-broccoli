@@ -1,11 +1,5 @@
 # Journal
-ICLOUD_JOURNAL_DIR="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal"
-HOME_JOURNAL_DIR="$HOME/journal"
-if [ -d "$ICLOUD_JOURNAL_DIR" ]; then
-    JOURNAL_DIR="$ICLOUD_JOURNAL_DIR"
-else
-    JOURNAL_DIR="$HOME_JOURNAL_DIR"
-fi
+JOURNAL_DIR="$HOME/journal"
 alias cdjournal="cd '$JOURNAL_DIR'"
 alias pushJournal="cdjournal && git add . && gc docs 'Update journal.' && gpush"
 alias pulljournal="cdjournal && gpull"

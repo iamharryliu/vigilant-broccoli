@@ -16,8 +16,7 @@ export const PERSONAL_WEBSITE_BACKEND_ENDPOINTS = {
   SEND_MESSAGE: '/contact/send-message',
 } as const;
 
-const JOURNAL_BASE_PATH =
-  '~/Library/Mobile Documents/iCloud~md~obsidian/Documents/journal';
+const JOURNAL_BASE_PATH = '~/journal';
 
 const VB_REPO_BASE_PATH = '~/vigilant-broccoli';
 
