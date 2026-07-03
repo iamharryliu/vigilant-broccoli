@@ -25,6 +25,7 @@ sync_secrets_to_vault() {
   local rabbitmq_user
   local rabbitmq_password
   local email_api_key
+  local gcs_sa_credentials
   local code_server_password
 
   ca_cert=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_self_signed_cert" and .name == "rabbitmq_ca") | .instances[0].attributes.cert_pem' 2>/dev/null || echo "")
@@ -35,7 +36,7 @@ sync_secrets_to_vault() {
   gcs_sa_credentials=$(echo "$state_json" | jq -r '.resources[] | select(.type == "google_service_account_key" and .name == "gcs_manager") | .instances[0].attributes.private_key' 2>/dev/null || echo "")
   code_server_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "code_server_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
 
-  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$code_server_password" ]; then
+  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
     return
   fi
@@ -118,7 +119,7 @@ until gcloud compute ssh "${VM_NAME}" \
 done
 echo "  SSH ready."
 
-echo "Step 2/3: Running vault post-init..."
+echo "Step 2/4: Running vault post-init..."
 npm run gcp:vm:post-init
 
 echo "Step 3/4: Syncing secrets to Vault..."
