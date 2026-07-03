@@ -1,0 +1,35 @@
+{
+  "APP": {
+    "TITLE": "Whiteboard",
+    "SUBTITLE": "Write together, live."
+  },
+  "ROOM": {
+    "LABEL": "Room:",
+    "PLACEHOLDER": "Enter a room name",
+    "JOIN": "Join room",
+    "LEAVE": "Leave room",
+    "RANDOMIZE": "Pick a random room",
+    "SHARE_HINT": "Share this room name with others to write together.",
+    "EMPTY_STATE": "Join a room to start writing together."
+  },
+  "USER": {
+    "YOU_LABEL": "You",
+    "YOU_FIELD": "You:",
+    "USERNAME_PLACEHOLDER": "Pick a username",
+    "RANDOMIZE": "Pick a random username"
+  },
+  "BOARD": {
+    "PLACEHOLDER": "Start typing… everyone in this room sees it live.",
+    "TITLE": "Shared board"
+  },
+  "MEMBERS": {
+    "TITLE": "In this room",
+    "EMPTY": "You're the only one here. Share the room name to invite others.",
+    "COUNT_ONE": "1 person here",
+    "COUNT_MANY": "{count} people here"
+  },
+  "CONNECTION": {
+    "CONNECTING": "Connecting to live updates…",
+    "ERROR": "Lost connection to live updates. Retrying… check your network."
+  }
+}

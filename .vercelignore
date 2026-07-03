@@ -1,0 +1,12 @@
+.git
+node_modules
+projects/nx-workspace/node_modules
+projects/nx-workspace/.nx
+projects/nx-workspace/dist
+projects/nx-workspace/apps/*/.next
+projects/nx-workspace/apps/*/*/.next
+projects/nx-workspace/apps/*/*/*/.next
+infrastructure/local/immich/model-cache
+infrastructure/terraform/.terraform
+*.tsbuildinfo
+projects/nx-workspace/apps/*/tsconfig.tsbuildinfo

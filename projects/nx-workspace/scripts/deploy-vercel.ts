@@ -40,6 +40,38 @@ const vercelEnv = { ...process.env };
 delete vercelEnv.NODE_EXTRA_CA_CERTS;
 delete vercelEnv.FORCE_COLOR;
 
+async function ensureProjectExists(
+  projectName: string,
+  teamId: string,
+  settings: Record<string, unknown>,
+  token: string,
+): Promise<void> {
+  const getRes = await fetch(
+    `https://api.vercel.com/v9/projects/${projectName}?teamId=${teamId}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (getRes.ok) return;
+
+  const createRes = await fetch(
+    `https://api.vercel.com/v11/projects?teamId=${teamId}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: projectName, ...settings }),
+    },
+  );
+  if (createRes.ok) {
+    console.log(`✓ Project created: ${projectName}`);
+  } else {
+    console.warn(
+      `⚠ Failed to create project ${projectName}: ${createRes.status} ${await createRes.text()}`,
+    );
+  }
+}
+
 async function applyProjectSettings(
   projectId: string,
   teamId: string,
@@ -159,6 +191,10 @@ async function main() {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('findme', 'dist/apps/findme/.next'),
     },
+    whiteboard: {
+      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
+      settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
+    },
   };
 
   const config = projectConfigs[projectName];
@@ -197,6 +233,12 @@ async function main() {
   }
 
   if (settings && vercelEnv.VERCEL_TOKEN) {
+    await ensureProjectExists(
+      vercelEnv.VERCEL_PROJECT_ID,
+      vercelEnv.VERCEL_ORG_ID,
+      settings,
+      vercelEnv.VERCEL_TOKEN,
+    );
     await applyProjectSettings(
       vercelEnv.VERCEL_PROJECT_ID,
       vercelEnv.VERCEL_ORG_ID,

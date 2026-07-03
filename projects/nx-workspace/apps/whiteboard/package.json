@@ -1,0 +1,12 @@
+{
+  "name": "whiteboard",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "*",
+    "@vigilant-broccoli/common-browser": "workspace:*",
+    "@vigilant-broccoli/react-lib": "workspace:*",
+    "next": "*",
+    "react": "*"
+  }
+}
