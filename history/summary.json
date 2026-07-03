@@ -196,5 +196,23 @@
     "timeMonth": 346,
     "timeYear": 346,
     "dailyMinutesDown": {}
+  },
+  {
+    "name": "Socket Server",
+    "url": "https://socket.harryliu.dev/health",
+    "icon": "https://icons.duckduckgo.com/ip3/socket.harryliu.dev.ico",
+    "slug": "socket-server",
+    "status": "up",
+    "uptime": "100.00%",
+    "uptimeDay": "100.00%",
+    "uptimeWeek": "100.00%",
+    "uptimeMonth": "100.00%",
+    "uptimeYear": "100.00%",
+    "time": 102,
+    "timeDay": 102,
+    "timeWeek": 102,
+    "timeMonth": 102,
+    "timeYear": 102,
+    "dailyMinutesDown": {}
   }
 ]
