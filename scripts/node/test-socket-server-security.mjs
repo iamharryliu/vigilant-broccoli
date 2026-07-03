@@ -18,15 +18,14 @@ const EVENT_MESSAGE = 'message';
 const EVENT_SUBSCRIBE = 'subscribe';
 const EVENT_PUBLISH = 'publish';
 
-if (!URL || !CA_B64) {
-  console.error('FAIL: missing one of SOCKET_SERVER_URL, SOCKET_SERVER_CA_CERT');
+if (!URL) {
+  console.error('FAIL: missing SOCKET_SERVER_URL');
   process.exit(2);
 }
 
-const tlsOpts = {
-  ca: Buffer.from(CA_B64, 'base64'),
-  checkServerIdentity: () => undefined,
-};
+const tlsOpts = CA_B64
+  ? { ca: Buffer.from(CA_B64, 'base64'), checkServerIdentity: () => undefined }
+  : {};
 
 const baseOpts = {
   transports: ['websocket'],

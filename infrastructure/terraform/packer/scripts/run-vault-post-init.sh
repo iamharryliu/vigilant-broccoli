@@ -96,7 +96,7 @@ vault write auth/jwt/role/${VAULT_ROLE_NAME} - <<ROLE
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_POLICY_NAME}\"],
-  \"ttl\": \"10m\"
+  \"ttl\": \"30m\"
 }
 ROLE
 
@@ -112,7 +112,7 @@ vault write auth/jwt/role/${VAULT_ROTATE_ROLE_NAME} - <<ROLE
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_ROTATE_POLICY_NAME}\"],
-  \"ttl\": \"10m\"
+  \"ttl\": \"30m\"
 }
 ROLE
 

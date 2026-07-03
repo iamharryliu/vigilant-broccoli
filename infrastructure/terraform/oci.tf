@@ -81,6 +81,24 @@ resource "oci_core_security_list" "rabbitmq_sl" {
       max = 3443
     }
   }
+
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+    tcp_options {
+      min = 80
+      max = 80
+    }
+  }
+
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+    tcp_options {
+      min = 443
+      max = 443
+    }
+  }
 }
 
 resource "oci_core_subnet" "public_subnet" {
@@ -127,6 +145,17 @@ resource "oci_core_instance" "rabbitmq" {
       shared_app_token       = random_password.shared_app_token.result
       socket_server_tls_key  = tls_private_key.socket_server.private_key_pem
       socket_server_tls_cert = tls_locally_signed_cert.socket_server.cert_pem
+      socket_server_domain   = var.socket_server_domain
+      acme_email             = var.acme_email
     }))
   }
+}
+
+resource "cloudflare_dns_record" "socket_server" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.socket_server_domain
+  content = oci_core_instance.rabbitmq.public_ip
+  type    = "A"
+  ttl     = 300
+  proxied = false
 }

@@ -45,6 +45,21 @@ write_files:
     content: |
       ${indent(6, socket_server_tls_cert)}
 
+  - path: /opt/socket-server/Caddyfile
+    content: |
+      {
+        email ${acme_email}
+      }
+
+      ${socket_server_domain} {
+        reverse_proxy https://socket-server-socketio:3443 {
+          transport http {
+            tls
+            tls_insecure_skip_verify
+          }
+        }
+      }
+
   - path: /opt/rabbitmq/docker-compose.yml
     content: |
       services:
@@ -91,6 +106,22 @@ write_files:
             interval: 30s
             timeout: 5s
             retries: 3
+        caddy:
+          image: caddy:2-alpine
+          container_name: caddy
+          restart: unless-stopped
+          pull_policy: always
+          ports:
+            - "80:80"
+            - "443:443"
+          volumes:
+            - /opt/socket-server/Caddyfile:/etc/caddy/Caddyfile:ro
+            - caddy_data:/data
+            - caddy_config:/config
+          depends_on:
+            - socket-server-socketio
+          labels:
+            com.centurylinklabs.watchtower.enable: "true"
         watchtower:
           image: containrrr/watchtower
           container_name: watchtower
@@ -104,6 +135,8 @@ write_files:
             DOCKER_API_VERSION: DOCKER_API_VERSION_PLACEHOLDER
       volumes:
         rabbitmq_data:
+        caddy_data:
+        caddy_config:
 
 runcmd:
   - systemctl enable docker

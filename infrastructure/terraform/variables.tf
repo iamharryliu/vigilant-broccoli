@@ -57,3 +57,8 @@ variable "code_server_domain" {
   type    = string
   default = "code.harryliu.dev"
 }
+
+variable "socket_server_domain" {
+  type    = string
+  default = "socket.harryliu.dev"
+}

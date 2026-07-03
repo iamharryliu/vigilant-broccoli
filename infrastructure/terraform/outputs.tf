@@ -20,6 +20,10 @@ output "oci_vm_socket_server_url" {
   value = "https://${oci_core_instance.rabbitmq.public_ip}:3443"
 }
 
+output "oci_vm_socket_server_domain_url" {
+  value = "https://${var.socket_server_domain}"
+}
+
 output "oci_gitea_public_ip" {
   value = oci_core_instance.gitea.public_ip
 }
