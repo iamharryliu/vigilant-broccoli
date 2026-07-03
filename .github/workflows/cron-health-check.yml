@@ -127,7 +127,7 @@ jobs:
 
           echo ""
           echo "[OCI VM — Socket Server]"
-          SOCKET_CODE=$(curl -sk -o /dev/null -w '%{http_code}' --max-time 15 "${SOCKET_SERVER_URL}/health" 2>/dev/null) || SOCKET_CODE="timeout"
+          SOCKET_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "${SOCKET_SERVER_URL}/health" 2>/dev/null) || SOCKET_CODE="timeout"
           if [ "$SOCKET_CODE" = "200" ]; then
             check "socket-server-socketio" "ok"
           else

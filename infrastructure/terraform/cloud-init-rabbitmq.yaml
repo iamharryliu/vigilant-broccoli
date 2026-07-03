@@ -35,16 +35,6 @@ write_files:
     content: |
       ${indent(6, rabbitmq_ca_cert)}
 
-  - path: /opt/socket-server/certs/server.key
-    permissions: '0644'
-    content: |
-      ${indent(6, socket_server_tls_key)}
-
-  - path: /opt/socket-server/certs/server.crt
-    permissions: '0644'
-    content: |
-      ${indent(6, socket_server_tls_cert)}
-
   - path: /opt/socket-server/Caddyfile
     content: |
       {
@@ -52,12 +42,7 @@ write_files:
       }
 
       ${socket_server_domain} {
-        reverse_proxy https://socket-server-socketio:3443 {
-          transport http {
-            tls
-            tls_insecure_skip_verify
-          }
-        }
+        reverse_proxy socket-server-socketio:3000
       }
 
   - path: /opt/rabbitmq/docker-compose.yml
@@ -91,18 +76,12 @@ write_files:
           pull_policy: always
           environment:
             HOST: 0.0.0.0
-            PORT: "3443"
+            PORT: "3000"
             SENDER_TOKEN: ${shared_app_token}
-            TLS_CERT_PATH: /etc/socket-server/certs/server.crt
-            TLS_KEY_PATH: /etc/socket-server/certs/server.key
-          ports:
-            - "3443:3443"
-          volumes:
-            - /opt/socket-server/certs:/etc/socket-server/certs:ro
           labels:
             com.centurylinklabs.watchtower.enable: "true"
           healthcheck:
-            test: ["CMD", "wget", "--no-check-certificate", "-qO-", "https://127.0.0.1:3443/health"]
+            test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/health"]
             interval: 30s
             timeout: 5s
             retries: 3

@@ -14,10 +14,6 @@ inputs:
   shared_app_token:
     description: Sender token for the socket server
     required: true
-  socket_server_ca_cert:
-    description: Base64-encoded CA cert (optional)
-    required: false
-    default: ''
   started_at:
     description: Unix epoch seconds when the deploy started (for duration calculation)
     required: false
@@ -43,7 +39,6 @@ runs:
       env:
         SOCKET_SERVER_URL: ${{ inputs.socket_server_url }}
         SHARED_APP_TOKEN: ${{ inputs.shared_app_token }}
-        SOCKET_SERVER_CA_CERT: ${{ inputs.socket_server_ca_cert }}
         DEPLOY_STATUS: ${{ inputs.status }}
         DEPLOY_JOB: ${{ inputs.job }}
         DEPLOY_COMMIT: ${{ github.sha }}

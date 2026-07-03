@@ -36,7 +36,6 @@ jobs:
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
             kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
-            kv/data/secrets SOCKET_SERVER_CA_CERT | SOCKET_SERVER_CA_CERT ;
 
       - name: Health check
         run: |
@@ -54,7 +53,6 @@ jobs:
         env:
           SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
-          SOCKET_SERVER_CA_CERT: ${{ env.SOCKET_SERVER_CA_CERT }}
         run: |
           cat > "$GITHUB_WORKSPACE/round-trip.mjs" <<'EOF'
           import { io } from 'socket.io-client';

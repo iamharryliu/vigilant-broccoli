@@ -37,7 +37,6 @@ jobs:
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
             kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
-            kv/data/secrets SOCKET_SERVER_CA_CERT | SOCKET_SERVER_CA_CERT ;
 
       - name: Notify started
         uses: ./.github/actions/deploy-notify
@@ -46,7 +45,6 @@ jobs:
           job: deploy
           socket_server_url: ${{ env.SOCKET_SERVER_URL }}
           shared_app_token: ${{ env.SHARED_APP_TOKEN }}
-          socket_server_ca_cert: ${{ env.SOCKET_SERVER_CA_CERT }}
 
 
   deploy-npm-packages:

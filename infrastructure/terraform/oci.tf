@@ -77,15 +77,6 @@ resource "oci_core_security_list" "rabbitmq_sl" {
     protocol = "6"
     source   = "0.0.0.0/0"
     tcp_options {
-      min = 3443
-      max = 3443
-    }
-  }
-
-  ingress_security_rules {
-    protocol = "6"
-    source   = "0.0.0.0/0"
-    tcp_options {
       min = 80
       max = 80
     }
@@ -142,11 +133,9 @@ resource "oci_core_instance" "rabbitmq" {
       rabbitmq_tls_key       = tls_private_key.rabbitmq.private_key_pem
       rabbitmq_tls_cert      = tls_locally_signed_cert.rabbitmq.cert_pem
       rabbitmq_ca_cert       = tls_self_signed_cert.rabbitmq_ca.cert_pem
-      shared_app_token       = random_password.shared_app_token.result
-      socket_server_tls_key  = tls_private_key.socket_server.private_key_pem
-      socket_server_tls_cert = tls_locally_signed_cert.socket_server.cert_pem
-      socket_server_domain   = var.socket_server_domain
-      acme_email             = var.acme_email
+      shared_app_token     = random_password.shared_app_token.result
+      socket_server_domain = var.socket_server_domain
+      acme_email           = var.acme_email
     }))
   }
 }

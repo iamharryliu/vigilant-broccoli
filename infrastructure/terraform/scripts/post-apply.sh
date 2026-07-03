@@ -64,16 +64,14 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     RABBITMQ_CONNECTION_STRING='${conn_str}' \
     EMAIL_SERVICE_API_KEY='${email_api_key}' \
     GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
-    SOCKET_SERVER_URL='${socket_server_url}' \
-    SOCKET_SERVER_CA_CERT=''
+    SOCKET_SERVER_URL='${socket_server_url}'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT='${ca_cert_b64}' \
     RABBITMQ_CONNECTION_STRING='${conn_str}' \
     EMAIL_SERVICE_API_KEY='${email_api_key}' \
     GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
-    SOCKET_SERVER_URL='${socket_server_url}' \
-    SOCKET_SERVER_CA_CERT=''
+    SOCKET_SERVER_URL='${socket_server_url}'
 fi
 
 echo 'Secrets synced to Vault'

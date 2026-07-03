@@ -1,0 +1,30 @@
+name: manual-run-tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  dispatch-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch test workflows
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TEST_WORKFLOWS=(
+            test-e2e-storage-service
+            test-e2e-socket-server-socketio
+            test-security-socket-server
+            test-e2e-rabbitmq
+            test-e2e-llm
+            test-smoke-email-service
+            test-e2e-email-subscription-service
+            test-security-api
+          )
+          for wf in "${TEST_WORKFLOWS[@]}"; do
+            gh workflow run "$wf" --repo ${{ github.repository }}
+            echo "dispatched: $wf"
+          done

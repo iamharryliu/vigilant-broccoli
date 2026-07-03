@@ -35,12 +35,10 @@ jobs:
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
-            kv/data/secrets SOCKET_SERVER_CA_CERT | SOCKET_SERVER_CA_CERT ;
 
       - name: Run security checks
         env:
           SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
-          SOCKET_SERVER_CA_CERT: ${{ env.SOCKET_SERVER_CA_CERT }}
         run: node scripts/node/test-socket-server-security.mjs
 
       - name: Notify on failure
