@@ -38,20 +38,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const caCert = process.env.SOCKET_SERVER_CA_CERT;
-  const tlsOpts: Record<string, unknown> = caCert
-    ? {
-        ca: Buffer.from(caCert, 'base64'),
-        checkServerIdentity: () => undefined,
-      }
-    : {};
-
   const socket = io(url, {
     auth: { token },
     transports: ['websocket'],
     reconnection: false,
-    ...tlsOpts,
-  } as Parameters<typeof io>[1]);
+  });
 
   try {
     await new Promise<void>((resolve, reject) => {
