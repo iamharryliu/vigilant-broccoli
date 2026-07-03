@@ -27,9 +27,20 @@ if [ -z "$SHARED_APP_TOKEN" ]; then
 fi
 
 OCI_VM_IP=$(cd "${SCRIPT_DIR}/../.." && terraform output -raw oci_vm_public_ip)
+SSH_OPTS="-i $HOME/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"
+
+ssh-keygen -R "$OCI_VM_IP" >/dev/null 2>&1 || true
+
+echo "Waiting for socket-server VM (${OCI_VM_IP}) to be ready..."
+for i in $(seq 1 30); do
+  if ssh $SSH_OPTS "ubuntu@${OCI_VM_IP}" 'test -f /opt/rabbitmq/docker-compose.yml && sudo docker info >/dev/null 2>&1' 2>/dev/null; then
+    break
+  fi
+  sleep 10
+done
 
 echo "Updating SENDER_TOKEN on socket-server VM (${OCI_VM_IP})..."
-printf '%s' "$SHARED_APP_TOKEN" | ssh -i ~/.ssh/id_ed25519 "ubuntu@${OCI_VM_IP}" '
+printf '%s' "$SHARED_APP_TOKEN" | ssh $SSH_OPTS "ubuntu@${OCI_VM_IP}" '
 NEW_TOKEN=$(cat)
 sudo sed -i "s/SENDER_TOKEN: .*/SENDER_TOKEN: $NEW_TOKEN/" /opt/rabbitmq/docker-compose.yml
 sudo docker compose -f /opt/rabbitmq/docker-compose.yml up -d

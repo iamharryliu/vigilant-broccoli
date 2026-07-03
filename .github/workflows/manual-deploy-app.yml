@@ -1,0 +1,78 @@
+name: manual-deploy-app
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Nx project to deploy'
+        required: true
+        type: choice
+        options:
+          - socket-server-socketio
+          - office-presence-socket-server-demo
+          - vb-manager-next-mobile
+          - findme
+          - hearth
+          - cloud-8-skate-angular
+          - personal-website-react
+          - personal-website-frontend
+          - employee-handler-ui
+          - cloud8skate-sanity
+          - vb-express
+          - llm-service
+          - email-service
+          - bucket-service
+          - email-subscription-service
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          export_token: 'true'
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ID ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+            kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN ;
+            kv/data/secrets SANITY_AUTH_TOKEN | SANITY_AUTH_TOKEN ;
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4
+        with:
+          username: iamharryliu
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # 1.6
+
+      - name: Deploy project
+        working-directory: ./projects/nx-workspace
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
+          VAULT_ADDR: https://127.0.0.1:8200
+          NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/projects/nx-workspace/scripts/vault-ca.crt
+        run: pnpm exec nx run ${{ github.event.inputs.project }}:deploy

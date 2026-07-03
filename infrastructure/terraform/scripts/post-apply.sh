@@ -79,8 +79,24 @@ echo 'Secrets synced to Vault'
   echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, SOCKET_SERVER_URL to kv/data/secrets (SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
 }
 
+sync_socket_server() {
+  "${SCRIPT_DIR}/../packer/scripts/sync-socket-server-token.sh"
+
+  echo "Verifying socket server health..."
+  for i in $(seq 1 30); do
+    if curl -s --max-time 5 https://socket.harryliu.dev/health 2>/dev/null | grep -q ok; then
+      echo "✓ https://socket.harryliu.dev/health"
+      return 0
+    fi
+    sleep 10
+  done
+  echo "Socket server health check failed" >&2
+  return 1
+}
+
 if [ "$NEW_IP" = "$CURRENT_IP" ]; then
   sync_secrets_to_vault
+  sync_socket_server
   exit 0
 fi
 
@@ -101,10 +117,12 @@ echo "  SSH ready."
 echo "Step 2/3: Running vault post-init..."
 npm run gcp:vm:post-init
 
-echo "Step 3/3: Syncing secrets to Vault..."
+echo "Step 3/4: Syncing secrets to Vault..."
 sync_secrets_to_vault
 
 echo "Step 4/4: Regenerating vault cert + updating WireGuard endpoint..."
 npm run gcp:vm:regen-cert
+
+sync_socket_server
 
 echo "Post-apply complete."

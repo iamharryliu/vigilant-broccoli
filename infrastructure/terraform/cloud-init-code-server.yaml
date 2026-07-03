@@ -9,13 +9,20 @@ packages:
 write_files:
   - path: /opt/code-server/Caddyfile
     content: |
-      {
-        email ${acme_email}
-      }
-
       ${code_server_domain} {
+        tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
         reverse_proxy code-server:8443
       }
+
+  - path: /opt/code-server/certs/origin.pem
+    permissions: '0644'
+    content: |
+      ${indent(6, code_server_origin_cert)}
+
+  - path: /opt/code-server/certs/origin.key
+    permissions: '0600'
+    content: |
+      ${indent(6, code_server_origin_key)}
 
   - path: /opt/code-server/custom-init/10-install-tools.sh
     permissions: '0755'
@@ -88,6 +95,7 @@ write_files:
             - "443:443"
           volumes:
             - /opt/code-server/Caddyfile:/etc/caddy/Caddyfile:ro
+            - /opt/code-server/certs:/etc/caddy/certs:ro
             - caddy_data:/data
             - caddy_config:/config
           depends_on:

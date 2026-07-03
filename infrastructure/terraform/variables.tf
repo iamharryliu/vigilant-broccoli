@@ -58,6 +58,11 @@ variable "code_server_domain" {
   default = "code.harryliu.dev"
 }
 
+variable "code_server_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
+
 variable "socket_server_domain" {
   type    = string
   default = "socket.harryliu.dev"
