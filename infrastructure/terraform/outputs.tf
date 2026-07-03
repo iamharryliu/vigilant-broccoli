@@ -39,8 +39,3 @@ output "oci_code_server_public_ip" {
 output "oci_code_server_url" {
   value = "https://${var.code_server_domain}"
 }
-
-output "oci_code_server_password" {
-  value     = random_password.code_server_password.result
-  sensitive = true
-}

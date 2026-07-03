@@ -20,7 +20,7 @@
     "oci:gitea:ssh": "ssh -i ~/.ssh/id_ed25519 ubuntu@git.harryliu.dev",
     "oci:code-server:ssh": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip",
     "oci:code-server:open": "open https://code.harryliu.dev",
-    "oci:code-server:password": "cd infrastructure/terraform && terraform output -raw oci_code_server_password | pbcopy && echo 'Code server password copied to clipboard.'",
+    "oci:code-server:password": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform state pull | jq -r '.resources[] | select(.type == \"random_password\" and .name == \"code_server_password\") | .instances[0].attributes.result' | pbcopy && echo 'Code server password copied to clipboard.'",
     "oci:code-server:logs": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip 'sudo docker logs -f code-server'",
     "oci:code-server:logs:cloud-init": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip 'tail -f /var/log/cloud-init-output.log'",
     "oci:code-server:replace": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply -replace=oci_core_instance.code_server && ssh-keygen -R $(terraform output -raw oci_code_server_public_ip)",
