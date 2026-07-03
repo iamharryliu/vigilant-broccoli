@@ -1,9 +1,9 @@
-name: cron-utility-backup-repos
+name: cron-backup
 
 on:
   push:
     paths:
-      - .github/workflows/cron-utility-backup-repos.yml
+      - .github/workflows/cron-backup.yml
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
@@ -100,6 +100,86 @@ jobs:
         run: |
           MAX_BACKUPS=7
           BACKUPS=$(gsutil ls gs://vigilant-broccoli-backup/strandbaden-backup-*.zip | sort)
+          BACKUP_COUNT=$(echo "$BACKUPS" | wc -l)
+          if [ "$BACKUP_COUNT" -gt "$MAX_BACKUPS" ]; then
+            DELETE_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))
+            echo "$BACKUPS" | head -n "$DELETE_COUNT" | xargs gsutil rm
+          fi
+
+  backup-mongodb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets MONGODB_URI | MONGODB_URI ;
+            kv/data/secrets MONGODB_DB | MONGODB_DB ;
+
+      - name: Install mongodb-database-tools
+        run: |
+          curl -sL -o mongodb-tools.deb https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
+          sudo dpkg -i mongodb-tools.deb
+
+      - name: Dump and upload backup to GCS
+        env:
+          MONGODB_URI: ${{ env.MONGODB_URI }}
+          MONGODB_DB: ${{ env.MONGODB_DB }}
+        run: |
+          TIMESTAMP=$(date -u +%Y-%m-%d)
+          DB_NAME="${MONGODB_DB:-vb-manager}"
+          mongodump --uri="$MONGODB_URI" --db="$DB_NAME" --archive="mongodb-$DB_NAME.gz" --gzip
+          gsutil cp "mongodb-$DB_NAME.gz" "gs://vigilant-broccoli-backup/mongodb-backup-$TIMESTAMP.gz"
+
+      - name: Cleanup old backups
+        run: |
+          MAX_BACKUPS=7
+          BACKUPS=$(gsutil ls gs://vigilant-broccoli-backup/mongodb-backup-*.gz | sort)
+          BACKUP_COUNT=$(echo "$BACKUPS" | wc -l)
+          if [ "$BACKUP_COUNT" -gt "$MAX_BACKUPS" ]; then
+            DELETE_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))
+            echo "$BACKUPS" | head -n "$DELETE_COUNT" | xargs gsutil rm
+          fi
+
+  backup-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets SUPABASE_DB_URL | SUPABASE_DB_URL ;
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /usr/share/keyrings/postgresql.gpg
+          sudo sed -i 's|deb |deb [signed-by=/usr/share/keyrings/postgresql.gpg] |' /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
+
+      - name: Dump and upload backup to GCS
+        env:
+          SUPABASE_DB_URL: ${{ env.SUPABASE_DB_URL }}
+        run: |
+          TIMESTAMP=$(date -u +%Y-%m-%d)
+          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges | gzip > "supabase.sql.gz"
+          gsutil cp "supabase.sql.gz" "gs://vigilant-broccoli-backup/supabase-backup-$TIMESTAMP.sql.gz"
+
+      - name: Cleanup old backups
+        run: |
+          MAX_BACKUPS=7
+          BACKUPS=$(gsutil ls gs://vigilant-broccoli-backup/supabase-backup-*.sql.gz | sort)
           BACKUP_COUNT=$(echo "$BACKUPS" | wc -l)
           if [ "$BACKUP_COUNT" -gt "$MAX_BACKUPS" ]; then
             DELETE_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))
