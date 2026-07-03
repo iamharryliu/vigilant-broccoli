@@ -9,11 +9,11 @@
 ## CI Status
 
 [![ci](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci.yml)\
+[![cron-backup](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml)\
 [![cron-cleanup-github-action-runs](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-github-action-runs.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-github-action-runs.yml)\
 [![cron-health-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml)\
 [![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)\
 [![cron-upptime-response-time](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml)\
-[![cron-utility-backup-repos](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-backup-repos.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-backup-repos.yml)\
 [![cron-utility-update-resume](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml)\
 [![deploy](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml)\
 [![deploy-github-profile](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml)\
