@@ -63,7 +63,7 @@ resource "github_branch_protection" "main" {
   ]
 
   required_status_checks {
-    strict   = false
-    contexts = []
+    strict   = true
+    contexts = ["nx-affected", "pre-commit"]
   }
 }

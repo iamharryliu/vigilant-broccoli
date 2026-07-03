@@ -8,6 +8,7 @@
 
 ## CI Status
 
+[![ci](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci.yml)\
 [![cron-cleanup-github-action-runs](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-github-action-runs.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-github-action-runs.yml)\
 [![cron-health-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml)\
 [![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)\
