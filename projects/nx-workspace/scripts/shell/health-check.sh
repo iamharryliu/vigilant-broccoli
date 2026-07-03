@@ -26,7 +26,12 @@ http_check() {
   local url="$2"
   local expected="${3:-200}"
   local code
-  code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$url" 2>/dev/null) || code="timeout"
+  # Retry to tolerate scale-to-zero cold starts (first request wakes the service).
+  for attempt in 1 2 3; do
+    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$url" 2>/dev/null) || code="timeout"
+    [ "$code" = "$expected" ] && break
+    [ "$attempt" -lt 3 ] && sleep 5
+  done
   if [ "$code" = "$expected" ]; then
     check "$name" "ok"
   else
@@ -40,12 +45,17 @@ echo ""
 echo "[Fly.io Apps]"
 http_check "vb-express" "https://vb-express.fly.dev"
 http_check "vb-email-service" "https://vb-email-service.fly.dev"
+http_check "vb-llm-service" "https://vb-llm-service.fly.dev"
+http_check "vb-storage-service" "https://vb-storage-service.fly.dev"
+http_check "email-subscription-service" "https://email-subscription-service.fly.dev"
 
 echo ""
 echo "[Websites]"
 http_check "harryliu.dev" "https://harryliu.dev"
 http_check "cloud8skate.com" "https://cloud8skate.com"
-http_check "vb-next-demo.vercel.app" "https://vb-next-demo.vercel.app"
+http_check "vb-hearth.vercel.app" "https://vb-hearth.vercel.app"
+http_check "findme" "https://findme-kohl.vercel.app"
+http_check "git.harryliu.dev" "https://git.harryliu.dev"
 
 echo ""
 echo "[GCP VM]"

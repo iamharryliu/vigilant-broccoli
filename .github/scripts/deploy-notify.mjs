@@ -2,7 +2,6 @@ import { io } from 'socket.io-client';
 
 const URL = process.env.SOCKET_SERVER_URL;
 const TOKEN = process.env.SHARED_APP_TOKEN;
-const CA_B64 = process.env.SOCKET_SERVER_CA_CERT;
 
 const DEPLOY_APP = 'vb-manager-next';
 const DEPLOY_RECEIVER_ID = 'deploy';
@@ -23,15 +22,10 @@ const payload = {
   affected_projects: process.env.DEPLOY_AFFECTED_PROJECTS || undefined,
 };
 
-const tlsOpts = CA_B64
-  ? { ca: Buffer.from(CA_B64, 'base64'), checkServerIdentity: () => undefined }
-  : {};
-
 const socket = io(URL, {
   auth: { token: TOKEN },
   transports: ['websocket'],
   reconnection: false,
-  ...tlsOpts,
 });
 
 try {

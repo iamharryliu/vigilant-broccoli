@@ -69,7 +69,6 @@
   },
   "homepage": "https://github.com/iamharryliu/vigilant-broccoli#readme",
   "devDependencies": {
-    "husky": "^4.3.8",
     "lint-staged": "^13.2.3",
     "prettier": "^3.0.0"
   },
@@ -77,10 +76,5 @@
     "*.{js,jsx,ts,tsx,json,html,css,scss,md}": [
       "pnpm format:commit"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit.legacy": "lint-staged"
-    }
   }
 }

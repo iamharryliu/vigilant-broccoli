@@ -33,7 +33,7 @@ ssh-keygen -R "$OCI_VM_IP" >/dev/null 2>&1 || true
 
 echo "Waiting for socket-server VM (${OCI_VM_IP}) to be ready..."
 for i in $(seq 1 30); do
-  if ssh $SSH_OPTS "ubuntu@${OCI_VM_IP}" 'test -f /opt/rabbitmq/docker-compose.yml && sudo docker info >/dev/null 2>&1' 2>/dev/null; then
+  if ssh $SSH_OPTS "ubuntu@${OCI_VM_IP}" 'test -f /opt/socket-server/docker-compose.yml && sudo docker info >/dev/null 2>&1' 2>/dev/null; then
     break
   fi
   sleep 10
@@ -42,7 +42,7 @@ done
 echo "Updating SENDER_TOKEN on socket-server VM (${OCI_VM_IP})..."
 printf '%s' "$SHARED_APP_TOKEN" | ssh $SSH_OPTS "ubuntu@${OCI_VM_IP}" '
 NEW_TOKEN=$(cat)
-sudo sed -i "s/SENDER_TOKEN: .*/SENDER_TOKEN: $NEW_TOKEN/" /opt/rabbitmq/docker-compose.yml
-sudo docker compose -f /opt/rabbitmq/docker-compose.yml up -d
+sudo sed -i "s/SENDER_TOKEN: .*/SENDER_TOKEN: $NEW_TOKEN/" /opt/socket-server/docker-compose.yml
+sudo docker compose -f /opt/socket-server/docker-compose.yml up -d
 '
 echo "SENDER_TOKEN synced with Vault."
