@@ -40,6 +40,26 @@ export type WhereIsFormValues = {
 const REMOVE_BTN_CLASS =
   'absolute top-0.5 right-0.5 bg-black/60 text-white border-none rounded-full w-5 h-5 cursor-pointer text-xs leading-5 text-center';
 
+const UPLOAD_MAX_DIMENSION = 1920;
+const UPLOAD_JPEG_QUALITY = 0.85;
+const UPLOAD_MIME_TYPE = 'image/jpeg';
+
+const resizeImageFile = async (file: File): Promise<PreviewImage> => {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(
+    1,
+    UPLOAD_MAX_DIMENSION / Math.max(bitmap.width, bitmap.height),
+  );
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  const dataUrl = canvas.toDataURL(UPLOAD_MIME_TYPE, UPLOAD_JPEG_QUALITY);
+  return { base64: dataUrl.split(',')[1], mimeType: UPLOAD_MIME_TYPE, dataUrl };
+};
+
 const ImageGrid = ({
   imageUrls,
   previews,
@@ -103,23 +123,9 @@ export const WhereIsFormComponent = ({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-    Promise.all(
-      files.map(
-        file =>
-          new Promise<PreviewImage>(resolve => {
-            const reader = new FileReader();
-            reader.onload = ev => {
-              const dataUrl = ev.target?.result as string;
-              resolve({
-                base64: dataUrl.split(',')[1],
-                mimeType: file.type,
-                dataUrl,
-              });
-            };
-            reader.readAsDataURL(file);
-          }),
-      ),
-    ).then(newPreviews => setPreviews(prev => [...prev, ...newPreviews]));
+    Promise.all(files.map(resizeImageFile)).then(newPreviews =>
+      setPreviews(prev => [...prev, ...newPreviews]),
+    );
   };
 
   const addTag = () => {
