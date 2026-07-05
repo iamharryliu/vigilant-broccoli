@@ -35,12 +35,12 @@ jobs:
           done
           wait
           sleep 3
-      - uses: upptime/uptime-monitor@master
+      - uses: upptime/uptime-monitor@1e27390f41da4d644dd921eed19fee111bdf5c88 # v1.43.8
         with:
           command: 'response-time'
         env:
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
-      - uses: upptime/uptime-monitor@master
+      - uses: upptime/uptime-monitor@1e27390f41da4d644dd921eed19fee111bdf5c88 # v1.43.8
         with:
           command: 'summary'
         env:
