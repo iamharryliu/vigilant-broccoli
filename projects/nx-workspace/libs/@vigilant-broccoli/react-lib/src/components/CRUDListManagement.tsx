@@ -290,6 +290,7 @@ export const EllipsisCTA = ({
   deleteLabel = DEFAULT_DELETE_LABEL,
   actions,
   icon = 'ellipsis-horizontal',
+  disabled = false,
 }: {
   onUpdate?: () => void;
   onDelete?: () => void | Promise<void>;
@@ -300,6 +301,7 @@ export const EllipsisCTA = ({
   deleteLabel?: string;
   actions?: EllipsisAction[];
   icon?: EllipsisIcon;
+  disabled?: boolean;
 }) => {
   const [pendingConfirm, setPendingConfirm] = useState<EllipsisAction | null>(
     null,
@@ -337,7 +339,7 @@ export const EllipsisCTA = ({
     <div onClick={e => e.stopPropagation()}>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <IconButton variant="ghost" icon={icon} />
+          <IconButton variant="ghost" icon={icon} disabled={disabled} />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
           {resolvedActions.map((action, idx) => (
@@ -430,7 +432,10 @@ export const CRUDItemFormDialog = <T,>({
     setOpen?.(false);
   }
   return (
-    <Dialog.Root open={isControlled ? open : internalOpen} onOpenChange={setOpen}>
+    <Dialog.Root
+      open={isControlled ? open : internalOpen}
+      onOpenChange={setOpen}
+    >
       {!isControlled && (
         <Dialog.Trigger>
           <Button variant="ghost">

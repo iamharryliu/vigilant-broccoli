@@ -1,9 +1,8 @@
-import { Users, Mail } from 'lucide-react';
+import { Users, Mail, Settings } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
-export const APP_LABEL = 'Employee Handler';
-
 export const NAV_LINKS = [
-  { label: 'Employees', href: ROUTES.EMPLOYEES, icon: Users },
-  { label: 'Signatures', href: ROUTES.SIGNATURES, icon: Mail },
-];
+  { labelKey: 'NAV.EMPLOYEES', href: ROUTES.EMPLOYEES, icon: Users },
+  { labelKey: 'NAV.SIGNATURES', href: ROUTES.SIGNATURES, icon: Mail },
+  { labelKey: 'NAV.SETTINGS', href: ROUTES.SETTINGS, icon: Settings },
+] as const;

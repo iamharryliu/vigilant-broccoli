@@ -11,10 +11,13 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  toast,
   type EllipsisAction,
 } from '@vigilant-broccoli/react-lib';
 import { Card, DropdownMenu, Text } from '@radix-ui/themes';
-import { authFetch, ERR_NO_EMAILS, postEmails } from '../../../lib/api-helpers';
+import { authFetchOk, postEmails } from '../../../lib/api-helpers';
+import { useAction } from '../../../lib/use-action';
+import { useTranslation } from '../../i18n';
 
 const INCOMING_ENDPOINT = '/api/employees/incoming';
 const ACTIVE_ENDPOINT = '/api/employees/active';
@@ -29,46 +32,6 @@ const TAB_QUERY_KEY = 'tab';
 const TAB_INCOMING = 'incoming';
 const TAB_ACTIVE = 'active';
 const TAB_INACTIVE = 'inactive';
-
-const LABEL_INCOMING = 'Incoming Employees';
-const LABEL_ACTIVE = 'Active Employees';
-const LABEL_INACTIVE = 'Inactive Employees';
-
-const LOADING_TEXT = 'Loading...';
-const EMPTY_TEXT = 'No employees';
-const BULK_ACTIONS_LABEL = 'Actions';
-const SELECT_ALL_LABEL = 'Select all';
-const SELECT_ROW_LABEL = 'Select row';
-
-const COL_NAME = 'Name';
-const COL_EMAIL = 'Email';
-const COL_ACTIONS = 'Actions';
-
-const ACTION_OFFBOARD = 'Offboard';
-const ACTION_RECOVER = 'Recover account';
-const ACTION_ONBOARD_ONE = 'Onboard';
-const ACTION_OFFBOARD_SELECTED = 'Offboard Selected';
-const ACTION_ONBOARD_SELECTED = 'Onboard Selected';
-const ACTION_RETENTION = 'Post-Retention Cleanup';
-const ACTION_SYNC = 'Sync Data';
-
-const CONFIRM_OFFBOARD_TITLE = 'Offboard employee';
-const CONFIRM_ONBOARD_TITLE = 'Onboard employee';
-
-const SUCCESS_OFFBOARD_ONE = 'Employee offboarded';
-const SUCCESS_ONBOARD_ONE = 'Employee onboarded';
-const SUCCESS_RECOVER = 'Account recovered';
-const SUCCESS_OFFBOARD_SELECTED = 'Offboarded selected employees';
-const SUCCESS_ONBOARD_SELECTED = 'Onboarded selected employees';
-const SUCCESS_RETENTION = 'Post-retention cleanup complete';
-const SUCCESS_SYNC = 'Sync complete';
-
-const offboardConfirmDescription = (email: string) =>
-  `Offboard ${email}? This will deactivate the account.`;
-const recoverConfirmDescription = (email: string) =>
-  `Recover the account for ${email}?`;
-const onboardConfirmDescription = (email: string) =>
-  `Onboard ${email}? This will activate the account.`;
 
 const PAGE_CONTAINER = 'max-w-5xl mx-auto p-8 space-y-6';
 const TABLE_WRAPPER = 'overflow-x-auto';
@@ -97,14 +60,16 @@ const normalizeList = (data: unknown): Employee[] => {
 };
 
 const useEmployeesTab = (endpoint: string) => {
+  const { t } = useTranslation();
   const [data, setData] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
 
   const reload = () => {
     setLoading(true);
-    authFetch(endpoint)
+    authFetchOk(endpoint)
       .then(res => res.json())
       .then(json => setData(normalizeList(json)))
+      .catch(() => toast.error(t('EMPLOYEES.ERROR.LOAD_FAILED')))
       .finally(() => setLoading(false));
   };
 
@@ -119,6 +84,7 @@ const useEmployeesTab = (endpoint: string) => {
 type EmployeeTableProps = {
   employees: Employee[];
   loading: boolean;
+  actionsDisabled?: boolean;
   buildActions?: (employee: Employee) => EllipsisAction[];
   selection?: {
     selectedEmails: Set<string>;
@@ -130,20 +96,22 @@ type EmployeeTableProps = {
 const EmployeeTable = ({
   employees,
   loading,
+  actionsDisabled,
   buildActions,
   selection,
 }: EmployeeTableProps) => {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <Text size="2" color="gray">
-        {LOADING_TEXT}
+        {t('COMMON.LOADING')}
       </Text>
     );
   }
   if (employees.length === 0) {
     return (
       <Text size="2" color="gray">
-        {EMPTY_TEXT}
+        {t('EMPLOYEES.EMPTY')}
       </Text>
     );
   }
@@ -163,13 +131,13 @@ const EmployeeTable = ({
                 <Checkbox
                   checked={allSelected}
                   onCheckedChange={() => selection.toggleAll()}
-                  aria-label={SELECT_ALL_LABEL}
+                  aria-label={t('EMPLOYEES.SELECT_ALL')}
                 />
               </th>
             )}
-            <th className={TH_CLASS}>{COL_NAME}</th>
-            <th className={TH_CLASS}>{COL_EMAIL}</th>
-            <th className={TH_CLASS}>{COL_ACTIONS}</th>
+            <th className={TH_CLASS}>{t('EMPLOYEES.COL.NAME')}</th>
+            <th className={TH_CLASS}>{t('EMPLOYEES.COL.EMAIL')}</th>
+            <th className={TH_CLASS}>{t('EMPLOYEES.COL.ACTIONS')}</th>
           </tr>
         </thead>
         <tbody>
@@ -183,7 +151,7 @@ const EmployeeTable = ({
                     <Checkbox
                       checked={isChecked}
                       onCheckedChange={() => selection.toggleEmail(emp.email)}
-                      aria-label={SELECT_ROW_LABEL}
+                      aria-label={t('EMPLOYEES.SELECT_ROW')}
                     />
                   </td>
                 )}
@@ -197,7 +165,10 @@ const EmployeeTable = ({
                 <td className={TD_CLASS}>
                   <div className={ROW_ACTIONS_CELL}>
                     {actions && actions.length > 0 && (
-                      <EllipsisCTA actions={actions} />
+                      <EllipsisCTA
+                        actions={actions}
+                        disabled={actionsDisabled}
+                      />
                     )}
                   </div>
                 </td>
@@ -210,9 +181,9 @@ const EmployeeTable = ({
   );
 };
 
-const requireEmail = (email: string) => {
+const requireEmail = (email: string, errorMessage: string) => {
   if (!email) {
-    alert(ERR_NO_EMAILS);
+    toast.error(errorMessage);
     return false;
   }
   return true;
@@ -221,7 +192,9 @@ const requireEmail = (email: string) => {
 export default function EmployeesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
   const tab = searchParams.get(TAB_QUERY_KEY) ?? TAB_ACTIVE;
+  const { running, run } = useAction();
 
   const incoming = useEmployeesTab(INCOMING_ENDPOINT);
   const active = useEmployeesTab(ACTIVE_ENDPOINT);
@@ -269,103 +242,139 @@ export default function EmployeesPage() {
     router.replace(`?${params.toString()}`);
   };
 
-  const offboardOne = async (email: string) => {
-    if (!requireEmail(email)) return;
-    await postEmails(MANUAL_OFFBOARD_ENDPOINT, [email]);
-    alert(SUCCESS_OFFBOARD_ONE);
-    active.reload();
-    inactive.reload();
+  const offboardOne = (email: string) => {
+    if (!requireEmail(email, t('EMPLOYEES.ERROR.NO_EMAILS'))) return;
+    return run(
+      async () => {
+        await postEmails(MANUAL_OFFBOARD_ENDPOINT, [email]);
+        active.reload();
+        inactive.reload();
+      },
+      { success: t('EMPLOYEES.SUCCESS.OFFBOARD_ONE') },
+    );
   };
 
-  const recoverOne = async (email: string) => {
-    if (!requireEmail(email)) return;
-    await postEmails(RECOVER_ENDPOINT, [email]);
-    alert(SUCCESS_RECOVER);
-    active.reload();
-    inactive.reload();
+  const recoverOne = (email: string) => {
+    if (!requireEmail(email, t('EMPLOYEES.ERROR.NO_EMAILS'))) return;
+    return run(
+      async () => {
+        await postEmails(RECOVER_ENDPOINT, [email]);
+        active.reload();
+        inactive.reload();
+      },
+      { success: t('EMPLOYEES.SUCCESS.RECOVER') },
+    );
   };
 
-  const onboardOne = async (email: string) => {
-    if (!requireEmail(email)) return;
-    await postEmails(MANUAL_ONBOARD_ENDPOINT, [email]);
-    alert(SUCCESS_ONBOARD_ONE);
-    incoming.reload();
-    active.reload();
+  const onboardOne = (email: string) => {
+    if (!requireEmail(email, t('EMPLOYEES.ERROR.NO_EMAILS'))) return;
+    return run(
+      async () => {
+        await postEmails(MANUAL_ONBOARD_ENDPOINT, [email]);
+        incoming.reload();
+        active.reload();
+      },
+      { success: t('EMPLOYEES.SUCCESS.ONBOARD_ONE') },
+    );
   };
 
-  const syncData = async () => {
-    await authFetch(SYNC_ENDPOINT);
-    alert(SUCCESS_SYNC);
-    active.reload();
-  };
+  const syncData = () =>
+    run(
+      async () => {
+        await authFetchOk(SYNC_ENDPOINT);
+        active.reload();
+      },
+      { success: t('EMPLOYEES.SUCCESS.SYNC') },
+    );
 
-  const offboardSelected = async () => {
+  const offboardSelected = () => {
     const emails = Array.from(selectedInactive);
     if (emails.length === 0) return;
-    await postEmails(MANUAL_OFFBOARD_ENDPOINT, emails);
-    alert(SUCCESS_OFFBOARD_SELECTED);
-    setSelectedInactive(new Set());
-    active.reload();
-    inactive.reload();
+    return run(
+      async () => {
+        await postEmails(MANUAL_OFFBOARD_ENDPOINT, emails);
+        setSelectedInactive(new Set());
+        active.reload();
+        inactive.reload();
+      },
+      { success: t('EMPLOYEES.SUCCESS.OFFBOARD_SELECTED') },
+    );
   };
 
-  const offboardSelectedActive = async () => {
+  const offboardSelectedActive = () => {
     const emails = Array.from(selectedActive);
     if (emails.length === 0) return;
-    await postEmails(MANUAL_OFFBOARD_ENDPOINT, emails);
-    alert(SUCCESS_OFFBOARD_SELECTED);
-    setSelectedActive(new Set());
-    active.reload();
-    inactive.reload();
+    return run(
+      async () => {
+        await postEmails(MANUAL_OFFBOARD_ENDPOINT, emails);
+        setSelectedActive(new Set());
+        active.reload();
+        inactive.reload();
+      },
+      { success: t('EMPLOYEES.SUCCESS.OFFBOARD_SELECTED') },
+    );
   };
 
-  const onboardSelected = async () => {
+  const onboardSelected = () => {
     const emails = Array.from(selectedIncoming);
     if (emails.length === 0) return;
-    await postEmails(MANUAL_ONBOARD_ENDPOINT, emails);
-    alert(SUCCESS_ONBOARD_SELECTED);
-    setSelectedIncoming(new Set());
-    incoming.reload();
-    active.reload();
+    return run(
+      async () => {
+        await postEmails(MANUAL_ONBOARD_ENDPOINT, emails);
+        setSelectedIncoming(new Set());
+        incoming.reload();
+        active.reload();
+      },
+      { success: t('EMPLOYEES.SUCCESS.ONBOARD_SELECTED') },
+    );
   };
 
-  const postRetentionCleanup = async () => {
-    await authFetch(POST_RETENTION_ENDPOINT);
-    alert(SUCCESS_RETENTION);
-  };
+  const postRetentionCleanup = () =>
+    run(
+      async () => {
+        await authFetchOk(POST_RETENTION_ENDPOINT);
+      },
+      { success: t('EMPLOYEES.SUCCESS.RETENTION') },
+    );
 
   const buildActiveActions = (emp: Employee): EllipsisAction[] => [
     {
-      label: ACTION_OFFBOARD,
+      label: t('EMPLOYEES.ACTION.OFFBOARD'),
       color: 'red',
       onSelect: () => offboardOne(emp.email),
       confirm: {
-        title: CONFIRM_OFFBOARD_TITLE,
-        description: offboardConfirmDescription(emp.email),
+        title: t('EMPLOYEES.CONFIRM.OFFBOARD_TITLE'),
+        description: t('EMPLOYEES.CONFIRM.OFFBOARD_DESCRIPTION', {
+          email: emp.email,
+        }),
       },
     },
   ];
 
   const buildIncomingActions = (emp: Employee): EllipsisAction[] => [
     {
-      label: ACTION_ONBOARD_ONE,
+      label: t('EMPLOYEES.ACTION.ONBOARD'),
       color: 'green',
       onSelect: () => onboardOne(emp.email),
       confirm: {
-        title: CONFIRM_ONBOARD_TITLE,
-        description: onboardConfirmDescription(emp.email),
+        title: t('EMPLOYEES.CONFIRM.ONBOARD_TITLE'),
+        description: t('EMPLOYEES.CONFIRM.ONBOARD_DESCRIPTION', {
+          email: emp.email,
+        }),
       },
     },
   ];
 
   const buildInactiveActions = (emp: Employee): EllipsisAction[] => [
     {
-      label: ACTION_RECOVER,
+      label: t('EMPLOYEES.ACTION.RECOVER'),
       color: 'green',
       onSelect: () => recoverOne(emp.email),
       confirm: {
-        title: ACTION_RECOVER,
-        description: recoverConfirmDescription(emp.email),
+        title: t('EMPLOYEES.ACTION.RECOVER'),
+        description: t('EMPLOYEES.CONFIRM.RECOVER_DESCRIPTION', {
+          email: emp.email,
+        }),
       },
     },
   ];
@@ -374,9 +383,15 @@ export default function EmployeesPage() {
     <div className={PAGE_CONTAINER}>
       <Tabs value={tab} onValueChange={onTabChange}>
         <TabsList>
-          <TabsTrigger value={TAB_INCOMING}>{LABEL_INCOMING}</TabsTrigger>
-          <TabsTrigger value={TAB_ACTIVE}>{LABEL_ACTIVE}</TabsTrigger>
-          <TabsTrigger value={TAB_INACTIVE}>{LABEL_INACTIVE}</TabsTrigger>
+          <TabsTrigger value={TAB_INCOMING}>
+            {t('EMPLOYEES.TAB.INCOMING')}
+          </TabsTrigger>
+          <TabsTrigger value={TAB_ACTIVE}>
+            {t('EMPLOYEES.TAB.ACTIVE')}
+          </TabsTrigger>
+          <TabsTrigger value={TAB_INACTIVE}>
+            {t('EMPLOYEES.TAB.INACTIVE')}
+          </TabsTrigger>
         </TabsList>
         <TabsContent value={TAB_INCOMING}>
           <Card>
@@ -387,16 +402,17 @@ export default function EmployeesPage() {
                     <DropdownMenu.Trigger>
                       <Button
                         variant="outline"
-                        disabled={selectedIncoming.size === 0}
+                        disabled={selectedIncoming.size === 0 || running}
                       >
-                        {BULK_ACTIONS_LABEL}
+                        {t('EMPLOYEES.BULK_ACTIONS')}
                       </Button>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
                       <DropdownMenu.Item
+                        disabled={running}
                         onSelect={() => void onboardSelected()}
                       >
-                        {ACTION_ONBOARD_SELECTED}
+                        {t('EMPLOYEES.ACTION.ONBOARD_SELECTED')}
                       </DropdownMenu.Item>
                     </DropdownMenu.Content>
                   </DropdownMenu.Root>
@@ -405,6 +421,7 @@ export default function EmployeesPage() {
               <EmployeeTable
                 employees={incoming.data}
                 loading={incoming.loading}
+                actionsDisabled={running}
                 buildActions={buildIncomingActions}
                 selection={{
                   selectedEmails: selectedIncoming,
@@ -422,18 +439,23 @@ export default function EmployeesPage() {
                 <div className="flex justify-end">
                   <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
-                      <Button variant="outline">{BULK_ACTIONS_LABEL}</Button>
+                      <Button variant="outline" disabled={running}>
+                        {t('EMPLOYEES.BULK_ACTIONS')}
+                      </Button>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
                       <DropdownMenu.Item
                         color="red"
-                        disabled={selectedActive.size === 0}
+                        disabled={selectedActive.size === 0 || running}
                         onSelect={() => void offboardSelectedActive()}
                       >
-                        {ACTION_OFFBOARD_SELECTED}
+                        {t('EMPLOYEES.ACTION.OFFBOARD_SELECTED')}
                       </DropdownMenu.Item>
-                      <DropdownMenu.Item onSelect={() => void syncData()}>
-                        {ACTION_SYNC}
+                      <DropdownMenu.Item
+                        disabled={running}
+                        onSelect={() => void syncData()}
+                      >
+                        {t('EMPLOYEES.ACTION.SYNC')}
                       </DropdownMenu.Item>
                     </DropdownMenu.Content>
                   </DropdownMenu.Root>
@@ -441,12 +463,13 @@ export default function EmployeesPage() {
               )}
               {!active.loading && active.data.length === 0 ? (
                 <Text size="2" color="gray">
-                  {EMPTY_TEXT}
+                  {t('EMPLOYEES.EMPTY')}
                 </Text>
               ) : (
                 <EmployeeTable
                   employees={active.data}
                   loading={active.loading}
+                  actionsDisabled={running}
                   buildActions={buildActiveActions}
                   selection={{
                     selectedEmails: selectedActive,
@@ -465,20 +488,23 @@ export default function EmployeesPage() {
                 <div className="flex justify-end">
                   <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
-                      <Button variant="outline">{BULK_ACTIONS_LABEL}</Button>
+                      <Button variant="outline" disabled={running}>
+                        {t('EMPLOYEES.BULK_ACTIONS')}
+                      </Button>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
                       <DropdownMenu.Item
-                        disabled={selectedInactive.size === 0}
+                        disabled={selectedInactive.size === 0 || running}
                         onSelect={() => void offboardSelected()}
                       >
-                        {ACTION_OFFBOARD_SELECTED}
+                        {t('EMPLOYEES.ACTION.OFFBOARD_SELECTED')}
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
                         color="red"
+                        disabled={running}
                         onSelect={() => void postRetentionCleanup()}
                       >
-                        {ACTION_RETENTION}
+                        {t('EMPLOYEES.ACTION.RETENTION')}
                       </DropdownMenu.Item>
                     </DropdownMenu.Content>
                   </DropdownMenu.Root>
@@ -487,6 +513,7 @@ export default function EmployeesPage() {
               <EmployeeTable
                 employees={inactive.data}
                 loading={inactive.loading}
+                actionsDisabled={running}
                 buildActions={buildInactiveActions}
                 selection={{
                   selectedEmails: selectedInactive,

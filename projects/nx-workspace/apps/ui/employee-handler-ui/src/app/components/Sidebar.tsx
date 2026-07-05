@@ -10,33 +10,32 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';
 import { NAV_LINKS } from '../app.consts';
+import { useTranslation } from '../i18n';
 
-const LIGHT_MODE_LABEL = 'Light mode';
-const DARK_MODE_LABEL = 'Dark mode';
-const LOGOUT_LABEL = 'Logout';
 const DARK = 'dark';
 const SIDEBAR_POSITION = 'fixed top-0 left-0 bottom-0 z-30';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const { appearance, toggleTheme } = useTheme();
   const isDark = appearance === DARK;
 
-  const navItems: SidebarCTA[] = NAV_LINKS.map(({ label, href, icon }) => ({
-    label,
+  const navItems: SidebarCTA[] = NAV_LINKS.map(({ labelKey, href, icon }) => ({
+    label: t(labelKey),
     href,
     icon,
     isActive: pathname.startsWith(href),
   }));
 
   const themeItem: SidebarCTA = {
-    label: isDark ? LIGHT_MODE_LABEL : DARK_MODE_LABEL,
+    label: isDark ? t('SIDEBAR.LIGHT_MODE') : t('SIDEBAR.DARK_MODE'),
     icon: isDark ? Sun : Moon,
     onClick: toggleTheme,
   };
 
   const logoutItem: SidebarCTA = {
-    label: LOGOUT_LABEL,
+    label: t('SIDEBAR.LOGOUT'),
     icon: LogOut,
     onClick: () => {
       supabase.auth.signOut();

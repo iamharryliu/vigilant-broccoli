@@ -1,0 +1,117 @@
+{
+  "APP": {
+    "LABEL": "Employee Handler",
+    "TAGLINE": "Sign in to manage employees and signatures"
+  },
+  "NAV": {
+    "EMPLOYEES": "Employees",
+    "SIGNATURES": "Signatures",
+    "SETTINGS": "Settings"
+  },
+  "SIDEBAR": {
+    "LIGHT_MODE": "Light mode",
+    "DARK_MODE": "Dark mode",
+    "LOGOUT": "Logout"
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "LANGUAGE": {
+      "TITLE": "Language",
+      "DESCRIPTION": "Choose the language used across the app.",
+      "LABEL": "Language",
+      "OPTION": {
+        "EN": "English",
+        "SV": "Swedish"
+      }
+    }
+  },
+  "COMMON": {
+    "LOADING": "Loading...",
+    "REQUEST_FAILED": "Request failed"
+  },
+  "EMPLOYEES": {
+    "TAB": {
+      "INCOMING": "Incoming Employees",
+      "ACTIVE": "Active Employees",
+      "INACTIVE": "Inactive Employees"
+    },
+    "EMPTY": "No employees",
+    "COL": {
+      "NAME": "Name",
+      "EMAIL": "Email",
+      "ACTIONS": "Actions"
+    },
+    "SELECT_ALL": "Select all",
+    "SELECT_ROW": "Select row",
+    "BULK_ACTIONS": "Actions",
+    "ACTION": {
+      "OFFBOARD": "Offboard",
+      "RECOVER": "Recover account",
+      "ONBOARD": "Onboard",
+      "OFFBOARD_SELECTED": "Offboard Selected",
+      "ONBOARD_SELECTED": "Onboard Selected",
+      "RETENTION": "Post-Retention Cleanup",
+      "SYNC": "Sync Data"
+    },
+    "CONFIRM": {
+      "OFFBOARD_TITLE": "Offboard employee",
+      "ONBOARD_TITLE": "Onboard employee",
+      "OFFBOARD_DESCRIPTION": "Offboard {email}? This will deactivate the account.",
+      "RECOVER_DESCRIPTION": "Recover the account for {email}?",
+      "ONBOARD_DESCRIPTION": "Onboard {email}? This will activate the account."
+    },
+    "SUCCESS": {
+      "OFFBOARD_ONE": "Employee offboarded",
+      "ONBOARD_ONE": "Employee onboarded",
+      "RECOVER": "Account recovered",
+      "OFFBOARD_SELECTED": "Offboarded selected employees",
+      "ONBOARD_SELECTED": "Onboarded selected employees",
+      "RETENTION": "Post-retention cleanup complete",
+      "SYNC": "Sync complete"
+    },
+    "ERROR": {
+      "NO_EMAILS": "Please enter valid email addresses",
+      "LOAD_FAILED": "Failed to load employees"
+    }
+  },
+  "SIGNATURES": {
+    "TAB": {
+      "MANAGER": "Signature Manager",
+      "PREVIEW": "Signature Previewer"
+    },
+    "LIST": {
+      "TITLE": "Signatures",
+      "EMPTY": "No signatures yet."
+    },
+    "FORM": {
+      "CREATE_TITLE": "Add Signature",
+      "CREATE_DESCRIPTION": "Choose a preset signature or paste custom HTML.",
+      "UPDATE_TITLE": "Update Signature",
+      "UPDATE_DESCRIPTION": "Edit the signature template.",
+      "LABEL_FIELD": "Label",
+      "TEMPLATE_PLACEHOLDER": "Paste signature HTML here...",
+      "SAVE": "Save",
+      "ADD": "Add Signature",
+      "SELECTED_BADGE": "Selected",
+      "PRESET_TAB": "Preset",
+      "CUSTOM_TAB": "Custom HTML",
+      "PREVIEW": "Preview",
+      "PREVIEW_EMPTY": "Choose a preset or enter HTML to see a preview."
+    },
+    "PREVIEWER": {
+      "SELECT_PLACEHOLDER": "Select signature...",
+      "DOWNLOAD_HTML": "Download Employee Signature",
+      "DOWNLOAD_ZIP": "Download All Employee Signatures"
+    },
+    "SUCCESS": {
+      "SELECT": "Signature applied to all employees",
+      "CREATE": "Signature created",
+      "UPDATE": "Signature updated",
+      "DELETE": "Signature deleted",
+      "DOWNLOAD_ZIP": "Signatures downloaded"
+    },
+    "ERROR": {
+      "LOAD_FAILED": "Failed to load signatures"
+    }
+  }
+}

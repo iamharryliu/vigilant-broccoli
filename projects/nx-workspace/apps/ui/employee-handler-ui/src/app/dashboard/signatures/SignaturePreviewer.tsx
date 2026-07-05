@@ -5,6 +5,7 @@ import {
   CopyButton,
   DownloadButton,
   Select,
+  toast,
   type DownloadAction,
 } from '@vigilant-broccoli/react-lib';
 import { Text } from '@radix-ui/themes';
@@ -15,14 +16,12 @@ import {
   SignatureTemplate,
 } from './signatures.shared';
 import { sanitizeSignatureHtml } from './sanitize-signature';
-import { authFetch } from '../../../lib/api-helpers';
+import { authFetchOk } from '../../../lib/api-helpers';
+import { useAction } from '../../../lib/use-action';
+import { useTranslation } from '../../i18n';
 
 const LIST_ENDPOINT = '/api/signature/list';
-const LOADING_TEXT = 'Loading...';
 
-const SELECT_TEMPLATE_PLACEHOLDER = 'Select signature...';
-const ACTION_DOWNLOAD_HTML = 'Download Employee Signature';
-const ACTION_DOWNLOAD_ZIP = 'Download All Employee Signatures';
 const DOWNLOAD_FILENAME = 'signature.html';
 const MIME_TYPE_HTML = 'text/html';
 const ZIP_FILENAME = 'signatures.zip';
@@ -48,11 +47,12 @@ const SignaturePreview = ({
   activeTemplate: string;
   downloadZipped: () => Promise<void>;
 }) => {
+  const { t } = useTranslation();
   const html = renderTemplate(activeTemplate, sig);
   const safeHtml = sanitizeSignatureHtml(html);
   const downloadActions: DownloadAction[] = [
     {
-      label: ACTION_DOWNLOAD_HTML,
+      label: t('SIGNATURES.PREVIEWER.DOWNLOAD_HTML'),
       onSelect: () => {
         triggerDownload(
           new Blob([html], { type: MIME_TYPE_HTML }),
@@ -60,7 +60,7 @@ const SignaturePreview = ({
         );
       },
     },
-    { label: ACTION_DOWNLOAD_ZIP, onSelect: downloadZipped },
+    { label: t('SIGNATURES.PREVIEWER.DOWNLOAD_ZIP'), onSelect: downloadZipped },
   ];
   return (
     <div className="flex items-start justify-between gap-2">
@@ -80,23 +80,27 @@ export const SignaturePreviewer = ({
   templates: SignatureTemplate[];
   selectedId: string;
 }) => {
+  const { t } = useTranslation();
   const [signatures, setSignatures] = useState<Signature[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewTemplate, setPreviewTemplate] = useState<
     SignatureTemplate | undefined
   >();
+  const { run } = useAction();
 
   useEffect(() => {
-    authFetch(LIST_ENDPOINT)
+    authFetchOk(LIST_ENDPOINT)
       .then(res => res.json())
       .then((data: { signatures: Signature[] }) => {
         setSignatures(data.signatures ?? []);
       })
+      .catch(() => toast.error(t('SIGNATURES.ERROR.LOAD_FAILED')))
       .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const active = templates.find(t => t.id === selectedId);
+    const active = templates.find(item => item.id === selectedId);
     setPreviewTemplate(active);
   }, [templates, selectedId]);
 
@@ -105,11 +109,15 @@ export const SignaturePreviewer = ({
     [signatures],
   );
 
-  const downloadZipped = async () => {
-    const res = await authFetch(DOWNLOAD_ZIP_ENDPOINT);
-    const blob = await res.blob();
-    triggerDownload(blob, ZIP_FILENAME);
-  };
+  const downloadZipped = () =>
+    run(
+      async () => {
+        const res = await authFetchOk(DOWNLOAD_ZIP_ENDPOINT);
+        const blob = await res.blob();
+        triggerDownload(blob, ZIP_FILENAME);
+      },
+      { success: t('SIGNATURES.SUCCESS.DOWNLOAD_ZIP') },
+    );
 
   return (
     <div className="space-y-4">
@@ -117,7 +125,7 @@ export const SignaturePreviewer = ({
         options={templates}
         selectedOption={previewTemplate}
         setValue={setPreviewTemplate}
-        placeholder={SELECT_TEMPLATE_PLACEHOLDER}
+        placeholder={t('SIGNATURES.PREVIEWER.SELECT_PLACEHOLDER')}
         optionIdenfifier="id"
         optionDisplayKey="label"
         triggerClassName="w-full"
@@ -127,7 +135,7 @@ export const SignaturePreviewer = ({
         <div className="space-y-6">
           {loading ? (
             <Text size="2" color="gray">
-              {LOADING_TEXT}
+              {t('COMMON.LOADING')}
             </Text>
           ) : (
             allSignatures.map(sig => (

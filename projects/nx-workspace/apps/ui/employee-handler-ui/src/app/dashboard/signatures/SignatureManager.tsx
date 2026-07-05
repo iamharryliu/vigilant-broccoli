@@ -20,31 +20,10 @@ import {
   SignatureTemplate,
 } from './signatures.shared';
 import { sanitizeSignatureHtml } from './sanitize-signature';
-
-const COPY = {
-  LIST: { TITLE: 'Signatures', EMPTY_MESSAGE: 'No signatures yet.' },
-  [FORM_TYPE.CREATE]: {
-    TITLE: 'Add Signature',
-    DESCRIPTION: 'Choose a preset signature or paste custom HTML.',
-  },
-  [FORM_TYPE.UPDATE]: {
-    TITLE: 'Update Signature',
-    DESCRIPTION: 'Edit the signature template.',
-  },
-};
-
-const LABEL_FIELD = 'Label';
-const TEMPLATE_PLACEHOLDER = 'Paste signature HTML here...';
-const SAVE_LABEL = 'Save';
-const ADD_LABEL = 'Add Signature';
-const SELECTED_BADGE = 'Selected';
+import { useTranslation } from '../../i18n';
 
 const FORM_TAB_PRESET = 'preset';
 const FORM_TAB_CUSTOM = 'custom';
-const PRESET_TAB_LABEL = 'Preset';
-const CUSTOM_TAB_LABEL = 'Custom HTML';
-const PREVIEW_LABEL = 'Preview';
-const PREVIEW_EMPTY_MESSAGE = 'Choose a preset or enter HTML to see a preview.';
 
 const DEFAULT_FORM: SignatureTemplate = { id: '', label: '', template: '' };
 
@@ -67,6 +46,7 @@ const SignatureForm = ({
   initialFormValues,
   submitHandler,
 }: CRUDFormProps<SignatureTemplate>) => {
+  const { t } = useTranslation();
   const [label, setLabel] = useState(initialFormValues.label);
   const [template, setTemplate] = useState(initialFormValues.template);
   const [formTab, setFormTab] = useState(
@@ -87,10 +67,10 @@ const SignatureForm = ({
     <div className="flex flex-col gap-3 mt-3">
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
-          {LABEL_FIELD}
+          {t('SIGNATURES.FORM.LABEL_FIELD')}
         </Text>
         <TextField.Root
-          placeholder={LABEL_FIELD}
+          placeholder={t('SIGNATURES.FORM.LABEL_FIELD')}
           value={label}
           onChange={e => setLabel(e.target.value)}
         />
@@ -98,10 +78,10 @@ const SignatureForm = ({
       <Tabs value={formTab} onValueChange={setFormTab}>
         <TabsList className="w-full">
           <TabsTrigger className="flex-1" value={FORM_TAB_PRESET}>
-            {PRESET_TAB_LABEL}
+            {t('SIGNATURES.FORM.PRESET_TAB')}
           </TabsTrigger>
           <TabsTrigger className="flex-1" value={FORM_TAB_CUSTOM}>
-            {CUSTOM_TAB_LABEL}
+            {t('SIGNATURES.FORM.CUSTOM_TAB')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value={FORM_TAB_PRESET}>
@@ -127,7 +107,7 @@ const SignatureForm = ({
         </TabsContent>
         <TabsContent value={FORM_TAB_CUSTOM}>
           <Textarea
-            placeholder={TEMPLATE_PLACEHOLDER}
+            placeholder={t('SIGNATURES.FORM.TEMPLATE_PLACEHOLDER')}
             value={template}
             onChange={e => setTemplate(e.target.value)}
             rows={8}
@@ -136,14 +116,14 @@ const SignatureForm = ({
       </Tabs>
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
-          {PREVIEW_LABEL}
+          {t('SIGNATURES.FORM.PREVIEW')}
         </Text>
         <div className="border border-gray-200 rounded-md p-4 min-h-16">
           {template.trim() ? (
             <SignatureHtml template={template} />
           ) : (
             <Text size="1" color="gray">
-              {PREVIEW_EMPTY_MESSAGE}
+              {t('SIGNATURES.FORM.PREVIEW_EMPTY')}
             </Text>
           )}
         </div>
@@ -154,7 +134,9 @@ const SignatureForm = ({
           submitHandler({ ...initialFormValues, label, template }, formType)
         }
       >
-        {formType === FORM_TYPE.UPDATE ? SAVE_LABEL : ADD_LABEL}
+        {formType === FORM_TYPE.UPDATE
+          ? t('SIGNATURES.FORM.SAVE')
+          : t('SIGNATURES.FORM.ADD')}
       </Button>
     </div>
   );
@@ -166,6 +148,7 @@ type SignatureListItemProps = {
 };
 
 const SignatureListItem = ({ item, selectedId }: SignatureListItemProps) => {
+  const { t } = useTranslation();
   const isSelected = item.id === selectedId;
   return (
     <div className="flex-1 min-w-0">
@@ -175,7 +158,7 @@ const SignatureListItem = ({ item, selectedId }: SignatureListItemProps) => {
         </Text>
         {isSelected && (
           <Text size="1" color="green" weight="medium">
-            {SELECTED_BADGE}
+            {t('SIGNATURES.FORM.SELECTED_BADGE')}
           </Text>
         )}
       </div>
@@ -200,20 +183,37 @@ export const SignatureManager = ({
   createTemplate: (form: SignatureTemplate) => Promise<SignatureTemplate>;
   updateTemplate: (item: SignatureTemplate) => Promise<void>;
   deleteTemplate: (id: string | number) => Promise<void>;
-}) => (
-  <CRUDItemList<SignatureTemplate>
-    items={templates}
-    setItems={setTemplates}
-    createItem={createTemplate}
-    createItemFormDefaultValues={DEFAULT_FORM}
-    updateItem={updateTemplate}
-    deleteItem={deleteTemplate}
-    FormComponent={SignatureForm}
-    ListItemComponent={({ item }) => (
-      <SignatureListItem item={item} selectedId={selectedId} />
-    )}
-    copy={COPY}
-    isCards
-    onItemClick={item => void selectTemplate(item)}
-  />
-);
+}) => {
+  const { t } = useTranslation();
+  const copy = {
+    LIST: {
+      TITLE: t('SIGNATURES.LIST.TITLE'),
+      EMPTY_MESSAGE: t('SIGNATURES.LIST.EMPTY'),
+    },
+    [FORM_TYPE.CREATE]: {
+      TITLE: t('SIGNATURES.FORM.CREATE_TITLE'),
+      DESCRIPTION: t('SIGNATURES.FORM.CREATE_DESCRIPTION'),
+    },
+    [FORM_TYPE.UPDATE]: {
+      TITLE: t('SIGNATURES.FORM.UPDATE_TITLE'),
+      DESCRIPTION: t('SIGNATURES.FORM.UPDATE_DESCRIPTION'),
+    },
+  };
+  return (
+    <CRUDItemList<SignatureTemplate>
+      items={templates}
+      setItems={setTemplates}
+      createItem={createTemplate}
+      createItemFormDefaultValues={DEFAULT_FORM}
+      updateItem={updateTemplate}
+      deleteItem={deleteTemplate}
+      FormComponent={SignatureForm}
+      ListItemComponent={({ item }) => (
+        <SignatureListItem item={item} selectedId={selectedId} />
+      )}
+      copy={copy}
+      isCards
+      onItemClick={item => void selectTemplate(item)}
+    />
+  );
+};

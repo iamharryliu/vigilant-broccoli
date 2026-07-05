@@ -112,25 +112,45 @@ const generateEmployees = (
     };
   });
 
-const employeesByEmail = new Map<string, MockEmployee>();
-const incomingEmails = new Set<string>();
-const activeEmails = new Set<string>();
-const inactiveEmails = new Set<string>();
-
-const seedStatus = (
-  status: EmployeeStatus,
-  set: Set<string>,
-  count: number,
-) => {
-  for (const employee of generateEmployees(status, count)) {
-    employeesByEmail.set(employee.email, employee);
-    set.add(employee.email);
-  }
+type EmployeeStore = {
+  employeesByEmail: Map<string, MockEmployee>;
+  incomingEmails: Set<string>;
+  activeEmails: Set<string>;
+  inactiveEmails: Set<string>;
 };
 
-seedStatus('incoming', incomingEmails, INCOMING_COUNT);
-seedStatus('active', activeEmails, ACTIVE_COUNT);
-seedStatus('inactive', inactiveEmails, INACTIVE_COUNT);
+const GLOBAL_STORE_KEY = '__employeeHandlerMockStore__';
+type GlobalWithStore = typeof globalThis & {
+  [GLOBAL_STORE_KEY]?: EmployeeStore;
+};
+const storeScope = globalThis as GlobalWithStore;
+
+const createStore = (): EmployeeStore => {
+  const store: EmployeeStore = {
+    employeesByEmail: new Map<string, MockEmployee>(),
+    incomingEmails: new Set<string>(),
+    activeEmails: new Set<string>(),
+    inactiveEmails: new Set<string>(),
+  };
+  const seedStatus = (
+    status: EmployeeStatus,
+    set: Set<string>,
+    count: number,
+  ) => {
+    for (const employee of generateEmployees(status, count)) {
+      store.employeesByEmail.set(employee.email, employee);
+      set.add(employee.email);
+    }
+  };
+  seedStatus('incoming', store.incomingEmails, INCOMING_COUNT);
+  seedStatus('active', store.activeEmails, ACTIVE_COUNT);
+  seedStatus('inactive', store.inactiveEmails, INACTIVE_COUNT);
+  return store;
+};
+
+const { employeesByEmail, incomingEmails, activeEmails, inactiveEmails } =
+  storeScope[GLOBAL_STORE_KEY] ??
+  (storeScope[GLOBAL_STORE_KEY] = createStore());
 
 const setStatus = (email: string, target: EmployeeStatus) => {
   incomingEmails.delete(email);

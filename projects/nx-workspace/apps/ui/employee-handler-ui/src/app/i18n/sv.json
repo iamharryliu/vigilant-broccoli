@@ -1,0 +1,117 @@
+{
+  "APP": {
+    "LABEL": "Employee Handler",
+    "TAGLINE": "Logga in för att hantera medarbetare och signaturer"
+  },
+  "NAV": {
+    "EMPLOYEES": "Medarbetare",
+    "SIGNATURES": "Signaturer",
+    "SETTINGS": "Inställningar"
+  },
+  "SIDEBAR": {
+    "LIGHT_MODE": "Ljust läge",
+    "DARK_MODE": "Mörkt läge",
+    "LOGOUT": "Logga ut"
+  },
+  "SETTINGS": {
+    "TITLE": "Inställningar",
+    "LANGUAGE": {
+      "TITLE": "Språk",
+      "DESCRIPTION": "Välj vilket språk som ska användas i appen.",
+      "LABEL": "Språk",
+      "OPTION": {
+        "EN": "Engelska",
+        "SV": "Svenska"
+      }
+    }
+  },
+  "COMMON": {
+    "LOADING": "Laddar...",
+    "REQUEST_FAILED": "Begäran misslyckades"
+  },
+  "EMPLOYEES": {
+    "TAB": {
+      "INCOMING": "Kommande medarbetare",
+      "ACTIVE": "Aktiva medarbetare",
+      "INACTIVE": "Inaktiva medarbetare"
+    },
+    "EMPTY": "Inga medarbetare",
+    "COL": {
+      "NAME": "Namn",
+      "EMAIL": "E-post",
+      "ACTIONS": "Åtgärder"
+    },
+    "SELECT_ALL": "Markera alla",
+    "SELECT_ROW": "Markera rad",
+    "BULK_ACTIONS": "Åtgärder",
+    "ACTION": {
+      "OFFBOARD": "Avsluta",
+      "RECOVER": "Återställ konto",
+      "ONBOARD": "Introducera",
+      "OFFBOARD_SELECTED": "Avsluta valda",
+      "ONBOARD_SELECTED": "Introducera valda",
+      "RETENTION": "Efterhantering av inaktiva",
+      "SYNC": "Synkronisera data"
+    },
+    "CONFIRM": {
+      "OFFBOARD_TITLE": "Avsluta medarbetare",
+      "ONBOARD_TITLE": "Introducera medarbetare",
+      "OFFBOARD_DESCRIPTION": "Avsluta {email}? Detta inaktiverar kontot.",
+      "RECOVER_DESCRIPTION": "Återställ kontot för {email}?",
+      "ONBOARD_DESCRIPTION": "Introducera {email}? Detta aktiverar kontot."
+    },
+    "SUCCESS": {
+      "OFFBOARD_ONE": "Medarbetaren har avslutats",
+      "ONBOARD_ONE": "Medarbetaren har introducerats",
+      "RECOVER": "Kontot har återställts",
+      "OFFBOARD_SELECTED": "Valda medarbetare har avslutats",
+      "ONBOARD_SELECTED": "Valda medarbetare har introducerats",
+      "RETENTION": "Efterhantering slutförd",
+      "SYNC": "Synkronisering slutförd"
+    },
+    "ERROR": {
+      "NO_EMAILS": "Ange giltiga e-postadresser",
+      "LOAD_FAILED": "Det gick inte att hämta medarbetare"
+    }
+  },
+  "SIGNATURES": {
+    "TAB": {
+      "MANAGER": "Signaturhantering",
+      "PREVIEW": "Signaturförhandsvisning"
+    },
+    "LIST": {
+      "TITLE": "Signaturer",
+      "EMPTY": "Inga signaturer ännu."
+    },
+    "FORM": {
+      "CREATE_TITLE": "Lägg till signatur",
+      "CREATE_DESCRIPTION": "Välj en förinställd signatur eller klistra in egen HTML.",
+      "UPDATE_TITLE": "Uppdatera signatur",
+      "UPDATE_DESCRIPTION": "Redigera signaturmallen.",
+      "LABEL_FIELD": "Namn",
+      "TEMPLATE_PLACEHOLDER": "Klistra in signatur-HTML här...",
+      "SAVE": "Spara",
+      "ADD": "Lägg till signatur",
+      "SELECTED_BADGE": "Vald",
+      "PRESET_TAB": "Förinställd",
+      "CUSTOM_TAB": "Egen HTML",
+      "PREVIEW": "Förhandsvisning",
+      "PREVIEW_EMPTY": "Välj en förinställning eller ange HTML för att se en förhandsvisning."
+    },
+    "PREVIEWER": {
+      "SELECT_PLACEHOLDER": "Välj signatur...",
+      "DOWNLOAD_HTML": "Ladda ner medarbetarens signatur",
+      "DOWNLOAD_ZIP": "Ladda ner alla medarbetares signaturer"
+    },
+    "SUCCESS": {
+      "SELECT": "Signaturen har tillämpats för alla medarbetare",
+      "CREATE": "Signaturen har skapats",
+      "UPDATE": "Signaturen har uppdaterats",
+      "DELETE": "Signaturen har tagits bort",
+      "DOWNLOAD_ZIP": "Signaturerna har laddats ner"
+    },
+    "ERROR": {
+      "LOAD_FAILED": "Det gick inte att hämta signaturer"
+    }
+  }
+}
