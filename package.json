@@ -7,6 +7,7 @@
     "npm:packages": "open https://www.npmjs.com/settings/vigilant-broccoli/packages",
     "format": "prettier --write .",
     "format:commit": "prettier --write",
+    "cloud:login": "pnpm gcp:login",
     "gcp:login": "gcloud auth login && gcloud config set project vigilant-broccoli && gcloud auth application-default login",
     "gh:login": "gh auth login && gh auth refresh -h github.com -s admin:org,delete_repo",
     "npm:login": "npm login",
