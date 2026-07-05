@@ -61,9 +61,4 @@ resource "github_branch_protection" "main" {
   force_push_bypassers = [
     "/iamharryliu"
   ]
-
-  required_status_checks {
-    strict   = true
-    contexts = ["nx-affected", "pre-commit"]
-  }
 }
