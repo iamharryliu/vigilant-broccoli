@@ -299,6 +299,21 @@ resource "google_secret_manager_secret_version" "wg_personal_mbp_public_key" {
   secret_data = "zV7buy0SHw1W4XozJzPdtixRec8Y44XxoX5pKSkNbFc="
 }
 
+resource "google_secret_manager_secret" "wg_gha_public_key" {
+  secret_id = "VB_VM_WG_GHA_PUBLIC_KEY"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "wg_gha_public_key" {
+  secret      = google_secret_manager_secret.wg_gha_public_key.id
+  secret_data = "REPLACE_WITH_GHA_WIREGUARD_PUBLIC_KEY"
+}
+
 resource "google_secret_manager_secret" "vault_unseal_keys" {
   secret_id = "VB_VM_VAULT_UNSEAL_KEYS"
 

@@ -49,8 +49,9 @@ jobs:
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          wg_private_key: ${{ secrets.VB_GHA_WG_PRIVATE_KEY }}
+          wg_endpoint: ${{ vars.VAULT_VM_WG_ENDPOINT }}
+          wg_server_public_key: ${{ secrets.VB_VM_WG_SERVER_PUBLIC_KEY }}
           export_token: 'true'
           secrets: |
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
@@ -73,6 +74,6 @@ jobs:
         env:
           COMMIT_SHA: ${{ github.sha }}
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
-          VAULT_ADDR: https://127.0.0.1:8200
+          VAULT_ADDR: https://10.0.1.1:8200
           NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/projects/nx-workspace/scripts/vault-ca.crt
         run: pnpm exec nx run ${{ github.event.inputs.project }}:deploy

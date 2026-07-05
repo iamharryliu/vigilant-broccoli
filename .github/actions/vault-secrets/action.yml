@@ -1,12 +1,15 @@
 name: Vault Secrets
-description: Authenticate to GCP, open an IAP tunnel to Vault, and import secrets.
+description: Open a WireGuard tunnel to vb-free-vm and import secrets from Vault.
 
 inputs:
-  workload_identity_provider:
-    description: GCP workload identity provider
+  wg_private_key:
+    description: WireGuard private key for the GitHub Actions peer
     required: true
-  service_account:
-    description: GCP service account
+  wg_endpoint:
+    description: 'WireGuard endpoint of vb-free-vm (host:port)'
+    required: true
+  wg_server_public_key:
+    description: WireGuard public key of vb-free-vm
     required: true
   secrets:
     description: Secrets to import (hashicorp/vault-action format)
@@ -23,46 +26,48 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
-      with:
-        workload_identity_provider: ${{ inputs.workload_identity_provider }}
-        service_account: ${{ inputs.service_account }}
+    - name: Install WireGuard
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y wireguard
 
-    - name: Setup Cloud SDK
-      uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+    - name: Open WireGuard Tunnel to Vault
+      shell: bash
+      run: |
+        umask 077
+        cat > /tmp/wg0.conf <<EOF
+        [Interface]
+        PrivateKey = ${{ inputs.wg_private_key }}
+        Address = 10.0.1.4/32
+
+        [Peer]
+        PublicKey = ${{ inputs.wg_server_public_key }}
+        Endpoint = ${{ inputs.wg_endpoint }}
+        AllowedIPs = 10.0.1.1/32
+        PersistentKeepalive = 25
+        EOF
+        sed -i 's/^[[:space:]]*//' /tmp/wg0.conf
+        sudo wg-quick up /tmp/wg0.conf
+        echo "Waiting for Vault to become reachable..."
+        for i in {1..30}; do
+          if curl -k -s --max-time 2 https://10.0.1.1:8200/v1/sys/health > /dev/null 2>&1; then
+            echo "Vault reachable over WireGuard"
+            exit 0
+          fi
+          echo "Attempt $i: Vault not reachable yet..."
+          sleep 1
+        done
+        echo "ERROR: Vault unreachable over WireGuard after 30 attempts"
+        exit 1
 
     - name: Setup Vault CA Certificate
       id: ca
       shell: bash
       run: echo "cert_base64=$(base64 -w 0 < projects/nx-workspace/scripts/vault-ca.crt)" >> $GITHUB_OUTPUT
 
-    - name: Open IAP Tunnel to Vault
-      shell: bash
-      run: |
-        gcloud compute ssh vb-free-vm \
-          --zone=us-central1-a \
-          --tunnel-through-iap \
-          --ssh-flag="-N" \
-          --ssh-flag="-L 8200:127.0.0.1:8200" \
-          --ssh-flag="-o ServerAliveInterval=30" \
-          --ssh-flag="-o ServerAliveCountMax=3" &
-        echo "Waiting for tunnel to establish..."
-        for i in {1..60}; do
-          if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
-            echo "Tunnel established successfully"
-            exit 0
-          fi
-          echo "Attempt $i: Tunnel not ready yet..."
-          sleep 2
-        done
-        echo "ERROR: IAP tunnel to Vault failed to establish after 60 attempts"
-        exit 1
-
     - name: Import Secrets from Vault
       uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4
       with:
-        url: https://127.0.0.1:8200
+        url: https://10.0.1.1:8200
         caCertificate: ${{ steps.ca.outputs.cert_base64 }}
         method: jwt
         role: ${{ inputs.role }}
