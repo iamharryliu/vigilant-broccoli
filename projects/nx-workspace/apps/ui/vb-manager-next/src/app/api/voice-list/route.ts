@@ -1,3 +1,4 @@
+import { getVbExpressApiKey } from '../../../lib/vb-express';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   HTTP_STATUS_CODES,
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
   const isMultipart = requestContentType.includes(MULTIPART);
 
   const headers: Record<string, string> = {
-    'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+    'x-api-key': getVbExpressApiKey(),
     [CONTENT_TYPE]: isMultipart ? requestContentType : APPLICATION_JSON,
   };
 

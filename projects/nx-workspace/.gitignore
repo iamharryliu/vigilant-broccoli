@@ -2,6 +2,7 @@
 
 # SQLite databases
 *.db
+*.sqlite
 
 # compiled output
 dist

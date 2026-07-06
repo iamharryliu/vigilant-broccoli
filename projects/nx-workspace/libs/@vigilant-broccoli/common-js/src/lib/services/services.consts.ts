@@ -24,3 +24,16 @@ export const VB_EXPRESS_ENDPOINT = {
   WHERE_IS_ANALYZE: 'api/where-is/analyze',
   PRICE_TRACKER_ANALYZE: 'api/price-tracker/analyze',
 };
+
+export const VB_EXPRESS_SERVICE = {
+  MESSAGING: 'messaging',
+  TASKS: 'tasks',
+  LLM: 'llm',
+  CHAT: 'chat',
+  CALENDAR: 'calendar',
+  VOICE_LIST: 'voice-list',
+  SPEECH_TO_TEXT: 'speech-to-text',
+  TEXT_TO_SPEECH: 'text-to-speech',
+  WHERE_IS: 'where-is',
+  PRICE_TRACKER: 'price-tracker',
+};

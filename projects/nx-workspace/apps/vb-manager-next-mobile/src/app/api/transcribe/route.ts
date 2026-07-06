@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { VB_EXPRESS_ENDPOINT } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { requireAuth } from '../../../../libs/api-auth';
+import { getVbExpressApiKey } from '../../utils/express.utils';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     {
       method: 'POST',
       headers: {
-        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        'x-api-key': getVbExpressApiKey(),
         'content-type': contentType,
       },
       body: request.body,

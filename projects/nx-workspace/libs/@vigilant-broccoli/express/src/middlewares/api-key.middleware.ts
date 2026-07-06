@@ -6,10 +6,25 @@ import {
 
 const ERROR_UNAUTHORIZED = 'Unauthorized';
 
-export const createApiKeyMiddleware = (apiKey?: string) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+type ApiKeyVerifier = (key: string) => Promise<boolean>;
+
+export const createApiKeyMiddleware = (
+  apiKey?: string,
+  verifyApiKey?: ApiKeyVerifier,
+) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     const providedKey = req.headers[API_KEY_HEADER];
-    if (!apiKey || providedKey === apiKey) {
+    if (!apiKey) {
+      return next();
+    }
+    if (verifyApiKey) {
+      if (
+        typeof providedKey === 'string' &&
+        (await verifyApiKey(providedKey))
+      ) {
+        return next();
+      }
+    } else if (providedKey === apiKey) {
       return next();
     }
     res

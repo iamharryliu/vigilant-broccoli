@@ -4,6 +4,7 @@
   "private": true,
   "main": "main.js",
   "dependencies": {
+    "@better-auth/api-key": "^1.6.23",
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/express": "workspace:*",
@@ -11,7 +12,7 @@
     "@vigilant-broccoli/messaging": "workspace:*",
     "@vigilant-broccoli/personal-common-js": "workspace:*",
     "archiver": "*",
-    "better-auth": "^1.6.17",
+    "better-auth": "^1.6.23",
     "cors": "*",
     "ejs": "^6.0.1",
     "express": "*",

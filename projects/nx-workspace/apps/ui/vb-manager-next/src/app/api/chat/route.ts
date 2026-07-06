@@ -1,3 +1,4 @@
+import { getVbExpressApiKey } from '../../../lib/vb-express';
 import { NextRequest } from 'next/server';
 import OpenAI from 'openai';
 import {
@@ -216,7 +217,7 @@ export async function POST(request: NextRequest) {
     {
       method: 'POST',
       headers: {
-        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        'x-api-key': getVbExpressApiKey(),
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
