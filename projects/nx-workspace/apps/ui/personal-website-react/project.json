@@ -62,13 +62,16 @@
     "ensure-cf-project": {
       "command": "npx wrangler pages project list 2>&1 | grep -qw harryliu-dev-react || npx wrangler pages project create harryliu-dev-react --production-branch main"
     },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts harryliu-dev-react 10"
+    },
     "deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name harryliu-dev-react",
-      "dependsOn": ["build", "ensure-cf-project"]
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     },
     "manual-deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name harryliu-dev-react",
-      "dependsOn": ["build", "ensure-cf-project"]
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     }
   }
 }

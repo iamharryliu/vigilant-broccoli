@@ -105,13 +105,16 @@
         "staticFilePath": "dist/apps/ui/personal-website-frontend/browser"
       }
     },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts harryliu-dev-angular 10"
+    },
     "deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-dev-angular",
-      "dependsOn": ["build"]
+      "dependsOn": ["build", "prune-deployments"]
     },
     "manual-deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-dev-angular",
-      "dependsOn": ["build"]
+      "dependsOn": ["build", "prune-deployments"]
     }
   }
 }
