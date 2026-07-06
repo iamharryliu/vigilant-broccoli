@@ -1,11 +1,10 @@
 import { defaultKeyHasher } from '@better-auth/api-key';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
-import { API_KEY_PERMISSION_RESOURCE, auth } from '../auth';
+import { API_KEY_MODEL, API_KEY_PERMISSION_RESOURCE, auth } from '../auth';
 
 const SEED_ACCOUNT_EMAIL = 'harryliu1995@gmail.com';
 const SEED_KEY_NAME = 'legacy-shared';
-const API_KEY_MODEL = 'apikey';
 const KEY_START_LENGTH = 6;
 
 export const syncLegacySharedApiKey = async () => {

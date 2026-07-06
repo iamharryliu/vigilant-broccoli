@@ -47,6 +47,7 @@ export const auth = betterAuth({
 });
 
 export const API_KEY_PERMISSION_RESOURCE = 'services';
+export const API_KEY_MODEL = 'apikey';
 
 export const verifyApiKey = async (key: string) => {
   const { valid } = await auth.api.verifyApiKey({ body: { key } });

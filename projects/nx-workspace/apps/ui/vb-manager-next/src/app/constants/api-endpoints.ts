@@ -48,6 +48,9 @@ export const API_ENDPOINTS = {
     '/api/network-monitor/outbound-connections',
   NETWORK_MONITOR_SCAN_DEVICE: '/api/network-monitor/scan-device',
 
+  // API key manager
+  API_KEYS: '/api/api-keys',
+
   // System
   LOCAL_MACHINE: '/api/local-machine',
   DISK_SPACE: '/api/disk-space',

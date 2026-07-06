@@ -9,6 +9,7 @@ primary_region = 'yyz'
   EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev'
   LLM_SERVICE_URL = 'https://vb-llm-service.fly.dev'
   DATABASE_PATH = '/data/vb-express.sqlite'
+  BETTER_AUTH_URL = 'https://vb-express.fly.dev'
 
 [mounts]
   source = 'vb_express_data'

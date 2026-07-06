@@ -25,6 +25,10 @@ export const VB_EXPRESS_ENDPOINT = {
   PRICE_TRACKER_ANALYZE: 'api/price-tracker/analyze',
 };
 
+export const VB_EXPRESS_ADMIN_ENDPOINT = {
+  API_KEYS: 'api/admin/api-keys',
+};
+
 export const VB_EXPRESS_SERVICE = {
   MESSAGING: 'messaging',
   TASKS: 'tasks',
