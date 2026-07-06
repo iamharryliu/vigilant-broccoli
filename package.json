@@ -40,6 +40,7 @@
     "gcp:vm:vault:seal": "./infrastructure/terraform/packer/scripts/run-vault-seal.sh",
     "gcp:vm:vault:save-secrets-local": "./infrastructure/terraform/packer/scripts/run-vault-get-secrets.sh",
     "gcp:vm:vault:set-secrets": "./infrastructure/terraform/packer/scripts/run-vault-set-secrets.sh",
+    "secret-rotation:all": "pnpm secret-rotation:flyio && gh workflow run rotate-secrets --repo iamharryliu/vigilant-broccoli -f confirm=rotate",
     "secret-rotation:flyio": "./infrastructure/terraform/packer/scripts/rotate-fly-token.sh",
     "local:install:machine-setup": "if [ \"$(uname)\" = Darwin ]; then zsh -c 'source setup/mac/install.sh'; else bash setup/linux/install.sh; fi",
     "local:docker:up": "docker compose -f infrastructure/local/docker-compose.yml up -d",
@@ -57,6 +58,7 @@
     "gh:actions:deploy": "gh workflow run deploy --repo iamharryliu/vigilant-broccoli",
     "gh:actions:health-check": "gh workflow run health-check --repo iamharryliu/vigilant-broccoli",
     "gh:actions:kill-services": "gh workflow run kill-services --repo iamharryliu/vigilant-broccoli",
+    "gh:actions:rotate-secrets": "gh workflow run rotate-secrets --repo iamharryliu/vigilant-broccoli",
     "gh:actions:run-tests": "gh workflow run manual-run-tests --repo iamharryliu/vigilant-broccoli",
     "cheatsheet": "./scripts/shell/cheatsheet.sh",
     "audit": "python3 scripts/python/vuln_tree.py ."
