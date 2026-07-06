@@ -35,4 +35,4 @@
 
 ## Machine Setups
 
-- [Macbook Pro Setup](./docs/machine-setups/mbp-setup.md)
+See [machine setup](./docs/machine-setups/machine-setup.md) for OS-specific setup instructions.
