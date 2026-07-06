@@ -16,7 +16,6 @@ interface WranglerDeploymentJson {
 
 const LOG_PREFIX = '[wrangler]';
 const MAX_STALE_BATCHES = 3;
-const MAX_DELETE_BATCH_SIZE = 20;
 const DEFAULT_KEEP_DEPLOYMENTS = 10;
 
 const WranglerCommand = {
@@ -73,31 +72,17 @@ async function pruneDeployments(
   projectName: string,
   keep = DEFAULT_KEEP_DEPLOYMENTS,
 ): Promise<void> {
-  let ids = await listDeploymentIds(projectName);
+  const ids = await listDeploymentIds(projectName);
+  const idsToDelete = ids.slice(keep);
+
   console.log(
-    `${LOG_PREFIX} ${projectName}: ${ids.length} deployment(s) found (list may be capped to a single page), keeping ${Math.min(keep, ids.length)}`,
+    `${LOG_PREFIX} ${projectName}: ${ids.length} deployment(s) listed (list is capped to a single page), keeping ${Math.min(keep, ids.length)}, deleting ${idsToDelete.length} this run`,
   );
 
-  let staleBatches = 0;
-  while (ids.length > keep) {
-    const batch = ids.slice(keep, keep + MAX_DELETE_BATCH_SIZE);
-    console.log(
-      `${LOG_PREFIX} ${projectName}: deleting batch of ${batch.length} (${ids.length} listed beyond keep)`,
-    );
+  if (idsToDelete.length > 0) {
     await ShellUtils.runShellCommand(
-      WranglerCommand.deleteDeploymentsBatch(projectName, batch),
+      WranglerCommand.deleteDeploymentsBatch(projectName, idsToDelete),
     );
-
-    ids = await listDeploymentIds(projectName);
-    const batchIdSet = new Set(batch);
-    const stillPresent = ids.filter(id => batchIdSet.has(id)).length;
-    staleBatches = stillPresent === batch.length ? staleBatches + 1 : 0;
-    if (staleBatches >= MAX_STALE_BATCHES) {
-      console.log(
-        `${LOG_PREFIX} ${projectName}: last batch made no progress (${stillPresent}/${batch.length} still present), stopping prune`,
-      );
-      break;
-    }
   }
 
   console.log(`${LOG_PREFIX} ${projectName}: prune complete`);

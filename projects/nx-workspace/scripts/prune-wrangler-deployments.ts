@@ -1,8 +1,7 @@
 import { execSync } from 'child_process';
 
 const DEFAULT_KEEP = 10;
-const MAX_DELETE_BATCH_SIZE = 20;
-const MAX_STALE_BATCHES = 3;
+const MAX_PARALLEL_DELETES = 20;
 
 interface WranglerDeployment {
   Id: string;
@@ -20,36 +19,20 @@ function listDeploymentIds(projectName: string): string[] {
 function deleteDeployments(projectName: string, ids: string[]): void {
   if (ids.length === 0) return;
   execSync(
-    `xargs -P ${MAX_DELETE_BATCH_SIZE} -I {} sh -c 'npx wrangler pages deployment delete {} --project-name ${projectName} --force 2>&1 || true'`,
+    `xargs -P ${MAX_PARALLEL_DELETES} -I {} sh -c 'npx wrangler pages deployment delete {} --project-name ${projectName} --force 2>&1 || true'`,
     { input: ids.join('\n'), stdio: ['pipe', 'inherit', 'inherit'] },
   );
 }
 
 function pruneDeployments(projectName: string, keep: number): void {
-  let ids = listDeploymentIds(projectName);
+  const ids = listDeploymentIds(projectName);
+  const idsToDelete = ids.slice(keep);
+
   console.log(
-    `${projectName}: ${ids.length} deployment(s) found (list may be capped to a single page), keeping ${Math.min(keep, ids.length)}`,
+    `${projectName}: ${ids.length} deployment(s) listed (list is capped to a single page), keeping ${Math.min(keep, ids.length)}, deleting ${idsToDelete.length} this run`,
   );
 
-  let staleBatches = 0;
-  while (ids.length > keep) {
-    const batch = ids.slice(keep, keep + MAX_DELETE_BATCH_SIZE);
-    console.log(
-      `${projectName}: deleting batch of ${batch.length} (${ids.length} listed beyond keep)`,
-    );
-    deleteDeployments(projectName, batch);
-
-    ids = listDeploymentIds(projectName);
-    const batchIdSet = new Set(batch);
-    const stillPresent = ids.filter(id => batchIdSet.has(id)).length;
-    staleBatches = stillPresent === batch.length ? staleBatches + 1 : 0;
-    if (staleBatches >= MAX_STALE_BATCHES) {
-      console.log(
-        `${projectName}: last batch made no progress (${stillPresent}/${batch.length} still present), stopping prune`,
-      );
-      break;
-    }
-  }
+  deleteDeployments(projectName, idsToDelete);
 
   console.log(`${projectName}: prune complete`);
 }
