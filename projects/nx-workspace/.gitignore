@@ -3,6 +3,7 @@
 # SQLite databases
 *.db
 *.sqlite
+better-auth.secret
 
 # compiled output
 dist

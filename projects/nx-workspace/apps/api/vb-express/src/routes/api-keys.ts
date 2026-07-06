@@ -6,7 +6,7 @@ import {
 import { API_KEY_MODEL, API_KEY_PERMISSION_RESOURCE, auth } from '../auth';
 
 const ERROR_EMAIL_REQUIRED = 'email is required';
-const ERROR_ENABLED_REQUIRED = 'enabled must be a boolean';
+const ERROR_NO_UPDATE_FIELDS = 'no valid update fields';
 const ERROR_KEY_NOT_FOUND = 'api key not found';
 const ALL_SERVICES = Object.values(VB_EXPRESS_SERVICE);
 const USER_MODEL = 'user';
@@ -91,24 +91,35 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 router.patch('/:id', async (req: Request, res: Response) => {
-  const { enabled } = req.body;
-  if (typeof enabled !== 'boolean') {
+  const { enabled, name, services } = req.body;
+  const update = {
+    ...(typeof enabled === 'boolean' ? { enabled } : {}),
+    ...(typeof name === 'string' && name ? { name } : {}),
+    ...(Array.isArray(services)
+      ? {
+          permissions: JSON.stringify({
+            [API_KEY_PERMISSION_RESOURCE]: services,
+          }),
+        }
+      : {}),
+  };
+  if (!Object.keys(update).length) {
     return res
       .status(HTTP_STATUS_CODES.BAD_REQUEST)
-      .json({ error: ERROR_ENABLED_REQUIRED });
+      .json({ error: ERROR_NO_UPDATE_FIELDS });
   }
   const context = await auth.$context;
   const updated = await context.adapter.update({
     model: API_KEY_MODEL,
     where: [{ field: 'id', value: req.params.id }],
-    update: { enabled },
+    update,
   });
   if (!updated) {
     return res
       .status(HTTP_STATUS_CODES.INVALID_PATH)
       .json({ error: ERROR_KEY_NOT_FOUND });
   }
-  return res.json({ id: req.params.id, enabled });
+  return res.json({ id: req.params.id });
 });
 
 router.delete('/:id', async (req: Request, res: Response) => {

@@ -1,281 +1,314 @@
 'use client';
+import { Badge, Callout, Code, Flex, Text } from '@radix-ui/themes';
 import {
-  Badge,
   Button,
-  Callout,
   Checkbox,
-  Code,
-  Flex,
+  CRUDFormProps,
+  CRUDItemList,
+  Input,
+  MonospaceText,
   Switch,
-  Table,
-  Text,
-  TextField,
-} from '@radix-ui/themes';
-import { CardContainer } from '@vigilant-broccoli/react-lib';
-import { VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
+} from '@vigilant-broccoli/react-lib';
+import { FORM_TYPE, VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';
-import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
-const TITLE = 'API Keys';
+const ALL_SERVICES = Object.values(VB_EXPRESS_SERVICE);
+const DEFAULT_EMAIL = 'harryliu1995@gmail.com';
+const SEED_KEY_NAME = 'legacy-shared';
+const KEY_START_LENGTH = 6;
+const NEVER = 'never';
 const FETCH_ERROR = 'Failed to fetch API keys';
-const MINT_ERROR = 'Failed to mint API key';
+const CREATE_ERROR = 'Failed to create API key';
 const UPDATE_ERROR = 'Failed to update API key';
 const DELETE_ERROR = 'Failed to delete API key';
-const DELETE_CONFIRM = 'Delete this API key? This cannot be undone.';
 const SHOW_ONCE_NOTICE =
   'Copy this key now — it is only shown once and cannot be recovered.';
-const DEFAULT_EMAIL = 'harryliu1995@gmail.com';
-const ALL_SERVICES = Object.values(VB_EXPRESS_SERVICE);
-const NEVER = 'never';
-const COPY = 'Copy';
-const COPIED = 'Copied!';
+const LOADING_MESSAGE = 'Loading…';
+const EMPTY_MESSAGE = 'No API keys.';
 
-interface ApiKeySummary {
+const LIST_COPY = {
+  LIST: {
+    TITLE: 'API Keys',
+    EMPTY_MESSAGE,
+  },
+  [FORM_TYPE.CREATE]: {
+    TITLE: 'Create API Key',
+    DESCRIPTION: 'The key value is shown once after creation.',
+  },
+  [FORM_TYPE.UPDATE]: {
+    TITLE: 'Update API Key',
+    DESCRIPTION: 'Rename the key or change its service access.',
+  },
+};
+
+interface ApiKeyItem {
   id: string;
-  name: string | null;
-  start: string | null;
+  name: string;
+  email: string;
   services: string[];
+  start: string | null;
   enabled: boolean;
-  createdAt: string;
+  createdAt: string | null;
   lastRequest: string | null;
-  email: string | null;
 }
+
+const CREATE_FORM_DEFAULT_VALUES: ApiKeyItem = {
+  id: '',
+  name: '',
+  email: DEFAULT_EMAIL,
+  services: ALL_SERVICES,
+  start: null,
+  enabled: true,
+  createdAt: null,
+  lastRequest: null,
+};
 
 const formatDate = (value: string | null) =>
   value ? new Date(value).toLocaleString() : NEVER;
 
 export const ApiKeysComponent = () => {
-  const [keys, setKeys] = useState<ApiKeySummary[] | null>(null);
+  const [items, setItems] = useState<ApiKeyItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState(DEFAULT_EMAIL);
-  const [services, setServices] = useState<string[]>(ALL_SERVICES);
-  const [minting, setMinting] = useState(false);
   const [mintedKey, setMintedKey] = useState<string | null>(null);
-  const [copyLabel, setCopyLabel] = useState(COPY);
-
-  const fetchKeys = async () => {
-    try {
-      const response = await fetch(API_ENDPOINTS.API_KEYS);
-      if (!response.ok) throw new Error(FETCH_ERROR);
-      const data = await response.json();
-      setKeys(data.keys);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : FETCH_ERROR);
-    }
-  };
 
   useEffect(() => {
+    const fetchKeys = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.API_KEYS);
+        if (!response.ok) throw new Error(FETCH_ERROR);
+        const data = await response.json();
+        setItems(data.keys);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : FETCH_ERROR);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchKeys();
   }, []);
 
-  const toggleService = (service: string) => {
-    setServices(current =>
-      current.includes(service)
-        ? current.filter(item => item !== service)
-        : [...current, service],
+  const createItem = async (item: ApiKeyItem) => {
+    const response = await fetch(API_ENDPOINTS.API_KEYS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: item.email,
+        name: item.name,
+        services: item.services,
+      }),
+    });
+    if (!response.ok) throw new Error(CREATE_ERROR);
+    const data = await response.json();
+    setMintedKey(data.key);
+    setError(null);
+    return {
+      ...item,
+      id: data.id,
+      start: data.key.slice(0, KEY_START_LENGTH),
+      createdAt: new Date().toISOString(),
+    };
+  };
+
+  const updateItem = async (item: ApiKeyItem) => {
+    const response = await fetch(`${API_ENDPOINTS.API_KEYS}/${item.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: item.name, services: item.services }),
+    });
+    if (!response.ok) {
+      setError(UPDATE_ERROR);
+      throw new Error(UPDATE_ERROR);
+    }
+    setError(null);
+  };
+
+  const deleteItem = async (id: string | number) => {
+    const response = await fetch(`${API_ENDPOINTS.API_KEYS}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      setError(DELETE_ERROR);
+      throw new Error(DELETE_ERROR);
+    }
+    setError(null);
+  };
+
+  const toggleEnabled = async (id: string, enabled: boolean) => {
+    const response = await fetch(`${API_ENDPOINTS.API_KEYS}/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled }),
+    });
+    if (!response.ok) {
+      setError(UPDATE_ERROR);
+      return;
+    }
+    setError(null);
+    setItems(current =>
+      current.map(item => (item.id === id ? { ...item, enabled } : item)),
     );
   };
 
-  const mintKey = async () => {
-    setMinting(true);
-    setMintedKey(null);
-    try {
-      const response = await fetch(API_ENDPOINTS.API_KEYS, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, services }),
-      });
-      if (!response.ok) throw new Error(MINT_ERROR);
-      const data = await response.json();
-      setMintedKey(data.key);
-      setCopyLabel(COPY);
-      setName('');
-      setError(null);
-      await fetchKeys();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : MINT_ERROR);
-    } finally {
-      setMinting(false);
-    }
-  };
-
-  const toggleKey = async (id: string, enabled: boolean) => {
-    try {
-      const response = await fetch(`${API_ENDPOINTS.API_KEYS}/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled }),
-      });
-      if (!response.ok) throw new Error(UPDATE_ERROR);
-      setError(null);
-      await fetchKeys();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : UPDATE_ERROR);
-    }
-  };
-
-  const deleteKey = async (id: string) => {
-    if (!window.confirm(DELETE_CONFIRM)) return;
-    try {
-      const response = await fetch(`${API_ENDPOINTS.API_KEYS}/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error(DELETE_ERROR);
-      setError(null);
-      await fetchKeys();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : DELETE_ERROR);
-    }
-  };
-
-  const copyMintedKey = async () => {
-    if (!mintedKey) return;
-    await navigator.clipboard.writeText(mintedKey);
-    setCopyLabel(COPIED);
-  };
-
-  if (keys === null && !error) return <CardSkeleton />;
-
-  return (
-    <div className="flex flex-col gap-4">
-      <CardContainer title={TITLE}>
-        {error && (
-          <Callout.Root color="red">
-            <Callout.Text>{error}</Callout.Text>
-          </Callout.Root>
-        )}
-        <Flex direction="column" gap="2">
-          <Flex gap="2" wrap="wrap">
-            <TextField.Root
-              placeholder="Key name (e.g. hearth)"
-              value={name}
-              onChange={event => setName(event.target.value)}
-              className="grow"
-            />
-            <TextField.Root
-              placeholder="Account email"
-              value={email}
-              onChange={event => setEmail(event.target.value)}
-              className="grow"
-            />
-          </Flex>
-          <Flex gap="3" wrap="wrap">
-            {ALL_SERVICES.map(service => (
-              <Text key={service} size="1" as="label">
-                <Flex gap="1" align="center">
-                  <Checkbox
-                    checked={services.includes(service)}
-                    onCheckedChange={() => toggleService(service)}
-                  />
-                  {service}
-                </Flex>
-              </Text>
-            ))}
-          </Flex>
-          <Flex gap="2">
-            <Button
-              onClick={mintKey}
-              disabled={minting || !name || !email || !services.length}
-            >
-              Mint key
-            </Button>
-            <Button
-              variant="soft"
-              onClick={() =>
-                setServices(
-                  services.length === ALL_SERVICES.length ? [] : ALL_SERVICES,
-                )
-              }
-            >
-              Toggle all services
-            </Button>
-          </Flex>
-          {mintedKey && (
-            <Callout.Root color="green">
-              <Callout.Text>
-                <Flex direction="column" gap="1">
-                  <Text size="1">{SHOW_ONCE_NOTICE}</Text>
-                  <Flex gap="2" align="center">
-                    <Code className="break-all">{mintedKey}</Code>
-                    <Button size="1" variant="soft" onClick={copyMintedKey}>
-                      {copyLabel}
-                    </Button>
-                  </Flex>
-                </Flex>
-              </Callout.Text>
-            </Callout.Root>
+  const ApiKeyListItem = ({ item }: { item: ApiKeyItem }) => (
+    <Flex justify="between" align="center" gap="3" wrap="wrap">
+      <Flex direction="column" gap="1">
+        <Flex gap="2" align="center" wrap="wrap">
+          <Text weight="medium">{item.name}</Text>
+          <Code size="1">{item.start}…</Code>
+          <Text size="1" color="gray">
+            {item.email}
+          </Text>
+        </Flex>
+        <Flex gap="1" wrap="wrap">
+          {item.services.length === ALL_SERVICES.length ? (
+            <Badge color="blue" size="1">
+              all services
+            </Badge>
+          ) : (
+            item.services.map(service => (
+              <Badge key={service} size="1">
+                {service}
+              </Badge>
+            ))
           )}
         </Flex>
-        <Table.Root>
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Key</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Account</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Services</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Last used</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Created</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Enabled</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell />
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {(keys ?? []).map(key => (
-              <Table.Row key={key.id}>
-                <Table.Cell>
-                  <Text weight="medium">{key.name}</Text>
-                </Table.Cell>
-                <Table.Cell>
-                  <Code size="1">{key.start}…</Code>
-                </Table.Cell>
-                <Table.Cell>
-                  <Text size="1">{key.email}</Text>
-                </Table.Cell>
-                <Table.Cell>
-                  <Flex gap="1" wrap="wrap">
-                    {key.services.length === ALL_SERVICES.length ? (
-                      <Badge color="blue" size="1">
-                        all services
-                      </Badge>
-                    ) : (
-                      key.services.map(service => (
-                        <Badge key={service} size="1">
-                          {service}
-                        </Badge>
-                      ))
-                    )}
-                  </Flex>
-                </Table.Cell>
-                <Table.Cell>
-                  <Text size="1">{formatDate(key.lastRequest)}</Text>
-                </Table.Cell>
-                <Table.Cell>
-                  <Text size="1">{formatDate(key.createdAt)}</Text>
-                </Table.Cell>
-                <Table.Cell>
-                  <Switch
-                    checked={key.enabled}
-                    onCheckedChange={checked => toggleKey(key.id, checked)}
-                  />
-                </Table.Cell>
-                <Table.Cell>
-                  <Button
-                    size="1"
-                    color="red"
-                    variant="soft"
-                    onClick={() => deleteKey(key.id)}
-                  >
-                    Delete
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </CardContainer>
-    </div>
+        <Text size="1" color="gray">
+          Last used: {formatDate(item.lastRequest)} · Created:{' '}
+          {formatDate(item.createdAt)}
+        </Text>
+      </Flex>
+      <Switch
+        checked={item.enabled}
+        onCheckedChange={checked => toggleEnabled(item.id, checked)}
+      />
+    </Flex>
+  );
+
+  return (
+    <Flex direction="column" gap="4">
+      {error && (
+        <Callout.Root color="red">
+          <Callout.Text>{error}</Callout.Text>
+        </Callout.Root>
+      )}
+      {mintedKey && (
+        <Callout.Root color="green">
+          <Callout.Text>
+            <Flex direction="column" gap="1">
+              <Text size="1">{SHOW_ONCE_NOTICE}</Text>
+              <MonospaceText text={mintedKey} />
+            </Flex>
+          </Callout.Text>
+        </Callout.Root>
+      )}
+      <CRUDItemList
+        items={items}
+        setItems={setItems}
+        ListItemComponent={ApiKeyListItem}
+        FormComponent={ApiKeyForm}
+        createItem={createItem}
+        createItemFormDefaultValues={CREATE_FORM_DEFAULT_VALUES}
+        updateItem={updateItem}
+        deleteItem={deleteItem}
+        canShowEllipsis={item => item.name !== SEED_KEY_NAME}
+        copy={{
+          ...LIST_COPY,
+          LIST: {
+            ...LIST_COPY.LIST,
+            EMPTY_MESSAGE: loading ? LOADING_MESSAGE : EMPTY_MESSAGE,
+          },
+        }}
+        isCards
+      />
+    </Flex>
+  );
+};
+
+const ApiKeyForm = ({
+  formType,
+  initialFormValues,
+  submitHandler,
+}: CRUDFormProps<ApiKeyItem>) => {
+  const [item, setItem] = useState(initialFormValues);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const toggleService = (service: string) => {
+    setItem(current => ({
+      ...current,
+      services: current.services.includes(service)
+        ? current.services.filter(entry => entry !== service)
+        : [...current.services, service],
+    }));
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    setFormError(null);
+    try {
+      await submitHandler(item, formType);
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : CREATE_ERROR);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Flex direction="column" gap="3" className="mt-3">
+      {formError && (
+        <Callout.Root color="red">
+          <Callout.Text>{formError}</Callout.Text>
+        </Callout.Root>
+      )}
+      <Input
+        placeholder="Key name (e.g. hearth)"
+        value={item.name}
+        onChange={event => setItem({ ...item, name: event.target.value })}
+      />
+      {formType === FORM_TYPE.CREATE && (
+        <Input
+          placeholder="Account email"
+          value={item.email}
+          onChange={event => setItem({ ...item, email: event.target.value })}
+        />
+      )}
+      <Flex gap="3" wrap="wrap">
+        {ALL_SERVICES.map(service => (
+          <Text key={service} size="1" as="label">
+            <Flex gap="1" align="center">
+              <Checkbox
+                checked={item.services.includes(service)}
+                onCheckedChange={() => toggleService(service)}
+              />
+              {service}
+            </Flex>
+          </Text>
+        ))}
+      </Flex>
+      <Button
+        variant="secondary"
+        onClick={() =>
+          setItem({
+            ...item,
+            services:
+              item.services.length === ALL_SERVICES.length ? [] : ALL_SERVICES,
+          })
+        }
+      >
+        Toggle all services
+      </Button>
+      <Button
+        onClick={handleSubmit}
+        loading={submitting}
+        disabled={!item.name || !item.email || !item.services.length}
+        className="w-full"
+      >
+        Submit
+      </Button>
+    </Flex>
   );
 };
