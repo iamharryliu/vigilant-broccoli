@@ -1,0 +1,66 @@
+name: cron-deploy-journal
+
+on:
+  push:
+    paths:
+      - .github/workflows/cron-deploy-journal.yml
+      - projects/nx-workspace/apps/ui/journal/**
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-journal
+  cancel-in-progress: false
+
+env:
+  GITEA_JOURNAL_ARCHIVE_URL: https://git.harryliu.dev/api/v1/repos/iamharryliu/journal/archive/main.zip
+
+jobs:
+  deploy-journal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
+            kv/data/secrets GITEA_TOKEN | GITEA_TOKEN ;
+
+      - name: Fetch journal notes from Gitea
+        env:
+          GITEA_TOKEN: ${{ env.GITEA_TOKEN }}
+        run: |
+          rm -rf journal-src journal.zip
+          curl -sfL -H "Authorization: token ${GITEA_TOKEN}" \
+            -o journal.zip "$GITEA_JOURNAL_ARCHIVE_URL"
+          unzip -q journal.zip -d journal-src
+          NOTES_DIR=$(find journal-src -mindepth 1 -maxdepth 1 -type d | head -1)
+          echo "NOTES_DIR=$NOTES_DIR" >> "$GITHUB_ENV"
+
+      - name: Build notes snapshot
+        working-directory: ./projects/nx-workspace
+        run: |
+          node apps/ui/journal/scripts/build-snapshot.mjs \
+            "$GITHUB_WORKSPACE/$NOTES_DIR" \
+            apps/ui/journal/public
+
+      - name: Deploy to Cloudflare Pages
+        working-directory: ./projects/nx-workspace
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
+        run: pnpm exec nx run journal:deploy --skip-nx-cache

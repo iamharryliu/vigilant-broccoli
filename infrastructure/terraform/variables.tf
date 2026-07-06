@@ -67,3 +67,24 @@ variable "socket_server_domain" {
   type    = string
   default = "socket.harryliu.dev"
 }
+
+variable "journal_domain" {
+  type    = string
+  default = "journal.harryliu.dev"
+}
+
+variable "journal_pages_project" {
+  type    = string
+  default = "journal"
+}
+
+# Cloudflare appended a suffix because journal.pages.dev was taken globally.
+variable "journal_pages_subdomain" {
+  type    = string
+  default = "journal-d64.pages.dev"
+}
+
+variable "journal_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
