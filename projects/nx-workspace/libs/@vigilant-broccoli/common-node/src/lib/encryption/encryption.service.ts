@@ -1,10 +1,10 @@
-import crypto, { Cipher, Decipher } from 'crypto';
+import crypto, { Cipheriv, Decipheriv } from 'crypto';
 import { logger } from '../logging/logger.service';
 import { getEnvironmentVariable } from '../../index';
 
 export class EncryptionService {
-  cipher: Cipher;
-  decipher: Decipher;
+  cipher: Cipheriv;
+  decipher: Decipheriv;
 
   constructor(
     encryptionMethod = 'aes-256-cbc',

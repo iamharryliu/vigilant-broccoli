@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import js from '@eslint/js';
 import baseConfig from '../../../eslint.config.mjs';
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
+import nextPlugin from '@next/eslint-plugin-next';
 
 const compat = new FlatCompat({
   baseDirectory: dirname(fileURLToPath(import.meta.url)),
@@ -15,10 +16,8 @@ export default [
     ignores: ['**/dist', '**/out-tsc', 'apps/ui/employee-handler-ui/.next/**'],
   },
   ...baseConfig,
-  ...compat.extends(
-    'plugin:@next/next/recommended',
-    'plugin:react-hooks/recommended',
-  ),
+  nextPlugin.configs.recommended,
+  ...compat.extends('plugin:react-hooks/recommended'),
   { plugins: { 'react-hooks': eslintPluginReactHooks } },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
