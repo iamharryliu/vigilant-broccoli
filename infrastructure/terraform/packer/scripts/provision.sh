@@ -73,6 +73,12 @@ chmod 640 /etc/vault/config.hcl
 echo "Installing Vault systemd service..."
 cp /tmp/vault.service /etc/systemd/system/vault.service
 
+echo "Installing cloudflared..."
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg -o /usr/share/keyrings/cloudflare-main.gpg
+echo "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bookworm main" | \
+  tee /etc/apt/sources.list.d/cloudflared.list
+apt-get update && apt-get install -y cloudflared
+
 echo "Installing Google Cloud SDK..."
 echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | \
   tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
@@ -88,6 +94,12 @@ cp /tmp/wg-init.sh /usr/local/bin/wg-init.sh
 chmod +x /usr/local/bin/wg-init.sh
 cp /tmp/wg-init.service /etc/systemd/system/wg-init.service
 
+echo "Installing cloudflared first-boot init..."
+cp /tmp/cloudflared-init.sh /usr/local/bin/cloudflared-init.sh
+chmod +x /usr/local/bin/cloudflared-init.sh
+cp /tmp/cloudflared-init.service /etc/systemd/system/cloudflared-init.service
+cp /tmp/cloudflared.service /etc/systemd/system/cloudflared.service
+
 echo "Installing guest agent watchdog..."
 cp /tmp/guest-agent-watchdog.sh /usr/local/bin/guest-agent-watchdog.sh
 chmod +x /usr/local/bin/guest-agent-watchdog.sh
@@ -97,6 +109,7 @@ cp /tmp/guest-agent-watchdog.timer /etc/systemd/system/guest-agent-watchdog.time
 systemctl daemon-reload
 systemctl enable vault
 systemctl enable wg-init.service
+systemctl enable cloudflared-init.service
 systemctl enable guest-agent-watchdog.timer
 
 echo "=== VB VM Image Provisioning Completed Successfully at $(date) ==="

@@ -2,10 +2,8 @@ import { execSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { getVaultToken } from './gcp-vault-token';
+import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
 
-const VAULT_CA_CERT_PATH = './scripts/vault-ca.crt';
-const VAULT_PATH = 'kv/data/secrets';
 const PRODUCTION = 'production';
 
 interface VaultSecrets {
@@ -13,20 +11,10 @@ interface VaultSecrets {
 }
 
 async function fetchSecretsFromVault(): Promise<VaultSecrets> {
-  const vaultAddr = process.env.VAULT_ADDR || 'https://10.0.1.1:8200';
-  const vaultToken = getVaultToken();
+  const vault = await createVaultClient();
 
-  const ca = readFileSync(VAULT_CA_CERT_PATH);
-  const nodeVault = await import('node-vault');
-  const vault = nodeVault.default({
-    apiVersion: 'v1',
-    endpoint: vaultAddr,
-    token: vaultToken,
-    requestOptions: { ca },
-  });
-
-  console.log(`Fetching secrets from Vault at ${VAULT_PATH}...`);
-  const result = await vault.read(VAULT_PATH);
+  console.log(`Fetching secrets from Vault at ${VAULT_SECRET_PATH}...`);
+  const result = await vault.read(VAULT_SECRET_PATH);
   const raw = result.data.data || result.data || result;
   return Object.fromEntries(
     Object.entries(raw as VaultSecrets).map(([k, v]) => [

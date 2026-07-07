@@ -72,8 +72,8 @@ resource "google_compute_instance" "vb_free_vm" {
   allow_stopping_for_update = true
 
   metadata = {
-    ssh-keys        = "harryliu:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCdsUNm7YC0dLJ5zNDCNsLcT1c/ff6C/1i0IhAbqKXNGfT5ObXmTtnBOuH1UnTnRGIAr52agN6l5VMx62r90OsCh0+zbvTDSl7dWPvvXOwCXKrftuSKTH84r6gYsRiDGuh6j3zpfokCg1yJlcryp2Dgs1ua26DZm301NXkEaB9MSWYZzgeFv9fmWTgvCXpIHsRnSKV8PINDA3Ouavz1T6uqbAeNL71NVBwEqHlPDWtzGryQdbIS6tA2ufKB8KZSHCZjuORwm8K8Jaf6FIywMOx/3rKOl6u85pI7//D1TORP/pnt1Hn9Wd/QCwtL+J4nhv4eqHtarRpJXtyK7e1c/7Ga8FU/BjNodzA+Sfm5yDg+LZfBcxBVh+8KTCNc1QrmcmhVoPKEh9luG/v/5A8DpuzaG6Wr/c2YKVCU4MU+POFAP94D2M+MgvbHdMDj57oTtqHrNnY97A06LuLpouqmZ6ZG8imbV3pj+UpogpDvJCxZ+iF0+8LJaNnkRzZ84G+hBl5xgQ+JhQ5V7uLYUi0w8D+SwFTTxflTeDBmVgcqPB5TY3tvOasbFIDIP4xCLlPq1J0EaTaESNtfCC7nZPXPjjfjPzKrE56Ne0OLQQdvn1OALvYgSFl58rkSYj1M0esAbQYxfhMzpHovr49wShGg8F+ipCqMRRtzwDbN6fd84M5nTw== harryliu@Harrys-MacBook-Pro.local"
-    enable-oslogin  = "true"
+    ssh-keys       = "harryliu:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCdsUNm7YC0dLJ5zNDCNsLcT1c/ff6C/1i0IhAbqKXNGfT5ObXmTtnBOuH1UnTnRGIAr52agN6l5VMx62r90OsCh0+zbvTDSl7dWPvvXOwCXKrftuSKTH84r6gYsRiDGuh6j3zpfokCg1yJlcryp2Dgs1ua26DZm301NXkEaB9MSWYZzgeFv9fmWTgvCXpIHsRnSKV8PINDA3Ouavz1T6uqbAeNL71NVBwEqHlPDWtzGryQdbIS6tA2ufKB8KZSHCZjuORwm8K8Jaf6FIywMOx/3rKOl6u85pI7//D1TORP/pnt1Hn9Wd/QCwtL+J4nhv4eqHtarRpJXtyK7e1c/7Ga8FU/BjNodzA+Sfm5yDg+LZfBcxBVh+8KTCNc1QrmcmhVoPKEh9luG/v/5A8DpuzaG6Wr/c2YKVCU4MU+POFAP94D2M+MgvbHdMDj57oTtqHrNnY97A06LuLpouqmZ6ZG8imbV3pj+UpogpDvJCxZ+iF0+8LJaNnkRzZ84G+hBl5xgQ+JhQ5V7uLYUi0w8D+SwFTTxflTeDBmVgcqPB5TY3tvOasbFIDIP4xCLlPq1J0EaTaESNtfCC7nZPXPjjfjPzKrE56Ne0OLQQdvn1OALvYgSFl58rkSYj1M0esAbQYxfhMzpHovr49wShGg8F+ipCqMRRtzwDbN6fd84M5nTw== harryliu@Harrys-MacBook-Pro.local"
+    enable-oslogin = "true"
   }
 
   boot_disk {
@@ -315,21 +315,6 @@ resource "google_secret_manager_secret" "wg_personal_mbp_public_key" {
 resource "google_secret_manager_secret_version" "wg_personal_mbp_public_key" {
   secret      = google_secret_manager_secret.wg_personal_mbp_public_key.id
   secret_data = "zV7buy0SHw1W4XozJzPdtixRec8Y44XxoX5pKSkNbFc="
-}
-
-resource "google_secret_manager_secret" "wg_gha_public_key" {
-  secret_id = "VB_VM_WG_GHA_PUBLIC_KEY"
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [google_project_service.secretmanager]
-}
-
-resource "google_secret_manager_secret_version" "wg_gha_public_key" {
-  secret      = google_secret_manager_secret.wg_gha_public_key.id
-  secret_data = "REPLACE_WITH_GHA_WIREGUARD_PUBLIC_KEY"
 }
 
 resource "google_secret_manager_secret" "vault_unseal_keys" {

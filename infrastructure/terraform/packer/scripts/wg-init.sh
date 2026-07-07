@@ -16,7 +16,6 @@ echo "Fetching WireGuard keys from Secret Manager..."
 SERVER_PRIVATE_KEY=$(gcloud secrets versions access latest --secret=VB_VM_WG_SERVER_PRIVATE_KEY)
 PEER_LAPTOP_PUBLIC_KEY=$(gcloud secrets versions access latest --secret=VB_VM_WG_ELVA11_MBP_PUBLIC_KEY)
 PEER_PERSONAL_MBP_PUBLIC_KEY=$(gcloud secrets versions access latest --secret=VB_VM_WG_PERSONAL_MBP_PUBLIC_KEY)
-PEER_GHA_PUBLIC_KEY=$(gcloud secrets versions access latest --secret=VB_VM_WG_GHA_PUBLIC_KEY)
 
 if [ -z "${SERVER_PRIVATE_KEY}" ]; then
   echo "ERROR: VB_VM_WG_SERVER_PRIVATE_KEY is empty"
@@ -30,11 +29,6 @@ fi
 
 if [ -z "${PEER_PERSONAL_MBP_PUBLIC_KEY}" ]; then
   echo "ERROR: VB_VM_WG_PERSONAL_MBP_PUBLIC_KEY is empty"
-  exit 1
-fi
-
-if [ -z "${PEER_GHA_PUBLIC_KEY}" ]; then
-  echo "ERROR: VB_VM_WG_GHA_PUBLIC_KEY is empty"
   exit 1
 fi
 
@@ -57,10 +51,6 @@ AllowedIPs = 10.0.1.2/32
 [Peer]
 PublicKey = ${PEER_PERSONAL_MBP_PUBLIC_KEY}
 AllowedIPs = 10.0.1.3/32
-
-[Peer]
-PublicKey = ${PEER_GHA_PUBLIC_KEY}
-AllowedIPs = 10.0.1.4/32
 EOF
 
 chmod 600 "${WG_CONF}"

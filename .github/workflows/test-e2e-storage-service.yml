@@ -30,9 +30,8 @@ jobs:
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          wg_private_key: ${{ secrets.VB_GHA_WG_PRIVATE_KEY }}
-          wg_endpoint: ${{ vars.VAULT_VM_WG_ENDPOINT }}
-          wg_server_public_key: ${{ secrets.VB_VM_WG_SERVER_PUBLIC_KEY }}
+          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
+          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
 

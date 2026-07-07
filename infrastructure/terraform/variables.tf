@@ -63,6 +63,11 @@ variable "code_server_allowed_emails" {
   default = ["harryliu1995@gmail.com"]
 }
 
+variable "vault_domain" {
+  type    = string
+  default = "vault.harryliu.dev"
+}
+
 variable "socket_server_domain" {
   type    = string
   default = "socket.harryliu.dev"

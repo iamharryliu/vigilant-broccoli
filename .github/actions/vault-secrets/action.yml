@@ -1,15 +1,12 @@
 name: Vault Secrets
-description: Open a WireGuard tunnel to vb-free-vm and import secrets from Vault.
+description: Import secrets from Vault at vault.harryliu.dev (cloudflared tunnel, Cloudflare Access service token).
 
 inputs:
-  wg_private_key:
-    description: WireGuard private key for the GitHub Actions peer
+  cf_access_client_id:
+    description: Cloudflare Access service token client ID
     required: true
-  wg_endpoint:
-    description: 'WireGuard endpoint of vb-free-vm (host:port)'
-    required: true
-  wg_server_public_key:
-    description: WireGuard public key of vb-free-vm
+  cf_access_client_secret:
+    description: Cloudflare Access service token client secret
     required: true
   secrets:
     description: Secrets to import (hashicorp/vault-action format)
@@ -26,51 +23,15 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install WireGuard
-      shell: bash
-      run: sudo apt-get update && sudo apt-get install -y wireguard
-
-    - name: Open WireGuard Tunnel to Vault
-      shell: bash
-      run: |
-        umask 077
-        cat > /tmp/wg0.conf <<EOF
-        [Interface]
-        PrivateKey = ${{ inputs.wg_private_key }}
-        Address = 10.0.1.4/32
-
-        [Peer]
-        PublicKey = ${{ inputs.wg_server_public_key }}
-        Endpoint = ${{ inputs.wg_endpoint }}
-        AllowedIPs = 10.0.1.1/32
-        PersistentKeepalive = 25
-        EOF
-        sed -i 's/^[[:space:]]*//' /tmp/wg0.conf
-        sudo wg-quick up /tmp/wg0.conf
-        echo "Waiting for Vault to become reachable..."
-        for i in {1..30}; do
-          if curl -k -s --max-time 2 https://10.0.1.1:8200/v1/sys/health > /dev/null 2>&1; then
-            echo "Vault reachable over WireGuard"
-            exit 0
-          fi
-          echo "Attempt $i: Vault not reachable yet..."
-          sleep 1
-        done
-        echo "ERROR: Vault unreachable over WireGuard after 30 attempts"
-        exit 1
-
-    - name: Setup Vault CA Certificate
-      id: ca
-      shell: bash
-      run: echo "cert_base64=$(base64 -w 0 < projects/nx-workspace/scripts/vault-ca.crt)" >> $GITHUB_OUTPUT
-
     - name: Import Secrets from Vault
       uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4
       with:
-        url: https://10.0.1.1:8200
-        caCertificate: ${{ steps.ca.outputs.cert_base64 }}
+        url: https://vault.harryliu.dev
         method: jwt
         role: ${{ inputs.role }}
         jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
         exportToken: ${{ inputs.export_token }}
+        extraHeaders: |
+          CF-Access-Client-Id: ${{ inputs.cf_access_client_id }}
+          CF-Access-Client-Secret: ${{ inputs.cf_access_client_secret }}
         secrets: ${{ inputs.secrets }}

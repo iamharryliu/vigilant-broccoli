@@ -120,6 +120,21 @@ build {
   }
 
   provisioner "file" {
+    source      = "${path.root}/scripts/cloudflared-init.sh"
+    destination = "/tmp/cloudflared-init.sh"
+  }
+
+  provisioner "file" {
+    source      = "${path.root}/scripts/cloudflared-init.service"
+    destination = "/tmp/cloudflared-init.service"
+  }
+
+  provisioner "file" {
+    source      = "${path.root}/scripts/cloudflared.service"
+    destination = "/tmp/cloudflared.service"
+  }
+
+  provisioner "file" {
     source      = "${path.root}/scripts/guest-agent-watchdog.sh"
     destination = "/tmp/guest-agent-watchdog.sh"
   }

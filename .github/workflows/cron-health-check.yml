@@ -33,9 +33,8 @@ jobs:
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          wg_private_key: ${{ secrets.VB_GHA_WG_PRIVATE_KEY }}
-          wg_endpoint: ${{ vars.VAULT_VM_WG_ENDPOINT }}
-          wg_server_public_key: ${{ secrets.VB_VM_WG_SERVER_PUBLIC_KEY }}
+          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
+          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
           secrets: |
             kv/data/secrets RABBITMQ_CONNECTION_STRING | RABBITMQ_CONNECTION_STRING ;
             kv/data/secrets RABBITMQ_CA_CERT | RABBITMQ_CA_CERT ;
@@ -46,6 +45,8 @@ jobs:
           RABBITMQ_CONNECTION_STRING: ${{ env.RABBITMQ_CONNECTION_STRING }}
           RABBITMQ_CA_CERT: ${{ env.RABBITMQ_CA_CERT }}
           SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
         run: |
           PASS=0
           FAIL=0
@@ -109,7 +110,10 @@ jobs:
 
           echo ""
           echo "[GCP VM — Vault]"
-          HEALTH=$(curl -k -s https://10.0.1.1:8200/v1/sys/health) || HEALTH=""
+          HEALTH=$(curl -s \
+            -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
+            -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
+            https://vault.harryliu.dev/v1/sys/health) || HEALTH=""
           if [ -n "$HEALTH" ]; then
             SEALED=$(echo "$HEALTH" | jq -r '.sealed')
             INITIALIZED=$(echo "$HEALTH" | jq -r '.initialized')
