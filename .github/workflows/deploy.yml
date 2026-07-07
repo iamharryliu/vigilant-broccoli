@@ -46,9 +46,21 @@ jobs:
           socket_server_url: ${{ env.SOCKET_SERVER_URL }}
           shared_app_token: ${{ env.SHARED_APP_TOKEN }}
 
+  gitleaks:
+    needs: notify-start
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-npm-packages:
-    needs: notify-start
+    needs: [notify-start, gitleaks]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -92,7 +104,7 @@ jobs:
         run: pnpm exec nx run-many -t publish-package --projects="${{ steps.check.outputs.affected_projects }}"
 
   deploy-apps:
-    needs: notify-start
+    needs: [notify-start, gitleaks]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -167,7 +179,7 @@ jobs:
         run: ${{ steps.check.outputs.deploy_cmd }}
 
   deploy-github-pages:
-    needs: notify-start
+    needs: [notify-start, gitleaks]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
