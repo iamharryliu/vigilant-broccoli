@@ -2,18 +2,20 @@
 
 ## Keyboard Shortcuts
 
-- Copy file path - `option` + right click
-- Mission Control - `ctrl + up`
-- Screen Capture
-  - Screenshot
-    - Save to Desktop - **shift + command + 3**
-    - Copy to Clipboard - **control + shift + command + 3**
-  - Crop
-    - Save to Desktop - **shift + command + 4**
-    - Copy to Clipboard - **control + shift + command + 4**
-  - Window
-    - Save to Desktop - **shift + command + 4 + space**
-- Lock Screen - **command + control + Q**
+```
+cmd + option + C              # copy pathname
+ctrl + up                     # Mission Control
+shift + cmd + 3               # save screenshot to Desktop
+control + shift + cmd + 3     # copy screenshot to Clipboard
+shift + cmd + 4               # crop and save to Desktop
+control + shift + cmd + 4     # crop and copy to Clipboard
+shift + cmd + 4 + space       # window screenshot to Desktop
+cmd + control + Q             # lock screen
+
+# AltTab
+option + tab                  # all tabs in all apps
+option + `                    # all tabs in active app
+```
 
 ## Image Cropping
 
@@ -40,9 +42,7 @@ Save (⌘S) or File → Export to save a new copy.
   - Clipboard history.
   - Emoji search.
 - [Dropzone 4](https://apps.apple.com/us/app/dropzone-4/id1485052491?mt=12) - Hold Option to delete Dropzone items.
-- [AltTab](https://alt-tab-macos.netlify.app/)
-  - Controls > Shortcut 1 (All Tabs in All Apps) - **option + tab**
-  - Controls > Shortcut 2 (All Tabs in Active App) - **options + `**
+- [AltTab](https://alt-tab-macos.netlify.app/) - app switcher
 - [Cheat Sheet](https://cheatsheet-mac.en.softonic.com/mac) - Hold command button to open Cheat Sheet. Set delay time with settings.
 
 ## References
