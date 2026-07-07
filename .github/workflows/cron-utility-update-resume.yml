@@ -30,6 +30,13 @@ jobs:
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
             kv/data/secrets CLOUDFLARE_R2_ACCESS_KEY_ID | CLOUDFLARE_R2_ACCESS_KEY_ID ;
             kv/data/secrets CLOUDFLARE_R2_SECRET_ACCESS_KEY | CLOUDFLARE_R2_SECRET_ACCESS_KEY ;
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
       - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           package_json_file: ./projects/nx-workspace/package.json
