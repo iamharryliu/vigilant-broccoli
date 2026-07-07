@@ -21,11 +21,20 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Import Secrets from Vault
-        uses: ./.github/actions/vault-secrets
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
+          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
           secrets: |
             kv/data/secrets RABBITMQ_CONNECTION_STRING | RABBITMQ_CONNECTION_STRING ;
             kv/data/secrets RABBITMQ_CA_CERT | RABBITMQ_CA_CERT ;
@@ -36,6 +45,8 @@ jobs:
           RABBITMQ_CONNECTION_STRING: ${{ env.RABBITMQ_CONNECTION_STRING }}
           RABBITMQ_CA_CERT: ${{ env.RABBITMQ_CA_CERT }}
           SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
         run: |
           PASS=0
           FAIL=0
@@ -99,7 +110,10 @@ jobs:
 
           echo ""
           echo "[GCP VM — Vault]"
-          HEALTH=$(curl -k -s https://127.0.0.1:8200/v1/sys/health) || HEALTH=""
+          HEALTH=$(curl -s \
+            -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
+            -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
+            https://vault.harryliu.dev/v1/sys/health) || HEALTH=""
           if [ -n "$HEALTH" ]; then
             SEALED=$(echo "$HEALTH" | jq -r '.sealed')
             INITIALIZED=$(echo "$HEALTH" | jq -r '.initialized')

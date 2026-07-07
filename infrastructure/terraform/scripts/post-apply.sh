@@ -55,7 +55,7 @@ sync_secrets_to_vault() {
 
   local conn_str="amqps://${rabbitmq_user}:${rabbitmq_password}@${rabbitmq_ip}:5671"
   local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
-  local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
+  local ci_ssh_key_b64=$(printf '%s' "$ci_ssh_private_key" | base64 -w 0)
   local socket_server_url="https://socket.harryliu.dev"
 
   gcloud compute ssh "${vm_name}" \

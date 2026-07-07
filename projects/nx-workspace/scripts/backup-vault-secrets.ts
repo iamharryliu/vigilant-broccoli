@@ -1,40 +1,9 @@
-import { readFileSync } from 'fs';
-import https from 'https';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { getVaultToken } from './gcp-vault-token';
+import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
 
-const VAULT_ADDR = 'https://10.0.1.1:8200';
-const SECRET_PATH = 'kv/data/secrets';
-const CERTS = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  'vault-ca.crt',
-);
+backupVaultSecrets(VAULT_SECRET_PATH);
 
-backupVaultSecrets(VAULT_ADDR, SECRET_PATH, CERTS);
-
-async function backupVaultSecrets(
-  vaultAddr: string,
-  secretPath: string,
-  certs?: string,
-) {
-  const vaultToken = getVaultToken();
-
-  const nodeVault = await import('node-vault');
-  const requestOptions: Record<string, unknown> = {};
-
-  if (certs) {
-    requestOptions.httpsAgent = new https.Agent({
-      ca: readFileSync(certs),
-    });
-  }
-
-  const vault = nodeVault.default({
-    apiVersion: 'v1',
-    endpoint: vaultAddr,
-    token: vaultToken,
-    requestOptions,
-  });
+async function backupVaultSecrets(secretPath: string) {
+  const vault = await createVaultClient();
 
   console.error(`Fetching secrets from Vault at ${secretPath}...`);
 

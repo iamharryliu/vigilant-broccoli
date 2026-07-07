@@ -33,8 +33,8 @@ jobs:
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
+          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
           secrets: |
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
             kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;

@@ -11,7 +11,7 @@ FLY_APP="vb-email-service"
 
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): current key and
 # VAULT_TOKEN come from the vault-secrets action, Vault is reached through the
-# IAP tunnel. Local mode: both go through gcloud + IAP SSH.
+# Cloudflare Access tunnel. Local mode: both go through gcloud + IAP SSH.
 if [ -z "$VAULT_ADDR" ]; then
   echo "Fetching root token from Secret Manager..."
   VAULT_TOKEN=$(gcloud secrets versions access latest \
@@ -69,7 +69,9 @@ export VAULT_TOKEN='${VAULT_TOKEN}'
 vault kv patch ${VAULT_KV_PATH}/secrets RESEND_API_KEY='${NEW_KEY}'
 "
 else
-  curl -sf -o /dev/null --cacert "$VAULT_CACERT" \
+  curl -sf -o /dev/null \
+    -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
+    -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
     -H "X-Vault-Token: ${VAULT_TOKEN}" \
     -X PATCH -H "Content-Type: application/merge-patch+json" \
     -d "{\"data\":{\"RESEND_API_KEY\":\"${NEW_KEY}\"}}" \

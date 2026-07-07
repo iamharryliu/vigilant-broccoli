@@ -31,8 +31,8 @@ jobs:
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
+          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
             kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;

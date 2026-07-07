@@ -1,12 +1,12 @@
 name: Vault Secrets
-description: Authenticate to GCP, open an IAP tunnel to Vault, and import secrets.
+description: Import secrets from Vault at vault.harryliu.dev (cloudflared tunnel, Cloudflare Access service token).
 
 inputs:
-  workload_identity_provider:
-    description: GCP workload identity provider
+  cf_access_client_id:
+    description: Cloudflare Access service token client ID
     required: true
-  service_account:
-    description: GCP service account
+  cf_access_client_secret:
+    description: Cloudflare Access service token client secret
     required: true
   secrets:
     description: Secrets to import (hashicorp/vault-action format)
@@ -23,49 +23,15 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
-      with:
-        workload_identity_provider: ${{ inputs.workload_identity_provider }}
-        service_account: ${{ inputs.service_account }}
-
-    - name: Setup Cloud SDK
-      uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
-
-    - name: Setup Vault CA Certificate
-      id: ca
-      shell: bash
-      run: echo "cert_base64=$(base64 -w 0 < projects/nx-workspace/scripts/vault-ca.crt)" >> $GITHUB_OUTPUT
-
-    - name: Open IAP Tunnel to Vault
-      shell: bash
-      run: |
-        gcloud compute ssh vb-free-vm \
-          --zone=us-central1-a \
-          --tunnel-through-iap \
-          --ssh-flag="-N" \
-          --ssh-flag="-L 8200:127.0.0.1:8200" \
-          --ssh-flag="-o ServerAliveInterval=30" \
-          --ssh-flag="-o ServerAliveCountMax=3" &
-        echo "Waiting for tunnel to establish..."
-        for i in {1..60}; do
-          if curl -k -s --max-time 2 https://127.0.0.1:8200/v1/sys/health > /dev/null 2>&1; then
-            echo "Tunnel established successfully"
-            exit 0
-          fi
-          echo "Attempt $i: Tunnel not ready yet..."
-          sleep 2
-        done
-        echo "ERROR: IAP tunnel to Vault failed to establish after 60 attempts"
-        exit 1
-
     - name: Import Secrets from Vault
       uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4
       with:
-        url: https://127.0.0.1:8200
-        caCertificate: ${{ steps.ca.outputs.cert_base64 }}
+        url: https://vault.harryliu.dev
         method: jwt
         role: ${{ inputs.role }}
         jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
         exportToken: ${{ inputs.export_token }}
+        extraHeaders: |
+          CF-Access-Client-Id: ${{ inputs.cf_access_client_id }}
+          CF-Access-Client-Secret: ${{ inputs.cf_access_client_secret }}
         secrets: ${{ inputs.secrets }}

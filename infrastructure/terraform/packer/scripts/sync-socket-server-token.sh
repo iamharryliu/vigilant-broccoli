@@ -7,9 +7,9 @@ source "${SCRIPT_DIR}/../../../config.sh"
 SOCKET_SERVER_HOST="socket.harryliu.dev"
 
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): SHARED_APP_TOKEN is
-# read fresh from Vault over the WireGuard tunnel, the VM is reached via its
-# DNS name using OCI_VM_SSH_KEY (base64) from the Vault import. Local mode:
-# gcloud + IAP for the token, terraform output for the IP, personal SSH key.
+# read fresh from Vault through the Cloudflare Access tunnel, the VM is reached
+# via its DNS name using OCI_VM_SSH_KEY (base64) from the Vault import. Local
+# mode: gcloud + IAP for the token, terraform output for the IP, personal SSH key.
 if [ -z "$VAULT_ADDR" ]; then
   echo "Fetching root token from Secret Manager..."
   VAULT_TOKEN=$(gcloud secrets versions access latest \
@@ -32,7 +32,9 @@ vault kv get -field=SHARED_APP_TOKEN ${VAULT_KV_PATH}/secrets
   SSH_KEY_FILE="$HOME/.ssh/id_ed25519"
 else
   echo "Fetching SHARED_APP_TOKEN from Vault..."
-  SHARED_APP_TOKEN=$(curl -sf --cacert "$VAULT_CACERT" \
+  SHARED_APP_TOKEN=$(curl -sf \
+    -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
+    -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
     -H "X-Vault-Token: ${VAULT_TOKEN}" \
     "${VAULT_ADDR}/v1/${VAULT_KV_PATH}/data/secrets" \
     | jq -r '.data.data.SHARED_APP_TOKEN // empty')

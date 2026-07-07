@@ -1,9 +1,6 @@
 import { spawn } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
-import https from 'https';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { getVaultToken } from './gcp-vault-token';
+import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
 
 function parseEnvFileKeys(filePath: string): Set<string> {
   const content = readFileSync(filePath, 'utf-8');
@@ -41,29 +38,11 @@ function parseArgs(argv: string[]) {
 }
 
 async function fetchSecrets(
-  vaultAddr: string,
   secretPath: string,
-  certs?: string,
   allowedKeys?: Set<string>,
   mappings?: Array<{ from: string; to: string }>,
 ) {
-  const vaultToken = getVaultToken();
-
-  const nodeVault = await import('node-vault');
-  const requestOptions: Record<string, unknown> = {};
-
-  if (certs) {
-    requestOptions.httpsAgent = new https.Agent({
-      ca: readFileSync(certs),
-    });
-  }
-
-  const vault = nodeVault.default({
-    apiVersion: 'v1',
-    endpoint: vaultAddr,
-    token: vaultToken,
-    requestOptions,
-  });
+  const vault = await createVaultClient();
 
   console.log(`Fetching secrets from Vault at ${secretPath}...`);
 
@@ -100,13 +79,6 @@ async function fetchSecrets(
 }
 
 async function fetchSecretsAndServe() {
-  const vaultAddr = 'https://10.0.1.1:8200';
-  const secretPath = 'kv/data/secrets';
-  const certs = path.join(
-    path.dirname(fileURLToPath(import.meta.url)),
-    'vault-ca.crt',
-  );
-
   const { envFiles, mappings, command } = parseArgs(process.argv.slice(2));
 
   let allowedKeys: Set<string> | undefined;
@@ -125,7 +97,7 @@ async function fetchSecretsAndServe() {
     );
   }
 
-  await fetchSecrets(vaultAddr, secretPath, certs, allowedKeys, mappings);
+  await fetchSecrets(VAULT_SECRET_PATH, allowedKeys, mappings);
 
   if (command.length > 0) {
     console.log(`\nStarting: ${command.join(' ')}\n`);

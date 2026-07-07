@@ -1,0 +1,13 @@
+[Unit]
+Description=cloudflared First-Boot Init
+After=network-online.target google-guest-agent.service
+Wants=network-online.target
+ConditionPathExists=!/var/lib/cloudflared-init.done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cloudflared-init.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
