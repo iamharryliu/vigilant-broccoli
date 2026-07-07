@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 env:
   PROFILE_REPO: git@github.com:iamharryliu/iamharryliu.git
@@ -20,9 +21,17 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
+          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
+          secrets: |
+            kv/data/secrets PROFILE_REPO_DEPLOY_KEY | PROFILE_REPO_DEPLOY_KEY ;
+
       - name: Push README to profile repo
         env:
-          DEPLOY_KEY: ${{ secrets.PROFILE_REPO_DEPLOY_KEY }}
+          DEPLOY_KEY: ${{ env.PROFILE_REPO_DEPLOY_KEY }}
         run: |
           mkdir -p ~/.ssh
           echo "$DEPLOY_KEY" > ~/.ssh/id_ed25519

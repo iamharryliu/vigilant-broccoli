@@ -44,7 +44,7 @@
     "secret-rotation:all": "pnpm secret-rotation:flyio && pnpm secret-rotation:gitea && pnpm secret-rotation:profile-deploy-key && gh workflow run rotate-secrets --repo iamharryliu/vigilant-broccoli -f confirm=rotate",
     "secret-rotation:flyio": "./infrastructure/terraform/packer/scripts/rotate-fly-token.sh",
     "secret-rotation:gitea": "./infrastructure/terraform/packer/scripts/rotate-gitea-token.sh",
-    "secret-rotation:profile-deploy-key": "./scripts/shell/rotate-profile-deploy-key.sh",
+    "secret-rotation:profile-deploy-key": "./scripts/ci/rotate-profile-deploy-key.sh",
     "secret-rotation:resend": "./infrastructure/terraform/packer/scripts/rotate-resend-key.sh",
     "local:install:machine-setup": "if [ \"$(uname)\" = Darwin ]; then zsh -c 'source setup/mac/install.sh'; else bash setup/linux/install.sh; fi",
     "local:docker:up": "docker compose -f infrastructure/local/docker-compose.yml up -d",
