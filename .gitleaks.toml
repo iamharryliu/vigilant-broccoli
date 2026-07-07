@@ -1,0 +1,45 @@
+[allowlist]
+description = "Gitleaks allowlist for known false positives and test credentials"
+
+# Environment and config files with public/test credentials
+paths = [
+  "(?:.*\\.env\\.(?:development|production))$",
+  "(?:.*project\\.json)$",
+  "(?:.*deployment-configs/.*\\.toml)$",
+  "(?:scripts/shell/test-.*\\.sh)$",
+  "(?:notes/software/.*\\.md)$",
+  "(?:scripts/node/google-tasks/.*\\.json)$",
+  "(?:projects/sandbox/.*\\.json)$",
+  "(?:personal-website/src/environment/.*\\.ts)$"
+]
+
+# Public API keys that are safe to commit
+regexes = [
+  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+  "RECAPTCHA_V3_SITE_KEY",
+  "nxCloudAccessToken"
+]
+
+# Historic commits with test credentials
+commits = [
+  "8a17d3f48fc1a6ad04975e4bdac6c90e9df151d7",
+  "1005e044b8db07bd9da55a463a60b48f236f4ced",
+  "e4e93dd6f9ac3be4bfca8f9cc4197ca7dac058c1",
+  "7e484b689ba59f05a0d985f8b66e31424865f367",
+  "5dd07446f8734601f13da2a0295e4a32c808cabb",
+  "131f13405e28519898eed46723e0fbf251a37428",
+  "887151632fce9e795e4dd622aa8da003c69093e7",
+  "bee9171676f3750346a16fb084888212a01c44f9",
+  "68d3973eeefe6fff660d1a00decef3faf91282c3",
+  "dc0efe6701f72f3668fc9ef110ef3fd72aaf857a",
+  "33de9a867cddff974d9df63295862f65ebd911f4",
+  "673d49411f480a7de8f78a00074319f206090287",
+  "d690fb8361da31ff37755f902c6370048ac14d11",
+  "f65be9859b98e3d0e408b7f230e1fc6827dda6c3",
+  "f5df720a4bf85a1992682a71c0920697bf8e10a8",
+  "0f4509fe2ea782a63204a537dbfe1968879ab42b",
+  "0c48220982f4954c7d1097a3d4661d888a246c44",
+  "bdbf4bd58e566ef10f70e0234262626b4d378c13",
+  "9806f044224cce94bf0c528e649b6a3bf6feeffd",
+  "6c75a27f905f3fb8423355b7d629d1533187638c"
+]
