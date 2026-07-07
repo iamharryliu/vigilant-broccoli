@@ -7,7 +7,7 @@ Reference apps (each demonstrates a different combination):
 - `apps/api/llm-service/` — pruned + `flyctl deploy --dockerfile` (fly builds image)
 - `apps/api/bucket-service/` — pruned + Docker Hub roundtrip (`deploy-container` pushes to `iamharryliu/bucket-service`, then `flyctl deploy --image`). Note: outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
-- `apps/api/vb-express/` — **legacy, not yet on this pattern**: pruned, no `smoke` target, no `[[http_service.checks]]` block. Don't copy from it.
+- `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
 
 ## Two orthogonal axes
 
@@ -27,11 +27,11 @@ Reference apps (each demonstrates a different combination):
 
 ## Smoke target
 
-Every new service must have `smoke` between build and deploy (vb-express predates this rule). Runs `scripts/shell/smoke-dist.sh <dist-dir>`. Behavior:
+Every service must have `smoke` between build and deploy. Runs `scripts/shell/smoke-dist.sh <dist-dir>`. Behavior:
 
 1. rsyncs dist to `/tmp` **excluding `node_modules`** — prevents Node's resolver from walking up into the workspace root's `node_modules` and masking missing deps.
 2. If `package.json` present, runs `pnpm install --frozen-lockfile --prod --ignore-workspace --ignore-scripts`.
-3. Boots with dummy `SHARED_APP_TOKEN`, `RESEND_API_KEY`, `SUPABASE_SECRET_KEY`. Polls `GET /` for 20s.
+3. Boots with dummy `SHARED_APP_TOKEN`, `RESEND_API_KEY`, `SUPABASE_SECRET_KEY`, and a tmp `DATABASE_PATH`. Polls `GET /` for 20s.
 
 If a new service needs more env vars to clear top-level init, add them to the script. **Top-level module init must not require live network or secrets** — defer to per-request.
 

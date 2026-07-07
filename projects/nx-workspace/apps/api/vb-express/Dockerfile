@@ -7,6 +7,8 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
 
+RUN apk add --no-cache su-exec
+
 RUN addgroup --system vb-express && \
           adduser --system --home /home/vb-express --shell /sbin/nologin -G vb-express vb-express && \
           mkdir -p /home/vb-express
@@ -18,4 +20,7 @@ USER vb-express
 
 RUN cd vb-express && pnpm install --frozen-lockfile --prod --ignore-scripts
 
-CMD [ "node", "vb-express" ]
+USER root
+
+# Fly volumes mount root-owned; chown at boot then drop to the app user.
+CMD [ "sh", "-c", "mkdir -p /data && chown vb-express:vb-express /data && exec su-exec vb-express node vb-express" ]

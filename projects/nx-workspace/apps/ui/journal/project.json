@@ -1,0 +1,59 @@
+{
+  "name": "journal",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/journal/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/ui/journal"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "journal:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "journal:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "journal:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw journal || npx wrangler pages project create journal --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts journal 10"
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/journal --project-name journal",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/journal --project-name journal",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    }
+  }
+}

@@ -3,6 +3,9 @@ import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 const CONTENT_TYPE_JSON = 'application/json';
 
+export const getVbExpressApiKey = () =>
+  getEnvironmentVariable('VB_EXPRESS_API_KEY');
+
 export const proxyToExpress = async (endpoint: string, body: unknown) => {
   const res = await fetch(
     `${getEnvironmentVariable('VB_EXPRESS_URL')}/${endpoint}`,
@@ -10,7 +13,7 @@ export const proxyToExpress = async (endpoint: string, body: unknown) => {
       method: 'POST',
       headers: {
         'Content-Type': CONTENT_TYPE_JSON,
-        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        'x-api-key': getVbExpressApiKey(),
       },
       body: JSON.stringify(body),
     },

@@ -11,6 +11,7 @@
 [![ci](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci.yml)\
 [![cron-backup](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml)\
 [![cron-cleanup-github-action-runs](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-github-action-runs.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-github-action-runs.yml)\
+[![cron-deploy-journal](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml)\
 [![cron-health-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-health-check.yml)\
 [![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)\
 [![cron-upptime-response-time](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml)\
@@ -34,4 +35,4 @@
 
 ## Machine Setups
 
-- [Macbook Pro Setup](./docs/machine-setups/mbp-setup.md)
+See [machine setup](./docs/machine-setups/machine-setup.md) for OS-specific setup instructions.

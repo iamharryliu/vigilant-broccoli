@@ -50,6 +50,13 @@
       "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
       "executor": "nx:noop"
     },
+    "smoke": {
+      "dependsOn": ["prune"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bash scripts/shell/smoke-dist.sh dist/apps/api/vb-express"
+      }
+    },
     "serve": {
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
@@ -86,7 +93,7 @@
     },
     "deploy": {
       "command": "flyctl deploy --dockerfile ./apps/api/vb-express/Dockerfile --config ./deployment-configs/fly-configs/vb-express.toml",
-      "dependsOn": ["build", "lint", "prune", "deploy:secrets"]
+      "dependsOn": ["build", "lint", "prune", "smoke", "deploy:secrets"]
     }
   }
 }

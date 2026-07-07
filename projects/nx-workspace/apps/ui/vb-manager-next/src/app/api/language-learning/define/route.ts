@@ -1,3 +1,4 @@
+import { getVbExpressApiKey } from '../../../../lib/vb-express';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   API_KEY_HEADER,
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       method: HTTP_METHOD.POST,
       headers: {
         ...HTTP_HEADERS.CONTENT_TYPE.JSON,
-        [API_KEY_HEADER]: getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        [API_KEY_HEADER]: getVbExpressApiKey(),
       },
       body: JSON.stringify({
         userPrompt: `Define the ${language} word "${word}" in English for a language learner.`,

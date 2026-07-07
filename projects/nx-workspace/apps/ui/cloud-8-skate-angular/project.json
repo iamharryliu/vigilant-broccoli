@@ -83,13 +83,16 @@
       "command": "node apps/ui/cloud-8-skate-angular/scripts/generate-sitemap.mjs",
       "dependsOn": ["build"]
     },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts cloud-8-skate-angular 10"
+    },
     "deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
-      "dependsOn": ["generate-sitemap"]
+      "dependsOn": ["generate-sitemap", "prune-deployments"]
     },
     "manual-deploy": {
       "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
-      "dependsOn": ["generate-sitemap"]
+      "dependsOn": ["generate-sitemap", "prune-deployments"]
     }
   }
 }

@@ -1,3 +1,4 @@
+import { getVbExpressApiKey } from '../../../lib/vb-express';
 import { NextRequest } from 'next/server';
 import { VB_EXPRESS_ENDPOINT } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
@@ -11,7 +12,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        'x-api-key': getVbExpressApiKey(),
       },
       body: await request.text(),
     },

@@ -11,7 +11,11 @@ import {
   checkRecaptchaToken,
 } from '@vigilant-broccoli/express';
 
-const textMessageService = new TextMessageService();
+let textMessageService: TextMessageService | undefined;
+const getTextMessageService = () => {
+  textMessageService = textMessageService ?? new TextMessageService();
+  return textMessageService;
+};
 const EMAIL_SERVICE_URL = getEnvironmentVariable('EMAIL_SERVICE_URL');
 const SHARED_APP_TOKEN = getEnvironmentVariable('SHARED_APP_TOKEN');
 
@@ -66,7 +70,7 @@ messagingRouter.post(
       return res.status(400).json({ error: 'body, from, and to are required' });
     }
 
-    const result = await textMessageService.sendTextMessage({
+    const result = await getTextMessageService().sendTextMessage({
       body,
       from,
       to,

@@ -1,3 +1,4 @@
+import { getVbExpressApiKey } from '../../../../lib/vb-express';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import {
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': getEnvironmentVariable('VB_EXPRESS_API_KEY'),
+        'x-api-key': getVbExpressApiKey(),
       },
       body: JSON.stringify({ images }),
     },

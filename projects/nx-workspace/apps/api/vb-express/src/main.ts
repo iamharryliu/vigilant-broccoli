@@ -1,7 +1,10 @@
 import express from 'express';
 import cors from 'cors';
-import { auth } from './auth';
+import { auth, createServiceVerifier, verifyApiKey } from './auth';
 import { toNodeHandler } from 'better-auth/node';
+import { getMigrations } from 'better-auth/db/migration';
+import { syncLegacySharedApiKey } from './libs/api-key-seed';
+import apiKeysRouter from './routes/api-keys';
 import tasksRouter from './routes/tasks';
 import tasksParseRouter from './routes/tasks-parse';
 import llmRouter from './routes/llm';
@@ -14,6 +17,7 @@ import textToSpeechRouter from './routes/text-to-speech';
 import whereIsRouter from './routes/where-is';
 import priceTrackerRouter from './routes/price-tracker';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import {
   createApiKeyMiddleware,
   createCorsOptions,
@@ -42,6 +46,9 @@ const ALLOWED_ORIGINS = [
   'https://www.cloud8skate.com',
 ];
 
+const serviceAccess = (service: string) =>
+  createApiKeyMiddleware(API_KEY, createServiceVerifier([service]));
+
 const createApp = () => {
   const app = express();
   app.use(express.static('public'));
@@ -53,29 +60,72 @@ const createApp = () => {
   });
   app.all('/api/auth/{*path}', toNodeHandler(auth));
   app.use('/contact', contactRouter);
-  app.use(createApiKeyMiddleware(API_KEY));
-  app.use('/api', pingRouter);
-  app.use('/api/messaging', messagingRouter);
-  app.use('/api/tasks', tasksRouter);
-  app.use('/api/tasks', tasksParseRouter);
-  app.use('/api/llm', llmRouter);
-  app.use('/api/chat', chatRouter);
-  app.use('/api/calendar', calendarRouter);
-  app.use('/api/voice-list', voiceListRouter);
-  app.use('/api/speech-to-text', speechToTextRouter);
-  app.use('/api/text-to-speech', textToSpeechRouter);
-  app.use('/api/where-is', whereIsRouter);
-  app.use('/api/price-tracker', priceTrackerRouter);
+  app.use(
+    '/api/admin/api-keys',
+    createApiKeyMiddleware(API_KEY),
+    apiKeysRouter,
+  );
+  app.use(
+    '/api/messaging',
+    serviceAccess(VB_EXPRESS_SERVICE.MESSAGING),
+    messagingRouter,
+  );
+  app.use(
+    '/api/tasks',
+    serviceAccess(VB_EXPRESS_SERVICE.TASKS),
+    tasksRouter,
+    tasksParseRouter,
+  );
+  app.use('/api/llm', serviceAccess(VB_EXPRESS_SERVICE.LLM), llmRouter);
+  app.use('/api/chat', serviceAccess(VB_EXPRESS_SERVICE.CHAT), chatRouter);
+  app.use(
+    '/api/calendar',
+    serviceAccess(VB_EXPRESS_SERVICE.CALENDAR),
+    calendarRouter,
+  );
+  app.use(
+    '/api/voice-list',
+    serviceAccess(VB_EXPRESS_SERVICE.VOICE_LIST),
+    voiceListRouter,
+  );
+  app.use(
+    '/api/speech-to-text',
+    serviceAccess(VB_EXPRESS_SERVICE.SPEECH_TO_TEXT),
+    speechToTextRouter,
+  );
+  app.use(
+    '/api/text-to-speech',
+    serviceAccess(VB_EXPRESS_SERVICE.TEXT_TO_SPEECH),
+    textToSpeechRouter,
+  );
+  app.use(
+    '/api/where-is',
+    serviceAccess(VB_EXPRESS_SERVICE.WHERE_IS),
+    whereIsRouter,
+  );
+  app.use(
+    '/api/price-tracker',
+    serviceAccess(VB_EXPRESS_SERVICE.PRICE_TRACKER),
+    priceTrackerRouter,
+  );
+  app.use('/api', createApiKeyMiddleware(API_KEY, verifyApiKey), pingRouter);
   return app;
 };
 
 const app = createApp();
 
-app.listen(APP_PORT as number, APP_HOST, () => {
-  console.log('');
-  console.log(`Server running at http://${APP_HOST}:${APP_PORT}`);
-  console.log('Ctrl-c to stop');
-  console.log('');
-});
+const startServer = async () => {
+  const { runMigrations } = await getMigrations(auth.options);
+  await runMigrations();
+  await syncLegacySharedApiKey();
+  app.listen(APP_PORT as number, APP_HOST, () => {
+    console.log('');
+    console.log(`Server running at http://${APP_HOST}:${APP_PORT}`);
+    console.log('Ctrl-c to stop');
+    console.log('');
+  });
+};
+
+startServer();
 
 export { app };

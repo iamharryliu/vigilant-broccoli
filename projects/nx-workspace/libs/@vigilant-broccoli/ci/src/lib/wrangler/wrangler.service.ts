@@ -10,12 +10,19 @@ interface WranglerProjectJson {
   'Project Domains': string;
 }
 
+interface WranglerDeploymentJson {
+  Id: string;
+}
+
 const LOG_PREFIX = '[wrangler]';
 const MAX_STALE_BATCHES = 3;
+const DEFAULT_KEEP_DEPLOYMENTS = 10;
 
 const WranglerCommand = {
   login: 'wrangler login',
   listPagesProjects: 'wrangler pages project list --json',
+  listDeployments: (projectName: string) =>
+    `wrangler pages deployment list --project-name ${projectName} --json`,
   deletePagesProject: (projectName: string) =>
     `wrangler pages project delete ${projectName} --yes`,
   countDeployments: (projectName: string) =>
@@ -23,6 +30,9 @@ const WranglerCommand = {
   deleteAllDeploymentsBatch: (projectName: string) =>
     `wrangler pages deployment list --project-name ${projectName} --json` +
     ` | jq -r '.[].Id'` +
+    ` | xargs -P 20 -I {} sh -c 'wrangler pages deployment delete {} --project-name ${projectName} --force 2>&1 || true'`,
+  deleteDeploymentsBatch: (projectName: string, ids: string[]) =>
+    `printf '%s\\n' ${ids.join(' ')}` +
     ` | xargs -P 20 -I {} sh -c 'wrangler pages deployment delete {} --project-name ${projectName} --force 2>&1 || true'`,
 };
 
@@ -45,6 +55,37 @@ async function listPagesProjects(): Promise<WranglerProject[]> {
     name: p['Project Name'],
     domains: p['Project Domains'].split(',').map(d => d.trim()),
   }));
+}
+
+async function listDeploymentIds(projectName: string): Promise<string[]> {
+  const output = await ShellUtils.runShellCommand(
+    WranglerCommand.listDeployments(projectName),
+    true,
+  );
+  const parsed: WranglerDeploymentJson[] = JSON.parse(
+    (output as string) || '[]',
+  );
+  return parsed.map(deployment => deployment.Id);
+}
+
+async function pruneDeployments(
+  projectName: string,
+  keep = DEFAULT_KEEP_DEPLOYMENTS,
+): Promise<void> {
+  const ids = await listDeploymentIds(projectName);
+  const idsToDelete = ids.slice(keep);
+
+  console.log(
+    `${LOG_PREFIX} ${projectName}: ${ids.length} deployment(s) listed (list is capped to a single page), keeping ${Math.min(keep, ids.length)}, deleting ${idsToDelete.length} this run`,
+  );
+
+  if (idsToDelete.length > 0) {
+    await ShellUtils.runShellCommand(
+      WranglerCommand.deleteDeploymentsBatch(projectName, idsToDelete),
+    );
+  }
+
+  console.log(`${LOG_PREFIX} ${projectName}: prune complete`);
 }
 
 async function deleteAllDeployments(projectName: string): Promise<void> {
@@ -89,6 +130,7 @@ async function login(): Promise<void> {
 
 export const WranglerService = {
   listPagesProjects,
+  pruneDeployments,
   deleteAllDeployments,
   deletePagesProject,
   login,

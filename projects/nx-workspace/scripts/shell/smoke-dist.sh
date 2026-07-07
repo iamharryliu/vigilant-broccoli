@@ -11,7 +11,8 @@
 #   `pnpm install --frozen-lockfile --prod` first (matches Dockerfile).
 # - Boots `node <dist-dir>/main.js` on a high port with dummy env values
 #   sufficient to clear top-level module init for every service in this
-#   repo (RESEND_API_KEY, SUPABASE_SECRET_KEY, SHARED_APP_TOKEN).
+#   repo (RESEND_API_KEY, SUPABASE_SECRET_KEY, SHARED_APP_TOKEN, and a
+#   tmp DATABASE_PATH for services with a local SQLite db).
 # - Polls GET / for up to 20s. Exits 0 on first 2xx, 1 if the process
 #   dies or the timeout elapses.
 set -euo pipefail
@@ -65,6 +66,7 @@ HOST=127.0.0.1 \
 SHARED_APP_TOKEN=smoke-test \
 RESEND_API_KEY=re_smoke_dummy \
 SUPABASE_SECRET_KEY=smoke-dummy \
+DATABASE_PATH="$SMOKE_ROOT/smoke.sqlite" \
   node "$SMOKE_DIR/main.js" &
 SERVER_PID=$!
 
