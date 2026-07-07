@@ -30,16 +30,21 @@ jobs:
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
             kv/data/secrets CLOUDFLARE_R2_ACCESS_KEY_ID | CLOUDFLARE_R2_ACCESS_KEY_ID ;
             kv/data/secrets CLOUDFLARE_R2_SECRET_ACCESS_KEY | CLOUDFLARE_R2_SECRET_ACCESS_KEY ;
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+        with:
+          package_json_file: ./projects/nx-workspace/package.json
+
       - name: Setup Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: '24'
-          package-manager-cache: false
+          node-version: 24
+          cache: 'pnpm'
+          cache-dependency-path: ./projects/nx-workspace/pnpm-lock.yaml
 
       - name: Install dependencies
         working-directory: ./projects/nx-workspace
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Run script
         working-directory: ./projects/nx-workspace
-        run: npx tsx scripts/download-resume-pdf-sa.ts
+        run: pnpm exec tsx scripts/download-resume-pdf-sa.ts
