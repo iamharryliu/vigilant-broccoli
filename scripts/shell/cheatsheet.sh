@@ -57,6 +57,7 @@ echo "  secret-rotation:all         Run all scripted rotations, then dispatch ro
 echo "  secret-rotation:flyio       Rotate Fly.io token"
 echo "  secret-rotation:gitea       Rotate Gitea CI token (scoped read:repository)"
 echo "  secret-rotation:profile-deploy-key  Rotate profile repo deploy key + GitHub secret"
+echo "  secret-rotation:resend      Rotate Resend API key (single-key swap, pushes to fly app)"
 echo ""
 echo "🐳 LOCAL"
 echo "  local:docker:up             Start local Docker Compose services"

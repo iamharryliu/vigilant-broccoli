@@ -78,7 +78,7 @@ POLICY
 echo 'Writing policy ${VAULT_ROTATE_POLICY_NAME}...'
 vault policy write ${VAULT_ROTATE_POLICY_NAME} - <<POLICY
 path \"${VAULT_KV_PATH}/data/secrets\" {
-  capabilities = [\"read\", \"update\"]
+  capabilities = [\"read\", \"update\", \"patch\"]
 }
 path \"${VAULT_KV_PATH}/data/test\" {
   capabilities = [\"read\"]
