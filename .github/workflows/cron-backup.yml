@@ -72,7 +72,8 @@ jobs:
           GITEA_VM_IP: ${{ env.GITEA_VM_IP }}
         run: |
           TIMESTAMP=$(date -u +%Y-%m-%d)
-          printf '%s' "$OCI_VM_SSH_KEY" | base64 -d > ssh_key
+          # Ensure a trailing newline — the stored key lacks one and OpenSSL/libcrypto rejects it.
+          { printf '%s' "$OCI_VM_SSH_KEY" | base64 -d; echo; } > ssh_key
           chmod 600 ssh_key
           SSH="ssh -i ssh_key -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15 ubuntu@${GITEA_VM_IP}"
           # gitea dump writes the archive inside the container; copy it out to the host, then pull it.
