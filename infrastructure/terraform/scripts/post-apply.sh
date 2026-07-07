@@ -27,6 +27,8 @@ sync_secrets_to_vault() {
   local email_api_key
   local gcs_sa_credentials
   local code_server_password
+  local ci_ssh_private_key
+  local ci_ssh_public_key
 
   ca_cert=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_self_signed_cert" and .name == "rabbitmq_ca") | .instances[0].attributes.cert_pem' 2>/dev/null || echo "")
   rabbitmq_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "rabbitmq") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
@@ -35,8 +37,10 @@ sync_secrets_to_vault() {
   email_api_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "email_service_api_key") | .instances[0].attributes.result' 2>/dev/null || echo "")
   gcs_sa_credentials=$(echo "$state_json" | jq -r '.resources[] | select(.type == "google_service_account_key" and .name == "gcs_manager") | .instances[0].attributes.private_key' 2>/dev/null || echo "")
   code_server_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "code_server_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
+  ci_ssh_private_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_private_key" and .name == "oci_vm_ci_ssh") | .instances[0].attributes.private_key_openssh' 2>/dev/null || echo "")
+  ci_ssh_public_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_private_key" and .name == "oci_vm_ci_ssh") | .instances[0].attributes.public_key_openssh' 2>/dev/null || echo "")
 
-  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ]; then
+  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
     return
   fi
@@ -51,6 +55,7 @@ sync_secrets_to_vault() {
 
   local conn_str="amqps://${rabbitmq_user}:${rabbitmq_password}@${rabbitmq_ip}:5671"
   local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
+  local ci_ssh_key_b64=$(printf '%s' "$ci_ssh_private_key" | base64 -w 0)
   local socket_server_url="https://socket.harryliu.dev"
 
   gcloud compute ssh "${vm_name}" \
@@ -68,7 +73,8 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     EMAIL_SERVICE_API_KEY='${email_api_key}' \
     GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
     CODE_SERVER_PASSWORD='${code_server_password}' \
-    SOCKET_SERVER_URL='${socket_server_url}'
+    SOCKET_SERVER_URL='${socket_server_url}' \
+    OCI_VM_SSH_KEY='${ci_ssh_key_b64}'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT='${ca_cert_b64}' \
@@ -76,12 +82,20 @@ else
     EMAIL_SERVICE_API_KEY='${email_api_key}' \
     GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
     CODE_SERVER_PASSWORD='${code_server_password}' \
-    SOCKET_SERVER_URL='${socket_server_url}'
+    SOCKET_SERVER_URL='${socket_server_url}' \
+    OCI_VM_SSH_KEY='${ci_ssh_key_b64}'
 fi
 
 echo 'Secrets synced to Vault'
 "
-  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL to kv/data/secrets (SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
+  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY to kv/data/secrets (SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
+
+  echo "Ensuring CI SSH key on socket-server VM (${rabbitmq_ip})..."
+  ssh-keygen -R "$rabbitmq_ip" >/dev/null 2>&1 || true
+  ssh -i "$HOME/.ssh/id_ed25519" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "ubuntu@${rabbitmq_ip}" \
+    "grep -qF '${ci_ssh_public_key}' ~/.ssh/authorized_keys 2>/dev/null || echo '${ci_ssh_public_key}' >> ~/.ssh/authorized_keys" \
+    && echo "✓ CI SSH key authorized on socket-server VM" \
+    || echo "Warning: could not install CI SSH key on ${rabbitmq_ip} — rerun pnpm tf:post-apply"
 }
 
 sync_socket_server() {

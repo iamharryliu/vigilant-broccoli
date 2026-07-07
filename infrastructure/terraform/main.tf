@@ -362,6 +362,10 @@ resource "random_password" "shared_app_token" {
   special = false
 }
 
+resource "tls_private_key" "oci_vm_ci_ssh" {
+  algorithm = "ED25519"
+}
+
 resource "tls_private_key" "rabbitmq_ca" {
   algorithm = "RSA"
   rsa_bits  = 4096
