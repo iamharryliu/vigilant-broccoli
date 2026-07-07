@@ -42,7 +42,7 @@ jobs:
             echo "$BACKUPS" | head -n "$DELETE_COUNT" | xargs gsutil rm
           fi
 
-  backup-journal:
+  backup-gitea:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,7 +54,8 @@ jobs:
           cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
           cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
           secrets: |
-            kv/data/secrets GITEA_TOKEN | GITEA_TOKEN ;
+            kv/data/secrets OCI_VM_SSH_KEY | OCI_VM_SSH_KEY ;
+            kv/data/secrets GITEA_VM_IP | GITEA_VM_IP ;
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
@@ -65,59 +66,29 @@ jobs:
       - name: Setup Cloud SDK
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
-      - name: Upload backup to GCS
+      - name: Dump Gitea and upload to GCS
+        env:
+          OCI_VM_SSH_KEY: ${{ env.OCI_VM_SSH_KEY }}
+          GITEA_VM_IP: ${{ env.GITEA_VM_IP }}
         run: |
           TIMESTAMP=$(date -u +%Y-%m-%d)
-          curl -sL -H "Authorization: token ${{ secrets.GITEA_TOKEN }}" \
-            -o journal.zip \
-            https://git.harryliu.dev/api/v1/repos/iamharryliu/journal/archive/main.zip
-          gsutil cp journal.zip gs://vigilant-broccoli-backup/journal-backup-$TIMESTAMP.zip
+          printf '%s' "$OCI_VM_SSH_KEY" | base64 -d > ssh_key
+          chmod 600 ssh_key
+          SSH="ssh -i ssh_key -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15 ubuntu@${GITEA_VM_IP}"
+          # gitea dump writes the archive inside the container; copy it out to the host, then pull it.
+          $SSH 'sudo docker exec -u git -w /tmp gitea gitea dump -t /tmp -c /data/gitea/conf/app.ini --file gitea-dump.zip \
+            && sudo docker cp gitea:/tmp/gitea-dump.zip /tmp/gitea-dump.zip \
+            && sudo chown "$(id -u):$(id -g)" /tmp/gitea-dump.zip \
+            && sudo docker exec -u git gitea rm -f /tmp/gitea-dump.zip'
+          scp -i ssh_key -o StrictHostKeyChecking=accept-new "ubuntu@${GITEA_VM_IP}:/tmp/gitea-dump.zip" gitea-dump.zip
+          $SSH 'sudo rm -f /tmp/gitea-dump.zip'
+          gsutil cp gitea-dump.zip "gs://vigilant-broccoli-backup/gitea-backup-$TIMESTAMP.zip"
+          rm -f ssh_key gitea-dump.zip
 
       - name: Cleanup old backups
         run: |
           MAX_BACKUPS=7
-          BACKUPS=$(gsutil ls gs://vigilant-broccoli-backup/journal-backup-*.zip | sort)
-          BACKUP_COUNT=$(echo "$BACKUPS" | wc -l)
-          if [ "$BACKUP_COUNT" -gt "$MAX_BACKUPS" ]; then
-            DELETE_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))
-            echo "$BACKUPS" | head -n "$DELETE_COUNT" | xargs gsutil rm
-          fi
-
-  backup-strandbaden:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
-
-      - name: Import Secrets from Vault
-        uses: ./.github/actions/vault-secrets
-        with:
-          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
-          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
-          secrets: |
-            kv/data/secrets GITEA_TOKEN | GITEA_TOKEN ;
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-
-      - name: Setup Cloud SDK
-        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
-
-      - name: Upload backup to GCS
-        run: |
-          TIMESTAMP=$(date -u +%Y-%m-%d)
-          curl -sL -H "Authorization: token ${{ secrets.GITEA_TOKEN }}" \
-            -o strandbaden.zip \
-            https://git.harryliu.dev/api/v1/repos/iamharryliu/strandbaden/archive/main.zip
-          gsutil cp strandbaden.zip gs://vigilant-broccoli-backup/strandbaden-backup-$TIMESTAMP.zip
-
-      - name: Cleanup old backups
-        run: |
-          MAX_BACKUPS=7
-          BACKUPS=$(gsutil ls gs://vigilant-broccoli-backup/strandbaden-backup-*.zip | sort)
+          BACKUPS=$(gsutil ls gs://vigilant-broccoli-backup/gitea-backup-*.zip | sort)
           BACKUP_COUNT=$(echo "$BACKUPS" | wc -l)
           if [ "$BACKUP_COUNT" -gt "$MAX_BACKUPS" ]; then
             DELETE_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))

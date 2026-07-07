@@ -29,6 +29,9 @@ sync_secrets_to_vault() {
   local code_server_password
   local ci_ssh_private_key
   local ci_ssh_public_key
+  local gitea_cf_access_client_id
+  local gitea_cf_access_client_secret
+  local gitea_ip
 
   ca_cert=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_self_signed_cert" and .name == "rabbitmq_ca") | .instances[0].attributes.cert_pem' 2>/dev/null || echo "")
   rabbitmq_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "rabbitmq") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
@@ -39,8 +42,11 @@ sync_secrets_to_vault() {
   code_server_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "code_server_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
   ci_ssh_private_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_private_key" and .name == "oci_vm_ci_ssh") | .instances[0].attributes.private_key_openssh' 2>/dev/null || echo "")
   ci_ssh_public_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_private_key" and .name == "oci_vm_ci_ssh") | .instances[0].attributes.public_key_openssh' 2>/dev/null || echo "")
+  gitea_cf_access_client_id=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "gitea_ci") | .instances[0].attributes.client_id' 2>/dev/null || echo "")
+  gitea_cf_access_client_secret=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "gitea_ci") | .instances[0].attributes.client_secret' 2>/dev/null || echo "")
+  gitea_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "gitea") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
 
-  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ]; then
+  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
     return
   fi
@@ -74,7 +80,10 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
     CODE_SERVER_PASSWORD='${code_server_password}' \
     SOCKET_SERVER_URL='${socket_server_url}' \
-    OCI_VM_SSH_KEY='${ci_ssh_key_b64}'
+    OCI_VM_SSH_KEY='${ci_ssh_key_b64}' \
+    GITEA_CF_ACCESS_CLIENT_ID='${gitea_cf_access_client_id}' \
+    GITEA_CF_ACCESS_CLIENT_SECRET='${gitea_cf_access_client_secret}' \
+    GITEA_VM_IP='${gitea_ip}'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT='${ca_cert_b64}' \
@@ -83,12 +92,15 @@ else
     GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
     CODE_SERVER_PASSWORD='${code_server_password}' \
     SOCKET_SERVER_URL='${socket_server_url}' \
-    OCI_VM_SSH_KEY='${ci_ssh_key_b64}'
+    OCI_VM_SSH_KEY='${ci_ssh_key_b64}' \
+    GITEA_CF_ACCESS_CLIENT_ID='${gitea_cf_access_client_id}' \
+    GITEA_CF_ACCESS_CLIENT_SECRET='${gitea_cf_access_client_secret}' \
+    GITEA_VM_IP='${gitea_ip}'
 fi
 
 echo 'Secrets synced to Vault'
 "
-  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY to kv/data/secrets (SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
+  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP to kv/data/secrets (SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
 
   echo "Ensuring CI SSH key on socket-server VM (${rabbitmq_ip})..."
   ssh-keygen -R "$rabbitmq_ip" >/dev/null 2>&1 || true
@@ -96,6 +108,13 @@ echo 'Secrets synced to Vault'
     "grep -qF '${ci_ssh_public_key}' ~/.ssh/authorized_keys 2>/dev/null || echo '${ci_ssh_public_key}' >> ~/.ssh/authorized_keys" \
     && echo "✓ CI SSH key authorized on socket-server VM" \
     || echo "Warning: could not install CI SSH key on ${rabbitmq_ip} — rerun pnpm tf:post-apply"
+
+  echo "Ensuring CI SSH key on gitea VM (${gitea_ip})..."
+  ssh-keygen -R "$gitea_ip" >/dev/null 2>&1 || true
+  ssh -i "$HOME/.ssh/id_ed25519" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "ubuntu@${gitea_ip}" \
+    "grep -qF '${ci_ssh_public_key}' ~/.ssh/authorized_keys 2>/dev/null || echo '${ci_ssh_public_key}' >> ~/.ssh/authorized_keys" \
+    && echo "✓ CI SSH key authorized on gitea VM" \
+    || echo "Warning: could not install CI SSH key on ${gitea_ip} — rerun pnpm tf:post-apply"
 }
 
 sync_socket_server() {

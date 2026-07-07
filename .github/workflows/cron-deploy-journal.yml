@@ -39,13 +39,19 @@ jobs:
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
             kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
             kv/data/secrets GITEA_TOKEN | GITEA_TOKEN ;
+            kv/data/secrets GITEA_CF_ACCESS_CLIENT_ID | GITEA_CF_ACCESS_CLIENT_ID ;
+            kv/data/secrets GITEA_CF_ACCESS_CLIENT_SECRET | GITEA_CF_ACCESS_CLIENT_SECRET ;
 
       - name: Fetch journal notes from Gitea
         env:
           GITEA_TOKEN: ${{ env.GITEA_TOKEN }}
+          CF_ACCESS_CLIENT_ID: ${{ env.GITEA_CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ env.GITEA_CF_ACCESS_CLIENT_SECRET }}
         run: |
           rm -rf journal-src journal.zip
           curl -sfL -H "Authorization: token ${GITEA_TOKEN}" \
+            -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
+            -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
             -o journal.zip "$GITEA_JOURNAL_ARCHIVE_URL"
           unzip -q journal.zip -d journal-src
           NOTES_DIR=$(find journal-src -mindepth 1 -maxdepth 1 -type d | head -1)

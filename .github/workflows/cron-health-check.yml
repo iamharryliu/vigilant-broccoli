@@ -39,6 +39,8 @@ jobs:
             kv/data/secrets RABBITMQ_CONNECTION_STRING | RABBITMQ_CONNECTION_STRING ;
             kv/data/secrets RABBITMQ_CA_CERT | RABBITMQ_CA_CERT ;
             kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
+            kv/data/secrets GITEA_CF_ACCESS_CLIENT_ID | GITEA_CF_ACCESS_CLIENT_ID ;
+            kv/data/secrets GITEA_CF_ACCESS_CLIENT_SECRET | GITEA_CF_ACCESS_CLIENT_SECRET ;
 
       - name: Run health checks
         env:
@@ -47,6 +49,8 @@ jobs:
           SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
           CF_ACCESS_CLIENT_ID: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
+          GITEA_CF_ACCESS_CLIENT_ID: ${{ env.GITEA_CF_ACCESS_CLIENT_ID }}
+          GITEA_CF_ACCESS_CLIENT_SECRET: ${{ env.GITEA_CF_ACCESS_CLIENT_SECRET }}
         run: |
           PASS=0
           FAIL=0
@@ -97,7 +101,6 @@ jobs:
           http_check "cloud8skate.com" "https://cloud8skate.com"
           http_check "vb-hearth.vercel.app" "https://vb-hearth.vercel.app"
           http_check "findme" "https://findme-kohl.vercel.app"
-          http_check "git.harryliu.dev" "https://git.harryliu.dev"
 
           echo ""
           echo "[GCP VM]"
@@ -126,6 +129,24 @@ jobs:
             fi
           else
             check "vault" "unreachable"
+          fi
+
+          echo ""
+          echo "[OCI VM — Gitea (behind Cloudflare Access)]"
+          # Authenticated probe: a 200 means the CF Access service token still
+          # works AND Gitea is up. A 302 to the Access login = expired/rejected
+          # token; anything else = Gitea down. Uses the API healthz endpoint,
+          # which the gitea-ci non_identity policy is allowed to reach.
+          GITEA_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
+            -H "CF-Access-Client-Id: ${GITEA_CF_ACCESS_CLIENT_ID}" \
+            -H "CF-Access-Client-Secret: ${GITEA_CF_ACCESS_CLIENT_SECRET}" \
+            "https://git.harryliu.dev/api/healthz" 2>/dev/null) || GITEA_CODE="timeout"
+          if [ "$GITEA_CODE" = "200" ]; then
+            check "gitea" "ok"
+          elif [ "$GITEA_CODE" = "302" ]; then
+            check "gitea" "CF Access token rejected/expired (HTTP 302 to login)"
+          else
+            check "gitea" "HTTP $GITEA_CODE (expected 200)"
           fi
 
           echo ""

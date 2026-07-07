@@ -43,6 +43,19 @@ variable "gitea_domain" {
   default = "git.harryliu.dev"
 }
 
+# DNS-only (grey-cloud) hostname for git-over-SSH on :2222. The apex git.harryliu.dev
+# is Cloudflare-proxied for the Access-gated web UI, and the proxy doesn't forward
+# :2222 — so SSH needs a direct-to-VM hostname.
+variable "gitea_ssh_domain" {
+  type    = string
+  default = "ssh.git.harryliu.dev"
+}
+
+variable "gitea_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
+
 variable "acme_email" {
   type    = string
   default = "harryliu1995@gmail.com"

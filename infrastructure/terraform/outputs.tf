@@ -29,7 +29,7 @@ output "oci_gitea_url" {
 }
 
 output "oci_gitea_ssh_clone_hint" {
-  value = "ssh://git@${var.gitea_domain}:2222/<owner>/<repo>.git"
+  value = "ssh://git@${var.gitea_ssh_domain}:2222/<owner>/<repo>.git"
 }
 
 output "oci_code_server_public_ip" {

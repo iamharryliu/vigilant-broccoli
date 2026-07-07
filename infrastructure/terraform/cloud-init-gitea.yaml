@@ -7,13 +7,19 @@ packages:
   - docker-compose-v2
 
 write_files:
+  # Cloudflare Origin CA cert — ACME can't complete behind the proxy/Access
+  - path: /opt/gitea/origin.crt
+    permissions: '0644'
+    content: |
+      ${indent(6, gitea_origin_cert)}
+  - path: /opt/gitea/origin.key
+    permissions: '0600'
+    content: |
+      ${indent(6, gitea_origin_key)}
   - path: /opt/gitea/Caddyfile
     content: |
-      {
-        email ${acme_email}
-      }
-
       ${gitea_domain} {
+        tls /etc/caddy/origin.crt /etc/caddy/origin.key
         reverse_proxy gitea:3000
       }
 
@@ -31,13 +37,13 @@ write_files:
             GITEA__database__DB_TYPE: sqlite3
             GITEA__server__DOMAIN: ${gitea_domain}
             GITEA__server__ROOT_URL: https://${gitea_domain}/
-            GITEA__server__SSH_DOMAIN: ${gitea_domain}
+            GITEA__server__SSH_DOMAIN: ${gitea_ssh_domain}
             GITEA__server__SSH_PORT: "2222"
             GITEA__server__SSH_LISTEN_PORT: "22"
             GITEA__service__DISABLE_REGISTRATION: "true"
             GITEA__service__REQUIRE_SIGNIN_VIEW: "false"
           volumes:
-            - gitea_data:/data
+            - /mnt/gitea-data:/data
             - /etc/timezone:/etc/timezone:ro
             - /etc/localtime:/etc/localtime:ro
           ports:
@@ -59,6 +65,8 @@ write_files:
             - "443:443"
           volumes:
             - /opt/gitea/Caddyfile:/etc/caddy/Caddyfile:ro
+            - /opt/gitea/origin.crt:/etc/caddy/origin.crt:ro
+            - /opt/gitea/origin.key:/etc/caddy/origin.key:ro
             - caddy_data:/data
             - caddy_config:/config
           depends_on:
@@ -77,7 +85,6 @@ write_files:
             WATCHTOWER_LABEL_ENABLE: "true"
             DOCKER_API_VERSION: DOCKER_API_VERSION_PLACEHOLDER
       volumes:
-        gitea_data:
         caddy_data:
         caddy_config:
 
@@ -85,5 +92,13 @@ runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ubuntu
+  # Mount the attached block volume at /mnt/gitea-data BEFORE Docker starts, so
+  # Gitea's /data bind-mount lands on the persistent volume, not the boot disk.
+  # Detect the data disk as the whole disk that is NOT the boot disk (device
+  # names like /dev/sdb aren't stable), format only if blank, and mount by UUID
+  # — a re-provision reattaches existing repo/DB data intact instead of wiping.
+  - mkdir -p /mnt/gitea-data
+  - 'ROOT_DISK=$(lsblk -no PKNAME "$(findmnt -no SOURCE /)" | head -1); for d in $(lsblk -dno NAME --nodeps -e7); do [ "$d" = "$ROOT_DISK" ] && continue; DATA_DEV="/dev/$d"; break; done; blkid "$DATA_DEV" || mkfs.ext4 -F "$DATA_DEV"; DATA_UUID=$(blkid -s UUID -o value "$DATA_DEV"); grep -q "$DATA_UUID" /etc/fstab || echo "UUID=$DATA_UUID /mnt/gitea-data ext4 defaults,_netdev,nofail 0 2" >> /etc/fstab'
+  - mount /mnt/gitea-data
   - 'DOCKER_API=$(docker version --format "{{.Server.APIVersion}}") && sed -i "s/DOCKER_API_VERSION_PLACEHOLDER/$DOCKER_API/" /opt/gitea/docker-compose.yml'
   - docker compose -f /opt/gitea/docker-compose.yml up -d
