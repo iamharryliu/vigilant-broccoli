@@ -24,6 +24,25 @@ resource "cloudflare_zero_trust_access_policy" "journal" {
   include    = [for email in var.journal_allowed_emails : { email = { email = email } }]
 }
 
+# Non-identity service token so cron-health-check can probe the journal origin
+# instead of only ever hitting the Access login page. Without this an
+# unauthenticated probe returns the Access login (not the Pages origin), so a
+# dead deploy would go undetected. Token is synced to Vault by post-apply.sh
+# (JOURNAL_CF_ACCESS_*).
+resource "cloudflare_zero_trust_access_service_token" "journal_ci" {
+  account_id = var.cloudflare_account_id
+  name       = "journal-ci"
+}
+
+resource "cloudflare_zero_trust_access_policy" "journal_ci" {
+  account_id = var.cloudflare_account_id
+  name       = "journal-allow-ci-service-token"
+  decision   = "non_identity"
+  include = [{
+    service_token = { token_id = cloudflare_zero_trust_access_service_token.journal_ci.id }
+  }]
+}
+
 resource "cloudflare_zero_trust_access_application" "journal" {
   account_id       = var.cloudflare_account_id
   name             = "journal"
@@ -40,8 +59,14 @@ resource "cloudflare_zero_trust_access_application" "journal" {
     { type = "public", uri = "*.${var.journal_pages_subdomain}" },
   ]
 
-  policies = [{
-    id         = cloudflare_zero_trust_access_policy.journal.id
-    precedence = 1
-  }]
+  policies = [
+    {
+      id         = cloudflare_zero_trust_access_policy.journal.id
+      precedence = 1
+    },
+    {
+      id         = cloudflare_zero_trust_access_policy.journal_ci.id
+      precedence = 2
+    },
+  ]
 }

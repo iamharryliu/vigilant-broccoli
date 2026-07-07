@@ -41,6 +41,10 @@ jobs:
             kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
             kv/data/secrets GITEA_CF_ACCESS_CLIENT_ID | GITEA_CF_ACCESS_CLIENT_ID ;
             kv/data/secrets GITEA_CF_ACCESS_CLIENT_SECRET | GITEA_CF_ACCESS_CLIENT_SECRET ;
+            kv/data/secrets CODE_SERVER_CF_ACCESS_CLIENT_ID | CODE_SERVER_CF_ACCESS_CLIENT_ID ;
+            kv/data/secrets CODE_SERVER_CF_ACCESS_CLIENT_SECRET | CODE_SERVER_CF_ACCESS_CLIENT_SECRET ;
+            kv/data/secrets JOURNAL_CF_ACCESS_CLIENT_ID | JOURNAL_CF_ACCESS_CLIENT_ID ;
+            kv/data/secrets JOURNAL_CF_ACCESS_CLIENT_SECRET | JOURNAL_CF_ACCESS_CLIENT_SECRET ;
 
       - name: Run health checks
         env:
@@ -51,6 +55,10 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
           GITEA_CF_ACCESS_CLIENT_ID: ${{ env.GITEA_CF_ACCESS_CLIENT_ID }}
           GITEA_CF_ACCESS_CLIENT_SECRET: ${{ env.GITEA_CF_ACCESS_CLIENT_SECRET }}
+          CODE_SERVER_CF_ACCESS_CLIENT_ID: ${{ env.CODE_SERVER_CF_ACCESS_CLIENT_ID }}
+          CODE_SERVER_CF_ACCESS_CLIENT_SECRET: ${{ env.CODE_SERVER_CF_ACCESS_CLIENT_SECRET }}
+          JOURNAL_CF_ACCESS_CLIENT_ID: ${{ env.JOURNAL_CF_ACCESS_CLIENT_ID }}
+          JOURNAL_CF_ACCESS_CLIENT_SECRET: ${{ env.JOURNAL_CF_ACCESS_CLIENT_SECRET }}
         run: |
           PASS=0
           FAIL=0
@@ -147,6 +155,44 @@ jobs:
             check "gitea" "CF Access token rejected/expired (HTTP 302 to login)"
           else
             check "gitea" "HTTP $GITEA_CODE (expected 200)"
+          fi
+
+          echo ""
+          echo "[OCI VM — code-server (behind Cloudflare Access)]"
+          # Authenticated probe of the code-server origin. An unauthenticated
+          # request only ever reaches the Access login (200 from the edge), so
+          # it can't tell a dead VM from a live one — the service token headers
+          # get Access to forward the request to the origin. /healthz is
+          # code-server's built-in health endpoint (200 when up). A 302 to login
+          # means the token was rejected/expired; anything else = origin down.
+          CODE_SERVER_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
+            -H "CF-Access-Client-Id: ${CODE_SERVER_CF_ACCESS_CLIENT_ID}" \
+            -H "CF-Access-Client-Secret: ${CODE_SERVER_CF_ACCESS_CLIENT_SECRET}" \
+            "https://code.harryliu.dev/healthz" 2>/dev/null) || CODE_SERVER_CODE="timeout"
+          if [ "$CODE_SERVER_CODE" = "200" ]; then
+            check "code-server" "ok"
+          elif [ "$CODE_SERVER_CODE" = "302" ]; then
+            check "code-server" "CF Access token rejected/expired (HTTP 302 to login)"
+          else
+            check "code-server" "HTTP $CODE_SERVER_CODE (expected 200)"
+          fi
+
+          echo ""
+          echo "[Cloudflare Pages — journal (behind Cloudflare Access)]"
+          # Same rationale as code-server: unauthenticated only sees the Access
+          # login, so probe the origin with the service token. A 200 means the
+          # token works AND the Pages deploy is serving; 302 = token rejected;
+          # anything else = deploy broken/missing.
+          JOURNAL_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
+            -H "CF-Access-Client-Id: ${JOURNAL_CF_ACCESS_CLIENT_ID}" \
+            -H "CF-Access-Client-Secret: ${JOURNAL_CF_ACCESS_CLIENT_SECRET}" \
+            "https://journal.harryliu.dev/" 2>/dev/null) || JOURNAL_CODE="timeout"
+          if [ "$JOURNAL_CODE" = "200" ]; then
+            check "journal" "ok"
+          elif [ "$JOURNAL_CODE" = "302" ]; then
+            check "journal" "CF Access token rejected/expired (HTTP 302 to login)"
+          else
+            check "journal" "HTTP $JOURNAL_CODE (expected 200)"
           fi
 
           echo ""

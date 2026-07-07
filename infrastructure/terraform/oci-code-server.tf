@@ -155,6 +155,24 @@ resource "cloudflare_zero_trust_access_policy" "code_server" {
   include    = [for email in var.code_server_allowed_emails : { email = { email = email } }]
 }
 
+# Non-identity service token so cron-health-check can probe the code-server
+# origin (/healthz) instead of only ever hitting the Access login page. Without
+# this an unauthenticated probe returns 200 from the Access edge even when the
+# VM is dead. Token is synced to Vault by post-apply.sh (CODE_SERVER_CF_ACCESS_*).
+resource "cloudflare_zero_trust_access_service_token" "code_server_ci" {
+  account_id = var.cloudflare_account_id
+  name       = "code-server-ci"
+}
+
+resource "cloudflare_zero_trust_access_policy" "code_server_ci" {
+  account_id = var.cloudflare_account_id
+  name       = "code-server-allow-ci-service-token"
+  decision   = "non_identity"
+  include = [{
+    service_token = { token_id = cloudflare_zero_trust_access_service_token.code_server_ci.id }
+  }]
+}
+
 resource "cloudflare_zero_trust_access_application" "code_server" {
   account_id       = var.cloudflare_account_id
   name             = "code-server"
@@ -162,8 +180,14 @@ resource "cloudflare_zero_trust_access_application" "code_server" {
   type             = "self_hosted"
   session_duration = "24h"
 
-  policies = [{
-    id         = cloudflare_zero_trust_access_policy.code_server.id
-    precedence = 1
-  }]
+  policies = [
+    {
+      id         = cloudflare_zero_trust_access_policy.code_server.id
+      precedence = 1
+    },
+    {
+      id         = cloudflare_zero_trust_access_policy.code_server_ci.id
+      precedence = 2
+    },
+  ]
 }

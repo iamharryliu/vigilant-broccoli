@@ -46,7 +46,9 @@ else
 
   OCI_VM_HOST="$SOCKET_SERVER_HOST"
   SSH_KEY_FILE=$(mktemp)
-  printf '%s' "$OCI_VM_SSH_KEY" | base64 -d > "$SSH_KEY_FILE"
+  # Trailing newline is required — OpenSSH/libcrypto reject a key without it,
+  # which makes every ssh below fail silently and the readiness loop hang.
+  { printf '%s' "$OCI_VM_SSH_KEY" | base64 -d; echo; } > "$SSH_KEY_FILE"
   chmod 600 "$SSH_KEY_FILE"
 fi
 
@@ -60,12 +62,20 @@ SSH_OPTS="-i $SSH_KEY_FILE -o StrictHostKeyChecking=accept-new -o ConnectTimeout
 ssh-keygen -R "$OCI_VM_HOST" >/dev/null 2>&1 || true
 
 echo "Waiting for socket-server VM (${OCI_VM_HOST}) to be ready..."
+READY=false
 for i in $(seq 1 30); do
   if ssh $SSH_OPTS "ubuntu@${OCI_VM_HOST}" 'test -f /opt/socket-server/docker-compose.yml && sudo docker info >/dev/null 2>&1' 2>/dev/null; then
+    READY=true
     break
   fi
   sleep 10
 done
+
+if [ "$READY" != true ]; then
+  echo "socket-server VM (${OCI_VM_HOST}) not ready after 5m — last SSH attempt:" >&2
+  ssh $SSH_OPTS "ubuntu@${OCI_VM_HOST}" 'test -f /opt/socket-server/docker-compose.yml && sudo docker info >/dev/null 2>&1' >&2 || true
+  exit 1
+fi
 
 echo "Updating SENDER_TOKEN on socket-server VM (${OCI_VM_HOST})..."
 printf '%s' "$SHARED_APP_TOKEN" | ssh $SSH_OPTS "ubuntu@${OCI_VM_HOST}" '
