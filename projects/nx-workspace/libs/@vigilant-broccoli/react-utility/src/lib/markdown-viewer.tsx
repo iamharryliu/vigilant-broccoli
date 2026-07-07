@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 const CLS = {
   ROOT: 'w-full h-full overflow-auto',
@@ -44,7 +45,10 @@ export function MarkdownViewer({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    marked.parse(content, { async: true }).then(setHtml);
+    marked.parse(content, { async: true }).then(raw => {
+      if (typeof window === 'undefined') return;
+      setHtml(DOMPurify.sanitize(raw));
+    });
   }, [content]);
 
   const canEdit = Boolean(saveContent && filePath);
