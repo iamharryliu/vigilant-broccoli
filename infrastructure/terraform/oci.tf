@@ -126,17 +126,23 @@ resource "oci_core_instance" "rabbitmq" {
   }
 
   metadata = {
-    ssh_authorized_keys = var.ssh_public_key
+    ssh_authorized_keys = "${var.ssh_public_key}${tls_private_key.oci_vm_ci_ssh.public_key_openssh}"
     user_data = base64encode(templatefile("${path.module}/cloud-init-rabbitmq.yaml", {
-      rabbitmq_user          = var.rabbitmq_user
-      rabbitmq_password      = random_password.rabbitmq_password.result
-      rabbitmq_tls_key       = tls_private_key.rabbitmq.private_key_pem
-      rabbitmq_tls_cert      = tls_locally_signed_cert.rabbitmq.cert_pem
-      rabbitmq_ca_cert       = tls_self_signed_cert.rabbitmq_ca.cert_pem
+      rabbitmq_user        = var.rabbitmq_user
+      rabbitmq_password    = random_password.rabbitmq_password.result
+      rabbitmq_tls_key     = tls_private_key.rabbitmq.private_key_pem
+      rabbitmq_tls_cert    = tls_locally_signed_cert.rabbitmq.cert_pem
+      rabbitmq_ca_cert     = tls_self_signed_cert.rabbitmq_ca.cert_pem
       shared_app_token     = random_password.shared_app_token.result
       socket_server_domain = var.socket_server_domain
       acme_email           = var.acme_email
     }))
+  }
+
+  # Metadata changes force VM replacement; key changes on the live VM are
+  # handled by post-apply.sh, while replacements pick up the config value.
+  lifecycle {
+    ignore_changes = [metadata["ssh_authorized_keys"]]
   }
 }
 
