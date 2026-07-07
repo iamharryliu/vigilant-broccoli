@@ -14,19 +14,7 @@ tmux rename-window -t "$SESSION:1" neovim
 tmux send-keys -t "$SESSION:1.1" "neovidetmuxvb" C-m
 
 #################################
-# Window 2: yazi
-#################################
-tmux new-window -t "$SESSION" -n yazi
-tmux send-keys -t "$SESSION:2.1" "yazi" C-m
-
-#################################
-# Window 3: btop
-#################################
-tmux new-window -t "$SESSION" -n btop
-tmux send-keys -t "$SESSION:3.1" "btop" C-m
-
-#################################
-# Window 4: vb (2 panes)
+# Window 2: vb (2 panes)
 #################################
 tmux new-window -t "$SESSION" -n vb -c "$PROJECT"
 
