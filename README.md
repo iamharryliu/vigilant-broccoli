@@ -1,10 +1,17 @@
 # vigilant-broccoli
 
+Welcome to vigilant-broccoli, my software passion project. [Click here](https://iamharryliu.github.io/vigilant-broccoli/) to see more.
+
 <div>
 <a href="https://github.com/iamharryliu/vigilant-broccoli">
 <img src="https://i.pinimg.com/564x/b7/62/38/b762386c0bbb20dec77c2632f73d28a8.jpg" alt="broccoli" width="200"/>
 </a>
 </div>
+
+## Development
+
+- [machine setup](./docs/machine-setups/machine-setup.md) - OS-specific setup instructions.
+- [cheatsheet](./docs/cheatsheet.md) - useful infra-level CLI commands (`pnpm run cheatsheet`).
 
 ## CI Status
 
@@ -33,11 +40,3 @@
 [![test-smoke-email-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml)\
 [![test-smoke-gcp-secret-manager](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml)\
 [![test-smoke-vault-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml)
-
-## Machine Setups
-
-See [machine setup](./docs/machine-setups/machine-setup.md) for OS-specific setup instructions.
-
-## Cheatsheet
-
-See [cheatsheet](./docs/cheatsheet.md) for useful infra-level CLI commands (`pnpm run cheatsheet`).
