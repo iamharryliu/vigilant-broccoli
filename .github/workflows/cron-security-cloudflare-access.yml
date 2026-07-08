@@ -1,0 +1,60 @@
+name: cron-security-cloudflare-access
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["deploy", "rotate-secrets"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  security-check:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: gitea
+            hostname: git.harryliu.dev
+            origin_ip_secret: GITEA_VM_IP
+          - name: code-server
+            hostname: code.harryliu.dev
+            origin_ip_secret: CODE_SERVER_VM_IP
+          - name: vault
+            hostname: vault.harryliu.dev
+            origin_ip_secret: ''
+          - name: journal
+            hostname: journal.harryliu.dev,journal-d64.pages.dev
+            origin_ip_secret: ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Import origin IP from Vault
+        if: matrix.origin_ip_secret != ''
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets ${{ matrix.origin_ip_secret }} | ORIGIN_IP ;
+
+      - name: Run Cloudflare Access security check for ${{ matrix.name }}
+        env:
+          ORIGIN_IP: ${{ env.ORIGIN_IP }}
+        run: |
+          chmod +x scripts/shell/check-cloudflare-access-security.sh
+          scripts/shell/check-cloudflare-access-security.sh "${{ matrix.name }}" "${{ matrix.hostname }}" "${ORIGIN_IP:-}"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Cloudflare Access security check failed for ${{ matrix.name }} (${{ matrix.hostname }})!"
+          exit 1

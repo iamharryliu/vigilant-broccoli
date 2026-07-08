@@ -51,8 +51,8 @@ jobs:
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
-          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets OCI_VM_SSH_KEY | OCI_VM_SSH_KEY ;
             kv/data/secrets GITEA_VM_IP | GITEA_VM_IP ;
@@ -105,8 +105,8 @@ jobs:
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
-          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets MONGODB_URI | MONGODB_URI ;
 
@@ -152,8 +152,8 @@ jobs:
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
-          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets SUPABASE_DB_URL | SUPABASE_DB_URL ;
 

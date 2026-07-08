@@ -34,6 +34,7 @@ sync_secrets_to_vault() {
   local gitea_ip
   local code_server_cf_access_client_id
   local code_server_cf_access_client_secret
+  local code_server_ip
   local journal_cf_access_client_id
   local journal_cf_access_client_secret
 
@@ -51,10 +52,11 @@ sync_secrets_to_vault() {
   gitea_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "gitea") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
   code_server_cf_access_client_id=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "code_server_ci") | .instances[0].attributes.client_id' 2>/dev/null || echo "")
   code_server_cf_access_client_secret=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "code_server_ci") | .instances[0].attributes.client_secret' 2>/dev/null || echo "")
+  code_server_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "code_server") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
   journal_cf_access_client_id=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "journal_ci") | .instances[0].attributes.client_id' 2>/dev/null || echo "")
   journal_cf_access_client_secret=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "journal_ci") | .instances[0].attributes.client_secret' 2>/dev/null || echo "")
 
-  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$journal_cf_access_client_id" ] || [ -z "$journal_cf_access_client_secret" ]; then
+  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ] || [ -z "$journal_cf_access_client_id" ] || [ -z "$journal_cf_access_client_secret" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
     return
   fi
@@ -95,6 +97,7 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     GITEA_VM_IP='${gitea_ip}' \
     CODE_SERVER_CF_ACCESS_CLIENT_ID='${code_server_cf_access_client_id}' \
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET='${code_server_cf_access_client_secret}' \
+    CODE_SERVER_VM_IP='${code_server_ip}' \
     JOURNAL_CF_ACCESS_CLIENT_ID='${journal_cf_access_client_id}' \
     JOURNAL_CF_ACCESS_CLIENT_SECRET='${journal_cf_access_client_secret}'
 else
@@ -111,13 +114,14 @@ else
     GITEA_VM_IP='${gitea_ip}' \
     CODE_SERVER_CF_ACCESS_CLIENT_ID='${code_server_cf_access_client_id}' \
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET='${code_server_cf_access_client_secret}' \
+    CODE_SERVER_VM_IP='${code_server_ip}' \
     JOURNAL_CF_ACCESS_CLIENT_ID='${journal_cf_access_client_id}' \
     JOURNAL_CF_ACCESS_CLIENT_SECRET='${journal_cf_access_client_secret}'
 fi
 
 echo 'Secrets synced to Vault'
 "
-  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
+  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
 
   echo "Ensuring CI SSH key on socket-server VM (${rabbitmq_ip})..."
   ssh-keygen -R "$rabbitmq_ip" >/dev/null 2>&1 || true

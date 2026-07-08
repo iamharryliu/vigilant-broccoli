@@ -88,14 +88,35 @@ resource "google_secret_manager_secret_version" "cloudflared_tunnel_token" {
   secret_data = data.cloudflare_zero_trust_tunnel_cloudflared_token.vault.token
 }
 
-resource "github_actions_secret" "vault_cf_access_client_id" {
-  repository  = github_repository.vigilant_broccoli.name
-  secret_name = "VAULT_CF_ACCESS_CLIENT_ID"
-  value       = cloudflare_zero_trust_access_service_token.vault_ci.client_id
+# CI fetches the CF Access service token from Secret Manager via Workload
+# Identity Federation (.github/actions/vault-secrets), so no static GitHub
+# Actions secret is needed — the token lives only in GCP SM (Tier 0).
+resource "google_secret_manager_secret" "vault_cf_access_client_id" {
+  secret_id = "VAULT_CF_ACCESS_CLIENT_ID"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
 }
 
-resource "github_actions_secret" "vault_cf_access_client_secret" {
-  repository  = github_repository.vigilant_broccoli.name
-  secret_name = "VAULT_CF_ACCESS_CLIENT_SECRET"
-  value       = cloudflare_zero_trust_access_service_token.vault_ci.client_secret
+resource "google_secret_manager_secret_version" "vault_cf_access_client_id" {
+  secret      = google_secret_manager_secret.vault_cf_access_client_id.id
+  secret_data = cloudflare_zero_trust_access_service_token.vault_ci.client_id
+}
+
+resource "google_secret_manager_secret" "vault_cf_access_client_secret" {
+  secret_id = "VAULT_CF_ACCESS_CLIENT_SECRET"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "vault_cf_access_client_secret" {
+  secret      = google_secret_manager_secret.vault_cf_access_client_secret.id
+  secret_data = cloudflare_zero_trust_access_service_token.vault_ci.client_secret
 }
