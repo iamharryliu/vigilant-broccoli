@@ -62,7 +62,7 @@ jobs:
 
       - name: Fetch Cloudflare Access service token from Secret Manager
         id: cf-access
-        uses: google-github-actions/get-secretmanager-secrets@2b5f97c5a4b9c105e64646762ad4fc3f5128e6f5 # v2
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3
         with:
           secrets: |-
             CF_ACCESS_CLIENT_ID:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_ID
