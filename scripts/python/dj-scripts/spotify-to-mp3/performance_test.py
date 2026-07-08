@@ -213,7 +213,7 @@ class PerformanceTest:
                 )
             else:
                 logger.info(
-                    f"Tested up to {result["total_playlists"]} parallel downloads without hitting failure threshold"
+                    f"Tested up to {result['total_playlists']} parallel downloads without hitting failure threshold"
                 )
 
 
