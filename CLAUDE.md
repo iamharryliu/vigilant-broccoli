@@ -2,14 +2,16 @@
 
 ## GitHub Actions Conventions
 
-- Always use Node.js 24-compatible action versions to avoid deprecation warnings. Current pinned versions: `actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7`.
+- Always use Node.js 24-compatible action versions to avoid deprecation warnings (GitHub is deprecating the Node 20 runtime — a Node 20 action still runs but logs a warning on every job). Before pinning or bumping any action, verify its `action.yml` declares `runs.using: 'node24'` at the target SHA (`gh api "repos/OWNER/REPO/contents/action.yml?ref=SHA" --jq '.content' | base64 -d | grep using`); pin to the full commit SHA with a trailing `# vN` version comment. Current pinned versions: `actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7`, `google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3`, `google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3`, `google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3`. When one of these actions appears in more than one workflow (or in `.github/actions/*`), bump every occurrence together so pins stay uniform.
 - The README status badges must reflect the workflows in `.github/workflows/` — update them when a workflow is added, renamed, or removed, and keep the badge list in alphabetical order by workflow name.
 - Cron-triggered workflows (`cron-*.yml`) must also be dispatchable on demand — include `workflow_dispatch:` alongside their `schedule:` trigger.
+- Keep GitHub Actions secrets slim — only add secrets that are actively used in workflows. Remove unused secrets to reduce exposure and maintenance burden.
+- Never introduce a new GitHub Actions repo secret. The only secrets that may ever exist are `GCP_SERVICE_ACCOUNT` and `GCP_WORKLOAD_IDENTITY_PROVIDER` (used for Workload Identity Federation to GCP). Any other credential a workflow needs must come from GCP Secret Manager via `google-github-actions/get-secretmanager-secrets`, not a new repo secret — workflows may optionally read a repo secret as a fallback (e.g. `secrets.GH_PAT || secrets.GITHUB_TOKEN`) as long as the workflow still functions correctly when that secret is unset.
 
 ## Root Scripts Conventions
 
 - Useful infra-level CLI commands (SSH, logs, deploys, resets, service management) should be added as scripts in the root `package.json`.
-- The cheatsheet (`scripts/shell/help.sh`, `npm run cheatsheet`) must reflect the root `package.json` scripts — update it when adding, renaming, or removing scripts.
+- The cheatsheet (`docs/cheatsheet.md`, linked from the README, printed via `scripts/shell/cheatsheet.sh` / `pnpm run cheatsheet`) must reflect the root `package.json` scripts — update it when adding, renaming, or removing scripts. `docs/cheatsheet.md` is the source of truth; `cheatsheet.sh` only prints its fenced code block and must not be edited to add content directly.
 
 ## Git Conventions
 
@@ -41,6 +43,7 @@
 
 ## Folder Structure
 
+- [Docs](./docs/) - Repo documentation. See [repo-patterns.md](./docs/repo-patterns.md) for the development/test/CI/deployment patterns map before adding or changing apps, workflows, or deploys, [repo-operations.md](./docs/repo-operations.md) for infra operations, secrets, data/persistence, local dev, and auth, and [cheatsheet.md](./docs/cheatsheet.md) for infra-level CLI commands (also linked from the README).
 - [Notes](./notes/) - Collection of markdown notes linked with relative file paths.
 - [Setup](./setup/) - Machine setup scripts and dotfiles.
   - [dotfiles](./setup/dotfiles/) - Shell configs, aliases, and scripts (symlinked to `$HOME`).
