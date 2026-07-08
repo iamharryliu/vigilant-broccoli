@@ -239,6 +239,8 @@ jobs:
       - name: Stage pages-index landing artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
+        env:
+          VITE_BASE_PATH: /vigilant-broccoli/
         run: pnpm exec nx run pages-index:deploy-github-pages --skip-nx-cache
 
       - name: Setup Pages
