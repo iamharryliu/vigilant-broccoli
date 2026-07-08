@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 6 * * *'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["deploy", "rotate-secrets"]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
@@ -11,6 +15,7 @@ permissions:
 
 jobs:
   security-check:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -26,7 +31,7 @@ jobs:
             hostname: vault.harryliu.dev
             origin_ip_secret: ''
           - name: journal
-            hostname: journal.harryliu.dev
+            hostname: journal.harryliu.dev,journal-d64.pages.dev
             origin_ip_secret: ''
     steps:
       - name: Checkout code
