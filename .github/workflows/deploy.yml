@@ -32,8 +32,8 @@ jobs:
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
-          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
             kv/data/secrets SOCKET_SERVER_URL | SOCKET_SERVER_URL ;
@@ -146,8 +146,8 @@ jobs:
         if: steps.check.outputs.has_deployments == 'true'
         uses: ./.github/actions/vault-secrets
         with:
-          cf_access_client_id: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
-          cf_access_client_secret: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           export_token: 'true'
           secrets: |
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
@@ -156,6 +156,15 @@ jobs:
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
             kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN ;
             kv/data/secrets SANITY_AUTH_TOKEN | SANITY_AUTH_TOKEN ;
+
+      - name: Fetch Cloudflare Access service token from Secret Manager
+        id: cf-access
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: google-github-actions/get-secretmanager-secrets@2b5f97c5a4b9c105e64646762ad4fc3f5128e6f5 # v2
+        with:
+          secrets: |-
+            CF_ACCESS_CLIENT_ID:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_ID
+            CF_ACCESS_CLIENT_SECRET:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_SECRET
 
       - name: Log in to Docker Hub
         if: steps.check.outputs.has_deployments == 'true'
@@ -174,8 +183,8 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://vault.harryliu.dev
-          CF_ACCESS_CLIENT_ID: ${{ secrets.VAULT_CF_ACCESS_CLIENT_ID }}
-          CF_ACCESS_CLIENT_SECRET: ${{ secrets.VAULT_CF_ACCESS_CLIENT_SECRET }}
+          CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
         run: ${{ steps.check.outputs.deploy_cmd }}
 
   deploy-github-pages:
