@@ -37,3 +37,7 @@
 ## Machine Setups
 
 See [machine setup](./docs/machine-setups/machine-setup.md) for OS-specific setup instructions.
+
+## Cheatsheet
+
+See [cheatsheet](./docs/cheatsheet.md) for useful infra-level CLI commands (`pnpm run cheatsheet`).
