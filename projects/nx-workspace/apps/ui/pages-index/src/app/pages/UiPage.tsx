@@ -68,23 +68,9 @@ export function UiPage() {
           </li>
           <li>
             <CardLink
-              href="https://journal.harryliu.dev/"
-              title={t('UI_PAGE.JOURNAL.TITLE')}
-              description={t('UI_PAGE.JOURNAL.DESCRIPTION')}
-            />
-          </li>
-          <li>
-            <CardLink
               href="https://whiteboard-one-psi.vercel.app/"
               title={t('UI_PAGE.WHITEBOARD.TITLE')}
               description={t('UI_PAGE.WHITEBOARD.DESCRIPTION')}
-            />
-          </li>
-          <li>
-            <CardLink
-              href="https://vigilant-broccoli.github.io/"
-              title={t('UI_PAGE.PAGES_INDEX.TITLE')}
-              description={t('UI_PAGE.PAGES_INDEX.DESCRIPTION')}
             />
           </li>
         </ul>

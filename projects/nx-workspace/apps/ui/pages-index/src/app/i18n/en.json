@@ -50,17 +50,9 @@
       "TITLE": "FindMe",
       "DESCRIPTION": "Live location sharing app deployed on Vercel."
     },
-    "JOURNAL": {
-      "TITLE": "Journal",
-      "DESCRIPTION": "Private markdown journal from Gitea (Cloudflare Access)."
-    },
     "WHITEBOARD": {
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
-    },
-    "PAGES_INDEX": {
-      "TITLE": "Pages Index",
-      "DESCRIPTION": "This GitHub Pages landing site."
     }
   },
   "STATUS_PAGE": {
