@@ -1,0 +1,94 @@
+import { useTranslation } from '../i18n';
+import { PageHeader } from '../components/PageHeader';
+import { SectionHeading } from '../components/SectionHeading';
+import { CardLink } from '../components/CardLink';
+
+export function UiPage() {
+  const { t } = useTranslation();
+
+  return (
+    <main className="mx-auto max-w-3xl px-6 py-16">
+      <PageHeader
+        title={t('UI_PAGE.TITLE')}
+        description={t('UI_PAGE.DESCRIPTION')}
+      />
+
+      <section className="mb-12">
+        <SectionHeading>
+          {t('UI_PAGE.SECTION_COMPONENT_LIBRARY')}
+        </SectionHeading>
+        <ul className="grid gap-4 sm:grid-cols-2">
+          <li>
+            <CardLink
+              href="./react-component-library/"
+              title={t('UI_PAGE.COMPONENT_LIBRARY.TITLE')}
+              description={t('UI_PAGE.COMPONENT_LIBRARY.DESCRIPTION')}
+            />
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <SectionHeading>{t('UI_PAGE.SECTION_APPS')}</SectionHeading>
+        <ul className="grid gap-4 sm:grid-cols-2">
+          <li>
+            <CardLink
+              href="https://harryliu.dev/"
+              title={t('UI_PAGE.HARRY_LIU.TITLE')}
+              description={t('UI_PAGE.HARRY_LIU.DESCRIPTION')}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://cloud8skate.com/"
+              title={t('UI_PAGE.CLOUD_8_SKATE.TITLE')}
+              description={t('UI_PAGE.CLOUD_8_SKATE.DESCRIPTION')}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="./docs-md/"
+              title={t('UI_PAGE.DOCS_MD.TITLE')}
+              description={t('UI_PAGE.DOCS_MD.DESCRIPTION')}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://employee-handler-ui.vercel.app"
+              title={t('UI_PAGE.EMPLOYEE_HANDLER_UI.TITLE')}
+              description={t('UI_PAGE.EMPLOYEE_HANDLER_UI.DESCRIPTION')}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://findme-kohl.vercel.app/"
+              title={t('UI_PAGE.FIND_ME.TITLE')}
+              description={t('UI_PAGE.FIND_ME.DESCRIPTION')}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://journal.harryliu.dev/"
+              title={t('UI_PAGE.JOURNAL.TITLE')}
+              description={t('UI_PAGE.JOURNAL.DESCRIPTION')}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://whiteboard-one-psi.vercel.app/"
+              title={t('UI_PAGE.WHITEBOARD.TITLE')}
+              description={t('UI_PAGE.WHITEBOARD.DESCRIPTION')}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://vigilant-broccoli.github.io/"
+              title={t('UI_PAGE.PAGES_INDEX.TITLE')}
+              description={t('UI_PAGE.PAGES_INDEX.DESCRIPTION')}
+            />
+          </li>
+        </ul>
+      </section>
+    </main>
+  );
+}

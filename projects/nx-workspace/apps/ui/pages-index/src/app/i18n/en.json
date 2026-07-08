@@ -1,0 +1,127 @@
+{
+  "COMMON": {
+    "BACK": "← Back"
+  },
+  "HOME": {
+    "TITLE": "vigilant-broccoli",
+    "STATUS": {
+      "TITLE": "Status",
+      "DESCRIPTION": "Live health of deployed services and applications."
+    },
+    "OPEN_SOURCE": {
+      "TITLE": "Open Source",
+      "DESCRIPTION": "GitHub, Docker Hub, and npm packages."
+    },
+    "UI": {
+      "TITLE": "UI",
+      "DESCRIPTION": "React component library and deployed UI apps."
+    },
+    "API_SERVICES": {
+      "TITLE": "API Services",
+      "DESCRIPTION": "API docs and service health."
+    }
+  },
+  "UI_PAGE": {
+    "TITLE": "UI",
+    "DESCRIPTION": "React component library and deployed UI apps.",
+    "SECTION_COMPONENT_LIBRARY": "React Component Library",
+    "SECTION_APPS": "UI Apps",
+    "COMPONENT_LIBRARY": {
+      "TITLE": "React Component Library",
+      "DESCRIPTION": "Showcase of reusable React components."
+    },
+    "HARRY_LIU": {
+      "TITLE": "Harry Liu",
+      "DESCRIPTION": "Personal website."
+    },
+    "CLOUD_8_SKATE": {
+      "TITLE": "Cloud 8 Skate",
+      "DESCRIPTION": "Cloud 8 Skate shop website."
+    },
+    "DOCS_MD": {
+      "TITLE": "Docs (Markdown)",
+      "DESCRIPTION": "Browse markdown notes from the repo."
+    },
+    "EMPLOYEE_HANDLER_UI": {
+      "TITLE": "Employee Handler UI",
+      "DESCRIPTION": "Employee management app deployed on Vercel."
+    },
+    "FIND_ME": {
+      "TITLE": "FindMe",
+      "DESCRIPTION": "Live location sharing app deployed on Vercel."
+    },
+    "JOURNAL": {
+      "TITLE": "Journal",
+      "DESCRIPTION": "Private markdown journal from Gitea (Cloudflare Access)."
+    },
+    "WHITEBOARD": {
+      "TITLE": "Whiteboard",
+      "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
+    },
+    "PAGES_INDEX": {
+      "TITLE": "Pages Index",
+      "DESCRIPTION": "This GitHub Pages landing site."
+    }
+  },
+  "STATUS_PAGE": {
+    "TITLE": "Status",
+    "DESCRIPTION_PREFIX": "Service health via",
+    "UPPTIME": "Upptime",
+    "LOADING_SERVICES": "Loading status…",
+    "NO_SERVICES": "No services configured.",
+    "GITHUB_ACTIONS": "GitHub Actions",
+    "VIEW_ALL": "View all →",
+    "LOADING_WORKFLOWS": "Loading workflows…",
+    "NO_WORKFLOWS": "No workflows found.",
+    "RAW_HISTORY": "Raw history:",
+    "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
+    "ERROR_STATUS_FAILED": "Failed to load status: {message}",
+    "ERROR_WORKFLOWS_UNAVAILABLE": "Could not load workflows (HTTP {status}).",
+    "ERROR_WORKFLOWS_FAILED": "Failed to load workflows: {message}",
+    "UPDATED": "Updated {date}"
+  },
+  "OPEN_SOURCE_PAGE": {
+    "TITLE": "Open Source",
+    "DESCRIPTION": "GitHub, Docker Hub, and npm packages.",
+    "GITHUB": {
+      "TITLE": "GitHub",
+      "DESCRIPTION": "vigilant-broccoli repository."
+    },
+    "DOCKER_HUB": {
+      "TITLE": "Docker Hub",
+      "DESCRIPTION": "iamharryliu Docker images."
+    },
+    "NPM": {
+      "TITLE": "npm",
+      "DESCRIPTION": "vigilant-broccoli npm packages."
+    }
+  },
+  "API_SERVICES_PAGE": {
+    "TITLE": "API Services",
+    "DESCRIPTION": "API docs.",
+    "API_DOCS": {
+      "TITLE": "API Docs",
+      "DESCRIPTION": "Swagger docs for Fly.io-deployed services."
+    }
+  },
+  "API_DOCS_PAGE": {
+    "TITLE": "API Docs",
+    "DESCRIPTION": "Swagger documentation for services deployed on Fly.io.",
+    "LLM_SERVICE": {
+      "TITLE": "LLM Service",
+      "DESCRIPTION": "vb-llm-service.fly.dev"
+    },
+    "EMAIL_SERVICE": {
+      "TITLE": "Email Service",
+      "DESCRIPTION": "vb-email-service.fly.dev"
+    },
+    "EMAIL_SUBSCRIPTION_SERVICE": {
+      "TITLE": "Email Subscription Service",
+      "DESCRIPTION": "email-subscription-service.fly.dev"
+    },
+    "STORAGE_SERVICE": {
+      "TITLE": "Storage Service",
+      "DESCRIPTION": "vb-storage-service.fly.dev"
+    }
+  }
+}

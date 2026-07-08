@@ -210,9 +210,8 @@ jobs:
         run: |
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
-          PAGES_INDEX_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^projects/nx-workspace/pages-index/" || true)
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 || "$PAGES_INDEX_CHANGED" -gt 0 ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
           else
             AFFECTED=$(pnpm exec nx show projects --affected --withTarget=deploy-github-pages --base=$NX_BASE --head=$NX_HEAD)
@@ -240,9 +239,7 @@ jobs:
       - name: Stage pages-index landing artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
-        run: |
-          mkdir -p _site
-          cp pages-index/*.html _site/
+        run: pnpm exec nx run pages-index:deploy-github-pages --skip-nx-cache
 
       - name: Setup Pages
         if: steps.check.outputs.has_deployments == 'true'
