@@ -60,7 +60,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gcp:vm:vault:set-secrets    Set secrets in Vault
 
 🔑 SECRETS
-  secret-rotation:all         Run all scripted rotations, then dispatch rotate-secrets workflow
+  secret-rotation:all         Run all scripted rotations, then dispatch ci-rotate-secrets workflow
   secret-rotation:flyio       Rotate Fly.io token
   secret-rotation:gitea       Rotate Gitea CI token (scoped read:repository)
   secret-rotation:profile-deploy-key  Rotate profile repo deploy key, store in Vault
@@ -84,9 +84,9 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 🐙 GITHUB
   gh:board:sync               Sync GitHub project board
   gh:actions:deploy           Trigger deploy workflow
-  gh:actions:health-check     Trigger health-check workflow
+  gh:actions:health-check     Trigger ci-health-check workflow
   gh:actions:kill-services    Trigger kill-services workflow
-  gh:actions:rotate-secrets   Trigger rotate-secrets workflow (prompts for confirm)
+  gh:actions:rotate-secrets   Trigger ci-rotate-secrets workflow (prompts for confirm)
   gh:actions:run-tests        Trigger all post-deploy test workflows
   gh:actions:replace-code-server  Trigger code-server VM replace workflow
   gh:actions:security-cloudflare-access  Trigger Cloudflare Access security check workflow
