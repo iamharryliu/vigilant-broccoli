@@ -16,6 +16,7 @@ Welcome to vigilant-broccoli, my software passion project. [Click here](https://
 ## CI Status
 
 [![ci-cleanup-github-action-runs](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-cleanup-github-action-runs.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-cleanup-github-action-runs.yml)\
+[![ci-health-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml)\
 [![ci-pr-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml)\
 [![ci-rotate-secrets](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml)\
 [![cron-backup](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml)\
@@ -25,7 +26,6 @@ Welcome to vigilant-broccoli, my software passion project. [Click here](https://
 [![cron-utility-update-resume](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml)\
 [![deploy](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml)\
 [![deploy-github-profile](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml)\
-[![health-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/health-check.yml)\
 [![manual-deploy-app](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml)\
 [![manual-kill-services](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml)\
 [![notify-complete](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml)\
