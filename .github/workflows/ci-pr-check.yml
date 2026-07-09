@@ -1,4 +1,4 @@
-name: pr-check
+name: ci-pr-check
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: pr-check-${{ github.ref }}
+  group: ci-pr-check-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
