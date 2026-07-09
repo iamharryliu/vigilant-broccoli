@@ -1,4 +1,4 @@
-name: cron-security-cloudflare-access
+name: test-security-cloudflare-access
 
 on:
   schedule:

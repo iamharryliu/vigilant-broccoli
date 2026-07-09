@@ -1,12 +1,13 @@
-name: cron-cleanup-github-action-runs
+name: ci-cleanup-github-action-runs
 
 on:
   push:
     paths:
-      - .github/workflows/cron-cleanup-github-action-runs.yml
+      - .github/workflows/ci-cleanup-github-action-runs.yml
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   cleanup:

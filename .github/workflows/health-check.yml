@@ -1,4 +1,4 @@
-name: cron-health-check
+name: health-check
 
 on:
   schedule:

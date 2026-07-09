@@ -268,3 +268,10 @@ jobs:
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
         with:
           artifact_name: github-pages-${{ github.run_attempt }}
+
+  cleanup:
+    needs: [deploy-npm-packages, deploy-apps, deploy-github-pages]
+    if: always()
+    uses: ./.github/workflows/ci-cleanup-github-action-runs.yml
+    permissions:
+      actions: write
