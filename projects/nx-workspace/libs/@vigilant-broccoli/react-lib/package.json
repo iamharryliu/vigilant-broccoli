@@ -28,5 +28,12 @@
       "import": "./index.mjs",
       "require": "./index.js"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamharryliu/vigilant-broccoli"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -3,6 +3,13 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/@vigilant-broccoli/react-lib/src",
   "projectType": "library",
+  "release": {
+    "version": {
+      "currentVersionResolver": "git-tag",
+      "preserveLocalDependencyProtocols": false,
+      "manifestRootsToUpdate": ["dist/{projectRoot}"]
+    }
+  },
   "tags": [],
   "targets": {
     "lint": {
@@ -22,6 +29,20 @@
         "production": {
           "mode": "production"
         }
+      }
+    },
+    "publish-package": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node ../../../../scripts/resolve-workspace-deps.js && VERSION=$(node -p \"require('./package.json').version\") && npm view $(node -p \"require('./package.json').name\")@$VERSION version 2>/dev/null && echo \"Skipping: version $VERSION already published\" || npm publish --access public --provenance",
+        "cwd": "dist/libs/@vigilant-broccoli/react-lib",
+        "forwardAllArgs": false
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
       }
     }
   }
