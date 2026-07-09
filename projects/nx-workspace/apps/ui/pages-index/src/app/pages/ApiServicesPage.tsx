@@ -1,6 +1,7 @@
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 import { CardLink } from '../components/CardLink';
+import { CardGrid } from '../components/CardGrid';
 
 export function ApiServicesPage() {
   const { t } = useTranslation();
@@ -12,7 +13,7 @@ export function ApiServicesPage() {
         description={t('API_SERVICES_PAGE.DESCRIPTION')}
       />
 
-      <ul className="grid gap-4 sm:grid-cols-2">
+      <CardGrid>
         <li>
           <CardLink
             route
@@ -21,7 +22,7 @@ export function ApiServicesPage() {
             description={t('API_SERVICES_PAGE.API_DOCS.DESCRIPTION')}
           />
         </li>
-      </ul>
+      </CardGrid>
     </main>
   );
 }

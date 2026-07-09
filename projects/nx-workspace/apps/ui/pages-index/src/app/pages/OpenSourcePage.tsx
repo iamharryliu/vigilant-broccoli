@@ -1,6 +1,7 @@
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 import { CardLink } from '../components/CardLink';
+import { CardGrid } from '../components/CardGrid';
 import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
 
 export function OpenSourcePage() {
@@ -13,7 +14,7 @@ export function OpenSourcePage() {
         description={t('OPEN_SOURCE_PAGE.DESCRIPTION')}
       />
 
-      <ul className="grid gap-4 sm:grid-cols-2">
+      <CardGrid>
         <li>
           <CardLink
             href="https://github.com/iamharryliu/vigilant-broccoli"
@@ -38,7 +39,7 @@ export function OpenSourcePage() {
             icon={<NpmIcon />}
           />
         </li>
-      </ul>
+      </CardGrid>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 import { CardLink } from '../components/CardLink';
+import { CardGrid } from '../components/CardGrid';
 
 export function ApiDocsPage() {
   const { t } = useTranslation();
@@ -12,7 +13,7 @@ export function ApiDocsPage() {
         description={t('API_DOCS_PAGE.DESCRIPTION')}
       />
 
-      <ul className="grid gap-4 sm:grid-cols-2">
+      <CardGrid>
         <li>
           <CardLink
             href="https://vb-llm-service.fly.dev/docs"
@@ -43,7 +44,7 @@ export function ApiDocsPage() {
             description={t('API_DOCS_PAGE.STORAGE_SERVICE.DESCRIPTION')}
           />
         </li>
-      </ul>
+      </CardGrid>
     </main>
   );
 }

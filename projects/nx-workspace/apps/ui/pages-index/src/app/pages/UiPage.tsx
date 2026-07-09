@@ -2,6 +2,7 @@ import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 import { SectionHeading } from '../components/SectionHeading';
 import { CardLink } from '../components/CardLink';
+import { CardGrid } from '../components/CardGrid';
 
 export function UiPage() {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ export function UiPage() {
         <SectionHeading>
           {t('UI_PAGE.SECTION_COMPONENT_LIBRARY')}
         </SectionHeading>
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <CardGrid>
           <li>
             <CardLink
               href="./react-component-library/"
@@ -25,12 +26,12 @@ export function UiPage() {
               description={t('UI_PAGE.COMPONENT_LIBRARY.DESCRIPTION')}
             />
           </li>
-        </ul>
+        </CardGrid>
       </section>
 
       <section>
         <SectionHeading>{t('UI_PAGE.SECTION_APPS')}</SectionHeading>
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <CardGrid>
           <li>
             <CardLink
               href="https://harryliu.dev/"
@@ -73,7 +74,7 @@ export function UiPage() {
               description={t('UI_PAGE.WHITEBOARD.DESCRIPTION')}
             />
           </li>
-        </ul>
+        </CardGrid>
       </section>
     </main>
   );

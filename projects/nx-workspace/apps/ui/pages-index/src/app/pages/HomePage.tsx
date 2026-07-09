@@ -1,5 +1,6 @@
 import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
+import { CardGrid } from '../components/CardGrid';
 
 export function HomePage() {
   const { t } = useTranslation();
@@ -10,7 +11,7 @@ export function HomePage() {
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
       </header>
 
-      <ul className="grid gap-4">
+      <CardGrid>
         <li>
           <CardLink
             route
@@ -43,7 +44,7 @@ export function HomePage() {
             description={t('HOME.API_SERVICES.DESCRIPTION')}
           />
         </li>
-      </ul>
+      </CardGrid>
     </main>
   );
 }
