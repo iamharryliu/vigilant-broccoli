@@ -11,9 +11,12 @@ claude
 # CONTEXT HANDLING
 /compact
 /clear
+/rewind
+/resume
 
 # SETTINGS
 /config
+/model
 
 CLAUDE.md
 ```
