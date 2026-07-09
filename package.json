@@ -70,7 +70,9 @@
     "gh:actions:rotate-secrets": "gh workflow run rotate-secrets --repo iamharryliu/vigilant-broccoli",
     "gh:actions:run-tests": "gh workflow run manual-run-tests --repo iamharryliu/vigilant-broccoli",
     "cheatsheet": "./scripts/shell/cheatsheet.sh",
-    "audit": "python3 scripts/python/vuln_tree.py ."
+    "audit": "python3 scripts/python/vuln_tree.py .",
+    "nx:migrate": "cd projects/nx-workspace && nx migrate latest",
+    "nx:migrate:run": "cd projects/nx-workspace && nx migrate --run-migrations"
   },
   "repository": {
     "type": "git",

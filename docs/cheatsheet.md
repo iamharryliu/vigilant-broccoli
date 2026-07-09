@@ -93,4 +93,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 
 🔍 AUDIT
   audit                       Run vulnerability audit tree
+
+⬆️  MIGRATE
+  nx:migrate                  nx migrate latest
+  nx:migrate:run              nx migrate --run-migrations
 ```
