@@ -15,7 +15,6 @@ Welcome to vigilant-broccoli, my software passion project. [Click here](https://
 
 ## CI Status
 
-[![ci-cleanup-github-action-runs](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-cleanup-github-action-runs.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-cleanup-github-action-runs.yml)\
 [![ci-health-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml)\
 [![ci-pr-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml)\
 [![ci-rotate-secrets](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml)\
