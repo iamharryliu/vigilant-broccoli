@@ -602,6 +602,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: GEMINI_LINK.API_KEYS.NAME,
+    target: GEMINI_LINK.API_KEYS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: GEMINI_LINK.BILLING.NAME,
     target: GEMINI_LINK.BILLING.URL,
     type: OPEN_TYPE.BROWSER,

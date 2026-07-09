@@ -478,13 +478,17 @@ export const GEMINI_LINK = {
     NAME: 'Google AI Studio Dashboard',
     URL: 'https://aistudio.google.com/',
   },
+  API_KEYS: {
+    NAME: 'Google AI Studio API Keys',
+    URL: 'https://aistudio.google.com/api-keys',
+  },
   BILLING: {
     NAME: 'Google AI Studio Billing',
-    URL: 'https://aistudio.google.com/usage?timeRange=last-28-days&tab=billing',
+    URL: 'https://aistudio.google.com/billing',
   },
   USAGE: {
     NAME: 'Google AI Studio Usage',
-    URL: 'https://aistudio.google.com/usage?timeRange=last-28-days',
+    URL: 'https://aistudio.google.com/usage',
   },
 } as const;
 
