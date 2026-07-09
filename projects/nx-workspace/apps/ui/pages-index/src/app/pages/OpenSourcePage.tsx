@@ -1,6 +1,7 @@
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 import { CardLink } from '../components/CardLink';
+import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
 
 export function OpenSourcePage() {
   const { t } = useTranslation();
@@ -18,6 +19,7 @@ export function OpenSourcePage() {
             href="https://github.com/iamharryliu/vigilant-broccoli"
             title={t('OPEN_SOURCE_PAGE.GITHUB.TITLE')}
             description={t('OPEN_SOURCE_PAGE.GITHUB.DESCRIPTION')}
+            icon={<GithubIcon />}
           />
         </li>
         <li>
@@ -25,6 +27,7 @@ export function OpenSourcePage() {
             href="https://hub.docker.com/u/iamharryliu"
             title={t('OPEN_SOURCE_PAGE.DOCKER_HUB.TITLE')}
             description={t('OPEN_SOURCE_PAGE.DOCKER_HUB.DESCRIPTION')}
+            icon={<DockerIcon />}
           />
         </li>
         <li>
@@ -32,6 +35,7 @@ export function OpenSourcePage() {
             href="https://www.npmjs.com/org/vigilant-broccoli"
             title={t('OPEN_SOURCE_PAGE.NPM.TITLE')}
             description={t('OPEN_SOURCE_PAGE.NPM.DESCRIPTION')}
+            icon={<NpmIcon />}
           />
         </li>
       </ul>

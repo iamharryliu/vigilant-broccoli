@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 const CARD_CLASS =
@@ -8,12 +9,22 @@ interface CardLinkProps {
   title: string;
   description: string;
   route?: boolean;
+  icon?: ReactNode;
 }
 
-export function CardLink({ href, title, description, route }: CardLinkProps) {
+export function CardLink({
+  href,
+  title,
+  description,
+  route,
+  icon,
+}: CardLinkProps) {
   const content = (
     <>
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <div className="flex items-center gap-2">
+        {icon}
+        <h2 className="text-lg font-semibold">{title}</h2>
+      </div>
       <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
         {description}
       </p>
