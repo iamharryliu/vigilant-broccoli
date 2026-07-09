@@ -1,6 +1,9 @@
+import { Activity, GitBranch, LayoutGrid, Server } from 'lucide-react';
 import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
+
+const ICON_CLASS = 'h-5 w-5 shrink-0';
 
 export function HomePage() {
   const { t } = useTranslation();
@@ -18,6 +21,7 @@ export function HomePage() {
             href="/status"
             title={t('HOME.STATUS.TITLE')}
             description={t('HOME.STATUS.DESCRIPTION')}
+            icon={<Activity className={ICON_CLASS} />}
           />
         </li>
         <li>
@@ -26,6 +30,7 @@ export function HomePage() {
             href="/open-source"
             title={t('HOME.OPEN_SOURCE.TITLE')}
             description={t('HOME.OPEN_SOURCE.DESCRIPTION')}
+            icon={<GitBranch className={ICON_CLASS} />}
           />
         </li>
         <li>
@@ -34,6 +39,7 @@ export function HomePage() {
             href="/ui"
             title={t('HOME.UI.TITLE')}
             description={t('HOME.UI.DESCRIPTION')}
+            icon={<LayoutGrid className={ICON_CLASS} />}
           />
         </li>
         <li>
@@ -42,6 +48,7 @@ export function HomePage() {
             href="/api-services"
             title={t('HOME.API_SERVICES.TITLE')}
             description={t('HOME.API_SERVICES.DESCRIPTION')}
+            icon={<Server className={ICON_CLASS} />}
           />
         </li>
       </CardGrid>
