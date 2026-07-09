@@ -5,11 +5,6 @@ const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 
 export const GithubActionsBadgesDemo = () => (
   <div className="flex flex-col gap-6">
-    <Text size="2" color="gray">
-      Hover a badge to see the lift + scale + shadow animation. Fetches
-      workflows for vigilant-broccoli from the GitHub API on mount.
-    </Text>
-
     <div className="flex flex-col gap-3">
       <Text size="2" weight="bold">
         Wrapped (CardContainer)
