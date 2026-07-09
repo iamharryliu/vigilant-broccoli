@@ -7,7 +7,7 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "@slack/types": "*",
-    "@slack/web-api": "^7.10.0",
+    "@slack/web-api": "^7.19.0",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/common-js": "workspace:*"
   },
