@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+  workflow_run:
+    workflows: ['deploy']
+    types: [completed]
+    branches: [main]
 
 permissions:
   actions: read
@@ -17,6 +21,7 @@ env:
 
 jobs:
   health-check:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
