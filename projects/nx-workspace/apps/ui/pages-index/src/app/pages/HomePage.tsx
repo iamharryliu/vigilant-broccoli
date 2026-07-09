@@ -10,7 +10,7 @@ export function HomePage() {
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
       </header>
 
-      <ul className="grid gap-4 sm:grid-cols-2">
+      <ul className="grid gap-4">
         <li>
           <CardLink
             route
