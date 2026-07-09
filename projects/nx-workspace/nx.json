@@ -176,5 +176,8 @@
       "preVersionCommand": "npx nx run-many -t build"
     }
   },
-  "analytics": false
+  "analytics": false,
+  "migrate": {
+    "agentic": false
+  }
 }

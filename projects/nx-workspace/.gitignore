@@ -78,3 +78,5 @@ test-results/
 .nx/polygraph
 .nx/self-healing
 package-lock.json
+
+.nx/migrate-runs
