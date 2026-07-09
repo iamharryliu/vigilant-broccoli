@@ -63,13 +63,9 @@
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
-    "LOADING_WORKFLOWS": "Loading workflows…",
-    "NO_WORKFLOWS": "No workflows found.",
     "RAW_HISTORY": "Raw history:",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
-    "ERROR_WORKFLOWS_UNAVAILABLE": "Could not load workflows (HTTP {status}).",
-    "ERROR_WORKFLOWS_FAILED": "Failed to load workflows: {message}",
     "UPDATED": "Updated {date}"
   },
   "OPEN_SOURCE_PAGE": {

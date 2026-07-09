@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
+import { GithubActionsBadges } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 
 const REPO_OWNER = 'iamharryliu';
 const REPO_NAME = 'vigilant-broccoli';
+const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 const SUMMARY_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/history/summary.json`;
-const WORKFLOWS_API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows`;
-const HISTORY_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/tree/main/history`;
-const ACTIONS_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/actions`;
+const HISTORY_URL = `${REPO_URL}/tree/main/history`;
+const ACTIONS_URL = `${REPO_URL}/actions`;
 
 interface ServiceStatus {
   name: string;
@@ -15,12 +16,6 @@ interface ServiceStatus {
   status: 'up' | 'down' | 'degraded' | 'unknown';
   uptime?: string;
   time?: number;
-}
-
-interface WorkflowBadge {
-  alt: string;
-  href: string;
-  src: string;
 }
 
 const STATUS_COLORS: Record<
@@ -49,30 +44,15 @@ const STATUS_COLORS: Record<
   },
 };
 
-const toWorkflowUrl = (htmlUrl: string): string | null => {
-  try {
-    const url = new URL(htmlUrl);
-    if (url.hostname !== 'github.com') return null;
-    const parts = url.pathname.split('/').filter(Boolean);
-    if (parts.length < 7) return null;
-    const [, , blob, , ...rest] = parts;
-    if (blob !== 'blob') return null;
-    const idx = rest.indexOf('.github');
-    if (idx === -1 || rest[idx + 1] !== 'workflows') return null;
-    const file = rest.slice(idx + 2).join('/');
-    return `https://github.com/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${file}`;
-  } catch {
-    return null;
-  }
-};
+interface StatusPageProps {
+  wrapped?: boolean;
+}
 
-export function StatusPage() {
+export function StatusPage({ wrapped = true }: StatusPageProps) {
   const { t } = useTranslation();
   const [services, setServices] = useState<ServiceStatus[] | null>(null);
   const [servicesError, setServicesError] = useState<string | null>(null);
   const [updated, setUpdated] = useState<string | null>(null);
-  const [badges, setBadges] = useState<WorkflowBadge[] | null>(null);
-  const [badgesError, setBadgesError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -98,40 +78,6 @@ export function StatusPage() {
       } catch (err) {
         setServicesError(
           t('STATUS_PAGE.ERROR_STATUS_FAILED', {
-            message: err instanceof Error ? err.message : String(err),
-          }),
-        );
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch(WORKFLOWS_API);
-        if (!res.ok) {
-          setBadgesError(
-            t('STATUS_PAGE.ERROR_WORKFLOWS_UNAVAILABLE', {
-              status: res.status,
-            }),
-          );
-          return;
-        }
-        const { workflows = [] } = await res.json();
-        const items: WorkflowBadge[] = workflows
-          .map((wf: { name: string; html_url: string; badge_url: string }) => ({
-            alt: wf.name,
-            href: toWorkflowUrl(wf.html_url) || wf.html_url || '#',
-            src: wf.badge_url,
-          }))
-          .sort((a: WorkflowBadge, b: WorkflowBadge) =>
-            a.alt.localeCompare(b.alt),
-          );
-        setBadges(items);
-      } catch (err) {
-        setBadgesError(
-          t('STATUS_PAGE.ERROR_WORKFLOWS_FAILED', {
             message: err instanceof Error ? err.message : String(err),
           }),
         );
@@ -222,37 +168,14 @@ export function StatusPage() {
             {t('STATUS_PAGE.VIEW_ALL')}
           </a>
         </div>
-        <div className="flex flex-wrap gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
-          {badgesError && (
-            <span className="text-sm text-red-500">{badgesError}</span>
-          )}
-          {!badgesError && badges === null && (
-            <span className="text-sm text-gray-400">
-              {t('STATUS_PAGE.LOADING_WORKFLOWS')}
-            </span>
-          )}
-          {!badgesError && badges?.length === 0 && (
-            <span className="text-sm text-gray-400">
-              {t('STATUS_PAGE.NO_WORKFLOWS')}
-            </span>
-          )}
-          {!badgesError &&
-            badges?.map(b => (
-              <a
-                key={b.href + b.src}
-                href={b.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block transition-transform duration-150 hover:scale-105"
-              >
-                <img
-                  src={b.src}
-                  alt={b.alt}
-                  loading="lazy"
-                  className="h-auto"
-                />
-              </a>
-            ))}
+        <div
+          className={
+            wrapped
+              ? 'flex flex-wrap gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3'
+              : 'flex flex-wrap gap-1.5'
+          }
+        >
+          <GithubActionsBadges repoUrl={REPO_URL} />
         </div>
       </section>
 
