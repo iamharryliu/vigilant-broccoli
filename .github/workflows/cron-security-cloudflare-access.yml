@@ -8,6 +8,10 @@ on:
     workflows: ["deploy", "rotate-secrets"]
     types: [completed]
     branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - 'infrastructure/terraform/**'
 
 permissions:
   contents: read
