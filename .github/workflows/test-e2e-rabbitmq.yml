@@ -3,7 +3,7 @@ name: test-e2e-rabbitmq
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ['deploy', 'rotate-secrets']
+    workflows: ['deploy', 'ci-rotate-secrets']
     types: [completed]
     branches: [main]
 

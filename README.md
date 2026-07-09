@@ -17,6 +17,7 @@ Welcome to vigilant-broccoli, my software passion project. [Click here](https://
 
 [![ci-cleanup-github-action-runs](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-cleanup-github-action-runs.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-cleanup-github-action-runs.yml)\
 [![ci-pr-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml)\
+[![ci-rotate-secrets](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml)\
 [![cron-backup](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml)\
 [![cron-deploy-journal](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml)\
 [![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)\
@@ -28,7 +29,6 @@ Welcome to vigilant-broccoli, my software passion project. [Click here](https://
 [![manual-deploy-app](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml)\
 [![manual-kill-services](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml)\
 [![notify-complete](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml)\
-[![rotate-secrets](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/rotate-secrets.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/rotate-secrets.yml)\
 [![test-e2e-email-subscription-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml)\
 [![test-e2e-llm](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml)\
 [![test-e2e-rabbitmq](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-rabbitmq.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-rabbitmq.yml)\

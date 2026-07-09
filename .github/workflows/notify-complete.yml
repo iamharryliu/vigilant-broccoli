@@ -2,7 +2,7 @@ name: notify-complete
 
 on:
   workflow_run:
-    workflows: ['deploy', 'rotate-secrets']
+    workflows: ['deploy', 'ci-rotate-secrets']
     types: [completed]
     branches: [main]
 
