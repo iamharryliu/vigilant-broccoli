@@ -22,14 +22,14 @@ export function OpenSourcePage() {
         </li>
         <li>
           <CardLink
-            href="https://hub.docker.com/repositories/iamharryliu"
+            href="https://hub.docker.com/u/iamharryliu"
             title={t('OPEN_SOURCE_PAGE.DOCKER_HUB.TITLE')}
             description={t('OPEN_SOURCE_PAGE.DOCKER_HUB.DESCRIPTION')}
           />
         </li>
         <li>
           <CardLink
-            href="https://www.npmjs.com/settings/vigilant-broccoli/packages"
+            href="https://www.npmjs.com/org/vigilant-broccoli"
             title={t('OPEN_SOURCE_PAGE.NPM.TITLE')}
             description={t('OPEN_SOURCE_PAGE.NPM.DESCRIPTION')}
           />
