@@ -27,17 +27,17 @@
     "typescript": "^5.4.5"
   },
   "scripts": {
-    "lint:commit": "npm run lint:commit",
+    "lint:commit": "pnpm run lint:commit",
     "format:commit": "prettier --write .",
-    "test:commit": "npx jest"
+    "test:commit": "pnpm exec jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "lint-staged": {
     "*.ts": [
-      "npm run format:commit",
-      "npm run test:commit"
+      "pnpm run format:commit",
+      "pnpm run test:commit"
     ]
   }
 }

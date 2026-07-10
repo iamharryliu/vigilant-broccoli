@@ -1,7 +1,7 @@
 {
   "name": "component-library",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "component-library/src",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/component-library/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -70,9 +70,9 @@
       "dependsOn": ["build"],
       "options": {
         "commands": [
-          "rm -rf ../_site/react-component-library",
-          "mkdir -p ../_site/react-component-library",
-          "cp -R ../dist/component-library/. ../_site/react-component-library/"
+          "rm -rf ../../../_site/react-component-library",
+          "mkdir -p ../../../_site/react-component-library",
+          "cp -R ../../../dist/component-library/. ../../../_site/react-component-library/"
         ],
         "parallel": false,
         "cwd": "{projectRoot}"

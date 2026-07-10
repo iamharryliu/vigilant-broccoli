@@ -281,8 +281,3 @@ graph LR
   B -->|Delivers message| C[Email Consumer]
   C -->|Sends Email| D[SMTP Server / Email Service]
 ```
-
-## Organization Infrastructure
-
-- Secret Manager
-- VPN
