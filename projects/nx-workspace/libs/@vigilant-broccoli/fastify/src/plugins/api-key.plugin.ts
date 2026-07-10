@@ -7,11 +7,26 @@ import {
 
 const ERROR_UNAUTHORIZED = 'Unauthorized';
 
-export const createApiKeyPlugin = (apiKey?: string) => {
+type ApiKeyVerifier = (key: string) => Promise<boolean>;
+
+export const createApiKeyPlugin = (
+  apiKey?: string,
+  verifyApiKey?: ApiKeyVerifier,
+) => {
   const plugin: FastifyPluginAsync = async app => {
     app.addHook('onRequest', async (req, reply) => {
+      if (!apiKey) return;
       const providedKey = req.headers[API_KEY_HEADER];
-      if (!apiKey || providedKey === apiKey) return;
+      if (verifyApiKey) {
+        if (
+          typeof providedKey === 'string' &&
+          (await verifyApiKey(providedKey))
+        ) {
+          return;
+        }
+      } else if (providedKey === apiKey) {
+        return;
+      }
       reply
         .code(HTTP_STATUS_CODES.UNAUTHORIZED)
         .send({ error: ERROR_UNAUTHORIZED });

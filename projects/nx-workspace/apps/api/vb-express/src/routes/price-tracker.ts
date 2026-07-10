@@ -1,12 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import { FastifyPluginAsync } from 'fastify';
+import { LLM_MODEL, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   priceTrackerAnalyzeSchema,
   PriceTrackerAnalyzeResult,
 } from '@vigilant-broccoli/llm-schemas';
 import { callLlm } from '../libs/llm-service.client';
-
-const router = Router();
 
 type AnalyzeImage = { name: string; base64: string; mimeType: string };
 
@@ -41,21 +39,27 @@ Rules:
 - Skip taxes, discounts, subtotals, and totals — only include purchased items
 - name should be human-readable (e.g. "Organic Whole Milk 1L" not "ORG WHL MLK 1L")`;
 
-router.post('/analyze', async (req: Request, res: Response) => {
-  const { images } = req.body as AnalyzeRequest;
-  if (!images || !images.length) {
-    return res.status(400).json({ error: ERROR_MISSING_IMAGES });
-  }
+const priceTrackerRoutes: FastifyPluginAsync = async app => {
+  app.post('/analyze', async (req, reply) => {
+    const { images } = req.body as AnalyzeRequest;
+    if (!images || !images.length) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_MISSING_IMAGES });
+    }
 
-  const { outputs } = await callLlm<{ outputs: PriceTrackerAnalyzeResult[] }>({
-    userPrompt: USER_PROMPT,
-    systemPrompt: SYSTEM_PROMPT,
-    images,
-    model: LLM_MODEL.GPT_4O,
-    jsonSchema: priceTrackerAnalyzeSchema,
+    const { outputs } = await callLlm<{ outputs: PriceTrackerAnalyzeResult[] }>(
+      {
+        userPrompt: USER_PROMPT,
+        systemPrompt: SYSTEM_PROMPT,
+        images,
+        model: LLM_MODEL.GPT_4O,
+        jsonSchema: priceTrackerAnalyzeSchema,
+      },
+    );
+
+    return outputs[0];
   });
+};
 
-  return res.json(outputs[0]);
-});
-
-export default router;
+export default priceTrackerRoutes;

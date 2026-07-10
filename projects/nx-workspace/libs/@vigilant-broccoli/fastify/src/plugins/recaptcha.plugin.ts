@@ -1,8 +1,9 @@
 import { FastifyPluginAsync } from 'fastify';
+import fp from 'fastify-plugin';
 import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { logger, RecaptchaService } from '@vigilant-broccoli/common-node';
 
-export const recaptchaPlugin: FastifyPluginAsync = async app => {
+const plugin: FastifyPluginAsync = async app => {
   app.addHook('preHandler', async (req, reply) => {
     if (req.method === HTTP_METHOD.GET) return;
     const { recaptchaToken } = (req.body || {}) as any;
@@ -17,3 +18,5 @@ export const recaptchaPlugin: FastifyPluginAsync = async app => {
     reply.code(HTTP_STATUS_CODES.FORBIDDEN).send();
   });
 };
+
+export const recaptchaPlugin = fp(plugin);

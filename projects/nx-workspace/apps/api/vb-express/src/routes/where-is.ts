@@ -1,12 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import { FastifyPluginAsync } from 'fastify';
+import { LLM_MODEL, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   whereIsAnalyzeSchema,
   WhereIsAnalyzeResult,
 } from '@vigilant-broccoli/llm-schemas';
 import { callLlm } from '../libs/llm-service.client';
-
-const router = Router();
 
 type AnalyzeImage = { name: string; base64: string; mimeType: string };
 
@@ -35,21 +33,25 @@ const buildUserPrompt = (existingTags?: string[]) =>
     ? `${USER_PROMPT} The following items are already tagged: ${existingTags.join(', ')}. Only include newly identified items not already in that list.`
     : USER_PROMPT;
 
-router.post('/analyze', async (req: Request, res: Response) => {
-  const { images, existingTags } = req.body as AnalyzeRequest;
-  if (!images || !images.length) {
-    return res.status(400).json({ error: ERROR_MISSING_IMAGES });
-  }
+const whereIsRoutes: FastifyPluginAsync = async app => {
+  app.post('/analyze', async (req, reply) => {
+    const { images, existingTags } = req.body as AnalyzeRequest;
+    if (!images || !images.length) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_MISSING_IMAGES });
+    }
 
-  const { outputs } = await callLlm<{ outputs: WhereIsAnalyzeResult[] }>({
-    userPrompt: buildUserPrompt(existingTags),
-    systemPrompt: SYSTEM_PROMPT,
-    images,
-    model: LLM_MODEL.GPT_4O,
-    jsonSchema: whereIsAnalyzeSchema,
+    const { outputs } = await callLlm<{ outputs: WhereIsAnalyzeResult[] }>({
+      userPrompt: buildUserPrompt(existingTags),
+      systemPrompt: SYSTEM_PROMPT,
+      images,
+      model: LLM_MODEL.GPT_4O,
+      jsonSchema: whereIsAnalyzeSchema,
+    });
+
+    return outputs[0];
   });
+};
 
-  return res.json(outputs[0]);
-});
-
-export default router;
+export default whereIsRoutes;

@@ -1,37 +1,51 @@
-import { Router, Request, Response } from 'express';
+import { FastifyPluginAsync } from 'fastify';
 import { Readable } from 'stream';
 import { AudioService } from '@vigilant-broccoli/common-node';
-
-const router = Router();
+import {
+  CONTENT_TYPE_HEADER,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
 
 const ERROR_TEXT_REQUIRED = 'Text is required';
 const ERROR_TTS_FAILED = 'Failed to generate speech';
+const AUDIO_CONTENT_TYPE = 'audio/mpeg';
+const CACHE_CONTROL_HEADER = 'Cache-Control';
+const NO_STORE = 'no-store';
 
-router.post('/', async (req: Request, res: Response) => {
-  const { text, voiceId, languageCode } = req.body as {
-    text?: string;
-    voiceId?: string;
-    languageCode?: string;
-  };
+type TextToSpeechBody = {
+  text?: string;
+  voiceId?: string;
+  languageCode?: string;
+};
 
-  if (!text?.trim())
-    return res.status(400).json({ error: ERROR_TEXT_REQUIRED });
+const textToSpeechRoutes: FastifyPluginAsync = async app => {
+  app.post('/', async (req, reply) => {
+    const { text, voiceId, languageCode } = req.body as TextToSpeechBody;
 
-  try {
-    const audioStream = await AudioService.streamTextToSpeech(text.trim(), {
-      ...(voiceId?.trim() && { voiceId: voiceId.trim() }),
-      ...(languageCode?.trim() && { languageCode: languageCode.trim() }),
-    });
+    if (!text?.trim()) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_TEXT_REQUIRED });
+    }
 
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Cache-Control', 'no-store');
-    Readable.fromWeb(
-      audioStream as Parameters<typeof Readable.fromWeb>[0],
-    ).pipe(res);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : ERROR_TTS_FAILED;
-    return res.status(500).json({ error: message });
-  }
-});
+    try {
+      const audioStream = await AudioService.streamTextToSpeech(text.trim(), {
+        ...(voiceId?.trim() && { voiceId: voiceId.trim() }),
+        ...(languageCode?.trim() && { languageCode: languageCode.trim() }),
+      });
 
-export default router;
+      reply.header(CONTENT_TYPE_HEADER, AUDIO_CONTENT_TYPE);
+      reply.header(CACHE_CONTROL_HEADER, NO_STORE);
+      return reply.send(
+        Readable.fromWeb(audioStream as Parameters<typeof Readable.fromWeb>[0]),
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : ERROR_TTS_FAILED;
+      return reply
+        .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .send({ error: message });
+    }
+  });
+};
+
+export default textToSpeechRoutes;

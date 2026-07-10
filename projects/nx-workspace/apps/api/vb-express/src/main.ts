@@ -1,31 +1,38 @@
-import express from 'express';
-import cors from 'cors';
+import Fastify, { FastifyInstance, FastifyPluginAsync } from 'fastify';
+import cors from '@fastify/cors';
+import multipart from '@fastify/multipart';
 import { auth, createServiceVerifier, verifyApiKey } from './auth';
-import { toNodeHandler } from 'better-auth/node';
 import { getMigrations } from 'better-auth/db/migration';
 import { syncLegacySharedApiKey } from './libs/api-key-seed';
-import apiKeysRouter from './routes/api-keys';
-import tasksRouter from './routes/tasks';
-import tasksParseRouter from './routes/tasks-parse';
-import llmRouter from './routes/llm';
-import chatRouter from './routes/chat';
-import calendarRouter from './routes/calendar';
-import { contactRouter, messagingRouter } from './routes/messaging';
-import voiceListRouter from './routes/voice-list';
-import speechToTextRouter from './routes/speech-to-text';
-import textToSpeechRouter from './routes/text-to-speech';
-import whereIsRouter from './routes/where-is';
-import priceTrackerRouter from './routes/price-tracker';
+import authRoutes from './routes/auth';
+import apiKeysRoutes from './routes/api-keys';
+import tasksRoutes from './routes/tasks';
+import tasksParseRoutes from './routes/tasks-parse';
+import llmRoutes from './routes/llm';
+import chatRoutes from './routes/chat';
+import calendarRoutes from './routes/calendar';
+import { contactRoutes, messagingRoutes } from './routes/messaging';
+import voiceListRoutes from './routes/voice-list';
+import speechToTextRoutes from './routes/speech-to-text';
+import textToSpeechRoutes from './routes/text-to-speech';
+import whereIsRoutes from './routes/where-is';
+import priceTrackerRoutes from './routes/price-tracker';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import {
-  createApiKeyMiddleware,
+  createApiKeyPlugin,
   createCorsOptions,
-  pingRouter,
-  requestLoggerMiddleware,
-} from '@vigilant-broccoli/express';
+  createDocsPlugin,
+  pingPlugin,
+  recaptchaPlugin,
+  requestLoggerPlugin,
+} from '@vigilant-broccoli/fastify';
+import { swaggerSpec } from './libs/swagger';
 
-const APP_PORT = getEnvironmentVariable('PORT') || 3333;
+const SERVICE_NAME = 'vb-express';
+const BODY_LIMIT_BYTES = 10 * 1024 * 1024;
+
+const APP_PORT = Number(getEnvironmentVariable('PORT') || 3333);
 const APP_HOST = getEnvironmentVariable('HOST') || '127.0.0.1';
 const API_KEY = getEnvironmentVariable('VB_EXPRESS_API_KEY');
 
@@ -46,86 +53,104 @@ const ALLOWED_ORIGINS = [
   'https://www.cloud8skate.com',
 ];
 
-const serviceAccess = (service: string) =>
-  createApiKeyMiddleware(API_KEY, createServiceVerifier([service]));
+const registerService = (
+  app: FastifyInstance,
+  prefix: string,
+  service: string,
+  routes: FastifyPluginAsync[],
+) =>
+  app.register(
+    async scope => {
+      await scope.register(
+        createApiKeyPlugin(API_KEY, createServiceVerifier([service])),
+      );
+      for (const route of routes) {
+        await scope.register(route);
+      }
+    },
+    { prefix },
+  );
 
-const createApp = () => {
-  const app = express();
-  app.use(express.static('public'));
-  app.use(cors(createCorsOptions(ALLOWED_ORIGINS)));
-  app.use(express.json({ limit: '10mb' }));
-  app.use(requestLoggerMiddleware);
-  app.get('/', (_, response) => {
-    response.send('vb-express');
-  });
-  app.all('/api/auth/{*path}', toNodeHandler(auth));
-  app.use('/contact', contactRouter);
-  app.use(
-    '/api/admin/api-keys',
-    createApiKeyMiddleware(API_KEY),
-    apiKeysRouter,
+const buildApp = async () => {
+  const app = Fastify({ bodyLimit: BODY_LIMIT_BYTES, logger: false });
+  await app.register(cors, createCorsOptions(ALLOWED_ORIGINS));
+  await app.register(multipart);
+  await app.register(requestLoggerPlugin);
+  await app.register(createDocsPlugin(swaggerSpec, SERVICE_NAME));
+  app.get('/', async () => SERVICE_NAME);
+  await app.register(authRoutes);
+  await app.register(
+    async scope => {
+      await scope.register(recaptchaPlugin);
+      await scope.register(contactRoutes);
+    },
+    { prefix: '/contact' },
   );
-  app.use(
-    '/api/messaging',
-    serviceAccess(VB_EXPRESS_SERVICE.MESSAGING),
-    messagingRouter,
+  await app.register(
+    async scope => {
+      await scope.register(createApiKeyPlugin(API_KEY));
+      await scope.register(apiKeysRoutes);
+    },
+    { prefix: '/api/admin/api-keys' },
   );
-  app.use(
-    '/api/tasks',
-    serviceAccess(VB_EXPRESS_SERVICE.TASKS),
-    tasksRouter,
-    tasksParseRouter,
-  );
-  app.use('/api/llm', serviceAccess(VB_EXPRESS_SERVICE.LLM), llmRouter);
-  app.use('/api/chat', serviceAccess(VB_EXPRESS_SERVICE.CHAT), chatRouter);
-  app.use(
-    '/api/calendar',
-    serviceAccess(VB_EXPRESS_SERVICE.CALENDAR),
-    calendarRouter,
-  );
-  app.use(
-    '/api/voice-list',
-    serviceAccess(VB_EXPRESS_SERVICE.VOICE_LIST),
-    voiceListRouter,
-  );
-  app.use(
+  await registerService(app, '/api/messaging', VB_EXPRESS_SERVICE.MESSAGING, [
+    messagingRoutes,
+  ]);
+  await registerService(app, '/api/tasks', VB_EXPRESS_SERVICE.TASKS, [
+    tasksRoutes,
+    tasksParseRoutes,
+  ]);
+  await registerService(app, '/api/llm', VB_EXPRESS_SERVICE.LLM, [llmRoutes]);
+  await registerService(app, '/api/chat', VB_EXPRESS_SERVICE.CHAT, [
+    chatRoutes,
+  ]);
+  await registerService(app, '/api/calendar', VB_EXPRESS_SERVICE.CALENDAR, [
+    calendarRoutes,
+  ]);
+  await registerService(app, '/api/voice-list', VB_EXPRESS_SERVICE.VOICE_LIST, [
+    voiceListRoutes,
+  ]);
+  await registerService(
+    app,
     '/api/speech-to-text',
-    serviceAccess(VB_EXPRESS_SERVICE.SPEECH_TO_TEXT),
-    speechToTextRouter,
+    VB_EXPRESS_SERVICE.SPEECH_TO_TEXT,
+    [speechToTextRoutes],
   );
-  app.use(
+  await registerService(
+    app,
     '/api/text-to-speech',
-    serviceAccess(VB_EXPRESS_SERVICE.TEXT_TO_SPEECH),
-    textToSpeechRouter,
+    VB_EXPRESS_SERVICE.TEXT_TO_SPEECH,
+    [textToSpeechRoutes],
   );
-  app.use(
-    '/api/where-is',
-    serviceAccess(VB_EXPRESS_SERVICE.WHERE_IS),
-    whereIsRouter,
-  );
-  app.use(
+  await registerService(app, '/api/where-is', VB_EXPRESS_SERVICE.WHERE_IS, [
+    whereIsRoutes,
+  ]);
+  await registerService(
+    app,
     '/api/price-tracker',
-    serviceAccess(VB_EXPRESS_SERVICE.PRICE_TRACKER),
-    priceTrackerRouter,
+    VB_EXPRESS_SERVICE.PRICE_TRACKER,
+    [priceTrackerRoutes],
   );
-  app.use('/api', createApiKeyMiddleware(API_KEY, verifyApiKey), pingRouter);
+  await app.register(
+    async scope => {
+      await scope.register(createApiKeyPlugin(API_KEY, verifyApiKey));
+      await scope.register(pingPlugin);
+    },
+    { prefix: '/api' },
+  );
   return app;
 };
-
-const app = createApp();
 
 const startServer = async () => {
   const { runMigrations } = await getMigrations(auth.options);
   await runMigrations();
   await syncLegacySharedApiKey();
-  app.listen(APP_PORT as number, APP_HOST, () => {
-    console.log('');
-    console.log(`Server running at http://${APP_HOST}:${APP_PORT}`);
-    console.log('Ctrl-c to stop');
-    console.log('');
-  });
+  const app = await buildApp();
+  await app.listen({ port: APP_PORT, host: APP_HOST });
+  console.log('');
+  console.log(`Server running at http://${APP_HOST}:${APP_PORT}`);
+  console.log('Ctrl-c to stop');
+  console.log('');
 };
 
 startServer();
-
-export { app };

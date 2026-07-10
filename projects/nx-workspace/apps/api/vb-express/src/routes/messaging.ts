@@ -1,15 +1,18 @@
-import { Router, Request, Response } from 'express';
-import { EMAIL_SERVICE_ENDPOINT } from '@vigilant-broccoli/common-js';
+import { FastifyPluginAsync } from 'fastify';
+import {
+  API_KEY_HEADER,
+  CONTENT_TYPE_HEADER,
+  EMAIL_SERVICE_ENDPOINT,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+  JSON_CONTENT_TYPE,
+} from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { Email, TextMessageService } from '@vigilant-broccoli/messaging';
 import {
   APP_NAME,
   MessageRequest,
 } from '@vigilant-broccoli/personal-common-js';
-import {
-  requireJsonContent,
-  checkRecaptchaToken,
-} from '@vigilant-broccoli/express';
 
 let textMessageService: TextMessageService | undefined;
 const getTextMessageService = () => {
@@ -59,15 +62,19 @@ const buildEmails = (
   ];
 };
 
-export const messagingRouter = Router();
+const ERROR_TEXT_MESSAGE_FIELDS_REQUIRED = 'body, from, and to are required';
+const ERROR_SEND_MESSAGE_FAILED = 'Failed to send message';
 
-messagingRouter.post(
-  '/send-text-message',
-  async (req: Request, res: Response) => {
-    const { body, from, to } = req.body;
+type SendTextMessageBody = { body?: string; from?: string; to?: string };
+
+export const messagingRoutes: FastifyPluginAsync = async app => {
+  app.post('/send-text-message', async (req, reply) => {
+    const { body, from, to } = req.body as SendTextMessageBody;
 
     if (!body || !from || !to) {
-      return res.status(400).json({ error: 'body, from, and to are required' });
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_TEXT_MESSAGE_FIELDS_REQUIRED });
     }
 
     const result = await getTextMessageService().sendTextMessage({
@@ -76,30 +83,25 @@ messagingRouter.post(
       to,
     });
 
-    return res.json({
+    return {
       success: true,
       sid: result.sid,
-    });
-  },
-);
+    };
+  });
+};
 
-export const contactRouter = Router();
-
-contactRouter.post(
-  '/send-message',
-  requireJsonContent,
-  checkRecaptchaToken,
-  async (req: Request, res: Response) => {
+export const contactRoutes: FastifyPluginAsync = async app => {
+  app.post('/send-message', async (req, reply) => {
     const { name, email, message, appName } = req.body as MessageRequest;
     const emails = buildEmails(name, email, message, appName);
     try {
       const response = await fetch(
         `${EMAIL_SERVICE_URL}/${EMAIL_SERVICE_ENDPOINT.QUEUE_EMAILS}`,
         {
-          method: 'POST',
+          method: HTTP_METHOD.POST,
           headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': SHARED_APP_TOKEN,
+            [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE,
+            [API_KEY_HEADER]: SHARED_APP_TOKEN ?? '',
           },
           body: JSON.stringify(emails),
         },
@@ -108,10 +110,12 @@ contactRouter.post(
         throw new Error(`Email service responded with ${response.status}`);
       }
       console.log(`📤 Queued ${emails.length} emails from: ${email}`);
-      res.json({ success: true });
+      return { success: true };
     } catch (err) {
       console.error('Failed to queue emails:', (err as Error).message);
-      res.status(500).json({ error: 'Failed to send message' });
+      return reply
+        .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .send({ error: ERROR_SEND_MESSAGE_FAILED });
     }
-  },
-);
+  });
+};

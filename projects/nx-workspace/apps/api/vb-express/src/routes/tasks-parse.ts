@@ -1,12 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+import { FastifyPluginAsync } from 'fastify';
+import { LLM_MODEL, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   tasksParseSchema,
   TasksParseResult,
 } from '@vigilant-broccoli/llm-schemas';
 import { callLlm } from '../libs/llm-service.client';
-
-const router = Router();
 
 type TaskListRef = { id: string; title: string };
 
@@ -58,35 +56,39 @@ const buildBaseUserPrompt = (text: string, hasImages: boolean) => {
   return `${header}\n\n${text}`;
 };
 
-router.post('/parse-image', async (req: Request, res: Response) => {
-  const { text, images, availableLists } = req.body as ParseImageRequest;
+const tasksParseRoutes: FastifyPluginAsync = async app => {
+  app.post('/parse-image', async (req, reply) => {
+    const { text, images, availableLists } = req.body as ParseImageRequest;
 
-  const trimmedText = text?.trim() ?? '';
-  const hasImages = !!images && images.length > 0;
+    const trimmedText = text?.trim() ?? '';
+    const hasImages = !!images && images.length > 0;
 
-  if (!trimmedText && !hasImages) {
-    return res.status(400).json({ error: ERROR_NO_INPUT });
-  }
+    if (!trimmedText && !hasImages) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_NO_INPUT });
+    }
 
-  const lists = availableLists ?? [];
-  const userPrompt = `${buildBaseUserPrompt(trimmedText, hasImages)}${buildListsBlock(lists)}`;
+    const lists = availableLists ?? [];
+    const userPrompt = `${buildBaseUserPrompt(trimmedText, hasImages)}${buildListsBlock(lists)}`;
 
-  const { outputs } = await callLlm<{ outputs: TasksParseResult[] }>({
-    userPrompt,
-    systemPrompt: SYSTEM_PROMPT,
-    images,
-    model: LLM_MODEL.GPT_4O,
-    jsonSchema: tasksParseSchema,
+    const { outputs } = await callLlm<{ outputs: TasksParseResult[] }>({
+      userPrompt,
+      systemPrompt: SYSTEM_PROMPT,
+      images,
+      model: LLM_MODEL.GPT_4O,
+      jsonSchema: tasksParseSchema,
+    });
+    const data = outputs[0];
+
+    const validIds = new Set(lists.map(l => l.id));
+    const suggestedListId =
+      data.suggestedListId && validIds.has(data.suggestedListId)
+        ? data.suggestedListId
+        : null;
+
+    return { items: data.items, suggestedListId };
   });
-  const data = outputs[0];
+};
 
-  const validIds = new Set(lists.map(l => l.id));
-  const suggestedListId =
-    data.suggestedListId && validIds.has(data.suggestedListId)
-      ? data.suggestedListId
-      : null;
-
-  return res.json({ items: data.items, suggestedListId });
-});
-
-export default router;
+export default tasksParseRoutes;

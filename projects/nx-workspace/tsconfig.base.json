@@ -30,9 +30,6 @@
       "@vigilant-broccoli/employee-handler": [
         "./libs/@vigilant-broccoli/employee-handler/src/index.ts"
       ],
-      "@vigilant-broccoli/express": [
-        "./libs/@vigilant-broccoli/express/src/index.ts"
-      ],
       "@vigilant-broccoli/fastify": [
         "./libs/@vigilant-broccoli/fastify/src/index.ts"
       ],

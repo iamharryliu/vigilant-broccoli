@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { FastifyPluginAsync } from 'fastify';
 import { LLM_MODEL, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   calendarParseSchema,
@@ -6,9 +6,16 @@ import {
 } from '@vigilant-broccoli/llm-schemas';
 import { callLlm } from '../libs/llm-service.client';
 
-const router = Router();
-
 const DEFAULT_TIME_ZONE = 'America/New_York';
+
+const ERROR_NO_INPUT = 'Provide text or at least one image';
+const ERROR_NO_EVENTS = 'Could not extract any events from input';
+
+type ParseBody = {
+  text?: string;
+  images?: { name: string; base64: string; mimeType: string }[];
+  timeZone?: string;
+};
 
 const buildSystemPrompt = (timeZone: string) => {
   const now = new Date();
@@ -28,43 +35,41 @@ Per-event rules:
 - Do not invent events; only return what is actually present in the input.`;
 };
 
-router.post('/parse', async (req: Request, res: Response) => {
-  const {
-    text,
-    images,
-    timeZone = DEFAULT_TIME_ZONE,
-  } = req.body as {
-    text?: string;
-    images?: { name: string; base64: string; mimeType: string }[];
-    timeZone?: string;
-  };
+const calendarRoutes: FastifyPluginAsync = async app => {
+  app.post('/parse', async (req, reply) => {
+    const {
+      text,
+      images,
+      timeZone = DEFAULT_TIME_ZONE,
+    } = req.body as ParseBody;
 
-  if (!text?.trim() && (!images || images.length === 0)) {
-    return res
-      .status(HTTP_STATUS_CODES.BAD_REQUEST)
-      .json({ error: 'Provide text or at least one image' });
-  }
+    if (!text?.trim() && (!images || images.length === 0)) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_NO_INPUT });
+    }
 
-  const userPrompt = text?.trim()
-    ? `Extract the calendar event from the following content:\n\n${text.trim()}`
-    : 'Extract the calendar event from the attached image(s).';
+    const userPrompt = text?.trim()
+      ? `Extract the calendar event from the following content:\n\n${text.trim()}`
+      : 'Extract the calendar event from the attached image(s).';
 
-  const { outputs } = await callLlm<{ outputs: CalendarParseResult[] }>({
-    userPrompt,
-    systemPrompt: buildSystemPrompt(timeZone),
-    images,
-    model: LLM_MODEL.GPT_4O,
-    jsonSchema: calendarParseSchema,
+    const { outputs } = await callLlm<{ outputs: CalendarParseResult[] }>({
+      userPrompt,
+      systemPrompt: buildSystemPrompt(timeZone),
+      images,
+      model: LLM_MODEL.GPT_4O,
+      jsonSchema: calendarParseSchema,
+    });
+
+    const events = outputs[0].events.filter(e => e.summary && e.start);
+    if (events.length === 0) {
+      return reply
+        .code(HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY)
+        .send({ error: ERROR_NO_EVENTS });
+    }
+
+    return { events };
   });
+};
 
-  const events = outputs[0].events.filter(e => e.summary && e.start);
-  if (events.length === 0) {
-    return res
-      .status(HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY)
-      .json({ error: 'Could not extract any events from input' });
-  }
-
-  return res.json({ events });
-});
-
-export default router;
+export default calendarRoutes;
