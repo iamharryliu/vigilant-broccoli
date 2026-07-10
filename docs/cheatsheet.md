@@ -65,6 +65,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:gitea       Rotate Gitea CI token (scoped read:repository)
   secret-rotation:profile-deploy-key  Rotate profile repo deploy key, store in Vault
   secret-rotation:resend      Rotate Resend API key (single-key swap, pushes to fly app)
+  secret-rotation:rabbitmq    Rotate RabbitMQ password, push connection string to fly consumers
 
 🐳 LOCAL
   local:docker:up             Start local Docker Compose services
