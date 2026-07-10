@@ -1,0 +1,20 @@
+services:
+  agent-sandbox:
+    build: .
+    image: vb-agent-sandbox
+    container_name: vb-agent-sandbox
+    restart: unless-stopped
+    env_file: .env
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    init: true
+    ports:
+      - '127.0.0.1:3000:3000'
+      - '127.0.0.1:4200:4200'
+      - '127.0.0.1:8080:8080'
+    volumes:
+      - agent_home:/home/agent
+
+volumes:
+  agent_home:

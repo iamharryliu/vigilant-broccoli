@@ -79,6 +79,14 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   vb-manager-next:status      Show PM2 process status
   health-check                Run health check script
 
+🤖 AGENT SANDBOX
+  sandbox:up                  Fetch tokens from Vault into .env, then build + start contained Claude sandbox
+  sandbox:claude              Run Claude autonomously inside the sandbox repo clone
+  sandbox:shell               Shell into the sandbox (dotfiles loaded)
+  sandbox:logs                Follow sandbox provisioning logs
+  sandbox:down                Stop the sandbox
+  sandbox:reset               Destroy sandbox volume and rebuild fresh
+
 🏠 HOMELAB
   homelab:up                  Start homelab services and Tailscale
   homelab:down                Stop homelab services and Tailscale
