@@ -1,0 +1,15 @@
+meta {
+  name: Retrieve Email
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resendBaseUrl}}/emails/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id:
+}

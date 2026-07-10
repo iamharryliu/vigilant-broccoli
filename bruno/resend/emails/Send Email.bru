@@ -1,0 +1,20 @@
+meta {
+  name: Send Email
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{resendBaseUrl}}/emails
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "from": "Acme <onboarding@resend.dev>",
+    "to": ["delivered@resend.dev"],
+    "subject": "Bruno test",
+    "html": "<p>Sent from the Resend Bruno collection.</p>"
+  }
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Check Token Validity
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resendBaseUrl}}/api-keys
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("✓ RESEND_API_KEY is valid");
+  } else {
+    console.log("✗ RESEND_API_KEY is invalid:", res.body);
+  }
+}

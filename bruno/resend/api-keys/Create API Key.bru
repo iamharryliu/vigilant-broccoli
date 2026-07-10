@@ -1,0 +1,18 @@
+meta {
+  name: Create API Key
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resendBaseUrl}}/api-keys
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "bruno-test-key",
+    "permission": "full_access"
+  }
+}

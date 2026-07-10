@@ -1,0 +1,16 @@
+meta {
+  name: resend
+  seq: 1
+}
+
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{process.env.RESEND_API_KEY}}
+}
+
+headers {
+  Content-Type: application/json
+}

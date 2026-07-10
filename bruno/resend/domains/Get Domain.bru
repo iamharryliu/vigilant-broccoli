@@ -1,0 +1,15 @@
+meta {
+  name: Get Domain
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resendBaseUrl}}/domains/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id:
+}
