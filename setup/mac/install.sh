@@ -43,3 +43,7 @@ fi
 if ask "Install Node Packages?"; then
     npminit
 fi
+
+if ask "Generate local SSL certificates for *.vigilant-broccoli.app?"; then
+    (cd "$HOME/vigilant-broccoli/infrastructure/local" && ./setup-certs.sh)
+fi

@@ -12,10 +12,10 @@
 ## Setup
 
 ```bash
-./setup-certs.sh                                    # generate SSL certificates
-docker-compose up -d                                # start all services
-docker-compose down                                 # stop all services
-npm run local:docker:restart [service]              # restart service(s)
+pnpm run local:install:machine-setup                # generate SSL certificates (mac only, via install.sh)
+pnpm run local:docker:up                            # start all services
+pnpm run local:docker:down                          # stop all services
+pnpm run local:docker:restart [service]              # restart service(s)
 ```
 
 ## Grafana
