@@ -6,8 +6,8 @@
   "types": "./src/index.d.ts",
   "dependencies": {
     "tslib": "^2.3.0",
-    "@slack/bolt": "*",
-    "@slack/types": "*",
+    "@slack/bolt": "^4.7.3",
+    "@slack/types": "^2.22.0",
     "@slack/web-api": "^7.19.0",
     "@vigilant-broccoli/slack-workspace": "workspace:*",
     "node-cron": "^4.2.1",

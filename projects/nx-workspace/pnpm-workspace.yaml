@@ -18,3 +18,12 @@ allowBuilds:
   unrs-resolver: true
   workerd: true
   '@scarf/scarf': false
+overrides:
+  fastify: $fastify
+  fastify-plugin: $fastify-plugin
+  '@fastify/cors': $@fastify/cors
+  '@slack/bolt': $@slack/bolt
+  '@slack/types': $@slack/types
+  '@slack/web-api': $@slack/web-api
+  next-auth>nodemailer: $nodemailer
+  '@slack/bolt>@types/express': $@types/express

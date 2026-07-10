@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "tslib": "^2.3.0",
-    "fastify": "*",
-    "fastify-plugin": "*",
-    "@fastify/cors": "*",
+    "fastify": "^5.10.0",
+    "fastify-plugin": "^5.1.0",
+    "@fastify/cors": "^11.3.0",
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*"
   },
