@@ -20,6 +20,7 @@
 ## Infrastructure Conventions
 
 - Every deployed service — apps and self-hosted infrastructure alike (e.g. Gitea, code-server) — must have an Upptime status check: add its public URL to `sites` in the root `.upptimerc.yml`. Services without a public URL (e.g. `vb-manager-next` served locally via PM2, RabbitMQ reachable only inside the VM network) are exempt and covered by `cron-health-check` instead.
+- Changes to network infrastructure (DNS records, domains/subdomains, proxying, tunnels, VPN) must be reflected in [network-management.md](./docs/infrastructure/network-management.md).
 
 ## Coding Conventions
 
@@ -46,7 +47,7 @@
 
 ## Folder Structure
 
-- [Docs](./docs/) - Repo documentation. See [repo-patterns.md](./docs/repo-patterns.md) for the development/test/CI/deployment patterns map before adding or changing apps, workflows, or deploys, [repo-operations.md](./docs/repo-operations.md) for infra operations, secrets, data/persistence, local dev, and auth, and [cheatsheet.md](./docs/cheatsheet.md) for infra-level CLI commands (also linked from the README).
+- [Docs](./docs/) - Repo documentation. See [repo-patterns.md](./docs/repo-patterns.md) for the development/test/CI/deployment patterns map before adding or changing apps, workflows, or deploys, [repo-operations.md](./docs/repo-operations.md) for infra operations, secrets, data/persistence, local dev, and auth, [network-management.md](./docs/infrastructure/network-management.md) for public URLs/DNS by domain/provider, and [cheatsheet.md](./docs/cheatsheet.md) for infra-level CLI commands (also linked from the README).
 - [Notes](./notes/) - Collection of markdown notes linked with relative file paths.
 - [Setup](./setup/) - Machine setup scripts and dotfiles.
   - [dotfiles](./setup/dotfiles/) - Shell configs, aliases, and scripts (symlinked to `$HOME`).
