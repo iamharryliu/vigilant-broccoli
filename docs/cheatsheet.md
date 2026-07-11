@@ -96,7 +96,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   homelab:pull                Pull latest homelab images
 
 🐙 GITHUB
-  gh:board:sync               Sync GitHub project board
   gh:actions:deploy           Trigger deploy workflow
   gh:actions:health-check     Trigger ci-health-check workflow
   gh:actions:kill-services    Trigger kill-services workflow

@@ -74,7 +74,6 @@
     "homelab:ps": "docker compose -f infrastructure/homelab/docker-compose.yml ps",
     "homelab:pull": "docker compose -f infrastructure/homelab/docker-compose.yml pull",
     "health-check": "./projects/nx-workspace/scripts/shell/health-check.sh",
-    "gh:board:sync": "./scripts/shell/gh-board.sh sync",
     "gh:actions:deploy": "gh workflow run deploy --repo iamharryliu/vigilant-broccoli",
     "gh:actions:health-check": "gh workflow run ci-health-check --repo iamharryliu/vigilant-broccoli",
     "gh:actions:kill-services": "gh workflow run kill-services --repo iamharryliu/vigilant-broccoli",
