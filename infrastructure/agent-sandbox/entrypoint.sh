@@ -2,10 +2,15 @@
 set -euo pipefail
 
 REPO_URL=https://github.com/iamharryliu/vigilant-broccoli.git
-REPO_DIR="$HOME/vigilant-broccoli"
+AGENT_USER=agent
+REPO_DIR="/home/$AGENT_USER/vigilant-broccoli"
 
-if [ "${SANDBOX_FIREWALL:-on}" != "off" ]; then
-  sudo /usr/local/bin/init-firewall.sh ${SANDBOX_ALLOWED_DOMAINS:-}
+if [ "$(id -u)" = "0" ]; then
+  if [ "${SANDBOX_FIREWALL:-on}" != "off" ]; then
+    /usr/local/bin/init-firewall.sh ${SANDBOX_ALLOWED_DOMAINS:-}
+  fi
+  export HOME="/home/$AGENT_USER" USER="$AGENT_USER" LOGNAME="$AGENT_USER"
+  exec setpriv --reuid="$AGENT_USER" --regid="$AGENT_USER" --init-groups "$0" "$@"
 fi
 
 if [ ! -d "$REPO_DIR/.git" ]; then
