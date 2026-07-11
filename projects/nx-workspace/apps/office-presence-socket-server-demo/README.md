@@ -1,5 +1,11 @@
 # Office Presence Socket Server Demo
 
+## Stack
+
+- TypeScript
+- Slack Bolt (Socket Mode) via `@vigilant-broccoli/slackbots`
+- Docker
+
 ## Build & Run
 
 ```

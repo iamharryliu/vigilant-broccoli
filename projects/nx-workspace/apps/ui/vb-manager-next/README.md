@@ -8,9 +8,10 @@ Management dashboard app.
 - Radix Themes + Tailwind CSS, lucide-react icons
 - dnd-kit (drag-and-drop)
 - NextAuth with Google OAuth
-- MongoDB (kanban board sync)
-- SQLite via better-sqlite3 (language learning)
-- Google Tasks & Calendar, Supabase, Stripe, Tailscale, OpenWeather
+- MongoDB (kanban board sync, language learning)
+- Leaflet / react-leaflet, react-markdown, fuse.js
+- Google Tasks & Calendar (googleapis), Supabase, Stripe, Tailscale
+- OpenAI SDK
 - Socket.IO client (chat demo)
-- Internal VB services (LLM, storage, email)
+- Internal VB libs (`react-lib`, `common-js`, `common-node`, `common-browser`, `next-lib`, `google-workspace`, `github-workspace`, `llm-schemas`, `money-movement`, and more)
 - Nx monorepo build, deployed via PM2
