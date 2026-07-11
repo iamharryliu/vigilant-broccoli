@@ -4,30 +4,30 @@ repo: vigilant-broccoli
 sites:
   - name: harryliu.dev
     url: https://harryliu.dev/
-  - name: Git
+  - name: git.harryliu.dev
     url: https://git.harryliu.dev/
-  - name: Code Server
+  - name: code.harryliu.dev
     url: https://code.harryliu.dev/login
-  - name: Cloud8Skate
+  - name: cloud8skate.com
     url: https://cloud8skate.com/
-  - name: FindMe
+  - name: findme
     url: https://findme-kohl.vercel.app/
-  - name: Hearth
+  - name: hearth
     url: https://vb-hearth.vercel.app/login
-  - name: Whiteboard
+  - name: whiteboard
     url: https://whiteboard-one-psi.vercel.app/
-  - name: LLM Service
+  - name: service-manager
+    url: https://vb-express.fly.dev/
+  - name: llm-service
     url: https://vb-llm-service.fly.dev/
     icon: https://vb-llm-service.fly.dev/favicon.ico
-  - name: Email Service
+  - name: email-service
     url: https://vb-email-service.fly.dev/
-  - name: Email Subscription Service
+  - name: email-subscription-service
     url: https://email-subscription-service.fly.dev/
-  - name: Storage Service
+  - name: storage-service
     url: https://vb-storage-service.fly.dev/
-  - name: VB Express
-    url: https://vb-express.fly.dev/
-  - name: Socket Server
+  - name: socker-server
     url: https://socket.harryliu.dev/health
 
 user-agent: upptime-vigilant-broccoli
