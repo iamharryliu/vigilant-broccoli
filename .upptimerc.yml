@@ -2,24 +2,13 @@ owner: iamharryliu
 repo: vigilant-broccoli
 
 sites:
-  - name: LLM Service
-    url: https://vb-llm-service.fly.dev/
-    icon: https://vb-llm-service.fly.dev/favicon.ico
-  - name: Storage Service
-    url: https://vb-storage-service.fly.dev/
-  - name: Email Service
-    url: https://vb-email-service.fly.dev/
-  - name: Email Subscription Service
-    url: https://email-subscription-service.fly.dev/
-  - name: VB Express
-    url: https://vb-express.fly.dev/
-  - name: Harry Liu
+  - name: harryliu.dev
     url: https://harryliu.dev/
-  - name: Gitea
+  - name: Git
     url: https://git.harryliu.dev/
   - name: Code Server
     url: https://code.harryliu.dev/login
-  - name: Cloud 8 Skate
+  - name: Cloud8Skate
     url: https://cloud8skate.com/
   - name: FindMe
     url: https://findme-kohl.vercel.app/
@@ -27,6 +16,17 @@ sites:
     url: https://vb-hearth.vercel.app/login
   - name: Whiteboard
     url: https://whiteboard-one-psi.vercel.app/
+  - name: LLM Service
+    url: https://vb-llm-service.fly.dev/
+    icon: https://vb-llm-service.fly.dev/favicon.ico
+  - name: Email Service
+    url: https://vb-email-service.fly.dev/
+  - name: Email Subscription Service
+    url: https://email-subscription-service.fly.dev/
+  - name: Storage Service
+    url: https://vb-storage-service.fly.dev/
+  - name: VB Express
+    url: https://vb-express.fly.dev/
   - name: Socket Server
     url: https://socket.harryliu.dev/health
 
