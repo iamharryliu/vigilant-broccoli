@@ -94,19 +94,19 @@
     "url": "https://production-findme.vercel.app/",
     "icon": "https://icons.duckduckgo.com/ip3/production-findme.vercel.app.ico",
     "slug": "production-findme",
-    "status": "down",
-    "uptime": "6.12%",
-    "uptimeDay": "6.12%",
-    "uptimeWeek": "6.12%",
-    "uptimeMonth": "6.12%",
-    "uptimeYear": "6.12%",
-    "time": 22,
-    "timeDay": 22,
-    "timeWeek": 22,
-    "timeMonth": 22,
-    "timeYear": 22,
+    "status": "up",
+    "uptime": "8.81%",
+    "uptimeDay": "8.81%",
+    "uptimeWeek": "8.81%",
+    "uptimeMonth": "8.81%",
+    "uptimeYear": "8.81%",
+    "time": 127,
+    "timeDay": 127,
+    "timeWeek": 127,
+    "timeMonth": 127,
+    "timeYear": 127,
     "dailyMinutesDown": {
-      "2026-07-12": 3
+      "2026-07-12": 33
     }
   },
   {
@@ -132,19 +132,19 @@
     "url": "https://production-vb-hearth.vercel.app/login",
     "icon": "https://icons.duckduckgo.com/ip3/production-vb-hearth.vercel.app.ico",
     "slug": "production-hearth",
-    "status": "down",
-    "uptime": "6.48%",
-    "uptimeDay": "6.48%",
-    "uptimeWeek": "6.48%",
-    "uptimeMonth": "6.48%",
-    "uptimeYear": "6.48%",
-    "time": 49,
-    "timeDay": 49,
-    "timeWeek": 49,
-    "timeMonth": 49,
-    "timeYear": 49,
+    "status": "up",
+    "uptime": "8.76%",
+    "uptimeDay": "8.76%",
+    "uptimeWeek": "8.76%",
+    "uptimeMonth": "8.76%",
+    "uptimeYear": "8.76%",
+    "time": 228,
+    "timeDay": 228,
+    "timeWeek": 228,
+    "timeMonth": 228,
+    "timeYear": 228,
     "dailyMinutesDown": {
-      "2026-07-12": 3
+      "2026-07-12": 33
     }
   },
   {
@@ -170,19 +170,19 @@
     "url": "https://production-whiteboard.vercel.app/",
     "icon": "https://icons.duckduckgo.com/ip3/production-whiteboard.vercel.app.ico",
     "slug": "production-whiteboard",
-    "status": "down",
-    "uptime": "6.94%",
-    "uptimeDay": "6.94%",
-    "uptimeWeek": "6.94%",
-    "uptimeMonth": "6.94%",
-    "uptimeYear": "6.94%",
-    "time": 21,
-    "timeDay": 21,
-    "timeWeek": 21,
-    "timeMonth": 21,
-    "timeYear": 21,
+    "status": "up",
+    "uptime": "8.76%",
+    "uptimeDay": "8.76%",
+    "uptimeWeek": "8.76%",
+    "uptimeMonth": "8.76%",
+    "uptimeYear": "8.76%",
+    "time": 113,
+    "timeDay": 113,
+    "timeWeek": 113,
+    "timeMonth": 113,
+    "timeYear": 113,
     "dailyMinutesDown": {
-      "2026-07-12": 3
+      "2026-07-12": 33
     }
   },
   {
@@ -191,18 +191,18 @@
     "icon": "https://icons.duckduckgo.com/ip3/production-cloud-8-skate-angular.pages.dev.ico",
     "slug": "production-cloud8skate",
     "status": "down",
-    "uptime": "7.31%",
-    "uptimeDay": "7.31%",
-    "uptimeWeek": "7.31%",
-    "uptimeMonth": "7.31%",
-    "uptimeYear": "7.31%",
+    "uptime": "0.55%",
+    "uptimeDay": "0.55%",
+    "uptimeWeek": "0.55%",
+    "uptimeMonth": "0.55%",
+    "uptimeYear": "0.55%",
     "time": 31,
     "timeDay": 31,
     "timeWeek": 31,
     "timeMonth": 31,
     "timeYear": 31,
     "dailyMinutesDown": {
-      "2026-07-12": 2
+      "2026-07-12": 36
     }
   },
   {
@@ -228,19 +228,19 @@
     "url": "https://production-vb-express.fly.dev/",
     "icon": "https://icons.duckduckgo.com/ip3/production-vb-express.fly.dev.ico",
     "slug": "production-service-manager",
-    "status": "down",
-    "uptime": "15.85%",
-    "uptimeDay": "15.85%",
-    "uptimeWeek": "15.85%",
-    "uptimeMonth": "15.85%",
-    "uptimeYear": "15.85%",
-    "time": 0,
-    "timeDay": 0,
-    "timeWeek": 0,
-    "timeMonth": 0,
-    "timeYear": 0,
+    "status": "up",
+    "uptime": "7.21%",
+    "uptimeDay": "7.21%",
+    "uptimeWeek": "7.21%",
+    "uptimeMonth": "7.21%",
+    "uptimeYear": "7.21%",
+    "time": 16451,
+    "timeDay": 16451,
+    "timeWeek": 16451,
+    "timeMonth": 16451,
+    "timeYear": 16451,
     "dailyMinutesDown": {
-      "2026-07-12": 2
+      "2026-07-12": 33
     }
   },
   {
@@ -266,19 +266,19 @@
     "url": "https://production-vb-llm-service.fly.dev/",
     "icon": "https://production-vb-llm-service.fly.dev/favicon.ico",
     "slug": "production-llm-service",
-    "status": "down",
-    "uptime": "21.64%",
-    "uptimeDay": "21.64%",
-    "uptimeWeek": "21.64%",
-    "uptimeMonth": "21.64%",
-    "uptimeYear": "21.64%",
-    "time": 0,
-    "timeDay": 0,
-    "timeWeek": 0,
-    "timeMonth": 0,
-    "timeYear": 0,
+    "status": "up",
+    "uptime": "6.54%",
+    "uptimeDay": "6.54%",
+    "uptimeWeek": "6.54%",
+    "uptimeMonth": "6.54%",
+    "uptimeYear": "6.54%",
+    "time": 7752,
+    "timeDay": 7752,
+    "timeWeek": 7752,
+    "timeMonth": 7752,
+    "timeYear": 7752,
     "dailyMinutesDown": {
-      "2026-07-12": 1
+      "2026-07-12": 32
     }
   },
   {
@@ -305,18 +305,18 @@
     "icon": "https://icons.duckduckgo.com/ip3/production-vb-email-service.fly.dev.ico",
     "slug": "production-email-service",
     "status": "down",
-    "uptime": "30.21%",
-    "uptimeDay": "30.21%",
-    "uptimeWeek": "30.21%",
-    "uptimeMonth": "30.21%",
-    "uptimeYear": "30.21%",
+    "uptime": "1.01%",
+    "uptimeDay": "1.01%",
+    "uptimeWeek": "1.01%",
+    "uptimeMonth": "1.01%",
+    "uptimeYear": "1.01%",
     "time": 0,
     "timeDay": 0,
     "timeWeek": 0,
     "timeMonth": 0,
     "timeYear": 0,
     "dailyMinutesDown": {
-      "2026-07-12": 1
+      "2026-07-12": 34
     }
   },
   {
@@ -378,19 +378,19 @@
     "url": "https://production-vb-storage-service.fly.dev/",
     "icon": "https://icons.duckduckgo.com/ip3/production-vb-storage-service.fly.dev.ico",
     "slug": "production-storage-service",
-    "status": "down",
-    "uptime": "64.83%",
-    "uptimeDay": "64.83%",
-    "uptimeWeek": "64.83%",
-    "uptimeMonth": "64.83%",
-    "uptimeYear": "64.83%",
-    "time": 0,
-    "timeDay": 0,
-    "timeWeek": 0,
-    "timeMonth": 0,
-    "timeYear": 0,
+    "status": "up",
+    "uptime": "1.49%",
+    "uptimeDay": "1.49%",
+    "uptimeWeek": "1.49%",
+    "uptimeMonth": "1.49%",
+    "uptimeYear": "1.49%",
+    "time": 8867,
+    "timeDay": 8867,
+    "timeWeek": 8867,
+    "timeMonth": 8867,
+    "timeYear": 8867,
     "dailyMinutesDown": {
-      "2026-07-12": 0
+      "2026-07-12": 33
     }
   },
   {
