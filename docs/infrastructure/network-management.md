@@ -18,11 +18,11 @@ cloud8skate.com                           Cloudflare Pages `cloud-8-skate-angula
 └── cloud8skate.com                       Cloud 8 Skate
 
 fly.dev                                   Fly.io API services
-├── vb-express.fly.dev                    VB Express
-├── vb-llm-service.fly.dev                LLM Service
-├── vb-email-service.fly.dev              Email Service
-├── email-subscription-service.fly.dev    Email Subscription Service
-└── vb-storage-service.fly.dev            Storage Service (bucket-service)
+├── staging-vb-express.fly.dev                 VB Express
+├── staging-vb-llm-service.fly.dev             LLM Service
+├── staging-vb-email-service.fly.dev           Email Service
+├── staging-email-subscription-service.fly.dev Email Subscription Service
+└── staging-vb-storage-service.fly.dev         Storage Service (bucket-service)
 
 vercel.app                                Vercel
 ├── vb-hearth.vercel.app                  Hearth

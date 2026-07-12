@@ -9,6 +9,10 @@ Reference apps (each demonstrates a different combination):
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
 - `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
 
+## Environment naming
+
+Deployed instances are environment-prefixed (`staging-`, later `production-`): fly app name (`staging-vb-llm-service`), config filename (`deployment-configs/fly-configs/staging-llm-service.toml`), `flyAppName` in `scripts/secrets-mapping.config.ts`, and the CI test workflow that targets it (`.github/workflows/staging-test-e2e-llm.yml`). Nx project names stay unprefixed (`llm-service`).
+
 ## Two orthogonal axes
 
 **Build shape:**
@@ -45,4 +49,4 @@ Wiring: pruned `smoke` depends on `prune`; bundled `smoke` depends on `build`. `
 
 ## Secrets
 
-Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. `nx deploy:secrets <svc>` reads Vault → `flyctl secrets set`. `deploy` depends on `deploy:secrets`.
+Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. `nx deploy:secrets <svc>` creates the fly app if it doesn't exist yet (`flyctl apps create`), then reads Vault → `flyctl secrets set`. `deploy` depends on `deploy:secrets`, so a first deploy to a brand-new app works end-to-end (volumes declared in `[mounts]` are auto-created on first deploy).
