@@ -12,6 +12,7 @@ existing_value() {
 
 SANDBOX_FIREWALL_VALUE=$(existing_value SANDBOX_FIREWALL)
 SANDBOX_ALLOWED_DOMAINS_VALUE=$(existing_value SANDBOX_ALLOWED_DOMAINS)
+SANDBOX_VAULT_ENV_VARS_VALUE=$(existing_value SANDBOX_VAULT_ENV_VARS)
 
 echo "Fetching root token from Secret Manager..."
 VAULT_TOKEN=$(gcloud secrets versions access latest \
@@ -50,6 +51,23 @@ CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}
 GH_TOKEN=${GH_TOKEN}
 SANDBOX_FIREWALL=${SANDBOX_FIREWALL_VALUE:-on}
 SANDBOX_ALLOWED_DOMAINS=${SANDBOX_ALLOWED_DOMAINS_VALUE}
+SANDBOX_VAULT_ENV_VARS=${SANDBOX_VAULT_ENV_VARS_VALUE}
 EOF
+
+if [ -n "${SANDBOX_VAULT_ENV_VARS_VALUE}" ]; then
+  echo "Injecting extra Vault secrets: ${SANDBOX_VAULT_ENV_VARS_VALUE}"
+  IFS=',' read -ra EXTRA_VAR_NAMES <<<"${SANDBOX_VAULT_ENV_VARS_VALUE}"
+  for VAR_NAME in "${EXTRA_VAR_NAMES[@]}"; do
+    VAR_NAME=$(echo "$VAR_NAME" | xargs)
+    [ -z "$VAR_NAME" ] && continue
+    VAR_VALUE=$(echo "$SECRETS" | jq -r --arg key "$VAR_NAME" '.[$key] // empty')
+    if [ -z "$VAR_VALUE" ]; then
+      echo "WARNING: ${VAR_NAME} not found in Vault (${VAULT_KV_PATH}/secrets); skipping." >&2
+      continue
+    fi
+    echo "${VAR_NAME}=${VAR_VALUE}" >>"$ENV_FILE"
+  done
+fi
+
 chmod 600 "$ENV_FILE"
 echo "✓ Wrote ${ENV_FILE} from Vault"

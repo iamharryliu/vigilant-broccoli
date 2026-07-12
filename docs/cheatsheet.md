@@ -81,6 +81,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 
 🤖 AGENT SANDBOX
   sandbox:up                  Fetch tokens from Vault into .env, then build + start contained Claude sandbox
+                               (set SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 in infrastructure/agent-sandbox/.env to also inject those Vault secret keys)
   sandbox:claude              Run Claude autonomously inside the sandbox repo clone
   sandbox:shell               Shell into the sandbox (dotfiles loaded)
   sandbox:logs                Follow sandbox provisioning logs
