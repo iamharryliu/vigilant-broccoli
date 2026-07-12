@@ -1,12 +1,23 @@
+# harryliu.dev — Cloudflare Pages site (project + deploys owned by the nx
+# `personal-website-frontend` deploy target via wrangler). Terraform owns the
+# custom domain attachment and its DNS, pointing at the `staging-harryliu-dev-angular`
+# project.
+
 import {
   to = cloudflare_dns_record.harryliu_dev_apex
   id = "${var.cloudflare_zone_id}/6072fab7c87f7aabda091bbe5a3249f7"
 }
 
+resource "cloudflare_pages_domain" "harryliu_dev" {
+  account_id   = var.cloudflare_account_id
+  project_name = var.harryliu_dev_pages_project
+  name         = "harryliu.dev"
+}
+
 resource "cloudflare_dns_record" "harryliu_dev_apex" {
   zone_id = var.cloudflare_zone_id
   name    = "harryliu.dev"
-  content = "harryliu-design-angular.pages.dev"
+  content = var.harryliu_dev_pages_subdomain
   type    = "CNAME"
   ttl     = 1
   proxied = true

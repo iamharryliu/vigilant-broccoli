@@ -122,3 +122,13 @@ variable "cloud8skate_pages_subdomain" {
   type    = string
   default = "staging-cloud-8-skate-angular.pages.dev"
 }
+
+variable "harryliu_dev_pages_project" {
+  type    = string
+  default = "staging-harryliu-dev-angular"
+}
+
+variable "harryliu_dev_pages_subdomain" {
+  type    = string
+  default = "staging-harryliu-dev-angular.pages.dev"
+}
