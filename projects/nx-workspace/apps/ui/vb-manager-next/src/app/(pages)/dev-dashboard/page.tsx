@@ -1,5 +1,7 @@
 'use client';
 
+import { Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Tabs } from '@radix-ui/themes';
 import { AwsManagementComponent } from '../../components/aws-management.component';
 import { DockerStatusComponent } from '../../components/docker-status.component';
@@ -21,9 +23,26 @@ const TAB = {
   CLOUD: 'cloud',
 } as const;
 
-export default function Page() {
+const TAB_PARAM = 'tab';
+
+function DevDashboardContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const activeTab = searchParams.get(TAB_PARAM) ?? TAB.LOCAL;
+
+  const setActiveTab = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(TAB_PARAM, value);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
   return (
-    <Tabs.Root defaultValue={TAB.LOCAL} className="h-full flex flex-col">
+    <Tabs.Root
+      value={activeTab}
+      onValueChange={setActiveTab}
+      className="h-full flex flex-col"
+    >
       <Tabs.List>
         <Tabs.Trigger value={TAB.LOCAL}>Local</Tabs.Trigger>
         <Tabs.Trigger value={TAB.CLOUD}>Cloud</Tabs.Trigger>
@@ -67,5 +86,13 @@ export default function Page() {
         </div>
       </Tabs.Content>
     </Tabs.Root>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <DevDashboardContent />
+    </Suspense>
   );
 }
