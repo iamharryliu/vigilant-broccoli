@@ -93,16 +93,32 @@ variable "journal_domain" {
 
 variable "journal_pages_project" {
   type    = string
-  default = "journal"
+  default = "staging-journal"
 }
 
-# Cloudflare appended a suffix because journal.pages.dev was taken globally.
+# Kept separate from the project name: Cloudflare appends a suffix when
+# <project>.pages.dev is taken globally (the old `journal` project got journal-d64).
 variable "journal_pages_subdomain" {
   type    = string
-  default = "journal-d64.pages.dev"
+  default = "staging-journal.pages.dev"
 }
 
 variable "journal_allowed_emails" {
   type    = list(string)
   default = ["harryliu1995@gmail.com"]
+}
+
+variable "cloud8skate_domain" {
+  type    = string
+  default = "cloud8skate.com"
+}
+
+variable "cloud8skate_pages_project" {
+  type    = string
+  default = "staging-cloud-8-skate-angular"
+}
+
+variable "cloud8skate_pages_subdomain" {
+  type    = string
+  default = "staging-cloud-8-skate-angular.pages.dev"
 }

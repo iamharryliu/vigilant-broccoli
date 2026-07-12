@@ -83,16 +83,27 @@
       "command": "node apps/ui/cloud-8-skate-angular/scripts/generate-sitemap.mjs",
       "dependsOn": ["build"]
     },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-cloud-8-skate-angular || npx wrangler pages project create staging-cloud-8-skate-angular --production-branch main"
+    },
     "prune-deployments": {
-      "command": "npx tsx scripts/prune-wrangler-deployments.ts cloud-8-skate-angular 10"
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-cloud-8-skate-angular 10"
     },
     "deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
-      "dependsOn": ["generate-sitemap", "prune-deployments"]
+      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name staging-cloud-8-skate-angular",
+      "dependsOn": [
+        "generate-sitemap",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
     },
     "manual-deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name cloud-8-skate-angular",
-      "dependsOn": ["generate-sitemap", "prune-deployments"]
+      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name staging-cloud-8-skate-angular",
+      "dependsOn": [
+        "generate-sitemap",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
     }
   }
 }

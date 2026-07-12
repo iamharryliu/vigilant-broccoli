@@ -105,16 +105,19 @@
         "staticFilePath": "dist/apps/ui/personal-website-frontend/browser"
       }
     },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-harryliu-dev-angular || npx wrangler pages project create staging-harryliu-dev-angular --production-branch main"
+    },
     "prune-deployments": {
-      "command": "npx tsx scripts/prune-wrangler-deployments.ts harryliu-dev-angular 10"
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-harryliu-dev-angular 10"
     },
     "deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-dev-angular",
-      "dependsOn": ["build", "prune-deployments"]
+      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-frontend/browser --project-name staging-harryliu-dev-angular",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     },
     "manual-deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-frontend/browser --project-name harryliu-dev-angular",
-      "dependsOn": ["build", "prune-deployments"]
+      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-frontend/browser --project-name staging-harryliu-dev-angular",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     }
   }
 }

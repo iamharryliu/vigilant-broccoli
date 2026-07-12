@@ -35,7 +35,7 @@ jobs:
             hostname: vault.harryliu.dev
             origin_ip_secret: ''
           - name: journal
-            hostname: journal.harryliu.dev,journal-d64.pages.dev
+            hostname: journal.harryliu.dev,staging-journal.pages.dev
             origin_ip_secret: ''
     steps:
       - name: Checkout code
