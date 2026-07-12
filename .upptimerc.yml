@@ -11,11 +11,11 @@ sites:
   - name: cloud8skate.com
     url: https://cloud8skate.com/
   - name: findme
-    url: https://findme-kohl.vercel.app/
+    url: https://staging-findme.vercel.app/
   - name: hearth
-    url: https://vb-hearth.vercel.app/login
+    url: https://staging-vb-hearth.vercel.app/login
   - name: whiteboard
-    url: https://whiteboard-one-psi.vercel.app/
+    url: https://staging-whiteboard.vercel.app/
   - name: service-manager
     url: https://staging-vb-express.fly.dev/
   - name: llm-service

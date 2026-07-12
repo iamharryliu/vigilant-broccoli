@@ -55,21 +55,21 @@ export function UiPage() {
           </li>
           <li>
             <CardLink
-              href="https://employee-handler-ui.vercel.app"
+              href="https://staging-employee-handler-ui.vercel.app"
               title={t('UI_PAGE.EMPLOYEE_HANDLER_UI.TITLE')}
               description={t('UI_PAGE.EMPLOYEE_HANDLER_UI.DESCRIPTION')}
             />
           </li>
           <li>
             <CardLink
-              href="https://findme-kohl.vercel.app/"
+              href="https://staging-findme.vercel.app/"
               title={t('UI_PAGE.FIND_ME.TITLE')}
               description={t('UI_PAGE.FIND_ME.DESCRIPTION')}
             />
           </li>
           <li>
             <CardLink
-              href="https://whiteboard-one-psi.vercel.app/"
+              href="https://staging-whiteboard.vercel.app/"
               title={t('UI_PAGE.WHITEBOARD.TITLE')}
               description={t('UI_PAGE.WHITEBOARD.DESCRIPTION')}
             />
