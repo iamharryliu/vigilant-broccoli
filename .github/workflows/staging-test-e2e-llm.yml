@@ -1,4 +1,4 @@
-name: test-e2e-llm
+name: staging-test-e2e-llm
 
 on:
   schedule:

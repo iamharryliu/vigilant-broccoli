@@ -1,4 +1,4 @@
-name: test-smoke-email-service
+name: staging-test-smoke-email-service
 
 on:
   schedule:

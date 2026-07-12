@@ -1,4 +1,4 @@
-name: test-e2e-email-subscription-service
+name: staging-test-e2e-email-subscription-service
 
 on:
   schedule:

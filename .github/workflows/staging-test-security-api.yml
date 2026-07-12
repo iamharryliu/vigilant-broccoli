@@ -1,4 +1,4 @@
-name: test-security-api
+name: staging-test-security-api
 
 on:
   schedule:

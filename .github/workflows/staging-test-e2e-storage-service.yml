@@ -1,4 +1,4 @@
-name: test-e2e-storage-service
+name: staging-test-e2e-storage-service
 
 on:
   schedule:
