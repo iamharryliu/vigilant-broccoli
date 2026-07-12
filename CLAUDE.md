@@ -54,8 +54,5 @@
   - [mac](./setup/mac/) - macOS setup: `install.sh` entry point, dock, dock stacks, preferences, wallpaper.
   - [linux](./setup/linux/) - Linux setup: `install.sh` symlinks `~/vigilant-broccoli` to the repo location if cloned elsewhere, links shared dotfiles, and hooks `.rc.bash` into `~/.bashrc`. `-y` runs non-interactively (used by the code-server VM bootstrap, which clones the repo to `~/vigilant-broccoli`).
 - [Projects](./projects/) - Software projects.
-  - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects
-    - [vb-manager-next](./projects/nx-workspace/apps/ui/vb-manager-next) - Next.js management dashboard app (Tailwind, NextAuth, PM2 deployed)
-    - [cloud8skate-sanity](./projects/nx-workspace/apps/cms/cloud8skate-sanity) - Sanity Studio CMS for cloud8skate (manual deploy only via `nx manual:deploy cloud8skate-sanity`)
-    - [hearth](./projects/nx-workspace/apps/hearth) - Next.js shared-living app for homes/communes/communities (Supabase, Radix, deployed to Vercel). Deploys to Vercel at `vb-hearth.vercel.app` (project ID pinned in `project.json`) and the `home-management` R2 bucket — the bucket name predates the rename.
+  - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects. See [repo-patterns.md](./docs/repo-patterns.md) for per-app deploy patterns and [repo-operations.md](./docs/repo-operations.md) for infra quirks (e.g. R2 bucket naming).
   - Note: `sharp` must remain in the workspace root `dependencies` (`projects/nx-workspace/package.json`) — required for Vercel serverless bundling of the `hearth` `/api/where-is` route.

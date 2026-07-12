@@ -61,6 +61,19 @@ cd envs/dev
 terraform init
 ```
 
+## Migrating Old Infra
+
+- Use `import` blocks (not `terraform import`) to bring existing/manually-created infra under management — declarative, plannable, diffable in a PR.
+
+```
+import {
+  to = aws_s3_bucket.my_bucket
+  id = "my-company-bucket"
+}
+```
+
+- `terraform plan -generate-config-out=generated.tf` scaffolds the resource block from the imported state.
+
 ## State Management
 
 - Terraform State Manager

@@ -31,6 +31,8 @@ terraform apply \
   -target=google_secret_manager_secret.wg_gha_public_key
 ```
 
+WireGuard is for laptop access only. CI reaches Vault through the cloudflared tunnel at `vault.harryliu.dev` — the tunnel, DNS record, Access service token, `VB_VM_CLOUDFLARED_TUNNEL_TOKEN` GCP secret, and the `VAULT_CF_ACCESS_*` GitHub Actions secrets are all created by the full `terraform apply` (see `cloudflare-vault.tf`); `cloudflared-init.sh` picks the tunnel token up on first boot.
+
 ### 2.Generate WireGuard keys + populate secrets
 
 ```bash
@@ -77,6 +79,8 @@ npm run gcp:vm:image:build
 cd terraform
 terraform apply
 ```
+
+First boot runs `wg-init.service` and `cloudflared-init.service` (tunnel token from Secret Manager). Verify the tunnel with `sudo systemctl status cloudflared` on the VM, or `curl https://vault.harryliu.dev/v1/sys/health` with the Access service token headers.
 
 ### 5.Laptop WireGuard config
 
