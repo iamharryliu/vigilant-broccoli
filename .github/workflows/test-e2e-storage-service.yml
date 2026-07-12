@@ -14,7 +14,7 @@ permissions:
   id-token: write
 
 env:
-  SERVICE_URL: https://vb-storage-service.fly.dev
+  SERVICE_URL: https://staging-vb-storage-service.fly.dev
 
 jobs:
   test-storage-service:

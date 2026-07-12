@@ -94,7 +94,7 @@
       }
     },
     "deploy": {
-      "command": "flyctl deploy --dockerfile ./apps/api/llm-service/Dockerfile --config ./deployment-configs/fly-configs/llm-service.toml",
+      "command": "flyctl deploy --dockerfile ./apps/api/llm-service/Dockerfile --config ./deployment-configs/fly-configs/staging-llm-service.toml",
       "dependsOn": ["build", "lint", "prune", "smoke", "deploy:secrets"]
     }
   }

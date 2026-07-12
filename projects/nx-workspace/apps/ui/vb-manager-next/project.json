@@ -34,10 +34,10 @@
         "env": {
           "NEXTAUTH_SECRET": "NEXTAUTH_SECRET",
           "NEXTAUTH_URL": "http://localhost:3000",
-          "VB_EXPRESS_URL": "https://vb-express.fly.dev",
-          "VB_STORAGE_SERVICE_URL": "https://vb-storage-service.fly.dev",
-          "EMAIL_SERVICE_URL": "https://vb-email-service.fly.dev",
-          "LLM_SERVICE_URL": "https://vb-llm-service.fly.dev"
+          "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev",
+          "VB_STORAGE_SERVICE_URL": "https://staging-vb-storage-service.fly.dev",
+          "EMAIL_SERVICE_URL": "https://staging-vb-email-service.fly.dev",
+          "LLM_SERVICE_URL": "https://staging-vb-llm-service.fly.dev"
         }
       }
     },

@@ -20,16 +20,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: vb-express
-            url: https://vb-express.fly.dev
-          - name: vb-llm-service
-            url: https://vb-llm-service.fly.dev
-          - name: vb-storage-service
-            url: https://vb-storage-service.fly.dev
-          - name: vb-email-service
-            url: https://vb-email-service.fly.dev
-          - name: email-subscription-service
-            url: https://email-subscription-service.fly.dev
+          - name: staging-vb-express
+            url: https://staging-vb-express.fly.dev
+          - name: staging-vb-llm-service
+            url: https://staging-vb-llm-service.fly.dev
+          - name: staging-vb-storage-service
+            url: https://staging-vb-storage-service.fly.dev
+          - name: staging-vb-email-service
+            url: https://staging-vb-email-service.fly.dev
+          - name: staging-email-subscription-service
+            url: https://staging-email-subscription-service.fly.dev
 
     steps:
       - name: Checkout code

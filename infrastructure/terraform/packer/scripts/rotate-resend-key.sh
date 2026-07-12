@@ -7,7 +7,7 @@ source "${SCRIPT_DIR}/../../../config.sh"
 RESEND_API="https://api.resend.com"
 KEY_NAME="vb-ci-$(date +%Y%m%d%H%M%S)"
 KEY_PERMISSION="full_access"
-FLY_APP="vb-email-service"
+FLY_APP="staging-vb-email-service"
 
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): current key and
 # VAULT_TOKEN come from the vault-secrets action, Vault is reached through the

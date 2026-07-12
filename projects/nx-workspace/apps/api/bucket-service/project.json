@@ -105,7 +105,7 @@
     },
     "deploy": {
       "dependsOn": ["deploy-container", "deploy:secrets"],
-      "command": "flyctl deploy --config ./deployment-configs/fly-configs/bucket-service.toml --image iamharryliu/bucket-service:${COMMIT_SHA:-latest}"
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/staging-bucket-service.toml --image iamharryliu/bucket-service:${COMMIT_SHA:-latest}"
     }
   }
 }

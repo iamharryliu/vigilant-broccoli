@@ -8,5 +8,5 @@ export const ENVIRONMENT = {
     : 'https://harryliu.dev',
   API_URL: import.meta.env.DEV
     ? 'http://localhost:3000'
-    : 'https://vb-express.fly.dev',
+    : 'https://staging-vb-express.fly.dev',
 };

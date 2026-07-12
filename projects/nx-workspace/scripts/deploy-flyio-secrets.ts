@@ -41,6 +41,31 @@ function runFlyctl(command: string): void {
   }
 }
 
+const FLY_ORG = 'personal';
+
+function flyAppExists(appName: string): boolean {
+  try {
+    execSync(`flyctl status --app ${appName}`, { stdio: 'pipe' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function ensureFlyApp(appName: string, dryRun = false): void {
+  if (flyAppExists(appName)) return;
+
+  const createCommand = `flyctl apps create ${appName} --org ${FLY_ORG}`;
+  if (dryRun) {
+    console.log(`[DRY RUN] Would execute: ${createCommand}`);
+    return;
+  }
+
+  console.log(`Fly app ${appName} not found. Creating...`);
+  runFlyctl(createCommand);
+  console.log(`Created fly app ${appName}`);
+}
+
 function getExistingSecretKeys(appName: string): string[] {
   try {
     const output = execSync(`flyctl secrets list --app ${appName} --json`, {
@@ -117,6 +142,8 @@ async function main() {
   console.log(
     `\nDeploying secrets for ${projectName} (Fly app: ${config.flyAppName})`,
   );
+
+  ensureFlyApp(config.flyAppName, dryRun);
 
   const envExamplePath = join(config.appPath, '.env.example');
   console.log(`Reading required secrets from ${envExamplePath}...`);

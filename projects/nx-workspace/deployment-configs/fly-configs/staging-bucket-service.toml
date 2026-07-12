@@ -1,19 +1,15 @@
-app = 'vb-express'
+app = 'staging-vb-storage-service'
 primary_region = 'yyz'
 
 [build]
+  image = 'iamharryliu/bucket-service:latest'
 
 [env]
   PORT = '3000'
   HOST = '0.0.0.0'
-  EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev'
-  LLM_SERVICE_URL = 'https://vb-llm-service.fly.dev'
-  DATABASE_PATH = '/data/vb-express.sqlite'
-  BETTER_AUTH_URL = 'https://vb-express.fly.dev'
-
-[mounts]
-  source = 'vb_express_data'
-  destination = '/data'
+  CLOUDFLARE_BUCKET_NAME = 'storage-buckets'
+  GOOGLE_GCS_PROJECT_ID = 'vigilant-broccoli'
+  GOOGLE_GCS_BUCKET_NAME = 'vb-storage-bucket'
 
 [http_service]
   internal_port = 3000
@@ -31,6 +27,6 @@ primary_region = 'yyz'
     path = '/'
 
 [[vm]]
-  memory = '512mb'
+  memory = '256mb'
   cpus = 1
-  memory_mb = 512
+  memory_mb = 256

@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
 
 RABBITMQ_USER="admin"
-FLY_APPS=("vb-email-service" "email-subscription-service")
+FLY_APPS=("staging-vb-email-service" "staging-email-subscription-service")
 SSH_OPTS="-i $HOME/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"
 
 RABBITMQ_IP=$(cd "${SCRIPT_DIR}/../../" && terraform output -raw oci_vm_public_ip)

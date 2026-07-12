@@ -31,7 +31,7 @@ jobs:
 
       - name: Destroy Fly app machines
         run: |
-          for app in vb-express vb-email-service vb-manager-next-mobile; do
+          for app in staging-vb-express staging-vb-email-service staging-vb-manager-next-mobile; do
             echo "Destroying machines for $app..."
             flyctl machine list --app $app --json \
               | jq -r '.[].id' \

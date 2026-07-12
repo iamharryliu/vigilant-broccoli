@@ -5,7 +5,8 @@ import {
 } from '../../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
-const EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev/api/send-email';
+const EMAIL_SERVICE_URL =
+  'https://staging-vb-email-service.fly.dev/api/send-email';
 const SENDER_EMAIL = 'home.management@harryliu.dev';
 
 async function sendEmail(to: string, subject: string, html: string) {

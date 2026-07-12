@@ -77,7 +77,7 @@
     },
     "deploy": {
       "dependsOn": ["deploy-container", "deploy:secrets"],
-      "command": "flyctl deploy --config ./deployment-configs/fly-configs/email-service.toml --image iamharryliu/email-service:${COMMIT_SHA:-latest}"
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/staging-email-service.toml --image iamharryliu/email-service:${COMMIT_SHA:-latest}"
     }
   }
 }

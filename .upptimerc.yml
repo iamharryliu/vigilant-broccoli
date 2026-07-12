@@ -17,16 +17,16 @@ sites:
   - name: whiteboard
     url: https://whiteboard-one-psi.vercel.app/
   - name: service-manager
-    url: https://vb-express.fly.dev/
+    url: https://staging-vb-express.fly.dev/
   - name: llm-service
-    url: https://vb-llm-service.fly.dev/
-    icon: https://vb-llm-service.fly.dev/favicon.ico
+    url: https://staging-vb-llm-service.fly.dev/
+    icon: https://staging-vb-llm-service.fly.dev/favicon.ico
   - name: email-service
-    url: https://vb-email-service.fly.dev/
+    url: https://staging-vb-email-service.fly.dev/
   - name: email-subscription-service
-    url: https://email-subscription-service.fly.dev/
+    url: https://staging-email-subscription-service.fly.dev/
   - name: storage-service
-    url: https://vb-storage-service.fly.dev/
+    url: https://staging-vb-storage-service.fly.dev/
   - name: socker-server
     url: https://socket.harryliu.dev/health
 

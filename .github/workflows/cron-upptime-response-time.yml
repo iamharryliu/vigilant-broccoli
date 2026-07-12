@@ -24,11 +24,11 @@ jobs:
         continue-on-error: true
         run: |
           urls=(
-            https://vb-llm-service.fly.dev/
-            https://vb-storage-service.fly.dev/
-            https://vb-email-service.fly.dev/
-            https://email-subscription-service.fly.dev/
-            https://vb-express.fly.dev/
+            https://staging-vb-llm-service.fly.dev/
+            https://staging-vb-storage-service.fly.dev/
+            https://staging-vb-email-service.fly.dev/
+            https://staging-email-subscription-service.fly.dev/
+            https://staging-vb-express.fly.dev/
           )
           for url in "${urls[@]}"; do
             curl -s -o /dev/null --max-time 30 "$url" &

@@ -16,21 +16,21 @@ export function ApiDocsPage() {
       <CardGrid>
         <li>
           <CardLink
-            href="https://vb-llm-service.fly.dev/docs"
+            href="https://staging-vb-llm-service.fly.dev/docs"
             title={t('API_DOCS_PAGE.LLM_SERVICE.TITLE')}
             description={t('API_DOCS_PAGE.LLM_SERVICE.DESCRIPTION')}
           />
         </li>
         <li>
           <CardLink
-            href="https://vb-email-service.fly.dev/docs"
+            href="https://staging-vb-email-service.fly.dev/docs"
             title={t('API_DOCS_PAGE.EMAIL_SERVICE.TITLE')}
             description={t('API_DOCS_PAGE.EMAIL_SERVICE.DESCRIPTION')}
           />
         </li>
         <li>
           <CardLink
-            href="https://email-subscription-service.fly.dev/docs"
+            href="https://staging-email-subscription-service.fly.dev/docs"
             title={t('API_DOCS_PAGE.EMAIL_SUBSCRIPTION_SERVICE.TITLE')}
             description={t(
               'API_DOCS_PAGE.EMAIL_SUBSCRIPTION_SERVICE.DESCRIPTION',
@@ -39,7 +39,7 @@ export function ApiDocsPage() {
         </li>
         <li>
           <CardLink
-            href="https://vb-storage-service.fly.dev/docs"
+            href="https://staging-vb-storage-service.fly.dev/docs"
             title={t('API_DOCS_PAGE.STORAGE_SERVICE.TITLE')}
             description={t('API_DOCS_PAGE.STORAGE_SERVICE.DESCRIPTION')}
           />

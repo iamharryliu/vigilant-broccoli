@@ -97,19 +97,19 @@
     "DESCRIPTION": "Swagger documentation for services deployed on Fly.io.",
     "LLM_SERVICE": {
       "TITLE": "LLM Service",
-      "DESCRIPTION": "vb-llm-service.fly.dev"
+      "DESCRIPTION": "staging-vb-llm-service.fly.dev"
     },
     "EMAIL_SERVICE": {
       "TITLE": "Email Service",
-      "DESCRIPTION": "vb-email-service.fly.dev"
+      "DESCRIPTION": "staging-vb-email-service.fly.dev"
     },
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "Email Subscription Service",
-      "DESCRIPTION": "email-subscription-service.fly.dev"
+      "DESCRIPTION": "staging-email-subscription-service.fly.dev"
     },
     "STORAGE_SERVICE": {
       "TITLE": "Storage Service",
-      "DESCRIPTION": "vb-storage-service.fly.dev"
+      "DESCRIPTION": "staging-vb-storage-service.fly.dev"
     }
   }
 }

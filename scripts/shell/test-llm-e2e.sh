@@ -2,7 +2,7 @@
 
 set -e
 
-LLM_SERVICE_URL="${LLM_SERVICE_URL:-https://vb-llm-service.fly.dev}"
+LLM_SERVICE_URL="${LLM_SERVICE_URL:-https://staging-vb-llm-service.fly.dev}"
 MODEL="${MODEL:-gpt-4o-mini}"
 PASS=0
 FAIL=0

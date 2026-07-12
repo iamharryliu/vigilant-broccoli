@@ -1,15 +1,13 @@
-app = 'vb-storage-service'
+app = 'staging-email-subscription-service'
 primary_region = 'yyz'
 
 [build]
-  image = 'iamharryliu/bucket-service:latest'
+  image = 'iamharryliu/email-subscription-service:latest'
 
 [env]
   PORT = '3000'
   HOST = '0.0.0.0'
-  CLOUDFLARE_BUCKET_NAME = 'storage-buckets'
-  GOOGLE_GCS_PROJECT_ID = 'vigilant-broccoli'
-  GOOGLE_GCS_BUCKET_NAME = 'vb-storage-bucket'
+  EMAIL_SERVICE_URL = 'https://staging-vb-email-service.fly.dev'
 
 [http_service]
   internal_port = 3000

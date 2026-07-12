@@ -14,7 +14,7 @@ permissions:
   id-token: write
 
 env:
-  LLM_SERVICE_URL: https://vb-llm-service.fly.dev
+  LLM_SERVICE_URL: https://staging-vb-llm-service.fly.dev
 
 jobs:
   test-llm-service:

@@ -92,7 +92,7 @@
       }
     },
     "deploy": {
-      "command": "flyctl deploy --dockerfile ./apps/api/vb-express/Dockerfile --config ./deployment-configs/fly-configs/vb-express.toml",
+      "command": "flyctl deploy --dockerfile ./apps/api/vb-express/Dockerfile --config ./deployment-configs/fly-configs/staging-vb-express.toml",
       "dependsOn": ["build", "lint", "prune", "smoke", "deploy:secrets"]
     }
   }

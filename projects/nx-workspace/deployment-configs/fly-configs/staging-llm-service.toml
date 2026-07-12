@@ -1,13 +1,11 @@
-app = 'email-subscription-service'
+app = 'staging-vb-llm-service'
 primary_region = 'yyz'
 
 [build]
-  image = 'iamharryliu/email-subscription-service:latest'
 
 [env]
   PORT = '3000'
   HOST = '0.0.0.0'
-  EMAIL_SERVICE_URL = 'https://vb-email-service.fly.dev'
 
 [http_service]
   internal_port = 3000
@@ -25,6 +23,6 @@ primary_region = 'yyz'
     path = '/'
 
 [[vm]]
-  memory = '256mb'
+  memory = '512mb'
   cpus = 1
-  memory_mb = 256
+  memory_mb = 512
