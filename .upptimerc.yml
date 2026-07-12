@@ -27,7 +27,7 @@ sites:
     url: https://staging-email-subscription-service.fly.dev/
   - name: storage-service
     url: https://staging-vb-storage-service.fly.dev/
-  - name: socker-server
+  - name: socket-server
     url: https://socket.harryliu.dev/health
 
 user-agent: upptime-vigilant-broccoli
