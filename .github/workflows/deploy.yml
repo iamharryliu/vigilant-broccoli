@@ -1,4 +1,5 @@
 name: deploy
+run-name: deploy (${{ inputs.environment || 'staging' }})
 on:
   push:
     branches: ['main']
@@ -6,6 +7,14 @@ on:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        type: choice
+        default: staging
+        options:
+          - staging
+          - production
   workflow_call:
 
 permissions:
@@ -129,14 +138,19 @@ jobs:
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
 
+          DEPLOY_TARGET="deploy"
+          if [[ "${{ inputs.environment || 'staging' }}" == "production" ]]; then
+            DEPLOY_TARGET="deploy:production"
+          fi
+
           if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
-            echo "deploy_cmd=pnpm exec nx run-many -t deploy" >> $GITHUB_OUTPUT
+            echo "deploy_cmd=pnpm exec nx run-many -t $DEPLOY_TARGET" >> $GITHUB_OUTPUT
           else
-            AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=deploy --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
+            AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=$DEPLOY_TARGET --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
             if [[ -n "$AFFECTED_COMMA" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
-              echo "deploy_cmd=pnpm exec nx run-many -t deploy --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
+              echo "deploy_cmd=pnpm exec nx run-many -t $DEPLOY_TARGET --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
             else
               echo "has_deployments=false" >> $GITHUB_OUTPUT
             fi

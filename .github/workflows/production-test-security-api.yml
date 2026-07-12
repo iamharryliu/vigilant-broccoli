@@ -1,0 +1,42 @@
+name: production-test-security-api
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: production-vb-express
+            url: https://production-vb-express.fly.dev
+          - name: production-vb-llm-service
+            url: https://production-vb-llm-service.fly.dev
+          - name: production-vb-storage-service
+            url: https://production-vb-storage-service.fly.dev
+          - name: production-vb-email-service
+            url: https://production-vb-email-service.fly.dev
+          - name: production-email-subscription-service
+            url: https://production-email-subscription-service.fly.dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Run security check for ${{ matrix.name }}
+        run: |
+          chmod +x scripts/shell/test-api-ping-security.sh
+          scripts/shell/test-api-ping-security.sh "${{ matrix.name }}" "${{ matrix.url }}"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Security check failed for ${{ matrix.name }}! /api/* may be accepting unauthorized requests."
+          exit 1

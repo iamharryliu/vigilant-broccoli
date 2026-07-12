@@ -1294,7 +1294,7 @@ const HOME_LINKS = [
 const UI_APP_LINKS = [
   {
     label: 'FindMe',
-    target: 'https://findme-kohl.vercel.app/',
+    target: 'https://staging-findme.vercel.app/',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },

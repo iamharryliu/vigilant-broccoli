@@ -4,9 +4,12 @@ import {
   createAdminClient,
 } from '../../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
-const EMAIL_SERVICE_URL =
-  'https://staging-vb-email-service.fly.dev/api/send-email';
+const EMAIL_SERVICE_BASE_URL =
+  getEnvironmentVariable('EMAIL_SERVICE_URL') ||
+  'https://staging-vb-email-service.fly.dev';
+const EMAIL_SERVICE_URL = `${EMAIL_SERVICE_BASE_URL}/api/send-email`;
 const SENDER_EMAIL = 'home.management@harryliu.dev';
 
 async function sendEmail(to: string, subject: string, html: string) {

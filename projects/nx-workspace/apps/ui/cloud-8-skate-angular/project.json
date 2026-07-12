@@ -43,6 +43,27 @@
           ],
           "outputHashing": "all"
         },
+        "production-env": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/ui/cloud-8-skate-angular/src/environments/environment.ts",
+              "with": "apps/ui/cloud-8-skate-angular/src/environments/environment.production.ts"
+            }
+          ]
+        },
         "development": {
           "optimization": false,
           "extractLicenses": false,
@@ -103,6 +124,19 @@
         "generate-sitemap",
         "ensure-cf-project",
         "prune-deployments"
+      ]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-cloud-8-skate-angular || npx wrangler pages project create production-cloud-8-skate-angular --production-branch main"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-cloud-8-skate-angular 10"
+    },
+    "deploy:production": {
+      "command": "npx nx build cloud-8-skate-angular --configuration=production-env && node apps/ui/cloud-8-skate-angular/scripts/generate-sitemap.mjs && npx wrangler pages deploy dist/apps/ui/cloud-8-skate-angular/browser --project-name production-cloud-8-skate-angular",
+      "dependsOn": [
+        "ensure-cf-project:production",
+        "prune-deployments:production"
       ]
     }
   }

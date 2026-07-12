@@ -4,7 +4,10 @@ import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
 
+const STAGING = 'staging';
 const PRODUCTION = 'production';
+const ENVIRONMENTS = [STAGING, PRODUCTION];
+const VERCEL_ENV = PRODUCTION;
 
 interface VaultSecrets {
   [key: string]: string;
@@ -123,11 +126,18 @@ function parseEnvKeys(filePath: string): string[] {
 async function main() {
   const args = process.argv.slice(2);
   const projectName = args[0];
-  const environment = args[1] || PRODUCTION;
+  const environment = args[1] || STAGING;
 
   if (!projectName) {
     console.error(
-      'Usage: npx tsx scripts/deploy-vercel.ts <project-name> [environment]',
+      'Usage: npx tsx scripts/deploy-vercel.ts <project-name> [staging|production]',
+    );
+    process.exit(1);
+  }
+
+  if (!ENVIRONMENTS.includes(environment)) {
+    console.error(
+      `Unknown environment "${environment}" (expected: ${ENVIRONMENTS.join(', ')})`,
     );
     process.exit(1);
   }
@@ -161,8 +171,9 @@ async function main() {
     hearth: {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,
-        NEXT_PUBLIC_APP_URL: 'https://staging-vb-hearth.vercel.app/',
-        VB_EXPRESS_URL: 'https://staging-vb-express.fly.dev',
+        NEXT_PUBLIC_APP_URL: `https://${environment}-vb-hearth.vercel.app/`,
+        VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
+        EMAIL_SERVICE_URL: `https://${environment}-vb-email-service.fly.dev`,
       },
       envExamplePath: 'apps/hearth/.env.local.example',
       settings: NX_VERCEL_SETTINGS('hearth', 'dist/apps/hearth/.next'),
@@ -238,7 +249,7 @@ async function main() {
   console.log('Deploying secrets...');
   const results = await Promise.all(
     Object.entries(allSecrets).map(([key, value]) =>
-      vercelEnvAdd(key, value, environment),
+      vercelEnvAdd(key, value, VERCEL_ENV),
     ),
   );
 
@@ -248,14 +259,7 @@ async function main() {
   }
 
   const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-  const deployArgs = [
-    'deploy',
-    environment === PRODUCTION && '--prod',
-    '--yes',
-    `"${repoRoot}"`,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const deployArgs = ['deploy', '--prod', '--yes', `"${repoRoot}"`].join(' ');
   console.log(`\nTriggering Vercel deployment for ${projectName}...\n`);
   execSync(`npx vercel ${deployArgs}`, {
     stdio: 'inherit',

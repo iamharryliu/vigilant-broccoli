@@ -23,6 +23,13 @@ on:
           - email-service
           - bucket-service
           - email-subscription-service
+      environment:
+        description: 'Deployment environment (production only exists for fly services)'
+        type: choice
+        default: staging
+        options:
+          - staging
+          - production
 
 permissions:
   actions: read
@@ -84,4 +91,9 @@ jobs:
           VAULT_ADDR: https://vault.harryliu.dev
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
-        run: pnpm exec nx run ${{ github.event.inputs.project }}:deploy
+        run: |
+          DEPLOY_TARGET="deploy"
+          if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+            DEPLOY_TARGET="deploy:production"
+          fi
+          pnpm exec nx run-many -t $DEPLOY_TARGET --projects="${{ github.event.inputs.project }}"

@@ -88,12 +88,28 @@
     "deploy:secrets": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts vb-express"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts vb-express staging"
       }
     },
     "deploy": {
       "command": "flyctl deploy --dockerfile ./apps/api/vb-express/Dockerfile --config ./deployment-configs/fly-configs/staging-vb-express.toml",
       "dependsOn": ["build", "lint", "prune", "smoke", "deploy:secrets"]
+    },
+    "deploy:secrets:production": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts vb-express production"
+      }
+    },
+    "deploy:production": {
+      "command": "flyctl deploy --dockerfile ./apps/api/vb-express/Dockerfile --config ./deployment-configs/fly-configs/production-vb-express.toml",
+      "dependsOn": [
+        "build",
+        "lint",
+        "prune",
+        "smoke",
+        "deploy:secrets:production"
+      ]
     }
   }
 }

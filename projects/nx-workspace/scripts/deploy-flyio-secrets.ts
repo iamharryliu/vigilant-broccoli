@@ -43,6 +43,10 @@ function runFlyctl(command: string): void {
 
 const FLY_ORG = 'personal';
 
+const STAGING = 'staging';
+const PRODUCTION = 'production';
+const ENVIRONMENTS = [STAGING, PRODUCTION];
+
 function flyAppExists(appName: string): boolean {
   try {
     execSync(`flyctl status --app ${appName}`, { stdio: 'pipe' });
@@ -121,16 +125,25 @@ async function main() {
 
   if (args.length === 0) {
     console.error(
-      'Usage: npx tsx scripts/deploy-flyio-secrets.ts <app-name> [--dry-run]',
+      'Usage: npx tsx scripts/deploy-flyio-secrets.ts <app-name> [environment] [--dry-run]',
     );
     console.error('\nAvailable apps:');
     Object.keys(secretsMapping).forEach(app => console.error(`  - ${app}`));
     process.exit(1);
   }
 
-  const projectName = args[0];
+  const positional = args.filter(arg => !arg.startsWith('--'));
+  const projectName = positional[0];
+  const environment = positional[1] || STAGING;
   const dryRun = args.includes('--dry-run');
   const config = secretsMapping[projectName];
+
+  if (!ENVIRONMENTS.includes(environment)) {
+    console.error(
+      `Error: Unknown environment "${environment}" (expected: ${ENVIRONMENTS.join(', ')})`,
+    );
+    process.exit(1);
+  }
 
   if (!config) {
     console.error(`Error: No configuration found for app "${projectName}"`);
@@ -139,11 +152,13 @@ async function main() {
     process.exit(1);
   }
 
+  const flyAppName = `${environment}-${config.flyAppBaseName}`;
+
   console.log(
-    `\nDeploying secrets for ${projectName} (Fly app: ${config.flyAppName})`,
+    `\nDeploying secrets for ${projectName} (Fly app: ${flyAppName})`,
   );
 
-  ensureFlyApp(config.flyAppName, dryRun);
+  ensureFlyApp(flyAppName, dryRun);
 
   const envExamplePath = join(config.appPath, '.env.example');
   console.log(`Reading required secrets from ${envExamplePath}...`);
@@ -168,7 +183,7 @@ async function main() {
     }
   }
 
-  await deploySecretsToFlyio(config.flyAppName, secretsToDeploy, dryRun);
+  await deploySecretsToFlyio(flyAppName, secretsToDeploy, dryRun);
 
   console.log('\nDone!');
 }

@@ -54,12 +54,22 @@
     "deploy:secrets": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts vb-manager-next-mobile"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts vb-manager-next-mobile staging"
       }
     },
     "deploy": {
       "command": "flyctl deploy --dockerfile ./apps/vb-manager-next-mobile/Dockerfile --config ./deployment-configs/fly-configs/staging-vb-manager-next-mobile.toml --build-arg VB_EXPRESS_URL=https://staging-vb-express.fly.dev",
       "dependsOn": ["build", "lint", "deploy:secrets"]
+    },
+    "deploy:secrets:production": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts vb-manager-next-mobile production"
+      }
+    },
+    "deploy:production": {
+      "command": "flyctl deploy --dockerfile ./apps/vb-manager-next-mobile/Dockerfile --config ./deployment-configs/fly-configs/production-vb-manager-next-mobile.toml --build-arg VB_EXPRESS_URL=https://production-vb-express.fly.dev",
+      "dependsOn": ["build", "lint", "deploy:secrets:production"]
     }
   }
 }

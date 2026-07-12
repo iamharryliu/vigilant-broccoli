@@ -100,12 +100,22 @@
     "deploy:secrets": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts bucket-service"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts bucket-service staging"
       }
     },
     "deploy": {
       "dependsOn": ["deploy-container", "deploy:secrets"],
       "command": "flyctl deploy --config ./deployment-configs/fly-configs/staging-bucket-service.toml --image iamharryliu/bucket-service:${COMMIT_SHA:-latest}"
+    },
+    "deploy:secrets:production": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts bucket-service production"
+      }
+    },
+    "deploy:production": {
+      "dependsOn": ["deploy-container", "deploy:secrets:production"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/production-bucket-service.toml --image iamharryliu/bucket-service:${COMMIT_SHA:-latest}"
     }
   }
 }

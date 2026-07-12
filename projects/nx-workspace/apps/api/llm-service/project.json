@@ -90,12 +90,28 @@
     "deploy:secrets": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts llm-service"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts llm-service staging"
       }
     },
     "deploy": {
       "command": "flyctl deploy --dockerfile ./apps/api/llm-service/Dockerfile --config ./deployment-configs/fly-configs/staging-llm-service.toml",
       "dependsOn": ["build", "lint", "prune", "smoke", "deploy:secrets"]
+    },
+    "deploy:secrets:production": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts llm-service production"
+      }
+    },
+    "deploy:production": {
+      "command": "flyctl deploy --dockerfile ./apps/api/llm-service/Dockerfile --config ./deployment-configs/fly-configs/production-llm-service.toml",
+      "dependsOn": [
+        "build",
+        "lint",
+        "prune",
+        "smoke",
+        "deploy:secrets:production"
+      ]
     }
   }
 }

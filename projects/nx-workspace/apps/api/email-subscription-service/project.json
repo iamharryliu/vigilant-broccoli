@@ -70,12 +70,22 @@
     "deploy:secrets": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts email-subscription-service"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts email-subscription-service staging"
       }
     },
     "deploy": {
       "dependsOn": ["deploy-container", "deploy:secrets"],
       "command": "flyctl deploy --config ./deployment-configs/fly-configs/staging-email-subscription-service.toml --image iamharryliu/email-subscription-service:${COMMIT_SHA:-latest}"
+    },
+    "deploy:secrets:production": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/deploy-flyio-secrets.ts email-subscription-service production"
+      }
+    },
+    "deploy:production": {
+      "dependsOn": ["deploy-container", "deploy:secrets:production"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/production-email-subscription-service.toml --image iamharryliu/email-subscription-service:${COMMIT_SHA:-latest}"
     }
   }
 }
