@@ -29,6 +29,11 @@ jobs:
             https://staging-vb-email-service.fly.dev/
             https://staging-email-subscription-service.fly.dev/
             https://staging-vb-express.fly.dev/
+            https://production-vb-llm-service.fly.dev/
+            https://production-vb-storage-service.fly.dev/
+            https://production-vb-email-service.fly.dev/
+            https://production-email-subscription-service.fly.dev/
+            https://production-vb-express.fly.dev/
           )
           for url in "${urls[@]}"; do
             curl -s -o /dev/null --max-time 30 "$url" &

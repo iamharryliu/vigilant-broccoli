@@ -20,6 +20,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - name: Warm fly.io services
+        continue-on-error: true
+        run: |
+          urls=(
+            https://staging-vb-llm-service.fly.dev/
+            https://staging-vb-storage-service.fly.dev/
+            https://staging-vb-email-service.fly.dev/
+            https://staging-email-subscription-service.fly.dev/
+            https://staging-vb-express.fly.dev/
+            https://production-vb-llm-service.fly.dev/
+            https://production-vb-storage-service.fly.dev/
+            https://production-vb-email-service.fly.dev/
+            https://production-email-subscription-service.fly.dev/
+            https://production-vb-express.fly.dev/
+          )
+          for url in "${urls[@]}"; do
+            curl -s -o /dev/null --max-time 30 "$url" &
+          done
+          wait
+          sleep 3
       - uses: upptime/uptime-monitor@1e27390f41da4d644dd921eed19fee111bdf5c88 # v1.43.8
         env:
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
