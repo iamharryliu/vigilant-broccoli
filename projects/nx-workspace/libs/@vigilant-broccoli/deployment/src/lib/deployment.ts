@@ -6,6 +6,7 @@ export const DEPLOY_STATUS = {
   STARTED: 'started',
   SUCCESS: 'success',
   FAILURE: 'failure',
+  ROTATION_STARTED: 'rotation-started',
 } as const;
 
 export type DeployStatus = (typeof DEPLOY_STATUS)[keyof typeof DEPLOY_STATUS];
@@ -14,6 +15,7 @@ export const DEPLOY_TOAST_LABEL: Record<DeployStatus, string> = {
   [DEPLOY_STATUS.STARTED]: 'Deploy started',
   [DEPLOY_STATUS.SUCCESS]: 'Deploy succeeded',
   [DEPLOY_STATUS.FAILURE]: 'Deploy failed',
+  [DEPLOY_STATUS.ROTATION_STARTED]: 'Secret rotation started',
 };
 
 export const formatDuration = (s: number) =>

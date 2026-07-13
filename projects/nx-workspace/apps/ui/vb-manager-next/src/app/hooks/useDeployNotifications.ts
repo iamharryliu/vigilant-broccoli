@@ -40,6 +40,11 @@ const DEPLOY_TOAST = {
       description: description(p),
       duration: TOAST_DURATION_MS,
     }),
+  [DEPLOY_STATUS.ROTATION_STARTED]: (p: DeployPayload) =>
+    toast.info(DEPLOY_TOAST_LABEL[DEPLOY_STATUS.ROTATION_STARTED], {
+      description: description(p),
+      duration: TOAST_DURATION_MS,
+    }),
   [DEPLOY_STATUS.SUCCESS]: (p: DeployPayload) =>
     toast.success(DEPLOY_TOAST_LABEL[DEPLOY_STATUS.SUCCESS], {
       description: description(p),
