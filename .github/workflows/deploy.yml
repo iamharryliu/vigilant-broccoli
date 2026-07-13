@@ -70,6 +70,7 @@ jobs:
 
   deploy-npm-packages:
     needs: [notify-start, gitleaks]
+    if: ${{ (inputs.environment || 'staging') == 'production' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -94,31 +95,24 @@ jobs:
         id: check
         working-directory: ./projects/nx-workspace
         run: |
-          CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
-          DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
-
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
-            PROJECTS_COMMA=$(pnpm exec nx show projects --withTarget=publish-package | tr '\n' ',' | sed 's/,$//')
-          else
-            PROJECTS_COMMA=$(pnpm exec nx show projects --affected --withTarget=publish-package --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
-          fi
+          PROJECTS_COMMA=$(pnpm exec nx show projects --withTarget=publish-package | tr '\n' ',' | sed 's/,$//')
 
           if [[ -n "$PROJECTS_COMMA" ]]; then
             echo "has_packages=true" >> $GITHUB_OUTPUT
-            echo "affected_projects=$PROJECTS_COMMA" >> $GITHUB_OUTPUT
+            echo "projects=$PROJECTS_COMMA" >> $GITHUB_OUTPUT
           else
             echo "has_packages=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build affected packages
+      - name: Build packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
-        run: pnpm exec nx run-many -t build --projects="${{ steps.check.outputs.affected_projects }}"
+        run: pnpm exec nx run-many -t build --projects="${{ steps.check.outputs.projects }}"
 
       - name: Publish npm packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
-        run: pnpm exec nx run-many -t publish-package --projects="${{ steps.check.outputs.affected_projects }}"
+        run: pnpm exec nx run-many -t publish-package --projects="${{ steps.check.outputs.projects }}"
 
   deploy-apps:
     needs: [notify-start, gitleaks]
