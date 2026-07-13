@@ -2,6 +2,7 @@ import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import {
   createBucketService,
   BucketProvider,
+  IBucketProvider,
 } from '@vigilant-broccoli/storage';
 import {
   CONTENT_TYPE_HEADER,
@@ -15,12 +16,19 @@ const ERROR_PROVIDER_REQUIRED = 'provider query parameter is required';
 const ERROR_NO_FILES = 'No valid files provided';
 const MESSAGE_FILE_DELETED = 'File deleted successfully';
 const VALID_PROVIDERS = new Set<string>(Object.values(BucketProvider));
+const bucketServices = new Map<BucketProvider, IBucketProvider>();
 
 function getBucketService(provider: string) {
   if (!VALID_PROVIDERS.has(provider)) {
     throw new Error(`Invalid provider: ${provider}`);
   }
-  return createBucketService(provider as BucketProvider);
+  const key = provider as BucketProvider;
+  let service = bucketServices.get(key);
+  if (!service) {
+    service = createBucketService(key);
+    bucketServices.set(key, service);
+  }
+  return service;
 }
 
 function resolveProvider(
