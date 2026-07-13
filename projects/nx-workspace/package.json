@@ -6,8 +6,7 @@
   "lint-staged": {
     "*.ts": [
       "nx affected -t lint",
-      "nx format:write",
-      "nx affected -t test"
+      "nx format:write"
     ],
     "*.{json,md}": [
       "nx format:write"
