@@ -1,9 +1,9 @@
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { FileSystemUtils } from '../file-system/file-system.utils';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export interface OpenResult {
   message: string;
@@ -18,23 +18,23 @@ export const open = async (
   target: string,
   args?: string,
 ): Promise<OpenResult> => {
-  let shellCommand: string;
+  let command: string;
+  let commandArgs: string[];
 
   switch (type) {
     case OPEN_TYPE.VSCODE: {
-      const expandedPath = FileSystemUtils.expandHomePath(target);
-      shellCommand = `code "${expandedPath}"`;
+      command = 'code';
+      commandArgs = [FileSystemUtils.expandHomePath(target)];
       break;
     }
     case OPEN_TYPE.FILE_SYSTEM: {
-      const expandedPath = FileSystemUtils.expandHomePath(target);
-      shellCommand = `open "${expandedPath}"`;
+      command = 'open';
+      commandArgs = [FileSystemUtils.expandHomePath(target)];
       break;
     }
     case OPEN_TYPE.MAC_APPLICATION: {
-      shellCommand = args
-        ? `open -a '${target}' "${args}"`
-        : `open -a '${target}'`;
+      command = 'open';
+      commandArgs = args ? ['-a', target, args] : ['-a', target];
       break;
     }
     default:
@@ -45,7 +45,7 @@ export const open = async (
       };
   }
 
-  const { stdout, stderr } = await execAsync(shellCommand);
+  const { stdout, stderr } = await execFileAsync(command, commandArgs);
 
   return {
     message: 'Command executed successfully',

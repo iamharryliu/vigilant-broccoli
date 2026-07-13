@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+const DOCKER_ID_PATTERN = /^[\w.-]+$/;
 
 export async function POST(request: Request) {
   try {
@@ -17,12 +18,27 @@ export async function POST(request: Request) {
       );
     }
 
+    if (
+      (containerId && !DOCKER_ID_PATTERN.test(String(containerId))) ||
+      (projectName && !DOCKER_ID_PATTERN.test(String(projectName)))
+    ) {
+      return NextResponse.json(
+        { error: 'containerId or projectName is invalid' },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
     // Stop container or compose project
     if (projectName) {
       // For compose projects, find and stop all containers with the project label
-      const { stdout } = await execAsync(
-        `docker ps -a --filter "label=com.docker.compose.project=${projectName}" --format "{{.ID}}"`,
-      );
+      const { stdout } = await execFileAsync('docker', [
+        'ps',
+        '-a',
+        '--filter',
+        `label=com.docker.compose.project=${projectName}`,
+        '--format',
+        '{{.ID}}',
+      ]);
 
       const containerIds = stdout
         .trim()
@@ -37,7 +53,7 @@ export async function POST(request: Request) {
       }
 
       // Stop all containers in the project
-      await execAsync(`docker stop ${containerIds.join(' ')}`);
+      await execFileAsync('docker', ['stop', ...containerIds]);
 
       return NextResponse.json({
         success: true,
@@ -45,7 +61,7 @@ export async function POST(request: Request) {
       });
     } else if (containerId) {
       // Stop a single container
-      await execAsync(`docker stop ${containerId}`);
+      await execFileAsync('docker', ['stop', String(containerId)]);
 
       return NextResponse.json({
         success: true,

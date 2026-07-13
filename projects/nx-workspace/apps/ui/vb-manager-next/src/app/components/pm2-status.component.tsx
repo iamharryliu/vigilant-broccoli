@@ -3,14 +3,15 @@ import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
-  Button,
   CardContainer,
+  DeleteIconButton,
+  IconButton,
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import { PlayIcon, StopIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { CardSkeleton } from './skeleton.component';
+import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface PM2Process {
@@ -132,6 +133,14 @@ export const PM2StatusComponent = () => {
         body: JSON.stringify({ processId: id }),
       }),
     );
+  const handleDelete = (id: number) =>
+    withAction(id, () =>
+      fetch(API_ENDPOINTS.PM2_DELETE, {
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
+        body: JSON.stringify({ processId: id }),
+      }),
+    );
 
   const toItem = (process: PM2Process): StatusCardListItem => ({
     id: String(process.pm_id),
@@ -146,36 +155,41 @@ export const PM2StatusComponent = () => {
       <div className="flex gap-1">
         {process.status === 'online' ? (
           <>
-            <Button
-              size="icon"
-              variant="secondary"
+            <IconButton
+              icon="rotate-ccw"
+              variant="ghost"
               onClick={() => handleRestart(process.pm_id)}
               disabled={actionInProgress.has(process.pm_id)}
               title="Restart process"
-            >
-              <ReloadIcon />
-            </Button>
-            <Button
-              size="icon"
-              variant="secondary"
+            />
+            <IconButton
+              icon="stop"
+              variant="ghost"
               onClick={() => handleStop(process.pm_id)}
               disabled={actionInProgress.has(process.pm_id)}
               title="Stop process"
-            >
-              <StopIcon />
-            </Button>
+            />
           </>
         ) : (
-          <Button
-            size="icon"
-            variant="secondary"
+          <IconButton
+            icon="play"
+            variant="ghost"
             onClick={() => handleStart(process.pm_id)}
             disabled={actionInProgress.has(process.pm_id)}
             title="Start process"
-          >
-            <PlayIcon />
-          </Button>
+          />
         )}
+        <ConfirmDeleteDialog
+          trigger={
+            <DeleteIconButton
+              disabled={actionInProgress.has(process.pm_id)}
+              title="Delete process"
+            />
+          }
+          title="Delete Process"
+          description={`Delete "${process.name}" from PM2? This removes it from the process list entirely.`}
+          onConfirm={() => handleDelete(process.pm_id)}
+        />
       </div>
     ),
     children: (

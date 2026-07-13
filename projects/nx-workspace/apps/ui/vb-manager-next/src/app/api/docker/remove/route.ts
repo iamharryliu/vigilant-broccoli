@@ -28,10 +28,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Start container or compose project
     if (projectName) {
-      // For compose projects, we need to find the directory and run docker-compose up
-      // For now, we'll start all containers with the project label
       const { stdout } = await execFileAsync('docker', [
         'ps',
         '-a',
@@ -53,27 +50,25 @@ export async function POST(request: Request) {
         );
       }
 
-      // Start all containers in the project
-      await execFileAsync('docker', ['start', ...containerIds]);
+      await execFileAsync('docker', ['rm', '-f', ...containerIds]);
 
       return NextResponse.json({
         success: true,
-        message: `Started ${containerIds.length} container(s) for project: ${projectName}`,
+        message: `Removed ${containerIds.length} container(s) for project: ${projectName}`,
       });
     } else if (containerId) {
-      // Start a single container
-      await execFileAsync('docker', ['start', String(containerId)]);
+      await execFileAsync('docker', ['rm', '-f', String(containerId)]);
 
       return NextResponse.json({
         success: true,
-        message: `Started container: ${containerId}`,
+        message: `Removed container: ${containerId}`,
       });
     }
   } catch (error) {
-    console.error('Error starting Docker container:', error);
+    console.error('Error removing Docker container:', error);
     return NextResponse.json(
       {
-        error: 'Failed to start Docker container',
+        error: 'Failed to remove Docker container',
         details: error instanceof Error ? error.message : String(error),
       },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },

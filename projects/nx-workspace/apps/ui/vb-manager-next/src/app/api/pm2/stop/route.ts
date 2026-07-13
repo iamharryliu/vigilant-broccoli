@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+const PM2_ID_PATTERN = /^[\w.-]+$/;
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +18,14 @@ export async function POST(request: Request) {
       );
     }
 
-    await execAsync(`pm2 stop ${processId}`);
+    if (!PM2_ID_PATTERN.test(String(processId))) {
+      return NextResponse.json(
+        { error: 'processId is invalid' },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
+    await execFileAsync('pm2', ['stop', String(processId)]);
 
     return NextResponse.json({
       success: true,

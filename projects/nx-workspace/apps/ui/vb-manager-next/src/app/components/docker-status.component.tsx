@@ -5,18 +5,15 @@ import {
   BORDER_ACTIVE,
   Button,
   CardContainer,
+  DeleteIconButton,
+  IconButton,
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import {
-  ExternalLinkIcon,
-  PlayIcon,
-  StopIcon,
-  PauseIcon,
-} from '@radix-ui/react-icons';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 import { CardSkeleton } from './skeleton.component';
+import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 interface ServiceInfo {
@@ -163,6 +160,16 @@ export const DockerStatusComponent = () => {
         ),
       }),
     );
+  const handleRemove = (identifier: string, isProject: boolean) =>
+    withAction(identifier, () =>
+      fetch(API_ENDPOINTS.DOCKER_REMOVE, {
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
+        body: JSON.stringify(
+          isProject ? { projectName: identifier } : { containerId: identifier },
+        ),
+      }),
+    );
 
   const projectToItem = (project: DockerProject): StatusCardListItem => {
     const isRunning = project.state === 'running';
@@ -176,19 +183,30 @@ export const DockerStatusComponent = () => {
         </Badge>
       ),
       actions: (
-        <Button
-          size="icon"
-          variant="secondary"
-          onClick={() =>
-            isRunning
-              ? handleStop(project.name, true)
-              : handleStart(project.name, true)
-          }
-          disabled={actionInProgress.has(project.name)}
-          title={isRunning ? 'Stop project' : 'Start project'}
-        >
-          {isRunning ? <PauseIcon /> : <PlayIcon />}
-        </Button>
+        <div className="flex gap-1">
+          <IconButton
+            icon={isRunning ? 'pause' : 'play'}
+            variant="ghost"
+            onClick={() =>
+              isRunning
+                ? handleStop(project.name, true)
+                : handleStart(project.name, true)
+            }
+            disabled={actionInProgress.has(project.name)}
+            title={isRunning ? 'Stop project' : 'Start project'}
+          />
+          <ConfirmDeleteDialog
+            trigger={
+              <DeleteIconButton
+                disabled={actionInProgress.has(project.name)}
+                title="Remove project"
+              />
+            }
+            title="Remove Project"
+            description={`Remove all containers for project "${project.name}"? This deletes them entirely, not just stops them.`}
+            onConfirm={() => handleRemove(project.name, true)}
+          />
+        </div>
       ),
       children: (
         <>
@@ -223,19 +241,30 @@ export const DockerStatusComponent = () => {
         </Badge>
       ),
       actions: (
-        <Button
-          size="icon"
-          variant="secondary"
-          onClick={() =>
-            isRunning
-              ? handleStop(container.id, false)
-              : handleStart(container.id, false)
-          }
-          disabled={actionInProgress.has(container.id)}
-          title={isRunning ? 'Stop container' : 'Start container'}
-        >
-          {isRunning ? <StopIcon /> : <PlayIcon />}
-        </Button>
+        <div className="flex gap-1">
+          <IconButton
+            icon={isRunning ? 'stop' : 'play'}
+            variant="ghost"
+            onClick={() =>
+              isRunning
+                ? handleStop(container.id, false)
+                : handleStart(container.id, false)
+            }
+            disabled={actionInProgress.has(container.id)}
+            title={isRunning ? 'Stop container' : 'Start container'}
+          />
+          <ConfirmDeleteDialog
+            trigger={
+              <DeleteIconButton
+                disabled={actionInProgress.has(container.id)}
+                title="Remove container"
+              />
+            }
+            title="Remove Container"
+            description={`Remove container "${container.name}"? This deletes it entirely, not just stops it.`}
+            onConfirm={() => handleRemove(container.id, false)}
+          />
+        </div>
       ),
       children: (
         <>
@@ -288,14 +317,12 @@ export const DockerStatusComponent = () => {
       title={`Docker Containers${dockerStatus ? ` (${items.length})` : ''}`}
       headerAction={
         !isDockerRunning ? (
-          <Button
-            size="icon"
+          <IconButton
+            icon="external-link"
             variant="ghost"
             onClick={handleOpenDocker}
             title="Open Docker.app"
-          >
-            <ExternalLinkIcon />
-          </Button>
+          />
         ) : undefined
       }
     >

@@ -25,17 +25,17 @@ export async function POST(request: Request) {
       );
     }
 
-    await execFileAsync('pm2', ['reload', String(processId)]);
+    await execFileAsync('pm2', ['delete', String(processId)]);
 
     return NextResponse.json({
       success: true,
-      message: `Restarted process: ${processId}`,
+      message: `Deleted process: ${processId}`,
     });
   } catch (error) {
-    console.error('Error restarting PM2 process:', error);
+    console.error('Error deleting PM2 process:', error);
     return NextResponse.json(
       {
-        error: 'Failed to restart PM2 process',
+        error: 'Failed to delete PM2 process',
         details: error instanceof Error ? error.message : String(error),
       },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
