@@ -100,7 +100,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gh:actions:deploy           Trigger deploy workflow
   gh:actions:health-check     Trigger ci-health-check workflow
   gh:actions:kill-services    Trigger kill-services workflow
-  gh:actions:rotate-secrets   Trigger ci-rotate-secrets workflow (prompts for confirm)
+  gh:actions:rotate-secrets   Trigger ci-rotate-secrets workflow
   gh:actions:run-tests        Trigger all post-deploy test workflows
   gh:actions:replace-code-server  Trigger code-server VM replace workflow
   gh:actions:security-cloudflare-access  Trigger Cloudflare Access security check workflow

@@ -47,5 +47,4 @@ Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repo
 ## Auth Patterns
 
 - **Service-to-service / CI-to-service**: `SHARED_APP_TOKEN` bearer token (socket server, deploy notifications, e2e tests). `vb-express` uses its own `VB_EXPRESS_API_KEY`. Both rotate via the `rotate-secrets` workflow; after rotation sync the socket-server VM (`pnpm oci:vm:sync-socket-token`).
-- **User-facing**: NextAuth with Google provider (`vb-manager-next`); Supabase auth (`hearth`).
-- **Destructive manual workflows** gate on a typed confirmation input (e.g. `rotate-secrets` requires literally typing `rotate`) — follow this pattern for new dangerous dispatch workflows.
+- **User-facing**: Supabase auth with Google provider (`hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next`) — one shared Supabase project/user pool, redirect URLs Terraform-managed. See [supabase-auth-pattern.md](../projects/nx-workspace/docs/auth/supabase-auth-pattern.md).
