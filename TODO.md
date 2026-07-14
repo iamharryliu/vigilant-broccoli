@@ -11,6 +11,10 @@
 - Short-lived JWTs instead of the long-lived `SHARED_APP_TOKEN` — `route.ts` signs `{ exp: +60s }` with a `JWT_SECRET` from Vault, server middleware verifies; optional per-room scope.
 - App-level: CORS allowlist via `ALLOWED_ORIGINS` env (currently `*`), payload size cap, last-message cache per room on subscribe.
 
+### 5. VM-rotation script inconsistencies
+
+- `sync-socket-server-token.sh` writes the CI-mode SSH private key via `mktemp` but never cleans it up — add `trap 'rm -f "$SSH_KEY_FILE"' EXIT` right after the `mktemp` call, matching the fix already applied in `rotate-rabbitmq-password.sh`. Low practical exposure (runner is ephemeral/destroyed after the job) but worth closing for consistency.
+
 ## P3
 
 ### 6. Framework surface
