@@ -27,6 +27,13 @@ const GOOGLE_TOKEN_STORAGE_KEY = 'google_provider_token';
 const MISSING_PROVIDER_ERROR =
   'useAuth must be used within its matching AuthProvider';
 
+// A safe post-login redirect must be a same-origin path: a single leading
+// slash, not protocol-relative (`//host`, `/\host`) and not an absolute or
+// `javascript:` URL. Anything else falls back to the app's home route,
+// preventing open-redirect and `javascript:` XSS via the `next` query param.
+const safeNextPath = (next: string | null, fallback: string): string =>
+  next && /^\/(?![/\\])/.test(next) ? next : fallback;
+
 export interface SupabaseAuth {
   AuthProvider: (props: { children: ReactNode }) => ReactNode;
   AuthCallbackPage: (props: { loadingLabel?: string }) => ReactNode;
@@ -181,8 +188,8 @@ export function createSupabaseAuth(
           );
         }
         const params = new URLSearchParams(window.location.search);
-        const next = params.get('next');
-        window.location.replace(session ? next || routes.home : routes.login);
+        const next = safeNextPath(params.get('next'), routes.home);
+        window.location.replace(session ? next : routes.login);
       });
       return () => subscription.unsubscribe();
       // eslint-disable-next-line react-hooks/exhaustive-deps
