@@ -27,12 +27,22 @@ const GOOGLE_TOKEN_STORAGE_KEY = 'google_provider_token';
 const MISSING_PROVIDER_ERROR =
   'useAuth must be used within its matching AuthProvider';
 
-// A safe post-login redirect must be a same-origin path: a single leading
-// slash, not protocol-relative (`//host`, `/\host`) and not an absolute or
-// `javascript:` URL. Anything else falls back to the app's home route,
-// preventing open-redirect and `javascript:` XSS via the `next` query param.
-const safeNextPath = (next: string | null, fallback: string): string =>
-  next && /^\/(?![/\\])/.test(next) ? next : fallback;
+// Resolve the user-supplied `next` param against the current origin and
+// return a redirect target built ONLY from the parsed URL's path components —
+// never the raw input. Anything that resolves to a different origin (absolute
+// URLs, protocol-relative `//host`) or a non-navigable scheme (`javascript:`)
+// falls back to the app's home route, preventing open-redirect and
+// `javascript:` XSS via the `next` query param.
+const safeNextPath = (next: string | null, fallback: string): string => {
+  if (!next) return fallback;
+  try {
+    const resolved = new URL(next, window.location.origin);
+    if (resolved.origin !== window.location.origin) return fallback;
+    return `${resolved.pathname}${resolved.search}${resolved.hash}`;
+  } catch {
+    return fallback;
+  }
+};
 
 export interface SupabaseAuth {
   AuthProvider: (props: { children: ReactNode }) => ReactNode;
