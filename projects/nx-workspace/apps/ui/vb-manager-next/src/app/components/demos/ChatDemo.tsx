@@ -12,6 +12,7 @@ import {
   SOCKET_EVENTS,
 } from '../../constants/chat';
 import { useSocketWithCertTrustPrompt } from '../../hooks/useSocketWithCertTrustPrompt';
+import { authFetch } from '../../../../libs/auth';
 
 const LOG_PREFIX = '[ChatDemo]';
 const SENDER_PREFIX = 'user-';
@@ -89,7 +90,7 @@ export function ChatDemo() {
     setSending(true);
     setDraft('');
     try {
-      const res = await fetch(API_ENDPOINTS.CHAT_PUBLISH, {
+      const res = await authFetch(API_ENDPOINTS.CHAT_PUBLISH, {
         method: HTTP_METHOD.POST,
         headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
         body: JSON.stringify({ text, sender }),

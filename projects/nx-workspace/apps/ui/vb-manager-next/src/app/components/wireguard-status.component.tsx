@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 interface WireguardConnection {
   name: string;
@@ -58,7 +59,7 @@ export const WireguardStatusComponent = () => {
   useEffect(() => {
     const fetchWireguardStatus = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.WIREGUARD_STATUS);
+        const response = await authFetch(API_ENDPOINTS.WIREGUARD_STATUS);
         if (!response.ok) throw new Error('Failed to fetch WireGuard status');
         const data = await response.json();
         setWgStatus(data);

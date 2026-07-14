@@ -13,14 +13,8 @@ import {
   languageLearningMultiSchema,
   LanguageLearningMultiResult,
 } from '@vigilant-broccoli/llm-schemas';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
+import { getUserEmail } from '../../../../../libs/server-auth';
 import { getMasteredWords, saveSession } from '../db';
-
-const getUserEmail = async (): Promise<string | null> => {
-  const session = await getServerSession(authOptions);
-  return session?.userEmail ?? session?.user?.email ?? null;
-};
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -62,7 +56,7 @@ function pickRandom<T>(items: T[]): T {
 }
 
 export async function POST(request: NextRequest) {
-  const userEmail = await getUserEmail();
+  const userEmail = await getUserEmail(request);
   if (!userEmail) {
     return NextResponse.json(
       { error: 'Unauthorized' },

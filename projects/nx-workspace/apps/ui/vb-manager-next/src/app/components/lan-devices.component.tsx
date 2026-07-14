@@ -11,6 +11,7 @@ import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { DEVICE_TYPE } from '../constants/network-monitor';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import { authFetch } from '../../../libs/auth';
 
 const TITLE = 'LAN Devices';
 const REFRESH_MS = 30000;
@@ -66,7 +67,7 @@ const ScanDialog = ({ device }: { device: LanDevice }) => {
   const runScan = useCallback(async () => {
     setState({ loading: true, error: null, ports: null });
     try {
-      const res = await fetch(API_ENDPOINTS.NETWORK_MONITOR_SCAN_DEVICE, {
+      const res = await authFetch(API_ENDPOINTS.NETWORK_MONITOR_SCAN_DEVICE, {
         method: HTTP_METHOD.POST,
         headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
         body: JSON.stringify({ ip: device.ip }),
@@ -202,7 +203,7 @@ export const LanDevicesComponent = () => {
 
   const fetchDevices = async () => {
     try {
-      const res = await fetch(API_ENDPOINTS.NETWORK_MONITOR_LAN_DEVICES);
+      const res = await authFetch(API_ENDPOINTS.NETWORK_MONITOR_LAN_DEVICES);
       if (!res.ok) throw new Error(FETCH_ERROR);
       const data = await res.json();
       setDevices(data);

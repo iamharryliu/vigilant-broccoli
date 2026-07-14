@@ -12,6 +12,7 @@ import {
 import { FORM_TYPE, VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 const ALL_SERVICES = Object.values(VB_EXPRESS_SERVICE);
 const DEFAULT_EMAIL = 'harryliu1995@gmail.com';
@@ -76,7 +77,7 @@ export const ApiKeysComponent = () => {
   useEffect(() => {
     const fetchKeys = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.API_KEYS);
+        const response = await authFetch(API_ENDPOINTS.API_KEYS);
         if (!response.ok) throw new Error(FETCH_ERROR);
         const data = await response.json();
         setItems(data.keys);
@@ -91,7 +92,7 @@ export const ApiKeysComponent = () => {
   }, []);
 
   const createItem = async (item: ApiKeyItem) => {
-    const response = await fetch(API_ENDPOINTS.API_KEYS, {
+    const response = await authFetch(API_ENDPOINTS.API_KEYS, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -113,7 +114,7 @@ export const ApiKeysComponent = () => {
   };
 
   const updateItem = async (item: ApiKeyItem) => {
-    const response = await fetch(`${API_ENDPOINTS.API_KEYS}/${item.id}`, {
+    const response = await authFetch(`${API_ENDPOINTS.API_KEYS}/${item.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: item.name, services: item.services }),
@@ -126,7 +127,7 @@ export const ApiKeysComponent = () => {
   };
 
   const deleteItem = async (id: string | number) => {
-    const response = await fetch(`${API_ENDPOINTS.API_KEYS}/${id}`, {
+    const response = await authFetch(`${API_ENDPOINTS.API_KEYS}/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {
@@ -137,7 +138,7 @@ export const ApiKeysComponent = () => {
   };
 
   const toggleEnabled = async (id: string, enabled: boolean) => {
-    const response = await fetch(`${API_ENDPOINTS.API_KEYS}/${id}`, {
+    const response = await authFetch(`${API_ENDPOINTS.API_KEYS}/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ enabled }),

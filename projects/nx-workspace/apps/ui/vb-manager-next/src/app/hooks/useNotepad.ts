@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
+import { authFetch } from '../../../libs/auth';
 
 const SAVE_DEBOUNCE_MS = 1000;
 const NOTEPAD_API = '/api/notepad';
@@ -69,7 +70,7 @@ export const useNotepad = (): NotepadState => {
       pendingSave: true,
     });
 
-    fetch(NOTEPAD_API, {
+    authFetch(NOTEPAD_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: text }),
@@ -97,7 +98,7 @@ export const useNotepad = (): NotepadState => {
       if (cache.pendingSave) isDirty.current = true;
     }
 
-    fetch(NOTEPAD_API)
+    authFetch(NOTEPAD_API)
       .then(res => res.json())
       .then(data => {
         if (data?.updatedAt) applyRemote(data.content ?? '', data.updatedAt);

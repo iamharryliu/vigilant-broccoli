@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 type UseTextToSpeechOptions = {
   autoPlay?: boolean;
@@ -77,7 +78,7 @@ export const useTextToSpeech = (
       requestAbortRef.current = abortController;
 
       try {
-        const response = await fetch(API_ENDPOINTS.TEXT_TO_SPEECH, {
+        const response = await authFetch(API_ENDPOINTS.TEXT_TO_SPEECH, {
           method: HTTP_METHOD.POST,
           headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({

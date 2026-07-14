@@ -10,6 +10,7 @@ import {
 } from '@vigilant-broccoli/github-workspace-js';
 import { Heading, Link, Text, Callout, Badge, Dialog } from '@radix-ui/themes';
 import { AlertCircle, Plus } from 'lucide-react';
+import { authFetch } from '../../../../../../libs/auth';
 
 import {
   CardSkeleton,
@@ -39,7 +40,7 @@ interface OrgMeta {
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
+  const res = await authFetch(url);
   if (!res.ok) throw new Error(res.statusText);
   return res.json();
 }
@@ -224,7 +225,7 @@ const memberToItem = (
   actions: (
     <EllipsisCTA
       onDelete={async () => {
-        const response = await fetch(
+        const response = await authFetch(
           `${ORG_MEMBER_API}?organization=${organizationName}&username=${member.login}`,
           { method: 'DELETE' },
         );
@@ -277,7 +278,7 @@ const repoToItem = (
   actions: isOrgAdmin ? (
     <EllipsisCTA
       onDelete={async () => {
-        const response = await fetch(
+        const response = await authFetch(
           `${API_ROUTES.ORGANIZATION_REPOSITORIES}?organization=${organizationName}&repo=${repo.name}`,
           { method: 'DELETE' },
         );
@@ -418,11 +419,17 @@ const RepositoriesList = ({
         placeholder="Repository name..."
         buttonLabel="Create Repository"
         onAdd={async repoName => {
-          const response = await fetch(API_ROUTES.ORGANIZATION_REPOSITORIES, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ organization: organizationName, repoName }),
-          });
+          const response = await authFetch(
+            API_ROUTES.ORGANIZATION_REPOSITORIES,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                organization: organizationName,
+                repoName,
+              }),
+            },
+          );
           if (response.ok)
             setRepositories(prev => [
               ...prev,
@@ -501,7 +508,7 @@ const MembersList = ({
         placeholder="GitHub username..."
         buttonLabel="Add Member"
         onAdd={async username => {
-          await fetch(ORG_MEMBER_API, {
+          await authFetch(ORG_MEMBER_API, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ organization: organizationName, username }),
@@ -562,7 +569,7 @@ const teamToItem = (
   actions: (
     <EllipsisCTA
       onDelete={async () => {
-        const response = await fetch(
+        const response = await authFetch(
           `/api/github/organization/teams?organization=${organizationName}&team=${encodeURIComponent(team.name)}`,
           { method: 'DELETE' },
         );
@@ -627,7 +634,7 @@ const TeamsList = ({
         placeholder="Team name..."
         buttonLabel="Create Team"
         onAdd={async teamName => {
-          const response = await fetch(API_ROUTES.ORGANIZATION_TEAMS, {
+          const response = await authFetch(API_ROUTES.ORGANIZATION_TEAMS, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ organization: organizationName, teamName }),

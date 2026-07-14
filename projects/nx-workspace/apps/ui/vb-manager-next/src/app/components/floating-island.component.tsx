@@ -19,6 +19,7 @@ import { ClockComponent } from './clock.component';
 import { useDrag } from '../hooks/useDrag';
 import { useWeather, getWeatherIcon } from '../hooks/useWeather';
 import { Skeleton } from './skeleton.component';
+import { authFetch } from '../../../libs/auth';
 
 interface ChatSuggestion {
   title: string;
@@ -133,7 +134,7 @@ export const FloatingIslandComponent = ({
   const fetchOutfitRecommendation = async () => {
     const MALMÖ = { lat: 55.605, lon: 13.0038 };
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `/api/outfit-recommendation?lat=${MALMÖ.lat}&lon=${MALMÖ.lon}`,
       );
 

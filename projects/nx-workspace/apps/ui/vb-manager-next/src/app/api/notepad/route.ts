@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../lib/auth';
+import { getUserEmail } from '../../../../libs/server-auth';
 import { supabaseAdmin } from '../../../lib/supabase-admin';
 
 export const runtime = 'nodejs';
@@ -9,23 +8,15 @@ export const runtime = 'nodejs';
 const NOTEPAD_TABLE = 'notepad';
 const NOTEPAD_ID = 'singleton';
 
-const requireSession = async (): Promise<void> => {
-  const session = await getServerSession(authOptions);
-  if (!session) throw new Error('Not authenticated');
-};
-
 const unauthorized = () =>
   NextResponse.json(
     { error: 'Unauthorized' },
     { status: HTTP_STATUS_CODES.UNAUTHORIZED },
   );
 
-export async function GET() {
-  try {
-    await requireSession();
-  } catch {
-    return unauthorized();
-  }
+export async function GET(request: NextRequest) {
+  const userEmail = await getUserEmail(request);
+  if (!userEmail) return unauthorized();
 
   const { data, error } = await supabaseAdmin
     .from(NOTEPAD_TABLE)
@@ -47,11 +38,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    await requireSession();
-  } catch {
-    return unauthorized();
-  }
+  const userEmail = await getUserEmail(request);
+  if (!userEmail) return unauthorized();
 
   const { content } = await request.json();
   const updatedAt = new Date().toISOString();

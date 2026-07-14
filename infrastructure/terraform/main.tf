@@ -35,6 +35,10 @@ terraform {
       source  = "hashicorp/time"
       version = "~> 0.11"
     }
+    supabase = {
+      source  = "supabase/supabase"
+      version = "~> 1.9"
+    }
   }
 }
 
@@ -54,6 +58,10 @@ provider "oci" {
   config_file_profile = "DEFAULT"
   region              = "ca-toronto-1"
 }
+
+# Reads SUPABASE_ACCESS_TOKEN from env (personal access token from
+# supabase.com/dashboard/account/tokens, not a project API key).
+provider "supabase" {}
 
 locals {
   oci_config       = file("~/.oci/config")

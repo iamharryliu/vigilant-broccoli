@@ -39,6 +39,7 @@ import {
   CALENDAR_DRAFT_MARKER,
   CHAT_RESPONSE_TYPE,
 } from '../constants/chatbot.consts';
+import { authFetch } from '../../../libs/auth';
 
 export interface MessageImage {
   data: string;
@@ -998,7 +999,7 @@ export const ChatbotPanel = ({
     model: LLMModel,
   ) => {
     try {
-      const response = await fetch('/api/chat', {
+      const response = await authFetch('/api/chat', {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
@@ -1090,7 +1091,7 @@ export const ChatbotPanel = ({
     setUploadedImages([]);
 
     try {
-      const response = await fetch('/api/calendar/parse', {
+      const response = await authFetch('/api/calendar/parse', {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
@@ -1168,7 +1169,7 @@ export const ChatbotPanel = ({
     });
 
     try {
-      const response = await fetch('/api/calendar/events', {
+      const response = await authFetch('/api/calendar/events', {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
@@ -1306,7 +1307,7 @@ export const ChatbotPanel = ({
     await runParseTasks(
       COMMAND_LABEL[COMMAND_NAME.TASKS],
       async () => {
-        const response = await fetch(TASKS_PARSE_API_PATH, {
+        const response = await authFetch(TASKS_PARSE_API_PATH, {
           method: HTTP_METHOD.POST,
           headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({
@@ -1356,7 +1357,7 @@ export const ChatbotPanel = ({
       let listTitle: string | undefined;
 
       if (!listId) {
-        const createListRes = await fetch(TASKS_LISTS_API_PATH, {
+        const createListRes = await authFetch(TASKS_LISTS_API_PATH, {
           method: HTTP_METHOD.POST,
           headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({ title: params.newListTitle }),
@@ -1373,7 +1374,7 @@ export const ChatbotPanel = ({
       }
 
       for (const task of params.tasks) {
-        const res = await fetch(TASKS_API_PATH, {
+        const res = await authFetch(TASKS_API_PATH, {
           method: HTTP_METHOD.POST,
           headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({ taskListId: listId, title: task.title }),

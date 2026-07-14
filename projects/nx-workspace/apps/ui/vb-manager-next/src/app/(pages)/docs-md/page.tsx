@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import type { DocsNode, DocsSearchResult } from '@vigilant-broccoli/react-lib';
 import { DocsViewer, FILE_PARAM } from '@vigilant-broccoli/react-utility';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import { authFetch } from '../../../../libs/auth';
 
 const API = {
   STRUCTURE: '/api/docs/structure',
@@ -26,7 +27,7 @@ const requestDocs = async <T,>(
   fallback: string,
   init?: RequestInit,
 ): Promise<T> => {
-  const response = await fetch(url, init);
+  const response = await authFetch(url, init);
   const data = await response.json();
   if (!data.success) throw new Error(data.error || fallback);
   return data as T;

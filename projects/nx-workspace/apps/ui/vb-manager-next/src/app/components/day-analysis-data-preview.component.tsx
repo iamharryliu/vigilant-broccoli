@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch, useAuthStatus } from '../../../libs/auth';
 import {
   categorizeTasksByQuadrant,
   cleanCalendarEvents,
@@ -72,13 +72,15 @@ const fetchAllDataSources = async () => {
     workCalendarResponse,
     weatherResponse,
   ] = await Promise.all([
-    fetch(`${API_ENDPOINTS.TASKS}?taskListId=${PERSONAL_TASK_LIST_ID}`),
-    fetch(`${API_ENDPOINTS.TASKS}?taskListId=${WORK_TASK_LIST_ID}`),
-    fetch(
+    authFetch(`${API_ENDPOINTS.TASKS}?taskListId=${PERSONAL_TASK_LIST_ID}`),
+    authFetch(`${API_ENDPOINTS.TASKS}?taskListId=${WORK_TASK_LIST_ID}`),
+    authFetch(
       `${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${PERSONAL_CALENDAR_ID}`,
     ),
-    fetch(`${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${WORK_CALENDAR_ID}`),
-    fetch(
+    authFetch(
+      `${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${WORK_CALENDAR_ID}`,
+    ),
+    authFetch(
       `${API_ENDPOINTS.WEATHER}?lat=${MALMO_COORDINATES.lat}&lon=${MALMO_COORDINATES.lon}`,
     ),
   ]);
@@ -147,7 +149,7 @@ const buildAnalysisData = (
 });
 
 export const useDayAnalysisSuggestions = () => {
-  const { status } = useSession();
+  const status = useAuthStatus();
   const [data, setData] = useState<any>(null);
 
   const fetchData = async () => {

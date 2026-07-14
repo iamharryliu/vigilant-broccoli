@@ -2,6 +2,7 @@
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
+import { authFetch } from '../../../libs/auth';
 
 const API_BASE_URL = '';
 
@@ -36,7 +37,7 @@ export const EmailMessageForm = ({
     setResult('');
     setError('');
 
-    const response = await fetch(`${API_BASE_URL}/api/send-email-message`, {
+    const response = await authFetch(`${API_BASE_URL}/api/send-email-message`, {
       method: HTTP_METHOD.POST,
       headers: {
         ...HTTP_HEADERS.CONTENT_TYPE.JSON,

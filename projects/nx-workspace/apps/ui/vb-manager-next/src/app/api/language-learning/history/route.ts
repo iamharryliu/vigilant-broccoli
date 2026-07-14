@@ -1,19 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
+import { getUserEmail } from '../../../../../libs/server-auth';
 import { getAllSessions } from '../db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const getUserEmail = async (): Promise<string | null> => {
-  const session = await getServerSession(authOptions);
-  return session?.userEmail ?? session?.user?.email ?? null;
-};
-
-export async function GET() {
-  const userEmail = await getUserEmail();
+export async function GET(request: NextRequest) {
+  const userEmail = await getUserEmail(request);
   if (!userEmail) {
     return NextResponse.json(
       { error: 'Unauthorized' },

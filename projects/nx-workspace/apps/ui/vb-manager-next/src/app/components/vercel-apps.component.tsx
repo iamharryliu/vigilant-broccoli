@@ -12,6 +12,7 @@ import { VERCEL_LINK } from '@vigilant-broccoli/links';
 import { useCallback, useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 interface VercelProject {
   id: string;
@@ -101,7 +102,7 @@ export const VercelAppsComponent = () => {
 
   const fetchProjects = useCallback(async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.VERCEL_PROJECTS);
+      const response = await authFetch(API_ENDPOINTS.VERCEL_PROJECTS);
       const data: VercelProjectsResponse = await response.json();
       if (!data.success || !data.projects) {
         setError(data.error || FETCH_ERROR_MSG);

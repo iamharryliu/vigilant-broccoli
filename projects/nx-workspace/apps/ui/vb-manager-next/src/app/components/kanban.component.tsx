@@ -10,7 +10,7 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { authFetch, signInWithGoogle, useAuthStatus } from '../../../libs/auth';
 import {
   DndContext,
   DragOverlay,
@@ -117,14 +117,14 @@ const createDefaultBoard = (): Board => ({
 });
 
 const fetchKanbanState = async (): Promise<KanbanState | null> => {
-  const response = await fetch(API_ENDPOINTS.KANBAN_BOARDS);
+  const response = await authFetch(API_ENDPOINTS.KANBAN_BOARDS);
   if (!response.ok) return null;
   const data = await response.json();
   return data.state ?? null;
 };
 
 const persistKanbanState = async (state: KanbanState): Promise<boolean> => {
-  const response = await fetch(API_ENDPOINTS.KANBAN_BOARDS, {
+  const response = await authFetch(API_ENDPOINTS.KANBAN_BOARDS, {
     method: HTTP_METHOD.PUT,
     headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
     body: JSON.stringify(state),
@@ -595,7 +595,7 @@ const BoardDragOverlay = ({ name }: { name: string }) => (
 
 // eslint-disable-next-line complexity
 export const KanbanComponent = () => {
-  const { status } = useSession();
+  const status = useAuthStatus();
   const {
     boards,
     activeBoard,
@@ -650,7 +650,7 @@ export const KanbanComponent = () => {
 
     const fetchTaskLists = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
+        const response = await authFetch(API_ENDPOINTS.TASKS_LISTS);
         const data = await response.json();
 
         if (response.ok && data.taskLists) {
@@ -676,7 +676,7 @@ export const KanbanComponent = () => {
 
   const handleDeleteList = useCallback(
     async (taskListId: string) => {
-      const response = await fetch(
+      const response = await authFetch(
         `${API_ENDPOINTS.TASKS_LISTS}?taskListId=${taskListId}`,
         { method: 'DELETE' },
       );
@@ -692,7 +692,7 @@ export const KanbanComponent = () => {
 
   const handleRenameList = useCallback(
     async (taskListId: string, title: string) => {
-      const response = await fetch(
+      const response = await authFetch(
         `${API_ENDPOINTS.TASKS_LISTS}?taskListId=${taskListId}`,
         {
           method: HTTP_METHOD.PATCH,
@@ -713,7 +713,7 @@ export const KanbanComponent = () => {
   const handleCreateList = useCallback(async () => {
     if (!newListName.trim()) return;
     setCreatingList(true);
-    const response = await fetch(API_ENDPOINTS.TASKS_LISTS, {
+    const response = await authFetch(API_ENDPOINTS.TASKS_LISTS, {
       method: HTTP_METHOD.POST,
       headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
       body: JSON.stringify({ title: newListName.trim() }),
@@ -812,7 +812,7 @@ export const KanbanComponent = () => {
 
   const handleTaskReorder = useCallback(
     async (taskListId: string, taskId: string, overTaskId: string) => {
-      const response = await fetch(
+      const response = await authFetch(
         `${API_ENDPOINTS.TASKS}?taskListId=${taskListId}`,
       );
       const data = await response.json();
@@ -832,7 +832,7 @@ export const KanbanComponent = () => {
       const newIndex = reordered.findIndex(t => t.id === taskId);
       const previousTaskId = newIndex > 0 ? reordered[newIndex - 1].id : null;
 
-      await fetch(API_ENDPOINTS.TASKS_MOVE, {
+      await authFetch(API_ENDPOINTS.TASKS_MOVE, {
         method: HTTP_METHOD.POST,
         headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
         body: JSON.stringify({
@@ -849,7 +849,7 @@ export const KanbanComponent = () => {
 
   const handleTaskCrossListMove = useCallback(
     async (taskData: any, sourceListId: string, targetListId: string) => {
-      const createResponse = await fetch(API_ENDPOINTS.TASKS, {
+      const createResponse = await authFetch(API_ENDPOINTS.TASKS, {
         method: HTTP_METHOD.POST,
         headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
         body: JSON.stringify({
@@ -861,7 +861,7 @@ export const KanbanComponent = () => {
 
       if (!createResponse.ok) return;
 
-      await fetch(
+      await authFetch(
         `${API_ENDPOINTS.TASKS}?taskListId=${sourceListId}&taskId=${taskData.task.id}`,
         { method: 'DELETE' },
       );
@@ -950,7 +950,7 @@ export const KanbanComponent = () => {
   );
 
   if (status === 'unauthenticated') {
-    signIn('google');
+    signInWithGoogle();
     return null;
   }
 

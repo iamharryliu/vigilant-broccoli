@@ -1,19 +1,14 @@
 import { google } from 'googleapis';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
+import { getGoogleAccessToken } from '../../../../../libs/server-auth';
 
-const getAuthenticatedCalendarClient = async () => {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.accessToken) {
-    throw new Error('Not authenticated');
-  }
+const getAuthenticatedCalendarClient = (req: NextRequest) => {
+  const accessToken = getGoogleAccessToken(req);
 
   const oauth2Client = new google.auth.OAuth2();
   oauth2Client.setCredentials({
-    access_token: session.accessToken,
+    access_token: accessToken,
   });
 
   return google.calendar({ version: 'v3', auth: oauth2Client });
@@ -21,7 +16,7 @@ const getAuthenticatedCalendarClient = async () => {
 
 export async function GET(req: NextRequest) {
   try {
-    const calendar = await getAuthenticatedCalendarClient();
+    const calendar = getAuthenticatedCalendarClient(req);
     const calendarId = req.nextUrl.searchParams.get('calendarId') || 'primary';
 
     const now = new Date();
@@ -74,7 +69,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const calendar = await getAuthenticatedCalendarClient();
+    const calendar = getAuthenticatedCalendarClient(req);
     const body = await req.json();
     const calendarId = body.calendarId || 'primary';
     const timeZone = body.timeZone || 'America/New_York';

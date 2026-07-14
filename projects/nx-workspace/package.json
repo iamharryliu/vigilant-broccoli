@@ -195,7 +195,6 @@
     "mongodb": "^7.5.0",
     "multer": "^2.2.0",
     "next": "16.1.7",
-    "next-auth": "^4.24.14",
     "ngx-google-analytics": "^14.0.1",
     "node-cron": "^4.6.0",
     "node-vault": "^0.10.10",

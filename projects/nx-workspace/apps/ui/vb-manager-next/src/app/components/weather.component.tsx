@@ -3,6 +3,7 @@
 import { Text, Spinner } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { DATE_CONST } from '@vigilant-broccoli/common-js';
+import { authFetch } from '../../../libs/auth';
 
 interface WeatherData {
   city: string;
@@ -75,7 +76,7 @@ export const WeatherComponent = () => {
     const fetchWeather = async () => {
       try {
         const weatherPromises = CITIES.map(async city => {
-          const response = await fetch(
+          const response = await authFetch(
             `/api/weather?lat=${city.lat}&lon=${city.lon}`,
           );
 

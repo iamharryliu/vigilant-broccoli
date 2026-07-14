@@ -1,7 +1,7 @@
 'use client';
 
 import { Sidebar, SidebarCTA, useTheme } from '@vigilant-broccoli/react-lib';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
 import {
   MessageCircle,
   Mail,
@@ -64,7 +64,7 @@ export const RightSidebar = ({
   onClearNotifications,
 }: Props) => {
   const { appearance, toggleTheme } = useTheme();
-  const { data: session } = useSession();
+  const session = useAuth();
   const isLight = appearance === LIGHT;
   const themeLabel = isLight ? DARK_MODE_LABEL : LIGHT_MODE_LABEL;
   const BellIcon = () => <BellIconWithBadge unreadCount={unreadCount} />;
@@ -133,7 +133,7 @@ export const RightSidebar = ({
             label: 'Sign In',
             icon: LogIn,
             title: 'Sign In',
-            onClick: () => signIn('google'),
+            onClick: () => signInWithGoogle(),
           },
         ]),
   ];

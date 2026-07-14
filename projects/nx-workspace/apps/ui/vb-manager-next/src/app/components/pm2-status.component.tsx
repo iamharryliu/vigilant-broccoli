@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 interface PM2Process {
   pm_id: number;
@@ -75,7 +76,7 @@ export const PM2StatusComponent = () => {
 
   const fetchPM2Status = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.PM2_PROCESSES);
+      const response = await authFetch(API_ENDPOINTS.PM2_PROCESSES);
       if (!response.ok) throw new Error('Failed to fetch PM2 process status');
       const data = await response.json();
       setPm2Processes(data);
@@ -111,7 +112,7 @@ export const PM2StatusComponent = () => {
 
   const handleStart = (id: number) =>
     withAction(id, () =>
-      fetch(API_ENDPOINTS.PM2_START, {
+      authFetch(API_ENDPOINTS.PM2_START, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ processId: id }),
@@ -119,7 +120,7 @@ export const PM2StatusComponent = () => {
     );
   const handleStop = (id: number) =>
     withAction(id, () =>
-      fetch(API_ENDPOINTS.PM2_STOP, {
+      authFetch(API_ENDPOINTS.PM2_STOP, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ processId: id }),
@@ -127,7 +128,7 @@ export const PM2StatusComponent = () => {
     );
   const handleRestart = (id: number) =>
     withAction(id, () =>
-      fetch(API_ENDPOINTS.PM2_RESTART, {
+      authFetch(API_ENDPOINTS.PM2_RESTART, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ processId: id }),
@@ -135,7 +136,7 @@ export const PM2StatusComponent = () => {
     );
   const handleDelete = (id: number) =>
     withAction(id, () =>
-      fetch(API_ENDPOINTS.PM2_DELETE, {
+      authFetch(API_ENDPOINTS.PM2_DELETE, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ processId: id }),

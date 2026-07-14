@@ -45,6 +45,8 @@ SECRETS=$(echo "$NOTES" | sed -n '/^{/,$p' | jq '.')
 KEY_MAP=(
   "CLOUDFLARE_API_TOKEN:CLOUDFLARE_API_TOKEN"
   "GITHUB_TOKEN:GITHUB_TOKEN"
+  "SUPABASE_ACCESS_TOKEN:SUPABASE_ACCESS_TOKEN"
+  "GOOGLE_AUTH_PROVIDER_CLIENT_SECRET:TF_VAR_supabase_google_client_secret"
 )
 
 for mapping in "${KEY_MAP[@]}"; do

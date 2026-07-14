@@ -15,6 +15,7 @@ import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 import { CardSkeleton } from './skeleton.component';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 interface ServiceInfo {
   name: string;
@@ -84,7 +85,7 @@ export const DockerStatusComponent = () => {
 
   const fetchDockerStatus = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.DOCKER_CONTAINERS);
+      const response = await authFetch(API_ENDPOINTS.DOCKER_CONTAINERS);
       if (!response.ok)
         throw new Error('Failed to fetch Docker container status');
       const data = await response.json();
@@ -107,7 +108,7 @@ export const DockerStatusComponent = () => {
   const handleOpenDocker = async () => {
     setIsStartingDocker(true);
     try {
-      await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
+      await authFetch(API_ENDPOINTS.SHELL_EXECUTE, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
@@ -142,7 +143,7 @@ export const DockerStatusComponent = () => {
 
   const handleStart = (identifier: string, isProject: boolean) =>
     withAction(identifier, () =>
-      fetch(API_ENDPOINTS.DOCKER_START, {
+      authFetch(API_ENDPOINTS.DOCKER_START, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify(
@@ -152,7 +153,7 @@ export const DockerStatusComponent = () => {
     );
   const handleStop = (identifier: string, isProject: boolean) =>
     withAction(identifier, () =>
-      fetch(API_ENDPOINTS.DOCKER_STOP, {
+      authFetch(API_ENDPOINTS.DOCKER_STOP, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify(
@@ -162,7 +163,7 @@ export const DockerStatusComponent = () => {
     );
   const handleRemove = (identifier: string, isProject: boolean) =>
     withAction(identifier, () =>
-      fetch(API_ENDPOINTS.DOCKER_REMOVE, {
+      authFetch(API_ENDPOINTS.DOCKER_REMOVE, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify(

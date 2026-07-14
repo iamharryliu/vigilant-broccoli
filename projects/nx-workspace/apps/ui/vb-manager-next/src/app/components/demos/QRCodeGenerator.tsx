@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@vigilant-broccoli/react-lib';
+import { authFetch } from '../../../../libs/auth';
 
 export function QRCodeGenerator() {
   const [url, setUrl] = useState('');
@@ -15,7 +16,7 @@ export function QRCodeGenerator() {
     setError(null);
     setQrDataUrl(null);
     try {
-      const res = await fetch('/api/qr-code', {
+      const res = await authFetch('/api/qr-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),

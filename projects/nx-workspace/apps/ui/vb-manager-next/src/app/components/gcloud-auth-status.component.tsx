@@ -16,6 +16,7 @@ import { GCP_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 const GCP_CONSOLE_BASE = 'https://console.cloud.google.com';
 const GCP_CONSOLE_LINK = {
@@ -185,7 +186,7 @@ const parseReauthData = (
 
 const fetchProjectsIfNeeded = async (needsReauth: boolean) => {
   if (needsReauth) return [];
-  const projectsResponse = await fetch(API_ENDPOINTS.GCLOUD_PROJECTS);
+  const projectsResponse = await authFetch(API_ENDPOINTS.GCLOUD_PROJECTS);
   return projectsResponse.ok ? projectsResponse.json() : [];
 };
 
@@ -199,7 +200,7 @@ export const GcloudAuthStatusComponent = () => {
   const switchProject = async (projectId: string) => {
     setSwitchingProject(projectId);
     try {
-      const response = await fetch(API_ENDPOINTS.GCLOUD_SET_PROJECT, {
+      const response = await authFetch(API_ENDPOINTS.GCLOUD_SET_PROJECT, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ projectId }),
@@ -209,7 +210,7 @@ export const GcloudAuthStatusComponent = () => {
         throw new Error('Failed to switch project');
       }
 
-      const authResponse = await fetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS);
+      const authResponse = await authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS);
       if (authResponse.ok) {
         setAuthStatus(await authResponse.json());
       }
@@ -223,7 +224,7 @@ export const GcloudAuthStatusComponent = () => {
   const switchAccount = async (account: string) => {
     setSwitchingProject(account);
     try {
-      const response = await fetch(API_ENDPOINTS.GCLOUD_SET_ACCOUNT, {
+      const response = await authFetch(API_ENDPOINTS.GCLOUD_SET_ACCOUNT, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ account }),
@@ -234,8 +235,8 @@ export const GcloudAuthStatusComponent = () => {
       }
 
       const [authResponse, reauthResponse] = await Promise.all([
-        fetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
-        fetch('/api/gcloud/reauth-needed'),
+        authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
+        authFetch('/api/gcloud/reauth-needed'),
       ]);
 
       if (authResponse.ok) {
@@ -263,8 +264,8 @@ export const GcloudAuthStatusComponent = () => {
     const fetchGcloudData = async () => {
       try {
         const [authResponse, reauthResponse] = await Promise.all([
-          fetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
-          fetch('/api/gcloud/reauth-needed'),
+          authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
+          authFetch('/api/gcloud/reauth-needed'),
         ]);
 
         if (!authResponse.ok) {
