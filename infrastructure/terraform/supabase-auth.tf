@@ -38,15 +38,17 @@ resource "supabase_settings" "vb_auth" {
     # Previously pointed at hearth's dead pre-rename Vercel domain
     # (vb-next-demo.vercel.app), which silently 404s any sign-in whose
     # redirectTo doesn't match uri_allow_list instead of erroring loudly.
-    site_url = "https://vb-hearth.vercel.app"
+    site_url = "https://production-vb-hearth.vercel.app"
 
     # One allow-listed entry per app per environment. Comma-separated per the
     # Management API's wire format (not a JSON array).
     uri_allow_list = join(",", [
       "http://localhost:4200/*",                              # hearth local dev
-      "https://vb-hearth.vercel.app/*",                       # hearth prod
+      "https://staging-vb-hearth.vercel.app/*",               # hearth staging
+      "https://production-vb-hearth.vercel.app/*",            # hearth prod
       "http://localhost:4000/auth/callback",                  # employee-handler-ui local dev
-      "https://employee-handler-ui.vercel.app/*",             # employee-handler-ui prod
+      "https://staging-employee-handler-ui.vercel.app/*",     # employee-handler-ui staging
+      "https://production-employee-handler-ui.vercel.app/*",  # employee-handler-ui prod
       "http://localhost:3000/*",                              # vb-manager-next local dev
       "http://127.0.0.1:3000/*",                              # vb-manager-next local dev (127.0.0.1 form)
       "https://manager.vigilant-broccoli.app/*",              # vb-manager-next prod (PM2)
