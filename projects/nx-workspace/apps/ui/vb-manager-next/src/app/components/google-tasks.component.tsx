@@ -3,7 +3,12 @@ import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Card, Text } from '@radix-ui/themes';
 import { Button, Checkbox, Input, Select } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import {
+  authFetch,
+  signInWithGoogle,
+  signOut,
+  useAuthStatus,
+} from '../../../libs/auth';
 import {
   useDroppable,
   DndContext,
@@ -140,7 +145,7 @@ const useTasks = (taskListId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${API_ENDPOINTS.TASKS}?taskListId=${taskListId}`,
       );
       const data = await response.json();
@@ -156,7 +161,7 @@ const useTasks = (taskListId: string) => {
   const createTask = async (title: string) => {
     if (!title.trim()) return;
     try {
-      const response = await fetch(API_ENDPOINTS.TASKS, {
+      const response = await authFetch(API_ENDPOINTS.TASKS, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ taskListId, title }),
@@ -199,7 +204,7 @@ const useTasks = (taskListId: string) => {
     );
 
     try {
-      const response = await fetch(API_ENDPOINTS.TASKS, {
+      const response = await authFetch(API_ENDPOINTS.TASKS, {
         method: HTTP_METHOD.PATCH,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
@@ -227,7 +232,7 @@ const useTasks = (taskListId: string) => {
   const updateTask = async (taskId: string, title: string) => {
     if (!title.trim()) return;
     try {
-      const response = await fetch(API_ENDPOINTS.TASKS, {
+      const response = await authFetch(API_ENDPOINTS.TASKS, {
         method: HTTP_METHOD.PATCH,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ taskListId, taskId, title }),
@@ -244,7 +249,7 @@ const useTasks = (taskListId: string) => {
 
   const moveTask = async (taskId: string, previousTaskId: string | null) => {
     try {
-      const response = await fetch(API_ENDPOINTS.TASKS_MOVE, {
+      const response = await authFetch(API_ENDPOINTS.TASKS_MOVE, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
@@ -291,7 +296,7 @@ const useTaskLists = (status: string) => {
 
     const fetchTaskLists = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
+        const response = await authFetch(API_ENDPOINTS.TASKS_LISTS);
         const data = await response.json();
 
         if (response.status === 401) {
@@ -599,7 +604,7 @@ const useVoiceAddTasks = (createTasks: (titles: string[]) => Promise<void>) => {
       setIsParsing(true);
       setVoiceError(null);
       try {
-        const res = await fetch(API_ENDPOINTS.TASKS_PARSE_TEXT, {
+        const res = await authFetch(API_ENDPOINTS.TASKS_PARSE_TEXT, {
           method: HTTP_METHOD.POST,
           headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({ transcript }),
@@ -908,7 +913,7 @@ const UnauthenticatedView = memo(() => (
         </Text>
         <Button
           onClick={async () => {
-            await signIn('google');
+            await signInWithGoogle();
           }}
         >
           Sign in with Google
@@ -948,7 +953,7 @@ export const GoogleTasksComponent = ({
   sortMode?: SortMode;
   onSortModeChange?: (taskListId: string, sortMode: SortMode) => void;
 } = {}) => {
-  const { data: session, status } = useSession();
+  const status = useAuthStatus();
   const { taskLists, authError: titleAuthError } = useTaskLists(status);
 
   const [selectedTaskListId, setSelectedTaskListId] = useState<string>(() => {
@@ -1019,13 +1024,12 @@ export const GoogleTasksComponent = ({
     const hasAuthError =
       titleAuthError ||
       error?.includes('Unauthorized') ||
-      error?.includes('authentication') ||
-      session?.error === 'RefreshAccessTokenError';
+      error?.includes('authentication');
 
     if (hasAuthError) {
       signOut();
     }
-  }, [titleAuthError, error, session?.error]);
+  }, [titleAuthError, error]);
 
   const handleCreateTask = useCallback(async () => {
     if (isCreatingTask) return;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@vigilant-broccoli/react-lib';
+import { authFetch } from '../../../../libs/auth';
 
 interface BucketFile {
   name: string;
@@ -27,7 +28,7 @@ export function StorageDemo() {
   const fetchFiles = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/bucket?provider=${provider}`);
+      const response = await authFetch(`/api/bucket?provider=${provider}`);
       const data = await response.json();
       setFiles(Array.isArray(data) ? data : []);
     } catch {
@@ -51,7 +52,10 @@ export function StorageDemo() {
     const formData = new FormData(e.currentTarget);
     formData.append('provider', provider);
     try {
-      const response = await fetch('/api/bucket', { method: 'POST', body: formData });
+      const response = await authFetch('/api/bucket', {
+        method: 'POST',
+        body: formData,
+      });
       if (response.ok) {
         await fetchFiles();
         (e.target as HTMLFormElement).reset();
@@ -62,7 +66,9 @@ export function StorageDemo() {
   };
 
   const handleDownload = async (fileName: string) => {
-    const response = await fetch(`/api/bucket?fileName=${encodeURIComponent(fileName)}&provider=${provider}`);
+    const response = await authFetch(
+      `/api/bucket?fileName=${encodeURIComponent(fileName)}&provider=${provider}`,
+    );
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -76,7 +82,7 @@ export function StorageDemo() {
 
   const handleDelete = async (fileName: string) => {
     if (!confirm(`Delete ${fileName}?`)) return;
-    const response = await fetch(
+    const response = await authFetch(
       `/api/bucket?fileName=${encodeURIComponent(fileName)}&provider=${provider}`,
       { method: 'DELETE' },
     );
@@ -115,21 +121,36 @@ export function StorageDemo() {
 
       <div>
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Files</h2>
-          <Button variant="outline" size="sm" onClick={fetchFiles} loading={loading}>
+          <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            Files
+          </h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchFiles}
+            loading={loading}
+          >
             Refresh
           </Button>
         </div>
 
         {files.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-sm py-6 text-center">No files uploaded yet</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm py-6 text-center">
+            No files uploaded yet
+          </p>
         ) : (
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead>
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Size</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Updated</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  Name
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  Size
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  Updated
+                </th>
                 <th className="px-4 py-2" />
               </tr>
             </thead>
@@ -137,11 +158,29 @@ export function StorageDemo() {
               {files.map(file => (
                 <tr key={file.name}>
                   <td className="px-4 py-2 text-sm">{file.name}</td>
-                  <td className="px-4 py-2 text-sm text-gray-500">{file.size ? `${(file.size / 1024).toFixed(2)} KB` : '-'}</td>
-                  <td className="px-4 py-2 text-sm text-gray-500">{file.updatedAt ? new Date(file.updatedAt).toLocaleString() : '-'}</td>
+                  <td className="px-4 py-2 text-sm text-gray-500">
+                    {file.size ? `${(file.size / 1024).toFixed(2)} KB` : '-'}
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-500">
+                    {file.updatedAt
+                      ? new Date(file.updatedAt).toLocaleString()
+                      : '-'}
+                  </td>
                   <td className="px-4 py-2 text-right space-x-2">
-                    <Button variant="ghost" size="sm" onClick={() => handleDownload(file.name)}>Download</Button>
-                    <Button variant="destructive-ghost" size="sm" onClick={() => handleDelete(file.name)}>Delete</Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDownload(file.name)}
+                    >
+                      Download
+                    </Button>
+                    <Button
+                      variant="destructive-ghost"
+                      size="sm"
+                      onClick={() => handleDelete(file.name)}
+                    >
+                      Delete
+                    </Button>
                   </td>
                 </tr>
               ))}

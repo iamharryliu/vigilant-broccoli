@@ -12,6 +12,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import Image from 'next/image';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
+import { authFetch } from '../../../../libs/auth';
 
 type OutputType = 'text' | 'image';
 
@@ -132,7 +133,7 @@ export const LLMSimplePromptTester = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(API_ENDPOINTS.LLM_TEST, {
+      const response = await authFetch(API_ENDPOINTS.LLM_TEST, {
         method: HTTP_METHOD.POST,
         body: JSON.stringify({
           userPrompt,
@@ -352,7 +353,10 @@ export const LLMSimplePromptTester = () => {
                       </Text>
                       <div className="flex gap-3 flex-wrap">
                         {outputs.map((imageUrl, index) => (
-                          <div className="border rounded overflow-hidden" key={index}>
+                          <div
+                            className="border rounded overflow-hidden"
+                            key={index}
+                          >
                             <img
                               src={imageUrl}
                               alt={`${model} output ${index + 1}`}

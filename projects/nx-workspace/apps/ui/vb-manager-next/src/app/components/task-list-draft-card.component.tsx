@@ -4,6 +4,7 @@ import { Text, Select } from '@radix-ui/themes';
 import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { authFetch } from '../../../libs/auth';
 
 export interface TaskDraftItem {
   title: string;
@@ -57,7 +58,7 @@ export const TaskListDraftCard = ({
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(TASKS_LISTS_API_PATH);
+        const res = await authFetch(TASKS_LISTS_API_PATH);
         if (!res.ok) throw new Error(LOAD_LISTS_ERROR_MESSAGE);
         const data = await res.json();
         if (cancelled) return;

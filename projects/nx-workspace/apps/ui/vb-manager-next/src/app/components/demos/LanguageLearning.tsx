@@ -25,6 +25,7 @@ import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { useTextToSpeech } from '../../hooks/useTextToSpeech';
 import type { LanguageLearningResult } from '@vigilant-broccoli/llm-schemas';
+import { authFetch } from '../../../../libs/auth';
 
 type Word = {
   id: string;
@@ -353,7 +354,7 @@ function WordDialog({
   useEffect(() => {
     if (token.kind !== 'lookup') return;
     setLoadingDefinition(true);
-    fetch(API_ENDPOINTS.LANGUAGE_LEARNING_DEFINE, {
+    authFetch(API_ENDPOINTS.LANGUAGE_LEARNING_DEFINE, {
       method: HTTP_METHOD.POST,
       headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
       body: JSON.stringify({ word: token.text, language }),
@@ -611,8 +612,8 @@ export function LanguageLearning() {
     if (storedMasteredFilter) setMasteredFilter(storedMasteredFilter);
 
     Promise.all([
-      fetch(API_ENDPOINTS.LANGUAGE_LEARNING_HISTORY).then(r => r.json()),
-      fetch(API_ENDPOINTS.LANGUAGE_LEARNING_MASTERED).then(r => r.json()),
+      authFetch(API_ENDPOINTS.LANGUAGE_LEARNING_HISTORY).then(r => r.json()),
+      authFetch(API_ENDPOINTS.LANGUAGE_LEARNING_MASTERED).then(r => r.json()),
     ]).then(([sessions, standalone]: [Session[], StandaloneMasteredWord[]]) => {
       setHistory(sessions);
       setMasteredIds(
@@ -661,7 +662,7 @@ export function LanguageLearning() {
   async function fetchWords() {
     setFetching(true);
     setFetchError(null);
-    const res = await fetch(API_ENDPOINTS.LANGUAGE_LEARNING_WORDS, {
+    const res = await authFetch(API_ENDPOINTS.LANGUAGE_LEARNING_WORDS, {
       method: HTTP_METHOD.POST,
       headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
       body: JSON.stringify({ languages }),
@@ -693,7 +694,7 @@ export function LanguageLearning() {
   }
 
   async function handleMaster(action: MasterAction) {
-    await fetch(API_ENDPOINTS.LANGUAGE_LEARNING_MASTERED, {
+    await authFetch(API_ENDPOINTS.LANGUAGE_LEARNING_MASTERED, {
       method: HTTP_METHOD.POST,
       headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
       body: JSON.stringify(
@@ -724,7 +725,7 @@ export function LanguageLearning() {
   }
 
   async function handleUnmaster(action: UnmasterAction) {
-    await fetch(API_ENDPOINTS.LANGUAGE_LEARNING_MASTERED, {
+    await authFetch(API_ENDPOINTS.LANGUAGE_LEARNING_MASTERED, {
       method: HTTP_METHOD.DELETE,
       headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
       body: JSON.stringify(
@@ -746,7 +747,7 @@ export function LanguageLearning() {
 
   async function handleReset() {
     setResetting(true);
-    await fetch(API_ENDPOINTS.LANGUAGE_LEARNING_RESET, {
+    await authFetch(API_ENDPOINTS.LANGUAGE_LEARNING_RESET, {
       method: HTTP_METHOD.DELETE,
     });
     setHistory([]);

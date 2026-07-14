@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 const TITLE = 'Local Services';
 const FETCH_ERROR = 'Failed to fetch local services';
@@ -41,7 +42,7 @@ export const LocalServicesComponent = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.LOCAL_SERVICES);
+      const response = await authFetch(API_ENDPOINTS.LOCAL_SERVICES);
       if (!response.ok) throw new Error(FETCH_ERROR);
       const data = await response.json();
       setServices(data);

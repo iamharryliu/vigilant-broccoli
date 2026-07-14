@@ -3,9 +3,9 @@
 import { Card, Text, Table, Code } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch, useAuthStatus } from '../../../libs/auth';
 
 interface TaskList {
   id: string;
@@ -13,7 +13,7 @@ interface TaskList {
 }
 
 export const TaskListDebugComponent = () => {
-  const { status } = useSession();
+  const status = useAuthStatus();
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +27,7 @@ export const TaskListDebugComponent = () => {
 
   const fetchTaskLists = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.TASKS_LISTS);
+      const response = await authFetch(API_ENDPOINTS.TASKS_LISTS);
       const data = await response.json();
 
       if (!response.ok) {
@@ -37,7 +37,9 @@ export const TaskListDebugComponent = () => {
       setTaskLists(data.taskLists);
       setLoading(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch task lists');
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch task lists',
+      );
       setLoading(false);
       console.error('Task lists fetch error:', err);
     }
@@ -62,7 +64,9 @@ export const TaskListDebugComponent = () => {
     <Card className="w-full">
       <div className="flex flex-col gap-3 p-4">
         <div className="flex justify-between items-center">
-          <Text size="3" weight="medium" color="gray">Task Lists Info</Text>
+          <Text size="3" weight="medium" color="gray">
+            Task Lists Info
+          </Text>
           <Button onClick={handleToggle} size="sm" variant="secondary">
             {isExpanded ? 'Hide' : 'Show'} Task Lists
           </Button>
@@ -71,27 +75,37 @@ export const TaskListDebugComponent = () => {
         {isExpanded && (
           <>
             {loading ? (
-              <Text size="2" color="gray">Loading...</Text>
+              <Text size="2" color="gray">
+                Loading...
+              </Text>
             ) : error ? (
-              <Text size="2" color="red">{error}</Text>
+              <Text size="2" color="red">
+                {error}
+              </Text>
             ) : (
               <Table.Root size="1">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell>
-                      <Text size="1" weight="bold">Title</Text>
+                      <Text size="1" weight="bold">
+                        Title
+                      </Text>
                     </Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>
-                      <Text size="1" weight="bold">ID</Text>
+                      <Text size="1" weight="bold">
+                        ID
+                      </Text>
                     </Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell />
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {taskLists.map((list) => (
+                  {taskLists.map(list => (
                     <Table.Row key={list.id}>
                       <Table.Cell>
-                        <Text size="1" weight="medium">{list.title}</Text>
+                        <Text size="1" weight="medium">
+                          {list.title}
+                        </Text>
                       </Table.Cell>
                       <Table.Cell>
                         <Code size="1">{list.id}</Code>

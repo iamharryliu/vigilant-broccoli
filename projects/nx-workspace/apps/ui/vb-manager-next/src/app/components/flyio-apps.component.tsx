@@ -14,6 +14,7 @@ import { FLYIO_LINK } from '@vigilant-broccoli/links';
 import { useCallback, useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 interface FlyApp {
   name: string;
@@ -82,7 +83,7 @@ export const FlyIoAppsComponent = () => {
 
   const fetchFlyApps = useCallback(async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.FLYIO_APPS);
+      const response = await authFetch(API_ENDPOINTS.FLYIO_APPS);
       const data: FlyAppsResponse = await response.json();
       if (!data.success || !data.apps) {
         setAuthRequired(!!data.authRequired);
@@ -108,7 +109,7 @@ export const FlyIoAppsComponent = () => {
 
   const handleLogin = async () => {
     setLoggingIn(true);
-    await fetch(API_ENDPOINTS.FLYIO_AUTH_LOGIN, { method: 'POST' });
+    await authFetch(API_ENDPOINTS.FLYIO_AUTH_LOGIN, { method: 'POST' });
     setLoggingIn(false);
     setLoading(true);
     await fetchFlyApps();

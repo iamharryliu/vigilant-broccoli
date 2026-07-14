@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 type SecretType = 'hex' | 'base64' | 'url-safe' | 'uuid';
 
@@ -28,11 +29,14 @@ const LocalMachineStats = ({
   downloadSpeed,
   uploadSpeed,
 }: LocalMachineStatsProps) => (
-  <div className="flex flex-col gap-2" style={{
+  <div
+    className="flex flex-col gap-2"
+    style={{
       borderTop: '1px solid var(--gray-5)',
       paddingTop: '12px',
       marginTop: '8px',
-    }}>
+    }}
+  >
     <div className="flex items-center gap-2">
       <Text size="2" weight="bold">
         Available disk space:
@@ -120,19 +124,19 @@ export const PublicIpComponent = () => {
 
         const [publicIpResponse, localIpResponse, sshKeyResponse] =
           await Promise.all([
-            fetch(API_ENDPOINTS.PUBLIC_IP)
+            authFetch(API_ENDPOINTS.PUBLIC_IP)
               .then(res => res.json())
               .catch(() => ({
                 success: false,
                 error: 'Failed to fetch public IP',
               })),
-            fetch(API_ENDPOINTS.LOCAL_IP)
+            authFetch(API_ENDPOINTS.LOCAL_IP)
               .then(res => res.json())
               .catch(() => ({
                 success: false,
                 error: 'Failed to fetch local IP',
               })),
-            fetch(API_ENDPOINTS.SSH_KEY)
+            authFetch(API_ENDPOINTS.SSH_KEY)
               .then(res => res.json())
               .catch(() => ({
                 success: false,
@@ -175,7 +179,7 @@ export const PublicIpComponent = () => {
     const fetchDiskSpace = async () => {
       try {
         setDiskLoading(true);
-        const response = await fetch(API_ENDPOINTS.DISK_SPACE);
+        const response = await authFetch(API_ENDPOINTS.DISK_SPACE);
         if (!response.ok) {
           throw new Error('Failed to fetch disk space');
         }
@@ -197,7 +201,7 @@ export const PublicIpComponent = () => {
     const fetchSpeedTest = async () => {
       try {
         setSpeedLoading(true);
-        const response = await fetch(API_ENDPOINTS.SPEED_TEST);
+        const response = await authFetch(API_ENDPOINTS.SPEED_TEST);
         if (!response.ok) {
           throw new Error('Failed to fetch speed test');
         }
@@ -283,7 +287,7 @@ export const PublicIpComponent = () => {
           <CopyButton
             disabled={loading}
             text={async () => {
-              const response = await fetch(
+              const response = await authFetch(
                 `${API_ENDPOINTS.GENERATE_SECRET}?type=${secretType}`,
               );
               const data = await response.json();

@@ -13,6 +13,7 @@ import {
   CONNECTION_SCOPE,
   ConnectionScope,
 } from '../constants/network-monitor';
+import { authFetch } from '../../../libs/auth';
 
 const TITLE = 'Outbound Connections';
 const REFRESH_MS = 15000;
@@ -63,7 +64,7 @@ export const OutboundConnectionsComponent = () => {
 
   const fetchConnections = async () => {
     try {
-      const res = await fetch(
+      const res = await authFetch(
         API_ENDPOINTS.NETWORK_MONITOR_OUTBOUND_CONNECTIONS,
       );
       if (!res.ok) throw new Error(FETCH_ERROR);

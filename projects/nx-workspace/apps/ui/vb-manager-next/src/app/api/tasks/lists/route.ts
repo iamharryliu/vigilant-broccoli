@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
+import { getGoogleAccessToken } from '../../../../../libs/server-auth';
 import {
   listTaskLists,
   isExpiredError,
@@ -9,15 +8,9 @@ import {
 
 export const runtime = 'nodejs';
 
-const getAccessToken = async (): Promise<string> => {
-  const session = await getServerSession(authOptions);
-  if (!session?.accessToken) throw new Error('Not authenticated');
-  return session.accessToken as string;
-};
-
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const accessToken = await getAccessToken();
+    const accessToken = getGoogleAccessToken(req);
     const taskLists = await listTaskLists(accessToken);
     return NextResponse.json({ taskLists });
   } catch (error) {
@@ -35,8 +28,10 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.accessToken) {
+  let accessToken: string;
+  try {
+    accessToken = getGoogleAccessToken(request);
+  } catch {
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: HTTP_STATUS_CODES.UNAUTHORIZED },
@@ -49,7 +44,7 @@ export async function POST(request: NextRequest) {
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ title }),
@@ -67,8 +62,10 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.accessToken) {
+  let accessToken: string;
+  try {
+    accessToken = getGoogleAccessToken(request);
+  } catch {
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: HTTP_STATUS_CODES.UNAUTHORIZED },
@@ -80,7 +77,7 @@ export async function DELETE(request: NextRequest) {
     `https://tasks.googleapis.com/tasks/v1/users/@me/lists/${taskListId}`,
     {
       method: 'DELETE',
-      headers: { Authorization: `Bearer ${session.accessToken}` },
+      headers: { Authorization: `Bearer ${accessToken}` },
     },
   );
 
@@ -95,8 +92,10 @@ export async function DELETE(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.accessToken) {
+  let accessToken: string;
+  try {
+    accessToken = getGoogleAccessToken(request);
+  } catch {
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: HTTP_STATUS_CODES.UNAUTHORIZED },
@@ -110,7 +109,7 @@ export async function PATCH(request: NextRequest) {
     {
       method: 'PATCH',
       headers: {
-        Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ title }),

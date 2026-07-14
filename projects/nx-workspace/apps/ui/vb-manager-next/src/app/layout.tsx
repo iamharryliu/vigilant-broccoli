@@ -3,8 +3,8 @@
 import '@radix-ui/themes/styles.css';
 import { Theme } from '@radix-ui/themes';
 import './global.css';
-import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider, useTheme, Toaster } from '@vigilant-broccoli/react-lib';
+import { AuthProvider } from '../../libs/auth';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const { appearance } = useTheme();
@@ -27,11 +27,11 @@ export default function RootLayout({
         <title>vb-manager-next</title>
       </head>
       <body>
-        <SessionProvider>
+        <AuthProvider>
           <ThemeProvider>
             <ThemeWrapper>{children}</ThemeWrapper>
           </ThemeProvider>
-        </SessionProvider>
+        </AuthProvider>
       </body>
     </html>
   );

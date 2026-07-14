@@ -13,6 +13,7 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { useRef, useState } from 'react';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
+import { authFetch } from '../../../libs/auth';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { DashboardIcon, ListBulletIcon } from '@radix-ui/react-icons';
 
@@ -112,7 +113,7 @@ export function LinkGroupComponent({
     args?: string,
   ) => {
     try {
-      const response = await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
+      const response = await authFetch(API_ENDPOINTS.SHELL_EXECUTE, {
         method: HTTP_METHOD.POST,
         headers: {
           ...HTTP_HEADERS.CONTENT_TYPE.JSON,

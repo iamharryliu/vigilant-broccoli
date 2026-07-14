@@ -13,11 +13,19 @@ import { CLOUDFLARE_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 const CF_ACCOUNT_ID = '26d066ec62c4d27b8da5e9aebac17293';
 const CF_DASH = `https://dash.cloudflare.com/${CF_ACCOUNT_ID}`;
 const PAGES_DEV_SUFFIX = '.pages.dev';
 const TITLE = 'Wrangler Pages';
+const DELETE_POLL_INTERVAL_MS = 3000;
+
+const DELETION_STATUS = {
+  DELETING: 'deleting',
+  DONE: 'done',
+  ERROR: 'error',
+} as const;
 
 interface WranglerProject {
   name: string;
@@ -30,6 +38,32 @@ interface WranglerPagesResponse {
   error?: string;
 }
 
+interface DeletionStatusResponse {
+  success: boolean;
+  status?: (typeof DELETION_STATUS)[keyof typeof DELETION_STATUS];
+  error?: string;
+}
+
+const pollDeletionStatus = (projectName: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const poll = setInterval(async () => {
+      const response = await authFetch(
+        `${API_ENDPOINTS.WRANGLER_PAGES}?status=${encodeURIComponent(projectName)}`,
+      );
+      const data: DeletionStatusResponse = await response.json();
+
+      if (!data.success || data.status === DELETION_STATUS.ERROR) {
+        clearInterval(poll);
+        reject(new Error(data.error || 'Failed to delete project'));
+        return;
+      }
+      if (data.status === DELETION_STATUS.DONE) {
+        clearInterval(poll);
+        resolve();
+      }
+    }, DELETE_POLL_INTERVAL_MS);
+  });
+
 const DASHBOARD_LINK = {
   href: CLOUDFLARE_LINK.DASHBOARD.URL,
   label: 'Dashboard',
@@ -40,10 +74,13 @@ export const WranglerPagesComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loggingIn, setLoggingIn] = useState(false);
+  const [deletingProjects, setDeletingProjects] = useState<Set<string>>(
+    new Set(),
+  );
 
   const fetchWranglerPages = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.WRANGLER_PAGES);
+      const response = await authFetch(API_ENDPOINTS.WRANGLER_PAGES);
       const data: WranglerPagesResponse = await response.json();
       if (!data.success || !data.projects)
         throw new Error(data.error || 'Failed to fetch Wrangler pages');
@@ -59,20 +96,33 @@ export const WranglerPagesComponent = () => {
   };
 
   const handleDelete = async (projectName: string) => {
-    const response = await fetch(API_ENDPOINTS.WRANGLER_PAGES, {
+    const response = await authFetch(API_ENDPOINTS.WRANGLER_PAGES, {
       method: HTTP_METHOD.DELETE,
       headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
       body: JSON.stringify({ projectName }),
     });
-    if (response.ok)
+    if (!response.ok) return;
+
+    setDeletingProjects(prev => new Set(prev).add(projectName));
+    try {
+      await pollDeletionStatus(projectName);
       setProjectsData(prev => prev.filter(p => p.name !== projectName));
+    } catch (err) {
+      console.error('Wrangler pages delete error:', err);
+    } finally {
+      setDeletingProjects(prev => {
+        const next = new Set(prev);
+        next.delete(projectName);
+        return next;
+      });
+    }
   };
 
   const handleLogin = async () => {
     setLoggingIn(true);
-    await fetch(API_ENDPOINTS.WRANGLER_LOGIN, { method: HTTP_METHOD.POST });
+    await authFetch(API_ENDPOINTS.WRANGLER_LOGIN, { method: HTTP_METHOD.POST });
     const poll = setInterval(async () => {
-      const response = await fetch(API_ENDPOINTS.WRANGLER_PAGES);
+      const response = await authFetch(API_ENDPOINTS.WRANGLER_PAGES);
       const data: WranglerPagesResponse = await response.json();
       if (data.success && data.projects) {
         clearInterval(poll);
@@ -97,13 +147,22 @@ export const WranglerPagesComponent = () => {
 
     const open = (url: string) => window.open(url, '_blank');
 
+    const isDeleting = deletingProjects.has(project.name);
+
     return {
       id: project.name,
       label: project.name,
       badges: (
-        <Badge color="blue" size="1">
-          Domains({project.domains.length})
-        </Badge>
+        <>
+          {isDeleting && (
+            <Badge color="orange" size="1">
+              Deleting…
+            </Badge>
+          )}
+          <Badge color="blue" size="1">
+            Domains({project.domains.length})
+          </Badge>
+        </>
       ),
       actions: (
         <EllipsisCTA

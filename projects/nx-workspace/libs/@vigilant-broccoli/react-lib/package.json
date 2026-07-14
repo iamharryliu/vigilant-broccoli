@@ -11,6 +11,7 @@
     "@radix-ui/react-select": "*",
     "@radix-ui/react-tabs": "*",
     "@radix-ui/themes": "*",
+    "@supabase/supabase-js": "^2.110.1",
     "@vigilant-broccoli/common-js": "workspace:*",
     "boring-avatars": "*",
     "class-variance-authority": "*",

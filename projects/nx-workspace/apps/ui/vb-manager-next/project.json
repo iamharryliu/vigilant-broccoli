@@ -32,8 +32,6 @@
       "options": {
         "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/vb-manager-next/supabase/migrations && cd apps/ui/vb-manager-next && next dev --webpack --hostname 127.0.0.1'",
         "env": {
-          "NEXTAUTH_SECRET": "NEXTAUTH_SECRET",
-          "NEXTAUTH_URL": "http://localhost:3000",
           "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev",
           "VB_STORAGE_SERVICE_URL": "https://staging-vb-storage-service.fly.dev",
           "EMAIL_SERVICE_URL": "https://staging-vb-email-service.fly.dev",

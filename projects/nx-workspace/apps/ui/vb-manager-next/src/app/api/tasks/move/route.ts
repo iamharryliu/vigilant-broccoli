@@ -1,20 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
+import { getGoogleAccessToken } from '../../../../../libs/server-auth';
 import { moveTask, isExpiredError } from '@vigilant-broccoli/google-workspace';
 
 export const runtime = 'nodejs';
 
-const getAccessToken = async (): Promise<string> => {
-  const session = await getServerSession(authOptions);
-  if (!session?.accessToken) throw new Error('Not authenticated');
-  return session.accessToken as string;
-};
-
 export async function POST(req: NextRequest) {
   try {
-    const accessToken = await getAccessToken();
+    const accessToken = getGoogleAccessToken(req);
     const body = await req.json();
     const { taskListId = '@default', taskId, previous } = body;
 

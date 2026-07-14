@@ -16,8 +16,6 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 1337,
-        NEXTAUTH_URL: 'https://manager.vigilant-broccoli.app',
-        NEXTAUTH_SECRET: 'your-secret-key-here-change-this-in-production',
         VB_EXPRESS_URL: 'https://staging-vb-express.fly.dev',
         VB_STORAGE_SERVICE_URL: 'https://staging-vb-storage-service.fly.dev',
         EMAIL_SERVICE_URL: 'https://staging-vb-email-service.fly.dev',

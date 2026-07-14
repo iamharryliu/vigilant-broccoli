@@ -4,6 +4,7 @@ import { Card, Heading } from '@radix-ui/themes';
 import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { EmailMessageForm } from '../EmailMessageForm';
+import { authFetch } from '../../../../libs/auth';
 
 const API_BASE_URL = '';
 
@@ -32,7 +33,7 @@ const TextMessageForm = () => {
     setLoading(true);
     setResult('');
 
-    const response = await fetch(`${API_BASE_URL}/api/send-text-message`, {
+    const response = await authFetch(`${API_BASE_URL}/api/send-text-message`, {
       method: HTTP_METHOD.POST,
       headers: {
         ...HTTP_HEADERS.CONTENT_TYPE.JSON,

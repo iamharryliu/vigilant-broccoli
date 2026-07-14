@@ -4,6 +4,7 @@ import { Text } from '@radix-ui/themes';
 import { Button, Input } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
+import { authFetch } from '../../../../libs/auth';
 
 export const RecipeScraperUtilityContent = () => {
   const [recipeUrl, setRecipeUrl] = useState('');
@@ -22,7 +23,7 @@ export const RecipeScraperUtilityContent = () => {
     setRecipeLoading(true);
     setRecipeMessage(null);
 
-    const response = await fetch(API_ENDPOINTS.RECIPE_SCRAPE, {
+    const response = await authFetch(API_ENDPOINTS.RECIPE_SCRAPE, {
       method: HTTP_METHOD.POST,
       headers: {
         ...HTTP_HEADERS.CONTENT_TYPE.JSON,

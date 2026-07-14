@@ -5,6 +5,7 @@ import { Text } from '@radix-ui/themes';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { AUDIO_MIME_TYPE, AUDIO_FILENAME } from '../../constants/audio';
 import { SpeechToTextButton } from './SpeechToTextButton';
+import { authFetch } from '../../../../libs/auth';
 
 const ERROR_GENERATE_LIST = 'Failed to generate list.';
 
@@ -45,7 +46,7 @@ export const VoiceListGenerator = () => {
         const formData = new FormData();
         formData.append('audio', audioBlob, AUDIO_FILENAME);
 
-        const res = await fetch(API_ENDPOINTS.VOICE_LIST, {
+        const res = await authFetch(API_ENDPOINTS.VOICE_LIST, {
           method: 'POST',
           body: formData,
         });

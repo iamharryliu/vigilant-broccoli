@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../lib/auth';
+import { getGoogleAccessToken } from '../../../../libs/server-auth';
 import {
   listTasks,
   createTask,
@@ -12,15 +11,9 @@ import {
 
 export const runtime = 'nodejs';
 
-const getAccessToken = async (): Promise<string> => {
-  const session = await getServerSession(authOptions);
-  if (!session?.accessToken) throw new Error('Not authenticated');
-  return session.accessToken as string;
-};
-
 export async function GET(req: NextRequest) {
   try {
-    const accessToken = await getAccessToken();
+    const accessToken = getGoogleAccessToken(req);
     const taskListId = req.nextUrl.searchParams.get('taskListId') ?? '@default';
     const tasks = await listTasks(accessToken, taskListId);
     return NextResponse.json({ success: true, tasks });
@@ -42,7 +35,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const accessToken = await getAccessToken();
+    const accessToken = getGoogleAccessToken(req);
     const body = await req.json();
     const task = await createTask(
       accessToken,
@@ -68,7 +61,7 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const accessToken = await getAccessToken();
+    const accessToken = getGoogleAccessToken(req);
     const taskListId = req.nextUrl.searchParams.get('taskListId') ?? '@default';
     const taskId = req.nextUrl.searchParams.get('taskId');
     if (!taskId) {
@@ -97,7 +90,7 @@ export async function DELETE(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const accessToken = await getAccessToken();
+    const accessToken = getGoogleAccessToken(req);
     const body = await req.json();
     const task = await updateTask(
       accessToken,

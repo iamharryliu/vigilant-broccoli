@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { AUDIO_MIME_TYPE, AUDIO_FILENAME } from '../constants/audio';
+import { authFetch } from '../../../libs/auth';
 
 const SPEECH_LANG = 'en-US';
 const ERROR_TRANSCRIBE = 'Failed to transcribe audio';
@@ -94,7 +95,7 @@ export const useSpeechToText = ({
     const formData = new FormData();
     formData.append('audio', audioBlob, AUDIO_FILENAME);
 
-    const response = await fetch(API_ENDPOINTS.SPEECH_TO_TEXT, {
+    const response = await authFetch(API_ENDPOINTS.SPEECH_TO_TEXT, {
       method: 'POST',
       body: formData,
     });

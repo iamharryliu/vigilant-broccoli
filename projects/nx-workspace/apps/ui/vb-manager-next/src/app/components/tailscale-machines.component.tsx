@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 interface TailscaleMachine {
   id: string;
@@ -88,7 +89,7 @@ export const TailscaleMachinesComponent = () => {
   useEffect(() => {
     const fetchMachines = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.TAILSCALE_MACHINES);
+        const response = await authFetch(API_ENDPOINTS.TAILSCALE_MACHINES);
         if (!response.ok) throw new Error(ERR_FETCH_FAILED);
         const data = await response.json();
         setMachines(data.machines ?? []);

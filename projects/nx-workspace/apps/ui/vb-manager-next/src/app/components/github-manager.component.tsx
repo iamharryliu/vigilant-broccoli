@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronRight, Users } from 'lucide-react';
 import { GithubOrgBasic } from '@vigilant-broccoli/github-workspace-js';
 import { GITHUB_LINK } from '@vigilant-broccoli/links';
+import { authFetch } from '../../../libs/auth';
 
 const TITLE = 'Github Organizations';
 const GITHUB_BASE = 'https://github.com';
@@ -67,7 +68,7 @@ const useOrganizations = () => {
   useEffect(() => {
     const fetchOrganizations = async () => {
       try {
-        const res = await fetch(API_ROUTES.USER_ORGANIZATIONS);
+        const res = await authFetch(API_ROUTES.USER_ORGANIZATIONS);
         if (!res.ok) {
           throw new Error(`Failed to fetch organizations: ${res.statusText}`);
         }

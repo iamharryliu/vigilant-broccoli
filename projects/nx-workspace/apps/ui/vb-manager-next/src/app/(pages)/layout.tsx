@@ -6,7 +6,7 @@ import { DropdownMenu } from '@radix-ui/themes';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '../../../libs/auth';
 import { APP_ROUTE } from '../app.const';
 import { useTheme } from '@vigilant-broccoli/react-lib';
 import { FloatingIslandComponent } from '../components/floating-island.component';
@@ -107,7 +107,7 @@ const handleKeyboardShortcut = (
 export default function Layout({ children }: { children: ReactNode }) {
   const { appearance, toggleTheme } = useTheme();
   const pathname = usePathname();
-  const { data: _session } = useSession();
+  const _session = useAuth();
   const { notifications, unreadCount, add, markAllRead, clear } =
     useNotificationHistory();
   const { notify: browserNotify } = useBrowserNotifications();

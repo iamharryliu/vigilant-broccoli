@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 const TITLE = 'GitHub Pages';
 const GH_BASE = 'https://github.com';
@@ -114,7 +115,7 @@ export const GithubPagesComponent = () => {
 
   const fetchSites = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.GITHUB_PAGES);
+      const response = await authFetch(API_ENDPOINTS.GITHUB_PAGES);
       const data: GithubPagesResponse = await response.json();
       if (!data.success || !data.sites)
         throw new Error(data.error || MESSAGE.FETCH_FAILED);

@@ -18,6 +18,7 @@ import {
 import { QUICK_LINKS, type QuickLink } from '../constants/quick-links';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 const LOCAL_STORAGE_KEY = 'quick-links-grouped-state';
 
@@ -173,7 +174,7 @@ export function SearchDialogComponent({
     target: string,
     args?: string,
   ) => {
-    const response = await fetch(API_ENDPOINTS.SHELL_EXECUTE, {
+    const response = await authFetch(API_ENDPOINTS.SHELL_EXECUTE, {
       method: HTTP_METHOD.POST,
       headers: {
         ...HTTP_HEADERS.CONTENT_TYPE.JSON,

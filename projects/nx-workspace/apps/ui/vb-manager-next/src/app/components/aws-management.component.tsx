@@ -13,6 +13,7 @@ import { AWS_LINK } from '@vigilant-broccoli/links';
 import { useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 const AWS_CONSOLE_BASE = 'https://console.aws.amazon.com';
 const AWS_CONSOLE_LINK = {
@@ -114,7 +115,7 @@ export const AwsManagementComponent = () => {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.AWS_PROFILES);
+        const response = await authFetch(API_ENDPOINTS.AWS_PROFILES);
         if (!response.ok) throw new Error('Failed to fetch AWS profiles');
         const data = await response.json();
         setProfiles(data.profiles);
