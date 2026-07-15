@@ -83,9 +83,10 @@ jobs:
           RMQ_PASS: ${{ env.RMQ_PASS }}
         run: |
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
+          RMQ_IP=$(dig +short "$RMQ_HOST" | head -1)
           STATUS=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 10 \
             --cacert /tmp/rabbitmq-ca.crt \
-            --resolve "rabbitmq:15671:${RMQ_HOST}" \
+            --resolve "rabbitmq:15671:${RMQ_IP}" \
             -u "${RMQ_USER}:${RMQ_PASS}" \
             "https://rabbitmq:15671/api/overview")
           echo "Management /api/overview status: $STATUS"
