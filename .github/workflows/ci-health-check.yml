@@ -216,11 +216,12 @@ jobs:
           RMQ_USER="${USER_PASS%%:*}"
           RMQ_PASS="${USER_PASS#*:}"
           RMQ_HOST="${HOST_PORT%%:*}"
+          RMQ_IP=$(dig +short "$RMQ_HOST" | head -1)
           echo "::add-mask::$RMQ_PASS"
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
           RMQ_CODE=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 15 \
             --cacert /tmp/rabbitmq-ca.crt \
-            --resolve "rabbitmq:15671:${RMQ_HOST}" \
+            --resolve "rabbitmq:15671:${RMQ_IP}" \
             -u "${RMQ_USER}:${RMQ_PASS}" \
             "https://rabbitmq:15671/api/overview" 2>/dev/null) || RMQ_CODE="timeout"
           if [ "$RMQ_CODE" = "200" ]; then
