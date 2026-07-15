@@ -75,6 +75,39 @@ sync_secrets_to_vault() {
   # curl-based mgmt/health checks that verify TLS against SNI 'rabbitmq'.
   local rabbitmq_host="socket.harryliu.dev"
   local conn_str="amqps://${rabbitmq_user}:${rabbitmq_password}@${rabbitmq_host}:5671"
+
+  # RABBITMQ_CONNECTION_STRING has two authoritative sources at different times:
+  # a fresh VM boots with Terraform's random_password (cloud-init), while
+  # rotate-rabbitmq-password.sh sets a new password out-of-band and updates
+  # Vault directly. So on an *update* we only patch Vault when the broker
+  # actually accepts the Terraform password (i.e. the VM/password was recreated
+  # this apply) — otherwise patching would overwrite the rotation password with
+  # one the broker never received, causing 401s. On first-run seed we always
+  # set it (fresh install, Terraform password is authoritative).
+  local rmq_ssh_opts="-i $HOME/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"
+  # Wait for the broker to be up before probing — on a VM rebuild the container
+  # may still be starting, and a premature probe would falsely conclude the
+  # Terraform password is stale and skip the (needed) Vault sync.
+  local rmq_ready=false
+  for i in $(seq 1 30); do
+    if ssh $rmq_ssh_opts "ubuntu@${rabbitmq_ip}" "sudo docker exec rabbitmq rabbitmqctl status" >/dev/null 2>&1; then
+      rmq_ready=true
+      break
+    fi
+    sleep 2
+  done
+
+  local rmq_conn_patch_line=""
+  if [ "$rmq_ready" != true ]; then
+    echo "Warning: RabbitMQ broker not reachable — leaving RABBITMQ_CONNECTION_STRING untouched (rerun pnpm tf:post-apply once the broker is up)."
+  elif ssh $rmq_ssh_opts "ubuntu@${rabbitmq_ip}" \
+    "sudo docker exec rabbitmq rabbitmqctl authenticate_user ${rabbitmq_user} '${rabbitmq_password}'" >/dev/null 2>&1; then
+    echo "Broker accepts the Terraform password — will sync RABBITMQ_CONNECTION_STRING to Vault."
+    rmq_conn_patch_line="RABBITMQ_CONNECTION_STRING='${conn_str}'"
+  else
+    echo "Broker rejects the Terraform password (rotation owns it) — leaving RABBITMQ_CONNECTION_STRING in Vault untouched."
+  fi
+
   local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
   # Trailing newline is required — $(...) strips it, and OpenSSH/libcrypto reject a key without it.
   local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
@@ -91,7 +124,7 @@ export VAULT_TOKEN='${vault_token}'
 if vault kv get kv/secrets >/dev/null 2>&1; then
   vault kv patch kv/secrets \
     RABBITMQ_CA_CERT='${ca_cert_b64}' \
-    RABBITMQ_CONNECTION_STRING='${conn_str}' \
+    ${rmq_conn_patch_line} \
     EMAIL_SERVICE_API_KEY='${email_api_key}' \
     GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
     CODE_SERVER_PASSWORD='${code_server_password}' \
@@ -126,18 +159,18 @@ fi
 
 echo 'Secrets synced to Vault'
 "
-  echo "✓ Synced RABBITMQ_CA_CERT, RABBITMQ_CONNECTION_STRING, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
+  echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
 
   echo "Ensuring CI SSH key on socket-server VM (${rabbitmq_ip})..."
   ssh-keygen -R "$rabbitmq_ip" >/dev/null 2>&1 || true
-  ssh -i "$HOME/.ssh/id_ed25519" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "ubuntu@${rabbitmq_ip}" \
+  ssh $rmq_ssh_opts "ubuntu@${rabbitmq_ip}" \
     "grep -qF '${ci_ssh_public_key}' ~/.ssh/authorized_keys 2>/dev/null || echo '${ci_ssh_public_key}' >> ~/.ssh/authorized_keys" \
     && echo "✓ CI SSH key authorized on socket-server VM" \
     || echo "Warning: could not install CI SSH key on ${rabbitmq_ip} — rerun pnpm tf:post-apply"
 
   echo "Ensuring CI SSH key on gitea VM (${gitea_ip})..."
   ssh-keygen -R "$gitea_ip" >/dev/null 2>&1 || true
-  ssh -i "$HOME/.ssh/id_ed25519" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "ubuntu@${gitea_ip}" \
+  ssh $rmq_ssh_opts "ubuntu@${gitea_ip}" \
     "grep -qF '${ci_ssh_public_key}' ~/.ssh/authorized_keys 2>/dev/null || echo '${ci_ssh_public_key}' >> ~/.ssh/authorized_keys" \
     && echo "✓ CI SSH key authorized on gitea VM" \
     || echo "Warning: could not install CI SSH key on ${gitea_ip} — rerun pnpm tf:post-apply"
