@@ -18,7 +18,7 @@ if [ -z "$VAULT_ADDR" ]; then
     --secret=VB_VM_VAULT_ROOT_TOKEN \
     --project="${GCP_PROJECT}")
 
-  RABBITMQ_IP=$(cd "${SCRIPT_DIR}/../../" && terraform output -raw oci_vm_public_ip)
+  RABBITMQ_SSH_TARGET=$(cd "${SCRIPT_DIR}/../../" && terraform output -raw oci_vm_public_ip)
   SSH_KEY_FILE="$HOME/.ssh/id_ed25519"
 else
   if [ -z "$OCI_VM_SSH_KEY" ]; then
@@ -26,7 +26,7 @@ else
     exit 1
   fi
 
-  RABBITMQ_IP="$RABBITMQ_HOST"
+  RABBITMQ_SSH_TARGET="$RABBITMQ_HOST"
   SSH_KEY_FILE=$(mktemp)
   trap 'rm -f "$SSH_KEY_FILE"' EXIT
   # Trailing newline is required — OpenSSH/libcrypto reject a key without it,
@@ -36,20 +36,20 @@ else
 fi
 
 SSH_OPTS="-i $SSH_KEY_FILE -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"
-RABBITMQ_SSH="ubuntu@${RABBITMQ_IP}"
+RABBITMQ_SSH="ubuntu@${RABBITMQ_SSH_TARGET}"
 
 NEW_PASSWORD=$(openssl rand -hex 24)
 
-echo "Setting new password on RabbitMQ VM (${RABBITMQ_IP})..."
+echo "Setting new password on RabbitMQ VM (${RABBITMQ_SSH_TARGET})..."
 ssh $SSH_OPTS "$RABBITMQ_SSH" "
 sudo sed -i \"s/RABBITMQ_DEFAULT_PASS: .*/RABBITMQ_DEFAULT_PASS: ${NEW_PASSWORD}/\" /opt/rabbitmq/docker-compose.yml
 sudo docker compose -f /opt/rabbitmq/docker-compose.yml up -d
 "
 
-# Connection string always uses the DNS name (RABBITMQ_IP is the SSH target,
-# which is the raw IP in local mode) so it matches the broker cert's SAN and
-# stays consistent with post-apply.sh — otherwise local rotations drift Vault
-# to the IP form and break the TLS-verifying CI checks.
+# Connection string always uses the DNS name (RABBITMQ_SSH_TARGET is the SSH
+# target, which is the raw IP in local mode) so it matches the broker cert's
+# SAN and stays consistent with post-apply.sh — otherwise local rotations drift
+# Vault to the IP form and break the TLS-verifying CI checks.
 NEW_CONNECTION_STRING="amqps://${RABBITMQ_USER}:${NEW_PASSWORD}@${RABBITMQ_HOST}:5671"
 
 echo "Waiting for RabbitMQ to finish starting..."
