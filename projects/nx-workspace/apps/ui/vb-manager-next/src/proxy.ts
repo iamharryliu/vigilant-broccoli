@@ -12,7 +12,7 @@ const unauthorized = (): NextResponse =>
     { status: HTTP_STATUS_CODES.UNAUTHORIZED },
   );
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const auth = request.headers.get(AUTHORIZATION_HEADER);
   if (!auth?.startsWith(BEARER_PREFIX)) return unauthorized();
   const token = auth.slice(BEARER_PREFIX.length);
