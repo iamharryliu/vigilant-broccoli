@@ -171,7 +171,7 @@ async function main() {
     hearth: {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,
-        NEXT_PUBLIC_APP_URL: `https://${environment}-vb-hearth.vercel.app/`,
+        NEXT_PUBLIC_APP_URL: `https://${environment}-hearth.vercel.app/`,
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
         EMAIL_SERVICE_URL: `https://${environment}-vb-email-service.fly.dev`,
       },

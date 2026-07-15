@@ -120,7 +120,7 @@ jobs:
           echo "[Websites]"
           http_check "harryliu.dev" "https://harryliu.dev"
           http_check "cloud8skate.com" "https://cloud8skate.com"
-          http_check "staging-vb-hearth.vercel.app" "https://staging-vb-hearth.vercel.app"
+          http_check "staging-hearth.vercel.app" "https://staging-hearth.vercel.app"
           http_check "findme" "https://staging-findme.vercel.app"
 
           echo ""
