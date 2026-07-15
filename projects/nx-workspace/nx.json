@@ -81,7 +81,6 @@
       "inputs": ["default", "^default"]
     }
   },
-  "neverConnectToCloud": true,
   "generators": {
     "@nx/angular:application": {
       "linter": "eslint",
@@ -179,5 +178,6 @@
   "analytics": false,
   "migrate": {
     "agentic": false
-  }
+  },
+  "nxCloudId": "6a578d61269ecfeebfec0ad3"
 }
