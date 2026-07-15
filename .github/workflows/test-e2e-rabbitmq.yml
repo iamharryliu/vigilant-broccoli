@@ -83,12 +83,19 @@ jobs:
           RMQ_PASS: ${{ env.RMQ_PASS }}
         run: |
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
-          RMQ_IP=$(dig +short "$RMQ_HOST" | head -1)
-          STATUS=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 10 \
-            --cacert /tmp/rabbitmq-ca.crt \
-            --resolve "rabbitmq:15671:${RMQ_IP}" \
-            -u "${RMQ_USER}:${RMQ_PASS}" \
-            "https://rabbitmq:15671/api/overview")
+          # The broker cert's SAN is 'rabbitmq' (not the public host), so we
+          # connect to the real host but present/verify SNI 'rabbitmq' against
+          # the CA. --connect-to resolves the host itself, so it works whether
+          # RMQ_HOST is a DNS name or a raw IP. Retry to tolerate brief blips.
+          for attempt in 1 2 3; do
+            STATUS=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 10 \
+              --cacert /tmp/rabbitmq-ca.crt \
+              --connect-to "rabbitmq:15671:${RMQ_HOST}:15671" \
+              -u "${RMQ_USER}:${RMQ_PASS}" \
+              "https://rabbitmq:15671/api/overview") || STATUS="000"
+            [ "$STATUS" = "200" ] && break
+            [ "$attempt" -lt 3 ] && sleep 5
+          done
           echo "Management /api/overview status: $STATUS"
           if [ "$STATUS" != "200" ]; then
             echo "✗ Management UI check failed"

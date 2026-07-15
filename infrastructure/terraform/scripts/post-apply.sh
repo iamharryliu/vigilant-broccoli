@@ -69,7 +69,12 @@ sync_secrets_to_vault() {
     return
   fi
 
-  local conn_str="amqps://${rabbitmq_user}:${rabbitmq_password}@${rabbitmq_ip}:5671"
+  # Use the DNS name (not the raw IP) so the connection string matches the
+  # broker cert's SAN and stays consistent with rotate-rabbitmq-password.sh —
+  # otherwise this sync silently flips Vault to the IP form and breaks the
+  # curl-based mgmt/health checks that verify TLS against SNI 'rabbitmq'.
+  local rabbitmq_host="socket.harryliu.dev"
+  local conn_str="amqps://${rabbitmq_user}:${rabbitmq_password}@${rabbitmq_host}:5671"
   local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
   # Trailing newline is required — $(...) strips it, and OpenSSH/libcrypto reject a key without it.
   local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
