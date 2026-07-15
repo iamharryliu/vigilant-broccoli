@@ -7,6 +7,7 @@ import {
   API_KEY_HEADER,
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,
+  HTTP_STATUS_CODES,
   JSON_CONTENT_TYPE,
   LLM_MODEL,
   OPEN_TYPE,
@@ -18,6 +19,16 @@ const SHARED_APP_TOKEN = process.env['SHARED_APP_TOKEN'];
 const LLM_ENDPOINT = `${LLM_SERVICE_URL}/api/llm`;
 const DEFAULT_LANGUAGE_CODE = 'en-US';
 const UNTITLED_RECIPE = 'Untitled Recipe';
+const NO_RECIPE_FOUND = 'NO_RECIPE_FOUND';
+const MIN_CLEAN_CONTENT_LENGTH = 200;
+const BOT_CHALLENGE_MARKERS = [
+  'just a moment',
+  'enable javascript and cookies to continue',
+  'checking if the site connection is secure',
+  'attention required! | cloudflare',
+  'verify you are human',
+  'access denied',
+];
 
 const extractCleanContent = (html: string): string =>
   html
@@ -40,6 +51,11 @@ const extractCleanContent = (html: string): string =>
     .replace(/\n\s*\n/g, '\n')
     .trim();
 
+const looksLikeBotChallenge = (cleanContent: string): boolean => {
+  const lowerContent = cleanContent.toLowerCase();
+  return BOT_CHALLENGE_MARKERS.some(marker => lowerContent.includes(marker));
+};
+
 const buildRecipePrompt = (
   url: string,
   recipeTemplate: string,
@@ -52,6 +68,9 @@ The markdown should follow this exact template format:
 ${recipeTemplate}
 
 Important guidelines:
+- Only use ingredients, quantities, and steps that literally appear in the Text Content below. Never invent, guess, "improve," or add ingredients/steps/references that are not present in the text, even if they are common for this type of dish.
+- If the Text Content is empty, garbled, a bot/cookie/JavaScript challenge page, an error page, or otherwise does not contain an actual recipe, respond with exactly the text ${NO_RECIPE_FOUND} and nothing else.
+- Only include a reference link (e.g. a YouTube video) in the References section if its URL literally appears in the Text Content — never fabricate one.
 - Prefer metric units over imperial units
 - Please convert all volume measurements to the following:
   - **tsp** - teaspoon
@@ -88,8 +107,39 @@ export async function POST(request: NextRequest) {
     'utf-8',
   );
 
-  const pageResponse = await fetch(url);
+  let pageResponse: Response;
+  try {
+    pageResponse = await fetch(url);
+  } catch {
+    return NextResponse.json(
+      { error: `Could not reach ${url}` },
+      { status: HTTP_STATUS_CODES.BAD_GATEWAY },
+    );
+  }
+
+  if (!pageResponse.ok) {
+    return NextResponse.json(
+      {
+        error: `Page returned ${pageResponse.status} ${pageResponse.statusText} - the site may be blocking automated requests`,
+      },
+      { status: HTTP_STATUS_CODES.BAD_GATEWAY },
+    );
+  }
+
   const cleanContent = extractCleanContent(await pageResponse.text());
+
+  if (
+    cleanContent.length < MIN_CLEAN_CONTENT_LENGTH ||
+    looksLikeBotChallenge(cleanContent)
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          'The page could not be read as a recipe (it may be behind a bot/cookie check or blocked the request)',
+      },
+      { status: HTTP_STATUS_CODES.BAD_GATEWAY },
+    );
+  }
 
   const llmResponse = await fetch(LLM_ENDPOINT, {
     method: HTTP_METHOD.POST,
@@ -115,6 +165,14 @@ export async function POST(request: NextRequest) {
 
   const { outputs } = (await llmResponse.json()) as { outputs: string[] };
   const markdown = outputs[0];
+
+  if (markdown.trim() === NO_RECIPE_FOUND) {
+    return NextResponse.json(
+      { error: 'No recipe could be found on that page' },
+      { status: HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY },
+    );
+  }
+
   const titleMatch = markdown.match(/^#\s+(.+)$/m);
   const title = titleMatch ? titleMatch[1] : UNTITLED_RECIPE;
 
