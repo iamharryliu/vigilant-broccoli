@@ -52,13 +52,13 @@
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "VERCEL_PROJECT_ID=staging-vb-hearth VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts hearth staging"
+        "command": "VERCEL_PROJECT_ID=staging-hearth VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts hearth staging"
       }
     },
     "deploy:production": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "VERCEL_PROJECT_ID=production-vb-hearth VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts hearth production"
+        "command": "VERCEL_PROJECT_ID=production-hearth VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts hearth production"
       }
     }
   }

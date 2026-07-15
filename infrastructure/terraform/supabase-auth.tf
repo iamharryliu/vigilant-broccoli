@@ -36,16 +36,17 @@ resource "supabase_settings" "vb_auth" {
   auth = jsonencode({
     # Fallback redirect target when redirectTo isn't on the allow list below.
     # Previously pointed at hearth's dead pre-rename Vercel domain
-    # (vb-next-demo.vercel.app), which silently 404s any sign-in whose
-    # redirectTo doesn't match uri_allow_list instead of erroring loudly.
-    site_url = "https://production-vb-hearth.vercel.app"
+    # (vb-next-demo.vercel.app, then vb-hearth.vercel.app), which silently
+    # 404s any sign-in whose redirectTo doesn't match uri_allow_list instead
+    # of erroring loudly.
+    site_url = "https://production-hearth.vercel.app"
 
     # One allow-listed entry per app per environment. Comma-separated per the
     # Management API's wire format (not a JSON array).
     uri_allow_list = join(",", [
       "http://localhost:4200/*",                              # hearth local dev
-      "https://staging-vb-hearth.vercel.app/*",               # hearth staging
-      "https://production-vb-hearth.vercel.app/*",            # hearth prod
+      "https://staging-hearth.vercel.app/*",                  # hearth staging
+      "https://production-hearth.vercel.app/*",               # hearth prod
       "http://localhost:4000/auth/callback",                  # employee-handler-ui local dev
       "https://staging-employee-handler-ui.vercel.app/*",     # employee-handler-ui staging
       "https://production-employee-handler-ui.vercel.app/*",  # employee-handler-ui prod

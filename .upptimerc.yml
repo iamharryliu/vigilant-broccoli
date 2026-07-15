@@ -21,7 +21,7 @@ sites:
   - name: staging-findme
     url: https://staging-findme.vercel.app/
   - name: staging-hearth
-    url: https://staging-vb-hearth.vercel.app/login
+    url: https://staging-hearth.vercel.app/login
   - name: staging-llm-service
     url: https://staging-vb-llm-service.fly.dev/
     icon: https://staging-vb-llm-service.fly.dev/favicon.ico
@@ -38,7 +38,7 @@ sites:
   - name: production-findme
     url: https://production-findme.vercel.app/
   - name: production-hearth
-    url: https://production-vb-hearth.vercel.app/login
+    url: https://production-hearth.vercel.app/login
   - name: production-llm-service
     url: https://production-vb-llm-service.fly.dev/
     icon: https://production-vb-llm-service.fly.dev/favicon.ico

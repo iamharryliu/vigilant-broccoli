@@ -30,8 +30,8 @@ fly.dev                                   Fly.io API services (production apps c
 └── production-vb-storage-service.fly.dev         Storage Service (production, bucket-service)
 
 vercel.app                                Vercel (production projects created on first production dispatch)
-├── staging-vb-hearth.vercel.app              Hearth (staging)
-├── production-vb-hearth.vercel.app           Hearth (production)
+├── staging-hearth.vercel.app                 Hearth (staging)
+├── production-hearth.vercel.app              Hearth (production)
 ├── staging-employee-handler-ui.vercel.app    Employee Handler UI (staging)
 ├── production-employee-handler-ui.vercel.app Employee Handler UI (production)
 ├── staging-findme.vercel.app                 FindMe (staging)
