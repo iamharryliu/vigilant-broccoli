@@ -7,7 +7,7 @@
     "@vigilant-broccoli/common-browser": "workspace:*",
     "@vigilant-broccoli/react-lib": "workspace:*",
     "leaflet": "*",
-    "next": "*",
+    "next": "16.2.6",
     "react": "*",
     "react-leaflet": "*"
   }
