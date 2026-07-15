@@ -53,7 +53,7 @@ echo ""
 echo "[Websites]"
 http_check "harryliu.dev" "https://harryliu.dev"
 http_check "cloud8skate.com" "https://cloud8skate.com"
-http_check "hearth.vercel.app" "https://hearth.vercel.app"
+http_check "staging-hearth" "https://staging-hearth.vercel.app"
 http_check "findme" "https://findme-kohl.vercel.app"
 http_check "git.harryliu.dev" "https://git.harryliu.dev"
 
