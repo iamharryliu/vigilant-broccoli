@@ -12,10 +12,6 @@ output "oci_vm_public_ip" {
   value = oci_core_instance.rabbitmq.public_ip
 }
 
-output "oci_vm_rabbitmq_management_url" {
-  value = "https://${oci_core_instance.rabbitmq.public_ip}:15671"
-}
-
 output "oci_vm_socket_server_url" {
   value = "https://${var.socket_server_domain}"
 }
