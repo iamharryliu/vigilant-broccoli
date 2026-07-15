@@ -46,7 +46,11 @@ sudo sed -i \"s/RABBITMQ_DEFAULT_PASS: .*/RABBITMQ_DEFAULT_PASS: ${NEW_PASSWORD}
 sudo docker compose -f /opt/rabbitmq/docker-compose.yml up -d
 "
 
-NEW_CONNECTION_STRING="amqps://${RABBITMQ_USER}:${NEW_PASSWORD}@${RABBITMQ_IP}:5671"
+# Connection string always uses the DNS name (RABBITMQ_IP is the SSH target,
+# which is the raw IP in local mode) so it matches the broker cert's SAN and
+# stays consistent with post-apply.sh — otherwise local rotations drift Vault
+# to the IP form and break the TLS-verifying CI checks.
+NEW_CONNECTION_STRING="amqps://${RABBITMQ_USER}:${NEW_PASSWORD}@${RABBITMQ_HOST}:5671"
 
 echo "Waiting for RabbitMQ to finish starting..."
 READY=false
