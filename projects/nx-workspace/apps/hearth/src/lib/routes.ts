@@ -25,6 +25,7 @@ export const ROUTES = {
   PROJECTS_DETAIL: (id: string) => `/projects/${id}`,
   MEALS: '/meals',
   MEALS_DETAIL: (id: string) => `/meals/${id}`,
+  FOOD_PLANNER: '/food-planner',
   DOCS: '/docs',
   DOCS_DETAIL: (id: string) => `/docs/${id}`,
   SETTINGS: '/settings',

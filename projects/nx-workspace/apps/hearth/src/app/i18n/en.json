@@ -1,4 +1,17 @@
 {
+  "FOOD_PLANNER": {
+    "TITLE": "Food Planner",
+    "TABS": {
+      "NOTES": "Notes",
+      "RECIPES": "Recipes",
+      "INVENTORY": "Inventory"
+    },
+    "PLACEHOLDER": {
+      "NOTES": "Notes coming soon.",
+      "RECIPES": "Recipes coming soon.",
+      "INVENTORY": "Inventory coming soon."
+    }
+  },
   "LOCATOR": {
     "TITLE": "Find Members",
     "SHARE": "Share my location",

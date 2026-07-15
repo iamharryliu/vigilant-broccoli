@@ -6,6 +6,7 @@ import {
   LayoutList,
   PenLine,
   MapPin,
+  ChefHat,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -41,6 +42,7 @@ export const NAV_LINKS = [
       { label: 'Household Rules', href: ROUTES.HOUSEHOLD_RULES },
     ],
   },
+  { label: 'Food Planner', href: ROUTES.FOOD_PLANNER, icon: ChefHat },
   { label: 'Find Members', href: ROUTES.LOCATOR, icon: MapPin },
   { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
   { label: 'Chores', href: ROUTES.CHORES, icon: ListTodo },
