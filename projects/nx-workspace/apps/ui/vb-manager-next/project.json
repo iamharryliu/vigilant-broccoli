@@ -8,22 +8,30 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 NEXT_PUBLIC_SOCKET_SERVER_URL=https://socket.harryliu.dev nx run vb-manager-next:build:next && node scripts/fix-next-config-helpers.js dist/apps/ui/vb-manager-next/.nx-helpers"
+        "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 NEXT_PUBLIC_SOCKET_SERVER_URL=https://socket.harryliu.dev nx run vb-manager-next:build:next"
       }
     },
     "build:next": {
-      "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        { "externalDependencies": ["next"] },
+        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/ui/vb-manager-next/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/ui/vb-manager-next/.next/!(cache)"
+      ],
       "options": {
-        "outputPath": "dist/apps/ui/vb-manager-next",
-        "webpack": true
+        "cwd": "apps/ui/vb-manager-next",
+        "tty": false,
+        "command": "next build --webpack"
       },
       "configurations": {
-        "development": {
-          "outputPath": "apps/ui/vb-manager-next"
-        },
-        "production": {}
+        "development": {}
       }
     },
     "serve": {
@@ -40,22 +48,15 @@
       }
     },
     "serve:no-vault": {
-      "executor": "@nx/next:server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "vb-manager-next:build",
-        "dev": true,
-        "webpack": true
+        "cwd": "apps/ui/vb-manager-next",
+        "command": "next dev --webpack"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "vb-manager-next:build:development",
-          "dev": true
-        },
-        "production": {
-          "buildTarget": "vb-manager-next:build:production",
-          "dev": false
-        }
+        "development": {},
+        "production": {}
       }
     },
     "test": {

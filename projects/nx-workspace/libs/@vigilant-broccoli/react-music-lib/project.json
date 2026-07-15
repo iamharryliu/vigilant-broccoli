@@ -16,24 +16,15 @@
       "executor": "@nx/eslint:lint"
     },
     "build": {
-      "executor": "@nx/rollup:rollup",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/libs/@vigilant-broccoli/react-music-lib",
-        "tsConfig": "libs/@vigilant-broccoli/react-music-lib/tsconfig.lib.json",
-        "project": "libs/@vigilant-broccoli/react-music-lib/package.json",
-        "entryFile": "libs/@vigilant-broccoli/react-music-lib/src/index.ts",
-        "external": ["react", "react-dom", "react/jsx-runtime"],
-        "rollupConfig": "@nx/react/plugins/bundle-rollup",
-        "compiler": "swc",
-        "assets": [
-          {
-            "glob": "libs/@vigilant-broccoli/react-music-lib/README.md",
-            "input": ".",
-            "output": "."
-          }
-        ]
-      }
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "externalDependencies": ["rollup"]
+        }
+      ]
     },
     "nx-release-publish": {
       "options": {

@@ -6,18 +6,26 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        { "externalDependencies": ["next"] },
+        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/ui/small-business-next/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/ui/small-business-next/.next/!(cache)"
+      ],
       "options": {
-        "outputPath": "dist/apps/ui/small-business-next",
-        "webpack": true
+        "cwd": "apps/ui/small-business-next",
+        "tty": false,
+        "command": "next build --webpack"
       },
       "configurations": {
-        "development": {
-          "outputPath": "apps/ui/small-business-next"
-        },
-        "production": {}
+        "development": {}
       }
     },
     "serve": {
@@ -28,23 +36,15 @@
       }
     },
     "serve:no-vault": {
-      "executor": "@nx/next:server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "small-business-next:build",
-        "dev": true,
-        "webpack": true,
-        "port": 4201
+        "cwd": "apps/ui/small-business-next",
+        "command": "next dev --webpack --port 4201"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "small-business-next:build:development",
-          "dev": true
-        },
-        "production": {
-          "buildTarget": "small-business-next:build:production",
-          "dev": false
-        }
+        "development": {},
+        "production": {}
       }
     },
     "lint": {

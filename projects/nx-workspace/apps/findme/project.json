@@ -6,37 +6,38 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        { "externalDependencies": ["next"] },
+        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/findme/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/findme/.next/!(cache)"
+      ],
       "options": {
-        "outputPath": "dist/apps/findme",
-        "webpack": true
+        "cwd": "apps/findme",
+        "tty": false,
+        "command": "next build --webpack"
       },
       "configurations": {
-        "development": {
-          "outputPath": "apps/findme"
-        },
-        "production": {}
+        "development": {}
       }
     },
     "serve": {
-      "executor": "@nx/next:server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "findme:build",
-        "dev": true,
-        "webpack": true
+        "cwd": "apps/findme",
+        "command": "next dev --webpack"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "findme:build:development",
-          "dev": true
-        },
-        "production": {
-          "buildTarget": "findme:build:production",
-          "dev": false
-        }
+        "development": {},
+        "production": {}
       }
     },
     "lint": {

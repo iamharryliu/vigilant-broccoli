@@ -179,5 +179,77 @@
   "analytics": false,
   "migrate": {
     "agentic": false
-  }
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/rollup/plugin",
+      "options": {
+        "buildTargetName": "build"
+      }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "devTargetName": "dev",
+        "typecheckTargetName": "typecheck"
+      }
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "serve",
+        "startTargetName": "start",
+        "serveStaticTargetName": "serve-static"
+      },
+      "include": ["apps/findme/**/*", "apps/whiteboard/**/*"]
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "serve:local",
+        "startTargetName": "start",
+        "serveStaticTargetName": "serve-static"
+      },
+      "include": ["apps/hearth/**/*"]
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "serve:dev",
+        "startTargetName": "start",
+        "serveStaticTargetName": "serve-static"
+      },
+      "include": ["apps/ui/employee-handler-ui/**/*"]
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "serve:no-vault",
+        "startTargetName": "start",
+        "serveStaticTargetName": "serve-static"
+      },
+      "include": [
+        "apps/ui/small-business-next/**/*",
+        "apps/vb-manager-next-mobile/**/*"
+      ]
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "buildTargetName": "build:next",
+        "devTargetName": "serve:no-vault",
+        "startTargetName": "start",
+        "serveStaticTargetName": "serve-static"
+      },
+      "include": ["apps/ui/vb-manager-next/**/*"]
+    }
+  ]
 }
