@@ -101,26 +101,105 @@ const RECIPE_TEMPLATE = `# [Recipe Name]
 - [Link text](RECIPE_URL)
 - [Another reference, ie YouTube if applicable](VIDEO_URL)`;
 
-const extractCleanContent = (html: string): string =>
-  html
-    .replace(/<script\b[^<]*(?:(?!<\/script\s*>)<[^<]*)*<\/script\s*>/gi, '')
-    .replace(/<style\b[^<]*(?:(?!<\/style\s*>)<[^<]*)*<\/style\s*>/gi, '')
-    .replace(
-      /<(nav|footer|header|iframe|noscript|svg)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,
-      '',
-    )
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&[a-z]+;/gi, ' ')
-    .replace(/&amp;/g, '&')
+const SKIPPED_CONTENT_TAGS = new Set([
+  'script',
+  'style',
+  'nav',
+  'footer',
+  'header',
+  'iframe',
+  'noscript',
+  'svg',
+]);
+
+const HTML_ENTITIES: Record<string, string> = {
+  nbsp: ' ',
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  '#39': "'",
+  apos: "'",
+};
+
+const decodeEntity = (entity: string): string => {
+  const body = entity.slice(1, -1);
+  return HTML_ENTITIES[body.toLowerCase()] ?? ' ';
+};
+
+// Finds the index right after the next literal `</tagName ... >` sequence, searching raw
+// text (not tag-aware) since content inside script/style bodies isn't markup.
+const findCloseTagEnd = (
+  html: string,
+  tagName: string,
+  from: number,
+): number => {
+  const closer = new RegExp(`</${tagName}[^>]*>`, 'i');
+  const match = closer.exec(html.slice(from));
+  return match ? from + match.index + match[0].length : html.length;
+};
+
+// Consumes one tag starting at `i` (html[i] === '<'), returning the next scan index and
+// any text to append (a space for a normal tag, nothing for a skipped-content tag).
+const consumeTag = (
+  html: string,
+  i: number,
+): { nextIndex: number; append: string } => {
+  const tagEnd = html.indexOf('>', i);
+  if (tagEnd === -1) return { nextIndex: html.length, append: '' };
+
+  const tagContent = html.slice(i + 1, tagEnd);
+  const tagName = tagContent
+    .match(/^\/?\s*([a-z][a-z0-9]*)/i)?.[1]
+    ?.toLowerCase();
+  const isClosing = tagContent.trimStart().startsWith('/');
+
+  if (!isClosing && tagName && SKIPPED_CONTENT_TAGS.has(tagName)) {
+    return {
+      nextIndex: findCloseTagEnd(html, tagName, tagEnd + 1),
+      append: '',
+    };
+  }
+  return { nextIndex: tagEnd + 1, append: ' ' };
+};
+
+// Single left-to-right scan, not regex matching of open/close pairs, so malformed/nested markup can't defeat it.
+const extractCleanContent = (html: string): string => {
+  let output = '';
+  let i = 0;
+
+  while (i < html.length) {
+    if (html.startsWith('<!--', i)) {
+      const end = html.indexOf('-->', i + 4);
+      i = end === -1 ? html.length : end + 3;
+      continue;
+    }
+
+    if (html[i] === '<') {
+      const { nextIndex, append } = consumeTag(html, i);
+      output += append;
+      i = nextIndex;
+      continue;
+    }
+
+    if (html[i] === '&') {
+      const entityMatch = html.slice(i, i + 12).match(/^&#?[a-z0-9]+;/i);
+      if (entityMatch) {
+        output += decodeEntity(entityMatch[0]);
+        i += entityMatch[0].length;
+        continue;
+      }
+    }
+
+    output += html[i];
+    i += 1;
+  }
+
+  return output
     .replace(/\s+/g, ' ')
     .replace(/\n\s*\n/g, '\n')
     .trim();
+};
 
 const looksLikeBotChallenge = (cleanContent: string): boolean => {
   const lowerContent = cleanContent.toLowerCase();
