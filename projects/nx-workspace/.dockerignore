@@ -1,0 +1,43 @@
+# dependencies at workspace root — Dockerfiles never COPY this directly.
+# Anchored so nested copies (e.g. dist/apps/*/.next/standalone/**/node_modules,
+# dist/apps/*/workspace_modules) used by COPY are not excluded.
+/node_modules
+
+# nx cache
+.nx/cache
+.nx/workspace-data
+.nx/polygraph
+.nx/self-healing
+.nx/migrate-runs
+
+# version control
+.git
+
+# env / secrets
+.env
+.env.local
+.env*.local
+vault-secrets.json
+
+# databases
+*.db
+*.sqlite
+better-auth.secret
+
+# logs
+logs/
+npm-debug.log
+yarn-error.log
+
+# editors
+.idea
+.vscode
+.angular
+
+# misc
+/tmp
+/out-tsc
+coverage
+test-results/
+.last-run.json
+*.tsbuildinfo
