@@ -16,7 +16,7 @@
     "@vigilant-broccoli/react-lib": "workspace:*",
     "leaflet": "*",
     "lucide-react": "*",
-    "next": "*",
+    "next": "16.2.6",
     "react": "*",
     "react-leaflet": "*",
     "recharts": "*",

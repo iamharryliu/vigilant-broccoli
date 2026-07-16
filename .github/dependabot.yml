@@ -1,0 +1,39 @@
+version: 2
+updates:
+  # Workspace npm dependencies (nx-workspace) — the deployed code.
+  - package-ecosystem: 'npm'
+    directory: '/projects/nx-workspace'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+    groups:
+      # Batch low-risk dev/build tooling into a single PR to cut noise.
+      dev-dependencies:
+        dependency-type: 'development'
+      angular:
+        patterns:
+          - '@angular/*'
+      next:
+        patterns:
+          - 'next'
+
+  # Root npm dependencies (repo-level tooling).
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: 'development'
+
+  # GitHub Actions — keep pinned SHAs current (Node 24 runtime convention).
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 5
+
+# NOTE: scripts/python/dj-scripts/spotify-to-mp3/requirements.txt is a
+# local-only personal script (not deployed, not in CI) and is intentionally
+# NOT tracked here — no pip ecosystem entry, so Dependabot opens no PRs for it.

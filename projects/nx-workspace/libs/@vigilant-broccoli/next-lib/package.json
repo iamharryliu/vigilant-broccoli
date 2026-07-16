@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@radix-ui/themes": "*",
-    "next": "*",
+    "next": "16.2.6",
     "react": "*"
   },
   "main": "./index.js",
