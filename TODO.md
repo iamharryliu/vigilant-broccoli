@@ -11,10 +11,6 @@
 - Short-lived JWTs instead of the long-lived `SHARED_APP_TOKEN` — `route.ts` signs `{ exp: +60s }` with a `JWT_SECRET` from Vault, server middleware verifies; optional per-room scope.
 - App-level: CORS allowlist via `ALLOWED_ORIGINS` env (currently `*`), payload size cap, last-message cache per room on subscribe.
 
-### 5. VM-rotation script inconsistencies
-
-- `sync-socket-server-token.sh` writes the CI-mode SSH private key via `mktemp` but never cleans it up — add `trap 'rm -f "$SSH_KEY_FILE"' EXIT` right after the `mktemp` call, matching the fix already applied in `rotate-rabbitmq-password.sh`. Low practical exposure (runner is ephemeral/destroyed after the job) but worth closing for consistency.
-
 ### 7. Deprecated Nx executors/plugins not yet migrated (removed in Nx v24)
 
 - `@nx/webpack:webpack` executor (`vb-express`, `llm-service`), plus `composePlugins`/`withNx` helpers — `nx g @nx/webpack:convert-to-inferred` refuses both because their `serve:no-vault` targets use `@nx/js:node`, which the codemod doesn't support alongside a webpack conversion. Needs either a later Nx version that lifts this restriction, or a careful manual conversion (see PR #93 for the pattern used on the 7 Next.js apps' build/serve targets).
