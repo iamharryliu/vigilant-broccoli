@@ -9,6 +9,9 @@ GCP_PROJECT="${GCP_PROJECT:-vigilant-broccoli}"
 PASS=0
 FAIL=0
 
+TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$TMP_DIR"' EXIT
+
 check() {
   local name="$1"
   local status="$2"
@@ -21,41 +24,67 @@ check() {
   fi
 }
 
-http_check() {
+http_check_start() {
   local name="$1"
   local url="$2"
   local expected="${3:-200}"
-  local code
-  # Retry to tolerate scale-to-zero cold starts (first request wakes the service).
-  for attempt in 1 2 3; do
-    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$url" 2>/dev/null) || code="timeout"
-    [ "$code" = "$expected" ] && break
-    [ "$attempt" -lt 3 ] && sleep 5
-  done
-  if [ "$code" = "$expected" ]; then
-    check "$name" "ok"
-  else
-    check "$name" "HTTP $code (expected $expected)"
-  fi
+  local outfile="$TMP_DIR/$name"
+  (
+    local code
+    # Retry to tolerate scale-to-zero cold starts (first request wakes the service).
+    for attempt in 1 2 3; do
+      code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$url" 2>/dev/null) || code="timeout"
+      [ "$code" = "$expected" ] && break
+      [ "$attempt" -lt 3 ] && sleep 5
+    done
+    if [ "$code" = "$expected" ]; then
+      echo "ok" > "$outfile"
+    else
+      echo "HTTP $code (expected $expected)" > "$outfile"
+    fi
+  ) &
+}
+
+http_check_finish() {
+  local name="$1"
+  check "$name" "$(cat "$TMP_DIR/$name")"
 }
 
 echo "=== Infrastructure Health Check ==="
 echo ""
 
 echo "[Fly.io Apps]"
-http_check "staging-vb-express" "https://staging-vb-express.fly.dev"
-http_check "staging-vb-email-service" "https://staging-vb-email-service.fly.dev"
-http_check "staging-vb-llm-service" "https://staging-vb-llm-service.fly.dev"
-http_check "staging-vb-storage-service" "https://staging-vb-storage-service.fly.dev"
-http_check "staging-email-subscription-service" "https://staging-email-subscription-service.fly.dev"
+FLY_APPS=(
+  "staging-vb-express|https://staging-vb-express.fly.dev"
+  "staging-vb-email-service|https://staging-vb-email-service.fly.dev"
+  "staging-vb-llm-service|https://staging-vb-llm-service.fly.dev"
+  "staging-vb-storage-service|https://staging-vb-storage-service.fly.dev"
+  "staging-email-subscription-service|https://staging-email-subscription-service.fly.dev"
+)
+for entry in "${FLY_APPS[@]}"; do
+  http_check_start "${entry%%|*}" "${entry#*|}"
+done
+wait
+for entry in "${FLY_APPS[@]}"; do
+  http_check_finish "${entry%%|*}"
+done
 
 echo ""
 echo "[Websites]"
-http_check "harryliu.dev" "https://harryliu.dev"
-http_check "cloud8skate.com" "https://cloud8skate.com"
-http_check "staging-hearth" "https://staging-hearth.vercel.app"
-http_check "findme" "https://findme-kohl.vercel.app"
-http_check "git.harryliu.dev" "https://git.harryliu.dev"
+WEBSITES=(
+  "harryliu.dev|https://harryliu.dev"
+  "cloud8skate.com|https://cloud8skate.com"
+  "staging-hearth|https://staging-hearth.vercel.app"
+  "findme|https://findme-kohl.vercel.app"
+  "git.harryliu.dev|https://git.harryliu.dev"
+)
+for entry in "${WEBSITES[@]}"; do
+  http_check_start "${entry%%|*}" "${entry#*|}"
+done
+wait
+for entry in "${WEBSITES[@]}"; do
+  http_check_finish "${entry%%|*}"
+done
 
 echo ""
 echo "[GCP VM]"
