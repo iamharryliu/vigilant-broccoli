@@ -2,6 +2,7 @@ name: cron-cleanup-workflow-runs
 
 on:
   push:
+    branches: [main]
     paths:
       - .github/workflows/cron-cleanup-workflow-runs.yml
   schedule:

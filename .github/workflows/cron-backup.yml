@@ -2,6 +2,7 @@ name: cron-backup
 
 on:
   push:
+    branches: [main]
     paths:
       - .github/workflows/cron-backup.yml
   schedule:

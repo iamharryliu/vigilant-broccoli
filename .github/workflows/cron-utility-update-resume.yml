@@ -2,6 +2,7 @@ name: cron-utility-update-resume
 
 on:
   push:
+    branches: [main]
     paths:
       - .github/workflows/cron-utility-update-resume.yml
   schedule:
