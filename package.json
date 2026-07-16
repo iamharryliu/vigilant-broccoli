@@ -94,8 +94,8 @@
   },
   "homepage": "https://github.com/iamharryliu/vigilant-broccoli#readme",
   "devDependencies": {
-    "lint-staged": "^13.2.3",
-    "prettier": "^3.0.0"
+    "lint-staged": "^17.0.8",
+    "prettier": "^3.9.5"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,html,css,scss,md}": [
