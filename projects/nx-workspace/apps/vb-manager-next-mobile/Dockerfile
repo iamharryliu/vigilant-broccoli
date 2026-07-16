@@ -13,7 +13,7 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 COPY dist/apps/vb-manager-next-mobile/.next/standalone ./
 COPY dist/apps/vb-manager-next-mobile/.next/static ./projects/nx-workspace/dist/apps/vb-manager-next-mobile/.next/static
-COPY dist/apps/vb-manager-next-mobile/public ./projects/nx-workspace/apps/vb-manager-next-mobile/public
+COPY apps/vb-manager-next-mobile/public ./projects/nx-workspace/apps/vb-manager-next-mobile/public
 
 RUN chown -R nextjs:nodejs /app
 
