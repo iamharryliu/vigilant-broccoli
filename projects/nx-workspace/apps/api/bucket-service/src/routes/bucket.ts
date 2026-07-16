@@ -16,10 +16,7 @@ const PROVIDER_PARAM = 'provider';
 const ERROR_PROVIDER_REQUIRED = 'provider query parameter is required';
 const ERROR_NO_FILES = 'No valid files provided';
 const MESSAGE_FILE_DELETED = 'File deleted successfully';
-const VALID_PROVIDERS = new Set<string>([
-  BucketProvider.CLOUDFLARE_R2,
-  BucketProvider.GOOGLE_CLOUD_STORAGE,
-]);
+const VALID_PROVIDERS = new Set<string>(Object.values(BucketProvider));
 const bucketServices = new Map<BucketProvider, IBucketProvider>();
 
 function getBucketService(provider: string) {
