@@ -6,37 +6,38 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        { "externalDependencies": ["next"] },
+        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/whiteboard/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/whiteboard/.next/!(cache)"
+      ],
       "options": {
-        "outputPath": "dist/apps/whiteboard",
-        "webpack": true
+        "cwd": "apps/whiteboard",
+        "tty": false,
+        "command": "next build --webpack"
       },
       "configurations": {
-        "development": {
-          "outputPath": "apps/whiteboard"
-        },
-        "production": {}
+        "development": {}
       }
     },
     "serve": {
-      "executor": "@nx/next:server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "whiteboard:build",
-        "dev": true,
-        "webpack": true
+        "cwd": "apps/whiteboard",
+        "command": "next dev --webpack"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "whiteboard:build:development",
-          "dev": true
-        },
-        "production": {
-          "buildTarget": "whiteboard:build:production",
-          "dev": false
-        }
+        "development": {},
+        "production": {}
       }
     },
     "lint": {

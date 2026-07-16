@@ -9,11 +9,13 @@
       "executor": "@nx/eslint:lint"
     },
     "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/pages-index"
+      ],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/pages-index"
+        "outDir": "../../../dist/pages-index"
       },
       "configurations": {
         "development": {
@@ -25,20 +27,10 @@
       }
     },
     "serve": {
-      "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "pages-index:build"
-      },
       "configurations": {
-        "development": {
-          "buildTarget": "pages-index:build:development",
-          "hmr": true
-        },
-        "production": {
-          "buildTarget": "pages-index:build:production",
-          "hmr": false
-        }
+        "development": {},
+        "production": {}
       }
     },
     "deploy-github-pages": {

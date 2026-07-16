@@ -19,11 +19,14 @@
       "executor": "@nx/eslint:lint"
     },
     "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["pre-build"],
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/apps/ui/personal-website-react"
+      ],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/ui/personal-website-react"
+        "outDir": "../../../dist/apps/ui/personal-website-react"
       },
       "configurations": {
         "development": {
@@ -41,32 +44,17 @@
             }
           ]
         }
-      },
-      "dependsOn": ["pre-build"]
+      }
     },
     "serve": {
-      "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "personal-website-react:build"
-      },
       "configurations": {
-        "development": {
-          "buildTarget": "personal-website-react:build:development",
-          "hmr": true
-        },
-        "production": {
-          "buildTarget": "personal-website-react:build:production",
-          "hmr": false
-        }
+        "development": {},
+        "production": {}
       }
     },
     "preview": {
-      "executor": "@nx/vite:preview-server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "personal-website-react:build"
-      }
+      "defaultConfiguration": "development"
     },
     "ensure-cf-project": {
       "command": "npx wrangler pages project list 2>&1 | grep -qw staging-harryliu-dev-react || npx wrangler pages project create staging-harryliu-dev-react --production-branch main"

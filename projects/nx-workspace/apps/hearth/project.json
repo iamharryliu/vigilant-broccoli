@@ -6,18 +6,26 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        { "externalDependencies": ["next"] },
+        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/hearth/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/hearth/.next/!(cache)"
+      ],
       "options": {
-        "outputPath": "dist/apps/hearth",
-        "webpack": true
+        "cwd": "apps/hearth",
+        "tty": false,
+        "command": "next build --webpack"
       },
       "configurations": {
-        "development": {
-          "outputPath": "apps/hearth"
-        },
-        "production": {}
+        "development": {}
       }
     },
     "serve": {
@@ -28,22 +36,15 @@
       }
     },
     "serve:local": {
-      "executor": "@nx/next:server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "hearth:build",
-        "dev": true,
-        "webpack": true
+        "cwd": "apps/hearth",
+        "command": "next dev --webpack"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "hearth:build:development",
-          "dev": true
-        },
-        "production": {
-          "buildTarget": "hearth:build:production",
-          "dev": false
-        }
+        "development": {},
+        "production": {}
       }
     },
     "lint": {

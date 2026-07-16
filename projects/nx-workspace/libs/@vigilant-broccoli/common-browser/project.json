@@ -13,11 +13,13 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/libs/@vigilant-broccoli/common-browser"
+      ],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/libs/@vigilant-broccoli/common-browser"
+        "outDir": "../../../dist/libs/@vigilant-broccoli/common-browser"
       },
       "configurations": {
         "development": {

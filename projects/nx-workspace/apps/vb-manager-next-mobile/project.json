@@ -6,46 +6,48 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        { "externalDependencies": ["next"] },
+        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/vb-manager-next-mobile/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/vb-manager-next-mobile/.next/!(cache)"
+      ],
       "options": {
-        "outputPath": "dist/apps/vb-manager-next-mobile"
+        "cwd": "apps/vb-manager-next-mobile",
+        "tty": false,
+        "command": "next build --webpack"
       },
       "configurations": {
-        "development": {
-          "outputPath": "apps/vb-manager-next-mobile"
-        },
-        "production": {}
+        "development": {}
       }
     },
     "serve": {
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.example 'cd apps/vb-manager-next-mobile && next dev --port 4200'",
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.example 'cd apps/vb-manager-next-mobile && next dev --webpack --port 4200'",
         "env": {
           "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
         }
       }
     },
     "serve:no-vault": {
-      "executor": "@nx/next:server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "vb-manager-next-mobile:build",
-        "dev": true,
-        "port": 4200
+        "cwd": "apps/vb-manager-next-mobile",
+        "command": "next dev --webpack --port 4200"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "vb-manager-next-mobile:build:development",
-          "dev": true
-        },
-        "production": {
-          "buildTarget": "vb-manager-next-mobile:build:production",
-          "dev": false
-        }
+        "development": {},
+        "production": {}
       }
     },
     "lint": {

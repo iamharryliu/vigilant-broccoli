@@ -16,11 +16,13 @@
       "executor": "@nx/eslint:lint"
     },
     "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/libs/@vigilant-broccoli/next-lib"
+      ],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/libs/@vigilant-broccoli/next-lib"
+        "outDir": "../../../dist/libs/@vigilant-broccoli/next-lib"
       },
       "configurations": {
         "development": {
