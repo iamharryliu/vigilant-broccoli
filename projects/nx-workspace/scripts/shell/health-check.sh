@@ -21,10 +21,16 @@ check() {
   fi
 }
 
-http_check() {
+HC_TMPDIR="$(mktemp -d)"
+trap 'rm -rf "$HC_TMPDIR"' EXIT
+
+# Runs in a background job; result is written to a file so the parent shell
+# can tally PASS/FAIL after `wait`, since background subshells can't mutate them.
+http_check_bg() {
   local name="$1"
   local url="$2"
   local expected="${3:-200}"
+  local outfile="$4"
   local code
   # Retry to tolerate scale-to-zero cold starts (first request wakes the service).
   for attempt in 1 2 3; do
@@ -33,29 +39,57 @@ http_check() {
     [ "$attempt" -lt 3 ] && sleep 5
   done
   if [ "$code" = "$expected" ]; then
-    check "$name" "ok"
+    echo "ok" > "$outfile"
   else
-    check "$name" "HTTP $code (expected $expected)"
+    echo "HTTP $code (expected $expected)" > "$outfile"
   fi
+}
+
+declare -a HC_NAMES=()
+declare -a HC_FILES=()
+
+queue_http_check() {
+  local name="$1"
+  local url="$2"
+  local expected="${3:-200}"
+  local outfile="$HC_TMPDIR/${#HC_NAMES[@]}"
+  HC_NAMES+=("$name")
+  HC_FILES+=("$outfile")
+  http_check_bg "$name" "$url" "$expected" "$outfile" &
+}
+
+print_http_check() {
+  check "${HC_NAMES[$1]}" "$(cat "${HC_FILES[$1]}")"
 }
 
 echo "=== Infrastructure Health Check ==="
 echo ""
 
+queue_http_check "staging-vb-express" "https://staging-vb-express.fly.dev"
+queue_http_check "staging-vb-email-service" "https://staging-vb-email-service.fly.dev"
+queue_http_check "staging-vb-llm-service" "https://staging-vb-llm-service.fly.dev"
+queue_http_check "staging-vb-storage-service" "https://staging-vb-storage-service.fly.dev"
+queue_http_check "staging-email-subscription-service" "https://staging-email-subscription-service.fly.dev"
+FLY_COUNT=${#HC_NAMES[@]}
+
+queue_http_check "harryliu.dev" "https://harryliu.dev"
+queue_http_check "cloud8skate.com" "https://cloud8skate.com"
+queue_http_check "staging-hearth" "https://staging-hearth.vercel.app"
+queue_http_check "findme" "https://findme-kohl.vercel.app"
+queue_http_check "git.harryliu.dev" "https://git.harryliu.dev"
+
+wait
+
 echo "[Fly.io Apps]"
-http_check "staging-vb-express" "https://staging-vb-express.fly.dev"
-http_check "staging-vb-email-service" "https://staging-vb-email-service.fly.dev"
-http_check "staging-vb-llm-service" "https://staging-vb-llm-service.fly.dev"
-http_check "staging-vb-storage-service" "https://staging-vb-storage-service.fly.dev"
-http_check "staging-email-subscription-service" "https://staging-email-subscription-service.fly.dev"
+for ((i = 0; i < FLY_COUNT; i++)); do
+  print_http_check "$i"
+done
 
 echo ""
 echo "[Websites]"
-http_check "harryliu.dev" "https://harryliu.dev"
-http_check "cloud8skate.com" "https://cloud8skate.com"
-http_check "staging-hearth" "https://staging-hearth.vercel.app"
-http_check "findme" "https://findme-kohl.vercel.app"
-http_check "git.harryliu.dev" "https://git.harryliu.dev"
+for ((i = FLY_COUNT; i < ${#HC_NAMES[@]}; i++)); do
+  print_http_check "$i"
+done
 
 echo ""
 echo "[GCP VM]"
