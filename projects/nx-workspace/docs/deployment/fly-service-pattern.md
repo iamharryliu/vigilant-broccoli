@@ -9,9 +9,11 @@ Reference apps (each demonstrates a different combination):
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
 - `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
 
-## Environment naming
+## Environments
 
-Deployed instances are environment-prefixed (`staging-`, later `production-`): fly app name (`staging-vb-llm-service`), config filename (`deployment-configs/fly-configs/staging-llm-service.toml`), `flyAppName` in `scripts/secrets-mapping.config.ts`, and the CI test workflow that targets it (`.github/workflows/staging-test-e2e-llm.yml`). Nx project names stay unprefixed (`llm-service`).
+Deployed instances are environment-prefixed (`staging-`, `production-`): fly app name (`staging-vb-llm-service`), config filename (`deployment-configs/fly-configs/<env>-llm-service.toml`), and the CI test workflow that targets it (`.github/workflows/staging-test-e2e-llm.yml`). Nx project names stay unprefixed (`llm-service`).
+
+Each service defines a target pair: `deploy` (staging) and `deploy:production`, with mirrored `deploy:secrets` / `deploy:secrets:production` chains. `scripts/secrets-mapping.config.ts` stores the env-less `flyAppBaseName`; `deploy-flyio-secrets.ts <project> <env>` composes `<env>-<base>` (and creates the app if missing). Cross-service URLs (`EMAIL_SERVICE_URL`, `LLM_SERVICE_URL`, `BETTER_AUTH_URL`, build args) live in the per-env fly config / deploy command so each environment talks only to its own siblings. Push to main deploys staging; production deploys via `deploy.yml`'s `workflow_dispatch` `environment: production` (or per app via `manual-deploy-app.yml`).
 
 ## Two orthogonal axes
 
