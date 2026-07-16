@@ -15,7 +15,12 @@ export const createApiKeyPlugin = (
 ) => {
   const plugin: FastifyPluginAsync = async app => {
     app.addHook('onRequest', async (req, reply) => {
-      if (!apiKey) return;
+      if (!apiKey) {
+        reply
+          .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+          .send({ error: ERROR_UNAUTHORIZED });
+        return;
+      }
       const providedKey = req.headers[API_KEY_HEADER];
       if (verifyApiKey) {
         if (
