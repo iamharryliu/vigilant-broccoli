@@ -32,7 +32,7 @@ runs:
   steps:
     - name: Install socket.io-client
       shell: bash
-      run: npm install --no-save socket.io-client@4
+      run: npm install --no-save --ignore-scripts socket.io-client@4.8.3
 
     - name: Send notification
       shell: bash
