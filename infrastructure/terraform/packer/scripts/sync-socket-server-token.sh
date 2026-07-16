@@ -46,6 +46,7 @@ else
 
   OCI_VM_HOST="$SOCKET_SERVER_HOST"
   SSH_KEY_FILE=$(mktemp)
+  trap 'rm -f "$SSH_KEY_FILE"' EXIT
   # Trailing newline is required — OpenSSH/libcrypto reject a key without it,
   # which makes every ssh below fail silently and the readiness loop hang.
   { printf '%s' "$OCI_VM_SSH_KEY" | base64 -d; echo; } > "$SSH_KEY_FILE"
