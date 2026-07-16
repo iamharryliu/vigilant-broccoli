@@ -16,12 +16,51 @@ const NO_RECIPE_FOUND = 'NO_RECIPE_FOUND';
 const MIN_CLEAN_CONTENT_LENGTH = 200;
 
 const ERROR_NO_INPUT = 'Provide a url or at least one image';
+const ERROR_URL_NOT_ALLOWED = 'This URL cannot be fetched';
 const ERROR_FETCH_FAILED = (url: string) => `Could not reach ${url}`;
 const ERROR_PAGE_NOT_OK = (res: Response) =>
   `Page returned ${res.status} ${res.statusText} - the site may be blocking automated requests`;
 const ERROR_UNREADABLE_PAGE =
   'The page could not be read as a recipe (it may be behind a bot/cookie check or blocked the request)';
 const ERROR_NO_RECIPE_FOUND = 'No recipe could be found';
+
+const ALLOWED_URL_PROTOCOLS = ['http:', 'https:'];
+const PRIVATE_HOSTNAME_SUFFIXES = ['.local', '.internal'];
+const BLOCKED_HOSTNAMES = ['localhost', 'metadata.google.internal'];
+
+const isPrivateIpv4 = (hostname: string): boolean => {
+  const parts = hostname.split('.').map(Number);
+  if (parts.length !== 4 || parts.some(part => Number.isNaN(part))) {
+    return false;
+  }
+  const [a, b] = parts;
+  const singleOctetMatch = [127, 10, 0].includes(a);
+  const linkLocalMatch = a === 169 && b === 254;
+  const class16Match = a === 172 && b >= 16 && b <= 31;
+  const class24Match = a === 192 && b === 168;
+  return singleOctetMatch || linkLocalMatch || class16Match || class24Match;
+};
+
+const isAllowedUrl = (url: string): boolean => {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+
+  if (!ALLOWED_URL_PROTOCOLS.includes(parsed.protocol)) return false;
+
+  const hostname = parsed.hostname.toLowerCase();
+  if (BLOCKED_HOSTNAMES.includes(hostname)) return false;
+  if (PRIVATE_HOSTNAME_SUFFIXES.some(suffix => hostname.endsWith(suffix))) {
+    return false;
+  }
+  if (hostname === '[::1]' || hostname.startsWith('[fe80:')) return false;
+  if (isPrivateIpv4(hostname)) return false;
+
+  return true;
+};
 
 const BOT_CHALLENGE_MARKERS = [
   'just a moment',
@@ -64,21 +103,21 @@ const RECIPE_TEMPLATE = `# [Recipe Name]
 
 const extractCleanContent = (html: string): string =>
   html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+    .replace(/<script\b[^<]*(?:(?!<\/script\s*>)<[^<]*)*<\/script\s*>/gi, '')
+    .replace(/<style\b[^<]*(?:(?!<\/style\s*>)<[^<]*)*<\/style\s*>/gi, '')
     .replace(
-      /<(nav|footer|header|iframe|noscript|svg)[^>]*>[\s\S]*?<\/\1>/gi,
+      /<(nav|footer|header|iframe|noscript|svg)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,
       '',
     )
     .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&[a-z]+;/gi, ' ')
+    .replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ')
     .replace(/\n\s*\n/g, '\n')
     .trim();
@@ -137,6 +176,15 @@ const scrapeUrl = async (
   content?: string;
   error?: { status: number; message: string };
 }> => {
+  if (!isAllowedUrl(url)) {
+    return {
+      error: {
+        status: HTTP_STATUS_CODES.BAD_REQUEST,
+        message: ERROR_URL_NOT_ALLOWED,
+      },
+    };
+  }
+
   let pageResponse: Response;
   try {
     pageResponse = await fetch(url);
