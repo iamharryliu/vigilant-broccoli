@@ -56,7 +56,6 @@ jobs:
           shared_app_token: ${{ env.SHARED_APP_TOKEN }}
 
   gitleaks:
-    needs: notify-start
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -69,7 +68,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-npm-packages:
-    needs: [notify-start, gitleaks]
+    needs: gitleaks
     if: ${{ (inputs.environment || 'staging') == 'production' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -115,7 +114,7 @@ jobs:
         run: pnpm exec nx run-many -t publish-package --projects="${{ steps.check.outputs.projects }}"
 
   deploy-apps:
-    needs: [notify-start, gitleaks]
+    needs: gitleaks
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -204,7 +203,7 @@ jobs:
         run: ${{ steps.check.outputs.deploy_cmd }}
 
   deploy-github-pages:
-    needs: [notify-start, gitleaks]
+    needs: gitleaks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
