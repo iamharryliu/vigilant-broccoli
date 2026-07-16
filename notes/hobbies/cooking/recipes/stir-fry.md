@@ -1,5 +1,7 @@
 # Stir Fry Recipes
 
+- [How to Stir Fry Any Vegetable - Three Basic Flavors and Recipes (蒜蓉炒西兰花/姜汁炒芥兰/虾酱炒通心菜)](https://www.youtube.com/watch?v=a-Yu8qOAEYQ)
+
 ## Vegetable Choices
 
 - Firm / longer-cooking vegetables

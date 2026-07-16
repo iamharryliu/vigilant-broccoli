@@ -6,6 +6,7 @@
 - [Grains](./grains.md)
 - [Noodles](./noodles.md)
 - [Pasta](./pasta.md)
+- [Pasta Shapes](./pasta-shapes.md)
 - [Pizza](./pizza.md)
 - [Potatoes](./potatoes.md)
 - [Sandwiches](./sandwiches.md)

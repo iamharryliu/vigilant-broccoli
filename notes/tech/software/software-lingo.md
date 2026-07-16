@@ -9,3 +9,4 @@
 | microservices       | Breaking applications into tiny remote services that run independently of each other.                                                               |
 | immutable           | Cannot be changed after it’s created.                                                                                                               |
 | tree shaking        | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.                                  |
+| RCE                 | Remote Code Execution. A vulnerability that lets an attacker run arbitrary code on a target system from a remote location.                          |

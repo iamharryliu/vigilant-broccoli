@@ -32,6 +32,16 @@
 
 - Multiple Next.js apps (`small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`, `hearth`, `employee-handler-ui`) log "Next.js inferred your workspace root, but it may not be correct" — caused by the repo having two lockfiles (root `pnpm-lock.yaml` and `projects/nx-workspace/pnpm-lock.yaml`). Fix by setting `outputFileTracingRoot` (or `turbopack.root`) explicitly in each app's Next.js config, or removing the redundant lockfile. Deferred — CI builds pass today (warning only); revisit if a tracing-root-sensitive deploy issue surfaces, especially for `hearth` given its Vercel serverless `sharp` bundling.
 
+### 10. `vb-manager-next`: Supabase Google sign-in has no allowlist — accepted risk (not fixed)
+
+**`projects/nx-workspace/apps/ui/vb-manager-next/src/middleware.ts`**, `libs/server-auth.ts`
+
+`middleware.ts` verifies the Supabase bearer token via `supabase.auth.getUser(token)` and admits any valid user — no allowed-emails check. **Any** Google user who completes the Supabase OAuth flow gets a valid session and passes the `/api/*` gate. The session is real access control, but any Google account can obtain one. (Migrated from NextAuth to Supabase auth; the missing-allowlist gap carried over unchanged. `employee-handler-ui`'s `proxy.ts` shows the allowlist pattern this could adopt.)
+
+**Fix:** in `middleware.ts` (and `getUserEmail`), reject unless `data.user.email` is in an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist, mirroring `employee-handler-ui/src/proxy.ts`.
+
+**Status:** deliberately left open. Owner's stated threat model: solo use, UI-only interaction, app bound to `127.0.0.1` (confirmed in `ecosystem.config.js` and the local nginx proxy), no external callers — the owner is the only account that will ever complete this app's Google OAuth flow, so the allowlist's marginal value is low here. Revisit if the app is ever exposed beyond loopback or a second Google account is ever expected to authenticate.
+
 ## P3
 
 ### 6. Framework surface

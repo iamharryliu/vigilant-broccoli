@@ -1,6 +1,7 @@
 # Pasta
 
 - [Creamy Tomato Garlic Pasta Recipe](https://majasrecipes.com/easy-and-creamy-tomato-garlic-pasta-recipe/)
+- [Pasta Shapes](./pasta-shapes.md)
 
 ## Basics
 
