@@ -1,7 +1,7 @@
-url: https://production-vb-hearth.vercel.app/login
+url: https://production-hearth.vercel.app/login
 status: up
 code: 200
-responseTime: 328
-lastUpdated: 2026-07-15T02:43:44.156Z
+responseTime: 281
+lastUpdated: 2026-07-16T02:50:30.125Z
 startTime: 2026-07-12T21:56:29.760Z
 generator: Upptime <https://github.com/upptime/upptime>
