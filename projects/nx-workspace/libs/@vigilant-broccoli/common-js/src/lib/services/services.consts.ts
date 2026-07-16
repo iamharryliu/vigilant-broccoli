@@ -23,6 +23,7 @@ export const VB_EXPRESS_ENDPOINT = {
   TASKS_PARSE_IMAGE: 'api/tasks/parse-image',
   WHERE_IS_ANALYZE: 'api/where-is/analyze',
   PRICE_TRACKER_ANALYZE: 'api/price-tracker/analyze',
+  RECIPE_SCRAPE: 'api/recipe/scrape',
 };
 
 export const VB_EXPRESS_ADMIN_ENDPOINT = {
@@ -40,4 +41,5 @@ export const VB_EXPRESS_SERVICE = {
   TEXT_TO_SPEECH: 'text-to-speech',
   WHERE_IS: 'where-is',
   PRICE_TRACKER: 'price-tracker',
+  RECIPE: 'recipe',
 };

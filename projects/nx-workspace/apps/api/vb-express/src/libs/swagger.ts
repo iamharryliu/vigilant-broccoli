@@ -2,7 +2,7 @@ import { createSwaggerSpec } from '@vigilant-broccoli/fastify';
 
 const SERVICE_TITLE = 'vb-express';
 const SERVICE_DESCRIPTION =
-  'Personal API gateway: better-auth sessions, API key admin, Google Tasks, LLM-backed parsing (calendar, tasks, receipts, storage), messaging, and audio. /api routes require an x-api-key header with the matching service permission.';
+  'Personal API gateway: better-auth sessions, API key admin, Google Tasks, LLM-backed parsing (calendar, tasks, receipts, recipes, storage), messaging, and audio. /api routes require an x-api-key header with the matching service permission.';
 
 const JSON_CONTENT = 'application/json';
 const MULTIPART_CONTENT = 'multipart/form-data';
@@ -459,6 +459,26 @@ export const swaggerSpec = createSwaggerSpec({
           '200': { description: '{ store, purchasedAt, items }' },
           '400': { description: 'images is required' },
           '401': UNAUTHORIZED_RESPONSE,
+        },
+      },
+    },
+    '/api/recipe/scrape': {
+      post: {
+        summary: 'Extract a recipe as markdown from a URL or image(s) via LLM',
+        requestBody: jsonBody({
+          type: 'object',
+          properties: {
+            url: { type: 'string' },
+            images: imagesSchema,
+            languageCode: { type: 'string' },
+          },
+        }),
+        responses: {
+          '200': { description: '{ title, markdown }' },
+          '400': { description: 'Provide a url or at least one image' },
+          '401': UNAUTHORIZED_RESPONSE,
+          '422': { description: 'No recipe could be found' },
+          '502': { description: 'Could not reach or read the given URL' },
         },
       },
     },

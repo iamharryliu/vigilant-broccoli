@@ -95,6 +95,7 @@ export const API_ENDPOINTS = {
 
   // Recipe
   RECIPE_SCRAPE: '/api/recipe/scrape',
+  RECIPE_SCRAPE_PREVIEW: '/api/recipe/scrape-preview',
 
   // Chat
   CHAT_PUBLISH: '/api/chat/publish',

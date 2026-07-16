@@ -10,6 +10,7 @@ import { SpeechToText } from '../llm/SpeechToText';
 import { VoiceListGenerator } from '../llm/VoiceListGenerator';
 import { TextToSpeechVoices } from '../llm/TextToSpeechVoices';
 import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
+import { RecipeScraperDemo } from '../llm/RecipeScraperDemo';
 import { QRCodeGenerator } from '../demos/QRCodeGenerator';
 import { LiveLocationsDemo } from '../demos/LiveLocationsDemo';
 import {
@@ -54,6 +55,11 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'llm-prompt-tester',
     title: 'LLM Prompt Tester',
     content: <LLMSimplePromptTester />,
+  },
+  {
+    id: 'recipe-scraper',
+    title: 'Recipe Scraper (URL or Image)',
+    content: <RecipeScraperDemo />,
   },
   {
     id: 'bucket-demo',
