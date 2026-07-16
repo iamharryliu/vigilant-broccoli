@@ -44,6 +44,7 @@
 
 - The Angular 21 toolchain (~25 devDependencies) exists for one app, `cloud-8-skate-angular`. Migrating it to the React/Next stack removes the largest maintenance burden in the workspace.
 
-### 562311. `health-check.sh` is fully serial with retry sleeps
+### efa939. Parallelize notify-start in ci-rotate-secrets
 
-**`projects/nx-workspace/scripts/shell/health-check.sh`** — 10 endpoints checked one after another (each up to 3 attempts × `--max-time 30` + `sleep 5`), then gcloud, Vault, terraform+SSH, and an AMQP connect. A cold-start-heavy run takes minutes. **Fix:** run the `http_check`s as background jobs and `wait`; wall time drops from sum to max.
+- `ci-rotate-secrets.yml` gates `rotate` on `needs: notify-start`, so the actual rotation waits for the notification job (checkout + Vault fetch + notify, ~30–60s) even though the notification is fire-and-forget (`continue-on-error: true`). Drop the `needs: notify-start` so both jobs start concurrently — matching `deploy.yml`, where `notify-start` already runs in parallel (its other jobs gate on `gitleaks` instead).
+- Survey of all other `deploy-notify` consumers (so this doesn't need re-checking): `deploy.yml` is already parallel — nothing gates on its `notify-start`, and the `gitleaks` gate on the deploy jobs is a deliberate security gate, not a notification; `notify-complete.yml` is inherently sequential by design (`workflow_run`-triggered completion notification after deploy/ci-rotate-secrets finish). `ci-rotate-secrets.yml` is the only workflow with the blocking pattern, so this item is fully scoped to the one `needs:` line.
