@@ -74,13 +74,13 @@ const chatRoutes: FastifyPluginAsync = async app => {
 
       reply.raw.end();
     } catch (err) {
-      const message = err instanceof Error ? err.message : ERROR_STREAM_FAILED;
+      console.error(ERROR_STREAM_FAILED, err);
       if (reply.sent) {
         reply.raw.end();
       } else {
         return reply
           .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .send({ error: message });
+          .send({ error: ERROR_STREAM_FAILED });
       }
     }
   });

@@ -20,9 +20,10 @@ const chatRoutes: FastifyPluginAsync = async app => {
 
       if (!upstream.ok || !upstream.body) {
         const text = await upstream.text();
+        console.error(ERROR_STREAM_FAILED, text);
         return reply
           .code(upstream.status || HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .send(text || ERROR_STREAM_FAILED);
+          .send({ error: ERROR_STREAM_FAILED });
       }
 
       for (const [k, v] of Object.entries(STREAM_HEADERS)) reply.header(k, v);
@@ -33,10 +34,10 @@ const chatRoutes: FastifyPluginAsync = async app => {
         ),
       );
     } catch (err) {
-      const message = err instanceof Error ? err.message : ERROR_STREAM_FAILED;
+      console.error(ERROR_STREAM_FAILED, err);
       return reply
         .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ error: message });
+        .send({ error: ERROR_STREAM_FAILED });
     }
   });
 };
