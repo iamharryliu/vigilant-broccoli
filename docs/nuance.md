@@ -56,9 +56,15 @@ of distinct deployments successfully, yet `wrangler pages deployment list --json
 reported exactly 25 both times, before and after — confirming the list is
 capped rather than the prune being stuck.
 
-Also affects `WranglerService.deleteAllDeployments` (full project teardown):
-its `runCount` helper uses `jq length` on the same capped list, so the
-"count stuck" detection there has the same blind spot. It loops rather than
-single-passing because full teardown has no deploy-critical-path timeout
-pressure, so a bounded number of stale-batch retries is an acceptable trade-off
-there — do not change `pruneDeployments` to loop the same way.
+`WranglerService.deleteAllDeployments` (full project teardown) loops to
+convergence instead — full teardown has no deploy-critical-path timeout
+pressure. Because the listed count stays pinned at 25 for large backlogs, it
+detects progress by comparing deployment ID sets between batches, not counts:
+new IDs sliding into view (or the list shrinking) means deletions succeeded.
+After 3 consecutive batches with zero ID turnover it throws (likely Cloudflare
+rate limiting) rather than attempting a project delete that would fail with
+deployments remaining. Deletes run at low concurrency with a delay between
+batches to avoid rate limits, so teardown of a large backlog is slow — which
+is why the vb-manager delete endpoint kicks it off in the background and the
+UI polls a status endpoint instead of blocking on the DELETE request. Do not
+change `pruneDeployments` to loop the same way.
