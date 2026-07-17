@@ -8,7 +8,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 
 const ERROR_MISSING_FIELDS = 'Missing required fields: userPrompt and model';
-const MAX_NUM_OUTPUTS = 4;
+const MAX_NUM_OUTPUTS = 10;
 
 type UploadedImage = {
   name: string;
