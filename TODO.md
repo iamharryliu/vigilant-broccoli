@@ -303,10 +303,6 @@ The GROQ queries return raw `asset->url` with no image transforms, and the galle
 
 **`apps/api/email-service/src/main.ts:30`**, `email-subscription-service/src/main.ts:49` (`checkServerIdentity: () => undefined`). CA is still pinned; drop the override or pin the expected CN/SAN.
 
-### a37e59. [security] Verbose upstream error text returned to clients
-
-vb-express `llm.ts:12-13`, `chat.ts`, `text-to-speech.ts`, `speech-to-text.ts`; llm-service `chat.ts:77-83`. Return generic messages, log details server-side.
-
 ### a4bc16. [security] hearth dev seed/clear routes live in production
 
 **`apps/hearth/src/app/api/dev/{seed,clear}/route.ts`**. Session-gated and RLS-scoped (limited blast radius), but `clear` bulk-deletes a home's data. Gate behind `NODE_ENV !== 'production'`.
