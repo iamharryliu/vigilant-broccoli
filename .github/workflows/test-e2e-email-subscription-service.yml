@@ -1,22 +1,42 @@
-name: production-test-e2e-email-subscription-service
+name: test-e2e-email-subscription-service
 
 on:
   schedule:
     - cron: '0 0 * * 0'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        type: choice
+        default: all
+        options:
+          - all
+          - staging
+          - production
+  workflow_run:
+    workflows: ["deploy", "ci-rotate-secrets"]
+    types: [completed]
+    branches: [main, production]
 
 permissions:
   contents: read
   id-token: write
 
 env:
-  SERVICE_URL: https://production-email-subscription-service.fly.dev
   TEST_EMAIL: harryliu1995@gmail.com
   TEST_SUBSCRIPTION: ci-test
 
 jobs:
   test-email-subscription-service:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+    name: ${{ matrix.environment }}
+    env:
+      SERVICE_URL: https://${{ matrix.environment }}-email-subscription-service.fly.dev
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 

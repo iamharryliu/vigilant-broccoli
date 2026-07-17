@@ -15,19 +15,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TEST_WORKFLOWS=(
-            staging-test-e2e-storage-service
+            test-e2e-storage-service
             test-e2e-socket-server-socketio
             test-security-socket-server
             test-e2e-rabbitmq
-            staging-test-e2e-llm
-            staging-test-smoke-email-service
-            staging-test-e2e-email-subscription-service
-            staging-test-security-api
-            production-test-e2e-storage-service
-            production-test-e2e-llm
-            production-test-smoke-email-service
-            production-test-e2e-email-subscription-service
-            production-test-security-api
+            test-e2e-llm
+            test-smoke-email-service
+            test-e2e-email-subscription-service
+            test-security-api
           )
           for wf in "${TEST_WORKFLOWS[@]}"; do
             gh workflow run "$wf" --repo ${{ github.repository }}

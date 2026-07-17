@@ -1,8 +1,8 @@
 name: deploy
-run-name: deploy (${{ inputs.environment || 'staging' }})
+run-name: deploy (${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }})
 on:
   push:
-    branches: ['main']
+    branches: ['main', 'production']
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy.yml'
@@ -29,6 +29,7 @@ concurrency:
 
 env:
   DOCKERHUB_USERNAME: iamharryliu
+  DEPLOY_ENVIRONMENT: ${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
 
 jobs:
   notify-start:
@@ -69,7 +70,7 @@ jobs:
 
   deploy-npm-packages:
     needs: gitleaks
-    if: ${{ (inputs.environment || 'staging') == 'production' }}
+    if: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'production' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -131,11 +132,11 @@ jobs:
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
 
           DEPLOY_TARGET="deploy"
-          if [[ "${{ inputs.environment || 'staging' }}" == "production" ]]; then
+          if [[ "$DEPLOY_ENVIRONMENT" == "production" ]]; then
             DEPLOY_TARGET="deploy:production"
           fi
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_ENVIRONMENT" == "production" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
             echo "deploy_cmd=pnpm exec nx run-many -t $DEPLOY_TARGET" >> $GITHUB_OUTPUT
           else
@@ -203,6 +204,7 @@ jobs:
 
   deploy-github-pages:
     needs: gitleaks
+    if: ${{ github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
