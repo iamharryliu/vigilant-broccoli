@@ -10,14 +10,6 @@
 
 **Fix:** clamp in the route (`Math.min(numOutputs, 4)`) and/or run with bounded concurrency; a Fastify schema `maximum` would have caught this for free.
 
-### 85ddfd. cloud-8-skate-angular gallery serves full-resolution Sanity originals
-
-**`apps/ui/cloud-8-skate-angular/src/app/services/cloud8-sanity.service.ts:150,178`**
-
-The GROQ queries return raw `asset->url` with no image transforms, and the gallery/album templates render them directly. Phone-camera originals are typically 3–10MB each — an album page downloads every original. Album-grid covers also lack `loading="lazy"`. This is the single largest user-visible load cost in the audited apps.
-
-**Fix:** use Sanity's image CDN params — `?w=800&auto=format&q=75` (plus `srcset`) for gallery images, `?w=400` for the aspect-square covers; add `loading="lazy"` to covers.
-
 ### 0cd00c. Structural duplication in the workspace
 
 - `personal-website-frontend` vs `personal-website-react`: flip the apex CNAME in `cloudflare-harryliu-dev.tf` to `staging-harryliu-dev-react.pages.dev`, apply + verify, then delete the Angular app and the stale Cloudflare Pages projects.

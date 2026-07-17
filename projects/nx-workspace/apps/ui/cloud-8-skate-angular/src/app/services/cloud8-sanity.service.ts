@@ -48,6 +48,7 @@ export interface Cloud8GalleryImage {
   _key?: string;
   alt?: string;
   url: string;
+  url2x: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -147,7 +148,7 @@ export class Cloud8SanityService {
         date,
         "createdAt": _createdAt,
         "updatedAt": _updatedAt,
-        "coverImageUrl": images[0].asset->url,
+        "coverImageUrl": images[0].asset->url + "?w=400&auto=format&q=75",
         "imageCount": count(images)
       }
     `;
@@ -175,7 +176,8 @@ export class Cloud8SanityService {
         images[]{
           _key,
           alt,
-          "url": asset->url,
+          "url": asset->url + "?w=800&auto=format&q=75",
+          "url2x": asset->url + "?w=1600&auto=format&q=75",
           "createdAt": asset->_createdAt,
           "updatedAt": asset->_updatedAt
         }
