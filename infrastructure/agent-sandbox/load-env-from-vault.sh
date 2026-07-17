@@ -32,7 +32,7 @@ vault kv get -format=json ${VAULT_KV_PATH}/secrets | jq '.data.data'
 ")
 
 CLAUDE_CODE_OAUTH_TOKEN=$(echo "$SECRETS" | jq -r '.CLAUDE_CODE_OAUTH_TOKEN // empty')
-GH_TOKEN=$(echo "$SECRETS" | jq -r '.GH_TOKEN // empty')
+GH_TOKEN=$(echo "$SECRETS" | jq -r '.AGENT_GITHUB_TOKEN // .GITHUB_TOKEN // empty')
 
 if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
   echo "ERROR: CLAUDE_CODE_OAUTH_TOKEN not found in Vault (${VAULT_KV_PATH}/secrets)." >&2
@@ -43,7 +43,7 @@ if [ "${#CLAUDE_CODE_OAUTH_TOKEN}" -lt 100 ]; then
   exit 1
 fi
 if [ -z "$GH_TOKEN" ]; then
-  echo "WARNING: GH_TOKEN not found in Vault; sandbox will have read-only git access." >&2
+  echo "WARNING: neither AGENT_GITHUB_TOKEN nor GITHUB_TOKEN found in Vault; sandbox will have read-only git access." >&2
 fi
 
 cat > "$ENV_FILE" <<EOF

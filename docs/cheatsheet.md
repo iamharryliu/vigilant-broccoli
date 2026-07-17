@@ -82,7 +82,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 🤖 AGENT SANDBOX
   sandbox:up                  Fetch tokens from Vault into .env, then build + start contained Claude sandbox
                                (set SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 in infrastructure/agent-sandbox/.env to also inject those Vault secret keys)
-  sandbox:claude              Run Claude autonomously inside the sandbox repo clone
+  sandbox:claude              Run Claude autonomously inside the sandbox repo clone (fable; append --model <m> to override)
+  sandbox:solve <id...>       Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR via /git-workflow (sonnet; --model <m> to override)
   sandbox:shell               Shell into the sandbox (dotfiles loaded)
   sandbox:logs                Follow sandbox provisioning logs
   sandbox:down                Stop the sandbox

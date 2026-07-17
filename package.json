@@ -58,6 +58,7 @@
     "local:docker:reload": "docker compose -f infrastructure/local/docker-compose.yml down && docker compose -f infrastructure/local/docker-compose.yml up -d",
     "sandbox:up": "./infrastructure/agent-sandbox/load-env-from-vault.sh && docker compose -f infrastructure/agent-sandbox/docker-compose.yml up -d --build --force-recreate",
     "sandbox:claude": "docker exec -it -u agent -w /home/agent/vigilant-broccoli vb-agent-sandbox claude --dangerously-skip-permissions --model fable",
+    "sandbox:solve": "./infrastructure/agent-sandbox/solve-todo.sh",
     "sandbox:shell": "docker exec -it -u agent -w /home/agent/vigilant-broccoli vb-agent-sandbox bash",
     "sandbox:logs": "docker logs -f vb-agent-sandbox",
     "sandbox:down": "docker compose -f infrastructure/agent-sandbox/docker-compose.yml down",
