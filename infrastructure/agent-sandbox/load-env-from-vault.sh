@@ -32,7 +32,22 @@ vault kv get -format=json ${VAULT_KV_PATH}/secrets | jq '.data.data'
 ")
 
 CLAUDE_CODE_OAUTH_TOKEN=$(echo "$SECRETS" | jq -r '.CLAUDE_CODE_OAUTH_TOKEN // empty')
-GH_TOKEN=$(echo "$SECRETS" | jq -r '.AGENT_GITHUB_TOKEN // .GITHUB_TOKEN // empty')
+AGENT_GH_APP_ID=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_ID // empty')
+AGENT_GH_APP_PRIVATE_KEY=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_PRIVATE_KEY // empty')
+PEM_FILE="${SCRIPT_DIR}/.github-app-key.pem"
+
+if [ -n "$AGENT_GH_APP_ID" ] && [ -n "$AGENT_GH_APP_PRIVATE_KEY" ]; then
+  case "$AGENT_GH_APP_PRIVATE_KEY" in
+    -----BEGIN*) printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY" > "$PEM_FILE" ;;
+    *) echo "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d > "$PEM_FILE" ;;
+  esac
+  chmod 600 "$PEM_FILE"
+  echo "Minting GitHub App installation token..."
+  GH_TOKEN=$("${SCRIPT_DIR}/mint-github-app-token.sh" "$AGENT_GH_APP_ID" "$PEM_FILE")
+else
+  rm -f "$PEM_FILE"
+  GH_TOKEN=$(echo "$SECRETS" | jq -r '.AGENT_GITHUB_TOKEN // .GITHUB_TOKEN // empty')
+fi
 
 if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
   echo "ERROR: CLAUDE_CODE_OAUTH_TOKEN not found in Vault (${VAULT_KV_PATH}/secrets)." >&2
@@ -43,12 +58,13 @@ if [ "${#CLAUDE_CODE_OAUTH_TOKEN}" -lt 100 ]; then
   exit 1
 fi
 if [ -z "$GH_TOKEN" ]; then
-  echo "WARNING: neither AGENT_GITHUB_TOKEN nor GITHUB_TOKEN found in Vault; sandbox will have read-only git access." >&2
+  echo "WARNING: no GitHub App credentials (AGENT_GH_APP_ID + AGENT_GH_APP_PRIVATE_KEY), AGENT_GITHUB_TOKEN, or GITHUB_TOKEN found in Vault; sandbox will have read-only git access." >&2
 fi
 
 cat > "$ENV_FILE" <<EOF
 CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}
 GH_TOKEN=${GH_TOKEN}
+AGENT_GH_APP_ID=${AGENT_GH_APP_ID}
 SANDBOX_FIREWALL=${SANDBOX_FIREWALL_VALUE:-on}
 SANDBOX_ALLOWED_DOMAINS=${SANDBOX_ALLOWED_DOMAINS_VALUE}
 SANDBOX_VAULT_ENV_VARS=${SANDBOX_VAULT_ENV_VARS_VALUE}
