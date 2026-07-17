@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: ['deploy', 'ci-rotate-secrets']
     types: [completed]
-    branches: [main]
+    branches: [main, production]
 
 permissions:
   contents: read

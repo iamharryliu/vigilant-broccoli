@@ -1,9 +1,22 @@
-name: production-test-smoke-email-service
+name: test-smoke-email-service
 
 on:
   schedule:
     - cron: '0 0 * * 0'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        type: choice
+        default: all
+        options:
+          - all
+          - staging
+          - production
+  workflow_run:
+    workflows: ["deploy", "ci-rotate-secrets"]
+    types: [completed]
+    branches: [main, production]
 
 permissions:
   contents: read
@@ -11,7 +24,13 @@ permissions:
 
 jobs:
   test-email-service:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+    name: ${{ matrix.environment }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
@@ -28,7 +47,7 @@ jobs:
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
-            -X POST https://production-vb-email-service.fly.dev/api/queue-emails \
+            -X POST https://${{ matrix.environment }}-vb-email-service.fly.dev/api/queue-emails \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${SHARED_APP_TOKEN}" \
             -d '[{"from":"Harry Liu <ci-test@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"ci-test: Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')

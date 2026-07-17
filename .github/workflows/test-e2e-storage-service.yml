@@ -1,24 +1,39 @@
-name: production-test-e2e-storage-service
+name: test-e2e-storage-service
 
 on:
   schedule:
     - cron: '0 0 * * 0'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        type: choice
+        default: all
+        options:
+          - all
+          - staging
+          - production
+  workflow_run:
+    workflows: ["deploy", "ci-rotate-secrets"]
+    types: [completed]
+    branches: [main, production]
 
 permissions:
   contents: read
   id-token: write
 
-env:
-  SERVICE_URL: https://production-vb-storage-service.fly.dev
-
 jobs:
   test-storage-service:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
         provider: [gcs, cloudflare-r2]
+    name: ${{ matrix.environment }} ${{ matrix.provider }}
+    env:
+      SERVICE_URL: https://${{ matrix.environment }}-vb-storage-service.fly.dev
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
@@ -33,9 +48,9 @@ jobs:
       - name: Prepare test fixture
         id: fixture
         run: |
-          FILE_NAME="ci-test-${{ matrix.provider }}-${{ github.run_id }}-${{ github.run_attempt }}.txt"
+          FILE_NAME="ci-test-${{ matrix.environment }}-${{ matrix.provider }}-${{ github.run_id }}-${{ github.run_attempt }}.txt"
           FILE_PATH="/tmp/${FILE_NAME}"
-          FILE_CONTENT="ci-test ${{ matrix.provider }} run=${{ github.run_id }} attempt=${{ github.run_attempt }} sha=${{ github.sha }}"
+          FILE_CONTENT="ci-test ${{ matrix.environment }} ${{ matrix.provider }} run=${{ github.run_id }} attempt=${{ github.run_attempt }} sha=${{ github.sha }}"
           printf '%s' "${FILE_CONTENT}" > "${FILE_PATH}"
           echo "file_name=${FILE_NAME}" >> $GITHUB_OUTPUT
           echo "file_path=${FILE_PATH}" >> $GITHUB_OUTPUT

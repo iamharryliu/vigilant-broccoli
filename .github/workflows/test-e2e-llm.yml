@@ -1,20 +1,26 @@
-name: staging-test-e2e-llm
+name: test-e2e-llm
 
 on:
   schedule:
     - cron: '0 0 * * 0'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        type: choice
+        default: all
+        options:
+          - all
+          - staging
+          - production
   workflow_run:
     workflows: ["deploy", "ci-rotate-secrets"]
     types: [completed]
-    branches: [main]
+    branches: [main, production]
 
 permissions:
   contents: read
   id-token: write
-
-env:
-  LLM_SERVICE_URL: https://staging-vb-llm-service.fly.dev
 
 jobs:
   test-llm-service:
@@ -23,6 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+        provider: [openai, anthropic, gemini, deepseek, grok]
         include:
           - provider: openai
             model: gpt-4o-mini
@@ -34,7 +42,9 @@ jobs:
             model: deepseek-chat
           - provider: grok
             model: grok-3-mini
-    name: ${{ matrix.provider }}
+    name: ${{ matrix.environment }} ${{ matrix.provider }}
+    env:
+      LLM_SERVICE_URL: https://${{ matrix.environment }}-vb-llm-service.fly.dev
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 

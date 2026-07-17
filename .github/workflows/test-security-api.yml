@@ -1,0 +1,52 @@
+name: test-security-api
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        type: choice
+        default: all
+        options:
+          - all
+          - staging
+          - production
+  workflow_run:
+    workflows: ["deploy", "ci-rotate-secrets"]
+    types: [completed]
+    branches: [main, production]
+
+permissions:
+  contents: read
+
+jobs:
+  security-check:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+        service:
+          - vb-express
+          - vb-llm-service
+          - vb-storage-service
+          - vb-email-service
+          - email-subscription-service
+    name: ${{ matrix.environment }}-${{ matrix.service }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Run security check for ${{ matrix.environment }}-${{ matrix.service }}
+        run: |
+          chmod +x scripts/shell/test-api-ping-security.sh
+          scripts/shell/test-api-ping-security.sh "${{ matrix.environment }}-${{ matrix.service }}" "https://${{ matrix.environment }}-${{ matrix.service }}.fly.dev"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Security check failed for ${{ matrix.environment }}-${{ matrix.service }}! /api/* may be accepting unauthorized requests."
+          exit 1
