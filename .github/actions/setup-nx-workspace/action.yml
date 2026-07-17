@@ -6,10 +6,6 @@ inputs:
     description: npm registry URL for setup-node (enables auth/.npmrc when set)
     required: false
     default: ''
-  update-npm:
-    description: Upgrade npm to latest after Node setup
-    required: false
-    default: 'false'
 
 runs:
   using: composite
@@ -28,11 +24,6 @@ runs:
         cache: 'pnpm'
         cache-dependency-path: ./projects/nx-workspace/pnpm-lock.yaml
         registry-url: ${{ inputs.registry-url }}
-
-    - name: Update npm
-      if: ${{ inputs.update-npm == 'true' }}
-      shell: bash
-      run: npm install -g npm@latest
 
     - name: Install dependencies
       shell: bash
