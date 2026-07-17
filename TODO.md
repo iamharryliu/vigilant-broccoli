@@ -383,10 +383,6 @@ vb-express `llm.ts:12-13`, `chat.ts`, `text-to-speech.ts`, `speech-to-text.ts`; 
 
 **`.github/actions/deploy-notify/action.yml:33-35`** — now pinned + `--ignore-scripts` (#109), but still 2+ registry installs per deploy; replace the emit with a plain HTTPS POST or cache the install.
 
-### d91086. [performance] `npm install -g npm@latest` on every workspace setup
-
-**`.github/actions/setup-nx-workspace/action.yml:35`**; Node 24 ships npm 11 with `--provenance` support — verify and delete.
-
 ### dcca91. [performance] `ci-pr-check` installs the whole workspace on docs-only PRs
 
 **`.github/workflows/ci-pr-check.yml`**; a paths gate on `projects/nx-workspace/**` would return feedback in seconds for non-workspace PRs.

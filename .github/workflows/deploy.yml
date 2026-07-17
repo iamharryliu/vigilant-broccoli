@@ -80,7 +80,6 @@ jobs:
       - uses: ./.github/actions/setup-nx-workspace
         with:
           registry-url: 'https://registry.npmjs.org'
-          update-npm: 'true'
 
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
