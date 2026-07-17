@@ -1,0 +1,46 @@
+name: staging-test-security-llm
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["deploy", "ci-rotate-secrets"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  LLM_SERVICE_URL: https://staging-vb-llm-service.fly.dev
+
+jobs:
+  security-check:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+
+      - name: Run numOutputs clamp check
+        env:
+          LLM_SERVICE_URL: ${{ env.LLM_SERVICE_URL }}
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          chmod +x scripts/shell/test-llm-security.sh
+          scripts/shell/test-llm-security.sh
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Security check failed! llm-service may be accepting unbounded numOutputs requests."
+          exit 1
