@@ -2,14 +2,6 @@
 
 ## P2
 
-### f5e7d2. Client-controlled unbounded parallel fan-out of paid LLM calls
-
-**`projects/nx-workspace/apps/api/llm-service/src/routes/llm.ts:35`** · `libs/@vigilant-broccoli/llm-tools/src/lib/llm.service.ts:226-231`
-
-`numOutputs` is taken from the request body with no cap and fanned out via `Promise.all(Array.from({ length: numOutputs }, ...))`; for image models it becomes `images.generate({ n: numOutputs })` — billed per image. A single request with `numOutputs: 50` fires 50 concurrent GPT-4o/image generations; any caller bug or retry loop amplifies cost 1:N with zero throttling, and the burst also spikes memory on the 512MB VM. (Same finding as security-audit M5 — fix once, close both.)
-
-**Fix:** clamp in the route (`Math.min(numOutputs, 4)`) and/or run with bounded concurrency; a Fastify schema `maximum` would have caught this for free.
-
 ### 85ddfd. cloud-8-skate-angular gallery serves full-resolution Sanity originals
 
 **`apps/ui/cloud-8-skate-angular/src/app/services/cloud8-sanity.service.ts:150,178`**

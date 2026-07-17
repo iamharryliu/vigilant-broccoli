@@ -41,7 +41,7 @@ export const swaggerSpec = createSwaggerSpec({
                       },
                     },
                   },
-                  numOutputs: { type: 'integer', default: 1 },
+                  numOutputs: { type: 'integer', default: 1, maximum: 10 },
                   responseFormat: { type: 'string', enum: ['json'] },
                   jsonSchema: { type: 'object' },
                 },
