@@ -8,6 +8,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 
 const ERROR_MISSING_FIELDS = 'Missing required fields: userPrompt and model';
+const MAX_NUM_OUTPUTS = 4;
 
 type UploadedImage = {
   name: string;
@@ -43,6 +44,8 @@ const llmRoutes: FastifyPluginAsync = async app => {
         .send({ error: ERROR_MISSING_FIELDS });
     }
 
+    const clampedNumOutputs = Math.min(numOutputs, MAX_NUM_OUTPUTS);
+
     if (jsonSchema) {
       const result = await LLMService.prompt({
         prompt: { userPrompt, systemPrompt, images },
@@ -54,7 +57,7 @@ const llmRoutes: FastifyPluginAsync = async app => {
 
     const outputs = await LLMService.generateMultipleOutputs(
       { prompt: { userPrompt, systemPrompt, images }, modelConfig: { model } },
-      numOutputs,
+      clampedNumOutputs,
       modelSupportsImageOutput(model),
     );
 
