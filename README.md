@@ -11,11 +11,11 @@ Welcome to vigilant-broccoli, my software passion project. [Click here](https://
 ## Development
 
 - [machine setup](./docs/machine-setups/machine-setup.md) - OS-specific setup instructions.
-- [cheatsheet](./docs/cheatsheet.md) - useful infra-level CLI commands (`pnpm run cheatsheet`).
+- [cheatsheet](./docs/cheatsheet.md) - useful infra-level CLI commands
 
 ```
 pnpm local:install:machine-setup
-pnpm run cheatsheet
+pnpm cheatsheet
 ```
 
 ## CI Status
