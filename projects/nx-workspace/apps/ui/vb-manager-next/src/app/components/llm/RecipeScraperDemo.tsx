@@ -10,26 +10,10 @@ import {
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { authFetch } from '../../../../libs/auth';
-
-type UploadedImage = {
-  name: string;
-  base64: string;
-  mimeType: string;
-};
-
-const readImageAsBase64 = (file: File): Promise<UploadedImage> =>
-  new Promise(resolve => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const dataUrl = e.target?.result as string;
-      resolve({
-        name: file.name,
-        base64: dataUrl.split(',')[1],
-        mimeType: file.type,
-      });
-    };
-    reader.readAsDataURL(file);
-  });
+import {
+  UploadedImage,
+  readImageAsBase64,
+} from '../../utils/image-upload.utils';
 
 const buildScrapeRequestBody = (
   recipeUrl: string,
@@ -117,19 +101,13 @@ export const RecipeScraperDemo = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex gap-2 items-end">
-        <Input
-          placeholder="Enter recipe URL..."
-          value={recipeUrl}
-          onChange={handleUrlChange}
-          onKeyDown={handleRecipeKeyDown}
-          disabled={loading || hasImage || hasText}
-          className="flex-1"
-        />
-        <Button onClick={handleScrapeRecipe} disabled={loading || !hasAnyInput}>
-          {loading ? 'Scraping...' : 'Scrape'}
-        </Button>
-      </div>
+      <Input
+        placeholder="Enter recipe URL..."
+        value={recipeUrl}
+        onChange={handleUrlChange}
+        onKeyDown={handleRecipeKeyDown}
+        disabled={loading || hasImage || hasText}
+      />
 
       <Textarea
         placeholder="...or paste recipe text here"
@@ -157,6 +135,14 @@ export const RecipeScraperDemo = () => {
           </>
         )}
       </div>
+
+      <Button
+        onClick={handleScrapeRecipe}
+        disabled={loading || !hasAnyInput}
+        className="self-end"
+      >
+        {loading ? 'Scraping...' : 'Scrape'}
+      </Button>
 
       {error && (
         <Text size="2" color="red">

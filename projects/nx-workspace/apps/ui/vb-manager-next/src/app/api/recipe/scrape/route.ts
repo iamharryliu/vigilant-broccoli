@@ -12,8 +12,16 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { VIGILANT_BROCCOLI_ROOT_PATH } from '../../../app.const';
 
+type RecipeImage = { name: string; base64: string; mimeType: string };
+
+type ScrapeRequestBody = {
+  url?: string;
+  text?: string;
+  images?: RecipeImage[];
+};
+
 export async function POST(request: NextRequest) {
-  const { url } = await request.json();
+  const { url, text, images } = (await request.json()) as ScrapeRequestBody;
 
   const res = await fetch(
     `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.RECIPE_SCRAPE}`,
@@ -23,7 +31,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'x-api-key': getVbExpressApiKey(),
       },
-      body: JSON.stringify({ url }),
+      body: JSON.stringify({ url, text, images }),
     },
   );
 
