@@ -6,6 +6,7 @@ type RecipeImage = { name: string; base64: string; mimeType: string };
 
 type ScrapeRequest = {
   url?: string;
+  text?: string;
   images?: RecipeImage[];
   languageCode?: string;
 };
@@ -15,7 +16,7 @@ const UNTITLED_RECIPE = 'Untitled Recipe';
 const NO_RECIPE_FOUND = 'NO_RECIPE_FOUND';
 const MIN_CLEAN_CONTENT_LENGTH = 200;
 
-const ERROR_NO_INPUT = 'Provide a url or at least one image';
+const ERROR_NO_INPUT = 'Provide a url, pasted text, or at least one image';
 const ERROR_URL_NOT_ALLOWED = 'This URL cannot be fetched';
 const ERROR_FETCH_FAILED = (url: string) => `Could not reach ${url}`;
 const ERROR_PAGE_NOT_OK = (res: Response) =>
@@ -304,11 +305,12 @@ const scrapeUrl = async (
 
 const recipeRoutes: FastifyPluginAsync = async app => {
   app.post('/scrape', async (req, reply) => {
-    const { url, images, languageCode } = req.body as ScrapeRequest;
+    const { url, text, images, languageCode } = req.body as ScrapeRequest;
     const trimmedUrl = url?.trim();
+    const trimmedText = text?.trim();
     const hasImages = !!images && images.length > 0;
 
-    if (!trimmedUrl && !hasImages) {
+    if (!trimmedUrl && !trimmedText && !hasImages) {
       return reply
         .code(HTTP_STATUS_CODES.BAD_REQUEST)
         .send({ error: ERROR_NO_INPUT });
@@ -324,6 +326,9 @@ const recipeRoutes: FastifyPluginAsync = async app => {
       }
       textContent = content;
       sourceDescription = `this text content. The original URL is: ${trimmedUrl}`;
+    } else if (trimmedText) {
+      textContent = trimmedText;
+      sourceDescription = 'this text content';
     } else {
       sourceDescription = 'the attached image(s)';
     }

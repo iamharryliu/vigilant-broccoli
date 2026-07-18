@@ -464,18 +464,22 @@ export const swaggerSpec = createSwaggerSpec({
     },
     '/api/recipe/scrape': {
       post: {
-        summary: 'Extract a recipe as markdown from a URL or image(s) via LLM',
+        summary:
+          'Extract a recipe as markdown from a URL, pasted text, or image(s) via LLM',
         requestBody: jsonBody({
           type: 'object',
           properties: {
             url: { type: 'string' },
+            text: { type: 'string' },
             images: imagesSchema,
             languageCode: { type: 'string' },
           },
         }),
         responses: {
           '200': { description: '{ title, markdown }' },
-          '400': { description: 'Provide a url or at least one image' },
+          '400': {
+            description: 'Provide a url, pasted text, or at least one image',
+          },
           '401': UNAUTHORIZED_RESPONSE,
           '422': { description: 'No recipe could be found' },
           '502': { description: 'Could not reach or read the given URL' },

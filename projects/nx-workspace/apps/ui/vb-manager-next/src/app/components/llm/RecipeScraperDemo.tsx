@@ -1,7 +1,12 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Text } from '@radix-ui/themes';
-import { Button, CopyPastable, Input } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  CopyPastable,
+  Input,
+  Textarea,
+} from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { authFetch } from '../../../../libs/auth';
@@ -26,8 +31,19 @@ const readImageAsBase64 = (file: File): Promise<UploadedImage> =>
     reader.readAsDataURL(file);
   });
 
+const buildScrapeRequestBody = (
+  recipeUrl: string,
+  recipeText: string,
+  image: UploadedImage | null,
+) => {
+  if (image) return { images: [image] };
+  if (recipeText.trim()) return { text: recipeText };
+  return { url: recipeUrl };
+};
+
 export const RecipeScraperDemo = () => {
   const [recipeUrl, setRecipeUrl] = useState('');
+  const [recipeText, setRecipeText] = useState('');
   const [image, setImage] = useState<UploadedImage | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,13 +57,24 @@ export const RecipeScraperDemo = () => {
     if (!file) return;
     setImage(await readImageAsBase64(file));
     setRecipeUrl('');
+    setRecipeText('');
   };
 
   const clearImage = () => setImage(null);
 
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRecipeUrl(e.target.value);
+    if (e.target.value) setRecipeText('');
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setRecipeText(e.target.value);
+    if (e.target.value) setRecipeUrl('');
+  };
+
   const handleScrapeRecipe = async () => {
-    if (!recipeUrl.trim() && !image) {
-      setError('Enter a URL or select an image');
+    if (!recipeUrl.trim() && !recipeText.trim() && !image) {
+      setError('Enter a URL, paste recipe text, or select an image');
       return;
     }
 
@@ -60,7 +87,9 @@ export const RecipeScraperDemo = () => {
       headers: {
         ...HTTP_HEADERS.CONTENT_TYPE.JSON,
       },
-      body: JSON.stringify(image ? { images: [image] } : { url: recipeUrl }),
+      body: JSON.stringify(
+        buildScrapeRequestBody(recipeUrl, recipeText, image),
+      ),
     });
 
     const data = await response.json();
@@ -81,31 +110,41 @@ export const RecipeScraperDemo = () => {
     }
   };
 
+  const hasUrl = !!recipeUrl.trim();
+  const hasText = !!recipeText.trim();
+  const hasImage = !!image;
+  const hasAnyInput = hasUrl || hasText || hasImage;
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex gap-2 items-end">
         <Input
           placeholder="Enter recipe URL..."
           value={recipeUrl}
-          onChange={e => setRecipeUrl(e.target.value)}
+          onChange={handleUrlChange}
           onKeyDown={handleRecipeKeyDown}
-          disabled={loading || !!image}
+          disabled={loading || hasImage || hasText}
           className="flex-1"
         />
-        <Button
-          onClick={handleScrapeRecipe}
-          disabled={loading || (!recipeUrl.trim() && !image)}
-        >
+        <Button onClick={handleScrapeRecipe} disabled={loading || !hasAnyInput}>
           {loading ? 'Scraping...' : 'Scrape'}
         </Button>
       </div>
+
+      <Textarea
+        placeholder="...or paste recipe text here"
+        value={recipeText}
+        onChange={handleTextChange}
+        disabled={loading || hasImage || hasUrl}
+        rows={6}
+      />
 
       <div className="flex gap-2 items-center">
         <input
           type="file"
           accept="image/*"
           onChange={handleFileSelect}
-          disabled={loading || !!recipeUrl.trim()}
+          disabled={loading || hasUrl || hasText}
         />
         {image && (
           <>
