@@ -1,6 +1,5 @@
+import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@vigilant-broccoli/personal-common-js';
 import { ENVIRONMENT } from '../../../environments/environment';
-
-const SEND_MESSAGE_ENDPOINT = '/api/send-message';
 
 const NETWORK_ERROR_MESSAGE =
   "Couldn't reach the server. Check your connection and try again.";
@@ -17,7 +16,7 @@ export type MessageRequest = {
 
 export async function sendMessage(request: MessageRequest): Promise<void> {
   const response = await fetch(
-    `${ENVIRONMENT.API_URL}${SEND_MESSAGE_ENDPOINT}`,
+    `${ENVIRONMENT.API_URL}${PERSONAL_WEBSITE_BACKEND_ENDPOINTS.SEND_MESSAGE}`,
     {
       method: 'POST',
       credentials: 'include',
