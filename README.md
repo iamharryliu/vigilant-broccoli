@@ -13,6 +13,11 @@ Welcome to vigilant-broccoli, my software passion project. [Click here](https://
 - [machine setup](./docs/machine-setups/machine-setup.md) - OS-specific setup instructions.
 - [cheatsheet](./docs/cheatsheet.md) - useful infra-level CLI commands (`pnpm run cheatsheet`).
 
+```
+pnpm local:install:machine-setup
+pnpm run cheatsheet
+```
+
 ## CI Status
 
 [![ci-health-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml)\
