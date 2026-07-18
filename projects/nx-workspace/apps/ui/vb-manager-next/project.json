@@ -19,7 +19,10 @@
         "default",
         "^default",
         { "externalDependencies": ["next"] },
-        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true },
+        { "env": "NEXT_PUBLIC_SUPABASE_URL" },
+        { "env": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" },
+        { "env": "NEXT_PUBLIC_SOCKET_SERVER_URL" }
       ],
       "outputs": [
         "{workspaceRoot}/dist/apps/ui/vb-manager-next/.next/!(cache)/**/*",
