@@ -10,6 +10,11 @@ import {
   readImageAsBase64,
 } from '../../utils/image-upload.utils';
 
+const MESSAGE_TYPE = {
+  SUCCESS: 'success',
+  ERROR: 'error',
+} as const;
+
 const buildScrapeRequestBody = (
   recipeUrl: string,
   recipeText: string,
@@ -26,7 +31,7 @@ export const RecipeScraperUtilityContent = () => {
   const [image, setImage] = useState<UploadedImage | null>(null);
   const [recipeLoading, setRecipeLoading] = useState(false);
   const [recipeMessage, setRecipeMessage] = useState<{
-    type: 'success' | 'error';
+    type: (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE];
     text: string;
   } | null>(null);
 
@@ -58,7 +63,7 @@ export const RecipeScraperUtilityContent = () => {
   const handleScrapeRecipe = async () => {
     if (!hasAnyInput) {
       setRecipeMessage({
-        type: 'error',
+        type: MESSAGE_TYPE.ERROR,
         text: 'Enter a URL, paste recipe text, or select an image',
       });
       return;
@@ -80,7 +85,7 @@ export const RecipeScraperUtilityContent = () => {
     if (!response.ok) {
       const data = await response.json();
       setRecipeMessage({
-        type: 'error',
+        type: MESSAGE_TYPE.ERROR,
         text: data.error || 'Failed to scrape recipe',
       });
       setRecipeLoading(false);
@@ -90,7 +95,7 @@ export const RecipeScraperUtilityContent = () => {
     setRecipeText('');
     setImage(null);
     setRecipeMessage({
-      type: 'success',
+      type: MESSAGE_TYPE.SUCCESS,
       text: 'Recipe downloaded successfully!',
     });
     setRecipeLoading(false);
@@ -156,7 +161,7 @@ export const RecipeScraperUtilityContent = () => {
       {recipeMessage && (
         <Text
           size="2"
-          color={recipeMessage.type === 'success' ? 'green' : 'red'}
+          color={recipeMessage.type === MESSAGE_TYPE.SUCCESS ? 'green' : 'red'}
         >
           {recipeMessage.text}
         </Text>

@@ -303,6 +303,41 @@ const scrapeUrl = async (
   return { content: cleanContent };
 };
 
+const resolveSource = async (
+  trimmedUrl: string | undefined,
+  trimmedText: string | undefined,
+): Promise<{
+  textContent?: string;
+  sourceDescription: string;
+  error?: { status: number; message: string };
+}> => {
+  if (trimmedUrl) {
+    const { content, error } = await scrapeUrl(trimmedUrl);
+    if (error) return { sourceDescription: '', error };
+    return {
+      textContent: content,
+      sourceDescription: `this text content. The original URL is: ${trimmedUrl}`,
+    };
+  }
+
+  if (trimmedText) {
+    return { textContent: trimmedText, sourceDescription: 'this text content' };
+  }
+
+  return { sourceDescription: 'the attached image(s)' };
+};
+
+const parseRecipeResponse = (
+  markdown: string,
+): { error: string } | { title: string; markdown: string } => {
+  if (markdown.trim() === NO_RECIPE_FOUND) {
+    return { error: ERROR_NO_RECIPE_FOUND };
+  }
+  const titleMatch = markdown.match(/^#\s+(.+)$/m);
+  const title = titleMatch ? titleMatch[1] : UNTITLED_RECIPE;
+  return { title, markdown };
+};
+
 const recipeRoutes: FastifyPluginAsync = async app => {
   app.post('/scrape', async (req, reply) => {
     const { url, text, images, languageCode } = req.body as ScrapeRequest;
@@ -316,21 +351,12 @@ const recipeRoutes: FastifyPluginAsync = async app => {
         .send({ error: ERROR_NO_INPUT });
     }
 
-    let textContent: string | undefined;
-    let sourceDescription: string;
-
-    if (trimmedUrl) {
-      const { content, error } = await scrapeUrl(trimmedUrl);
-      if (error) {
-        return reply.code(error.status).send({ error: error.message });
-      }
-      textContent = content;
-      sourceDescription = `this text content. The original URL is: ${trimmedUrl}`;
-    } else if (trimmedText) {
-      textContent = trimmedText;
-      sourceDescription = 'this text content';
-    } else {
-      sourceDescription = 'the attached image(s)';
+    const { textContent, sourceDescription, error } = await resolveSource(
+      trimmedUrl,
+      trimmedText,
+    );
+    if (error) {
+      return reply.code(error.status).send({ error: error.message });
     }
 
     const userPrompt = buildRecipePrompt(
@@ -345,18 +371,14 @@ const recipeRoutes: FastifyPluginAsync = async app => {
       model: LLM_MODEL.GPT_4O_MINI,
     });
 
-    const markdown = outputs[0];
-
-    if (markdown.trim() === NO_RECIPE_FOUND) {
+    const result = parseRecipeResponse(outputs[0]);
+    if ('error' in result) {
       return reply
         .code(HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY)
-        .send({ error: ERROR_NO_RECIPE_FOUND });
+        .send({ error: result.error });
     }
 
-    const titleMatch = markdown.match(/^#\s+(.+)$/m);
-    const title = titleMatch ? titleMatch[1] : UNTITLED_RECIPE;
-
-    return { title, markdown };
+    return result;
   });
 };
 
