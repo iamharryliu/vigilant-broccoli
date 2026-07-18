@@ -37,7 +37,8 @@
       "command": "npx wrangler pages project list 2>&1 | grep -qw staging-docs-md || npx wrangler pages project create staging-docs-md --production-branch main"
     },
     "prune-deployments": {
-      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-docs-md 10"
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-docs-md 10",
+      "dependsOn": ["ensure-cf-project"]
     },
     "deploy": {
       "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md",
