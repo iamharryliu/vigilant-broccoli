@@ -6,7 +6,7 @@ All public URLs for deployed applications, grouped by domain/provider.
 
 ```
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
-├── harryliu.dev                          Personal website — Cloudflare Pages `staging-harryliu-dev-angular` (domain + CNAME: Terraform, infrastructure/terraform/)
+├── harryliu.dev                          Personal website — Cloudflare Pages `staging-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
 ├── journal.harryliu.dev                  Journal — Cloudflare Pages `staging-journal` (deployed from Gitea via cron-deploy-journal; owner-email Access + non-identity CI service token for cron-health-check origin probes)
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `staging-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed via deploy.yml's deploy-apps job; public, no Access gating)
@@ -42,8 +42,7 @@ vercel.app                                Vercel (production projects created on
 
 pages.dev                                 Cloudflare Pages production aliases (staging projects serve the custom domains above)
 ├── production-cloud-8-skate-angular.pages.dev Cloud 8 Skate (production)
-├── production-harryliu-dev-react.pages.dev    Personal website React (production)
-└── production-harryliu-dev-angular.pages.dev  Personal website Angular (production)
+└── production-harryliu-dev-react.pages.dev    Personal website React (production)
 
 github.io                                 GitHub Pages
 └── iamharryliu.github.io/vigilant-broccoli   Pages index (pages-index/)

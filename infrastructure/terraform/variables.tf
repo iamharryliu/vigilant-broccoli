@@ -142,10 +142,10 @@ variable "cloud8skate_pages_subdomain" {
 
 variable "harryliu_dev_pages_project" {
   type    = string
-  default = "staging-harryliu-dev-angular"
+  default = "staging-harryliu-dev-react"
 }
 
 variable "harryliu_dev_pages_subdomain" {
   type    = string
-  default = "staging-harryliu-dev-angular.pages.dev"
+  default = "staging-harryliu-dev-react.pages.dev"
 }
