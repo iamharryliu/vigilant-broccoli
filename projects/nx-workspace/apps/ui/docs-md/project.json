@@ -33,18 +33,19 @@
         "production": {}
       }
     },
-    "deploy-github-pages": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["build"],
-      "options": {
-        "commands": [
-          "rm -rf ../../../_site/docs-md",
-          "mkdir -p ../../../_site/docs-md",
-          "cp -R ../../../dist/docs-md/. ../../../_site/docs-md/"
-        ],
-        "parallel": false,
-        "cwd": "{projectRoot}"
-      }
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-docs-md || npx wrangler pages project create staging-docs-md --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-docs-md 10"
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     }
   }
 }

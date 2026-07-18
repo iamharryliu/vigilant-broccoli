@@ -6,6 +6,8 @@ sites:
     url: https://harryliu.dev/
   - name: git.harryliu.dev
     url: https://git.harryliu.dev/
+  - name: docs.harryliu.dev
+    url: https://docs.harryliu.dev/
   - name: code.harryliu.dev
     url: https://code.harryliu.dev/login
   - name: staging-cloud8skate.com

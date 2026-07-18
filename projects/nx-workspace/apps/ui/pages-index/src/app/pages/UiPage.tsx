@@ -48,7 +48,7 @@ export function UiPage() {
           </li>
           <li>
             <CardLink
-              href="./docs-md/"
+              href="https://docs.harryliu.dev/"
               title={t('UI_PAGE.DOCS_MD.TITLE')}
               description={t('UI_PAGE.DOCS_MD.DESCRIPTION')}
             />

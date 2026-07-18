@@ -39,3 +39,7 @@ output "oci_code_server_url" {
 output "journal_url" {
   value = "https://${var.journal_domain}"
 }
+
+output "docs_url" {
+  value = "https://${var.docs_domain}"
+}

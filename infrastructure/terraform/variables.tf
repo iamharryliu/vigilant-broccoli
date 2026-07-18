@@ -108,6 +108,23 @@ variable "journal_allowed_emails" {
   default = ["harryliu1995@gmail.com"]
 }
 
+variable "docs_domain" {
+  type    = string
+  default = "docs.harryliu.dev"
+}
+
+variable "docs_pages_project" {
+  type    = string
+  default = "staging-docs-md"
+}
+
+# Kept separate from the project name: Cloudflare appends a suffix when
+# <project>.pages.dev is taken globally.
+variable "docs_pages_subdomain" {
+  type    = string
+  default = "staging-docs-md.pages.dev"
+}
+
 variable "cloud8skate_domain" {
   type    = string
   default = "cloud8skate.com"
