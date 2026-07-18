@@ -17,6 +17,7 @@ import speechToTextRoutes from './routes/speech-to-text';
 import textToSpeechRoutes from './routes/text-to-speech';
 import whereIsRoutes from './routes/where-is';
 import priceTrackerRoutes from './routes/price-tracker';
+import recipeRoutes from './routes/recipe';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import {
@@ -131,6 +132,9 @@ const buildApp = async () => {
     VB_EXPRESS_SERVICE.PRICE_TRACKER,
     [priceTrackerRoutes],
   );
+  await registerService(app, '/api/recipe', VB_EXPRESS_SERVICE.RECIPE, [
+    recipeRoutes,
+  ]);
   await app.register(
     async scope => {
       await scope.register(createApiKeyPlugin(API_KEY, verifyApiKey));

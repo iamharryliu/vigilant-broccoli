@@ -1,22 +1,32 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Text } from '@radix-ui/themes';
-import { Button, Input } from '@vigilant-broccoli/react-lib';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { authFetch } from '../../../../libs/auth';
+import { useRecipeScraperInputs } from '../../hooks/useRecipeScraperInputs';
+import { RecipeScraperInputs } from '../llm/RecipeScraperInputs';
+
+const MESSAGE_TYPE = {
+  SUCCESS: 'success',
+  ERROR: 'error',
+} as const;
 
 export const RecipeScraperUtilityContent = () => {
-  const [recipeUrl, setRecipeUrl] = useState('');
+  const inputs = useRecipeScraperInputs();
   const [recipeLoading, setRecipeLoading] = useState(false);
   const [recipeMessage, setRecipeMessage] = useState<{
-    type: 'success' | 'error';
+    type: (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE];
     text: string;
   } | null>(null);
 
   const handleScrapeRecipe = async () => {
-    if (!recipeUrl.trim()) {
-      setRecipeMessage({ type: 'error', text: 'Please enter a URL' });
+    if (!inputs.hasAnyInput) {
+      setRecipeMessage({
+        type: MESSAGE_TYPE.ERROR,
+        text: 'Enter a URL, paste recipe text, or select an image',
+      });
       return;
     }
 
@@ -28,21 +38,21 @@ export const RecipeScraperUtilityContent = () => {
       headers: {
         ...HTTP_HEADERS.CONTENT_TYPE.JSON,
       },
-      body: JSON.stringify({ url: recipeUrl }),
+      body: JSON.stringify(inputs.requestBody),
     });
 
     if (!response.ok) {
       const data = await response.json();
       setRecipeMessage({
-        type: 'error',
+        type: MESSAGE_TYPE.ERROR,
         text: data.error || 'Failed to scrape recipe',
       });
       setRecipeLoading(false);
       return;
     }
-    setRecipeUrl('');
+    inputs.reset();
     setRecipeMessage({
-      type: 'success',
+      type: MESSAGE_TYPE.SUCCESS,
       text: 'Recipe downloaded successfully!',
     });
     setRecipeLoading(false);
@@ -56,18 +66,17 @@ export const RecipeScraperUtilityContent = () => {
 
   return (
     <>
-      <div className="flex gap-2 items-end">
-        <Input
-          placeholder="Enter recipe URL..."
-          value={recipeUrl}
-          onChange={e => setRecipeUrl(e.target.value)}
-          onKeyDown={handleRecipeKeyDown}
-          disabled={recipeLoading}
-          className="flex-1"
+      <div className="flex flex-col gap-3">
+        <RecipeScraperInputs
+          inputs={inputs}
+          loading={recipeLoading}
+          onUrlKeyDown={handleRecipeKeyDown}
         />
+
         <Button
           onClick={handleScrapeRecipe}
-          disabled={recipeLoading || !recipeUrl.trim()}
+          disabled={recipeLoading || !inputs.hasAnyInput}
+          className="self-end"
         >
           {recipeLoading ? 'Scraping...' : 'Download'}
         </Button>
@@ -76,7 +85,7 @@ export const RecipeScraperUtilityContent = () => {
       {recipeMessage && (
         <Text
           size="2"
-          color={recipeMessage.type === 'success' ? 'green' : 'red'}
+          color={recipeMessage.type === MESSAGE_TYPE.SUCCESS ? 'green' : 'red'}
         >
           {recipeMessage.text}
         </Text>
