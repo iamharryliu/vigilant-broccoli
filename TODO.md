@@ -1,5 +1,26 @@
 # Repo Audit — Outstanding Issues
 
+## Features to Add
+
+### b802f7. Deploy docs-md to docs.harryliu.dev (replacing the GitHub Pages path)
+
+`docs-md` currently deploys as a static Vite app to GitHub Pages at `https://iamharryliu.github.io/vigilant-broccoli/docs-md/` (staged by `.github/workflows/deploy.yml:248-253` via `nx run docs-md:deploy-github-pages`, copied into `_site/docs-md/`; project config in `projects/nx-workspace/apps/ui/docs-md/project.json`). Move it to its own custom domain, `docs.harryliu.dev`, following the `journal.harryliu.dev` pattern (Cloudflare Pages + Terraform-managed domain — see `infrastructure/terraform/cloudflare-journal.tf` and `variables.tf:89-106`).
+
+Steps:
+
+1. Decide hosting target for the new deploy — likely Cloudflare Pages (consistent with `journal`), deployed via a dedicated GitHub Actions job/workflow (or extend `deploy.yml`) using `wrangler`, rather than the GitHub Pages `actions/deploy-pages` flow.
+2. Add Terraform for the new domain: a `cloudflare-docs.tf` (mirroring `cloudflare-journal.tf`) with `cloudflare_pages_domain`, `cloudflare_dns_record`, and any Access policy needed; add `docs_domain` / `docs_pages_project` / `docs_pages_subdomain` variables to `variables.tf` and an output in `outputs.tf`.
+3. Update `docs-md`'s Vite base path (`VITE_BASE_PATH`) — a root-domain deploy needs `/` instead of `/vigilant-broccoli/docs-md/`.
+4. Add/update the GitHub Actions workflow to build and deploy `docs-md` to the new Cloudflare Pages project (see `cron-deploy-journal.yml` for the wrangler deploy pattern); wire up Workload Identity / secrets per the repo's GitHub Actions conventions (no new repo secrets — use GCP Secret Manager).
+5. Add `docs.harryliu.dev` to `sites` in `.upptimerc.yml` (per the Infrastructure Conventions in `CLAUDE.md`, every deployed service with a public URL needs an Upptime check).
+6. Remove the `docs-md` GitHub Pages path and update all references to `docs.harryliu.dev` in the same change (no separate follow-up/verification gate):
+   - `.github/workflows/deploy.yml:248-253` — delete the "Stage docs-md pages artifact" step entirely.
+   - `projects/nx-workspace/apps/ui/docs-md/project.json` — remove the `deploy-github-pages` target (and its `_site/docs-md` output), replaced by the new Cloudflare Pages deploy target from step 4.
+   - `docs/infrastructure/network-management.md:48` — remove `docs-md` from the `iamharryliu.github.io/vigilant-broccoli` entry, add a `docs.harryliu.dev` entry under the `harryliu.dev` zone (alongside `journal.harryliu.dev`).
+   - `projects/nx-workspace/apps/ui/pages-index/src/app/pages/UiPage.tsx` — update the docs-md card's link to `docs.harryliu.dev`.
+   - `docs/cheatsheet.md` / root `package.json` scripts — update any reference to the old docs-md deploy path.
+7. Verify the new `docs.harryliu.dev` deployment serves correctly post-merge (DNS/Cloudflare Pages propagation can lag a live PR check).
+
 ## P1
 
 ### 009c6e. [security] CI GitHub Actions service account is massively overprivileged
