@@ -51,12 +51,19 @@ resource "github_branch_protection" "main" {
   repository_id = github_repository.vigilant_broccoli.node_id
   pattern       = "main"
 
+  # enforce_admins stays false so /iamharryliu (repo admin) can still push
+  # directly; required_pull_request_reviews still blocks non-admin pushers,
+  # e.g. the agent sandbox's GitHub App, which only has Contents/PR/Workflows RW.
   enforce_admins                  = false
   allows_force_pushes             = false
   allows_deletions                = false
   require_signed_commits          = false
   required_linear_history         = false
   require_conversation_resolution = false
+
+  required_pull_request_reviews {
+    required_approving_review_count = 0
+  }
 
   force_push_bypassers = [
     "/iamharryliu"
