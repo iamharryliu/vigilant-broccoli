@@ -49,6 +49,23 @@ a:hover {
   visibility: hidden;
 }
 
+.markdown-content a img {
+  display: inline-block;
+  height: 1.5rem;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.markdown-content a img:hover {
+  transform: scale(1.1);
+  filter: brightness(1.15);
+}
+
+.markdown-content a:has(img):hover {
+  opacity: 1;
+}
+
 code {
   background-color: #f8f8f8;
   padding: 1em;

@@ -5,6 +5,7 @@ const { join } = require('path');
 module.exports = {
   darkMode: 'class',
   content: [
+    join(__dirname, 'index.html'),
     join(
       __dirname,
       '{src,pages,components,app}/**/!(*.stories|*.spec).{ts,tsx,html}',

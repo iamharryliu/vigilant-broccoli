@@ -2,6 +2,11 @@ import { ENVIRONMENT } from '../../../environments/environment';
 
 const SEND_MESSAGE_ENDPOINT = '/api/send-message';
 
+const NETWORK_ERROR_MESSAGE =
+  "Couldn't reach the server. Check your connection and try again.";
+const SERVER_ERROR_MESSAGE =
+  'Something went wrong sending your message. Please try again, or reach out on one of the links here if it keeps failing.';
+
 export type MessageRequest = {
   name: string;
   email: string;
@@ -10,29 +15,18 @@ export type MessageRequest = {
   recaptchaToken?: string;
 };
 
-const showError = (msg: string) => alert(msg);
-const showSuccess = (msg: string) => alert(msg);
-
-export async function sendMessage(request: MessageRequest): Promise<any> {
-  try {
-    const res = await fetch(`${ENVIRONMENT.API_URL}${SEND_MESSAGE_ENDPOINT}`, {
+export async function sendMessage(request: MessageRequest): Promise<void> {
+  const response = await fetch(
+    `${ENVIRONMENT.API_URL}${SEND_MESSAGE_ENDPOINT}`,
+    {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(request),
-    });
-    if (!res.ok) {
-      const text = await res.text().catch(() => res.statusText);
-      showError(`This is a server side error:\n${text}`);
-      throw new Error(text);
-    }
-    const body = await res.json().catch(() => ({}));
-    if (body?.message) showSuccess(body.message);
-    return body;
-  } catch (err) {
-    if (err instanceof TypeError) {
-      showError(`This is a client side error: ${err.message}`);
-    }
-    throw err;
-  }
+    },
+  ).catch(() => {
+    throw new Error(NETWORK_ERROR_MESSAGE);
+  });
+
+  if (!response.ok) throw new Error(SERVER_ERROR_MESSAGE);
 }
