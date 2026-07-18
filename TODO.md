@@ -184,9 +184,9 @@ Both email services start their AMQP consumer in the web process but run with `a
 
 **`libs/@vigilant-broccoli/react-lib/package.json`** (no `sideEffects` field) · `src/components/index.ts:43` re-exports `Toaster.tsx` (`export … from 'sonner'`). pages-index uses zero toasts yet bundles sonner (~68kB raw); same in docs-md/journal. **Fix:** move `Toaster`/`toast` to a subpath entry (the existing `live-location-map` pattern) and add `"sideEffects": false` (or `["**/*.css"]`); optionally `experimental.optimizePackageImports` in the Next apps.
 
-### 611602. [performance] FontAwesome `all.css` global in both Angular apps — one uses zero icons
+### 611602. [performance] FontAwesome loaded globally for a handful of icons
 
-**`apps/ui/cloud-8-skate-angular/project.json:26`**, **`apps/ui/personal-website-frontend/project.json:39`** — both list `fontawesome-free/css/all.css` in build `styles`; cloud-8-skate uses 0 `fa-` classes, the other ~11 icons — ~76kB render-blocking CSS + ~1MB webfonts for nothing / 11 glyphs. `personal-website-react/index.html:33` additionally loads FA 6.5.2 render-blocking from a CDN for 11 icons. **Fix:** delete the entry from cloud-8-skate; inline SVGs (or a subset kit) for the other two.
+**`apps/ui/cloud-8-skate-angular/project.json:26`** lists `fontawesome-free/css/all.css` in build `styles` but uses 0 `fa-` classes — ~76kB render-blocking CSS + ~1MB webfonts for nothing. `personal-website-react/index.html:33` loads FA 6.5.2 render-blocking from a CDN for 11 icons. **Fix:** delete the entry from cloud-8-skate; inline SVGs (or a subset kit) for the React app.
 
 ### 69d76a. [performance] Whiteboard broadcasts the full document on every keystroke
 
@@ -194,7 +194,7 @@ Both email services start their AMQP consumer in the web process but run with `a
 
 ### 6b3c12. [performance] No route-level code splitting in any SPA
 
-Zero `lazy(` hits across `apps/ui`, `apps/findme`, `apps/whiteboard`; both Angular apps eagerly import every page in `routes.const.ts` (no `loadComponent`). Concretely: `personal-website-react/src/app/app.tsx` statically imports all 9 pages, so `marked` ships in the initial chunk for home-page visitors. **Fix:** `React.lazy` + `Suspense` for heavy routes; `loadComponent` for Angular (the `personal-website-frontend` initial-bundle instance is tracked in 5bdea5).
+Zero `lazy(` hits across `apps/ui`, `apps/findme`, `apps/whiteboard`; `cloud-8-skate-angular` eagerly imports every page in `routes.const.ts` (no `loadComponent`). Concretely: `personal-website-react/src/app/app.tsx` statically imports all 9 pages, so `marked` ships in the initial chunk for home-page visitors. **Fix:** `React.lazy` + `Suspense` for heavy routes; `loadComponent` for Angular.
 
 ### 6fc308. [performance] vb-manager root layout is `'use client'` with a hidden always-mounted dialog tree
 
@@ -277,11 +277,8 @@ The GROQ queries return raw `asset->url` with no image transforms, and the galle
 - **`component-library`**: JS chunk 676.91 kB / CSS chunk 725.17 kB, both over the 500 kB threshold. CSS cause: `src/main.tsx` imports the full `@radix-ui/themes/styles.css` (812 kB unminified, unpurgeable). JS cause: `libs/@vigilant-broccoli/react-sandbox/src/lib/ComponentSandbox.tsx` statically imports all 13 demo components + 6 utility contents at module top-level, rendered unconditionally even though only one `CollapsibleList` section is open by default — fix with `React.lazy` + `Suspense` per demo.
 - **`docs-md`**: JS chunk 520.30 kB / CSS chunk 733.63 kB, over threshold. Same `@radix-ui/themes/styles.css` full import in `src/main.tsx`, used only for the `<Theme>` wrapper — fix by dropping the Radix Themes dependency here in favor of a minimal custom CSS reset (or Radix Themes' documented modular CSS imports: tokens + only needed color scales + components).
 - **`journal`**: JS chunk 519.53 kB / CSS chunk 733.63 kB, over threshold. Same root cause and fix as `docs-md`. All three Vite apps additionally have no `build.rollupOptions.output.manualChunks` in `vite.config.mts` — everything (including `react`/`react-dom`/`@radix-ui/themes`) ships as one chunk; splitting vendor deps into their own chunk would help caching independent of the fixes above. (Tailwind content globs in all three are correctly scoped — confirmed not a contributing factor.)
-- **`personal-website-frontend`** (Angular): initial bundle 536.44 kB, exceeds the configured 500 kB budget by 36.44 kB. Cause: `src/app/core/consts/routes.const.ts` declares all 9 routes with eager `component:`, so every page (including non-landing routes like `docs-md`, `grind-75`, `component-library`, `calendar`) bundles into the initial chunk. Fix: convert non-landing routes to `loadComponent: () => import(...).then(m => m.XPageComponent)`; lazy-loading even one or two clears the deficit. The budget itself (`apps/ui/personal-website-frontend/project.json:46-51`) doesn't need to change.
 
 ### 0cd00c. [maintenance] Structural duplication in the workspace
-
-- `personal-website-frontend` vs `personal-website-react`: flip the apex CNAME in `cloudflare-harryliu-dev.tf` to `staging-harryliu-dev-react.pages.dev`, apply + verify, then delete the Angular app and the stale Cloudflare Pages projects.
 
 ### 91e45c. [maintenance] Deprecated Nx executors/plugins not yet migrated (removed in Nx v24)
 
@@ -415,9 +412,9 @@ New `S3Client` per R2 operation (`api/where-is/r2.ts:8-9`; a 10-image POST = 10 
 
 `CRUDListManagement.tsx` recreates handlers and re-renders every row on any list change (memo a row component before lists grow); `ThemeProvider.tsx:57` context value recreated per render; `GithubActionsBadges.tsx` refetches the workflows API on every mount, uncached.
 
-### f3b4c5. [performance] Angular apps use default zone change detection throughout
+### f3b4c5. [performance] Angular app uses default zone change detection throughout
 
-No `OnPush` anywhere, and `provideZoneChangeDetection()` without `eventCoalescing: true` (`cloud-8-skate-angular/src/main.ts:8`, `personal-website-frontend/src/main.ts:7`). One-liner improvement.
+No `OnPush` anywhere, and `provideZoneChangeDetection()` without `eventCoalescing: true` (`cloud-8-skate-angular/src/main.ts:8`). One-liner improvement.
 
 ### f4d5e6. [performance] Shell/dotfile nits
 

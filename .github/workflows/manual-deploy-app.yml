@@ -15,7 +15,6 @@ on:
           - hearth
           - cloud-8-skate-angular
           - personal-website-react
-          - personal-website-frontend
           - employee-handler-ui
           - cloud8skate-sanity
           - vb-express
