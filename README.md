@@ -1,6 +1,6 @@
 # vigilant-broccoli
 
-Welcome to vigilant-broccoli, my software passion project. [Click here](https://iamharryliu.github.io/vigilant-broccoli/) to see more.
+[Click here](https://iamharryliu.github.io/vigilant-broccoli/) for more.
 
 <div>
 <a href="https://github.com/iamharryliu/vigilant-broccoli">
@@ -12,6 +12,8 @@ Welcome to vigilant-broccoli, my software passion project. [Click here](https://
 
 - [machine setup](./docs/machine-setups/machine-setup.md) - OS-specific setup instructions.
 - [cheatsheet](./docs/cheatsheet.md) - useful infra-level CLI commands
+
+## Commands
 
 ```
 pnpm local:install:machine-setup
