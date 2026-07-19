@@ -13,6 +13,10 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: test-e2e-socket-server-socketio
+  cancel-in-progress: true
+
 jobs:
   test-socket-server:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}

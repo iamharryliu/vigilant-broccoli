@@ -384,10 +384,6 @@ The GROQ queries return raw `asset->url` with no image transforms, and the galle
 
 mongodb-tools .deb (~90MB) + pgdg apt setup every day (`cron-backup.yml:125-126`); cache with `actions/cache`.
 
-### ed2d57. [performance] No `concurrency` groups on two follower e2e workflows
-
-**`test-e2e-rabbitmq.yml`**, **`test-e2e-socket-server-socketio.yml`** (the other followers have them now) — two quick deploys run overlapping suites against the same live services. Add `concurrency` + `cancel-in-progress: true`.
-
 ### ee4b66. [performance] No `encode` in any Caddyfile
 
 Caddy doesn't compress by default; matters for the unproxied `socket.harryliu.dev` (`oci.tf`). One line: `encode zstd gzip`. Related: 443/udp never mapped, so HTTP/3 is unusable on that host; local nginx has no `gzip on`.
