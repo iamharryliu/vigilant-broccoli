@@ -41,7 +41,6 @@ declare -a TOOLS_APPS=(
     "/Applications/Dropzone 4.app"
     "/Applications/Handy.app"
     "/Applications/Raycast.app"
-    "/Applications/superwhisper.app"
 )
 
 declare -a UTILITY_APPS=(
