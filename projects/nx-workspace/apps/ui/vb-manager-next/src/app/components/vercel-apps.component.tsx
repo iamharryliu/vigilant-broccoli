@@ -9,10 +9,11 @@ import {
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 import { VERCEL_LINK } from '@vigilant-broccoli/links';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
 
 interface VercelProject {
   id: string;
@@ -100,7 +101,7 @@ export const VercelAppsComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProjects = useCallback(async () => {
+  const fetchProjects = async () => {
     try {
       const response = await authFetch(API_ENDPOINTS.VERCEL_PROJECTS);
       const data: VercelProjectsResponse = await response.json();
@@ -117,13 +118,9 @@ export const VercelAppsComponent = () => {
       setError(FETCH_ERROR_MSG);
       setLoading(false);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    fetchProjects();
-    const interval = setInterval(fetchProjects, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [fetchProjects]);
+  usePollingInterval(fetchProjects, POLL_INTERVAL_MS);
 
   if (loading) return <CardSkeleton title={TITLE} rows={5} />;
 

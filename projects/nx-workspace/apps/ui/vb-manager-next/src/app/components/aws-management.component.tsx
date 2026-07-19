@@ -10,11 +10,13 @@ import {
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 import { AWS_LINK } from '@vigilant-broccoli/links';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
 
+const AWS_POLL_INTERVAL_MS = 30000;
 const AWS_CONSOLE_BASE = 'https://console.aws.amazon.com';
 const AWS_CONSOLE_LINK = {
   href: AWS_LINK.CONSOLE.URL,
@@ -112,26 +114,22 @@ export const AwsManagementComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProfiles = async () => {
-      try {
-        const response = await authFetch(API_ENDPOINTS.AWS_PROFILES);
-        if (!response.ok) throw new Error('Failed to fetch AWS profiles');
-        const data = await response.json();
-        setProfiles(data.profiles);
-        setLoading(false);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to fetch AWS profiles',
-        );
-        setLoading(false);
-      }
-    };
+  const fetchProfiles = async () => {
+    try {
+      const response = await authFetch(API_ENDPOINTS.AWS_PROFILES);
+      if (!response.ok) throw new Error('Failed to fetch AWS profiles');
+      const data = await response.json();
+      setProfiles(data.profiles);
+      setLoading(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch AWS profiles',
+      );
+      setLoading(false);
+    }
+  };
 
-    fetchProfiles();
-    const interval = setInterval(fetchProfiles, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchProfiles, AWS_POLL_INTERVAL_MS);
 
   if (loading) return <CardSkeleton title="AWS Management" rows={3} />;
 

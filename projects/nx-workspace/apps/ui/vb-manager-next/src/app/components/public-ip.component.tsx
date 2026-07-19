@@ -11,6 +11,10 @@ import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
+
+const DISK_SPACE_POLL_INTERVAL_MS = 30000;
+const SPEED_TEST_POLL_INTERVAL_MS = 30000;
 
 type SecretType = 'hex' | 'base64' | 'url-safe' | 'uuid';
 
@@ -175,50 +179,42 @@ export const PublicIpComponent = () => {
     fetchIpAddresses();
   }, []);
 
-  useEffect(() => {
-    const fetchDiskSpace = async () => {
-      try {
-        setDiskLoading(true);
-        const response = await authFetch(API_ENDPOINTS.DISK_SPACE);
-        if (!response.ok) {
-          throw new Error('Failed to fetch disk space');
-        }
-        const data = await response.json();
-        setDiskAvailable(data.available);
-      } catch (err) {
-        console.error('Disk space error:', err);
-      } finally {
-        setDiskLoading(false);
+  const fetchDiskSpace = async () => {
+    try {
+      setDiskLoading(true);
+      const response = await authFetch(API_ENDPOINTS.DISK_SPACE);
+      if (!response.ok) {
+        throw new Error('Failed to fetch disk space');
       }
-    };
+      const data = await response.json();
+      setDiskAvailable(data.available);
+    } catch (err) {
+      console.error('Disk space error:', err);
+    } finally {
+      setDiskLoading(false);
+    }
+  };
 
-    fetchDiskSpace();
-    const interval = setInterval(fetchDiskSpace, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchDiskSpace, DISK_SPACE_POLL_INTERVAL_MS);
 
-  useEffect(() => {
-    const fetchSpeedTest = async () => {
-      try {
-        setSpeedLoading(true);
-        const response = await authFetch(API_ENDPOINTS.SPEED_TEST);
-        if (!response.ok) {
-          throw new Error('Failed to fetch speed test');
-        }
-        const data = await response.json();
-        setDownloadSpeed(data.downloadSpeed);
-        setUploadSpeed(data.uploadSpeed);
-      } catch (err) {
-        console.error('Speed test error:', err);
-      } finally {
-        setSpeedLoading(false);
+  const fetchSpeedTest = async () => {
+    try {
+      setSpeedLoading(true);
+      const response = await authFetch(API_ENDPOINTS.SPEED_TEST);
+      if (!response.ok) {
+        throw new Error('Failed to fetch speed test');
       }
-    };
+      const data = await response.json();
+      setDownloadSpeed(data.downloadSpeed);
+      setUploadSpeed(data.uploadSpeed);
+    } catch (err) {
+      console.error('Speed test error:', err);
+    } finally {
+      setSpeedLoading(false);
+    }
+  };
 
-    fetchSpeedTest();
-    const interval = setInterval(fetchSpeedTest, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchSpeedTest, SPEED_TEST_POLL_INTERVAL_MS);
 
   if (error) {
     return (

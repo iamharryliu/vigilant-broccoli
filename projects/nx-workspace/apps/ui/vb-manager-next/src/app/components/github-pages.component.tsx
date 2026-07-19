@@ -7,10 +7,11 @@ import {
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
 
 const TITLE = 'GitHub Pages';
 const GH_BASE = 'https://github.com';
@@ -128,11 +129,7 @@ export const GithubPagesComponent = () => {
     }
   };
 
-  useEffect(() => {
-    fetchSites();
-    const interval = setInterval(fetchSites, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchSites, POLL_INTERVAL_MS);
 
   if (loading) return <CardSkeleton title={TITLE} rows={3} />;
 

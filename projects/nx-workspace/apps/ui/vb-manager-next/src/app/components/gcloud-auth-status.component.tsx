@@ -13,12 +13,14 @@ import {
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 import { GCP_LINK } from '@vigilant-broccoli/links';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
 
 const GCP_CONSOLE_BASE = 'https://console.cloud.google.com';
+const GCLOUD_POLL_INTERVAL_MS = 30000;
 const GCP_CONSOLE_LINK = {
   href: GCP_LINK.CONSOLE.URL,
   label: 'Console',
@@ -236,7 +238,7 @@ export const GcloudAuthStatusComponent = () => {
 
       const [authResponse, reauthResponse] = await Promise.all([
         authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
-        authFetch('/api/gcloud/reauth-needed'),
+        authFetch('/api/gcloud/reauth-needed?fresh=1'),
       ]);
 
       if (authResponse.ok) {
@@ -260,43 +262,39 @@ export const GcloudAuthStatusComponent = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchGcloudData = async () => {
-      try {
-        const [authResponse, reauthResponse] = await Promise.all([
-          authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
-          authFetch('/api/gcloud/reauth-needed'),
-        ]);
+  const fetchGcloudData = async () => {
+    try {
+      const [authResponse, reauthResponse] = await Promise.all([
+        authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
+        authFetch('/api/gcloud/reauth-needed'),
+      ]);
 
-        if (!authResponse.ok) {
-          throw new Error('Failed to fetch gcloud auth status');
-        }
-
-        const authData = await authResponse.json();
-        setAuthStatus(authData);
-        const reauthJson = reauthResponse.ok
-          ? await reauthResponse.json()
-          : null;
-        const reauthData = parseReauthData(
-          reauthResponse,
-          reauthJson,
-          authData.activeAccount,
-        );
-        setReauthStatus(reauthData);
-        setProjects(await fetchProjectsIfNeeded(reauthData.needsReauth));
-        setLoading(false);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to fetch gcloud status',
-        );
-        setLoading(false);
+      if (!authResponse.ok) {
+        throw new Error('Failed to fetch gcloud auth status');
       }
-    };
 
-    fetchGcloudData();
-    const interval = setInterval(fetchGcloudData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+      const authData = await authResponse.json();
+      setAuthStatus(authData);
+      const reauthJson = reauthResponse.ok
+        ? await reauthResponse.json()
+        : null;
+      const reauthData = parseReauthData(
+        reauthResponse,
+        reauthJson,
+        authData.activeAccount,
+      );
+      setReauthStatus(reauthData);
+      setProjects(await fetchProjectsIfNeeded(reauthData.needsReauth));
+      setLoading(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch gcloud status',
+      );
+      setLoading(false);
+    }
+  };
+
+  usePollingInterval(fetchGcloudData, GCLOUD_POLL_INTERVAL_MS);
 
   if (loading) {
     return <CardSkeleton title="GCP Management" rows={3} />;
