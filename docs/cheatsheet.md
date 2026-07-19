@@ -79,15 +79,17 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   vb-manager-next:status      Show PM2 process status
   health-check                Run health check script
 
-🤖 AGENT SANDBOX
-  sandbox:up                  Fetch tokens from Vault into .env, then build + start contained Claude sandbox
+🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
+  agentic:dev-sandbox:up      Fetch tokens from Vault into .env, then build + start contained Claude sandbox
                                (set SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 in infrastructure/agent-sandbox/.env to also inject those Vault secret keys)
-  sandbox:claude              Run Claude autonomously inside the sandbox repo clone (fable; append --model <m> to override)
-  sandbox:solve <id...>       Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR via /git-workflow (sonnet; --model <m> to override)
-  sandbox:shell               Shell into the sandbox (dotfiles loaded)
-  sandbox:logs                Follow sandbox provisioning logs
-  sandbox:down                Stop the sandbox
-  sandbox:reset               Destroy sandbox volume and rebuild fresh
+  agentic:dev-sandbox:cli     Open an interactive Claude session in the sandbox repo clone (fable; append --model <m> to override)
+  agentic:dev-sandbox:shell   Open an interactive bash shell in the sandbox (dotfiles loaded)
+  agentic:dev-sandbox:logs    Follow sandbox provisioning logs
+  agentic:dev-sandbox:down    Stop the sandbox
+  agentic:dev-sandbox:reset   Destroy sandbox volume and rebuild fresh
+
+🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
+  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR via /git-workflow (sonnet; --model <m> to override)
 
 🏠 HOMELAB
   homelab:up                  Start homelab services and Tailscale

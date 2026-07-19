@@ -22,7 +22,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ ${#IDS[@]} -eq 0 ]; then
-  echo "Usage: pnpm sandbox:solve [--model <model>] <TODO_ID> [TODO_ID...]" >&2
+  echo "Usage: pnpm agentic:task:solve [--model <model>] <TODO_ID> [TODO_ID...]" >&2
   exit 1
 fi
 
@@ -44,7 +44,7 @@ fi
 
 if [ -z "$GH_TOKEN_VALUE" ]; then
   echo "ERROR: no GitHub token available — solves cannot push or open PRs." >&2
-  echo "Add GitHub App credentials or a fine-grained PAT to Vault (see docs/infrastructure/secret-management.md), then run: pnpm sandbox:up" >&2
+  echo "Add GitHub App credentials or a fine-grained PAT to Vault (see docs/infrastructure/secret-management.md), then run: pnpm agentic:dev-sandbox:up" >&2
   exit 1
 fi
 
