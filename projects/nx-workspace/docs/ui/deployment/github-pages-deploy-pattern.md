@@ -1,6 +1,6 @@
 # GitHub Pages deploy pattern
 
-One GitHub Pages site — `iamharryliu.github.io/vigilant-broccoli` — assembled from a shared `_site/` staging directory: `pages-index` at the root, `component-library` under `/react-component-library/`. App-side requirements (i18n, cards) are in [ui-app-pattern.md](../ui/ui-app-pattern.md).
+One GitHub Pages site — `iamharryliu.github.io/vigilant-broccoli` — assembled from a shared `_site/` staging directory: `pages-index` at the root, `component-library` under `/react-component-library/`. App-side requirements (i18n, cards) are in [ui-app-pattern.md](../ui-app-pattern.md).
 
 ## How it works
 

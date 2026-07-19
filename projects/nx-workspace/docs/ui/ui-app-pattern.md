@@ -1,6 +1,6 @@
 # UI application pattern
 
-What every UI app in this workspace must have, and the shared building blocks to use — this doc owns the UI-specific requirements ([CLAUDE.md](../../../../CLAUDE.md) points here rather than restating them); which app deploys where is mapped in [repo-patterns.md](../../../../docs/repo-patterns.md). Each deploy destination has its own pattern doc: [vercel-deploy-pattern.md](../deployment/vercel-deploy-pattern.md), [cloudflare-pages-deploy-pattern.md](../deployment/cloudflare-pages-deploy-pattern.md), [github-pages-deploy-pattern.md](../deployment/github-pages-deploy-pattern.md).
+What every UI app in this workspace must have, and the shared building blocks to use — this doc owns the UI-specific requirements ([APP_DEVELOPMENT.md](../../../../APP_DEVELOPMENT.md) points here rather than restating them); which app deploys where is mapped in [repo-patterns.md](../../../../docs/repo-patterns.md). Each deploy destination has its own pattern doc: [vercel-deploy-pattern.md](./deployment/vercel-deploy-pattern.md), [cloudflare-pages-deploy-pattern.md](./deployment/cloudflare-pages-deploy-pattern.md), [github-pages-deploy-pattern.md](./deployment/github-pages-deploy-pattern.md).
 
 ## Where UI apps live
 
@@ -29,8 +29,7 @@ Every UI application appears as a card under "UI Apps" in `apps/ui/pages-index/s
 
 ## Env vars
 
-- Client-side `NEXT_PUBLIC_*` vars: direct `process.env.NEXT_PUBLIC_*` property access only — Next.js can only statically inline them at build time with direct access, not through a wrapper function.
-- Everything server-side: `getEnvironmentVariable` from `@vigilant-broccoli/common-node`.
+- Follow the env var access rules in [APP_DEVELOPMENT.md](../../../../APP_DEVELOPMENT.md): direct `process.env.NEXT_PUBLIC_*` access client-side, `getEnvironmentVariable` from `@vigilant-broccoli/common-node` server-side.
 
 ## Local dev
 
