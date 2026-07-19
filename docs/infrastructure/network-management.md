@@ -8,10 +8,10 @@ All public URLs for deployed applications, grouped by domain/provider.
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
 ├── harryliu.dev                          Personal website — Cloudflare Pages `staging-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
-├── journal.harryliu.dev                  Journal — Cloudflare Pages `staging-journal` (deployed from Gitea via cron-deploy-journal; owner-email Access + non-identity CI service token for cron-health-check origin probes)
+├── journal.harryliu.dev                  Journal — Cloudflare Pages `staging-journal` (deployed from Gitea via cron-deploy-journal; owner-email Access + non-identity CI service token for ci-health-check origin probes)
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `staging-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed via deploy.yml's deploy-apps job; public, no Access gating)
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct)
-├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for cron-health-check /healthz origin probes)
+├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
 ├── socket.harryliu.dev                   Socket server — OCI RabbitMQ VM (A record, DNS-only)
 └── vault.harryliu.dev                    Vault — GCP vb-free-vm via cloudflared tunnel (CNAME, proxied + Cloudflare Access service token, CI-only)
 
