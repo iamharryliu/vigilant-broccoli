@@ -1,6 +1,6 @@
 # UI application pattern
 
-What every UI app in this workspace must have, and the shared building blocks to use. Binding rules live in [CLAUDE.md](../../../../CLAUDE.md); which app deploys where is mapped in [repo-patterns.md](../../../../docs/repo-patterns.md). Each deploy destination has its own pattern doc: [vercel-deploy-pattern.md](../deployment/vercel-deploy-pattern.md), [cloudflare-pages-deploy-pattern.md](../deployment/cloudflare-pages-deploy-pattern.md), [github-pages-deploy-pattern.md](../deployment/github-pages-deploy-pattern.md).
+What every UI app in this workspace must have, and the shared building blocks to use — this doc owns the UI-specific requirements ([CLAUDE.md](../../../../CLAUDE.md) points here rather than restating them); which app deploys where is mapped in [repo-patterns.md](../../../../docs/repo-patterns.md). Each deploy destination has its own pattern doc: [vercel-deploy-pattern.md](../deployment/vercel-deploy-pattern.md), [cloudflare-pages-deploy-pattern.md](../deployment/cloudflare-pages-deploy-pattern.md), [github-pages-deploy-pattern.md](../deployment/github-pages-deploy-pattern.md).
 
 ## Where UI apps live
 
@@ -10,7 +10,7 @@ What every UI app in this workspace must have, and the shared building blocks to
 
 ## Shared components (react-lib)
 
-Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel before building new UI — prefer existing shared components over hand-rolled equivalents (CLAUDE.md rule). Frequently needed: `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`), `CardContainer`, `Button`, `IconButton`, `Dialog`, `Sidebar`, `Tabs`, `Select`, `Input`, `ThemeProvider`.
+Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel before building new UI — prefer existing shared components over hand-rolled equivalents, unless told otherwise. Frequently needed: `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`), `CardContainer`, `Button`, `IconButton`, `Dialog`, `Sidebar`, `Tabs`, `Select`, `Input`, `ThemeProvider`.
 
 User-facing auth is `createSupabaseAuth` from the same lib — read [supabase-auth-pattern.md](../auth/supabase-auth-pattern.md) first, never hand-roll per-app auth.
 
