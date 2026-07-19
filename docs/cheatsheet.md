@@ -7,10 +7,12 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   open:repo                   Open GitHub repo
   open:repo:actions           Open GitHub Actions
   npm:packages                Open npm packages page
+  cheatsheet                  Print this cheatsheet
 
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
   format                      Format all files with Prettier
+  format:commit               Format given files with Prettier (pass paths)
   cloud:login                 Login to GCP and GitHub CLI
   gcp:login                   Login to GCP and set project
   gh:login                    Login to GitHub CLI
