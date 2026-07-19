@@ -51,18 +51,6 @@ fi
 LOG_DIR=$(mktemp -d /tmp/vb-solve.XXXXXX)
 echo "Logs: $LOG_DIR"
 
-solve_prompt() {
-  cat <<EOF
-You are running non-interactively in a fresh clone of vigilant-broccoli. Solve TODO item $1:
-
-1. Read TODO.md at the repo root and find the item under the heading starting with "### $1.". If no such item exists, print an error and exit non-zero without making changes.
-2. Resolve the issue described by that item.
-3. Remove the resolved item from TODO.md (and its priority heading, e.g. "## P2", if it has no items left).
-4. Invoke the /git-workflow command (instructions in ~/.claude/commands/git-workflow.md) to branch, commit, push, and open a PR that includes both the fix and the TODO.md update.
-5. Print the PR URL.
-EOF
-}
-
 PIDS=()
 for id in "${IDS[@]}"; do
   grep -q "^### ${id}\." "$REPO_ROOT/TODO.md" || echo "WARNING: no '### ${id}.' item in local TODO.md (sandbox clones fresh main)" >&2
@@ -70,10 +58,9 @@ for id in "${IDS[@]}"; do
     --cap-add NET_ADMIN --cap-add NET_RAW \
     --env-file "$ENV_FILE" \
     -e GH_TOKEN="$GH_TOKEN_VALUE" \
-    -e SOLVE_PROMPT="$(solve_prompt "$id")" \
     -e SOLVE_MODEL="$MODEL" \
     "$IMAGE" \
-    bash -c 'cd "$HOME/vigilant-broccoli" && exec claude -p "$SOLVE_PROMPT" --dangerously-skip-permissions --model "$SOLVE_MODEL"' \
+    bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" "$1"' _ "$id" \
     > "$LOG_DIR/solve-${id}.log" 2>&1 &
   PIDS+=($!)
   echo "Started vb-solve-${id} (model: $MODEL, log: $LOG_DIR/solve-${id}.log)"
