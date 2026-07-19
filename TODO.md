@@ -427,3 +427,29 @@ No `OnPush` anywhere, and `provideZoneChangeDetection()` without `eventCoalescin
 ### 1c8bcf. [maintenance] Framework surface
 
 - The Angular 21 toolchain (~25 devDependencies) exists for one app, `cloud-8-skate-angular`. Migrating it to the React/Next stack removes the largest maintenance burden in the workspace.
+
+### ce18a7. [maintenance] No shared `localStorage` state hook — 9 hand-rolled copies split across two incompatible strategies
+
+`libs/@vigilant-broccoli/react-lib/src/hooks/` contains exactly one hook (`useGeolocation.ts`), so every UI-preference persistence site re-implements read → validate → write by hand, in one of two mutually incompatible ways:
+
+**Strategy A — read in `useEffect`** (SSR-safe, but flashes the default on first paint): `react-lib/src/components/ThemeProvider.tsx:32-38`, `react-lib/src/components/CollapsibleList.tsx:33-47`, `vb-manager-next/src/app/components/quick-links.component.tsx:12-21`, `search-dialog.component.tsx:132-141`, `demos/LanguageLearning.tsx:582-632`, `(pages)/dev-dashboard/page.tsx:30-39`.
+
+**Strategy B — lazy `useState` initializer behind `typeof window === 'undefined'`** (no flash, but server HTML and the client's first render disagree whenever the stored value differs from the default → React hydration mismatch): `kanban.component.tsx:634-638`, `google-tasks.component.tsx:325-337` and `:959-965`, `hooks/useNotepad.ts:32-33`.
+
+Strategy A's flash is not cosmetic where panels unmount. On `dev-dashboard`, Radix `Tabs.Content` renders only the active tab, so a user whose stored tab is `cloud` still mounts the Local panel for one paint — firing `PUBLIC_IP`, `LOCAL_IP`, `SSH_KEY`, `DOCKER_CONTAINERS`, `PM2_PROCESSES`, and `LOCAL_SERVICES` (all fetch on mount) before tearing it down. Related: the polling cost of those same routes is 0d64c9.
+
+Separately, `search-dialog.component.tsx:23` and `quick-links.component.tsx:7` both define `LOCAL_STORAGE_KEY = 'quick-links-grouped-state'` — one key backing two independent `isGrouped` states, so toggling grouping in one component leaves the other stale until remount.
+
+**Desired end state:** one `useLocalStorageState` hook in `react-lib/src/hooks/`, owning the read/validate/write, exposing a `hydrated` flag so callers can gate render instead of flashing, and syncing via the `storage` event (`ThemeProvider.tsx:40-50` already implements that listener and is the pattern to lift).
+
+**Steps:**
+
+1. Add `libs/@vigilant-broccoli/react-lib/src/hooks/useLocalStorageState.ts`, following `useGeolocation.ts`'s shape (named `export function`, `useEffect`-based, no class). Roughly `useLocalStorageState<T>(key, defaultValue, options?: { isValid?, parse?, serialize? })` returning `{ value, setValue, hydrated }`. Read in `useEffect` (not a lazy initializer) so SSR and first client render always agree; `hydrated` lets callers return `null`/a skeleton for one paint rather than committing to a wrong default. `isValid` covers the union-validation the tab/sort-mode sites already do by hand (`LanguageLearning.tsx:584-589`, `google-tasks.component.tsx:328-334`, `isTab` in `dev-dashboard/page.tsx`); `parse`/`serialize` cover the JSON sites in step 5.
+2. Export it from `libs/@vigilant-broccoli/react-lib/src/index.ts` alongside the existing `hooks/useGeolocation` line. Note this lib publishes to npm (`project.json:36` `publish-package`), so the barrel export is public API — and per 5cbc97 the barrel is already the subject of a `sideEffects`/subpath cleanup, so keep the hook free of module-scope side effects.
+3. Migrate the strategy-A sites listed above. `CollapsibleList.tsx` is the odd one — it persists one key _per item_ (`storageKey(item.id)`) and already tracks its own `mounted` flag, so either call the hook per item or leave it and note why.
+4. Migrate the strategy-B sites (`kanban.component.tsx`, both `google-tasks.component.tsx` sites, `useNotepad.ts`). This is the substantive fix: it removes the `typeof window` guards and the hydration mismatches they cause. `useSortModeStorage` (`google-tasks.component.tsx:323`) becomes a thin wrapper over the new hook.
+5. Fold in the JSON-serialized stores — `hooks/useChatHistory.ts:40-57`, `hooks/useNotificationHistory.ts:18-59`, `useNotepad.ts:33-39` — only if `parse`/`serialize` land in step 1; otherwise leave them and say so.
+6. Fix the `'quick-links-grouped-state'` collision: either give `search-dialog` its own key (accepting that existing users' saved grouping resets once) or let both share one hook instance so the `storage`-event sync keeps them consistent.
+7. **Preserve every existing key string verbatim** while migrating — `'notepad:content'`, `'vb-manager-chats'`, `'swimlanes-boards'`, `'quick-links-grouped-state'`, `'language-learning-*'`, `'dev-dashboard-tab'`, `'google-tasks-selected-list-id'`. The naming is inconsistent (`:` vs `-` separators, some `vb-manager-` prefixed, most not), but renaming keys silently discards whatever users have stored. Normalize in a separate change with a migration read if it's worth doing at all.
+8. Out of scope: auth-token storage (`createSupabaseAuth.tsx:95-195`, the `auth-provider.tsx` files in hearth / small-business-next / employee-handler-ui / vb-manager-next-mobile). Different concern with a security dimension — the mobile `provider_token` case is tracked as ae83d3.
+9. Verify with `npx nx lint react-lib vb-manager-next` and a typecheck of each consuming app, then manually reload each migrated surface to confirm the preference actually survives and no hydration warning appears in the console. Bump/release `react-lib` per its `publish-package` flow if consumers resolve it from npm rather than the workspace.
