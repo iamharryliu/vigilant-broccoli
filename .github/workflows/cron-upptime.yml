@@ -29,9 +29,10 @@ jobs:
           gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
-            kv/data/secrets UPPTIME_GH_APP_ID | UPPTIME_GH_APP_ID ;
             kv/data/secrets UPPTIME_GH_APP_PRIVATE_KEY | UPPTIME_GH_APP_PRIVATE_KEY ;
       - name: Mint upptime GitHub App installation token
+        env:
+          UPPTIME_GH_APP_ID: '4350545'
         run: |
           PEM_FILE=$(mktemp)
           echo "$UPPTIME_GH_APP_PRIVATE_KEY" | base64 -d > "$PEM_FILE"

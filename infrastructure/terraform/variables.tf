@@ -21,8 +21,9 @@ variable "github_repo" {
 }
 
 variable "upptime_gh_app_id" {
-  description = "App ID of the dedicated GitHub App (Contents + Issues RW only) that the upptime crons use to push status commits and manage incident issues. Create at https://github.com/settings/apps, install on this repo, and set in a local terraform.tfvars — this is not secret, but has no safe default."
+  description = "App ID of the dedicated GitHub App (Contents + Issues RW only) that the upptime crons use to push status commits and manage incident issues. Not a secret — it's visible in the ruleset config — so it's hardcoded here like the other non-secret IDs. Only its private key (UPPTIME_GH_APP_PRIVATE_KEY) lives in Vault. If the app is recreated, update this and the ID in the two cron-upptime workflows."
   type        = number
+  default     = 4350545
 }
 
 variable "cloudflare_account_id" {
