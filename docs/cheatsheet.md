@@ -92,6 +92,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
   agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR via /git-workflow (sonnet; --model <m> to override)
+  agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
 
 🏠 HOMELAB
   homelab:up                  Start homelab services and Tailscale
