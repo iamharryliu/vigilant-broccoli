@@ -1,6 +1,6 @@
 # Vercel deploy pattern (Next.js apps)
 
-Deploys for `hearth`, `findme`, `whiteboard`, `employee-handler-ui`. Everything runs through `scripts/deploy-vercel.ts`; app-side requirements (i18n, cards) are in [ui-app-pattern.md](../ui-app-pattern.md).
+Deploys for `hearth`, `findme`, `whiteboard`, `employee-handler-ui`. Everything runs through `scripts/deploy-vercel.ts`.
 
 ## Targets
 
@@ -23,11 +23,10 @@ Renaming a project does **not** move its `<name>.vercel.app` domain, and `vercel
 
 ## Gotchas
 
-- `sharp` must remain in the workspace root `dependencies` — required for Vercel serverless bundling of the `hearth` `/api/where-is` route (CLAUDE.md).
-- Apps with Supabase sign-in need their real deployed domains in `uri_allow_list` — follow [supabase-auth-pattern.md](../../auth/supabase-auth-pattern.md); a missing entry silently redirects to `site_url`.
+- `sharp` must remain in the workspace root `dependencies` — required for Vercel serverless bundling of the `hearth` `/api/where-is` route.
+- Apps with Supabase sign-in need their real deployed domains in `uri_allow_list` — follow `supabase-auth-pattern.md`; a missing entry silently redirects to `site_url`.
 
-## New app checklist
+## New app checklist (Vercel-side)
 
 1. `deploy` / `deploy:production` target pair in `project.json`.
 2. Entry in `projectConfigs` in `scripts/deploy-vercel.ts`.
-3. The rest of the deployable-app checklist (Upptime, `manual-deploy-app.yml`, test coverage) is in [repo-patterns.md](../../../../../docs/repo-patterns.md).

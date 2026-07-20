@@ -1,12 +1,12 @@
 # Supabase Auth Pattern
 
-Single shared Supabase project (`vb-supabase`, ref `jrdosjjgmsoodpjmjqxx`) provides Google-provider sign-in for all user-facing apps: `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next`. All apps share one auth user pool — the same Google account is the same user everywhere.
+Single shared Supabase project (`vb-supabase`, ref `jrdosjjgmsoodpjmjqxx`) provides Google-provider sign-in for all user-facing apps: `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`. All apps share one auth user pool — the same Google account is the same user everywhere.
 
 Reference implementation: **vb-manager-next** (the only app on the shared lib so far).
 
 ## Supabase config is Terraform-managed
 
-[`infrastructure/terraform/supabase-auth.tf`](../../../../infrastructure/terraform/supabase-auth.tf) owns `site_url`, `uri_allow_list`, and the Google provider on the shared project. **Never edit these in the Supabase dashboard** — Terraform will revert them on the next apply, and the dashboard change is lost. Local Terraform env (including `SUPABASE_ACCESS_TOKEN` and `TF_VAR_supabase_google_client_secret`) is loaded from the Bitwarden `vb-vault-secrets` note by `infrastructure/terraform/scripts/load-vault-tf-env.sh`.
+[`infrastructure/terraform/supabase-auth.tf`](../../../infrastructure/terraform/supabase-auth.tf) owns `site_url`, `uri_allow_list`, and the Google provider on the shared project. **Never edit these in the Supabase dashboard** — Terraform will revert them on the next apply, and the dashboard change is lost. Local Terraform env (including `SUPABASE_ACCESS_TOKEN` and `TF_VAR_supabase_google_client_secret`) is loaded from the Bitwarden `vb-vault-secrets` note by `infrastructure/terraform/scripts/load-vault-tf-env.sh`.
 
 ### The silent-fallback failure mode
 
@@ -14,7 +14,7 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 ### Adding / changing redirect URLs
 
-1. Get the app's real deployed domains from [`network-management.md`](../../../../docs/infrastructure/network-management.md) — the source of truth. **Every deployed app follows the `staging-<name>` / `production-<name>` prefix pattern** (e.g. `staging-hearth.vercel.app`, `production-hearth.vercel.app`). Do **not** guess a bare `<name>.vercel.app` — that domain usually does not exist, so its sign-in silently falls through to `site_url`. This exact mistake was live for hearth and employee-handler-ui.
+1. Get the app's real deployed domains from [`network-management.md`](../../infrastructure/network-management.md) — the source of truth. **Every deployed app follows the `staging-<name>` / `production-<name>` prefix pattern** (e.g. `staging-hearth.vercel.app`, `production-hearth.vercel.app`). Do **not** guess a bare `<name>.vercel.app` — that domain usually does not exist, so its sign-in silently falls through to `site_url`. This exact mistake was live for hearth and employee-handler-ui.
 2. Add one entry per app **per environment** to `uri_allow_list` in `supabase-auth.tf`: the local dev URL(s) plus each real staging and production URL. Use the `https://<domain>/*` wildcard form for Vercel/PM2 apps (matches any callback path); use the exact `.../auth/callback` path form for fly.io mobile shells. Keep entries grouped and commented by app, matching the existing style.
 3. Only add apps that actually use Supabase sign-in (`signInWithOAuth` / `createSupabaseAuth`). Apps deployed to Vercel but without Supabase auth (e.g. `findme`, `whiteboard`) do **not** belong here. Apps not yet deployed (not in `network-management.md`) get added when they ship.
 4. `pnpm tf:plan` — confirm the **only** change is the `auth` attribute (the other blocks must show as unchanged; see the resource's own comment about why `api`/`database`/`network`/`storage` are pinned). Then `pnpm tf:apply`.
@@ -53,5 +53,5 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 ## Migration status
 
 - `vb-manager-next` — on the shared `react-lib` auth module (migrated from NextAuth).
-- `hearth`, `employee-handler-ui`, `small-business-next` — same pattern, but hand-rolled per-app copies predating the shared module; consolidation pending.
+- `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next-mobile` — same pattern, but hand-rolled per-app copies predating the shared module; consolidation pending.
 - `vb-express` (Fastify) — still on better-auth + API-key plugin; not part of this pattern yet.

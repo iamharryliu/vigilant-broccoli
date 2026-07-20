@@ -2,15 +2,15 @@
 
 ## Doc Map
 
-- [Dev Tooling](./DEV_TOOLING.md) — root `package.json` CLI scripts (SSH, logs, deploys, resets, service management) + cheatsheet; read first before adding or changing root scripts
-- [CI](./CI.md) — read first before touching workflows, monitoring, or IaC
+- [Dev Tooling](./docs/DEV_TOOLING.md) — root `package.json` CLI scripts (SSH, logs, deploys, resets, service management) + cheatsheet; read first before adding or changing root scripts
+- [CI](./docs/CI.md) — read first before touching workflows, monitoring, or IaC
   - GitHub Actions — action pinning, README badges, cron dispatch, workflow secrets
   - Upptime — status checks for deployed services
   - Terraform — IaC in `infrastructure/terraform/`
-- [App Development](./APP_DEVELOPMENT.md) — shared HTTP consts, env var access, auth, dependency pinning, npm publishing; read first before app work
+- [App Development](./docs/APP_DEVELOPMENT.md) — shared HTTP consts, env var access, auth, dependency pinning, npm publishing; read first before app work
   - [repo-patterns.md](./docs/repo-patterns.md) — decision map for adding/changing an app, workflow, or deploy: which existing pattern to copy
-  - UI — [projects/nx-workspace/docs/ui/](./projects/nx-workspace/docs/ui/) (`ui-app-pattern.md`, `deployment/*`)
-  - API — [projects/nx-workspace/docs/api/](./projects/nx-workspace/docs/api/) (`deployment/fly-service-pattern.md`)
+  - UI — [docs/ui/](./docs/ui/) (`ui-app-pattern.md`, `auth/*`, `deployment/*`)
+  - API — [docs/api/](./docs/api/) (`deployment/fly-service-pattern.md`)
 - Git Conventions — this file
 - Infrastructure Conventions — this file
 - Coding Conventions — this file
@@ -26,20 +26,16 @@
 
 ## Coding Conventions
 
-- Prefer simple code implementation.
 - Prefer functional programming patterns over OOP.
 - Avoid excessive try/catch blocks; only add error handling when explicitly needed.
 - Avoid comments and blocks, only if really necessary do inline comments.
 - Avoid string literals, prefer having consts.
 - Do not write tests unless explicitly asked.
 - Do not write markdown reports, summaries, or documentation unless explicitly asked.
-- Follow these guidelines unless explicitly told otherwise.
 
 ## Folder Structure
 
-Root convention docs (`APP_DEVELOPMENT.md`, `CI.md`, `DEV_TOOLING.md`) are covered by the Doc Map above.
-
-- [Docs](./docs/) - Repo documentation. See [repo-patterns.md](./docs/repo-patterns.md) for the development/test/CI/deployment patterns map before adding or changing apps, workflows, or deploys, [repo-operations.md](./docs/repo-operations.md) for infra operations, secrets, data/persistence, local dev, and auth, [network-management.md](./docs/infrastructure/network-management.md) for public URLs/DNS by domain/provider, and [cheatsheet.md](./docs/cheatsheet.md) for infra-level CLI commands (also linked from the README).
+- [Docs](./docs/) - Repo documentation: the convention docs routed from the Doc Map above (`APP_DEVELOPMENT.md`, `CI.md`, `DEV_TOOLING.md`, `repo-patterns.md`), plus [repo-operations.md](./docs/repo-operations.md) for infra operations, secrets, data/persistence, local dev, and auth, [network-management.md](./docs/infrastructure/network-management.md) for public URLs/DNS by domain/provider, and [cheatsheet.md](./docs/cheatsheet.md) for infra-level CLI commands (also linked from the README).
 - [Notes](./notes/) - Collection of markdown notes linked with relative file paths.
 - [Setup](./setup/) - Machine setup scripts and dotfiles.
   - [dotfiles](./setup/dotfiles/) - Shell configs, aliases, and scripts (symlinked to `$HOME`).
