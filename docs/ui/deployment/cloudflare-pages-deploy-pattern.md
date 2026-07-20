@@ -1,6 +1,6 @@
 # Cloudflare Pages deploy pattern (static UI apps)
 
-Static UIs in `apps/ui/*` deploy to Cloudflare Pages via wrangler. App-side requirements (i18n, cards) are in [ui-app-pattern.md](../ui/ui-app-pattern.md).
+Static UIs in `apps/ui/*` deploy to Cloudflare Pages via wrangler.
 
 Reference apps:
 
@@ -23,10 +23,9 @@ Project names are environment-prefixed (`staging-journal`, `production-cloud-8-s
 
 ## Custom domains (Terraform)
 
-Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern; `cloudflare-journal.tf` adds Cloudflare Access gating of the `*.pages.dev` aliases, required for private content. Custom domains are environment-less: attached to whichever environment's project serves live traffic (today the `staging-*` projects). Public URLs per domain: [network-management.md](../../../../docs/infrastructure/network-management.md).
+Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern; `cloudflare-journal.tf` adds Cloudflare Access gating of the `*.pages.dev` aliases, required for private content. Custom domains are environment-less: attached to whichever environment's project serves live traffic (today the `staging-*` projects). Public URLs per domain: [network-management.md](../../infrastructure/network-management.md).
 
-## New app checklist
+## New app checklist (Cloudflare-side)
 
 1. Wrangler target trio (staging, and `:production` variants unless deliberately single-env) + `manual-deploy` in `project.json` — copy `personal-website-react`.
 2. `cloudflare-<site>.tf` if the site gets a custom domain.
-3. The rest of the deployable-app checklist (Upptime, `manual-deploy-app.yml`, test coverage) is in [repo-patterns.md](../../../../docs/repo-patterns.md).

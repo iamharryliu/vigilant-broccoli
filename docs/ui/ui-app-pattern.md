@@ -1,6 +1,6 @@
 # UI application pattern
 
-What every UI app in this workspace must have, and the shared building blocks to use — this doc owns the UI-specific requirements ([CLAUDE.md](../../../../CLAUDE.md) points here rather than restating them); which app deploys where is mapped in [repo-patterns.md](../../../../docs/repo-patterns.md). Each deploy destination has its own pattern doc: [vercel-deploy-pattern.md](../deployment/vercel-deploy-pattern.md), [cloudflare-pages-deploy-pattern.md](../deployment/cloudflare-pages-deploy-pattern.md), [github-pages-deploy-pattern.md](../deployment/github-pages-deploy-pattern.md).
+What every UI app in this workspace must have, and the shared building blocks to use. Each deploy destination has its own pattern doc: [vercel-deploy-pattern.md](./deployment/vercel-deploy-pattern.md), [cloudflare-pages-deploy-pattern.md](./deployment/cloudflare-pages-deploy-pattern.md), [github-pages-deploy-pattern.md](./deployment/github-pages-deploy-pattern.md).
 
 ## Where UI apps live
 
@@ -12,7 +12,7 @@ What every UI app in this workspace must have, and the shared building blocks to
 
 Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel before building new UI — prefer existing shared components over hand-rolled equivalents, unless told otherwise. Frequently needed: `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`), `CardContainer`, `Button`, `IconButton`, `Dialog`, `Sidebar`, `Tabs`, `Select`, `Input`, `ThemeProvider`.
 
-User-facing auth is `createSupabaseAuth` from the same lib — read [supabase-auth-pattern.md](../auth/supabase-auth-pattern.md) first, never hand-roll per-app auth.
+User-facing auth is `createSupabaseAuth` from the same lib — read [supabase-auth-pattern.md](./auth/supabase-auth-pattern.md) first, never hand-roll per-app auth. Supabase auth is UI-app-only: its server half (bearer-token middleware, admin client, per-route helpers) lives inside the Next.js apps, and no fly API service uses it.
 
 ## i18n (required)
 
@@ -27,19 +27,13 @@ All user-facing copy goes through the shared `createI18n` from `@vigilant-brocco
 
 Every UI application appears as a card under "UI Apps" in `apps/ui/pages-index/src/app/pages/UiPage.tsx` (the GitHub Pages "UI" page).
 
-## Env vars
-
-- Client-side `NEXT_PUBLIC_*` vars: direct `process.env.NEXT_PUBLIC_*` property access only — Next.js can only statically inline them at build time with direct access, not through a wrapper function.
-- Everything server-side: `getEnvironmentVariable` from `@vigilant-broccoli/common-node`.
-
 ## Local dev
 
 - Mock backends live under `apps/api/mock/*` (e.g. `mock-employee-handler-service`) — prefer extending a mock over pointing a local UI at live services.
-- Running against real secrets: the app's `serve` target (Vault-wrapped; see repo-patterns.md).
+- Running against real secrets: the app's `serve` target (Vault-wrapped).
 
-## New UI app checklist
+## New UI app checklist (app-side)
 
 1. Project under `apps/ui/*` (or `apps/*` for Next.js), deploy targets per the destination's pattern doc.
 2. i18n wired via `createI18n` (above).
 3. UI Apps card in `UiPage.tsx`.
-4. The rest of the deployable-app checklist (Upptime, `manual-deploy-app.yml` entry, secrets mapping) is in repo-patterns.md.
