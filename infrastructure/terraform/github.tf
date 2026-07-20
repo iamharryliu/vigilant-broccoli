@@ -48,7 +48,6 @@ resource "github_actions_secret" "gcp_workload_identity_provider" {
 }
 
 locals {
-  ruleset_bypass_github_actions  = 15368
   ruleset_bypass_repository_role = 5
 }
 
@@ -65,16 +64,10 @@ resource "github_repository_ruleset" "main" {
     }
   }
 
-  # A ruleset is used over github_branch_protection because classic protection
-  # can only exempt repo admins: the Actions bot has no bypass there, so the
-  # upptime crons could not push their status commits. The agent sandbox's
-  # GitHub App is deliberately left out of bypass_actors — it goes through PRs.
-  bypass_actors {
-    actor_id    = local.ruleset_bypass_github_actions
-    actor_type  = "Integration"
-    bypass_mode = "always"
-  }
-
+  # Admin-only bypass, matching the old enforce_admins = false. The GitHub
+  # Actions app cannot be a bypass actor here: this repo is user-owned, and
+  # GitHub rejects Integration actors outside the owner organization. The
+  # agent sandbox's GitHub App is deliberately excluded — it goes through PRs.
   bypass_actors {
     actor_id    = local.ruleset_bypass_repository_role
     actor_type  = "RepositoryRole"
