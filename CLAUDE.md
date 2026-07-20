@@ -11,18 +11,10 @@
   - [repo-patterns.md](./docs/repo-patterns.md) — decision map for adding/changing an app, workflow, or deploy: which existing pattern to copy
   - UI — [docs/ui/](./docs/ui/) (`ui-app-pattern.md`, `auth/*`, `deployment/*`)
   - API — [docs/api/](./docs/api/) (`deployment/fly-service-pattern.md`)
-- Git Conventions — this file
-- Infrastructure Conventions — this file
+- [Git](./docs/GIT.md) — read first before committing or pushing
+- [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS records, domains/subdomains, proxying, tunnels, or VPN
 - Coding Conventions — this file
 - Folder Structure — this file
-
-## Git Conventions
-
-- Never commit or push unless explicitly instructed to.
-
-## Infrastructure Conventions
-
-- Changes to network infrastructure (DNS records, domains/subdomains, proxying, tunnels, VPN) must be reflected in [network-management.md](./docs/infrastructure/network-management.md).
 
 ## Coding Conventions
 
@@ -35,7 +27,7 @@
 
 ## Folder Structure
 
-- [Docs](./docs/) - Repo documentation: the convention docs routed from the Doc Map above (`APP_DEVELOPMENT.md`, `CI.md`, `DEV_TOOLING.md`, `repo-patterns.md`), plus [repo-operations.md](./docs/repo-operations.md) for infra operations, secrets, data/persistence, local dev, and auth, [network-management.md](./docs/infrastructure/network-management.md) for public URLs/DNS by domain/provider, and [cheatsheet.md](./docs/cheatsheet.md) for infra-level CLI commands (also linked from the README).
+- [Docs](./docs/) - Repo documentation: the convention docs routed from the Doc Map above (`APP_DEVELOPMENT.md`, `CI.md`, `DEV_TOOLING.md`, `GIT.md`, `repo-patterns.md`), plus [repo-operations.md](./docs/repo-operations.md) for infra operations, secrets, data/persistence, local dev, and auth, [network-management.md](./docs/infrastructure/network-management.md) for public URLs/DNS by domain/provider, and [cheatsheet.md](./docs/cheatsheet.md) for infra-level CLI commands (also linked from the README).
 - [Notes](./notes/) - Collection of markdown notes linked with relative file paths.
 - [Setup](./setup/) - Machine setup scripts and dotfiles.
   - [dotfiles](./setup/dotfiles/) - Shell configs, aliases, and scripts (symlinked to `$HOME`).

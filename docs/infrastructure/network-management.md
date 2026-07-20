@@ -1,5 +1,7 @@
 # Network Management
 
+Changes to network infrastructure (DNS records, domains/subdomains, proxying, tunnels, VPN) must be reflected here.
+
 ## DNS URLs
 
 All public URLs for deployed applications, grouped by domain/provider.
