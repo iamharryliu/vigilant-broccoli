@@ -91,7 +91,9 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic:dev-sandbox:reset   Destroy sandbox volume and rebuild fresh
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
-  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR via /git-workflow (sonnet; --model <m> to override)
+  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override)
+                               (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
+  agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
 
 🏠 HOMELAB
   homelab:up                  Start homelab services and Tailscale
