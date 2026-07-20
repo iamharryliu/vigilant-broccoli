@@ -13,6 +13,7 @@
   - API — [docs/api/](./docs/api/) (`deployment/fly-service-pattern.md`)
 - [Git](./docs/GIT.md) — read first before committing or pushing
 - [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS records, domains/subdomains, proxying, tunnels, or VPN
+- [nuance.md](./docs/nuance.md) — non-obvious bugs and quirks discovered in this repo; check before debugging something that looks like it shouldn't happen
 - Coding Conventions — this file
 - Folder Structure — this file
 
@@ -27,12 +28,11 @@
 
 ## Folder Structure
 
-- [Docs](./docs/) - Repo documentation: the convention docs routed from the Doc Map above (`APP_DEVELOPMENT.md`, `CI.md`, `DEV_TOOLING.md`, `GIT.md`, `repo-patterns.md`), plus [repo-operations.md](./docs/repo-operations.md) for infra operations, secrets, data/persistence, local dev, and auth, [network-management.md](./docs/infrastructure/network-management.md) for public URLs/DNS by domain/provider, and [cheatsheet.md](./docs/cheatsheet.md) for infra-level CLI commands (also linked from the README).
+- [Docs](./docs/) - Repo documentation.
 - [Notes](./notes/) - Collection of markdown notes linked with relative file paths.
 - [Setup](./setup/) - Machine setup scripts and dotfiles.
   - [dotfiles](./setup/dotfiles/) - Shell configs, aliases, and scripts (symlinked to `$HOME`).
-  - [mac](./setup/mac/) - macOS setup: `install.sh` entry point, dock, dock stacks, preferences, wallpaper.
-  - [linux](./setup/linux/) - Linux setup: `install.sh` symlinks `~/vigilant-broccoli` to the repo location if cloned elsewhere, links shared dotfiles, and hooks `.rc.bash` into `~/.bashrc`. `-y` runs non-interactively (used by the code-server VM bootstrap, which clones the repo to `~/vigilant-broccoli`).
+  - [mac](./setup/mac/) - macOS setup.
+  - [linux](./setup/linux/) - Linux setup.
 - [Projects](./projects/) - Software projects.
-  - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects. See [repo-patterns.md](./docs/repo-patterns.md) for per-app deploy patterns and [repo-operations.md](./docs/repo-operations.md) for infra quirks (e.g. R2 bucket naming).
-  - Note: `sharp` must remain in the workspace root `dependencies` (`projects/nx-workspace/package.json`) — required for Vercel serverless bundling of the `hearth` `/api/where-is` route.
+  - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects.
