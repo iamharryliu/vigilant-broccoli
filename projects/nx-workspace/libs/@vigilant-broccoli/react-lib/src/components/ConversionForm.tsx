@@ -18,7 +18,7 @@ export const ConversionForm = ({
 
   const isSupportedFile = (file: File) => {
     const supportedTypes = ['text/', 'application/json', 'application/csv'];
-    const supportedExtensions = ['.txt', '.json', '.csv'];
+    const supportedExtensions = ['.txt', '.json', '.csv', '.pem', '.env'];
 
     const mimeOk = supportedTypes.some(type => file.type.startsWith(type));
     const extOk = supportedExtensions.some(ext =>
@@ -45,7 +45,9 @@ export const ConversionForm = ({
       };
       reader.readAsText(file);
     } else {
-      alert('Unsupported file type. Please drop a .txt, .json, or .csv file.');
+      alert(
+        'Unsupported file type. Please drop a .txt, .json, .csv, .pem, or .env file.',
+      );
     }
   }, []);
 
@@ -71,7 +73,7 @@ export const ConversionForm = ({
             onChange={e => setText(e.target.value)}
             placeholder={copy.placeholder}
             size="3"
-            className='h-full'
+            className="h-full"
             resize="vertical"
           />
         </div>
