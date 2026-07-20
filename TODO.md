@@ -290,6 +290,19 @@ The GROQ queries return raw `asset->url` with no image transforms, and the galle
 
 - Multiple Next.js apps (`small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`, `hearth`, `employee-handler-ui`) log "Next.js inferred your workspace root, but it may not be correct" — caused by the repo having two lockfiles (root `pnpm-lock.yaml` and `projects/nx-workspace/pnpm-lock.yaml`). Fix by setting `outputFileTracingRoot` (or `turbopack.root`) explicitly in each app's Next.js config, or removing the redundant lockfile. Deferred — CI builds pass today (warning only); revisit if a tracing-root-sensitive deploy issue surfaces, especially for `hearth` given its Vercel serverless `sharp` bundling.
 
+### a5fb01. [security] upptime GitHub App private key has no rotation automation
+
+The upptime crons (`.github/workflows/cron-upptime.yml`, `cron-upptime-response-time.yml`) mint per-run installation tokens from a dedicated GitHub App (App ID `4350545`, hardcoded; Contents + Issues RW only) via `infrastructure/agent-sandbox/mint-github-app-token.sh`, using `UPPTIME_GH_APP_PRIVATE_KEY` from Vault `kv/data/secrets` (base64-encoded PEM). This key is what lets a push bypass the `main` ruleset (`infrastructure/terraform/github.tf` — `Integration 4350545` bypass actor), so it's security-relevant, yet nothing rotates it. It's absent from the `rotate-secrets` workflow (`.github/workflows/ci-rotate-secrets.yml`) and from the manual rotation inventory in `docs/infrastructure/secret-management.md`. Every other GitHub App/PAT credential is at least documented as a manual rotate-at-source item (`AGENT_GH_APP_PRIVATE_KEY`, `AGENT_GITHUB_TOKEN` — secret-management.md:66-67), and the app-key case even has a working precedent: `pnpm secret-rotation:profile-deploy-key` (`scripts/ci/rotate-profile-deploy-key.sh`) already does mint → verify → `vault kv patch` → delete-predecessors for an ed25519 deploy key.
+
+Desired end state: the key is on a rotation path — at minimum listed as a manual rotate-at-source item in secret-management.md; better, a scripted rotator following the repo's mint → verify → store → revoke pattern (`docs/infrastructure/secret-rotation-implementation.md`).
+
+**Steps:**
+
+1. Add `UPPTIME_GH_APP_PRIVATE_KEY` to the manual rotation inventory in `docs/infrastructure/secret-management.md` (the "Rotate at source, then `vault kv patch`" list), noting: generate a new private key on the app at https://github.com/settings/apps, `base64 -i key.pem | tr -d '\n'`, `vault kv patch kv/secrets UPPTIME_GH_APP_PRIVATE_KEY=...`, then delete the old key on the app. No redeploy needed — the crons read Vault fresh each run.
+2. Optional (preferred): script it as `pnpm secret-rotation:upptime-app-key`, modeled on `rotate-profile-deploy-key.sh`. Note the constraint — GitHub has no API to _generate_ an app private key (only humans can, in the app settings UI), so a rotator can only _verify a human-supplied new key and revoke old ones_, not fully self-serve. Scope accordingly, or document it as manual-only.
+3. If scripted, wire it into `pnpm secret-rotation:all` and the rotation table in `docs/infrastructure/secret-rotation-implementation.md`, matching the existing entries' columns.
+4. Cross-check `docs/infrastructure/secret-management.md`'s key inventory (Deploy secrets tier) actually lists `UPPTIME_GH_APP_PRIVATE_KEY` — it was added ad hoc during the GitHub App migration and may not be in the canonical inventory yet.
+
 ## P3
 
 ### 9f4e45. [security] Non-constant-time API-key comparison

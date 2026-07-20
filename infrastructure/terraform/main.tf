@@ -141,6 +141,47 @@ resource "google_compute_firewall" "allow_iap_ssh" {
 data "google_project" "project" {
 }
 
+# Data Access audit logs (off by default, unlike always-on Admin Activity logs).
+# These are the sensitive-data-read blind spots for this project: secret values,
+# the Vault auto-unseal KMS key, and the backup bucket (which holds every DB dump
+# and repo/Gitea backup). Admin Activity — IAM changes, SA key creation, and
+# GenerateAccessToken impersonation — is already logged for free, so no config is
+# needed for those. Scoped per service (not allServices) to keep ingestion low;
+# all three are low-volume here (a few reads per CI run / per Vault restart) and
+# well within the 50 GiB/project/month Cloud Logging free tier.
+resource "google_project_iam_audit_config" "secretmanager" {
+  project = data.google_project.project.project_id
+  service = "secretmanager.googleapis.com"
+  audit_log_config {
+    log_type = "DATA_READ"
+  }
+  audit_log_config {
+    log_type = "DATA_WRITE"
+  }
+}
+
+resource "google_project_iam_audit_config" "cloudkms" {
+  project = data.google_project.project.project_id
+  service = "cloudkms.googleapis.com"
+  audit_log_config {
+    log_type = "DATA_READ"
+  }
+  audit_log_config {
+    log_type = "DATA_WRITE"
+  }
+}
+
+resource "google_project_iam_audit_config" "storage" {
+  project = data.google_project.project.project_id
+  service = "storage.googleapis.com"
+  audit_log_config {
+    log_type = "DATA_READ"
+  }
+  audit_log_config {
+    log_type = "DATA_WRITE"
+  }
+}
+
 resource "google_project_service" "iamcredentials" {
   service            = "iamcredentials.googleapis.com"
   disable_on_destroy = false
