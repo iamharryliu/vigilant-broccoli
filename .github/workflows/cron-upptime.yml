@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
@@ -28,6 +30,8 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets GITHUB_TOKEN | GITHUB_TOKEN ;
+      - name: Point origin at the admin PAT for push
+        run: git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
       - name: Warm fly.io services
         continue-on-error: true
         run: |
