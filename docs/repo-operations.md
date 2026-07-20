@@ -46,4 +46,4 @@ Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repo
 ## Auth Patterns
 
 - **Service-to-service / CI-to-service**: `SHARED_APP_TOKEN` bearer token (socket server, deploy notifications, e2e tests). `vb-express` uses its own `VB_EXPRESS_API_KEY`. Both rotate via the `rotate-secrets` workflow; after rotation sync the socket-server VM (`pnpm oci:vm:sync-socket-token`).
-- **User-facing**: owned by `supabase-auth-pattern.md`.
+- **User-facing**: owned by [supabase-auth-pattern.md](./ui/auth/supabase-auth-pattern.md).

@@ -24,7 +24,7 @@ Renaming a project does **not** move its `<name>.vercel.app` domain, and `vercel
 ## Gotchas
 
 - `sharp` must remain in the workspace root `dependencies` — required for Vercel serverless bundling of the `hearth` `/api/where-is` route.
-- Apps with Supabase sign-in need their real deployed domains in `uri_allow_list` — follow `supabase-auth-pattern.md`; a missing entry silently redirects to `site_url`.
+- Apps with Supabase sign-in need their real deployed domains in `uri_allow_list` — follow [supabase-auth-pattern.md](../auth/supabase-auth-pattern.md); a missing entry silently redirects to `site_url`.
 
 ## New app checklist (Vercel-side)
 
