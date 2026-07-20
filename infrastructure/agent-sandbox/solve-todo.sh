@@ -7,11 +7,16 @@ ENV_FILE="$SCRIPT_DIR/.env"
 IMAGE=vb-agent-sandbox
 
 MODEL=sonnet
+PROMPT=""
 IDS=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --model)
       MODEL=$2
+      shift 2
+      ;;
+    --prompt)
+      PROMPT=$2
       shift 2
       ;;
     *)
@@ -21,8 +26,12 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ ${#IDS[@]} -eq 0 ]; then
-  echo "Usage: pnpm agentic:task:solve [--model <model>] <TODO_ID> [TODO_ID...]" >&2
+if [ -n "$PROMPT" ] && [ ${#IDS[@]} -gt 0 ]; then
+  echo "ERROR: pass either --prompt \"<task>\" or TODO ids, not both." >&2
+  exit 1
+fi
+if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
+  echo "Usage: pnpm agentic:task:solve [--model <model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
   exit 1
 fi
 
@@ -48,6 +57,18 @@ if [ -z "$GH_TOKEN_VALUE" ]; then
   exit 1
 fi
 
+if [ -n "$PROMPT" ]; then
+  echo "Solving free-text task (model: $MODEL): $PROMPT"
+  docker run --rm --init --name "vb-solve-prompt-$(date +%s)" \
+    --cap-add NET_ADMIN --cap-add NET_RAW \
+    --env-file "$ENV_FILE" \
+    -e GH_TOKEN="$GH_TOKEN_VALUE" \
+    -e SOLVE_MODEL="$MODEL" \
+    "$IMAGE" \
+    bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" --prompt "$1"' _ "$PROMPT"
+  exit $?
+fi
+
 LOG_DIR=$(mktemp -d /tmp/vb-solve.XXXXXX)
 echo "Logs: $LOG_DIR"
 
@@ -60,7 +81,7 @@ for id in "${IDS[@]}"; do
     -e GH_TOKEN="$GH_TOKEN_VALUE" \
     -e SOLVE_MODEL="$MODEL" \
     "$IMAGE" \
-    bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" "$1"' _ "$id" \
+    bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" --id "$1"' _ "$id" \
     > "$LOG_DIR/solve-${id}.log" 2>&1 &
   PIDS+=($!)
   echo "Started vb-solve-${id} (model: $MODEL, log: $LOG_DIR/solve-${id}.log)"
