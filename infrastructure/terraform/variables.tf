@@ -20,6 +20,11 @@ variable "github_repo" {
   default     = "vigilant-broccoli"
 }
 
+variable "upptime_gh_app_id" {
+  description = "App ID of the dedicated GitHub App (Contents + Issues RW only) that the upptime crons use to push status commits and manage incident issues. Create at https://github.com/settings/apps, install on this repo, and set in a local terraform.tfvars — this is not secret, but has no safe default."
+  type        = number
+}
+
 variable "cloudflare_account_id" {
   type    = string
   default = "26d066ec62c4d27b8da5e9aebac17293"
