@@ -64,13 +64,23 @@ resource "github_repository_ruleset" "main" {
     }
   }
 
-  # Admin-only bypass, matching the old enforce_admins = false. The GitHub
-  # Actions app cannot be a bypass actor here: this repo is user-owned, and
-  # GitHub rejects Integration actors outside the owner organization. The
-  # agent sandbox's GitHub App is deliberately excluded — it goes through PRs.
+  # Admin bypass, matching the old enforce_admins = false. The built-in
+  # GitHub Actions integration can't be a bypass actor on a user-owned repo
+  # (GitHub rejects it outside an owner organization) — but a GitHub App you
+  # create and install directly on the repo is a normal, separate actor and
+  # isn't subject to that restriction. The upptime crons authenticate as
+  # such an app (Contents + Issues RW only, nothing else) to push status
+  # commits. The agent sandbox's GitHub App is deliberately NOT a bypass
+  # actor here — it goes through PRs, unlike this dedicated upptime app.
   bypass_actors {
     actor_id    = local.ruleset_bypass_repository_role
     actor_type  = "RepositoryRole"
+    bypass_mode = "always"
+  }
+
+  bypass_actors {
+    actor_id    = var.upptime_gh_app_id
+    actor_type  = "Integration"
     bypass_mode = "always"
   }
 
