@@ -30,8 +30,9 @@ jobs:
       matrix:
         environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
         service:
+          # vb-llm-service is private-only (no public fly.dev edge); its no-key/wrong-key
+          # auth checks run over the flycast tunnel in test-security-llm.yml
           - vb-express
-          - vb-llm-service
           - vb-storage-service
           - vb-email-service
           - email-subscription-service
