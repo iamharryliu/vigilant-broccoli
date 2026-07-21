@@ -9,8 +9,13 @@ CI_LOG=/tmp/pr-ci-failures.log
 CI_LOG_BUDGET=20000
 PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
+PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
 
 cd "$REPO_DIR"
+
+# Stash the helper outside the working tree before checkout — the PR branch may predate it,
+# and gh pr checkout would otherwise leave us on a branch where the helper path doesn't exist.
+cp "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh" "$PRE_COMMIT_HELPER"
 
 git fetch origin --quiet
 gh pr checkout "$PR"
@@ -53,7 +58,7 @@ claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
 
-bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
+bash "$PRE_COMMIT_HELPER"
 
 if [ -z "$(git status --porcelain)" ]; then
   echo "ERROR: no changes produced — PR #${PR} CI failure was not fixed." >&2
