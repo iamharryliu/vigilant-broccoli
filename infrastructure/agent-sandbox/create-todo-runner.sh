@@ -75,6 +75,8 @@ echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TR
 [ -n "$PR_SUMMARY" ] || PR_SUMMARY="- Add TODO entry${TODO_ID:+ ${TODO_ID}} for: ${DESCRIPTION}"
 [ -n "$PR_TEST_PLAN" ] || PR_TEST_PLAN="- [ ] Entry reviewed for accuracy and actionable steps"
 
+bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
+
 git add TODO.md
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push -u origin "$BRANCH"

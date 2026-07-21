@@ -64,6 +64,7 @@
     "agentic:dev-sandbox:reset": "docker compose -f infrastructure/agent-sandbox/docker-compose.yml down -v && docker compose -f infrastructure/agent-sandbox/docker-compose.yml up -d --build",
     "agentic:task:solve": "./infrastructure/agent-sandbox/solve-todo.sh",
     "agentic:task:create": "./infrastructure/agent-sandbox/create-todo.sh",
+    "agentic:pr:fix": "./infrastructure/agent-sandbox/fix-pr.sh",
     "vb-manager-next:start": "cd projects/nx-workspace && nx run vb-manager-next:pm2:start",
     "vb-manager-next:reload": "cd projects/nx-workspace && nx run vb-manager-next:pm2:reload",
     "vb-manager-next:delete": "cd projects/nx-workspace && nx run vb-manager-next:pm2:delete",
