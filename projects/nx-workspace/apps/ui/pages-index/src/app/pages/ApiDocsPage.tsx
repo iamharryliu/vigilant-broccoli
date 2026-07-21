@@ -16,13 +16,6 @@ export function ApiDocsPage() {
       <CardGrid>
         <li>
           <CardLink
-            href="https://staging-vb-llm-service.fly.dev/docs"
-            title={t('API_DOCS_PAGE.LLM_SERVICE.TITLE')}
-            description={t('API_DOCS_PAGE.LLM_SERVICE.DESCRIPTION')}
-          />
-        </li>
-        <li>
-          <CardLink
             href="https://staging-vb-email-service.fly.dev/docs"
             title={t('API_DOCS_PAGE.EMAIL_SERVICE.TITLE')}
             description={t('API_DOCS_PAGE.EMAIL_SERVICE.DESCRIPTION')}

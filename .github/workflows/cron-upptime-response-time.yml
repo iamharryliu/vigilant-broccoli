@@ -46,12 +46,10 @@ jobs:
         continue-on-error: true
         run: |
           urls=(
-            https://staging-vb-llm-service.fly.dev/
             https://staging-vb-storage-service.fly.dev/
             https://staging-vb-email-service.fly.dev/
             https://staging-email-subscription-service.fly.dev/
             https://staging-vb-express.fly.dev/
-            https://production-vb-llm-service.fly.dev/
             https://production-vb-storage-service.fly.dev/
             https://production-vb-email-service.fly.dev/
             https://production-email-subscription-service.fly.dev/

@@ -303,23 +303,6 @@ Desired end state: the key is on a rotation path — at minimum listed as a manu
 3. If scripted, wire it into `pnpm secret-rotation:all` and the rotation table in `docs/infrastructure/secret-rotation-implementation.md`, matching the existing entries' columns.
 4. Cross-check `docs/infrastructure/secret-management.md`'s key inventory (Deploy secrets tier) actually lists `UPPTIME_GH_APP_PRIVATE_KEY` — it was added ad hoc during the GitHub App migration and may not be in the canonical inventory yet.
 
-### 455179. [security] vb-llm-service is unnecessarily public — lock it down to Fly's private network only
-
-**`projects/nx-workspace/deployment-configs/fly-configs/{staging,production}-llm-service.toml`** · consumer: `apps/api/vb-express/src/libs/llm-service.client.ts:11` (`LLM_SERVICE_URL`, set in `deployment-configs/fly-configs/{staging,production}-vb-express.toml:10`)
-
-llm-service is reachable at `https://{staging,production}-vb-llm-service.fly.dev`, but grep across the workspace shows the only caller anywhere in the repo is vb-express. No Vercel app, browser client, or third party hits it. 4eb262 already flags the public-edge hop for performance (extra TLS round trip, chained cold starts); this entry is the security half — don't just switch the URL scheme, remove the public IPs entirely so the fly.dev hostname stops resolving to anything reachable at all.
-
-Desired end state: llm-service has no public IPv4/IPv6 allocated; vb-express reaches it only over Fly's private 6PN network; CI's e2e/security suites (currently run from `ubuntu-latest` runners against the public URL) tunnel in instead of failing.
-
-**Steps:**
-
-1. For both `staging-vb-llm-service` and `production-vb-llm-service`, release the public IPs: `flyctl ips list -a <app>` then `flyctl ips release <ip>` for each v4/v6 address.
-2. Allocate a private flycast address so llm-service keeps fly-proxy's health-aware routing/auto-start behavior while staying internal-only: `flyctl ips allocate-v6 --private -a <app>` for both environments.
-3. Update `LLM_SERVICE_URL` in `staging-vb-express.toml` and `production-vb-express.toml` from `https://<env>-vb-llm-service.fly.dev` to `http://<env>-vb-llm-service.flycast` — plain http, no TLS on the private network. This also folds in 4eb262's fix for this leg.
-4. `.github/workflows/test-e2e-llm.yml:47` and `test-security-llm.yml:35` set `LLM_SERVICE_URL` to the public fly.dev URL and run on `ubuntu-latest` — they'll stop being able to reach the service. Add a `flyctl proxy` step (reusing `FLY_API_TOKEN` from Vault the same way `deploy.yml:171` does) to tunnel a local port to the app's private address before `scripts/shell/test-llm-e2e.sh` / `test-llm-security.sh` run, and point `LLM_SERVICE_URL` at the local proxy port.
-5. Update `docs/infrastructure/network-management.md`'s fly.dev URL table — llm-service moves from the public list to private-only, reachable via flycast from other Fly apps.
-6. Deploy both environments and verify: `curl https://staging-vb-llm-service.fly.dev` fails to connect (no public IP); an LLM/chat request through vb-express still succeeds.
-
 ### 0e704f. [security] Plan: route vb-email-service and vb-storage-service through vb-express instead of exposing them directly
 
 Follow-up to 455179. Unlike llm-service, these two services can't just have their public IPs released — they're called directly by apps that aren't on Fly's private network:

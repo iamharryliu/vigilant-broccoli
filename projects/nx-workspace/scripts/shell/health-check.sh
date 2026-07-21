@@ -67,7 +67,6 @@ echo ""
 
 queue_http_check "staging-vb-express" "https://staging-vb-express.fly.dev"
 queue_http_check "staging-vb-email-service" "https://staging-vb-email-service.fly.dev"
-queue_http_check "staging-vb-llm-service" "https://staging-vb-llm-service.fly.dev"
 queue_http_check "staging-vb-storage-service" "https://staging-vb-storage-service.fly.dev"
 queue_http_check "staging-email-subscription-service" "https://staging-email-subscription-service.fly.dev"
 FLY_COUNT=${#HC_NAMES[@]}

@@ -7,7 +7,7 @@ primary_region = 'yyz'
   PORT = '3000'
   HOST = '0.0.0.0'
   EMAIL_SERVICE_URL = 'https://staging-vb-email-service.fly.dev'
-  LLM_SERVICE_URL = 'https://staging-vb-llm-service.fly.dev'
+  LLM_SERVICE_URL = 'http://staging-vb-llm-service.flycast'
   DATABASE_PATH = '/data/vb-express.sqlite'
   BETTER_AUTH_URL = 'https://staging-vb-express.fly.dev'
 
