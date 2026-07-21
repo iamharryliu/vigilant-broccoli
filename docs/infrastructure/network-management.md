@@ -50,11 +50,11 @@ github.io                                 GitHub Pages
 
 ## Private-only Fly.io services
 
-Reachable only over Fly's private 6PN network via a flycast address — no public IPv4/IPv6 allocated, so the `fly.dev` hostname resolves to nothing reachable.
+Reachable only over Fly's private 6PN network via a flycast address — no public IPv4/IPv6 allocated, so the `fly.dev` hostname resolves to nothing reachable. Each app has a private ingress IPv6 (`fly ips allocate-v6 --private`) and `[http_service].force_https = false`, so the flycast edge serves the internal port over plain HTTP on port 80 (a `.internal` direct-machine dial would hit the app's IPv4-only `0.0.0.0` bind and reset; flycast routes through fly-proxy, which also auto-starts stopped machines).
 
 ```
-staging-vb-llm-service.flycast            LLM Service (staging) — called by staging-vb-express over 6PN
-production-vb-llm-service.flycast         LLM Service (production) — called by production-vb-express over 6PN
+staging-vb-llm-service.flycast            LLM Service (staging) — called by staging-vb-express via http://…flycast over 6PN
+production-vb-llm-service.flycast         LLM Service (production) — called by production-vb-express via http://…flycast over 6PN
 ```
 
-CI e2e/security suites reach these from `ubuntu-latest` runners by opening a `flyctl proxy` WireGuard tunnel to the app's private address (see `test-e2e-llm.yml`, `test-security-llm.yml`).
+CI e2e/security suites reach these from `ubuntu-latest` runners by opening a `flyctl proxy 3000:80 <app>.flycast -a <app>` WireGuard tunnel, then hitting `http://127.0.0.1:3000` (see `test-e2e-llm.yml`, `test-security-llm.yml`).
