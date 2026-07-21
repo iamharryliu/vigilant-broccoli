@@ -58,4 +58,3 @@ production-vb-llm-service.flycast         LLM Service (production) — called by
 ```
 
 CI e2e/security suites reach these from `ubuntu-latest` runners by opening a `flyctl proxy` WireGuard tunnel to the app's private address (see `test-e2e-llm.yml`, `test-security-llm.yml`).
-
