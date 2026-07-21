@@ -95,6 +95,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
                                (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
   agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic:pr:update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
 
 🏠 HOMELAB
   homelab:up                  Start homelab services and Tailscale
