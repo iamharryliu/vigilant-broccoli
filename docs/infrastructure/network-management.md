@@ -23,8 +23,6 @@ cloud8skate.com                           Cloudflare Pages `staging-cloud-8-skat
 fly.dev                                   Fly.io API services (production apps created on first production dispatch)
 ├── staging-vb-express.fly.dev                    VB Express (staging)
 ├── production-vb-express.fly.dev                 VB Express (production)
-├── staging-vb-llm-service.fly.dev                LLM Service (staging)
-├── production-vb-llm-service.fly.dev             LLM Service (production)
 ├── staging-vb-email-service.fly.dev              Email Service (staging)
 ├── production-vb-email-service.fly.dev           Email Service (production)
 ├── staging-email-subscription-service.fly.dev    Email Subscription Service (staging)
@@ -49,3 +47,15 @@ pages.dev                                 Cloudflare Pages production aliases (s
 github.io                                 GitHub Pages
 └── iamharryliu.github.io/vigilant-broccoli   Pages index (pages-index/)
 ```
+
+## Private-only Fly.io services
+
+Reachable only over Fly's private 6PN network via a flycast address — no public IPv4/IPv6 allocated, so the `fly.dev` hostname resolves to nothing reachable.
+
+```
+staging-vb-llm-service.flycast            LLM Service (staging) — called by staging-vb-express over 6PN
+production-vb-llm-service.flycast         LLM Service (production) — called by production-vb-express over 6PN
+```
+
+CI e2e/security suites reach these from `ubuntu-latest` runners by opening a `flyctl proxy` WireGuard tunnel to the app's private address (see `test-e2e-llm.yml`, `test-security-llm.yml`).
+
