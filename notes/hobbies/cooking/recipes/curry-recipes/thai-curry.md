@@ -11,6 +11,8 @@
 - basil
 - lime juice
 - chicken/veggie stock
+- lime leaves
+- fish sauce
 
 ## Instructions
 
@@ -38,6 +40,7 @@
 | **Khao Soi**                | Creamy, rich, and mildly spicy; northern-style with coconut milk and curry paste | Pickled mustard greens, shallots, onions, bean sprouts, cilantro                  |
 
 # Reference
+
 - [Coconut Milk Oil Separation](https://www.youtube.com/shorts/qFH1lrKQbXI)
 - Thai Green Curry
   - [Video](https://www.youtube.com/watch?v=LIbKVpBQKJI)
