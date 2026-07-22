@@ -2,6 +2,15 @@
 
 Dormant Caddy + tailnet path-routing scaffold for self-hosting services. Currently has no backends — add one under "Adding a service".
 
+## Stack
+
+- Language - YAML
+- Tooling
+  - Docker Compose
+- Services
+  - Caddy
+  - Tailscale
+
 ## Tailnet access
 
 `npm run homelab:up` chains `tailscale serve --tcp=80 tcp://127.0.0.1:22100`.

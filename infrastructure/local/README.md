@@ -1,5 +1,23 @@
 # Local Infrastructure
 
+Docker Compose stack for self-hosted local services (photos, logs, dashboards) behind an nginx proxy.
+
+## Stack
+
+- Language - YAML
+- Tooling
+  - Docker Compose
+- Services
+  - nginx
+  - Immich
+  - PostgreSQL
+  - Redis
+  - Adminer
+  - Loki
+  - Promtail
+  - Grafana
+  - Resilio Sync
+
 ## Services
 
 - **manager.vigilant-broccoli.app** - Main application
@@ -8,27 +26,6 @@
 - **loki.vigilant-broccoli.app** - Log aggregation
 - **sync.vigilant-broccoli.app** - Resilio Sync web interface
 - **images.vigilant-broccoli.app** - Immich photo management
-
-## Setup
-
-```bash
-pnpm run local:install:machine-setup                # generate SSL certificates (mac only, via install.sh)
-pnpm run local:docker:up                            # start all services
-pnpm run local:docker:down                          # stop all services
-pnpm run local:docker:restart [service]              # restart service(s)
-```
-
-## Grafana
-
-Access: https://grafana.vigilant-broccoli.app
-
-Loki datasource is pre-configured.
-
-## Loki
-
-Access: https://loki.vigilant-broccoli.app
-
-Log aggregation with 30-day retention.
 
 ### Log Flow
 
