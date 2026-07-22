@@ -6,17 +6,9 @@
 
 **`infrastructure/terraform/main.tf:250-274`**
 
-The WIF-federated `github-actions` SA that every workflow can impersonate holds project `roles/editor`, `roles/iam.serviceAccountAdmin`, `roles/iam.workloadIdentityPoolAdmin`, and project-level `roles/secretmanager.secretAccessor`. A single compromised workflow run can read every secret (Vault root token, WG server key, unseal keys, Bitwarden password), rewrite the Workload Identity Pool for persistence, and take full project control.
+The WIF-federated `github-actions` SA that every workflow can impersonate holds project `roles/editor`, `roles/iam.serviceAccountAdmin`, `roles/iam.workloadIdentityPoolAdmin`, and project-level `roles/secretmanager.secretAccessor`. A single compromised workflow run can read almost every secret (Vault root token, WG server key, unseal keys), rewrite the Workload Identity Pool for persistence, and take full project control.
 
 **Fix:** Terraform applies run locally, so CI does not need editor/SA-admin/pool-admin — remove all three. Replace the project-level `secretAccessor` with per-secret `google_secret_manager_secret_iam_member` grants for only the secrets workflows actually read (per `cloudflare-vault.tf`, the CF Access token pair + tunnel token).
-
-### 020247. [security] Bitwarden master password stored in GCP Secret Manager
-
-**`infrastructure/terraform/main.tf:348-356`** · consumers: `projects/nx-workspace/scripts/shell/backup-secrets.sh`, `infrastructure/terraform/scripts/load-vault-tf-env.sh:26-31`
-
-Bitwarden is the encrypted backup-of-last-resort for all Vault secrets, yet its master password sits in plaintext in Secret Manager, readable by the CI SA (009c6e) and any process on any VM using the default compute SA (1a2b1b). `backup-secrets.sh` also passes it as a CLI arg (`bw export --password …`), argv-visible.
-
-**Fix:** exclude it from project-level accessor grants (per-secret IAM, no CI/VM access). Better, don't store the master password server-side at all — the backup scripts run manually, so unlock interactively / via OS keychain, or use a dedicated automation account with an API key + session unlock.
 
 ### 032af1. [performance] bucket-service buffers entire uploads/downloads in memory, no multipart limits, on a 256MB VM
 
