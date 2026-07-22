@@ -106,12 +106,6 @@ Publishing is gated by `SENDER_TOKEN`, but subscribing is completely open: any a
 
 Home docs (leases, insurance, warranties) are served from the public r2.dev URL. Keys embed random UUIDs (not enumerable), but there's no authorization and no expiry on reads — anyone with a URL can fetch a private PDF indefinitely, even after leaving the home. **Fix:** make the bucket private; serve through an authenticated route that checks home membership and returns a short-lived presigned URL.
 
-### 2ca4a3. [security] Watchtower auto-deploys `:latest` images with docker.sock on internet-facing VMs
-
-**`infrastructure/terraform/cloud-init-{rabbitmq,gitea,code-server}.yaml`**
-
-Every 300s, unpinned images (`gitea/gitea:latest`, `code-server:latest`, `iamharryliu/socket-server-socketio:latest`) are pulled and run; watchtower holds the Docker socket (root-equivalent). Compromise of the `iamharryliu` Docker Hub account or any upstream image = automatic RCE on the Gitea (source-of-truth mirror), code-server, and RabbitMQ VMs. **Fix:** pin digests and update deliberately; strong 2FA on the Hub account; consider signed images. Polling-frequency reduction tracked in 96e791.
-
 ### 306cc4. [security] Single shared Vault role gives every workflow the whole secret store
 
 **`infrastructure/terraform/packer/scripts/run-vault-post-init.sh`** (policy grants `kv/data/secrets/*`) · consumed by `.github/actions/vault-secrets/action.yml`

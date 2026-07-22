@@ -95,7 +95,6 @@ write_files:
           image: caddy:2-alpine
           container_name: caddy
           restart: unless-stopped
-          pull_policy: always
           ports:
             - "80:80"
             - "443:443"
@@ -105,8 +104,6 @@ write_files:
             - caddy_config:/config
           depends_on:
             - socket-server-socketio
-          labels:
-            com.centurylinklabs.watchtower.enable: "true"
         watchtower:
           image: containrrr/watchtower
           container_name: watchtower
