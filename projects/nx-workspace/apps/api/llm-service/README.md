@@ -2,12 +2,9 @@
 
 ## Stack
 
-- Language
-  - TypeScript
-- Framework
-  - Fastify
-- Build Tool
-  - webpack
+- Language - TypeScript
+- Framework - Fastify
+- Build Tool - webpack
 - External libs
   - Anthropic SDK, OpenAI SDK
 - Internal libs

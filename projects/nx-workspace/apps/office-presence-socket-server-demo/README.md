@@ -2,12 +2,9 @@
 
 ## Stack
 
-- Language
-  - TypeScript
-- Framework
-  - Slack Bolt (Socket Mode)
-- Build Tool
-  - esbuild
+- Language - TypeScript
+- Framework - Slack Bolt (Socket Mode)
+- Build Tool - esbuild
 - Internal libs
   - `slackbots`
 - Cloud services

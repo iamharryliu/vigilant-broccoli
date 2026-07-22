@@ -9,12 +9,9 @@
 
 ## Stack
 
-- Language
-  - TypeScript
-- Framework
-  - Angular
-- Build Tool
-  - Angular CLI
+- Language - TypeScript
+- Framework - Angular
+- Build Tool - Angular CLI
 - External libs
   - Tailwind CSS
 - Internal libs

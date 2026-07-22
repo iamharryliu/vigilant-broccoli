@@ -4,12 +4,9 @@ Renders repo markdown docs via the GitHub API.
 
 ## Stack
 
-- Language
-  - TypeScript
-- Framework
-  - React
-- Build Tool
-  - Vite
+- Language - TypeScript
+- Framework - React
+- Build Tool - Vite
 - External libs
   - Tailwind CSS
 - Internal libs

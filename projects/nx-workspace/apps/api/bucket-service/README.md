@@ -2,12 +2,9 @@
 
 ## Stack
 
-- Language
-  - TypeScript
-- Framework
-  - Fastify
-- Build Tool
-  - esbuild
+- Language - TypeScript
+- Framework - Fastify
+- Build Tool - esbuild
 - External libs
   - Winston logging
 - Internal libs

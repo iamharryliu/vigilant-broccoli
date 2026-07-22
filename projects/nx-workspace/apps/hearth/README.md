@@ -12,12 +12,9 @@ Shared life for homes, communes, and communities.
 
 ## Stack
 
-- Language
-  - TypeScript
-- Framework
-  - Next.js (React)
-- Build Tool
-  - Next.js
+- Language - TypeScript
+- Framework - Next.js (React)
+- Build Tool - Next.js
 - External libs
   - Radix Themes, lucide-react, recharts
   - Leaflet / react-leaflet, FullCalendar

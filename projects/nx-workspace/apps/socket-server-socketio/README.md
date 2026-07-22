@@ -2,12 +2,9 @@
 
 ## Stack
 
-- Language
-  - TypeScript
-- Framework
-  - Express + Socket.IO
-- Build Tool
-  - esbuild
+- Language - TypeScript
+- Framework - Express + Socket.IO
+- Build Tool - esbuild
 - External libs
   - Zod
 - Internal libs

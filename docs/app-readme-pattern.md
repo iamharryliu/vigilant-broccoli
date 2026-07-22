@@ -12,6 +12,8 @@ Every app under `projects/nx-workspace/apps/*` has a `README.md` with:
   - **Internal libs** — the `@vigilant-broccoli/*` VB libs it consumes
   - **Cloud services** — hosted/managed platforms and external APIs it deploys to or calls (e.g. Vercel, Cloudflare Pages, Fly.io, Docker Hub, Supabase, Sanity, AWS S3, Stripe)
 
+Language, Framework, and Build Tool each hold a single value, written inline (`- Language - TypeScript`). External libs, Internal libs, and Cloud services are nested bullet lists.
+
 Classify by nature, not name: a client SDK is an external lib, but the platform or API it talks to is a cloud service — list the service, not its SDK. Framework and Build Tool may be the same tool (e.g. Next.js); list it in both.
 
 Example:
@@ -19,12 +21,9 @@ Example:
 ```md
 ## Stack
 
-- Language
-  - TypeScript
-- Framework
-  - React
-- Build Tool
-  - Vite
+- Language - TypeScript
+- Framework - React
+- Build Tool - Vite
 - External libs
   - Tailwind CSS
 - Internal libs
