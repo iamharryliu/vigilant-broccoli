@@ -3,14 +3,12 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../infrastructure/config.sh"
+source "${SCRIPT_DIR}/../../infrastructure/terraform/packer/scripts/lib/vault-ops-token.sh"
 
 PROFILE_REPO="iamharryliu/iamharryliu"
 KEY_TITLE="vigilant-broccoli profile sync"
 
-echo "Fetching root token from Secret Manager..."
-VAULT_TOKEN=$(gcloud secrets versions access latest \
-  --secret=VB_VM_VAULT_ROOT_TOKEN \
-  --project="${GCP_PROJECT}")
+fetch_vault_ops_credentials
 
 echo "Capturing current deploy key IDs..."
 OLD_KEY_IDS=$(gh api "repos/${PROFILE_REPO}/keys" --jq '.[].id')
@@ -36,13 +34,17 @@ fi
 
 echo "Updating Vault with new deploy key..."
 NEW_KEY=$(cat "${KEY_DIR}/key")
-gcloud compute ssh "${VM_NAME}" \
+printf '%s\n%s\n' "$VAULT_OPS_ROLE_ID" "$VAULT_OPS_SECRET_ID" | gcloud compute ssh "${VM_NAME}" \
   --zone="${GCP_ZONE}" \
   --tunnel-through-iap \
   --command="
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
+
+read -r ROLE_ID
+read -r SECRET_ID
+VAULT_TOKEN=\$(vault write -field=token auth/approle/login role_id=\"\$ROLE_ID\" secret_id=\"\$SECRET_ID\")
+export VAULT_TOKEN
 
 vault kv patch ${VAULT_KV_PATH}/secrets PROFILE_REPO_DEPLOY_KEY='${NEW_KEY}'
 "

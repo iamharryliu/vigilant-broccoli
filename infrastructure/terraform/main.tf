@@ -398,6 +398,29 @@ resource "google_secret_manager_secret" "vault_root_token" {
   depends_on = [google_project_service.secretmanager]
 }
 
+# AppRole credentials for the scoped vb-ops-policy/vb-ops-role, populated by
+# run-vault-post-init.sh. Operator scripts use these short-TTL tokens instead
+# of vault_root_token for routine reads/writes.
+resource "google_secret_manager_secret" "vault_ops_role_id" {
+  secret_id = "VB_VM_VAULT_OPS_ROLE_ID"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret" "vault_ops_secret_id" {
+  secret_id = "VB_VM_VAULT_OPS_SECRET_ID"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
 resource "google_secret_manager_secret" "bitwarden_password" {
   secret_id = "BITWARDEN_PASSWORD"
 
