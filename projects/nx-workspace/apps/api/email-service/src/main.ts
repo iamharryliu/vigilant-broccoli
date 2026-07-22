@@ -23,6 +23,8 @@ const API_KEY = process.env.SHARED_APP_TOKEN;
 const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING;
 const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
 const RECONNECT_DELAY_MS = 5000;
+const MAX_DELIVERY_ATTEMPTS = 5;
+const RETRY_COUNT_HEADER = 'x-retry-count';
 
 const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   ? {
@@ -84,11 +86,28 @@ async function startConsumer() {
           channel.ack(msg);
           console.log('Email sent and message acknowledged.');
         } catch (err) {
-          console.error(
-            'Failed to send email, requeuing:',
-            (err as Error).message,
-          );
-          channel.nack(msg, false, true);
+          const retryCount =
+            (msg.properties.headers?.[RETRY_COUNT_HEADER] as number) ?? 0;
+          if (retryCount + 1 >= MAX_DELIVERY_ATTEMPTS) {
+            console.error(
+              'Failed to send email, max retries exceeded, dropping:',
+              (err as Error).message,
+            );
+            channel.nack(msg, false, false);
+          } else {
+            console.error(
+              'Failed to send email, retrying:',
+              (err as Error).message,
+            );
+            channel.sendToQueue(QUEUE.EMAIL, msg.content, {
+              persistent: true,
+              headers: {
+                ...msg.properties.headers,
+                [RETRY_COUNT_HEADER]: retryCount + 1,
+              },
+            });
+            channel.ack(msg);
+          }
         }
       }
     },
