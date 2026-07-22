@@ -72,7 +72,6 @@ write_files:
           image: lscr.io/linuxserver/code-server:latest
           container_name: code-server
           restart: unless-stopped
-          pull_policy: always
           environment:
             PUID: "1000"
             PGID: "1000"
@@ -83,13 +82,10 @@ write_files:
           volumes:
             - code_server_config:/config
             - /opt/code-server/custom-init:/custom-cont-init.d:ro
-          labels:
-            com.centurylinklabs.watchtower.enable: "true"
         caddy:
           image: caddy:2-alpine
           container_name: caddy
           restart: unless-stopped
-          pull_policy: always
           ports:
             - "80:80"
             - "443:443"
@@ -100,19 +96,6 @@ write_files:
             - caddy_config:/config
           depends_on:
             - code-server
-          labels:
-            com.centurylinklabs.watchtower.enable: "true"
-        watchtower:
-          image: containrrr/watchtower
-          container_name: watchtower
-          restart: unless-stopped
-          volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-          environment:
-            WATCHTOWER_CLEANUP: "true"
-            WATCHTOWER_POLL_INTERVAL: "300"
-            WATCHTOWER_LABEL_ENABLE: "true"
-            DOCKER_API_VERSION: DOCKER_API_VERSION_PLACEHOLDER
       volumes:
         code_server_config:
         caddy_data:
@@ -122,5 +105,4 @@ runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ubuntu
-  - 'DOCKER_API=$(docker version --format "{{.Server.APIVersion}}") && sed -i "s/DOCKER_API_VERSION_PLACEHOLDER/$DOCKER_API/" /opt/code-server/docker-compose.yml'
   - docker compose -f /opt/code-server/docker-compose.yml up -d
