@@ -2,7 +2,15 @@
 
 ## Stack
 
-- Next.js + React + TypeScript
-- Supabase
-- Internal VB libs (`common-browser`, `react-lib`)
-- Deployed to Vercel
+- Language
+  - TypeScript
+- Framework
+  - Next.js (React)
+- Build Tool
+  - Next.js
+- Internal libs
+  - `common-browser`
+  - `react-lib`
+- Cloud services
+  - Supabase
+  - Vercel

@@ -2,8 +2,17 @@
 
 ## Stack
 
-- Fastify + TypeScript
-- RabbitMQ (amqplib) for email queue consumption
-- Resend (via `@vigilant-broccoli/messaging`)
-- Internal VB libs (`common-js`, `fastify`)
-- Deployed to Fly.io
+- Language
+  - TypeScript
+- Framework
+  - Fastify
+- Build Tool
+  - esbuild
+- Internal libs
+  - `common-js`
+  - `fastify`
+  - `messaging`
+- Cloud services
+  - RabbitMQ (email queue)
+  - Resend
+  - Fly.io
