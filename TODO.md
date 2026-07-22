@@ -42,14 +42,6 @@ AuthProvider wraps the whole app in `layout.tsx`, so every page (including `/log
 
 **Fix:** render the shell immediately (skeletons instead of `return null`); let public routes render unconditionally. Longer term, adopt `@supabase/ssr` cookie sessions so server components can fetch data, or at least start the homes fetch in parallel with session resolution.
 
-### 0d64c9. [performance] vb-manager-next dev-dashboard is a shell-exec polling storm
-
-**`projects/nx-workspace/apps/ui/vb-manager-next/src/app/(pages)/dev-dashboard/page.tsx`** and its API routes
-
-Every card polls its own API route and nearly every route shells out per request: `api/gcloud/reauth-needed` runs a real GCP round trip (`gcloud projects list`) every 30s and `api/gcloud/auth-status` runs two sequential `gcloud` invocations; wireguard polls every 10s; `api/docker/containers` runs `docker info` + `docker ps -a` sequentially every 30s; `libs/@vigilant-broccoli/github-workspace/src/lib/github.service.ts:119` execs one `gh api` per repo (N+1) per 60s poll. Thousands of process spawns and cloud API calls per day on the VM that also serves code-server.
-
-**Fix:** parallelize sequential execs; drop `docker info` (infer daemon-down from `docker ps` failing); lengthen intervals for slow-changing state (gcloud reauth 5–15 min, wireguard 30–60s); add a small per-route in-memory TTL cache (pattern exists in `api/speed-test/route.ts`); pause polling when `document.hidden`; replace per-repo `gh` execs with one GraphQL call or a 5–10 min server-side cache.
-
 ### 151a48. [performance] No Nx computation cache survives between CI runs — every run builds from cold
 
 **`projects/nx-workspace/nx.json:84`** (`"neverConnectToCloud": true`) · no `actions/cache` usage anywhere in `.github/`

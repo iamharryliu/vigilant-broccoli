@@ -10,12 +10,15 @@ import {
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 import { CardSkeleton } from './skeleton.component';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
+
+const DOCKER_POLL_INTERVAL_MS = 30000;
 
 interface ServiceInfo {
   name: string;
@@ -286,11 +289,7 @@ export const DockerStatusComponent = () => {
     };
   };
 
-  useEffect(() => {
-    fetchDockerStatus();
-    const interval = setInterval(fetchDockerStatus, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchDockerStatus, DOCKER_POLL_INTERVAL_MS);
 
   if (loading) return <CardSkeleton title="Docker Containers" rows={3} />;
 
