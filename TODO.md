@@ -426,10 +426,6 @@ New `S3Client` per R2 operation (`api/where-is/r2.ts:8-9`; a 10-image POST = 10 
 
 `CRUDListManagement.tsx` recreates handlers and re-renders every row on any list change (memo a row component before lists grow); `ThemeProvider.tsx:57` context value recreated per render; `GithubActionsBadges.tsx` refetches the workflows API on every mount, uncached.
 
-### f3b4c5. [performance] Angular app uses default zone change detection throughout
-
-No `OnPush` anywhere, and `provideZoneChangeDetection()` without `eventCoalescing: true` (`cloud-8-skate-angular/src/main.ts:8`). One-liner improvement.
-
 ### f4d5e6. [performance] Shell/dotfile nits
 
 `setup/dotfiles/zsh/scripts/docker_cleanup.sh:15` uses `stat -f %m` (breaks the 7-day throttle on Linux) and hits the Docker daemon as part of its check; `setup/dotfiles/zsh/.rc.zsh:10` forks `sysctl|grep` per shell, `:37` re-sources `~/.bash_profile`, `:39` re-sources tmux conf per shell; `load_aliases` spawns ~5 `find`s + ~20 `source`s per startup.
