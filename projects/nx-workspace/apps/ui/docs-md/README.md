@@ -9,6 +9,8 @@ Renders repo markdown docs via the GitHub API.
 - Build Tool - Vite
 - External libs
   - Tailwind CSS
+  - Radix Themes
+  - fuse.js
 - Internal libs
   - `react-lib`
   - `react-utility`

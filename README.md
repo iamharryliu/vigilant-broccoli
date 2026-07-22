@@ -1,12 +1,18 @@
 # vigilant-broccoli
 
-[Click here](https://iamharryliu.github.io/vigilant-broccoli/) for more.
-
 <div>
 <a href="https://github.com/iamharryliu/vigilant-broccoli">
 <img src="https://i.pinimg.com/564x/b7/62/38/b762386c0bbb20dec77c2632f73d28a8.jpg" alt="broccoli" width="200"/>
 </a>
 </div>
+
+## Contents
+
+- [Development](#development)
+- [Commands](#commands)
+- [CI Status](#ci-status)
+- [Stack](#stack)
+- [Click here](https://iamharryliu.github.io/vigilant-broccoli/) for more.
 
 ## Development
 
@@ -48,3 +54,104 @@ pnpm cheatsheet
 [![test-smoke-email-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml)\
 [![test-smoke-gcp-secret-manager](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml)\
 [![test-smoke-vault-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml)
+
+## Stack
+
+- Cloud Providers
+  - Google Cloud Platform
+  - Oracle Cloud Infrastructure
+  - Cloudflare
+  - Vercel
+  - Fly.io
+- Infrastructure as Code
+  - Terraform
+  - Packer
+- Containers / Orchestration
+  - Docker
+  - Docker Compose
+- Networking
+  - Caddy
+  - Nginx
+  - Tailscale
+- Secrets Management
+  - HashiCorp Vault
+  - Google Secret Manager
+- Process Management
+  - PM2
+- Monitoring / Observability
+  - Grafana
+  - Loki
+  - Promtail
+  - Upptime
+- Self-Hosted Services
+  - Gitea
+  - code-server
+  - Immich
+  - Resilio Sync
+  - Adminer
+- CI/CD
+  - GitHub Actions
+- Databases
+  - PostgreSQL
+  - SQLite
+  - MongoDB
+- Caching / Messaging
+  - Redis
+  - RabbitMQ
+- CMS
+  - Sanity
+- Backend as a Service
+  - Supabase
+- Object Storage
+  - AWS S3
+  - Google Cloud Storage
+  - Cloudflare R2
+- Auth
+  - Better Auth
+  - NextAuth
+- AI / LLM
+  - Anthropic
+  - OpenAI
+- Payments
+  - Stripe
+- Communications
+  - Slack
+  - Twilio
+  - Resend
+- Container Registry
+  - Docker Hub
+- Package Registries
+  - npm
+- Package Managers
+  - pnpm
+- Monorepo Tooling
+  - Nx
+- Languages
+  - TypeScript
+  - JavaScript
+  - Bash / Shell
+  - Python
+  - HCL (Terraform)
+- Build Tools
+  - Vite
+  - Webpack
+  - esbuild
+  - SWC
+  - Rollup
+- Backend Frameworks
+  - Fastify
+  - Express
+  - Socket.IO
+- Frontend Frameworks
+  - React
+  - Next.js
+  - Angular
+- Styling
+  - Tailwind CSS
+- Testing
+  - Vitest
+  - Jest
+  - Playwright
+- Linting / Formatting
+  - ESLint
+  - Prettier
