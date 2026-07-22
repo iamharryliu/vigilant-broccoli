@@ -219,6 +219,10 @@ export const GITHUB_LINK = {
     NAME: 'GitHub Organizations Settings',
     URL: 'https://github.com/settings/organizations',
   },
+  APPS: {
+    NAME: 'GitHub Apps',
+    URL: 'https://github.com/settings/apps',
+  },
 } as const;
 
 export const AWS_LINK = {

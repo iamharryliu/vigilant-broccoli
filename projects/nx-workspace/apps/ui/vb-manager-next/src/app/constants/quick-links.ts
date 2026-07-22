@@ -129,6 +129,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: GITHUB_LINK.APPS.NAME,
+    target: GITHUB_LINK.APPS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: GITHUB_LINK.ACTIONS_PRICING.NAME,
     target: GITHUB_LINK.ACTIONS_PRICING.URL,
     type: OPEN_TYPE.BROWSER,
