@@ -44,11 +44,11 @@ AuthProvider wraps the whole app in `layout.tsx`, so every page (including `/log
 
 ### 16dbe5. [performance] code-server VM re-provisions its entire toolchain (~1GB+) on every container (re)start
 
-**`infrastructure/terraform/cloud-init-code-server.yaml:27-66`** (init script), `:72` (`:latest`), `:113` (300s watchtower poll)
+**`infrastructure/terraform/cloud-init-code-server.yaml:27-66`** (init script), `:72` (`:latest`)
 
-The `/custom-cont-init.d` script runs at every container start: `apt-get update/install` runs unconditionally, and the `command -v`-guarded blocks (Node, ~700MB `google-cloud-cli`, claude-code) only survive while the same image filesystem is alive. Watchtower auto-updates `linuxserver/code-server:latest` (~weekly), discarding the toolchain layer — 1GB+ of downloads and minutes of apt/npm on every update while code-server is blocked from starting.
+The `/custom-cont-init.d` script runs at every container start: `apt-get update/install` runs unconditionally, and the `command -v`-guarded blocks (Node, ~700MB `google-cloud-cli`, claude-code) only survive while the same image filesystem is alive. Watchtower no longer auto-updates `linuxserver/code-server:latest` (removed in 2ca4a3), but any deliberate redeploy — `terraform apply` (VM recreation) or a manual `docker compose pull && up -d` — still discards the toolchain layer: 1GB+ of downloads and minutes of apt/npm before code-server can start.
 
-**Fix:** bake a derived image (`FROM lscr.io/linuxserver/code-server` + toolchain in a Dockerfile), push to Docker Hub, let Watchtower track that. Cheaper fallback: install the toolchain under the persistent `/config` volume (or gate the script on a `/config` marker file) and pin the image tag.
+**Fix:** bake a derived image (`FROM lscr.io/linuxserver/code-server` + toolchain in a Dockerfile), push to Docker Hub, and reference it here. Cheaper fallback: install the toolchain under the persistent `/config` volume (or gate the script on a `/config` marker file) and pin the image tag.
 
 ## P2
 
@@ -209,10 +209,6 @@ No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`ap
 ### 8bc0e1. [performance] Backup bucket versioning silently multiplies retention ~13x past the intended 7 copies
 
 **`infrastructure/terraform/main.tf:439-443`** — the backup bucket has `versioning { enabled = true }` with a 90-day age Delete rule, while `cron-backup.yml` prunes to 7 backups via `gsutil rm` — which with versioning only makes objects noncurrent. Net: ~90 daily full dumps (repo + Gitea + MongoDB + Supabase) billed, not 7. **Fix:** disable versioning (dated filenames already provide history), or add a `days_since_noncurrent_time` lifecycle rule (e.g. 7).
-
-### 96e791. [performance] Watchtower polls every 300s on VMs where nothing is ever push-deployed
-
-On the rabbitmq VM the 300s poll is the deploy path for the socket server — keep it. On gitea (`cloud-init-gitea.yaml:84`) and code-server (`cloud-init-code-server.yaml:113`) the only watched images are third-party `:latest`: 288 registry polls/day buy nothing except surprise mid-day upgrades (which trigger 16dbe5). **Fix:** `WATCHTOWER_SCHEDULE` (e.g. nightly) on those two VMs. Pinning digests is tracked in 2ca4a3.
 
 ### 9a3554. [performance] Every `pnpm tf:*` command pays a ~5–10s Bitwarden/gcloud secrets bootstrap
 
