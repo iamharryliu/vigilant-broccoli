@@ -6,3 +6,4 @@ export * from './google-workspace/gam.api';
 export * from './google-workspace/google-tasks.errors';
 export * from './google-workspace/google-tasks.model';
 export * from './google-workspace/google-tasks.service';
+export * from './google-workspace/google-oauth.service';
