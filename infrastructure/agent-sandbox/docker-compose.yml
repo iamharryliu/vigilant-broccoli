@@ -4,7 +4,12 @@ services:
     image: vb-agent-sandbox
     container_name: vb-agent-sandbox
     restart: unless-stopped
-    env_file: .env
+    environment:
+      - CLAUDE_CODE_OAUTH_TOKEN
+      - GH_TOKEN
+      - AGENT_GH_APP_ID
+      - SANDBOX_FIREWALL
+      - SANDBOX_ALLOWED_DOMAINS
     cap_add:
       - NET_ADMIN
       - NET_RAW

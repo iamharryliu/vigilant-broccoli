@@ -1,25 +1,32 @@
 #!/bin/bash
+# Fetches agent-sandbox secrets from Vault and exports them as shell vars —
+# never written to disk. Source it (". load-env-from-vault.sh") to export
+# into your current shell, or run it directly and `eval "$(...)"` the output.
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../config.sh"
 
-ENV_FILE="${SCRIPT_DIR}/.env"
+SOURCED=0
+[[ "${BASH_SOURCE[0]}" != "${0}" ]] && SOURCED=1
 
-existing_value() {
-  grep "^$1=" "$ENV_FILE" 2>/dev/null | cut -d= -f2-
+emit() {
+  local name=$1 value=$2
+  if [ "$SOURCED" = "1" ]; then
+    export "${name}=${value}"
+  else
+    local escaped
+    escaped=$(printf '%s' "$value" | sed "s/'/'\\\\''/g")
+    printf "export %s='%s'\n" "$name" "$escaped"
+  fi
 }
 
-SANDBOX_FIREWALL_VALUE=$(existing_value SANDBOX_FIREWALL)
-SANDBOX_ALLOWED_DOMAINS_VALUE=$(existing_value SANDBOX_ALLOWED_DOMAINS)
-SANDBOX_VAULT_ENV_VARS_VALUE=$(existing_value SANDBOX_VAULT_ENV_VARS)
-
-echo "Fetching root token from Secret Manager..."
+echo "Fetching root token from Secret Manager..." >&2
 VAULT_TOKEN=$(gcloud secrets versions access latest \
   --secret=VB_VM_VAULT_ROOT_TOKEN \
   --project="${GCP_PROJECT}")
 
-echo "Fetching agent sandbox tokens from Vault..."
+echo "Fetching agent sandbox tokens from Vault..." >&2
 SECRETS=$(gcloud compute ssh "${VM_NAME}" \
   --zone="${GCP_ZONE}" \
   --tunnel-through-iap \
@@ -34,18 +41,15 @@ vault kv get -format=json ${VAULT_KV_PATH}/secrets | jq '.data.data'
 CLAUDE_CODE_OAUTH_TOKEN=$(echo "$SECRETS" | jq -r '.CLAUDE_CODE_OAUTH_TOKEN // empty')
 AGENT_GH_APP_ID=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_ID // empty')
 AGENT_GH_APP_PRIVATE_KEY=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_PRIVATE_KEY // empty')
-PEM_FILE="${SCRIPT_DIR}/.github-app-key.pem"
 
 if [ -n "$AGENT_GH_APP_ID" ] && [ -n "$AGENT_GH_APP_PRIVATE_KEY" ]; then
   case "$AGENT_GH_APP_PRIVATE_KEY" in
-    -----BEGIN*) printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY" > "$PEM_FILE" ;;
-    *) echo "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d > "$PEM_FILE" ;;
+    -----BEGIN*) PEM_CONTENT="$AGENT_GH_APP_PRIVATE_KEY" ;;
+    *) PEM_CONTENT=$(echo "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d) ;;
   esac
-  chmod 600 "$PEM_FILE"
-  echo "Minting GitHub App installation token..."
-  GH_TOKEN=$("${SCRIPT_DIR}/mint-github-app-token.sh" "$AGENT_GH_APP_ID" "$PEM_FILE")
+  echo "Minting GitHub App installation token..." >&2
+  GH_TOKEN=$("${SCRIPT_DIR}/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$PEM_CONTENT"))
 else
-  rm -f "$PEM_FILE"
   GH_TOKEN=$(echo "$SECRETS" | jq -r '.AGENT_GITHUB_TOKEN // empty')
 fi
 
@@ -61,18 +65,14 @@ if [ -z "$GH_TOKEN" ]; then
   echo "WARNING: no GitHub App credentials (AGENT_GH_APP_ID + AGENT_GH_APP_PRIVATE_KEY) or AGENT_GITHUB_TOKEN found in Vault; sandbox will have read-only git access." >&2
 fi
 
-cat > "$ENV_FILE" <<EOF
-CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}
-GH_TOKEN=${GH_TOKEN}
-AGENT_GH_APP_ID=${AGENT_GH_APP_ID}
-SANDBOX_FIREWALL=${SANDBOX_FIREWALL_VALUE:-on}
-SANDBOX_ALLOWED_DOMAINS=${SANDBOX_ALLOWED_DOMAINS_VALUE}
-SANDBOX_VAULT_ENV_VARS=${SANDBOX_VAULT_ENV_VARS_VALUE}
-EOF
+emit CLAUDE_CODE_OAUTH_TOKEN "$CLAUDE_CODE_OAUTH_TOKEN"
+emit GH_TOKEN "$GH_TOKEN"
+emit AGENT_GH_APP_ID "$AGENT_GH_APP_ID"
+emit AGENT_GH_APP_PRIVATE_KEY "$AGENT_GH_APP_PRIVATE_KEY"
 
-if [ -n "${SANDBOX_VAULT_ENV_VARS_VALUE}" ]; then
-  echo "Injecting extra Vault secrets: ${SANDBOX_VAULT_ENV_VARS_VALUE}"
-  IFS=',' read -ra EXTRA_VAR_NAMES <<<"${SANDBOX_VAULT_ENV_VARS_VALUE}"
+if [ -n "${SANDBOX_VAULT_ENV_VARS:-}" ]; then
+  echo "Injecting extra Vault secrets: ${SANDBOX_VAULT_ENV_VARS}" >&2
+  IFS=',' read -ra EXTRA_VAR_NAMES <<<"${SANDBOX_VAULT_ENV_VARS}"
   for VAR_NAME in "${EXTRA_VAR_NAMES[@]}"; do
     VAR_NAME=$(echo "$VAR_NAME" | xargs)
     [ -z "$VAR_NAME" ] && continue
@@ -81,9 +81,8 @@ if [ -n "${SANDBOX_VAULT_ENV_VARS_VALUE}" ]; then
       echo "WARNING: ${VAR_NAME} not found in Vault (${VAULT_KV_PATH}/secrets); skipping." >&2
       continue
     fi
-    echo "${VAR_NAME}=${VAR_VALUE}" >>"$ENV_FILE"
+    emit "$VAR_NAME" "$VAR_VALUE"
   done
 fi
 
-chmod 600 "$ENV_FILE"
-echo "✓ Wrote ${ENV_FILE} from Vault"
+echo "✓ Loaded agent sandbox secrets (session only — nothing written to disk)" >&2
