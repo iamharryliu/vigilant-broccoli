@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/lib/vault-ops-token.sh"
 
 RESEND_API="https://api.resend.com"
 KEY_NAME="vb-ci-$(date +%Y%m%d%H%M%S)"
@@ -11,21 +12,23 @@ FLY_APP="staging-vb-email-service"
 
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): current key and
 # VAULT_TOKEN come from the vault-secrets action, Vault is reached through the
-# Cloudflare Access tunnel. Local mode: both go through gcloud + IAP SSH.
+# Cloudflare Access tunnel. Local mode: the vb-ops AppRole via gcloud + IAP SSH.
 if [ -z "$VAULT_ADDR" ]; then
-  echo "Fetching root token from Secret Manager..."
-  VAULT_TOKEN=$(gcloud secrets versions access latest \
-    --secret=VB_VM_VAULT_ROOT_TOKEN \
-    --project="${GCP_PROJECT}")
+  fetch_vault_ops_credentials
 
   echo "Reading current Resend key from Vault..."
-  CURRENT_KEY=$(gcloud compute ssh "${VM_NAME}" \
+  CURRENT_KEY=$(printf '%s\n%s\n' "$VAULT_OPS_ROLE_ID" "$VAULT_OPS_SECRET_ID" | gcloud compute ssh "${VM_NAME}" \
     --zone="${GCP_ZONE}" \
     --tunnel-through-iap \
     --command="
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
+
+read -r ROLE_ID
+read -r SECRET_ID
+VAULT_TOKEN=\$(vault write -field=token auth/approle/login role_id=\"\$ROLE_ID\" secret_id=\"\$SECRET_ID\")
+export VAULT_TOKEN
+
 vault kv get -field=RESEND_API_KEY ${VAULT_KV_PATH}/secrets
 " 2>/dev/null | tr -d '[:space:]')
 else
@@ -58,13 +61,17 @@ fi
 
 echo "Updating Vault with new key..."
 if [ -z "$VAULT_ADDR" ]; then
-  gcloud compute ssh "${VM_NAME}" \
+  printf '%s\n%s\n' "$VAULT_OPS_ROLE_ID" "$VAULT_OPS_SECRET_ID" | gcloud compute ssh "${VM_NAME}" \
     --zone="${GCP_ZONE}" \
     --tunnel-through-iap \
     --command="
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
+
+read -r ROLE_ID
+read -r SECRET_ID
+VAULT_TOKEN=\$(vault write -field=token auth/approle/login role_id=\"\$ROLE_ID\" secret_id=\"\$SECRET_ID\")
+export VAULT_TOKEN
 
 vault kv patch ${VAULT_KV_PATH}/secrets RESEND_API_KEY='${NEW_KEY}'
 "

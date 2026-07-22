@@ -61,11 +61,13 @@ sync_secrets_to_vault() {
     return
   fi
 
-  local vault_token
-  vault_token=$(gcloud secrets versions access latest --secret="VB_VM_VAULT_ROOT_TOKEN" 2>/dev/null || echo "")
+  local vault_ops_role_id
+  local vault_ops_secret_id
+  vault_ops_role_id=$(gcloud secrets versions access latest --secret="VB_VM_VAULT_OPS_ROLE_ID" 2>/dev/null || echo "")
+  vault_ops_secret_id=$(gcloud secrets versions access latest --secret="VB_VM_VAULT_OPS_SECRET_ID" 2>/dev/null || echo "")
 
-  if [ -z "$vault_token" ]; then
-    echo "Warning: Vault root token not found in GCP Secret Manager. Skipping Vault sync."
+  if [ -z "$vault_ops_role_id" ] || [ -z "$vault_ops_secret_id" ]; then
+    echo "Warning: Vault ops AppRole credentials not found in GCP Secret Manager. Skipping Vault sync."
     return
   fi
 
@@ -97,13 +99,13 @@ sync_secrets_to_vault() {
     sleep 2
   done
 
-  local rmq_conn_patch_line=""
+  local rmq_sync_conn=false
   if [ "$rmq_ready" != true ]; then
     echo "Warning: RabbitMQ broker not reachable — leaving RABBITMQ_CONNECTION_STRING untouched (rerun pnpm tf:post-apply once the broker is up)."
   elif ssh $rmq_ssh_opts "ubuntu@${rabbitmq_ip}" \
     "sudo docker exec rabbitmq rabbitmqctl authenticate_user ${rabbitmq_user} '${rabbitmq_password}'" >/dev/null 2>&1; then
     echo "Broker accepts the Terraform password — will sync RABBITMQ_CONNECTION_STRING to Vault."
-    rmq_conn_patch_line="RABBITMQ_CONNECTION_STRING='${conn_str}'"
+    rmq_sync_conn=true
   else
     echo "Broker rejects the Terraform password (rotation owns it) — leaving RABBITMQ_CONNECTION_STRING in Vault untouched."
   fi
@@ -113,48 +115,69 @@ sync_secrets_to_vault() {
   local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
   local socket_server_url="https://socket.harryliu.dev"
 
-  gcloud compute ssh "${vm_name}" \
+  # Every value below is a live secret, so it's built into a JSON blob and
+  # piped over stdin (along with the AppRole login credentials) instead of
+  # being interpolated into --command — that string would otherwise sit in
+  # `ps` on the VM, readable by anyone else on the box, for the life of this
+  # ssh session.
+  local secrets_json
+  secrets_json=$(jq -n \
+    --arg rabbitmq_ca_cert "$ca_cert_b64" \
+    --arg email_api_key "$email_api_key" \
+    --arg gcs_sa_credentials "$gcs_sa_credentials" \
+    --arg code_server_password "$code_server_password" \
+    --arg socket_server_url "$socket_server_url" \
+    --arg ci_ssh_key_b64 "$ci_ssh_key_b64" \
+    --arg gitea_cf_access_client_id "$gitea_cf_access_client_id" \
+    --arg gitea_cf_access_client_secret "$gitea_cf_access_client_secret" \
+    --arg gitea_ip "$gitea_ip" \
+    --arg code_server_cf_access_client_id "$code_server_cf_access_client_id" \
+    --arg code_server_cf_access_client_secret "$code_server_cf_access_client_secret" \
+    --arg code_server_ip "$code_server_ip" \
+    --arg journal_cf_access_client_id "$journal_cf_access_client_id" \
+    --arg journal_cf_access_client_secret "$journal_cf_access_client_secret" \
+    '{
+      RABBITMQ_CA_CERT: $rabbitmq_ca_cert,
+      EMAIL_SERVICE_API_KEY: $email_api_key,
+      GOOGLE_GCS_SA_CREDENTIALS: $gcs_sa_credentials,
+      CODE_SERVER_PASSWORD: $code_server_password,
+      SOCKET_SERVER_URL: $socket_server_url,
+      OCI_VM_SSH_KEY: $ci_ssh_key_b64,
+      GITEA_CF_ACCESS_CLIENT_ID: $gitea_cf_access_client_id,
+      GITEA_CF_ACCESS_CLIENT_SECRET: $gitea_cf_access_client_secret,
+      GITEA_VM_IP: $gitea_ip,
+      CODE_SERVER_CF_ACCESS_CLIENT_ID: $code_server_cf_access_client_id,
+      CODE_SERVER_CF_ACCESS_CLIENT_SECRET: $code_server_cf_access_client_secret,
+      CODE_SERVER_VM_IP: $code_server_ip,
+      JOURNAL_CF_ACCESS_CLIENT_ID: $journal_cf_access_client_id,
+      JOURNAL_CF_ACCESS_CLIENT_SECRET: $journal_cf_access_client_secret
+    }')
+
+  { printf '%s\n%s\n%s\n%s\n' "$vault_ops_role_id" "$vault_ops_secret_id" "$rmq_sync_conn" "$conn_str"; echo "$secrets_json"; } \
+    | gcloud compute ssh "${vm_name}" \
     --zone="${vm_zone}" \
     --tunnel-through-iap \
     --command="
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${vault_token}'
+
+read -r ROLE_ID
+read -r SECRET_ID
+read -r RMQ_SYNC_CONN
+read -r CONN_STR
+BASE_JSON=\$(cat)
+
+VAULT_TOKEN=\$(vault write -field=token auth/approle/login role_id=\"\$ROLE_ID\" secret_id=\"\$SECRET_ID\")
+export VAULT_TOKEN
 
 if vault kv get kv/secrets >/dev/null 2>&1; then
-  vault kv patch kv/secrets \
-    RABBITMQ_CA_CERT='${ca_cert_b64}' \
-    ${rmq_conn_patch_line} \
-    EMAIL_SERVICE_API_KEY='${email_api_key}' \
-    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
-    CODE_SERVER_PASSWORD='${code_server_password}' \
-    SOCKET_SERVER_URL='${socket_server_url}' \
-    OCI_VM_SSH_KEY='${ci_ssh_key_b64}' \
-    GITEA_CF_ACCESS_CLIENT_ID='${gitea_cf_access_client_id}' \
-    GITEA_CF_ACCESS_CLIENT_SECRET='${gitea_cf_access_client_secret}' \
-    GITEA_VM_IP='${gitea_ip}' \
-    CODE_SERVER_CF_ACCESS_CLIENT_ID='${code_server_cf_access_client_id}' \
-    CODE_SERVER_CF_ACCESS_CLIENT_SECRET='${code_server_cf_access_client_secret}' \
-    CODE_SERVER_VM_IP='${code_server_ip}' \
-    JOURNAL_CF_ACCESS_CLIENT_ID='${journal_cf_access_client_id}' \
-    JOURNAL_CF_ACCESS_CLIENT_SECRET='${journal_cf_access_client_secret}'
+  if [ \"\$RMQ_SYNC_CONN\" = true ]; then
+    echo \"\$BASE_JSON\" | jq --arg c \"\$CONN_STR\" '. + {RABBITMQ_CONNECTION_STRING: \$c}' | vault kv patch kv/secrets @-
+  else
+    echo \"\$BASE_JSON\" | vault kv patch kv/secrets @-
+  fi
 else
-  vault kv put kv/secrets \
-    RABBITMQ_CA_CERT='${ca_cert_b64}' \
-    RABBITMQ_CONNECTION_STRING='${conn_str}' \
-    EMAIL_SERVICE_API_KEY='${email_api_key}' \
-    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
-    CODE_SERVER_PASSWORD='${code_server_password}' \
-    SOCKET_SERVER_URL='${socket_server_url}' \
-    OCI_VM_SSH_KEY='${ci_ssh_key_b64}' \
-    GITEA_CF_ACCESS_CLIENT_ID='${gitea_cf_access_client_id}' \
-    GITEA_CF_ACCESS_CLIENT_SECRET='${gitea_cf_access_client_secret}' \
-    GITEA_VM_IP='${gitea_ip}' \
-    CODE_SERVER_CF_ACCESS_CLIENT_ID='${code_server_cf_access_client_id}' \
-    CODE_SERVER_CF_ACCESS_CLIENT_SECRET='${code_server_cf_access_client_secret}' \
-    CODE_SERVER_VM_IP='${code_server_ip}' \
-    JOURNAL_CF_ACCESS_CLIENT_ID='${journal_cf_access_client_id}' \
-    JOURNAL_CF_ACCESS_CLIENT_SECRET='${journal_cf_access_client_secret}'
+  echo \"\$BASE_JSON\" | jq --arg c \"\$CONN_STR\" '. + {RABBITMQ_CONNECTION_STRING: \$c}' | vault kv put kv/secrets @-
 fi
 
 echo 'Secrets synced to Vault'

@@ -60,6 +60,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gcp:vm:vault:seal           Seal Vault
   gcp:vm:vault:save-secrets-local     Save Vault secrets locally
   gcp:vm:vault:set-secrets    Set secrets in Vault
+  gcp:vm:vault:revoke-root-token      Revoke Vault root token (after verifying vb-ops AppRole)
 
 🔑 SECRETS
   secret-rotation:all         Run all scripted rotations, then dispatch ci-rotate-secrets workflow

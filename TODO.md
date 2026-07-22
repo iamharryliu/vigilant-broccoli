@@ -70,12 +70,6 @@ Every VM (including transient Packer build VMs) using the default SA can read al
 
 The management UI (TLS but single-factor, username `admin`) is internet-reachable — continuous credential-stuffing surface. SSH/22 is world-open on all three OCI VMs. **Fix:** restrict 15671 and 22 to home/WG egress IPs. (5671 AMQPS must stay open for fly.io consumers — justified.)
 
-### 21290b. [security] Vault root token used as everyday credential + passed on command lines
-
-**`infrastructure/terraform/main.tf`** (`VB_VM_VAULT_ROOT_TOKEN` secret) · `packer/scripts/run-vault-*.sh`, `rotate-*.sh`, `scripts/post-apply.sh:119-122`
-
-The never-expiring root token is the routine operational credential and is interpolated into `gcloud compute ssh --command="… VAULT_TOKEN='…' …"` strings (visible in `ps` on the VM); unseal keys likewise passed as CLI args. **Fix:** scoped admin policy + short-TTL token role for scripts; revoke the root token (keep recovery keys); pass secrets via stdin — `sync-socket-server-token.sh` already does the stdin pattern correctly, copy it.
-
 ### 229043. [security] No rate limiting on LLM/chat endpoints (cost abuse)
 
 **`projects/nx-workspace/apps/api/llm-service/src/routes/llm.ts`**, `chat.ts`

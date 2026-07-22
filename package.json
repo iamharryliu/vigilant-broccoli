@@ -45,6 +45,7 @@
     "gcp:vm:vault:seal": "./infrastructure/terraform/packer/scripts/run-vault-seal.sh",
     "gcp:vm:vault:save-secrets-local": "./infrastructure/terraform/packer/scripts/run-vault-get-secrets.sh",
     "gcp:vm:vault:set-secrets": "./infrastructure/terraform/packer/scripts/run-vault-set-secrets.sh",
+    "gcp:vm:vault:revoke-root-token": "./infrastructure/terraform/packer/scripts/revoke-vault-root-token.sh",
     "secret-rotation:all": "pnpm secret-rotation:flyio && pnpm secret-rotation:gitea && pnpm secret-rotation:profile-deploy-key && gh workflow run ci-rotate-secrets --repo iamharryliu/vigilant-broccoli",
     "secret-rotation:flyio": "./infrastructure/terraform/packer/scripts/rotate-fly-token.sh",
     "secret-rotation:gitea": "./infrastructure/terraform/packer/scripts/rotate-gitea-token.sh",
