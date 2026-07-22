@@ -11,9 +11,9 @@ Reference apps (each demonstrates a different combination):
 
 ## Environments
 
-Deployed instances are environment-prefixed (`staging-`, `production-`): fly app name (`staging-vb-llm-service`), config filename (`deployment-configs/fly-configs/<env>-llm-service.toml`), and the CI test workflow that targets it (`.github/workflows/staging-test-e2e-llm.yml`). Nx project names stay unprefixed (`llm-service`).
+Deployed instances follow the repo-wide `staging-` / `production-` prefix convention. Fly specifics: the app name (`staging-vb-llm-service`) and config filename (`deployment-configs/fly-configs/<env>-llm-service.toml`) are prefixed; nx project names stay unprefixed (`llm-service`).
 
-Each service defines a target pair: `deploy` (staging) and `deploy:production`, with mirrored `deploy:secrets` / `deploy:secrets:production` chains. `scripts/secrets-mapping.config.ts` stores the env-less `flyAppBaseName`; `deploy-flyio-secrets.ts <project> <env>` composes `<env>-<base>` (and creates the app if missing). Cross-service URLs (`EMAIL_SERVICE_URL`, `LLM_SERVICE_URL`, `BETTER_AUTH_URL`, build args) live in the per-env fly config / deploy command so each environment talks only to its own siblings. Push to main deploys staging; production deploys via `deploy.yml`'s `workflow_dispatch` `environment: production` (or per app via `manual-deploy-app.yml`).
+Each service defines a target pair: `deploy` (staging) and `deploy:production`, with mirrored `deploy:secrets` / `deploy:secrets:production` chains. `scripts/secrets-mapping.config.ts` stores the env-less `flyAppBaseName`; `deploy-flyio-secrets.ts <project> <env>` composes `<env>-<base>`. Cross-service URLs (`EMAIL_SERVICE_URL`, `LLM_SERVICE_URL`, `BETTER_AUTH_URL`, build args) live in the per-env fly config / deploy command so each environment talks only to its own siblings. Post-deploy checks run in the environment-matrix `test-*` workflows (e.g. `test-e2e-llm.yml`).
 
 ## Two orthogonal axes
 
@@ -30,6 +30,10 @@ Each service defines a target pair: `deploy` (staging) and `deploy:production`, 
 ## Transitive-dep gotcha (pruned only)
 
 `@nx/js:prune-lockfile` only includes deps **directly listed** in `apps/api/<svc>/package.json`. If a workspace lib (e.g. `@vigilant-broccoli/fastify`) has a runtime dep (e.g. `fastify-plugin`) that ends up as an externalized `require(...)` in `main.js`, that dep must also be listed in the consuming service's `package.json`. Otherwise: `Cannot find module` at boot → 502 → e2e fail. `@nx/dependency-checks` lint does NOT catch this; the `smoke` target does.
+
+## pnpm `overrides` gotcha (pruned only)
+
+Do NOT use `overrides` in `pnpm-workspace.yaml` to force versions for packages consumed by pruned services: `@nx/js:prune-lockfile` copies the `overrides:` block into each pruned `pnpm-lock.yaml`, but the pruned `pnpm install --frozen-lockfile --prod` (in `scripts/shell/smoke-dist.sh` and the service Dockerfiles) has no matching overrides config, so it fails with `ERR_PNPM_LOCKFILE_CONFIG_MISMATCH` — breaking smoke and the real fly deploy. Align each importer's specifier with the workspace root instead.
 
 ## Smoke target
 
@@ -51,4 +55,6 @@ Wiring: pruned `smoke` depends on `prune`; bundled `smoke` depends on `build`. `
 
 ## Secrets
 
-Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. `nx deploy:secrets <svc>` creates the fly app if it doesn't exist yet (`flyctl apps create`), then reads Vault → `flyctl secrets set`. `deploy` depends on `deploy:secrets`, so a first deploy to a brand-new app works end-to-end (volumes declared in `[mounts]` are auto-created on first deploy).
+Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. The service's `.env.example` is the key list: `deploy-flyio-secrets.ts` parses it, pulls those keys from the service's Vault path, and pushes them with `flyctl secrets set`. `nx deploy:secrets <svc>` creates the fly app first if it doesn't exist yet (`flyctl apps create`); `deploy` depends on `deploy:secrets`, so a first deploy to a brand-new app works end-to-end (volumes declared in `[mounts]` are auto-created on first deploy).
+
+Both environments read the same Vault path — per-env secret values would need per-env vault paths.

@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
+import { createTtlCache } from '../../../utils/ttl-cache.utils';
 
 interface ReauthStatus {
   needsReauth: boolean;
@@ -7,21 +8,22 @@ interface ReauthStatus {
   error?: string;
 }
 
-export async function GET() {
-  return new Promise<NextResponse>(resolve => {
+const REAUTH_CACHE_TTL_MS = 5 * 60 * 1000;
+const REAUTH_CHECK_TIMEOUT_MS = 2000;
+
+function checkReauthStatus(): Promise<ReauthStatus> {
+  return new Promise<ReauthStatus>(resolve => {
     exec(
       'gcloud config get-value account 2>/dev/null',
       (error, accountOutput) => {
         const activeAccount = accountOutput?.trim() || null;
 
         if (!activeAccount) {
-          resolve(
-            NextResponse.json({
-              needsReauth: true,
-              activeAccount: null,
-              error: 'No active account configured',
-            }),
-          );
+          resolve({
+            needsReauth: true,
+            activeAccount: null,
+            error: 'No active account configured',
+          });
           return;
         }
 
@@ -36,32 +38,39 @@ export async function GET() {
               output.includes('invalid_grant') ||
               execError?.code === 1;
 
-            const status: ReauthStatus = {
+            resolve({
               needsReauth,
               activeAccount,
               error: needsReauth
                 ? 'Run: gcloud auth login && gcloud auth application-default login'
                 : undefined,
-            };
-
-            resolve(NextResponse.json(status));
+            });
           },
         );
 
         const timeout = setTimeout(() => {
           child.kill();
-          resolve(
-            NextResponse.json({
-              needsReauth: true,
-              activeAccount,
-              error:
-                'Run: gcloud auth login && gcloud auth application-default login',
-            }),
-          );
-        }, 2000);
+          resolve({
+            needsReauth: true,
+            activeAccount,
+            error:
+              'Run: gcloud auth login && gcloud auth application-default login',
+          });
+        }, REAUTH_CHECK_TIMEOUT_MS);
 
         child.on('close', () => clearTimeout(timeout));
       },
     );
   });
+}
+
+const getCachedReauthStatus = createTtlCache(
+  REAUTH_CACHE_TTL_MS,
+  checkReauthStatus,
+);
+
+export async function GET(request: NextRequest) {
+  const forceFresh = request.nextUrl.searchParams.get('fresh') === '1';
+  const status = await getCachedReauthStatus(forceFresh);
+  return NextResponse.json(status);
 }

@@ -18,12 +18,14 @@ interface GcloudAuthStatus {
 
 export async function GET() {
   try {
-    // Get list of authenticated accounts
-    const { stdout: accountsOutput } = await execAsync(
-      'gcloud auth list --format="value(account,status)"',
-    );
+    const [accountsResult, projectResult] = await Promise.all([
+      execAsync('gcloud auth list --format="value(account,status)"'),
+      execAsync('gcloud config get-value project 2>/dev/null').catch(
+        () => ({ stdout: '' }),
+      ),
+    ]);
 
-    const accounts: GcloudAccount[] = accountsOutput
+    const accounts: GcloudAccount[] = accountsResult.stdout
       .trim()
       .split('\n')
       .filter(line => line.trim())
@@ -40,18 +42,7 @@ export async function GET() {
 
     const activeAccount =
       accounts.find(acc => acc.status === 'ACTIVE')?.account || null;
-
-    // Get current project
-    let currentProject: string | null = null;
-    try {
-      const { stdout: projectOutput } = await execAsync(
-        'gcloud config get-value project 2>/dev/null',
-      );
-      currentProject = projectOutput.trim() || null;
-    } catch {
-      // If no project is set, that's okay
-      currentProject = null;
-    }
+    const currentProject = projectResult.stdout.trim() || null;
 
     const status: GcloudAuthStatus = {
       activeAccount,

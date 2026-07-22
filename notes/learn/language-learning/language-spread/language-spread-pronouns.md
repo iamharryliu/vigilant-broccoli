@@ -4,15 +4,15 @@
 
 ### Subjective
 
-| English      | Swedish       | French    | Spanish |
-| :----------- | :------------ | :-------- | :------ |
-| I            | jag           | je        | yo      |
-| you          | du            | tu        | tú      |
-| he/she       | han/hon       | il/elle   | él/ella |
-| we           | vi            | nous      |         |
-| you (plural) | ni            | vous      |         |
-| they         | de            | ils/elles |         |
-| he/she/they  | sin/sitt/sina |           |         |
+| English      | Swedish       | French    | Spanish           |
+| :----------- | :------------ | :-------- | :---------------- |
+| I            | jag           | je        | yo                |
+| you          | du            | tu        | tú                |
+| he/she       | han/hon       | il/elle   | él/ella           |
+| we           | vi            | nous      | nosotros/nosotras |
+| you (plural) | ni            | vous      | vosotros/ustedes  |
+| they         | de            | ils/elles | ellos/ellas       |
+| he/she/they  | sin/sitt/sina |           |                   |
 
 ### Objective
 
@@ -27,14 +27,14 @@
 
 ## Possessive Pronouns
 
-| English      | Swedish       | French | Spanish          |
-| :----------- | :------------ | :----- | :--------------- |
-| mine         | min/mitt/mina |        |                  |
-| yours        | er            | vôtre  | tuya             |
-| his/hers/its | hans/hennes   |        |                  |
-| ours         | vår           | notres | nuestro/neuestra |
-| yours        |               |        |                  |
-| theirs       | deras         | leurs  | suyo/suya        |
+| English        | Swedish       | French      | Spanish         |
+| :------------- | :------------ | :---------- | :-------------- |
+| mine           | min/mitt/mina | mien/mienne | mío/mía         |
+| yours (sing.)  | din/ditt/dina | tien/tienne | tuya            |
+| his/hers/its   | hans/hennes   | sien/sienne | suyo/suya       |
+| ours           | vår           | nôtre       | nuestro/nuestra |
+| yours (plural) | er/ert/era    | vôtre       | vuestra/suya    |
+| theirs         | deras         | leurs       | suyo/suya       |
 
 ## Reflexive Pronouns
 
@@ -49,3 +49,16 @@ Examples: myself, yourself, himself, herself, itself, ourselves, yourselves, the
 | ourselves              |         |        |         |
 | yourselves             |         |        |         |
 | themselves             |         |        |         |
+
+## Relative Pronouns
+
+Introduce a clause giving more information about a noun.
+Examples: who, whom, whose, which, that
+
+| English | Swedish | French          | Spanish   |
+| :------ | :------ | :-------------- | :-------- |
+| who     | vem     | qui             | quien     |
+| whom    | vem     | qui             | quien     |
+| whose   | vems    | dont            | cuyo/cuya |
+| which   | vilken  | lequel/laquelle | cual      |
+| that    | som     | que/qui         | que       |

@@ -10,16 +10,18 @@ import {
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
 import { CLOUDFLARE_LINK } from '@vigilant-broccoli/links';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
 
 const CF_ACCOUNT_ID = '26d066ec62c4d27b8da5e9aebac17293';
 const CF_DASH = `https://dash.cloudflare.com/${CF_ACCOUNT_ID}`;
 const PAGES_DEV_SUFFIX = '.pages.dev';
 const TITLE = 'Wrangler Pages';
 const DELETE_POLL_INTERVAL_MS = 3000;
+const WRANGLER_POLL_INTERVAL_MS = 60000;
 
 const DELETION_STATUS = {
   DELETING: 'deleting',
@@ -134,11 +136,7 @@ export const WranglerPagesComponent = () => {
     }, 3000);
   };
 
-  useEffect(() => {
-    fetchWranglerPages();
-    const interval = setInterval(fetchWranglerPages, 60000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchWranglerPages, WRANGLER_POLL_INTERVAL_MS);
 
   const toItem = (project: WranglerProject): StatusCardListItem => {
     const primaryDomain = project.domains[0];

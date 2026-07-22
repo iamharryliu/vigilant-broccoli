@@ -42,14 +42,6 @@ AuthProvider wraps the whole app in `layout.tsx`, so every page (including `/log
 
 **Fix:** render the shell immediately (skeletons instead of `return null`); let public routes render unconditionally. Longer term, adopt `@supabase/ssr` cookie sessions so server components can fetch data, or at least start the homes fetch in parallel with session resolution.
 
-### 0d64c9. [performance] vb-manager-next dev-dashboard is a shell-exec polling storm
-
-**`projects/nx-workspace/apps/ui/vb-manager-next/src/app/(pages)/dev-dashboard/page.tsx`** and its API routes
-
-Every card polls its own API route and nearly every route shells out per request: `api/gcloud/reauth-needed` runs a real GCP round trip (`gcloud projects list`) every 30s and `api/gcloud/auth-status` runs two sequential `gcloud` invocations; wireguard polls every 10s; `api/docker/containers` runs `docker info` + `docker ps -a` sequentially every 30s; `libs/@vigilant-broccoli/github-workspace/src/lib/github.service.ts:119` execs one `gh api` per repo (N+1) per 60s poll. Thousands of process spawns and cloud API calls per day on the VM that also serves code-server.
-
-**Fix:** parallelize sequential execs; drop `docker info` (infer daemon-down from `docker ps` failing); lengthen intervals for slow-changing state (gcloud reauth 5–15 min, wireguard 30–60s); add a small per-route in-memory TTL cache (pattern exists in `api/speed-test/route.ts`); pause polling when `document.hidden`; replace per-repo `gh` execs with one GraphQL call or a 5–10 min server-side cache.
-
 ### 151a48. [performance] No Nx computation cache survives between CI runs — every run builds from cold
 
 **`projects/nx-workspace/nx.json:84`** (`"neverConnectToCloud": true`) · no `actions/cache` usage anywhere in `.github/`
@@ -289,6 +281,40 @@ The GROQ queries return raw `asset->url` with no image transforms, and the galle
 ### 1f0a7e. [maintenance] Next.js "inferred workspace root" warning
 
 - Multiple Next.js apps (`small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`, `hearth`, `employee-handler-ui`) log "Next.js inferred your workspace root, but it may not be correct" — caused by the repo having two lockfiles (root `pnpm-lock.yaml` and `projects/nx-workspace/pnpm-lock.yaml`). Fix by setting `outputFileTracingRoot` (or `turbopack.root`) explicitly in each app's Next.js config, or removing the redundant lockfile. Deferred — CI builds pass today (warning only); revisit if a tracing-root-sensitive deploy issue surfaces, especially for `hearth` given its Vercel serverless `sharp` bundling.
+
+### a5fb01. [security] upptime GitHub App private key has no rotation automation
+
+The upptime crons (`.github/workflows/cron-upptime.yml`, `cron-upptime-response-time.yml`) mint per-run installation tokens from a dedicated GitHub App (App ID `4350545`, hardcoded; Contents + Issues RW only) via `infrastructure/agent-sandbox/mint-github-app-token.sh`, using `UPPTIME_GH_APP_PRIVATE_KEY` from Vault `kv/data/secrets` (base64-encoded PEM). This key is what lets a push bypass the `main` ruleset (`infrastructure/terraform/github.tf` — `Integration 4350545` bypass actor), so it's security-relevant, yet nothing rotates it. It's absent from the `rotate-secrets` workflow (`.github/workflows/ci-rotate-secrets.yml`) and from the manual rotation inventory in `docs/infrastructure/secret-management.md`. Every other GitHub App/PAT credential is at least documented as a manual rotate-at-source item (`AGENT_GH_APP_PRIVATE_KEY`, `AGENT_GITHUB_TOKEN` — secret-management.md:66-67), and the app-key case even has a working precedent: `pnpm secret-rotation:profile-deploy-key` (`scripts/ci/rotate-profile-deploy-key.sh`) already does mint → verify → `vault kv patch` → delete-predecessors for an ed25519 deploy key.
+
+Desired end state: the key is on a rotation path — at minimum listed as a manual rotate-at-source item in secret-management.md; better, a scripted rotator following the repo's mint → verify → store → revoke pattern (`docs/infrastructure/secret-rotation-implementation.md`).
+
+**Steps:**
+
+1. Add `UPPTIME_GH_APP_PRIVATE_KEY` to the manual rotation inventory in `docs/infrastructure/secret-management.md` (the "Rotate at source, then `vault kv patch`" list), noting: generate a new private key on the app at https://github.com/settings/apps, `base64 -i key.pem | tr -d '\n'`, `vault kv patch kv/secrets UPPTIME_GH_APP_PRIVATE_KEY=...`, then delete the old key on the app. No redeploy needed — the crons read Vault fresh each run.
+2. Optional (preferred): script it as `pnpm secret-rotation:upptime-app-key`, modeled on `rotate-profile-deploy-key.sh`. Note the constraint — GitHub has no API to _generate_ an app private key (only humans can, in the app settings UI), so a rotator can only _verify a human-supplied new key and revoke old ones_, not fully self-serve. Scope accordingly, or document it as manual-only.
+3. If scripted, wire it into `pnpm secret-rotation:all` and the rotation table in `docs/infrastructure/secret-rotation-implementation.md`, matching the existing entries' columns.
+4. Cross-check `docs/infrastructure/secret-management.md`'s key inventory (Deploy secrets tier) actually lists `UPPTIME_GH_APP_PRIVATE_KEY` — it was added ad hoc during the GitHub App migration and may not be in the canonical inventory yet.
+
+### 0e704f. [security] Plan: route vb-email-service and vb-storage-service through vb-express instead of exposing them directly
+
+Follow-up to 455179. Unlike llm-service, these two services can't just have their public IPs released — they're called directly by apps that aren't on Fly's private network:
+
+- **vb-email-service**: called by vb-express (`apps/api/vb-express/src/routes/messaging.ts:99`) and by email-subscription-service (`apps/api/email-subscription-service/src/main.ts:30,90` — itself a Fly app, so this leg _can_ move to flycast independent of the rest), plus three Vercel-hosted callers that hit the public fly.dev URL directly: `apps/hearth/src/app/api/homes/[id]/members/route.ts:9-12`, `apps/ui/small-business-next/src/app/api/notify/route.ts:8-9`, `apps/ui/vb-manager-next/src/app/api/send-email-message/route.ts:22`.
+- **vb-storage-service** (bucket-service): called only by `apps/ui/vb-manager-next/src/app/api/bucket/route.ts:9-27` (upload/download/list), also from Vercel.
+- **email-subscription-service** itself has public `/api/subscribe`, `/api/unsubscribe`, `/api/notify` routes (`apps/api/email-subscription-service/src/main.ts:167-278`) with no in-repo caller found — needs a decision on whether it's intentionally a public-facing API (future newsletter signup) or can be locked down too.
+
+Vercel serverless functions can't join Fly's 6PN network, so fully closing this off means adding proxy/passthrough routes on vb-express and repointing those Vercel apps at vb-express's public URL instead of the backend services' fly.dev URLs — real app-code work across 4+ apps, not just a fly.toml change. This entry is scoping/planning only; no implementation.
+
+**Steps:**
+
+1. Decide per service whether to gateway it through vb-express or accept it stays public:
+   - vb-email-service: design a `POST /api/gateway/send-email`-style route on vb-express that forwards to email-service internally (flycast), matching the existing `API_KEY_HEADER`/`SHARED_APP_TOKEN` auth pattern (`llm-service.client.ts:15`, `messaging.ts`). If adopted, repoint hearth/small-business-next/vb-manager-next's `EMAIL_SERVICE_URL` at vb-express's public URL and update `scripts/deploy-vercel.ts:175-176`, which currently injects the raw email-service URL into Vercel env.
+   - vb-storage-service: design equivalent passthrough routes for `apps/ui/vb-manager-next/src/app/api/bucket/route.ts`'s upload/download/list operations, noting these may carry larger/streamed payloads than the JSON email gateway.
+   - email-subscription-service: resolve whether its public routes are intentional (legitimate exception to "vb-express only") or unused and safe to lock down once a real caller exists.
+2. For whichever services move behind the gateway, add the vb-express routes, then repeat 455179's lockdown steps (release public IPs, allocate flycast, update fly-configs) for each.
+3. Update the calling apps' env vars/URLs to point at vb-express instead of the backend services directly.
+4. Update `docs/api/deployment/fly-service-pattern.md` and `docs/infrastructure/network-management.md` once the target architecture is decided; cross-reference 4eb262 (private-networking performance) and 240ff8 (open email relay hardening), which overlap with whatever ends up staying public.
+5. Whatever stays public after step 1 should get hardening (240ff8 already covers vb-email-service's caller-controlled to/from/html; consider similar allowlisting for bucket-service) rather than being left exposed with no mitigation.
 
 ## P3
 

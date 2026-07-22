@@ -44,7 +44,7 @@ jobs:
             model: grok-3-mini
     name: ${{ matrix.environment }} ${{ matrix.provider }}
     env:
-      LLM_SERVICE_URL: https://${{ matrix.environment }}-vb-llm-service.fly.dev
+      LLM_SERVICE_URL: http://127.0.0.1:3000
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
@@ -55,6 +55,17 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # 1.6
+
+      - name: Tunnel to llm-service private network
+        run: |
+          flyctl proxy 3000:80 ${{ matrix.environment }}-vb-llm-service.flycast -a ${{ matrix.environment }}-vb-llm-service &
+          for i in $(seq 1 30); do
+            curl -sf "${LLM_SERVICE_URL}/" >/dev/null 2>&1 && break
+            sleep 1
+          done
 
       - name: Run e2e tests (${{ matrix.provider }})
         env:

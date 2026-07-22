@@ -13,6 +13,8 @@ export const TextToolsPage = () => {
       <CleanEnvConversionForm />
       <StubbedJSONValuesForm />
       <FormatBlockStringToSingleStringForm />
+      <TextToBase64Form />
+      <Base64ToTextForm />
       <CharacterCounter />
     </div>
   );
@@ -116,6 +118,38 @@ const FormatBlockStringToSingleStringForm = () => {
       initialText={''}
       sampleText={SAMPLE_BLOCK_STRING}
       conversionFn={EnvUtils.formatBlockStringToSingleLineString}
+    />
+  );
+};
+
+const SAMPLE_TEXT_FOR_BASE64 = `-----BEGIN PRIVATE KEY-----\nMIIBVAIBADANBgkqhki\n-----END PRIVATE KEY-----`;
+
+const TextToBase64Form = () => {
+  return (
+    <ConversionForm
+      copy={{
+        header: 'Text to Base64',
+        placeholder: SAMPLE_TEXT_FOR_BASE64,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_TEXT_FOR_BASE64}
+      conversionFn={EnvUtils.encodeBase64}
+    />
+  );
+};
+
+const SAMPLE_BASE64 = EnvUtils.encodeBase64('hello world');
+
+const Base64ToTextForm = () => {
+  return (
+    <ConversionForm
+      copy={{
+        header: 'Base64 to Text',
+        placeholder: SAMPLE_BASE64,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_BASE64}
+      conversionFn={EnvUtils.decodeBase64}
     />
   );
 };

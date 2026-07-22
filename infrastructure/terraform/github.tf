@@ -1,6 +1,6 @@
 resource "github_repository" "vigilant_broccoli" {
-  name        = var.github_repo
-  description = "idek"
+  name         = var.github_repo
+  description  = "idek"
   homepage_url = "https://iamharryliu.github.io/vigilant-broccoli/"
   visibility   = "public"
 
@@ -15,8 +15,8 @@ resource "github_repository" "vigilant_broccoli" {
   allow_auto_merge       = false
   delete_branch_on_merge = true
 
-  auto_init              = false
-  archive_on_destroy     = true
+  auto_init                   = false
+  archive_on_destroy          = true
   squash_merge_commit_title   = "COMMIT_OR_PR_TITLE"
   squash_merge_commit_message = "COMMIT_MESSAGES"
 }
@@ -47,25 +47,49 @@ resource "github_actions_secret" "gcp_workload_identity_provider" {
   value       = google_iam_workload_identity_pool_provider.github.name
 }
 
-resource "github_branch_protection" "main" {
-  repository_id = github_repository.vigilant_broccoli.node_id
-  pattern       = "main"
+locals {
+  ruleset_bypass_repository_role = 5
+}
 
-  # enforce_admins stays false so /iamharryliu (repo admin) can still push
-  # directly; required_pull_request_reviews still blocks non-admin pushers,
-  # e.g. the agent sandbox's GitHub App, which only has Contents/PR/Workflows RW.
-  enforce_admins                  = false
-  allows_force_pushes             = false
-  allows_deletions                = false
-  require_signed_commits          = false
-  required_linear_history         = false
-  require_conversation_resolution = false
+resource "github_repository_ruleset" "main" {
+  name        = "main"
+  repository  = github_repository.vigilant_broccoli.name
+  target      = "branch"
+  enforcement = "active"
 
-  required_pull_request_reviews {
-    required_approving_review_count = 0
+  conditions {
+    ref_name {
+      include = ["~DEFAULT_BRANCH"]
+      exclude = []
+    }
   }
 
-  force_push_bypassers = [
-    "/iamharryliu"
-  ]
+  # Admin bypass, matching the old enforce_admins = false. The built-in
+  # GitHub Actions integration can't be a bypass actor on a user-owned repo
+  # (GitHub rejects it outside an owner organization) — but a GitHub App you
+  # create and install directly on the repo is a normal, separate actor and
+  # isn't subject to that restriction. The upptime crons authenticate as
+  # such an app (Contents + Issues RW only, nothing else) to push status
+  # commits. The agent sandbox's GitHub App is deliberately NOT a bypass
+  # actor here — it goes through PRs, unlike this dedicated upptime app.
+  bypass_actors {
+    actor_id    = local.ruleset_bypass_repository_role
+    actor_type  = "RepositoryRole"
+    bypass_mode = "always"
+  }
+
+  bypass_actors {
+    actor_id    = var.upptime_gh_app_id
+    actor_type  = "Integration"
+    bypass_mode = "always"
+  }
+
+  rules {
+    deletion         = true
+    non_fast_forward = true
+
+    pull_request {
+      required_approving_review_count = 0
+    }
+  }
 }

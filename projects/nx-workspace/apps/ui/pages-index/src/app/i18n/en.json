@@ -95,10 +95,6 @@
   "API_DOCS_PAGE": {
     "TITLE": "API Docs",
     "DESCRIPTION": "Swagger documentation for services deployed on Fly.io.",
-    "LLM_SERVICE": {
-      "TITLE": "LLM Service",
-      "DESCRIPTION": "staging-vb-llm-service.fly.dev"
-    },
     "EMAIL_SERVICE": {
       "TITLE": "Email Service",
       "DESCRIPTION": "staging-vb-email-service.fly.dev"

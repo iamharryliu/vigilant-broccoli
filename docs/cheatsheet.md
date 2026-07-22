@@ -7,10 +7,12 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   open:repo                   Open GitHub repo
   open:repo:actions           Open GitHub Actions
   npm:packages                Open npm packages page
+  cheatsheet                  Print this cheatsheet
 
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
   format                      Format all files with Prettier
+  format:commit               Format given files with Prettier (pass paths)
   cloud:login                 Login to GCP and GitHub CLI
   gcp:login                   Login to GCP and set project
   gh:login                    Login to GitHub CLI
@@ -82,14 +84,18 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
   agentic:dev-sandbox:up      Fetch tokens from Vault into .env, then build + start contained Claude sandbox
                                (set SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 in infrastructure/agent-sandbox/.env to also inject those Vault secret keys)
-  agentic:dev-sandbox:cli     Open an interactive Claude session in the sandbox repo clone (fable; append --model <m> to override)
+  agentic:dev-sandbox:cli     Open an interactive Claude session in a persistent tmux session in the sandbox repo clone (auto mode, sonnet; --model <m> to override)
   agentic:dev-sandbox:shell   Open an interactive bash shell in the sandbox (dotfiles loaded)
   agentic:dev-sandbox:logs    Follow sandbox provisioning logs
   agentic:dev-sandbox:down    Stop the sandbox
   agentic:dev-sandbox:reset   Destroy sandbox volume and rebuild fresh
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
-  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR via /git-workflow (sonnet; --model <m> to override)
+  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override)
+                               (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
+  agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic:pr:update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
 
 🏠 HOMELAB
   homelab:up                  Start homelab services and Tailscale

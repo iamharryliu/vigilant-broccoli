@@ -2,8 +2,14 @@
 
 ## Stack
 
-- Next.js + React + TypeScript
-- Tailwind CSS
-- Supabase (auth)
-- AWS S3
-- Internal VB libs (`common-js`, `common-node`)
+- Language - TypeScript
+- Framework - Next.js (React)
+- Build Tool - Next.js
+- External libs
+  - Tailwind CSS
+- Internal libs
+  - `common-js`
+  - `common-node`
+- Cloud services
+  - Supabase (auth)
+  - AWS S3

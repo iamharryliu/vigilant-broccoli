@@ -10,6 +10,7 @@ on:
 permissions:
   contents: write
   issues: write
+  id-token: write
 
 concurrency:
   group: upptime
@@ -20,16 +21,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets UPPTIME_GH_APP_PRIVATE_KEY | UPPTIME_GH_APP_PRIVATE_KEY ;
+      - name: Mint upptime GitHub App installation token
+        env:
+          UPPTIME_GH_APP_ID: '4350545'
+        run: |
+          PEM_FILE=$(mktemp)
+          echo "$UPPTIME_GH_APP_PRIVATE_KEY" | base64 -d > "$PEM_FILE"
+          TOKEN=$(./infrastructure/agent-sandbox/mint-github-app-token.sh "$UPPTIME_GH_APP_ID" "$PEM_FILE")
+          rm -f "$PEM_FILE"
+          echo "::add-mask::$TOKEN"
+          echo "GH_PAT=$TOKEN" >> "$GITHUB_ENV"
+      - name: Point origin at the upptime app token for push
+        run: git remote set-url origin "https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git"
       - name: Warm fly.io services
         continue-on-error: true
         run: |
           urls=(
-            https://staging-vb-llm-service.fly.dev/
             https://staging-vb-storage-service.fly.dev/
             https://staging-vb-email-service.fly.dev/
             https://staging-email-subscription-service.fly.dev/
             https://staging-vb-express.fly.dev/
-            https://production-vb-llm-service.fly.dev/
             https://production-vb-storage-service.fly.dev/
             https://production-vb-email-service.fly.dev/
             https://production-email-subscription-service.fly.dev/
@@ -41,5 +61,3 @@ jobs:
           wait
           sleep 3
       - uses: upptime/uptime-monitor@65aad8bba77c40ec051f30e7329563f7f4cfab6e # v1.43.9
-        env:
-          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}

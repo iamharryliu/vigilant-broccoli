@@ -112,7 +112,6 @@ jobs:
           echo "[Fly.io Apps]"
           http_check "staging-vb-express" "https://staging-vb-express.fly.dev"
           http_check "staging-vb-email-service" "https://staging-vb-email-service.fly.dev"
-          http_check "staging-vb-llm-service" "https://staging-vb-llm-service.fly.dev"
           http_check "staging-vb-storage-service" "https://staging-vb-storage-service.fly.dev"
           http_check "staging-email-subscription-service" "https://staging-email-subscription-service.fly.dev"
 

@@ -2,6 +2,12 @@
 
 ## Stack
 
-- React + TypeScript + Vite
-- Tailwind CSS
-- Deployed to GitHub Pages
+- Language - TypeScript
+- Framework - React
+- Build Tool - Vite
+- External libs
+  - Tailwind CSS
+- Internal libs
+  - `react-lib`
+- Cloud services
+  - GitHub Pages
