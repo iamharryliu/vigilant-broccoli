@@ -1,10 +1,13 @@
 import { google } from 'googleapis';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { isExpiredError } from '@vigilant-broccoli/google-workspace';
 import { NextRequest, NextResponse } from 'next/server';
-import { getGoogleAccessToken } from '../../../../../libs/server-auth';
+import { getGoogleAccessTokenForRequest } from '../../../../../libs/google-token';
 
-const getAuthenticatedCalendarClient = (req: NextRequest) => {
-  const accessToken = getGoogleAccessToken(req);
+export const runtime = 'nodejs';
+
+const getAuthenticatedCalendarClient = async (req: NextRequest) => {
+  const accessToken = await getGoogleAccessTokenForRequest(req);
 
   const oauth2Client = new google.auth.OAuth2();
   oauth2Client.setCredentials({
@@ -14,9 +17,22 @@ const getAuthenticatedCalendarClient = (req: NextRequest) => {
   return google.calendar({ version: 'v3', auth: oauth2Client });
 };
 
+const errorResponse = (error: unknown, fallback: string) => {
+  if (isExpiredError(error)) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
+  }
+  return NextResponse.json(
+    { error: error instanceof Error ? error.message : fallback },
+    { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+  );
+};
+
 export async function GET(req: NextRequest) {
   try {
-    const calendar = getAuthenticatedCalendarClient(req);
+    const calendar = await getAuthenticatedCalendarClient(req);
     const calendarId = req.nextUrl.searchParams.get('calendarId') || 'primary';
 
     const now = new Date();
@@ -57,19 +73,13 @@ export async function GET(req: NextRequest) {
       upcomingEvents,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : 'Failed to fetch events',
-      },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
-    );
+    return errorResponse(error, 'Failed to fetch events');
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const calendar = getAuthenticatedCalendarClient(req);
+    const calendar = await getAuthenticatedCalendarClient(req);
     const body = await req.json();
     const calendarId = body.calendarId || 'primary';
     const timeZone = body.timeZone || 'America/New_York';
@@ -97,12 +107,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, event: response.data });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : 'Failed to create event',
-      },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
-    );
+    return errorResponse(error, 'Failed to create event');
   }
 }

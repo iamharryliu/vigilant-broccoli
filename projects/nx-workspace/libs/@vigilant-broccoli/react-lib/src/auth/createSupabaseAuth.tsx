@@ -66,7 +66,33 @@ export interface SupabaseAuth {
 export function createSupabaseAuth(
   options: CreateSupabaseAuthOptions,
 ): SupabaseAuth {
-  const { supabaseUrl, supabaseKey, googleScopes, routes } = options;
+  const {
+    supabaseUrl,
+    supabaseKey,
+    googleScopes,
+    offlineAccess,
+    onProviderRefreshToken,
+    routes,
+  } = options;
+
+  const OFFLINE_ACCESS_PARAMS = {
+    access_type: 'offline',
+    prompt: 'consent',
+  };
+
+  const captureProviderTokens = async (
+    session: Session | null,
+  ): Promise<void> => {
+    if (session?.provider_token) {
+      localStorage.setItem(GOOGLE_TOKEN_STORAGE_KEY, session.provider_token);
+    }
+    if (session?.provider_refresh_token && onProviderRefreshToken) {
+      await onProviderRefreshToken({
+        refreshToken: session.provider_refresh_token,
+        accessToken: session.access_token ?? null,
+      });
+    }
+  };
 
   let _supabase: SupabaseClient | null = null;
   const getSupabase = (): SupabaseClient => {
@@ -87,6 +113,7 @@ export function createSupabaseAuth(
       options: {
         redirectTo: `${window.location.origin}${routes.callback}`,
         ...(googleScopes ? { scopes: googleScopes } : {}),
+        ...(offlineAccess ? { queryParams: OFFLINE_ACCESS_PARAMS } : {}),
       },
     });
   };
@@ -142,12 +169,7 @@ export function createSupabaseAuth(
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-        if (nextSession?.provider_token) {
-          localStorage.setItem(
-            GOOGLE_TOKEN_STORAGE_KEY,
-            nextSession.provider_token,
-          );
-        }
+        void captureProviderTokens(nextSession);
         setSession(nextSession);
       });
 
@@ -191,15 +213,13 @@ export function createSupabaseAuth(
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (session?.provider_token) {
-          localStorage.setItem(
-            GOOGLE_TOKEN_STORAGE_KEY,
-            session.provider_token,
-          );
-        }
         const params = new URLSearchParams(window.location.search);
         const next = safeNextPath(params.get('next'), routes.home);
-        window.location.replace(session ? next : routes.login);
+        // Persist the refresh token before navigating away — otherwise the
+        // redirect cancels the in-flight POST and the token is never stored.
+        void captureProviderTokens(session).finally(() => {
+          window.location.replace(session ? next : routes.login);
+        });
       });
       return () => subscription.unsubscribe();
       // eslint-disable-next-line react-hooks/exhaustive-deps
