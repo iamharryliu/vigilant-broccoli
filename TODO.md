@@ -220,10 +220,6 @@ No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`ap
 
 On the rabbitmq VM the 300s poll is the deploy path for the socket server — keep it. On gitea (`cloud-init-gitea.yaml:84`) and code-server (`cloud-init-code-server.yaml:113`) the only watched images are third-party `:latest`: 288 registry polls/day buy nothing except surprise mid-day upgrades (which trigger 16dbe5). **Fix:** `WATCHTOWER_SCHEDULE` (e.g. nightly) on those two VMs. Pinning digests is tracked in 2ca4a3.
 
-### 984565. [performance] Local stack runs an obsolete second Immich container that likely crash-loops
-
-**`infrastructure/local/docker-compose.yml:40-57`** — `immich-microservices` runs a second full `immich-server:release` with `command: ['start.sh', 'microservices']`; Immich removed that entrypoint (v1.106, mid-2024), so under `restart: unless-stopped` this either crash-loops or doubles Immich's memory. The DB is pinned to `pgvecto-rs:pg16-v0.2.0`, which current Immich no longer supports — the `release` tag guarantees drift. **Fix:** delete the microservices service and pin `immich-server` to a version matched to the DB image.
-
 ### 9a3554. [performance] Every `pnpm tf:*` command pays a ~5–10s Bitwarden/gcloud secrets bootstrap
 
 **`infrastructure/terraform/scripts/load-vault-tf-env.sh:19-35`** — each invocation runs `bw status`, a network `gcloud secrets versions access`, `bw unlock`, `bw list folders`, `bw list items` — each `bw` call a ~0.5–1s Node CLI startup plus vault decryption, on every `tf:plan`/`tf:apply`/`tf:import`. **Fix:** cache `BW_SESSION` (0600 file under `$XDG_RUNTIME_DIR` or keychain) and the resolved token exports with a short TTL; re-derive only on failure.
