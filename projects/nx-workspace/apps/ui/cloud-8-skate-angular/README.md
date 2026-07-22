@@ -9,8 +9,15 @@
 
 ## Stack
 
-- Angular + TypeScript
-- Tailwind CSS
-- Sanity CMS (content)
-- Google Analytics, Google Calendar
-- Deployed to Cloudflare Pages
+- Language - TypeScript
+- Framework - Angular
+- Build Tool - Angular CLI
+- External libs
+  - Tailwind CSS
+- Internal libs
+  - `personal-common-js`
+- Cloud services
+  - Sanity (CMS)
+  - Google Analytics
+  - Google Calendar
+  - Cloudflare Pages

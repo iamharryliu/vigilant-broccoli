@@ -2,6 +2,10 @@
 
 ## Stack
 
-- Sanity Studio (v5) + React + TypeScript
-- styled-components
-- Manual deploy only (`nx manual:deploy cloud8skate-sanity`)
+- Language - TypeScript
+- Framework - Sanity Studio (v5, React)
+- Build Tool - Sanity CLI
+- External libs
+  - styled-components
+- Cloud services
+  - Sanity (studio hosting)

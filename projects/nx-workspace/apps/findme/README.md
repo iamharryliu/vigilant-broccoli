@@ -2,9 +2,15 @@
 
 ## Stack
 
-- Next.js + React + TypeScript
-- Supabase (live location sync)
-- Leaflet / react-leaflet
-- Internal VB libs (`common-browser`, `react-lib`)
-- i18n
-- Deployed to Vercel
+- Language - TypeScript
+- Framework - Next.js (React)
+- Build Tool - Next.js
+- External libs
+  - Leaflet / react-leaflet
+  - i18n
+- Internal libs
+  - `common-browser`
+  - `react-lib`
+- Cloud services
+  - Supabase (live location sync)
+  - Vercel
