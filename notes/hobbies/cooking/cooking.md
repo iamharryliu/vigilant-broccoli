@@ -9,7 +9,4 @@
 - [Cooking Techniques](./cooking-techniques/cooking-techniques.md)
 - [Recipes](./recipes/recipes.md)
 - [Food Notes](./food-notes/food-notes.md)
-- Drinks
-  - [Coffee](./drinks/coffee.md)
-  - [Alcohol](./drinks/alcohol.md)
 - [Cooking Lingo](./cooking-lingo.md)
