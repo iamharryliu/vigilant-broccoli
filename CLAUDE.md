@@ -2,6 +2,7 @@
 
 ## Doc Map
 
+- [Agent Context Map](./docs/agent-diagram.md) — mermaid diagram of how this Doc Map, `docs/`, and skills/commands relate; update it whenever an agent-related change lands (Doc Map entries added/removed, `docs/` structure changed, or skills/commands added/removed/rewired) — e.g. #167
 - [Dev Tooling](./docs/DEV_TOOLING.md) — root `package.json` CLI scripts (SSH, logs, deploys, resets, service management) + cheatsheet; read first before adding or changing root scripts
 - [CI](./docs/CI.md) — read first before touching workflows, monitoring, or IaC
   - GitHub Actions — action pinning, README badges, cron dispatch, workflow secrets
