@@ -10,7 +10,7 @@
       "options": {
         "commands": [
           {
-            "command": "node --import tsx apps/ui/personal-website-react/scripts/download-resume.ts && rsync -ar --exclude '__init__.py' --include '*/' --include '*.ts' --include '*.go' --include '*.py' --exclude '*' ../grind-75 apps/ui/personal-website-react/public/assets/grind-75/ --delete && node --import tsx file_structure_to_json.ts apps/ui/personal-website-react/public/assets/grind-75/grind-75/ ./apps/ui/personal-website-react/public/assets/grind-75/grind-75.json"
+            "command": "node --import tsx apps/ui/personal-website-react/scripts/download-resume.ts"
           }
         ]
       }
