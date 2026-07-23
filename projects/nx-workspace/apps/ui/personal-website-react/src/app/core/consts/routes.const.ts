@@ -60,18 +60,6 @@ export const CALENDAR_ROUTE: RouteMeta = {
   description: "Harry Liu's calendar.",
 };
 
-export const LEETCODE_ROUTE: RouteMeta = {
-  path: '/grind-75',
-  title: 'grind 75',
-  description: 'Grind 75 LeetCode solutions by Harry Liu.',
-};
-
-export const LEETCODE_SOLUTION_ROUTE: RouteMeta = {
-  path: '/grind-75/:language/:filename',
-  title: 'grind75',
-  description: 'Grind 75 LeetCode solutions by Harry Liu.',
-};
-
 const internalUrl = (path: string) =>
   path === '/' ? '/' : path.startsWith('/') ? path : `/${path}`;
 
@@ -165,6 +153,4 @@ export const ROUTES: RouteMeta[] = [
   LINK_TREE_ROUTE,
   CALENDAR_ROUTE,
   COMPONENT_LIBRARY_ROUTE,
-  LEETCODE_ROUTE,
-  LEETCODE_SOLUTION_ROUTE,
 ];
