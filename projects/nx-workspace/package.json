@@ -42,6 +42,7 @@
     "@nx/playwright": "23.0.1",
     "@nx/react": "23.0.1",
     "@nx/rollup": "23.0.1",
+    "@nx/s3-cache": "5.0.7",
     "@nx/vite": "23.0.1",
     "@nx/vitest": "23.0.1",
     "@nx/web": "23.0.1",

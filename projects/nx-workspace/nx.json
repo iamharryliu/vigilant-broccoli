@@ -82,6 +82,14 @@
     }
   },
   "neverConnectToCloud": true,
+  "s3": {
+    "region": "auto",
+    "bucket": "vigilant-broccoli-nx-cache",
+    "endpoint": "https://26d066ec62c4d27b8da5e9aebac17293.r2.cloudflarestorage.com",
+    "forcePathStyle": true,
+    "disableChecksum": true,
+    "localMode": "no-cache"
+  },
   "generators": {
     "@nx/angular:application": {
       "linter": "eslint",

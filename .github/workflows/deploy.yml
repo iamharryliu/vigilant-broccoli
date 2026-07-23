@@ -89,6 +89,9 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets NPM_TOKEN | NODE_AUTH_TOKEN ;
+            kv/data/secrets NX_KEY | NX_KEY ;
+            kv/data/secrets CLOUDFLARE_R2_ACCESS_KEY_ID | NX_CACHE_ACCESS_KEY_ID ;
+            kv/data/secrets CLOUDFLARE_R2_SECRET_ACCESS_KEY | NX_CACHE_SECRET_ACCESS_KEY ;
 
       - name: Check if npm publish needed
         id: check
@@ -106,6 +109,9 @@ jobs:
       - name: Build packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.NX_CACHE_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.NX_CACHE_SECRET_ACCESS_KEY }}
         run: pnpm exec nx run-many -t build --projects="${{ steps.check.outputs.projects }}"
 
       - name: Publish npm packages
@@ -171,6 +177,9 @@ jobs:
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
             kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN ;
             kv/data/secrets SANITY_AUTH_TOKEN | SANITY_AUTH_TOKEN ;
+            kv/data/secrets NX_KEY | NX_KEY ;
+            kv/data/secrets CLOUDFLARE_R2_ACCESS_KEY_ID | NX_CACHE_ACCESS_KEY_ID ;
+            kv/data/secrets CLOUDFLARE_R2_SECRET_ACCESS_KEY | NX_CACHE_SECRET_ACCESS_KEY ;
 
       - name: Fetch Cloudflare Access service token from Secret Manager
         id: cf-access
@@ -200,6 +209,8 @@ jobs:
           VAULT_ADDR: https://vault.harryliu.dev
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
+          AWS_ACCESS_KEY_ID: ${{ env.NX_CACHE_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.NX_CACHE_SECRET_ACCESS_KEY }}
         run: ${{ steps.check.outputs.deploy_cmd }}
 
   deploy-github-pages:

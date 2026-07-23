@@ -33,6 +33,7 @@ Where state lives, per app:
 | MongoDB (`vb-manager` db)  | `vb-manager-next`                                     | `MONGODB_URI`                                                                |
 | SQLite on a fly volume     | `vb-express`                                          | `[mounts]` in its fly config, `DATABASE_PATH`                                |
 | Cloudflare R2 buckets      | `hearth` (`home-management` bucket), `bucket-service` | Bucket names may predate app renames                                         |
+| Cloudflare R2 (`vigilant-broccoli-nx-cache`) | Nx self-hosted remote build cache (`@nx/s3-cache`)    | Disposable; 7-day lifecycle expiry keeps it in the free tier. No backup      |
 | Gitea (`git.harryliu.dev`) | journal, strandbaden repos                            | Self-hosted on OCI                                                           |
 
 Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repos, mongodump, pg_dump) into `gs://vigilant-broccoli-backup`, keeping the last 7. **A new persistent store must get a backup job there.**
