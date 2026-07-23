@@ -72,6 +72,20 @@ variable "cloudflare_zone_id" {
   default = "6cb0ddc52a5da0094c589bdf7adc16ad"
 }
 
+variable "nx_cache_r2_bucket" {
+  description = "R2 bucket backing the Nx self-hosted remote cache (see cloudflare-nx-cache.tf)."
+  type        = string
+  default     = "nx-cache"
+}
+
+# 7 days. Cache entries are cheap to regenerate (a miss just rebuilds), so a
+# short TTL keeps the bucket comfortably inside R2's 10 GB free tier.
+variable "nx_cache_r2_ttl_seconds" {
+  description = "Age in seconds after which Nx remote-cache objects are deleted by the R2 lifecycle rule."
+  type        = number
+  default     = 604800
+}
+
 variable "code_server_domain" {
   type    = string
   default = "code.harryliu.dev"
