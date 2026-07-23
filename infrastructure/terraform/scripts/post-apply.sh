@@ -110,6 +110,11 @@ sync_secrets_to_vault() {
     echo "Broker rejects the Terraform password (rotation owns it) — leaving RABBITMQ_CONNECTION_STRING in Vault untouched."
   fi
 
+  local rmq_conn_patch_arg=""
+  if [ "$rmq_conn_patch_needed" = true ]; then
+    rmq_conn_patch_arg='RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR"'
+  fi
+
   local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
   # Trailing newline is required — $(...) strips it, and OpenSSH/libcrypto reject a key without it.
   local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
@@ -126,6 +131,7 @@ export VAULT_CACERT=/etc/vault/tls/vault.crt
 if vault kv get kv/secrets >/dev/null 2>&1; then
   vault kv patch kv/secrets \
     RABBITMQ_CA_CERT="$CA_CERT_B64" \
+    '"${rmq_conn_patch_arg}"' \
     EMAIL_SERVICE_API_KEY="$EMAIL_API_KEY" \
     GOOGLE_GCS_SA_CREDENTIALS="$GCS_SA_CREDENTIALS" \
     CODE_SERVER_PASSWORD="$CODE_SERVER_PASSWORD" \
@@ -139,13 +145,6 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
     JOURNAL_CF_ACCESS_CLIENT_ID="$JOURNAL_CF_ACCESS_CLIENT_ID" \
     JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET"
-'
-  if [ "$rmq_conn_patch_needed" = true ]; then
-    vault_script+='
-  vault kv patch kv/secrets RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR"
-'
-  fi
-  vault_script+='
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT="$CA_CERT_B64" \
