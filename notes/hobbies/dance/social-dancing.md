@@ -3,6 +3,15 @@
 - [Salsa](./salsa.md)
 - [Bachata](./bachata.md)
 
+## Exercises
+
+- 1 hand only (left and right)
+- shoulders only
+- waist only
+- palms only
+- eyes closed
+- [STUCK? Create New Salsa Moves With These Tricks](https://www.youtube.com/watch?v=CXQQ99_hq5k)
+
 ## Types of Moves
 
 - Dips

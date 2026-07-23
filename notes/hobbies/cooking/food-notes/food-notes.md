@@ -14,6 +14,11 @@
 - [Sourdough](./sourdough.md)
 - [Sprinkles](./spinkles.md)
 
-- Quorn - Fungus based meat alternative.
-- Deglazing is to achieve browned caramelized bits in food.
-- Cook vegetables on high heat.
+## Seasonal Produce
+
+| Season     | Vegetables                                                                            | Fruits                                                               | Herbs                                           |
+| ---------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------- |
+| **Spring** | Asparagus, peas, artichokes, radishes, lettuce, spinach, spring onions                | Strawberries, rhubarb, lemons                                        | Basil, chives, dill, parsley, tarragon          |
+| **Summer** | Tomatoes, zucchini, bell peppers, cucumbers, eggplant, corn, green beans, squash      | Berries, peaches, apricots, nectarines, melons, cherries             | Basil, cilantro, mint, oregano, rosemary, thyme |
+| **Fall**   | Pumpkin, squash, sweet potatoes, beets, Brussels sprouts, cabbage, carrots, mushrooms | Apples, pears, grapes, figs, pomegranates                            | Sage, thyme, rosemary, oregano                  |
+| **Winter** | Root vegetables (potatoes, parsnips, turnips), kale, broccoli, cauliflower, cabbage   | Citrus (oranges, lemons, grapefruit), persimmons, pomegranates, kiwi | Rosemary, thyme, sage, bay leaves               |
