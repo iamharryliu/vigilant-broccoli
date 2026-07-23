@@ -18,7 +18,7 @@
 set -euo pipefail
 
 DIST_DIR="${1:?usage: smoke-dist.sh <dist-dir>}"
-PORT="${SMOKE_PORT:-39871}"
+PORT="${SMOKE_PORT:-$((30000 + ($$ % 20000)))}"
 TIMEOUT_SECONDS="${SMOKE_TIMEOUT_SECONDS:-20}"
 HEALTH_PATH="${SMOKE_HEALTH_PATH:-/}"
 
