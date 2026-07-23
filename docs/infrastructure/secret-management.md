@@ -39,6 +39,8 @@ Rotate manually at
 - `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS`
 - `CLOUDFLARE_R2_ACCESS_KEY_ID`
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
+- `NX_CACHE_R2_ACCESS_KEY_ID` — bucket-scoped ("Object Read & Write" on `nx-cache`) R2 token for the Nx remote cache
+- `NX_CACHE_R2_SECRET_ACCESS_KEY`
 
 ### Other
 

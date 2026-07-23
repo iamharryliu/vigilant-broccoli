@@ -43,3 +43,12 @@ output "journal_url" {
 output "docs_url" {
   value = "https://${var.docs_domain}"
 }
+
+output "nx_cache_r2_bucket" {
+  value = cloudflare_r2_bucket.nx_cache.name
+}
+
+output "nx_cache_r2_endpoint" {
+  description = "S3 endpoint for the Nx remote cache; matches the `endpoint` in nx.json's s3 config."
+  value       = "https://${var.cloudflare_account_id}.r2.cloudflarestorage.com"
+}

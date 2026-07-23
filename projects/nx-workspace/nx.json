@@ -81,6 +81,13 @@
       "inputs": ["default", "^default"]
     }
   },
+  "s3": {
+    "region": "auto",
+    "endpoint": "https://26d066ec62c4d27b8da5e9aebac17293.r2.cloudflarestorage.com",
+    "bucket": "nx-cache",
+    "forcePathStyle": true,
+    "localMode": "read-only"
+  },
   "neverConnectToCloud": true,
   "generators": {
     "@nx/angular:application": {
