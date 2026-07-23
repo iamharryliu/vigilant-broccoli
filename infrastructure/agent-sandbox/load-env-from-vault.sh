@@ -6,6 +6,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../config.sh"
+source "${SCRIPT_DIR}/../lib/ssh-secrets.sh"
 
 SOURCED=0
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] && SOURCED=1
@@ -27,16 +28,12 @@ VAULT_TOKEN=$(gcloud secrets versions access latest \
   --project="${GCP_PROJECT}")
 
 echo "Fetching agent sandbox tokens from Vault..." >&2
-SECRETS=$(gcloud compute ssh "${VM_NAME}" \
-  --zone="${GCP_ZONE}" \
-  --tunnel-through-iap \
-  --command="
+SECRETS=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
 
-vault kv get -format=json ${VAULT_KV_PATH}/secrets | jq '.data.data'
-")
+vault kv get -format=json '"${VAULT_KV_PATH}"'/secrets | jq ".data.data"
+' VAULT_TOKEN "$VAULT_TOKEN")
 
 CLAUDE_CODE_OAUTH_TOKEN=$(echo "$SECRETS" | jq -r '.CLAUDE_CODE_OAUTH_TOKEN // empty')
 AGENT_GH_APP_ID=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_ID // empty')
