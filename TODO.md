@@ -124,12 +124,6 @@ Role `github-actions-role` is usable by any job with `id-token: write` — inclu
 
 The repo is public, so Actions logs are world-readable. Only `RMQ_PASS` is masked; host + username print in clear, and the workflow proves 5671/15671 are internet-reachable — two of three credentials for online brute force. **Fix:** drop the echo or `::add-mask::` host and user; ideally firewall the management UI (cf. 20177f).
 
-### 415136. [security] Secrets embedded in `gcloud ssh --command` strings / CLI args
-
-**`infrastructure/terraform/scripts/post-apply.sh:119-122`**, `scripts/ci/rotate-profile-deploy-key.sh`, `packer/scripts/rotate-*.sh`, `run-vault-*.sh` (e.g. `rotate-resend-key.sh:82` `flyctl secrets set … RESEND_API_KEY=…`)
-
-Vault root token, RabbitMQ password, GCS SA private key, code-server password, CI SSH private key, and CF Access client secrets are interpolated inline into remote `--command=` strings and `flyctl` argv — visible in `ps`/`/proc/*/cmdline` on both ends. Also a quoting-injection risk if any value ever contains `'`. **Fix:** pipe secrets over stdin (`sync-socket-server-token.sh` already does this correctly).
-
 ### 427e54. [performance] Follower jobs fire after every deploy — even no-op deploys
 
 Thirteen workflows trigger on `workflow_run` (health-check, notify-complete, e2e suites incl. the 5-provider paid-token `test-e2e-llm` matrix, security suites, smoke) — roughly 25 jobs, most doing their own checkout + OIDC + Secret Manager + Vault round trip. `deploy` succeeds even when `has_deployments=false` (`deploy.yml:140-153`), so a push touching nothing deployable still triggers the full fan-out against production; it also double-fires via `ci-rotate-secrets` calling deploy. **Fix:** expose what was actually deployed (job output → `repository_dispatch` per service or an artifact followers check) and exit early otherwise; drop the cron+per-deploy duplication on the `test-security-*` suites.

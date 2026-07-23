@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../config.sh"
+source "${SCRIPT_DIR}/../../lib/ssh-secrets.sh"
 
 TERRAFORM_DIR="$SCRIPT_DIR/../"
 WG_CONF="/opt/homebrew/etc/wireguard/vb.conf"
@@ -97,13 +98,14 @@ sync_secrets_to_vault() {
     sleep 2
   done
 
-  local rmq_conn_patch_line=""
+  local rmq_conn_patch_needed=false
   if [ "$rmq_ready" != true ]; then
     echo "Warning: RabbitMQ broker not reachable — leaving RABBITMQ_CONNECTION_STRING untouched (rerun pnpm tf:post-apply once the broker is up)."
-  elif ssh $rmq_ssh_opts "ubuntu@${rabbitmq_ip}" \
-    "sudo docker exec rabbitmq rabbitmqctl authenticate_user ${rabbitmq_user} '${rabbitmq_password}'" >/dev/null 2>&1; then
+  elif ssh_secrets "$rmq_ssh_opts" "ubuntu@${rabbitmq_ip}" \
+    'sudo docker exec rabbitmq rabbitmqctl authenticate_user '"${rabbitmq_user}"' "$RABBITMQ_PASSWORD"' \
+    RABBITMQ_PASSWORD "$rabbitmq_password" >/dev/null 2>&1; then
     echo "Broker accepts the Terraform password — will sync RABBITMQ_CONNECTION_STRING to Vault."
-    rmq_conn_patch_line="RABBITMQ_CONNECTION_STRING='${conn_str}'"
+    rmq_conn_patch_needed=true
   else
     echo "Broker rejects the Terraform password (rotation owns it) — leaving RABBITMQ_CONNECTION_STRING in Vault untouched."
   fi
@@ -113,52 +115,76 @@ sync_secrets_to_vault() {
   local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
   local socket_server_url="https://socket.harryliu.dev"
 
-  gcloud compute ssh "${vm_name}" \
-    --zone="${vm_zone}" \
-    --tunnel-through-iap \
-    --command="
+  # Everything below is sent to the remote shell as literal (single-quoted)
+  # text — no local variable ever gets embedded into the command string.
+  # Actual values are decoded from stdin by gcloud_ssh_secrets before this
+  # script body runs, so they never appear in `ps`/`/proc/*/cmdline`.
+  local vault_script='
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${vault_token}'
 
 if vault kv get kv/secrets >/dev/null 2>&1; then
   vault kv patch kv/secrets \
-    RABBITMQ_CA_CERT='${ca_cert_b64}' \
-    ${rmq_conn_patch_line} \
-    EMAIL_SERVICE_API_KEY='${email_api_key}' \
-    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
-    CODE_SERVER_PASSWORD='${code_server_password}' \
-    SOCKET_SERVER_URL='${socket_server_url}' \
-    OCI_VM_SSH_KEY='${ci_ssh_key_b64}' \
-    GITEA_CF_ACCESS_CLIENT_ID='${gitea_cf_access_client_id}' \
-    GITEA_CF_ACCESS_CLIENT_SECRET='${gitea_cf_access_client_secret}' \
-    GITEA_VM_IP='${gitea_ip}' \
-    CODE_SERVER_CF_ACCESS_CLIENT_ID='${code_server_cf_access_client_id}' \
-    CODE_SERVER_CF_ACCESS_CLIENT_SECRET='${code_server_cf_access_client_secret}' \
-    CODE_SERVER_VM_IP='${code_server_ip}' \
-    JOURNAL_CF_ACCESS_CLIENT_ID='${journal_cf_access_client_id}' \
-    JOURNAL_CF_ACCESS_CLIENT_SECRET='${journal_cf_access_client_secret}'
+    RABBITMQ_CA_CERT="$CA_CERT_B64" \
+    EMAIL_SERVICE_API_KEY="$EMAIL_API_KEY" \
+    GOOGLE_GCS_SA_CREDENTIALS="$GCS_SA_CREDENTIALS" \
+    CODE_SERVER_PASSWORD="$CODE_SERVER_PASSWORD" \
+    SOCKET_SERVER_URL="$SOCKET_SERVER_URL" \
+    OCI_VM_SSH_KEY="$CI_SSH_KEY_B64" \
+    GITEA_CF_ACCESS_CLIENT_ID="$GITEA_CF_ACCESS_CLIENT_ID" \
+    GITEA_CF_ACCESS_CLIENT_SECRET="$GITEA_CF_ACCESS_CLIENT_SECRET" \
+    GITEA_VM_IP="$GITEA_IP" \
+    CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
+    CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
+    CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
+    JOURNAL_CF_ACCESS_CLIENT_ID="$JOURNAL_CF_ACCESS_CLIENT_ID" \
+    JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET"
+'
+  if [ "$rmq_conn_patch_needed" = true ]; then
+    vault_script+='
+  vault kv patch kv/secrets RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR"
+'
+  fi
+  vault_script+='
 else
   vault kv put kv/secrets \
-    RABBITMQ_CA_CERT='${ca_cert_b64}' \
-    RABBITMQ_CONNECTION_STRING='${conn_str}' \
-    EMAIL_SERVICE_API_KEY='${email_api_key}' \
-    GOOGLE_GCS_SA_CREDENTIALS='${gcs_sa_credentials}' \
-    CODE_SERVER_PASSWORD='${code_server_password}' \
-    SOCKET_SERVER_URL='${socket_server_url}' \
-    OCI_VM_SSH_KEY='${ci_ssh_key_b64}' \
-    GITEA_CF_ACCESS_CLIENT_ID='${gitea_cf_access_client_id}' \
-    GITEA_CF_ACCESS_CLIENT_SECRET='${gitea_cf_access_client_secret}' \
-    GITEA_VM_IP='${gitea_ip}' \
-    CODE_SERVER_CF_ACCESS_CLIENT_ID='${code_server_cf_access_client_id}' \
-    CODE_SERVER_CF_ACCESS_CLIENT_SECRET='${code_server_cf_access_client_secret}' \
-    CODE_SERVER_VM_IP='${code_server_ip}' \
-    JOURNAL_CF_ACCESS_CLIENT_ID='${journal_cf_access_client_id}' \
-    JOURNAL_CF_ACCESS_CLIENT_SECRET='${journal_cf_access_client_secret}'
+    RABBITMQ_CA_CERT="$CA_CERT_B64" \
+    RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR" \
+    EMAIL_SERVICE_API_KEY="$EMAIL_API_KEY" \
+    GOOGLE_GCS_SA_CREDENTIALS="$GCS_SA_CREDENTIALS" \
+    CODE_SERVER_PASSWORD="$CODE_SERVER_PASSWORD" \
+    SOCKET_SERVER_URL="$SOCKET_SERVER_URL" \
+    OCI_VM_SSH_KEY="$CI_SSH_KEY_B64" \
+    GITEA_CF_ACCESS_CLIENT_ID="$GITEA_CF_ACCESS_CLIENT_ID" \
+    GITEA_CF_ACCESS_CLIENT_SECRET="$GITEA_CF_ACCESS_CLIENT_SECRET" \
+    GITEA_VM_IP="$GITEA_IP" \
+    CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
+    CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
+    CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
+    JOURNAL_CF_ACCESS_CLIENT_ID="$JOURNAL_CF_ACCESS_CLIENT_ID" \
+    JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET"
 fi
 
-echo 'Secrets synced to Vault'
-"
+echo "Secrets synced to Vault"
+'
+
+  gcloud_ssh_secrets "${vm_name}" "${vm_zone}" "$vault_script" \
+    VAULT_TOKEN "$vault_token" \
+    CA_CERT_B64 "$ca_cert_b64" \
+    RMQ_CONN_STR "$conn_str" \
+    EMAIL_API_KEY "$email_api_key" \
+    GCS_SA_CREDENTIALS "$gcs_sa_credentials" \
+    CODE_SERVER_PASSWORD "$code_server_password" \
+    SOCKET_SERVER_URL "$socket_server_url" \
+    CI_SSH_KEY_B64 "$ci_ssh_key_b64" \
+    GITEA_CF_ACCESS_CLIENT_ID "$gitea_cf_access_client_id" \
+    GITEA_CF_ACCESS_CLIENT_SECRET "$gitea_cf_access_client_secret" \
+    GITEA_IP "$gitea_ip" \
+    CODE_SERVER_CF_ACCESS_CLIENT_ID "$code_server_cf_access_client_id" \
+    CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
+    CODE_SERVER_IP "$code_server_ip" \
+    JOURNAL_CF_ACCESS_CLIENT_ID "$journal_cf_access_client_id" \
+    JOURNAL_CF_ACCESS_CLIENT_SECRET "$journal_cf_access_client_secret"
   echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
 
   echo "Ensuring CI SSH key on socket-server VM (${rabbitmq_ip})..."

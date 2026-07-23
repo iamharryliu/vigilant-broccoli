@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 INIT_OUTPUT=$(gcloud compute ssh "${VM_NAME}" \
   --zone="${GCP_ZONE}" \
@@ -42,14 +43,10 @@ else
 fi
 
 echo "Configuring Vault..."
-gcloud compute ssh "${VM_NAME}" \
-  --zone="${GCP_ZONE}" \
-  --tunnel-through-iap \
-  --command="
+gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" "
 set -e
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
 
 echo 'Enabling KV v2 at ${VAULT_KV_PATH}/...'
 vault secrets enable -path=${VAULT_KV_PATH} kv-v2 2>/dev/null || echo '  already enabled'
@@ -120,4 +117,4 @@ echo 'Creating kv/test placeholder...'
 vault kv put ${VAULT_KV_PATH}/test test=test
 
 echo 'Done.'
-"
+" VAULT_TOKEN "$VAULT_TOKEN"

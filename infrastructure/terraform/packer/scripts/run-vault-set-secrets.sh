@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 SECRETS_FILE="$HOME/Desktop/vault-secrets.json"
 
@@ -31,15 +32,11 @@ if [ $? -ne 0 ] || [ -z "$KV_ARGS" ]; then
 fi
 
 echo "Setting secrets in Vault..."
-gcloud compute ssh "${VM_NAME}" \
-  --zone="${GCP_ZONE}" \
-  --tunnel-through-iap \
-  --command="
+gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
 
-vault kv put ${VAULT_KV_PATH}/secrets ${KV_ARGS}
+eval "vault kv put '"${VAULT_KV_PATH}"'/secrets $KV_ARGS"
 
-echo 'Secrets set successfully.'
-"
+echo "Secrets set successfully."
+' VAULT_TOKEN "$VAULT_TOKEN" KV_ARGS "$KV_ARGS"
