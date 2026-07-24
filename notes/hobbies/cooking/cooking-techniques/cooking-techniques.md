@@ -1,7 +1,5 @@
 # Cooking Techniques
 
-- [Cutting](./cutting-techniques.md)
-- [Pickling](./pickling.md)
-- [Brining](./brining.md)
-- [Stir Fry](../recipes/stir-fry.md)
 - [Ingredient Prepping](./ingredient-prepping.md)
+- [How to Dice Red Onion](https://www.youtube.com/watch?v=sB8eDkyPT-E)
+- [How to Cut A Bell Pepper | Gordon Ramsay](https://www.youtube.com/watch?v=hZGqtmwboHU)
