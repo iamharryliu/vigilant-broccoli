@@ -60,4 +60,4 @@ jobs:
           done
           wait
           sleep 3
-      - uses: upptime/uptime-monitor@65aad8bba77c40ec051f30e7329563f7f4cfab6e # v1.43.9
+      - uses: upptime/uptime-monitor@7d817ff35938c9c706acb7c86ed8d52e22cae2b7 # v1.43.10
