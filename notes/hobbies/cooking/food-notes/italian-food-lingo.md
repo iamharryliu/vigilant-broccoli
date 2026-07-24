@@ -1,6 +1,0 @@
-# Italian Food Lingo
-
-| Term             | Description                                                                                                                                                                                                                                                                                   |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Bronze Dye Pasta | Pasta extruded through bronze dies, creating a rough, textured surface. More porous than Teflon-extruded pasta, the rougher surface helps sauce adhere better. Generally preferred for its superior sauce retention and mouthfeel, though it typically costs slightly more than smooth pasta. |
-| Mantecare        | The technique of tossing and combining pasta with sauce in a pan, using a combination of heat, movement, and often pasta water to create an emulsion. The motion helps the sauce coat the pasta evenly and bind together.                                                                     |

@@ -4,7 +4,6 @@
 
 - [Cooking Techniques](#cooking-techniques)
 - [Types of Cuts](#types-of-cuts)
-- [Basic Tastes](#basic-tastes)
 - [Food Science & Components](#food-science--components)
 - [Ingredients & Food Products](#ingredients--food-products)
 - [Asian Food Lingo](#asian-food-lingo)
@@ -31,44 +30,44 @@
 | Julienne   | Thin matchstick-shaped strips, about ⅛ inch (3 mm) thick and about 2 inches (5 cm) long.              |       |
 | Chiffonade | Thin ribbons, usually made by rolling leafy herbs or greens before slicing.                           |       |
 
-## Basic Tastes
-
-| Term   | Description                                                                                                                                                                |
-| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Bitter | One of the five basic tastes. Characterized by a sharp, sometimes astringent flavor commonly found in coffee, dark chocolate, kale, and many leafy greens.                 |
-| Salty  | One of the five basic tastes. Produced by dissolved salts, primarily sodium chloride, and enhances or balances other flavors.                                              |
-| Sour   | One of the five basic tastes. Caused by acids and recognized by a tart or tangy flavor, as in lemons, vinegar, and yogurt.                                                 |
-| Sweet  | One of the five basic tastes. Associated with sugars and some sweeteners, providing a pleasant sugary flavor found in fruits, honey, and desserts.                         |
-| Umami  | One of the five basic tastes. A savory, rich flavor associated with glutamates and nucleotides, commonly found in mushrooms, tomatoes, aged cheeses, soy sauce, and meats. |
-
 ## Food Science & Components
 
-| Term              | Description                                                                                                                                                                                                                               |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Caramelization    | The browning of sugars when heated, producing new flavors, aromas, and a brown color. Unlike the Maillard reaction, caramelization does not require proteins or amino acids.                                                              |
-| Cellulose         | An insoluble structural carbohydrate that forms plant cell walls. Humans cannot digest cellulose, so it functions as dietary fiber, contributing texture and structure to fruits, vegetables, and grains.                                 |
-| Collagen          | The primary structural protein found in connective tissue, skin, tendons, and bones. When cooked slowly with moisture, collagen breaks down into gelatin, making meat tender.                                                             |
-| Emulsion          | A stable mixture of two liquids that normally do not mix, such as oil and water. Emulsifiers or vigorous mixing help keep the liquids combined. Examples include mayonnaise and vinaigrettes.                                             |
-| Gelatin           | A protein derived from collagen that forms a gel when dissolved in hot liquid and cooled. Commonly used to thicken desserts, jellies, marshmallows, and stocks.                                                                           |
-| Gelatinization    | The process by which starch granules absorb water and swell when heated, thickening liquids into sauces, gravies, soups, and puddings.                                                                                                    |
-| Gluten            | A network of proteins (primarily glutenin and gliadin) formed when wheat flour is mixed with water. Gluten gives dough its elasticity, strength, and chewy texture.                                                                       |
-| Maillard Reaction | A chemical reaction between amino acids and reducing sugars during cooking that produces browned color and complex savory flavors. Responsible for the crust on bread, seared meat, and roasted coffee.                                   |
-| Pectin            | A naturally occurring soluble fiber found in the cell walls of fruits, especially apples and citrus fruits. Used as a gelling agent to thicken jams, jellies, and preserves. Commercial pectin is available in powdered and liquid forms. |
-| Starch            | The primary storage carbohydrate in plants, found in foods such as potatoes, rice, corn, and wheat. Starch thickens sauces and soups when heated with liquid and gelatinizes during cooking.                                              |
+| Term               | Description                                                                                                                                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bitter             | One of the five basic tastes. Characterized by a sharp, sometimes astringent flavor commonly found in coffee, dark chocolate, kale, and many leafy greens.                                                                                                          |
+| Caramelization     | The browning of sugars when heated, producing new flavors, aromas, and a brown color. Unlike the Maillard reaction, caramelization does not require proteins or amino acids.                                                                                        |
+| Cellulose          | An insoluble structural carbohydrate that forms plant cell walls. Humans cannot digest cellulose, so it functions as dietary fiber, contributing texture and structure to fruits, vegetables, and grains.                                                           |
+| Collagen           | The primary structural protein found in connective tissue, skin, tendons, and bones. When cooked slowly with moisture, collagen breaks down into gelatin, making meat tender.                                                                                       |
+| Emulsion           | A stable mixture of two liquids that normally do not mix, such as oil and water. Emulsifiers or vigorous mixing help keep the liquids combined. Examples include mayonnaise and vinaigrettes.                                                                       |
+| Gelatin            | A protein derived from collagen that forms a gel when dissolved in hot liquid and cooled. Commonly used to thicken desserts, jellies, marshmallows, and stocks.                                                                                                     |
+| Gelatinization     | The process by which starch granules absorb water and swell when heated, thickening liquids into sauces, gravies, soups, and puddings.                                                                                                                              |
+| Gluten             | A network of proteins (primarily glutenin and gliadin) formed when wheat flour is mixed with water. Gluten gives dough its elasticity, strength, and chewy texture.                                                                                                 |
+| Leidenfrost Effect | A phenomenon in which a droplet of water placed on a sufficiently hot surface forms a layer of steam that insulates it, causing the droplet to glide across the surface. In cooking, it is commonly used to test whether a pan is hot enough for effective searing. |
+| Maillard Reaction  | A chemical reaction between amino acids and reducing sugars during cooking that produces browned color and complex savory flavors. Responsible for the crust on bread, seared meat, and roasted coffee.                                                             |
+| Pectin             | A naturally occurring soluble fiber found in the cell walls of fruits, especially apples and citrus fruits. Used as a gelling agent to thicken jams, jellies, and preserves. Commercial pectin is available in powdered and liquid forms.                           |
+| Salty              | One of the five basic tastes. Produced by dissolved salts, primarily sodium chloride, and enhances or balances other flavors.                                                                                                                                       |
+| Sour               | One of the five basic tastes. Caused by acids and recognized by a tart or tangy flavor, as in lemons, vinegar, and yogurt.                                                                                                                                          |
+| Starch             | The primary storage carbohydrate in plants, found in foods such as potatoes, rice, corn, and wheat. Starch thickens sauces and soups when heated with liquid and gelatinizes during cooking.                                                                        |
+| Sweet              | One of the five basic tastes. Associated with sugars and some sweeteners, providing a pleasant sugary flavor found in fruits, honey, and desserts.                                                                                                                  |
+| Umami              | One of the five basic tastes. A savory, rich flavor associated with glutamates and nucleotides, commonly found in mushrooms, tomatoes, aged cheeses, soy sauce, and meats.                                                                                          |
 
 ## Ingredients & Food Products
 
-| Term  | Description                                                                                                                                                    |
-| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Quorn | A fungus-based meat alternative made from mycoprotein. High in protein and low in fat, commonly used as a substitute for meat in vegetarian and vegan cooking. |
+| Term                       | Description                                                                                                                                                                                                     |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MSG (Monosodium Glutamate) | A flavor enhancer consisting of the sodium salt of glutamic acid. It boosts the savory umami taste of foods and is commonly added to soups, stir-fries, snacks, and seasoning blends to make them taste richer. |
+| Quorn                      | A fungus-based meat alternative made from mycoprotein. High in protein and low in fat, commonly used as a substitute for meat in vegetarian and vegan cooking.                                                  |
 
 ## Asian Food Lingo
 
-| Term   | Description                                                                                                                                                                                                                                                                        |
-| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Hoisin | A thick, dark, slightly sweet Chinese sauce made from fermented soybeans, garlic, sugar, and spices. Used in marinades, dipping sauces, and stir-fries. Common in Chinese and Southeast Asian cuisine.                                                                             |
-| Laksa  | A spicy noodle soup originating from Southeast Asia (Malaysia, Singapore, and Indonesia). Typically made with coconut milk, curry spices, rice noodles, and a protein such as chicken, shrimp, or tofu.                                                                            |
-| Mirin  | A sweet Japanese cooking ingredient made from fermented rice. Used in marinades, glazes, and sauces to add subtle sweetness and depth of flavor. Available in three types: **hon-mirin** (traditional), **shio-mirin** (contains salt), and **aji-mirin** (a sweetened seasoning). |
+| Term        | Description                                                                                                                                                                                                                                                                                                     |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dashi       | A traditional Japanese broth made from kombu (kelp), bonito flakes, or other ingredients. It forms the umami-rich foundation of many Japanese soups, sauces, and simmered dishes.                                                                                                                               |
+| Hondashi    | A Japanese instant dashi seasoning made from dried bonito fish and other seasonings. It quickly adds umami flavor to soups, sauces, noodle broths, and other Japanese dishes.                                                                                                                                   |
+| Hoisin      | A thick, dark, slightly sweet Chinese sauce made from fermented soybeans, garlic, sugar, and spices. Used in marinades, dipping sauces, and stir-fries. Common in Chinese and Southeast Asian cuisine.                                                                                                          |
+| Laksa       | A spicy Southeast Asian noodle soup, commonly from Malaysia, Singapore, and Indonesia. Depending on the regional style, it features either a rich coconut milk-based curry broth or a tangy tamarind-based broth and is typically served with rice noodles, seafood, chicken, or tofu as a flavorful main dish. |
+| Mirin       | A sweet Japanese cooking ingredient made from fermented rice. Used in marinades, glazes, and sauces to add subtle sweetness and depth of flavor. Available in three types: **hon-mirin** (traditional), **shio-mirin** (contains salt), and **aji-mirin** (a sweetened seasoning).                              |
+| Shiro Dashi | A light-colored Japanese seasoned dashi made from bonito, kombu, soy sauce, mirin, and other seasonings. Used as a convenient base for soups, noodle broths, hot pots, and simmered dishes.                                                                                                                     |
 
 ## Italian Food Lingo
 
