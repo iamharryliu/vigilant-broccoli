@@ -38,6 +38,8 @@ sync_secrets_to_vault() {
   local code_server_ip
   local journal_cf_access_client_id
   local journal_cf_access_client_secret
+  local nx_cache_write_token
+  local nx_cache_read_token
 
   ca_cert=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_self_signed_cert" and .name == "rabbitmq_ca") | .instances[0].attributes.cert_pem' 2>/dev/null || echo "")
   rabbitmq_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "rabbitmq") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
@@ -56,6 +58,8 @@ sync_secrets_to_vault() {
   code_server_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "code_server") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
   journal_cf_access_client_id=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "journal_ci") | .instances[0].attributes.client_id' 2>/dev/null || echo "")
   journal_cf_access_client_secret=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "journal_ci") | .instances[0].attributes.client_secret' 2>/dev/null || echo "")
+  nx_cache_write_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_write_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
+  nx_cache_read_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_read_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
 
   if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ] || [ -z "$journal_cf_access_client_id" ] || [ -z "$journal_cf_access_client_secret" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
@@ -115,6 +119,17 @@ sync_secrets_to_vault() {
     rmq_conn_patch_arg='RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR"'
   fi
 
+  # nx-cache tokens aren't in the required-secrets guard above (they're
+  # unrelated to VM bootstrap) so they can legitimately be absent — e.g.
+  # before cloudflare-nx-cache.tf has ever been applied. ssh-secrets.sh
+  # aborts the whole remote script on any empty secret value, so this arg
+  # (and the matching NAME/VALUE pair below) must be omitted entirely
+  # rather than passed as an empty string.
+  local nx_cache_patch_arg=""
+  if [ -n "$nx_cache_write_token" ] && [ -n "$nx_cache_read_token" ]; then
+    nx_cache_patch_arg='NX_CACHE_WRITE_TOKEN="$NX_CACHE_WRITE_TOKEN" NX_CACHE_READ_TOKEN="$NX_CACHE_READ_TOKEN"'
+  fi
+
   local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
   # Trailing newline is required — $(...) strips it, and OpenSSH/libcrypto reject a key without it.
   local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
@@ -144,7 +159,8 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
     JOURNAL_CF_ACCESS_CLIENT_ID="$JOURNAL_CF_ACCESS_CLIENT_ID" \
-    JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET"
+    JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET" \
+    '"${nx_cache_patch_arg}"'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT="$CA_CERT_B64" \
@@ -161,11 +177,19 @@ else
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
     JOURNAL_CF_ACCESS_CLIENT_ID="$JOURNAL_CF_ACCESS_CLIENT_ID" \
-    JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET"
+    JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET" \
+    '"${nx_cache_patch_arg}"'
 fi
 
 echo "Secrets synced to Vault"
 '
+
+  # _secrets_prelude aborts the whole remote script on any empty value, so
+  # the nx-cache pair is only appended when both tokens actually exist.
+  local nx_cache_secret_args=()
+  if [ -n "$nx_cache_write_token" ] && [ -n "$nx_cache_read_token" ]; then
+    nx_cache_secret_args=(NX_CACHE_WRITE_TOKEN "$nx_cache_write_token" NX_CACHE_READ_TOKEN "$nx_cache_read_token")
+  fi
 
   gcloud_ssh_secrets "${vm_name}" "${vm_zone}" "$vault_script" \
     VAULT_TOKEN "$vault_token" \
@@ -183,8 +207,14 @@ echo "Secrets synced to Vault"
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
     CODE_SERVER_IP "$code_server_ip" \
     JOURNAL_CF_ACCESS_CLIENT_ID "$journal_cf_access_client_id" \
-    JOURNAL_CF_ACCESS_CLIENT_SECRET "$journal_cf_access_client_secret"
+    JOURNAL_CF_ACCESS_CLIENT_SECRET "$journal_cf_access_client_secret" \
+    "${nx_cache_secret_args[@]}"
   echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
+  if [ -n "$nx_cache_write_token" ] && [ -n "$nx_cache_read_token" ]; then
+    echo "✓ Synced NX_CACHE_WRITE_TOKEN, NX_CACHE_READ_TOKEN to kv/data/secrets"
+  else
+    echo "Warning: NX_CACHE_WRITE_TOKEN / NX_CACHE_READ_TOKEN not found in Terraform state — apply cloudflare-nx-cache.tf, then rerun pnpm tf:post-apply."
+  fi
 
   echo "Ensuring CI SSH key on socket-server VM (${rabbitmq_ip})..."
   ssh-keygen -R "$rabbitmq_ip" >/dev/null 2>&1 || true

@@ -47,15 +47,3 @@ output "docs_url" {
 output "nx_cache_url" {
   value = "https://${var.nx_cache_domain}"
 }
-
-# Sensitive: pull with `terraform output -raw nx_cache_write_token` / `nx_cache_read_token`
-# to do the one-time sync into Vault (kv/data/secrets NX_CACHE_WRITE_TOKEN / NX_CACHE_READ_TOKEN).
-output "nx_cache_write_token" {
-  value     = random_password.nx_cache_write_token.result
-  sensitive = true
-}
-
-output "nx_cache_read_token" {
-  value     = random_password.nx_cache_read_token.result
-  sensitive = true
-}

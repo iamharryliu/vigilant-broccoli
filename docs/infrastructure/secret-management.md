@@ -42,15 +42,9 @@ Rotate manually at
 
 ### Nx cache
 
-`NX_CACHE_WRITE_TOKEN` / `NX_CACHE_READ_TOKEN` are Terraform-minted (`random_password.nx_cache_write_token` / `nx_cache_read_token` in `cloudflare-nx-cache.tf`) and bound directly into the `nx-cache` Worker as its own bearer tokens — never a Cloudflare API/R2 credential. After `pnpm tf:apply`, sync manually:
+`NX_CACHE_WRITE_TOKEN` / `NX_CACHE_READ_TOKEN` are Terraform-minted (`random_password.nx_cache_write_token` / `nx_cache_read_token` in `cloudflare-nx-cache.tf`) and bound directly into the `nx-cache` Worker as its own bearer tokens — never a Cloudflare API/R2 credential, and never exposed via a Terraform `output` (an `output` only hides a value from the CLI, not from Terraform Cloud state, so — like `rabbitmq_password`/`OCI_VM_SSH_KEY`/the rest of this list — it's pulled straight from `terraform state pull` instead). `pnpm tf:apply` syncs both to Vault automatically via `tf:post-apply` (`sync_secrets_to_vault` in `post-apply.sh`); if the resources aren't in state yet it just warns and skips that pair (unrelated to VM bootstrap, so it never blocks the rest of the sync) — rerun `pnpm tf:post-apply` once they exist.
 
-```bash
-vault kv patch kv/data/secrets \
-  NX_CACHE_WRITE_TOKEN="$(terraform output -raw nx_cache_write_token)" \
-  NX_CACHE_READ_TOKEN="$(terraform output -raw nx_cache_read_token)"
-```
-
-`NX_CACHE_WRITE_TOKEN` (GET/HEAD/PUT) goes only to `deploy.yml`; `NX_CACHE_READ_TOKEN` (GET/HEAD only — the Worker returns `403` on PUT) goes to `ci-pr-check.yml`. Rotate by tainting both `random_password` resources, `pnpm tf:apply`, then repeat the sync above.
+`NX_CACHE_WRITE_TOKEN` (GET/HEAD/PUT) goes only to `deploy.yml`; `NX_CACHE_READ_TOKEN` (GET/HEAD only — the Worker returns `403` on PUT) goes to `ci-pr-check.yml`. Rotate by tainting both `random_password` resources, then `pnpm tf:apply`.
 
 ### Other
 
