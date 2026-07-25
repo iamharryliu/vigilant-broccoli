@@ -40,6 +40,18 @@ Rotate manually at
 - `CLOUDFLARE_R2_ACCESS_KEY_ID`
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
 
+### Nx cache
+
+`NX_CACHE_WRITE_TOKEN` / `NX_CACHE_READ_TOKEN` are Terraform-minted (`random_password.nx_cache_write_token` / `nx_cache_read_token` in `cloudflare-nx-cache.tf`) and bound directly into the `nx-cache` Worker as its own bearer tokens — never a Cloudflare API/R2 credential. After `pnpm tf:apply`, sync manually:
+
+```bash
+vault kv patch kv/data/secrets \
+  NX_CACHE_WRITE_TOKEN="$(terraform output -raw nx_cache_write_token)" \
+  NX_CACHE_READ_TOKEN="$(terraform output -raw nx_cache_read_token)"
+```
+
+`NX_CACHE_WRITE_TOKEN` (GET/HEAD/PUT) goes only to `deploy.yml`; `NX_CACHE_READ_TOKEN` (GET/HEAD only — the Worker returns `403` on PUT) goes to `ci-pr-check.yml`. Rotate by tainting both `random_password` resources, `pnpm tf:apply`, then repeat the sync above.
+
 ### Other
 
 - Wireguard secrets
