@@ -13,6 +13,7 @@
   - UI — [docs/ui/](./docs/ui/) (`ui-app-pattern.md`, `auth/*`, `deployment/*`)
   - API — [docs/api/](./docs/api/) (`deployment/fly-service-pattern.md`)
 - [Git](./docs/GIT.md) — read first before committing or pushing
+- [notes-pattern.md](./docs/notes-pattern.md) — read first before adding/editing files under `notes/`: index-file naming, linking, and ordering convention
 - [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS records, domains/subdomains, proxying, tunnels, or VPN
 - [nuance.md](./docs/nuance.md) — non-obvious bugs and quirks discovered in this repo; check before debugging something that looks like it shouldn't happen
 - [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist for `/refactor-code-cleanup`; unattended `agentic:task:solve` runs must apply it before finishing
@@ -31,7 +32,7 @@
 ## Folder Structure
 
 - [Docs](./docs/) - Repo documentation.
-- [Notes](./notes/) - Collection of markdown notes linked with relative file paths.
+- [Notes](./notes/) - Collection of markdown notes linked with relative file paths — see [notes-pattern.md](./docs/notes-pattern.md).
 - [Setup](./setup/) - Machine setup scripts and dotfiles.
   - [dotfiles](./setup/dotfiles/) - Shell configs, aliases, and scripts (symlinked to `$HOME`).
   - [mac](./setup/mac/) - macOS setup.

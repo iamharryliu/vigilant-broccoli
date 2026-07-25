@@ -1,5 +1,6 @@
 # Ingredients
 
+- [Crutons](./crutons.md)
 - [Vegetarian Alternatives](./vegetarian-ingredient-alternatives.md)
 
 ## Spices and Herbs
