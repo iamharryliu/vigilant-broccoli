@@ -32,10 +32,12 @@
   - ½ to 1 teaspoon organic cane sugar (as needed)
 
 ### Dhungar method (for smokiness; optional)
+
 - 1 to 2-inch piece of lump charcoal
 - ½ teaspoon neutral-flavored oil
 
 ### Tadka
+
 - 3 tablespoons (42g) vegan butter
 - 1-inch piece ginger, peeled and cut into matchsticks (optional)
 - 1 tablespoon kasoori methi, crushed with your hands
@@ -43,6 +45,7 @@
 - ½ teaspoon Indian red chile powder
 
 ### Cashew Cream (optional)
+
 - ½ cup (70g) raw cashews
 - 6 tablespoons (90ml) water, more as needed
 - 1 tablespoon freshly squeezed lemon juice
