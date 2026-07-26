@@ -374,10 +374,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`.github/actions/deploy-notify/action.yml:33-35`** — now pinned + `--ignore-scripts` (#109), but still 2+ registry installs per deploy; replace the emit with a plain HTTPS POST or cache the install.
 
-### dcca91. [performance] `ci-pr-check` installs the whole workspace on docs-only PRs
-
-**`.github/workflows/ci-pr-check.yml`**; a paths gate on `projects/nx-workspace/**` would return feedback in seconds for non-workspace PRs.
-
 ### e6849f. [performance] Daily `cron-backup` re-downloads tooling uncached
 
 mongodb-tools .deb (~90MB) + pgdg apt setup every day (`cron-backup.yml:125-126`); cache with `actions/cache`.
