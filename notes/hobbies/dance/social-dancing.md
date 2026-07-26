@@ -21,7 +21,6 @@
 
 ## Positions
 
-- Hammerlock
 - Hook turns
 - Shadow positions
   - Lead shadow follower
