@@ -63,7 +63,10 @@ export interface ViewModeOption {
 interface DocsExplorerProps {
   nodes: DocsNode[];
   getContent: (path: string) => Promise<string>;
-  renderContent?: (content: string) => ReactNode;
+  renderContent?: (
+    content: string,
+    navigate: (path: string) => void,
+  ) => ReactNode;
   search?: (query: string) => Promise<DocsSearchResult[]>;
   urlSync?: DocsExplorerUrlSync;
   sidebarTitle?: string;
@@ -333,7 +336,11 @@ export const DocsExplorer = ({
                         <DropdownMenu.Item
                           key={mode.value}
                           onSelect={() => onViewModeChange?.(mode.value)}
-                          className={currentViewMode === mode.value ? 'font-semibold' : ''}
+                          className={
+                            currentViewMode === mode.value
+                              ? 'font-semibold'
+                              : ''
+                          }
                         >
                           {mode.label}
                         </DropdownMenu.Item>
@@ -362,7 +369,7 @@ export const DocsExplorer = ({
               </DropdownMenu.Root>
             </div>
             {renderContent ? (
-              renderContent(content)
+              renderContent(content, selectFile)
             ) : (
               <pre className="whitespace-pre-wrap px-4 sm:px-6 py-4 text-sm">
                 {content}

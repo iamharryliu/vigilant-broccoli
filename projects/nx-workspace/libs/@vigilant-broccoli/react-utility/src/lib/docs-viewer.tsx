@@ -89,22 +89,29 @@ export function DocsViewer({
 
   const canEdit = Boolean(saveContent && activeFile);
 
-  const viewModeOptions = (Object.values(VIEW_MODE) as ViewMode[]).map(mode => ({
-    label: MODE_LABEL[mode],
-    value: mode,
-  }));
+  const viewModeOptions = (Object.values(VIEW_MODE) as ViewMode[]).map(
+    mode => ({
+      label: MODE_LABEL[mode],
+      value: mode,
+    }),
+  );
 
-  const renderContent = (content: string) => (
+  const renderContent = (content: string, navigate: (path: string) => void) => (
     <div className="flex flex-col h-full">
       <div className="flex-1 min-h-0">
         {viewMode === VIEW_MODE.CHECKLIST ? (
-          <ChecklistViewer content={content} filePath={activeFile} />
+          <ChecklistViewer
+            content={content}
+            filePath={activeFile}
+            onNavigate={navigate}
+          />
         ) : (
           <MarkdownViewer
             content={content}
             filePath={activeFile}
             saveContent={saveContent}
             editTrigger={editTrigger}
+            onNavigate={navigate}
           />
         )}
       </div>
@@ -128,7 +135,7 @@ export function DocsViewer({
       emptyMessage={COPY.EMPTY}
       onEdit={canEdit ? () => setEditTrigger(t => t + 1) : undefined}
       viewModes={viewModeOptions}
-      onViewModeChange={(mode) => updateViewMode(mode as ViewMode)}
+      onViewModeChange={mode => updateViewMode(mode as ViewMode)}
       currentViewMode={viewMode}
     />
   );

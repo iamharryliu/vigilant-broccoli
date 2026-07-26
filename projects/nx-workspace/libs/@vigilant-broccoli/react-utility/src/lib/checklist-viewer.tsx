@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type JSX } from 'react';
 import { marked, Tokens } from 'marked';
+import { createNoteLinkClickHandler } from './note-links';
 
 const STORAGE_PREFIX = 'docs-checklist:';
 const INTRO_PREFIX = 'intro';
@@ -37,6 +38,7 @@ const CLS = {
 interface ChecklistViewerProps {
   content: string;
   filePath: string;
+  onNavigate?: (path: string) => void;
 }
 
 interface ChecklistItem {
@@ -164,10 +166,19 @@ interface ItemRowProps {
   item: ChecklistItem;
   checked: Set<string>;
   toggle: (id: string) => void;
+  filePath: string;
+  onNavigate?: (path: string) => void;
 }
 
-const ItemRow = ({ item, checked, toggle }: ItemRowProps) => {
+const ItemRow = ({
+  item,
+  checked,
+  toggle,
+  filePath,
+  onNavigate,
+}: ItemRowProps) => {
   const isChecked = checked.has(item.id);
+  const handleLinkClick = createNoteLinkClickHandler(filePath, onNavigate);
   return (
     <li className="list-none">
       <label className={CLS.ROW_LABEL}>
@@ -183,6 +194,7 @@ const ItemRow = ({ item, checked, toggle }: ItemRowProps) => {
           onClickCapture={e => {
             if ((e.target as HTMLElement).tagName === ANCHOR_TAG) {
               e.stopPropagation();
+              handleLinkClick(e);
             }
           }}
         />
@@ -195,6 +207,8 @@ const ItemRow = ({ item, checked, toggle }: ItemRowProps) => {
               item={child}
               checked={checked}
               toggle={toggle}
+              filePath={filePath}
+              onNavigate={onNavigate}
             />
           ))}
         </ul>
@@ -203,7 +217,11 @@ const ItemRow = ({ item, checked, toggle }: ItemRowProps) => {
   );
 };
 
-export function ChecklistViewer({ content, filePath }: ChecklistViewerProps) {
+export function ChecklistViewer({
+  content,
+  filePath,
+  onNavigate,
+}: ChecklistViewerProps) {
   const parsed = useMemo(() => parseContent(content), [content]);
   const [checked, setChecked] = useState<Set<string>>(() => new Set());
 
@@ -257,6 +275,8 @@ export function ChecklistViewer({ content, filePath }: ChecklistViewerProps) {
                 item={item}
                 checked={checked}
                 toggle={toggle}
+                filePath={filePath}
+                onNavigate={onNavigate}
               />
             ))}
           </ul>
@@ -287,6 +307,8 @@ export function ChecklistViewer({ content, filePath }: ChecklistViewerProps) {
                       item={item}
                       checked={checked}
                       toggle={toggle}
+                      filePath={filePath}
+                      onNavigate={onNavigate}
                     />
                   ))}
                 </ul>
