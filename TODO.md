@@ -402,10 +402,6 @@ New `S3Client` per R2 operation (`api/where-is/r2.ts:8-9`; a 10-image POST = 10 
 
 `buildFileTree` awaits `stat` per entry serially (`api/docs/structure/route.ts:29`); weather route is `force-dynamic` with no server cache.
 
-### f1c2d3. [performance] docs-md fetches the entire repo git tree (unauthenticated, 60 req/hr limit) per session
-
-**`apps/ui/docs-md/src/app/github-docs.ts:87`**; journal already solves this with a deploy-time `structure.json` — reuse the pattern. Both apps also rebuild their Fuse index inside every `searchDocs` call (`github-docs.ts:116`).
-
 ### f2e3a4. [performance] Shared-component nits
 
 `CRUDListManagement.tsx` recreates handlers and re-renders every row on any list change (memo a row component before lists grow); `ThemeProvider.tsx:57` context value recreated per render; `GithubActionsBadges.tsx` refetches the workflows API on every mount, uncached.
