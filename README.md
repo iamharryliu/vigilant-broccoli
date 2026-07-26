@@ -14,6 +14,8 @@
 - [Stack](#stack)
 - [Click here](https://iamharryliu.github.io/vigilant-broccoli/) for more.
 
+> Fun fact: broccoli is a member of the cabbage family and was cultivated from wild cabbage in Italy over 2,000 years ago.
+
 ## Development
 
 - [machine setup](./docs/machine-setups/machine-setup.md) - OS-specific setup instructions.
