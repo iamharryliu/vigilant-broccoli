@@ -3,7 +3,7 @@
 - **Essential**
 - [Home Management](../lifestyle/home/home-management.md)
 - [Cooking](../hobbies/cooking/cooking.md)
-- [Knots](https://www.youtube.com/watch?v=3X8drKsdf5E)
+- [Knots](./knots.md)
 - **Accessibility**
   - [Language Learning](../learn/language-learning/language-learning.md)
   - Software
@@ -29,3 +29,9 @@
 - [Career](./career/career.md)
 - [Design](./design/design.md)
 - [Small Business](./small-business.md)
+- [Communication](./communication.md)
+- [Economics](./economics.md)
+- [Finance Lingo](./finance/finance-lingo.md)
+- [Project Management](./project-management.md)
+- [Habits](./self-improvement/habits.md)
+- [Tips](./tips.md)

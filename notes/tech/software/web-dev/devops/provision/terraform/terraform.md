@@ -1,6 +1,7 @@
 # Terraform
 
 - [Terraform State Management](./terraform-state-management.md)
+- [Terraform Repo Management](./terraform-repo-management.md)
 
 ## Commands
 

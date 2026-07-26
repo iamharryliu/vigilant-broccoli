@@ -9,6 +9,7 @@
 ## Job Hunting
 
 - [Interview Prep](./interview-prep.md)
+- [Interviewer Prep](./interviewer-prep.md)
 - [LinkedIn Jobs](https://www.linkedin.com/jobs/)
 
 ### Ask Yourself
