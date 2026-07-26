@@ -4,6 +4,8 @@
 - [Lingo](./network-security-lingo.md)
 - [jwt](./jwt.md)
 - [ssh](./ssh.md)
+- [nmap](./nmap.md)
+- [WireGuard](./wireguard.md)
 - [Have I Been Pwned?](https://haveibeenpwned.com/)
 - [Password Generator](https://passwordsgenerator.net/)
 - [How to Choose a Password - Computerphile](https://www.youtube.com/watch?v=3NjQ9b3pgIg)
