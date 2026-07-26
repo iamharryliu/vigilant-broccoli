@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState, type JSX } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { marked, Tokens } from 'marked';
+import DOMPurify from 'dompurify';
 import { createNoteLinkClickHandler } from './note-links';
 
 const STORAGE_PREFIX = 'docs-checklist:';
-const INTRO_PREFIX = 'intro';
-const SECTION_PREFIX = 's';
+const LIST_ID_PREFIX = 'list';
 const NESTED_LIST_SUFFIX = 'l';
 const PARSER_OPTS = { async: false } as const;
 const STRIP_P_RE = /^<p>|<\/p>\n?$/g;
@@ -13,26 +13,23 @@ const ANCHOR_TAG = 'A';
 const COPY = {
   RESET: 'Reset',
   CHECKED_SUFFIX: 'checked',
-  EMPTY: 'No list items found in this file.',
 } as const;
 
 const CLS = {
   ROOT: 'w-full h-full overflow-auto',
-  PROSE: 'prose dark:prose-invert max-w-none px-6 py-4',
+  PROSE: 'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4',
   HEADER:
     'flex items-center gap-1 not-prose mb-4 pb-2 border-b border-gray-200 dark:border-gray-700',
   HEADER_TEXT: 'text-sm text-gray-600 dark:text-gray-400',
   RESET_BTN:
     'text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300',
+  BLOCK: 'contents',
   LIST: 'not-prose pl-0',
   NESTED_LIST: 'ml-6 border-l border-gray-200 dark:border-gray-700 pl-3',
   ROW_LABEL: 'flex items-start gap-2 py-1 cursor-pointer group',
   CHECKBOX: 'mt-1.5 h-4 w-4 shrink-0 cursor-pointer',
   ROW_TEXT: 'flex-1 leading-6',
   ROW_TEXT_DONE: 'line-through text-gray-400 dark:text-gray-500',
-  SECTION_HEADER: 'flex items-baseline justify-between gap-2 mt-6',
-  SECTION_COUNT: 'text-xs text-gray-500 dark:text-gray-400 not-prose',
-  EMPTY: 'text-gray-500',
 } as const;
 
 interface ChecklistViewerProps {
@@ -47,17 +44,9 @@ interface ChecklistItem {
   children: ChecklistItem[];
 }
 
-interface ChecklistSection {
-  id: string;
-  headingHtml: string;
-  headingLevel: number;
-  items: ChecklistItem[];
-}
-
-interface ParsedChecklist {
-  intro: ChecklistItem[];
-  sections: ChecklistSection[];
-}
+type ContentBlock =
+  | { kind: 'html'; html: string }
+  | { kind: 'list'; items: ChecklistItem[] };
 
 const inlineHtml = (tokens: Tokens.Generic[]): string =>
   marked
@@ -92,36 +81,21 @@ const buildItems = (
     return { id, html, children };
   });
 
-const parseContent = (content: string): ParsedChecklist => {
+// Only top-level lists become checkboxes; everything else renders as normal markdown.
+const parseContent = (content: string): ContentBlock[] => {
   const tokens = marked.lexer(content);
-  const sections: ChecklistSection[] = [];
-  const intro: ChecklistItem[] = [];
-  let currentSection: ChecklistSection | null = null;
-  let sectionIndex = 0;
+  let listIndex = 0;
 
-  for (const token of tokens) {
-    if (token.type === 'heading') {
-      const heading = token as Tokens.Heading;
-      currentSection = {
-        id: `${SECTION_PREFIX}${sectionIndex++}`,
-        headingHtml: inlineHtml(heading.tokens ?? []),
-        headingLevel: heading.depth,
-        items: [],
+  return tokens.map(token => {
+    if (token.type === 'list') {
+      const idPrefix = `${LIST_ID_PREFIX}${listIndex++}`;
+      return {
+        kind: 'list',
+        items: buildItems((token as Tokens.List).items, idPrefix),
       };
-      sections.push(currentSection);
-    } else if (token.type === 'list') {
-      const target = currentSection ? currentSection.items : intro;
-      const prefix = currentSection ? currentSection.id : INTRO_PREFIX;
-      target.push(
-        ...buildItems(
-          (token as Tokens.List).items,
-          `${prefix}.${target.length}`,
-        ),
-      );
     }
-  }
-
-  return { intro, sections };
+    return { kind: 'html', html: marked.parser([token], PARSER_OPTS) };
+  });
 };
 
 const collectIds = (items: ChecklistItem[], out: string[] = []): string[] => {
@@ -130,14 +104,6 @@ const collectIds = (items: ChecklistItem[], out: string[] = []): string[] => {
     collectIds(item.children, out);
   }
   return out;
-};
-
-const countProgress = (
-  items: ChecklistItem[],
-  checked: Set<string>,
-): [number, number] => {
-  const ids = collectIds(items);
-  return [ids.filter(id => checked.has(id)).length, ids.length];
 };
 
 const storageKey = (filePath: string) => `${STORAGE_PREFIX}${filePath}`;
@@ -190,7 +156,7 @@ const ItemRow = ({
         />
         <span
           className={`${CLS.ROW_TEXT} ${isChecked ? CLS.ROW_TEXT_DONE : ''}`}
-          dangerouslySetInnerHTML={{ __html: item.html }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.html) }}
           onClickCapture={e => {
             if ((e.target as HTMLElement).tagName === ANCHOR_TAG) {
               e.stopPropagation();
@@ -222,7 +188,7 @@ export function ChecklistViewer({
   filePath,
   onNavigate,
 }: ChecklistViewerProps) {
-  const parsed = useMemo(() => parseContent(content), [content]);
+  const blocks = useMemo(() => parseContent(content), [content]);
   const [checked, setChecked] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
@@ -245,17 +211,27 @@ export function ChecklistViewer({
     saveChecked(filePath, empty);
   };
 
-  const allItems = useMemo(
-    () => [...parsed.intro, ...parsed.sections.flatMap(s => s.items)],
-    [parsed],
+  const allIds = useMemo(
+    () =>
+      collectIds(
+        blocks
+          .filter(
+            (b): b is Extract<ContentBlock, { kind: 'list' }> =>
+              b.kind === 'list',
+          )
+          .flatMap(b => b.items),
+      ),
+    [blocks],
   );
-  const [done, total] = countProgress(allItems, checked);
-  const hasContent = total > 0;
+  const total = allIds.length;
+  const done = allIds.filter(id => checked.has(id)).length;
+
+  const handleContentClick = createNoteLinkClickHandler(filePath, onNavigate);
 
   return (
     <div className={CLS.ROOT}>
-      <div className={CLS.PROSE}>
-        {hasContent && (
+      <div className={CLS.PROSE} onClick={handleContentClick}>
+        {total > 0 && (
           <div className={CLS.HEADER}>
             <span className={CLS.HEADER_TEXT}>
               {done} / {total} {COPY.CHECKED_SUFFIX}
@@ -267,57 +243,28 @@ export function ChecklistViewer({
           </div>
         )}
 
-        {parsed.intro.length > 0 && (
-          <ul className={CLS.LIST}>
-            {parsed.intro.map(item => (
-              <ItemRow
-                key={item.id}
-                item={item}
-                checked={checked}
-                toggle={toggle}
-                filePath={filePath}
-                onNavigate={onNavigate}
-              />
-            ))}
-          </ul>
-        )}
-
-        {parsed.sections.map(section => {
-          const [sDone, sTotal] = countProgress(section.items, checked);
-          const HeadingTag =
-            `h${section.headingLevel}` as keyof JSX.IntrinsicElements;
-          return (
-            <section key={section.id}>
-              <div className={CLS.SECTION_HEADER}>
-                <HeadingTag
-                  className="m-0"
-                  dangerouslySetInnerHTML={{ __html: section.headingHtml }}
+        {blocks.map((block, index) =>
+          block.kind === 'list' ? (
+            <ul key={index} className={CLS.LIST}>
+              {block.items.map(item => (
+                <ItemRow
+                  key={item.id}
+                  item={item}
+                  checked={checked}
+                  toggle={toggle}
+                  filePath={filePath}
+                  onNavigate={onNavigate}
                 />
-                {sTotal > 0 && (
-                  <span className={CLS.SECTION_COUNT}>
-                    {sDone}/{sTotal}
-                  </span>
-                )}
-              </div>
-              {section.items.length > 0 && (
-                <ul className={CLS.LIST}>
-                  {section.items.map(item => (
-                    <ItemRow
-                      key={item.id}
-                      item={item}
-                      checked={checked}
-                      toggle={toggle}
-                      filePath={filePath}
-                      onNavigate={onNavigate}
-                    />
-                  ))}
-                </ul>
-              )}
-            </section>
-          );
-        })}
-
-        {!hasContent && <p className={CLS.EMPTY}>{COPY.EMPTY}</p>}
+              ))}
+            </ul>
+          ) : (
+            <div
+              key={index}
+              className={CLS.BLOCK}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(block.html) }}
+            />
+          ),
+        )}
       </div>
     </div>
   );
