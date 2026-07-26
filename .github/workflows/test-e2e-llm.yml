@@ -39,7 +39,7 @@ jobs:
           - provider: gemini
             model: gemini-2.5-flash-lite
           - provider: deepseek
-            model: deepseek-chat
+            model: deepseek-v4-flash
           - provider: grok
             model: grok-3-mini
     name: ${{ matrix.environment }} ${{ matrix.provider }}
