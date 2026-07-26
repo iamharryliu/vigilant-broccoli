@@ -17,6 +17,7 @@
     "tf:apply": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply && cd ../.. && ./infrastructure/terraform/scripts/post-apply.sh",
     "tf:post-apply": "./infrastructure/terraform/scripts/post-apply.sh",
     "tf:output": "cd infrastructure/terraform && terraform output",
+    "tf:unlock": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform force-unlock",
     "oci:vm:ssh": "./scripts/shell/oci-ssh.sh oci_vm_public_ip",
     "oci:vm:sync-socket-token": "./infrastructure/terraform/packer/scripts/sync-socket-server-token.sh",
     "oci:gitea:ssh": "./scripts/shell/oci-ssh.sh oci_gitea_public_ip",
