@@ -121,6 +121,9 @@ const COPY = {
   SELECTED_SUFFIX: 'selected',
   CLEAR_SELECTION: 'Clear',
   LOADING_AGGREGATE: 'Loading selected files...',
+  SIDEBAR_ACTIONS: 'Sidebar actions',
+  SELECT_MULTIPLE: 'Select multiple',
+  TURN_OFF_MULTI_SELECT: 'Turn off multi-select',
 } as const;
 
 const AGGREGATE_MODE_LABEL: Record<AggregateMode, string> = {
@@ -148,6 +151,7 @@ export const DocsExplorer = ({
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [contentError, setContentError] = useState<string | null>(null);
 
+  const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
   const [aggregateSourceContents, setAggregateSourceContents] = useState<
     string[]
@@ -182,6 +186,11 @@ export const DocsExplorer = ({
   }, []);
 
   const clearSelection = () => setSelectedPaths([]);
+
+  const toggleMultiSelectMode = () => {
+    if (multiSelectMode) clearSelection();
+    setMultiSelectMode(prev => !prev);
+  };
 
   useEffect(() => {
     if (!hasSelection) return;
@@ -335,7 +344,25 @@ export const DocsExplorer = ({
         className={`${MOBILE_NO_CARD_CLS} ${sidebarVisibilityCls} w-full md:w-80 md:flex-shrink-0 overflow-hidden flex-col`}
       >
         <div className="px-3 pt-3 pb-2">
-          <h2 className="text-sm font-semibold mb-1.5">{sidebarTitle}</h2>
+          <div className="flex items-center justify-between mb-1.5">
+            <h2 className="text-sm font-semibold">{sidebarTitle}</h2>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <IconButton
+                  variant="ghost"
+                  icon="ellipsis-horizontal"
+                  aria-label={COPY.SIDEBAR_ACTIONS}
+                />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content>
+                <DropdownMenu.Item onSelect={toggleMultiSelectMode}>
+                  {multiSelectMode
+                    ? COPY.TURN_OFF_MULTI_SELECT
+                    : COPY.SELECT_MULTIPLE}
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </div>
           {search && (
             <>
               <TextField.Root
@@ -403,6 +430,7 @@ export const DocsExplorer = ({
                 selectedPath={selectedPath || undefined}
                 selectedPaths={selectedPaths}
                 onToggleSelect={toggleSelectPath}
+                multiSelectMode={multiSelectMode}
               />
             </div>
           )}
@@ -493,11 +521,6 @@ export const DocsExplorer = ({
                   >
                     {COPY.COPY_MARKDOWN}
                   </DropdownMenu.Item>
-                  {hasSelection && (
-                    <DropdownMenu.Item onSelect={clearSelection}>
-                      {COPY.CLEAR_SELECTION}
-                    </DropdownMenu.Item>
-                  )}
                   <DropdownMenu.Separator className="md:hidden" />
                   <DropdownMenu.Item
                     onSelect={showSidebarOnMobile}
@@ -552,12 +575,14 @@ const FileTree = ({
   selectedPath,
   selectedPaths,
   onToggleSelect,
+  multiSelectMode,
 }: {
   nodes: DocsNode[];
   onFileSelect: (path: string) => void;
   selectedPath?: string;
   selectedPaths: string[];
   onToggleSelect: (path: string) => void;
+  multiSelectMode: boolean;
 }) => (
   <div className="w-full">
     {nodes.map(node => (
@@ -568,6 +593,7 @@ const FileTree = ({
         selectedPath={selectedPath}
         selectedPaths={selectedPaths}
         onToggleSelect={onToggleSelect}
+        multiSelectMode={multiSelectMode}
       />
     ))}
   </div>
@@ -579,6 +605,7 @@ const FileTreeNode = ({
   selectedPath,
   selectedPaths,
   onToggleSelect,
+  multiSelectMode,
   depth = 0,
 }: {
   node: DocsNode;
@@ -586,6 +613,7 @@ const FileTreeNode = ({
   selectedPath?: string;
   selectedPaths: string[];
   onToggleSelect: (path: string) => void;
+  multiSelectMode: boolean;
   depth?: number;
 }) => {
   const shouldBeExpanded = selectedPath
@@ -601,6 +629,8 @@ const FileTreeNode = ({
   const handleClick = () => {
     if (node.type === NODE_TYPE_DIRECTORY) {
       setIsExpanded(prev => !prev);
+    } else if (multiSelectMode) {
+      onToggleSelect(node.path);
     } else {
       onFileSelect(node.path);
     }
@@ -626,13 +656,15 @@ const FileTreeNode = ({
           </>
         ) : (
           <>
-            <input
-              type="checkbox"
-              className="w-3.5 h-3.5 flex-shrink-0"
-              checked={selectedPaths.includes(node.path)}
-              onClick={e => e.stopPropagation()}
-              onChange={() => onToggleSelect(node.path)}
-            />
+            {multiSelectMode && (
+              <input
+                type="checkbox"
+                className="w-3.5 h-3.5 flex-shrink-0"
+                checked={selectedPaths.includes(node.path)}
+                onClick={e => e.stopPropagation()}
+                onChange={() => onToggleSelect(node.path)}
+              />
+            )}
             <File className="w-4 h-4 flex-shrink-0" />
           </>
         )}
@@ -649,6 +681,7 @@ const FileTreeNode = ({
               selectedPath={selectedPath}
               selectedPaths={selectedPaths}
               onToggleSelect={onToggleSelect}
+              multiSelectMode={multiSelectMode}
               depth={depth + 1}
             />
           ))}
