@@ -11,18 +11,14 @@ function generateToken(): string {
 async function rotateVaultSecrets() {
   const vault = await createVaultClient();
 
-  console.log(`Reading current secrets from ${VAULT_SECRET_PATH}...`);
-  const result = await vault.read(VAULT_SECRET_PATH);
-  const current: Record<string, string> = result.data.data || result.data;
-
-  const updated = { ...current };
+  const patch: Record<string, string> = {};
   for (const key of ROTATE_KEYS) {
-    updated[key] = generateToken();
+    patch[key] = generateToken();
     console.log(`✓ Rotated ${key}`);
   }
 
-  console.log(`Writing updated secrets to ${VAULT_SECRET_PATH}...`);
-  await vault.write(VAULT_SECRET_PATH, { data: updated });
+  console.log(`Patching ${VAULT_SECRET_PATH}...`);
+  await vault.update(VAULT_SECRET_PATH, { data: patch });
   console.log(`✓ Rotation complete (${ROTATE_KEYS.length} keys)`);
 }
 
