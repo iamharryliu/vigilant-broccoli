@@ -31,6 +31,10 @@
 - Checkbox state persists per file (`localStorage`, key `docs-checklist:<path>`), keyed by structural position (`list<N>.<itemIndex>`, nested via `.l.`) — not content, so state can go stale if list ordering changes
 - All rendered HTML (both view modes) is sanitized with DOMPurify before injection
 - Relative markdown links are intercepted and routed through `urlSync`/`onNavigate` instead of a real browser navigation — neither app has a per-file route, so a plain `<a href>` navigation would 404 or reload the whole app
+- Headings get GitHub-style slug `id`s (`markdown-config.ts`'s `createHeadingRenderer`, via `github-slugger`) so `[Section](#section)`-style TOC/cross-file anchors resolve — `marked` v5+ no longer assigns heading ids on its own
+- `createHeadingRenderer()` builds a fresh renderer+slugger per parse call rather than a shared/global one — `marked`'s own heading-id extensions track dedup state in module scope, which breaks under React Strict Mode's double-invoked effects/memos (two overlapping parses for the same content stomp on each other's dedup reset) and under any real overlapping parse (e.g. switching files before the previous parse settles)
+- Both apps' `urlSync.set()` must preserve `window.location.hash` when rebuilding the URL — it's easy to accidentally drop the hash (e.g. rebuilding the URL from just the query params) since `DocsExplorer` calls `urlSync.set()` on initial mount too, even when just echoing back the file it already read from the URL
+- `scrollToUrlHash()` (`note-links.ts`) runs after content renders in both viewers — the browser's native scroll-to-fragment only fires around initial page load, which is well before this SPA's async-fetched content (and its heading ids) exist in the DOM
 - Edit mode swaps content for a plain `<textarea>` (no live preview); content-pane dropdown also has "Copy markdown" (always) and "Back to files" (mobile only)
 - Search is debounced 300ms; Arrow keys move focus between the search box and result list, Escape clears the query
 - Mobile collapses to two full-width panels (sidebar/content) toggled by a back button — no side-by-side layout below `md:`

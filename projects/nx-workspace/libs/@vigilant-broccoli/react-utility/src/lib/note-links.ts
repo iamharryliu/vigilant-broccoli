@@ -29,6 +29,14 @@ export const resolveNoteLink = (
   return resolved.join(PATH_SEP);
 };
 
+// The browser's native scroll-to-fragment only fires around the initial page load; by the
+// time async-fetched content renders its headings, that window has already closed.
+export const scrollToUrlHash = () => {
+  const hash = window.location.hash.slice(1);
+  if (!hash) return;
+  document.getElementById(hash)?.scrollIntoView();
+};
+
 export const createNoteLinkClickHandler =
   (filePath: string, onNavigate?: (path: string) => void) =>
   (event: MouseEvent<HTMLElement>) => {

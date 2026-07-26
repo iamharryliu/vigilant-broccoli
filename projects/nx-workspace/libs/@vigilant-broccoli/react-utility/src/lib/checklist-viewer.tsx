@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { marked, Tokens } from 'marked';
+import type { MarkedOptions, Tokens } from 'marked';
 import DOMPurify from 'dompurify';
-import { createNoteLinkClickHandler } from './note-links';
+import { createHeadingRenderer, marked } from './markdown-config';
+import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
 
 const STORAGE_PREFIX = 'docs-checklist:';
 const LIST_ID_PREFIX = 'list';
 const NESTED_LIST_SUFFIX = 'l';
-const PARSER_OPTS = { async: false } as const;
 const STRIP_P_RE = /^<p>|<\/p>\n?$/g;
 const ANCHOR_TAG = 'A';
 
@@ -48,17 +48,15 @@ type ContentBlock =
   | { kind: 'html'; html: string }
   | { kind: 'list'; items: ChecklistItem[] };
 
-const inlineHtml = (tokens: Tokens.Generic[]): string =>
+const inlineHtml = (tokens: Tokens.Generic[], opts: MarkedOptions): string =>
   marked
-    .parser(
-      [{ type: 'paragraph', raw: '', tokens } as Tokens.Paragraph],
-      PARSER_OPTS,
-    )
+    .parser([{ type: 'paragraph', raw: '', tokens } as Tokens.Paragraph], opts)
     .replace(STRIP_P_RE, '');
 
 const buildItems = (
   listItems: Tokens.ListItem[],
   idPrefix: string,
+  opts: MarkedOptions,
 ): ChecklistItem[] =>
   listItems.map((item, index) => {
     const id = `${idPrefix}.${index}`;
@@ -70,12 +68,13 @@ const buildItems = (
           ...buildItems(
             (token as Tokens.List).items,
             `${id}.${NESTED_LIST_SUFFIX}`,
+            opts,
           ),
         );
       } else if (token.type === 'text') {
-        html += inlineHtml((token as Tokens.Text).tokens ?? []);
+        html += inlineHtml((token as Tokens.Text).tokens ?? [], opts);
       } else {
-        html += marked.parser([token], PARSER_OPTS);
+        html += marked.parser([token], opts);
       }
     }
     return { id, html, children };
@@ -83,6 +82,14 @@ const buildItems = (
 
 // Only top-level lists become checkboxes; everything else renders as normal markdown.
 const parseContent = (content: string): ContentBlock[] => {
+  // marked.parser()'s options replace marked.defaults entirely rather than merging with it,
+  // and a fresh renderer per call keeps heading-id dedup state isolated per parse (see
+  // markdown-config.ts's createHeadingRenderer for why that isolation matters).
+  const opts: MarkedOptions = {
+    ...marked.defaults,
+    renderer: createHeadingRenderer(),
+    async: false,
+  };
   const tokens = marked.lexer(content);
   let listIndex = 0;
 
@@ -91,10 +98,10 @@ const parseContent = (content: string): ContentBlock[] => {
       const idPrefix = `${LIST_ID_PREFIX}${listIndex++}`;
       return {
         kind: 'list',
-        items: buildItems((token as Tokens.List).items, idPrefix),
+        items: buildItems((token as Tokens.List).items, idPrefix, opts),
       };
     }
-    return { kind: 'html', html: marked.parser([token], PARSER_OPTS) };
+    return { kind: 'html', html: marked.parser([token], opts) };
   });
 };
 
@@ -195,6 +202,10 @@ export function ChecklistViewer({
     setChecked(loadChecked(filePath));
   }, [filePath]);
 
+  useEffect(() => {
+    scrollToUrlHash();
+  }, [blocks]);
+
   const toggle = (id: string) => {
     setChecked(prev => {
       const next = new Set(prev);
@@ -261,7 +272,9 @@ export function ChecklistViewer({
             <div
               key={index}
               className={CLS.BLOCK}
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(block.html) }}
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(block.html),
+              }}
             />
           ),
         )}

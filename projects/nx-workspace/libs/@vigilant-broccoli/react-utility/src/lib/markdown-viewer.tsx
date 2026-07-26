@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import { createNoteLinkClickHandler } from './note-links';
+import { createHeadingRenderer, marked } from './markdown-config';
+import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
 
 const CLS = {
   ROOT: 'w-full h-full overflow-auto',
@@ -48,11 +48,17 @@ export function MarkdownViewer({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    marked.parse(content, { async: true }).then(raw => {
-      if (typeof window === 'undefined') return;
-      setHtml(DOMPurify.sanitize(raw));
-    });
+    marked
+      .parse(content, { renderer: createHeadingRenderer(), async: true })
+      .then(raw => {
+        if (typeof window === 'undefined') return;
+        setHtml(DOMPurify.sanitize(raw));
+      });
   }, [content]);
+
+  useEffect(() => {
+    if (html) scrollToUrlHash();
+  }, [html]);
 
   const canEdit = Boolean(saveContent && filePath);
 
