@@ -1,7 +1,8 @@
 'use client';
 
 import { Heading, Text } from '@radix-ui/themes';
-import { Button, toast } from '@vigilant-broccoli/react-lib';
+import { Button } from '@vigilant-broccoli/react-lib';
+import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
   DEPLOY_STATUS,
   DEPLOY_TOAST_LABEL,

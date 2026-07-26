@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { toast } from '@vigilant-broccoli/react-lib';
+import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { errorMessage } from './api-helpers';
 
 type RunOptions = {
