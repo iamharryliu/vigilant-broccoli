@@ -20,9 +20,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check for nx-workspace changes
+        id: check
+        run: |
+          NX_WORKSPACE_PATHS='^(projects/nx-workspace/|\.github/(workflows/ci-pr-check\.yml|actions/setup-nx-workspace/))'
+          if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | grep -qE "$NX_WORKSPACE_PATHS"; then
+            echo "nx-workspace-changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "nx-workspace-changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: ./.github/actions/setup-nx-workspace
+        if: steps.check.outputs.nx-workspace-changed == 'true'
 
       - name: Lint, test, build affected
+        if: steps.check.outputs.nx-workspace-changed == 'true'
         working-directory: ./projects/nx-workspace
         run: pnpm exec nx affected -t lint test build --base=$NX_BASE --head=$NX_HEAD
 
