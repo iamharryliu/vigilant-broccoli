@@ -5,6 +5,11 @@ const STRUCTURE_URL = 'structure.json';
 const NOTES_DIR = 'notes';
 const NODE_TYPE_FILE = 'file';
 const PATH_SEP = '/';
+const FILENAME_FUSE_OPTIONS = {
+  keys: ['name', 'path'],
+  threshold: 0.4,
+  includeScore: true,
+};
 
 interface FlatFile {
   name: string;
@@ -13,6 +18,7 @@ interface FlatFile {
 
 let treeCache: DocsNode[] | null = null;
 let flatFilesCache: FlatFile[] | null = null;
+let filenameFuseCache: Fuse<FlatFile> | null = null;
 
 const flatten = (nodes: DocsNode[]): FlatFile[] =>
   nodes.flatMap(node =>
@@ -42,12 +48,10 @@ export const searchDocs = async (
 ): Promise<DocsSearchResult[]> => {
   if (!flatFilesCache) await fetchStructure();
   const files = flatFilesCache ?? [];
-  const fuse = new Fuse(files, {
-    keys: ['name', 'path'],
-    threshold: 0.4,
-    includeScore: true,
-  });
-  return fuse.search(query).map(r => ({
+  if (!filenameFuseCache) {
+    filenameFuseCache = new Fuse(files, FILENAME_FUSE_OPTIONS);
+  }
+  return filenameFuseCache.search(query).map(r => ({
     name: r.item.name,
     path: r.item.path,
     matchType: 'filename' as const,

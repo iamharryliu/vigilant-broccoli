@@ -8,7 +8,11 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "build-snapshot": {
+      "command": "node apps/ui/docs-md/scripts/build-snapshot.mjs ../../notes apps/ui/docs-md/public"
+    },
     "build": {
+      "dependsOn": ["^build", "build-snapshot"],
       "outputs": [
         "{projectRoot}/{options.outDir}",
         "{workspaceRoot}/dist/docs-md"
