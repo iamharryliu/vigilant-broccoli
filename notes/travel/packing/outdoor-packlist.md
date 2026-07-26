@@ -70,6 +70,7 @@
 - **Sleeping**
   - pillow
   - sleeping bag/blanket
+  - sheets
 - **Toiletry**
   - [Toiletry Packlist](./toiletry-packlist.md)
   - toilet paper
@@ -79,6 +80,14 @@
   - extra bags/totes
   - large sitting blanket
   - long lighter and matches
+  - kleenex
+  - waterproof bags/cases
+  - fly swatter
+  - clothesline
+  - shovel
+  - plastic bags
+  - fan
+  - utility gloves
 - [Travel Packlist Leisure](./packlist.md#leisure)
 - [Dog Packlist](./dog-packlist.md)
 
@@ -100,6 +109,8 @@
   - dishwasher soap
   - collapsable wash buckets
   - water tank
+  - sponges
+  - kitchen towels
 
 ## Food
 
@@ -110,6 +121,9 @@
   - noodles
   - hotdogs
   - soups
+  - eggs
+  - ketchup
+  - bread
 - **Snacks**
   - dried fruits
   - nuts and seeds
@@ -121,6 +135,7 @@
   - electrolyte powders
   - ground coffee
   - tea leaves
+  - milk
 
 ## Nice to Have
 
