@@ -3,7 +3,8 @@
 import '@radix-ui/themes/styles.css';
 import { Theme } from '@radix-ui/themes';
 import './global.css';
-import { ThemeProvider, useTheme, Toaster } from '@vigilant-broccoli/react-lib';
+import { ThemeProvider, useTheme } from '@vigilant-broccoli/react-lib';
+import { Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import { AuthProvider } from '../../libs/auth';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {

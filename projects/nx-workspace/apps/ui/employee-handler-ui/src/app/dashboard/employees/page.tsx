@@ -11,9 +11,9 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  toast,
   type EllipsisAction,
 } from '@vigilant-broccoli/react-lib';
+import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { Card, DropdownMenu, Text } from '@radix-ui/themes';
 import { authFetchOk, postEmails } from '../../../lib/api-helpers';
 import { useAction } from '../../../lib/use-action';

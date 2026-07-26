@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { toast } from '@vigilant-broccoli/react-lib';
+import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { SOCKET_EVENTS } from '@vigilant-broccoli/common-js';
 import {
   DEPLOY_APP,

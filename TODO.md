@@ -152,10 +152,6 @@ Both email services start their AMQP consumer in the web process but run with `a
 
 **`apps/api/llm-service/src/routes/chat.ts`** — after `reply.hijack()`, the `for await` loop has no `close` listener on the raw socket; when the user closes the tab mid-generation, the OpenAI stream is consumed (and billed) to completion. **Fix:** pass an `AbortController.signal` to the SDK call and abort from `reply.raw.on('close', ...)`.
 
-### 5cbc97. [performance] react-lib has no `sideEffects` hint; `sonner` bundles into every barrel consumer
-
-**`libs/@vigilant-broccoli/react-lib/package.json`** (no `sideEffects` field) · `src/components/index.ts:43` re-exports `Toaster.tsx` (`export … from 'sonner'`). pages-index uses zero toasts yet bundles sonner (~68kB raw); same in docs-md/journal. **Fix:** move `Toaster`/`toast` to a subpath entry (the existing `live-location-map` pattern) and add `"sideEffects": false` (or `["**/*.css"]`); optionally `experimental.optimizePackageImports` in the Next apps.
-
 ### 611602. [performance] FontAwesome loaded globally for a handful of icons
 
 **`apps/ui/cloud-8-skate-angular/project.json:26`** lists `fontawesome-free/css/all.css` in build `styles` but uses 0 `fa-` classes — ~76kB render-blocking CSS + ~1MB webfonts for nothing. `personal-website-react/index.html:33` loads FA 6.5.2 render-blocking from a CDN for 11 icons. **Fix:** delete the entry from cloud-8-skate; inline SVGs (or a subset kit) for the React app.
