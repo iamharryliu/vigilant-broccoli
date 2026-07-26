@@ -32,6 +32,8 @@ const COPY = {
   EMPTY: 'Select a markdown file to view its contents',
 } as const;
 
+const AGGREGATE_KEY_PREFIX = 'aggregate:';
+
 export interface DocsViewerProps {
   getStructure: () => Promise<DocsNode[]>;
   getContent: (path: string) => Promise<string>;
@@ -96,27 +98,38 @@ export function DocsViewer({
     }),
   );
 
-  const renderContent = (content: string, navigate: (path: string) => void) => (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 min-h-0">
-        {viewMode === VIEW_MODE.CHECKLIST ? (
-          <ChecklistViewer
-            content={content}
-            filePath={activeFile}
-            onNavigate={navigate}
-          />
-        ) : (
-          <MarkdownViewer
-            content={content}
-            filePath={activeFile}
-            saveContent={saveContent}
-            editTrigger={editTrigger}
-            onNavigate={navigate}
-          />
-        )}
+  const renderContent = (
+    content: string,
+    navigate: (path: string) => void,
+    sourcePaths: string[],
+  ) => {
+    const isAggregate = sourcePaths.length > 1;
+    const contentKey = isAggregate
+      ? `${AGGREGATE_KEY_PREFIX}${sourcePaths.join('|')}`
+      : (sourcePaths[0] ?? activeFile);
+
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 min-h-0">
+          {viewMode === VIEW_MODE.CHECKLIST ? (
+            <ChecklistViewer
+              content={content}
+              filePath={contentKey}
+              onNavigate={navigate}
+            />
+          ) : (
+            <MarkdownViewer
+              content={content}
+              filePath={sourcePaths[0] ?? activeFile}
+              saveContent={isAggregate ? undefined : saveContent}
+              editTrigger={editTrigger}
+              onNavigate={navigate}
+            />
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   if (isLoadingTree) {
     return <div className={CLS.CENTERED_MSG}>{COPY.LOADING_TREE}</div>;
