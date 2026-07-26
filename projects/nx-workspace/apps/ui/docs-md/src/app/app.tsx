@@ -9,7 +9,11 @@ const getFileParam = () =>
 const setFileParam = (path: string) => {
   const params = new URLSearchParams(window.location.search);
   params.set(FILE_PARAM, path);
-  window.history.pushState(null, '', `?${params.toString()}`);
+  window.history.pushState(
+    null,
+    '',
+    `?${params.toString()}${window.location.hash}`,
+  );
 };
 
 export function App() {

@@ -37,6 +37,7 @@ const INDENT_BASE_PX = 8;
 const LEADING_HEADING_RE = /^#\s[^\n]*\n+/;
 const ALL_HEADINGS_RE = /^#{1,6}\s[^\n]*\n+/gm;
 const AGGREGATE_SEPARATOR = '\n\n---\n\n';
+const HASH_SEP = '#';
 
 const stripLeadingHeading = (content: string) =>
   content.replace(LEADING_HEADING_RE, '');
@@ -207,7 +208,13 @@ export const DocsExplorer = ({
   }, [selectedPaths, hasSelection, getContent]);
 
   const selectFile = useCallback(
-    async (path: string) => {
+    async (pathWithHash: string) => {
+      const [path, hash] = pathWithHash.split(HASH_SEP);
+      // Only touch the hash when the caller supplied one (a resolved cross-file
+      // link) — plain path selections (tree, search, initial URL sync) leave
+      // whatever's already in the URL alone, so a direct load of `?file=...#foo`
+      // isn't clobbered by the initial mount echoing the file back into the URL.
+      if (hash !== undefined) window.location.hash = hash;
       setSelectedPaths([]);
       setSelectedPath(path);
       setMobilePanel('content');

@@ -11,7 +11,7 @@ export const resolveNoteLink = (
 ): string | null => {
   if (!href || EXTERNAL_OR_HASH_HREF_RE.test(href)) return null;
 
-  const rawPath = href.split('#')[0];
+  const [rawPath, hash] = href.split('#');
   if (!rawPath) return null;
 
   const segments = [
@@ -26,7 +26,16 @@ export const resolveNoteLink = (
     else resolved.push(segment);
   }
 
-  return resolved.join(PATH_SEP);
+  const resolvedPath = resolved.join(PATH_SEP);
+  return hash ? `${resolvedPath}#${hash}` : resolvedPath;
+};
+
+// The browser's native scroll-to-fragment only fires around the initial page load; by the
+// time async-fetched content renders its headings, that window has already closed.
+export const scrollToUrlHash = () => {
+  const hash = window.location.hash.slice(1);
+  if (!hash) return;
+  document.getElementById(hash)?.scrollIntoView();
 };
 
 export const createNoteLinkClickHandler =
