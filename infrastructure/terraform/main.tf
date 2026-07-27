@@ -27,6 +27,10 @@ terraform {
       source  = "oracle/oci"
       version = "~> 6.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.0"
@@ -57,6 +61,11 @@ provider "cloudflare" {}
 provider "oci" {
   config_file_profile = "DEFAULT"
   region              = "ca-toronto-1"
+}
+
+provider "aws" {
+  region  = var.aws_region
+  profile = "AdministratorAccess-841376026547"
 }
 
 # Reads SUPABASE_ACCESS_TOKEN from env (personal access token from
