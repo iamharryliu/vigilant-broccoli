@@ -334,10 +334,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`apps/api/email-service/src/main.ts:38-57`** (and the email-subscription copy) caches the channel, not a connect promise: two concurrent first requests each open a connection and the loser idles forever; error paths null the channel but never close the connection. Cache the promise; close on error.
 
-### be5cf7. [performance] `common-node` barrel drags winston/archiver/qrcode into every service
-
-**`libs/@vigilant-broccoli/common-node/src/index.ts`** re-exports the whole lib, so services importing only `getEnvironmentVariable` pay require-time + image weight for all three. Split entry points.
-
 ### c3ab6c. [performance] New OpenAI/Anthropic SDK client per prompt
 
 **`libs/@vigilant-broccoli/llm-tools/src/lib/llm.utils.ts:77,86`**; muted by shared undici pools, trivial to memoize per provider/key.

@@ -3,7 +3,8 @@ import ejs from 'ejs';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { Resend } from 'resend';
 import { DEFAULT_EJS_TEMPLATE, getDefaultEmailRequest } from './email.consts';
-import { logger, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { logger } from '@vigilant-broccoli/common-node/logger';
 import { Email } from './email.models';
 
 type EmailProvider = 'smtp' | 'resend';

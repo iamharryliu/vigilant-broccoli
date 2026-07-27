@@ -1,6 +1,7 @@
 import { Twilio } from 'twilio';
 import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
-import { logger, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { logger } from '@vigilant-broccoli/common-node/logger';
 
 export class TextMessageService {
   private client: Twilio;

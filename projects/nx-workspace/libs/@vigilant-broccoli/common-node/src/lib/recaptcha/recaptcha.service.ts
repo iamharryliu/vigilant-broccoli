@@ -1,4 +1,3 @@
-import { logger } from '../logging/logger.service';
 import { getEnvironmentVariable } from '../utils';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 export class RecaptchaService {
@@ -8,7 +7,7 @@ export class RecaptchaService {
     this.secretKey =
       secretKey || getEnvironmentVariable('RECAPTCHA_V3_SECRET_KEY');
     if (!this.secretKey) {
-      logger.error('RecaptchaService is not configured properly.');
+      console.error('RecaptchaService is not configured properly.');
     }
   }
 

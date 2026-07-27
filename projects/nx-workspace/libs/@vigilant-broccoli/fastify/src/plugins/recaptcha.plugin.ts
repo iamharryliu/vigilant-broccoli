@@ -1,7 +1,8 @@
 import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { logger, RecaptchaService } from '@vigilant-broccoli/common-node';
+import { RecaptchaService } from '@vigilant-broccoli/common-node';
+import { logger } from '@vigilant-broccoli/common-node/logger';
 
 const plugin: FastifyPluginAsync = async app => {
   app.addHook('preHandler', async (req, reply) => {

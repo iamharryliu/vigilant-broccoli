@@ -2,11 +2,6 @@ import { getEnvironmentVariable } from '../utils';
 import { RecaptchaService } from './recaptcha.service';
 
 global.fetch = jest.fn();
-jest.mock('@vigilant-broccoli/common-node', () => ({
-  logger: {
-    error: jest.fn(),
-  },
-}));
 
 describe('RecaptchaService', () => {
   let recaptchaService: RecaptchaService;

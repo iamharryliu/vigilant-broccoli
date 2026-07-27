@@ -27,6 +27,15 @@
       "@vigilant-broccoli/common-node": [
         "./libs/@vigilant-broccoli/common-node/src/index.ts"
       ],
+      "@vigilant-broccoli/common-node/logger": [
+        "./libs/@vigilant-broccoli/common-node/src/logger.ts"
+      ],
+      "@vigilant-broccoli/common-node/qr-code": [
+        "./libs/@vigilant-broccoli/common-node/src/qr-code.ts"
+      ],
+      "@vigilant-broccoli/common-node/archive": [
+        "./libs/@vigilant-broccoli/common-node/src/archive.ts"
+      ],
       "@vigilant-broccoli/employee-handler": [
         "./libs/@vigilant-broccoli/employee-handler/src/index.ts"
       ],
