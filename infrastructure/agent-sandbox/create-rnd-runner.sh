@@ -22,7 +22,7 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 $QUESTION
 
 Rules:
-- Read docs/rnd/README.md first and follow its template and rules EXACTLY: sections in order — # R&D title, a one-line blockquote restating the question with today's date, ## Context, ## Alternatives (a markdown table with columns Option | Pros | Cons | Cost | Security | Scalability, at least two options, every cell filled or "—"), ## Recommendation, ## Sample Implementation.
+- Read docs/rnd/TEMPLATE.md first and follow its template and rules EXACTLY: sections in order — # R&D title, a one-line blockquote restating the question with today's date, ## Context, ## Alternatives (a markdown table with columns Option | Pros | Cons | Cost | Security | Scalability, at least two options, every cell filled or "—"), ## Recommendation, ## Sample Implementation.
 - Be brief. Favor the table and short sentences over prose. No filler, no preamble, no conclusion beyond the recommendation.
 - Research before writing. When the question touches this repo, grep for the relevant files, patterns, and docs and cite concrete paths (e.g. path/to/file.ext:12) in Context and Sample Implementation. Prefer patterns already used in the repo (check CLAUDE.md and the docs it links).
 - Write the note to a NEW file docs/rnd/<concise-kebab-slug>.md — pick a short descriptive slug from the question. Do not modify any file outside docs/rnd/.
