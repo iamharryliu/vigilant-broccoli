@@ -50,7 +50,6 @@ declare -a UTILITY_APPS=(
     "/Applications/Firefox.app"
     "/Applications/Google Chrome.app"
     "/Applications/NordVPN.app"
-    "/Applications/Obsidian.app"
     "/Applications/Safari.app"
     "/System/Applications/System Settings.app"
     "/Applications/TeamViewer.app"

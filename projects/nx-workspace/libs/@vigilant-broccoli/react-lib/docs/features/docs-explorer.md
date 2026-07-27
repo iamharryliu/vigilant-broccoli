@@ -16,12 +16,14 @@
 - `urlSync: { get, set }` — syncs selected file to the URL instead of component state alone
 - `viewModes`, `currentViewMode`, `onViewModeChange` — populate the content-pane dropdown
 - `onEdit` — adds an Edit item to the content-pane dropdown
+- `renderGraph(navigate)` — optional; enables the sidebar graph toggle and renders its result in the content pane (see [note-graph.md](./note-graph.md))
 - `sidebarTitle`, `searchPlaceholder`, `emptyMessage` — copy overrides
 
 ## DocsViewer Props
 
 - `getStructure`, `getContent`, `search` — same contracts as DocsExplorer
 - `saveContent(path, content)` — optional; its presence alone enables the Edit action
+- `getGraph()` — optional; supplies the note graph and enables the graph toggle (see [note-graph.md](./note-graph.md))
 - `urlSync` — forwarded to DocsExplorer
 
 ## Behaviour
