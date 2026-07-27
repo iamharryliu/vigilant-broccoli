@@ -29,20 +29,20 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 ☁️  OCI
   oci:vm:ssh                  SSH into OCI VM (RabbitMQ)
   oci:vm:sync-socket-token    Sync socket-server SENDER_TOKEN with Vault (run after rotation)
-  oci:gitea:ssh               SSH into Gitea VM
-  oci:gitea:backup:local      Dump Gitea to a local zip
-  oci:gitea:backup:cloud      Dump Gitea straight to GCS (timestamped)
-  oci:gitea:restore:local <zip>  Restore Gitea from a local dump zip
-  oci:gitea:restore:cloud [gs://]  Restore from GCS (default: latest backup)
+  gitea:ssh                   SSH into Gitea VM
+  gitea:backup:local          Dump Gitea to a local zip
+  gitea:backup:cloud          Dump Gitea straight to GCS (timestamped)
+  gitea:restore:local <zip>   Restore Gitea from a local dump zip
+  gitea:restore:cloud [gs://]  Restore from GCS (default: latest backup)
 
 💻 CODE SERVER
-  oci:code-server:open        Open code.harryliu.dev
-  oci:code-server:password    Copy code-server password to clipboard
-  oci:code-server:ssh         SSH into code-server VM
-  oci:code-server:logs        Follow code-server container logs
-  oci:code-server:logs:cloud-init  Follow VM provisioning log
-  oci:code-server:reset       Rebuild containers + volumes (fresh environment)
-  oci:code-server:replace     Replace the VM via terraform (fresh host)
+  code-server:open            Open code.harryliu.dev
+  code-server:password        Copy code-server password to clipboard
+  code-server:ssh             SSH into code-server VM
+  code-server:logs            Follow code-server container logs
+  code-server:logs:cloud-init  Follow VM provisioning log
+  code-server:reset           Rebuild containers + volumes (fresh environment)
+  code-server:replace         Replace the VM via terraform (fresh host)
 
 🖥️  GCP VM
   gcp:vm:image:build          Build GCP VM Packer image (init + build)
