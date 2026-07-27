@@ -43,3 +43,7 @@ output "journal_url" {
 output "docs_url" {
   value = "https://${var.docs_domain}"
 }
+
+output "aws_test_instance_public_ip" {
+  value = aws_instance.test.public_ip
+}

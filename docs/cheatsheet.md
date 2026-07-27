@@ -17,6 +17,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gcp:login                   Login to GCP and set project
   gh:login                    Login to GitHub CLI
   npm:login                   Login to npm
+  aws:login                   Login to AWS SSO (AdministratorAccess-841376026547)
   oracle:config               Edit OCI config
 
 🏗️  TERRAFORM
