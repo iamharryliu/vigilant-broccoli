@@ -47,6 +47,7 @@ flowchart TD
             CMD_SPELLCHECK["docs-spell-check.md"]
             CMD_REFACTOR_CLEANUP["refactor-code-cleanup.md"]
             CMD_RND_NOTE["rnd-note.md"]
+            CMD_AUDIT_NOTE["audit-note.md"]
             CMD_SHIP_PR["ship-pr.md"]
             CMD_UPDATE_FEATURE_DOCS["update-feature-documentation.md"]
             CMD_UPDATE_READMES["update-readmes.md"]

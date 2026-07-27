@@ -67,6 +67,7 @@
     "agentic:task:solve": "./infrastructure/agent-sandbox/solve-todo.sh",
     "agentic:task:create": "./infrastructure/agent-sandbox/create-todo.sh",
     "agentic:rnd": "./infrastructure/agent-sandbox/create-rnd.sh",
+    "agentic:audit": "./infrastructure/agent-sandbox/create-audit.sh",
     "agentic:pr:fix": "./infrastructure/agent-sandbox/fix-pr.sh",
     "agentic:pr:update": "./infrastructure/agent-sandbox/update-pr.sh",
     "vb-manager-next:start": "cd projects/nx-workspace && nx run vb-manager-next:pm2:start",
