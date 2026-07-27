@@ -23,7 +23,7 @@ resource "google_service_account" "github_actions_pr_check" {
 resource "google_iam_workload_identity_pool_provider" "github_pr_check" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_actions.workload_identity_pool_id
   workload_identity_pool_provider_id = "github-pr-check"
-  display_name                       = "GitHub provider (ci-pr-check.yml only)"
+  display_name                       = "GitHub provider (ci-pr-check)"
   description                        = "Same OIDC issuer as the 'github' provider, but the attribute_condition also requires job_workflow_ref to be ci-pr-check.yml, so only that workflow can present this identity."
 
   attribute_mapping = {
