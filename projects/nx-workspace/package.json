@@ -186,6 +186,7 @@
     "express": "^5.2.1",
     "fastify": "^5.10.0",
     "fastify-plugin": "^5.1.0",
+    "framer-motion": "^12.23.12",
     "fuse.js": "^7.4.2",
     "gapi-script": "^1.2.0",
     "github-slugger": "^2.0.0",

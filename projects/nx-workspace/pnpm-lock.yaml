@@ -190,6 +190,9 @@ importers:
       fastify-plugin:
         specifier: ^5.1.0
         version: 5.1.0
+      framer-motion:
+        specifier: ^12.23.12
+        version: 12.40.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       fuse.js:
         specifier: ^7.4.2
         version: 7.4.2
@@ -1181,6 +1184,9 @@ importers:
       clsx:
         specifier: '*'
         version: 2.1.1
+      framer-motion:
+        specifier: '*'
+        version: 12.40.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       lucide-react:
         specifier: '*'
         version: 0.513.0(react@19.2.7)
