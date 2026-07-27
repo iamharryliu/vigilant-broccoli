@@ -77,6 +77,22 @@ export interface DocsSearchResult {
   excerpt?: string;
 }
 
+export interface NoteGraphNode {
+  id: string;
+  name: string;
+  group: string;
+}
+
+export interface NoteGraphLink {
+  source: string;
+  target: string;
+}
+
+export interface NoteGraph {
+  nodes: NoteGraphNode[];
+  links: NoteGraphLink[];
+}
+
 export interface DocsExplorerUrlSync {
   get: () => string | null;
   set: (path: string) => void;
@@ -104,6 +120,7 @@ interface DocsExplorerProps {
   viewModes?: ViewModeOption[];
   onViewModeChange?: (mode: string | undefined) => void;
   currentViewMode?: string;
+  renderGraph?: (navigate: (path: string) => void) => ReactNode;
 }
 
 const COPY = {
@@ -124,6 +141,9 @@ const COPY = {
   SIDEBAR_ACTIONS: 'Sidebar actions',
   SELECT_MULTIPLE: 'Select multiple',
   TURN_OFF_MULTI_SELECT: 'Turn off multi-select',
+  SHOW_GRAPH: 'Graph view',
+  HIDE_GRAPH: 'Close graph view',
+  GRAPH_TITLE: 'Graph',
 } as const;
 
 const AGGREGATE_MODE_LABEL: Record<AggregateMode, string> = {
@@ -145,7 +165,9 @@ export const DocsExplorer = ({
   viewModes,
   onViewModeChange,
   currentViewMode,
+  renderGraph,
 }: DocsExplorerProps) => {
+  const [showGraph, setShowGraph] = useState(false);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [content, setContent] = useState('');
   const [isLoadingContent, setIsLoadingContent] = useState(false);
@@ -218,6 +240,7 @@ export const DocsExplorer = ({
 
   const selectFile = useCallback(
     async (pathWithHash: string) => {
+      setShowGraph(false);
       const [path, hash] = pathWithHash.split(HASH_SEP);
       // Only touch the hash when the caller supplied one (a resolved cross-file
       // link) — plain path selections (tree, search, initial URL sync) leave
@@ -346,22 +369,35 @@ export const DocsExplorer = ({
         <div className="px-3 pt-3 pb-2">
           <div className="flex items-center justify-between mb-1.5">
             <h2 className="text-sm font-semibold">{sidebarTitle}</h2>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
+            <div className="flex items-center gap-1">
+              {renderGraph && (
                 <IconButton
-                  variant="ghost"
-                  icon="ellipsis-horizontal"
-                  aria-label={COPY.SIDEBAR_ACTIONS}
+                  variant={showGraph ? 'default' : 'ghost'}
+                  icon="graph"
+                  aria-label={showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH}
+                  onClick={() => {
+                    setShowGraph(prev => !prev);
+                    setMobilePanel('content');
+                  }}
                 />
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content>
-                <DropdownMenu.Item onSelect={toggleMultiSelectMode}>
-                  {multiSelectMode
-                    ? COPY.TURN_OFF_MULTI_SELECT
-                    : COPY.SELECT_MULTIPLE}
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
+              )}
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <IconButton
+                    variant="ghost"
+                    icon="ellipsis-horizontal"
+                    aria-label={COPY.SIDEBAR_ACTIONS}
+                  />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <DropdownMenu.Item onSelect={toggleMultiSelectMode}>
+                    {multiSelectMode
+                      ? COPY.TURN_OFF_MULTI_SELECT
+                      : COPY.SELECT_MULTIPLE}
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </div>
           </div>
           {search && (
             <>
@@ -440,7 +476,27 @@ export const DocsExplorer = ({
       <Card
         className={`${MOBILE_NO_CARD_CLS} ${contentVisibilityCls} flex-1 overflow-hidden flex-col`}
       >
-        {!selectedPath && !hasSelection ? (
+        {showGraph && renderGraph ? (
+          <div className="relative w-full h-full">
+            <div className="absolute top-2 left-2 z-10 md:hidden">
+              <IconButton
+                variant="ghost"
+                icon="arrow-left"
+                onClick={showSidebarOnMobile}
+                aria-label={COPY.BACK_TO_FILES}
+              />
+            </div>
+            <div className="absolute top-2 right-2 z-10">
+              <IconButton
+                variant="ghost"
+                icon="x"
+                onClick={() => setShowGraph(false)}
+                aria-label={COPY.HIDE_GRAPH}
+              />
+            </div>
+            {renderGraph(selectFile)}
+          </div>
+        ) : !selectedPath && !hasSelection ? (
           <CenteredMessage>{emptyMessage}</CenteredMessage>
         ) : (hasSelection ? isLoadingAggregate : isLoadingContent) ? (
           <CenteredMessage>

@@ -1,7 +1,12 @@
 import Fuse from 'fuse.js';
-import type { DocsNode, DocsSearchResult } from '@vigilant-broccoli/react-lib';
+import type {
+  DocsNode,
+  DocsSearchResult,
+  NoteGraph,
+} from '@vigilant-broccoli/react-lib';
 
 const STRUCTURE_URL = 'structure.json';
+const GRAPH_URL = 'graph.json';
 const NOTES_DIR = 'notes';
 const NODE_TYPE_FILE = 'file';
 const PATH_SEP = '/';
@@ -45,6 +50,16 @@ export const fetchContent = async (path: string): Promise<string> => {
   const res = await fetch(`${NOTES_DIR}${PATH_SEP}${path}`);
   if (!res.ok) throw new Error(`Failed to load: ${path}`);
   return res.text();
+};
+
+let graphCache: NoteGraph | null = null;
+
+export const fetchGraph = async (): Promise<NoteGraph> => {
+  if (graphCache) return graphCache;
+  const res = await fetch(GRAPH_URL);
+  if (!res.ok) throw new Error('Failed to load graph');
+  graphCache = await res.json();
+  return graphCache as NoteGraph;
 };
 
 const fetchAllFileContents = (): Promise<Map<string, string>> => {

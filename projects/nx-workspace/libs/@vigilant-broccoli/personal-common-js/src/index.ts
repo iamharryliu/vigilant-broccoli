@@ -81,9 +81,6 @@ export const MAC_OS_APP = {
   FIREFOX: {
     NAME: 'Firefox',
   },
-  OBSIDIAN: {
-    NAME: 'Obsidian',
-  },
   SPOTIFY: {
     NAME: 'Spotify',
   },

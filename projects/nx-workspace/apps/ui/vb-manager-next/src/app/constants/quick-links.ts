@@ -854,12 +854,6 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
-    label: MAC_OS_APP.OBSIDIAN.NAME,
-    target: MAC_OS_APP.OBSIDIAN.NAME,
-    type: OPEN_TYPE.MAC_APPLICATION,
-    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
-  },
-  {
     label: MAC_OS_APP.SLACK.NAME,
     target: MAC_OS_APP.SLACK.NAME,
     type: OPEN_TYPE.MAC_APPLICATION,
