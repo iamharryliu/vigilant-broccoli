@@ -1,5 +1,4 @@
 import { Location } from '@vigilant-broccoli/common-js';
-import { logger } from '../logging/logger.service';
 import { getEnvironmentVariable } from '../utils';
 
 export interface OpenWeatherForecastItem {
@@ -81,7 +80,7 @@ export const OpenWeatherService = {
 
       return { weatherData, timezoneOffset };
     } catch (err) {
-      logger.error('Failed to fetch weather forecast', err);
+      console.error('Failed to fetch weather forecast', err);
       throw err;
     }
   },
@@ -109,7 +108,7 @@ export const OpenWeatherService = {
 
       return await response.json();
     } catch (err) {
-      logger.error('Failed to fetch current weather', err);
+      console.error('Failed to fetch current weather', err);
       throw err;
     }
   },

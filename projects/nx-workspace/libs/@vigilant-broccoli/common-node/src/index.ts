@@ -16,7 +16,6 @@ export * from './lib/logger/logger';
 export * from './lib/logger/logger.model';
 export * from './lib/logger/logger.const';
 export * from './lib/logger/logger.transports';
-export * from './lib/logging/logger.service';
 // Encryption
 export * from './lib/encryption/encryption.service';
 // Google Recaptcha
@@ -25,5 +24,3 @@ export * from './lib/recaptcha/recaptcha.service';
 export * from './lib/weather/openweather.service';
 // Audio
 export * from './lib/audio/audio.service';
-// QR Code
-export * from './lib/qr-code/qr-code.service';

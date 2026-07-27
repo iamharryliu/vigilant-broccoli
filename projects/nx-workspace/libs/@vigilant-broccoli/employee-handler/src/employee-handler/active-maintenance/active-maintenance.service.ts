@@ -16,6 +16,7 @@ import {
   FileSystemUtils,
   getEnvironmentVariable,
 } from '@vigilant-broccoli/common-node';
+import { ArchiveUtils } from '@vigilant-broccoli/common-node/archive';
 
 // TODO: kind of awkward with caching, refactor later.
 const updateEmailSignatures = async (
@@ -76,7 +77,7 @@ const generateLocalSignatures = async (
     ALL_GENERATED_SIGNATURES_FILEPATH,
     combinedSignatures,
   );
-  await FileSystemUtils.zipFolder(
+  await ArchiveUtils.zipFolder(
     SIGNATURE_TMP_DIR,
     ZIPPED_GENERATED_SIGNATURES_FILEPATH,
   );

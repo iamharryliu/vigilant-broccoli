@@ -1,6 +1,5 @@
 import crypto, { Cipheriv, Decipheriv } from 'crypto';
-import { logger } from '../logging/logger.service';
-import { getEnvironmentVariable } from '../../index';
+import { getEnvironmentVariable } from '../utils';
 
 export class EncryptionService {
   cipher: Cipheriv;
@@ -14,7 +13,7 @@ export class EncryptionService {
     secretKey = secretKey || getEnvironmentVariable('SECRET_KEY');
     secretIv = secretIv || getEnvironmentVariable('SECRET_IV');
     if (secretKey === 'key' || secretIv === 'secret') {
-      logger.warn('EncryptionService using default properties.');
+      console.warn('EncryptionService using default properties.');
     }
 
     encryptionMethod =

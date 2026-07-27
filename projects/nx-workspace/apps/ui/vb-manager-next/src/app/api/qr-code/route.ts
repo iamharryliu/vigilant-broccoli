@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { QRCodeService } from '@vigilant-broccoli/common-node';
+import { QRCodeService } from '@vigilant-broccoli/common-node/qr-code';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

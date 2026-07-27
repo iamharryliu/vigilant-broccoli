@@ -1,7 +1,6 @@
 import fs, { existsSync, readdirSync, statSync } from 'fs';
 import path, { join } from 'path';
 import crypto from 'crypto';
-import archiver from 'archiver';
 import { homedir } from 'os';
 import { TMP_PATH } from './file-system.consts';
 
@@ -17,35 +16,6 @@ const appendFile = async (filepath: string, content: string): Promise<void> => {
 
 const makedirectory = async (directoryPath: string): Promise<void> => {
   await fs.promises.mkdir(directoryPath, { recursive: true });
-};
-
-const zipFolder = async (
-  sourceFolder: string,
-  zipFilePath = '',
-): Promise<string> => {
-  await makedirectory(path.dirname(zipFilePath));
-  return new Promise((resolve, reject) => {
-    if (!fs.existsSync(sourceFolder)) {
-      return reject(new Error(`Source folder does not exist: ${sourceFolder}`));
-    }
-    const savePath = zipFilePath ? zipFilePath : `${sourceFolder}.zip`;
-    const output = fs.createWriteStream(savePath);
-    const archive = archiver('zip', {
-      zlib: { level: 9 },
-    });
-    output.on('close', () => {
-      console.info(
-        `Zip file created: ${savePath} (${archive.pointer()} total bytes)`,
-      );
-      resolve(savePath);
-    });
-    archive.on('error', err => {
-      reject(err);
-    });
-    archive.pipe(output);
-    archive.directory(sourceFolder, false);
-    archive.finalize();
-  });
 };
 
 const deletePath = async (paths: string | string[]): Promise<void> => {
@@ -138,7 +108,6 @@ export const FileSystemUtils = {
   // CREATE
   writeFile,
   makedirectory,
-  zipFolder,
   writeJSON,
   generateTmpFilepath,
   // READ
