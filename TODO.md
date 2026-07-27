@@ -118,12 +118,6 @@ Role `github-actions-role` is usable by any job with `id-token: write` — inclu
 
 `StrictHostKeyChecking=accept-new` plus `ssh-keygen -R` before connecting = trust-on-first-use every run, then the rotated `SHARED_APP_TOKEN` is piped over that connection. DNS hijack / MITM of `socket.harryliu.dev` presents its own host key, is accepted, and receives the new token. Same TOFU pattern in `cron-backup.yml:79,85` (lower impact). **Fix:** store the VMs' host public keys (not secret) in repo/Vault, write to `known_hosts` with `StrictHostKeyChecking=yes`, drop the `ssh-keygen -R`.
 
-### 34c5fe. [security] Public workflow logs disclose RabbitMQ broker host + username
-
-**`.github/workflows/test-e2e-rabbitmq.yml:52`** — `echo "Parsed broker host: $RMQ_HOST (user: $RMQ_USER)"`
-
-The repo is public, so Actions logs are world-readable. Only `RMQ_PASS` is masked; host + username print in clear, and the workflow proves 5671/15671 are internet-reachable — two of three credentials for online brute force. **Fix:** drop the echo or `::add-mask::` host and user; ideally firewall the management UI (cf. 20177f).
-
 ### 427e54. [performance] Follower jobs fire after every deploy — even no-op deploys
 
 Thirteen workflows trigger on `workflow_run` (health-check, notify-complete, e2e suites incl. the 5-provider paid-token `test-e2e-llm` matrix, security suites, smoke) — roughly 25 jobs, most doing their own checkout + OIDC + Secret Manager + Vault round trip. `deploy` succeeds even when `has_deployments=false` (`deploy.yml:140-153`), so a push touching nothing deployable still triggers the full fan-out against production; it also double-fires via `ci-rotate-secrets` calling deploy. **Fix:** expose what was actually deployed (job output → `repository_dispatch` per service or an artifact followers check) and exit early otherwise; drop the cron+per-deploy duplication on the `test-security-*` suites.
