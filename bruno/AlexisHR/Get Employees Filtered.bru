@@ -1,0 +1,20 @@
+meta {
+  name: Get Employees Filtered
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://api.alexishr.com/v1/employee?limit=500&select=workEmail
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 500
+  select: workEmail
+}
+
+headers {
+  Authorization: Bearer {{process.env.ALEXISHR_API_KEY}}
+}

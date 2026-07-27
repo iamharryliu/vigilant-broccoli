@@ -1,0 +1,43 @@
+meta {
+  name: View Publish
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://slack.com/api/views.publish
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{process.env.SLACKBOT_TOKEN}}
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "user_id": "U08DG21SY8N",
+    "view": {
+      "type": "home",
+      "blocks": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "This is a Block Kit example"
+          },
+          "accessory": {
+            "type": "image",
+            "image_url": "https://api.slack.com/img/blocks/bkb_template_images/notifications.png",
+            "alt_text": "calendar thumbnail"
+          }
+        }
+      ]
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+}
