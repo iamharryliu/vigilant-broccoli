@@ -294,10 +294,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`apps/api/email-service/src/main.ts:30`**, `email-subscription-service/src/main.ts:49` (`checkServerIdentity: () => undefined`). CA is still pinned; drop the override or pin the expected CN/SAN.
 
-### a4bc16. [security] hearth dev seed/clear routes live in production
-
-**`apps/hearth/src/app/api/dev/{seed,clear}/route.ts`**. Session-gated and RLS-scoped (limited blast radius), but `clear` bulk-deletes a home's data. Gate behind `NODE_ENV !== 'production'`.
-
 ### ab1da0. [security] checklist-viewer renders marked output without sanitization
 
 **`libs/@vigilant-broccoli/react-utility/src/lib/checklist-viewer.tsx:87,182,274`** pipes `marked.parser()` into `dangerouslySetInnerHTML` with no DOMPurify (its sibling `markdown-viewer.tsx` sanitizes). Author-controlled today; latent stored-XSS if pointed at user content. Add DOMPurify.
