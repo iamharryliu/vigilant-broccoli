@@ -45,11 +45,12 @@ jobs:
           RMQ_USER="${USER_PASS%%:*}"
           RMQ_PASS="${USER_PASS#*:}"
           RMQ_HOST="${HOST_PORT%%:*}"
+          echo "::add-mask::$RMQ_HOST"
+          echo "::add-mask::$RMQ_USER"
           echo "::add-mask::$RMQ_PASS"
           echo "RMQ_HOST=$RMQ_HOST" >> $GITHUB_ENV
           echo "RMQ_USER=$RMQ_USER" >> $GITHUB_ENV
           echo "RMQ_PASS=$RMQ_PASS" >> $GITHUB_ENV
-          echo "Parsed broker host: $RMQ_HOST (user: $RMQ_USER)"
 
       - name: Verify broker TLS certificate chain
         env:
