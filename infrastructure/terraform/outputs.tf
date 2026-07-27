@@ -44,6 +44,22 @@ output "docs_url" {
   value = "https://${var.docs_domain}"
 }
 
+output "nx_cache_url" {
+  value = "https://${var.nx_cache_domain}"
+}
+
+# Not sensitive: a WIF provider path or SA email grants nothing by itself —
+# the actual boundary is the attribute_condition + IAM bindings. Paste these
+# literally into ci-pr-check.yml's vault-secrets step (not a repo secret —
+# see the comment there for why).
+output "github_actions_pr_check_workload_identity_provider" {
+  value = google_iam_workload_identity_pool_provider.github_pr_check.name
+}
+
+output "github_actions_pr_check_service_account_email" {
+  value = google_service_account.github_actions_pr_check.email
+}
+
 output "aws_test_instance_public_ip" {
   value = aws_instance.test.public_ip
 }
