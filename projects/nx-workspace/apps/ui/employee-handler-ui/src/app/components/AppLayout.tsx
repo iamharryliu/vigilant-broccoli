@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Toaster } from '@vigilant-broccoli/react-lib';
+import { Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import { useAuth } from '../providers/auth-provider';
 import { ROUTES } from '../../lib/routes';
 import { I18nProvider } from '../i18n';

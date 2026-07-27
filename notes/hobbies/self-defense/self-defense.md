@@ -1,6 +1,7 @@
 # Self Defense
 
 - [Packlist](./martial-arts-packlist.md)
+- [BJJ](./bjj.md)
 - Most people are right hand dominant
 
 ## Brazilian Jiu Jitsu

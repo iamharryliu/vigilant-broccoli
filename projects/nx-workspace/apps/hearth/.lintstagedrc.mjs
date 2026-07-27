@@ -1,3 +1,3 @@
 export default {
-  '**/*.{ts,tsx}': () => 'tsc --noEmit -p tsconfig.json',
+  '**/*.{ts,tsx}': () => 'pnpm exec tsc --noEmit -p tsconfig.json',
 };

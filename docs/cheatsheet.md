@@ -17,6 +17,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gcp:login                   Login to GCP and set project
   gh:login                    Login to GitHub CLI
   npm:login                   Login to npm
+  aws:login                   Login to AWS SSO (AdministratorAccess-841376026547)
   oracle:config               Edit OCI config
 
 🏗️  TERRAFORM
@@ -29,20 +30,20 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 ☁️  OCI
   oci:vm:ssh                  SSH into OCI VM (RabbitMQ)
   oci:vm:sync-socket-token    Sync socket-server SENDER_TOKEN with Vault (run after rotation)
-  oci:gitea:ssh               SSH into Gitea VM
-  oci:gitea:backup:local      Dump Gitea to a local zip
-  oci:gitea:backup:cloud      Dump Gitea straight to GCS (timestamped)
-  oci:gitea:restore:local <zip>  Restore Gitea from a local dump zip
-  oci:gitea:restore:cloud [gs://]  Restore from GCS (default: latest backup)
+  gitea:ssh                   SSH into Gitea VM
+  gitea:backup:local          Dump Gitea to a local zip
+  gitea:backup:cloud          Dump Gitea straight to GCS (timestamped)
+  gitea:restore:local <zip>   Restore Gitea from a local dump zip
+  gitea:restore:cloud [gs://]  Restore from GCS (default: latest backup)
 
 💻 CODE SERVER
-  oci:code-server:open        Open code.harryliu.dev
-  oci:code-server:password    Copy code-server password to clipboard
-  oci:code-server:ssh         SSH into code-server VM
-  oci:code-server:logs        Follow code-server container logs
-  oci:code-server:logs:cloud-init  Follow VM provisioning log
-  oci:code-server:reset       Rebuild containers + volumes (fresh environment)
-  oci:code-server:replace     Replace the VM via terraform (fresh host)
+  code-server:open            Open code.harryliu.dev
+  code-server:password        Copy code-server password to clipboard
+  code-server:ssh             SSH into code-server VM
+  code-server:logs            Follow code-server container logs
+  code-server:logs:cloud-init  Follow VM provisioning log
+  code-server:reset           Rebuild containers + volumes (fresh environment)
+  code-server:replace         Replace the VM via terraform (fresh host)
 
 🖥️  GCP VM
   gcp:vm:image:build          Build GCP VM Packer image (init + build)
@@ -94,6 +95,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override)
                                (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
   agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  agentic:rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  agentic:audit "<scope>"    Headlessly audit the codebase for <scope> and write a concise findings note (severity + location + remediation table) under docs/audit/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)
   agentic:pr:update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
 

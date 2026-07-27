@@ -8,6 +8,11 @@ variable "zone" {
   default = "us-central1-a"
 }
 
+variable "aws_region" {
+  type    = string
+  default = "eu-north-1"
+}
+
 variable "github_owner" {
   description = "GitHub repository owner"
   type        = string

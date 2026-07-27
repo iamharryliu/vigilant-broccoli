@@ -23,8 +23,8 @@ export const ANTHROPIC_MODEL = {
 export const ANTHROPIC_MODELS = Object.values(ANTHROPIC_MODEL);
 
 export const DEEPSEEK_MODEL = {
-  DEEP_SEEK: 'deepseek-chat',
-  DEEP_SEEK_REASONER: 'deepseek-reasoner',
+  DEEP_SEEK_V4_PRO: 'deepseek-v4-pro',
+  DEEP_SEEK_V4_FLASH: 'deepseek-v4-flash',
 } as const;
 export const DEEPSEEK_MODELS = Object.values(DEEPSEEK_MODEL);
 
@@ -107,11 +107,11 @@ export const LLM_MODEL_METADATA: Record<string, LLMModelMetadata> = {
   },
 
   // DeepSeek Models
-  [DEEPSEEK_MODEL.DEEP_SEEK]: {
+  [DEEPSEEK_MODEL.DEEP_SEEK_V4_PRO]: {
     hasImageInputSupport: false,
     hasImageOutputSupport: false,
   },
-  [DEEPSEEK_MODEL.DEEP_SEEK_REASONER]: {
+  [DEEPSEEK_MODEL.DEEP_SEEK_V4_FLASH]: {
     hasImageInputSupport: false,
     hasImageOutputSupport: false,
   },

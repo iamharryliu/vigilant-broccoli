@@ -118,12 +118,6 @@ Role `github-actions-role` is usable by any job with `id-token: write` — inclu
 
 `StrictHostKeyChecking=accept-new` plus `ssh-keygen -R` before connecting = trust-on-first-use every run, then the rotated `SHARED_APP_TOKEN` is piped over that connection. DNS hijack / MITM of `socket.harryliu.dev` presents its own host key, is accepted, and receives the new token. Same TOFU pattern in `cron-backup.yml:79,85` (lower impact). **Fix:** store the VMs' host public keys (not secret) in repo/Vault, write to `known_hosts` with `StrictHostKeyChecking=yes`, drop the `ssh-keygen -R`.
 
-### 34c5fe. [security] Public workflow logs disclose RabbitMQ broker host + username
-
-**`.github/workflows/test-e2e-rabbitmq.yml:52`** — `echo "Parsed broker host: $RMQ_HOST (user: $RMQ_USER)"`
-
-The repo is public, so Actions logs are world-readable. Only `RMQ_PASS` is masked; host + username print in clear, and the workflow proves 5671/15671 are internet-reachable — two of three credentials for online brute force. **Fix:** drop the echo or `::add-mask::` host and user; ideally firewall the management UI (cf. 20177f).
-
 ### 427e54. [performance] Follower jobs fire after every deploy — even no-op deploys
 
 Thirteen workflows trigger on `workflow_run` (health-check, notify-complete, e2e suites incl. the 5-provider paid-token `test-e2e-llm` matrix, security suites, smoke) — roughly 25 jobs, most doing their own checkout + OIDC + Secret Manager + Vault round trip. `deploy` succeeds even when `has_deployments=false` (`deploy.yml:140-153`), so a push touching nothing deployable still triggers the full fan-out against production; it also double-fires via `ci-rotate-secrets` calling deploy. **Fix:** expose what was actually deployed (job output → `repository_dispatch` per service or an artifact followers check) and exit early otherwise; drop the cron+per-deploy duplication on the `test-security-*` suites.
@@ -151,10 +145,6 @@ Both email services start their AMQP consumer in the web process but run with `a
 ### 5b720a. [performance] llm-service streaming doesn't abort upstream on client disconnect
 
 **`apps/api/llm-service/src/routes/chat.ts`** — after `reply.hijack()`, the `for await` loop has no `close` listener on the raw socket; when the user closes the tab mid-generation, the OpenAI stream is consumed (and billed) to completion. **Fix:** pass an `AbortController.signal` to the SDK call and abort from `reply.raw.on('close', ...)`.
-
-### 5cbc97. [performance] react-lib has no `sideEffects` hint; `sonner` bundles into every barrel consumer
-
-**`libs/@vigilant-broccoli/react-lib/package.json`** (no `sideEffects` field) · `src/components/index.ts:43` re-exports `Toaster.tsx` (`export … from 'sonner'`). pages-index uses zero toasts yet bundles sonner (~68kB raw); same in docs-md/journal. **Fix:** move `Toaster`/`toast` to a subpath entry (the existing `live-location-map` pattern) and add `"sideEffects": false` (or `["**/*.css"]`); optionally `experimental.optimizePackageImports` in the Next apps.
 
 ### 611602. [performance] FontAwesome loaded globally for a handful of icons
 
@@ -298,10 +288,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`apps/api/email-service/src/main.ts:30`**, `email-subscription-service/src/main.ts:49` (`checkServerIdentity: () => undefined`). CA is still pinned; drop the override or pin the expected CN/SAN.
 
-### a4bc16. [security] hearth dev seed/clear routes live in production
-
-**`apps/hearth/src/app/api/dev/{seed,clear}/route.ts`**. Session-gated and RLS-scoped (limited blast radius), but `clear` bulk-deletes a home's data. Gate behind `NODE_ENV !== 'production'`.
-
 ### ab1da0. [security] checklist-viewer renders marked output without sanitization
 
 **`libs/@vigilant-broccoli/react-utility/src/lib/checklist-viewer.tsx:87,182,274`** pipes `marked.parser()` into `dangerouslySetInnerHTML` with no DOMPurify (its sibling `markdown-viewer.tsx` sanitizes). Author-controlled today; latent stored-XSS if pointed at user content. Add DOMPurify.
@@ -374,10 +360,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`.github/actions/deploy-notify/action.yml:33-35`** — now pinned + `--ignore-scripts` (#109), but still 2+ registry installs per deploy; replace the emit with a plain HTTPS POST or cache the install.
 
-### dcca91. [performance] `ci-pr-check` installs the whole workspace on docs-only PRs
-
-**`.github/workflows/ci-pr-check.yml`**; a paths gate on `projects/nx-workspace/**` would return feedback in seconds for non-workspace PRs.
-
 ### e6849f. [performance] Daily `cron-backup` re-downloads tooling uncached
 
 mongodb-tools .deb (~90MB) + pgdg apt setup every day (`cron-backup.yml:125-126`); cache with `actions/cache`.
@@ -401,10 +383,6 @@ New `S3Client` per R2 operation (`api/where-is/r2.ts:8-9`; a 10-image POST = 10 
 ### f0a1b2. [performance] vb-manager misc nits
 
 `buildFileTree` awaits `stat` per entry serially (`api/docs/structure/route.ts:29`); weather route is `force-dynamic` with no server cache.
-
-### f1c2d3. [performance] docs-md fetches the entire repo git tree (unauthenticated, 60 req/hr limit) per session
-
-**`apps/ui/docs-md/src/app/github-docs.ts:87`**; journal already solves this with a deploy-time `structure.json` — reuse the pattern. Both apps also rebuild their Fuse index inside every `searchDocs` call (`github-docs.ts:116`).
 
 ### f2e3a4. [performance] Shared-component nits
 
@@ -447,3 +425,25 @@ Separately, `search-dialog.component.tsx:23` and `quick-links.component.tsx:7` b
 7. **Preserve every existing key string verbatim** while migrating — `'notepad:content'`, `'vb-manager-chats'`, `'swimlanes-boards'`, `'quick-links-grouped-state'`, `'language-learning-*'`, `'dev-dashboard-tab'`, `'google-tasks-selected-list-id'`. The naming is inconsistent (`:` vs `-` separators, some `vb-manager-` prefixed, most not), but renaming keys silently discards whatever users have stored. Normalize in a separate change with a migration read if it's worth doing at all.
 8. Out of scope: auth-token storage (`createSupabaseAuth.tsx:95-195`, the `auth-provider.tsx` files in hearth / small-business-next / employee-handler-ui / vb-manager-next-mobile). Different concern with a security dimension — the mobile `provider_token` case is tracked as ae83d3.
 9. Verify with `npx nx lint react-lib vb-manager-next` and a typecheck of each consuming app, then manually reload each migrated surface to confirm the preference actually survives and no hydration warning appears in the console. Bump/release `react-lib` per its `publish-package` flow if consumers resolve it from npm rather than the workspace.
+
+## Feature
+
+### Enhancements
+
+#### Local graph mode for the docs-md note viewer
+
+**`libs/@vigilant-broccoli/react-utility/src/lib/graph-view.tsx`, `libs/@vigilant-broccoli/react-utility/src/lib/docs-viewer.tsx`, `libs/@vigilant-broccoli/react-lib/src/components/DocsExplorer.tsx`**
+
+The graph view added in #207 renders the whole note graph. Obsidian also offers a _local_ graph — the currently-open note plus its links out to N hops — which is more useful while reading. All the pieces already exist: `GraphView` receives `activePath` and already builds a `neighbors` adjacency map for hover highlighting, and `graph.json` (emitted by `apps/ui/docs-md/scripts/build-snapshot.mjs`) carries the full `{nodes, links}`. A local graph is just the full graph filtered to the BFS neighborhood of `activePath`, fed back into the same `GraphView`.
+
+**Desired end state:** a Global/Local toggle in the graph panel (defaulting to Local when a file is open) with a depth selector (1–2 hops). Local mode shows only the active note and its neighborhood, recomputed whenever the active file changes; clicking a node still opens it and re-roots the local graph on the clicked node. Global mode is the current behavior.
+
+**Steps:**
+
+1. Add a pure `localSubgraph(graph: NoteGraph, rootPath: string, depth: number): NoteGraph` helper — BFS over an adjacency map, returning `{nodes, links}` limited to visited nodes and the links among them. Put it beside the `NoteGraph` types in `react-lib` (`DocsExplorer.tsx`) or next to `GraphView`. Factor the adjacency-map build out of `graph-view.tsx` so the hover-highlight code and this helper share one implementation instead of duplicating it.
+2. In `docs-viewer.tsx`'s `GraphPanel`, add graph-scope state (`'global' | 'local'`) plus a depth, persisted like `VIEW_MODE_STORAGE_KEY`. When scope is local and `activePath` is set, pass `localSubgraph(graph, activePath, depth)` to `GraphView`; otherwise pass the full graph. Memoize on `graph`/`activePath`/`depth` so switching notes updates the local view.
+3. Surface the toggle inside the panel (the graph region already has a top-right toolbar in `DocsExplorer`) — a small Global/Local segmented control plus depth, keeping the existing single sidebar graph toggle button as the entry point.
+4. Edge cases: orphan active note (degree 0) → render just the single node with a hint; no file open while in local mode → fall back to global or an empty state; keep auto-fit working after each recompute — `GraphView` already re-fits until the user interacts, so verify a subgraph swap re-triggers fit (or reset the internal `userInteracted` flag on root change).
+5. Verify with `npx nx lint react-lib react-utility docs-md` + typecheck, then manually: open a hub note (e.g. `recipes.md`), confirm local mode shows only its neighborhood, changing notes re-roots it, and depth 2 pulls in neighbors-of-neighbors; confirm global mode is unchanged.
+
+Out of scope: showing the local graph _alongside_ the note content (Obsidian's right-sidebar pane) — this first cut reuses the existing full-panel graph toggle.

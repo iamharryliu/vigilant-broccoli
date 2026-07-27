@@ -1,0 +1,47 @@
+name: test-e2e-twilio
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['deploy', 'ci-rotate-secrets']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test-twilio:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets TWILIO_ACCOUNT_SID | TWILIO_ACCOUNT_SID ;
+            kv/data/secrets TWILIO_AUTH_TOKEN | TWILIO_AUTH_TOKEN ;
+
+      - name: Verify Twilio credentials
+        env:
+          TWILIO_ACCOUNT_SID: ${{ env.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ env.TWILIO_AUTH_TOKEN }}
+        run: |
+          # Read-only Account fetch: confirms the credentials authenticate
+          # without touching a billable resource (SMS, calls, Lookup, Verify).
+          STATUS=$(curl -s -o /tmp/account.json -w '%{http_code}' \
+            -u "${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}" \
+            "https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}.json")
+          echo "Accounts API status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "✗ Twilio credential check failed"
+            cat /tmp/account.json
+            exit 1
+          fi
+          ACCOUNT_STATUS=$(grep -o '"status":"[^"]*"' /tmp/account.json | head -1)
+          echo "✓ Twilio credentials valid ($ACCOUNT_STATUS)"

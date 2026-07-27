@@ -21,7 +21,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check for nx-workspace changes
+        id: check
+        run: |
+          NX_WORKSPACE_PATHS='^(projects/nx-workspace/|\.github/(workflows/ci-pr-check\.yml|actions/setup-nx-workspace/))'
+          if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | grep -qE "$NX_WORKSPACE_PATHS"; then
+            echo "nx-workspace-changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "nx-workspace-changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: ./.github/actions/setup-nx-workspace
+        if: steps.check.outputs.nx-workspace-changed == 'true'
 
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
@@ -32,6 +43,7 @@ jobs:
             kv/data/secrets NX_CACHE_READ_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
       - name: Lint, test, build affected
+        if: steps.check.outputs.nx-workspace-changed == 'true'
         working-directory: ./projects/nx-workspace
         env:
           NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev

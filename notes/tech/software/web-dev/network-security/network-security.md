@@ -4,6 +4,8 @@
 - [Lingo](./network-security-lingo.md)
 - [jwt](./jwt.md)
 - [ssh](./ssh.md)
+- [nmap](./nmap.md)
+- [WireGuard](./wireguard.md)
 - [Have I Been Pwned?](https://haveibeenpwned.com/)
 - [Password Generator](https://passwordsgenerator.net/)
 - [How to Choose a Password - Computerphile](https://www.youtube.com/watch?v=3NjQ9b3pgIg)
@@ -35,6 +37,13 @@
 - OAuth - Clientside application will redirect to a third party authorization (Google, Facebook, Apple, etc) and grant an OAuth Token.
 - SSO -When the user signs in successfully they are granted an authentication token that is used to remember the user is verified.
 - OTP - One time password that is passed to the user usually via email or password.
+
+## Types of Vulnerabilities
+
+- permissions
+- logs
+- request endpoints
+- people
 
 ## Types of Attacks
 

@@ -11,5 +11,6 @@
 🇸🇪 Sweden
 [Sweden](./Sweden/Sweden.md)
 🇩🇰 Denmark
+[Copenhagen](./Copenhagen/Denmark/Copenhagen.md)
 🇸🇮 Slovenia
 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland

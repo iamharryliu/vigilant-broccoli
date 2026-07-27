@@ -4,9 +4,11 @@ import {
   type DocsExplorerUrlSync,
   type DocsNode,
   type DocsSearchResult,
+  type NoteGraph,
 } from '@vigilant-broccoli/react-lib';
 import { MarkdownViewer } from './markdown-viewer';
 import { ChecklistViewer } from './checklist-viewer';
+import { GraphView } from './graph-view';
 
 const FILE_PARAM = 'file';
 const VIEW_MODE_STORAGE_KEY = 'docs-md:view-mode';
@@ -30,14 +32,49 @@ const CLS = {
 const COPY = {
   LOADING_TREE: 'Loading file structure...',
   EMPTY: 'Select a markdown file to view its contents',
+  LOADING_GRAPH: 'Loading graph...',
+  GRAPH_ERROR: 'Failed to load graph',
 } as const;
+
+const AGGREGATE_KEY_PREFIX = 'aggregate:';
 
 export interface DocsViewerProps {
   getStructure: () => Promise<DocsNode[]>;
   getContent: (path: string) => Promise<string>;
   saveContent?: (path: string, content: string) => Promise<void>;
   search?: (query: string) => Promise<DocsSearchResult[]>;
+  getGraph?: () => Promise<NoteGraph>;
   urlSync?: DocsExplorerUrlSync;
+}
+
+function GraphPanel({
+  getGraph,
+  activePath,
+  onSelect,
+}: {
+  getGraph: () => Promise<NoteGraph>;
+  activePath?: string;
+  onSelect: (path: string) => void;
+}) {
+  const [graph, setGraph] = useState<NoteGraph | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getGraph()
+      .then(g => !cancelled && setGraph(g))
+      .catch(() => !cancelled && setError(COPY.GRAPH_ERROR));
+    return () => {
+      cancelled = true;
+    };
+  }, [getGraph]);
+
+  if (error) return <div className={CLS.CENTERED_ERR}>{error}</div>;
+  if (!graph)
+    return <div className={CLS.CENTERED_MSG}>{COPY.LOADING_GRAPH}</div>;
+  return (
+    <GraphView graph={graph} activePath={activePath} onSelect={onSelect} />
+  );
 }
 
 export function DocsViewer({
@@ -45,6 +82,7 @@ export function DocsViewer({
   getContent,
   saveContent,
   search,
+  getGraph,
   urlSync,
 }: DocsViewerProps) {
   const [nodes, setNodes] = useState<DocsNode[]>([]);
@@ -89,27 +127,45 @@ export function DocsViewer({
 
   const canEdit = Boolean(saveContent && activeFile);
 
-  const viewModeOptions = (Object.values(VIEW_MODE) as ViewMode[]).map(mode => ({
-    label: MODE_LABEL[mode],
-    value: mode,
-  }));
-
-  const renderContent = (content: string) => (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 min-h-0">
-        {viewMode === VIEW_MODE.CHECKLIST ? (
-          <ChecklistViewer content={content} filePath={activeFile} />
-        ) : (
-          <MarkdownViewer
-            content={content}
-            filePath={activeFile}
-            saveContent={saveContent}
-            editTrigger={editTrigger}
-          />
-        )}
-      </div>
-    </div>
+  const viewModeOptions = (Object.values(VIEW_MODE) as ViewMode[]).map(
+    mode => ({
+      label: MODE_LABEL[mode],
+      value: mode,
+    }),
   );
+
+  const renderContent = (
+    content: string,
+    navigate: (path: string) => void,
+    sourcePaths: string[],
+  ) => {
+    const isAggregate = sourcePaths.length > 1;
+    const contentKey = isAggregate
+      ? `${AGGREGATE_KEY_PREFIX}${sourcePaths.join('|')}`
+      : (sourcePaths[0] ?? activeFile);
+
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 min-h-0">
+          {viewMode === VIEW_MODE.CHECKLIST ? (
+            <ChecklistViewer
+              content={content}
+              filePath={contentKey}
+              onNavigate={navigate}
+            />
+          ) : (
+            <MarkdownViewer
+              content={content}
+              filePath={sourcePaths[0] ?? activeFile}
+              saveContent={isAggregate ? undefined : saveContent}
+              editTrigger={editTrigger}
+              onNavigate={navigate}
+            />
+          )}
+        </div>
+      </div>
+    );
+  };
 
   if (isLoadingTree) {
     return <div className={CLS.CENTERED_MSG}>{COPY.LOADING_TREE}</div>;
@@ -128,8 +184,19 @@ export function DocsViewer({
       emptyMessage={COPY.EMPTY}
       onEdit={canEdit ? () => setEditTrigger(t => t + 1) : undefined}
       viewModes={viewModeOptions}
-      onViewModeChange={(mode) => updateViewMode(mode as ViewMode)}
+      onViewModeChange={mode => updateViewMode(mode as ViewMode)}
       currentViewMode={viewMode}
+      renderGraph={
+        getGraph
+          ? navigate => (
+              <GraphPanel
+                getGraph={getGraph}
+                activePath={activeFile}
+                onSelect={navigate}
+              />
+            )
+          : undefined
+      }
     />
   );
 }

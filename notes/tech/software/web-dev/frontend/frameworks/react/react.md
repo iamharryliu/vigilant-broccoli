@@ -2,12 +2,12 @@
 
 React is an un-opinionated frontend library framework that generally requires using other dependencies (libraries, tools, etc..).
 
-[React Basics](./react-basics)
-[React Hooks](./react-hooks)
-[React Hooks](./react-redux)
-[React Render](./react-render)
-[React Typescript](./react-typescript)
-[React Nuances](./react-nuances)
+[React Basics](./react-basics.md)
+[React Hooks](./react-hooks.md)
+[React Hooks](./react-redux.md)
+[React Render](./react-render.md)
+[React Typescript](./react-typescript.md)
+[React Nuances](./react-nuances.md)
 
 ```
 import { createContext, ReactNode, useContext } from "react"

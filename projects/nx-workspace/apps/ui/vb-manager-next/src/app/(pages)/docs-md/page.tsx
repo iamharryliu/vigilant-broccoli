@@ -75,7 +75,9 @@ function DocsPageContent() {
       set: (path: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set(FILE_PARAM, path);
-        router.push(`?${params.toString()}`, { scroll: false });
+        router.push(`?${params.toString()}${window.location.hash}`, {
+          scroll: false,
+        });
       },
     }),
     [searchParams, router],

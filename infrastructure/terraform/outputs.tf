@@ -47,3 +47,7 @@ output "docs_url" {
 output "nx_cache_url" {
   value = "https://${var.nx_cache_domain}"
 }
+
+output "aws_test_instance_public_ip" {
+  value = aws_instance.test.public_ip
+}

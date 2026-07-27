@@ -13,8 +13,9 @@
   - UI — [docs/ui/](./docs/ui/) (`ui-app-pattern.md`, `auth/*`, `deployment/*`)
   - API — [docs/api/](./docs/api/) (`deployment/fly-service-pattern.md`)
 - [Git](./docs/GIT.md) — read first before committing or pushing
-- [notes-pattern.md](./docs/notes-pattern.md) — read first before adding/editing files under `notes/`: universal link hygiene, plus per-topic conventions (e.g. cooking) under `docs/notes/`
+- [notes-pattern.md](./docs/notes-pattern.md) — read first before adding/editing files under `notes/`: universal link hygiene, plus per-topic conventions (e.g. cooking, lingo files) under `docs/notes/`
 - [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS records, domains/subdomains, proxying, tunnels, or VPN
+- [secret-management.md](./docs/infrastructure/secret-management.md) — read first before adding a secret or a local `.env`/`.tfvars` file; secrets live in Vault/GCP Secret Manager (avoid local secret files), non-secret IDs are hardcoded in Terraform
 - [nuance.md](./docs/nuance.md) — non-obvious bugs and quirks discovered in this repo; check before debugging something that looks like it shouldn't happen
 - [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist for `/refactor-code-cleanup`; unattended `agentic:task:solve` runs must apply it before finishing
 - Coding Conventions — this file
