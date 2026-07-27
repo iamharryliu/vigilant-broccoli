@@ -34,13 +34,29 @@ jobs:
       - uses: ./.github/actions/setup-nx-workspace
         if: steps.check.outputs.nx-workspace-changed == 'true'
 
+      # pull_request runs execute this workflow's YAML from the PR branch
+      # itself, so (unlike every other workflow in this repo) anyone who gets
+      # a PR check to run could edit this file to request a different secret.
+      # That's why this does NOT use secrets.GCP_WORKLOAD_IDENTITY_PROVIDER /
+      # GCP_SERVICE_ACCOUNT (the broad SA — roles/editor, project-wide Secret
+      # Manager access, serviceAccountAdmin) or the default Vault role (reads
+      # all of kv/data/secrets). Both are hardcoded literals, not secrets —
+      # see outputs.tf's github_actions_pr_check_* outputs for why that's
+      # safe — and both are narrowly scoped: the WIF provider only trusts
+      # job_workflow_ref=ci-pr-check.yml, the SA can only read the two
+      # Cloudflare Access secrets, and the Vault role's policy can only read
+      # kv/data/ci-pr-check (one path, one low-privilege token), not the
+      # shared secret store. continue-on-error because none of this is
+      # load-bearing — worst case a PR just runs without a warm cache.
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
+        continue-on-error: true
         with:
-          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          gcp_workload_identity_provider: projects/88091895337/locations/global/workloadIdentityPools/github-actions/providers/github-pr-check
+          gcp_service_account: github-actions-pr-check@vigilant-broccoli.iam.gserviceaccount.com
+          role: github-actions-pr-check-role
           secrets: |
-            kv/data/secrets NX_CACHE_READ_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
+            kv/data/ci-pr-check NX_CACHE_READ_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
       - name: Lint, test, build affected
         if: steps.check.outputs.nx-workspace-changed == 'true'

@@ -122,12 +122,23 @@ sync_secrets_to_vault() {
   # nx-cache tokens aren't in the required-secrets guard above (they're
   # unrelated to VM bootstrap) so they can legitimately be absent — e.g.
   # before cloudflare-nx-cache.tf has ever been applied. ssh-secrets.sh
-  # aborts the whole remote script on any empty secret value, so this arg
-  # (and the matching NAME/VALUE pair below) must be omitted entirely
-  # rather than passed as an empty string.
-  local nx_cache_patch_arg=""
-  if [ -n "$nx_cache_write_token" ] && [ -n "$nx_cache_read_token" ]; then
-    nx_cache_patch_arg='NX_CACHE_WRITE_TOKEN="$NX_CACHE_WRITE_TOKEN" NX_CACHE_READ_TOKEN="$NX_CACHE_READ_TOKEN"'
+  # aborts the whole remote script on any empty secret value, so each arg
+  # (and its matching NAME/VALUE pair below) must be omitted entirely rather
+  # than passed as an empty string.
+  #
+  # The read token deliberately does NOT go into kv/secrets (-> kv/data/secrets)
+  # alongside the write token: ci-pr-check.yml (pull_request-triggered, so
+  # reachable by anyone who gets a PR check to run) reads it from the
+  # isolated kv/ci-pr-check path instead, via github-actions-pr-check-role,
+  # whose policy can only read that one path — not the whole secret store.
+  local nx_cache_write_patch_arg=""
+  if [ -n "$nx_cache_write_token" ]; then
+    nx_cache_write_patch_arg='NX_CACHE_WRITE_TOKEN="$NX_CACHE_WRITE_TOKEN"'
+  fi
+
+  local nx_cache_read_put_cmd=""
+  if [ -n "$nx_cache_read_token" ]; then
+    nx_cache_read_put_cmd='vault kv put kv/ci-pr-check NX_CACHE_READ_TOKEN="$NX_CACHE_READ_TOKEN"'
   fi
 
   local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
@@ -160,7 +171,7 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
     JOURNAL_CF_ACCESS_CLIENT_ID="$JOURNAL_CF_ACCESS_CLIENT_ID" \
     JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET" \
-    '"${nx_cache_patch_arg}"'
+    '"${nx_cache_write_patch_arg}"'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT="$CA_CERT_B64" \
@@ -178,17 +189,23 @@ else
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
     JOURNAL_CF_ACCESS_CLIENT_ID="$JOURNAL_CF_ACCESS_CLIENT_ID" \
     JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET" \
-    '"${nx_cache_patch_arg}"'
+    '"${nx_cache_write_patch_arg}"'
 fi
+
+'"${nx_cache_read_put_cmd}"'
 
 echo "Secrets synced to Vault"
 '
 
   # _secrets_prelude aborts the whole remote script on any empty value, so
-  # the nx-cache pair is only appended when both tokens actually exist.
+  # each pair is only appended when that token actually exists — independent
+  # of each other, since they now go to two different Vault paths.
   local nx_cache_secret_args=()
-  if [ -n "$nx_cache_write_token" ] && [ -n "$nx_cache_read_token" ]; then
-    nx_cache_secret_args=(NX_CACHE_WRITE_TOKEN "$nx_cache_write_token" NX_CACHE_READ_TOKEN "$nx_cache_read_token")
+  if [ -n "$nx_cache_write_token" ]; then
+    nx_cache_secret_args+=(NX_CACHE_WRITE_TOKEN "$nx_cache_write_token")
+  fi
+  if [ -n "$nx_cache_read_token" ]; then
+    nx_cache_secret_args+=(NX_CACHE_READ_TOKEN "$nx_cache_read_token")
   fi
 
   gcloud_ssh_secrets "${vm_name}" "${vm_zone}" "$vault_script" \
@@ -210,10 +227,15 @@ echo "Secrets synced to Vault"
     JOURNAL_CF_ACCESS_CLIENT_SECRET "$journal_cf_access_client_secret" \
     "${nx_cache_secret_args[@]}"
   echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
-  if [ -n "$nx_cache_write_token" ] && [ -n "$nx_cache_read_token" ]; then
-    echo "✓ Synced NX_CACHE_WRITE_TOKEN, NX_CACHE_READ_TOKEN to kv/data/secrets"
+  if [ -n "$nx_cache_write_token" ]; then
+    echo "✓ Synced NX_CACHE_WRITE_TOKEN to kv/data/secrets"
   else
-    echo "Warning: NX_CACHE_WRITE_TOKEN / NX_CACHE_READ_TOKEN not found in Terraform state — apply cloudflare-nx-cache.tf, then rerun pnpm tf:post-apply."
+    echo "Warning: NX_CACHE_WRITE_TOKEN not found in Terraform state — apply cloudflare-nx-cache.tf, then rerun pnpm tf:post-apply."
+  fi
+  if [ -n "$nx_cache_read_token" ]; then
+    echo "✓ Synced NX_CACHE_READ_TOKEN to kv/data/ci-pr-check (isolated path for github-actions-pr-check-role)"
+  else
+    echo "Warning: NX_CACHE_READ_TOKEN not found in Terraform state — apply cloudflare-nx-cache.tf, then rerun pnpm tf:post-apply."
   fi
 
   echo "Ensuring CI SSH key on socket-server VM (${rabbitmq_ip})..."

@@ -112,6 +112,8 @@ Home docs (leases, insurance, warranties) are served from the public r2.dev URL.
 
 Role `github-actions-role` is usable by any job with `id-token: write` — including low-stakes smoke tests. The `secrets:` filter in the composite action is cosmetic; a compromised step can mint its own OIDC token and dump the whole KV path. **Fix:** per-purpose Vault roles bound with `bound_claims.job_workflow_ref` (the rotate role in the same script already shows the pattern) exposing only the keys each workflow needs.
 
+**Partially addressed** for `ci-pr-check.yml`: the nx-cache remote-cache PR gave it its own `github-actions-pr-check-role` (policy scoped to `kv/data/ci-pr-check` only) plus its own minimally-scoped GCP service account/WIF provider — that was the urgent instance, since `pull_request` (unlike every other trigger here) runs the workflow YAML from the PR branch itself, reachable by outside contributors. Still open: `deploy.yml` and `notify-start` (push-triggered, higher trust bar, but still share the broad `github-actions-role` + `github_actions` GCP SA that also carries `roles/editor`/`serviceAccountAdmin`/project-wide `secretAccessor`) haven't been narrowed — a compromised dependency in either would still reach the whole store.
+
 ### 331697. [security] SSH host-key verification effectively disabled when pushing `SHARED_APP_TOKEN`
 
 **`infrastructure/terraform/packer/scripts/sync-socket-server-token.sh:61-63`** (via `ci-rotate-secrets.yml`)
