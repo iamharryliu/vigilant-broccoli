@@ -42,6 +42,7 @@ write_files:
       }
 
       ${socket_server_domain} {
+        encode zstd gzip
         reverse_proxy socket-server-socketio:3000
       }
 

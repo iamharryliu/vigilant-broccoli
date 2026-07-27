@@ -378,10 +378,6 @@ mongodb-tools .deb (~90MB) + pgdg apt setup every day (`cron-backup.yml:125-126`
 
 **`test-e2e-rabbitmq.yml`**, **`test-e2e-socket-server-socketio.yml`** (the other followers have them now) — two quick deploys run overlapping suites against the same live services. Add `concurrency` + `cancel-in-progress: true`.
 
-### ee4b66. [performance] No `encode` in any Caddyfile
-
-Caddy doesn't compress by default; matters for the unproxied `socket.harryliu.dev` (`oci.tf`). One line: `encode zstd gzip`. Related: 443/udp never mapped, so HTTP/3 is unusable on that host; local nginx has no `gzip on`.
-
 ### eef44b. [performance] OCI VMs pay full apt provisioning on every replacement
 
 All three cloud-inits do `package_update/upgrade` + Docker install at first boot; fine while replacements are rare, bake an OCI image if they become routine. Also ~700MB `google-cloud-cli` is baked into the GCP image just to read 4 secrets at first boot — a metadata-token + Secret Manager REST `curl` would do.
