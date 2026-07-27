@@ -350,10 +350,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`libs/@vigilant-broccoli/llm-tools/src/lib/llm.utils.ts:77,86`**; muted by shared undici pools, trivial to memoize per provider/key.
 
-### c75e91. [performance] `fetchSockets()` round trip per publish for a log line
-
-**`apps/socket-server-socketio/src/main.ts:135`**; use `io.sockets.adapter.rooms.get(room)?.size`.
-
 ### d19470. [performance] vb-express auth DB is synchronous `node:sqlite`
 
 **`apps/api/vb-express/src/auth.ts:3,31`** (`DatabaseSync`); every session/API-key check blocks the event loop, serializing streaming responses under burst. Fine at personal scale; worth knowing.
