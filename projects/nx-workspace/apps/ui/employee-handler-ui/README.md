@@ -8,6 +8,7 @@
 - External libs
   - Radix Themes/UI + Tailwind CSS, lucide-react icons
   - Nodemailer
+  - isomorphic-dompurify
 - Internal libs
   - `common-js`
   - `employee-handler`

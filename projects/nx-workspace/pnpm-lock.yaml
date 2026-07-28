@@ -172,6 +172,9 @@ importers:
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
+      d3-force:
+        specifier: ^3.0.0
+        version: 3.0.0
       dompurify:
         specifier: ^3.4.11
         version: 3.4.11
@@ -187,6 +190,9 @@ importers:
       fastify-plugin:
         specifier: ^5.1.0
         version: 5.1.0
+      framer-motion:
+        specifier: ^12.23.12
+        version: 12.40.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       fuse.js:
         specifier: ^7.4.2
         version: 7.4.2
@@ -458,6 +464,9 @@ importers:
       '@types/better-sqlite3':
         specifier: ^7.6.13
         version: 7.6.13
+      '@types/d3-force':
+        specifier: ^3.0.10
+        version: 3.0.10
       '@types/ejs':
         specifier: ^3.1.5
         version: 3.1.5
@@ -1175,6 +1184,9 @@ importers:
       clsx:
         specifier: '*'
         version: 2.1.1
+      framer-motion:
+        specifier: '*'
+        version: 12.40.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       lucide-react:
         specifier: '*'
         version: 0.513.0(react@19.2.7)
@@ -1196,6 +1208,12 @@ importers:
       react:
         specifier: '*'
         version: 19.2.7
+
+  libs/@vigilant-broccoli/resume:
+    dependencies:
+      '@playwright/test':
+        specifier: '*'
+        version: 1.61.1
 
   libs/@vigilant-broccoli/slack-workspace:
     dependencies:
@@ -13659,6 +13677,12 @@ packages:
         integrity: sha512-NcV1JjO5oDzoK26oMzbILE6HW7uVXOHLQvHshBUW4UMdZGfiY6v5BeQwh9a9tCzv+CeefZQHJt5SRgK154RtiA==,
       }
 
+  '@types/d3-force@3.0.10':
+    resolution:
+      {
+        integrity: sha512-ZYeSaCF3p73RdOKcjj+swRlZfnYpK1EbaDiYICEEp5Q6sUiqFaFQ9qgoshp5CzIyyb/yD09kD9o2zEltCexlgw==,
+      }
+
   '@types/d3-interpolate@3.0.4':
     resolution:
       {
@@ -17922,10 +17946,24 @@ packages:
       }
     engines: { node: '>=12' }
 
+  d3-dispatch@3.0.1:
+    resolution:
+      {
+        integrity: sha512-rzUyPU/S7rwUflMyLc1ETDeBj0NRuHKKAcvukozwhshr6g6c5d8zh4c2gQjY2bZ0dXeGLWc1PF174P2tVvKhfg==,
+      }
+    engines: { node: '>=12' }
+
   d3-ease@3.0.1:
     resolution:
       {
         integrity: sha512-wR/XK3D3XcLIZwpbvQwQ5fK+8Ykds1ip7A2Txe0yxncXSdq1L9skcG7blcedkOX+ZcgxGAmLX1FrRGbADwzi0w==,
+      }
+    engines: { node: '>=12' }
+
+  d3-force@3.0.0:
+    resolution:
+      {
+        integrity: sha512-zxV/SsA+U4yte8051P4ECydjD/S+qeYtnaIyAs9tgHCqfguma/aAQDjo85A9Z6EKhBirHRJHXIgJUlffT4wdLg==,
       }
     engines: { node: '>=12' }
 
@@ -17947,6 +17985,13 @@ packages:
     resolution:
       {
         integrity: sha512-p3KP5HCf/bvjBSSKuXid6Zqijx7wIfNW+J/maPs+iwR35at5JCbLUT0LzF1cnjbCHWhqzQTIN2Jpe8pRebIEFQ==,
+      }
+    engines: { node: '>=12' }
+
+  d3-quadtree@3.0.1:
+    resolution:
+      {
+        integrity: sha512-04xDrxQTDTCFwP5H6hRhsRcb9xxv2RzkcsygFzmkSIOJy3PeRJP7sNk3VRIbKXcog561P9oU0/rVH6vDROAgUw==,
       }
     engines: { node: '>=12' }
 
@@ -41669,6 +41714,8 @@ snapshots:
 
   '@types/d3-ease@3.0.2': {}
 
+  '@types/d3-force@3.0.10': {}
+
   '@types/d3-interpolate@3.0.4':
     dependencies:
       '@types/d3-color': 3.1.3
@@ -44849,7 +44896,15 @@ snapshots:
 
   d3-color@3.1.0: {}
 
+  d3-dispatch@3.0.1: {}
+
   d3-ease@3.0.1: {}
+
+  d3-force@3.0.0:
+    dependencies:
+      d3-dispatch: 3.0.1
+      d3-quadtree: 3.0.1
+      d3-timer: 3.0.1
 
   d3-format@3.1.2: {}
 
@@ -44858,6 +44913,8 @@ snapshots:
       d3-color: 3.1.0
 
   d3-path@3.1.0: {}
+
+  d3-quadtree@3.0.1: {}
 
   d3-scale@4.0.2:
     dependencies:

@@ -6,7 +6,7 @@
 </a>
 </div>
 
-## Contents
+## Table of Contents
 
 - [Development](#development)
 - [Commands](#commands)
@@ -36,7 +36,6 @@ pnpm cheatsheet
 [![cron-deploy-journal](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml)\
 [![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)\
 [![cron-upptime-response-time](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml)\
-[![cron-utility-update-resume](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml)\
 [![deploy](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml)\
 [![deploy-github-profile](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml)\
 [![manual-deploy-app](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml)\
@@ -64,6 +63,8 @@ pnpm cheatsheet
   - Cloudflare
   - Vercel
   - Fly.io
+  - AWS
+  - GitHub
 - Infrastructure as Code
   - Terraform
   - Packer
@@ -74,9 +75,12 @@ pnpm cheatsheet
   - Caddy
   - Nginx
   - Tailscale
+  - WireGuard
+  - cloudflared
 - Secrets Management
   - HashiCorp Vault
   - Google Secret Manager
+  - Bitwarden
 - Process Management
   - PM2
 - Monitoring / Observability
@@ -88,8 +92,9 @@ pnpm cheatsheet
   - Gitea
   - code-server
   - Immich
-  - Resilio Sync
   - Adminer
+  - Watchtower
+  - Claude Code
 - CI/CD
   - GitHub Actions
 - Databases
@@ -109,16 +114,25 @@ pnpm cheatsheet
   - Cloudflare R2
 - Auth
   - Better Auth
-  - NextAuth
 - AI / LLM
   - Anthropic
   - OpenAI
+  - DeepSeek
+  - xAI (Grok)
+  - Google Gemini
 - Payments
   - Stripe
 - Communications
   - Slack
   - Twilio
   - Resend
+- Third-Party APIs
+  - Google OAuth
+  - Google Workspace APIs (Tasks, Calendar)
+  - Google Analytics
+  - Google reCAPTCHA
+  - OpenWeatherMap
+  - ElevenLabs
 - Container Registry
   - Docker Hub
 - Package Registries
@@ -133,22 +147,44 @@ pnpm cheatsheet
   - Bash / Shell
   - Python
   - HCL (Terraform)
+  - YAML
 - Build Tools
   - Vite
   - Webpack
   - esbuild
   - SWC
   - Rollup
+  - Next.js
+  - Angular CLI
+  - Sanity CLI
 - Backend Frameworks
   - Fastify
   - Express
   - Socket.IO
+  - Slack Bolt
 - Frontend Frameworks
   - React
   - Next.js
   - Angular
 - Styling
   - Tailwind CSS
+  - Font Awesome
+- UI Libraries
+  - Radix Themes
+  - lucide-react
+  - Leaflet / react-leaflet
+  - recharts
+  - FullCalendar
+  - React Router
+  - dnd-kit
+  - react-markdown
+  - fuse.js
+  - styled-components
+  - marked
+- Utility Libraries
+  - Zod
+  - Nodemailer
+  - isomorphic-dompurify
 - Testing
   - Vitest
   - Jest

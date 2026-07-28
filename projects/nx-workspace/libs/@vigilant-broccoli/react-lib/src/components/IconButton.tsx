@@ -23,6 +23,7 @@ import {
   Square,
   Sun,
   Trash,
+  Waypoints,
   X,
   type LucideIcon,
 } from 'lucide-react';
@@ -55,6 +56,7 @@ export const ICON_BUTTON_ICONS = {
   minimize: Minimize2,
   'ellipsis-horizontal': MoreHorizontal,
   'ellipsis-vertical': EllipsisVertical,
+  graph: Waypoints,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconButtonIcon = keyof typeof ICON_BUTTON_ICONS;

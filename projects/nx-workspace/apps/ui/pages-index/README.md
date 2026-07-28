@@ -7,6 +7,8 @@
 - Build Tool - Vite
 - External libs
   - Tailwind CSS
+  - React Router
+  - lucide-react
 - Internal libs
   - `react-lib`
 - Cloud services

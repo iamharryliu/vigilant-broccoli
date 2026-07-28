@@ -1,0 +1,25 @@
+meta {
+  name: Create Absence
+  type: http
+  seq: 10
+}
+
+post {
+  url: https://api.cinode.com/v0.1/companies/{{process.env.COMPANY_ID}}/users/{{process.env.USER_ID}}/absences
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{process.env.CINODE_ACCESS_TOKEN}}
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "start": "2026-07-02",
+    "end": "2026-07-09",
+    "extentPercentage": 100,
+    "absenceTypeId": 3088
+  }
+}

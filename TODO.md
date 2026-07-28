@@ -34,14 +34,6 @@ AuthProvider wraps the whole app in `layout.tsx`, so every page (including `/log
 
 **Fix:** render the shell immediately (skeletons instead of `return null`); let public routes render unconditionally. Longer term, adopt `@supabase/ssr` cookie sessions so server components can fetch data, or at least start the homes fetch in parallel with session resolution.
 
-### 151a48. [performance] No Nx computation cache survives between CI runs — every run builds from cold
-
-**`projects/nx-workspace/nx.json:84`** (`"neverConnectToCloud": true`) · no `actions/cache` usage anywhere in `.github/`
-
-`cache: true` is set on all build/lint/test targets, but the cache dies with each ephemeral runner — only the pnpm store is cached. Every push to main rebuilds/relints/re-prunes/re-smokes every affected service from scratch; `ci-pr-check` gets no reuse between PR pushes. Several minutes of redundant compute per run.
-
-**Fix:** add an `actions/cache` step for `projects/nx-workspace/.nx/cache` in `.github/actions/setup-nx-workspace/action.yml`, keyed on lockfile + SHA with a `restore-keys` prefix fallback. Reconcile the `--skip-nx-cache` flags (d2904c) or they'll silently negate this for the most-frequent builds.
-
 ### 16dbe5. [performance] code-server VM re-provisions its entire toolchain (~1GB+) on every container (re)start
 
 **`infrastructure/terraform/cloud-init-code-server.yaml:27-66`** (init script), `:72` (`:latest`)
@@ -112,17 +104,13 @@ Home docs (leases, insurance, warranties) are served from the public r2.dev URL.
 
 Role `github-actions-role` is usable by any job with `id-token: write` — including low-stakes smoke tests. The `secrets:` filter in the composite action is cosmetic; a compromised step can mint its own OIDC token and dump the whole KV path. **Fix:** per-purpose Vault roles bound with `bound_claims.job_workflow_ref` (the rotate role in the same script already shows the pattern) exposing only the keys each workflow needs.
 
+**Partially addressed** for `ci-pr-check.yml`: the nx-cache remote-cache PR gave it its own `github-actions-pr-check-role` (policy scoped to `kv/data/ci-pr-check` only) plus its own minimally-scoped GCP service account/WIF provider — that was the urgent instance, since `pull_request` (unlike every other trigger here) runs the workflow YAML from the PR branch itself, reachable by outside contributors. Still open: `deploy.yml` and `notify-start` (push-triggered, higher trust bar, but still share the broad `github-actions-role` + `github_actions` GCP SA that also carries `roles/editor`/`serviceAccountAdmin`/project-wide `secretAccessor`) haven't been narrowed — a compromised dependency in either would still reach the whole store.
+
 ### 331697. [security] SSH host-key verification effectively disabled when pushing `SHARED_APP_TOKEN`
 
 **`infrastructure/terraform/packer/scripts/sync-socket-server-token.sh:61-63`** (via `ci-rotate-secrets.yml`)
 
 `StrictHostKeyChecking=accept-new` plus `ssh-keygen -R` before connecting = trust-on-first-use every run, then the rotated `SHARED_APP_TOKEN` is piped over that connection. DNS hijack / MITM of `socket.harryliu.dev` presents its own host key, is accepted, and receives the new token. Same TOFU pattern in `cron-backup.yml:79,85` (lower impact). **Fix:** store the VMs' host public keys (not secret) in repo/Vault, write to `known_hosts` with `StrictHostKeyChecking=yes`, drop the `ssh-keygen -R`.
-
-### 34c5fe. [security] Public workflow logs disclose RabbitMQ broker host + username
-
-**`.github/workflows/test-e2e-rabbitmq.yml:52`** — `echo "Parsed broker host: $RMQ_HOST (user: $RMQ_USER)"`
-
-The repo is public, so Actions logs are world-readable. Only `RMQ_PASS` is masked; host + username print in clear, and the workflow proves 5671/15671 are internet-reachable — two of three credentials for online brute force. **Fix:** drop the echo or `::add-mask::` host and user; ideally firewall the management UI (cf. 20177f).
 
 ### 427e54. [performance] Follower jobs fire after every deploy — even no-op deploys
 
@@ -240,11 +228,17 @@ The GROQ queries return raw `asset->url` with no image transforms, and the galle
 
 ### 0cd00c. [maintenance] Structural duplication in the workspace
 
-### 91e45c. [maintenance] Deprecated Nx executors/plugins not yet migrated (removed in Nx v24)
+### d3010c. [maintenance] `@nx/webpack:webpack` executor not migrated to inferred (removed in Nx v24)
 
-- `@nx/webpack:webpack` executor (`vb-express`, `llm-service`), plus `composePlugins`/`withNx` helpers — `nx g @nx/webpack:convert-to-inferred` refuses both because their `serve:no-vault` targets use `@nx/js:node`, which the codemod doesn't support alongside a webpack conversion. Needs either a later Nx version that lifts this restriction, or a careful manual conversion (see PR #93 for the pattern used on the 7 Next.js apps' build/serve targets).
-- `@nx/angular/tailwind`, `@nx/next/tailwind`, `@nx/react/tailwind` glob-pattern helpers (14 `tailwind.config.js` files across the workspace) — deprecated in favor of Tailwind v4's CSS-first config, which no longer needs content globs. No automated codemod; workspace is currently on Tailwind v3.4.3 uniformly. Scoped out of PR #93 as a separate, larger migration.
-- `nxViteTsPaths` / `nxCopyAssetsPlugin` from `@nx/vite/plugins/*` (5 Vite apps + 4 libs) — still deprecated even after the `@nx/vite:build` executor itself was migrated to the inferred plugin in PR #93. Replace with `vite-tsconfig-paths`'s `tsconfigPaths()` and Vite's native `publicDir` (or `vite-plugin-static-copy`), respectively.
+`vb-express` and `llm-service`, plus the `composePlugins`/`withNx` helpers their `webpack.config.js` files use — `nx g @nx/webpack:convert-to-inferred` refuses both because their `serve:no-vault` targets use `@nx/js:node`, which the codemod doesn't support alongside a webpack conversion.
+
+Needs either a later Nx version that lifts this restriction, or a careful manual conversion (see PR #93 for the pattern used on the 7 Next.js apps' build/serve targets).
+
+### 112bae. [maintenance] `nxViteTsPaths` / `nxCopyAssetsPlugin` still deprecated after Nx v24 vite executor migration
+
+`nxViteTsPaths` / `nxCopyAssetsPlugin` from `@nx/vite/plugins/*`, used across 5 Vite apps + 4 libs — still deprecated even after the `@nx/vite:build` executor itself was migrated to the inferred plugin in PR #93.
+
+**Fix:** replace `nxViteTsPaths` with `vite-tsconfig-paths`'s `tsconfigPaths()`, and `nxCopyAssetsPlugin` with Vite's native `publicDir` (or `vite-plugin-static-copy`).
 
 ### 1f0a7e. [maintenance] Next.js "inferred workspace root" warning
 
@@ -294,10 +288,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`apps/api/email-service/src/main.ts:30`**, `email-subscription-service/src/main.ts:49` (`checkServerIdentity: () => undefined`). CA is still pinned; drop the override or pin the expected CN/SAN.
 
-### a4bc16. [security] hearth dev seed/clear routes live in production
-
-**`apps/hearth/src/app/api/dev/{seed,clear}/route.ts`**. Session-gated and RLS-scoped (limited blast radius), but `clear` bulk-deletes a home's data. Gate behind `NODE_ENV !== 'production'`.
-
 ### ab1da0. [security] checklist-viewer renders marked output without sanitization
 
 **`libs/@vigilant-broccoli/react-utility/src/lib/checklist-viewer.tsx:87,182,274`** pipes `marked.parser()` into `dangerouslySetInnerHTML` with no DOMPurify (its sibling `markdown-viewer.tsx` sanitizes). Author-controlled today; latent stored-XSS if pointed at user content. Add DOMPurify.
@@ -346,21 +336,9 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`libs/@vigilant-broccoli/common-node/src/index.ts`** re-exports the whole lib, so services importing only `getEnvironmentVariable` pay require-time + image weight for all three. Split entry points.
 
-### c3ab6c. [performance] New OpenAI/Anthropic SDK client per prompt
-
-**`libs/@vigilant-broccoli/llm-tools/src/lib/llm.utils.ts:77,86`**; muted by shared undici pools, trivial to memoize per provider/key.
-
-### d19470. [performance] vb-express auth DB is synchronous `node:sqlite`
-
-**`apps/api/vb-express/src/auth.ts:3,31`** (`DatabaseSync`); every session/API-key check blocks the event loop, serializing streaming responses under burst. Fine at personal scale; worth knowing.
-
 ### d1a94d. [performance] Small sequential-await nits
 
 **`apps/api/vb-express/src/routes/api-keys.ts`** (two independent `findMany`s → `Promise.all`); email-subscription `/notify` awaits `queueEmail` per subscriber in a loop.
-
-### d2904c. [performance] `--skip-nx-cache` on the most-frequent builds
-
-**`deploy.yml:245,252,259`**, `cron-deploy-journal.yml:73`; a no-op today, but silently negates 151a48's fix for exactly the builds that run most often.
 
 ### d47732. [performance] `deploy-notify` npm-installs `socket.io-client` per notification
 
@@ -369,10 +347,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 ### e6849f. [performance] Daily `cron-backup` re-downloads tooling uncached
 
 mongodb-tools .deb (~90MB) + pgdg apt setup every day (`cron-backup.yml:125-126`); cache with `actions/cache`.
-
-### ed2d57. [performance] No `concurrency` groups on two follower e2e workflows
-
-**`test-e2e-rabbitmq.yml`**, **`test-e2e-socket-server-socketio.yml`** (the other followers have them now) — two quick deploys run overlapping suites against the same live services. Add `concurrency` + `cancel-in-progress: true`.
 
 ### ee4b66. [performance] No `encode` in any Caddyfile
 
@@ -431,3 +405,42 @@ Separately, `search-dialog.component.tsx:23` and `quick-links.component.tsx:7` b
 7. **Preserve every existing key string verbatim** while migrating — `'notepad:content'`, `'vb-manager-chats'`, `'swimlanes-boards'`, `'quick-links-grouped-state'`, `'language-learning-*'`, `'dev-dashboard-tab'`, `'google-tasks-selected-list-id'`. The naming is inconsistent (`:` vs `-` separators, some `vb-manager-` prefixed, most not), but renaming keys silently discards whatever users have stored. Normalize in a separate change with a migration read if it's worth doing at all.
 8. Out of scope: auth-token storage (`createSupabaseAuth.tsx:95-195`, the `auth-provider.tsx` files in hearth / small-business-next / employee-handler-ui / vb-manager-next-mobile). Different concern with a security dimension — the mobile `provider_token` case is tracked as ae83d3.
 9. Verify with `npx nx lint react-lib vb-manager-next` and a typecheck of each consuming app, then manually reload each migrated surface to confirm the preference actually survives and no hydration warning appears in the console. Bump/release `react-lib` per its `publish-package` flow if consumers resolve it from npm rather than the workspace.
+
+## Feature
+
+### Enhancements
+
+#### f7afb2. Provision Vault JWT policies/roles declaratively instead of the imperative post-init script
+
+**`infrastructure/terraform/scripts/post-apply.sh`, `infrastructure/terraform/packer/scripts/run-vault-post-init.sh`, `infrastructure/config.sh`, `package.json` (`gcp:vm:post-init`)**
+
+Vault's JWT auth config — the `github-actions-role` / `-rotate-role` / `-pr-check-role` roles and their policies — is currently written by the imperative `run-vault-post-init.sh`, which is really a VM-**bootstrap** script (it also runs `vault operator init`, enables the KV/JWT mounts, and seeds a `kv/test` placeholder). #217 made `post-apply.sh` call `npm run gcp:vm:post-init` on the IP-unchanged path so a new/edited role (e.g. `github-actions-pr-check-role`) is no longer silently skipped on a normal `tf:apply` — but that's an interim fix: it re-runs the whole heavy bootstrap script over IAP SSH on every apply, and policy/role definitions live as here-doc strings in a shell script rather than as reviewable declarative state.
+
+**Desired end state:** Vault policies/roles are managed as first-class Terraform resources (the `hashicorp/vault` provider's `vault_policy` + `vault_jwt_auth_backend_role`), so `tf:plan` shows role/policy diffs and `tf:apply` reconciles them like any other resource — no imperative re-run, no piggy-backing on VM bootstrap. `run-vault-post-init.sh` shrinks to genuine one-time bootstrap (init + mount enablement), and `post-apply.sh` no longer needs the interim unconditional `post-init` call.
+
+**Steps:**
+
+1. Add the `hashicorp/vault` provider to `infrastructure/terraform/main.tf` `required_providers`, configured to reach Vault over the same path local Terraform already uses (WireGuard `10.0.1.1:8200` + `NODE_EXTRA_CA_CERTS`/`VAULT_CACERT`); source the root token the way `load-vault-tf-env.sh` / `gcp-vault-token.ts` already do rather than a new secret. Confirm the CI path (`vault.harryliu.dev` tunnel) isn't broken — Terraform apply is local-only today, so this stays local.
+2. Port the two policies and three roles from `run-vault-post-init.sh` into `vault_policy` + `vault_jwt_auth_backend_role` resources, keeping the exact names/paths/TTLs/`bound_claims` (`job_workflow_ref` scoping for the rotate and pr-check roles) so nothing changes semantically. Reference `infrastructure/config.sh` values as Terraform vars/locals to keep one source of truth.
+3. `terraform import` the existing live policies/roles into the new resources so the first apply is a no-op diff, not a destroy/recreate.
+4. Strip the policy/role/`kv/test` blocks out of `run-vault-post-init.sh`, leaving only true bootstrap (init + KV/JWT mount enable). Remove the interim unconditional `npm run gcp:vm:post-init` call added to `post-apply.sh`'s IP-unchanged branch in #217.
+5. Update docs: [secret-management.md](./docs/infrastructure/secret-management.md) (the role/policy inventory now lives in Terraform) and any reference to `pnpm gcp:vm:post-init` being required after adding a Vault role.
+6. Verify: `pnpm tf:plan` shows the imported roles/policies as no-change, then edit one `bound_claims` and confirm `tf:plan` shows the diff and `tf:apply` reconciles it without touching the VM; confirm `ci-pr-check` and `ci-rotate-secrets` still authenticate to Vault afterward.
+
+#### faa345. Local graph mode for the docs-md note viewer
+
+**`libs/@vigilant-broccoli/react-utility/src/lib/graph-view.tsx`, `libs/@vigilant-broccoli/react-utility/src/lib/docs-viewer.tsx`, `libs/@vigilant-broccoli/react-lib/src/components/DocsExplorer.tsx`**
+
+The graph view added in #207 renders the whole note graph. Obsidian also offers a _local_ graph — the currently-open note plus its links out to N hops — which is more useful while reading. All the pieces already exist: `GraphView` receives `activePath` and already builds a `neighbors` adjacency map for hover highlighting, and `graph.json` (emitted by `apps/ui/docs-md/scripts/build-snapshot.mjs`) carries the full `{nodes, links}`. A local graph is just the full graph filtered to the BFS neighborhood of `activePath`, fed back into the same `GraphView`.
+
+**Desired end state:** a Global/Local toggle in the graph panel (defaulting to Local when a file is open) with a depth selector (1–2 hops). Local mode shows only the active note and its neighborhood, recomputed whenever the active file changes; clicking a node still opens it and re-roots the local graph on the clicked node. Global mode is the current behavior.
+
+**Steps:**
+
+1. Add a pure `localSubgraph(graph: NoteGraph, rootPath: string, depth: number): NoteGraph` helper — BFS over an adjacency map, returning `{nodes, links}` limited to visited nodes and the links among them. Put it beside the `NoteGraph` types in `react-lib` (`DocsExplorer.tsx`) or next to `GraphView`. Factor the adjacency-map build out of `graph-view.tsx` so the hover-highlight code and this helper share one implementation instead of duplicating it.
+2. In `docs-viewer.tsx`'s `GraphPanel`, add graph-scope state (`'global' | 'local'`) plus a depth, persisted like `VIEW_MODE_STORAGE_KEY`. When scope is local and `activePath` is set, pass `localSubgraph(graph, activePath, depth)` to `GraphView`; otherwise pass the full graph. Memoize on `graph`/`activePath`/`depth` so switching notes updates the local view.
+3. Surface the toggle inside the panel (the graph region already has a top-right toolbar in `DocsExplorer`) — a small Global/Local segmented control plus depth, keeping the existing single sidebar graph toggle button as the entry point.
+4. Edge cases: orphan active note (degree 0) → render just the single node with a hint; no file open while in local mode → fall back to global or an empty state; keep auto-fit working after each recompute — `GraphView` already re-fits until the user interacts, so verify a subgraph swap re-triggers fit (or reset the internal `userInteracted` flag on root change).
+5. Verify with `npx nx lint react-lib react-utility docs-md` + typecheck, then manually: open a hub note (e.g. `recipes.md`), confirm local mode shows only its neighborhood, changing notes re-roots it, and depth 2 pulls in neighbors-of-neighbors; confirm global mode is unchanged.
+
+Out of scope: showing the local graph _alongside_ the note content (Obsidian's right-sidebar pane) — this first cut reuses the existing full-panel graph toggle.

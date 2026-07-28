@@ -8,9 +8,13 @@
     "pre-build": {
       "executor": "nx:run-commands",
       "options": {
+        "parallel": false,
         "commands": [
           {
-            "command": "node --import tsx apps/ui/personal-website-react/scripts/download-resume.ts"
+            "command": "pnpm exec playwright install --with-deps chromium"
+          },
+          {
+            "command": "node --import tsx apps/ui/personal-website-react/scripts/generate-resume.ts"
           }
         ]
       }

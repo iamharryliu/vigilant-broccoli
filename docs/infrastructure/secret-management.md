@@ -72,6 +72,24 @@ Every rotator follows mint → verify → store → revoke, so Vault never holds
 
 Rotate at source, then write to Vault (`vault kv patch kv/data/secrets KEY=value`):
 
+### Nx cache
+
+`NX_CACHE_WRITE_TOKEN` / `NX_CACHE_READ_TOKEN` are Terraform-minted (`random_password.nx_cache_write_token` / `nx_cache_read_token` in `cloudflare-nx-cache.tf`) and bound directly into the `nx-cache` Worker as its own bearer tokens — never a Cloudflare API/R2 credential, and never exposed via a Terraform `output` (an `output` only hides a value from the CLI, not from Terraform Cloud state, so — like `rabbitmq_password`/`OCI_VM_SSH_KEY`/the rest of this list — it's pulled straight from `terraform state pull` instead). `pnpm tf:apply` syncs both to Vault automatically via `tf:post-apply` (`sync_secrets_to_vault` in `post-apply.sh`); if the resources aren't in state yet it just warns and skips that pair (unrelated to VM bootstrap, so it never blocks the rest of the sync) — rerun `pnpm tf:post-apply` once they exist.
+
+`NX_CACHE_WRITE_TOKEN` (GET/HEAD/PUT) goes to `deploy.yml`, at `kv/data/secrets` like every other deploy secret, via the shared `github-actions-role`/`github-actions@...` identity.
+
+`NX_CACHE_READ_TOKEN` (GET/HEAD only — the Worker returns `403` on PUT) goes to `ci-pr-check.yml` instead, and deliberately does **not** share the write token's path or identity: `ci-pr-check.yml` is `pull_request`-triggered, which (unlike every other workflow here) executes the workflow YAML from the PR branch itself — so anyone who gets a PR check to run could edit that file to ask for a different secret. It's isolated at every layer instead of relying on the `secrets:` filter being honored:
+
+- **Vault**: lives at its own path, `kv/data/ci-pr-check`, not `kv/data/secrets`. Read via `github-actions-pr-check-role` (`run-vault-post-init.sh`), whose policy grants `read` on that one path only — not the shared store the default `github-actions-role` can read in full.
+- **GCP WIF**: a separate, minimally-scoped service account (`github-actions-pr-check`, `github-actions-pr-check.tf`) fetches the Cloudflare Access secrets needed to reach the Vault tunnel. It's bound via a WIF provider (`github-pr-check`) whose `attribute_condition` requires `job_workflow_ref` to start with `ci-pr-check.yml@`, and it can read only the two `VAULT_CF_ACCESS_CLIENT_ID`/`_SECRET` secrets in Secret Manager — not the project-wide `secretAccessor` + `roles/editor` + `serviceAccountAdmin` the shared `github_actions` SA carries for push-triggered workflows. Without this, a PR could assume the broad SA and read `VB_VM_VAULT_ROOT_TOKEN` directly from Secret Manager, which would bypass any amount of Vault-side role scoping.
+- **Broad provider refuses PR tokens**: the pivot the previous bullet describes is closed at the source — the shared `github` WIF provider's `attribute_condition` (`main.tf`) now also requires `event_name != 'pull_request'`, so a `pull_request` run cannot mint a token through it at all and _must_ use `github-pr-check` (narrow SA). This is safe because `ci-pr-check.yml` is the only `pull_request`-triggered workflow; every other consumer of the broad provider is push/schedule/dispatch/workflow_call/workflow_run, none of which carry `event_name == 'pull_request'`.
+- The WIF provider path and SA email are hardcoded literals in `ci-pr-check.yml` (`outputs.tf`'s `github_actions_pr_check_*` outputs), not repo secrets — knowing either grants nothing without satisfying the `attribute_condition`, and a PR that can edit the workflow can already exfiltrate anything it references regardless of whether it's a secret or a literal.
+- The Vault-secrets step is `continue-on-error: true` — none of this is load-bearing for PR correctness; worst case a PR just builds without a warm cache.
+
+Rotate `NX_CACHE_WRITE_TOKEN`/`NX_CACHE_READ_TOKEN` by tainting both `random_password` resources, then `pnpm tf:apply`.
+
+### Other
+
 - Cloudflare — `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS`, `CLOUDFLARE_R2_ACCESS_KEY_ID`, `CLOUDFLARE_R2_SECRET_ACCESS_KEY` ([API tokens](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/api-tokens), [R2 tokens](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/api-tokens))
 - `DOCKERHUB_TOKEN` (Docker Hub account settings)
 - `GITHUB_TOKEN` (Terraform GitHub provider)

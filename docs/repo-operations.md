@@ -27,13 +27,14 @@ Authority: [secret-management.md](./infrastructure/secret-management.md) — hie
 
 Where state lives, per app:
 
-| Store                      | Used by                                               | Notes                                                                        |
-| -------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Supabase Postgres          | `hearth`                                              | Migrations via `scripts/migrate.ts --migrations-dir=...` (`SUPABASE_DB_URL`) |
-| MongoDB (`vb-manager` db)  | `vb-manager-next`                                     | `MONGODB_URI`                                                                |
-| SQLite on a fly volume     | `vb-express`                                          | `[mounts]` in its fly config, `DATABASE_PATH`                                |
-| Cloudflare R2 buckets      | `hearth` (`home-management` bucket), `bucket-service` | Bucket names may predate app renames                                         |
-| Gitea (`git.harryliu.dev`) | journal, strandbaden repos                            | Self-hosted on OCI                                                           |
+| Store                      | Used by                                                                 | Notes                                                                                 |
+| -------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Supabase Postgres          | `hearth`                                                                | Migrations via `scripts/migrate.ts --migrations-dir=...` (`SUPABASE_DB_URL`)          |
+| MongoDB (`vb-manager` db)  | `vb-manager-next`                                                       | `MONGODB_URI`                                                                         |
+| SQLite on a fly volume     | `vb-express`                                                            | `[mounts]` in its fly config, `DATABASE_PATH`                                         |
+| Cloudflare R2 buckets      | `hearth` (`home-management` bucket), `bucket-service`                   | Bucket names may predate app renames                                                  |
+| Gitea (`git.harryliu.dev`) | journal, strandbaden repos                                              | Self-hosted on OCI                                                                    |
+| R2 bucket `nx-cache`       | Nx self-hosted remote cache (`nx-cache.harryliu.dev` Cloudflare Worker) | Not app data — 7-day lifecycle-expired build cache, exempt from the backup rule below |
 
 Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repos, mongodump, pg_dump) into `gs://vigilant-broccoli-backup`, keeping the last 7. **A new persistent store must get a backup job there.**
 

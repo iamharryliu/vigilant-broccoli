@@ -4,9 +4,11 @@ import {
   type DocsExplorerUrlSync,
   type DocsNode,
   type DocsSearchResult,
+  type NoteGraph,
 } from '@vigilant-broccoli/react-lib';
 import { MarkdownViewer } from './markdown-viewer';
 import { ChecklistViewer } from './checklist-viewer';
+import { GraphView } from './graph-view';
 
 const FILE_PARAM = 'file';
 const VIEW_MODE_STORAGE_KEY = 'docs-md:view-mode';
@@ -30,6 +32,8 @@ const CLS = {
 const COPY = {
   LOADING_TREE: 'Loading file structure...',
   EMPTY: 'Select a markdown file to view its contents',
+  LOADING_GRAPH: 'Loading graph...',
+  GRAPH_ERROR: 'Failed to load graph',
 } as const;
 
 const AGGREGATE_KEY_PREFIX = 'aggregate:';
@@ -39,7 +43,38 @@ export interface DocsViewerProps {
   getContent: (path: string) => Promise<string>;
   saveContent?: (path: string, content: string) => Promise<void>;
   search?: (query: string) => Promise<DocsSearchResult[]>;
+  getGraph?: () => Promise<NoteGraph>;
   urlSync?: DocsExplorerUrlSync;
+}
+
+function GraphPanel({
+  getGraph,
+  activePath,
+  onSelect,
+}: {
+  getGraph: () => Promise<NoteGraph>;
+  activePath?: string;
+  onSelect: (path: string) => void;
+}) {
+  const [graph, setGraph] = useState<NoteGraph | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getGraph()
+      .then(g => !cancelled && setGraph(g))
+      .catch(() => !cancelled && setError(COPY.GRAPH_ERROR));
+    return () => {
+      cancelled = true;
+    };
+  }, [getGraph]);
+
+  if (error) return <div className={CLS.CENTERED_ERR}>{error}</div>;
+  if (!graph)
+    return <div className={CLS.CENTERED_MSG}>{COPY.LOADING_GRAPH}</div>;
+  return (
+    <GraphView graph={graph} activePath={activePath} onSelect={onSelect} />
+  );
 }
 
 export function DocsViewer({
@@ -47,6 +82,7 @@ export function DocsViewer({
   getContent,
   saveContent,
   search,
+  getGraph,
   urlSync,
 }: DocsViewerProps) {
   const [nodes, setNodes] = useState<DocsNode[]>([]);
@@ -150,6 +186,17 @@ export function DocsViewer({
       viewModes={viewModeOptions}
       onViewModeChange={mode => updateViewMode(mode as ViewMode)}
       currentViewMode={viewMode}
+      renderGraph={
+        getGraph
+          ? navigate => (
+              <GraphPanel
+                getGraph={getGraph}
+                activePath={activeFile}
+                onSelect={navigate}
+              />
+            )
+          : undefined
+      }
     />
   );
 }

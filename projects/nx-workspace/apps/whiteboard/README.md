@@ -1,5 +1,11 @@
 # Whiteboard
 
+Collaborative drawing and brainstorming canvas.
+
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript

@@ -168,56 +168,66 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <NotificationContext.Provider value={add}>
-      <div className="w-full h-screen flex flex-col overflow-hidden">
-        <NextNavBar
-          routes={tabRoutes}
-          isDark={appearance === 'dark'}
-          rightContent={
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {dropdownRoutes.map(obj => (
-                <DropdownMenu.Root key={obj.title}>
-                  <DropdownMenu.Trigger>
-                    <Button
-                      variant="ghost"
-                      style={{
-                        cursor: 'pointer',
-                        color: isActiveDropdown(obj.children)
-                          ? 'var(--accent-9)'
-                          : 'inherit',
-                        fontWeight: isActiveDropdown(obj.children) ? 500 : 400,
-                      }}
-                    >
-                      {obj.title}
-                      <DropdownMenu.TriggerIcon />
-                    </Button>
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content>
-                    {obj.children?.map(child => (
-                      <DropdownMenu.Item key={child.path} asChild>
-                        <Link href={child.path ?? '#'}>{child.title}</Link>
-                      </DropdownMenu.Item>
-                    ))}
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
-              ))}
-            </div>
-          }
-        />
-        <div className="flex flex-1 overflow-hidden">
-          <main className="flex-1 p-4 min-w-0 overflow-y-auto">{children}</main>
-          <RightSidebar
-            setChatbotDialogOpen={setChatbotDialogOpen}
-            setEmailDialogOpen={setEmailDialogOpen}
-            setCalendarDialogOpen={setCalendarDialogOpen}
-            setNotepadDialogOpen={setNotepadDialogOpen}
-            setPomodoroDialogOpen={setPomodoroDialogOpen}
-            setSearchDialogOpen={setSearchDialogOpen}
-            notificationsOpen={notificationsOpen}
-            setNotificationsOpen={handleSetNotificationsOpen}
-            unreadCount={unreadCount}
-            notifications={notifications}
-            onClearNotifications={clear}
+      <div className="w-full h-screen flex flex-col overflow-hidden print:h-auto print:overflow-visible print:block">
+        <div className="print:hidden">
+          <NextNavBar
+            routes={tabRoutes}
+            isDark={appearance === 'dark'}
+            rightContent={
+              <div
+                style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
+              >
+                {dropdownRoutes.map(obj => (
+                  <DropdownMenu.Root key={obj.title}>
+                    <DropdownMenu.Trigger>
+                      <Button
+                        variant="ghost"
+                        style={{
+                          cursor: 'pointer',
+                          color: isActiveDropdown(obj.children)
+                            ? 'var(--accent-9)'
+                            : 'inherit',
+                          fontWeight: isActiveDropdown(obj.children)
+                            ? 500
+                            : 400,
+                        }}
+                      >
+                        {obj.title}
+                        <DropdownMenu.TriggerIcon />
+                      </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      {obj.children?.map(child => (
+                        <DropdownMenu.Item key={child.path} asChild>
+                          <Link href={child.path ?? '#'}>{child.title}</Link>
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                ))}
+              </div>
+            }
           />
+        </div>
+        <div className="flex flex-1 overflow-hidden print:h-auto print:overflow-visible print:block">
+          <main className="flex-1 p-4 min-w-0 overflow-y-auto print:h-auto print:overflow-visible print:p-0 print:w-full">
+            {children}
+          </main>
+          <div className="print:hidden">
+            <RightSidebar
+              setChatbotDialogOpen={setChatbotDialogOpen}
+              setEmailDialogOpen={setEmailDialogOpen}
+              setCalendarDialogOpen={setCalendarDialogOpen}
+              setNotepadDialogOpen={setNotepadDialogOpen}
+              setPomodoroDialogOpen={setPomodoroDialogOpen}
+              setSearchDialogOpen={setSearchDialogOpen}
+              notificationsOpen={notificationsOpen}
+              setNotificationsOpen={handleSetNotificationsOpen}
+              unreadCount={unreadCount}
+              notifications={notifications}
+              onClearNotifications={clear}
+            />
+          </div>
         </div>
         <div style={{ display: 'none' }} aria-hidden="true">
           <FloatingIslandComponent

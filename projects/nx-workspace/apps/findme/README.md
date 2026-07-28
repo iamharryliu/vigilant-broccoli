@@ -1,5 +1,11 @@
 # FindMe
 
+Real-time location sharing for friends and family.
+
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
@@ -7,7 +13,6 @@
 - Build Tool - Next.js
 - External libs
   - Leaflet / react-leaflet
-  - i18n
 - Internal libs
   - `common-browser`
   - `react-lib`

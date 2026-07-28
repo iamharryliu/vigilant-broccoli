@@ -18,9 +18,30 @@
 set -euo pipefail
 
 DIST_DIR="${1:?usage: smoke-dist.sh <dist-dir>}"
-PORT="${SMOKE_PORT:-$((30000 + ($$ % 20000)))}"
 TIMEOUT_SECONDS="${SMOKE_TIMEOUT_SECONDS:-20}"
 HEALTH_PATH="${SMOKE_HEALTH_PATH:-/}"
+
+# A PID-derived port isn't collision-safe: it doesn't check the port is
+# actually free, and mod-reduction means unrelated processes started later
+# in the same job can land on the same value. Probe candidates instead.
+port_is_free() {
+  ! (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null
+}
+
+pick_free_port() {
+  local candidate attempt
+  for attempt in $(seq 1 20); do
+    candidate=$((30000 + RANDOM % 20000))
+    if port_is_free "$candidate"; then
+      echo "$candidate"
+      return 0
+    fi
+  done
+  echo "smoke-dist: could not find a free port after 20 attempts" >&2
+  return 1
+}
+
+PORT="${SMOKE_PORT:-$(pick_free_port)}"
 
 if [ ! -f "$DIST_DIR/main.js" ]; then
   echo "smoke-dist: $DIST_DIR/main.js not found"
