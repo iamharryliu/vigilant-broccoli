@@ -24,18 +24,9 @@ export interface ResumeSkills {
   soft: string[];
 }
 
-export interface ResumePersonalProject {
-  name: string;
-  url: string;
-  tags?: string;
-  tagline?: string;
-  bullets: string[];
-}
-
 export interface ResumeData {
   basics: ResumeBasics;
   summary: string;
   workExperience: ResumeWorkExperience[];
   skills: ResumeSkills;
-  personalProjects: ResumePersonalProject[];
 }

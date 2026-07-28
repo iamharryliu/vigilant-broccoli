@@ -1,10 +1,6 @@
 import { chromium } from '@playwright/test';
 import { resumeData } from './index';
-import type {
-  ResumeData,
-  ResumeWorkExperience,
-  ResumePersonalProject,
-} from './resume.types';
+import type { ResumeData, ResumeWorkExperience } from './resume.types';
 
 const LINK_COLOR = '#1155cc';
 const HEADING_COLOR = '#3d85c6';
@@ -33,19 +29,8 @@ const renderWorkExperience = (entry: ResumeWorkExperience): string => `
     ${renderBulletList(entry.bullets)}
   </div>`;
 
-const renderPersonalProject = (project: ResumePersonalProject): string => `
-  <div class="entry">
-    <div>
-      <span class="bold">${escapeHtml(project.name)}</span> -
-      <a href="${escapeHtml(project.url)}">${escapeHtml(project.url)}</a>
-      ${project.tags ? ` - ${escapeHtml(project.tags)}` : ''}
-      ${project.tagline ? ` - <span class="italic">${escapeHtml(project.tagline)}</span>` : ''}
-    </div>
-    ${renderBulletList(project.bullets)}
-  </div>`;
-
 const buildResumeHtml = (resume: ResumeData): string => {
-  const { basics, summary, workExperience, skills, personalProjects } = resume;
+  const { basics, summary, workExperience, skills } = resume;
 
   return `<!doctype html>
 <html>
@@ -116,11 +101,6 @@ const buildResumeHtml = (resume: ResumeData): string => {
     <p><span class="bold">Technical: </span>${escapeHtml(skills.technical.join(', '))}.</p>
     <p class="bold" style="margin-top: 4px;">Soft:</p>
     ${renderBulletList(skills.soft)}
-  </section>
-
-  <section>
-    <h2>Personal Projects</h2>
-    ${personalProjects.map(renderPersonalProject).join('')}
   </section>
 </body>
 </html>`;

@@ -1,10 +1,6 @@
 import { Fragment, ReactNode } from 'react';
 import { Roboto } from 'next/font/google';
-import {
-  ResumeData,
-  ResumeWorkExperience,
-  ResumePersonalProject,
-} from '@vigilant-broccoli/resume';
+import { ResumeData, ResumeWorkExperience } from '@vigilant-broccoli/resume';
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -54,31 +50,8 @@ const WorkExperienceEntry = ({ entry }: { entry: ResumeWorkExperience }) => (
   </div>
 );
 
-const PersonalProjectEntry = ({
-  project,
-}: {
-  project: ResumePersonalProject;
-}) => (
-  <div className="mb-1.5 last:mb-0">
-    <div>
-      <span className="font-bold">{project.name}</span>
-      {' - '}
-      <a href={project.url} className={`underline ${LINK_COLOR_CLASS}`}>
-        {project.url}
-      </a>
-      {project.tags && <span> - {project.tags}</span>}
-      {project.tagline && <span className="italic"> - {project.tagline}</span>}
-    </div>
-    <ul className="list-disc pl-5 mt-0.5 space-y-0.5">
-      {project.bullets.map((bullet, index) => (
-        <li key={index}>{renderInlineBold(bullet)}</li>
-      ))}
-    </ul>
-  </div>
-);
-
 export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
-  const { basics, summary, workExperience, skills, personalProjects } = resume;
+  const { basics, summary, workExperience, skills } = resume;
 
   return (
     <div
@@ -132,13 +105,6 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
             <li key={index}>{item}</li>
           ))}
         </ul>
-      </section>
-
-      <section>
-        <SectionHeading>Personal Projects</SectionHeading>
-        {personalProjects.map((project, index) => (
-          <PersonalProjectEntry key={index} project={project} />
-        ))}
       </section>
     </div>
   );

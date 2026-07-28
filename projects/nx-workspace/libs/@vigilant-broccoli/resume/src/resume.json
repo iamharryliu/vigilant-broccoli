@@ -77,6 +77,19 @@
         "**Saved QA team over 50 hours per week** with automated **Python** scripts to reduce time spent manually searching through application logs. Script handled parsing and sorting of logs for QA analysis.",
         "Worked with product owners to enhance data flows of new requirements to the legacy application"
       ]
+    },
+    {
+      "company": "Vigilant Broccoli",
+      "role": "Software Developer (Personal Monorepo)",
+      "startDate": "July 2023",
+      "endDate": "present",
+      "bullets": [
+        "Architect and maintain a personal **Nx monorepo** housing full-stack web apps, API services, shared libraries, developer notes, and infrastructure code.",
+        "Design and run **agentic coding workflows** with Claude Code — custom skills and slash commands for code review, refactor cleanup, README/documentation upkeep, and automated PR authoring.",
+        "Provision and operate cloud infrastructure across **GCP, Fly.io, Cloudflare, and Oracle Cloud** with **Terraform**, managing secrets through **HashiCorp Vault** and Google Secret Manager.",
+        "Build and maintain **GitHub Actions** CI/CD pipelines covering PR checks, health checks, cron jobs, and smoke/e2e/security test suites across a growing set of apps and services.",
+        "Publish reusable internal libraries to **npm** and document repo-wide conventions to keep patterns consistent as the monorepo scales."
+      ]
     }
   ],
   "skills": {
@@ -92,15 +105,5 @@
       "Excellent communication and active listening skills, able to explain technical ideas in a clear and simple manner.",
       "Strong team player who is always open for discussions and collective collaboration."
     ]
-  },
-  "personalProjects": [
-    {
-      "name": "Vigilant Broccoli",
-      "url": "https://github.com/iamharryliu/vigilant-broccoli",
-      "tags": "IaC, CICD, Package Management",
-      "bullets": [
-        "Personal monorepo used to house personal software projects, developer notes, sandbox code, and more."
-      ]
-    }
-  ]
+  }
 }
