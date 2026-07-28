@@ -63,6 +63,8 @@ pnpm cheatsheet
   - Cloudflare
   - Vercel
   - Fly.io
+  - AWS
+  - GitHub
 - Infrastructure as Code
   - Terraform
   - Packer
@@ -73,9 +75,12 @@ pnpm cheatsheet
   - Caddy
   - Nginx
   - Tailscale
+  - WireGuard
+  - cloudflared
 - Secrets Management
   - HashiCorp Vault
   - Google Secret Manager
+  - Bitwarden
 - Process Management
   - PM2
 - Monitoring / Observability
@@ -87,8 +92,9 @@ pnpm cheatsheet
   - Gitea
   - code-server
   - Immich
-  - Resilio Sync
   - Adminer
+  - Watchtower
+  - Claude Code
 - CI/CD
   - GitHub Actions
 - Databases
@@ -108,16 +114,25 @@ pnpm cheatsheet
   - Cloudflare R2
 - Auth
   - Better Auth
-  - NextAuth
 - AI / LLM
   - Anthropic
   - OpenAI
+  - DeepSeek
+  - xAI (Grok)
+  - Google Gemini
 - Payments
   - Stripe
 - Communications
   - Slack
   - Twilio
   - Resend
+- Third-Party APIs
+  - Google OAuth
+  - Google Workspace APIs (Tasks, Calendar)
+  - Google Analytics
+  - Google reCAPTCHA
+  - OpenWeatherMap
+  - ElevenLabs
 - Container Registry
   - Docker Hub
 - Package Registries
@@ -132,22 +147,44 @@ pnpm cheatsheet
   - Bash / Shell
   - Python
   - HCL (Terraform)
+  - YAML
 - Build Tools
   - Vite
   - Webpack
   - esbuild
   - SWC
   - Rollup
+  - Next.js
+  - Angular CLI
+  - Sanity CLI
 - Backend Frameworks
   - Fastify
   - Express
   - Socket.IO
+  - Slack Bolt
 - Frontend Frameworks
   - React
   - Next.js
   - Angular
 - Styling
   - Tailwind CSS
+  - Font Awesome
+- UI Libraries
+  - Radix Themes
+  - lucide-react
+  - Leaflet / react-leaflet
+  - recharts
+  - FullCalendar
+  - React Router
+  - dnd-kit
+  - react-markdown
+  - fuse.js
+  - styled-components
+  - marked
+- Utility Libraries
+  - Zod
+  - Nodemailer
+  - isomorphic-dompurify
 - Testing
   - Vitest
   - Jest

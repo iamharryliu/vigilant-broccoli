@@ -5,6 +5,8 @@
 - Language - TypeScript
 - Framework - Next.js (React)
 - Build Tool - Next.js
+- External libs
+  - Zod
 - Internal libs
   - `common-browser`
   - `common-js`
