@@ -212,14 +212,6 @@ No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`ap
 
 **Status:** deliberately left open. Owner's stated threat model: solo use, UI-only interaction, app bound to `127.0.0.1` (confirmed in `ecosystem.config.js` and the local nginx proxy), no external callers — the owner is the only account that will ever complete this app's Google OAuth flow, so the allowlist's marginal value is low here. Revisit if the app is ever exposed beyond loopback or a second Google account is ever expected to authenticate.
 
-### 85ddfd. [performance] cloud-8-skate-angular gallery serves full-resolution Sanity originals
-
-**`apps/ui/cloud-8-skate-angular/src/app/services/cloud8-sanity.service.ts:150,178`**
-
-The GROQ queries return raw `asset->url` with no image transforms, and the gallery/album templates render them directly. Phone-camera originals are typically 3–10MB each — an album page downloads every original. Album-grid covers also lack `loading="lazy"`. This is the single largest user-visible load cost in the audited apps.
-
-**Fix:** use Sanity's image CDN params — `?w=800&auto=format&q=75` (plus `srcset`) for gallery images, `?w=400` for the aspect-square covers; add `loading="lazy"` to covers.
-
 ### 5bdea5. [performance] Vite/Angular bundle-size warnings
 
 - **`component-library`**: JS chunk 676.91 kB / CSS chunk 725.17 kB, both over the 500 kB threshold. CSS cause: `src/main.tsx` imports the full `@radix-ui/themes/styles.css` (812 kB unminified, unpurgeable). JS cause: `libs/@vigilant-broccoli/react-sandbox/src/lib/ComponentSandbox.tsx` statically imports all 13 demo components + 6 utility contents at module top-level, rendered unconditionally even though only one `CollapsibleList` section is open by default — fix with `React.lazy` + `Suspense` per demo.
