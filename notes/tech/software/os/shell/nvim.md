@@ -1,5 +1,6 @@
 # nvim
 
+- [Setup Review (2026-07-28)](./nvim-review.md)
 - Default `<leader>` is `\`
 
 ```
