@@ -65,6 +65,8 @@ brew "node@22", link: true
 brew "nss"
 # Manage multiple Node.js versions
 brew "nvm"
+# Get up and running with large language models locally
+brew "ollama"
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
 # Execute binaries from Python packages in isolated environments
