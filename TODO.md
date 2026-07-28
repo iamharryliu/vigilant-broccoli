@@ -226,12 +226,6 @@ No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`ap
 
 Needs either a later Nx version that lifts this restriction, or a careful manual conversion (see PR #93 for the pattern used on the 7 Next.js apps' build/serve targets).
 
-### 112bae. [maintenance] `nxViteTsPaths` / `nxCopyAssetsPlugin` still deprecated after Nx v24 vite executor migration
-
-`nxViteTsPaths` / `nxCopyAssetsPlugin` from `@nx/vite/plugins/*`, used across 5 Vite apps + 4 libs — still deprecated even after the `@nx/vite:build` executor itself was migrated to the inferred plugin in PR #93.
-
-**Fix:** replace `nxViteTsPaths` with `vite-tsconfig-paths`'s `tsconfigPaths()`, and `nxCopyAssetsPlugin` with Vite's native `publicDir` (or `vite-plugin-static-copy`).
-
 ### 1f0a7e. [maintenance] Next.js "inferred workspace root" warning
 
 - Multiple Next.js apps (`small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`, `hearth`, `employee-handler-ui`) log "Next.js inferred your workspace root, but it may not be correct" — caused by the repo having two lockfiles (root `pnpm-lock.yaml` and `projects/nx-workspace/pnpm-lock.yaml`). Fix by setting `outputFileTracingRoot` (or `turbopack.root`) explicitly in each app's Next.js config, or removing the redundant lockfile. Deferred — CI builds pass today (warning only); revisit if a tracing-root-sensitive deploy issue surfaces, especially for `hearth` given its Vercel serverless `sharp` bundling.
