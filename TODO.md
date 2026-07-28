@@ -338,10 +338,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`libs/@vigilant-broccoli/common-node/src/index.ts`** re-exports the whole lib, so services importing only `getEnvironmentVariable` pay require-time + image weight for all three. Split entry points.
 
-### c3ab6c. [performance] New OpenAI/Anthropic SDK client per prompt
-
-**`libs/@vigilant-broccoli/llm-tools/src/lib/llm.utils.ts:77,86`**; muted by shared undici pools, trivial to memoize per provider/key.
-
 ### c75e91. [performance] `fetchSockets()` round trip per publish for a log line
 
 **`apps/socket-server-socketio/src/main.ts:135`**; use `io.sockets.adapter.rooms.get(room)?.size`.
