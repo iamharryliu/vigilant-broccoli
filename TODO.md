@@ -348,10 +348,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`apps/api/vb-express/src/routes/api-keys.ts`** (two independent `findMany`s → `Promise.all`); email-subscription `/notify` awaits `queueEmail` per subscriber in a loop.
 
-### d2904c. [performance] `--skip-nx-cache` on the most-frequent builds
-
-**`deploy.yml:245,252,259`**, `cron-deploy-journal.yml:73`; a no-op today, but silently negates 151a48's fix for exactly the builds that run most often.
-
 ### d47732. [performance] `deploy-notify` npm-installs `socket.io-client` per notification
 
 **`.github/actions/deploy-notify/action.yml:33-35`** — now pinned + `--ignore-scripts` (#109), but still 2+ registry installs per deploy; replace the emit with a plain HTTPS POST or cache the install.
