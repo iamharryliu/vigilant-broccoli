@@ -6,23 +6,10 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": ["{workspaceRoot}/dist/apps/api/llm-service"],
       "defaultConfiguration": "production",
-      "options": {
-        "target": "node",
-        "compiler": "tsc",
-        "outputPath": "dist/apps/api/llm-service",
-        "main": "apps/api/llm-service/src/main.ts",
-        "tsConfig": "apps/api/llm-service/tsconfig.app.json",
-        "webpackConfig": "apps/api/llm-service/webpack.config.js",
-        "generatePackageJson": true
-      },
       "configurations": {
-        "development": {
-          "outputHashing": "none"
-        },
-        "production": {}
+        "development": {}
       }
     },
     "prune-lockfile": {

@@ -1,21 +1,41 @@
-const { composePlugins, withNx } = require('@nx/webpack');
+const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 
-// Nx plugins for webpack.
-module.exports = composePlugins(
-  withNx({
-    target: 'node',
-  }),
-  config => {
-    config.output = {
-      ...config.output,
-      ...(process.env.NODE_ENV !== 'production' && {
-        clean: true,
-        devtoolModuleFilenameTemplate: '[absolute-resource-path]',
-      }),
-    };
-    config.devtool = 'source-map';
-    // Update the webpack config as needed here.
-    // e.g. `config.plugins.push(new MyPlugin())`
-    return config;
+const configValues = {
+  build: {
+    default: {
+      target: 'node',
+      compiler: 'tsc',
+      outputPath: '../../../dist/apps/api/vb-express',
+      main: './src/main.ts',
+      tsConfig: './tsconfig.app.json',
+      generatePackageJson: true,
+      outputHashing: 'none',
+    },
+    development: {},
   },
-);
+};
+
+const configuration = process.env.NX_TASK_TARGET_CONFIGURATION || 'default';
+
+const buildOptions = {
+  ...configValues.build.default,
+  ...configValues.build[configuration],
+};
+
+module.exports = async () => ({
+  plugins: [
+    new NxAppWebpackPlugin(buildOptions),
+    {
+      apply: compiler => {
+        compiler.options.output = {
+          ...compiler.options.output,
+          ...(process.env.NODE_ENV !== 'production' && {
+            clean: true,
+            devtoolModuleFilenameTemplate: '[absolute-resource-path]',
+          }),
+        };
+        compiler.options.devtool = 'source-map';
+      },
+    },
+  ],
+});
