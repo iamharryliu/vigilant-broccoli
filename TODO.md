@@ -220,12 +220,6 @@ No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`ap
 
 ### 0cd00c. [maintenance] Structural duplication in the workspace
 
-### d3010c. [maintenance] `@nx/webpack:webpack` executor not migrated to inferred (removed in Nx v24)
-
-`vb-express` and `llm-service`, plus the `composePlugins`/`withNx` helpers their `webpack.config.js` files use — `nx g @nx/webpack:convert-to-inferred` refuses both because their `serve:no-vault` targets use `@nx/js:node`, which the codemod doesn't support alongside a webpack conversion.
-
-Needs either a later Nx version that lifts this restriction, or a careful manual conversion (see PR #93 for the pattern used on the 7 Next.js apps' build/serve targets).
-
 ### 112bae. [maintenance] `nxViteTsPaths` / `nxCopyAssetsPlugin` still deprecated after Nx v24 vite executor migration
 
 `nxViteTsPaths` / `nxCopyAssetsPlugin` from `@nx/vite/plugins/*`, used across 5 Vite apps + 4 libs — still deprecated even after the `@nx/vite:build` executor itself was migrated to the inferred plugin in PR #93.
