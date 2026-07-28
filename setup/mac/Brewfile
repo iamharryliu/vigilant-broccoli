@@ -65,8 +65,8 @@ brew "node@22", link: true
 brew "nss"
 # Manage multiple Node.js versions
 brew "nvm"
-# Get up and running with large language models locally
-brew "ollama"
+# Create, run, and share large language models (LLMs)
+brew "ollama", restart_service: :changed
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
 # Execute binaries from Python packages in isolated environments
@@ -182,11 +182,9 @@ vscode "dbaeumer.vscode-eslint"
 vscode "eamodio.gitlens"
 vscode "editorconfig.editorconfig"
 vscode "esbenp.prettier-vscode"
-vscode "github.github-vscode-theme"
 vscode "gruntfuggly.todo-tree"
 vscode "johnpapa.vscode-peacock"
 vscode "mechatroner.rainbow-csv"
-vscode "nrwl.angular-console"
 vscode "shd101wyy.markdown-preview-enhanced"
 vscode "usernamehw.errorlens"
 go "golang.org/x/tools/gopls"
