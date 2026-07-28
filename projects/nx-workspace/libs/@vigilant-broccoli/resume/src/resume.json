@@ -19,6 +19,19 @@
   "summary": "Over 5 years of software developer experience, working with enterprise level applications (banks and insurance companies). Excellent team player who encourages a collaborative knowledge-sharing environment to deliver quality results. Experienced with building end to end applications and software infrastructure.",
   "workExperience": [
     {
+      "company": "vigilant-broccoli",
+      "role": "Software Developer (Personal Monorepo)",
+      "startDate": "July 2023",
+      "endDate": "present",
+      "bullets": [
+        "Architect and maintain a personal **Nx monorepo** containing full-stack web apps, API services, shared libraries, developer notes, and infrastructure code.",
+        "Design and run **agentic coding workflows** with **Claude Code**, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring.",
+        "Provision and operate **cloud infrastructure** with **Terraform**, managing secrets through dedicated secret managers.",
+        "Build and maintain **CI/CD pipelines** covering PR checks, health checks, cron jobs, and smoke, end-to-end, and security test suites across a growing set of apps and services.",
+        "Publish reusable internal libraries to **npm** and document repo-wide conventions to keep patterns consistent as the monorepo scales."
+      ]
+    },
+    {
       "company": "Tillmobil",
       "role": "Software Developer",
       "startDate": "March 2025",
@@ -76,19 +89,6 @@
       "bullets": [
         "**Saved QA team over 50 hours per week** with automated **Python** scripts to reduce time spent manually searching through application logs. Script handled parsing and sorting of logs for QA analysis.",
         "Worked with product owners to enhance data flows of new requirements to the legacy application"
-      ]
-    },
-    {
-      "company": "Vigilant Broccoli",
-      "role": "Software Developer (Personal Monorepo)",
-      "startDate": "July 2023",
-      "endDate": "present",
-      "bullets": [
-        "Architect and maintain a personal **Nx monorepo** housing full-stack web apps, API services, shared libraries, developer notes, and infrastructure code.",
-        "Design and run **agentic coding workflows** with Claude Code — custom skills and slash commands for code review, refactor cleanup, README/documentation upkeep, and automated PR authoring.",
-        "Provision and operate cloud infrastructure across **GCP, Fly.io, Cloudflare, and Oracle Cloud** with **Terraform**, managing secrets through **HashiCorp Vault** and Google Secret Manager.",
-        "Build and maintain **GitHub Actions** CI/CD pipelines covering PR checks, health checks, cron jobs, and smoke/e2e/security test suites across a growing set of apps and services.",
-        "Publish reusable internal libraries to **npm** and document repo-wide conventions to keep patterns consistent as the monorepo scales."
       ]
     }
   ],
