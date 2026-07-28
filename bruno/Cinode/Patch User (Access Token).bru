@@ -1,0 +1,20 @@
+meta {
+  name: Patch User (Access Token)
+  type: http
+  seq: 8
+}
+
+patch {
+  url: https://api.cinode.com/v0.1/companies/{{process.env.COMPANY_ID}}/users/{{process.env.USER_ID}}
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{process.env.CINODE_ACCESS_TOKEN}}
+  Content-Type: application/json
+}
+
+body:json {
+  [{"value":"2023-11-06T00:00:00.000000+00:00","path":"/employmentenddate","op":"replace"}]
+}

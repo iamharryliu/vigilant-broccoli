@@ -1,0 +1,19 @@
+meta {
+  name: Get Leaves
+  type: http
+  seq: 8
+}
+
+get {
+  url: https://api.alexishr.com/v1/leave?relations=type,employee
+  body: none
+  auth: none
+}
+
+params:query {
+  relations: type,employee
+}
+
+headers {
+  Authorization: Bearer {{process.env.ALEXISHR_API_KEY}}
+}
