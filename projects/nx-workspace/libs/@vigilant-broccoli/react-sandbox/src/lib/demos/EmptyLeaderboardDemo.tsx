@@ -1,11 +1,6 @@
-import {
-  UserLeaderboard,
-  LeaderBoardUser,
-  LeaderboardMetricColumn,
-  SortKey,
-  sortKeys,
-} from '@vigilant-broccoli/react-lib';
+import { UserLeaderboard, LeaderBoardUser } from '@vigilant-broccoli/react-lib';
 import { MouseEvent as ReactMouseEvent, useEffect, useState } from 'react';
+import { USER_METRICS } from './UserLeaderboardDemo';
 
 const MOCK_HYDRATION_INTERVAL_MS = 1500;
 
@@ -13,11 +8,11 @@ const noop = () => undefined;
 
 export function EmptyLeaderboardDemo() {
   const [isLoading, setIsLoading] = useState(true);
-  const [sortKey, setSortKey] = useState<SortKey>('totalRecordings');
+  const [sortKey, setSortKey] = useState(USER_METRICS[0].key);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [visibleColumns, setVisibleColumns] = useState<
-    LeaderboardMetricColumn[]
-  >([...sortKeys]);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(
+    USER_METRICS.map(m => m.key),
+  );
   const [page, setPage] = useState(1);
   const changedUserIds = new Set<number>();
   const rankChanges = new Map<number, number>();
@@ -47,6 +42,7 @@ export function EmptyLeaderboardDemo() {
   return (
     <div>
       <UserLeaderboard
+        metrics={USER_METRICS}
         period="week"
         setPeriod={noop}
         sortKey={sortKey}

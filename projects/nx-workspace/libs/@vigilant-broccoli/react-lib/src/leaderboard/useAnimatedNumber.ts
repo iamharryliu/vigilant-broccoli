@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { LeaderboardMetrics } from './leaderboard.types';
 
 export function useAnimatedNumber(
   targetValue: number,
@@ -40,4 +41,57 @@ export function useAnimatedNumber(
   }, [targetValue, isChanging, displayValue, durationMs]);
 
   return displayValue;
+}
+
+/**
+ * Animates an arbitrary bag of metrics at once, so callers don't need to know
+ * the metric keys up front (and therefore can't call a hook per key).
+ */
+export function useAnimatedMetrics(
+  targetMetrics: LeaderboardMetrics,
+  isChanging = true,
+  durationMs = 600,
+): LeaderboardMetrics {
+  const [displayMetrics, setDisplayMetrics] =
+    useState<LeaderboardMetrics>(targetMetrics);
+  const displayRef = useRef(displayMetrics);
+  displayRef.current = displayMetrics;
+
+  useEffect(() => {
+    if (!isChanging) {
+      setDisplayMetrics(targetMetrics);
+      return;
+    }
+
+    const startMetrics = displayRef.current;
+    const startTime = Date.now();
+    let frameId: number;
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+      const next: LeaderboardMetrics = {};
+      for (const key of Object.keys(targetMetrics)) {
+        const start = startMetrics[key] ?? targetMetrics[key];
+        const target = targetMetrics[key];
+        next[key] =
+          Math.round((start + (target - start) * easeProgress) * 10) / 10;
+      }
+      setDisplayMetrics(next);
+
+      if (progress < 1) {
+        frameId = requestAnimationFrame(animate);
+      } else {
+        setDisplayMetrics(targetMetrics);
+      }
+    };
+
+    frameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetMetrics, isChanging, durationMs]);
+
+  return displayMetrics;
 }

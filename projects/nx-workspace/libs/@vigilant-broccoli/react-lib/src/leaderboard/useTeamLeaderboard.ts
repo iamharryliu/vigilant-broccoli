@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   LeaderBoardPeriod,
+  LeaderboardMetricDef,
+  LeaderboardMetrics,
   TEAM_PERIODS,
-  TEAM_SORT_KEYS,
   TeamLeaderboardRow,
-  TeamSortKey,
 } from './leaderboard.types';
 import {
   DEFAULT_CHANGE_ANIMATION_MS,
@@ -17,17 +17,19 @@ import { useRankTracking } from './useRankTracking';
 
 export type TeamLeaderboardFetchParams = {
   period: LeaderBoardPeriod;
-  sortKey: TeamSortKey;
+  sortKey: string;
 };
 
 type UnrankedTeamRow = Omit<TeamLeaderboardRow, 'rank'>;
 
 type TeamLeaderboardFilters = {
   period: LeaderBoardPeriod;
-  sortKey: TeamSortKey;
+  sortKey: string;
 };
 
 export type UseTeamLeaderboardOptions = {
+  /** Defines which metrics this leaderboard can sort and display by. */
+  metrics: LeaderboardMetricDef[];
   /** Fetches the raw (unranked) team rows for the current period. */
   fetchTeams: (
     params: TeamLeaderboardFetchParams,
@@ -39,18 +41,23 @@ export type UseTeamLeaderboardOptions = {
   initialFilters?: Partial<TeamLeaderboardFilters>;
 };
 
-function teamHasChanged(
-  oldRow: UnrankedTeamRow,
-  newRow: UnrankedTeamRow,
+function metricsHaveChanged(
+  oldMetrics: LeaderboardMetrics,
+  newMetrics: LeaderboardMetrics,
 ): boolean {
-  return (
-    oldRow.totalCalls !== newRow.totalCalls ||
-    oldRow.averageScore !== newRow.averageScore
-  );
+  const keys = new Set([
+    ...Object.keys(oldMetrics),
+    ...Object.keys(newMetrics),
+  ]);
+  for (const key of keys) {
+    if ((oldMetrics[key] || 0) !== (newMetrics[key] || 0)) return true;
+  }
+  return false;
 }
 
 function loadPersistedFilters(
   persistKey: string | null,
+  metricKeys: string[],
 ): Partial<TeamLeaderboardFilters> {
   if (!persistKey || typeof window === 'undefined') return {};
   try {
@@ -61,9 +68,11 @@ function loadPersistedFilters(
       period: TEAM_PERIODS.includes(parsed.period as LeaderBoardPeriod)
         ? (parsed.period as LeaderBoardPeriod)
         : undefined,
-      sortKey: TEAM_SORT_KEYS.includes(parsed.sortKey as TeamSortKey)
-        ? (parsed.sortKey as TeamSortKey)
-        : undefined,
+      sortKey:
+        typeof parsed.sortKey === 'string' &&
+        metricKeys.includes(parsed.sortKey)
+          ? parsed.sortKey
+          : undefined,
     };
   } catch {
     return {};
@@ -71,6 +80,7 @@ function loadPersistedFilters(
 }
 
 export function useTeamLeaderboard({
+  metrics,
   fetchTeams,
   refreshIntervalMs = DEFAULT_REFRESH_INTERVAL_MS,
   rankChangeDurationMs = DEFAULT_RANK_CHANGE_DURATION_MS,
@@ -78,16 +88,18 @@ export function useTeamLeaderboard({
   persistKey = null,
   initialFilters,
 }: UseTeamLeaderboardOptions) {
+  const metricKeys = useMemo(() => metrics.map(m => m.key), [metrics]);
+
   const persisted = useMemo(
-    () => loadPersistedFilters(persistKey),
-    [persistKey],
+    () => loadPersistedFilters(persistKey, metricKeys),
+    [persistKey, metricKeys],
   );
 
   const [period, setPeriod] = useState<LeaderBoardPeriod>(
     initialFilters?.period ?? persisted.period ?? 'week',
   );
-  const [sortKey, setSortKey] = useState<TeamSortKey>(
-    initialFilters?.sortKey ?? persisted.sortKey ?? 'totalCalls',
+  const [sortKey, setSortKey] = useState<string>(
+    initialFilters?.sortKey ?? persisted.sortKey ?? metricKeys[0],
   );
 
   const [rows, setRows] = useState<UnrankedTeamRow[]>([]);
@@ -123,7 +135,7 @@ export function useTeamLeaderboard({
         const changed = new Set<number>();
         for (const newRow of fetched) {
           const oldRow = oldRowMap.get(newRow.id);
-          if (!oldRow || teamHasChanged(oldRow, newRow)) {
+          if (!oldRow || metricsHaveChanged(oldRow.metrics, newRow.metrics)) {
             changed.add(newRow.id);
           }
         }
@@ -176,7 +188,7 @@ export function useTeamLeaderboard({
   const sortedRows = useMemo<TeamLeaderboardRow[]>(() => {
     return rows
       .slice()
-      .sort((a, b) => b[sortKey] - a[sortKey])
+      .sort((a, b) => (b.metrics[sortKey] ?? 0) - (a.metrics[sortKey] ?? 0))
       .map((team, index) => ({ ...team, rank: index + 1 }));
   }, [rows, sortKey]);
 
@@ -186,6 +198,7 @@ export function useTeamLeaderboard({
   });
 
   return {
+    metrics,
     period,
     setPeriod,
     sortKey,

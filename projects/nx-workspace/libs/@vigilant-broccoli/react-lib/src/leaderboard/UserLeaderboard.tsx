@@ -1,6 +1,11 @@
 'use client';
 
-import { MouseEvent as ReactMouseEvent, useEffect, useState } from 'react';
+import {
+  MouseEvent as ReactMouseEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { UserRow } from './UserRow';
@@ -12,17 +17,11 @@ import { LeaderboardFilterField } from './LeaderboardFilterField';
 import {
   LeaderBoardUser,
   LeaderBoardPeriod,
-  LeaderboardMetricColumn,
+  LeaderboardMetricDef,
   LeaderboardUserGroup,
-  sortKeys,
-  SortKey,
   ITEMS_PER_PAGE_OPTIONS,
 } from './leaderboard.types';
-import {
-  LEADERBOARD_TEXT,
-  PERIOD_LABELS,
-  SORT_LABELS,
-} from './leaderboard.consts';
+import { LEADERBOARD_TEXT, PERIOD_LABELS } from './leaderboard.consts';
 import { Select } from '../components/Select';
 import { MultiSelect } from '../components/MultiSelect';
 import { Button } from '../components/Button';
@@ -100,6 +99,7 @@ function LeaderboardPagination({
 
 function FloatingCurrentUserBar({
   currentUser,
+  metrics,
   onClick,
   rankChanges,
   visibleColumns,
@@ -109,9 +109,10 @@ function FloatingCurrentUserBar({
   floatingFollowInnerClassName,
 }: {
   currentUser: LeaderBoardUser | null;
+  metrics: LeaderboardMetricDef[];
   onClick: (user: LeaderBoardUser) => void;
   rankChanges: Map<number, number>;
-  visibleColumns: LeaderboardMetricColumn[];
+  visibleColumns: string[];
   rankChangeDurationMs?: number;
   navbarHeight?: number;
   followTopAdjustment?: number;
@@ -129,6 +130,7 @@ function FloatingCurrentUserBar({
       rowComponent={UserRow}
       rowProps={{
         user: currentUser,
+        metrics,
         onClick: () => onClick(currentUser),
         rankChange: rankChanges.get(currentUser.id),
         rankChangeDurationMs,
@@ -139,12 +141,13 @@ function FloatingCurrentUserBar({
 }
 
 type UserLeaderboardProps = {
+  metrics: LeaderboardMetricDef[];
   period: LeaderBoardPeriod;
   setPeriod: (v: LeaderBoardPeriod) => void;
-  sortKey: SortKey;
-  setSortKey: (v: SortKey) => void;
-  visibleColumns: LeaderboardMetricColumn[];
-  setVisibleColumns: (v: LeaderboardMetricColumn[]) => void;
+  sortKey: string;
+  setSortKey: (v: string) => void;
+  visibleColumns: string[];
+  setVisibleColumns: (v: string[]) => void;
   selectedGroupId: number | null;
   setSelectedGroupId: (v: number | null) => void;
   itemsPerPage: number;
@@ -170,6 +173,7 @@ type UserLeaderboardProps = {
 };
 
 export function UserLeaderboard({
+  metrics,
   period,
   setPeriod,
   sortKey,
@@ -200,29 +204,29 @@ export function UserLeaderboard({
   floatingFollowInnerClassName,
 }: UserLeaderboardProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const availableSortKeys = sortKeys.filter(key =>
+  const metricKeys = useMemo(() => metrics.map(m => m.key), [metrics]);
+  const sortLabels = useMemo(
+    () => Object.fromEntries(metrics.map(m => [m.key, m.label])),
+    [metrics],
+  );
+  const availableSortKeys = metricKeys.filter(key =>
     visibleColumns.includes(key),
   );
 
   useEffect(() => {
     if (visibleColumns.length === 0) {
-      setVisibleColumns([sortKeys[0]]);
+      setVisibleColumns([metricKeys[0]]);
       return;
     }
     if (!visibleColumns.includes(sortKey)) {
       setSortKey(visibleColumns[0]);
     }
-  }, [sortKey, setSortKey, setVisibleColumns, visibleColumns]);
+  }, [sortKey, setSortKey, setVisibleColumns, visibleColumns, metricKeys]);
 
-  const columnOptions = sortKeys.map(key => ({
-    id: key,
-    name: SORT_LABELS[key],
-  }));
+  const columnOptions = metrics.map(m => ({ id: m.key, name: m.label }));
 
   const handleColumnsChange = (value: string[]) => {
-    const nextColumns = value.filter((v): v is LeaderboardMetricColumn =>
-      (sortKeys as readonly string[]).includes(v),
-    );
+    const nextColumns = value.filter(v => metricKeys.includes(v));
     if (nextColumns.length === 0) return;
     setVisibleColumns(nextColumns);
   };
@@ -244,7 +248,7 @@ export function UserLeaderboard({
           triggerClassName="w-40"
           selectedOption={sortKey}
           options={availableSortKeys}
-          displayMapper={SORT_LABELS}
+          displayMapper={sortLabels}
           setValue={setSortKey}
           placeholder={LEADERBOARD_TEXT.SORT_BY}
         />
@@ -320,6 +324,7 @@ export function UserLeaderboard({
             >
               <UserRow
                 user={u}
+                metrics={metrics}
                 onClick={() => handleUserClick(u)}
                 isChanging={changedUserIds.has(u.id)}
                 rankChange={rankChanges.get(u.id)}
@@ -364,6 +369,7 @@ export function UserLeaderboard({
       {!isFullscreen && (
         <FloatingCurrentUserBar
           currentUser={currentUser}
+          metrics={metrics}
           onClick={handleUserClick}
           rankChanges={rankChanges}
           rankChangeDurationMs={rankChangeDurationMs}

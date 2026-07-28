@@ -2,13 +2,34 @@ import {
   UserLeaderboard,
   useLeaderboard,
   LeaderBoardUser,
+  LeaderboardMetricDef,
 } from '@vigilant-broccoli/react-lib';
+import { Coins } from 'lucide-react';
 import { useCallback, useRef } from 'react';
 
 const MOCK_USER_COUNT = 50;
 const REFRESH_MS = 1500;
 const INITIAL_LOAD_DELAY_MS = 1200;
 const CURRENT_USER_ID = 1;
+
+export const USER_METRICS: LeaderboardMetricDef[] = [
+  { key: 'points', label: 'Points', shortLabel: 'Points' },
+  { key: 'pointsPerDay', label: 'Points per day', shortLabel: 'Per day' },
+  {
+    key: 'avgDuration',
+    label: 'Avg duration',
+    shortLabel: 'Duration',
+    format: 'duration',
+  },
+  {
+    key: 'goldEarned',
+    label: 'Gold earned',
+    shortLabel: 'Gold',
+    format: 'compact',
+    icon: Coins,
+    iconClassName: 'text-yellow-500',
+  },
+];
 
 const MOCK_NAMES = [
   'Alice Johnson',
@@ -67,19 +88,8 @@ const delay = (ms: number) =>
   new Promise<void>(resolve => setTimeout(resolve, ms));
 
 function generateMockUser(id: number): LeaderBoardUser {
-  const totalRecordings = Math.floor(Math.random() * 200) + 10;
-  const totalSales = Math.floor(Math.random() * totalRecordings * 0.8);
   const displayName = MOCK_NAMES[id - 1];
   const email = `${displayName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
-
-  const stats = {
-    totalRecordings,
-    averageNumberOfCallsPerDay: Math.round((Math.random() * 30 + 5) * 10) / 10,
-    averageScore: Math.round(Math.random() * 10 * 10) / 10,
-    averageCallDuration: Math.floor(Math.random() * 180000) + 60000,
-    totalSales,
-    goldEarned: Math.floor(Math.random() * 150),
-  };
 
   return {
     id,
@@ -87,60 +97,44 @@ function generateMockUser(id: number): LeaderBoardUser {
     displayName,
     companyId: 1,
     rank: id,
-    stats,
-    metrics: stats,
+    metrics: {
+      points: Math.floor(Math.random() * 200) + 10,
+      pointsPerDay: Math.round((Math.random() * 30 + 5) * 10) / 10,
+      avgDuration: Math.floor(Math.random() * 180000) + 60000,
+      goldEarned: Math.floor(Math.random() * 150),
+    },
   };
 }
 
-function updateUserStats(user: LeaderBoardUser): LeaderBoardUser {
+function updateUserMetrics(user: LeaderBoardUser): LeaderBoardUser {
   const shouldUpdate = Math.random() > 0.3;
   if (!shouldUpdate) return user;
 
   const changeType = Math.random();
-  let newTotalRecordings = user.stats.totalRecordings;
-  let newTotalSales = user.stats.totalSales;
-  let newGoldEarned = user.stats.goldEarned;
-  let newAvgScore = user.stats.averageScore;
+  const metrics = { ...user.metrics };
 
   if (changeType < 0.2) {
     const burst = Math.floor(Math.random() * 5) + 3;
-    newTotalRecordings += burst;
-    newTotalSales += Math.floor(burst * 0.8);
-    newGoldEarned += Math.floor(Math.random() * 15) + 5;
+    metrics.points += burst;
+    metrics.goldEarned += Math.floor(Math.random() * 15) + 5;
   } else if (changeType < 0.4) {
     const burst = Math.floor(Math.random() * 3) + 2;
-    newTotalRecordings += burst;
-    newTotalSales += Math.floor(burst * 0.5);
-    newGoldEarned += Math.floor(Math.random() * 8);
+    metrics.points += burst;
+    metrics.goldEarned += Math.floor(Math.random() * 8);
   } else if (changeType < 0.6) {
-    newTotalRecordings += 1;
-    newTotalSales += 1;
-    newGoldEarned += Math.floor(Math.random() * 5);
+    metrics.points += 1;
+    metrics.goldEarned += Math.floor(Math.random() * 5);
   } else if (changeType < 0.8) {
-    newTotalRecordings += 1;
+    metrics.points += 1;
   } else {
-    newAvgScore = Math.min(10, newAvgScore + Math.random() * 2);
+    metrics.points += Math.floor(Math.random() * 3);
   }
 
-  const newStats = {
-    ...user.stats,
-    totalRecordings: newTotalRecordings,
-    totalSales: newTotalSales,
-    averageScore: Math.round(newAvgScore * 10) / 10,
-    averageNumberOfCallsPerDay:
-      Math.round(
-        (user.stats.averageNumberOfCallsPerDay + Math.random() * 3 - 1.5) * 10,
-      ) / 10,
-    goldEarned: newGoldEarned,
-    averageCallDuration:
-      user.stats.averageCallDuration + Math.floor(Math.random() * 10000 - 5000),
-  };
+  metrics.pointsPerDay =
+    Math.round((metrics.pointsPerDay + Math.random() * 3 - 1.5) * 10) / 10;
+  metrics.avgDuration += Math.floor(Math.random() * 10000 - 5000);
 
-  return {
-    ...user,
-    stats: newStats,
-    metrics: newStats,
-  };
+  return { ...user, metrics };
 }
 
 export function UserLeaderboardDemo() {
@@ -155,12 +149,16 @@ export function UserLeaderboardDemo() {
       );
       hasLoadedRef.current = true;
     } else {
-      usersRef.current = usersRef.current.map(updateUserStats);
+      usersRef.current = usersRef.current.map(updateUserMetrics);
     }
-    return usersRef.current.map(user => ({ ...user }));
+    return usersRef.current.map(user => ({
+      ...user,
+      metrics: { ...user.metrics },
+    }));
   }, []);
 
   const leaderboard = useLeaderboard({
+    metrics: USER_METRICS,
     fetchUsers,
     refreshIntervalMs: REFRESH_MS,
     rankChangeDurationMs: REFRESH_MS,

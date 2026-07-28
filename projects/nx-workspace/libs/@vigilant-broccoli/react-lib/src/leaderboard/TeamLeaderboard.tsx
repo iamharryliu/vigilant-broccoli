@@ -7,27 +7,26 @@ import { LeaderboardCellSkeleton } from './Skeleton';
 import { LeaderboardFilterField } from './LeaderboardFilterField';
 import { LeaderboardMetricCell } from './LeaderboardMetricCell';
 import { LeaderboardRow } from './LeaderboardRow';
+import { formatMetricValue } from './leaderboard.utils';
 import {
+  LeaderboardMetricDef,
   TEAM_PERIODS,
-  TEAM_SORT_KEYS,
   TeamLeaderboardRow,
-  TeamSortKey,
 } from './leaderboard.types';
 import {
   DEFAULT_RANK_CHANGE_DURATION_MS,
   LEADERBOARD_TEXT,
   PERIOD_LABELS,
-  TEAM_METRIC_LABELS,
-  TEAM_SORT_LABELS,
 } from './leaderboard.consts';
 import { Select } from '../components/Select';
 import { TeamAvatar } from '../components/TeamAvatar';
 
 type TeamLeaderboardProps = {
+  metrics: LeaderboardMetricDef[];
   period: (typeof TEAM_PERIODS)[number];
   setPeriod: (value: (typeof TEAM_PERIODS)[number]) => void;
-  sortKey: TeamSortKey;
-  setSortKey: (value: TeamSortKey) => void;
+  sortKey: string;
+  setSortKey: (value: string) => void;
   loading: boolean;
   refreshing: boolean;
   sortedRows: TeamLeaderboardRow[];
@@ -38,6 +37,7 @@ type TeamLeaderboardProps = {
 };
 
 export function TeamLeaderboard({
+  metrics,
   period,
   setPeriod,
   sortKey,
@@ -50,6 +50,8 @@ export function TeamLeaderboard({
   rankChanges = new Map(),
   rankChangeDurationMs = DEFAULT_RANK_CHANGE_DURATION_MS,
 }: TeamLeaderboardProps) {
+  const sortLabels = Object.fromEntries(metrics.map(m => [m.key, m.label]));
+
   const filterControls = (
     <>
       <LeaderboardFilterField label={LEADERBOARD_TEXT.PERIOD}>
@@ -66,8 +68,8 @@ export function TeamLeaderboard({
         <Select
           triggerClassName="w-36"
           selectedOption={sortKey}
-          options={[...TEAM_SORT_KEYS]}
-          displayMapper={TEAM_SORT_LABELS}
+          options={metrics.map(m => m.key)}
+          displayMapper={sortLabels}
           setValue={setSortKey}
           placeholder={LEADERBOARD_TEXT.SORT_BY}
         />
@@ -77,7 +79,7 @@ export function TeamLeaderboard({
 
   const rows = loading ? (
     <LeaderboardSkeleton
-      columnCount={3}
+      columnCount={metrics.length}
       rowCount={sortedRows.length > 0 ? sortedRows.length : 5}
       metricsClassName="min-w-[16rem] gap-3"
       metricAlignment="end"
@@ -113,22 +115,23 @@ export function TeamLeaderboard({
               rankChangeDurationMs={rankChangeDurationMs}
               className={index % 2 === 1 ? 'bg-muted/50 rounded-2xl' : ''}
             >
-              <div className="grid grid-cols-3 gap-3 min-w-[16rem]">
-                <LeaderboardMetricCell
-                  label={TEAM_METRIC_LABELS.calls}
-                  value={team.totalCalls}
-                  isChanging={changedTeamIds.has(team.id)}
-                />
-                <LeaderboardMetricCell
-                  label={TEAM_METRIC_LABELS.avgScore}
-                  value={team.averageScore.toFixed(1)}
-                  isChanging={changedTeamIds.has(team.id)}
-                />
-                <LeaderboardMetricCell
-                  label={TEAM_METRIC_LABELS.members}
-                  value={team.memberCount}
-                  isChanging={changedTeamIds.has(team.id)}
-                />
+              <div
+                className="grid gap-3 min-w-[16rem]"
+                style={{
+                  gridTemplateColumns: `repeat(${Math.max(1, metrics.length)}, minmax(0, 1fr))`,
+                }}
+              >
+                {metrics.map(metric => (
+                  <LeaderboardMetricCell
+                    key={metric.key}
+                    label={metric.shortLabel ?? metric.label}
+                    value={formatMetricValue(
+                      team.metrics[metric.key] ?? 0,
+                      metric.format,
+                    )}
+                    isChanging={changedTeamIds.has(team.id)}
+                  />
+                ))}
               </div>
             </LeaderboardRow>
           </motion.div>

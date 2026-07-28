@@ -11,11 +11,9 @@ import {
 import {
   LeaderBoardPeriod,
   LeaderBoardUser,
-  LeaderBoardUserStats,
-  LeaderboardMetricColumn,
+  LeaderboardMetricDef,
+  LeaderboardMetrics,
   LeaderboardUserGroup,
-  SortKey,
-  sortKeys,
 } from './leaderboard.types';
 import {
   DEFAULT_CHANGE_ANIMATION_MS,
@@ -27,19 +25,21 @@ import { useRankTracking } from './useRankTracking';
 
 export type LeaderboardFetchParams = {
   period: LeaderBoardPeriod;
-  sortKey: SortKey;
+  sortKey: string;
   selectedGroupId: number | null;
 };
 
 type LeaderboardFilters = {
   period: LeaderBoardPeriod;
-  sortKey: SortKey;
+  sortKey: string;
   selectedGroupId: number | null;
   itemsPerPage: number;
-  visibleColumns: LeaderboardMetricColumn[];
+  visibleColumns: string[];
 };
 
 export type UseLeaderboardOptions = {
+  /** Defines which metrics this leaderboard can sort and display by. */
+  metrics: LeaderboardMetricDef[];
   /** Fetches the raw (unranked) users for the current filters. */
   fetchUsers: (params: LeaderboardFetchParams) => Promise<LeaderBoardUser[]>;
   /** Groups shown in the group filter dropdown. */
@@ -63,32 +63,31 @@ export type UseLeaderboardOptions = {
   onUserClick?: (user: LeaderBoardUser) => void;
 };
 
-function statsHaveChanged(
-  oldStats: LeaderBoardUserStats,
-  newStats: LeaderBoardUserStats,
+function metricsHaveChanged(
+  oldMetrics: LeaderboardMetrics,
+  newMetrics: LeaderboardMetrics,
 ): boolean {
-  return (
-    (oldStats.totalRecordings || 0) !== (newStats.totalRecordings || 0) ||
-    (oldStats.averageScore || 0) !== (newStats.averageScore || 0) ||
-    (oldStats.averageCallDuration || 0) !==
-      (newStats.averageCallDuration || 0) ||
-    (oldStats.averageNumberOfCallsPerDay || 0) !==
-      (newStats.averageNumberOfCallsPerDay || 0) ||
-    (oldStats.totalSales || 0) !== (newStats.totalSales || 0) ||
-    (oldStats.goldEarned || 0) !== (newStats.goldEarned || 0)
-  );
+  const keys = new Set([
+    ...Object.keys(oldMetrics),
+    ...Object.keys(newMetrics),
+  ]);
+  for (const key of keys) {
+    if ((oldMetrics[key] || 0) !== (newMetrics[key] || 0)) return true;
+  }
+  return false;
 }
 
-function parseVisibleColumns(value: unknown): LeaderboardMetricColumn[] {
-  if (!Array.isArray(value)) return [...sortKeys];
-  const parsed = value.filter((v): v is LeaderboardMetricColumn =>
-    (sortKeys as readonly string[]).includes(v),
+function parseVisibleColumns(value: unknown, metricKeys: string[]): string[] {
+  if (!Array.isArray(value)) return metricKeys;
+  const parsed = value.filter(
+    (v): v is string => typeof v === 'string' && metricKeys.includes(v),
   );
-  return parsed.length > 0 ? parsed : [...sortKeys];
+  return parsed.length > 0 ? parsed : metricKeys;
 }
 
 function loadPersistedFilters(
   persistKey: string | null,
+  metricKeys: string[],
 ): Partial<LeaderboardFilters> {
   if (!persistKey || typeof window === 'undefined') return {};
   try {
@@ -103,7 +102,7 @@ function loadPersistedFilters(
           ? parsed.selectedGroupId
           : null,
       itemsPerPage: parsed.itemsPerPage,
-      visibleColumns: parseVisibleColumns(parsed.visibleColumns),
+      visibleColumns: parseVisibleColumns(parsed.visibleColumns, metricKeys),
     };
   } catch {
     return {};
@@ -111,6 +110,7 @@ function loadPersistedFilters(
 }
 
 export function useLeaderboard({
+  metrics,
   fetchUsers,
   userGroups = [],
   filterUsersByGroup,
@@ -122,16 +122,18 @@ export function useLeaderboard({
   initialFilters,
   onUserClick,
 }: UseLeaderboardOptions) {
+  const metricKeys = useMemo(() => metrics.map(m => m.key), [metrics]);
+
   const persisted = useMemo(
-    () => loadPersistedFilters(persistKey),
-    [persistKey],
+    () => loadPersistedFilters(persistKey, metricKeys),
+    [persistKey, metricKeys],
   );
 
   const [period, setPeriodState] = useState<LeaderBoardPeriod>(
     initialFilters?.period ?? persisted.period ?? 'week',
   );
-  const [sortKey, setSortKeyState] = useState<SortKey>(
-    initialFilters?.sortKey ?? persisted.sortKey ?? 'totalRecordings',
+  const [sortKey, setSortKeyState] = useState<string>(
+    initialFilters?.sortKey ?? persisted.sortKey ?? metricKeys[0],
   );
   const [selectedGroupId, setSelectedGroupIdState] = useState<number | null>(
     initialFilters?.selectedGroupId ?? persisted.selectedGroupId ?? null,
@@ -141,10 +143,8 @@ export function useLeaderboard({
       persisted.itemsPerPage ??
       DEFAULT_ITEMS_PER_PAGE,
   );
-  const [visibleColumns, setVisibleColumns] = useState<
-    LeaderboardMetricColumn[]
-  >(
-    initialFilters?.visibleColumns ?? persisted.visibleColumns ?? [...sortKeys],
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(
+    initialFilters?.visibleColumns ?? persisted.visibleColumns ?? metricKeys,
   );
 
   const [users, setUsers] = useState<LeaderBoardUser[]>([]);
@@ -194,7 +194,10 @@ export function useLeaderboard({
         const changed = new Set<number>();
         for (const newUser of fetched) {
           const oldUser = oldUserMap.get(newUser.id);
-          if (!oldUser || statsHaveChanged(oldUser.stats, newUser.stats)) {
+          if (
+            !oldUser ||
+            metricsHaveChanged(oldUser.metrics, newUser.metrics)
+          ) {
             changed.add(newUser.id);
           }
         }
@@ -256,7 +259,7 @@ export function useLeaderboard({
   const sortedUsers = useMemo(() => {
     return filteredUsers
       .slice()
-      .sort((a, b) => b.stats[sortKey] - a.stats[sortKey])
+      .sort((a, b) => (b.metrics[sortKey] ?? 0) - (a.metrics[sortKey] ?? 0))
       .map((u, index) => ({ ...u, rank: index + 1 }));
   }, [filteredUsers, sortKey]);
 
@@ -268,13 +271,13 @@ export function useLeaderboard({
 
   useEffect(() => {
     if (visibleColumns.length === 0) {
-      setVisibleColumns([sortKeys[0]]);
+      setVisibleColumns([metricKeys[0]]);
       return;
     }
     if (!visibleColumns.includes(sortKey)) {
       setSortKeyState(visibleColumns[0]);
     }
-  }, [sortKey, visibleColumns]);
+  }, [sortKey, visibleColumns, metricKeys]);
 
   const totalPages = Math.max(1, Math.ceil(sortedUsers.length / itemsPerPage));
   const safePage = Math.min(page, totalPages);
@@ -291,7 +294,7 @@ export function useLeaderboard({
     setPage(1);
   }, []);
 
-  const setSortKey = useCallback((value: SortKey) => {
+  const setSortKey = useCallback((value: string) => {
     setSortKeyState(value);
     setPage(1);
   }, []);
@@ -318,6 +321,7 @@ export function useLeaderboard({
   );
 
   return {
+    metrics,
     period,
     setPeriod,
     sortKey,

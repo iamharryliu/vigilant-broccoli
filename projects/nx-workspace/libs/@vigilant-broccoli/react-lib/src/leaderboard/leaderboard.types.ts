@@ -1,56 +1,44 @@
-export interface LeaderboardItem {
-  id: string | number;
-  rank: number;
-  displayName: string;
-  image?: string;
-  metrics: Record<string, number | string>;
-}
+import { ComponentType } from 'react';
 
 export type DisplaySize = 'default' | 'large' | 'xl' | '2xl';
 
 export type LeaderBoardPeriod = 'day' | 'week' | 'month' | 'lifetime';
 
-export interface LeaderBoardUserStats {
-  totalRecordings: number;
-  averageNumberOfCallsPerDay: number;
-  averageScore: number;
-  averageCallDuration: number;
-  totalSales: number;
-  goldEarned: number;
+/** Arbitrary numeric stats keyed by metric key, e.g. `{ points: 42, memberCount: 8 }`. */
+export type LeaderboardMetrics = Record<string, number>;
+
+export type LeaderboardMetricFormat =
+  | 'integer'
+  | 'decimal1'
+  | 'duration'
+  | 'compact';
+
+/** Describes one column/metric a leaderboard can sort and display by. */
+export interface LeaderboardMetricDef {
+  key: string;
+  label: string;
+  /** Shown under the value in a row; defaults to `label`. */
+  shortLabel?: string;
+  /** Defaults to `'integer'`. */
+  format?: LeaderboardMetricFormat;
+  icon?: ComponentType<{ size?: number; className?: string }>;
+  iconClassName?: string;
 }
 
-export interface LeaderBoardUser extends LeaderboardItem {
+export interface LeaderBoardUser {
   id: number;
   email: string;
   displayName: string;
   image?: string;
   companyId: number;
-  stats: LeaderBoardUserStats;
   rank: number;
-  metrics: Record<string, number | string>;
+  metrics: LeaderboardMetrics;
 }
 
 export type LeaderboardUserGroup = {
   id: number;
   name: string;
 };
-
-export type LeaderboardMetricColumn =
-  | 'totalRecordings'
-  | 'averageNumberOfCallsPerDay'
-  | 'averageScore'
-  | 'averageCallDuration'
-  | 'goldEarned';
-
-export const sortKeys = [
-  'totalRecordings',
-  'averageNumberOfCallsPerDay',
-  'averageScore',
-  'averageCallDuration',
-  'goldEarned',
-] as const;
-
-export type SortKey = (typeof sortKeys)[number];
 
 export const ITEMS_PER_PAGE_OPTIONS = [10, 20, 30, 50] as const;
 
@@ -59,9 +47,7 @@ export type TeamLeaderboardRow = {
   name: string;
   image?: string;
   rank: number;
-  memberCount: number;
-  totalCalls: number;
-  averageScore: number;
+  metrics: LeaderboardMetrics;
 };
 
 export const TEAM_PERIODS: LeaderBoardPeriod[] = [
@@ -70,9 +56,3 @@ export const TEAM_PERIODS: LeaderBoardPeriod[] = [
   'month',
   'lifetime',
 ];
-export const TEAM_SORT_KEYS = [
-  'totalCalls',
-  'averageScore',
-  'memberCount',
-] as const;
-export type TeamSortKey = (typeof TEAM_SORT_KEYS)[number];
