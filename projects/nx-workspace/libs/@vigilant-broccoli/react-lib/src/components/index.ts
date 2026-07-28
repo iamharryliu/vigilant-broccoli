@@ -9,6 +9,8 @@ export * from './ImageCropDialog';
 export * from './Input';
 export * from './Textarea';
 export * from './UserAvatar';
+export * from './TeamAvatar';
+export * from './MultiSelect';
 export * from './CopyButton';
 export * from './DownloadButton';
 export * from './CopyPastable';
