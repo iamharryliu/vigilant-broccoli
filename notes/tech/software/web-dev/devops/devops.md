@@ -11,7 +11,6 @@
 - [Google Cloud](./google-cloud.md)
 - [AWS](./aws/aws.md)
 - [Cloudflare](./cloudflare.md)
-- [Wrangler](./wrangler.md)
 
 ## Devops Tools
 
