@@ -4,3 +4,4 @@ immich/
 loki/data/
 grafana/data/
 gitea/data/
+ollama/

@@ -1,0 +1,28 @@
+meta {
+  name: Chat
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ollamaBaseUrl}}/api/chat
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "model": "qwen3:8b",
+    "stream": false,
+    "messages": [
+      {
+        "role": "user",
+        "content": "Why is the sky blue?"
+      }
+    ]
+  }
+}
