@@ -128,12 +128,3 @@ services:
     networks:
       - monitoring
       - default
-
-  ollama:
-    container_name: ollama
-    image: ollama/ollama:latest
-    restart: unless-stopped
-    volumes:
-      - ./ollama/data:/root/.ollama
-    ports:
-      - "127.0.0.1:11434:11434"

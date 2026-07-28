@@ -17,7 +17,6 @@ Docker Compose stack for self-hosted local services (photos, logs, dashboards) b
   - Promtail
   - Grafana
   - Resilio Sync
-  - Ollama
 
 ## Services
 
@@ -53,15 +52,3 @@ Preferences → Docker Engine → paste contents of `docker-daemon-config.json` 
 - `max-size: 10m` — rotate logs at 10MB
 - `max-file: 3` — keep 3 log files (~30MB per container)
   **Why:** Prevents old logs from exceeding Loki's 3-day retention, causing timestamp rejection errors.
-
-### Ollama (Local LLM)
-
-Reachable at `http://localhost:11434`, not proxied through nginx (API-only, no subdomain).
-
-Pull a model after first `docker compose up`:
-
-```
-docker exec -it ollama ollama pull qwen3:8b
-```
-
-**Why `qwen3:8b`:** Docker Desktop on macOS runs containers in a Linux VM with no access to Apple's Metal API, so this container always runs inference on CPU regardless of the host's GPU/unified memory. `qwen3:8b` is a reasonable default for CPU inference; for GPU-accelerated speed on larger models (e.g. `qwen3:14b`, `qwen3-coder:30b`), run Ollama natively on the Mac host instead (`brew install ollama`) rather than through this container.
