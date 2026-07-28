@@ -55,3 +55,10 @@
     color 0.3s ease,
     border-color 0.3s ease;
 }
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0.3in;
+  }
+}

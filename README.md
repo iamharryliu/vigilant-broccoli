@@ -36,7 +36,6 @@ pnpm cheatsheet
 [![cron-deploy-journal](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml)\
 [![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)\
 [![cron-upptime-response-time](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml)\
-[![cron-utility-update-resume](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml)\
 [![deploy](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml)\
 [![deploy-github-profile](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml)\
 [![manual-deploy-app](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml)\
