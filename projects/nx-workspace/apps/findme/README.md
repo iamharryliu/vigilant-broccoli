@@ -1,5 +1,11 @@
 # FindMe
 
+Real-time location sharing for friends and family.
+
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript

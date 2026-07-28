@@ -6,7 +6,7 @@
 </a>
 </div>
 
-## Contents
+## Table of Contents
 
 - [Development](#development)
 - [Commands](#commands)
