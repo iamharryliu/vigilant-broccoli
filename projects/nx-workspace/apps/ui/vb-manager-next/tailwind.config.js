@@ -1,22 +1,31 @@
-const { createGlobPatternsForDependencies } = require('@nx/next/tailwind');
-
-// The above utility import will not work if you are using Next.js' --turbo.
-// Instead you will have to manually add the dependent paths to be included.
-// For example
-// ../libs/buttons/**/*.{ts,tsx,js,jsx,html}',                 <--- Adding a shared lib
-// !../libs/buttons/**/*.{stories,spec}.{ts,tsx,js,jsx,html}', <--- Skip adding spec/stories files from shared lib
-
-// If you are **not** using `--turbo` you can uncomment both lines 1 & 19.
-// A discussion of the issue can be found: https://github.com/nrwl/nx/issues/26510
-
+// createGlobPatternsForDependencies from '@nx/next/tailwind' is deprecated and
+// removed in Nx v24; the lib globs below mirror its last computed output.
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
   content: [
     './{src,pages,components,app}/**/*.{ts,tsx,js,jsx,html}',
     '!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}',
-    // join(__dirname, '{src,pages,components}/**/*!(*.stories|*.spec).{ts,tsx,html}'),
-    ...createGlobPatternsForDependencies(__dirname),
+    '../../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/common-js/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/common-node/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/google-workspace/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-utility/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/github-workspace-js/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/next-lib/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-sandbox/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/ci/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/github-workspace/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/llm-schemas/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/vibecheck-lite/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/llm-tools/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/money-movement/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/links/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/deployment/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/resume/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-music-lib/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/personal-common-js/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   theme: {
     extend: {
