@@ -269,6 +269,15 @@ sync_socket_server() {
 }
 
 if [ "$NEW_IP" = "$CURRENT_IP" ]; then
+  # Run post-init even when the VM IP is unchanged (the common case). It
+  # (re)writes Vault's JWT policies/roles, and it's idempotent — every
+  # `vault policy write` / `vault write auth/jwt/role/...` in
+  # run-vault-post-init.sh is an upsert. Without this, a Terraform/config
+  # change that adds or edits a Vault role (e.g. github-actions-pr-check-role)
+  # would be silently skipped on a normal `tf:apply`, since post-init only ran
+  # on the IP-changed branch below — leaving CI to fail with "role could not
+  # be found" until someone ran `pnpm gcp:vm:post-init` by hand.
+  npm run gcp:vm:post-init
   sync_secrets_to_vault
   sync_socket_server
   exit 0

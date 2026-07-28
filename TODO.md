@@ -428,7 +428,24 @@ Separately, `search-dialog.component.tsx:23` and `quick-links.component.tsx:7` b
 
 ### Enhancements
 
-#### Local graph mode for the docs-md note viewer
+#### f7afb2. Provision Vault JWT policies/roles declaratively instead of the imperative post-init script
+
+**`infrastructure/terraform/scripts/post-apply.sh`, `infrastructure/terraform/packer/scripts/run-vault-post-init.sh`, `infrastructure/config.sh`, `package.json` (`gcp:vm:post-init`)**
+
+Vault's JWT auth config — the `github-actions-role` / `-rotate-role` / `-pr-check-role` roles and their policies — is currently written by the imperative `run-vault-post-init.sh`, which is really a VM-**bootstrap** script (it also runs `vault operator init`, enables the KV/JWT mounts, and seeds a `kv/test` placeholder). #217 made `post-apply.sh` call `npm run gcp:vm:post-init` on the IP-unchanged path so a new/edited role (e.g. `github-actions-pr-check-role`) is no longer silently skipped on a normal `tf:apply` — but that's an interim fix: it re-runs the whole heavy bootstrap script over IAP SSH on every apply, and policy/role definitions live as here-doc strings in a shell script rather than as reviewable declarative state.
+
+**Desired end state:** Vault policies/roles are managed as first-class Terraform resources (the `hashicorp/vault` provider's `vault_policy` + `vault_jwt_auth_backend_role`), so `tf:plan` shows role/policy diffs and `tf:apply` reconciles them like any other resource — no imperative re-run, no piggy-backing on VM bootstrap. `run-vault-post-init.sh` shrinks to genuine one-time bootstrap (init + mount enablement), and `post-apply.sh` no longer needs the interim unconditional `post-init` call.
+
+**Steps:**
+
+1. Add the `hashicorp/vault` provider to `infrastructure/terraform/main.tf` `required_providers`, configured to reach Vault over the same path local Terraform already uses (WireGuard `10.0.1.1:8200` + `NODE_EXTRA_CA_CERTS`/`VAULT_CACERT`); source the root token the way `load-vault-tf-env.sh` / `gcp-vault-token.ts` already do rather than a new secret. Confirm the CI path (`vault.harryliu.dev` tunnel) isn't broken — Terraform apply is local-only today, so this stays local.
+2. Port the two policies and three roles from `run-vault-post-init.sh` into `vault_policy` + `vault_jwt_auth_backend_role` resources, keeping the exact names/paths/TTLs/`bound_claims` (`job_workflow_ref` scoping for the rotate and pr-check roles) so nothing changes semantically. Reference `infrastructure/config.sh` values as Terraform vars/locals to keep one source of truth.
+3. `terraform import` the existing live policies/roles into the new resources so the first apply is a no-op diff, not a destroy/recreate.
+4. Strip the policy/role/`kv/test` blocks out of `run-vault-post-init.sh`, leaving only true bootstrap (init + KV/JWT mount enable). Remove the interim unconditional `npm run gcp:vm:post-init` call added to `post-apply.sh`'s IP-unchanged branch in #217.
+5. Update docs: [secret-management.md](./docs/infrastructure/secret-management.md) (the role/policy inventory now lives in Terraform) and any reference to `pnpm gcp:vm:post-init` being required after adding a Vault role.
+6. Verify: `pnpm tf:plan` shows the imported roles/policies as no-change, then edit one `bound_claims` and confirm `tf:plan` shows the diff and `tf:apply` reconciles it without touching the VM; confirm `ci-pr-check` and `ci-rotate-secrets` still authenticate to Vault afterward.
+
+#### faa345. Local graph mode for the docs-md note viewer
 
 **`libs/@vigilant-broccoli/react-utility/src/lib/graph-view.tsx`, `libs/@vigilant-broccoli/react-utility/src/lib/docs-viewer.tsx`, `libs/@vigilant-broccoli/react-lib/src/components/DocsExplorer.tsx`**
 
