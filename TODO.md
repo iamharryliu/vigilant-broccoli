@@ -336,6 +336,10 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`libs/@vigilant-broccoli/common-node/src/index.ts`** re-exports the whole lib, so services importing only `getEnvironmentVariable` pay require-time + image weight for all three. Split entry points.
 
+### d19470. [performance] vb-express auth DB is synchronous `node:sqlite`
+
+**`apps/api/vb-express/src/auth.ts:3,31`** (`DatabaseSync`); every session/API-key check blocks the event loop, serializing streaming responses under burst. Fine at personal scale; worth knowing.
+
 ### d1a94d. [performance] Small sequential-await nits
 
 **`apps/api/vb-express/src/routes/api-keys.ts`** (two independent `findMany`s → `Promise.all`); email-subscription `/notify` awaits `queueEmail` per subscriber in a loop.
