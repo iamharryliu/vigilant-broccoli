@@ -62,9 +62,22 @@ jobs:
         if: steps.check.outputs.nx-workspace-changed == 'true'
         working-directory: ./projects/nx-workspace
         env:
-          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
-          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
-        run: pnpm exec nx affected -t lint test build --base=$NX_BASE --head=$NX_HEAD
+          # Enable the remote cache only when the token was actually fetched.
+          # Nx treats a configured-but-unreachable/unauthenticated cache as a
+          # fatal "Misconfigured remote cache endpoint" (the 401 fails the whole
+          # run), so setting the server URL with an empty token — e.g. when the
+          # Vault step above failed (continue-on-error), or before the role/token
+          # is provisioned — would break every PR. Leaving the server var UNSET
+          # makes Nx fall back to the local cache silently instead.
+          NX_CACHE_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+        run: |
+          if [ -n "$NX_CACHE_TOKEN" ]; then
+            export NX_SELF_HOSTED_REMOTE_CACHE_SERVER=https://nx-cache.harryliu.dev
+            export NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN="$NX_CACHE_TOKEN"
+          else
+            echo "nx remote cache token unavailable — building with local cache only."
+          fi
+          pnpm exec nx affected -t lint test build --base=$NX_BASE --head=$NX_HEAD
 
   pre-commit:
     runs-on: ubuntu-latest
