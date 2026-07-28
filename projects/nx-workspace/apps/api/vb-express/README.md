@@ -6,9 +6,8 @@
 - Framework - Fastify
 - Build Tool - webpack
 - External libs
-  - better-auth (API keys)
+  - better-auth
   - SQLite (`node:sqlite`)
-  - Nodemailer, ejs
 - Internal libs
   - `common-js`
   - `common-node`
@@ -17,7 +16,11 @@
   - `messaging`
   - `personal-common-js`
 - Cloud services
-  - Google Calendar & Tasks
+  - Google Tasks
+  - Google OAuth
+  - Google reCAPTCHA
   - Twilio
-  - Resend
+  - ElevenLabs
+  - Email Service (HTTP)
+  - LLM Service (HTTP)
   - Fly.io

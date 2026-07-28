@@ -14,3 +14,4 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code agent behind a lo
   - GitHub
 - Secrets
   - HashiCorp Vault
+  - Google Secret Manager
