@@ -218,8 +218,6 @@ No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`ap
 - **`docs-md`**: JS chunk 520.30 kB / CSS chunk 733.63 kB, over threshold. Same `@radix-ui/themes/styles.css` full import in `src/main.tsx`, used only for the `<Theme>` wrapper — fix by dropping the Radix Themes dependency here in favor of a minimal custom CSS reset (or Radix Themes' documented modular CSS imports: tokens + only needed color scales + components).
 - **`journal`**: JS chunk 519.53 kB / CSS chunk 733.63 kB, over threshold. Same root cause and fix as `docs-md`. All three Vite apps additionally have no `build.rollupOptions.output.manualChunks` in `vite.config.mts` — everything (including `react`/`react-dom`/`@radix-ui/themes`) ships as one chunk; splitting vendor deps into their own chunk would help caching independent of the fixes above. (Tailwind content globs in all three are correctly scoped — confirmed not a contributing factor.)
 
-### 0cd00c. [maintenance] Structural duplication in the workspace
-
 ### 112bae. [maintenance] `nxViteTsPaths` / `nxCopyAssetsPlugin` still deprecated after Nx v24 vite executor migration
 
 `nxViteTsPaths` / `nxCopyAssetsPlugin` from `@nx/vite/plugins/*`, used across 5 Vite apps + 4 libs — still deprecated even after the `@nx/vite:build` executor itself was migrated to the inferred plugin in PR #93.
