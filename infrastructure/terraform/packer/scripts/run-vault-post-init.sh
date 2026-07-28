@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 INIT_OUTPUT=$(gcloud compute ssh "${VM_NAME}" \
   --zone="${GCP_ZONE}" \
@@ -42,14 +43,10 @@ else
 fi
 
 echo "Configuring Vault..."
-gcloud compute ssh "${VM_NAME}" \
-  --zone="${GCP_ZONE}" \
-  --tunnel-through-iap \
-  --command="
+gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" "
 set -e
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
 
 echo 'Enabling KV v2 at ${VAULT_KV_PATH}/...'
 vault secrets enable -path=${VAULT_KV_PATH} kv-v2 2>/dev/null || echo '  already enabled'
@@ -116,8 +113,36 @@ vault write auth/jwt/role/${VAULT_ROTATE_ROLE_NAME} - <<ROLE
 }
 ROLE
 
+# ci-pr-check.yml is pull_request-triggered — it runs the workflow YAML from
+# the PR branch itself, so (unlike every other consumer of this script's
+# roles) its identity is reachable by anyone who gets a PR check to run.
+# Scoped to one path holding exactly one low-privilege, easily-rotated key —
+# not kv/data/secrets, which every other role here can read in full.
+echo 'Writing policy ${VAULT_PR_CHECK_POLICY_NAME}...'
+vault policy write ${VAULT_PR_CHECK_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/ci-pr-check\" {
+  capabilities = [\"read\"]
+}
+POLICY
+
+echo 'Creating role ${VAULT_PR_CHECK_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_PR_CHECK_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims_type\": \"glob\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/ci-pr-check.yml@*\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_PR_CHECK_POLICY_NAME}\"],
+  \"ttl\": \"30m\"
+}
+ROLE
+
 echo 'Creating kv/test placeholder...'
 vault kv put ${VAULT_KV_PATH}/test test=test
 
 echo 'Done.'
-"
+" VAULT_TOKEN "$VAULT_TOKEN"

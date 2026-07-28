@@ -1,7 +1,6 @@
 import { io } from 'socket.io-client';
 
 const URL = process.env.SOCKET_SERVER_URL;
-const CA_B64 = process.env.SOCKET_SERVER_CA_CERT;
 
 const APP = 'security-check';
 const PAYLOAD = { canary: 'should-not-be-delivered', ts: Date.now() };
@@ -23,14 +22,9 @@ if (!URL) {
   process.exit(2);
 }
 
-const tlsOpts = CA_B64
-  ? { ca: Buffer.from(CA_B64, 'base64'), checkServerIdentity: () => undefined }
-  : {};
-
 const baseOpts = {
   transports: ['websocket'],
   reconnection: false,
-  ...tlsOpts,
 };
 
 const awaitConnect = sock =>

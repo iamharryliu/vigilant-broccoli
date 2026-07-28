@@ -1,27 +1,21 @@
 # Recipes
 
-- [Goto Meals](goto-meals.md)
-- Bread Recipes
-  - [Sourdough Bread](./bread-recipes/sourdough-bread.md)
-  - [Flat Bread](./bread-recipes/flat-bread.md)
-  - [New York Style Bagel](./bread-recipes/new-york-style-bagel.md)
-  - [Non-Sourdough Bread](./bread-recipes/non-sourdough-bread.md)
-- Breakfast Recipes
-  - [French Toast](./breakfast-recipes/french-toast.md)
-- Pickling Recipes
-  - [Quick Pickles Onions](./pickling-recipes/quick-pickled-onions.md)
-  - [Vietnamese Pickling](./pickling-recipes/vietnamese-pickling.md)
-- Porridge Recipes
-  - [Congee](./porridge-recipes/congee.md)
-- Rice Dishes
-  - [Mexican Rice](./rice-dishes/mexican-rice.md)
-  - [Fried Rice](./rice-dishes/fried-rice.md)
-  - [Cheesy Chicken Broccoli Rice](https://www.jocooks.com/recipes/one-pot-cheesy-chicken-broccoli-rice-casserole/)
-- Curry Recipes
-  - [Chickpea and Porato Curry](./curry-recipes/chickpea-potato-curry.md)
-- Tofu Recipes
-  - [Marry Me Tofu](./tofu-recipes/marry-me-tofu.md)
-- Sandwich Recipes
-  - [Smash Burger](./sandwich-recipes/smash-burger.md)
-- Pasta Recipes
-  - [Tomato Pasta](./pastas/tomato-pasta.md)
+- [Goto Meals](./goto-meals.md)
+- [Bread Recipes](./bread-recipes/bread-recipes.md)
+- [Breakfast Recipes](./breakfast-recipes/breakfast-recipes.md)
+- [Curry Recipes](./curry-recipes/curry-recipes.md)
+- [Drink Recipes](./drink-recipes/drink-recipes.md)
+- [Noodle Recipes](./noodle-recipes/noodle-recipes.md)
+- [Pasta Recipes](./pasta-recipes/pasta-recipes.md)
+- [Pickling Recipes](./pickling-recipes/pickling-recipes.md)
+- [Porridge Recipes](./porridge-recipes/porridge-recipes.md)
+- [Potato Recipes](./potato-recipes/potato-recipes.md)
+- [Rice Dishes](./rice-dishes/rice-dishes.md)
+- [Salad Recipes](./salad-recipes/salad-recipes.md)
+- [Sandwich Recipes](./sandwich-recipes/sandwich-recipes.md)
+- [Side Recipes](./side-recipes/side-recipes.md)
+- [Sort Later Recipes](./sort-later-recipes/sort-later-recipes.md)
+- [Soup Recipes](./soup-recipes/soup-recipes.md)
+- [Tofu Recipes](./tofu-recipes/tofu-recipes.md)
+- [Tomato Recipes](./tomato-recipes/tomato-recipes.md)
+- [Vegetable Recipes](./vegetable-recipes/vegetable-recipes.md)

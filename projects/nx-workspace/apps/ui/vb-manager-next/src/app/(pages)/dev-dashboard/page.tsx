@@ -1,7 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { Tabs } from '@radix-ui/themes';
 import { AwsManagementComponent } from '../../components/aws-management.component';
 import { DockerStatusComponent } from '../../components/docker-status.component';
@@ -23,24 +22,33 @@ const TAB = {
   CLOUD: 'cloud',
 } as const;
 
-const TAB_PARAM = 'tab';
+type Tab = (typeof TAB)[keyof typeof TAB];
 
-function DevDashboardContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+const TAB_STORAGE_KEY = 'dev-dashboard-tab';
 
-  const activeTab = searchParams.get(TAB_PARAM) ?? TAB.LOCAL;
+const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 
-  const setActiveTab = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(TAB_PARAM, value);
-    router.push(`?${params.toString()}`, { scroll: false });
+const isTab = (value: string | null): value is Tab =>
+  Object.values(TAB).includes(value as Tab);
+
+export default function Page() {
+  const [activeTab, setActiveTab] = useState<Tab>(TAB.LOCAL);
+
+  useEffect(() => {
+    const storedTab = localStorage.getItem(TAB_STORAGE_KEY);
+    if (isTab(storedTab)) setActiveTab(storedTab);
+  }, []);
+
+  const handleTabChange = (value: string) => {
+    if (!isTab(value)) return;
+    setActiveTab(value);
+    localStorage.setItem(TAB_STORAGE_KEY, value);
   };
 
   return (
     <Tabs.Root
       value={activeTab}
-      onValueChange={setActiveTab}
+      onValueChange={handleTabChange}
       className="h-full flex flex-col"
     >
       <Tabs.List>
@@ -81,18 +89,10 @@ function DevDashboardContent() {
           </div>
           <div className="flex flex-col gap-4">
             <GithubTeamManager />
-            <GithubRepoActionStatusBadges repoUrl="https://github.com/iamharryliu/vigilant-broccoli" />
+            <GithubRepoActionStatusBadges repoUrl={REPO_URL} />
           </div>
         </div>
       </Tabs.Content>
     </Tabs.Root>
-  );
-}
-
-export default function Page() {
-  return (
-    <Suspense fallback={null}>
-      <DevDashboardContent />
-    </Suspense>
   );
 }

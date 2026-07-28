@@ -1,4 +1,5 @@
 import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
+import * as path from 'path';
 import {
   createBucketService,
   BucketProvider,
@@ -76,7 +77,7 @@ const bucketRoutes: FastifyPluginAsync = async app => {
     const collected: { filename: string; buffer: Buffer }[] = [];
     for await (const part of parts) {
       collected.push({
-        filename: part.filename,
+        filename: path.basename(part.filename),
         buffer: await part.toBuffer(),
       });
     }

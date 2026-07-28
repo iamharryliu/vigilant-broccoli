@@ -1,0 +1,26 @@
+import { getVbExpressApiKey } from '../../../../lib/vb-express';
+import { NextRequest, NextResponse } from 'next/server';
+import { VB_EXPRESS_ENDPOINT } from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+export async function POST(request: NextRequest) {
+  const body = await request.text();
+
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.RECIPE_SCRAPE}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getVbExpressApiKey(),
+      },
+      body,
+    },
+  );
+
+  const data = await res.json().catch(() => ({ error: 'Invalid response' }));
+  return NextResponse.json(data, { status: res.status });
+}

@@ -9,8 +9,10 @@ const llmRoutes: FastifyPluginAsync = async app => {
     try {
       return await callLlm<{ outputs: unknown[] }>(req.body);
     } catch (err) {
-      const message = err instanceof Error ? err.message : ERROR_LLM_SERVICE;
-      return reply.code(HTTP_STATUS_CODES.BAD_GATEWAY).send({ error: message });
+      console.error(ERROR_LLM_SERVICE, err);
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_GATEWAY)
+        .send({ error: ERROR_LLM_SERVICE });
     }
   });
 };

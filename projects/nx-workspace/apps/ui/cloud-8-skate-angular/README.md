@@ -1,5 +1,12 @@
 # Cloud8Skate
 
+## Table of Contents
+
+- [Deployment URLs](#deployment-urls)
+- [Stack](#stack)
+
+## Deployment URLs
+
 - [Deployed Site](https://cloud8skate.com/)
 - Sanity CMS
   - [Overview](https://www.sanity.io/organizations/ogjQYJiGp/project/akt6kw0u?orgId=ogjQYJiGp)
@@ -9,8 +16,18 @@
 
 ## Stack
 
-- Angular + TypeScript
-- Tailwind CSS
-- Sanity CMS (content)
-- Google Analytics, Google Calendar
-- Deployed to Cloudflare Pages
+- Language - TypeScript
+- Framework - Angular
+- Build Tool - Angular CLI
+- External libs
+  - Tailwind CSS
+  - Font Awesome
+- Internal libs
+  - `general-components`
+  - `personal-common-js`
+- Cloud services
+  - Sanity (CMS)
+  - Google Analytics
+  - Google Calendar
+  - Google reCAPTCHA
+  - Cloudflare Pages

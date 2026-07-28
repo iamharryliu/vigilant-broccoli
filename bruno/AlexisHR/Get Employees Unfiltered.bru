@@ -1,0 +1,19 @@
+meta {
+  name: Get Employees Unfiltered
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://api.alexishr.com/v1/employee?limit=500
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 500
+}
+
+headers {
+  Authorization: Bearer {{process.env.ALEXISHR_API_KEY}}
+}

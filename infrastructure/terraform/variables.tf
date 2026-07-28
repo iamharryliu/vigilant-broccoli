@@ -8,6 +8,11 @@ variable "zone" {
   default = "us-central1-a"
 }
 
+variable "aws_region" {
+  type    = string
+  default = "eu-north-1"
+}
+
 variable "github_owner" {
   description = "GitHub repository owner"
   type        = string
@@ -18,6 +23,12 @@ variable "github_repo" {
   description = "GitHub repository name"
   type        = string
   default     = "vigilant-broccoli"
+}
+
+variable "upptime_gh_app_id" {
+  description = "App ID of the dedicated GitHub App (Contents + Issues RW only) that the upptime crons use to push status commits and manage incident issues. Not a secret — it's visible in the ruleset config — so it's hardcoded here like the other non-secret IDs. Only its private key (UPPTIME_GH_APP_PRIVATE_KEY) lives in Vault. If the app is recreated, update this and the ID in the two cron-upptime workflows."
+  type        = number
+  default     = 4350545
 }
 
 variable "cloudflare_account_id" {
@@ -91,6 +102,18 @@ variable "journal_domain" {
   default = "journal.harryliu.dev"
 }
 
+variable "nx_cache_domain" {
+  type    = string
+  default = "nx-cache.harryliu.dev"
+}
+
+# 7 days: a cache miss just rebuilds, so a short TTL trades a little compute
+# for bounded R2 storage (keeps usage inside the 10 GB free tier).
+variable "nx_cache_r2_ttl_seconds" {
+  type    = number
+  default = 604800
+}
+
 variable "journal_pages_project" {
   type    = string
   default = "staging-journal"
@@ -106,6 +129,23 @@ variable "journal_pages_subdomain" {
 variable "journal_allowed_emails" {
   type    = list(string)
   default = ["harryliu1995@gmail.com"]
+}
+
+variable "docs_domain" {
+  type    = string
+  default = "docs.harryliu.dev"
+}
+
+variable "docs_pages_project" {
+  type    = string
+  default = "staging-docs-md"
+}
+
+# Kept separate from the project name: Cloudflare appends a suffix when
+# <project>.pages.dev is taken globally.
+variable "docs_pages_subdomain" {
+  type    = string
+  default = "staging-docs-md.pages.dev"
 }
 
 variable "cloud8skate_domain" {
@@ -125,10 +165,10 @@ variable "cloud8skate_pages_subdomain" {
 
 variable "harryliu_dev_pages_project" {
   type    = string
-  default = "staging-harryliu-dev-angular"
+  default = "staging-harryliu-dev-react"
 }
 
 variable "harryliu_dev_pages_subdomain" {
   type    = string
-  default = "staging-harryliu-dev-angular.pages.dev"
+  default = "staging-harryliu-dev-react.pages.dev"
 }

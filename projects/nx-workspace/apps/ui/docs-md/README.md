@@ -1,8 +1,18 @@
 # Docs MD
 
+Renders repo markdown docs fetched at build/runtime.
+
 ## Stack
 
-- React + TypeScript + Vite
-- Tailwind CSS
-- GitHub API (renders repo markdown docs)
-- Deployed to GitHub Pages
+- Language - TypeScript
+- Framework - React
+- Build Tool - Vite
+- External libs
+  - Tailwind CSS
+  - Radix Themes
+  - fuse.js
+- Internal libs
+  - `react-lib`
+  - `react-utility`
+- Cloud services
+  - Cloudflare Pages (docs.harryliu.dev)

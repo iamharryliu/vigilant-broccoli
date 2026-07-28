@@ -66,7 +66,32 @@ rmgbn() {
 }
 
 
-alias droplocalbranches='git branch | grep -vE "^\*?\s*main$" | xargs git branch -D'
+droplocalbranches() {
+  local branches_to_delete
+  branches_to_delete=$(git branch --format='%(refname:short)' | grep -vE "^main$")
+
+  if [[ -z "$branches_to_delete" ]]; then
+    echo "No branches to delete (main is safe)."
+    return 0
+  fi
+
+  while IFS= read -r branch; do
+    local worktree_path
+    worktree_path=$(git worktree list --porcelain | awk -v b="refs/heads/$branch" '/^worktree/ {path=$2} $0 ~ b {print path}')
+
+    if [[ -n "$worktree_path" ]]; then
+      echo "Removing worktree for branch '$branch' at $worktree_path..."
+      git worktree remove --force "$worktree_path" || {
+        echo "  Failed to remove worktree. Skipping branch '$branch'."
+        continue
+      }
+    fi
+
+    echo "Deleting branch '$branch'..."
+    git branch -D "$branch"
+  done <<< "$branches_to_delete"
+}
+
 alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs -I {} git push origin --delete {} && git fetch -p'
 
 # Checkout Aliases

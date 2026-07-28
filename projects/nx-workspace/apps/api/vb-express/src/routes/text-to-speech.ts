@@ -40,10 +40,10 @@ const textToSpeechRoutes: FastifyPluginAsync = async app => {
         Readable.fromWeb(audioStream as Parameters<typeof Readable.fromWeb>[0]),
       );
     } catch (err) {
-      const message = err instanceof Error ? err.message : ERROR_TTS_FAILED;
+      console.error(ERROR_TTS_FAILED, err);
       return reply
         .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ error: message });
+        .send({ error: ERROR_TTS_FAILED });
     }
   });
 };

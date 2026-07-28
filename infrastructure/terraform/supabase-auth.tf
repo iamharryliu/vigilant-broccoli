@@ -53,7 +53,7 @@ resource "supabase_settings" "vb_auth" {
       "http://localhost:3000/*",                              # vb-manager-next local dev
       "http://127.0.0.1:3000/*",                              # vb-manager-next local dev (127.0.0.1 form)
       "https://manager.vigilant-broccoli.app/*",              # vb-manager-next prod (PM2)
-      "https://vb-manager-next-mobile.fly.dev/auth/callback", # vb-manager-next mobile
+      "https://staging-vb-manager-next-mobile.fly.dev/auth/callback", # vb-manager-next mobile
     ])
 
     external_google_enabled          = true

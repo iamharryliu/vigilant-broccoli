@@ -27,6 +27,10 @@ terraform {
       source  = "oracle/oci"
       version = "~> 6.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.0"
@@ -57,6 +61,11 @@ provider "cloudflare" {}
 provider "oci" {
   config_file_profile = "DEFAULT"
   region              = "ca-toronto-1"
+}
+
+provider "aws" {
+  region  = var.aws_region
+  profile = "AdministratorAccess-841376026547"
 }
 
 # Reads SUPABASE_ACCESS_TOKEN from env (personal access token from
@@ -141,6 +150,47 @@ resource "google_compute_firewall" "allow_iap_ssh" {
 data "google_project" "project" {
 }
 
+# Data Access audit logs (off by default, unlike always-on Admin Activity logs).
+# These are the sensitive-data-read blind spots for this project: secret values,
+# the Vault auto-unseal KMS key, and the backup bucket (which holds every DB dump
+# and repo/Gitea backup). Admin Activity — IAM changes, SA key creation, and
+# GenerateAccessToken impersonation — is already logged for free, so no config is
+# needed for those. Scoped per service (not allServices) to keep ingestion low;
+# all three are low-volume here (a few reads per CI run / per Vault restart) and
+# well within the 50 GiB/project/month Cloud Logging free tier.
+resource "google_project_iam_audit_config" "secretmanager" {
+  project = data.google_project.project.project_id
+  service = "secretmanager.googleapis.com"
+  audit_log_config {
+    log_type = "DATA_READ"
+  }
+  audit_log_config {
+    log_type = "DATA_WRITE"
+  }
+}
+
+resource "google_project_iam_audit_config" "cloudkms" {
+  project = data.google_project.project.project_id
+  service = "cloudkms.googleapis.com"
+  audit_log_config {
+    log_type = "DATA_READ"
+  }
+  audit_log_config {
+    log_type = "DATA_WRITE"
+  }
+}
+
+resource "google_project_iam_audit_config" "storage" {
+  project = data.google_project.project.project_id
+  service = "storage.googleapis.com"
+  audit_log_config {
+    log_type = "DATA_READ"
+  }
+  audit_log_config {
+    log_type = "DATA_WRITE"
+  }
+}
+
 resource "google_project_service" "iamcredentials" {
   service            = "iamcredentials.googleapis.com"
   disable_on_destroy = false
@@ -202,7 +252,18 @@ resource "google_iam_workload_identity_pool_provider" "github" {
     "attribute.aud"        = "assertion.aud"
   }
 
-  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}'"
+  # This SA is broadly privileged (roles/editor, project-wide secretAccessor,
+  # serviceAccountAdmin). pull_request runs execute their workflow YAML from
+  # the PR branch, so a PR that could mint a token through this provider could
+  # edit its own workflow to impersonate this SA and read the whole store —
+  # so pull_request tokens are refused here and must use the github-pr-check
+  # provider (narrow SA, github-actions-pr-check.tf) instead. Verified safe:
+  # ci-pr-check.yml is the only pull_request-triggered workflow, and no
+  # push/dispatch/workflow_call/workflow_run flow that legitimately uses this
+  # provider ever carries event_name == "pull_request" (workflow_call tokens
+  # keep the originating event's name, and deploy.yml's only caller is the
+  # dispatch-triggered ci-rotate-secrets.yml).
+  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}' && assertion.event_name != 'pull_request'"
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
@@ -249,6 +310,12 @@ resource "google_project_iam_member" "github_actions_secret_accessor" {
   project = data.google_project.project.project_id
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.github_actions.email}"
+
+  condition {
+    title       = "exclude_bitwarden_password"
+    description = "Bitwarden is the offline backup-of-last-resort for every other secret here; CI must never be able to read it."
+    expression  = "!resource.name.startsWith(\"projects/${data.google_project.project.number}/secrets/${google_secret_manager_secret.bitwarden_password.secret_id}\")"
+  }
 }
 
 resource "google_project_iam_member" "github_actions_editor" {
@@ -273,6 +340,12 @@ resource "google_project_iam_member" "vm_default_sa_secret_accessor" {
   project = data.google_project.project.project_id
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+
+  condition {
+    title       = "exclude_bitwarden_password"
+    description = "Bitwarden is the offline backup-of-last-resort for every other secret here; no VM should be able to read it."
+    expression  = "!resource.name.startsWith(\"projects/${data.google_project.project.number}/secrets/${google_secret_manager_secret.bitwarden_password.secret_id}\")"
+  }
 }
 
 resource "google_secret_manager_secret" "wg_server_private_key" {

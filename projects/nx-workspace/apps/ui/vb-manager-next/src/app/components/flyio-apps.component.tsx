@@ -11,10 +11,11 @@ import {
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 import { FLYIO_LINK } from '@vigilant-broccoli/links';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
 
 interface FlyApp {
   name: string;
@@ -81,7 +82,7 @@ export const FlyIoAppsComponent = () => {
   const [authRequired, setAuthRequired] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
 
-  const fetchFlyApps = useCallback(async () => {
+  const fetchFlyApps = async () => {
     try {
       const response = await authFetch(API_ENDPOINTS.FLYIO_APPS);
       const data: FlyAppsResponse = await response.json();
@@ -99,13 +100,9 @@ export const FlyIoAppsComponent = () => {
       setError(FETCH_ERROR_MSG);
       setLoading(false);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    fetchFlyApps();
-    const interval = setInterval(fetchFlyApps, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [fetchFlyApps]);
+  usePollingInterval(fetchFlyApps, POLL_INTERVAL_MS);
 
   const handleLogin = async () => {
     setLoggingIn(true);

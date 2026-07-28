@@ -1,0 +1,20 @@
+meta {
+  name: Get Availability (Access Token)
+  type: http
+  seq: 7
+}
+
+post {
+  url: https://api.cinode.com/v0.1/companies/{{process.env.COMPANY_ID}}/availability
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{process.env.CINODE_ACCESS_TOKEN}}
+  Content-Type: application/json
+}
+
+body:json {
+  {}
+}

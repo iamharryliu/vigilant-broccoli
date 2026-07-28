@@ -6,8 +6,8 @@ import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import {
   authFetch,
   signInWithGoogle,
-  signOut,
   useAuthStatus,
+  useGoogleToken,
 } from '../../../libs/auth';
 import {
   useDroppable,
@@ -85,6 +85,13 @@ const SORT_MODE_LABELS: Record<SortMode, string> = {
 };
 
 const STORAGE_KEY_SELECTED_TASK_LIST = 'google-tasks-selected-list-id';
+
+const TASKS_TITLE = 'Tasks';
+const SIGN_IN_GOOGLE_LABEL = 'Sign in with Google';
+const SIGN_IN_GOOGLE_DESCRIPTION = 'Sign in to view your Google Tasks';
+const RECONNECT_GOOGLE_LABEL = 'Reconnect Google';
+const RECONNECT_GOOGLE_DESCRIPTION =
+  'Your Google access expired. Reconnect to load your tasks — you stay signed in.';
 
 const getStorageKey = {
   sortMode: (taskListId: string) => `google-tasks-sort-mode-${taskListId}`,
@@ -909,24 +916,48 @@ const UnauthenticatedView = memo(() => (
     <div className="flex flex-col gap-3 p-4">
       <div className="flex justify-between items-center">
         <Text size="5" weight="bold">
-          Tasks
+          {TASKS_TITLE}
         </Text>
         <Button
           onClick={async () => {
             await signInWithGoogle();
           }}
         >
-          Sign in with Google
+          {SIGN_IN_GOOGLE_LABEL}
         </Button>
       </div>
       <Text size="2" color="gray">
-        Sign in to view your Google Tasks
+        {SIGN_IN_GOOGLE_DESCRIPTION}
       </Text>
     </div>
   </Card>
 ));
 
 UnauthenticatedView.displayName = 'UnauthenticatedView';
+
+const GoogleReconnectView = memo(() => (
+  <Card className="w-full">
+    <div className="flex flex-col gap-3 p-4">
+      <div className="flex justify-between items-center">
+        <Text size="5" weight="bold">
+          {TASKS_TITLE}
+        </Text>
+        <Button
+          onClick={async () => {
+            await signInWithGoogle();
+          }}
+        >
+          {RECONNECT_GOOGLE_LABEL}
+        </Button>
+      </div>
+      <Text size="2" color="gray">
+        {RECONNECT_GOOGLE_DESCRIPTION}
+      </Text>
+    </div>
+  </Card>
+));
+
+GoogleReconnectView.displayName = 'GoogleReconnectView';
 
 interface DragOverTask {
   id: string;
@@ -954,6 +985,7 @@ export const GoogleTasksComponent = ({
   onSortModeChange?: (taskListId: string, sortMode: SortMode) => void;
 } = {}) => {
   const status = useAuthStatus();
+  const { clearGoogleToken } = useGoogleToken();
   const { taskLists, authError: titleAuthError } = useTaskLists(status);
 
   const [selectedTaskListId, setSelectedTaskListId] = useState<string>(() => {
@@ -1020,16 +1052,14 @@ export const GoogleTasksComponent = ({
     if (status === 'authenticated') fetchTasks();
   }, [status, taskListId, refreshTrigger]);
 
-  useEffect(() => {
-    const hasAuthError =
-      titleAuthError ||
-      error?.includes('Unauthorized') ||
-      error?.includes('authentication');
+  const hasGoogleAuthError =
+    titleAuthError ||
+    !!error?.includes('Unauthorized') ||
+    !!error?.includes('authentication');
 
-    if (hasAuthError) {
-      signOut();
-    }
-  }, [titleAuthError, error]);
+  useEffect(() => {
+    if (hasGoogleAuthError) clearGoogleToken();
+  }, [hasGoogleAuthError, clearGoogleToken]);
 
   const handleCreateTask = useCallback(async () => {
     if (isCreatingTask) return;
@@ -1156,6 +1186,7 @@ export const GoogleTasksComponent = ({
 
   if (status === 'loading') return <CardSkeleton showTitleSkeleton rows={5} />;
   if (status === 'unauthenticated') return <UnauthenticatedView />;
+  if (hasGoogleAuthError) return <GoogleReconnectView />;
 
   const isDragDropEnabled = sortMode === SORT_MODE.DEFAULT;
 

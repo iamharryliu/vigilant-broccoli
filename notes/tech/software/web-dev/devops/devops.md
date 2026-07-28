@@ -1,5 +1,7 @@
 # Devops
 
+- [Devops Lingo](./devops-lingo.md)
+
 ## Services
 
 - [Apple Developer](./apple.md)
@@ -17,11 +19,15 @@
 - [Kubernetes](./kubernetes.md)
 - [Nx](./nx.md)
 - [Hashicorp Vault](./hashicorp-vault.md)
+- [Automation](./automation/automation.md)
+- [Deployment](./deployment/deployment.md)
 
 ## Notes
 
 - [DNS](./dns.md)
 - [Monorepo](./monorepo.md)
+- [Cloud Services](../../../../software/cloud-services.md)
+- [Local Services](../../../../software/local-services.md)
 
 ## Cloud Services Name Mapping
 

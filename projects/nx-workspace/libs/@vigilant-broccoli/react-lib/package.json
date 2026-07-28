@@ -16,6 +16,7 @@
     "boring-avatars": "*",
     "class-variance-authority": "*",
     "clsx": "*",
+    "framer-motion": "*",
     "lucide-react": "*",
     "react": "*",
     "react-easy-crop": "*",
@@ -24,6 +25,7 @@
   },
   "main": "./index.js",
   "types": "./index.d.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./index.mjs",

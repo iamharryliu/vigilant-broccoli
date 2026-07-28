@@ -66,5 +66,5 @@ for i in $(seq 1 24); do
   [ "$status" = "healthy" ] && echo "✓ Gitea restored and healthy" && exit 0
   sleep 5
 done
-echo "⚠ Gitea did not report healthy in time — check logs: pnpm oci:gitea:logs"
+echo "⚠ Gitea did not report healthy in time — check logs: pnpm gitea:ssh"
 exit 1

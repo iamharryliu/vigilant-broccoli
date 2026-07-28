@@ -12,5 +12,3 @@
   - Simmering ingredients in liquid to soften food.
 
 - High and low heat is required to cook foods such as meats and starchy foods.
-
-## Caramelization

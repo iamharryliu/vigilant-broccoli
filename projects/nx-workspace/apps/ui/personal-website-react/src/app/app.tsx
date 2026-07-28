@@ -16,11 +16,7 @@ import {
   COMPONENT_LIBRARY_ROUTE,
   CONTACT_ROUTE,
   DEFAULT_DESCRIPTION,
-  DOCS_MD_FILE_ROUTE,
-  DOCS_MD_ROUTE,
   INDEX_ROUTE,
-  LEETCODE_ROUTE,
-  LEETCODE_SOLUTION_ROUTE,
   LINK_TREE_ROUTE,
   ROUTES,
   type RouteMeta,
@@ -33,8 +29,6 @@ import { ContactPage } from './components/pages/contact.page';
 import { CalendarPage } from './components/pages/calendar.page';
 import { LinkTreePage } from './components/pages/link-tree.page';
 import { ComponentLibraryPage } from './components/pages/component-library.page';
-import { DocsMdPage } from './components/pages/docs-md.page';
-import { LeetCodePage } from './components/pages/leet-code.page';
 
 initAnalytics();
 
@@ -54,11 +48,7 @@ const updateMetaTag = (
 };
 
 const findRouteMeta = (pathname: string): RouteMeta | undefined => {
-  const direct = ROUTES.find(r => r.path === pathname);
-  if (direct) return direct;
-  if (pathname.startsWith('/docs-md/')) return DOCS_MD_FILE_ROUTE;
-  if (pathname.startsWith('/grind-75/')) return LEETCODE_SOLUTION_ROUTE;
-  return undefined;
+  return ROUTES.find(r => r.path === pathname);
 };
 
 function SeoUpdater() {
@@ -137,13 +127,6 @@ export function App() {
           <Route
             path={COMPONENT_LIBRARY_ROUTE.path}
             element={<ComponentLibraryPage />}
-          />
-          <Route path={DOCS_MD_ROUTE.path} element={<DocsMdPage />} />
-          <Route path={DOCS_MD_FILE_ROUTE.path} element={<DocsMdPage />} />
-          <Route path={LEETCODE_ROUTE.path} element={<LeetCodePage />} />
-          <Route
-            path={LEETCODE_SOLUTION_ROUTE.path}
-            element={<LeetCodePage />}
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

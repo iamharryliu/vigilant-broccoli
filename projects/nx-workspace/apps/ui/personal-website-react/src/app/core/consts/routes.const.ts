@@ -30,18 +30,6 @@ export const CAREER_ROUTE: RouteMeta = {
   description: "Harry Liu's career experience and work history.",
 };
 
-export const DOCS_MD_ROUTE: RouteMeta = {
-  path: '/docs-md',
-  title: 'DocsMD',
-  description: 'Browse markdown documents and notes by Harry Liu.',
-};
-
-export const DOCS_MD_FILE_ROUTE: RouteMeta = {
-  path: '/docs-md/:markdownFilename',
-  title: 'DocsMD',
-  description: 'Browse markdown documents and notes by Harry Liu.',
-};
-
 export const ABOUT_ROUTE: RouteMeta = {
   path: '/about',
   title: 'about',
@@ -70,18 +58,6 @@ export const CALENDAR_ROUTE: RouteMeta = {
   path: '/calendar',
   title: 'calendar',
   description: "Harry Liu's calendar.",
-};
-
-export const LEETCODE_ROUTE: RouteMeta = {
-  path: '/grind-75',
-  title: 'grind 75',
-  description: 'Grind 75 LeetCode solutions by Harry Liu.',
-};
-
-export const LEETCODE_SOLUTION_ROUTE: RouteMeta = {
-  path: '/grind-75/:language/:filename',
-  title: 'grind75',
-  description: 'Grind 75 LeetCode solutions by Harry Liu.',
 };
 
 const internalUrl = (path: string) =>
@@ -151,13 +127,6 @@ const RESUME: Link = {
   url: { external: `${ENVIRONMENT.APP_URL}/assets/resume.pdf` },
   text: 'Resume',
 };
-const DOCS_MD: Link = {
-  url: {
-    internal: DOCS_MD_ROUTE.path,
-    external: externalUrl(DOCS_MD_ROUTE.path),
-  },
-  text: 'DocsMD',
-};
 
 export const LINKS = {
   INDEX_PAGE,
@@ -165,7 +134,6 @@ export const LINKS = {
   CALENDAR_PAGE,
   CONTACT_PAGE,
   LINK_TREE,
-  DOCS_MD,
   LINKEDIN,
   GITHUB,
   PERSONAL_INSTAGRAM,
@@ -182,11 +150,7 @@ export const ROUTES: RouteMeta[] = [
   ABOUT_ROUTE,
   CAREER_ROUTE,
   CONTACT_ROUTE,
-  DOCS_MD_ROUTE,
-  DOCS_MD_FILE_ROUTE,
   LINK_TREE_ROUTE,
   CALENDAR_ROUTE,
   COMPONENT_LIBRARY_ROUTE,
-  LEETCODE_ROUTE,
-  LEETCODE_SOLUTION_ROUTE,
 ];

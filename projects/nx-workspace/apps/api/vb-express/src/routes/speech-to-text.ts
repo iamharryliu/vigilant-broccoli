@@ -7,20 +7,24 @@ const ERROR_TRANSCRIPTION_FAILED = 'Transcription failed';
 
 const speechToTextRoutes: FastifyPluginAsync = async app => {
   app.post('/', async (req, reply) => {
+    const file = await req.file();
+    if (!file) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_NO_AUDIO });
+    }
+
     try {
-      const file = await req.file();
-      if (!file) throw new Error(ERROR_NO_AUDIO);
       const blob = new Blob([new Uint8Array(await file.toBuffer())], {
         type: file.mimetype,
       });
       const transcript = await AudioService.getTranscriptText(blob);
       return { transcript };
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : ERROR_TRANSCRIPTION_FAILED;
+      console.error(ERROR_TRANSCRIPTION_FAILED, err);
       return reply
         .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ error: message });
+        .send({ error: ERROR_TRANSCRIPTION_FAILED });
     }
   });
 };

@@ -24,18 +24,18 @@ export class LocalBucketProvider implements IBucketProvider {
   }
 
   async upload(destinationName: string, buffer: Buffer): Promise<void> {
-    const destinationPath = path.join(this.bucketPath, destinationName);
+    const destinationPath = this.resolveContainedPath(destinationName);
     await fs.mkdir(path.dirname(destinationPath), { recursive: true });
     await fs.writeFile(destinationPath, buffer);
   }
 
   async download(fileName: string, destinationPath: string): Promise<void> {
-    const sourcePath = path.join(this.bucketPath, fileName);
+    const sourcePath = this.resolveContainedPath(fileName);
     await fs.copyFile(sourcePath, destinationPath);
   }
 
   async delete(fileName: string): Promise<void> {
-    const filePath = path.join(this.bucketPath, fileName);
+    const filePath = this.resolveContainedPath(fileName);
     await fs.unlink(filePath);
   }
 
@@ -60,7 +60,7 @@ export class LocalBucketProvider implements IBucketProvider {
 
   async exists(fileName: string): Promise<boolean> {
     try {
-      await fs.access(path.join(this.bucketPath, fileName));
+      await fs.access(this.resolveContainedPath(fileName));
       return true;
     } catch {
       return false;
@@ -68,8 +68,20 @@ export class LocalBucketProvider implements IBucketProvider {
   }
 
   async read(fileName: string): Promise<Buffer> {
-    const filePath = path.join(this.bucketPath, fileName);
+    const filePath = this.resolveContainedPath(fileName);
     return await fs.readFile(filePath);
+  }
+
+  private resolveContainedPath(fileName: string): string {
+    const bucketRoot = path.resolve(this.bucketPath);
+    const resolved = path.resolve(bucketRoot, fileName);
+    if (
+      resolved !== bucketRoot &&
+      !resolved.startsWith(bucketRoot + path.sep)
+    ) {
+      throw new Error(`Invalid file path: ${fileName}`);
+    }
+    return resolved;
   }
 
   private async readDirRecursive(dir: string): Promise<string[]> {

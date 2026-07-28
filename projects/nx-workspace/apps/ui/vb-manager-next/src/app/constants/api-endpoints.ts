@@ -58,6 +58,9 @@ export const API_ENDPOINTS = {
   DISK_SPACE: '/api/disk-space',
   SPEED_TEST: '/api/speed-test',
 
+  // Auth
+  GOOGLE_TOKEN: '/api/auth/google-token',
+
   // Tasks
   TASKS: '/api/tasks',
   TASKS_LISTS: '/api/tasks/lists',
@@ -95,6 +98,7 @@ export const API_ENDPOINTS = {
 
   // Recipe
   RECIPE_SCRAPE: '/api/recipe/scrape',
+  RECIPE_SCRAPE_PREVIEW: '/api/recipe/scrape-preview',
 
   // Chat
   CHAT_PUBLISH: '/api/chat/publish',

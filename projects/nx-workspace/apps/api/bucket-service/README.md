@@ -2,8 +2,16 @@
 
 ## Stack
 
-- Fastify + TypeScript
-- AWS S3 & Google Cloud Storage (`@vigilant-broccoli/storage`)
-- Winston logging
-- Internal VB libs (`common-js`, `common-node`, `fastify`)
-- Deployed to Fly.io
+- Language - TypeScript
+- Framework - Fastify
+- Build Tool - esbuild
+- Internal libs
+  - `common-js`
+  - `common-node`
+  - `fastify`
+  - `storage`
+- Cloud services
+  - AWS S3
+  - Cloudflare R2
+  - Google Cloud Storage
+  - Fly.io

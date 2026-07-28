@@ -17,6 +17,8 @@ interface WranglerDeploymentJson {
 const LOG_PREFIX = '[wrangler]';
 const MAX_STALE_BATCHES = 3;
 const DEFAULT_KEEP_DEPLOYMENTS = 10;
+const DELETE_CONCURRENCY = 4;
+const BATCH_DELAY_MS = 2000;
 
 const WranglerCommand = {
   login: 'wrangler login',
@@ -25,25 +27,13 @@ const WranglerCommand = {
     `wrangler pages deployment list --project-name ${projectName} --json`,
   deletePagesProject: (projectName: string) =>
     `wrangler pages project delete ${projectName} --yes`,
-  countDeployments: (projectName: string) =>
-    `wrangler pages deployment list --project-name ${projectName} --json | jq length`,
-  deleteAllDeploymentsBatch: (projectName: string) =>
-    `wrangler pages deployment list --project-name ${projectName} --json` +
-    ` | jq -r '.[].Id'` +
-    ` | xargs -P 20 -I {} sh -c 'wrangler pages deployment delete {} --project-name ${projectName} --force 2>&1 || true'`,
   deleteDeploymentsBatch: (projectName: string, ids: string[]) =>
     `printf '%s\\n' ${ids.join(' ')}` +
-    ` | xargs -P 20 -I {} sh -c 'wrangler pages deployment delete {} --project-name ${projectName} --force 2>&1 || true'`,
+    ` | xargs -P ${DELETE_CONCURRENCY} -I {} sh -c 'wrangler pages deployment delete {} --project-name ${projectName} --force 2>&1 || true'`,
 };
 
-const runCount = async (projectName: string): Promise<number> =>
-  parseInt(
-    ((await ShellUtils.runShellCommand(
-      WranglerCommand.countDeployments(projectName),
-      true,
-    )) as string) || '0',
-    10,
-  );
+const sleep = (ms: number): Promise<void> =>
+  new Promise(resolve => setTimeout(resolve, ms));
 
 async function listPagesProjects(): Promise<WranglerProject[]> {
   const output = await ShellUtils.runShellCommand(
@@ -89,28 +79,32 @@ async function pruneDeployments(
 }
 
 async function deleteAllDeployments(projectName: string): Promise<void> {
-  let remaining = await runCount(projectName);
-  console.log(`${LOG_PREFIX} ${projectName}: ${remaining} deployments found`);
+  let ids = await listDeploymentIds(projectName);
+  console.log(
+    `${LOG_PREFIX} ${projectName}: ${ids.length} deployment(s) found (list is capped to a single page)`,
+  );
 
   let batch = 1;
   let staleBatches = 0;
-  while (remaining > 1) {
+  while (ids.length > 1) {
     console.log(
-      `${LOG_PREFIX} ${projectName}: deleting batch ${batch} (${remaining} remaining)`,
+      `${LOG_PREFIX} ${projectName}: deleting batch ${batch} (${ids.length} listed)`,
     );
     await ShellUtils.runShellCommand(
-      WranglerCommand.deleteAllDeploymentsBatch(projectName),
+      WranglerCommand.deleteDeploymentsBatch(projectName, ids),
     );
-    const prev = remaining;
-    remaining = await runCount(projectName);
-    staleBatches = remaining >= prev ? staleBatches + 1 : 0;
+    const prevIds = new Set(ids);
+    ids = await listDeploymentIds(projectName);
+    const anyDeleted =
+      ids.some(id => !prevIds.has(id)) || ids.length < prevIds.size;
+    staleBatches = anyDeleted ? 0 : staleBatches + 1;
     if (staleBatches >= MAX_STALE_BATCHES) {
-      console.log(
-        `${LOG_PREFIX} ${projectName}: count stuck at ${remaining}, proceeding with project delete`,
+      throw new Error(
+        `${projectName}: no deployments removed after ${MAX_STALE_BATCHES} batches, likely rate-limited by Cloudflare`,
       );
-      break;
     }
     batch++;
+    await sleep(BATCH_DELAY_MS);
   }
   console.log(`${LOG_PREFIX} ${projectName}: deployments cleared`);
 }

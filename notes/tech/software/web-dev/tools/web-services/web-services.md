@@ -7,5 +7,6 @@
 - [OpenAI](./openai.md)
 - [OpenWeather](./openweather-api.md)
 - [Spotify API](./spotify-api.md)
+- [Stripe](./stripe.md)
 
 - [Services Statuses](./services-statuses.md)

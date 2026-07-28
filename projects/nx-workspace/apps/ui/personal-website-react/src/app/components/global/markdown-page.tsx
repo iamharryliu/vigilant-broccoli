@@ -36,7 +36,7 @@ export function MarkdownPage({ filepath }: Props) {
   if (html === null) return <LoadingSpinner header="Loading..." />;
   return (
     <div
-      className="prose dark:prose-invert max-w-none prose-img:inline-block prose-img:my-0 prose-a:no-underline"
+      className="markdown-content prose dark:prose-invert max-w-none prose-img:inline-block prose-img:my-0 prose-a:no-underline"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

@@ -5,5 +5,5 @@ import { AppComponent } from './app/app.component';
 
 bootstrapApplication(AppComponent, {
   ...appConfig,
-  providers: [provideZoneChangeDetection(), ...appConfig.providers],
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }), ...appConfig.providers],
 }).catch(err => console.error(err));

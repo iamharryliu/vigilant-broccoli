@@ -27,7 +27,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - uses: ./.github/actions/setup-nx-workspace
 
@@ -42,6 +42,7 @@ jobs:
             kv/data/secrets GITEA_TOKEN | GITEA_TOKEN ;
             kv/data/secrets GITEA_CF_ACCESS_CLIENT_ID | GITEA_CF_ACCESS_CLIENT_ID ;
             kv/data/secrets GITEA_CF_ACCESS_CLIENT_SECRET | GITEA_CF_ACCESS_CLIENT_SECRET ;
+            kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
       - name: Fetch journal notes from Gitea
         env:
@@ -70,4 +71,6 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
-        run: pnpm exec nx run journal:deploy --skip-nx-cache
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+        run: pnpm exec nx run journal:deploy

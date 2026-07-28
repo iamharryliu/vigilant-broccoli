@@ -11,12 +11,16 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: test-e2e-rabbitmq
+  cancel-in-progress: true
+
 jobs:
   test-rabbitmq:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -45,11 +49,12 @@ jobs:
           RMQ_USER="${USER_PASS%%:*}"
           RMQ_PASS="${USER_PASS#*:}"
           RMQ_HOST="${HOST_PORT%%:*}"
+          echo "::add-mask::$RMQ_HOST"
+          echo "::add-mask::$RMQ_USER"
           echo "::add-mask::$RMQ_PASS"
           echo "RMQ_HOST=$RMQ_HOST" >> $GITHUB_ENV
           echo "RMQ_USER=$RMQ_USER" >> $GITHUB_ENV
           echo "RMQ_PASS=$RMQ_PASS" >> $GITHUB_ENV
-          echo "Parsed broker host: $RMQ_HOST (user: $RMQ_USER)"
 
       - name: Verify broker TLS certificate chain
         env:

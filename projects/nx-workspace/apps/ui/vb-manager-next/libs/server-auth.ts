@@ -2,15 +2,8 @@ import { NextRequest } from 'next/server';
 import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
-  GOOGLE_TOKEN_HEADER,
 } from '@vigilant-broccoli/common-js';
 import { supabase } from '../src/lib/supabase';
-
-export const getGoogleAccessToken = (request: NextRequest): string => {
-  const token = request.headers.get(GOOGLE_TOKEN_HEADER);
-  if (!token) throw new Error('Not authenticated');
-  return token;
-};
 
 export const getUserEmail = async (
   request: NextRequest,

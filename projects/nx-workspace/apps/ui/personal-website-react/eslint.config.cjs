@@ -7,7 +7,6 @@ module.exports = [
       '**/assets/**',
       '**/public/**',
       '**/dist/**',
-      'src/assets/grind-75/**',
       'src/assets/md-library/**',
     ],
   },
