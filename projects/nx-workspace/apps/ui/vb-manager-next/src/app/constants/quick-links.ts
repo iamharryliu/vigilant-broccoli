@@ -1125,12 +1125,6 @@ const UTILITY_LINKS = [
 
 const CAREER_LINKS = [
   {
-    label: PERSONAL_URL.RESUME.NAME,
-    target: PERSONAL_URL.RESUME.URL,
-    type: OPEN_TYPE.BROWSER,
-    subgroup: LINK_GROUP_SUBGROUP.CAREER,
-  },
-  {
     label: 'LinkedIn',
     target: 'https://www.linkedin.com',
     type: OPEN_TYPE.BROWSER,
