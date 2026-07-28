@@ -34,14 +34,6 @@ AuthProvider wraps the whole app in `layout.tsx`, so every page (including `/log
 
 **Fix:** render the shell immediately (skeletons instead of `return null`); let public routes render unconditionally. Longer term, adopt `@supabase/ssr` cookie sessions so server components can fetch data, or at least start the homes fetch in parallel with session resolution.
 
-### 151a48. [performance] No Nx computation cache survives between CI runs — every run builds from cold
-
-**`projects/nx-workspace/nx.json:84`** (`"neverConnectToCloud": true`) · no `actions/cache` usage anywhere in `.github/`
-
-`cache: true` is set on all build/lint/test targets, but the cache dies with each ephemeral runner — only the pnpm store is cached. Every push to main rebuilds/relints/re-prunes/re-smokes every affected service from scratch; `ci-pr-check` gets no reuse between PR pushes. Several minutes of redundant compute per run.
-
-**Fix:** add an `actions/cache` step for `projects/nx-workspace/.nx/cache` in `.github/actions/setup-nx-workspace/action.yml`, keyed on lockfile + SHA with a `restore-keys` prefix fallback. Reconcile the `--skip-nx-cache` flags (d2904c) or they'll silently negate this for the most-frequent builds.
-
 ### 16dbe5. [performance] code-server VM re-provisions its entire toolchain (~1GB+) on every container (re)start
 
 **`infrastructure/terraform/cloud-init-code-server.yaml:27-66`** (init script), `:72` (`:latest`)
