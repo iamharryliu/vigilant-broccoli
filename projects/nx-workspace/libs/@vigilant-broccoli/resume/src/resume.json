@@ -16,15 +16,15 @@
       }
     ]
   },
-  "summary": "Over 5 years of software developer experience, working with enterprise level applications (banks and insurance companies). Excellent team player who encourages a collaborative knowledge-sharing environment to deliver quality results. Experienced with building end to end applications and software infrastructure.",
+  "summary": "Over 5 years of software developer experience, working with enterprise-level applications (banks and insurance companies). Excellent team player who encourages a collaborative knowledge-sharing environment to deliver quality results. Experienced with building end-to-end applications and software infrastructure.",
   "workExperience": [
     {
       "company": "vigilant-broccoli",
-      "role": "Software Developer (Personal Monorepo)",
+      "role": "Software Developer (Open Source Monorepo)",
       "startDate": "July 2023",
       "endDate": "present",
       "bullets": [
-        "Architect and maintain a personal **Nx monorepo** containing full-stack web apps, API services, shared libraries, developer notes, and infrastructure code.",
+        "Architect and maintain an **open-source Nx monorepo** containing full-stack web apps, API services, shared libraries, developer notes, and infrastructure code.",
         "Design and run **agentic coding workflows** with **Claude Code**, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring.",
         "Provision and operate **cloud infrastructure** with **Terraform**, managing secrets through dedicated secret managers.",
         "Build and maintain **CI/CD pipelines** covering PR checks, health checks, cron jobs, and smoke, end-to-end, and security test suites across a growing set of apps and services.",
@@ -37,10 +37,10 @@
       "startDate": "March 2025",
       "endDate": "present",
       "bullets": [
-        "Concurrently led and contributed to development of two production systems—a call analysis SaaS platform and a trading card marketplace API—balancing full-stack ownership and backend responsibilities across both codebases and infrastructure.",
+        "Led and contributed to two production systems—a call analysis SaaS platform and a trading card marketplace API—across both codebases and infrastructure.",
         "Built AI-driven transcription and insight pipelines for call centers.",
         "Delivered gamification features (leaderboards, achievements) to drive user engagement.",
-        "Built REST API for trading card marketplace aggregating multi-source pricing data",
+        "Built REST API for trading card marketplace aggregating multi-source pricing data.",
         "Designed automated ingestion pipelines, search indexing, and cron-based synchronization.",
         "Managed GCP infrastructure (Terraform) and CI/CD pipelines with automated testing and monitoring."
       ]
@@ -63,12 +63,12 @@
       "bullets": [
         "Provided **technical leadership** to team members through training and ongoing developer support.",
         "Modernized legacy browser and mobile applications using **Angular/Ionic** and **Express** frameworks.",
-        "Collaborated with UI designers to establish a **reusable global component library** for client applications, enhancing consistency and efficiency in UI development. Components built in **Storybook** to meet design criteria.",
-        "Engineered and implemented robust login-related infrastructure/features, including user challenge authentication, one time password login/authentication and **session management** to ensure a secure and enjoyable user experience.",
-        "Rebuilding legacy **REST API** services with over 200 endpoints, improving overall system functionality and efficiency while implementing enhancements to meet evolving requirements.",
-        "Implemented efficient **state management** patterns using **Redux patterns** to maintain consistency across the frontend application, ensuring optimal performance and user experience.",
-        "Established application test environments and conducted thorough **unit testing** and **end-to-end testing** to achieve the customers requirements for **90% test coverage** of feature capabilities.",
-        "Worked in an **Agile** team to define and implement defined user stories and tasks."
+        "Collaborated with UI designers to build a **reusable global component library** in **Storybook**, improving consistency and efficiency across client applications.",
+        "Engineered robust login infrastructure, including challenge authentication, one-time password login, and **session management**, for a secure user experience.",
+        "Rebuilt legacy **REST API** services spanning over 200 endpoints to improve system functionality and meet evolving requirements.",
+        "Implemented **state management** patterns using **Redux** to maintain consistency and performance across the frontend application.",
+        "Established test environments and conducted thorough **unit** and **end-to-end testing** to meet the customer's requirement of **90% test coverage** across feature capabilities.",
+        "Worked in an **Agile** team to define and implement user stories and tasks."
       ]
     },
     {
@@ -77,8 +77,8 @@
       "startDate": "September 2022",
       "endDate": "December 2023",
       "bullets": [
-        "Developed and presented proof of concept **React** app code for real estate application that allows users to search for properties and view property details",
-        "Designed architecture of UI application and take lead in implementing appropriate design patterns for the team to follow during the course of development."
+        "Developed and presented a proof-of-concept **React** app for a real estate application that lets users search for properties and view property details.",
+        "Designed the UI application's architecture and led the team in implementing appropriate design patterns throughout development."
       ]
     },
     {
@@ -87,8 +87,8 @@
       "startDate": "September 2019",
       "endDate": "December 2020",
       "bullets": [
-        "**Saved QA team over 50 hours per week** with automated **Python** scripts to reduce time spent manually searching through application logs. Script handled parsing and sorting of logs for QA analysis.",
-        "Worked with product owners to enhance data flows of new requirements to the legacy application"
+        "**Saved QA team over 50 hours per week** by building automated **Python** scripts to parse and sort application logs, replacing manual log searches.",
+        "Worked with product owners to enhance data flows of new requirements to the legacy application."
       ]
     }
   ],
@@ -98,7 +98,7 @@
       "Cloud Development",
       "Fullstack Development",
       "Infrastructure as Code (IaC)",
-      "Devops Development",
+      "DevOps Development",
       "Unit and E2E Testing"
     ],
     "soft": [
