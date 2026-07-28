@@ -1,0 +1,106 @@
+{
+  "basics": {
+    "name": "Harry Liu",
+    "title": "Software Developer | Full Stack | Devops | Typescript | Python",
+    "email": "harryliu1995@gmail.com",
+    "phone": "+46 72-752 11 78",
+    "links": [
+      {
+        "label": "linkedin.com/in/iamharryliu",
+        "url": "https://linkedin.com/in/iamharryliu"
+      },
+      { "label": "harryliu.dev", "url": "https://harryliu.dev" },
+      {
+        "label": "github.com/iamharryliu",
+        "url": "https://github.com/iamharryliu"
+      }
+    ]
+  },
+  "summary": "Over 5 years of software developer experience, working with enterprise level applications (banks and insurance companies). Excellent team player who encourages a collaborative knowledge-sharing environment to deliver quality results. Experienced with building end to end applications and software infrastructure.",
+  "workExperience": [
+    {
+      "company": "Tillmobil",
+      "role": "Software Developer",
+      "startDate": "March 2025",
+      "endDate": "present",
+      "bullets": [
+        "Concurrently led and contributed to development of two production systems—a call analysis SaaS platform and a trading card marketplace API—balancing full-stack ownership and backend responsibilities across both codebases and infrastructure.",
+        "Built AI-driven transcription and insight pipelines for call centers.",
+        "Delivered gamification features (leaderboards, achievements) to drive user engagement.",
+        "Built REST API for trading card marketplace aggregating multi-source pricing data",
+        "Designed automated ingestion pipelines, search indexing, and cron-based synchronization.",
+        "Managed GCP infrastructure (Terraform) and CI/CD pipelines with automated testing and monitoring."
+      ]
+    },
+    {
+      "company": "Tretton37",
+      "role": "Software Developer",
+      "startDate": "June 2024",
+      "endDate": "March 2025",
+      "bullets": [
+        "Collaborated with company leadership to design and automate the company's HR system infrastructure, optimizing data flows and eliminating tens of hours of overhead reporting each week.",
+        "Developed reusable **internal tools** and libraries, streamlining internal development by providing standardized service interfaces and reducing the need for boilerplate code."
+      ]
+    },
+    {
+      "company": "Capco",
+      "role": "Fullstack Web Developer for Cross Mobile Banking Application",
+      "startDate": "January 2021",
+      "endDate": "July 2024",
+      "bullets": [
+        "Provided **technical leadership** to team members through training and ongoing developer support.",
+        "Modernized legacy browser and mobile applications using **Angular/Ionic** and **Express** frameworks.",
+        "Collaborated with UI designers to establish a **reusable global component library** for client applications, enhancing consistency and efficiency in UI development. Components built in **Storybook** to meet design criteria.",
+        "Engineered and implemented robust login-related infrastructure/features, including user challenge authentication, one time password login/authentication and **session management** to ensure a secure and enjoyable user experience.",
+        "Rebuilding legacy **REST API** services with over 200 endpoints, improving overall system functionality and efficiency while implementing enhancements to meet evolving requirements.",
+        "Implemented efficient **state management** patterns using **Redux patterns** to maintain consistency across the frontend application, ensuring optimal performance and user experience.",
+        "Established application test environments and conducted thorough **unit testing** and **end-to-end testing** to achieve the customers requirements for **90% test coverage** of feature capabilities.",
+        "Worked in an **Agile** team to define and implement defined user stories and tasks."
+      ]
+    },
+    {
+      "company": "Capco",
+      "role": "Frontend Developer for Real Estate Application",
+      "startDate": "September 2022",
+      "endDate": "December 2023",
+      "bullets": [
+        "Developed and presented proof of concept **React** app code for real estate application that allows users to search for properties and view property details",
+        "Designed architecture of UI application and take lead in implementing appropriate design patterns for the team to follow during the course of development."
+      ]
+    },
+    {
+      "company": "Capco",
+      "role": "Application Developer for Phone Interactive Voice Response Application",
+      "startDate": "September 2019",
+      "endDate": "December 2020",
+      "bullets": [
+        "**Saved QA team over 50 hours per week** with automated **Python** scripts to reduce time spent manually searching through application logs. Script handled parsing and sorting of logs for QA analysis.",
+        "Worked with product owners to enhance data flows of new requirements to the legacy application"
+      ]
+    }
+  ],
+  "skills": {
+    "technical": [
+      "Web Development",
+      "Cloud Development",
+      "Fullstack Development",
+      "Infrastructure as Code (IaC)",
+      "Devops Development",
+      "Unit and E2E Testing"
+    ],
+    "soft": [
+      "Excellent communication and active listening skills, able to explain technical ideas in a clear and simple manner.",
+      "Strong team player who is always open for discussions and collective collaboration."
+    ]
+  },
+  "personalProjects": [
+    {
+      "name": "Vigilant Broccoli",
+      "url": "https://github.com/iamharryliu/vigilant-broccoli",
+      "tags": "IaC, CICD, Package Management",
+      "bullets": [
+        "Personal monorepo used to house personal software projects, developer notes, sandbox code, and more."
+      ]
+    }
+  ]
+}

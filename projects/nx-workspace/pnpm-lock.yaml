@@ -1209,6 +1209,12 @@ importers:
         specifier: '*'
         version: 19.2.7
 
+  libs/@vigilant-broccoli/resume:
+    dependencies:
+      '@playwright/test':
+        specifier: '*'
+        version: 1.61.1
+
   libs/@vigilant-broccoli/slack-workspace:
     dependencies:
       '@slack/types':
