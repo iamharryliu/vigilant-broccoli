@@ -236,11 +236,21 @@ The GROQ queries return raw `asset->url` with no image transforms, and the galle
 
 ### 0cd00c. [maintenance] Structural duplication in the workspace
 
-### 91e45c. [maintenance] Deprecated Nx executors/plugins not yet migrated (removed in Nx v24)
+### d3010c. [maintenance] `@nx/webpack:webpack` executor not migrated to inferred (removed in Nx v24)
 
-- `@nx/webpack:webpack` executor (`vb-express`, `llm-service`), plus `composePlugins`/`withNx` helpers — `nx g @nx/webpack:convert-to-inferred` refuses both because their `serve:no-vault` targets use `@nx/js:node`, which the codemod doesn't support alongside a webpack conversion. Needs either a later Nx version that lifts this restriction, or a careful manual conversion (see PR #93 for the pattern used on the 7 Next.js apps' build/serve targets).
-- `@nx/angular/tailwind`, `@nx/next/tailwind`, `@nx/react/tailwind` glob-pattern helpers (14 `tailwind.config.js` files across the workspace) — deprecated in favor of Tailwind v4's CSS-first config, which no longer needs content globs. No automated codemod; workspace is currently on Tailwind v3.4.3 uniformly. Scoped out of PR #93 as a separate, larger migration.
-- `nxViteTsPaths` / `nxCopyAssetsPlugin` from `@nx/vite/plugins/*` (5 Vite apps + 4 libs) — still deprecated even after the `@nx/vite:build` executor itself was migrated to the inferred plugin in PR #93. Replace with `vite-tsconfig-paths`'s `tsconfigPaths()` and Vite's native `publicDir` (or `vite-plugin-static-copy`), respectively.
+`vb-express` and `llm-service`, plus the `composePlugins`/`withNx` helpers their `webpack.config.js` files use — `nx g @nx/webpack:convert-to-inferred` refuses both because their `serve:no-vault` targets use `@nx/js:node`, which the codemod doesn't support alongside a webpack conversion.
+
+Needs either a later Nx version that lifts this restriction, or a careful manual conversion (see PR #93 for the pattern used on the 7 Next.js apps' build/serve targets).
+
+### e8e058. [maintenance] Tailwind glob-pattern helpers deprecated across 14 configs (removed in Nx v24)
+
+`@nx/angular/tailwind`, `@nx/next/tailwind`, `@nx/react/tailwind` glob-pattern helpers, used across 14 `tailwind.config.js` files in the workspace — deprecated in favor of Tailwind v4's CSS-first config, which no longer needs content globs. No automated codemod; workspace is currently on Tailwind v3.4.3 uniformly. Scoped out of PR #93 as a separate, larger migration (upgrading to Tailwind v4 first).
+
+### 112bae. [maintenance] `nxViteTsPaths` / `nxCopyAssetsPlugin` still deprecated after Nx v24 vite executor migration
+
+`nxViteTsPaths` / `nxCopyAssetsPlugin` from `@nx/vite/plugins/*`, used across 5 Vite apps + 4 libs — still deprecated even after the `@nx/vite:build` executor itself was migrated to the inferred plugin in PR #93.
+
+**Fix:** replace `nxViteTsPaths` with `vite-tsconfig-paths`'s `tsconfigPaths()`, and `nxCopyAssetsPlugin` with Vite's native `publicDir` (or `vite-plugin-static-copy`).
 
 ### 1f0a7e. [maintenance] Next.js "inferred workspace root" warning
 
