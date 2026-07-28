@@ -89,6 +89,20 @@ jobs:
         with:
           python-version: '3.13'
 
-      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+      # pre-commit/action@v3.0.1 (its latest release) pins actions/cache@v4 by
+      # a mutable tag, which resolves to a Node 20 action and triggers the
+      # deprecation warning — so its steps are inlined here with a pinned,
+      # Node 24-compatible actions/cache instead.
+      - name: Install pre-commit
+        run: python -m pip install pre-commit
+
+      - name: Cache pre-commit envs
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Run pre-commit
         env:
           SKIP: grind-75-tests,lint-staged
+        run: pre-commit run --show-diff-on-failure --color=always --all-files
