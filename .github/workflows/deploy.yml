@@ -245,19 +245,32 @@ jobs:
             fi
           fi
 
+      - name: Import Secrets from Vault
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
+
       - name: Stage component-library pages artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/react-component-library/
-        run: pnpm exec nx run component-library:deploy-github-pages --skip-nx-cache
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+        run: pnpm exec nx run component-library:deploy-github-pages
 
       - name: Stage pages-index landing artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/
-        run: pnpm exec nx run pages-index:deploy-github-pages --skip-nx-cache
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+        run: pnpm exec nx run pages-index:deploy-github-pages
 
       - name: Setup Pages
         if: steps.check.outputs.has_deployments == 'true'
