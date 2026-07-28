@@ -1,0 +1,15 @@
+meta {
+  name: Delete Absence
+  type: http
+  seq: 12
+}
+
+delete {
+  url: https://api.cinode.com/v0.1/companies/{{process.env.COMPANY_ID}}/users/{{process.env.USER_ID}}/absences/{{process.env.ABSENCE_ID}}
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{process.env.CINODE_ACCESS_TOKEN}}
+}

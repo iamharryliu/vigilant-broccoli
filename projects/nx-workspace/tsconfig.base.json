@@ -103,6 +103,12 @@
       ],
       "@vigilant-broccoli/deployment": [
         "./libs/@vigilant-broccoli/deployment/src/index.ts"
+      ],
+      "@vigilant-broccoli/resume": [
+        "./libs/@vigilant-broccoli/resume/src/index.ts"
+      ],
+      "@vigilant-broccoli/resume/server": [
+        "./libs/@vigilant-broccoli/resume/src/server.ts"
       ]
     }
   },

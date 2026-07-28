@@ -1,0 +1,15 @@
+meta {
+  name: Get Cinode Access and Refresh Tokens
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://api.cinode.com/token
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Basic {{process.env.CINODE_AUTH_TOKEN}}
+}

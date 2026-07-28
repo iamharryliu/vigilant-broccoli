@@ -70,24 +70,42 @@ function getLLMClient(modelConfig: Partial<LLMModelConfig> = {}) {
   return getOpenAIClient(modelConfig);
 }
 
+const anthropicClientCache = new Map<string, Anthropic>();
+const openAIClientCache = new Map<string, OpenAI>();
+
 function getAnthropicClient({
   model = LLM_MODEL.CLAUDE_4_SONNET,
   apiKey,
 }: Partial<LLMModelConfig> = {}) {
-  return new Anthropic({
-    apiKey: apiKey ? apiKey : getModelAPIKey(model),
-  });
+  const resolvedApiKey = apiKey ? apiKey : getModelAPIKey(model);
+  const cacheKey = resolvedApiKey ?? '';
+  const cachedClient = anthropicClientCache.get(cacheKey);
+  if (cachedClient) {
+    return cachedClient;
+  }
+  const client = new Anthropic({ apiKey: resolvedApiKey });
+  anthropicClientCache.set(cacheKey, client);
+  return client;
 }
 
 function getOpenAIClient({
   model = LLM_MODEL.GPT_4O,
   apiKey,
 }: Partial<LLMModelConfig> = {}) {
-  return new OpenAI({
-    baseURL: getModelBaseUrl(model),
-    apiKey: apiKey ? apiKey : getModelAPIKey(model),
+  const baseURL = getModelBaseUrl(model);
+  const resolvedApiKey = apiKey ? apiKey : getModelAPIKey(model);
+  const cacheKey = `${baseURL}:${resolvedApiKey ?? ''}`;
+  const cachedClient = openAIClientCache.get(cacheKey);
+  if (cachedClient) {
+    return cachedClient;
+  }
+  const client = new OpenAI({
+    baseURL,
+    apiKey: resolvedApiKey,
     fetch: globalThis.fetch,
   });
+  openAIClientCache.set(cacheKey, client);
+  return client;
 }
 
 function formatPromptParams(request: LLMPromptRequest, stream = false) {

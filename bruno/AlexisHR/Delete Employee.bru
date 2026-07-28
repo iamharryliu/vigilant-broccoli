@@ -1,0 +1,16 @@
+meta {
+  name: Delete Employee
+  type: http
+  seq: 6
+}
+
+delete {
+  url: https://api.alexishr.com/v1/employee/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{process.env.ALEXISHR_API_KEY}}
+  Content-Type: application/json
+}

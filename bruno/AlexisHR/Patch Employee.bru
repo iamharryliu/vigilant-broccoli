@@ -1,0 +1,22 @@
+meta {
+  name: Patch Employee
+  type: http
+  seq: 4
+}
+
+patch {
+  url: https://api.alexishr.com/v1/employee/66431809fd71c51926b9f612
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{process.env.ALEXISHR_API_KEY}}
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "title": "Consultant"
+  }
+}

@@ -65,6 +65,8 @@ brew "node@22", link: true
 brew "nss"
 # Manage multiple Node.js versions
 brew "nvm"
+# Get up and running with large language models locally
+brew "ollama"
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
 # Execute binaries from Python packages in isolated environments
@@ -150,8 +152,6 @@ cask "iterm2"
 cask "little-snitch"
 # VPN client for secure internet access and private browsing
 cask "nordvpn"
-# Knowledge base that works on top of a local folder of plain text Markdown files
-cask "obsidian"
 # Retro video game emulation
 cask "openemu"
 # Control your tools with a few keystrokes
