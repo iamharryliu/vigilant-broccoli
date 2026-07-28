@@ -29,6 +29,7 @@
 - Avoid string literals, prefer having consts.
 - Do not write tests unless explicitly asked.
 - Do not write markdown reports, summaries, or documentation unless explicitly asked.
+- If a PR touches files for a cloud service, or introduces/changes usage of one, add or update a `## Free Tier` section in that service's notes/docs file documenting its free tier limits (e.g. [github-actions.md](./notes/tech/software/web-dev/devops/automation/github-actions.md)).
 
 ## Folder Structure
 
