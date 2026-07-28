@@ -13,9 +13,6 @@ import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
 import { RecipeScraperDemo } from '../llm/RecipeScraperDemo';
 import { QRCodeGenerator } from '../demos/QRCodeGenerator';
 import { LiveLocationsDemo } from '../demos/LiveLocationsDemo';
-import { UserLeaderboardDemo } from '../demos/UserLeaderboardDemo';
-import { GroupLeaderboardDemo } from '../demos/GroupLeaderboardDemo';
-import { EmptyLeaderboardDemo } from '../demos/EmptyLeaderboardDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -89,21 +86,6 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'notifications-demo',
     title: 'Notifications Demo',
     content: <NotificationsDemo />,
-  },
-  {
-    id: 'user-leaderboard-demo',
-    title: 'User Leaderboard Demo',
-    content: <UserLeaderboardDemo />,
-  },
-  {
-    id: 'group-leaderboard-demo',
-    title: 'Group Leaderboard Demo',
-    content: <GroupLeaderboardDemo />,
-  },
-  {
-    id: 'empty-leaderboard-demo',
-    title: 'Empty Leaderboard Demo',
-    content: <EmptyLeaderboardDemo />,
   },
 ];
 

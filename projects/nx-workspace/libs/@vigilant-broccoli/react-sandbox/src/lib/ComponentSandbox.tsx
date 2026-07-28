@@ -31,6 +31,9 @@ import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
 import { ToasterDemo } from './demos/ToasterDemo';
+import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
+import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
+import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
 
 const STORAGE_KEY = 'component-sandbox';
 const STORAGE_KEY_UTILITIES = `${STORAGE_KEY}-utilities`;
@@ -146,6 +149,21 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'github-actions-badges',
     title: 'GitHub Actions Badges',
     content: <GithubActionsBadgesDemo />,
+  },
+  {
+    id: 'user-leaderboard',
+    title: 'User Leaderboard',
+    content: <UserLeaderboardDemo />,
+  },
+  {
+    id: 'group-leaderboard',
+    title: 'Group Leaderboard',
+    content: <GroupLeaderboardDemo />,
+  },
+  {
+    id: 'empty-leaderboard',
+    title: 'Empty Leaderboard',
+    content: <EmptyLeaderboardDemo />,
   },
 ];
 
