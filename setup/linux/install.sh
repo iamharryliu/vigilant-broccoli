@@ -19,6 +19,12 @@ if ask "Symlink dotfiles?"; then
     symlink_common_dotfiles
 fi
 
+if [ "$1" != "-y" ] && ask "Install neovide (builds from source via cargo, no apt package exists)?"; then
+    command -v cargo > /dev/null || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source "$HOME/.cargo/env"
+    cargo install --git https://github.com/neovide/neovide
+fi
+
 RC_LINE='source $HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash'
 grep -qxF "$RC_LINE" "$HOME/.bashrc" 2>/dev/null || echo "$RC_LINE" >> "$HOME/.bashrc"
 echo "Added rc hook to ~/.bashrc"
