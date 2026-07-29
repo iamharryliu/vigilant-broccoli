@@ -38,6 +38,7 @@
       "bullets": [
         "Led and contributed to two production systems—a call analysis SaaS platform and a trading card marketplace API—across both codebases and infrastructure.",
         "Built AI-driven transcription and insight pipelines for call centers.",
+        "Adopted **AI-driven development** workflows with tools like **Claude Code** to accelerate feature delivery and code review.",
         "Delivered gamification features (leaderboards, achievements) to drive user engagement.",
         "Built REST API for trading card marketplace aggregating multi-source pricing data.",
         "Designed automated ingestion pipelines, search indexing, and cron-based synchronization.",
@@ -78,6 +79,7 @@
       "Cloud Development",
       "Fullstack Development",
       "Infrastructure as Code (IaC)",
+      "AI Agentic Software Development",
       "DevOps Development",
       "Unit and E2E Testing"
     ],
