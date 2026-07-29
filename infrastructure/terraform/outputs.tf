@@ -37,7 +37,7 @@ output "oci_code_server_url" {
 }
 
 output "aws_seafile_public_ip" {
-  value = aws_instance.seafile.public_ip
+  value = aws_eip.seafile.public_ip
 }
 
 output "aws_seafile_url" {

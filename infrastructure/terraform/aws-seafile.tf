@@ -85,6 +85,17 @@ resource "aws_instance" "seafile" {
   }
 }
 
+# Keeps the public IP stable across user_data updates, which otherwise stop/start
+# the instance and release the ephemeral IP back to AWS's pool.
+resource "aws_eip" "seafile" {
+  instance = aws_instance.seafile.id
+  domain   = "vpc"
+
+  tags = {
+    Name = "seafile-eip"
+  }
+}
+
 resource "tls_private_key" "seafile_origin" {
   algorithm = "RSA"
   rsa_bits  = 2048
@@ -109,7 +120,7 @@ resource "cloudflare_origin_ca_certificate" "seafile" {
 resource "cloudflare_dns_record" "seafile" {
   zone_id = var.cloudflare_zone_id
   name    = var.seafile_domain
-  content = aws_instance.seafile.public_ip
+  content = aws_eip.seafile.public_ip
   type    = "A"
   ttl     = 1
   proxied = true
