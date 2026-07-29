@@ -16,14 +16,13 @@
 
 ## Development
 
-- [machine setup](./docs/machine-setups/machine-setup.md) - OS-specific setup instructions.
-- [cheatsheet](./docs/cheatsheet.md) - useful infra-level CLI commands
+### Commands
 
-## Commands
+View [cheatsheet](./docs/cheatsheet.md) for useful infra-level CLI commands.
 
 ```
-pnpm local:install:machine-setup
 pnpm cheatsheet
+pnpm local:install:machine-setup
 ```
 
 ## CI Status
