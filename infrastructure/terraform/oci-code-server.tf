@@ -90,14 +90,14 @@ resource "oci_core_instance" "code_server" {
   shape               = "VM.Standard.A1.Flex"
 
   shape_config {
-    ocpus         = 2
-    memory_in_gbs = 14
+    ocpus         = 1
+    memory_in_gbs = 6
   }
 
   source_details {
     source_type             = "image"
     source_id               = data.oci_core_images.ubuntu_arm.images[0].id
-    boot_volume_size_in_gbs = 50
+    boot_volume_size_in_gbs = 30
   }
 
   create_vnic_details {

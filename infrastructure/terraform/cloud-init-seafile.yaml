@@ -1,0 +1,85 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - docker.io
+  - docker-compose-v2
+
+write_files:
+  - path: /opt/seafile/Caddyfile
+    content: |
+      ${seafile_domain} {
+        tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+        reverse_proxy seafile:80
+      }
+
+  - path: /opt/seafile/certs/origin.pem
+    permissions: '0644'
+    content: |
+      ${indent(6, seafile_origin_cert)}
+
+  - path: /opt/seafile/certs/origin.key
+    permissions: '0600'
+    content: |
+      ${indent(6, seafile_origin_key)}
+
+  - path: /opt/seafile/docker-compose.yml
+    content: |
+      services:
+        db:
+          image: mariadb:10.11
+          container_name: seafile-db
+          restart: unless-stopped
+          environment:
+            MYSQL_ROOT_PASSWORD: ${seafile_db_root_password}
+            MYSQL_LOG_CONSOLE: "true"
+          volumes:
+            - seafile_db:/var/lib/mysql
+        memcached:
+          image: memcached:1.6.29
+          container_name: seafile-memcached
+          restart: unless-stopped
+          entrypoint: memcached -m 256
+        seafile:
+          image: seafileltd/seafile-mc:latest
+          container_name: seafile
+          restart: unless-stopped
+          environment:
+            DB_HOST: db
+            DB_ROOT_PASSWD: ${seafile_db_root_password}
+            TIME_ZONE: America/Toronto
+            SEAFILE_ADMIN_EMAIL: ${seafile_admin_email}
+            SEAFILE_ADMIN_PASSWORD: ${seafile_admin_password}
+            SEAFILE_SERVER_LETSENCRYPT: "false"
+            SEAFILE_SERVER_HOSTNAME: ${seafile_domain}
+          volumes:
+            - seafile_data:/shared
+          depends_on:
+            - db
+            - memcached
+        caddy:
+          image: caddy:2-alpine
+          container_name: caddy
+          restart: unless-stopped
+          ports:
+            - "80:80"
+            - "443:443"
+          volumes:
+            - /opt/seafile/Caddyfile:/etc/caddy/Caddyfile:ro
+            - /opt/seafile/certs:/etc/caddy/certs:ro
+            - caddy_data:/data
+            - caddy_config:/config
+          depends_on:
+            - seafile
+      volumes:
+        seafile_db:
+        seafile_data:
+        caddy_data:
+        caddy_config:
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ubuntu
+  - docker compose -f /opt/seafile/docker-compose.yml up -d

@@ -29,6 +29,9 @@ Provisions the project's cloud resources — Cloudflare DNS/Pages, Oracle Cloud 
   - RabbitMQ
   - Caddy
   - code-server
+  - Seafile
+  - MariaDB
+  - Memcached
   - Watchtower
 - Secrets
   - HashiCorp Vault
