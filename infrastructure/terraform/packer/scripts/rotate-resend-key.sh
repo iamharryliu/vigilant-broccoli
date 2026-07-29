@@ -10,6 +10,13 @@ KEY_NAME="vb-ci-$(date +%Y%m%d%H%M%S)"
 KEY_PERMISSION="full_access"
 FLY_APP="staging-vb-email-service"
 
+resend_curl() {
+  local key="$1"; shift
+  curl -K - "$@" <<HEADER
+header = "Authorization: Bearer ${key}"
+HEADER
+}
+
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): current key and
 # VAULT_TOKEN come from the vault-secrets action, Vault is reached through the
 # Cloudflare Access tunnel. Local mode: both go through gcloud + IAP SSH.
@@ -35,8 +42,7 @@ if [ -z "$CURRENT_KEY" ]; then
 fi
 
 echo "Minting successor key (${KEY_NAME})..."
-CREATE=$(curl -sf -X POST "${RESEND_API}/api-keys" \
-  -H "Authorization: Bearer ${CURRENT_KEY}" \
+CREATE=$(resend_curl "$CURRENT_KEY" -sf -X POST "${RESEND_API}/api-keys" \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"${KEY_NAME}\",\"permission\":\"${KEY_PERMISSION}\"}")
 NEW_ID=$(jq -r '.id // empty' <<< "$CREATE")
@@ -48,7 +54,7 @@ if [ -z "$NEW_KEY" ]; then
 fi
 
 echo "Verifying new key..."
-if ! curl -sf -o /dev/null -H "Authorization: Bearer ${NEW_KEY}" "${RESEND_API}/api-keys"; then
+if ! resend_curl "$NEW_KEY" -sf -o /dev/null "${RESEND_API}/api-keys"; then
   echo "ERROR: New key failed verification; old key left untouched"
   exit 1
 fi
@@ -75,12 +81,12 @@ echo "Pushing new key to ${FLY_APP} (rolling restart)..."
 printf 'RESEND_API_KEY=%s\n' "${NEW_KEY}" | flyctl secrets import --app "${FLY_APP}"
 
 echo "Deleting all other Resend keys (single-key policy)..."
-OLD_IDS=$(curl -sf -H "Authorization: Bearer ${NEW_KEY}" "${RESEND_API}/api-keys" \
+OLD_IDS=$(resend_curl "$NEW_KEY" -sf "${RESEND_API}/api-keys" \
   | jq -r --arg new "$NEW_ID" '.data[] | select(.id != $new) | .id')
 for KEY_ID in $OLD_IDS; do
   echo "Deleting key (ID: ${KEY_ID})..."
-  curl -sf -o /dev/null -X DELETE -H "Authorization: Bearer ${NEW_KEY}" "${RESEND_API}/api-keys/${KEY_ID}"
+  resend_curl "$NEW_KEY" -sf -o /dev/null -X DELETE "${RESEND_API}/api-keys/${KEY_ID}"
 done
 
-REMAINING=$(curl -sf -H "Authorization: Bearer ${NEW_KEY}" "${RESEND_API}/api-keys" | jq '.data | length')
+REMAINING=$(resend_curl "$NEW_KEY" -sf "${RESEND_API}/api-keys" | jq '.data | length')
 echo "✓ Resend key rotated successfully (${REMAINING} key active)"
