@@ -45,6 +45,15 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   code-server:reset           Rebuild containers + volumes (fresh environment)
   code-server:replace         Replace the VM via terraform (fresh host)
 
+📁 SEAFILE
+  seafile:open                Open drive.harryliu.dev
+  seafile:password            Copy Seafile admin password to clipboard
+  seafile:ssh                 SSH into Seafile VM
+  seafile:logs                Follow Seafile container logs
+  seafile:logs:cloud-init     Follow VM provisioning log
+  seafile:reset               Rebuild containers + volumes (fresh environment)
+  seafile:replace             Replace the VM via terraform (fresh host)
+
 🖥️  GCP VM
   gcp:vm:image:build          Build GCP VM Packer image (init + build)
   gcp:vm:ssh                  SSH into GCP VM via IAP

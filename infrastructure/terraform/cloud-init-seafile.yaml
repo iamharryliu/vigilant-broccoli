@@ -3,9 +3,8 @@ package_update: true
 package_upgrade: true
 
 ssh_authorized_keys:
-%{ for key in seafile_ssh_keys ~}
-  - ${key}
-%{ endfor ~}
+  - ${seafile_ssh_keys[0]}
+  - ${seafile_ssh_keys[1]}
 
 packages:
   - docker.io
