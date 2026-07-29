@@ -69,6 +69,46 @@ gs                                          # Change sort order
 <C-t>                                       # Open in new tab
 ```
 
+## LSP
+
+```
+gd                                          # Go to definition
+gD                                          # Go to declaration
+gr                                          # Go to references
+gI                                          # Go to implementation
+K                                           # Hover documentation
+<leader>D                                  # Type definition
+<leader>rn                                  # Rename symbol
+<leader>ca                                 # Code action
+<leader>ds                                  # Document symbols
+<leader>ws                                  # Workspace symbols
+
+[d / ]d                                     # Previous/next diagnostic
+<leader>e                                   # Show diagnostic under cursor
+<leader>q                                   # Diagnostics to location list
+
+:Mason                                      # Open Mason installer UI
+:LspInstall                                 # Install/enable a language server
+```
+
+## Completion
+
+```
+<C-n>/<C-p>                                 # Next/previous completion item
+<C-Space>                                   # Trigger completion
+<CR>                                        # Confirm selected item
+<Tab>/<S-Tab>                                # Next/previous item or snippet jump
+<C-e>                                       # Abort completion
+```
+
+## Formatting & Linting
+
+```
+<leader>lf                                  # Format buffer (also runs on save)
+```
+
+Linting (nvim-lint) runs automatically on save, buffer enter, and leaving insert mode; diagnostics show up alongside LSP diagnostics.
+
 ## FZF
 
 ```
