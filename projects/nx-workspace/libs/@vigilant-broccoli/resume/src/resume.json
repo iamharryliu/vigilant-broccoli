@@ -56,38 +56,19 @@
     },
     {
       "company": "Capco",
-      "role": "Fullstack Web Developer for Cross Mobile Banking Application",
-      "startDate": "January 2021",
+      "role": "Software Developer",
+      "startDate": "September 2019",
       "endDate": "July 2024",
       "bullets": [
-        "Provided **technical leadership** to team members through training and ongoing developer support.",
-        "Modernized legacy browser and mobile applications using **Angular/Ionic** and **Express** frameworks.",
-        "Collaborated with UI designers to build a **reusable global component library** in **Storybook**, improving consistency and efficiency across client applications.",
-        "Engineered robust login infrastructure, including challenge authentication, one-time password login, and **session management**, for a secure user experience.",
-        "Rebuilt legacy **REST API** services spanning over 200 endpoints to improve system functionality and meet evolving requirements.",
-        "Implemented **state management** patterns using **Redux** to maintain consistency and performance across the frontend application.",
-        "Established test environments and conducted thorough **unit** and **end-to-end testing** to meet the customer's requirement of **90% test coverage** across feature capabilities.",
-        "Worked in an **Agile** team to define and implement user stories and tasks."
-      ]
-    },
-    {
-      "company": "Capco",
-      "role": "Frontend Developer for Real Estate Application",
-      "startDate": "September 2022",
-      "endDate": "December 2023",
-      "bullets": [
-        "Developed and presented a proof-of-concept **React** app for a real estate application that lets users search for properties and view property details.",
-        "Designed the UI application's architecture and led the team in implementing appropriate design patterns throughout development."
-      ]
-    },
-    {
-      "company": "Capco",
-      "role": "Application Developer for Phone Interactive Voice Response Application",
-      "startDate": "September 2019",
-      "endDate": "December 2020",
-      "bullets": [
-        "**Saved QA team over 50 hours per week** by building automated **Python** scripts to parse and sort application logs, replacing manual log searches.",
-        "Worked with product owners to enhance data flows of new requirements to the legacy application."
+        "Developed secure login infrastructure for a cross-platform mobile banking application, including challenge authentication, one-time password login, and **session management**.",
+        "Rebuilt legacy banking **REST API** services spanning over 200 endpoints, and modernized legacy browser and mobile banking applications using **Angular/Ionic** and **Express** frameworks to meet evolving system requirements.",
+        "Implemented **state management** patterns using **Redux** to maintain consistency and performance across the banking frontend application.",
+        "Established test environments and conducted thorough **unit** and **end-to-end testing** to meet the banking client's requirement of **90% test coverage** across feature capabilities.",
+        "Provided **technical leadership** to team members through training and ongoing developer support on the banking application team.",
+        "Collaborated with UI designers to build a **reusable global component library** in **Storybook**, improving consistency and efficiency across banking client applications.",
+        "**Saved QA teams hundred of hours per week** by building automated **Python** scripts to parse and sort application logs for a phone interactive voice response banking application, replacing manual log searches.",
+        "Developed and presented a proof-of-concept **React** app for a real estate application that lets users search for properties and view property details, designing the UI architecture and leading the team's design pattern implementation.",
+        "Worked in **Agile** teams to define and implement user stories and tasks across client engagements."
       ]
     }
   ],
