@@ -2,6 +2,11 @@
 package_update: true
 package_upgrade: true
 
+ssh_authorized_keys:
+%{ for key in seafile_ssh_keys ~}
+  - ${key}
+%{ endfor ~}
+
 packages:
   - docker.io
   - docker-compose-v2
