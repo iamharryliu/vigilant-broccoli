@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
@@ -14,7 +14,7 @@ export default defineConfig(() => ({
     port: 4202,
     host: 'localhost',
   },
-  plugins: [react(), nxViteTsPaths()],
+  plugins: [react(), tsconfigPaths()],
   build: {
     outDir: '../../../dist/apps/ui/journal',
     emptyOutDir: true,
