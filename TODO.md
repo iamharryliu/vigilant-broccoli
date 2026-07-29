@@ -396,21 +396,3 @@ Vault's JWT auth config — the `github-actions-role` / `-rotate-role` / `-pr-ch
 4. Strip the policy/role/`kv/test` blocks out of `run-vault-post-init.sh`, leaving only true bootstrap (init + KV/JWT mount enable). Remove the interim unconditional `npm run gcp:vm:post-init` call added to `post-apply.sh`'s IP-unchanged branch in #217.
 5. Update docs: [secret-management.md](./docs/infrastructure/secret-management.md) (the role/policy inventory now lives in Terraform) and any reference to `pnpm gcp:vm:post-init` being required after adding a Vault role.
 6. Verify: `pnpm tf:plan` shows the imported roles/policies as no-change, then edit one `bound_claims` and confirm `tf:plan` shows the diff and `tf:apply` reconciles it without touching the VM; confirm `ci-pr-check` and `ci-rotate-secrets` still authenticate to Vault afterward.
-
-#### faa345. Local graph mode for the docs-md note viewer
-
-**`libs/@vigilant-broccoli/react-utility/src/lib/graph-view.tsx`, `libs/@vigilant-broccoli/react-utility/src/lib/docs-viewer.tsx`, `libs/@vigilant-broccoli/react-lib/src/components/DocsExplorer.tsx`**
-
-The graph view added in #207 renders the whole note graph. Obsidian also offers a _local_ graph — the currently-open note plus its links out to N hops — which is more useful while reading. All the pieces already exist: `GraphView` receives `activePath` and already builds a `neighbors` adjacency map for hover highlighting, and `graph.json` (emitted by `apps/ui/docs-md/scripts/build-snapshot.mjs`) carries the full `{nodes, links}`. A local graph is just the full graph filtered to the BFS neighborhood of `activePath`, fed back into the same `GraphView`.
-
-**Desired end state:** a Global/Local toggle in the graph panel (defaulting to Local when a file is open) with a depth selector (1–2 hops). Local mode shows only the active note and its neighborhood, recomputed whenever the active file changes; clicking a node still opens it and re-roots the local graph on the clicked node. Global mode is the current behavior.
-
-**Steps:**
-
-1. Add a pure `localSubgraph(graph: NoteGraph, rootPath: string, depth: number): NoteGraph` helper — BFS over an adjacency map, returning `{nodes, links}` limited to visited nodes and the links among them. Put it beside the `NoteGraph` types in `react-lib` (`DocsExplorer.tsx`) or next to `GraphView`. Factor the adjacency-map build out of `graph-view.tsx` so the hover-highlight code and this helper share one implementation instead of duplicating it.
-2. In `docs-viewer.tsx`'s `GraphPanel`, add graph-scope state (`'global' | 'local'`) plus a depth, persisted like `VIEW_MODE_STORAGE_KEY`. When scope is local and `activePath` is set, pass `localSubgraph(graph, activePath, depth)` to `GraphView`; otherwise pass the full graph. Memoize on `graph`/`activePath`/`depth` so switching notes updates the local view.
-3. Surface the toggle inside the panel (the graph region already has a top-right toolbar in `DocsExplorer`) — a small Global/Local segmented control plus depth, keeping the existing single sidebar graph toggle button as the entry point.
-4. Edge cases: orphan active note (degree 0) → render just the single node with a hint; no file open while in local mode → fall back to global or an empty state; keep auto-fit working after each recompute — `GraphView` already re-fits until the user interacts, so verify a subgraph swap re-triggers fit (or reset the internal `userInteracted` flag on root change).
-5. Verify with `npx nx lint react-lib react-utility docs-md` + typecheck, then manually: open a hub note (e.g. `recipes.md`), confirm local mode shows only its neighborhood, changing notes re-roots it, and depth 2 pulls in neighbors-of-neighbors; confirm global mode is unchanged.
-
-Out of scope: showing the local graph _alongside_ the note content (Obsidian's right-sidebar pane) — this first cut reuses the existing full-panel graph toggle.
