@@ -20,15 +20,14 @@
   "workExperience": [
     {
       "company": "vigilant-broccoli",
-      "role": "Software Developer (Open Source Monorepo)",
+      "role": "Open Source Maintainer",
       "startDate": "July 2023",
       "endDate": "present",
       "bullets": [
-        "Architect and maintain an **open-source Nx monorepo** containing full-stack web apps, API services, shared libraries, developer notes, and infrastructure code.",
+        "Architect and maintain an **open-source Nx monorepo** containing full-stack web apps, API services, shared reusable **npm** libraries, developer notes, and infrastructure code.",
         "Design and run **agentic coding workflows** with **Claude Code**, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring.",
         "Provision and operate **cloud infrastructure** with **Terraform**, managing secrets through dedicated secret managers.",
-        "Build and maintain **CI/CD pipelines** covering PR checks, health checks, cron jobs, and smoke, end-to-end, and security test suites across a growing set of apps and services.",
-        "Publish reusable internal libraries to **npm** and document repo-wide conventions to keep patterns consistent as the monorepo scales."
+        "Build and maintain **CI/CD pipelines** covering PR checks, health checks, cron jobs, and smoke, end-to-end, and security test suites across a growing set of apps and services."
       ]
     },
     {
