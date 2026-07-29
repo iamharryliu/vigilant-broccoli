@@ -88,6 +88,8 @@ jobs:
           RMQ_PASS: ${{ env.RMQ_PASS }}
         run: |
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
+          RMQ_NETRC=$(mktemp)
+          printf 'machine rabbitmq login %s password %s\n' "$RMQ_USER" "$RMQ_PASS" > "$RMQ_NETRC"
           # The broker cert's SAN is 'rabbitmq' (not the public host), so we
           # connect to the real host but present/verify SNI 'rabbitmq' against
           # the CA. --connect-to resolves the host itself, so it works whether
@@ -96,11 +98,12 @@ jobs:
             STATUS=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 10 \
               --cacert /tmp/rabbitmq-ca.crt \
               --connect-to "rabbitmq:15671:${RMQ_HOST}:15671" \
-              -u "${RMQ_USER}:${RMQ_PASS}" \
+              --netrc-file "$RMQ_NETRC" \
               "https://rabbitmq:15671/api/overview") || STATUS="000"
             [ "$STATUS" = "200" ] && break
             [ "$attempt" -lt 3 ] && sleep 5
           done
+          rm -f "$RMQ_NETRC"
           echo "Management /api/overview status: $STATUS"
           if [ "$STATUS" != "200" ]; then
             echo "✗ Management UI check failed"

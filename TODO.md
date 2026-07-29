@@ -290,10 +290,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`infrastructure/terraform/cloud-init-code-server.yaml:80-81`** (leaked web password → container root). Separate the two.
 
-### baacec. [security] Secrets passed as CLI args in CI
-
-`ci-health-check.yml` and `test-e2e-rabbitmq.yml` (`curl … -u "${RMQ_USER}:${RMQ_PASS}"`), `cron-deploy-journal.yml:53` (`-H "Authorization: token ${GITEA_TOKEN}"`), `rotate-resend-key.sh:82`. Feed via stdin/`--netrc`/`curl -K -`.
-
 ### bb6d65. [security] Unverified binary/`curl|bash` installs
 
 `cron-backup.yml:125` (mongodb-tools `.deb`, no checksum), `deploy-github-profile.yml:39` + `cron-backup.yml` (`ssh-keyscan` TOFU), `cloud-init-code-server.yaml` (nodesource `curl|bash` as root each VM init), Packer `provision.sh:29-30` (`get.docker.com`). Pin/verify checksums; hardcode GitHub's published host keys.

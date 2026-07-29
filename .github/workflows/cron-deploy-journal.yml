@@ -51,10 +51,11 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ env.GITEA_CF_ACCESS_CLIENT_SECRET }}
         run: |
           rm -rf journal-src journal.zip
-          curl -sfL -H "Authorization: token ${GITEA_TOKEN}" \
-            -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
-            -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
-            -o journal.zip "$GITEA_JOURNAL_ARCHIVE_URL"
+          curl -sfL -K - -o journal.zip "$GITEA_JOURNAL_ARCHIVE_URL" <<CURL_CFG
+          header = "Authorization: token ${GITEA_TOKEN}"
+          header = "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}"
+          header = "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}"
+          CURL_CFG
           unzip -q journal.zip -d journal-src
           NOTES_DIR=$(find journal-src -mindepth 1 -maxdepth 1 -type d | head -1)
           echo "NOTES_DIR=$NOTES_DIR" >> "$GITHUB_ENV"
