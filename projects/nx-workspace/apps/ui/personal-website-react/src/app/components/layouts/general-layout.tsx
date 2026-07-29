@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { Github, Linkedin, Calendar } from 'lucide-react';
 import { ENVIRONMENT } from '../../../environments/environment';
 import { LINKS } from '../../core/consts/routes.const';
 import { NavbarSection } from '../features/navbar-section';
@@ -24,7 +25,7 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
                   rel="noreferrer"
                   className="transition-all duration-200 hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
                 >
-                  <i className="fa-brands fa-github fa-xl" />
+                  <Github size={22} />
                 </a>
                 <a
                   href="https://www.linkedin.com/in/iamharryliu/"
@@ -32,7 +33,7 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
                   rel="noreferrer"
                   className="transition-all duration-200 hover:scale-110 hover:text-blue-700 dark:hover:text-blue-500"
                 >
-                  <i className="fa-brands fa-linkedin fa-xl" />
+                  <Linkedin size={22} />
                 </a>
                 <Link
                   to={LINKS.CONTACT_PAGE.url.internal ?? '/'}
@@ -81,7 +82,7 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
                   className="transition-all duration-200 hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
                   aria-label="Calendar"
                 >
-                  <i className="fa-solid fa-calendar fa-xl" />
+                  <Calendar size={22} />
                 </Link>
                 {ENVIRONMENT.JOB_HUNT_MODE ? (
                   <a
@@ -90,7 +91,7 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
                     rel="noreferrer"
                     className="transition-all duration-200 hover:scale-110 hover:text-blue-700 dark:hover:text-blue-500"
                   >
-                    <i className="fa-brands fa-linkedin fa-xl" />
+                    <Linkedin size={22} />
                   </a>
                 ) : null}
                 <ToggleDarkModeButton />

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import { LINKS } from '../../core/consts/routes.const';
 
 const NAV_LINKS = [LINKS.ABOUT_PAGE, LINKS.CALENDAR_PAGE];
@@ -46,7 +47,7 @@ export function NavbarSection({ className = '' }: Props) {
             className="text-gray-600 dark:text-gray-300 focus:outline-none"
             aria-label="Toggle navigation"
           >
-            <i className="fas fa-bars" />
+            <Menu size={20} />
           </button>
         </div>
         <div
