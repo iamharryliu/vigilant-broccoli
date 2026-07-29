@@ -10,6 +10,8 @@ sites:
     url: https://docs.harryliu.dev/
   - name: code.harryliu.dev
     url: https://code.harryliu.dev/login
+  - name: drive.harryliu.dev
+    url: https://drive.harryliu.dev/
   - name: nx-cache.harryliu.dev
     url: https://nx-cache.harryliu.dev/health
   - name: staging-cloud8skate.com

@@ -36,6 +36,14 @@ output "oci_code_server_url" {
   value = "https://${var.code_server_domain}"
 }
 
+output "aws_seafile_public_ip" {
+  value = aws_instance.seafile.public_ip
+}
+
+output "aws_seafile_url" {
+  value = "https://${var.seafile_domain}"
+}
+
 output "journal_url" {
   value = "https://${var.journal_domain}"
 }

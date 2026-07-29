@@ -87,6 +87,21 @@ variable "code_server_allowed_emails" {
   default = ["harryliu1995@gmail.com"]
 }
 
+variable "seafile_domain" {
+  type    = string
+  default = "drive.harryliu.dev"
+}
+
+variable "seafile_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
+
+variable "seafile_admin_email" {
+  type    = string
+  default = "harryliu1995@gmail.com"
+}
+
 variable "vault_domain" {
   type    = string
   default = "vault.harryliu.dev"
