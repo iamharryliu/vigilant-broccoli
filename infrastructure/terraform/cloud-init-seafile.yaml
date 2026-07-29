@@ -82,8 +82,23 @@ write_files:
         caddy_data:
         caddy_config:
 
+  - path: /opt/seafile/fix-csrf.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      for i in $(seq 1 60); do
+        if docker exec seafile test -f /shared/seafile/conf/seahub_settings.py; then
+          break
+        fi
+        sleep 5
+      done
+      docker exec seafile sed -i 's#http://${seafile_domain}#https://${seafile_domain}#g' /shared/seafile/conf/seahub_settings.py
+      docker exec seafile bash -c "grep -q CSRF_TRUSTED_ORIGINS /shared/seafile/conf/seahub_settings.py || echo 'CSRF_TRUSTED_ORIGINS = [\"https://${seafile_domain}\"]' >> /shared/seafile/conf/seahub_settings.py"
+      docker compose -f /opt/seafile/docker-compose.yml restart seafile
+
 runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ubuntu
   - docker compose -f /opt/seafile/docker-compose.yml up -d
+  - /opt/seafile/fix-csrf.sh
