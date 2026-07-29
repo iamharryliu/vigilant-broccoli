@@ -94,6 +94,47 @@ const nodeRadius = (degree: number): number =>
 const endpointId = (end: SimLink['source']): string =>
   typeof end === 'object' ? (end as SimNode).id : String(end);
 
+export function buildAdjacency(graph: NoteGraph): Map<string, Set<string>> {
+  const adjacency = new Map<string, Set<string>>();
+  for (const node of graph.nodes) adjacency.set(node.id, new Set());
+  for (const link of graph.links) {
+    if (!adjacency.has(link.source) || !adjacency.has(link.target)) continue;
+    adjacency.get(link.source)?.add(link.target);
+    adjacency.get(link.target)?.add(link.source);
+  }
+  return adjacency;
+}
+
+export function localSubgraph(
+  graph: NoteGraph,
+  rootPath: string,
+  depth: number,
+): NoteGraph {
+  const adjacency = buildAdjacency(graph);
+  if (!adjacency.has(rootPath)) return { nodes: [], links: [] };
+
+  const visited = new Set([rootPath]);
+  let frontier = [rootPath];
+  for (let hop = 0; hop < depth; hop++) {
+    const next: string[] = [];
+    for (const id of frontier) {
+      for (const neighbor of adjacency.get(id) ?? []) {
+        if (visited.has(neighbor)) continue;
+        visited.add(neighbor);
+        next.push(neighbor);
+      }
+    }
+    frontier = next;
+  }
+
+  return {
+    nodes: graph.nodes.filter(n => visited.has(n.id)),
+    links: graph.links.filter(
+      l => visited.has(l.source) && visited.has(l.target),
+    ),
+  };
+}
+
 export interface GraphViewProps {
   graph: NoteGraph;
   activePath?: string;
@@ -116,8 +157,7 @@ export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
     const nodes: SimNode[] = graph.nodes.map(n => ({ ...n, degree: 0 }));
     const nodeById = new Map(nodes.map(n => [n.id, n]));
     const links: SimLink[] = [];
-    const neighbors = new Map<string, Set<string>>();
-    nodes.forEach(n => neighbors.set(n.id, new Set()));
+    const neighbors = buildAdjacency(graph);
     for (const link of graph.links) {
       const source = nodeById.get(link.source);
       const target = nodeById.get(link.target);
@@ -125,8 +165,6 @@ export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
       links.push({ source: source.id, target: target.id });
       source.degree++;
       target.degree++;
-      neighbors.get(source.id)?.add(target.id);
-      neighbors.get(target.id)?.add(source.id);
     }
 
     const transform = { k: 1, x: 0, y: 0 };
