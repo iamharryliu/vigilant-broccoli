@@ -15,7 +15,7 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_security_group" "seafile" {
   name        = "seafile-sg"
-  description = "Seafile VM: SSH open, 80/443 restricted to Cloudflare so Access can't be bypassed via direct IP"
+  description = "Seafile VM: SSH open, 80/443 restricted to Cloudflare so Access cannot be bypassed via direct IP"
 
   ingress {
     from_port   = 22
