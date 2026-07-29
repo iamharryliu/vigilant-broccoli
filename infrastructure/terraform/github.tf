@@ -35,6 +35,11 @@ resource "github_branch_default" "default" {
   branch     = github_branch.main.branch
 }
 
+resource "github_branch" "production" {
+  repository = github_repository.vigilant_broccoli.name
+  branch     = "production"
+}
+
 resource "github_actions_secret" "gcp_service_account" {
   repository  = github_repository.vigilant_broccoli.name
   secret_name = "GCP_SERVICE_ACCOUNT"
@@ -91,5 +96,36 @@ resource "github_repository_ruleset" "main" {
     pull_request {
       required_approving_review_count = 0
     }
+  }
+}
+
+resource "github_repository_ruleset" "production" {
+  name        = "production"
+  repository  = github_repository.vigilant_broccoli.name
+  target      = "branch"
+  enforcement = "active"
+
+  conditions {
+    ref_name {
+      include = ["refs/heads/production"]
+      exclude = []
+    }
+  }
+
+  # Only the admin bypass actor can update production at all (`update`), and
+  # even then only via a fast-forward (`non_fast_forward`) — matching a
+  # local `git merge main --ff-only && git push`, not a GitHub-side PR
+  # merge. Bypass mode "always" means the admin can still override both in
+  # an emergency, same tradeoff as the `main` ruleset above.
+  bypass_actors {
+    actor_id    = local.ruleset_bypass_repository_role
+    actor_type  = "RepositoryRole"
+    bypass_mode = "always"
+  }
+
+  rules {
+    deletion          = true
+    non_fast_forward = true
+    update            = true
   }
 }
