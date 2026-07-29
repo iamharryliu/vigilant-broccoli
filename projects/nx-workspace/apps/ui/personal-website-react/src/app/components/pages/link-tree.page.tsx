@@ -1,3 +1,13 @@
+import {
+  Globe,
+  Calendar,
+  File,
+  Github,
+  Linkedin,
+  Instagram,
+  Coffee,
+  type LucideIcon,
+} from 'lucide-react';
 import { CenteredAppLayout } from '../layouts/centered-app-layout';
 import { ProfileCard } from '../features/profile-card';
 import { LINKS } from '../../core/consts/routes.const';
@@ -5,50 +15,50 @@ import { LINKS } from '../../core/consts/routes.const';
 type LinkTreeItem = {
   text: string;
   url: string;
-  icon: string;
+  icon: LucideIcon;
 };
 
 const LINK_TREE_ITEMS: LinkTreeItem[] = [
   {
     text: 'Personal Website',
     url: LINKS.INDEX_PAGE.url.external!,
-    icon: 'fa-solid fa-globe',
+    icon: Globe,
   },
   {
     text: 'Calendar',
     url: LINKS.CALENDAR_PAGE.url.external!,
-    icon: 'fa-solid fa-calendar',
+    icon: Calendar,
   },
-  { text: 'Resume', url: LINKS.RESUME.url.external!, icon: 'fa-solid fa-file' },
+  { text: 'Resume', url: LINKS.RESUME.url.external!, icon: File },
   {
     text: 'GitHub',
     url: LINKS.GITHUB.url.external!,
-    icon: 'fa-brands fa-github',
+    icon: Github,
   },
   {
     text: 'LinkedIn',
     url: LINKS.LINKEDIN.url.external!,
-    icon: 'fa-brands fa-linkedin',
+    icon: Linkedin,
   },
   {
     text: 'Toronto City Skate',
     url: LINKS.SKATE_IG.url.external!,
-    icon: 'fa-brands fa-instagram',
+    icon: Instagram,
   },
   {
     text: 'Cloud8Skate',
     url: LINKS.CLOUD8SKATE.url.external!,
-    icon: 'fa-solid fa-globe',
+    icon: Globe,
   },
   {
     text: 'Cloud8Skate Instagram',
     url: LINKS.CLOUD8SKATE_IG.url.external!,
-    icon: 'fa-brands fa-instagram',
+    icon: Instagram,
   },
   {
     text: 'Buy me a coffee?',
     url: LINKS.KOFI.url.external!,
-    icon: 'fa-solid fa-mug-hot',
+    icon: Coffee,
   },
 ];
 
@@ -71,7 +81,7 @@ export function LinkTreePage() {
                 rel="noreferrer"
                 className="relative flex items-center w-full text-white bg-black hover:bg-gray-800 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-black dark:hover:bg-gray-800"
               >
-                <i className={`${link.icon} w-5 text-lg`} />
+                <link.icon size={18} />
                 <span className="flex-1 text-center font-bold">
                   {link.text}
                 </span>
