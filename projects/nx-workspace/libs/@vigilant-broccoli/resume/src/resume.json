@@ -60,13 +60,13 @@
       "startDate": "September 2019",
       "endDate": "July 2024",
       "bullets": [
-        "Engineered secure login infrastructure for a cross-platform mobile banking application, including challenge authentication, one-time password login, and **session management**.",
+        "Developed secure login infrastructure for a cross-platform mobile banking application, including challenge authentication, one-time password login, and **session management**.",
         "Rebuilt legacy banking **REST API** services spanning over 200 endpoints, and modernized legacy browser and mobile banking applications using **Angular/Ionic** and **Express** frameworks to meet evolving system requirements.",
         "Implemented **state management** patterns using **Redux** to maintain consistency and performance across the banking frontend application.",
         "Established test environments and conducted thorough **unit** and **end-to-end testing** to meet the banking client's requirement of **90% test coverage** across feature capabilities.",
         "Provided **technical leadership** to team members through training and ongoing developer support on the banking application team.",
         "Collaborated with UI designers to build a **reusable global component library** in **Storybook**, improving consistency and efficiency across banking client applications.",
-        "**Saved QA team over 50 hours per week** by building automated **Python** scripts to parse and sort application logs for a phone interactive voice response banking application, replacing manual log searches.",
+        "**Saved QA teams hundred of hours per week** by building automated **Python** scripts to parse and sort application logs for a phone interactive voice response banking application, replacing manual log searches.",
         "Developed and presented a proof-of-concept **React** app for a real estate application that lets users search for properties and view property details, designing the UI architecture and leading the team's design pattern implementation.",
         "Worked in **Agile** teams to define and implement user stories and tasks across client engagements."
       ]
