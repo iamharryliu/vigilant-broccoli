@@ -266,10 +266,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 
 **`libs/@vigilant-broccoli/react-utility/src/lib/checklist-viewer.tsx:87,182,274`** pipes `marked.parser()` into `dangerouslySetInnerHTML` with no DOMPurify (its sibling `markdown-viewer.tsx` sanitizes). Author-controlled today; latent stored-XSS if pointed at user content. Add DOMPurify.
 
-### ae6665. [security] personal-website-react markdown page renders unsanitized
-
-**`apps/ui/personal-website-react/src/app/components/global/markdown-page.tsx:23,40`** renders `marked.parse()` unsanitized (author self-XSS only). Sanitize for consistency.
-
 ### ae83d3. [security] Mobile app stores Google `provider_token` in `localStorage`
 
 **`apps/vb-manager-next-mobile/src/app/providers/auth-provider.tsx:63`** (XSS-exfiltratable). Prefer sessionStorage/in-memory.
