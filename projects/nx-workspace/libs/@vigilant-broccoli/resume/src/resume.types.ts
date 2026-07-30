@@ -28,5 +28,6 @@ export interface ResumeData {
   basics: ResumeBasics;
   summary: string;
   workExperience: ResumeWorkExperience[];
+  projectExperience: ResumeWorkExperience[];
   skills: ResumeSkills;
 }
