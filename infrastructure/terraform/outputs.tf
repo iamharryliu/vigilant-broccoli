@@ -67,7 +67,3 @@ output "github_actions_pr_check_workload_identity_provider" {
 output "github_actions_pr_check_service_account_email" {
   value = google_service_account.github_actions_pr_check.email
 }
-
-output "aws_test_instance_public_ip" {
-  value = aws_instance.test.public_ip
-}
