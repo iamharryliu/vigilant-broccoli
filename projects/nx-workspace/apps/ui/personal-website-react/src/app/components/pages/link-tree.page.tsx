@@ -5,7 +5,6 @@ import {
   Github,
   Linkedin,
   Instagram,
-  Coffee,
   type LucideIcon,
 } from 'lucide-react';
 import { CenteredAppLayout } from '../layouts/centered-app-layout';
@@ -54,11 +53,6 @@ const LINK_TREE_ITEMS: LinkTreeItem[] = [
     text: 'Cloud8Skate Instagram',
     url: LINKS.CLOUD8SKATE_IG.url.external!,
     icon: Instagram,
-  },
-  {
-    text: 'Buy me a coffee?',
-    url: LINKS.KOFI.url.external!,
-    icon: Coffee,
   },
 ];
 

@@ -48,12 +48,6 @@ export const LINK_TREE_ROUTE: RouteMeta = {
   description: "Harry Liu's links - social media, projects, and more.",
 };
 
-export const COMPONENT_LIBRARY_ROUTE: RouteMeta = {
-  path: '/component-library',
-  title: 'component library',
-  description: 'A showcase of reusable UI components by Harry Liu.',
-};
-
 export const CALENDAR_ROUTE: RouteMeta = {
   path: '/calendar',
   title: 'calendar',
@@ -98,10 +92,6 @@ const LINK_TREE: Link = {
   text: 'Links',
 };
 const LINKEDIN: Link = { url: { external: URLS.LINKEDIN }, text: 'LinkedIn' };
-const KOFI: Link = {
-  url: { external: URLS.KOFI },
-  text: 'Buy me a coffee? 🥺',
-};
 const GITHUB: Link = { url: { external: URLS.GITHUB }, text: 'Github' };
 const PERSONAL_INSTAGRAM: Link = {
   url: { external: URLS.PERSONAL_IG },
@@ -142,7 +132,6 @@ export const LINKS = {
   CLOUD8SKATE,
   CLOUD8SKATE_IG,
   RESUME,
-  KOFI,
 };
 
 export const ROUTES: RouteMeta[] = [
@@ -152,5 +141,4 @@ export const ROUTES: RouteMeta[] = [
   CONTACT_ROUTE,
   LINK_TREE_ROUTE,
   CALENDAR_ROUTE,
-  COMPONENT_LIBRARY_ROUTE,
 ];

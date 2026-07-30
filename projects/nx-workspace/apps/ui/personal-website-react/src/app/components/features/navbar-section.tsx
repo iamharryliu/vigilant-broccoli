@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { LINKS } from '../../core/consts/routes.const';
 
-const NAV_LINKS = [LINKS.ABOUT_PAGE, LINKS.CALENDAR_PAGE];
+const NAV_LINKS = [LINKS.ABOUT_PAGE, LINKS.CALENDAR_PAGE, LINKS.CONTACT_PAGE];
 
 const activeClass = 'text-blue-600 dark:text-blue-400 font-semibold';
 
