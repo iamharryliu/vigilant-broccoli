@@ -13,26 +13,27 @@
 | Greenfield Project             | A type of initiative (often in construction, software, or business) that is built from scratch, without needing to work within the constraints of existing systems, infrastructure, or legacy code. |
 | Keys                           | Unique identifiers or cryptographic components used for secure access, data encryption, or mapping data structures.                                                                                 |
 | On-Prem                        | Short for “on-premises,” meaning software, hardware, or infrastructure hosted locally within an organization’s facilities.                                                                          |
+| Starlink                       | SpaceX’s satellite internet constellation, providing broadband via a network of low Earth orbit (LEO) satellites.                                                                                   |
 | Token                          | A piece of data used for authentication, authorization, or as a placeholder in secure communications.                                                                                               |
 
 ## Roles
 
-| Role                                 | Primary Responsibility                                                                                |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Data Engineer                        | Data pipelines, analytics infrastructure, warehouses.                                                   |
-| Data Scientist / ML Engineer         | Machine learning models and analytics.                                                                  |
-| DevOps / Platform Engineer           | Builds CI/CD, cloud infrastructure, observability, deployments, and reliability.                        |
-| Engineering Manager (EM) / Tech Lead | Decides how the team executes. Removes blockers, manages engineers, technical direction, delivery.      |
-| Product Manager (PM)                 | Decides what to build and why. Owns roadmap, prioritization, customer needs, and business value.        |
-| Project Manager                      | Schedule, coordination, budgets, stakeholder communication. Distinct from Product Manager.              |
-| QA / Test Engineer                   | Prevents regressions through testing, automation, and quality processes.                                |
-| Scrum Master / Agile Coach           | Facilitates agile processes (less common in smaller companies).                                         |
-| Security Engineer                    | Application security, threat modeling, compliance, vulnerability management.                            |
-| Site Reliability Engineer (SRE)      | Reliability, uptime, incident response, performance.                                                    |
-| Software Architect                   | Long-term system architecture across multiple teams.                                                    |
-| Software Engineers                   | Design, build, test, and maintain the product. Usually the largest group.                               |
-| Technical Writer                     | Documentation for developers and users.                                                                 |
-| UX/UI Designer                       | Makes the product usable and intuitive through research, wireframes, and visual design.                 |
+| Role                                 | Primary Responsibility                                                                             |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| Data Engineer                        | Data pipelines, analytics infrastructure, warehouses.                                              |
+| Data Scientist / ML Engineer         | Machine learning models and analytics.                                                             |
+| DevOps / Platform Engineer           | Builds CI/CD, cloud infrastructure, observability, deployments, and reliability.                   |
+| Engineering Manager (EM) / Tech Lead | Decides how the team executes. Removes blockers, manages engineers, technical direction, delivery. |
+| Product Manager (PM)                 | Decides what to build and why. Owns roadmap, prioritization, customer needs, and business value.   |
+| Project Manager                      | Schedule, coordination, budgets, stakeholder communication. Distinct from Product Manager.         |
+| QA / Test Engineer                   | Prevents regressions through testing, automation, and quality processes.                           |
+| Scrum Master / Agile Coach           | Facilitates agile processes (less common in smaller companies).                                    |
+| Security Engineer                    | Application security, threat modeling, compliance, vulnerability management.                       |
+| Site Reliability Engineer (SRE)      | Reliability, uptime, incident response, performance.                                               |
+| Software Architect                   | Long-term system architecture across multiple teams.                                               |
+| Software Engineers                   | Design, build, test, and maintain the product. Usually the largest group.                          |
+| Technical Writer                     | Documentation for developers and users.                                                            |
+| UX/UI Designer                       | Makes the product usable and intuitive through research, wireframes, and visual design.            |
 
 ## Hot Takes
 
