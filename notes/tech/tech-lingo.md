@@ -3,6 +3,9 @@
 - [Software Lingo](./software/software-lingo.md)
 - [Computer Hardware Lingo](./hardware/computer-hardware-lingo.md)
 
+- [Roles](#roles)
+- [Hot Takes](#hot-takes)
+
 | Term                           | Description                                                                                                                                                                                         |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Brownfield Project             | A type of initiative that involves working with or building on top of existing systems, infrastructure, or legacy code, requiring consideration of prior constraints and technical debt.            |
@@ -11,6 +14,25 @@
 | Keys                           | Unique identifiers or cryptographic components used for secure access, data encryption, or mapping data structures.                                                                                 |
 | On-Prem                        | Short for “on-premises,” meaning software, hardware, or infrastructure hosted locally within an organization’s facilities.                                                                          |
 | Token                          | A piece of data used for authentication, authorization, or as a placeholder in secure communications.                                                                                               |
+
+## Roles
+
+| Role                                 | Primary Responsibility                                                                                |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Data Engineer                        | Data pipelines, analytics infrastructure, warehouses.                                                   |
+| Data Scientist / ML Engineer         | Machine learning models and analytics.                                                                  |
+| DevOps / Platform Engineer           | Builds CI/CD, cloud infrastructure, observability, deployments, and reliability.                        |
+| Engineering Manager (EM) / Tech Lead | Decides how the team executes. Removes blockers, manages engineers, technical direction, delivery.      |
+| Product Manager (PM)                 | Decides what to build and why. Owns roadmap, prioritization, customer needs, and business value.        |
+| Project Manager                      | Schedule, coordination, budgets, stakeholder communication. Distinct from Product Manager.              |
+| QA / Test Engineer                   | Prevents regressions through testing, automation, and quality processes.                                |
+| Scrum Master / Agile Coach           | Facilitates agile processes (less common in smaller companies).                                         |
+| Security Engineer                    | Application security, threat modeling, compliance, vulnerability management.                            |
+| Site Reliability Engineer (SRE)      | Reliability, uptime, incident response, performance.                                                    |
+| Software Architect                   | Long-term system architecture across multiple teams.                                                    |
+| Software Engineers                   | Design, build, test, and maintain the product. Usually the largest group.                               |
+| Technical Writer                     | Documentation for developers and users.                                                                 |
+| UX/UI Designer                       | Makes the product usable and intuitive through research, wireframes, and visual design.                 |
 
 ## Hot Takes
 
