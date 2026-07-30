@@ -70,6 +70,7 @@ const buildResumeHtml = (resume: ResumeData): string => {
   .entry:last-child { margin-bottom: 0; }
   .entry-header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
   .dates { white-space: nowrap; }
+  .skills-technical { margin-bottom: 5px; }
   ul { margin: 2px 0 0; padding-left: 20px; }
   li { margin-bottom: 1px; }
 </style>
@@ -103,8 +104,8 @@ const buildResumeHtml = (resume: ResumeData): string => {
 
   <section>
     <h2>Skills</h2>
-    <p><span class="bold">Technical: </span>${escapeHtml(skills.technical.join(', '))}.</p>
-    <p class="bold">Soft:</p>
+    <div class="skills-technical"><span class="bold">Technical: </span>${escapeHtml(skills.technical.join(', '))}.</div>
+    <div class="bold">Soft:</div>
     ${renderBulletList(skills.soft)}
   </section>
 </body>

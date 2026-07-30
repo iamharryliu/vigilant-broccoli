@@ -16,7 +16,7 @@
       }
     ]
   },
-  "summary": "Over 5 years of software developer experience, working with enterprise-level applications (banks and insurance companies). Excellent team player who encourages a collaborative knowledge-sharing environment to deliver quality results. Experienced with building end-to-end applications and software infrastructure.",
+  "summary": "Over 5 years of software developer experience, working with both enterprise-level application building and smaller projects.",
   "workExperience": [
     {
       "company": "Tillmobil",
@@ -77,17 +77,17 @@
   ],
   "skills": {
     "technical": [
-      "Web Development",
-      "Cloud Development",
-      "Fullstack Development",
-      "Infrastructure as Code (IaC)",
       "AI Agentic Software Development",
-      "DevOps Development",
-      "Unit and E2E Testing"
+      "Solution Architecture",
+      "Web Development",
+      "DevOps/Platform Engineering",
+      "Infrastructure as Code (IaC)",
+      "Application Testing"
     ],
     "soft": [
       "Excellent communication and active listening skills, able to explain technical ideas in a clear and simple manner.",
-      "Strong team player who is always open for discussions and collective collaboration."
+      "Strong team player who is always open for discussions and collective collaboration.",
+      "Cultivates a collaborative knowledge-sharing environment to deliver quality results."
     ]
   }
 }
