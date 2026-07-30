@@ -32,7 +32,7 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 cd "$REPO_DIR"
 
 if [ "$MODE" = id ]; then
-  TASK=$(awk -v id="$ID" '/^### /||/^## /{p=($0 ~ "^### " id "\\.")} p' TODO.md)
+  TASK=$(awk -v id="$ID" '/^#+ /{p=($0 ~ "^#+ " id "\\.")} p' TODO.md)
   if [ -z "$TASK" ]; then
     echo "ERROR: no '### ${ID}.' item in TODO.md" >&2
     exit 1
@@ -85,12 +85,39 @@ if [ "$MODE" = id ]; then
     exit 1
   fi
   TMP=$(mktemp)
-  awk -v id="$ID" '/^### /||/^## /{skip=($0 ~ "^### " id "\\.")} !skip' TODO.md > "$TMP"
+  awk -v id="$ID" '/^#+ /{skip=($0 ~ "^#+ " id "\\.")} !skip' TODO.md > "$TMP"
+  # Drop now-empty structural headings at any depth (e.g. a "### Enhancements"
+  # subsection, or its parent "## Feature", left with no leaf entry beneath it
+  # once the id above was removed) — not just direct ### children of ##.
+  # A "leaf" entry is a heading carrying a 6-hex-id (any depth); a heading is
+  # dropped, along with its whole span, only if no leaf appears before the next
+  # heading at an equal-or-shallower depth.
   awk '
-    function flush() { if (heading == "" || has_item) { if (heading != "") print heading; printf "%s", buf } }
-    /^## / { flush(); heading = $0; buf = ""; has_item = 0; next }
-    { buf = buf $0 "\n"; if (/^### /) has_item = 1 }
-    END { flush() }
+    function depth(line,    d) { d = 0; while (substr(line, d + 1, 1) == "#") d++; return d }
+    { line[NR] = $0 }
+    END {
+      n = NR
+      for (i = 1; i <= n; i++) {
+        hd[i] = (line[i] ~ /^#+ /) ? depth(line[i]) : -1
+        isleaf[i] = (line[i] ~ /^#+ [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]\./)
+      }
+      for (i = 1; i <= n; i++) {
+        if (hd[i] < 0 || isleaf[i]) continue
+        d = hd[i]; has = 0
+        for (j = i + 1; j <= n; j++) {
+          if (hd[j] < 0) continue
+          if (hd[j] <= d) break
+          if (isleaf[j]) { has = 1; break }
+        }
+        if (!has) {
+          for (j = i; j <= n; j++) {
+            if (j > i && hd[j] >= 0 && hd[j] <= d) break
+            suppressed[j] = 1
+          }
+        }
+      }
+      for (i = 1; i <= n; i++) if (!suppressed[i]) print line[i]
+    }
   ' "$TMP" > TODO.md
   rm -f "$TMP"
 else
