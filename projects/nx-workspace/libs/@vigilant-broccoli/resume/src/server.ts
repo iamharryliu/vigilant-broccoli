@@ -30,7 +30,7 @@ const renderWorkExperience = (entry: ResumeWorkExperience): string => `
   </div>`;
 
 const buildResumeHtml = (resume: ResumeData): string => {
-  const { basics, summary, workExperience, skills } = resume;
+  const { basics, summary, workExperience, projectExperience, skills } = resume;
 
   return `<!doctype html>
 <html>
@@ -97,9 +97,14 @@ const buildResumeHtml = (resume: ResumeData): string => {
   </section>
 
   <section>
+    <h2>Project Experience</h2>
+    ${projectExperience.map(renderWorkExperience).join('')}
+  </section>
+
+  <section>
     <h2>Skills</h2>
     <p><span class="bold">Technical: </span>${escapeHtml(skills.technical.join(', '))}.</p>
-    <p class="bold" style="margin-top: 4px;">Soft:</p>
+    <p class="bold">Soft:</p>
     ${renderBulletList(skills.soft)}
   </section>
 </body>
