@@ -19,18 +19,6 @@
   "summary": "Over 5 years of software developer experience, working with enterprise-level applications (banks and insurance companies). Excellent team player who encourages a collaborative knowledge-sharing environment to deliver quality results. Experienced with building end-to-end applications and software infrastructure.",
   "workExperience": [
     {
-      "company": "vigilant-broccoli",
-      "role": "Open Source Maintainer",
-      "startDate": "July 2023",
-      "endDate": "present",
-      "bullets": [
-        "Architect and maintain an **open-source Nx monorepo** containing full-stack web apps, API services, shared reusable **npm** libraries, developer notes, and infrastructure code.",
-        "Design and run **agentic coding workflows** with **Claude Code**, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring.",
-        "Provision and operate **cloud infrastructure** with **Terraform**, managing secrets through dedicated secret managers.",
-        "Build and maintain **CI/CD pipelines** covering PR checks, health checks, cron jobs, and smoke, end-to-end, and security test suites across a growing set of apps and services."
-      ]
-    },
-    {
       "company": "Tillmobil",
       "role": "Software Developer",
       "startDate": "March 2025",
@@ -70,6 +58,20 @@
         "**Saved QA teams hundred of hours per week** by building automated **Python** scripts to parse and sort application logs for a phone interactive voice response banking application, replacing manual log searches.",
         "Developed and presented a proof-of-concept **React** app for a real estate application that lets users search for properties and view property details, designing the UI architecture and leading the team's design pattern implementation.",
         "Worked in **Agile** teams to define and implement user stories and tasks across client engagements."
+      ]
+    }
+  ],
+  "projectExperience": [
+    {
+      "company": "vigilant-broccoli",
+      "role": "Open Source Maintainer",
+      "startDate": "July 2023",
+      "endDate": "present",
+      "bullets": [
+        "Architect and maintain an **open-source Nx monorepo** containing full-stack web apps, API services, shared reusable **npm** libraries, developer notes, and infrastructure code.",
+        "Design and run **agentic coding workflows** with **Claude Code**, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring.",
+        "Provision and operate **cloud infrastructure** with **Terraform**, managing secrets through dedicated secret managers.",
+        "Build and maintain **CI/CD pipelines** covering PR checks, health checks, cron jobs, and smoke, end-to-end, and security test suites across a growing set of apps and services."
       ]
     }
   ],

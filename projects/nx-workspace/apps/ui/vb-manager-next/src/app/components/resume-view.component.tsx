@@ -51,7 +51,7 @@ const WorkExperienceEntry = ({ entry }: { entry: ResumeWorkExperience }) => (
 );
 
 export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
-  const { basics, summary, workExperience, skills } = resume;
+  const { basics, summary, workExperience, projectExperience, skills } = resume;
 
   return (
     <div
@@ -94,12 +94,19 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
       </section>
 
       <section className="mb-2">
+        <SectionHeading>Project Experience</SectionHeading>
+        {projectExperience.map((entry, index) => (
+          <WorkExperienceEntry key={index} entry={entry} />
+        ))}
+      </section>
+
+      <section className="mb-2">
         <SectionHeading>Skills</SectionHeading>
         <p>
           <span className="font-bold">Technical: </span>
           {skills.technical.join(', ')}.
         </p>
-        <p className="font-bold mt-1">Soft:</p>
+        <p className="font-bold">Soft:</p>
         <ul className="list-disc pl-5 space-y-0.5">
           {skills.soft.map((item, index) => (
             <li key={index}>{item}</li>
