@@ -5,7 +5,6 @@ import { UiPage } from './pages/UiPage';
 import { StatusPage } from './pages/StatusPage';
 import { OpenSourcePage } from './pages/OpenSourcePage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
-import { ApiDocsPage } from './pages/ApiDocsPage';
 
 export function App() {
   return (
@@ -18,7 +17,6 @@ export function App() {
             <Route path="/status" element={<StatusPage />} />
             <Route path="/open-source" element={<OpenSourcePage />} />
             <Route path="/api-services" element={<ApiServicesPage />} />
-            <Route path="/api-docs" element={<ApiDocsPage />} />
           </Routes>
         </HashRouter>
       </div>

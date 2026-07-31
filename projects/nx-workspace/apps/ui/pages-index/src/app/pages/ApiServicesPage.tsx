@@ -16,10 +16,25 @@ export function ApiServicesPage() {
       <CardGrid>
         <li>
           <CardLink
-            route
-            href="/api-docs"
-            title={t('API_SERVICES_PAGE.API_DOCS.TITLE')}
-            description={t('API_SERVICES_PAGE.API_DOCS.DESCRIPTION')}
+            href="https://staging-vb-email-service.fly.dev/docs"
+            title={t('API_SERVICES_PAGE.EMAIL_SERVICE.TITLE')}
+            description={t('API_SERVICES_PAGE.EMAIL_SERVICE.DESCRIPTION')}
+          />
+        </li>
+        <li>
+          <CardLink
+            href="https://staging-email-subscription-service.fly.dev/docs"
+            title={t('API_SERVICES_PAGE.EMAIL_SUBSCRIPTION_SERVICE.TITLE')}
+            description={t(
+              'API_SERVICES_PAGE.EMAIL_SUBSCRIPTION_SERVICE.DESCRIPTION',
+            )}
+          />
+        </li>
+        <li>
+          <CardLink
+            href="https://staging-vb-storage-service.fly.dev/docs"
+            title={t('API_SERVICES_PAGE.STORAGE_SERVICE.TITLE')}
+            description={t('API_SERVICES_PAGE.STORAGE_SERVICE.DESCRIPTION')}
           />
         </li>
       </CardGrid>

@@ -86,14 +86,6 @@
   },
   "API_SERVICES_PAGE": {
     "TITLE": "API Services",
-    "DESCRIPTION": "API docs.",
-    "API_DOCS": {
-      "TITLE": "API Docs",
-      "DESCRIPTION": "Swagger docs for Fly.io-deployed services."
-    }
-  },
-  "API_DOCS_PAGE": {
-    "TITLE": "API Docs",
     "DESCRIPTION": "Swagger documentation for services deployed on Fly.io.",
     "EMAIL_SERVICE": {
       "TITLE": "Email Service",
