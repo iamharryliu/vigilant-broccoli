@@ -42,3 +42,4 @@
   - [linux](./setup/linux/) - Linux setup.
 - [Projects](./projects/) - Software projects.
   - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects.
+  - [grind-75](./projects/grind-75) - Standalone Grind 75 algorithm practice in Go/Python/TypeScript; the Python tests run as a `.pre-commit-config.yaml` hook.
