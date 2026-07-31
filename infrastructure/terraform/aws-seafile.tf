@@ -60,14 +60,46 @@ resource "random_password" "seafile_admin_password" {
   special = false
 }
 
+# Seafile's files/DB live here, not on the boot disk, so they survive VM
+# replacement (AMI updates force a new instance whenever Canonical publishes a
+# new Ubuntu 22.04 build — see data.aws_ami.ubuntu). cloud-init formats it only
+# on first use, so re-provisioning reattaches existing data intact.
+resource "aws_ebs_volume" "seafile_data" {
+  availability_zone = "eu-north-1a"
+  size              = 30
+  type              = "gp3"
+
+  tags = {
+    Name = "seafile-data"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_volume_attachment" "seafile_data" {
+  device_name = "/dev/sdf"
+  volume_id   = aws_ebs_volume.seafile_data.id
+  instance_id = aws_instance.seafile.id
+}
+
 resource "aws_instance" "seafile" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t3.medium"
   vpc_security_group_ids = [aws_security_group.seafile.id]
 
+  # Pinned so a replaced instance always lands in the same AZ as
+  # aws_ebs_volume.seafile_data (EBS volumes can't cross AZs).
+  availability_zone = "eu-north-1a"
+
   root_block_device {
     volume_size = 20
     volume_type = "gp3"
+  }
+
+  metadata_options {
+    http_tokens = "required"
   }
 
   user_data = base64encode(templatefile("${path.module}/cloud-init-seafile.yaml", {

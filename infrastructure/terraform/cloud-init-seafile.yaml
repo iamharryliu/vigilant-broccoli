@@ -29,6 +29,7 @@ write_files:
       ${indent(6, seafile_origin_key)}
 
   - path: /opt/seafile/docker-compose.yml
+    permissions: '0600'
     content: |
       services:
         db:
@@ -39,14 +40,14 @@ write_files:
             MYSQL_ROOT_PASSWORD: ${seafile_db_root_password}
             MYSQL_LOG_CONSOLE: "true"
           volumes:
-            - seafile_db:/var/lib/mysql
+            - /mnt/seafile-data/db:/var/lib/mysql
         memcached:
           image: memcached:1.6.29
           container_name: seafile-memcached
           restart: unless-stopped
           entrypoint: memcached -m 256
         seafile:
-          image: seafileltd/seafile-mc:latest
+          image: seafileltd/seafile-mc:11.0.13
           container_name: seafile
           restart: unless-stopped
           environment:
@@ -58,7 +59,7 @@ write_files:
             SEAFILE_SERVER_LETSENCRYPT: "false"
             SEAFILE_SERVER_HOSTNAME: ${seafile_domain}
           volumes:
-            - seafile_data:/shared
+            - /mnt/seafile-data/shared:/shared
           depends_on:
             - db
             - memcached
@@ -77,8 +78,6 @@ write_files:
           depends_on:
             - seafile
       volumes:
-        seafile_db:
-        seafile_data:
         caddy_data:
         caddy_config:
 
@@ -100,5 +99,14 @@ runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ubuntu
+  # Mount the attached block volume at /mnt/seafile-data BEFORE Docker starts,
+  # so the db/seafile bind-mounts above land on the persistent volume, not the
+  # boot disk. Detect the data disk as the whole disk that is NOT the boot disk
+  # (device names aren't stable across AWS's Xen/NVMe naming), format only if
+  # blank, and mount by UUID — a re-provision reattaches existing data intact
+  # instead of wiping it.
+  - mkdir -p /mnt/seafile-data
+  - 'ROOT_DISK=$(lsblk -no PKNAME "$(findmnt -no SOURCE /)" | head -1); for d in $(lsblk -dno NAME --nodeps -e7); do [ "$d" = "$ROOT_DISK" ] && continue; DATA_DEV="/dev/$d"; break; done; blkid "$DATA_DEV" || mkfs.ext4 -F "$DATA_DEV"; DATA_UUID=$(blkid -s UUID -o value "$DATA_DEV"); grep -q "$DATA_UUID" /etc/fstab || echo "UUID=$DATA_UUID /mnt/seafile-data ext4 defaults,_netdev,nofail 0 2" >> /etc/fstab'
+  - mount /mnt/seafile-data
   - docker compose -f /opt/seafile/docker-compose.yml up -d
   - /opt/seafile/fix-csrf.sh
