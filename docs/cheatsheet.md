@@ -26,6 +26,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   tf:apply                    Load vault env, apply terraform, and run post-apply
   tf:post-apply               Run post-apply script
   tf:output                   Show terraform outputs
+  tf:unlock                   Load vault env and run terraform force-unlock <lock-id>
 
 ☁️  OCI
   oci:vm:ssh                  SSH into OCI VM (RabbitMQ)
@@ -78,6 +79,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:profile-deploy-key  Rotate profile repo deploy key, store in Vault
   secret-rotation:resend      Rotate Resend API key (single-key swap, pushes to fly app)
   secret-rotation:rabbitmq    Rotate RabbitMQ password, push connection string to fly consumers
+  secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
 
 🐳 LOCAL
   local:docker:up             Start local Docker Compose services

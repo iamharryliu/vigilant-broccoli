@@ -4,9 +4,11 @@
 
 ### 009c6e. [security] CI GitHub Actions service account is massively overprivileged
 
-**`infrastructure/terraform/main.tf:250-274`**
+**`infrastructure/terraform/main.tf:311-345`** (`github_actions_secret_accessor`, `_editor`, `_workload_identity_pool_admin`, `_service_account_admin`)
 
 The WIF-federated `github-actions` SA that every workflow can impersonate holds project `roles/editor`, `roles/iam.serviceAccountAdmin`, `roles/iam.workloadIdentityPoolAdmin`, and project-level `roles/secretmanager.secretAccessor`. A single compromised workflow run can read almost every secret (Vault root token, WG server key, unseal keys), rewrite the Workload Identity Pool for persistence, and take full project control.
+
+Two mitigations have since landed and narrow the blast radius without closing the finding: the `secretAccessor` grant now carries an IAM condition excluding `BITWARDEN_PASSWORD` (#159), and the pool provider's `attribute_condition` refuses `pull_request` tokens outright so untrusted PR-branch workflow YAML can't reach this SA at all (it must use the narrow `github-pr-check` provider in `github-actions-pr-check.tf`). Everything else — every other secret, editor, and pool/SA admin — is still reachable from any push/dispatch/`workflow_run` job.
 
 **Fix:** Terraform applies run locally, so CI does not need editor/SA-admin/pool-admin — remove all three. Replace the project-level `secretAccessor` with per-secret `google_secret_manager_secret_iam_member` grants for only the secrets workflows actually read (per `cloudflare-vault.tf`, the CF Access token pair + tunnel token).
 
@@ -38,11 +40,29 @@ AuthProvider wraps the whole app in `layout.tsx`, so every page (including `/log
 
 **`infrastructure/terraform/cloud-init-code-server.yaml:27-66`** (init script), `:72` (`:latest`)
 
-The `/custom-cont-init.d` script runs at every container start: `apt-get update/install` runs unconditionally, and the `command -v`-guarded blocks (Node, ~700MB `google-cloud-cli`, claude-code) only survive while the same image filesystem is alive. Watchtower no longer auto-updates `linuxserver/code-server:latest` (removed in 2ca4a3), but any deliberate redeploy — `terraform apply` (VM recreation) or a manual `docker compose pull && up -d` — still discards the toolchain layer: 1GB+ of downloads and minutes of apt/npm before code-server can start.
+The `/custom-cont-init.d` script runs at every container start: `apt-get update/install` runs unconditionally, and the `command -v`-guarded blocks (Node, ~700MB `google-cloud-cli`, claude-code) only survive while the same image filesystem is alive. It also clones/pulls this repo and then runs `setup/linux/apt-packages.txt` + `setup/linux/install.sh` in full on every start, so the wipe now costs more than the original ~1GB estimate. Watchtower no longer auto-updates `linuxserver/code-server:latest` on this VM, but any deliberate redeploy — `terraform apply` (VM recreation) or a manual `docker compose pull && up -d` — still discards the toolchain layer: 1GB+ of downloads and minutes of apt/npm before code-server can start.
 
 **Fix:** bake a derived image (`FROM lscr.io/linuxserver/code-server` + toolchain in a Dockerfile), push to Docker Hub, and reference it here. Cheaper fallback: install the toolchain under the persistent `/config` volume (or gate the script on a `/config` marker file) and pin the image tag.
 
+### 3c9e11. [security] Seafile cloud-init writes to the boot disk whenever the data-volume mount fails
+
+**`infrastructure/terraform/cloud-init-seafile.yaml`** (`runcmd`: disk detection one-liner → `mount /mnt/seafile-data` → `docker compose up -d`)
+
+#262 moved Seafile's files and MariaDB onto `aws_ebs_volume.seafile_data` so they survive the AMI-driven instance replacements that periodically recreate `aws_instance.seafile`. But the runcmd sequence has no guard between mounting and starting: cloud-init's `runcmd` script does not `set -e`, so if `mount /mnt/seafile-data` fails for any reason the next line still runs `docker compose up -d`, and the `db`/`seafile` bind-mounts (`/mnt/seafile-data/db`, `/mnt/seafile-data/shared`) are silently created on the boot disk instead. Seafile comes up looking healthy, Upptime stays green, and everything written from then on is destroyed by the next replacement — the exact loss #262 was written to prevent, now silent instead of obvious.
+
+Two concrete ways the mount loses: (1) the detection loop `for d in $(lsblk -dno NAME --nodeps -e7)` picks the first non-root whole disk, so it finds nothing and leaves `DATA_DEV` empty if `aws_volume_attachment.seafile_data` hasn't landed yet — Terraform creates the attachment _after_ the instance, so this is a race against boot, currently won only because `package_update`/`package_upgrade` + the Docker install run first; (2) any `mkfs`/`blkid`/fstab hiccup leaves nothing mounted at `/mnt/seafile-data`.
+
+**Fix:** wait for the device before formatting (poll `lsblk` for a non-root disk for up to ~60s), and hard-gate the compose start on the mount actually being the data volume — e.g. `findmnt -M /mnt/seafile-data >/dev/null || exit 1` before `docker compose up -d`, so a failed mount leaves the site down (loud) instead of silently writing to ephemeral storage. Consider also asserting the mount in a small systemd unit or `RequiresMountsFor=` so the same guard survives reboots, not just first boot.
+
 ## P2
+
+### 8f204c. [security] Watchtower still holds docker.sock on the RabbitMQ VM, watching an unpinned `:latest` image
+
+**`infrastructure/terraform/cloud-init-rabbitmq.yaml:108-118`** (`watchtower` service), `:80` (`iamharryliu/socket-server-socketio:latest`, `pull_policy: always`)
+
+#168 removed Watchtower from the Gitea and code-server VMs and deleted the entry that had tracked this outright — but the RabbitMQ VM's instance was deliberately kept, because the 300s poll _is_ the deploy path for socket-server. The security properties that entry described still hold for this one and are now tracked nowhere: the container mounts `/var/run/docker.sock` (root-equivalent on the host), the watchtower image itself is unpinned (`containrrr/watchtower`, no tag), and it auto-pulls `iamharryliu/socket-server-socketio:latest` every 5 minutes. Compromise of the `iamharryliu` Docker Hub account, or of the `containrrr/watchtower` image, is automatic RCE on the VM that also runs the RabbitMQ broker for every email service.
+
+This is a real tradeoff, not an oversight — removing Watchtower here means replacing the socket-server deploy mechanism. **Fix (whichever is preferred):** pin `containrrr/watchtower` to a digest and deploy socket-server by digest rather than `:latest`; or replace the poll with a push deploy (the `deploy-notify` action already reaches this VM) and drop the docker.sock mount entirely. At minimum, enforce strong 2FA on the Docker Hub account, since it is currently a single-factor path to host root.
 
 ### 17daeb. [security] GCP VMs on `default` network; default-allow-ssh likely open on the Vault VM
 
@@ -124,7 +144,7 @@ Role `github-actions-role` is usable by any job with `id-token: write` — inclu
 
 ### 427e54. [performance] Follower jobs fire after every deploy — even no-op deploys
 
-Thirteen workflows trigger on `workflow_run` (health-check, notify-complete, e2e suites incl. the 5-provider paid-token `test-e2e-llm` matrix, security suites, smoke) — roughly 25 jobs, most doing their own checkout + OIDC + Secret Manager + Vault round trip. `deploy` succeeds even when `has_deployments=false` (`deploy.yml:140-153`), so a push touching nothing deployable still triggers the full fan-out against production; it also double-fires via `ci-rotate-secrets` calling deploy. **Fix:** expose what was actually deployed (job output → `repository_dispatch` per service or an artifact followers check) and exit early otherwise; drop the cron+per-deploy duplication on the `test-security-*` suites.
+Fourteen of the 28 workflows trigger on `workflow_run` (health-check, notify-complete, cleanup-workflow-runs, e2e suites incl. the 5-provider paid-token `test-e2e-llm` matrix, security suites, smoke) — roughly 25 jobs, most doing their own checkout + OIDC + Secret Manager + Vault round trip. `deploy` succeeds even when `has_deployments=false` (`deploy.yml:140-153`), so a push touching nothing deployable still triggers the full fan-out against production; it also double-fires via `ci-rotate-secrets` calling deploy. **Fix:** expose what was actually deployed (job output → `repository_dispatch` per service or an artifact followers check) and exit early otherwise; drop the cron+per-deploy duplication on the `test-security-*` suites.
 
 ### 45c377. [performance] `cron-deploy-journal` rebuilds and redeploys hourly, unconditionally
 
@@ -140,7 +160,7 @@ Both email services start their AMQP consumer in the web process but run with `a
 
 ### 4eb262. [performance] Service-to-service calls go over the public fly edge instead of private networking
 
-**`deployment-configs/fly-configs/production-vb-express.toml:9-10`** (and staging) — `EMAIL_SERVICE_URL`/`LLM_SERVICE_URL` are `https://*.fly.dev`. Every vb-express→llm-service call exits through the fly edge, TLS, and back in; multi-MB base64 image payloads get re-sent over that hop, and chained cold starts stack (a cold vb-express request needing llm-service pays two sequential boots). **Fix:** `http://<app>.flycast` (keeps auto-start) — no public egress/TLS/edge hop.
+**`deployment-configs/fly-configs/production-vb-express.toml:9`** (and staging) — `EMAIL_SERVICE_URL` is still `https://production-vb-email-service.fly.dev`, so every vb-express→email-service call exits through the fly edge, TLS, and back in, and chained cold starts stack (a cold vb-express request needing email-service pays two sequential boots). `LLM_SERVICE_URL` was already moved to `http://*-vb-llm-service.flycast` by #149/#152 — the heavier leg (multi-MB base64 image payloads) is fixed; this entry now covers only the email hop. **Fix:** point this one env var at `http://<app>.flycast` (keeps auto-start) — no public egress/TLS/edge hop. This is independent of 0e704f: email-service keeps its public IP for the Vercel callers that can't join 6PN either way, so only vb-express's own leg moves. `email-subscription-service/src/main.ts:30,90` is the other in-fly caller and can move the same way.
 
 ### 5b34e7. [performance] `googleapis` meta-package import — heavy cold-start cost in vb-express
 
@@ -224,6 +244,14 @@ No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`ap
 - **`docs-md`**: JS chunk 520.30 kB / CSS chunk 733.63 kB, over threshold. Same `@radix-ui/themes/styles.css` full import in `src/main.tsx`, used only for the `<Theme>` wrapper — fix by dropping the Radix Themes dependency here in favor of a minimal custom CSS reset (or Radix Themes' documented modular CSS imports: tokens + only needed color scales + components).
 - **`journal`**: JS chunk 519.53 kB / CSS chunk 733.63 kB, over threshold. Same root cause and fix as `docs-md`. All three Vite apps additionally have no `build.rollupOptions.output.manualChunks` in `vite.config.mts` — everything (including `react`/`react-dom`/`@radix-ui/themes`) ships as one chunk; splitting vendor deps into their own chunk would help caching independent of the fixes above. (Tailwind content globs in all three are correctly scoped — confirmed not a contributing factor.)
 
+### e17c40. [maintenance] `vb-manager-next-mobile` is deployed to fly but monitored by nothing
+
+**`.upptimerc.yml`** (no `sites:` entry), **`.github/workflows/ci-health-check.yml`** (no check either)
+
+`vb-manager-next-mobile` has `deploy`/`deploy:production` targets in `apps/vb-manager-next-mobile/project.json`, staging and production fly configs (`deployment-configs/fly-configs/{staging,production}-vb-manager-next-mobile.toml`, both with a public `http_service` on `force_https`), an entry in `manual-deploy-app.yml`'s app list, and secrets wiring in `scripts/secrets-mapping.config.ts:47`. It is the only publicly-reachable deployed app in the repo with no status check in either system, which CLAUDE.md's [CI.md](./docs/CI.md) rule forbids — every deployed service with a public URL needs an `.upptimerc.yml` `sites:` entry, and the only documented exemption is for services with no public URL (covered by `ci-health-check` instead), which doesn't apply here.
+
+**Fix:** add `staging-vb-manager-next-mobile` and `production-vb-manager-next-mobile` to `sites:` in `.upptimerc.yml`, following the existing fly entries' shape and their staging-then-production ordering. Pick a path that returns 200 unauthenticated — the sibling Supabase-auth apps use a login route for exactly this (`staging-hearth` → `/login`), so check whether the mobile app's root redirects before settling on `/`. If the app is in fact dormant and not meant to be running, the alternative is to retire it (fly configs, deploy targets, `manual-deploy-app` option, secrets mapping) rather than monitor it — decide which before adding checks.
+
 ### 1f0a7e. [maintenance] Next.js "inferred workspace root" warning
 
 - Multiple Next.js apps (`small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`, `hearth`, `employee-handler-ui`) log "Next.js inferred your workspace root, but it may not be correct" — caused by the repo having two lockfiles (root `pnpm-lock.yaml` and `projects/nx-workspace/pnpm-lock.yaml`). Fix by setting `outputFileTracingRoot` (or `turbopack.root`) explicitly in each app's Next.js config, or removing the redundant lockfile. Deferred — CI builds pass today (warning only); revisit if a tracing-root-sensitive deploy issue surfaces, especially for `hearth` given its Vercel serverless `sharp` bundling.
@@ -243,7 +271,7 @@ Desired end state: the key is on a rotation path — at minimum listed as a manu
 
 ### 0e704f. [security] Plan: route vb-email-service and vb-storage-service through vb-express instead of exposing them directly
 
-Follow-up to 455179. Unlike llm-service, these two services can't just have their public IPs released — they're called directly by apps that aren't on Fly's private network:
+Follow-up to #149, which locked llm-service down to Fly's private 6PN network. Unlike llm-service, these two services can't just have their public IPs released — they're called directly by apps that aren't on Fly's private network:
 
 - **vb-email-service**: called by vb-express (`apps/api/vb-express/src/routes/messaging.ts:99`) and by email-subscription-service (`apps/api/email-subscription-service/src/main.ts:30,90` — itself a Fly app, so this leg _can_ move to flycast independent of the rest), plus three Vercel-hosted callers that hit the public fly.dev URL directly: `apps/hearth/src/app/api/homes/[id]/members/route.ts:9-12`, `apps/ui/small-business-next/src/app/api/notify/route.ts:8-9`, `apps/ui/vb-manager-next/src/app/api/send-email-message/route.ts:22`.
 - **vb-storage-service** (bucket-service): called only by `apps/ui/vb-manager-next/src/app/api/bucket/route.ts:9-27` (upload/download/list), also from Vercel.
@@ -257,12 +285,18 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
    - vb-email-service: design a `POST /api/gateway/send-email`-style route on vb-express that forwards to email-service internally (flycast), matching the existing `API_KEY_HEADER`/`SHARED_APP_TOKEN` auth pattern (`llm-service.client.ts:15`, `messaging.ts`). If adopted, repoint hearth/small-business-next/vb-manager-next's `EMAIL_SERVICE_URL` at vb-express's public URL and update `scripts/deploy-vercel.ts:175-176`, which currently injects the raw email-service URL into Vercel env.
    - vb-storage-service: design equivalent passthrough routes for `apps/ui/vb-manager-next/src/app/api/bucket/route.ts`'s upload/download/list operations, noting these may carry larger/streamed payloads than the JSON email gateway.
    - email-subscription-service: resolve whether its public routes are intentional (legitimate exception to "vb-express only") or unused and safe to lock down once a real caller exists.
-2. For whichever services move behind the gateway, add the vb-express routes, then repeat 455179's lockdown steps (release public IPs, allocate flycast, update fly-configs) for each.
+2. For whichever services move behind the gateway, add the vb-express routes, then repeat #149's lockdown steps (release public IPs, allocate flycast, update fly-configs) for each.
 3. Update the calling apps' env vars/URLs to point at vb-express instead of the backend services directly.
 4. Update `docs/api/deployment/fly-service-pattern.md` and `docs/infrastructure/network-management.md` once the target architecture is decided; cross-reference 4eb262 (private-networking performance) and 240ff8 (open email relay hardening), which overlap with whatever ends up staying public.
 5. Whatever stays public after step 1 should get hardening (240ff8 already covers vb-email-service's caller-controlled to/from/html; consider similar allowlisting for bucket-service) rather than being left exposed with no mitigation.
 
 ## P3
+
+### c4a917. [security] nx-cache Worker PUT has no size cap
+
+**`infrastructure/cloudflare-workers/nx-cache/index.js`** (PUT branch)
+
+The Worker's immutable-write race (a `head()`-then-`put()` pair that let two concurrent PUTs for the same key both slip through) is now fixed with a conditional `put(..., { onlyIf: { etagDoesNotMatch: '*' } })`. Separately, PUT still streams the body to R2 with no size limit — a leaked write token (held only by `deploy.yml` today) can run up R2 storage until the `nx_cache_r2_ttl_seconds` lifecycle rule expires it. **Fix:** reject PUT when `Content-Length` exceeds a reasonable cache-artifact size (e.g. a few hundred MB).
 
 ### 9f4e45. [security] Non-constant-time API-key comparison
 
@@ -271,10 +305,6 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 ### a10595. [security] RabbitMQ TLS server-identity verification disabled
 
 **`apps/api/email-service/src/main.ts:30`**, `email-subscription-service/src/main.ts:49` (`checkServerIdentity: () => undefined`). CA is still pinned; drop the override or pin the expected CN/SAN.
-
-### ab1da0. [security] checklist-viewer renders marked output without sanitization
-
-**`libs/@vigilant-broccoli/react-utility/src/lib/checklist-viewer.tsx:87,182,274`** pipes `marked.parser()` into `dangerouslySetInnerHTML` with no DOMPurify (its sibling `markdown-viewer.tsx` sanitizes). Author-controlled today; latent stored-XSS if pointed at user content. Add DOMPurify.
 
 ### ae83d3. [security] Mobile app stores Google `provider_token` in `localStorage`
 
@@ -354,7 +384,15 @@ New `S3Client` per R2 operation (`api/where-is/r2.ts:8-9`; a 10-image POST = 10 
 
 ### 1c8bcf. [maintenance] Framework surface
 
-- The Angular 21 toolchain (~25 devDependencies) exists for one app, `cloud-8-skate-angular`. Migrating it to the React/Next stack removes the largest maintenance burden in the workspace.
+- The Angular 21 toolchain (~25 devDependencies) exists for one app, `cloud-8-skate-angular`, plus the `libs/angular/general-components` lib it consumes. Migrating it to the React/Next stack removes the largest maintenance burden in the workspace.
+
+### 4d81ba. [maintenance] Resume markup is implemented twice and has already drifted once
+
+**`libs/@vigilant-broccoli/resume/src/server.ts`** (`buildResumeHtml`/`renderWorkExperience` — HTML strings for the Playwright PDF) vs **`apps/ui/vb-manager-next/src/app/components/resume-view.component.tsx`** (JSX for the `/career` page)
+
+#222 introduced `@vigilant-broccoli/resume` with `resume.json` as the single source of truth for resume _data_, but the _presentation_ is written twice — once as a template-literal HTML document for the headless-Chromium PDF export consumed by personal-website-react's build, once as React for the in-app view. They share no rendering code, so any layout change has to be made in both. This is not hypothetical: #255 added the Project Experience section and removed the spacing above "Soft:" in the React view only, and `vigilant-broccoli` silently dropped out of the published `resume.pdf` until #257 patched `server.ts` to match a day later. The PDF is the artifact that actually gets sent to people, and it is the copy with no UI to notice the drift.
+
+**Fix:** render one tree. The realistic option given the PDF path is headless Chromium is to render the React view to HTML server-side (`react-dom/server`'s `renderToStaticMarkup`) inside `generateResumePdfBuffer` and drop `buildResumeHtml`, keeping the print stylesheet as the only PDF-specific piece. If that pulls too much of vb-manager-next's styling into the lib, the cheaper alternative is to move the shared section/entry components into the `resume` lib itself so both consumers import them. Either way the acceptance test is the same: add a Project Experience entry to `resume.json` and confirm it appears in both `/career` and a regenerated `resume.pdf` without touching two files.
 
 ### 2bf612. [maintenance] Seafile is pinned at 11.0.13 — deferred major-version upgrade (11 → 12 → 13)
 
@@ -387,7 +425,7 @@ Deliberately deferred, not a bug — for a personal solo-admin file-sync/backup 
 
 **Strategy B — lazy `useState` initializer behind `typeof window === 'undefined'`** (no flash, but server HTML and the client's first render disagree whenever the stored value differs from the default → React hydration mismatch): `kanban.component.tsx:634-638`, `google-tasks.component.tsx:325-337` and `:959-965`, `hooks/useNotepad.ts:32-33`.
 
-Strategy A's flash is not cosmetic where panels unmount. On `dev-dashboard`, Radix `Tabs.Content` renders only the active tab, so a user whose stored tab is `cloud` still mounts the Local panel for one paint — firing `PUBLIC_IP`, `LOCAL_IP`, `SSH_KEY`, `DOCKER_CONTAINERS`, `PM2_PROCESSES`, and `LOCAL_SERVICES` (all fetch on mount) before tearing it down. Related: the polling cost of those same routes is 0d64c9.
+Strategy A's flash is not cosmetic where panels unmount. On `dev-dashboard`, Radix `Tabs.Content` renders only the active tab, so a user whose stored tab is `cloud` still mounts the Local panel for one paint — firing `PUBLIC_IP`, `LOCAL_IP`, `SSH_KEY`, `DOCKER_CONTAINERS`, `PM2_PROCESSES`, and `LOCAL_SERVICES` (all fetch on mount) before tearing it down. (The separate polling cost of those same routes was fixed in #134.)
 
 Separately, `search-dialog.component.tsx:23` and `quick-links.component.tsx:7` both define `LOCAL_STORAGE_KEY = 'quick-links-grouped-state'` — one key backing two independent `isGrouped` states, so toggling grouping in one component leaves the other stale until remount.
 
@@ -396,7 +434,7 @@ Separately, `search-dialog.component.tsx:23` and `quick-links.component.tsx:7` b
 **Steps:**
 
 1. Add `libs/@vigilant-broccoli/react-lib/src/hooks/useLocalStorageState.ts`, following `useGeolocation.ts`'s shape (named `export function`, `useEffect`-based, no class). Roughly `useLocalStorageState<T>(key, defaultValue, options?: { isValid?, parse?, serialize? })` returning `{ value, setValue, hydrated }`. Read in `useEffect` (not a lazy initializer) so SSR and first client render always agree; `hydrated` lets callers return `null`/a skeleton for one paint rather than committing to a wrong default. `isValid` covers the union-validation the tab/sort-mode sites already do by hand (`LanguageLearning.tsx:584-589`, `google-tasks.component.tsx:328-334`, `isTab` in `dev-dashboard/page.tsx`); `parse`/`serialize` cover the JSON sites in step 5.
-2. Export it from `libs/@vigilant-broccoli/react-lib/src/index.ts` alongside the existing `hooks/useGeolocation` line. Note this lib publishes to npm (`project.json:36` `publish-package`), so the barrel export is public API — and per 5cbc97 the barrel is already the subject of a `sideEffects`/subpath cleanup, so keep the hook free of module-scope side effects.
+2. Export it from `libs/@vigilant-broccoli/react-lib/src/index.ts` alongside the existing `hooks/useGeolocation` line. Note this lib publishes to npm (`project.json:36` `publish-package`), so the barrel export is public API — and #197 already split the sonner `Toaster` out to a subpath to keep the barrel side-effect-free, so keep the hook free of module-scope side effects too.
 3. Migrate the strategy-A sites listed above. `CollapsibleList.tsx` is the odd one — it persists one key _per item_ (`storageKey(item.id)`) and already tracks its own `mounted` flag, so either call the hook per item or leave it and note why.
 4. Migrate the strategy-B sites (`kanban.component.tsx`, both `google-tasks.component.tsx` sites, `useNotepad.ts`). This is the substantive fix: it removes the `typeof window` guards and the hydration mismatches they cause. `useSortModeStorage` (`google-tasks.component.tsx:323`) becomes a thin wrapper over the new hook.
 5. Fold in the JSON-serialized stores — `hooks/useChatHistory.ts:40-57`, `hooks/useNotificationHistory.ts:18-59`, `useNotepad.ts:33-39` — only if `parse`/`serialize` land in step 1; otherwise leave them and say so.

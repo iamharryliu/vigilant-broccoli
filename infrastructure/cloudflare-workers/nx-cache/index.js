@@ -75,12 +75,16 @@ export default {
       // Immutable writes: first successful writer for a given content-hash
       // key wins. This is the actual CREEP fix — a cache key can be created,
       // never overwritten, so a leaked read-only token (or a compromised PR
-      // build) can't poison an entry another build already trusts.
-      const existing = await env.CACHE.head(key);
-      if (existing) {
+      // build) can't poison an entry another build already trusts. The
+      // conditional makes check-and-write atomic in R2 itself, so two
+      // concurrent PUTs for the same key can't both slip past a separate
+      // head() check the way a head-then-put pair could.
+      const result = await env.CACHE.put(key, request.body, {
+        onlyIf: { etagDoesNotMatch: '*' },
+      });
+      if (!result) {
         return new Response(null, { status: 409 });
       }
-      await env.CACHE.put(key, request.body);
       return new Response(null, { status: 200 });
     }
 
