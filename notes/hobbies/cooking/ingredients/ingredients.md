@@ -12,3 +12,7 @@
 - [Garlic Confit](./sauce-recipes/garlic-confit.md)
 - [Mayo](./sauce-recipes/mayo.md)
 - [Roux](./sauce-recipes/roux.md)
+
+## Stocks
+
+- [Vegetable Stock](./stock-recipes/vegetable-stock.md)
