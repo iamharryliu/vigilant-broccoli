@@ -55,7 +55,7 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
 
   return (
     <div
-      className={`bg-white text-black text-[13px] leading-snug p-8 shadow-md print:shadow-none print:p-0 max-w-[850px] mx-auto print:max-w-none print:w-full ${roboto.className}`}
+      className={`bg-white text-black text-[13px] leading-snug p-8 shadow-md print:shadow-none print:p-0 max-w-[850px] print:max-w-none print:w-full ${roboto.className}`}
     >
       <div className="grid grid-cols-3 items-start mb-2">
         <div className="flex flex-col gap-0.5">
