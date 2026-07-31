@@ -13,7 +13,13 @@ export default defineConfig({
   plugins: [
     react(),
     tsconfigPaths(),
-    viteStaticCopy({ targets: [{ src: '*.md', dest: '.' }], silent: true }),
+    viteStaticCopy({
+      targets: [
+        { src: '*.md', dest: '.' },
+        { src: 'package.json', dest: '.' },
+      ],
+      silent: true,
+    }),
     dts({
       entryRoot: 'src',
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
