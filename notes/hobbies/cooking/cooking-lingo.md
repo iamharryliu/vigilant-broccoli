@@ -6,6 +6,7 @@
 - [Types of Cuts](#types-of-cuts)
 - [Food Science & Components](#food-science--components)
 - [Ingredients & Food Products](#ingredients--food-products)
+- [Kitchen](#kitchen)
 - [Asian Food Lingo](#asian-food-lingo)
 - [French Food Lingo](#french-food-lingo)
 - [Italian Food Lingo](#italian-food-lingo)
@@ -77,6 +78,14 @@
 
 ---
 
+## Kitchen
+
+| Term       | Description                                                                                                                                                                                                                       |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pantry** | A room, closet, or cupboard used to store food, dry goods, and cooking supplies. A well-stocked pantry (oils, vinegars, grains, canned goods, spices) provides shelf-stable staples for cooking without a dedicated grocery trip. |
+
+---
+
 ## Asian Food Lingo
 
 | Term                              | Description                                                                                                                                                                                                                                                                                                     |
@@ -97,16 +106,16 @@
 
 ## French Food Lingo
 
-| Term          | Description                                                                                                                                                                                                                       |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Mirepoix**  | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews.                        |
+| Term         | Description                                                                                                                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mirepoix** | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews. |
 
 ---
 
 ## Italian Food Lingo
 
-| Term                 | Description                                                                                                                                                                                                                                                                                   |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Bronze Die Pasta** | Pasta extruded through bronze dies, creating a rough, textured surface. More porous than Teflon-extruded pasta, the rougher surface helps sauce adhere better. Generally preferred for its superior sauce retention and mouthfeel, though it typically costs slightly more than smooth pasta. |
-| **Mantecare**        | The Italian technique of tossing and combining pasta with sauce in a pan, using heat, movement, and often starchy pasta water to create a smooth emulsion. This helps the sauce coat the pasta evenly and bind together.                                                                      |
-| **Soffritto**        | A base of finely chopped onion, celery, and carrot slowly cooked in oil or fat until softened, forming the aromatic foundation for many Italian sauces, soups, and stews. Similar in role to the French [Mirepoix](#french-food-lingo), but cooked down further before other ingredients are added.                |
+| Term                 | Description                                                                                                                                                                                                                                                                                         |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bronze Die Pasta** | Pasta extruded through bronze dies, creating a rough, textured surface. More porous than Teflon-extruded pasta, the rougher surface helps sauce adhere better. Generally preferred for its superior sauce retention and mouthfeel, though it typically costs slightly more than smooth pasta.       |
+| **Mantecare**        | The Italian technique of tossing and combining pasta with sauce in a pan, using heat, movement, and often starchy pasta water to create a smooth emulsion. This helps the sauce coat the pasta evenly and bind together.                                                                            |
+| **Soffritto**        | A base of finely chopped onion, celery, and carrot slowly cooked in oil or fat until softened, forming the aromatic foundation for many Italian sauces, soups, and stews. Similar in role to the French [Mirepoix](#french-food-lingo), but cooked down further before other ingredients are added. |
