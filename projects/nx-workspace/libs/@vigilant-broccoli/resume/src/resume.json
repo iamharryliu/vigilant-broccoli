@@ -9,7 +9,10 @@
         "label": "linkedin.com/in/iamharryliu",
         "url": "https://linkedin.com/in/iamharryliu"
       },
-      { "label": "harryliu.dev", "url": "https://harryliu.dev" },
+      {
+        "label": "harryliu.dev",
+        "url": "https://harryliu.dev"
+      },
       {
         "label": "github.com/iamharryliu",
         "url": "https://github.com/iamharryliu"
