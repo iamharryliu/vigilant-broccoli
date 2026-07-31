@@ -12,24 +12,24 @@
       "TITLE": "Open Source",
       "DESCRIPTION": "GitHub, Docker Hub, and npm packages."
     },
+    "WEB_APPLICATIONS": {
+      "TITLE": "Web Applications",
+      "DESCRIPTION": "Deployed apps and demos."
+    },
     "UI": {
       "TITLE": "UI",
-      "DESCRIPTION": "React component library and deployed UI apps."
+      "DESCRIPTION": "React component library."
     },
     "API_SERVICES": {
       "TITLE": "API Services",
       "DESCRIPTION": "API docs and service health."
     }
   },
-  "UI_PAGE": {
-    "TITLE": "UI",
-    "DESCRIPTION": "React component library and deployed UI apps.",
-    "SECTION_COMPONENT_LIBRARY": "React Component Library",
-    "SECTION_APPS": "UI Apps",
-    "COMPONENT_LIBRARY": {
-      "TITLE": "React Component Library",
-      "DESCRIPTION": "Showcase of reusable React components."
-    },
+  "WEB_APPLICATIONS_PAGE": {
+    "TITLE": "Web Applications",
+    "DESCRIPTION": "Deployed apps and demos.",
+    "SECTION_APPS": "Apps",
+    "SECTION_DEMO": "Demo",
     "HARRY_LIU": {
       "TITLE": "harryliu.dev",
       "DESCRIPTION": "Personal website."
@@ -42,10 +42,6 @@
       "TITLE": "Docs (Markdown)",
       "DESCRIPTION": "Browse markdown notes from the repo."
     },
-    "EMPLOYEE_HANDLER_UI": {
-      "TITLE": "Employee Handler UI",
-      "DESCRIPTION": "Employee management app deployed on Vercel."
-    },
     "FIND_ME": {
       "TITLE": "FindMe",
       "DESCRIPTION": "Live location sharing app deployed on Vercel."
@@ -53,6 +49,19 @@
     "WHITEBOARD": {
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
+    },
+    "EMPLOYEE_HANDLER": {
+      "TITLE": "Employee Handler",
+      "DESCRIPTION": "Employee management app deployed on Vercel."
+    }
+  },
+  "UI_PAGE": {
+    "TITLE": "UI",
+    "DESCRIPTION": "React component library.",
+    "SECTION_COMPONENT_LIBRARY": "React Component Library",
+    "COMPONENT_LIBRARY": {
+      "TITLE": "React Component Library",
+      "DESCRIPTION": "Showcase of reusable React components."
     }
   },
   "STATUS_PAGE": {
