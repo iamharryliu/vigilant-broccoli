@@ -1,5 +1,12 @@
 # Employee Handler
 
+Employee lifecycle automation — onboarding, offboarding, signatures, data sync.
+
+## Table of Contents
+
+- [CLI Script Implementation](#cli-script-implementation)
+- [Stack](#stack)
+
 ## CLI Script Implementation
 
 ```
@@ -33,3 +40,17 @@ npx tsx script.ts offboardInactiveEmployees
 # Post Retention
 npx tsx script.ts postRetentionCleanup
 ```
+
+## Stack
+
+- Language - TypeScript
+- External libs
+  - `express`
+  - `nodemailer`
+- Internal libs
+  - `common-js`
+  - `common-node`
+  - `google-workspace`
+- Cloud services
+  - Google Workspace
+  - npm

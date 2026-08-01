@@ -16,6 +16,10 @@ module.exports = {
     ),
     join(
       __dirname,
+      '../../../libs/@vigilant-broccoli/react-utility/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
       '../../../libs/@vigilant-broccoli/common-js/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
     join(
@@ -26,5 +30,5 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 };

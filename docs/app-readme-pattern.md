@@ -1,26 +1,26 @@
 # README Stack Pattern
 
-Every app under `projects/nx-workspace/apps/*` and every component under `infrastructure/*` carries a `README.md` with a title, a one-line purpose, a `## Table of Contents`, and a `## Stack` section. Keep it minimal — headers + bullets, no prose. Derive everything from the actual code and config so newly introduced tech shows up, and update sections in place rather than duplicating.
+Every app under `projects/nx-workspace/apps/*`, every component under `infrastructure/*`, and every `libs/@vigilant-broccoli/*` lib that publishes to npm (has a `publish-package` target — see [repo-patterns.md](./repo-patterns.md#deployment)) carries a `README.md` with a title, a one-line purpose, a `## Table of Contents`, and a `## Stack` section. Keep it minimal — headers + bullets, no prose. Derive everything from the actual code and config so newly introduced tech shows up, and update sections in place rather than duplicating.
 
 ## Table of Contents
 
 Every README gets a `## Table of Contents` right after the one-line purpose, linking to each `##` header that follows it, in document order. Regenerate it whenever headers are added, removed, or reordered — it's the one section that's fully derived, safe to rebuild from scratch every run.
 
-## Apps
+## Apps and publishable libs
 
-Each app under `projects/nx-workspace/apps/*` has a `README.md` with:
+Each app under `projects/nx-workspace/apps/*`, and each `libs/@vigilant-broccoli/*` lib with a `publish-package` target, has a `README.md` with:
 
-- `# <App Title>` — human-readable name (title case, not the dir slug)
-- One line on what the app does (skip if the title already says it)
+- `# <Title>` — human-readable name (title case, not the dir/package slug)
+- One line on what it does (skip if the title already says it)
 - `## Table of Contents`
-- `## Deployment URLs` — optional; a bullet list of externally hosted resources tied to this app (deployed site, CMS studio/overview, calendars, analytics dashboards, admin consoles, etc.), grouped the same way as Stack (single link inline, related links nested under a group label). This section is manually curated, not derived from code — `/update-readmes` must never delete or invent entries here. Only add an entry when the user gives you the URL, and only fix an entry the user confirms is broken or stale.
+- `## Deployment URLs` — optional; a bullet list of externally hosted resources tied to it (deployed site, CMS studio/overview, calendars, analytics dashboards, admin consoles, etc.), grouped the same way as Stack (single link inline, related links nested under a group label). This section is manually curated, not derived from code — `/update-readmes` must never delete or invent entries here. Only add an entry when the user gives you the URL, and only fix an entry the user confirms is broken or stale.
 - `## Stack` — a bullet list grouped into these levels, in order:
   - **Language** — e.g. TypeScript
   - **Framework** — the app framework, e.g. Next.js, Fastify, Angular, React
   - **Build Tool** — the bundler/builder, e.g. Vite, Next.js, esbuild, webpack
   - **External libs** — other third-party npm packages: UI libs, SDKs, tooling
   - **Internal libs** — the `@vigilant-broccoli/*` VB libs it consumes
-  - **Cloud services** — hosted/managed platforms and external APIs it deploys to or calls (e.g. Vercel, Cloudflare Pages, Fly.io, Docker Hub, Supabase, Sanity, AWS S3, Stripe)
+  - **Cloud services** — hosted/managed platforms and external APIs it deploys to or calls (e.g. Vercel, Cloudflare Pages, Fly.io, Docker Hub, npm, Supabase, Sanity, AWS S3, Stripe). Always reflect the deploy destination here: a `libs/@vigilant-broccoli/*` lib with a `publish-package` target lists `npm`; an `apps/api/*` service shipped via the Docker Hub roundtrip (`deploy-container` target — see [fly-service-pattern.md](./api/deployment/fly-service-pattern.md)) lists `Docker Hub`.
 
 Language, Framework, and Build Tool each hold a single value, written inline (`- Language - TypeScript`). External libs, Internal libs, and Cloud services are nested bullet lists.
 
@@ -100,4 +100,4 @@ Example (`infrastructure/terraform`):
 
 ## Aggregate
 
-The root `README.md` carries a `## Table of Contents` and a `## Stack` section — the repo-wide roll-up of everything above, written as grouped nested bullets (category → items). After refreshing individual READMEs, reconcile it so every technology that appears in any app or infrastructure README is represented there.
+The root `README.md` carries a `## Table of Contents` and a `## Stack` section — the repo-wide roll-up of everything above, written as grouped nested bullets (category → items). After refreshing individual READMEs, reconcile it so every technology that appears in any app, publishable-lib, or infrastructure README is represented there.

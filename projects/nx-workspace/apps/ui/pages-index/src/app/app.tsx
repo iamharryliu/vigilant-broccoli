@@ -4,6 +4,11 @@ import { HomePage } from './pages/HomePage';
 import { UiPage } from './pages/UiPage';
 import { StatusPage } from './pages/StatusPage';
 import { OpenSourcePage } from './pages/OpenSourcePage';
+import { GithubReadmePage } from './pages/GithubReadmePage';
+import { DockerImagesPage } from './pages/DockerImagesPage';
+import { DockerImageReadmePage } from './pages/DockerImageReadmePage';
+import { NpmPackagesPage } from './pages/NpmPackagesPage';
+import { NpmPackageReadmePage } from './pages/NpmPackageReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 
@@ -17,6 +22,17 @@ export function App() {
             <Route path="/ui" element={<UiPage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/open-source" element={<OpenSourcePage />} />
+            <Route path="/open-source/github" element={<GithubReadmePage />} />
+            <Route path="/open-source/docker" element={<DockerImagesPage />} />
+            <Route
+              path="/open-source/docker/:image"
+              element={<DockerImageReadmePage />}
+            />
+            <Route path="/open-source/npm" element={<NpmPackagesPage />} />
+            <Route
+              path="/open-source/npm/:pkg"
+              element={<NpmPackageReadmePage />}
+            />
             <Route path="/web-applications" element={<WebApplicationsPage />} />
             <Route path="/api-services" element={<ApiServicesPage />} />
           </Routes>
