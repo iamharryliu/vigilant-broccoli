@@ -16,6 +16,10 @@ on:
           - staging
           - production
   workflow_call:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        type: string
 
 permissions:
   actions: read
