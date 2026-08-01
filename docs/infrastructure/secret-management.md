@@ -7,7 +7,7 @@
 - Tooling generates them from the secret manager at run time instead:
   - Agent sandbox: `load-env-from-vault.sh` fetches Vault tokens and `export`s them straight into the current shell session — sourced (`. load-env-from-vault.sh`) or `eval "$(load-env-from-vault.sh)"` — never writing them to disk.
   - Terraform CLI env comes from `infrastructure/terraform/scripts/load-vault-tf-env.sh`.
-  - Local scripts read the Vault token via `projects/nx-workspace/scripts/gcp-vault-token.ts`.
+  - Local scripts read the Vault token via `projects/nx-workspace/scripts/gcp-vault-token.ts`, with `NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt` for Vault's self-signed cert.
 - Committed `*.env.example` files are fine — they list keys with no values and drive `deploy-flyio-secrets.ts`.
 - Non-secret identifiers (account IDs, zone IDs, GitHub App IDs, domains) are not secrets: hardcode them as variable `default`s in `infrastructure/terraform/variables.tf` (e.g. `upptime_gh_app_id`, `cloudflare_account_id`, `cloudflare_zone_id`) rather than routing them through `.tfvars` or Vault. Only the matching secret half — a private key or token — goes to the secret manager.
 
@@ -52,7 +52,7 @@ Rotate credentials semi-annually. Everything below Tier 0 lives in Vault at `kv/
 Entry points:
 
 - `pnpm secret-rotation:all` — single command: runs the local-only rotators in sequence (`secret-rotation:flyio`, `secret-rotation:gitea`, `secret-rotation:profile-deploy-key`), then dispatches the `rotate-secrets` workflow. `secret-rotation:rabbitmq`, `secret-rotation:resend`, and `secret-rotation:twilio` are deliberately excluded — the workflow already rotates all three, and their local modes use gcloud/IAP rather than the CI tunnel (see the table below).
-- `rotate-secrets` workflow (`ci-rotate-secrets.yml`) — verifies `FLY_API_TOKEN` from Vault (fails fast before rotating anything), regenerates `SHARED_APP_TOKEN` / `VB_EXPRESS_API_KEY`, syncs the new `SHARED_APP_TOKEN` to the socket-server VM as `SENDER_TOKEN`, rotates `RESEND_API_KEY`, `RABBITMQ_CONNECTION_STRING`, and `TWILIO_AUTH_TOKEN`, and redeploys.
+- `rotate-secrets` workflow (`ci-rotate-secrets.yml`) — verifies `FLY_API_TOKEN` from Vault (fails fast before rotating anything), regenerates `SHARED_APP_TOKEN` / `VB_EXPRESS_API_KEY`, syncs the new `SHARED_APP_TOKEN` to the socket-server VM as `SENDER_TOKEN`, rotates `RESEND_API_KEY`, `RABBITMQ_CONNECTION_STRING`, and `TWILIO_AUTH_TOKEN`, then calls `deploy.yml` twice — staging, then production — so both environments pick up the rotated values in the same run.
 
 Every rotator follows mint → verify → store → revoke, so Vault never holds a dead credential:
 
