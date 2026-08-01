@@ -75,7 +75,10 @@
     "RAW_HISTORY": "Raw history:",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
-    "UPDATED": "Updated {date}"
+    "UPDATED": "Updated {date}",
+    "GROUP_PRODUCTION": "Production",
+    "GROUP_STAGING": "Staging",
+    "GROUP_PERSONAL": "Personal Apps"
   },
   "OPEN_SOURCE_PAGE": {
     "TITLE": "Open Source",
@@ -91,6 +94,50 @@
     "NPM": {
       "TITLE": "npm",
       "DESCRIPTION": "vigilant-broccoli npm packages."
+    }
+  },
+  "README_PAGE": {
+    "VIEW_ON_GITHUB": "View on GitHub",
+    "VIEW_ON_NPM": "View on npm",
+    "VIEW_ON_DOCKER_HUB": "View on Docker Hub",
+    "LOADING": "Loading README…",
+    "ERROR": "Failed to load README: {message}",
+    "NOT_FOUND": "Unknown item."
+  },
+  "DOCKER_IMAGES_PAGE": {
+    "TITLE": "Docker Hub",
+    "DESCRIPTION": "iamharryliu Docker images.",
+    "BUCKET_SERVICE": {
+      "TITLE": "bucket-service",
+      "DESCRIPTION": "Object storage proxy across multiple bucket providers."
+    },
+    "EMAIL_SERVICE": {
+      "TITLE": "email-service",
+      "DESCRIPTION": "Email queue producer/consumer."
+    },
+    "EMAIL_SUBSCRIPTION_SERVICE": {
+      "TITLE": "email-subscription-service",
+      "DESCRIPTION": "Email subscription management and broadcast."
+    }
+  },
+  "NPM_PACKAGES_PAGE": {
+    "TITLE": "npm Packages",
+    "DESCRIPTION": "Published @vigilant-broccoli packages.",
+    "REACT_LIB": {
+      "TITLE": "react-lib",
+      "DESCRIPTION": "Shared React component library."
+    },
+    "EMPLOYEE_HANDLER": {
+      "TITLE": "employee-handler",
+      "DESCRIPTION": "Employee lifecycle automation — onboarding, offboarding, signatures, data sync."
+    },
+    "SLACK_WORKSPACE": {
+      "TITLE": "slack-workspace",
+      "DESCRIPTION": "Slack Web API client and view-builder utilities."
+    },
+    "SLACKBOTS": {
+      "TITLE": "slackbots",
+      "DESCRIPTION": "Slack bot apps built on slack-workspace, including Office Presence."
     }
   },
   "API_SERVICES_PAGE": {
