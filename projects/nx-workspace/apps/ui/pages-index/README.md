@@ -29,6 +29,6 @@
     - Apps → harryliu.dev, Cloud8Skate, Docs (Markdown), FindMe, Whiteboard (external)
     - Demo → Employee Handler
   - `/api-services` — API Services
-    - Email Service, Email Subscription Service, Storage Service docs (external)
+    - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). Covers private-only Fly services (llm-service, bucket-service) whose own `/docs` is unreachable from the internet, as well as the public ones. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
   - `/ui` — UI
     - React Component Library → `./react-component-library/`

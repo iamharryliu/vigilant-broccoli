@@ -8,7 +8,23 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "generate-openapi": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{workspaceRoot}/scripts/generate-openapi-specs.ts",
+        "{workspaceRoot}/apps/api/bucket-service/src/libs/swagger.ts",
+        "{workspaceRoot}/apps/api/email-service/src/swagger.ts",
+        "{workspaceRoot}/apps/api/email-subscription-service/src/swagger.ts",
+        "{workspaceRoot}/apps/api/llm-service/src/libs/swagger.ts"
+      ],
+      "outputs": ["{projectRoot}/public/openapi"],
+      "options": {
+        "command": "tsx scripts/generate-openapi-specs.ts"
+      }
+    },
     "build": {
+      "dependsOn": ["generate-openapi"],
       "outputs": [
         "{projectRoot}/{options.outDir}",
         "{workspaceRoot}/dist/pages-index"
@@ -27,6 +43,7 @@
       }
     },
     "serve": {
+      "dependsOn": ["generate-openapi"],
       "defaultConfiguration": "development",
       "configurations": {
         "development": {},

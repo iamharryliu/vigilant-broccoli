@@ -147,6 +147,17 @@
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "Email Subscription Service",
       "DESCRIPTION": "staging-email-subscription-service.fly.dev"
+    },
+    "LLM_SERVICE": {
+      "TITLE": "LLM Service",
+      "DESCRIPTION": "staging-llm-service.flycast — private"
+    },
+    "STORAGE_SERVICE": {
+      "TITLE": "Storage Service",
+      "DESCRIPTION": "staging-storage-service.flycast — private"
     }
+  },
+  "API_SERVICE_DOCS_PAGE": {
+    "ERROR": "Failed to load Swagger UI from {message}"
   }
 }
