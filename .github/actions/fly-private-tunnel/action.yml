@@ -3,7 +3,7 @@ description: Install flyctl and open a WireGuard tunnel to a private-only Fly ap
 
 inputs:
   app:
-    description: Fly app name to tunnel to (e.g. staging-vb-llm-service)
+    description: Fly app name to tunnel to (e.g. staging-llm-service)
     required: true
   local_port:
     description: Local port to bind the tunnel to

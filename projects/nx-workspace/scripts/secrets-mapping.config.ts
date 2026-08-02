@@ -22,7 +22,7 @@ export const secretsMapping: SecretsMapping = {
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
   'llm-service': {
-    flyAppBaseName: 'vb-llm-service',
+    flyAppBaseName: 'llm-service',
     appPath: './apps/api/llm-service',
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,

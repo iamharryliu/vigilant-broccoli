@@ -1,4 +1,4 @@
-app = 'staging-vb-llm-service'
+app = 'staging-llm-service'
 primary_region = 'yyz'
 
 [build]
