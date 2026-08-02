@@ -57,4 +57,10 @@ Wiring: pruned `smoke` depends on `prune`; bundled `smoke` depends on `build`. `
 
 Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. The service's `.env.example` is the key list: `deploy-flyio-secrets.ts` parses it, pulls those keys from the service's Vault path, and pushes them with `flyctl secrets set`. `nx deploy:secrets <svc>` creates the fly app first if it doesn't exist yet (`flyctl apps create`); `deploy` depends on `deploy:secrets`, so a first deploy to a brand-new app works end-to-end (volumes declared in `[mounts]` are auto-created on first deploy).
 
+## Private-only services
+
+Set `privateOnly: true` in `secrets-mapping.config.ts` (llm-service, bucket-service). `deploy:secrets` then reconciles the app's IPs before every deploy: allocates a private ingress IPv6 if missing, and releases any public `v4`/`v6`/`shared_v4` it finds. Because `deploy` depends on `deploy:secrets`, a brand-new private service never has a public edge, and a public IP that reappears (some flyctl versions auto-allocate on first deploy when the config declares an `http_service`) is cleaned up on the next deploy rather than needing a human to notice.
+
+Pair it with `[http_service].force_https = false` — see [network-management.md](../../infrastructure/network-management.md) for why, and for how CI reaches these services.
+
 Both environments read the same Vault path — per-env secret values would need per-env vault paths.

@@ -49,7 +49,9 @@ github.io                                 GitHub Pages
 
 ## Private-only Fly.io services
 
-Reachable only over Fly's private 6PN network via a flycast address — no public IPv4/IPv6 allocated, so the `fly.dev` hostname resolves to nothing reachable. Each app has a private ingress IPv6 (`fly ips allocate-v6 --private`) and `[http_service].force_https = false`, so the flycast edge serves the internal port over plain HTTP on port 80 (a `.internal` direct-machine dial would hit the app's IPv4-only `0.0.0.0` bind and reset; flycast routes through fly-proxy, which also auto-starts stopped machines).
+Reachable only over Fly's private 6PN network via a flycast address — no public IPv4/IPv6 allocated, so the `fly.dev` hostname resolves to nothing reachable. Each app has a private ingress IPv6 and `[http_service].force_https = false`, so the flycast edge serves the internal port over plain HTTP on port 80 (a `.internal` direct-machine dial would hit the app's IPv4-only `0.0.0.0` bind and reset; flycast routes through fly-proxy, which also auto-starts stopped machines).
+
+IP allocation is automated, not manual: services flagged `privateOnly: true` in `scripts/secrets-mapping.config.ts` get their private IPv6 allocated and any public IP released by `deploy:secrets` on every deploy — see [fly-service-pattern.md](../api/deployment/fly-service-pattern.md).
 
 ```
 staging-vb-llm-service.flycast            LLM Service (staging) — called by staging-vb-express via http://…flycast over 6PN
