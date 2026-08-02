@@ -158,7 +158,6 @@
     }
   },
   "API_SERVICE_DOCS_PAGE": {
-    "PRIVATE_NOTICE": "Private-only service on Fly's 6PN network. The spec is published here at build time; \"Try it out\" needs a flyctl proxy tunnel to 127.0.0.1:3000.",
     "ERROR": "Failed to load Swagger UI from {message}"
   }
 }

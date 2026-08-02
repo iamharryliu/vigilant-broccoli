@@ -10,7 +10,7 @@ export const API_SERVICES: ApiServiceInfo[] = [
   { slug: 'bucket-service', private: true },
 ];
 
-export const toApiServiceRoute = (slug: string) => `/api-services/${slug}`;
+export const toApiServiceDocsHref = (slug: string) => `#/api-services/${slug}`;
 
 export const toSpecUrl = (slug: string) =>
   `${import.meta.env.BASE_URL}openapi/${slug}.json`;

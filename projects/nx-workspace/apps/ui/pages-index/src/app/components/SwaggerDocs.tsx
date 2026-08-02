@@ -87,14 +87,16 @@ export function SwaggerDocs({ specUrl }: SwaggerDocsProps) {
   return (
     <>
       {error && (
-        <p className="text-sm text-red-500">
+        <p className="px-6 py-16 text-sm text-red-500">
           {t('API_SERVICE_DOCS_PAGE.ERROR', { message: error })}
         </p>
       )}
       {!error && !ready && (
-        <p className="text-sm text-gray-400">{t('README_PAGE.LOADING')}</p>
+        <p className="px-6 py-16 text-sm text-gray-400">
+          {t('README_PAGE.LOADING')}
+        </p>
       )}
-      <div id={CONTAINER_ID} ref={containerRef} className="bg-white" />
+      <div id={CONTAINER_ID} ref={containerRef} />
     </>
   );
 }
