@@ -31,8 +31,12 @@
         "Built AI-driven transcription and insight pipelines for call centers.",
         "Adopted **AI-driven development** workflows with tools like **Claude Code** to accelerate feature delivery and code review.",
         "Delivered gamification features (leaderboards, achievements) to drive user engagement.",
+        "Engineered authentication infrastructure with **NextAuth**, supporting Microsoft and Google **OAuth2**, session management, and role-based access control.",
+        "Optimized database performance through query tuning, strategic indexing, and **N+1** resolution, improving page load times with pre-computed leaderboard caching.",
+        "Built a microservices architecture with a **WebSocket** server for real-time updates and a **RabbitMQ** worker for asynchronous job processing.",
         "Built REST API for trading card marketplace aggregating multi-source pricing data.",
         "Designed automated ingestion pipelines, search indexing, and cron-based synchronization.",
+        "Indexed card variants in **Elasticsearch** for fast marketplace search, with multi-currency (SEK/USD/EUR) price tracking and trend analysis.",
         "Managed GCP infrastructure (Terraform) and CI/CD pipelines with automated testing and monitoring."
       ]
     },
