@@ -27,9 +27,7 @@ fly.dev                                   Fly.io API services (production apps c
 ├── staging-vb-email-service.fly.dev              Email Service (staging)
 ├── production-vb-email-service.fly.dev           Email Service (production)
 ├── staging-email-subscription-service.fly.dev    Email Subscription Service (staging)
-├── production-email-subscription-service.fly.dev Email Subscription Service (production)
-├── staging-vb-storage-service.fly.dev            Storage Service (staging, bucket-service)
-└── production-vb-storage-service.fly.dev         Storage Service (production, bucket-service)
+└── production-email-subscription-service.fly.dev Email Subscription Service (production)
 
 vercel.app                                Vercel (production projects created on first production dispatch)
 ├── staging-hearth.vercel.app                 Hearth (staging)
@@ -56,6 +54,10 @@ Reachable only over Fly's private 6PN network via a flycast address — no publi
 ```
 staging-vb-llm-service.flycast            LLM Service (staging) — called by staging-vb-express via http://…flycast over 6PN
 production-vb-llm-service.flycast         LLM Service (production) — called by production-vb-express via http://…flycast over 6PN
+staging-vb-storage-service.flycast        Storage Service (staging, bucket-service) — no in-fly caller; CI + local dev only
+production-vb-storage-service.flycast     Storage Service (production, bucket-service) — no in-fly caller; CI + local dev only
 ```
 
-CI e2e/security suites reach these from `ubuntu-latest` runners by opening a `flyctl proxy 3000:80 <app>.flycast -a <app>` WireGuard tunnel, then hitting `http://127.0.0.1:3000` (see `test-e2e-llm.yml`, `test-security-llm.yml`).
+CI e2e/security suites reach these from `ubuntu-latest` runners via the `.github/actions/fly-private-tunnel` composite action, which installs flyctl and opens a `flyctl proxy 3000:80 <app>.flycast -a <app>` WireGuard tunnel; the job then hits `http://127.0.0.1:3000`. Used by `test-e2e-llm.yml`, `test-security-llm.yml`, `test-e2e-storage-service.yml`, `test-security-storage-service.yml`. The job must also import `FLY_API_TOKEN` from Vault for flyctl to authenticate.
+
+Locally-run apps need the same tunnel: `vb-manager-next` (pm2, not deployed) reaches bucket-service via `flyctl proxy 3001:80 staging-vb-storage-service.flycast -a staging-vb-storage-service` with `VB_STORAGE_SERVICE_URL=http://127.0.0.1:3001`. Port 3001, not 3000 — `nx serve vb-manager-next` runs `next dev` on 3000.

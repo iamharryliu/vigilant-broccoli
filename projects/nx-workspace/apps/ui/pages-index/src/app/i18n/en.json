@@ -150,10 +150,6 @@
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "Email Subscription Service",
       "DESCRIPTION": "staging-email-subscription-service.fly.dev"
-    },
-    "STORAGE_SERVICE": {
-      "TITLE": "Storage Service",
-      "DESCRIPTION": "staging-vb-storage-service.fly.dev"
     }
   }
 }

@@ -30,8 +30,6 @@ sites:
     url: https://staging-hearth.vercel.app/login
   - name: staging-service-manager
     url: https://staging-vb-express.fly.dev/
-  - name: staging-storage-service
-    url: https://staging-vb-storage-service.fly.dev/
   - name: staging-whiteboard
     url: https://staging-whiteboard.vercel.app/
   - name: production-email-service
@@ -44,8 +42,6 @@ sites:
     url: https://production-hearth.vercel.app/login
   - name: production-service-manager
     url: https://production-vb-express.fly.dev/
-  - name: production-storage-service
-    url: https://production-vb-storage-service.fly.dev/
   - name: production-whiteboard
     url: https://production-whiteboard.vercel.app/
 
