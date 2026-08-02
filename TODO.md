@@ -56,10 +56,6 @@ Every VM (including transient Packer build VMs) using the default SA can read al
 
 The management UI (TLS but single-factor, username `admin`) is internet-reachable — continuous credential-stuffing surface. SSH/22 is world-open on all three OCI VMs. **Fix:** restrict 15671 and 22 to home/WG egress IPs. (5671 AMQPS must stay open for fly.io consumers — justified.)
 
-### ff4327. [security] Seafile SSH open to 0.0.0.0/0, no brute-force mitigation
-
-**`infrastructure/terraform/aws-seafile.tf:20-25`** (`aws_security_group.seafile` ingress) — the security group's own `description` (`:18`) documents this as an intentional tradeoff ("SSH open, 80/443 restricted to Cloudflare..."), and it's mitigated by key-only auth (Ubuntu's cloud image disables SSH password auth by default). No `fail2ban` or connection-rate limiting is configured, so the box is a continuous target for opportunistic scanning/brute-force attempts, all of which fail without a valid key but still consume log volume and a nonzero CPU/attack-surface cost. Likely an acceptable risk for a single-admin personal server (compare `20177f`'s equivalent finding for the OCI VMs, same tradeoff). **Fix (if ever prioritized):** restrict the `cidr_blocks` on the port-22 ingress rule to a known home/WireGuard egress IP (matching `20177f`'s suggested fix for the OCI boxes), or add `fail2ban` via cloud-init.
-
 ### 21290b. [security] Vault root token used as everyday credential + passed on command lines
 
 **`infrastructure/terraform/main.tf`** (`VB_VM_VAULT_ROOT_TOKEN` secret) · `packer/scripts/run-vault-*.sh`, `rotate-*.sh`, `scripts/post-apply.sh:119-122`
@@ -178,16 +174,6 @@ No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`ap
 - App-level: CORS allowlist via `ALLOWED_ORIGINS` env (currently `*`), payload size cap, last-message cache per room on subscribe.
 - Subscribe-side authorization (any anonymous client can join any room) tracked separately in 27b216.
 
-### 16815c. [security] `vb-manager-next`: Supabase Google sign-in has no allowlist — accepted risk (not fixed)
-
-**`projects/nx-workspace/apps/ui/vb-manager-next/src/middleware.ts`**, `libs/server-auth.ts`
-
-`middleware.ts` verifies the Supabase bearer token via `supabase.auth.getUser(token)` and admits any valid user — no allowed-emails check. **Any** Google user who completes the Supabase OAuth flow gets a valid session and passes the `/api/*` gate. The session is real access control, but any Google account can obtain one. (Migrated from NextAuth to Supabase auth; the missing-allowlist gap carried over unchanged. `employee-handler-ui`'s `proxy.ts` shows the allowlist pattern this could adopt.)
-
-**Fix:** in `middleware.ts` (and `getUserEmail`), reject unless `data.user.email` is in an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist, mirroring `employee-handler-ui/src/proxy.ts`.
-
-**Status:** deliberately left open. Owner's stated threat model: solo use, UI-only interaction, app bound to `127.0.0.1` (confirmed in `ecosystem.config.js` and the local nginx proxy), no external callers — the owner is the only account that will ever complete this app's Google OAuth flow, so the allowlist's marginal value is low here. Revisit if the app is ever exposed beyond loopback or a second Google account is ever expected to authenticate.
-
 ### 5bdea5. [performance] Vite/Angular bundle-size warnings
 
 - **`component-library`**: JS chunk 676.91 kB / CSS chunk 725.17 kB, both over the 500 kB threshold. CSS cause: `src/main.tsx` imports the full `@radix-ui/themes/styles.css` (812 kB unminified, unpurgeable). JS cause: `libs/@vigilant-broccoli/react-sandbox/src/lib/ComponentSandbox.tsx` statically imports all 13 demo components + 6 utility contents at module top-level, rendered unconditionally even though only one `CollapsibleList` section is open by default — fix with `React.lazy` + `Suspense` per demo.
@@ -251,10 +237,6 @@ The Worker's immutable-write race (a `head()`-then-`put()` pair that let two con
 
 **`projects/nx-workspace/scripts/vault-ca.crt`** (SAN `IP Address:136.116.117.204`); old IP in `notes/tech/.../hashicorp-vault.md`. Gitignore the generated cert / distribute out-of-band.
 
-### b8169a. [security] Default credentials in local docker-compose
-
-**`infrastructure/local/docker-compose.yml:82,140-141`** — Grafana `admin`/`admin`, Immich Postgres `postgres`/`postgres`. Localhost-bound (mitigated), but set real passwords via the gitignored `.env`.
-
 ### b92f95. [security] code-server login password == sudo password
 
 **`infrastructure/terraform/cloud-init-code-server.yaml:80-81`** (leaked web password → container root). Separate the two.
@@ -270,10 +252,6 @@ The Worker's immutable-write race (a `head()`-then-`put()` pair that let two con
 ### be5cf7. [performance] `common-node` barrel drags winston/archiver/qrcode into every service
 
 **`libs/@vigilant-broccoli/common-node/src/index.ts`** re-exports the whole lib, so services importing only `getEnvironmentVariable` pay require-time + image weight for all three. Split entry points.
-
-### d19470. [performance] vb-express auth DB is synchronous `node:sqlite`
-
-**`apps/api/vb-express/src/auth.ts:3,31`** (`DatabaseSync`); every session/API-key check blocks the event loop, serializing streaming responses under burst. Fine at personal scale; worth knowing.
 
 ### d1a94d. [performance] Small sequential-await nits
 
@@ -348,6 +326,32 @@ Separately, `search-dialog.component.tsx:23` and `quick-links.component.tsx:7` b
 7. **Preserve every existing key string verbatim** while migrating — `'notepad:content'`, `'vb-manager-chats'`, `'swimlanes-boards'`, `'quick-links-grouped-state'`, `'language-learning-*'`, `'dev-dashboard-tab'`, `'google-tasks-selected-list-id'`. The naming is inconsistent (`:` vs `-` separators, some `vb-manager-` prefixed, most not), but renaming keys silently discards whatever users have stored. Normalize in a separate change with a migration read if it's worth doing at all.
 8. Out of scope: auth-token storage (`createSupabaseAuth.tsx:95-195`, the `auth-provider.tsx` files in hearth / small-business-next / employee-handler-ui / vb-manager-next-mobile). Different concern with a security dimension — the mobile `provider_token` case is tracked as ae83d3.
 9. Verify with `npx nx lint react-lib vb-manager-next` and a typecheck of each consuming app, then manually reload each migrated surface to confirm the preference actually survives and no hydration warning appears in the console. Bump/release `react-lib` per its `publish-package` flow if consumers resolve it from npm rather than the workspace.
+
+## Non-Risk Review
+
+Findings from the same audit that the audit's own text already frames as low/accepted risk specifically because this is a solo-admin, personal-scale deployment — no team, no other users, no insider threat model. Kept here for visibility rather than deleted; revisit if that context changes (e.g. the app gains other users, or is exposed beyond loopback/localhost).
+
+### ff4327. [security] Seafile SSH open to 0.0.0.0/0, no brute-force mitigation
+
+**`infrastructure/terraform/aws-seafile.tf:20-25`** (`aws_security_group.seafile` ingress) — the security group's own `description` (`:18`) documents this as an intentional tradeoff ("SSH open, 80/443 restricted to Cloudflare..."), and it's mitigated by key-only auth (Ubuntu's cloud image disables SSH password auth by default). No `fail2ban` or connection-rate limiting is configured, so the box is a continuous target for opportunistic scanning/brute-force attempts, all of which fail without a valid key but still consume log volume and a nonzero CPU/attack-surface cost. Likely an acceptable risk for a single-admin personal server (compare `20177f`'s equivalent finding for the OCI VMs, same tradeoff). **Fix (if ever prioritized):** restrict the `cidr_blocks` on the port-22 ingress rule to a known home/WireGuard egress IP (matching `20177f`'s suggested fix for the OCI boxes), or add `fail2ban` via cloud-init.
+
+### 16815c. [security] `vb-manager-next`: Supabase Google sign-in has no allowlist — accepted risk (not fixed)
+
+**`projects/nx-workspace/apps/ui/vb-manager-next/src/middleware.ts`**, `libs/server-auth.ts`
+
+`middleware.ts` verifies the Supabase bearer token via `supabase.auth.getUser(token)` and admits any valid user — no allowed-emails check. **Any** Google user who completes the Supabase OAuth flow gets a valid session and passes the `/api/*` gate. The session is real access control, but any Google account can obtain one. (Migrated from NextAuth to Supabase auth; the missing-allowlist gap carried over unchanged. `employee-handler-ui`'s `proxy.ts` shows the allowlist pattern this could adopt.)
+
+**Fix:** in `middleware.ts` (and `getUserEmail`), reject unless `data.user.email` is in an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist, mirroring `employee-handler-ui/src/proxy.ts`.
+
+**Status:** deliberately left open. Owner's stated threat model: solo use, UI-only interaction, app bound to `127.0.0.1` (confirmed in `ecosystem.config.js` and the local nginx proxy), no external callers — the owner is the only account that will ever complete this app's Google OAuth flow, so the allowlist's marginal value is low here. Revisit if the app is ever exposed beyond loopback or a second Google account is ever expected to authenticate.
+
+### b8169a. [security] Default credentials in local docker-compose
+
+**`infrastructure/local/docker-compose.yml:82,140-141`** — Grafana `admin`/`admin`, Immich Postgres `postgres`/`postgres`. Localhost-bound (mitigated), but set real passwords via the gitignored `.env`.
+
+### d19470. [performance] vb-express auth DB is synchronous `node:sqlite`
+
+**`apps/api/vb-express/src/auth.ts:3,31`** (`DatabaseSync`); every session/API-key check blocks the event loop, serializing streaming responses under burst. Fine at personal scale; worth knowing.
 
 ## Feature
 
