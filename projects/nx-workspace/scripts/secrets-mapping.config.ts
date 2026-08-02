@@ -3,6 +3,7 @@ export interface AppSecretsConfig {
   appPath: string;
   vaultPath: string;
   excludeEnvVars?: string[];
+  privateOnly?: boolean;
 }
 
 export interface SecretsMapping {
@@ -25,6 +26,7 @@ export const secretsMapping: SecretsMapping = {
     appPath: './apps/api/llm-service',
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
+    privateOnly: true,
   },
   'email-service': {
     flyAppBaseName: 'vb-email-service',
@@ -43,6 +45,7 @@ export const secretsMapping: SecretsMapping = {
     appPath: './apps/api/bucket-service',
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
+    privateOnly: true,
   },
   'vb-manager-next-mobile': {
     flyAppBaseName: 'vb-manager-next-mobile',
