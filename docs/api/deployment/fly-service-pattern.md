@@ -63,4 +63,6 @@ Set `privateOnly: true` in `secrets-mapping.config.ts` (llm-service, bucket-serv
 
 Pair it with `[http_service].force_https = false` — see [network-management.md](../../infrastructure/network-management.md) for why, and for how CI reaches these services.
 
+Going private also takes the service's `/docs` Swagger UI off the public internet, so drop its card from `pages-index`'s `ApiServicesPage.tsx` + `en.json` rather than leaving a dead link. Publishing those specs statically instead is scoped in TODO `3ba7d1`.
+
 Both environments read the same Vault path — per-env secret values would need per-env vault paths.

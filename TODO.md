@@ -288,6 +288,25 @@ Vercel serverless functions can't join Fly's 6PN network, so fully closing this 
 4. Update `docs/api/deployment/fly-service-pattern.md` and `docs/infrastructure/network-management.md` once the target architecture is decided; cross-reference 4eb262 (private-networking performance) and 240ff8 (open email relay hardening), which overlap with whatever ends up staying public.
 5. Whatever stays public after step 1 should get hardening (240ff8 already covers vb-email-service's caller-controlled to/from/html; consider similar allowlisting for bucket-service) rather than being left exposed with no mitigation.
 
+### 3ba7d1. [maintenance] Private services have no publicly viewable Swagger docs
+
+Going private removed the only way to read these services' API docs. `docs.plugin.ts` serves `/docs` (Swagger UI) and `/docs/json` off each service itself, so once the public edge is gone the docs go with it — #149 and #273 both had to delete the corresponding card from `pages-index`'s `ApiServicesPage.tsx` rather than repoint it. `ApiServicesPage` is now down to vb-email-service and email-subscription-service, the two still-public services; llm-service and bucket-service are undocumented to anyone without a `flyctl proxy` tunnel. Any further lockdown (0e704f) shrinks the page further.
+
+The enabling detail: **the OpenAPI specs are plain static objects in the source tree**, built by `createSwaggerSpec({ paths })` — `apps/api/{llm-service,bucket-service,vb-express}/src/libs/swagger.ts` and `apps/api/{email-service,email-subscription-service}/src/swagger.ts`. Nothing is introspected from live Fastify routes, so a spec can be published at build time without the service running or being reachable.
+
+**Options:**
+
+1. **Static specs rendered in pages-index (recommended).** Add a build step that imports each `swaggerSpec` and writes `apps/ui/pages-index/public/openapi/<service>.json`, then turn `ApiServicesPage`'s external `CardLink`s into an in-app route rendering Swagger UI against the local spec — reuse the CDN-script approach already in `libs/@vigilant-broccoli/fastify/src/plugins/docs.plugin.ts`. Uniform for public and private services, no 6PN dependency, no cold-start, nothing to deploy or secure. pages-index already renders READMEs in-app (#270), so this matches where it's going. Note it's served from a subpath (`iamharryliu.github.io/vigilant-broccoli`), so spec URLs must be base-path aware. Trade-off: "Try it out" can't reach a private service — set `servers` per service so public ones stay interactive and private ones read as reference.
+2. **Proxy `/docs/:service` through vb-express.** It's public and already on 6PN, so it can fetch `http://<env>-<svc>.flycast/docs/json` and re-serve it. Docs stay live against the deployed build. Trade-offs: opens a public passthrough into the private network (needs a strict service-name allowlist and only the two docs paths — no method or path passthrough), couples docs availability to vb-express, and wakes the private machine on every docs view.
+3. **Dedicated public `api-docs` fly app** aggregating specs over flycast. Same benefit as 2 without touching vb-express, but it's a whole app to deploy, monitor, and secure for content that is entirely static. Not worth it at this size.
+
+**Steps:**
+
+1. Pick an option — 1 unless the specs stop being hand-written static objects.
+2. If 1: add the spec-emit step, add the in-app docs route, restore the llm-service and bucket-service cards to `ApiServicesPage.tsx` + `en.json`, and repoint the two public services' cards at the local specs so all four are consistent.
+3. Decide what `servers` each spec declares — public fly.dev URL for public services, omitted (or flagged internal-only) for private ones.
+4. If the specs ever become runtime-generated from route schemas, replace the import with an nx `openapi` target that boots the service locally and dumps `app.swagger()` to the same JSON path; the pages-index side is unchanged.
+
 ## P3
 
 ### c4a917. [security] nx-cache Worker PUT has no size cap
