@@ -63,4 +63,6 @@ Set `privateOnly: true` in `secrets-mapping.config.ts` (llm-service, bucket-serv
 
 Pair it with `[http_service].force_https = false` — see [network-management.md](../../infrastructure/network-management.md) for why, and for how CI reaches these services.
 
+Going private also takes the service's own `/docs` Swagger UI off the internet. Docs stay readable because the OpenAPI specs are static objects (`createSwaggerSpec`), so `pages-index`'s `generate-openapi` target imports them and publishes `public/openapi/<service>.json` at build time; `/api-services/<service>` renders Swagger UI against that. Register a new service in `scripts/generate-openapi-specs.ts` and `pages-index`'s `consts/apiServices.ts` — give public services a `publicUrl` so "Try it out" works, and leave it off for private ones.
+
 Both environments read the same Vault path — per-env secret values would need per-env vault paths.

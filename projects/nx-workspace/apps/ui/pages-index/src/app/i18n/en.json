@@ -147,6 +147,18 @@
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "Email Subscription Service",
       "DESCRIPTION": "staging-email-subscription-service.fly.dev"
+    },
+    "LLM_SERVICE": {
+      "TITLE": "LLM Service",
+      "DESCRIPTION": "staging-llm-service.flycast — private"
+    },
+    "STORAGE_SERVICE": {
+      "TITLE": "Storage Service",
+      "DESCRIPTION": "staging-storage-service.flycast — private"
     }
+  },
+  "API_SERVICE_DOCS_PAGE": {
+    "PRIVATE_NOTICE": "Private-only service on Fly's 6PN network. The spec is published here at build time; \"Try it out\" needs a flyctl proxy tunnel to 127.0.0.1:3000.",
+    "ERROR": "Failed to load Swagger UI from {message}"
   }
 }

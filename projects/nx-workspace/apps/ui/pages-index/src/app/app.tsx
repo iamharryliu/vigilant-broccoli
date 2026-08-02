@@ -11,6 +11,7 @@ import { NpmPackagesPage } from './pages/NpmPackagesPage';
 import { NpmPackageReadmePage } from './pages/NpmPackageReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
+import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
 
 export function App() {
   return (
@@ -35,6 +36,10 @@ export function App() {
             />
             <Route path="/web-applications" element={<WebApplicationsPage />} />
             <Route path="/api-services" element={<ApiServicesPage />} />
+            <Route
+              path="/api-services/:service"
+              element={<ApiServiceDocsPage />}
+            />
           </Routes>
         </HashRouter>
       </div>
