@@ -1,4 +1,4 @@
-app = 'production-vb-storage-service'
+app = 'production-storage-service'
 primary_region = 'yyz'
 
 [build]

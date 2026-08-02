@@ -30,7 +30,7 @@ jobs:
       matrix:
         environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
         service:
-          # vb-llm-service and vb-storage-service are private-only (no public fly.dev
+          # vb-llm-service and storage-service are private-only (no public fly.dev
           # edge); their no-key/wrong-key auth checks run over the flycast tunnel in
           # test-security-llm.yml and test-security-storage-service.yml
           - vb-express

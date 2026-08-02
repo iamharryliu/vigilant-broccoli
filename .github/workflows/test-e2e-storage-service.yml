@@ -48,7 +48,7 @@ jobs:
 
       - uses: ./.github/actions/fly-private-tunnel
         with:
-          app: ${{ matrix.environment }}-vb-storage-service
+          app: ${{ matrix.environment }}-storage-service
 
       - name: Prepare test fixture
         id: fixture

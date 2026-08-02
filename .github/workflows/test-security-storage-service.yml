@@ -33,7 +33,7 @@ jobs:
     name: ${{ matrix.environment }}
     env:
       SERVICE_URL: http://127.0.0.1:3000
-      APP_NAME: ${{ matrix.environment }}-vb-storage-service
+      APP_NAME: ${{ matrix.environment }}-storage-service
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -47,7 +47,7 @@ jobs:
 
       - uses: ./.github/actions/fly-private-tunnel
         with:
-          app: ${{ matrix.environment }}-vb-storage-service
+          app: ${{ matrix.environment }}-storage-service
 
       - name: Run security check
         run: |

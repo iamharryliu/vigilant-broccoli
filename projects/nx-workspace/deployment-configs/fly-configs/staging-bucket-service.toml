@@ -1,4 +1,4 @@
-app = 'staging-vb-storage-service'
+app = 'staging-storage-service'
 primary_region = 'yyz'
 
 [build]
