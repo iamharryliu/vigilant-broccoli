@@ -3,22 +3,27 @@ import {
   createServerClient,
   createAdminClient,
 } from '../../../../../../libs/supabase-server';
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import {
+  HTTP_STATUS_CODES,
+  VB_EXPRESS_ENDPOINT,
+} from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { getVbExpressApiKey } from '../../../../../lib/vb-express';
 
-const EMAIL_SERVICE_BASE_URL =
-  getEnvironmentVariable('EMAIL_SERVICE_URL') ||
-  'https://staging-vb-email-service.fly.dev';
-const EMAIL_SERVICE_URL = `${EMAIL_SERVICE_BASE_URL}/api/send-email`;
 const SENDER_EMAIL = 'home.management@harryliu.dev';
 
 async function sendEmail(to: string, subject: string, html: string) {
-  const apiKey = process.env.SHARED_APP_TOKEN;
-  const res = await fetch(EMAIL_SERVICE_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey ?? '' },
-    body: JSON.stringify({ from: SENDER_EMAIL, to, subject, html }),
-  });
+  const res = await fetch(
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.SEND_EMAIL}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getVbExpressApiKey(),
+      },
+      body: JSON.stringify({ from: SENDER_EMAIL, to, subject, html }),
+    },
+  );
   if (!res.ok) throw new Error(`Email service error: ${res.status}`);
 }
 

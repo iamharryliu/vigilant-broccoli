@@ -4,8 +4,8 @@ export interface ApiServiceInfo {
 }
 
 export const API_SERVICES: ApiServiceInfo[] = [
-  { slug: 'email-service', private: false },
-  { slug: 'email-subscription-service', private: false },
+  { slug: 'email-service', private: true },
+  { slug: 'email-subscription-service', private: true },
   { slug: 'llm-service', private: true },
   { slug: 'bucket-service', private: true },
 ];

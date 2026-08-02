@@ -142,11 +142,11 @@
     "DESCRIPTION": "Swagger documentation for services deployed on Fly.io.",
     "EMAIL_SERVICE": {
       "TITLE": "Email Service",
-      "DESCRIPTION": "staging-vb-email-service.fly.dev"
+      "DESCRIPTION": "staging-vb-email-service.flycast — private"
     },
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "Email Subscription Service",
-      "DESCRIPTION": "staging-email-subscription-service.fly.dev"
+      "DESCRIPTION": "staging-email-subscription-service.flycast — private"
     },
     "LLM_SERVICE": {
       "TITLE": "LLM Service",

@@ -17,16 +17,8 @@ interface SpecEntry {
 }
 
 const SPECS: SpecEntry[] = [
-  {
-    slug: 'email-service',
-    spec: emailServiceSpec,
-    publicUrl: 'https://staging-vb-email-service.fly.dev',
-  },
-  {
-    slug: 'email-subscription-service',
-    spec: emailSubscriptionServiceSpec,
-    publicUrl: 'https://staging-email-subscription-service.fly.dev',
-  },
+  { slug: 'email-service', spec: emailServiceSpec },
+  { slug: 'email-subscription-service', spec: emailSubscriptionServiceSpec },
   { slug: 'llm-service', spec: llmServiceSpec },
   { slug: 'bucket-service', spec: bucketServiceSpec },
 ];

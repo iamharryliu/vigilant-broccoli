@@ -20,10 +20,6 @@ sites:
     url: https://production-cloud-8-skate-angular.pages.dev/
   - name: socket-server
     url: https://socket.harryliu.dev/health
-  - name: staging-email-service
-    url: https://staging-vb-email-service.fly.dev/
-  - name: staging-email-subscription-service
-    url: https://staging-email-subscription-service.fly.dev/
   - name: staging-findme
     url: https://staging-findme.vercel.app/
   - name: staging-hearth
@@ -32,10 +28,6 @@ sites:
     url: https://staging-vb-express.fly.dev/
   - name: staging-whiteboard
     url: https://staging-whiteboard.vercel.app/
-  - name: production-email-service
-    url: https://production-vb-email-service.fly.dev/
-  - name: production-email-subscription-service
-    url: https://production-email-subscription-service.fly.dev/
   - name: production-findme
     url: https://production-findme.vercel.app/
   - name: production-hearth
