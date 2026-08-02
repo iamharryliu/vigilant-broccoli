@@ -20,6 +20,10 @@ on:
       environment:
         description: 'Deployment environment'
         type: string
+      skip_pages:
+        description: 'Skip the GitHub Pages deploy — set by callers that invoke this workflow more than once per run, since the pages artifact name is unique per run, not per call'
+        type: boolean
+        default: false
 
 permissions:
   actions: read
@@ -215,7 +219,7 @@ jobs:
 
   deploy-github-pages:
     needs: gitleaks
-    if: ${{ github.ref_name == 'main' }}
+    if: ${{ github.ref_name == 'main' && !inputs.skip_pages }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
