@@ -30,13 +30,6 @@ export function ApiServicesPage() {
             )}
           />
         </li>
-        <li>
-          <CardLink
-            href="https://staging-vb-storage-service.fly.dev/docs"
-            title={t('API_SERVICES_PAGE.STORAGE_SERVICE.TITLE')}
-            description={t('API_SERVICES_PAGE.STORAGE_SERVICE.DESCRIPTION')}
-          />
-        </li>
       </CardGrid>
     </main>
   );

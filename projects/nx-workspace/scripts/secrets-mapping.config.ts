@@ -39,7 +39,7 @@ export const secretsMapping: SecretsMapping = {
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
   'bucket-service': {
-    flyAppBaseName: 'vb-storage-service',
+    flyAppBaseName: 'storage-service',
     appPath: './apps/api/bucket-service',
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,

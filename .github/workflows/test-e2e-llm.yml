@@ -57,15 +57,9 @@ jobs:
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
 
-      - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # 1.6
-
-      - name: Tunnel to llm-service private network
-        run: |
-          flyctl proxy 3000:80 ${{ matrix.environment }}-vb-llm-service.flycast -a ${{ matrix.environment }}-vb-llm-service &
-          for i in $(seq 1 30); do
-            curl -sf "${LLM_SERVICE_URL}/" >/dev/null 2>&1 && break
-            sleep 1
-          done
+      - uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: ${{ matrix.environment }}-vb-llm-service
 
       - name: Run e2e tests (${{ matrix.provider }})
         env:

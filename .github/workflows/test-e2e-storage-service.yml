@@ -33,7 +33,7 @@ jobs:
         provider: [gcs, cloudflare-r2]
     name: ${{ matrix.environment }} ${{ matrix.provider }}
     env:
-      SERVICE_URL: https://${{ matrix.environment }}-vb-storage-service.fly.dev
+      SERVICE_URL: http://127.0.0.1:3000
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -44,6 +44,11 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: ${{ matrix.environment }}-storage-service
 
       - name: Prepare test fixture
         id: fixture

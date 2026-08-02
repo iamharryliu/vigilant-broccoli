@@ -1,4 +1,4 @@
-app = 'staging-vb-storage-service'
+app = 'staging-storage-service'
 primary_region = 'yyz'
 
 [build]
@@ -13,7 +13,7 @@ primary_region = 'yyz'
 
 [http_service]
   internal_port = 3000
-  force_https = true
+  force_https = false
   auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
