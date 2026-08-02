@@ -54,8 +54,8 @@ Reachable only over Fly's private 6PN network via a flycast address — no publi
 IP allocation is automated, not manual: services flagged `privateOnly: true` in `scripts/secrets-mapping.config.ts` get their private IPv6 allocated and any public IP released by `deploy:secrets` on every deploy — see [fly-service-pattern.md](../api/deployment/fly-service-pattern.md).
 
 ```
-staging-vb-llm-service.flycast            LLM Service (staging) — called by staging-vb-express via http://…flycast over 6PN
-production-vb-llm-service.flycast         LLM Service (production) — called by production-vb-express via http://…flycast over 6PN
+staging-llm-service.flycast               LLM Service (staging) — called by staging-vb-express via http://…flycast over 6PN
+production-llm-service.flycast            LLM Service (production) — called by production-vb-express via http://…flycast over 6PN
 staging-storage-service.flycast           Storage Service (staging, bucket-service) — no in-fly caller; CI + local dev only
 production-storage-service.flycast        Storage Service (production, bucket-service) — no in-fly caller; CI + local dev only
 ```
@@ -64,4 +64,6 @@ CI e2e/security suites reach these from `ubuntu-latest` runners via the `.github
 
 Locally-run apps need the same tunnel: `vb-manager-next` (pm2, not deployed) reaches bucket-service via `flyctl proxy 3001:80 staging-storage-service.flycast -a staging-storage-service` with `VB_STORAGE_SERVICE_URL=http://127.0.0.1:3001`. Port 3001, not 3000 — `nx serve vb-manager-next` runs `next dev` on 3000.
 
-The storage-service apps dropped their `vb-` prefix during the 6PN migration (old: `<env>-vb-storage-service`). Fly has no rename, so these are new apps; the originals were destroyed after cutover. Only deployed instances carry the `<env>-` prefix — the nx project stays `bucket-service`.
+The storage-service and llm-service apps dropped their `vb-` prefix (old: `<env>-vb-storage-service`, `<env>-vb-llm-service`). Fly has no rename, so these are new apps; the originals were destroyed after cutover. Only deployed instances carry the `<env>-` prefix — the nx projects stay `bucket-service` and `llm-service`.
+
+The llm rename is a two-app cutover, unlike storage: `LLM_SERVICE_URL` is baked into vb-express's `[env]`, so the new llm app must exist and be deployed **before** vb-express redeploys against the new flycast host, or vb-express's LLM routes 502 against a name that doesn't resolve.

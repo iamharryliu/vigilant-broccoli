@@ -1,4 +1,4 @@
-app = 'production-vb-llm-service'
+app = 'production-llm-service'
 primary_region = 'yyz'
 
 [build]

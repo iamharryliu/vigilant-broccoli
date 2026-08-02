@@ -59,7 +59,7 @@ jobs:
 
       - uses: ./.github/actions/fly-private-tunnel
         with:
-          app: ${{ matrix.environment }}-vb-llm-service
+          app: ${{ matrix.environment }}-llm-service
 
       - name: Run e2e tests (${{ matrix.provider }})
         env:

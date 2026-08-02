@@ -47,7 +47,7 @@ jobs:
 
       - uses: ./.github/actions/fly-private-tunnel
         with:
-          app: ${{ matrix.environment }}-vb-llm-service
+          app: ${{ matrix.environment }}-llm-service
 
       - name: Run numOutputs clamp check
         env:
