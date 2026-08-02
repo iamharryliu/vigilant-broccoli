@@ -38,14 +38,26 @@ export const scrollToUrlHash = () => {
   document.getElementById(hash)?.scrollIntoView();
 };
 
+// In-page heading anchors (e.g. a Table of Contents link to "#stack") must not fall through
+// to the browser default: under HashRouter the URL's fragment IS the route, so letting the
+// browser navigate to "#stack" replaces the current route hash instead of scrolling.
+const isInPageAnchor = (href: string): boolean => href.startsWith('#');
+
 export const createNoteLinkClickHandler =
   (filePath: string, onNavigate?: (path: string) => void) =>
   (event: MouseEvent<HTMLElement>) => {
-    if (!onNavigate) return;
     const anchor = (event.target as HTMLElement).closest('a');
     if (!anchor) return;
     const href = anchor.getAttribute('href');
     if (!href) return;
+
+    if (isInPageAnchor(href)) {
+      event.preventDefault();
+      document.getElementById(href.slice(1))?.scrollIntoView();
+      return;
+    }
+
+    if (!onNavigate) return;
     const target = resolveNoteLink(filePath, href);
     if (target === null) return;
     event.preventDefault();
