@@ -355,7 +355,7 @@ New `S3Client` per R2 operation (`api/where-is/r2.ts:8-9`; a 10-image POST = 10 
 
 ### f5e6f7. [performance] Manual-op script nits
 
-`backup-secrets.sh` makes several ~1s `bw` round trips per note chunk (list once, look up with `jq`); `secret-rotation:all` chains four scripts each opening its own IAP tunnel (~5–10s each); `check-cloudflare-access-security.sh` re-fetches the Cloudflare IP list per hostname and spawns `python3` per CIDR; root `format` (`package.json:8`) runs prettier over the whole repo with no `--cache`; `scripts/shell/oci-ssh.sh:8-12` pays `terraform output` + `ssh-keyscan` before every SSH — cache the IP, keyscan only on host-key failure; nx `parallel` left at default 3.
+`backup-secrets.sh` makes several ~1s `bw` round trips per note chunk (list once, look up with `jq`); `secret-rotation:all` chains five scripts each opening its own IAP tunnel (~5–10s each); `check-cloudflare-access-security.sh` re-fetches the Cloudflare IP list per hostname and spawns `python3` per CIDR; root `format` (`package.json:8`) runs prettier over the whole repo with no `--cache`; `scripts/shell/oci-ssh.sh:8-12` pays `terraform output` + `ssh-keyscan` before every SSH — cache the IP, keyscan only on host-key failure; nx `parallel` left at default 3.
 
 ### 1c8bcf. [maintenance] Framework surface
 
