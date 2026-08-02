@@ -33,12 +33,14 @@ export const secretsMapping: SecretsMapping = {
     appPath: './apps/api/email-service',
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
+    privateOnly: true,
   },
   'email-subscription-service': {
     flyAppBaseName: 'email-subscription-service',
     appPath: './apps/api/email-subscription-service',
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
+    privateOnly: true,
   },
   'bucket-service': {
     flyAppBaseName: 'storage-service',

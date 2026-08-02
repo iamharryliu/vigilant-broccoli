@@ -158,10 +158,6 @@ Both email services start their AMQP consumer in the web process but run with `a
 
 `.upptimerc.yml` `sites:` includes all the fly apps (staging + production); each check wakes a stopped machine, fly's idle sweep stops it minutes later. Net: a large fraction of always-on runtime is paid anyway, real users still frequently hit cold starts (vb-express runs better-auth migrations at boot), and every cycle re-handshakes RabbitMQ/Supabase. **Fix (pick one per service):** `min_machines_running = 1` for user-facing vb-express, or `auto_stop_machines = 'suspend'` (resume ~sub-second vs full boot), or lengthen the Upptime interval.
 
-### 4eb262. [performance] Service-to-service calls go over the public fly edge instead of private networking
-
-**`deployment-configs/fly-configs/production-vb-express.toml:9`** (and staging) — `EMAIL_SERVICE_URL` is still `https://production-vb-email-service.fly.dev`, so every vb-express→email-service call exits through the fly edge, TLS, and back in, and chained cold starts stack (a cold vb-express request needing email-service pays two sequential boots). `LLM_SERVICE_URL` was already moved to `http://*-llm-service.flycast` by #149/#152 — the heavier leg (multi-MB base64 image payloads) is fixed; this entry now covers only the email hop. **Fix:** point this one env var at `http://<app>.flycast` (keeps auto-start) — no public egress/TLS/edge hop. This is independent of 0e704f: email-service keeps its public IP for the Vercel callers that can't join 6PN either way, so only vb-express's own leg moves. `email-subscription-service/src/main.ts:30,90` is the other in-fly caller and can move the same way.
-
 ### 5b34e7. [performance] `googleapis` meta-package import — heavy cold-start cost in vb-express
 
 **`apps/api/vb-express/src/routes/tasks.ts:2`** — `import { google } from 'googleapis'` indexes every Google API at require time on a shared-1-cpu machine that cold-boots constantly (496949), and drags a huge tree into the pruned image. **Fix:** `@googleapis/tasks` only, or plain `fetch` against the REST API (the code already does this for task lists).
@@ -268,25 +264,6 @@ Desired end state: the key is on a rotation path — at minimum listed as a manu
 2. Optional (preferred): script it as `pnpm secret-rotation:upptime-app-key`, modeled on `rotate-profile-deploy-key.sh`. Note the constraint — GitHub has no API to _generate_ an app private key (only humans can, in the app settings UI), so a rotator can only _verify a human-supplied new key and revoke old ones_, not fully self-serve. Scope accordingly, or document it as manual-only.
 3. If scripted, wire it into `pnpm secret-rotation:all` and the rotation table in `docs/infrastructure/secret-rotation-implementation.md`, matching the existing entries' columns.
 4. Cross-check `docs/infrastructure/secret-management.md`'s key inventory (Deploy secrets tier) actually lists `UPPTIME_GH_APP_PRIVATE_KEY` — it was added ad hoc during the GitHub App migration and may not be in the canonical inventory yet.
-
-### 0e704f. [security] Plan: route vb-email-service through vb-express instead of exposing it directly
-
-Follow-up to #149, which locked llm-service down to Fly's private 6PN network. Unlike llm-service, this service can't just have its public IPs released — it's called directly by apps that aren't on Fly's private network:
-
-- **vb-email-service**: called by vb-express (`apps/api/vb-express/src/routes/messaging.ts:99`) and by email-subscription-service (`apps/api/email-subscription-service/src/main.ts:30,90` — itself a Fly app, so this leg _can_ move to flycast independent of the rest), plus one deployed off-Fly caller that hits the public fly.dev URL directly: `apps/hearth/src/app/api/homes/[id]/members/route.ts:9-12` (Vercel). The other two callers — `apps/ui/small-business-next/src/app/api/notify/route.ts:8-9` and `apps/ui/vb-manager-next/src/app/api/send-email-message/route.ts:22` — are local-only apps (no `deploy` target), so they don't constrain the design; they just need a `flyctl proxy` tunnel for local dev.
-- **email-subscription-service** itself has public `/api/subscribe`, `/api/unsubscribe`, `/api/notify` routes (`apps/api/email-subscription-service/src/main.ts:167-278`) with no in-repo caller found — needs a decision on whether it's intentionally a public-facing API (future newsletter signup) or can be locked down too. If not, it is the next zero-caller lockdown, and needs no gateway.
-
-Vercel serverless functions can't join Fly's 6PN network, so fully closing this off means adding proxy/passthrough routes on vb-express and repointing hearth at vb-express's public URL instead of the backend service's fly.dev URL — real app-code work, not just a fly.toml change. This entry is scoping/planning only; no implementation.
-
-**Steps:**
-
-1. Decide per service whether to gateway it through vb-express or accept it stays public:
-   - vb-email-service: design a `POST /api/gateway/send-email`-style route on vb-express that forwards to email-service internally (flycast), matching the existing `API_KEY_HEADER`/`SHARED_APP_TOKEN` auth pattern (`llm-service.client.ts:15`, `messaging.ts`). If adopted, repoint hearth's `EMAIL_SERVICE_URL` at vb-express's public URL and update `scripts/deploy-vercel.ts:175-176`, which currently injects the raw email-service URL into Vercel env.
-   - email-subscription-service: resolve whether its public routes are intentional (legitimate exception to "vb-express only") or unused and safe to lock down once a real caller exists.
-2. For whichever services move behind the gateway, add the vb-express routes, then repeat #149's lockdown steps (release public IPs, allocate flycast, update fly-configs) for each.
-3. Update the calling apps' env vars/URLs to point at vb-express instead of the backend services directly.
-4. Update `docs/api/deployment/fly-service-pattern.md` and `docs/infrastructure/network-management.md` once the target architecture is decided; cross-reference 4eb262 (private-networking performance) and 240ff8 (open email relay hardening), which overlap with whatever ends up staying public.
-5. Whatever stays public after step 1 should get hardening (240ff8 already covers vb-email-service's caller-controlled to/from/html; consider similar allowlisting for bucket-service) rather than being left exposed with no mitigation.
 
 ## P3
 

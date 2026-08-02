@@ -1,4 +1,4 @@
-name: test-security-api
+name: test-security-email-subscription-service
 
 on:
   schedule:
@@ -20,6 +20,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   security-check:
@@ -29,25 +30,32 @@ jobs:
       fail-fast: false
       matrix:
         environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
-        service:
-          # llm-service, storage-service, vb-email-service, and
-          # email-subscription-service are private-only (no public fly.dev edge);
-          # their no-key/wrong-key auth checks run over the flycast tunnel in
-          # test-security-llm.yml, test-security-storage-service.yml,
-          # test-security-email.yml, and test-security-email-subscription-service.yml
-          - vb-express
-    name: ${{ matrix.environment }}-${{ matrix.service }}
+    name: ${{ matrix.environment }}
+    env:
+      SERVICE_URL: http://127.0.0.1:3000
+      APP_NAME: ${{ matrix.environment }}-email-subscription-service
     steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Run security check for ${{ matrix.environment }}-${{ matrix.service }}
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: ${{ env.APP_NAME }}
+
+      - name: Run security check
         run: |
           chmod +x scripts/shell/test-api-ping-security.sh
-          scripts/shell/test-api-ping-security.sh "${{ matrix.environment }}-${{ matrix.service }}" "https://${{ matrix.environment }}-${{ matrix.service }}.fly.dev"
+          scripts/shell/test-api-ping-security.sh "${APP_NAME}" "${SERVICE_URL}"
 
       - name: Notify on failure
         if: failure()
         run: |
-          echo "Security check failed for ${{ matrix.environment }}-${{ matrix.service }}! /api/* may be accepting unauthorized requests."
+          echo "Security check failed for ${APP_NAME}! /api/* may be accepting unauthorized requests."
           exit 1
