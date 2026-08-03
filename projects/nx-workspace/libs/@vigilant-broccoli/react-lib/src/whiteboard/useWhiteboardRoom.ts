@@ -5,7 +5,11 @@ import {
   CONNECTION_STATUS,
   ConnectionStatus,
 } from '../live-location/live-location.types';
-import { WhiteboardMember, WhiteboardRoomState } from './whiteboard-room.types';
+import {
+  WhiteboardCursor,
+  WhiteboardMember,
+  WhiteboardRoomState,
+} from './whiteboard-room.types';
 
 const PRESENCE_EVENT = 'presence';
 const SYNC_EVENT = 'sync';
@@ -14,6 +18,7 @@ const PAGEHIDE_EVENT = 'pagehide';
 
 const CONTENT_EVENT = 'content';
 const REQUEST_STATE_EVENT = 'request-state';
+const CURSOR_EVENT = 'cursor';
 
 const SUBSCRIBE_STATUS = {
   SUBSCRIBED: 'SUBSCRIBED',
@@ -28,6 +33,14 @@ interface PresencePayload {
 
 interface ContentPayload {
   content: string;
+  updatedAt: number;
+}
+
+interface CursorPayload {
+  userId: string;
+  username: string;
+  x: number | null;
+  y: number | null;
   updatedAt: number;
 }
 
@@ -71,6 +84,7 @@ export function useWhiteboardRoom(
 ): WhiteboardRoomState {
   const [content, setContentState] = useState('');
   const [members, setMembers] = useState<WhiteboardMember[]>([]);
+  const [cursors, setCursors] = useState<WhiteboardCursor[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     CONNECTION_STATUS.CONNECTING,
   );
@@ -78,6 +92,7 @@ export function useWhiteboardRoom(
   const usernameRef = useRef<string>(username);
   const updatedAtRef = useRef<number>(0);
   const contentRef = useRef<string>('');
+  const cursorsRef = useRef<Record<string, WhiteboardCursor>>({});
 
   useEffect(() => {
     usernameRef.current = username;
@@ -99,6 +114,13 @@ export function useWhiteboardRoom(
         }),
       );
       setMembers(list);
+
+      const presentIds = new Set(list.map(member => member.userId));
+      const prunedCursors = Object.fromEntries(
+        Object.entries(cursorsRef.current).filter(([id]) => presentIds.has(id)),
+      );
+      cursorsRef.current = prunedCursors;
+      setCursors(Object.values(prunedCursors));
     });
 
     channel.on(BROADCAST_EVENT, { event: CONTENT_EVENT }, message => {
@@ -107,6 +129,23 @@ export function useWhiteboardRoom(
       updatedAtRef.current = payload.updatedAt;
       contentRef.current = payload.content;
       setContentState(payload.content);
+    });
+
+    channel.on(BROADCAST_EVENT, { event: CURSOR_EVENT }, message => {
+      const payload = message.payload as CursorPayload;
+      const existing = cursorsRef.current[payload.userId];
+      if (existing && payload.updatedAt <= existing.updatedAt) return;
+      cursorsRef.current = {
+        ...cursorsRef.current,
+        [payload.userId]: {
+          userId: payload.userId,
+          username: payload.username,
+          x: payload.x,
+          y: payload.y,
+          updatedAt: payload.updatedAt,
+        },
+      };
+      setCursors(Object.values(cursorsRef.current));
     });
 
     channel.on(BROADCAST_EVENT, { event: REQUEST_STATE_EVENT }, () => {
@@ -155,6 +194,8 @@ export function useWhiteboardRoom(
       updatedAtRef.current = 0;
       contentRef.current = '';
       setContentState('');
+      cursorsRef.current = {};
+      setCursors([]);
     };
   }, [supabase, channelName, userId]);
 
@@ -170,5 +211,29 @@ export function useWhiteboardRoom(
     });
   }, []);
 
-  return { content, setContent, members, connectionStatus };
+  const setCursorPosition = useCallback(
+    (x: number | null, y: number | null) => {
+      channelRef.current?.send({
+        type: BROADCAST_EVENT,
+        event: CURSOR_EVENT,
+        payload: {
+          userId,
+          username: usernameRef.current,
+          x,
+          y,
+          updatedAt: Date.now(),
+        },
+      });
+    },
+    [userId],
+  );
+
+  return {
+    content,
+    setContent,
+    members,
+    cursors,
+    setCursorPosition,
+    connectionStatus,
+  };
 }
