@@ -116,7 +116,7 @@ export const HomeDetailView = ({ homeId }: Props) => {
   if (!loaded) return null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <div className="space-y-4">
         <HomeForm
           name={name}
