@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../../libs/auth';
 import { APP_ROUTE } from '../app.const';
-import { useTheme } from '@vigilant-broccoli/react-lib';
+import { useTheme, useThemeKeybind } from '@vigilant-broccoli/react-lib';
 import { FloatingIslandComponent } from '../components/floating-island.component';
 import { RightSidebar } from '../components/right-sidebar.component';
 import { useDeployNotifications } from '../hooks/useDeployNotifications';
@@ -42,7 +42,6 @@ type KeyboardHandlers = {
   setWeatherDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
   setUtilitiesDialogOpen: (open: boolean) => void;
-  toggleTheme: () => void;
 };
 
 // eslint-disable-next-line complexity
@@ -83,9 +82,6 @@ const processKeyboardInput = (
     case 'u':
       handlers.setUtilitiesDialogOpen(true);
       return true;
-    case 'd':
-      handlers.toggleTheme();
-      return true;
     default:
       return false;
   }
@@ -105,7 +101,8 @@ const handleKeyboardShortcut = (
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const { appearance, toggleTheme } = useTheme();
+  const { appearance } = useTheme();
+  useThemeKeybind();
   const pathname = usePathname();
   const _session = useAuth();
   const { notifications, unreadCount, add, markAllRead, clear } =
@@ -158,13 +155,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         setWeatherDialogOpen,
         setPomodoroDialogOpen,
         setUtilitiesDialogOpen,
-        toggleTheme,
       });
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [toggleTheme]);
+  }, []);
 
   return (
     <NotificationContext.Provider value={add}>

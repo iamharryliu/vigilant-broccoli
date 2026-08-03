@@ -1,6 +1,7 @@
 export * from './auth';
 export * from './components';
 export * from './hooks/useGeolocation';
+export * from './hooks/useThemeKeybind';
 export * from './i18n';
 export * from './leaderboard';
 export * from './live-location';
