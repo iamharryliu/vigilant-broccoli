@@ -13,11 +13,12 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   local:install:machine-setup Run machine setup installer (mac/linux)
   format                      Format all files with Prettier
   format:commit               Format given files with Prettier (pass paths)
-  cloud:login                 Login to GCP and GitHub CLI
+  cloud:login                 Check GCP/AWS/GitHub/npm/Fly login status, login where needed
   gcp:login                   Login to GCP and set project
   gh:login                    Login to GitHub CLI
   npm:login                   Login to npm
   aws:login                   Login to AWS SSO (AdministratorAccess-841376026547)
+  fly:login                   Login to Fly.io CLI
   oracle:config               Edit OCI config
 
 🏗️  TERRAFORM
