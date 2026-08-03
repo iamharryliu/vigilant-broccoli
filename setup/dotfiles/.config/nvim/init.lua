@@ -30,7 +30,26 @@ if vim.g.neovide then
   vim.keymap.set("i", "<D-v>", "<C-r>+", { silent = true })
   vim.keymap.set("c", "<D-v>", "<C-r>+", { silent = true })
   vim.keymap.set("t", "<D-v>", [[<C-\><C-n>"+pi]], { silent = true })
+
+  -- Save
+  vim.keymap.set({ "n", "i" }, "<D-s>", "<cmd>write<CR>", { silent = true })
+  vim.keymap.set("t", "<D-s>", function()
+    vim.api.nvim_chan_send(vim.b.terminal_job_id, "\19")
+  end, { silent = true })
+
+  -- Close buffer
+  vim.keymap.set("n", "<D-w>", "<cmd>bdelete<CR>", { silent = true })
+
+  -- Undo/redo
+  vim.keymap.set("n", "<D-z>", "u", { silent = true })
+  vim.keymap.set("n", "<D-S-z>", "<C-r>", { silent = true })
+
+  -- New tab
+  vim.keymap.set("n", "<D-t>", "<cmd>tabnew<CR>", { silent = true })
 end
+
+-- Save (Ctrl-S), for every nvim instance including ones nested inside a terminal/tmux pane
+vim.keymap.set({ "n", "i" }, "<C-s>", "<cmd>write<CR>", { silent = true })
 
 vim.opt.clipboard = "unnamedplus"
 vim.opt.mouse = "a"

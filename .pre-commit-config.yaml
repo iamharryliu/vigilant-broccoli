@@ -28,3 +28,11 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+  - repo: local
+    hooks:
+      - id: nvim-tmux-config-smoketest
+        name: Run nvim/tmux custom config smoke test.
+        entry: ./setup/dotfiles/common/scripts/config-smoketest.sh
+        language: system
+        pass_filenames: false
+        files: ^setup/dotfiles/(\.config/nvim/|\.tmux\.conf$)
