@@ -19,7 +19,12 @@ const toSidebarCTA = (link: NavLink, pathname: string): SidebarCTA => ({
   children: link.children?.map(child => toSidebarCTA(child, pathname)),
 });
 
-export default function Sidebar() {
+type SidebarProps = {
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
+};
+
+export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
 
   const items: SidebarCTA[] = NAV_LINKS.map(link =>
@@ -32,6 +37,8 @@ export default function Sidebar() {
       LinkComponent={Link}
       searchable
       className={SIDEBAR_POSITION}
+      mobileOpen={mobileOpen}
+      onMobileClose={onMobileClose}
     />
   );
 }

@@ -35,6 +35,8 @@ export type SidebarProps = {
   footer?: ReactNode;
   LinkComponent?: LinkComponent;
   className?: string;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 };
 
 const ICON_SIZE = 18;
@@ -42,6 +44,15 @@ const CHEVRON_SIZE = 14;
 const BRANDING_HEIGHT = 'h-[49px]';
 const COLLAPSED_WIDTH = 'w-14';
 const EXPANDED_WIDTH = 'hover:w-48';
+
+const MOBILE_WIDTH = 'max-md:w-64';
+const MOBILE_OPEN_TRANSFORM = 'max-md:translate-x-0';
+const MOBILE_CLOSED_TRANSFORM = 'max-md:-translate-x-full';
+const MD_VISIBLE_TRANSFORM = 'md:translate-x-0';
+const MD_COLLAPSED_WIDTH = 'md:w-14';
+const MD_EXPANDED_WIDTH = 'md:hover:w-48';
+const MOBILE_BACKDROP =
+  'fixed inset-0 z-20 bg-black/50 md:hidden';
 
 const BORDER_COLOR = 'border-gray-200 dark:border-gray-800';
 const SURFACE_BG = 'bg-white dark:bg-gray-950';
@@ -161,6 +172,8 @@ export const Sidebar = ({
   footer,
   LinkComponent,
   className,
+  mobileOpen,
+  onMobileClose,
 }: SidebarProps) => {
   const [openId, setOpenId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -171,110 +184,136 @@ export const Sidebar = ({
       ? flat.filter(p => p.label.toLowerCase().includes(query.toLowerCase()))
       : null;
 
-  const widthClass = expandable
-    ? `${COLLAPSED_WIDTH} ${EXPANDED_WIDTH}`
-    : COLLAPSED_WIDTH;
-  const collapsibleLabelClass = labelClassFor(expandable);
-  const itemLabelClass = expandable ? LABEL_COLLAPSIBLE : LABEL_VISIBLE;
+  const isMobileAware = mobileOpen !== undefined;
+  const forceExpanded = isMobileAware && mobileOpen;
+  const widthClass = isMobileAware
+    ? cn(
+        MOBILE_WIDTH,
+        mobileOpen ? MOBILE_OPEN_TRANSFORM : MOBILE_CLOSED_TRANSFORM,
+        MD_VISIBLE_TRANSFORM,
+        MD_COLLAPSED_WIDTH,
+        expandable && MD_EXPANDED_WIDTH,
+      )
+    : cn(COLLAPSED_WIDTH, expandable && EXPANDED_WIDTH);
+  const collapsibleLabelClass = forceExpanded
+    ? LABEL_VISIBLE
+    : labelClassFor(expandable);
+  const itemLabelClass = forceExpanded
+    ? LABEL_VISIBLE
+    : expandable
+      ? LABEL_COLLAPSIBLE
+      : LABEL_VISIBLE;
 
   const borderClass = `${side === 'right' ? 'border-l' : 'border-r'} ${BORDER_COLOR}`;
   const listJustify =
     align === 'space-evenly' ? 'justify-evenly' : 'justify-start';
 
   return (
-    <aside
-      className={cn(
-        'group/sidebar shrink-0 flex flex-col overflow-hidden transition-all duration-200',
-        SURFACE_BG,
-        widthClass,
-        borderClass,
-        className,
+    <>
+      {isMobileAware && mobileOpen && (
+        <div className={MOBILE_BACKDROP} onClick={onMobileClose} />
       )}
-      onMouseLeave={() => {
-        setOpenId(null);
-        setQuery('');
-      }}
-    >
-      {branding && (
-        <BrandingHeader
-          branding={branding}
-          LinkComponent={LinkComponent}
-          expandable={expandable}
-        />
-      )}
-
-      <div
+      <aside
         className={cn(
-          'flex flex-col flex-1 gap-1 px-2 py-4 overflow-y-auto overflow-x-hidden',
-          listJustify,
+          'group/sidebar shrink-0 flex flex-col overflow-hidden transition-all duration-200',
+          SURFACE_BG,
+          widthClass,
+          borderClass,
+          className,
         )}
+        onMouseLeave={() => {
+          setOpenId(null);
+          setQuery('');
+        }}
       >
-        {searchable && (
-          <div className={cn('flex items-center gap-3 px-2 py-2 rounded-md', ROW_INACTIVE)}>
-            <span className="shrink-0">
-              <Search size={ICON_SIZE} />
-            </span>
-            <input
-              type="text"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder="Search..."
-              className={cn(
-                'transition-all duration-150 text-sm bg-transparent outline-none placeholder-gray-400 dark:placeholder-gray-500 dark:text-white min-w-0',
-                collapsibleLabelClass,
-              )}
-            />
-          </div>
+        {branding && (
+          <BrandingHeader
+            branding={branding}
+            LinkComponent={LinkComponent}
+            expandable={expandable}
+            forceExpanded={forceExpanded}
+          />
         )}
 
-        {results ? (
-          results.length > 0 ? (
-            results.map((item, idx) => (
-              <ItemRow
-                key={`${item.label}-${idx}`}
-                item={item}
-                labelClassName={LABEL_VISIBLE}
-                LinkComponent={LinkComponent}
-                onClickExtra={() => setQuery('')}
+        <div
+          className={cn(
+            'flex flex-col flex-1 gap-1 px-2 py-4 overflow-y-auto overflow-x-hidden',
+            listJustify,
+          )}
+        >
+          {searchable && (
+            <div className={cn('flex items-center gap-3 px-2 py-2 rounded-md', ROW_INACTIVE)}>
+              <span className="shrink-0">
+                <Search size={ICON_SIZE} />
+              </span>
+              <input
+                type="text"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Search..."
+                className={cn(
+                  'transition-all duration-150 text-sm bg-transparent outline-none placeholder-gray-400 dark:placeholder-gray-500 dark:text-white min-w-0',
+                  collapsibleLabelClass,
+                )}
               />
-            ))
+            </div>
+          )}
+
+          {results ? (
+            results.length > 0 ? (
+              results.map((item, idx) => (
+                <ItemRow
+                  key={`${item.label}-${idx}`}
+                  item={item}
+                  labelClassName={LABEL_VISIBLE}
+                  LinkComponent={LinkComponent}
+                  onClickExtra={() => {
+                    setQuery('');
+                    onMobileClose?.();
+                  }}
+                />
+              ))
+            ) : (
+              <span className="text-xs text-gray-400 dark:text-gray-500 px-3 py-2">
+                No results
+              </span>
+            )
           ) : (
-            <span className="text-xs text-gray-400 dark:text-gray-500 px-3 py-2">
-              No results
-            </span>
-          )
-        ) : (
-          items.map((item, idx) => {
-            const itemKey = item.href ?? `${item.label}-${idx}`;
-            if (item.children && item.children.length > 0) {
-              const isOpen = openId === itemKey;
+            items.map((item, idx) => {
+              const itemKey = item.href ?? `${item.label}-${idx}`;
+              if (item.children && item.children.length > 0) {
+                const isOpen = openId === itemKey;
+                return (
+                  <NestedItem
+                    key={itemKey}
+                    item={item}
+                    isOpen={isOpen}
+                    expandable={expandable}
+                    LinkComponent={LinkComponent}
+                    onToggle={() => setOpenId(isOpen ? null : itemKey)}
+                    onNavigate={onMobileClose}
+                    forceExpanded={forceExpanded}
+                  />
+                );
+              }
               return (
-                <NestedItem
+                <ItemRow
                   key={itemKey}
                   item={item}
-                  isOpen={isOpen}
-                  expandable={expandable}
+                  labelClassName={itemLabelClass}
                   LinkComponent={LinkComponent}
-                  onToggle={() => setOpenId(isOpen ? null : itemKey)}
+                  onClickExtra={onMobileClose}
                 />
               );
-            }
-            return (
-              <ItemRow
-                key={itemKey}
-                item={item}
-                labelClassName={itemLabelClass}
-                LinkComponent={LinkComponent}
-              />
-            );
-          })
-        )}
-      </div>
+            })
+          )}
+        </div>
 
-      {footer && (
-        <div className={cn('shrink-0 border-t', BORDER_COLOR)}>{footer}</div>
-      )}
-    </aside>
+        {footer && (
+          <div className={cn('shrink-0 border-t', BORDER_COLOR)}>{footer}</div>
+        )}
+      </aside>
+    </>
   );
 };
 
@@ -282,12 +321,14 @@ type BrandingHeaderProps = {
   branding: SidebarBranding;
   LinkComponent?: LinkComponent;
   expandable: boolean;
+  forceExpanded?: boolean;
 };
 
 const BrandingHeader = ({
   branding,
   LinkComponent,
   expandable,
+  forceExpanded = false,
 }: BrandingHeaderProps) => {
   const Icon = branding.icon;
   const visual =
@@ -300,16 +341,20 @@ const BrandingHeader = ({
 
   const labelClass = cn(
     'overflow-hidden font-semibold text-sm whitespace-nowrap transition-all duration-150',
-    expandable
-      ? 'w-0 opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:opacity-100'
-      : 'opacity-100',
+    forceExpanded
+      ? 'opacity-100'
+      : expandable
+        ? 'w-0 opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:opacity-100'
+        : 'opacity-100',
   );
 
   const containerClass = cn(
     'flex items-center border-b shrink-0 gap-3 px-3 dark:text-white',
     BRANDING_HEIGHT,
     BORDER_COLOR,
-    expandable && 'justify-center group-hover/sidebar:justify-start',
+    forceExpanded
+      ? 'justify-start'
+      : expandable && 'justify-center group-hover/sidebar:justify-start',
   );
 
   const inner = (
@@ -341,6 +386,8 @@ type NestedItemProps = {
   expandable: boolean;
   LinkComponent?: LinkComponent;
   onToggle: () => void;
+  onNavigate?: () => void;
+  forceExpanded?: boolean;
 };
 
 const NestedItem = ({
@@ -349,16 +396,22 @@ const NestedItem = ({
   expandable,
   LinkComponent,
   onToggle,
+  onNavigate,
+  forceExpanded = false,
 }: NestedItemProps) => {
   const [openChildId, setOpenChildId] = useState<string | null>(null);
   const Icon = item.icon;
   const labelClass = cn(
     'whitespace-nowrap overflow-hidden text-left transition-all duration-150',
-    labelClassFor(expandable),
+    forceExpanded ? LABEL_VISIBLE : labelClassFor(expandable),
   );
   const chevronClass = cn(
     'shrink-0 transition-opacity duration-150',
-    expandable ? 'opacity-0 group-hover/sidebar:opacity-100' : LABEL_HIDDEN,
+    forceExpanded
+      ? 'opacity-100'
+      : expandable
+        ? 'opacity-0 group-hover/sidebar:opacity-100'
+        : LABEL_HIDDEN,
   );
 
   return (
@@ -404,6 +457,8 @@ const NestedItem = ({
                     onToggle={() =>
                       setOpenChildId(openChildId === childKey ? null : childKey)
                     }
+                    onNavigate={onNavigate}
+                    forceExpanded={forceExpanded}
                   />
                 );
               }
@@ -412,6 +467,7 @@ const NestedItem = ({
                   key={childKey}
                   item={child}
                   labelClassName="opacity-100"
+                  onClickExtra={onNavigate}
                   LinkComponent={LinkComponent}
                   className="px-3 py-1.5"
                 />
