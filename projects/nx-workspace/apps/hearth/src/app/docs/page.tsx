@@ -8,6 +8,7 @@ import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';
 import { HomeDocForm, HomeDocFormData } from './components/HomeDocForm';
+import { uploadFormFiles } from './upload-files';
 import { ROUTES } from '../../lib/routes';
 
 const CATEGORY_COLORS: Record<DocCategory, string> = {
@@ -68,10 +69,11 @@ export default function DocsPage() {
   }, [fetchDocs]);
 
   const handleCreate = async (data: HomeDocFormData) => {
+    const files = await uploadFormFiles(data.files, token);
     await fetch('/api/docs', {
       method: 'POST',
       headers: authHeader({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ ...data, homeId }),
+      body: JSON.stringify({ ...data, files, homeId }),
     });
     setModal(null);
     fetchDocs();

@@ -3,22 +3,35 @@ import {
   createServerClient,
   getBearerToken,
 } from '../../../../libs/supabase-server';
-import { uploadImage, deleteImage, getImageUrl } from './r2';
+import { uploadImage, deleteImage, readImage, getImageUrl } from './r2';
 import {
   processImage,
   validateImageCount,
   ImageValidationError,
-  RawImage,
 } from './image-processor';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
 
-const MAX_REQUEST_BYTES = 50 * 1024 * 1024; // 50MB — 10 images × ~5MB each
+const MAX_REQUEST_BYTES = 1 * 1024 * 1024;
 const ERROR_REQUEST_TOO_LARGE = 'Request too large.';
+
+interface StagedImageRef {
+  key: string;
+  mimeType: string;
+}
 
 const makeR2Key = (itemId: string) =>
   `where-is/${itemId}/${crypto.randomUUID()}.jpg`;
+
+const readAndProcessStagedImages = async (images: StagedImageRef[]) =>
+  Promise.all(
+    images.map(async img => {
+      const buffer = await readImage(img.key);
+      await deleteImage(img.key);
+      return processImage({ buffer, mimeType: img.mimeType });
+    }),
+  );
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -67,7 +80,7 @@ export async function POST(request: NextRequest) {
       title: string;
       description: string;
       tags: string[];
-      images: RawImage[];
+      images: StagedImageRef[];
       homeId: number;
       userId: string;
     };
@@ -84,7 +97,7 @@ export async function POST(request: NextRequest) {
 
   let processedImages: Awaited<ReturnType<typeof processImage>>[];
   try {
-    processedImages = await Promise.all(images.map(processImage));
+    processedImages = await readAndProcessStagedImages(images);
   } catch (e) {
     if (e instanceof ImageValidationError) {
       return Response.json(
@@ -140,7 +153,7 @@ export async function PATCH(request: NextRequest) {
       description: string;
       tags: string[];
       removedImageUrls: string[];
-      newImages: RawImage[];
+      newImages: StagedImageRef[];
     };
   const supabase = createServerClient(getBearerToken(request));
 
@@ -182,7 +195,7 @@ export async function PATCH(request: NextRequest) {
     let processedImages: Awaited<ReturnType<typeof processImage>>[];
     try {
       validateImageCount(newImages);
-      processedImages = await Promise.all(newImages.map(processImage));
+      processedImages = await readAndProcessStagedImages(newImages);
     } catch (e) {
       if (e instanceof ImageValidationError) {
         return Response.json(

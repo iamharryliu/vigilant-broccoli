@@ -162,10 +162,6 @@ Zero `lazy(` hits across `apps/ui`, `apps/findme`, `apps/whiteboard`; `cloud-8-s
 
 **`apps/ui/vb-manager-next/src/app/layout.tsx:1`** + `(pages)/layout.tsx` mounting `FloatingIslandComponent` inside `display: none` on every page — including the chatbot dialog which statically imports `react-markdown`, plus email/calendar/weather/pomodoro dialogs, all in the shared layout bundle executing on first paint. **Fix:** `next/dynamic` for each dialog (needed only after a shortcut/click); move `'use client'` down from the root layout so pages can opt into server rendering later.
 
-### 70c513. [performance] hearth where-is: base64-in-JSON uploads buffered whole; 50MB cap unreachable on Vercel
-
-**`apps/hearth/src/app/api/where-is/route.ts:17`** (`MAX_REQUEST_BYTES = 50MB`) — base64 inflates ~33% and Vercel serverless caps bodies at ~4.5MB, so multi-photo uploads fail long before the app-level limit, and successful ones hold payload + decoded buffers + sharp outputs in one lambda's memory. Same pattern in `api/docs/route.ts:14` (100MB cap). **Fix:** presigned R2 PUT URLs (one small minting route) + metadata-only POST; or at least multipart streaming.
-
 ### 769a1e. [performance] hearth HomeProvider: sequential independent queries on every page's critical path
 
 **`apps/hearth/src/app/providers/home-provider.tsx:35-44`** — `owned` homes then `memberships` awaited sequentially; every page's data fetch is gated on `selectedHomeId`, so this adds a full extra round trip to first content on every cold load. **Fix:** `Promise.all`; consider caching last `selectedHomeId` in `localStorage` to skip the gate for returning users.

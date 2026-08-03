@@ -9,7 +9,7 @@ export interface HomeDocFormData {
   name: string;
   description: string;
   category: DocCategory;
-  files: { base64: string; mimeType: string; name: string }[];
+  files: { file: File; mimeType: string; name: string }[];
 }
 
 interface Props {
@@ -45,23 +45,12 @@ export function HomeDocForm({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-    Promise.all(
-      files.map(
-        file =>
-          new Promise<HomeDocFormData['files'][number]>(resolve => {
-            const reader = new FileReader();
-            reader.onload = ev => {
-              const dataUrl = ev.target?.result as string;
-              resolve({
-                base64: dataUrl.split(',')[1],
-                mimeType: file.type,
-                name: file.name,
-              });
-            };
-            reader.readAsDataURL(file);
-          }),
-      ),
-    ).then(incoming => setPendingFiles(prev => [...prev, ...incoming]));
+    const incoming = files.map(file => ({
+      file,
+      mimeType: file.type,
+      name: file.name,
+    }));
+    setPendingFiles(prev => [...prev, ...incoming]);
     e.target.value = '';
   };
 

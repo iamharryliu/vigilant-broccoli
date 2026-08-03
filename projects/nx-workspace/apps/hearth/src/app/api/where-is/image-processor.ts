@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 
-const ALLOWED_MIME_TYPES = new Set([
+export const ALLOWED_MIME_TYPES = new Set([
   'image/jpeg',
   'image/png',
   'image/webp',
@@ -19,8 +19,8 @@ export interface ProcessedImage {
   mimeType: 'image/jpeg';
 }
 
-export interface RawImage {
-  base64: string;
+export interface StagedImage {
+  buffer: Buffer;
   mimeType: string;
 }
 
@@ -31,7 +31,7 @@ export class ImageValidationError extends Error {
   }
 }
 
-export const validateImageCount = (images: RawImage[]) => {
+export const validateImageCount = <T>(images: T[]) => {
   if (images.length === 0)
     throw new ImageValidationError('At least one image is required.');
   if (images.length > MAX_IMAGES_PER_UPLOAD)
@@ -58,7 +58,7 @@ export const compressForLlm = async (
 };
 
 export const processImage = async (
-  image: RawImage,
+  image: StagedImage,
 ): Promise<ProcessedImage> => {
   if (!ALLOWED_MIME_TYPES.has(image.mimeType)) {
     throw new ImageValidationError(
@@ -66,7 +66,7 @@ export const processImage = async (
     );
   }
 
-  const buffer = Buffer.from(image.base64, 'base64');
+  const buffer = image.buffer;
 
   if (buffer.byteLength > MAX_FILE_SIZE_BYTES) {
     throw new ImageValidationError(
