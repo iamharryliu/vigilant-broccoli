@@ -1,12 +1,16 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import {
+  cursorColor,
+  PeerCaretsOverlay,
+  PeerCursorsOverlay,
+} from '@vigilant-broccoli/react-lib';
 import {
   CONNECTION_STATUS,
   useWhiteboardRoom,
 } from '../hooks/useWhiteboardRoom';
 import { useTranslation } from '../i18n';
-import { CaretCoordinates, getCaretCoordinates } from '../utils/caret-position';
 
 const USER_PREFIX = 'user-';
 const USER_ID_LENGTH = 6;
@@ -18,10 +22,6 @@ const RANDOMIZE_ICON = '🎲';
 const SINGLE_MEMBER = 1;
 
 const CURSOR_SEND_INTERVAL_MS = 60;
-const CURSOR_HUE_SATURATION = 70;
-const CURSOR_HUE_LIGHTNESS = 45;
-const CURSOR_HASH_MULTIPLIER = 31;
-const CURSOR_HASH_MODULO = 360;
 
 const NAME_ADJECTIVES = [
   'swift',
@@ -75,15 +75,6 @@ const getOrCreate = (key: string, create: () => string) => {
   return value;
 };
 
-const cursorColor = (userId: string) => {
-  let hash = 0;
-  for (let i = 0; i < userId.length; i++) {
-    hash = (hash * CURSOR_HASH_MULTIPLIER + userId.charCodeAt(i)) | 0;
-  }
-  const hue = Math.abs(hash) % CURSOR_HASH_MODULO;
-  return `hsl(${hue}, ${CURSOR_HUE_SATURATION}%, ${CURSOR_HUE_LIGHTNESS}%)`;
-};
-
 export function WhiteboardApp() {
   const { t } = useTranslation();
   const [userId, setUserId] = useState('');
@@ -127,9 +118,6 @@ export function WhiteboardApp() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const lastCursorSentAtRef = useRef(0);
   const lastIndexSentAtRef = useRef(0);
-  const [caretPositions, setCaretPositions] = useState<
-    Record<string, CaretCoordinates>
-  >({});
 
   const handleBoardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const now = Date.now();
@@ -161,43 +149,6 @@ export function WhiteboardApp() {
     members.length <= SINGLE_MEMBER
       ? t('MEMBERS.COUNT_ONE')
       : t('MEMBERS.COUNT_MANY', { count: members.length });
-
-  const peerCursors = cursors.filter(
-    cursor =>
-      cursor.userId !== userId && cursor.x !== null && cursor.y !== null,
-  );
-
-  const peerTextCursors = cursors.filter(
-    cursor => cursor.userId !== userId && cursor.index !== null,
-  );
-
-  const recomputeCaretPositions = useCallback(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    const next: Record<string, CaretCoordinates> = {};
-    peerTextCursors.forEach(cursor => {
-      const index = Math.min(cursor.index as number, content.length);
-      const coords = getCaretCoordinates(textarea, index);
-      next[cursor.userId] = {
-        top: coords.top - textarea.scrollTop,
-        left: coords.left - textarea.scrollLeft,
-        height: coords.height,
-      };
-    });
-    setCaretPositions(next);
-  }, [peerTextCursors, content]);
-
-  useEffect(() => {
-    recomputeCaretPositions();
-  }, [recomputeCaretPositions]);
-
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.addEventListener('scroll', recomputeCaretPositions);
-    return () =>
-      textarea.removeEventListener('scroll', recomputeCaretPositions);
-  }, [recomputeCaretPositions]);
 
   return (
     <div className="flex flex-col h-[100dvh] bg-gray-50">
@@ -320,58 +271,13 @@ export function WhiteboardApp() {
               disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
               className="h-full w-full resize-none rounded border border-gray-300 p-3 font-mono text-sm leading-relaxed text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100"
             />
-            {peerTextCursors.map(cursor => {
-              const position = caretPositions[cursor.userId];
-              if (!position) return null;
-              return (
-                <div
-                  key={cursor.userId}
-                  style={{
-                    top: position.top,
-                    left: position.left,
-                    height: position.height,
-                  }}
-                  className="pointer-events-none absolute z-10 overflow-visible"
-                >
-                  <span
-                    style={{ backgroundColor: cursorColor(cursor.userId) }}
-                    className="block h-full w-0.5 animate-pulse"
-                  />
-                  <span
-                    style={{ backgroundColor: cursorColor(cursor.userId) }}
-                    className="absolute bottom-full left-0 mb-0.5 inline-block rounded px-1.5 py-0.5 text-xs whitespace-nowrap text-white shadow"
-                  >
-                    {cursor.username}
-                  </span>
-                </div>
-              );
-            })}
-            {peerCursors.map(cursor => (
-              <div
-                key={cursor.userId}
-                style={{
-                  left: `${(cursor.x as number) * 100}%`,
-                  top: `${(cursor.y as number) * 100}%`,
-                }}
-                className="pointer-events-none absolute z-10 -translate-x-0.5 -translate-y-0.5 transition-[left,top] duration-75 ease-out"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill={cursorColor(cursor.userId)}
-                  className="drop-shadow"
-                >
-                  <path d="M1 1l6.5 13.5L9 9l5.5-1.5L1 1z" />
-                </svg>
-                <span
-                  style={{ backgroundColor: cursorColor(cursor.userId) }}
-                  className="ml-3 -mt-1 inline-block rounded px-1.5 py-0.5 text-xs whitespace-nowrap text-white shadow"
-                >
-                  {cursor.username}
-                </span>
-              </div>
-            ))}
+            <PeerCaretsOverlay
+              cursors={cursors}
+              currentUserId={userId}
+              content={content}
+              textareaRef={textareaRef}
+            />
+            <PeerCursorsOverlay cursors={cursors} currentUserId={userId} />
           </div>
 
           <p className="text-xs text-gray-400">{t('ROOM.SHARE_HINT')}</p>
