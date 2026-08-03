@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { DropdownMenu } from '@radix-ui/themes';
-import { Home } from 'lucide-react';
+import { Home, Moon, Sun } from 'lucide-react';
 import { supabase } from '../../../libs/supabase';
 import { useHome } from '../providers/home-provider';
 import { useAuth } from '../providers/auth-provider';
@@ -11,13 +11,21 @@ import {
   Select,
   UserAvatar,
   USER_AVATAR_VARIANT,
+  useTheme,
 } from '@vigilant-broccoli/react-lib';
+
+const LIGHT_MODE_LABEL = 'Light mode';
+const DARK_MODE_LABEL = 'Dark mode';
+const DARK = 'dark';
 
 export default function Topbar() {
   const { homes, selectedHomeId, setSelectedHomeId } = useHome();
   const session = useAuth();
+  const { appearance, toggleTheme } = useTheme();
   if (!session?.user.email) return null;
   const email = session.user.email;
+  const isDark = appearance === DARK;
+  const ThemeIcon = isDark ? Sun : Moon;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-20 flex items-center justify-end gap-3 px-6 py-3 border-b border-gray-200 bg-white">
@@ -49,6 +57,17 @@ export default function Topbar() {
           <DropdownMenu.Separator />
           <DropdownMenu.Item asChild>
             <Link href={ROUTES.USER_SETTINGS}>User Settings</Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            className="cursor-pointer flex items-center gap-2"
+            onSelect={event => {
+              event.preventDefault();
+              toggleTheme();
+            }}
+          >
+            <ThemeIcon size={14} />
+            {isDark ? LIGHT_MODE_LABEL : DARK_MODE_LABEL}
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
           <DropdownMenu.Item
