@@ -1,4 +1,6 @@
-import { promises as fs } from 'fs';
+import { promises as fs, createWriteStream } from 'fs';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
 import * as path from 'path';
 import {
   IBucketProvider,
@@ -27,6 +29,12 @@ export class LocalBucketProvider implements IBucketProvider {
     const destinationPath = this.resolveContainedPath(destinationName);
     await fs.mkdir(path.dirname(destinationPath), { recursive: true });
     await fs.writeFile(destinationPath, buffer);
+  }
+
+  async uploadStream(destinationName: string, stream: Readable): Promise<void> {
+    const destinationPath = this.resolveContainedPath(destinationName);
+    await fs.mkdir(path.dirname(destinationPath), { recursive: true });
+    await pipeline(stream, createWriteStream(destinationPath));
   }
 
   async download(fileName: string, destinationPath: string): Promise<void> {
