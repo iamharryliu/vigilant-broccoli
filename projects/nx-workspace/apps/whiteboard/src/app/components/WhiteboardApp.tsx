@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CONNECTION_STATUS,
   useWhiteboardRoom,
@@ -15,6 +15,12 @@ const ROOM_STORAGE_KEY = 'whiteboard-room';
 const NAME_SEPARATOR = '-';
 const RANDOMIZE_ICON = '🎲';
 const SINGLE_MEMBER = 1;
+
+const CURSOR_SEND_INTERVAL_MS = 60;
+const CURSOR_HUE_SATURATION = 70;
+const CURSOR_HUE_LIGHTNESS = 45;
+const CURSOR_HASH_MULTIPLIER = 31;
+const CURSOR_HASH_MODULO = 360;
 
 const NAME_ADJECTIVES = [
   'swift',
@@ -68,6 +74,15 @@ const getOrCreate = (key: string, create: () => string) => {
   return value;
 };
 
+const cursorColor = (userId: string) => {
+  let hash = 0;
+  for (let i = 0; i < userId.length; i++) {
+    hash = (hash * CURSOR_HASH_MULTIPLIER + userId.charCodeAt(i)) | 0;
+  }
+  const hue = Math.abs(hash) % CURSOR_HASH_MODULO;
+  return `hsl(${hue}, ${CURSOR_HUE_SATURATION}%, ${CURSOR_HUE_LIGHTNESS}%)`;
+};
+
 export function WhiteboardApp() {
   const { t } = useTranslation();
   const [userId, setUserId] = useState('');
@@ -97,16 +112,42 @@ export function WhiteboardApp() {
     setActiveRoom('');
   };
 
-  const { content, setContent, members, connectionStatus } = useWhiteboardRoom(
-    activeRoom,
-    userId,
-    username,
-  );
+  const {
+    content,
+    setContent,
+    members,
+    cursors,
+    setCursorPosition,
+    connectionStatus,
+  } = useWhiteboardRoom(activeRoom, userId, username);
+
+  const boardRef = useRef<HTMLDivElement | null>(null);
+  const lastCursorSentAtRef = useRef(0);
+
+  const handleBoardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const now = Date.now();
+    if (now - lastCursorSentAtRef.current < CURSOR_SEND_INTERVAL_MS) return;
+    lastCursorSentAtRef.current = now;
+
+    const rect = boardRef.current?.getBoundingClientRect();
+    if (!rect || rect.width === 0 || rect.height === 0) return;
+    setCursorPosition(
+      (e.clientX - rect.left) / rect.width,
+      (e.clientY - rect.top) / rect.height,
+    );
+  };
+
+  const handleBoardMouseLeave = () => setCursorPosition(null, null);
 
   const membersLabel =
     members.length <= SINGLE_MEMBER
       ? t('MEMBERS.COUNT_ONE')
       : t('MEMBERS.COUNT_MANY', { count: members.length });
+
+  const peerCursors = cursors.filter(
+    cursor =>
+      cursor.userId !== userId && cursor.x !== null && cursor.y !== null,
+  );
 
   return (
     <div className="flex flex-col h-[100dvh] bg-gray-50">
@@ -210,13 +251,46 @@ export function WhiteboardApp() {
             <span className="text-gray-500">{membersLabel}</span>
           </div>
 
-          <textarea
-            value={content}
-            onChange={e => setContent(e.target.value)}
-            placeholder={t('BOARD.PLACEHOLDER')}
-            disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
-            className="flex-1 min-h-0 w-full resize-none rounded border border-gray-300 p-3 font-mono text-sm leading-relaxed text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100"
-          />
+          <div
+            ref={boardRef}
+            onMouseMove={handleBoardMouseMove}
+            onMouseLeave={handleBoardMouseLeave}
+            className="relative flex-1 min-h-0"
+          >
+            <textarea
+              value={content}
+              onChange={e => setContent(e.target.value)}
+              placeholder={t('BOARD.PLACEHOLDER')}
+              disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
+              className="h-full w-full resize-none rounded border border-gray-300 p-3 font-mono text-sm leading-relaxed text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100"
+            />
+            {peerCursors.map(cursor => (
+              <div
+                key={cursor.userId}
+                style={{
+                  left: `${(cursor.x as number) * 100}%`,
+                  top: `${(cursor.y as number) * 100}%`,
+                }}
+                className="pointer-events-none absolute z-10 -translate-x-0.5 -translate-y-0.5 transition-[left,top] duration-75 ease-out"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill={cursorColor(cursor.userId)}
+                  className="drop-shadow"
+                >
+                  <path d="M1 1l6.5 13.5L9 9l5.5-1.5L1 1z" />
+                </svg>
+                <span
+                  style={{ backgroundColor: cursorColor(cursor.userId) }}
+                  className="ml-3 -mt-1 inline-block rounded px-1.5 py-0.5 text-xs whitespace-nowrap text-white shadow"
+                >
+                  {cursor.username}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <p className="text-xs text-gray-400">{t('ROOM.SHARE_HINT')}</p>
 
@@ -229,7 +303,10 @@ export function WhiteboardApp() {
                 key={member.userId}
                 className="flex items-center gap-2 text-sm text-gray-700"
               >
-                <span className="h-2 w-2 rounded-full bg-green-500" />
+                <span
+                  style={{ backgroundColor: cursorColor(member.userId) }}
+                  className="h-2 w-2 rounded-full"
+                />
                 <span>
                   {member.userId === userId
                     ? t('USER.YOU_LABEL')
