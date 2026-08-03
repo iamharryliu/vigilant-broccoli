@@ -82,4 +82,8 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
-require("lazy").setup("plugins")
+-- Skip plugin loading under the config smoke test: it only exercises keymaps/options
+-- set above, and doing this avoids installing the whole plugin set on a cold CI runner.
+if not vim.env.NVIM_SMOKETEST then
+  require("lazy").setup("plugins")
+end

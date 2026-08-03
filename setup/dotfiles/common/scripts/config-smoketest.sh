@@ -94,7 +94,7 @@ f:close()
 vim.cmd("qa!")
 LUA
 
-SMOKETEST_OUT="$WORKDIR/neovide_results.txt" nvim --headless \
+SMOKETEST_OUT="$WORKDIR/neovide_results.txt" NVIM_SMOKETEST=1 nvim --headless \
   --cmd 'lua vim.g.neovide = true' \
   -u "$NVIM_INIT" \
   -S "$WORKDIR/check_neovide.lua" 2>"$WORKDIR/neovide_stderr.txt"
@@ -104,6 +104,54 @@ if [ -s "$WORKDIR/neovide_stderr.txt" ]; then
   cat "$WORKDIR/neovide_stderr.txt"
   FAIL=1
 fi
+
+# ---- End-to-end: <D-s> pressed while attached to a terminal (e.g. a tmuxvb pane) must
+# actually forward a working Ctrl-S byte to whatever nvim is running inside it, not just
+# have *a* mapping registered (the "<present>" check above only proves that). This needs
+# a real --listen server + a separate --remote-send client: nvim_input()/:startinsert
+# called from within the same headless -S script never actually enters active Terminal
+# mode (mode() stays "nt"), since there's no attached UI client driving it.
+E2E_SOCK="$WORKDIR/e2e.sock"
+E2E_MARKER="$WORKDIR/e2e_marker.txt"
+E2E_RC="$WORKDIR/e2e_rc.lua"
+cat > "$E2E_RC" <<LUA
+vim.keymap.set("n", "<C-s>", function()
+  local f = io.open("$E2E_MARKER", "w")
+  f:write("saved")
+  f:close()
+end, {})
+LUA
+
+NVIM_SMOKETEST=1 nvim --headless --listen "$E2E_SOCK" --cmd 'lua vim.g.neovide = true' -u "$NVIM_INIT" >/dev/null 2>&1 &
+E2E_PID=$!
+
+waited=0
+while [ ! -S "$E2E_SOCK" ] && [ "$waited" -lt 5000 ]; do
+  sleep 0.1
+  waited=$((waited + 100))
+done
+
+nvim --server "$E2E_SOCK" --remote-expr "execute('terminal nvim --clean -u $E2E_RC')" >/dev/null 2>&1
+sleep 1.5
+nvim --server "$E2E_SOCK" --remote-expr "execute('startinsert')" >/dev/null 2>&1
+sleep 0.5
+nvim --server "$E2E_SOCK" --remote-send '<D-s>' >/dev/null 2>&1
+
+waited=0
+while [ ! -f "$E2E_MARKER" ] && [ "$waited" -lt 5000 ]; do
+  sleep 0.1
+  waited=$((waited + 100))
+done
+
+if [ -f "$E2E_MARKER" ]; then
+  echo "PASS: end-to-end <D-s> forwards Ctrl-S to a nested nvim inside the terminal"
+else
+  echo "FAIL: end-to-end <D-s> forwards Ctrl-S to a nested nvim inside the terminal"
+  FAIL=1
+fi
+
+kill "$E2E_PID" 2>/dev/null
+wait "$E2E_PID" 2>/dev/null
 
 # ---- nvim, plain (no Neovide): D-* mappings must NOT leak out of the neovide gate ----
 cat > "$WORKDIR/check_plain.lua" <<'LUA'
@@ -134,7 +182,7 @@ f:close()
 vim.cmd("qa!")
 LUA
 
-SMOKETEST_OUT="$WORKDIR/plain_results.txt" nvim --headless \
+SMOKETEST_OUT="$WORKDIR/plain_results.txt" NVIM_SMOKETEST=1 nvim --headless \
   -u "$NVIM_INIT" \
   -S "$WORKDIR/check_plain.lua" 2>"$WORKDIR/plain_stderr.txt"
 report "$WORKDIR/plain_results.txt"
