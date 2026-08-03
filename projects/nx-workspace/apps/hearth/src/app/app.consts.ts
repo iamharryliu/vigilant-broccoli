@@ -7,6 +7,7 @@ import {
   PenLine,
   MapPin,
   ChefHat,
+  PackageSearch,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -23,12 +24,12 @@ export const NAV_LINKS = [
       { label: 'Meals', href: ROUTES.MEALS },
     ],
   },
+  { label: 'Where Is', href: ROUTES.WHERE_IS, icon: PackageSearch },
   {
     label: 'Utility',
-    href: ROUTES.WHERE_IS,
+    href: ROUTES.DOCS,
     icon: Wrench,
     children: [
-      { label: 'Where Is', href: ROUTES.WHERE_IS },
       { label: 'Docs', href: ROUTES.DOCS },
       { label: 'Price Tracker', href: ROUTES.PRICE_TRACKER },
     ],
