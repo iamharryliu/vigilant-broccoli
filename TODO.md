@@ -12,14 +12,6 @@ Two mitigations have since landed and narrow the blast radius without closing th
 
 **Fix:** Terraform applies run locally, so CI does not need editor/SA-admin/pool-admin — remove all three. Replace the project-level `secretAccessor` with per-secret `google_secret_manager_secret_iam_member` grants for only the secrets workflows actually read (per `cloudflare-vault.tf`, the CF Access token pair + tunnel token).
 
-### 032af1. [performance] bucket-service buffers entire uploads/downloads in memory, no multipart limits, on a 256MB VM
-
-**`projects/nx-workspace/apps/api/bucket-service/src/routes/bucket.ts`** (upload collects `await part.toBuffer()` for every part before uploading; GET reads the whole object then `reply.send(buffer)`) · `src/main.ts:42` registers `@fastify/multipart` with no `limits` · providers in `libs/@vigilant-broccoli/storage/src/lib/bucket/providers/*` all materialize whole objects.
-
-Peak memory ≈ sum of all file sizes, on a `memory = '256mb'` fly machine — a single ~150MB file in either direction OOMs it.
-
-**Fix:** register multipart with `limits: { fileSize, files }`; stream each part to the provider as it arrives (`Upload` from `@aws-sdk/lib-storage`, `file.createWriteStream()` for GCS, `pipeline(part.file, ...)` for local); for GET return the provider stream via `reply.send(stream)`.
-
 ### 076146. [performance] RabbitMQ consumers hot-requeue poison messages forever (queue wedge + Resend hammering)
 
 **`projects/nx-workspace/apps/api/email-service/src/main.ts:91`** · same pattern in `email-subscription-service/src/main.ts:139`
