@@ -7,10 +7,11 @@ import {
   ConnectionStatus,
 } from '../live-location/live-location.types';
 import {
-  WhiteboardCursor,
-  WhiteboardMember,
-  WhiteboardRoomState,
-} from './whiteboard-room.types';
+  BroadcastPresenceChannel,
+  SupabaseBroadcastLike,
+} from './supabase-broadcast.types';
+import { useCursorPresence } from './useCursorPresence';
+import { WhiteboardMember, WhiteboardRoomState } from './whiteboard-room.types';
 
 const PRESENCE_EVENT = 'presence';
 const SYNC_EVENT = 'sync';
@@ -19,9 +20,9 @@ const PAGEHIDE_EVENT = 'pagehide';
 
 const YJS_UPDATE_EVENT = 'yjs-update';
 const REQUEST_STATE_EVENT = 'request-state';
-const CURSOR_EVENT = 'cursor';
 const YJS_TEXT_NAME = 'content';
 const REMOTE_UPDATE_ORIGIN = 'remote';
+const CURSOR_CHANNEL_SUFFIX = ':cursors';
 
 const SUBSCRIBE_STATUS = {
   SUBSCRIBED: 'SUBSCRIBED',
@@ -36,47 +37,6 @@ interface PresencePayload {
 
 interface YjsUpdatePayload {
   update: string;
-}
-
-interface CursorPayload {
-  userId: string;
-  username: string;
-  x: number | null;
-  y: number | null;
-  index: number | null;
-  updatedAt: number;
-}
-
-interface BroadcastChannel {
-  on(
-    event: typeof PRESENCE_EVENT,
-    filter: { event: typeof SYNC_EVENT },
-    callback: () => void,
-  ): BroadcastChannel;
-  on(
-    event: typeof BROADCAST_EVENT,
-    filter: { event: string },
-    callback: (message: { payload: unknown }) => void,
-  ): BroadcastChannel;
-  subscribe(callback: (status: string) => void): BroadcastChannel;
-  presenceState<T>(): Record<string, T[]>;
-  track(payload: PresencePayload): Promise<unknown>;
-  untrack(): Promise<unknown>;
-  send(message: {
-    type: typeof BROADCAST_EVENT;
-    event: string;
-    payload: unknown;
-  }): Promise<unknown>;
-}
-
-export interface SupabaseBroadcastLike {
-  channel(
-    name: string,
-    opts: {
-      config: { presence: { key: string }; broadcast: { self: boolean } };
-    },
-  ): BroadcastChannel;
-  removeChannel(channel: BroadcastChannel): void;
 }
 
 const encodeUpdate = (update: Uint8Array): string => {
@@ -138,19 +98,19 @@ export function useWhiteboardRoom(
 ): WhiteboardRoomState {
   const [content, setContentState] = useState('');
   const [members, setMembers] = useState<WhiteboardMember[]>([]);
-  const [cursors, setCursors] = useState<WhiteboardCursor[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     CONNECTION_STATUS.CONNECTING,
   );
-  const channelRef = useRef<BroadcastChannel | null>(null);
+  const channelRef = useRef<BroadcastPresenceChannel | null>(null);
   const usernameRef = useRef<string>(username);
   const docRef = useRef<Y.Doc | null>(null);
-  const cursorsRef = useRef<Record<string, WhiteboardCursor>>({});
-  const ownCursorRef = useRef<{
-    x: number | null;
-    y: number | null;
-    index: number | null;
-  }>({ x: null, y: null, index: null });
+
+  const { cursors, setCursorPosition, setTextCursorIndex } = useCursorPresence(
+    supabase,
+    `${channelName}${CURSOR_CHANNEL_SUFFIX}`,
+    userId,
+    username,
+  );
 
   useEffect(() => {
     usernameRef.current = username;
@@ -189,36 +149,11 @@ export function useWhiteboardRoom(
         }),
       );
       setMembers(list);
-
-      const presentIds = new Set(list.map(member => member.userId));
-      const prunedCursors = Object.fromEntries(
-        Object.entries(cursorsRef.current).filter(([id]) => presentIds.has(id)),
-      );
-      cursorsRef.current = prunedCursors;
-      setCursors(Object.values(prunedCursors));
     });
 
     channel.on(BROADCAST_EVENT, { event: YJS_UPDATE_EVENT }, message => {
       const payload = message.payload as YjsUpdatePayload;
       Y.applyUpdate(doc, decodeUpdate(payload.update), REMOTE_UPDATE_ORIGIN);
-    });
-
-    channel.on(BROADCAST_EVENT, { event: CURSOR_EVENT }, message => {
-      const payload = message.payload as CursorPayload;
-      const existing = cursorsRef.current[payload.userId];
-      if (existing && payload.updatedAt <= existing.updatedAt) return;
-      cursorsRef.current = {
-        ...cursorsRef.current,
-        [payload.userId]: {
-          userId: payload.userId,
-          username: payload.username,
-          x: payload.x,
-          y: payload.y,
-          index: payload.index,
-          updatedAt: payload.updatedAt,
-        },
-      };
-      setCursors(Object.values(cursorsRef.current));
     });
 
     channel.on(BROADCAST_EVENT, { event: REQUEST_STATE_EVENT }, () => {
@@ -265,9 +200,6 @@ export function useWhiteboardRoom(
       doc.destroy();
       docRef.current = null;
       setContentState('');
-      cursorsRef.current = {};
-      setCursors([]);
-      ownCursorRef.current = { x: null, y: null, index: null };
     };
   }, [supabase, channelName, userId]);
 
@@ -276,37 +208,6 @@ export function useWhiteboardRoom(
     if (!doc) return;
     applyTextDiff(doc.getText(YJS_TEXT_NAME), next);
   }, []);
-
-  const sendOwnCursor = useCallback(() => {
-    channelRef.current?.send({
-      type: BROADCAST_EVENT,
-      event: CURSOR_EVENT,
-      payload: {
-        userId,
-        username: usernameRef.current,
-        x: ownCursorRef.current.x,
-        y: ownCursorRef.current.y,
-        index: ownCursorRef.current.index,
-        updatedAt: Date.now(),
-      },
-    });
-  }, [userId]);
-
-  const setCursorPosition = useCallback(
-    (x: number | null, y: number | null) => {
-      ownCursorRef.current = { ...ownCursorRef.current, x, y };
-      sendOwnCursor();
-    },
-    [sendOwnCursor],
-  );
-
-  const setTextCursorIndex = useCallback(
-    (index: number | null) => {
-      ownCursorRef.current = { ...ownCursorRef.current, index };
-      sendOwnCursor();
-    },
-    [sendOwnCursor],
-  );
 
   return {
     content,
