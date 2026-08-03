@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../providers/auth-provider';
 import { ROUTES } from '../../lib/routes';
@@ -13,6 +13,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const session = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r));
 
@@ -35,9 +36,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Topbar />
-      <Sidebar />
-      <div className="pt-[49px] pl-14">{children}</div>
+      <Topbar onMenuClick={() => setSidebarOpen(open => !open)} />
+      <Sidebar
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
+      />
+      <div className="pt-[49px] pl-0 md:pl-14">{children}</div>
     </>
   );
 }
