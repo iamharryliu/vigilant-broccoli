@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Text, Badge } from '@radix-ui/themes';
 import {
   Button,
@@ -20,6 +20,8 @@ const LABEL = {
   ANALYZING: 'Analyzing...',
   SAVE: 'Save',
   REANALYZE: 'Re-analyze',
+  TAKE_PHOTO: 'Take Photo',
+  CHOOSE_PHOTOS: 'Choose Photos',
 } as const;
 
 export interface PreviewImage {
@@ -105,6 +107,8 @@ export const WhereIsFormComponent = ({
   submitHandler,
 }: CRUDFormProps<WhereIsFormValues>) => {
   const session = useAuth();
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const libraryInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(initialFormValues.title);
   const [description, setDescription] = useState(initialFormValues.description);
   const [tags, setTags] = useState<string[]>(initialFormValues.tags);
@@ -122,6 +126,7 @@ export const WhereIsFormComponent = ({
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
+    e.target.value = '';
     if (!files.length) return;
     Promise.all(files.map(resizeImageFile)).then(newPreviews =>
       setPreviews(prev => [...prev, ...newPreviews]),
@@ -285,12 +290,35 @@ export const WhereIsFormComponent = ({
           setPreviews(prev => prev.filter((_, j) => j !== i))
         }
       />
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          onClick={() => cameraInputRef.current?.click()}
+        >
+          {LABEL.TAKE_PHOTO}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => libraryInputRef.current?.click()}
+        >
+          {LABEL.CHOOSE_PHOTOS}
+        </Button>
+      </div>
       <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+      <input
+        ref={libraryInputRef}
         type="file"
         accept="image/*"
         multiple
         onChange={handleFileSelect}
-        className="text-sm"
+        className="hidden"
       />
 
       {isUpdate && (
