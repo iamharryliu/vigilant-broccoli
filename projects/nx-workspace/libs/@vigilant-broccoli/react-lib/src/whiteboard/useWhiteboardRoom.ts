@@ -41,6 +41,7 @@ interface CursorPayload {
   username: string;
   x: number | null;
   y: number | null;
+  index: number | null;
   updatedAt: number;
 }
 
@@ -93,6 +94,11 @@ export function useWhiteboardRoom(
   const updatedAtRef = useRef<number>(0);
   const contentRef = useRef<string>('');
   const cursorsRef = useRef<Record<string, WhiteboardCursor>>({});
+  const ownCursorRef = useRef<{
+    x: number | null;
+    y: number | null;
+    index: number | null;
+  }>({ x: null, y: null, index: null });
 
   useEffect(() => {
     usernameRef.current = username;
@@ -142,6 +148,7 @@ export function useWhiteboardRoom(
           username: payload.username,
           x: payload.x,
           y: payload.y,
+          index: payload.index,
           updatedAt: payload.updatedAt,
         },
       };
@@ -196,6 +203,7 @@ export function useWhiteboardRoom(
       setContentState('');
       cursorsRef.current = {};
       setCursors([]);
+      ownCursorRef.current = { x: null, y: null, index: null };
     };
   }, [supabase, channelName, userId]);
 
@@ -211,21 +219,35 @@ export function useWhiteboardRoom(
     });
   }, []);
 
+  const sendOwnCursor = useCallback(() => {
+    channelRef.current?.send({
+      type: BROADCAST_EVENT,
+      event: CURSOR_EVENT,
+      payload: {
+        userId,
+        username: usernameRef.current,
+        x: ownCursorRef.current.x,
+        y: ownCursorRef.current.y,
+        index: ownCursorRef.current.index,
+        updatedAt: Date.now(),
+      },
+    });
+  }, [userId]);
+
   const setCursorPosition = useCallback(
     (x: number | null, y: number | null) => {
-      channelRef.current?.send({
-        type: BROADCAST_EVENT,
-        event: CURSOR_EVENT,
-        payload: {
-          userId,
-          username: usernameRef.current,
-          x,
-          y,
-          updatedAt: Date.now(),
-        },
-      });
+      ownCursorRef.current = { ...ownCursorRef.current, x, y };
+      sendOwnCursor();
     },
-    [userId],
+    [sendOwnCursor],
+  );
+
+  const setTextCursorIndex = useCallback(
+    (index: number | null) => {
+      ownCursorRef.current = { ...ownCursorRef.current, index };
+      sendOwnCursor();
+    },
+    [sendOwnCursor],
   );
 
   return {
@@ -234,6 +256,7 @@ export function useWhiteboardRoom(
     members,
     cursors,
     setCursorPosition,
+    setTextCursorIndex,
     connectionStatus,
   };
 }
