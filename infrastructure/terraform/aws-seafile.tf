@@ -60,6 +60,24 @@ resource "random_password" "seafile_admin_password" {
   special = false
 }
 
+# Dedicated non-root MySQL user for the seafile/ccnet/seahub DBs, required
+# from Seafile Docker 12.0 onward (11.0.13 used the MySQL root user directly).
+resource "random_password" "seafile_db_password" {
+  length  = 32
+  special = false
+}
+
+# Required from Seafile Docker 12.0 onward; must be >= 32 chars.
+resource "random_password" "seafile_jwt_private_key" {
+  length  = 40
+  special = false
+}
+
+resource "random_password" "seafile_redis_password" {
+  length  = 32
+  special = false
+}
+
 # Seafile's files/DB live here, not on the boot disk, so they survive VM
 # replacement (AMI updates force a new instance whenever Canonical publishes a
 # new Ubuntu 22.04 build — see data.aws_ami.ubuntu). cloud-init formats it only
@@ -68,13 +86,10 @@ resource "aws_ebs_volume" "seafile_data" {
   availability_zone = "eu-north-1a"
   size              = 30
   type              = "gp3"
+  encrypted         = true
 
   tags = {
     Name = "seafile-data"
-  }
-
-  lifecycle {
-    prevent_destroy = true
   }
 }
 
@@ -96,11 +111,19 @@ resource "aws_instance" "seafile" {
   root_block_device {
     volume_size = 20
     volume_type = "gp3"
+    encrypted   = true
   }
 
   metadata_options {
     http_tokens = "required"
   }
+
+  # aws_instance defaults this to false: a user_data-only change (no other
+  # ForceNew attribute in the same apply) would otherwise sit in state without
+  # ever reaching the running instance, since AWS doesn't re-run cloud-init on
+  # a live boot. This VM is entirely cloud-init-driven, so any user_data edit
+  # should always mean a fresh boot.
+  user_data_replace_on_change = true
 
   user_data = base64encode(templatefile("${path.module}/cloud-init-seafile.yaml", {
     seafile_ssh_keys         = split("\n", trimspace(var.ssh_public_key))
@@ -108,6 +131,9 @@ resource "aws_instance" "seafile" {
     seafile_origin_cert      = cloudflare_origin_ca_certificate.seafile.certificate
     seafile_origin_key       = tls_private_key.seafile_origin.private_key_pem
     seafile_db_root_password = random_password.seafile_db_root_password.result
+    seafile_db_password      = random_password.seafile_db_password.result
+    seafile_jwt_private_key  = random_password.seafile_jwt_private_key.result
+    seafile_redis_password   = random_password.seafile_redis_password.result
     seafile_admin_email      = var.seafile_admin_email
     seafile_admin_password   = random_password.seafile_admin_password.result
   }))

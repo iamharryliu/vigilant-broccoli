@@ -44,16 +44,6 @@ The `/custom-cont-init.d` script runs at every container start: `apt-get update/
 
 **Fix:** bake a derived image (`FROM lscr.io/linuxserver/code-server` + toolchain in a Dockerfile), push to Docker Hub, and reference it here. Cheaper fallback: install the toolchain under the persistent `/config` volume (or gate the script on a `/config` marker file) and pin the image tag.
 
-### 3c9e11. [security] Seafile cloud-init writes to the boot disk whenever the data-volume mount fails
-
-**`infrastructure/terraform/cloud-init-seafile.yaml`** (`runcmd`: disk detection one-liner → `mount /mnt/seafile-data` → `docker compose up -d`)
-
-#262 moved Seafile's files and MariaDB onto `aws_ebs_volume.seafile_data` so they survive the AMI-driven instance replacements that periodically recreate `aws_instance.seafile`. But the runcmd sequence has no guard between mounting and starting: cloud-init's `runcmd` script does not `set -e`, so if `mount /mnt/seafile-data` fails for any reason the next line still runs `docker compose up -d`, and the `db`/`seafile` bind-mounts (`/mnt/seafile-data/db`, `/mnt/seafile-data/shared`) are silently created on the boot disk instead. Seafile comes up looking healthy, Upptime stays green, and everything written from then on is destroyed by the next replacement — the exact loss #262 was written to prevent, now silent instead of obvious.
-
-Two concrete ways the mount loses: (1) the detection loop `for d in $(lsblk -dno NAME --nodeps -e7)` picks the first non-root whole disk, so it finds nothing and leaves `DATA_DEV` empty if `aws_volume_attachment.seafile_data` hasn't landed yet — Terraform creates the attachment _after_ the instance, so this is a race against boot, currently won only because `package_update`/`package_upgrade` + the Docker install run first; (2) any `mkfs`/`blkid`/fstab hiccup leaves nothing mounted at `/mnt/seafile-data`.
-
-**Fix:** wait for the device before formatting (poll `lsblk` for a non-root disk for up to ~60s), and hard-gate the compose start on the mount actually being the data volume — e.g. `findmnt -M /mnt/seafile-data >/dev/null || exit 1` before `docker compose up -d`, so a failed mount leaves the site down (loud) instead of silently writing to ephemeral storage. Consider also asserting the mount in a small systemd unit or `RequiresMountsFor=` so the same guard survives reboots, not just first boot.
-
 ## P2
 
 ### 8f204c. [security] Watchtower still holds docker.sock on the RabbitMQ VM, watching an unpinned `:latest` image
@@ -75,12 +65,6 @@ Only WireGuard-UDP and IAP-SSH firewall rules are defined on the `default` netwo
 **`infrastructure/terraform/main.tf:103-104`** (scopes) + project-level secretAccessor grants
 
 Every VM (including transient Packer build VMs) using the default SA can read all project secrets and use the Vault KMS unseal key — any RCE on the box yields Vault root token + WG private key + Bitwarden password. **Fix:** dedicated SA for `vb-free-vm` with per-secret grants (needs only `VB_VM_WG_*`, `VB_VM_CLOUDFLARED_TUNNEL_TOKEN`) + the KMS key; run Packer with a separate minimal SA.
-
-### 16fb17. [security] Seafile's two EBS volumes are unencrypted at rest
-
-**`infrastructure/terraform/aws-seafile.tf:67-79`** (`aws_ebs_volume.seafile_data`) + `:96-99` (`aws_instance.seafile`'s `root_block_device`)
-
-Confirmed via `terraform state show`: both volumes have `encrypted = false`, and account-level default EBS encryption is off in this region. `seafile_data` (added for persistent storage independent of instance replacement) holds every user file plus the full MariaDB database — admin password hash, per-share tokens, everything — all unencrypted on disk. **Fix:** add `encrypted = true` to both the `aws_ebs_volume.seafile_data` resource and the `root_block_device` block. `encrypted` is a ForceNew attribute on `aws_ebs_volume`, so this forces a volume replacement — repeat the same live-migration procedure used to introduce `seafile_data` (targeted apply for a fresh encrypted volume, copy data over via a verified backup, swap the bind mounts, restart) rather than a plain `terraform apply`, to avoid the same `-target`-pulls-in-dependencies trap that replaced the instance early last time. Schedule for a deliberate maintenance window, not opportunistically.
 
 ### 20177f. [security] RabbitMQ management UI + SSH exposed to 0.0.0.0/0; user is `admin`
 
@@ -368,29 +352,6 @@ New `S3Client` per R2 operation (`api/where-is/r2.ts:8-9`; a 10-image POST = 10 
 #222 introduced `@vigilant-broccoli/resume` with `resume.json` as the single source of truth for resume _data_, but the _presentation_ is written twice — once as a template-literal HTML document for the headless-Chromium PDF export consumed by personal-website-react's build, once as React for the in-app view. They share no rendering code, so any layout change has to be made in both. This is not hypothetical: #255 added the Project Experience section and removed the spacing above "Soft:" in the React view only, and `vigilant-broccoli` silently dropped out of the published `resume.pdf` until #257 patched `server.ts` to match a day later. The PDF is the artifact that actually gets sent to people, and it is the copy with no UI to notice the drift.
 
 **Fix:** render one tree. The realistic option given the PDF path is headless Chromium is to render the React view to HTML server-side (`react-dom/server`'s `renderToStaticMarkup`) inside `generateResumePdfBuffer` and drop `buildResumeHtml`, keeping the print stylesheet as the only PDF-specific piece. If that pulls too much of vb-manager-next's styling into the lib, the cheaper alternative is to move the shared section/entry components into the `resume` lib itself so both consumers import them. Either way the acceptance test is the same: add a Project Experience entry to `resume.json` and confirm it appears in both `/career` and a regenerated `resume.pdf` without touching two files.
-
-### 2bf612. [maintenance] Seafile is pinned at 11.0.13 — deferred major-version upgrade (11 → 12 → 13)
-
-**`infrastructure/terraform/cloud-init-seafile.yaml`** (pins `seafileltd/seafile-mc:11.0.13`) + **`infrastructure/terraform/aws-seafile.tf`** (`aws_ebs_volume.seafile_data` — the persistent volume the `db`/`seafile` services bind-mount, independent of the instance lifecycle, so this upgrade needs no further data migration, only compose-file changes on that already-persistent volume)
-
-Deliberately deferred, not a bug — for a personal solo-admin file-sync/backup deployment, 12.0/13.0 don't add much day-to-day. Their new features (SeaDoc collaborative whiteboard, real-time notification server, SeaSearch full-text search — Pro-flavored, a metadata server for extended file properties, better video thumbnails) are all things this deployment would disable anyway. The actual long-term driver is staying on a version that still receives security patches, not new functionality — worth revisiting eventually, not urgently.
-
-**Why it's a real project, not a tag bump:** an attempt this session jumped straight from 11.0.13 to 13.0.25 and broke `seaf-server` (site down, `HTTP 502`) — Seafile requires sequential major-version upgrades because each major version has its own required docker-compose env-var interface:
-
-- **11.0.13 (current):** our custom compose only passes `DB_HOST`, `DB_ROOT_PASSWD`, `TIME_ZONE`, `SEAFILE_ADMIN_EMAIL`, `SEAFILE_ADMIN_PASSWORD`, `SEAFILE_SERVER_LETSENCRYPT`, `SEAFILE_SERVER_HOSTNAME` — MySQL root only, no dedicated app DB user.
-- **12.0** (per `https://manual.seafile.com/12.0/repo/docker/ce/{env,seafile-server.yml}`) needs: `DB_HOST`, `DB_PORT`, `DB_USER` (new — dedicated non-root `seafile` MySQL user), `DB_ROOT_PASSWD`, `DB_PASSWORD` (new secret for that user), `SEAFILE_MYSQL_DB_CCNET_DB_NAME`/`_SEAFILE_DB_NAME`/`_SEAHUB_DB_NAME` (defaults should already match our DB), `TIME_ZONE`, `INIT_SEAFILE_ADMIN_EMAIL`/`INIT_SEAFILE_ADMIN_PASSWORD` (renamed, INIT-only so harmless on an existing install), `SEAFILE_SERVER_HOSTNAME`, `SEAFILE_SERVER_PROTOCOL` (new — worth testing as `https` directly, possibly obsoleting the `fix-csrf.sh` post-boot sed hack already in `cloud-init-seafile.yaml`), `JWT_PRIVATE_KEY` (new mandatory secret, ≥32 chars, required even with SeaDoc/notification disabled), `ENABLE_SEADOC=false` (skip the extra sdoc-server/notification-server services). The `db` service should add `MARIADB_AUTO_UPGRADE=1` plus the official healthcheck (`healthcheck.sh --connect --mariadbupgrade --innodb_initialized`) with `depends_on: db: condition: service_healthy` on `seafile`.
-- **13.0** (per `https://manual.seafile.com/13.0/repo/docker/ce/{env,seafile-server.yml}`) renames the DB vars again: `SEAFILE_MYSQL_DB_HOST`/`_USER`/`_PASSWORD` (was `DB_HOST`/`DB_USER`/`DB_PASSWORD`), `INIT_SEAFILE_MYSQL_ROOT_PASSWORD` (was `DB_ROOT_PASSWD`); same `JWT_PRIVATE_KEY`/`SEAFILE_SERVER_HOSTNAME`/`SEAFILE_SERVER_PROTOCOL`; new `CACHE_PROVIDER` (defaults `redis`, but `memcached` stays fully supported via `MEMCACHED_HOST`/`MEMCACHED_PORT` — set `CACHE_PROVIDER=memcached` to avoid adding a Redis service we don't need). `ENABLE_NOTIFICATION_SERVER`/`ENABLE_SEAFILE_AI`/`ENABLE_FACE_RECOGNITION` already default `false`. Breaking changes per `https://manual.seafile.com/latest/upgrade/upgrade_notes_for_13.0.x/`: WebDAV drops LDAP-account login (not applicable — no LDAP here), old file-tags feature removed (check if used before upgrading).
-
-**Do not adopt Seafile's official `caddy.yml`** (`lucaslorentz/caddy-docker-proxy`) during either step — it mounts `/var/run/docker.sock` into the Caddy container (a container-to-host-root privilege-escalation path) and does its own ACME/Let's Encrypt TLS by default, which can't complete behind Cloudflare Access anyway (exactly why `aws-seafile.tf`'s `cloudflare_origin_ca_certificate.seafile` + our static Caddyfile exist). Keep the existing `caddy` service in `cloud-init-seafile.yaml` untouched across both steps; only adapt `db`/`memcached`/`seafile`.
-
-**Steps:**
-
-1. Snapshot `aws_ebs_volume.seafile_data` first (`aws ec2 create-snapshot`, fast and non-disruptive) as a rollback point.
-2. Add `random_password` Terraform resources for the two new secrets (`DB_PASSWORD`/`SEAFILE_MYSQL_DB_PASSWORD` for the new non-root DB user, `JWT_PRIVATE_KEY`) in `aws-seafile.tf`, alongside the existing `random_password.seafile_db_root_password`/`seafile_admin_password`, and thread them into the `cloud-init-seafile.yaml` `templatefile()` call the same way.
-3. Do the 11→12 step live via SSH first: edit the on-box `/opt/seafile/docker-compose.yml` `db`/`memcached`/`seafile` blocks per the env-var mapping above, `docker compose pull && up -d`, and verify — clean `seaf-server`/`seahub` startup in `docker logs seafile`, `HTTP 200`/`302` via curl, and an actual browser login — before touching the 12→13 step.
-4. Repeat for 12→13 with its renamed env vars once 12.0 is confirmed healthy.
-5. Only after both steps are verified working live, update `cloud-init-seafile.yaml`'s `docker-compose.yml` template and the image tag in `aws-seafile.tf`/`cloud-init-seafile.yaml` to match the final verified 13.0 config, so a future instance replacement (still periodic — see the AMI-drift discussion elsewhere in this repo's Seafile setup) lands correctly instead of replaying a broken intermediate state.
-6. Test whether `SEAFILE_SERVER_PROTOCOL=https` makes the `fix-csrf.sh` sed-based workaround in `cloud-init-seafile.yaml` unnecessary; remove it if so, otherwise leave it as a harmless idempotent safety net.
 
 ### ce18a7. [maintenance] No shared `localStorage` state hook — 9 hand-rolled copies split across two incompatible strategies
 
