@@ -456,3 +456,31 @@ Vault's JWT auth config — the `github-actions-role` / `-rotate-role` / `-pr-ch
 5. Retire the `staging-journal` Cloudflare Pages project once cut over.
 6. Update [network-management.md](./docs/infrastructure/network-management.md)'s `journal.harryliu.dev` line (currently "Cloudflare Pages `staging-journal`...") to describe the gitea-vm-hosted setup, and revisit [repo-patterns.md](./docs/repo-patterns.md)'s note that "`journal` is deliberately single-environment" if the deploy mechanism change affects that framing.
 7. Close `45c377` as resolved by this change instead of by its own fix, since deleting the cron removes the recurring cost entirely.
+
+#### a3f9c2. hearth where-is: search only matches the AI's literal wording, no semantic fallback
+
+**`apps/hearth/src/app/where-is/page.tsx:38-45`** (`fuzzyMatch`) · **`apps/hearth/src/app/api/where-is/analyze/route.ts`** (existing LLM vision-analysis pipeline)
+
+`fuzzyMatch` requires every word of the search query to appear as a literal substring somewhere in the concatenated title/description/tags — all AI-generated text from `analyze`/`reanalyze`. If the model tagged a drawer "cutting tools" and a user searches "scissors," the query returns nothing: there's no fallback once the literal match misses, which undercuts the feature's actual value (ask in your own words, find the spot) exactly when the AI's wording differs from the user's.
+
+**Desired end state:** when the literal fuzzy match comes up empty (or as the primary path, cost permitting), send the query plus the candidate items' title/description/tags to the same LLM already used for image analysis and have it rank/return the best-matching item(s) — a semantic match instead of a strict substring one.
+
+**Steps:**
+
+1. Add `apps/hearth/src/app/api/where-is/search/route.ts`: accept `{ query, homeId }`, fetch that home's `where_is_items` (title/description/tags only, no images), and prompt the LLM to return the best-matching item id(s) with a short "why" justification, falling back to "no match" rather than guessing.
+2. In `where-is/page.tsx`, call this route when `fuzzyMatch` returns zero results for a non-empty query, and surface the LLM's matched item(s) with the "why" text so the result doesn't feel like a black box.
+3. Keep the existing literal `fuzzyMatch` as the fast first pass (free, instant) — only pay for the LLM call on a miss.
+
+#### d7e1b4. hearth where-is: flat storage-area list has no room/zone grouping
+
+**`apps/hearth/src/app/where-is/page.tsx`** (`WhereIsPage`, flat `CRUDItemList`) · **`apps/hearth/src/app/where-is/where-is-form.tsx`** (freeform `tags`) · **`apps/hearth/src/lib/types.ts`** (`WhereIsItem`)
+
+Storage areas are a flat, freeform-titled list with tags but no structured location field — there's no way to browse "just the kitchen" or "just the garage." Fine for a handful of entries, but browsing (as opposed to searching) stops working once the list grows past a dozen or so, since nothing groups or filters by physical location.
+
+**Desired end state:** a lightweight `room` concept surfaced as filter chips above the list (All / Kitchen / Garage / Bedroom / ... derived from whatever rooms are actually in use), so users can narrow the list spatially before scrolling or searching.
+
+**Steps:**
+
+1. Cheapest option: treat it as a convention over the existing `tags` array (e.g. a `room:kitchen` tag set by the user or suggested by the analyze prompt) rather than a new column — avoids a migration, and the `WhereIsFormComponent` tag UI already supports free entry.
+2. If that feels too implicit, add a dedicated nullable `room` text column to `where_is_items` plus a small fixed suggestion list (recent/most-used rooms) in the form, rather than a fully open free-text field that fragments into near-duplicates ("Kitchen" vs "kitchen" vs "Kitchen cabinet").
+3. On `where-is/page.tsx`, derive the distinct set of rooms from the loaded items and render them as filter chips above the search input, combinable with the existing text search (AND, not OR).
