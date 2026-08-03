@@ -157,7 +157,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-8">
+    <div className="max-w-2xl mx-auto p-6 space-y-6">
       <Text size="6" weight="bold">
         Settings
       </Text>
@@ -181,7 +181,7 @@ export default function SettingsPage() {
           {EXPORT_OPTIONS.map(({ key, label }) => (
             <label
               key={key}
-              className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50"
+              className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50"
             >
               <Checkbox
                 checked={selected.has(key)}
@@ -254,7 +254,7 @@ export default function SettingsPage() {
           Clear all records for the selected home. This is irreversible.
         </Text>
         <div className="border border-red-100 rounded-lg divide-y divide-red-50">
-          <label className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-red-50">
+          <label className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-red-50">
             <Checkbox
               checked={allClearSelected}
               onCheckedChange={toggleAllClear}
@@ -266,7 +266,7 @@ export default function SettingsPage() {
           {CLEAR_OPTIONS.map(({ key, label }) => (
             <label
               key={key}
-              className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-red-50"
+              className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-red-50"
             >
               <Checkbox
                 checked={clearSelected.has(key)}
