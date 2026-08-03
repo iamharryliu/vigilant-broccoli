@@ -39,30 +39,49 @@ write_files:
           environment:
             MYSQL_ROOT_PASSWORD: ${seafile_db_root_password}
             MYSQL_LOG_CONSOLE: "true"
+            MARIADB_AUTO_UPGRADE: "1"
           volumes:
             - /mnt/seafile-data/db:/var/lib/mysql
-        memcached:
-          image: memcached:1.6.29
-          container_name: seafile-memcached
+          healthcheck:
+            test: ["CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--mariadbupgrade", "--innodb_initialized"]
+            interval: 20s
+            start_period: 30s
+            timeout: 5s
+            retries: 10
+        redis:
+          image: redis:7-alpine
+          container_name: seafile-redis
           restart: unless-stopped
-          entrypoint: memcached -m 256
+          command: ["redis-server", "--requirepass", "${seafile_redis_password}", "--save", "", "--appendonly", "no"]
         seafile:
-          image: seafileltd/seafile-mc:11.0.13
+          image: seafileltd/seafile-mc:13.0.25
           container_name: seafile
           restart: unless-stopped
           environment:
-            DB_HOST: db
-            DB_ROOT_PASSWD: ${seafile_db_root_password}
+            SEAFILE_MYSQL_DB_HOST: db
+            SEAFILE_MYSQL_DB_USER: seafile
+            SEAFILE_MYSQL_DB_PASSWORD: ${seafile_db_password}
+            SEAFILE_MYSQL_DB_CCNET_DB_NAME: ccnet_db
+            SEAFILE_MYSQL_DB_SEAFILE_DB_NAME: seafile_db
+            SEAFILE_MYSQL_DB_SEAHUB_DB_NAME: seahub_db
+            INIT_SEAFILE_MYSQL_ROOT_PASSWORD: ${seafile_db_root_password}
             TIME_ZONE: America/Toronto
-            SEAFILE_ADMIN_EMAIL: ${seafile_admin_email}
-            SEAFILE_ADMIN_PASSWORD: ${seafile_admin_password}
-            SEAFILE_SERVER_LETSENCRYPT: "false"
+            INIT_SEAFILE_ADMIN_EMAIL: ${seafile_admin_email}
+            INIT_SEAFILE_ADMIN_PASSWORD: ${seafile_admin_password}
             SEAFILE_SERVER_HOSTNAME: ${seafile_domain}
+            SEAFILE_SERVER_PROTOCOL: https
+            JWT_PRIVATE_KEY: ${seafile_jwt_private_key}
+            CACHE_PROVIDER: redis
+            REDIS_HOST: redis
+            REDIS_PASSWORD: ${seafile_redis_password}
+            ENABLE_SEADOC: "false"
           volumes:
             - /mnt/seafile-data/shared:/shared
           depends_on:
-            - db
-            - memcached
+            db:
+              condition: service_healthy
+            redis:
+              condition: service_started
         caddy:
           image: caddy:2-alpine
           container_name: caddy
@@ -95,18 +114,68 @@ write_files:
       docker exec seafile bash -c "grep -q CSRF_TRUSTED_ORIGINS /shared/seafile/conf/seahub_settings.py || echo 'CSRF_TRUSTED_ORIGINS = [\"https://${seafile_domain}\"]' >> /shared/seafile/conf/seahub_settings.py"
       docker compose -f /opt/seafile/docker-compose.yml restart seafile
 
+  - path: /opt/seafile/fix-download-limit.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # Seafile's zip-download endpoint refuses anything over max_download_dir_size
+      # (default 100M) with "Failed to download. The total size of the files
+      # exceeded the limit." Must be appended into the existing [fileserver]
+      # section, not a new one, or seafile.conf fails to parse.
+      for i in $(seq 1 60); do
+        if docker exec seafile test -f /shared/seafile/conf/seafile.conf; then
+          break
+        fi
+        sleep 5
+      done
+      docker exec seafile bash -c "grep -q max_download_dir_size /shared/seafile/conf/seafile.conf || sed -i '/^\[fileserver\]/a max_download_dir_size = 20000' /shared/seafile/conf/seafile.conf"
+      docker compose -f /opt/seafile/docker-compose.yml restart seafile
+
+  - path: /opt/seafile/mount-data-and-start.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # Runs as a single script (not separate runcmd entries) so `set -e`
+      # actually aborts the boot before `docker compose up` if the data volume
+      # never mounts — otherwise the db/seafile bind-mounts below silently land
+      # on the ephemeral boot disk and everything written is lost on the next
+      # AMI-driven instance replacement.
+      set -euo pipefail
+
+      mkdir -p /mnt/seafile-data
+
+      ROOT_DISK=$(lsblk -no PKNAME "$(findmnt -no SOURCE /)" | head -1)
+      DATA_DEV=""
+      for i in $(seq 1 12); do
+        for d in $(lsblk -dno NAME --nodeps -e7); do
+          [ "$d" = "$ROOT_DISK" ] && continue
+          DATA_DEV="/dev/$d"
+          break
+        done
+        [ -n "$DATA_DEV" ] && break
+        sleep 5
+      done
+      if [ -z "$DATA_DEV" ]; then
+        echo "seafile: no data disk found after 60s, aborting boot" >&2
+        exit 1
+      fi
+
+      blkid "$DATA_DEV" || mkfs.ext4 -F "$DATA_DEV"
+      DATA_UUID=$(blkid -s UUID -o value "$DATA_DEV")
+      grep -q "$DATA_UUID" /etc/fstab || echo "UUID=$DATA_UUID /mnt/seafile-data ext4 defaults,_netdev,nofail 0 2" >> /etc/fstab
+
+      mount /mnt/seafile-data
+      if ! findmnt -M /mnt/seafile-data >/dev/null; then
+        echo "seafile: /mnt/seafile-data failed to mount, aborting before compose up" >&2
+        exit 1
+      fi
+
+      docker compose -f /opt/seafile/docker-compose.yml up -d
+
 runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ubuntu
-  # Mount the attached block volume at /mnt/seafile-data BEFORE Docker starts,
-  # so the db/seafile bind-mounts above land on the persistent volume, not the
-  # boot disk. Detect the data disk as the whole disk that is NOT the boot disk
-  # (device names aren't stable across AWS's Xen/NVMe naming), format only if
-  # blank, and mount by UUID — a re-provision reattaches existing data intact
-  # instead of wiping it.
-  - mkdir -p /mnt/seafile-data
-  - 'ROOT_DISK=$(lsblk -no PKNAME "$(findmnt -no SOURCE /)" | head -1); for d in $(lsblk -dno NAME --nodeps -e7); do [ "$d" = "$ROOT_DISK" ] && continue; DATA_DEV="/dev/$d"; break; done; blkid "$DATA_DEV" || mkfs.ext4 -F "$DATA_DEV"; DATA_UUID=$(blkid -s UUID -o value "$DATA_DEV"); grep -q "$DATA_UUID" /etc/fstab || echo "UUID=$DATA_UUID /mnt/seafile-data ext4 defaults,_netdev,nofail 0 2" >> /etc/fstab'
-  - mount /mnt/seafile-data
-  - docker compose -f /opt/seafile/docker-compose.yml up -d
+  - /opt/seafile/mount-data-and-start.sh
   - /opt/seafile/fix-csrf.sh
+  - /opt/seafile/fix-download-limit.sh
