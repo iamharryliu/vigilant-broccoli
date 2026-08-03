@@ -16,10 +16,6 @@ Every rotator follows **mint → verify → store → revoke**: mint the new cre
 
 `openssl genrsa` → `oci iam user api-key upload` (authed by the current key) → update fingerprint + key in Vault → verify `oci iam user get` → delete old key. OCI allows 3 keys per user, so the overlap window is safe.
 
-### `TF_CLOUD_TOKEN` — self-succession
-
-HCP Terraform's API can create user tokens with the existing token. Verify against `/api/v2/account/details`, patch Vault, revoke the old token. Consumers (`tf:*` scripts) load from Vault per invocation.
-
 ## Manual only (no mint API)
 
 Rotate at source, then `vault kv patch` (or `gh secret set`):
