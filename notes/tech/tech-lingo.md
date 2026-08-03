@@ -3,6 +3,7 @@
 - [Software Lingo](./software/software-lingo.md)
 - [Computer Hardware Lingo](./hardware/computer-hardware-lingo.md)
 
+- [Build Systems & CI/CD](#build-systems--cicd)
 - [Roles](#roles)
 - [Hot Takes](#hot-takes)
 
@@ -15,6 +16,17 @@
 | On-Prem                        | Short for “on-premises,” meaning software, hardware, or infrastructure hosted locally within an organization’s facilities.                                                                          |
 | Starlink                       | SpaceX’s satellite internet constellation, providing broadband via a network of low Earth orbit (LEO) satellites.                                                                                   |
 | Token                          | A piece of data used for authentication, authorization, or as a placeholder in secure communications.                                                                                               |
+
+## Build Systems & CI/CD
+
+| Term           | Description                                                                                                                                                         |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bazel          | Google's open-source build and test tool for multi-language monorepos, with fine-grained incremental builds and caching based on a declarative dependency graph.    |
+| Gerrit         | A web-based code review tool built on Git, using a change/patch-set model instead of long-lived PR branches, with formal reviewer approval workflows.               |
+| GitHub Actions | GitHub's built-in CI/CD platform for automating build, test, and deploy workflows via YAML-defined jobs triggered by repository events.                             |
+| Nx             | A build system and monorepo tool with computation caching, task orchestration, and dependency-graph-aware "affected" builds (used in this repo).                    |
+| Turborepo      | A high-performance build system for JavaScript/TypeScript monorepos, with remote caching and declarative task pipelines.                                            |
+| Zuul           | A gated CI system that speculatively tests changes in their prospective merge order before merging, originally built for OpenStack and commonly paired with Gerrit. |
 
 ## Roles
 
