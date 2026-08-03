@@ -350,6 +350,7 @@ const NestedItem = ({
   LinkComponent,
   onToggle,
 }: NestedItemProps) => {
+  const [openChildId, setOpenChildId] = useState<string | null>(null);
   const Icon = item.icon;
   const labelClass = cn(
     'whitespace-nowrap overflow-hidden text-left transition-all duration-150',
@@ -390,15 +391,32 @@ const NestedItem = ({
       >
         <div className="overflow-hidden">
           <div className="flex flex-col gap-1 mt-1 ml-3 pb-1">
-            {item.children?.map((child, idx) => (
-              <ItemRow
-                key={child.href ?? `${child.label}-${idx}`}
-                item={child}
-                labelClassName="opacity-100"
-                LinkComponent={LinkComponent}
-                className="px-3 py-1.5"
-              />
-            ))}
+            {item.children?.map((child, idx) => {
+              const childKey = child.href ?? `${child.label}-${idx}`;
+              if (child.children && child.children.length > 0) {
+                return (
+                  <NestedItem
+                    key={childKey}
+                    item={child}
+                    isOpen={openChildId === childKey}
+                    expandable={expandable}
+                    LinkComponent={LinkComponent}
+                    onToggle={() =>
+                      setOpenChildId(openChildId === childKey ? null : childKey)
+                    }
+                  />
+                );
+              }
+              return (
+                <ItemRow
+                  key={childKey}
+                  item={child}
+                  labelClassName="opacity-100"
+                  LinkComponent={LinkComponent}
+                  className="px-3 py-1.5"
+                />
+              );
+            })}
           </div>
         </div>
       </div>
