@@ -6,7 +6,8 @@ import { Badge, Text } from '@radix-ui/themes';
 import {
   CRUDItemFormDialog,
   EllipsisCTA,
-  StackedImages,
+  ImageCarouselDialog,
+  ImageFilmstrip,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../../providers/auth-provider';
@@ -30,6 +31,7 @@ export default function WhereIsDetailPage() {
   const session = useAuth();
   const [item, setItem] = useState<WhereIsItem | null>(null);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -130,17 +132,18 @@ export default function WhereIsDetailPage() {
 
         {item.imageUrls.length > 0 && (
           <>
-            <StackedImages urls={item.imageUrls} alt={item.title} size={120} />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {item.imageUrls.map((url, i) => (
-                <img
-                  key={i}
-                  src={url}
-                  alt={`${item.title} ${i + 1}`}
-                  className="w-full rounded-lg object-cover"
-                />
-              ))}
-            </div>
+            <ImageFilmstrip
+              urls={item.imageUrls}
+              alt={item.title}
+              onSelect={setCarouselIndex}
+            />
+            <ImageCarouselDialog
+              images={item.imageUrls}
+              initialIndex={carouselIndex ?? 0}
+              open={carouselIndex !== null}
+              onOpenChange={open => !open && setCarouselIndex(null)}
+              alt={item.title}
+            />
           </>
         )}
 
