@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 import { Badge, Text } from '@radix-ui/themes';
 import {
   CRUDItemFormDialog,
@@ -94,6 +96,16 @@ export default function WhereIsDetailPage() {
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
       <div className="print:hidden space-y-6">
+        <div className="flex items-center gap-1 text-sm text-gray-500">
+          <Link href={ROUTES.WHERE_IS} className="hover:text-gray-700">
+            Storage Areas
+          </Link>
+          <ChevronRight size={14} />
+          <Text size="2" color="gray" className="truncate">
+            {item.title}
+          </Text>
+        </div>
+
         <div className="flex items-center justify-between">
           <Text size="6" weight="bold">
             {item.title}
