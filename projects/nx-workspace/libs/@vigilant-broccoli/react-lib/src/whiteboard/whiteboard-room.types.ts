@@ -10,6 +10,7 @@ export interface WhiteboardCursor {
   username: string;
   x: number | null;
   y: number | null;
+  index: number | null;
   updatedAt: number;
 }
 
@@ -19,5 +20,6 @@ export interface WhiteboardRoomState {
   members: WhiteboardMember[];
   cursors: WhiteboardCursor[];
   setCursorPosition: (x: number | null, y: number | null) => void;
+  setTextCursorIndex: (index: number | null) => void;
   connectionStatus: ConnectionStatus;
 }

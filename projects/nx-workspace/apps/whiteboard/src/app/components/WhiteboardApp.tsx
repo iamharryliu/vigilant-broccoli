@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   CONNECTION_STATUS,
   useWhiteboardRoom,
 } from '../hooks/useWhiteboardRoom';
 import { useTranslation } from '../i18n';
+import { CaretCoordinates, getCaretCoordinates } from '../utils/caret-position';
 
 const USER_PREFIX = 'user-';
 const USER_ID_LENGTH = 6;
@@ -118,11 +119,17 @@ export function WhiteboardApp() {
     members,
     cursors,
     setCursorPosition,
+    setTextCursorIndex,
     connectionStatus,
   } = useWhiteboardRoom(activeRoom, userId, username);
 
   const boardRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const lastCursorSentAtRef = useRef(0);
+  const lastIndexSentAtRef = useRef(0);
+  const [caretPositions, setCaretPositions] = useState<
+    Record<string, CaretCoordinates>
+  >({});
 
   const handleBoardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const now = Date.now();
@@ -139,6 +146,17 @@ export function WhiteboardApp() {
 
   const handleBoardMouseLeave = () => setCursorPosition(null, null);
 
+  const sendTextCursorIndex = () => {
+    const now = Date.now();
+    if (now - lastIndexSentAtRef.current < CURSOR_SEND_INTERVAL_MS) return;
+    lastIndexSentAtRef.current = now;
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    setTextCursorIndex(textarea.selectionStart);
+  };
+
+  const handleTextBlur = () => setTextCursorIndex(null);
+
   const membersLabel =
     members.length <= SINGLE_MEMBER
       ? t('MEMBERS.COUNT_ONE')
@@ -148,6 +166,38 @@ export function WhiteboardApp() {
     cursor =>
       cursor.userId !== userId && cursor.x !== null && cursor.y !== null,
   );
+
+  const peerTextCursors = cursors.filter(
+    cursor => cursor.userId !== userId && cursor.index !== null,
+  );
+
+  const recomputeCaretPositions = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    const next: Record<string, CaretCoordinates> = {};
+    peerTextCursors.forEach(cursor => {
+      const index = Math.min(cursor.index as number, content.length);
+      const coords = getCaretCoordinates(textarea, index);
+      next[cursor.userId] = {
+        top: coords.top - textarea.scrollTop,
+        left: coords.left - textarea.scrollLeft,
+        height: coords.height,
+      };
+    });
+    setCaretPositions(next);
+  }, [peerTextCursors, content]);
+
+  useEffect(() => {
+    recomputeCaretPositions();
+  }, [recomputeCaretPositions]);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.addEventListener('scroll', recomputeCaretPositions);
+    return () =>
+      textarea.removeEventListener('scroll', recomputeCaretPositions);
+  }, [recomputeCaretPositions]);
 
   return (
     <div className="flex flex-col h-[100dvh] bg-gray-50">
@@ -255,15 +305,47 @@ export function WhiteboardApp() {
             ref={boardRef}
             onMouseMove={handleBoardMouseMove}
             onMouseLeave={handleBoardMouseLeave}
-            className="relative flex-1 min-h-0"
+            className="relative flex-1 min-h-0 overflow-hidden"
           >
             <textarea
+              ref={textareaRef}
               value={content}
-              onChange={e => setContent(e.target.value)}
+              onChange={e => {
+                setContent(e.target.value);
+                sendTextCursorIndex();
+              }}
+              onSelect={sendTextCursorIndex}
+              onBlur={handleTextBlur}
               placeholder={t('BOARD.PLACEHOLDER')}
               disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
               className="h-full w-full resize-none rounded border border-gray-300 p-3 font-mono text-sm leading-relaxed text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100"
             />
+            {peerTextCursors.map(cursor => {
+              const position = caretPositions[cursor.userId];
+              if (!position) return null;
+              return (
+                <div
+                  key={cursor.userId}
+                  style={{
+                    top: position.top,
+                    left: position.left,
+                    height: position.height,
+                  }}
+                  className="pointer-events-none absolute z-10 overflow-visible"
+                >
+                  <span
+                    style={{ backgroundColor: cursorColor(cursor.userId) }}
+                    className="block h-full w-0.5 animate-pulse"
+                  />
+                  <span
+                    style={{ backgroundColor: cursorColor(cursor.userId) }}
+                    className="absolute bottom-full left-0 mb-0.5 inline-block rounded px-1.5 py-0.5 text-xs whitespace-nowrap text-white shadow"
+                  >
+                    {cursor.username}
+                  </span>
+                </div>
+              );
+            })}
             {peerCursors.map(cursor => (
               <div
                 key={cursor.userId}
