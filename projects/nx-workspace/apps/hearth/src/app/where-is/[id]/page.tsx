@@ -120,15 +120,12 @@ export default function WhereIsDetailPage() {
           </Text>
         )}
 
-        {item.tags.length > 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {item.tags.map(tag => (
-              <Badge key={tag} variant="soft" size="2">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
+        <Text size="1" color="gray" as="p">
+          Added{' '}
+          {new Date(item.createdAt).toLocaleDateString(undefined, {
+            dateStyle: 'medium',
+          })}
+        </Text>
 
         {item.imageUrls.length > 0 && (
           <>
@@ -147,12 +144,15 @@ export default function WhereIsDetailPage() {
           </>
         )}
 
-        <Text size="1" color="gray" as="p">
-          Added{' '}
-          {new Date(item.createdAt).toLocaleDateString(undefined, {
-            dateStyle: 'medium',
-          })}
-        </Text>
+        {item.tags.length > 0 && (
+          <div className="flex gap-2 flex-wrap">
+            {item.tags.map(tag => (
+              <Badge key={tag} variant="soft" size="2">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
 
       <WhereIsLabel itemId={item.id} title={item.title} />
