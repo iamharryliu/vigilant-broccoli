@@ -21,7 +21,8 @@
     "react": "*",
     "react-easy-crop": "*",
     "sonner": "*",
-    "tailwind-merge": "*"
+    "tailwind-merge": "*",
+    "yjs": "^13.6.31"
   },
   "main": "./index.js",
   "types": "./index.d.ts",

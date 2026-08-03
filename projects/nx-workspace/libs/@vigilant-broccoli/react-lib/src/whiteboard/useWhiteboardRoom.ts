@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import * as Y from 'yjs';
 import {
   CONNECTION_STATUS,
   ConnectionStatus,
@@ -16,9 +17,11 @@ const SYNC_EVENT = 'sync';
 const BROADCAST_EVENT = 'broadcast';
 const PAGEHIDE_EVENT = 'pagehide';
 
-const CONTENT_EVENT = 'content';
+const YJS_UPDATE_EVENT = 'yjs-update';
 const REQUEST_STATE_EVENT = 'request-state';
 const CURSOR_EVENT = 'cursor';
+const YJS_TEXT_NAME = 'content';
+const REMOTE_UPDATE_ORIGIN = 'remote';
 
 const SUBSCRIBE_STATUS = {
   SUBSCRIBED: 'SUBSCRIBED',
@@ -31,9 +34,8 @@ interface PresencePayload {
   username: string;
 }
 
-interface ContentPayload {
-  content: string;
-  updatedAt: number;
+interface YjsUpdatePayload {
+  update: string;
 }
 
 interface CursorPayload {
@@ -77,6 +79,57 @@ export interface SupabaseBroadcastLike {
   removeChannel(channel: BroadcastChannel): void;
 }
 
+const encodeUpdate = (update: Uint8Array): string => {
+  let binary = '';
+  update.forEach(byte => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary);
+};
+
+const decodeUpdate = (encoded: string): Uint8Array => {
+  const binary = atob(encoded);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+};
+
+// Textareas only report the final string on change, so we diff it against
+// the CRDT's current text to recover the minimal insert/delete op — this is
+// what keeps concurrent edits at different positions from clobbering each
+// other, unlike broadcasting the full string.
+const applyTextDiff = (yText: Y.Text, nextValue: string) => {
+  const previousValue = yText.toString();
+  if (previousValue === nextValue) return;
+
+  let start = 0;
+  while (
+    start < previousValue.length &&
+    start < nextValue.length &&
+    previousValue[start] === nextValue[start]
+  ) {
+    start++;
+  }
+
+  let previousEnd = previousValue.length;
+  let nextEnd = nextValue.length;
+  while (
+    previousEnd > start &&
+    nextEnd > start &&
+    previousValue[previousEnd - 1] === nextValue[nextEnd - 1]
+  ) {
+    previousEnd--;
+    nextEnd--;
+  }
+
+  yText.doc?.transact(() => {
+    if (previousEnd > start) yText.delete(start, previousEnd - start);
+    if (nextEnd > start) yText.insert(start, nextValue.slice(start, nextEnd));
+  });
+};
+
 export function useWhiteboardRoom(
   supabase: SupabaseBroadcastLike,
   channelName: string,
@@ -91,8 +144,7 @@ export function useWhiteboardRoom(
   );
   const channelRef = useRef<BroadcastChannel | null>(null);
   const usernameRef = useRef<string>(username);
-  const updatedAtRef = useRef<number>(0);
-  const contentRef = useRef<string>('');
+  const docRef = useRef<Y.Doc | null>(null);
   const cursorsRef = useRef<Record<string, WhiteboardCursor>>({});
   const ownCursorRef = useRef<{
     x: number | null;
@@ -107,9 +159,26 @@ export function useWhiteboardRoom(
   useEffect(() => {
     if (!userId || !channelName) return;
 
+    const doc = new Y.Doc();
+    const yText = doc.getText(YJS_TEXT_NAME);
+    docRef.current = doc;
+
     const channel = supabase.channel(channelName, {
       config: { presence: { key: userId }, broadcast: { self: false } },
     });
+
+    const handleTextChange = () => setContentState(yText.toString());
+    yText.observe(handleTextChange);
+
+    const handleDocUpdate = (update: Uint8Array, origin: unknown) => {
+      if (origin === REMOTE_UPDATE_ORIGIN) return;
+      channel.send({
+        type: BROADCAST_EVENT,
+        event: YJS_UPDATE_EVENT,
+        payload: { update: encodeUpdate(update) },
+      });
+    };
+    doc.on('update', handleDocUpdate);
 
     channel.on(PRESENCE_EVENT, { event: SYNC_EVENT }, () => {
       const state = channel.presenceState<PresencePayload>();
@@ -129,12 +198,9 @@ export function useWhiteboardRoom(
       setCursors(Object.values(prunedCursors));
     });
 
-    channel.on(BROADCAST_EVENT, { event: CONTENT_EVENT }, message => {
-      const payload = message.payload as ContentPayload;
-      if (payload.updatedAt <= updatedAtRef.current) return;
-      updatedAtRef.current = payload.updatedAt;
-      contentRef.current = payload.content;
-      setContentState(payload.content);
+    channel.on(BROADCAST_EVENT, { event: YJS_UPDATE_EVENT }, message => {
+      const payload = message.payload as YjsUpdatePayload;
+      Y.applyUpdate(doc, decodeUpdate(payload.update), REMOTE_UPDATE_ORIGIN);
     });
 
     channel.on(BROADCAST_EVENT, { event: CURSOR_EVENT }, message => {
@@ -156,14 +222,10 @@ export function useWhiteboardRoom(
     });
 
     channel.on(BROADCAST_EVENT, { event: REQUEST_STATE_EVENT }, () => {
-      if (updatedAtRef.current === 0) return;
       channel.send({
         type: BROADCAST_EVENT,
-        event: CONTENT_EVENT,
-        payload: {
-          content: contentRef.current,
-          updatedAt: updatedAtRef.current,
-        },
+        event: YJS_UPDATE_EVENT,
+        payload: { update: encodeUpdate(Y.encodeStateAsUpdate(doc)) },
       });
     });
 
@@ -198,8 +260,10 @@ export function useWhiteboardRoom(
       channel.untrack();
       supabase.removeChannel(channel);
       channelRef.current = null;
-      updatedAtRef.current = 0;
-      contentRef.current = '';
+      yText.unobserve(handleTextChange);
+      doc.off('update', handleDocUpdate);
+      doc.destroy();
+      docRef.current = null;
       setContentState('');
       cursorsRef.current = {};
       setCursors([]);
@@ -208,15 +272,9 @@ export function useWhiteboardRoom(
   }, [supabase, channelName, userId]);
 
   const setContent = useCallback((next: string) => {
-    setContentState(next);
-    contentRef.current = next;
-    const updatedAt = Date.now();
-    updatedAtRef.current = updatedAt;
-    channelRef.current?.send({
-      type: BROADCAST_EVENT,
-      event: CONTENT_EVENT,
-      payload: { content: next, updatedAt },
-    });
+    const doc = docRef.current;
+    if (!doc) return;
+    applyTextDiff(doc.getText(YJS_TEXT_NAME), next);
   }, []);
 
   const sendOwnCursor = useCallback(() => {
