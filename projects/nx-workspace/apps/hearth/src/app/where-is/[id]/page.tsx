@@ -17,6 +17,7 @@ import { WhereIsItem } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
 import { WhereIsFormComponent, WhereIsFormValues } from '../where-is-form';
 import { WhereIsLabel } from '../where-is-label';
+import { uploadPreviewImages } from '../upload-images';
 
 const WHERE_IS_COPY = {
   LIST: { TITLE: 'Storage Areas', EMPTY_MESSAGE: '' },
@@ -45,29 +46,32 @@ export default function WhereIsDetailPage() {
   }, [id, session?.access_token]);
 
   const handleUpdate = async (form: WhereIsFormValues) => {
+    const removedImageUrls = (item?.imageUrls ?? []).filter(
+      url => !(form.imageUrls ?? []).includes(url),
+    );
+    const accessToken = session?.access_token ?? '';
+    const newImages = await uploadPreviewImages(form.images, accessToken);
+
     await fetch('/api/where-is', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token ?? ''}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         id: form.id,
         title: form.title,
         description: form.description,
         tags: form.tags,
+        removedImageUrls,
+        newImages,
       }),
     });
-    setItem(prev =>
-      prev
-        ? {
-            ...prev,
-            title: form.title,
-            description: form.description,
-            tags: form.tags,
-          }
-        : prev,
-    );
+
+    const res = await fetch(`/api/where-is?id=${form.id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    setItem(await res.json());
   };
 
   const handleDelete = async () => {
@@ -91,6 +95,7 @@ export default function WhereIsDetailPage() {
     description: item.description,
     tags: item.tags,
     images: [],
+    imageUrls: item.imageUrls,
   };
 
   return (
