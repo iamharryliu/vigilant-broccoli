@@ -5,6 +5,7 @@ import { Card, Text, Table, Badge, Dialog } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
   Select,
   Textarea,
@@ -428,7 +429,10 @@ export default function ChoresPage() {
                 <Dialog.Trigger>
                   <Button>Add Chore</Button>
                 </Dialog.Trigger>
-                <Dialog.Content style={{ maxWidth: 500 }}>
+                <Dialog.Content
+                  className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+                  style={{ maxWidth: 500 }}
+                >
                   <Dialog.Title>
                     {editingChore ? 'Edit Chore' : 'New Chore'}
                   </Dialog.Title>

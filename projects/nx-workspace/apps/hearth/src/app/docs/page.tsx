@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge, Dialog, Text } from '@radix-ui/themes';
-import { Button, EllipsisCTA, Input } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  EllipsisCTA,
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Input,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';
@@ -238,7 +243,10 @@ export default function DocsPage() {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 500 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 500 }}
+        >
           <Dialog.Title>Add Document</Dialog.Title>
           <HomeDocForm
             onSubmit={handleCreate}
@@ -254,7 +262,10 @@ export default function DocsPage() {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 500 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 500 }}
+        >
           <Dialog.Title>Edit Document</Dialog.Title>
           {modal?.type === 'edit' && (
             <HomeDocForm

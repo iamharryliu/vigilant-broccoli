@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Text } from '@radix-ui/themes';
 import { Dialog } from '@radix-ui/themes';
+import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
 import { CalendarEvent } from '../../../lib/types';
 import { CalendarView } from '../components/CalendarView';
@@ -107,7 +108,10 @@ export default function OverallCalendarPage() {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 480 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 480 }}
+        >
           <Dialog.Title>
             {modal?.type === 'edit' ? 'Edit Event' : 'New Event'}
           </Dialog.Title>

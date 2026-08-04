@@ -15,6 +15,7 @@ import {
 } from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import { Button } from './Button';
+import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from './Dialog';
 import { IconButton, type IconButtonIcon } from './IconButton';
 import { StackedImages } from './StackedImages';
 
@@ -443,7 +444,10 @@ export const CRUDItemFormDialog = <T,>({
           </Button>
         </Dialog.Trigger>
       )}
-      <Dialog.Content onCloseAutoFocus={e => e.preventDefault()}>
+      <Dialog.Content
+        className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        onCloseAutoFocus={e => e.preventDefault()}
+      >
         <Dialog.Title>{copy[formType].TITLE}</Dialog.Title>
         <Dialog.Description>{copy[formType].DESCRIPTION}</Dialog.Description>
         <FormComponent
