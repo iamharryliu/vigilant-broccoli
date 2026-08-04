@@ -6,6 +6,7 @@ import {
   ListObjectsV2Command,
   HeadObjectCommand,
 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { IBucketProvider, AwsBucketConfig, BucketFile } from '../bucket.models';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { promises as fs } from 'fs';
@@ -48,6 +49,18 @@ export class AwsBucketProvider implements IBucketProvider {
         Body: buffer,
       }),
     );
+  }
+
+  async uploadStream(destinationName: string, stream: Readable): Promise<void> {
+    const upload = new Upload({
+      client: this.client,
+      params: {
+        Bucket: this.bucketName,
+        Key: destinationName,
+        Body: stream,
+      },
+    });
+    await upload.done();
   }
 
   async download(fileName: string, destinationPath: string): Promise<void> {

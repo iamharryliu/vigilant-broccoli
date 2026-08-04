@@ -17,3 +17,4 @@
 - [Self Defense](./self-defense/self-defense.md)
 - [Skate](./skate/skate.md)
 - [Swimming](./swimming/swimming.md)
+- [Video Editing](./video-editing.md)

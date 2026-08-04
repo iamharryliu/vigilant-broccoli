@@ -666,6 +666,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.1082.0
         version: 3.1082.0
+      '@aws-sdk/lib-storage':
+        specifier: ^3.1101.0
+        version: 3.1101.0(@aws-sdk/client-s3@3.1082.0)
       '@fastify/cors':
         specifier: ^11.3.0
         version: 11.3.0
@@ -1275,6 +1278,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.907.0
         version: 3.1073.0
+      '@aws-sdk/lib-storage':
+        specifier: ^3.1101.0
+        version: 3.1101.0(@aws-sdk/client-s3@3.1073.0)
       '@google-cloud/storage':
         specifier: ^7.18.0
         version: 7.21.0(encoding@0.1.13)
@@ -1889,6 +1895,12 @@ packages:
   '@aws-sdk/credential-provider-web-identity@3.972.62':
     resolution: {integrity: sha512-CrGUTJlMSkecTSSSA4J/BC+VmzXAgVXDkRKj4Wy1EvrsZPaT0L9tiCly6VPSfJTM4ypokARht+IgDSk38gmh9w==}
     engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/lib-storage@3.1101.0':
+    resolution: {integrity: sha512-S2kYJzmX8a9SPgesOn8la1Ezuto8OqI4e85yNdiOJ/trLMrBxxEZoz8CtOk0uT3FjEJXVbYApzLNmVGVLvUwxA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@aws-sdk/client-s3': ^3.1101.0
 
   '@aws-sdk/middleware-flexible-checksums@3.974.32':
     resolution: {integrity: sha512-KhuzFMzUbb3oEj43CdPDbEJ/RG/RkErkmXk3J/LE8OPFNvkCn8PYPMpjOLgzAzvxBacsSyytdWf+R50q0alJ4w==}
@@ -11090,6 +11102,9 @@ packages:
   buffer-more-ints@1.0.0:
     resolution: {integrity: sha512-EMetuGFz5SLsT0QTnXzINh4Ksr+oo4i+UGTXEshiGCQWnsgSs7ZhJ8fzlwQ+OzEMs0MpDAMr1hxnblp5a4vcHg==}
 
+  buffer@5.6.0:
+    resolution: {integrity: sha512-/gDYp/UtU0eA1ys8bOs9J6a+E/KWIY+DZ+Q2WESNUA0jFRsJOc0SNUO6xJ5SGA1xueg3NL65W6s+NY5l9cunuw==}
+
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
 
@@ -17952,6 +17967,9 @@ packages:
     resolution: {integrity: sha512-eLoXW/DHyl62zxY4SCaIgnRhuMr6ri4juEYARS8E6sCEqzKpOiE521Ucofdx+KnDZl5xmvGYaaKCk5FEOxJCoQ==}
     engines: {node: '>= 0.4'}
 
+  stream-browserify@3.0.0:
+    resolution: {integrity: sha512-H73RAHsVBapbim0tU2JwwOiXUj+fikfiaoYAKHF3VJfA0pe2BCzkhAHBlLG6REzE+2WNZcxOXjK7lkso+9euLA==}
+
   stream-events@1.0.5:
     resolution: {integrity: sha512-E1GUzBSgvct8Jsb3v2X15pjzN1tYebtbLaMg+eBOUOAxgbLoSbT2NS91ckc5lJD1KfLjId+jXJRgo0qnV5Nerg==}
 
@@ -20818,6 +20836,26 @@ snapshots:
       '@aws-sdk/types': 3.974.2
       '@smithy/core': 3.31.1
       '@smithy/types': 4.16.1
+      tslib: 2.8.1
+
+  '@aws-sdk/lib-storage@3.1101.0(@aws-sdk/client-s3@3.1073.0)':
+    dependencies:
+      '@aws-sdk/client-s3': 3.1073.0
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      buffer: 5.6.0
+      events: 3.3.0
+      stream-browserify: 3.0.0
+      tslib: 2.8.1
+
+  '@aws-sdk/lib-storage@3.1101.0(@aws-sdk/client-s3@3.1082.0)':
+    dependencies:
+      '@aws-sdk/client-s3': 3.1082.0
+      '@smithy/core': 3.31.1
+      '@smithy/types': 4.16.1
+      buffer: 5.6.0
+      events: 3.3.0
+      stream-browserify: 3.0.0
       tslib: 2.8.1
 
   '@aws-sdk/middleware-flexible-checksums@3.974.32':
@@ -32345,6 +32383,11 @@ snapshots:
 
   buffer-more-ints@1.0.0: {}
 
+  buffer@5.6.0:
+    dependencies:
+      base64-js: 1.5.1
+      ieee754: 1.2.1
+
   buffer@5.7.1:
     dependencies:
       base64-js: 1.5.1
@@ -41228,6 +41271,11 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
       internal-slot: 1.1.0
+
+  stream-browserify@3.0.0:
+    dependencies:
+      inherits: 2.0.4
+      readable-stream: 3.6.2
 
   stream-events@1.0.5:
     dependencies:
