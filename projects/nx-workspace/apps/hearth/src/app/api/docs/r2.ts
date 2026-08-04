@@ -5,7 +5,6 @@ import {
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { R2_PUBLIC_URL } from '../../config';
 import { FileValidationError } from './file-processor';
 
 const getClient = () =>
@@ -20,6 +19,7 @@ const getClient = () =>
 
 const BUCKET_NAME = 'home-management';
 const PRESIGNED_UPLOAD_EXPIRY_SECONDS = 300;
+const PRESIGNED_DOWNLOAD_EXPIRY_SECONDS = 300;
 
 export const uploadFile = (key: string, buffer: Buffer, mimeType: string) =>
   getClient().send(
@@ -64,4 +64,9 @@ export const readFile = async (
 export const deleteFile = (key: string) =>
   getClient().send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: key }));
 
-export const getFileUrl = (key: string) => `${R2_PUBLIC_URL}/${key}`;
+export const getFileUrl = (key: string) =>
+  getSignedUrl(
+    getClient(),
+    new GetObjectCommand({ Bucket: BUCKET_NAME, Key: key }),
+    { expiresIn: PRESIGNED_DOWNLOAD_EXPIRY_SECONDS },
+  );

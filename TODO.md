@@ -90,12 +90,6 @@ Publishing is gated by `SENDER_TOKEN`, but subscribing is completely open: any a
 
 `body`/`from`/`to` pass straight to `Twilio.messages.create` with no allowlist and no rate limit. A leaked messaging key → SMS to arbitrary premium/international numbers on the owner's account. **Fix:** restrict `from` to owned numbers, allowlist/validate `to`, rate-limit.
 
-### 2a641b. [security] hearth: R2 bucket world-readable; private documents served from a public URL
-
-**`projects/nx-workspace/apps/hearth/src/app/config.ts`** (`R2_PUBLIC_URL = https://pub-….r2.dev`), `src/app/api/docs/r2.ts`
-
-Home docs (leases, insurance, warranties) are served from the public r2.dev URL. Keys embed random UUIDs (not enumerable), but there's no authorization and no expiry on reads — anyone with a URL can fetch a private PDF indefinitely, even after leaving the home. **Fix:** make the bucket private; serve through an authenticated route that checks home membership and returns a short-lived presigned URL.
-
 ### 306cc4. [security] Single shared Vault role gives every workflow the whole secret store
 
 **`infrastructure/terraform/packer/scripts/run-vault-post-init.sh`** (policy grants `kv/data/secrets/*`) · consumed by `.github/actions/vault-secrets/action.yml`
