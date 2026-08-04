@@ -20,14 +20,6 @@ On any handler error the consumer does `channel.nack(msg, false, true)` with `pr
 
 **Fix:** on failure `nack(msg, false, false)` into a dead-letter queue, or republish with an `x-retry` count header and reject after N attempts (optionally with delay).
 
-### 0d1d8a. [performance] hearth renders a blank screen until a client-side session round-trip; entire app is CSR
-
-**`projects/nx-workspace/apps/hearth/src/app/providers/auth-provider.tsx:34`** — `if (session === undefined) return null;`
-
-AuthProvider wraps the whole app in `layout.tsx`, so every page (including `/login`) paints blank until `supabase.auth.getSession()` resolves in the browser; all 31 `page.tsx` files are `'use client'`. First load is a 4-hop waterfall: bundle → `getSession()` → HomeProvider queries (themselves sequential, see 769a1e) → per-page fetch gated on `selectedHomeId`.
-
-**Fix:** render the shell immediately (skeletons instead of `return null`); let public routes render unconditionally. Longer term, adopt `@supabase/ssr` cookie sessions so server components can fetch data, or at least start the homes fetch in parallel with session resolution.
-
 ### 16dbe5. [performance] code-server VM re-provisions its entire toolchain (~1GB+) on every container (re)start
 
 **`infrastructure/terraform/cloud-init-code-server.yaml:27-66`** (init script), `:72` (`:latest`)
