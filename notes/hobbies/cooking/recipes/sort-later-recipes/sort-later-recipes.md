@@ -2,6 +2,7 @@
 
 - [Braised Asparagus](./braised-asparagus.md)
 - [Braised Tofu](./braised-tofu.md)
+- [Chilli](./chilli.md)
 - [Coconut Chia Pudding](./coconut-chia-pudding.md)
 - [Cold Corn Soba](./cold-corn-soba.md)
 - [Crispy, Airy, Absolutely Perfect Baguettes](./crispy-airy-absolutely-perfect-baguettes.md)

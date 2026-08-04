@@ -1,6 +1,7 @@
 # Ingredients
 
 - [Crutons](./crutons.md)
+- [Kidney Beans](./kidney-beans.md)
 - [Vegetarian Alternatives](./vegetarian-ingredient-alternatives.md)
 
 ## Spices and Herbs
