@@ -7,10 +7,10 @@ import {
 } from '../../../../../libs/supabase-server';
 import { createFileUploadUrl } from '../r2';
 import { ALLOWED_MIME_TYPES } from '../file-processor';
+import { MAX_FILE_SIZE_BYTES, MAX_FILES_PER_DOC } from '../limits';
 
 export const runtime = 'nodejs';
 
-const MAX_TARGETS_PER_REQUEST = 20;
 const STAGING_KEY_PREFIX = 'staging/docs';
 
 const RequestSchema = z.object({
@@ -18,10 +18,11 @@ const RequestSchema = z.object({
     .array(
       z.object({
         mimeType: z.string().refine(mime => ALLOWED_MIME_TYPES.has(mime)),
+        size: z.number().int().positive().max(MAX_FILE_SIZE_BYTES),
       }),
     )
     .min(1)
-    .max(MAX_TARGETS_PER_REQUEST),
+    .max(MAX_FILES_PER_DOC),
 });
 
 export async function POST(request: NextRequest) {

@@ -6,6 +6,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { R2_PUBLIC_URL } from '../../config';
+import { FileValidationError } from './file-processor';
 
 const getClient = () =>
   new S3Client({
@@ -41,12 +42,21 @@ export const createFileUploadUrl = (key: string, mimeType: string) =>
     { expiresIn: PRESIGNED_UPLOAD_EXPIRY_SECONDS },
   );
 
-export const readFile = async (key: string): Promise<Buffer> => {
+export const readFile = async (
+  key: string,
+  maxBytes: number,
+): Promise<Buffer> => {
   const response = await getClient().send(
     new GetObjectCommand({ Bucket: BUCKET_NAME, Key: key }),
   );
   if (!response.Body) {
     throw new Error(`Staged file ${key} not found`);
+  }
+  // Reject before buffering the body — the staged object may be far larger than maxBytes.
+  if ((response.ContentLength ?? 0) > maxBytes) {
+    throw new FileValidationError(
+      `File exceeds maximum size of ${maxBytes / 1024 / 1024}MB.`,
+    );
   }
   return Buffer.from(await response.Body.transformToByteArray());
 };

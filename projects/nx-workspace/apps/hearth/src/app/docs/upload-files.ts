@@ -1,4 +1,5 @@
 import { HomeDocFormData } from './components/HomeDocForm';
+import { MAX_FILE_SIZE_BYTES } from '../api/docs/limits';
 
 export interface StagedFileRef {
   key: string;
@@ -18,6 +19,13 @@ export const uploadFormFiles = async (
 ): Promise<StagedFileRef[]> => {
   if (!files.length) return [];
 
+  const oversized = files.find(f => f.file.size > MAX_FILE_SIZE_BYTES);
+  if (oversized) {
+    throw new Error(
+      `"${oversized.name}" exceeds the ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB limit.`,
+    );
+  }
+
   const mintRes = await fetch('/api/docs/upload-url', {
     method: 'POST',
     headers: {
@@ -25,7 +33,7 @@ export const uploadFormFiles = async (
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
-      files: files.map(f => ({ mimeType: f.mimeType })),
+      files: files.map(f => ({ mimeType: f.mimeType, size: f.file.size })),
     }),
   });
   const { targets } = (await mintRes.json()) as { targets: UploadTarget[] };

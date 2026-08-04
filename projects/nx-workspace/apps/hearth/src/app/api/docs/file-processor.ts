@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import { MAX_FILE_SIZE_BYTES, MAX_FILES_PER_DOC } from './limits';
 
 export const ALLOWED_MIME_TYPES = new Set([
   'application/pdf',
@@ -9,8 +10,6 @@ export const ALLOWED_MIME_TYPES = new Set([
   'image/heif',
 ]);
 
-const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024; // 20MB
-const MAX_FILES_PER_DOC = 20;
 const MAX_IMAGE_DIMENSION = 2560;
 const JPEG_QUALITY = 85;
 

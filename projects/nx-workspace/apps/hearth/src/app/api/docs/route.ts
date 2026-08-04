@@ -7,6 +7,7 @@ import {
   validateFileCount,
   FileValidationError,
 } from './file-processor';
+import { MAX_FILE_SIZE_BYTES } from './limits';
 
 export const runtime = 'nodejs';
 
@@ -21,9 +22,16 @@ interface StagedFileRef {
 const readAndProcessStagedFiles = async (files: StagedFileRef[]) =>
   Promise.all(
     files.map(async file => {
-      const buffer = await readFile(file.key);
-      await deleteFile(file.key);
-      return processFile({ buffer, mimeType: file.mimeType, name: file.name });
+      try {
+        const buffer = await readFile(file.key, MAX_FILE_SIZE_BYTES);
+        return await processFile({
+          buffer,
+          mimeType: file.mimeType,
+          name: file.name,
+        });
+      } finally {
+        await deleteFile(file.key).catch(() => undefined);
+      }
     }),
   );
 

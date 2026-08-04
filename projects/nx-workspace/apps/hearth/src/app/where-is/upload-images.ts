@@ -1,4 +1,5 @@
 import { PreviewImage } from './where-is-form';
+import { MAX_IMAGE_SIZE_BYTES } from '../api/where-is/limits';
 
 export interface StagedImageRef {
   key: string;
@@ -17,6 +18,13 @@ export const uploadPreviewImages = async (
 ): Promise<StagedImageRef[]> => {
   if (!previews.length) return [];
 
+  const oversized = previews.find(p => p.blob.size > MAX_IMAGE_SIZE_BYTES);
+  if (oversized) {
+    throw new Error(
+      `Image exceeds the ${MAX_IMAGE_SIZE_BYTES / 1024 / 1024}MB limit.`,
+    );
+  }
+
   const mintRes = await fetch('/api/where-is/upload-url', {
     method: 'POST',
     headers: {
@@ -24,8 +32,7 @@ export const uploadPreviewImages = async (
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
-      count: previews.length,
-      mimeType: previews[0].mimeType,
+      images: previews.map(p => ({ mimeType: p.mimeType, size: p.blob.size })),
     }),
   });
   const { targets } = (await mintRes.json()) as { targets: UploadTarget[] };

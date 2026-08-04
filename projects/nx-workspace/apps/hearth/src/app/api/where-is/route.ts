@@ -9,6 +9,7 @@ import {
   validateImageCount,
   ImageValidationError,
 } from './image-processor';
+import { MAX_IMAGE_SIZE_BYTES } from './limits';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
@@ -27,9 +28,12 @@ const makeR2Key = (itemId: string) =>
 const readAndProcessStagedImages = async (images: StagedImageRef[]) =>
   Promise.all(
     images.map(async img => {
-      const buffer = await readImage(img.key);
-      await deleteImage(img.key);
-      return processImage({ buffer, mimeType: img.mimeType });
+      try {
+        const buffer = await readImage(img.key, MAX_IMAGE_SIZE_BYTES);
+        return await processImage({ buffer, mimeType: img.mimeType });
+      } finally {
+        await deleteImage(img.key).catch(() => undefined);
+      }
     }),
   );
 

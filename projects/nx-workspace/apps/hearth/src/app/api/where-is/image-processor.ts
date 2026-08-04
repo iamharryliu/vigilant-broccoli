@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import { MAX_IMAGE_SIZE_BYTES, MAX_IMAGES_PER_UPLOAD } from './limits';
 
 export const ALLOWED_MIME_TYPES = new Set([
   'image/jpeg',
@@ -7,8 +8,6 @@ export const ALLOWED_MIME_TYPES = new Set([
   'image/heic',
   'image/heif',
 ]);
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB raw base64 decoded
-const MAX_IMAGES_PER_UPLOAD = 10;
 const MAX_DIMENSION = 1920;
 const JPEG_QUALITY = 85;
 const LLM_MAX_DIMENSION = 512;
@@ -68,9 +67,9 @@ export const processImage = async (
 
   const buffer = image.buffer;
 
-  if (buffer.byteLength > MAX_FILE_SIZE_BYTES) {
+  if (buffer.byteLength > MAX_IMAGE_SIZE_BYTES) {
     throw new ImageValidationError(
-      `Image exceeds maximum size of ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB.`,
+      `Image exceeds maximum size of ${MAX_IMAGE_SIZE_BYTES / 1024 / 1024}MB.`,
     );
   }
 
