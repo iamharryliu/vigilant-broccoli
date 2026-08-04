@@ -32,16 +32,17 @@ export default function HomeProvider({
     if (!session?.user.id) return;
 
     const fetchHomes = async () => {
-      const { data: owned } = await supabase
-        .from('homes')
-        .select('id, name, description')
-        .eq('user_id', session.user.id);
-
-      const { data: memberships } = await supabase
-        .from('home_members')
-        .select('home_id, homes(id, name, description)')
-        .eq('user_id', session.user.id)
-        .eq('status', 'accepted');
+      const [{ data: owned }, { data: memberships }] = await Promise.all([
+        supabase
+          .from('homes')
+          .select('id, name, description')
+          .eq('user_id', session.user.id),
+        supabase
+          .from('home_members')
+          .select('home_id, homes(id, name, description)')
+          .eq('user_id', session.user.id)
+          .eq('status', 'accepted'),
+      ]);
 
       const memberHomes = (memberships ?? [])
         .map(m => m.homes as unknown as Home)

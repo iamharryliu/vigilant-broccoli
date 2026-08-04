@@ -140,10 +140,6 @@ Zero `lazy(` hits across `apps/ui`, `apps/findme`, `apps/whiteboard`; `cloud-8-s
 
 **`apps/ui/vb-manager-next/src/app/layout.tsx:1`** + `(pages)/layout.tsx` mounting `FloatingIslandComponent` inside `display: none` on every page — including the chatbot dialog which statically imports `react-markdown`, plus email/calendar/weather/pomodoro dialogs, all in the shared layout bundle executing on first paint. **Fix:** `next/dynamic` for each dialog (needed only after a shortcut/click); move `'use client'` down from the root layout so pages can opt into server rendering later.
 
-### 769a1e. [performance] hearth HomeProvider: sequential independent queries on every page's critical path
-
-**`apps/hearth/src/app/providers/home-provider.tsx:35-44`** — `owned` homes then `memberships` awaited sequentially; every page's data fetch is gated on `selectedHomeId`, so this adds a full extra round trip to first content on every cold load. **Fix:** `Promise.all`; consider caching last `selectedHomeId` in `localStorage` to skip the gate for returning users.
-
 ### 7ce463. [performance] hearth calendar fetches the entire event history on every view
 
 **`apps/hearth/src/app/api/calendar/events/route.ts:42-44`** — `select('*')` on `calendar_events` with no date-range filter; grows unboundedly. **Fix:** accept `start`/`end` params (FullCalendar provides the visible range) and filter with `.gte/.lte`.
