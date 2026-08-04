@@ -1,7 +1,6 @@
 # Software
 
 - [Software Lingo](./software-lingo.md)
-- [Software Language](./software-languages.md)
 - [Software Breakdown](./general/software-breakdown.md)
 - [Software Roadmap](./software-roadmap.md)
 - [Dev Glossary](./dev-glossary.md)
@@ -21,6 +20,7 @@
   - [Sanity](./sanity.md)
   - [Claude](./claude.md)
   - [Immich](./self-host/immich.md)
+- [LLM Chat Services](./llm-chat-services.md)
 - [OS](./os/os.md)
 - [Open Source](./open-source.md)
 - [Data Science](./data-science/data-science.md)
