@@ -41,7 +41,7 @@ const getSupabase = (req: NextRequest) => {
   return createServerClient(accessToken);
 };
 
-const toDoc = (
+const toDoc = async (
   row: Record<string, unknown> & { home_doc_files?: Record<string, unknown>[] },
 ) => ({
   id: row.id,
@@ -49,14 +49,16 @@ const toDoc = (
   description: row.description ?? null,
   category: row.category,
   homeId: row.home_id,
-  files: (row.home_doc_files ?? []).map((f: Record<string, unknown>) => ({
-    id: f.id,
-    name: f.name,
-    mimeType: f.mime_type,
-    url: getFileUrl(f.r2_key as string),
-    sizeBytes: f.size_bytes,
-    createdAt: f.created_at,
-  })),
+  files: await Promise.all(
+    (row.home_doc_files ?? []).map(async (f: Record<string, unknown>) => ({
+      id: f.id,
+      name: f.name,
+      mimeType: f.mime_type,
+      url: await getFileUrl(f.r2_key as string),
+      sizeBytes: f.size_bytes,
+      createdAt: f.created_at,
+    })),
+  ),
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -82,7 +84,7 @@ export async function GET(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  const mapped = (data ?? []).map(toDoc);
+  const mapped = await Promise.all((data ?? []).map(toDoc));
   return Response.json(id ? (mapped[0] ?? null) : mapped);
 }
 
