@@ -19,6 +19,7 @@ const API = {
 const LABEL = {
   ANALYZING: 'Analyzing...',
   SAVE: 'Save',
+  SAVING: 'Saving...',
   REANALYZE: 'Re-analyze',
   TAKE_PHOTO: 'Take Photo',
   CHOOSE_PHOTOS: 'Choose Photos',
@@ -28,6 +29,7 @@ export interface PreviewImage {
   base64: string;
   mimeType: string;
   dataUrl: string;
+  blob: Blob;
 }
 
 export type WhereIsFormValues = {
@@ -46,6 +48,16 @@ const UPLOAD_MAX_DIMENSION = 1920;
 const UPLOAD_JPEG_QUALITY = 0.85;
 const UPLOAD_MIME_TYPE = 'image/jpeg';
 
+const canvasToBlob = (canvas: HTMLCanvasElement): Promise<Blob> =>
+  new Promise((resolve, reject) => {
+    canvas.toBlob(
+      blob =>
+        blob ? resolve(blob) : reject(new Error('Failed to create blob')),
+      UPLOAD_MIME_TYPE,
+      UPLOAD_JPEG_QUALITY,
+    );
+  });
+
 const resizeImageFile = async (file: File): Promise<PreviewImage> => {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(
@@ -59,7 +71,13 @@ const resizeImageFile = async (file: File): Promise<PreviewImage> => {
   bitmap.close();
 
   const dataUrl = canvas.toDataURL(UPLOAD_MIME_TYPE, UPLOAD_JPEG_QUALITY);
-  return { base64: dataUrl.split(',')[1], mimeType: UPLOAD_MIME_TYPE, dataUrl };
+  const blob = await canvasToBlob(canvas);
+  return {
+    base64: dataUrl.split(',')[1],
+    mimeType: UPLOAD_MIME_TYPE,
+    dataUrl,
+    blob,
+  };
 };
 
 const ImageGrid = ({
@@ -121,6 +139,7 @@ export const WhereIsFormComponent = ({
   );
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const isUpdate = formType === FORM_TYPE.UPDATE;
 
@@ -211,24 +230,31 @@ export const WhereIsFormComponent = ({
       await handleAnalyze();
       return;
     }
-    await submitHandler(
-      {
-        ...initialFormValues,
-        title,
-        description,
-        tags,
-        images: previews,
-        imageUrls,
-      },
-      formType,
-    );
+    setSubmitting(true);
+    try {
+      await submitHandler(
+        {
+          ...initialFormValues,
+          title,
+          description,
+          tags,
+          images: previews,
+          imageUrls,
+        },
+        formType,
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const submitLabel = analyzing
     ? LABEL.ANALYZING
-    : isUpdate || analyzed
-      ? LABEL.SAVE
-      : `Analyze${previews.length > 1 ? ` (${previews.length} images)` : ''}`;
+    : submitting
+      ? LABEL.SAVING
+      : isUpdate || analyzed
+        ? LABEL.SAVE
+        : `Analyze${previews.length > 1 ? ` (${previews.length} images)` : ''}`;
 
   return (
     <div className="flex flex-col gap-3 mt-3">
@@ -331,7 +357,7 @@ export const WhereIsFormComponent = ({
         </Button>
       )}
 
-      <Button onClick={handleSubmit} disabled={analyzing}>
+      <Button onClick={handleSubmit} disabled={analyzing || submitting}>
         {submitLabel}
       </Button>
     </div>

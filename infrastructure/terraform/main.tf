@@ -592,3 +592,25 @@ resource "cloudflare_r2_bucket" "vibecheck" {
   name       = "vibecheck-bucket"
   location   = "ENAM"
 }
+
+# hearth's bucket, created before Terraform adoption — not itself a cloudflare_r2_bucket resource here,
+# but bucket_name is just a string so CORS can still be managed without importing the bucket.
+resource "cloudflare_r2_bucket_cors" "home_management" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = "home-management"
+
+  rules = [
+    {
+      allowed = {
+        methods = ["PUT"]
+        origins = [
+          "http://localhost:3000",
+          "http://localhost:4200",
+          "https://staging-hearth.vercel.app",
+          "https://production-hearth.vercel.app",
+        ]
+        headers = ["Content-Type"]
+      }
+    }
+  ]
+}

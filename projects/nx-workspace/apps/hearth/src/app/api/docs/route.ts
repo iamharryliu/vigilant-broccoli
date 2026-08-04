@@ -1,17 +1,39 @@
 import { NextRequest } from 'next/server';
 import { createServerClient } from '../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { uploadFile, deleteFile, getFileUrl } from './r2';
+import { uploadFile, deleteFile, readFile, getFileUrl } from './r2';
 import {
   processFile,
   validateFileCount,
   FileValidationError,
-  RawFile,
 } from './file-processor';
+import { MAX_FILE_SIZE_BYTES } from './limits';
 
 export const runtime = 'nodejs';
 
-const MAX_REQUEST_BYTES = 100 * 1024 * 1024; // 100MB — 20 files × ~5MB each
+const MAX_REQUEST_BYTES = 1 * 1024 * 1024;
+
+interface StagedFileRef {
+  key: string;
+  mimeType: string;
+  name: string;
+}
+
+const readAndProcessStagedFiles = async (files: StagedFileRef[]) =>
+  Promise.all(
+    files.map(async file => {
+      try {
+        const buffer = await readFile(file.key, MAX_FILE_SIZE_BYTES);
+        return await processFile({
+          buffer,
+          mimeType: file.mimeType,
+          name: file.name,
+        });
+      } finally {
+        await deleteFile(file.key).catch(() => undefined);
+      }
+    }),
+  );
 
 const getSupabase = (req: NextRequest) => {
   const accessToken =
@@ -78,7 +100,7 @@ export async function POST(req: NextRequest) {
     description: string;
     category: string;
     homeId: number;
-    files: RawFile[];
+    files: StagedFileRef[];
   };
 
   try {
@@ -92,7 +114,7 @@ export async function POST(req: NextRequest) {
 
   let processedFiles: Awaited<ReturnType<typeof processFile>>[];
   try {
-    processedFiles = await Promise.all(files.map(processFile));
+    processedFiles = await readAndProcessStagedFiles(files);
   } catch (e) {
     if (e instanceof FileValidationError)
       return Response.json(

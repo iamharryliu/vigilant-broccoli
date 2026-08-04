@@ -1,6 +1,7 @@
 import sharp from 'sharp';
+import { MAX_FILE_SIZE_BYTES, MAX_FILES_PER_DOC } from './limits';
 
-const ALLOWED_MIME_TYPES = new Set([
+export const ALLOWED_MIME_TYPES = new Set([
   'application/pdf',
   'image/jpeg',
   'image/png',
@@ -9,13 +10,11 @@ const ALLOWED_MIME_TYPES = new Set([
   'image/heif',
 ]);
 
-const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024; // 20MB
-const MAX_FILES_PER_DOC = 20;
 const MAX_IMAGE_DIMENSION = 2560;
 const JPEG_QUALITY = 85;
 
-export interface RawFile {
-  base64: string;
+export interface StagedFile {
+  buffer: Buffer;
   mimeType: string;
   name: string;
 }
@@ -34,7 +33,7 @@ export class FileValidationError extends Error {
   }
 }
 
-export const validateFileCount = (files: RawFile[]) => {
+export const validateFileCount = <T>(files: T[]) => {
   if (files.length === 0)
     throw new FileValidationError('At least one file is required.');
   if (files.length > MAX_FILES_PER_DOC)
@@ -43,13 +42,13 @@ export const validateFileCount = (files: RawFile[]) => {
     );
 };
 
-export const processFile = async (file: RawFile): Promise<ProcessedFile> => {
+export const processFile = async (file: StagedFile): Promise<ProcessedFile> => {
   if (!ALLOWED_MIME_TYPES.has(file.mimeType))
     throw new FileValidationError(
       `Unsupported file type: ${file.mimeType}. Allowed: PDF, JPEG, PNG, WebP, HEIC.`,
     );
 
-  const buffer = Buffer.from(file.base64, 'base64');
+  const buffer = file.buffer;
 
   if (buffer.byteLength > MAX_FILE_SIZE_BYTES)
     throw new FileValidationError(
