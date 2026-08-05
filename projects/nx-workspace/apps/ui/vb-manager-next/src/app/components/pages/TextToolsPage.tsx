@@ -15,6 +15,7 @@ export const TextToolsPage = () => {
       <FormatBlockStringToSingleStringForm />
       <TextToBase64Form />
       <Base64ToTextForm />
+      <TextToPercentEncodedForm />
       <CharacterCounter />
     </div>
   );
@@ -150,6 +151,22 @@ const Base64ToTextForm = () => {
       initialText={''}
       sampleText={SAMPLE_BASE64}
       conversionFn={EnvUtils.decodeBase64}
+    />
+  );
+};
+
+const SAMPLE_TEXT_FOR_PERCENT_ENCODING = 'p@ss w0rd/#1';
+
+const TextToPercentEncodedForm = () => {
+  return (
+    <ConversionForm
+      copy={{
+        header: 'Text to Percent Encoded (URL Encoding)',
+        placeholder: SAMPLE_TEXT_FOR_PERCENT_ENCODING,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_TEXT_FOR_PERCENT_ENCODING}
+      conversionFn={EnvUtils.encodePercent}
     />
   );
 };
