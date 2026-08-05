@@ -5,8 +5,8 @@
   - [Google Workspace](./google/google-workspace.md)
   - [Google Maps](./google/google-maps.md)
 - [OpenAI](./openai.md)
-- [OpenWeather](./openweather-api.md)
 - [Spotify API](./spotify-api.md)
 - [Stripe](./stripe.md)
+- [Weather Services](./weather-services.md)
 
 - [Services Statuses](./services-statuses.md)

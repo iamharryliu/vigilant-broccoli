@@ -1,6 +1,7 @@
 # Social
 
 - [Party Planning](./party-planning.md)
+- [Social Medias](./social-medias.md)
 - Love Languages
   - Acts of service
   - Words of affirmation
