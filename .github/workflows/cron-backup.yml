@@ -189,7 +189,8 @@ jobs:
         run: |
           set -euo pipefail
           TIMESTAMP=$(date -u +%Y-%m-%d)
-          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges | gzip > "supabase.sql.gz"
+          # The runner image ships an older postgresql-client on PATH; call the v17 binary directly.
+          /usr/lib/postgresql/17/bin/pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges | gzip > "supabase.sql.gz"
           gsutil cp "supabase.sql.gz" "gs://vigilant-broccoli-backup/supabase-backup-$TIMESTAMP.sql.gz"
 
       - name: Cleanup old backups
