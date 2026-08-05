@@ -8,6 +8,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   open:repo:actions           Open GitHub Actions
   npm:packages                Open npm packages page
   cheatsheet                  Print this cheatsheet
+  cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
 
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
