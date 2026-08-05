@@ -54,6 +54,61 @@ git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
+salvage_on_failure() {
+  local exit_code=$?
+  trap - EXIT
+  set +e
+  [ "$exit_code" -eq 0 ] && exit 0
+
+  echo "Runner exited with status $exit_code — checking for salvageable work on $BRANCH" >&2
+  git checkout "$BRANCH" >/dev/null 2>&1
+
+  if [ -z "$(git status --porcelain)" ]; then
+    echo "No uncommitted changes to salvage." >&2
+    exit "$exit_code"
+  fi
+
+  if [ "$MODE" = id ]; then
+    SALVAGE_TITLE="[WIP] Resolve TODO ${ID} (agent run incomplete)"
+  else
+    SALVAGE_TITLE="[WIP] $(printf '%s' "$TASK" | tr '\n' ' ' | cut -c1-80) (agent run incomplete)"
+  fi
+
+  git add -A
+  # --no-verify: a WIP salvage commit must not be blocked by lint/format hooks —
+  # the goal is to preserve an unfinished diff, not to ship clean code.
+  git commit --no-verify -m "wip: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"
+
+  if ! git push -u origin "$BRANCH"; then
+    echo "Failed to push salvage branch $BRANCH — partial work could not be recovered." >&2
+    exit "$exit_code"
+  fi
+
+  SALVAGE_BODY=$(cat <<BODY
+## Summary
+
+This agent run did not finish (exited with status ${exit_code}). This draft PR captures its partial, uncommitted work so it isn't lost.
+
+Original task:
+
+${TASK}
+
+To continue, run: \`pnpm agentic:pr:update <PR#> "finish the task"\`
+
+$PR_FOOTER
+BODY
+)
+
+  if PR_URL=$(gh pr create --draft --title "$SALVAGE_TITLE" --body "$SALVAGE_BODY" 2>&1); then
+    echo "Salvaged partial work: $PR_URL" >&2
+  else
+    echo "Pushed salvage branch $BRANCH but failed to open a PR — open one manually." >&2
+  fi
+
+  exit "$exit_code"
+}
+trap salvage_on_failure EXIT
+
 PROMPT=$(cat <<EOF
 You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. $INTRO
 
