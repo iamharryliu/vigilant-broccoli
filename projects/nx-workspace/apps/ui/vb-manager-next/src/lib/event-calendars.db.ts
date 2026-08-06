@@ -25,9 +25,7 @@ interface EventCalendarSourceRow {
   source_type: string;
 }
 
-const db = new Database(DB_PATH);
-
-db.prepare(
+const SCHEMA_STATEMENTS = [
   `
   CREATE TABLE IF NOT EXISTS event_calendars (
     id TEXT PRIMARY KEY,
@@ -38,9 +36,6 @@ db.prepare(
     updated_at TEXT NOT NULL
   )
 `,
-).run();
-
-db.prepare(
   `
   CREATE TABLE IF NOT EXISTS event_calendar_sources (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,12 +44,24 @@ db.prepare(
     source_type TEXT NOT NULL
   )
 `,
-).run();
-
-db.prepare(
   `CREATE INDEX IF NOT EXISTS idx_event_calendar_sources_calendar_id
    ON event_calendar_sources(calendar_id)`,
-).run();
+];
+
+// Opened on first query rather than at import. Next.js evaluates route modules
+// while collecting page data at build time, and better-sqlite3 is a native
+// addon — connecting eagerly makes every production build depend on the
+// addon's ABI matching the building Node, which fails the build outright.
+let database: Database.Database | null = null;
+
+const getDb = (): Database.Database => {
+  if (database) return database;
+  database = new Database(DB_PATH);
+  for (const statement of SCHEMA_STATEMENTS) {
+    database.prepare(statement).run();
+  }
+  return database;
+};
 
 const toEventCalendar = (
   row: EventCalendarRow,
@@ -70,7 +77,7 @@ const toEventCalendar = (
 });
 
 const loadSourcesByCalendarId = (): Map<string, EventCalendarSource[]> => {
-  const rows = db
+  const rows = getDb()
     .prepare('SELECT calendar_id, url, source_type FROM event_calendar_sources')
     .all() as EventCalendarSourceRow[];
 
@@ -85,8 +92,9 @@ const loadSourcesByCalendarId = (): Map<string, EventCalendarSource[]> => {
   }, new Map<string, EventCalendarSource[]>());
 };
 
-const replaceSources = db.transaction(
-  (calendarId: string, sources: EventCalendarSource[]) => {
+const replaceSources = (calendarId: string, sources: EventCalendarSource[]) => {
+  const db = getDb();
+  db.transaction(() => {
     db.prepare('DELETE FROM event_calendar_sources WHERE calendar_id = ?').run(
       calendarId,
     );
@@ -101,11 +109,11 @@ const replaceSources = db.transaction(
         source_type: source.sourceType,
       });
     }
-  },
-);
+  })();
+};
 
 export const listEventCalendars = (): EventCalendar[] => {
-  const rows = db
+  const rows = getDb()
     .prepare('SELECT * FROM event_calendars ORDER BY created_at')
     .all() as EventCalendarRow[];
   const sourcesByCalendarId = loadSourcesByCalendarId();
@@ -115,6 +123,7 @@ export const listEventCalendars = (): EventCalendar[] => {
 };
 
 export const getEventCalendar = (id: string): EventCalendar | null => {
+  const db = getDb();
   const row = db
     .prepare('SELECT * FROM event_calendars WHERE id = ?')
     .get(id) as EventCalendarRow | undefined;
@@ -149,18 +158,20 @@ export const insertEventCalendar = ({
   const id = randomUUID();
   const now = new Date().toISOString();
 
-  db.prepare(
-    `INSERT INTO event_calendars
+  getDb()
+    .prepare(
+      `INSERT INTO event_calendars
      (id, name, google_calendar_id, is_public, created_at, updated_at)
      VALUES (@id, @name, @google_calendar_id, @is_public, @created_at, @updated_at)`,
-  ).run({
-    id,
-    name,
-    google_calendar_id: googleCalendarId,
-    is_public: isPublic ? 1 : 0,
-    created_at: now,
-    updated_at: now,
-  });
+    )
+    .run({
+      id,
+      name,
+      google_calendar_id: googleCalendarId,
+      is_public: isPublic ? 1 : 0,
+      created_at: now,
+      updated_at: now,
+    });
 
   replaceSources(id, sources);
 
@@ -187,25 +198,30 @@ export const updateEventCalendar = (
   if (!existing) return null;
 
   const updatedAt = new Date().toISOString();
-  db.prepare(
-    `UPDATE event_calendars
+  getDb()
+    .prepare(
+      `UPDATE event_calendars
      SET name = @name, is_public = @is_public, updated_at = @updated_at
      WHERE id = @id`,
-  ).run({
-    id,
-    name: updates.name ?? existing.name,
-    is_public: (updates.isPublic ?? existing.isPublic) ? 1 : 0,
-    updated_at: updatedAt,
-  });
+    )
+    .run({
+      id,
+      name: updates.name ?? existing.name,
+      is_public: (updates.isPublic ?? existing.isPublic) ? 1 : 0,
+      updated_at: updatedAt,
+    });
 
   if (updates.sources) replaceSources(id, updates.sources);
 
   return getEventCalendar(id);
 };
 
-export const deleteEventCalendar = db.transaction((id: string) => {
-  db.prepare('DELETE FROM event_calendar_sources WHERE calendar_id = ?').run(
-    id,
-  );
-  db.prepare('DELETE FROM event_calendars WHERE id = ?').run(id);
-});
+export const deleteEventCalendar = (id: string) => {
+  const db = getDb();
+  db.transaction(() => {
+    db.prepare('DELETE FROM event_calendar_sources WHERE calendar_id = ?').run(
+      id,
+    );
+    db.prepare('DELETE FROM event_calendars WHERE id = ?').run(id);
+  })();
+};
