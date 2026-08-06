@@ -1,5 +1,5 @@
 // Where a calendar's events get scraped from. Facebook group event pages are
-// the only implemented scraper today (scripts/node/facebook-event-scraper);
+// the only implemented scraper today (src/lib/event-scraper);
 // new source types get added here and taught to the scraper.
 export const EVENT_SOURCE_TYPE = {
   FACEBOOK_GROUP: 'facebook_group',
@@ -38,4 +38,6 @@ export interface EventCalendar {
   sources: EventCalendarSource[];
   createdAt: string;
   updatedAt: string;
+  lastSyncedAt?: string;
+  lastSyncMessage?: string;
 }

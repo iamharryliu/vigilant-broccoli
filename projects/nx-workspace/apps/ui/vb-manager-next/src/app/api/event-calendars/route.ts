@@ -11,6 +11,7 @@ import {
   setGoogleCalendarPublic,
 } from '../../../lib/google-calendar-admin';
 import { normalizeSources } from './sources';
+import { startSync } from '../../../lib/event-scraper/sync-runner';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -67,14 +68,18 @@ export async function POST(request: NextRequest) {
       await setGoogleCalendarPublic(calendar, googleCalendarId, true);
     }
 
-    return NextResponse.json({
-      calendar: insertEventCalendar({
-        name: name.trim(),
-        googleCalendarId,
-        isPublic,
-        sources: normalizeSources(sources),
-      }),
+    const created = insertEventCalendar({
+      name: name.trim(),
+      googleCalendarId,
+      isPublic,
+      sources: normalizeSources(sources),
     });
+
+    // Populate the new calendar straight away when it already has sources —
+    // otherwise it sits empty until the user notices a Sync button.
+    if (created.sources.length) startSync(created.id);
+
+    return NextResponse.json({ calendar: created });
   } catch (error) {
     return serverError(error);
   }

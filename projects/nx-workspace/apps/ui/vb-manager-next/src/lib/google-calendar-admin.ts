@@ -3,8 +3,8 @@ import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 // Calendars here are owned by the google_calendar_manager service account
 // (Terraform-managed, see infrastructure/terraform/main.tf) rather than by the
-// signed-in user, so the facebook-event-scraper — which authenticates as that
-// same service account — can always write to any calendar this app creates.
+// signed-in user, so the event scraper — which authenticates as that same
+// service account — can always write to any calendar this app creates.
 // The credential is base64-encoded JSON, matching how Terraform emits
 // google_service_account_key.private_key.
 const CALENDAR_SA_CREDENTIALS_ENV = 'GOOGLE_CALENDAR_SA_CREDENTIALS';

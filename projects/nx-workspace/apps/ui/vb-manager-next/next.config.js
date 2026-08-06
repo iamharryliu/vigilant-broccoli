@@ -18,7 +18,7 @@ const nextConfig = {
   // See: https://nx.dev/recipes/next/next-config-setup
   nx: { ...options },
   distDir: '../../../dist/apps/ui/vb-manager-next/.next',
-  serverExternalPackages: ['socket.io-client', 'better-sqlite3'],
+  serverExternalPackages: ['socket.io-client', 'better-sqlite3', 'playwright'],
 };
 const plugins = [
   // Add more Next.js plugins to this list if needed.

@@ -25,6 +25,9 @@ const DELETE_ERROR = 'Failed to delete calendar';
 const LOADING_MESSAGE = 'Loading…';
 const EMPTY_MESSAGE = 'No event calendars yet.';
 const UNKNOWN_SOURCE_LABEL = 'Unrecognized URL';
+const SYNC_ERROR = 'Failed to start sync';
+const SYNC_POLL_INTERVAL_MS = 3000;
+const SYNC_RUNNING = 'running';
 const SOURCES_PLACEHOLDER =
   'One URL per line, e.g. https://www.facebook.com/groups/klubbkalenderlatin/events';
 
@@ -167,6 +170,54 @@ export const EventCalendarsComponent = () => {
     );
   };
 
+  const [syncStatuses, setSyncStatuses] = useState<
+    Record<string, { state: string; message: string }>
+  >({});
+
+  const refreshSyncStatus = async (id: string) => {
+    const response = await authFetch(
+      `${API_ENDPOINTS.EVENT_CALENDARS}/${id}/sync`,
+    );
+    if (!response.ok) return;
+    const data = await response.json();
+    const status =
+      data.status ??
+      (data.lastSyncMessage
+        ? { state: 'idle', message: data.lastSyncMessage }
+        : null);
+    if (status) setSyncStatuses(current => ({ ...current, [id]: status }));
+  };
+
+  useEffect(() => {
+    items.forEach(item => refreshSyncStatus(item.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.length]);
+
+  useEffect(() => {
+    const anyRunning = Object.values(syncStatuses).some(
+      status => status.state === SYNC_RUNNING,
+    );
+    if (!anyRunning) return;
+    const timer = setInterval(
+      () => items.forEach(item => refreshSyncStatus(item.id)),
+      SYNC_POLL_INTERVAL_MS,
+    );
+    return () => clearInterval(timer);
+  }, [syncStatuses, items]);
+
+  const startSync = async (id: string) => {
+    const response = await authFetch(
+      `${API_ENDPOINTS.EVENT_CALENDARS}/${id}/sync`,
+      { method: 'POST' },
+    );
+    if (!response.ok) {
+      setError(await errorFromResponse(response, SYNC_ERROR));
+      return;
+    }
+    const data = await response.json();
+    setSyncStatuses(current => ({ ...current, [id]: data.status }));
+  };
+
   const EventCalendarListItem = ({ item }: { item: EventCalendar }) => (
     <Flex justify="between" align="center" gap="3" wrap="wrap">
       <Flex direction="column" gap="1">
@@ -197,14 +248,29 @@ export const EventCalendarsComponent = () => {
           )}
         </Flex>
       </Flex>
-      <Flex direction="column" gap="1" align="center">
-        <Text size="1" color="gray">
-          Public
-        </Text>
-        <Switch
-          checked={item.isPublic}
-          onCheckedChange={checked => togglePublic(item.id, checked)}
-        />
+      <Flex direction="column" gap="2" align="end">
+        <Flex direction="column" gap="1" align="center">
+          <Text size="1" color="gray">
+            Public
+          </Text>
+          <Switch
+            checked={item.isPublic}
+            onCheckedChange={checked => togglePublic(item.id, checked)}
+          />
+        </Flex>
+        <Button
+          variant="secondary"
+          onClick={() => startSync(item.id)}
+          loading={syncStatuses[item.id]?.state === SYNC_RUNNING}
+          disabled={!item.sources.length}
+        >
+          Sync now
+        </Button>
+        {syncStatuses[item.id] && (
+          <Text size="1" color="gray">
+            {syncStatuses[item.id].message}
+          </Text>
+        )}
       </Flex>
     </Flex>
   );

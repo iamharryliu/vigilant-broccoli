@@ -1,4 +1,6 @@
 import Database from 'better-sqlite3';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { randomUUID } from 'crypto';
 import {
@@ -7,8 +9,14 @@ import {
   EventSourceType,
 } from '../app/constants/event-calendars';
 
+// Deliberately outside the repo: cwd under PM2 is the build output directory,
+// so a db file there is data living inside a rebuildable artifact. This path is
+// where the sync runner reads which calendars to sync and which URLs to
+// scrape for each.
 const DB_FILENAME = 'vb-manager.db';
-const DB_PATH = path.resolve(process.cwd(), DB_FILENAME);
+const DB_DIRECTORY =
+  process.env.VB_MANAGER_DATA_DIR ?? path.join(os.homedir(), '.vb-manager');
+const DB_PATH = path.join(DB_DIRECTORY, DB_FILENAME);
 
 interface EventCalendarRow {
   id: string;
@@ -17,6 +25,8 @@ interface EventCalendarRow {
   is_public: number;
   created_at: string;
   updated_at: string;
+  last_synced_at: string | null;
+  last_sync_message: string | null;
 }
 
 interface EventCalendarSourceRow {
@@ -33,7 +43,9 @@ const SCHEMA_STATEMENTS = [
     google_calendar_id TEXT NOT NULL,
     is_public INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    updated_at TEXT NOT NULL,
+    last_synced_at TEXT,
+    last_sync_message TEXT
   )
 `,
   `
@@ -56,9 +68,26 @@ let database: Database.Database | null = null;
 
 const getDb = (): Database.Database => {
   if (database) return database;
+  fs.mkdirSync(DB_DIRECTORY, { recursive: true });
   database = new Database(DB_PATH);
   for (const statement of SCHEMA_STATEMENTS) {
     database.prepare(statement).run();
+  }
+  // Tables created before sync tracking existed lack these columns.
+  const columns = (
+    database.prepare('PRAGMA table_info(event_calendars)').all() as {
+      name: string;
+    }[]
+  ).map(column => column.name);
+  for (const [column, type] of [
+    ['last_synced_at', 'TEXT'],
+    ['last_sync_message', 'TEXT'],
+  ]) {
+    if (!columns.includes(column)) {
+      database
+        .prepare(`ALTER TABLE event_calendars ADD COLUMN ${column} ${type}`)
+        .run();
+    }
   }
   return database;
 };
@@ -74,6 +103,8 @@ const toEventCalendar = (
   sources,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
+  lastSyncedAt: row.last_synced_at ?? undefined,
+  lastSyncMessage: row.last_sync_message ?? undefined,
 });
 
 const loadSourcesByCalendarId = (): Map<string, EventCalendarSource[]> => {
@@ -224,4 +255,18 @@ export const deleteEventCalendar = (id: string) => {
     );
     db.prepare('DELETE FROM event_calendars WHERE id = ?').run(id);
   })();
+};
+
+export const recordSyncResult = (id: string, message: string) => {
+  getDb()
+    .prepare(
+      `UPDATE event_calendars
+       SET last_synced_at = @last_synced_at, last_sync_message = @last_sync_message
+       WHERE id = @id`,
+    )
+    .run({
+      id,
+      last_synced_at: new Date().toISOString(),
+      last_sync_message: message,
+    });
 };
