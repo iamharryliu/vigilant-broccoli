@@ -35,6 +35,9 @@ const FACEBOOK_BASE_URL = 'https://www.facebook.com';
 const DEFAULT_GROUP_EVENTS_URL = `${FACEBOOK_BASE_URL}/groups/klubbkalenderlatin/events`;
 const LOGIN_REDIRECT_PATH = '/login';
 const EVENT_LINK_SELECTOR = 'a[href*="/events/"]';
+const NAV_WAIT_UNTIL = 'domcontentloaded';
+const SECTION_UPCOMING = 'upcoming';
+const SECTION_PAST = 'past';
 
 const SEE_MORE_TEXT = 'See more';
 const SEE_LESS_TEXT = 'See less';
@@ -111,7 +114,7 @@ const clickAllSeeMoreButtons = async page => {
 
 const extractEvents = page =>
   page.evaluate(
-    ({ eventLinkSelector, eventIdPatternSource, sharedByPrefix, pastEventsHeading, facebookBaseUrl }) => {
+    ({ eventLinkSelector, eventIdPatternSource, sharedByPrefix, pastEventsHeading, facebookBaseUrl, sectionUpcoming, sectionPast }) => {
       const eventIdPattern = new RegExp(eventIdPatternSource);
       const anchors = [...document.querySelectorAll(eventLinkSelector)].filter(a =>
         eventIdPattern.test(new URL(a.href, location.href).pathname),
@@ -143,7 +146,7 @@ const extractEvents = page =>
           title,
           when,
           sharedBy,
-          section: isBeforePastHeading ? 'upcoming' : 'past',
+          section: isBeforePastHeading ? sectionUpcoming : sectionPast,
           url: `${facebookBaseUrl}/events/${id}/`,
         });
       }
@@ -155,6 +158,8 @@ const extractEvents = page =>
       sharedByPrefix: SHARED_BY_PREFIX,
       pastEventsHeading: PAST_EVENTS_HEADING,
       facebookBaseUrl: FACEBOOK_BASE_URL,
+      sectionUpcoming: SECTION_UPCOMING,
+      sectionPast: SECTION_PAST,
     },
   );
 
@@ -195,19 +200,21 @@ const extractEventDetails = page =>
   );
 
 const enrichEventWithDetails = async (page, event) => {
-  await page.goto(event.url, { waitUntil: 'domcontentloaded' });
-  if (page.url().includes(LOGIN_REDIRECT_PATH)) return event;
+  await page.goto(event.url, { waitUntil: NAV_WAIT_UNTIL });
 
-  await page.waitForTimeout(EVENT_DETAIL_NAV_DELAY_MS);
-  await clickAllSeeMoreButtons(page);
-  const { dateTime, location, description } = await extractEventDetails(page);
+  let details = {};
+  if (!page.url().includes(LOGIN_REDIRECT_PATH)) {
+    await page.waitForTimeout(EVENT_DETAIL_NAV_DELAY_MS);
+    await clickAllSeeMoreButtons(page);
+    details = await extractEventDetails(page);
+  }
 
   return {
     id: event.id,
     title: event.title,
-    dateTime: dateTime ?? event.when,
-    location,
-    description,
+    dateTime: details.dateTime ?? event.when,
+    location: details.location,
+    description: details.description,
     sharedBy: event.sharedBy,
     section: event.section,
     url: event.url,
@@ -225,7 +232,7 @@ const runScrape = async ({ groupUrl, includePast, headed, outPath }) => {
   });
   const page = context.pages()[0] ?? (await context.newPage());
 
-  await page.goto(groupUrl, { waitUntil: 'domcontentloaded' });
+  await page.goto(groupUrl, { waitUntil: NAV_WAIT_UNTIL });
 
   if (page.url().includes(LOGIN_REDIRECT_PATH)) {
     await context.close();
@@ -237,7 +244,7 @@ const runScrape = async ({ groupUrl, includePast, headed, outPath }) => {
   await clickAllSeeMoreButtons(page);
 
   const events = await extractEvents(page);
-  const filtered = includePast ? events : events.filter(event => event.section === 'upcoming');
+  const filtered = includePast ? events : events.filter(event => event.section === SECTION_UPCOMING);
 
   const enriched = [];
   for (const [index, event] of filtered.entries()) {
