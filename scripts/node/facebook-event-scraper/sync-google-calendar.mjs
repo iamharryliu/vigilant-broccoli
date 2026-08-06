@@ -58,17 +58,34 @@ const DATE_TIME_SINGLE_PATTERN =
   /^\w+,\s(?<month>\w+)\s(?<day>\d{1,2}),\s(?<year>\d{4})\sat\s(?<startHour>\d{1,2}):(?<startMinute>\d{2})\s(?<startPeriod>AM|PM)/;
 const DEFAULT_EVENT_DURATION_HOURS = 3;
 
+// Multi-day events with no per-day time shown at all, e.g. "Fri, Sep 25 - Sep 26"
+// — no year either, so the year is inferred from the current date.
+const DATE_ONLY_RANGE_PATTERN =
+  /^\w+,\s(?<startMonth>\w+)\s(?<startDay>\d{1,2})\s*-\s*(?:(?<endMonth>\w+)\s)?(?<endDay>\d{1,2})/;
+
 const pad = n => String(n).padStart(2, '0');
 const to24Hour = (hour, period) => {
   const hour12 = Number(hour) % 12;
   return period.toUpperCase() === 'PM' ? hour12 + 12 : hour12;
 };
+const findMonthNumber = monthText => MONTH_NAMES.findIndex(name => name.startsWith(monthText)) + 1;
 const buildLocalDateTime = (year, month, day, hour, minute) =>
   `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00`;
+const buildDateOnly = (year, month, day) => `${year}-${pad(month)}-${pad(day)}`;
+
+// Facebook only ever shows these for the upcoming event this script scrapes,
+// so the current year is the right guess unless that month/day already
+// passed this year — then it must mean next year.
+const inferYearForMonthDay = (monthNumber, day) => {
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  const candidate = new Date(Date.UTC(now.getFullYear(), monthNumber - 1, day));
+  return candidate < today ? now.getFullYear() + 1 : now.getFullYear();
+};
 
 const buildRangeFromMatch = groups => {
   const { month, day, year, startHour, startMinute, startPeriod, endHour, endMinute, endPeriod } = groups;
-  const monthNumber = MONTH_NAMES.indexOf(month) + 1;
+  const monthNumber = findMonthNumber(month);
   if (!monthNumber) return null;
 
   const startHour24 = to24Hour(startHour, startPeriod);
@@ -92,7 +109,7 @@ const buildRangeFromMatch = groups => {
 
 const buildDefaultDurationRange = groups => {
   const { month, day, year, startHour, startMinute, startPeriod } = groups;
-  const monthNumber = MONTH_NAMES.indexOf(month) + 1;
+  const monthNumber = findMonthNumber(month);
   if (!monthNumber) return null;
 
   const startHour24 = to24Hour(startHour, startPeriod);
@@ -112,12 +129,34 @@ const buildDefaultDurationRange = groups => {
   };
 };
 
+const buildDateOnlyRange = groups => {
+  const { startMonth, startDay, endMonth, endDay } = groups;
+  const startMonthNumber = findMonthNumber(startMonth);
+  const endMonthNumber = findMonthNumber(endMonth ?? startMonth);
+  if (!startMonthNumber || !endMonthNumber) return null;
+
+  const startYear = inferYearForMonthDay(startMonthNumber, Number(startDay));
+  const endYear = endMonthNumber < startMonthNumber ? startYear + 1 : startYear;
+
+  // Calendar's all-day `end.date` is exclusive — the day after the last day.
+  const endExclusive = new Date(Date.UTC(endYear, endMonthNumber - 1, Number(endDay) + 1));
+
+  return {
+    allDay: true,
+    start: buildDateOnly(startYear, startMonthNumber, startDay),
+    end: buildDateOnly(endExclusive.getUTCFullYear(), endExclusive.getUTCMonth() + 1, endExclusive.getUTCDate()),
+  };
+};
+
 const parseEventDateTimeRange = dateTimeText => {
   const rangeMatch = dateTimeText.match(DATE_TIME_RANGE_PATTERN);
   if (rangeMatch) return buildRangeFromMatch(rangeMatch.groups);
 
   const singleMatch = dateTimeText.match(DATE_TIME_SINGLE_PATTERN);
   if (singleMatch) return buildDefaultDurationRange(singleMatch.groups);
+
+  const dateOnlyMatch = dateTimeText.match(DATE_ONLY_RANGE_PATTERN);
+  if (dateOnlyMatch) return buildDateOnlyRange(dateOnlyMatch.groups);
 
   return null;
 };
@@ -163,8 +202,8 @@ const buildEventRequestBody = (event, range) => ({
   summary: event.title,
   description: [event.description, event.url].filter(Boolean).join('\n\n'),
   location: event.location,
-  start: { dateTime: range.start, timeZone: CALENDAR_TIME_ZONE },
-  end: { dateTime: range.end, timeZone: CALENDAR_TIME_ZONE },
+  start: range.allDay ? { date: range.start } : { dateTime: range.start, timeZone: CALENDAR_TIME_ZONE },
+  end: range.allDay ? { date: range.end } : { dateTime: range.end, timeZone: CALENDAR_TIME_ZONE },
 });
 
 const upsertEvent = async (calendar, calendarId, event, range) => {
