@@ -33,6 +33,8 @@ const UNTRACKED_DELETE_ERROR = 'Failed to delete calendar';
 const UNTRACKED_TITLE = 'Untracked calendars';
 const UNTRACKED_DESCRIPTION =
   'Owned by the calendar service account but not managed here — typically left behind by a deleted row. Deleting one removes it and all of its events for good.';
+const UNTRACKED_UNAVAILABLE =
+  'Google returns no calendar list for this service account, so calendars it owns outside this page cannot be listed. Calendars managed here are unaffected.';
 const SYNC_POLL_INTERVAL_MS = 3000;
 const SYNC_RUNNING = 'running';
 const SOURCES_PLACEHOLDER =
@@ -226,6 +228,7 @@ export const EventCalendarsComponent = () => {
   };
 
   const [untracked, setUntracked] = useState<UntrackedCalendar[]>([]);
+  const [untrackedAvailable, setUntrackedAvailable] = useState(true);
   const [pendingDelete, setPendingDelete] = useState<UntrackedCalendar | null>(
     null,
   );
@@ -240,6 +243,7 @@ export const EventCalendarsComponent = () => {
     }
     const data = await response.json();
     setUntracked(data.calendars);
+    setUntrackedAvailable(data.enumerationAvailable);
   };
 
   useEffect(() => {
@@ -345,6 +349,11 @@ export const EventCalendarsComponent = () => {
         }}
         isCards
       />
+      {!untrackedAvailable && (
+        <Text size="1" color="gray">
+          {UNTRACKED_UNAVAILABLE}
+        </Text>
+      )}
       {untracked.length > 0 && (
         <Flex direction="column" gap="2">
           <Text weight="medium">{UNTRACKED_TITLE}</Text>

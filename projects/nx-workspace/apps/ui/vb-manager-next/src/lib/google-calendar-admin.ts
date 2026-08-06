@@ -16,6 +16,7 @@ const PUBLIC_ACL_ROLE = 'reader';
 const OWNER_ACL_ROLE = 'owner';
 const USER_ACL_SCOPE_TYPE = 'user';
 const HTTP_NOT_FOUND = 404;
+const EVENTS_COUNT_MAX_RESULTS = 2500;
 
 export const getCalendarAdminClient = (): calendar_v3.Calendar => {
   const credentials = JSON.parse(
@@ -101,21 +102,36 @@ export const deleteGoogleCalendar = (
     if (error.code !== HTTP_NOT_FOUND) throw error;
   });
 
-const EVENTS_COUNT_MAX_RESULTS = 2500;
-
 // Calendars the service account owns that vb-manager-next has no row for —
 // e.g. left behind by a deleted row, or created before this page existed.
+//
+// calendarList is a per-account *subscription* list, and for a service account
+// (which has no primary calendar) Google can return 404 for it outright — seen
+// in practice, and it stays 404 even after a successful calendarList.insert.
+// Individual calendars keep working fine; only enumeration is lost. That is
+// reported as unavailable rather than as an empty list, since "no orphans" and
+// "cannot tell" mean very different things to someone cleaning up.
 export const listUntrackedCalendars = async (
   calendar: calendar_v3.Calendar,
   trackedGoogleCalendarIds: Set<string>,
-): Promise<UntrackedCalendar[]> => {
-  const { data } = await calendar.calendarList.list({ maxResults: 250 });
+): Promise<{
+  calendars: UntrackedCalendar[];
+  enumerationAvailable: boolean;
+}> => {
+  const list = await calendar.calendarList
+    .list({ maxResults: 250 })
+    .catch((error: { code?: number }) => {
+      if (error.code === HTTP_NOT_FOUND) return null;
+      throw error;
+    });
 
-  const untracked = (data.items || []).filter(
+  if (!list) return { calendars: [], enumerationAvailable: false };
+
+  const untracked = (list.data.items || []).filter(
     item => item.id && !item.primary && !trackedGoogleCalendarIds.has(item.id),
   );
 
-  return Promise.all(
+  const calendars = await Promise.all(
     untracked.map(async item => {
       const events = await calendar.events
         .list({
@@ -131,4 +147,6 @@ export const listUntrackedCalendars = async (
       };
     }),
   );
+
+  return { calendars, enumerationAvailable: true };
 };

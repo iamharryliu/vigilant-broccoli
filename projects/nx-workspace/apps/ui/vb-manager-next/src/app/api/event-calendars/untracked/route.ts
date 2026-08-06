@@ -23,12 +23,9 @@ export async function GET(request: NextRequest) {
     const tracked = new Set(
       listEventCalendars().map(calendar => calendar.googleCalendarId),
     );
-    return NextResponse.json({
-      calendars: await listUntrackedCalendars(
-        getCalendarAdminClient(),
-        tracked,
-      ),
-    });
+    return NextResponse.json(
+      await listUntrackedCalendars(getCalendarAdminClient(), tracked),
+    );
   } catch (error) {
     console.error('[event-calendars] untracked lookup failed', error);
     return NextResponse.json(
