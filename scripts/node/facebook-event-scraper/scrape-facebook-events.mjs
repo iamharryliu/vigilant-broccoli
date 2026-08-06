@@ -10,6 +10,10 @@
 // debugging can't attach to your default profile directly (security hardening),
 // so a copied profile is the closest available approximation — your normal
 // Chrome window is never touched and doesn't need to be closed.
+//
+// After listing events from the group page, visits each event's own permalink
+// to pull its full date/time, location, and description — the group listing
+// only has the title and a coarse relative date.
 
 import { chromium } from 'playwright';
 import { existsSync } from 'node:fs';
@@ -33,11 +37,19 @@ const LOGIN_REDIRECT_PATH = '/login';
 const EVENT_LINK_SELECTOR = 'a[href*="/events/"]';
 
 const SEE_MORE_TEXT = 'See more';
+const SEE_LESS_TEXT = 'See less';
 const MAX_EXPAND_ROUNDS = 60;
 const EXPAND_CLICK_DELAY_MS = 800;
 const EVENT_ID_PATTERN = /\/events\/(\d+)\/?/;
 const SHARED_BY_PREFIX = 'Shared by ';
 const PAST_EVENTS_HEADING = 'Past events';
+
+const EVENT_DETAIL_NAV_DELAY_MS = 2000;
+const EVENT_DETAIL_VISIT_DELAY_MS = 1000;
+const MIN_DETAIL_TEXT_LENGTH = 30;
+const DATE_TIME_PATTERN = /^[A-Za-z]+,\s+[A-Za-z]+\s+\d{1,2}(,\s*\d{4})?\s+at\s+\d{1,2}:\d{2}\s*[AP]M/;
+const PRIVACY_LINE_PATTERN = /^(Public|Private|Friends)\b.*·/;
+const LOCATION_ARIA_LABEL = 'Location information for this event';
 
 const parseArgs = argv => ({
   groupUrl: argv.find(arg => arg.startsWith('http')) ?? DEFAULT_GROUP_EVENTS_URL,
@@ -146,6 +158,62 @@ const extractEvents = page =>
     },
   );
 
+const extractEventDetails = page =>
+  page.evaluate(
+    ({ dateTimePatternSource, privacyLinePatternSource, locationAriaLabel, seeLessText, minDetailTextLength }) => {
+      const dateTimePattern = new RegExp(dateTimePatternSource);
+      const privacyLinePattern = new RegExp(privacyLinePatternSource);
+
+      const detailTexts = [...document.querySelectorAll('[dir="auto"]')]
+        .map(el => el.textContent.trim())
+        .filter(text => text.length > minDetailTextLength);
+
+      const dateTime = detailTexts.find(text => dateTimePattern.test(text));
+
+      const privacyLineIndex = detailTexts.findIndex(text => privacyLinePattern.test(text));
+      let description = privacyLineIndex >= 0 ? detailTexts[privacyLineIndex + 1] : undefined;
+      if (description?.endsWith(seeLessText)) {
+        description = description.slice(0, -seeLessText.length).trim();
+      }
+
+      const locationText = document.querySelector(`[aria-label="${locationAriaLabel}"]`)?.innerText;
+      const location = locationText
+        ?.split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .join(', ');
+
+      return { dateTime, location, description };
+    },
+    {
+      dateTimePatternSource: DATE_TIME_PATTERN.source,
+      privacyLinePatternSource: PRIVACY_LINE_PATTERN.source,
+      locationAriaLabel: LOCATION_ARIA_LABEL,
+      seeLessText: SEE_LESS_TEXT,
+      minDetailTextLength: MIN_DETAIL_TEXT_LENGTH,
+    },
+  );
+
+const enrichEventWithDetails = async (page, event) => {
+  await page.goto(event.url, { waitUntil: 'domcontentloaded' });
+  if (page.url().includes(LOGIN_REDIRECT_PATH)) return event;
+
+  await page.waitForTimeout(EVENT_DETAIL_NAV_DELAY_MS);
+  await clickAllSeeMoreButtons(page);
+  const { dateTime, location, description } = await extractEventDetails(page);
+
+  return {
+    id: event.id,
+    title: event.title,
+    dateTime: dateTime ?? event.when,
+    location,
+    description,
+    sharedBy: event.sharedBy,
+    section: event.section,
+    url: event.url,
+  };
+};
+
 const runScrape = async ({ groupUrl, includePast, headed, outPath }) => {
   await syncChromeProfile();
   await clearStaleSingletonLockFiles();
@@ -171,12 +239,19 @@ const runScrape = async ({ groupUrl, includePast, headed, outPath }) => {
   const events = await extractEvents(page);
   const filtered = includePast ? events : events.filter(event => event.section === 'upcoming');
 
+  const enriched = [];
+  for (const [index, event] of filtered.entries()) {
+    console.error(`[${index + 1}/${filtered.length}] Fetching details: ${event.title}`);
+    enriched.push(await enrichEventWithDetails(page, event));
+    await page.waitForTimeout(EVENT_DETAIL_VISIT_DELAY_MS);
+  }
+
   await context.close();
 
-  const output = JSON.stringify(filtered, null, 2);
+  const output = JSON.stringify(enriched, null, 2);
   if (outPath) {
     await writeFile(outPath, output);
-    console.log(`Wrote ${filtered.length} events to ${outPath}`);
+    console.log(`Wrote ${enriched.length} events to ${outPath}`);
   } else {
     console.log(output);
   }
