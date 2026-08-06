@@ -102,6 +102,11 @@ jobs:
           path: ~/.cache/pre-commit
           key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
 
+      # nvim-tmux-config-smoketest (see .pre-commit-config.yaml) needs a real nvim binary;
+      # tmux is already preinstalled on this image.
+      - name: Install neovim
+        run: sudo apt-get update && sudo apt-get install -y neovim
+
       - name: Run pre-commit
         env:
           SKIP: grind-75-tests,lint-staged

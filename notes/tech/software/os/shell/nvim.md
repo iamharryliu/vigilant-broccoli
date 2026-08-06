@@ -1,10 +1,11 @@
 # nvim
 
-- Default `<leader>` is `\`
+- `<leader>` is `<Space>` (`vim.g.mapleader = " "`, set in `init.lua`)
 
 ```
 u                                           # Undo
 ctrl + r                                    # Redo
+ctrl + s                                    # Save (custom, works in any nvim instance incl. nested)
 ```
 
 ## NvimTree
@@ -128,6 +129,7 @@ Linting (nvim-lint) runs automatically on save, buffer enter, and leaving insert
 ```
 neovide -- -c "terminal" -c "startinsert"   # Start Neovide as a dedicated terminal
 neovide -- -c "vsplit +term"                # Start with editor and terminal side-by-side
+neovidetmuxvb                               # Start Neovide attached to the "vb" tmux session (see tmux.md)
 
 
 # --- OPENING INSIDE NEOVIDE (NORMAL MODE) ---
@@ -142,7 +144,27 @@ i                                           # Enter Terminal-Insert mode (to typ
 <C-\><C-n>                                  # Exit Terminal-Insert mode (back to Normal mode)
 exit                                        # Close the shell and the buffer
 :bd!                                        # Force kill terminal buffer from Normal mode
+
+
+# --- TERMINAL BUFFER NAVIGATION (any :terminal, not just Neovide) ---
+alt + Left                                  # Move back a word (sends <Esc>b to the shell)
+alt + Right                                 # Move forward a word (sends <Esc>f to the shell)
+alt + Backspace                             # Delete previous word (sends <C-w> to the shell)
+
+
+# --- CUSTOM CMD-KEY MAPPINGS (only active when vim.g.neovide is true) ---
+cmd + c                                     # Copy (normal/visual mode)
+cmd + v                                     # Paste (normal/insert/cmdline/terminal-insert mode)
+cmd + s                                     # Save (normal/insert mode: :write)
+cmd + w                                     # Close buffer (normal mode: :bdelete)
+cmd + z                                     # Undo (normal mode)
+cmd + shift + z                             # Redo (normal mode)
+cmd + t                                     # New tab (normal mode: :tabnew)
 ```
+
+- These Cmd-key mappings only fire in Neovide's own buffers (`vim.g.neovide` gate in `init.lua`). Inside a `:terminal` buffer, nvim is in Terminal mode, a mode distinct from Normal/Insert — Cmd is a GUI-only modifier that never reaches whatever is running inside the terminal (tmux, a nested nvim, a shell), so none of these keys work there by default.
+- The one exception is `cmd + s`: Terminal mode has an explicit mapping that forwards a raw `Ctrl-S` byte down the pty, and `<C-s>` is bound globally (outside the Neovide gate) to `:write` — so it reaches a nested nvim (e.g. one running inside a `tmuxvb` pane) too.
+- The rest (`cmd + w/z/shift+z/t`) are intentionally _not_ forwarded into the terminal: once you're inside a nested nvim you already have the native keys (`u`, `<C-r>`, `:bd`, `:tabnew`) available directly, and blindly forwarding `Ctrl-Z` would trigger vim's own built-in "suspend" binding instead of undo.
 
 # Git Diff
 
