@@ -12,14 +12,6 @@ Two mitigations have since landed and narrow the blast radius without closing th
 
 **Fix:** Terraform applies run locally, so CI does not need editor/SA-admin/pool-admin — remove all three. Replace the project-level `secretAccessor` with per-secret `google_secret_manager_secret_iam_member` grants for only the secrets workflows actually read (per `cloudflare-vault.tf`, the CF Access token pair + tunnel token).
 
-### 076146. [performance] RabbitMQ consumers hot-requeue poison messages forever (queue wedge + Resend hammering)
-
-**`projects/nx-workspace/apps/api/email-service/src/main.ts:91`** · same pattern in `email-subscription-service/src/main.ts:139`
-
-On any handler error the consumer does `channel.nack(msg, false, true)` with `prefetch(1)`. A permanently-failing message (malformed JSON, Resend 4xx) is redelivered immediately and infinitely: a tight CPU loop on a 256MB machine that hammers the Resend API and head-of-line blocks every other email indefinitely.
-
-**Fix:** on failure `nack(msg, false, false)` into a dead-letter queue, or republish with an `x-retry` count header and reject after N attempts (optionally with delay).
-
 ### 16dbe5. [performance] code-server VM re-provisions its entire toolchain (~1GB+) on every container (re)start
 
 **`infrastructure/terraform/cloud-init-code-server.yaml:27-66`** (init script), `:72` (`:latest`)
