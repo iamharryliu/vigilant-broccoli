@@ -85,11 +85,11 @@ const parseEventDateTimeRange = dateTimeText => {
 };
 
 const fetchServiceAccountCredentials = () => {
-  const json = execSync(
+  const base64Json = execSync(
     `gcloud secrets versions access latest --secret=${CALENDAR_SA_SECRET_NAME} --project=${GCP_PROJECT}`,
     { encoding: 'utf8' },
   );
-  return JSON.parse(json);
+  return JSON.parse(Buffer.from(base64Json.trim(), 'base64').toString('utf-8'));
 };
 
 const createCalendarClient = () => {

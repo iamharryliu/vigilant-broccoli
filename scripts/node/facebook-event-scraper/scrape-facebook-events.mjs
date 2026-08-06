@@ -1,8 +1,9 @@
 // Usage:
 //   node scrape-facebook-events.mjs [groupEventsUrl]
-//     --headed     show the browser while scraping (default: headless)
-//     --past       also include past events (default: upcoming only)
-//     --out FILE   write JSON to FILE instead of stdout
+//     --headed          show the browser while scraping (default: headless)
+//     --past            also include past events (default: upcoming only)
+//     --out FILE        write JSON to FILE instead of stdout
+//     --concurrency N   parallel tabs for detail-page visits (default: 4)
 //
 // Reuses your real Chrome login by copying your local Chrome profile's session
 // cookies into a separate profile dir on each run, then driving actual Chrome
@@ -13,7 +14,8 @@
 //
 // After listing events from the group page, visits each event's own permalink
 // to pull its full date/time, location, and description — the group listing
-// only has the title and a coarse relative date.
+// only has the title and a coarse relative date. Detail visits run across
+// multiple tabs in the same authenticated context, in parallel.
 
 import { chromium } from 'playwright';
 import { existsSync } from 'node:fs';
@@ -49,6 +51,7 @@ const PAST_EVENTS_HEADING = 'Past events';
 
 const EVENT_DETAIL_NAV_DELAY_MS = 2000;
 const EVENT_DETAIL_VISIT_DELAY_MS = 1000;
+const DEFAULT_CONCURRENCY = 4;
 const MIN_DETAIL_TEXT_LENGTH = 30;
 const DATE_TIME_PATTERN = /^[A-Za-z]+,\s+[A-Za-z]+\s+\d{1,2}(,\s*\d{4})?\s+at\s+\d{1,2}:\d{2}\s*[AP]M/;
 const PRIVACY_LINE_PATTERN = /^(Public|Private|Friends)\b.*·/;
@@ -59,6 +62,7 @@ const parseArgs = argv => ({
   includePast: argv.includes('--past'),
   headed: argv.includes('--headed'),
   outPath: argv.includes('--out') ? argv[argv.indexOf('--out') + 1] : undefined,
+  concurrency: argv.includes('--concurrency') ? Number(argv[argv.indexOf('--concurrency') + 1]) : DEFAULT_CONCURRENCY,
 });
 
 const copyIfExists = async (src, dest) => {
@@ -221,7 +225,31 @@ const enrichEventWithDetails = async (page, event) => {
   };
 };
 
-const runScrape = async ({ groupUrl, includePast, headed, outPath }) => {
+const enrichEventsConcurrently = async (context, listPage, events, concurrency) => {
+  const workerCount = Math.max(1, Math.min(concurrency, events.length));
+  const extraPages = await Promise.all(Array.from({ length: workerCount - 1 }, () => context.newPage()));
+  const pages = [listPage, ...extraPages];
+
+  const enriched = new Array(events.length);
+  let nextIndex = 0;
+
+  const runWorker = async page => {
+    while (nextIndex < events.length) {
+      const index = nextIndex++;
+      const event = events[index];
+      console.error(`[${index + 1}/${events.length}] Fetching details: ${event.title}`);
+      enriched[index] = await enrichEventWithDetails(page, event);
+      await page.waitForTimeout(EVENT_DETAIL_VISIT_DELAY_MS);
+    }
+  };
+
+  await Promise.all(pages.map(runWorker));
+  await Promise.all(pages.slice(1).map(page => page.close()));
+
+  return enriched;
+};
+
+const runScrape = async ({ groupUrl, includePast, headed, outPath, concurrency }) => {
   await syncChromeProfile();
   await clearStaleSingletonLockFiles();
 
@@ -246,12 +274,7 @@ const runScrape = async ({ groupUrl, includePast, headed, outPath }) => {
   const events = await extractEvents(page);
   const filtered = includePast ? events : events.filter(event => event.section === SECTION_UPCOMING);
 
-  const enriched = [];
-  for (const [index, event] of filtered.entries()) {
-    console.error(`[${index + 1}/${filtered.length}] Fetching details: ${event.title}`);
-    enriched.push(await enrichEventWithDetails(page, event));
-    await page.waitForTimeout(EVENT_DETAIL_VISIT_DELAY_MS);
-  }
+  const enriched = await enrichEventsConcurrently(context, page, filtered, concurrency);
 
   await context.close();
 
