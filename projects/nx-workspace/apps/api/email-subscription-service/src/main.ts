@@ -122,6 +122,7 @@ async function startConsumer() {
   const channel = await connection.createChannel();
   await channel.prefetch(1);
   await channel.assertQueue(QUEUE.EMAIL_SUBSCRIPTION, { durable: true });
+  await channel.assertQueue(QUEUE.EMAIL_SUBSCRIPTION_DLQ, { durable: true });
   console.log(`Waiting for messages in ${QUEUE.EMAIL_SUBSCRIPTION}...`);
 
   channel.consume(
@@ -138,10 +139,14 @@ async function startConsumer() {
             (msg.properties.headers?.[RETRY_COUNT_HEADER] as number) ?? 0;
           if (retryCount + 1 >= MAX_DELIVERY_ATTEMPTS) {
             console.error(
-              'Failed to send subscription email, max retries exceeded, dropping:',
+              'Failed to send subscription email, max retries exceeded, dead-lettering:',
               (err as Error).message,
             );
-            channel.nack(msg, false, false);
+            channel.sendToQueue(QUEUE.EMAIL_SUBSCRIPTION_DLQ, msg.content, {
+              persistent: true,
+              headers: msg.properties.headers,
+            });
+            channel.ack(msg);
           } else {
             console.error(
               'Failed to send subscription email, retrying:',
