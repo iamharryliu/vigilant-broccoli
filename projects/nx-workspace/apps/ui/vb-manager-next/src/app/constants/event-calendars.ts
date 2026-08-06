@@ -41,3 +41,9 @@ export interface EventCalendar {
   lastSyncedAt?: string;
   lastSyncMessage?: string;
 }
+
+export interface UntrackedCalendar {
+  googleCalendarId: string;
+  name: string;
+  eventCount: number;
+}

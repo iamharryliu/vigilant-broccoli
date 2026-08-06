@@ -1,9 +1,10 @@
 'use client';
-import { Badge, Callout, Code, Flex, Text } from '@radix-ui/themes';
+import { Badge, Callout, Card, Code, Flex, Text } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
   CRUDItemList,
+  DeleteItemConfirmationDialog,
   Input,
   Switch,
 } from '@vigilant-broccoli/react-lib';
@@ -16,6 +17,7 @@ import {
   EVENT_SOURCE_TYPE,
   EVENT_SOURCE_TYPE_LABEL,
   EventCalendar,
+  UntrackedCalendar,
 } from '../constants/event-calendars';
 
 const FETCH_ERROR = 'Failed to fetch calendars';
@@ -26,6 +28,11 @@ const LOADING_MESSAGE = 'Loading…';
 const EMPTY_MESSAGE = 'No event calendars yet.';
 const UNKNOWN_SOURCE_LABEL = 'Unrecognized URL';
 const SYNC_ERROR = 'Failed to start sync';
+const UNTRACKED_FETCH_ERROR = 'Failed to load untracked calendars';
+const UNTRACKED_DELETE_ERROR = 'Failed to delete calendar';
+const UNTRACKED_TITLE = 'Untracked calendars';
+const UNTRACKED_DESCRIPTION =
+  'Owned by the calendar service account but not managed here — typically left behind by a deleted row. Deleting one removes it and all of its events for good.';
 const SYNC_POLL_INTERVAL_MS = 3000;
 const SYNC_RUNNING = 'running';
 const SOURCES_PLACEHOLDER =
@@ -218,6 +225,44 @@ export const EventCalendarsComponent = () => {
     setSyncStatuses(current => ({ ...current, [id]: data.status }));
   };
 
+  const [untracked, setUntracked] = useState<UntrackedCalendar[]>([]);
+  const [pendingDelete, setPendingDelete] = useState<UntrackedCalendar | null>(
+    null,
+  );
+
+  const fetchUntracked = async () => {
+    const response = await authFetch(
+      `${API_ENDPOINTS.EVENT_CALENDARS}/untracked`,
+    );
+    if (!response.ok) {
+      setError(await errorFromResponse(response, UNTRACKED_FETCH_ERROR));
+      return;
+    }
+    const data = await response.json();
+    setUntracked(data.calendars);
+  };
+
+  useEffect(() => {
+    fetchUntracked();
+  }, [items.length]);
+
+  const deleteUntracked = async (calendar: UntrackedCalendar) => {
+    const response = await authFetch(
+      `${API_ENDPOINTS.EVENT_CALENDARS}/untracked/${encodeURIComponent(calendar.googleCalendarId)}`,
+      { method: 'DELETE' },
+    );
+    if (!response.ok) {
+      setError(await errorFromResponse(response, UNTRACKED_DELETE_ERROR));
+      return;
+    }
+    setError(null);
+    setUntracked(current =>
+      current.filter(
+        entry => entry.googleCalendarId !== calendar.googleCalendarId,
+      ),
+    );
+  };
+
   const EventCalendarListItem = ({ item }: { item: EventCalendar }) => (
     <Flex justify="between" align="center" gap="3" wrap="wrap">
       <Flex direction="column" gap="1">
@@ -300,6 +345,46 @@ export const EventCalendarsComponent = () => {
         }}
         isCards
       />
+      {untracked.length > 0 && (
+        <Flex direction="column" gap="2">
+          <Text weight="medium">{UNTRACKED_TITLE}</Text>
+          <Text size="1" color="gray">
+            {UNTRACKED_DESCRIPTION}
+          </Text>
+          {untracked.map(calendar => (
+            <Card key={calendar.googleCalendarId}>
+              <Flex justify="between" align="center" gap="3" wrap="wrap">
+                <Flex direction="column" gap="1">
+                  <Text weight="medium">{calendar.name}</Text>
+                  <Code size="1">{calendar.googleCalendarId}</Code>
+                  <Text size="1" color={calendar.eventCount ? 'red' : 'gray'}>
+                    {calendar.eventCount} event
+                    {calendar.eventCount === 1 ? '' : 's'} would be destroyed
+                  </Text>
+                </Flex>
+                <Button
+                  variant="secondary"
+                  onClick={() => setPendingDelete(calendar)}
+                >
+                  Delete
+                </Button>
+              </Flex>
+            </Card>
+          ))}
+        </Flex>
+      )}
+      {pendingDelete && (
+        <DeleteItemConfirmationDialog
+          open
+          onOpenChange={open => !open && setPendingDelete(null)}
+          title={`Delete "${pendingDelete.name}"?`}
+          description={`This permanently deletes the calendar and its ${pendingDelete.eventCount} event(s). This cannot be undone.`}
+          deleteItem={async () => {
+            await deleteUntracked(pendingDelete);
+            setPendingDelete(null);
+          }}
+        />
+      )}
     </Flex>
   );
 };

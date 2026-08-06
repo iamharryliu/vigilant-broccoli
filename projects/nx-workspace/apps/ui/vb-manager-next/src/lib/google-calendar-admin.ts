@@ -1,5 +1,6 @@
 import { google, calendar_v3 } from 'googleapis';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { UntrackedCalendar } from '../app/constants/event-calendars';
 
 // Calendars here are owned by the google_calendar_manager service account
 // (Terraform-managed, see infrastructure/terraform/main.tf) rather than by the
@@ -99,3 +100,35 @@ export const deleteGoogleCalendar = (
   calendar.calendars.delete({ calendarId }).catch(error => {
     if (error.code !== HTTP_NOT_FOUND) throw error;
   });
+
+const EVENTS_COUNT_MAX_RESULTS = 2500;
+
+// Calendars the service account owns that vb-manager-next has no row for —
+// e.g. left behind by a deleted row, or created before this page existed.
+export const listUntrackedCalendars = async (
+  calendar: calendar_v3.Calendar,
+  trackedGoogleCalendarIds: Set<string>,
+): Promise<UntrackedCalendar[]> => {
+  const { data } = await calendar.calendarList.list({ maxResults: 250 });
+
+  const untracked = (data.items || []).filter(
+    item => item.id && !item.primary && !trackedGoogleCalendarIds.has(item.id),
+  );
+
+  return Promise.all(
+    untracked.map(async item => {
+      const events = await calendar.events
+        .list({
+          calendarId: item.id as string,
+          maxResults: EVENTS_COUNT_MAX_RESULTS,
+          singleEvents: true,
+        })
+        .catch(() => ({ data: { items: [] } }));
+      return {
+        googleCalendarId: item.id as string,
+        name: item.summary ?? '(untitled)',
+        eventCount: (events.data.items || []).length,
+      };
+    }),
+  );
+};
