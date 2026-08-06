@@ -46,8 +46,17 @@ const MONTH_NAMES = [
   'December',
 ];
 
+// Facebook renders a narrow no-break space (U+202F), not a regular space,
+// between a time and its AM/PM marker — \s matches both, a literal ' ' matches
+// only the latter and silently fails to match every real event.
 const DATE_TIME_RANGE_PATTERN =
-  /^\w+, (?<month>\w+) (?<day>\d{1,2}), (?<year>\d{4}) at (?<startHour>\d{1,2}):(?<startMinute>\d{2}) (?<startPeriod>AM|PM)\s*[–-]\s*(?<endHour>\d{1,2}):(?<endMinute>\d{2}) (?<endPeriod>AM|PM)/;
+  /^\w+,\s(?<month>\w+)\s(?<day>\d{1,2}),\s(?<year>\d{4})\sat\s(?<startHour>\d{1,2}):(?<startMinute>\d{2})\s(?<startPeriod>AM|PM)\s*[–-]\s*(?<endHour>\d{1,2}):(?<endMinute>\d{2})\s(?<endPeriod>AM|PM)/;
+
+// Falls back to this for events Facebook shows with only a start time
+// (no " – end time" range).
+const DATE_TIME_SINGLE_PATTERN =
+  /^\w+,\s(?<month>\w+)\s(?<day>\d{1,2}),\s(?<year>\d{4})\sat\s(?<startHour>\d{1,2}):(?<startMinute>\d{2})\s(?<startPeriod>AM|PM)/;
+const DEFAULT_EVENT_DURATION_HOURS = 3;
 
 const pad = n => String(n).padStart(2, '0');
 const to24Hour = (hour, period) => {
@@ -55,13 +64,10 @@ const to24Hour = (hour, period) => {
   return period.toUpperCase() === 'PM' ? hour12 + 12 : hour12;
 };
 const buildLocalDateTime = (year, month, day, hour, minute) =>
-  `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${minute}:00`;
+  `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00`;
 
-const parseEventDateTimeRange = dateTimeText => {
-  const match = dateTimeText.match(DATE_TIME_RANGE_PATTERN);
-  if (!match) return null;
-
-  const { month, day, year, startHour, startMinute, startPeriod, endHour, endMinute, endPeriod } = match.groups;
+const buildRangeFromMatch = groups => {
+  const { month, day, year, startHour, startMinute, startPeriod, endHour, endMinute, endPeriod } = groups;
   const monthNumber = MONTH_NAMES.indexOf(month) + 1;
   if (!monthNumber) return null;
 
@@ -82,6 +88,38 @@ const parseEventDateTimeRange = dateTimeText => {
     start: buildLocalDateTime(year, monthNumber, day, startHour24, startMinute),
     end: buildLocalDateTime(endYear, endMonth, endDay, endHour24, endMinute),
   };
+};
+
+const buildDefaultDurationRange = groups => {
+  const { month, day, year, startHour, startMinute, startPeriod } = groups;
+  const monthNumber = MONTH_NAMES.indexOf(month) + 1;
+  if (!monthNumber) return null;
+
+  const startHour24 = to24Hour(startHour, startPeriod);
+  const endDate = new Date(
+    Date.UTC(Number(year), monthNumber - 1, Number(day), startHour24 + DEFAULT_EVENT_DURATION_HOURS, Number(startMinute)),
+  );
+
+  return {
+    start: buildLocalDateTime(year, monthNumber, day, startHour24, startMinute),
+    end: buildLocalDateTime(
+      endDate.getUTCFullYear(),
+      endDate.getUTCMonth() + 1,
+      endDate.getUTCDate(),
+      endDate.getUTCHours(),
+      endDate.getUTCMinutes(),
+    ),
+  };
+};
+
+const parseEventDateTimeRange = dateTimeText => {
+  const rangeMatch = dateTimeText.match(DATE_TIME_RANGE_PATTERN);
+  if (rangeMatch) return buildRangeFromMatch(rangeMatch.groups);
+
+  const singleMatch = dateTimeText.match(DATE_TIME_SINGLE_PATTERN);
+  if (singleMatch) return buildDefaultDurationRange(singleMatch.groups);
+
+  return null;
 };
 
 const fetchServiceAccountCredentials = () => {
