@@ -24,11 +24,13 @@ const unauthorized = () =>
     { status: HTTP_STATUS_CODES.UNAUTHORIZED },
   );
 
-const serverError = (error: unknown) =>
-  NextResponse.json(
+const serverError = (error: unknown) => {
+  console.error('[event-calendars]', error);
+  return NextResponse.json(
     { error: error instanceof Error ? error.message : 'Unexpected error' },
     { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
   );
+};
 
 export async function GET(request: NextRequest) {
   const userEmail = await getUserEmail(request);

@@ -7,7 +7,7 @@ import {
   Input,
   Switch,
 } from '@vigilant-broccoli/react-lib';
-import { FORM_TYPE } from '@vigilant-broccoli/common-js';
+import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
@@ -55,6 +55,19 @@ const CREATE_FORM_DEFAULT_VALUES: EventCalendar = {
   updatedAt: '',
 };
 
+// Surfaces the route's own message (missing credential, Google API rejection,
+// …) instead of a generic failure string that gives nothing to debug with.
+const errorFromResponse = async (response: Response, fallback: string) => {
+  const detail = await response
+    .json()
+    .then(body => body?.error)
+    .catch(() => null);
+  const message = detail ? `${fallback}: ${detail}` : fallback;
+  return response.status === HTTP_STATUS_CODES.UNAUTHORIZED
+    ? `${message} (not signed in — sign in and retry)`
+    : message;
+};
+
 const sourcesToText = (calendar: EventCalendar) =>
   calendar.sources.map(source => source.url).join('\n');
 
@@ -78,7 +91,8 @@ export const EventCalendarsComponent = () => {
     const fetchCalendars = async () => {
       try {
         const response = await authFetch(API_ENDPOINTS.EVENT_CALENDARS);
-        if (!response.ok) throw new Error(FETCH_ERROR);
+        if (!response.ok)
+          throw new Error(await errorFromResponse(response, FETCH_ERROR));
         const data = await response.json();
         setItems(data.calendars);
         setError(null);
@@ -101,7 +115,8 @@ export const EventCalendarsComponent = () => {
         sources: item.sources,
       }),
     });
-    if (!response.ok) throw new Error(CREATE_ERROR);
+    if (!response.ok)
+      throw new Error(await errorFromResponse(response, CREATE_ERROR));
     const data = await response.json();
     setError(null);
     return data.calendar as EventCalendar;
@@ -117,8 +132,9 @@ export const EventCalendarsComponent = () => {
       },
     );
     if (!response.ok) {
-      setError(UPDATE_ERROR);
-      throw new Error(UPDATE_ERROR);
+      const message = await errorFromResponse(response, UPDATE_ERROR);
+      setError(message);
+      throw new Error(message);
     }
     setError(null);
   };
@@ -128,8 +144,9 @@ export const EventCalendarsComponent = () => {
       method: 'DELETE',
     });
     if (!response.ok) {
-      setError(DELETE_ERROR);
-      throw new Error(DELETE_ERROR);
+      const message = await errorFromResponse(response, DELETE_ERROR);
+      setError(message);
+      throw new Error(message);
     }
     setError(null);
   };
@@ -141,7 +158,7 @@ export const EventCalendarsComponent = () => {
       body: JSON.stringify({ isPublic }),
     });
     if (!response.ok) {
-      setError(UPDATE_ERROR);
+      setError(await errorFromResponse(response, UPDATE_ERROR));
       return;
     }
     setError(null);
