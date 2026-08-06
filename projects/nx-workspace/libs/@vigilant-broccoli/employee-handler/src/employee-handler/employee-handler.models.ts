@@ -3,6 +3,7 @@ import {
   WorkspaceEmailSignatureUpdate,
 } from '@vigilant-broccoli/google-workspace';
 import { Attachment } from 'nodemailer/lib/mailer';
+import { LeaveSyncUtilities } from './leave-sync/leave-sync.models';
 
 interface OnboardUtilities {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,6 +37,7 @@ export interface EmployeeHandlerConfig {
   activeMaintenanceUtilities: ActiveMaintenanceUtilities;
   offboardUtilities: OffboardUtilities;
   postRetentionUtilities: PostRetentionUtilities;
+  leaveSyncUtilities?: LeaveSyncUtilities;
   customFunctions?: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: (...args: any[]) => Promise<void>;
