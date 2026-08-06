@@ -1,3 +1,5 @@
+vim.g.mapleader = " "
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -13,6 +15,7 @@ vim.opt.rtp:prepend(lazypath)
 
 if vim.g.neovide then
   vim.g.neovide_input_macos_option_key_is_meta = 'only_left'
+  vim.g.neovide_remember_window_size = true
   vim.g.neovide_scale_factor = 1.0
   vim.g.neovide_padding_top = 0
   vim.g.neovide_padding_bottom = 0
@@ -27,10 +30,43 @@ if vim.g.neovide then
   vim.keymap.set("i", "<D-v>", "<C-r>+", { silent = true })
   vim.keymap.set("c", "<D-v>", "<C-r>+", { silent = true })
   vim.keymap.set("t", "<D-v>", [[<C-\><C-n>"+pi]], { silent = true })
+
+  -- Save
+  vim.keymap.set({ "n", "i" }, "<D-s>", "<cmd>write<CR>", { silent = true })
+  vim.keymap.set("t", "<D-s>", function()
+    vim.api.nvim_chan_send(vim.b.terminal_job_id, "\19")
+  end, { silent = true })
+
+  -- Close buffer
+  vim.keymap.set("n", "<D-w>", "<cmd>bdelete<CR>", { silent = true })
+
+  -- Undo/redo
+  vim.keymap.set("n", "<D-z>", "u", { silent = true })
+  vim.keymap.set("n", "<D-S-z>", "<C-r>", { silent = true })
+
+  -- New tab
+  vim.keymap.set("n", "<D-t>", "<cmd>tabnew<CR>", { silent = true })
 end
+
+-- Save (Ctrl-S), for every nvim instance including ones nested inside a terminal/tmux pane
+vim.keymap.set({ "n", "i" }, "<C-s>", "<cmd>write<CR>", { silent = true })
 
 vim.opt.clipboard = "unnamedplus"
 vim.opt.mouse = "a"
+
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.signcolumn = "yes"
+
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+vim.opt.undofile = true
+vim.opt.scrolloff = 8
 
 vim.api.nvim_create_autocmd("TermOpen", {
   callback = function()
@@ -46,4 +82,8 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
-require("lazy").setup("plugins")
+-- Skip plugin loading under the config smoke test: it only exercises keymaps/options
+-- set above, and doing this avoids installing the whole plugin set on a cold CI runner.
+if not vim.env.NVIM_SMOKETEST then
+  require("lazy").setup("plugins")
+end

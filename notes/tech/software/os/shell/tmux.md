@@ -144,3 +144,35 @@ KEY_BIND + t                                        # Display a clock
 KEY_BIND + ?                                        # List all tmux shortcuts
 KEY_BIND + :                                        # Enter tmux command mode
 ```
+
+## Custom Setup (this repo's `.tmux.conf`)
+
+- Prefix key is remapped: `ctrl + Space` (not the default `ctrl + b`)
+- `mode-keys vi` — copy mode uses vi-style navigation
+- Mouse mode is on
+- Windows/panes are 1-indexed (`base-index`/`pane-base-index`), not 0-indexed
+
+```
+ctrl + Space                                        # Prefix (KEY_BIND above)
+
+# Panes
+PREFIX + |                                          # Split pane side-by-side, in current path
+PREFIX + -                                          # Split pane top/bottom, in current path
+PREFIX + h/j/k/l                                    # Move focus left/down/up/right (no arrows needed)
+
+# Clipboard (OSC 52 everywhere; pbcopy/pbpaste bindings added on macOS)
+y (in copy mode)                                     # Copy selection to system clipboard (pbcopy) and exit copy mode
+PREFIX + p                                          # Paste last pbcopy'd content into the pane
+```
+
+- Default `"`, `%`, and `PREFIX + Space` bindings are unbound (replaced by `|`/`-` above).
+- `allow-passthrough on` plus `TERM`/`TERM_PROGRAM` propagation is set for terminal image tools (e.g. yazi) to render correctly inside a pane.
+
+### `tmuxvb` workflow
+
+`tmuxvb` (alias → `setup/dotfiles/common/scripts/tmux-vb.sh`) creates/attaches a tmux session named `vb`:
+
+- Window 1 (`neovim`): runs `neovidetmuxvb`, which launches the Neovide GUI app; Neovide opens nvim, which immediately runs `:terminal tmux attach -t vb` (falling back to bootstrapping the session itself if `vb` doesn't exist yet) and drops straight into Terminal-insert mode.
+- Window 2 (`vb`): two panes in the repo root — one free for general work, one running `claude`.
+
+Since Neovide's `:terminal` buffer attaches back into the very same `vb` session, you end up viewing/controlling the `vb` tmux session through a terminal buffer hosted inside Neovide's own nvim instance. See [nvim.md](./nvim.md)'s Neovide section for which Cmd-key mappings do (and don't) carry through into that nested session, and why.

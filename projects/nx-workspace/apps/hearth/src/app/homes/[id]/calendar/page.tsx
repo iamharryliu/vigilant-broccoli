@@ -3,6 +3,7 @@
 import { use, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, Text } from '@radix-ui/themes';
+import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../../providers/auth-provider';
 import { ROUTES } from '../../../../lib/routes';
 import { CalendarEvent } from '../../../../lib/types';
@@ -123,7 +124,10 @@ export default function HomeCalendarPage({
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 480 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 480 }}
+        >
           <Dialog.Title>
             {modal?.type === 'edit' ? 'Edit Event' : 'New Event'}
           </Dialog.Title>

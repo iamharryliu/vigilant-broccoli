@@ -3,11 +3,19 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 RESEND_API="https://api.resend.com"
 KEY_NAME="vb-ci-$(date +%Y%m%d%H%M%S)"
 KEY_PERMISSION="full_access"
 FLY_APP="staging-vb-email-service"
+
+resend_curl() {
+  local key="$1"; shift
+  curl -K - "$@" <<HEADER
+header = "Authorization: Bearer ${key}"
+HEADER
+}
 
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): current key and
 # VAULT_TOKEN come from the vault-secrets action, Vault is reached through the
@@ -19,15 +27,11 @@ if [ -z "$VAULT_ADDR" ]; then
     --project="${GCP_PROJECT}")
 
   echo "Reading current Resend key from Vault..."
-  CURRENT_KEY=$(gcloud compute ssh "${VM_NAME}" \
-    --zone="${GCP_ZONE}" \
-    --tunnel-through-iap \
-    --command="
+  CURRENT_KEY=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
-vault kv get -field=RESEND_API_KEY ${VAULT_KV_PATH}/secrets
-" 2>/dev/null | tr -d '[:space:]')
+vault kv get -field=RESEND_API_KEY '"${VAULT_KV_PATH}"'/secrets
+' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null | tr -d '[:space:]')
 else
   CURRENT_KEY="$RESEND_API_KEY"
 fi
@@ -38,8 +42,7 @@ if [ -z "$CURRENT_KEY" ]; then
 fi
 
 echo "Minting successor key (${KEY_NAME})..."
-CREATE=$(curl -sf -X POST "${RESEND_API}/api-keys" \
-  -H "Authorization: Bearer ${CURRENT_KEY}" \
+CREATE=$(resend_curl "$CURRENT_KEY" -sf -X POST "${RESEND_API}/api-keys" \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"${KEY_NAME}\",\"permission\":\"${KEY_PERMISSION}\"}")
 NEW_ID=$(jq -r '.id // empty' <<< "$CREATE")
@@ -51,23 +54,19 @@ if [ -z "$NEW_KEY" ]; then
 fi
 
 echo "Verifying new key..."
-if ! curl -sf -o /dev/null -H "Authorization: Bearer ${NEW_KEY}" "${RESEND_API}/api-keys"; then
+if ! resend_curl "$NEW_KEY" -sf -o /dev/null "${RESEND_API}/api-keys"; then
   echo "ERROR: New key failed verification; old key left untouched"
   exit 1
 fi
 
 echo "Updating Vault with new key..."
 if [ -z "$VAULT_ADDR" ]; then
-  gcloud compute ssh "${VM_NAME}" \
-    --zone="${GCP_ZONE}" \
-    --tunnel-through-iap \
-    --command="
+  gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
 
-vault kv patch ${VAULT_KV_PATH}/secrets RESEND_API_KEY='${NEW_KEY}'
-"
+vault kv patch '"${VAULT_KV_PATH}"'/secrets RESEND_API_KEY="$NEW_KEY"
+' VAULT_TOKEN "$VAULT_TOKEN" NEW_KEY "$NEW_KEY"
 else
   curl -sf -o /dev/null \
     -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
@@ -79,15 +78,15 @@ else
 fi
 
 echo "Pushing new key to ${FLY_APP} (rolling restart)..."
-flyctl secrets set --app "${FLY_APP}" RESEND_API_KEY="${NEW_KEY}"
+printf 'RESEND_API_KEY=%s\n' "${NEW_KEY}" | flyctl secrets import --app "${FLY_APP}"
 
 echo "Deleting all other Resend keys (single-key policy)..."
-OLD_IDS=$(curl -sf -H "Authorization: Bearer ${NEW_KEY}" "${RESEND_API}/api-keys" \
+OLD_IDS=$(resend_curl "$NEW_KEY" -sf "${RESEND_API}/api-keys" \
   | jq -r --arg new "$NEW_ID" '.data[] | select(.id != $new) | .id')
 for KEY_ID in $OLD_IDS; do
   echo "Deleting key (ID: ${KEY_ID})..."
-  curl -sf -o /dev/null -X DELETE -H "Authorization: Bearer ${NEW_KEY}" "${RESEND_API}/api-keys/${KEY_ID}"
+  resend_curl "$NEW_KEY" -sf -o /dev/null -X DELETE "${RESEND_API}/api-keys/${KEY_ID}"
 done
 
-REMAINING=$(curl -sf -H "Authorization: Bearer ${NEW_KEY}" "${RESEND_API}/api-keys" | jq '.data | length')
+REMAINING=$(resend_curl "$NEW_KEY" -sf "${RESEND_API}/api-keys" | jq '.data | length')
 echo "✓ Resend key rotated successfully (${REMAINING} key active)"

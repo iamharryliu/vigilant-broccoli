@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '../../../../libs/supabase';
 import { ROUTES } from '../../../lib/routes';
 import { GOOGLE_TOKEN_STORAGE_KEY } from '../../hooks/use-google-token';
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -24,4 +24,12 @@ export default function AuthCallbackPage() {
   }, [router, searchParams]);
 
   return <p>Signing you in...</p>;
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<p>Signing you in...</p>}>
+      <AuthCallbackContent />
+    </Suspense>
+  );
 }

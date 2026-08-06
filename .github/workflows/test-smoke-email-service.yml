@@ -31,8 +31,10 @@ jobs:
       matrix:
         environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
     name: ${{ matrix.environment }}
+    env:
+      SERVICE_URL: http://127.0.0.1:3000
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
@@ -41,13 +43,18 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: ${{ matrix.environment }}-vb-email-service
 
       - name: Test email service
         env:
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
         run: |
           STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
-            -X POST https://${{ matrix.environment }}-vb-email-service.fly.dev/api/queue-emails \
+            -X POST ${{ env.SERVICE_URL }}/api/queue-emails \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${SHARED_APP_TOKEN}" \
             -d '[{"from":"Harry Liu <ci-test@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"ci-test: Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')

@@ -32,10 +32,6 @@ export const VB_REPO_PATH = {
 } as const;
 
 export const PERSONAL_URL = {
-  RESUME: {
-    NAME: 'Resume',
-    URL: 'https://docs.google.com/document/d/1s6Wy8i4zU85o19qyXKhdpH4jdTP36QDPUgZdV7E6-QU/edit#heading=h.uzt44hq0695d',
-  },
   TO_DRAW: {
     NAME: 'To Draw',
     URL: 'https://ca.pinterest.com/prettydamntired/to-draw/',
@@ -80,9 +76,6 @@ export const MAC_OS_APP = {
   },
   FIREFOX: {
     NAME: 'Firefox',
-  },
-  OBSIDIAN: {
-    NAME: 'Obsidian',
   },
   SPOTIFY: {
     NAME: 'Spotify',

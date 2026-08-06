@@ -129,6 +129,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: GITHUB_LINK.APPS.NAME,
+    target: GITHUB_LINK.APPS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: GITHUB_LINK.ACTIONS_PRICING.NAME,
     target: GITHUB_LINK.ACTIONS_PRICING.URL,
     type: OPEN_TYPE.BROWSER,
@@ -848,12 +854,6 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
-    label: MAC_OS_APP.OBSIDIAN.NAME,
-    target: MAC_OS_APP.OBSIDIAN.NAME,
-    type: OPEN_TYPE.MAC_APPLICATION,
-    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
-  },
-  {
     label: MAC_OS_APP.SLACK.NAME,
     target: MAC_OS_APP.SLACK.NAME,
     type: OPEN_TYPE.MAC_APPLICATION,
@@ -1124,12 +1124,6 @@ const UTILITY_LINKS = [
 ];
 
 const CAREER_LINKS = [
-  {
-    label: PERSONAL_URL.RESUME.NAME,
-    target: PERSONAL_URL.RESUME.URL,
-    type: OPEN_TYPE.BROWSER,
-    subgroup: LINK_GROUP_SUBGROUP.CAREER,
-  },
   {
     label: 'LinkedIn',
     target: 'https://www.linkedin.com',

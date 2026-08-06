@@ -78,6 +78,31 @@ function formatBlockStringToSingleLineString(block: string): string {
   return block.split(/\r?\n/).join('\\n');
 }
 
+function encodeBase64(text: string): string {
+  const bytes = new TextEncoder().encode(text);
+  let binary = '';
+  bytes.forEach(byte => (binary += String.fromCharCode(byte)));
+  return btoa(binary);
+}
+
+function decodeBase64(base64: string): string {
+  try {
+    const binary = atob(base64.trim());
+    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  } catch {
+    return '';
+  }
+}
+
+function encodePercent(text: string): string {
+  try {
+    return encodeURIComponent(text);
+  } catch {
+    return '';
+  }
+}
+
 export const EnvUtils = {
   getPrettierJSON,
   getEnvironmentVariablesFromJSON,
@@ -85,4 +110,7 @@ export const EnvUtils = {
   getStubbedEnvironmentVariableKeys,
   getStubbedJSONValues,
   formatBlockStringToSingleLineString,
+  encodeBase64,
+  decodeBase64,
+  encodePercent,
 };

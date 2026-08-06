@@ -7,11 +7,11 @@ primary_region = 'yyz'
 [env]
   PORT = '3000'
   HOST = '0.0.0.0'
-  EMAIL_SERVICE_URL = 'https://staging-vb-email-service.fly.dev'
+  EMAIL_SERVICE_URL = 'http://staging-vb-email-service.flycast'
 
 [http_service]
   internal_port = 3000
-  force_https = true
+  force_https = false
   auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0

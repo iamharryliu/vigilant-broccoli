@@ -7,8 +7,8 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  toast,
 } from '@vigilant-broccoli/react-lib';
+import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { SignaturePreviewer } from './SignaturePreviewer';
 import { SignatureManager } from './SignatureManager';

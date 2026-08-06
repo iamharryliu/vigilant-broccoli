@@ -1,9 +1,23 @@
 # Coffee
 
+## Table of Contents
+
+- [Parameters](#parameters)
+- [Brewing Methods](#brewing-methods)
+  - [Cold Brew](#cold-brew)
+  - [Moka Pot](#moka-pot)
+  - [Common Drinks](#common-drinks)
+  - [Barista Notes](#barista-notes)
+- [Coffee Lifecycle](#coffee-lifecycle)
+
+## Coffee Lifecycle
+
 ```mermaid
 flowchart LR
 Bean-->RM[Roast Method]-->BM[Brew Method]-->Coffee
 ```
+
+## Parameters
 
 | Parameter               | **Lower Value Effect**                         | **Higher Value Effect**                             |
 | ----------------------- | ---------------------------------------------- | --------------------------------------------------- |
@@ -16,24 +30,16 @@ Bean-->RM[Roast Method]-->BM[Brew Method]-->Coffee
 | **Roast Level**         | Light roast → acidic, fruity, floral           | Dark roast → bold, bitter, smoky                    |
 | **Brew Method**         | Filter (pour-over) → clean, bright, lighter    | Immersion (French press) → fuller body, oils        |
 
-## Parameters
-
-- Bean Specs
-  - Origin
-  - Roast
-- Grind size.
-- Water Quality
-
 ## Brewing Methods
 
 - Drip/Pourover Coffee
+  - [Clever Dripper](https://www.youtube.com/watch?v=RpOdennxP24)
   - Drip Coffee Maker
   - Chemex
   - Pourover Dripper
   - Vietnamese Drip
 - Immersion
   - [French Press](https://www.youtube.com/watch?v=st571DYYTR8)
-  - [Clever Dripper](https://www.youtube.com/watch?v=RpOdennxP24)
   - Cold Brew
 - Pressure Brewed Coffee
   - Moka Pot

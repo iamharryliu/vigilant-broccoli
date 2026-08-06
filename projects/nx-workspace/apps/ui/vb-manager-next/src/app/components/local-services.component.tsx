@@ -5,13 +5,15 @@ import {
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
 
 const TITLE = 'Local Services';
 const FETCH_ERROR = 'Failed to fetch local services';
+const LOCAL_SERVICES_POLL_INTERVAL_MS = 30000;
 
 interface LocalService {
   pid: number;
@@ -54,11 +56,7 @@ export const LocalServicesComponent = () => {
     }
   };
 
-  useEffect(() => {
-    fetchServices();
-    const interval = setInterval(fetchServices, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchServices, LOCAL_SERVICES_POLL_INTERVAL_MS);
 
   if (loading) return <CardSkeleton title={TITLE} rows={3} />;
 

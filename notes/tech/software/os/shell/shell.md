@@ -1,6 +1,7 @@
 # Shell
 
 - [vim](./vim.md)
+  - [nvim](./nvim.md)
 - Tools
   - [tmux](./tmux.md)
   - [fzf](./fzf.md)
@@ -8,6 +9,8 @@
   - [find](./find.md)
   - [grep](./grep.md)
   - [tree](./tree.md)
+  - [ln](./ln.md)
+  - [scp](./scp.md)
 - [Cron](./cron.md)
 
 ## Commands
@@ -62,6 +65,7 @@ ps aux | grep WORDS
 ```
 
 ## Encode/Decode
+
 ```
 base64 -i DECODED_FILENAME -o ENCODED_FILENAME
 echo ENCODED_FILENAME| base64 -d > DECODED_FILENAME

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
+  EMAIL_SERVICE_ENDPOINT,
   HTTP_HEADERS,
   HTTP_METHOD,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
-const EMAIL_SERVICE_URL =
-  'https://staging-vb-email-service.fly.dev/api/send-email';
 const FROM = 'Harry Liu <contact@harryliu.dev>';
 
 export const POST = async (req: NextRequest) => {
@@ -29,19 +29,22 @@ export const POST = async (req: NextRequest) => {
 
   const results = await Promise.allSettled(
     emails.map(async (to: string) => {
-      const res = await fetch(EMAIL_SERVICE_URL, {
-        method: HTTP_METHOD.POST,
-        headers: {
-          ...HTTP_HEADERS.CONTENT_TYPE.JSON,
-          'x-api-key': apiKey,
+      const res = await fetch(
+        `${getEnvironmentVariable('EMAIL_SERVICE_URL')}/${EMAIL_SERVICE_ENDPOINT.SEND_EMAIL}`,
+        {
+          method: HTTP_METHOD.POST,
+          headers: {
+            ...HTTP_HEADERS.CONTENT_TYPE.JSON,
+            'x-api-key': apiKey,
+          },
+          body: JSON.stringify({
+            from: FROM,
+            to,
+            subject: `[${service}] New update`,
+            html: `<p>You have a new update from <strong>${service}</strong>.</p>`,
+          }),
         },
-        body: JSON.stringify({
-          from: FROM,
-          to,
-          subject: `[${service}] New update`,
-          html: `<p>You have a new update from <strong>${service}</strong>.</p>`,
-        }),
-      });
+      );
       if (!res.ok) throw new Error(`${res.status}`);
     }),
   );

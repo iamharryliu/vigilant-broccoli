@@ -1,0 +1,58 @@
+name: test-security-private-network-exposure
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        type: choice
+        default: all
+        options:
+          - all
+          - staging
+          - production
+  workflow_run:
+    workflows: ["deploy", "ci-rotate-secrets"]
+    types: [completed]
+    branches: [main, production]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-no-public-ip:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+        # Every service flagged privateOnly:true in scripts/secrets-mapping.config.ts
+        # (flyAppBaseName values, not nx project names — e.g. bucket-service -> storage-service)
+        service:
+          - llm-service
+          - storage-service
+          - vb-email-service
+          - email-subscription-service
+    name: ${{ matrix.environment }}-${{ matrix.service }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Verify ${{ matrix.environment }}-${{ matrix.service }} has no public IP
+        run: |
+          APP="${{ matrix.environment }}-${{ matrix.service }}"
+          HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "https://${APP}.fly.dev/" 2>/dev/null || echo "000")
+          echo "Response code: ${HTTP_CODE}"
+          if [ "${HTTP_CODE}" = "200" ]; then
+            echo "✗ https://${APP}.fly.dev/ responded 200 — this service is flagged privateOnly and should have no public IP"
+            exit 1
+          fi
+          echo "✓ ${APP}.fly.dev is not publicly reachable (${HTTP_CODE})"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "${{ matrix.environment }}-${{ matrix.service }} is publicly reachable! It should be private-only (Fly 6PN / flycast) — check deploy:secrets ran and released the public IP."
+          exit 1

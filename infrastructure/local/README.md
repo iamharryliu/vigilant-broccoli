@@ -1,34 +1,22 @@
 # Local Infrastructure
 
-## Services
+Docker Compose stack for self-hosted local services (photos, logs, dashboards) behind an nginx proxy.
 
-- **manager.vigilant-broccoli.app** - Main application
-- **adminer.vigilant-broccoli.app** - Database management
-- **grafana.vigilant-broccoli.app** - Log dashboards
-- **loki.vigilant-broccoli.app** - Log aggregation
-- **sync.vigilant-broccoli.app** - Resilio Sync web interface
-- **images.vigilant-broccoli.app** - Immich photo management
+## Table of Contents
 
-## Setup
+- [Networking](#networking)
+- [Observability](#observability)
+- [Stack](#stack)
 
-```bash
-pnpm run local:install:machine-setup                # generate SSL certificates (mac only, via install.sh)
-pnpm run local:docker:up                            # start all services
-pnpm run local:docker:down                          # stop all services
-pnpm run local:docker:restart [service]              # restart service(s)
-```
+## Networking
 
-## Grafana
+- [manager.vigilant-broccoli.app](https://manager.vigilant-broccoli.app) - Main application
+- [adminer.vigilant-broccoli.app](https://adminer.vigilant-broccoli.app) - Database management
+- [grafana.vigilant-broccoli.app](https://grafana.vigilant-broccoli.app) - Log dashboards
+- [loki.vigilant-broccoli.app](https://loki.vigilant-broccoli.app) - Log aggregation
+- [images.vigilant-broccoli.app](https://images.vigilant-broccoli.app) - Immich photo management
 
-Access: https://grafana.vigilant-broccoli.app
-
-Loki datasource is pre-configured.
-
-## Loki
-
-Access: https://loki.vigilant-broccoli.app
-
-Log aggregation with 30-day retention.
+## Observability
 
 ### Log Flow
 
@@ -55,3 +43,20 @@ Preferences → Docker Engine → paste contents of `docker-daemon-config.json` 
 - `max-size: 10m` — rotate logs at 10MB
 - `max-file: 3` — keep 3 log files (~30MB per container)
   **Why:** Prevents old logs from exceeding Loki's 3-day retention, causing timestamp rejection errors.
+
+## Stack
+
+- Language
+  - YAML
+  - Bash
+- Tooling
+  - Docker Compose
+- Services
+  - nginx
+  - Immich
+  - PostgreSQL
+  - Redis
+  - Adminer
+  - Loki
+  - Promtail
+  - Grafana

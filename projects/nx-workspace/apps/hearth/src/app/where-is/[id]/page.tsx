@@ -2,17 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 import { Badge, Text } from '@radix-ui/themes';
 import {
   CRUDItemFormDialog,
   EllipsisCTA,
-  StackedImages,
+  ImageCarouselDialog,
+  ImageFilmstrip,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../../providers/auth-provider';
 import { WhereIsItem } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
 import { WhereIsFormComponent, WhereIsFormValues } from '../where-is-form';
+import { WhereIsLabel } from '../where-is-label';
+import { uploadPreviewImages } from '../upload-images';
 
 const WHERE_IS_COPY = {
   LIST: { TITLE: 'Storage Areas', EMPTY_MESSAGE: '' },
@@ -29,6 +34,7 @@ export default function WhereIsDetailPage() {
   const session = useAuth();
   const [item, setItem] = useState<WhereIsItem | null>(null);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -40,29 +46,32 @@ export default function WhereIsDetailPage() {
   }, [id, session?.access_token]);
 
   const handleUpdate = async (form: WhereIsFormValues) => {
+    const removedImageUrls = (item?.imageUrls ?? []).filter(
+      url => !(form.imageUrls ?? []).includes(url),
+    );
+    const accessToken = session?.access_token ?? '';
+    const newImages = await uploadPreviewImages(form.images, accessToken);
+
     await fetch('/api/where-is', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token ?? ''}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         id: form.id,
         title: form.title,
         description: form.description,
         tags: form.tags,
+        removedImageUrls,
+        newImages,
       }),
     });
-    setItem(prev =>
-      prev
-        ? {
-            ...prev,
-            title: form.title,
-            description: form.description,
-            tags: form.tags,
-          }
-        : prev,
-    );
+
+    const res = await fetch(`/api/where-is?id=${form.id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    setItem(await res.json());
   };
 
   const handleDelete = async () => {
@@ -86,68 +95,84 @@ export default function WhereIsDetailPage() {
     description: item.description,
     tags: item.tags,
     images: [],
+    imageUrls: item.imageUrls,
   };
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <Text size="6" weight="bold">
-          {item.title}
-        </Text>
-        <EllipsisCTA
-          onUpdate={() => setUpdateOpen(true)}
-          onDelete={handleDelete}
-        />
-      </div>
-
-      <CRUDItemFormDialog
-        open={updateOpen}
-        onOpenChange={setUpdateOpen}
-        formType={FORM_TYPE.UPDATE}
-        initialFormValues={formValues}
-        FormComponent={WhereIsFormComponent as never}
-        submitHandler={handleUpdate as never}
-        copy={WHERE_IS_COPY}
-      />
-
-      {item.description && (
-        <Text size="3" color="gray" as="p">
-          {item.description}
-        </Text>
-      )}
-
-      {item.tags.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
-          {item.tags.map(tag => (
-            <Badge key={tag} variant="soft" size="2">
-              {tag}
-            </Badge>
-          ))}
+      <div className="print:hidden space-y-6">
+        <div className="flex items-center gap-1 text-sm text-gray-500">
+          <Link href={ROUTES.WHERE_IS} className="hover:text-gray-700">
+            Storage Areas
+          </Link>
+          <ChevronRight size={14} />
+          <Text size="2" color="gray" className="truncate">
+            {item.title}
+          </Text>
         </div>
-      )}
 
-      {item.imageUrls.length > 0 && (
-        <>
-          <StackedImages urls={item.imageUrls} alt={item.title} size={120} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {item.imageUrls.map((url, i) => (
-              <img
-                key={i}
-                src={url}
-                alt={`${item.title} ${i + 1}`}
-                className="w-full rounded-lg object-cover"
-              />
+        <div className="flex items-center justify-between">
+          <Text size="6" weight="bold">
+            {item.title}
+          </Text>
+          <EllipsisCTA
+            onUpdate={() => setUpdateOpen(true)}
+            onDelete={handleDelete}
+          />
+        </div>
+
+        <CRUDItemFormDialog
+          open={updateOpen}
+          onOpenChange={setUpdateOpen}
+          formType={FORM_TYPE.UPDATE}
+          initialFormValues={formValues}
+          FormComponent={WhereIsFormComponent as never}
+          submitHandler={handleUpdate as never}
+          copy={WHERE_IS_COPY}
+        />
+
+        {item.description && (
+          <Text size="3" color="gray" as="p">
+            {item.description}
+          </Text>
+        )}
+
+        <Text size="1" color="gray" as="p">
+          Added{' '}
+          {new Date(item.createdAt).toLocaleDateString(undefined, {
+            dateStyle: 'medium',
+          })}
+        </Text>
+
+        {item.imageUrls.length > 0 && (
+          <>
+            <ImageFilmstrip
+              urls={item.imageUrls}
+              alt={item.title}
+              onSelect={setCarouselIndex}
+            />
+            <ImageCarouselDialog
+              images={item.imageUrls}
+              initialIndex={carouselIndex ?? 0}
+              open={carouselIndex !== null}
+              onOpenChange={open => !open && setCarouselIndex(null)}
+              alt={item.title}
+            />
+          </>
+        )}
+
+        {item.tags.length > 0 && (
+          <div className="flex gap-2 flex-wrap">
+            {item.tags.map(tag => (
+              <Badge key={tag} variant="soft" size="2">
+                {tag}
+              </Badge>
             ))}
           </div>
-        </>
-      )}
+        )}
+      </div>
 
-      <Text size="1" color="gray" as="p">
-        Added{' '}
-        {new Date(item.createdAt).toLocaleDateString(undefined, {
-          dateStyle: 'medium',
-        })}
-      </Text>
+      <WhereIsLabel itemId={item.id} title={item.title} />
     </div>
   );
 }

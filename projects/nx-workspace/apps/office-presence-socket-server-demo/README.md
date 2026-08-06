@@ -1,10 +1,21 @@
 # Office Presence Socket Server Demo
 
+Slack bot for sharing office presence status via Socket Mode.
+
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
-- TypeScript
-- Slack Bolt (Socket Mode) via `@vigilant-broccoli/slackbots`
-- Docker
+- Language - TypeScript
+- Framework - Slack Bolt (Socket Mode)
+- Build Tool - esbuild
+- Internal libs
+  - `slackbots`
+- Cloud services
+  - Slack
+  - Docker Hub (`iamharryliu/office-presence-socket-server-demo`)
 
 ## Build & Run
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { toast } from '@vigilant-broccoli/react-lib';
+import { toast } from '@vigilant-broccoli/react-lib/toaster';
 
 const TOAST_ID = 'socket-cert-trust';
 const TOAST_TITLE = 'Cannot reach realtime server';

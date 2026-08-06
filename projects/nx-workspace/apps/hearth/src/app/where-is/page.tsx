@@ -14,6 +14,7 @@ import {
   WhereIsFormValues,
   PreviewImage,
 } from './where-is-form';
+import { uploadPreviewImages } from './upload-images';
 
 const DEFAULT_FORM: WhereIsFormValues = {
   id: '',
@@ -87,12 +88,14 @@ export default function WhereIsPage() {
     form: WhereIsFormValues,
   ): Promise<WhereIsFormValues> => {
     const { description, tags } = form;
+    const accessToken = session?.access_token ?? '';
+    const images = await uploadPreviewImages(form.images, accessToken);
 
     await fetch('/api/where-is', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token ?? ''}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         title: form.title,
@@ -100,10 +103,7 @@ export default function WhereIsPage() {
         tags,
         homeId: selectedHomeId,
         userId: session?.user.id,
-        images: form.images.map(p => ({
-          base64: p.base64,
-          mimeType: p.mimeType,
-        })),
+        images,
       }),
     });
 
@@ -128,11 +128,14 @@ export default function WhereIsPage() {
     const removedImageUrls = (original?.imageUrls ?? []).filter(
       url => !(form.imageUrls ?? []).includes(url),
     );
+    const accessToken = session?.access_token ?? '';
+    const newImages = await uploadPreviewImages(form.images, accessToken);
+
     await fetch('/api/where-is', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token ?? ''}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         id: form.id,
@@ -140,10 +143,7 @@ export default function WhereIsPage() {
         description: form.description,
         tags: form.tags,
         removedImageUrls,
-        newImages: form.images.map(p => ({
-          base64: p.base64,
-          mimeType: p.mimeType,
-        })),
+        newImages,
       }),
     });
   };

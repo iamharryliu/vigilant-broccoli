@@ -1,0 +1,15 @@
+meta {
+  name: Get Leave Types
+  type: http
+  seq: 9
+}
+
+get {
+  url: https://api.alexishr.com/v1/leave-type
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{process.env.ALEXISHR_API_KEY}}
+}

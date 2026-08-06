@@ -2,7 +2,13 @@
 
 ## Stack
 
-- React + TypeScript + Vite
-- Tailwind CSS
-- `@vigilant-broccoli/react-sandbox`
-- Deployed to GitHub Pages
+- Language - TypeScript
+- Framework - React
+- Build Tool - Vite
+- External libs
+  - Tailwind CSS
+  - Radix Themes
+- Internal libs
+  - `react-sandbox`
+- Cloud services
+  - GitHub Pages

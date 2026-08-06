@@ -24,6 +24,7 @@ export const VB_EXPRESS_ENDPOINT = {
   WHERE_IS_ANALYZE: 'api/where-is/analyze',
   PRICE_TRACKER_ANALYZE: 'api/price-tracker/analyze',
   RECIPE_SCRAPE: 'api/recipe/scrape',
+  SEND_EMAIL: 'api/messaging/send-email',
 };
 
 export const VB_EXPRESS_ADMIN_ENDPOINT = {

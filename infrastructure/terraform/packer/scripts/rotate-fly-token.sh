@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 echo "Fetching root token from Secret Manager..."
 VAULT_TOKEN=$(gcloud secrets versions access latest \
@@ -33,16 +34,12 @@ if ! fly apps list --access-token "$NEW_TOKEN" > /dev/null; then
 fi
 
 echo "Updating Vault with new token..."
-gcloud compute ssh "${VM_NAME}" \
-  --zone="${GCP_ZONE}" \
-  --tunnel-through-iap \
-  --command="
+gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
 
-vault kv patch ${VAULT_KV_PATH}/secrets FLY_API_TOKEN='${NEW_TOKEN}'
-"
+vault kv patch '"${VAULT_KV_PATH}"'/secrets FLY_API_TOKEN="$NEW_TOKEN"
+' VAULT_TOKEN "$VAULT_TOKEN" NEW_TOKEN "$NEW_TOKEN"
 
 echo "Revoking previous tokens..."
 for TOKEN_ID in $OLD_TOKEN_IDS; do

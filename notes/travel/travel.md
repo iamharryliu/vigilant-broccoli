@@ -2,6 +2,7 @@
 
 - [Packlist](./packing/packlist.md)
 - [Camper Van](./campervan.md)
+- [Places](./places/places.md)
 
 ## Useful Apps
 

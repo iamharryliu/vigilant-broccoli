@@ -13,14 +13,9 @@ import {
   ABOUT_ROUTE,
   CALENDAR_ROUTE,
   CAREER_ROUTE,
-  COMPONENT_LIBRARY_ROUTE,
   CONTACT_ROUTE,
   DEFAULT_DESCRIPTION,
-  DOCS_MD_FILE_ROUTE,
-  DOCS_MD_ROUTE,
   INDEX_ROUTE,
-  LEETCODE_ROUTE,
-  LEETCODE_SOLUTION_ROUTE,
   LINK_TREE_ROUTE,
   ROUTES,
   type RouteMeta,
@@ -32,9 +27,6 @@ import { CareerPage } from './components/pages/career.page';
 import { ContactPage } from './components/pages/contact.page';
 import { CalendarPage } from './components/pages/calendar.page';
 import { LinkTreePage } from './components/pages/link-tree.page';
-import { ComponentLibraryPage } from './components/pages/component-library.page';
-import { DocsMdPage } from './components/pages/docs-md.page';
-import { LeetCodePage } from './components/pages/leet-code.page';
 
 initAnalytics();
 
@@ -54,11 +46,7 @@ const updateMetaTag = (
 };
 
 const findRouteMeta = (pathname: string): RouteMeta | undefined => {
-  const direct = ROUTES.find(r => r.path === pathname);
-  if (direct) return direct;
-  if (pathname.startsWith('/docs-md/')) return DOCS_MD_FILE_ROUTE;
-  if (pathname.startsWith('/grind-75/')) return LEETCODE_SOLUTION_ROUTE;
-  return undefined;
+  return ROUTES.find(r => r.path === pathname);
 };
 
 function SeoUpdater() {
@@ -122,31 +110,23 @@ function PageviewTracker() {
 export function App() {
   // Touch matches to silence unused warning; not strictly needed.
   useMatch('/');
+  const location = useLocation();
   return (
     <ThemeProvider>
       <AppProvider>
         <SeoUpdater />
         <PageviewTracker />
-        <Routes>
-          <Route path={INDEX_ROUTE.path} element={<HomePage />} />
-          <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
-          <Route path={CAREER_ROUTE.path} element={<CareerPage />} />
-          <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
-          <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
-          <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
-          <Route
-            path={COMPONENT_LIBRARY_ROUTE.path}
-            element={<ComponentLibraryPage />}
-          />
-          <Route path={DOCS_MD_ROUTE.path} element={<DocsMdPage />} />
-          <Route path={DOCS_MD_FILE_ROUTE.path} element={<DocsMdPage />} />
-          <Route path={LEETCODE_ROUTE.path} element={<LeetCodePage />} />
-          <Route
-            path={LEETCODE_SOLUTION_ROUTE.path}
-            element={<LeetCodePage />}
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <div key={location.pathname} className="animate-fade-in">
+          <Routes>
+            <Route path={INDEX_ROUTE.path} element={<HomePage />} />
+            <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
+            <Route path={CAREER_ROUTE.path} element={<CareerPage />} />
+            <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
+            <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
+            <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
       </AppProvider>
     </ThemeProvider>
   );

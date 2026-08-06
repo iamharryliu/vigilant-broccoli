@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 echo "Fetching root token from Secret Manager..."
 VAULT_TOKEN=$(gcloud secrets versions access latest \
@@ -10,20 +11,16 @@ VAULT_TOKEN=$(gcloud secrets versions access latest \
   --project="${GCP_PROJECT}")
 
 echo "Sealing Vault..."
-gcloud compute ssh "${VM_NAME}" \
-  --zone="${GCP_ZONE}" \
-  --tunnel-through-iap \
-  --command="
+gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-export VAULT_TOKEN='${VAULT_TOKEN}'
 
 vault operator seal
 
-if vault status 2>&1 | grep -q 'Sealed.*true'; then
-  echo 'Vault sealed successfully.'
+if vault status 2>&1 | grep -q "Sealed.*true"; then
+  echo "Vault sealed successfully."
 else
-  echo 'ERROR: Vault is still unsealed.'
+  echo "ERROR: Vault is still unsealed."
   exit 1
 fi
-"
+' VAULT_TOKEN "$VAULT_TOKEN"

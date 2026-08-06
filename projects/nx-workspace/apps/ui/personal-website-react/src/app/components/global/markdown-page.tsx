@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { LoadingSpinner } from './loading-spinner';
 
 type Props = {
@@ -21,7 +22,7 @@ export function MarkdownPage({ filepath }: Props) {
       })
       .then(async text => {
         const parsed = await marked.parse(text, { async: true });
-        if (!cancelled) setHtml(parsed);
+        if (!cancelled) setHtml(DOMPurify.sanitize(parsed));
       })
       .catch(err => {
         if (!cancelled) setError(err.message);

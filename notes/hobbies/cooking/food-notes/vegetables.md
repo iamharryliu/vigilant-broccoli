@@ -5,8 +5,9 @@ A quick guide to boiling, baking, or stir-frying vegetables based on their densi
 ---
 
 ## 🟤 Hard / Dense Vegetables
-*Takes longest to cook — good for roasting, boiling, or stews.
-For stir-fry, slice very thin or par-cook first.*
+
+_Takes longest to cook — good for roasting, boiling, or stews.
+For stir-fry, slice very thin or par-cook first._
 
 - Potatoes
 - Sweet potatoes
@@ -22,7 +23,8 @@ For stir-fry, slice very thin or par-cook first.*
 ---
 
 ## 🟠 Medium / Semi-Dense Vegetables
-*Cook moderately fast — balance between structure and tenderness.*
+
+_Cook moderately fast — balance between structure and tenderness._
 
 - Broccoli stems
 - Cauliflower
@@ -39,8 +41,9 @@ For stir-fry, slice very thin or par-cook first.*
 ---
 
 ## 🟢 Light / Tender Vegetables
-*Cook quickly — great for stir-fries, quick blanch, or steaming.
-Often added at the end of dishes.*
+
+_Cook quickly — great for stir-fries, quick blanch, or steaming.
+Often added at the end of dishes._
 
 - Broccoli florets
 - Spinach
@@ -57,6 +60,8 @@ Often added at the end of dishes.*
 ---
 
 ## 🔑 Rules of Thumb
+
+- Cook vegetables on high heat.
 - **Dense roots & tubers** → Start first
   - Boil 10–30 min
   - Roast 25–45 min

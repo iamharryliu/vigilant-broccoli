@@ -1,7 +1,12 @@
 import { useMemo } from 'react';
 import { Theme } from '@radix-ui/themes';
 import { DocsViewer, FILE_PARAM } from '@vigilant-broccoli/react-utility';
-import { fetchStructure, fetchContent, searchDocs } from './github-docs';
+import {
+  fetchStructure,
+  fetchContent,
+  searchDocs,
+  fetchGraph,
+} from './github-docs';
 
 const getFileParam = () =>
   new URLSearchParams(window.location.search).get(FILE_PARAM);
@@ -9,7 +14,11 @@ const getFileParam = () =>
 const setFileParam = (path: string) => {
   const params = new URLSearchParams(window.location.search);
   params.set(FILE_PARAM, path);
-  window.history.pushState(null, '', `?${params.toString()}`);
+  window.history.pushState(
+    null,
+    '',
+    `?${params.toString()}${window.location.hash}`,
+  );
 };
 
 export function App() {
@@ -22,6 +31,7 @@ export function App() {
           getStructure={fetchStructure}
           getContent={fetchContent}
           search={searchDocs}
+          getGraph={fetchGraph}
           urlSync={urlSync}
         />
       </div>

@@ -8,10 +8,13 @@ import {
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
+
+const WIREGUARD_POLL_INTERVAL_MS = 30000;
 
 interface WireguardConnection {
   name: string;
@@ -56,29 +59,23 @@ export const WireguardStatusComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchWireguardStatus = async () => {
-      try {
-        const response = await authFetch(API_ENDPOINTS.WIREGUARD_STATUS);
-        if (!response.ok) throw new Error('Failed to fetch WireGuard status');
-        const data = await response.json();
-        setWgStatus(data);
-        setLoading(false);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Failed to fetch WireGuard status',
-        );
-        setLoading(false);
-        console.error('WireGuard status error:', err);
-      }
-    };
+  const fetchWireguardStatus = async () => {
+    try {
+      const response = await authFetch(API_ENDPOINTS.WIREGUARD_STATUS);
+      if (!response.ok) throw new Error('Failed to fetch WireGuard status');
+      const data = await response.json();
+      setWgStatus(data);
+      setLoading(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch WireGuard status',
+      );
+      setLoading(false);
+      console.error('WireGuard status error:', err);
+    }
+  };
 
-    fetchWireguardStatus();
-    const interval = setInterval(fetchWireguardStatus, 10000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchWireguardStatus, WIREGUARD_POLL_INTERVAL_MS);
 
   if (loading) return <CardSkeleton title="WireGuard Connections" rows={2} />;
 

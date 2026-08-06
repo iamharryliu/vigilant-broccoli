@@ -7,11 +7,15 @@ import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { supabase } from '../../../libs/supabase';
 import { ROUTES } from '../../lib/routes';
-import { NAV_LINKS } from '../app.consts';
+import { NAV_LINKS, NavLink } from '../app.consts';
+
+const isLinkWithHref = (link: NavLink): link is NavLink & { href: string } =>
+  Boolean(link.href);
 
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const navLinks = NAV_LINKS.filter(isLinkWithHref);
 
   return (
     <nav className="border-b border-gray-200">
@@ -21,7 +25,7 @@ export default function Navbar() {
             Hearth
           </Link>
           <div className="hidden sm:flex items-center gap-4">
-            {NAV_LINKS.map(({ label, href }) => (
+            {navLinks.map(({ label, href }) => (
               <Link
                 key={href}
                 href={href}
@@ -60,7 +64,7 @@ export default function Navbar() {
 
       {open && (
         <div className="sm:hidden flex flex-col px-6 pb-4 gap-3">
-          {NAV_LINKS.map(({ label, href }) => (
+          {navLinks.map(({ label, href }) => (
             <Link
               key={href}
               href={href}

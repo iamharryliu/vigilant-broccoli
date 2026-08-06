@@ -1,4 +1,5 @@
 import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
+import * as path from 'path';
 import {
   createBucketService,
   BucketProvider,
@@ -15,6 +16,7 @@ const PROVIDER_PARAM = 'provider';
 const ERROR_PROVIDER_REQUIRED = 'provider query parameter is required';
 const ERROR_NO_FILES = 'No valid files provided';
 const MESSAGE_FILE_DELETED = 'File deleted successfully';
+const STREAM_UPLOAD_BODY_LIMIT_BYTES = 100 * 1024 * 1024;
 const VALID_PROVIDERS = new Set<string>(Object.values(BucketProvider));
 const bucketServices = new Map<BucketProvider, IBucketProvider>();
 
@@ -76,7 +78,7 @@ const bucketRoutes: FastifyPluginAsync = async app => {
     const collected: { filename: string; buffer: Buffer }[] = [];
     for await (const part of parts) {
       collected.push({
-        filename: part.filename,
+        filename: path.basename(part.filename),
         buffer: await part.toBuffer(),
       });
     }
@@ -97,6 +99,35 @@ const bucketRoutes: FastifyPluginAsync = async app => {
       files: uploaded,
     });
   });
+
+  app.post(
+    '/stream',
+    { bodyLimit: STREAM_UPLOAD_BODY_LIMIT_BYTES },
+    async (req, reply) => {
+      const provider = resolveProvider(req, reply);
+      if (!provider) return;
+      const bucket = getBucketService(provider);
+      const parts = req.files({
+        throwFileSizeLimit: true,
+        limits: { fileSize: STREAM_UPLOAD_BODY_LIMIT_BYTES },
+      });
+      const uploaded: string[] = [];
+      for await (const part of parts) {
+        const filename = path.basename(part.filename);
+        await bucket.uploadStream(filename, part.file);
+        uploaded.push(filename);
+      }
+      if (uploaded.length === 0) {
+        return reply
+          .code(HTTP_STATUS_CODES.BAD_REQUEST)
+          .send({ error: ERROR_NO_FILES });
+      }
+      return reply.send({
+        message: `${uploaded.length} file(s) uploaded successfully`,
+        files: uploaded,
+      });
+    },
+  );
 
   app.delete('/:fileName', async (req, reply) => {
     const provider = resolveProvider(req, reply);

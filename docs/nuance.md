@@ -68,3 +68,16 @@ batches to avoid rate limits, so teardown of a large backlog is slow — which
 is why the vb-manager delete endpoint kicks it off in the background and the
 UI polls a status endpoint instead of blocking on the DELETE request. Do not
 change `pruneDeployments` to loop the same way.
+
+## `sharp` must stay in the nx-workspace root `dependencies`
+
+`sharp` is only imported by the `hearth` app's `/api/where-is` route, so it
+would normally belong in that app's own `package.json`. But Vercel's
+serverless bundler for `hearth` only picks up native/optional deps like
+`sharp` when they're hoisted into the workspace root `dependencies`
+(`projects/nx-workspace/package.json`) — a dep declared solely in the app's
+own `package.json` doesn't get bundled the same way, and the deployed
+function fails to resolve `sharp` at runtime.
+
+Keep `sharp` in the root `dependencies`, even though nothing at the root
+imports it directly.

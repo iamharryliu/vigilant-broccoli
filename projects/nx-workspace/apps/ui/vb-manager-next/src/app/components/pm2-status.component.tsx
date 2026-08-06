@@ -9,11 +9,14 @@ import {
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
+
+const PM2_POLL_INTERVAL_MS = 30000;
 
 interface PM2Process {
   pm_id: number;
@@ -213,11 +216,7 @@ export const PM2StatusComponent = () => {
     ),
   });
 
-  useEffect(() => {
-    fetchPM2Status();
-    const interval = setInterval(fetchPM2Status, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchPM2Status, PM2_POLL_INTERVAL_MS);
 
   if (loading) return <CardSkeleton title="PM2 Processes" rows={3} />;
 

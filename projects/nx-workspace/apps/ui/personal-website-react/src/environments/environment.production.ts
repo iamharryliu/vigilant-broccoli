@@ -1,6 +1,5 @@
 export const ENVIRONMENT = {
   PRODUCTION: !import.meta.env.DEV,
-  JOB_HUNT_MODE: false,
   RECAPTCHA_V3_SITE_KEY: '6LcGFJksAAAAAASSxpM5kNEe0NEOPyHhrpMkuBCL',
   ANALYTICS_ID: import.meta.env.DEV ? '' : 'G-GW4BER2BMZ',
   APP_URL: import.meta.env.DEV

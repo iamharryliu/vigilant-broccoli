@@ -1,10 +1,26 @@
 # Email Subscription Service
 
+Email subscription management and broadcast.
+
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
-- Fastify + TypeScript
-- Supabase (subscriptions table)
-- RabbitMQ (amqplib) for email queue
-- Calls Email Service over HTTP
-- Internal VB libs (`common-js`, `fastify`)
-- Deployed to Fly.io
+- Language - TypeScript
+- Framework - Fastify
+- Build Tool - esbuild
+- External libs
+  - `amqplib`
+  - `@supabase/supabase-js`
+- Internal libs
+  - `common-js`
+  - `fastify`
+  - `messaging`
+- Cloud services
+  - Supabase (subscriptions table)
+  - RabbitMQ (email queue)
+  - Email Service (HTTP)
+  - Docker Hub
+  - Fly.io

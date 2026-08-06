@@ -60,6 +60,34 @@ export const swaggerSpec = createSwaggerSpec({
         },
       },
     },
+    '/api/bucket/stream': {
+      post: {
+        summary:
+          'Upload one or more files by streaming each part to the provider',
+        parameters: [PROVIDER_QUERY_PARAM],
+        requestBody: {
+          required: true,
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                properties: {
+                  files: {
+                    type: 'array',
+                    items: { type: 'string', format: 'binary' },
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Upload result with file names' },
+          '400': { description: 'Missing provider or files' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
     '/api/bucket/{fileName}': {
       get: {
         summary: 'Download a file',

@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactNode, Ref } from 'react';
 import { Text } from '@radix-ui/themes';
 
 const LOADING_LABEL = 'Loading...';
@@ -6,6 +6,12 @@ const SAVING_LABEL = 'Saving...';
 const DEFAULT_PLACEHOLDER = 'Quick notes...';
 
 const styles = {
+  board: {
+    position: 'relative',
+    display: 'flex',
+    flex: 1,
+    minHeight: 0,
+  },
   textarea: {
     flex: 1,
     resize: 'none',
@@ -31,6 +37,12 @@ interface SyncedTextEditorProps {
   lastSaved: Date | null;
   placeholder?: string;
   style?: CSSProperties;
+  textareaRef?: Ref<HTMLTextAreaElement>;
+  onTextareaSelect?: () => void;
+  onTextareaBlur?: () => void;
+  onBoardMouseMove?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onBoardMouseLeave?: () => void;
+  overlay?: ReactNode;
 }
 
 const statusLabel = (
@@ -53,6 +65,12 @@ export const SyncedTextEditor = ({
   lastSaved,
   placeholder = DEFAULT_PLACEHOLDER,
   style,
+  textareaRef,
+  onTextareaSelect,
+  onTextareaBlur,
+  onBoardMouseMove,
+  onBoardMouseLeave,
+  overlay,
 }: SyncedTextEditorProps) => (
   <div
     className="flex flex-col gap-2"
@@ -66,16 +84,29 @@ export const SyncedTextEditor = ({
         {statusLabel(isLoading, isSaving, lastSaved)}
       </Text>
     </div>
-    <textarea
-      value={content}
-      onChange={e => onChange(e.target.value)}
-      disabled={isLoading}
-      placeholder={isLoading ? LOADING_LABEL : placeholder}
-      style={{
-        ...styles.textarea,
-        opacity: isLoading ? 0.6 : 1,
-        cursor: isLoading ? 'wait' : 'text',
-      }}
-    />
+    <div
+      style={styles.board}
+      onMouseMove={onBoardMouseMove}
+      onMouseLeave={onBoardMouseLeave}
+    >
+      <textarea
+        ref={textareaRef}
+        value={content}
+        onChange={e => {
+          onChange(e.target.value);
+          onTextareaSelect?.();
+        }}
+        onSelect={onTextareaSelect}
+        onBlur={onTextareaBlur}
+        disabled={isLoading}
+        placeholder={isLoading ? LOADING_LABEL : placeholder}
+        style={{
+          ...styles.textarea,
+          opacity: isLoading ? 0.6 : 1,
+          cursor: isLoading ? 'wait' : 'text',
+        }}
+      />
+      {overlay}
+    </div>
   </div>
 );

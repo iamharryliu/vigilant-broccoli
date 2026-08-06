@@ -3,8 +3,14 @@
 - **Walking**
   - Headlamp
   - Harness
+  - Human harness
   - leash
   - cooling neck scarf
+- **Health**
+  - Toothbrush + toothpaste
+  - Dog first aid kit
+  - Tick medication
+  - Coconut oil
 - **Consumables**
   - Food(enough dog food for travel duration)
   - Chew toys

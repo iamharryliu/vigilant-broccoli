@@ -58,6 +58,9 @@ export const API_ENDPOINTS = {
   DISK_SPACE: '/api/disk-space',
   SPEED_TEST: '/api/speed-test',
 
+  // Auth
+  GOOGLE_TOKEN: '/api/auth/google-token',
+
   // Tasks
   TASKS: '/api/tasks',
   TASKS_LISTS: '/api/tasks/lists',

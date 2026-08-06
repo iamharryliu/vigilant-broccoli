@@ -1,7 +1,4 @@
 {
-  "COMMON": {
-    "BACK": "← Back"
-  },
   "HOME": {
     "TITLE": "vigilant-broccoli",
     "STATUS": {
@@ -12,24 +9,24 @@
       "TITLE": "Open Source",
       "DESCRIPTION": "GitHub, Docker Hub, and npm packages."
     },
+    "WEB_APPLICATIONS": {
+      "TITLE": "Web Applications",
+      "DESCRIPTION": "Deployed apps and demos."
+    },
     "UI": {
       "TITLE": "UI",
-      "DESCRIPTION": "React component library and deployed UI apps."
+      "DESCRIPTION": "React component library."
     },
     "API_SERVICES": {
       "TITLE": "API Services",
       "DESCRIPTION": "API docs and service health."
     }
   },
-  "UI_PAGE": {
-    "TITLE": "UI",
-    "DESCRIPTION": "React component library and deployed UI apps.",
-    "SECTION_COMPONENT_LIBRARY": "React Component Library",
-    "SECTION_APPS": "UI Apps",
-    "COMPONENT_LIBRARY": {
-      "TITLE": "React Component Library",
-      "DESCRIPTION": "Showcase of reusable React components."
-    },
+  "WEB_APPLICATIONS_PAGE": {
+    "TITLE": "Web Applications",
+    "DESCRIPTION": "Deployed apps and demos.",
+    "SECTION_APPS": "Apps",
+    "SECTION_DEMO": "Demo",
     "HARRY_LIU": {
       "TITLE": "harryliu.dev",
       "DESCRIPTION": "Personal website."
@@ -42,10 +39,6 @@
       "TITLE": "Docs (Markdown)",
       "DESCRIPTION": "Browse markdown notes from the repo."
     },
-    "EMPLOYEE_HANDLER_UI": {
-      "TITLE": "Employee Handler UI",
-      "DESCRIPTION": "Employee management app deployed on Vercel."
-    },
     "FIND_ME": {
       "TITLE": "FindMe",
       "DESCRIPTION": "Live location sharing app deployed on Vercel."
@@ -53,6 +46,19 @@
     "WHITEBOARD": {
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
+    },
+    "EMPLOYEE_HANDLER": {
+      "TITLE": "Employee Handler",
+      "DESCRIPTION": "Employee management app deployed on Vercel."
+    }
+  },
+  "UI_PAGE": {
+    "TITLE": "UI",
+    "DESCRIPTION": "React component library.",
+    "SECTION_COMPONENT_LIBRARY": "React Component Library",
+    "COMPONENT_LIBRARY": {
+      "TITLE": "React Component Library",
+      "DESCRIPTION": "Showcase of reusable React components."
     }
   },
   "STATUS_PAGE": {
@@ -66,7 +72,10 @@
     "RAW_HISTORY": "Raw history:",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
-    "UPDATED": "Updated {date}"
+    "UPDATED": "Updated {date}",
+    "GROUP_PRODUCTION": "Production",
+    "GROUP_STAGING": "Staging",
+    "GROUP_PERSONAL": "Personal Apps"
   },
   "OPEN_SOURCE_PAGE": {
     "TITLE": "Open Source",
@@ -84,32 +93,71 @@
       "DESCRIPTION": "vigilant-broccoli npm packages."
     }
   },
-  "API_SERVICES_PAGE": {
-    "TITLE": "API Services",
-    "DESCRIPTION": "API docs.",
-    "API_DOCS": {
-      "TITLE": "API Docs",
-      "DESCRIPTION": "Swagger docs for Fly.io-deployed services."
-    }
+  "README_PAGE": {
+    "VIEW_ON_GITHUB": "View on GitHub",
+    "VIEW_ON_NPM": "View on npm",
+    "VIEW_ON_DOCKER_HUB": "View on Docker Hub",
+    "LOADING": "Loading README…",
+    "ERROR": "Failed to load README: {message}",
+    "NOT_FOUND": "Unknown item."
   },
-  "API_DOCS_PAGE": {
-    "TITLE": "API Docs",
-    "DESCRIPTION": "Swagger documentation for services deployed on Fly.io.",
-    "LLM_SERVICE": {
-      "TITLE": "LLM Service",
-      "DESCRIPTION": "staging-vb-llm-service.fly.dev"
+  "DOCKER_IMAGES_PAGE": {
+    "TITLE": "Docker Hub",
+    "DESCRIPTION": "iamharryliu Docker images.",
+    "BUCKET_SERVICE": {
+      "TITLE": "bucket-service",
+      "DESCRIPTION": "Object storage proxy across multiple bucket providers."
     },
     "EMAIL_SERVICE": {
+      "TITLE": "email-service",
+      "DESCRIPTION": "Email queue producer/consumer."
+    },
+    "EMAIL_SUBSCRIPTION_SERVICE": {
+      "TITLE": "email-subscription-service",
+      "DESCRIPTION": "Email subscription management and broadcast."
+    }
+  },
+  "NPM_PACKAGES_PAGE": {
+    "TITLE": "npm Packages",
+    "DESCRIPTION": "Published @vigilant-broccoli packages.",
+    "REACT_LIB": {
+      "TITLE": "react-lib",
+      "DESCRIPTION": "Shared React component library."
+    },
+    "EMPLOYEE_HANDLER": {
+      "TITLE": "employee-handler",
+      "DESCRIPTION": "Employee lifecycle automation — onboarding, offboarding, signatures, data sync."
+    },
+    "SLACK_WORKSPACE": {
+      "TITLE": "slack-workspace",
+      "DESCRIPTION": "Slack Web API client and view-builder utilities."
+    },
+    "SLACKBOTS": {
+      "TITLE": "slackbots",
+      "DESCRIPTION": "Slack bot apps built on slack-workspace, including Office Presence."
+    }
+  },
+  "API_SERVICES_PAGE": {
+    "TITLE": "API Services",
+    "DESCRIPTION": "Swagger documentation for services deployed on Fly.io.",
+    "EMAIL_SERVICE": {
       "TITLE": "Email Service",
-      "DESCRIPTION": "staging-vb-email-service.fly.dev"
+      "DESCRIPTION": "staging-vb-email-service.flycast — private"
     },
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "Email Subscription Service",
-      "DESCRIPTION": "staging-email-subscription-service.fly.dev"
+      "DESCRIPTION": "staging-email-subscription-service.flycast — private"
+    },
+    "LLM_SERVICE": {
+      "TITLE": "LLM Service",
+      "DESCRIPTION": "staging-llm-service.flycast — private"
     },
     "STORAGE_SERVICE": {
       "TITLE": "Storage Service",
-      "DESCRIPTION": "staging-vb-storage-service.fly.dev"
+      "DESCRIPTION": "staging-storage-service.flycast — private"
     }
+  },
+  "API_SERVICE_DOCS_PAGE": {
+    "ERROR": "Failed to load Swagger UI from {message}"
   }
 }

@@ -1,0 +1,61 @@
+name: test-security-email-subscription-service
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        type: choice
+        default: all
+        options:
+          - all
+          - staging
+          - production
+  workflow_run:
+    workflows: ["deploy", "ci-rotate-secrets"]
+    types: [completed]
+    branches: [main, production]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  security-check:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+    name: ${{ matrix.environment }}
+    env:
+      SERVICE_URL: http://127.0.0.1:3000
+      APP_NAME: ${{ matrix.environment }}-email-subscription-service
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: ${{ env.APP_NAME }}
+
+      - name: Run security check
+        run: |
+          chmod +x scripts/shell/test-api-ping-security.sh
+          scripts/shell/test-api-ping-security.sh "${APP_NAME}" "${SERVICE_URL}"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Security check failed for ${APP_NAME}! /api/* may be accepting unauthorized requests."
+          exit 1

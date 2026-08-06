@@ -9,13 +9,15 @@ export default function WhiteboardPage() {
   const { selectedHomeId: homeId } = useHome();
   const token = session?.access_token ?? '';
 
-  if (!homeId) return null;
+  if (!homeId || !session?.user.id) return null;
 
   return (
     <div className="max-w-3xl mx-auto p-6 h-[calc(100vh-8rem)]">
       <WhiteboardEditor
         homeId={homeId}
         token={token}
+        userId={session.user.id}
+        username={session.user.email ?? session.user.id}
         style={{ height: '100%' }}
       />
     </div>

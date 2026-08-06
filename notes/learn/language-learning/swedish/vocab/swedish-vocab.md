@@ -1,3 +1,0 @@
-@ - snabel-a
-. - pont
-- - streck

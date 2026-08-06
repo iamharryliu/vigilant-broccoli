@@ -7,10 +7,11 @@ import {
   StatusCardList,
   StatusCardListItem,
 } from '@vigilant-broccoli/react-lib';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
 
 interface TailscaleMachine {
   id: string;
@@ -86,26 +87,22 @@ export const TailscaleMachinesComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchMachines = async () => {
-      try {
-        const response = await authFetch(API_ENDPOINTS.TAILSCALE_MACHINES);
-        if (!response.ok) throw new Error(ERR_FETCH_FAILED);
-        const data = await response.json();
-        setMachines(data.machines ?? []);
-        setError(null);
-        setLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : ERR_FETCH_FAILED);
-        setLoading(false);
-        console.error(ERR_FETCH_FAILED, err);
-      }
-    };
+  const fetchMachines = async () => {
+    try {
+      const response = await authFetch(API_ENDPOINTS.TAILSCALE_MACHINES);
+      if (!response.ok) throw new Error(ERR_FETCH_FAILED);
+      const data = await response.json();
+      setMachines(data.machines ?? []);
+      setError(null);
+      setLoading(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : ERR_FETCH_FAILED);
+      setLoading(false);
+      console.error(ERR_FETCH_FAILED, err);
+    }
+  };
 
-    fetchMachines();
-    const interval = setInterval(fetchMachines, REFRESH_MS);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(fetchMachines, REFRESH_MS);
 
   if (loading) return <CardSkeleton title={TITLE} rows={3} />;
 

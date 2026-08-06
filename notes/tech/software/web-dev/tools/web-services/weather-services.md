@@ -1,0 +1,13 @@
+# Weather Services
+
+Comparison of top weather APIs — free tier, paid pricing, and best-fit use case.
+
+| Service                                                                                                  | Free Tier                                                       | Paid Pricing                        | Best For                                                                   |
+| -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------- |
+| [OpenWeather](./openweather-api.md)                                                                      | 1M calls/month (60/min); One Call 3.0 capped at 1,000 calls/day | From $40/mo                         | General-purpose — used in this repo, generous free tier for hobby projects |
+| [WeatherAPI.com](https://www.weatherapi.com/pricing.aspx)                                                | 1M calls/month; current + 3-day forecast                        | From $4/mo                          | Highest free call volume on a budget                                       |
+| [Tomorrow.io](https://support.tomorrow.io/hc/en-us/articles/23554984091156-Tomorrow-io-Pricing-Overview) | 500 calls/day, 3 req/sec                                        | Usage-based, custom/enterprise      | Hyperlocal minute-by-minute forecasts, business alerting                   |
+| [Visual Crossing](https://www.visualcrossing.com/weather-data-pricing/)                                  | 1,000 records/day, commercial use included                      | From $0.0001/record (pay-as-you-go) | Historical weather data & bulk/backfill queries                            |
+| [Open-Meteo](https://open-meteo.com/en/pricing)                                                          | 10,000 calls/day, no key needed (non-commercial)                | From $29/mo (commercial)            | Free/open-source projects, zero signup friction                            |
+| [NWS](https://www.weather.gov/documentation/services-web-api) (api.weather.gov)                          | Free, no key, no published cap                                  | N/A — always free (US government)   | US-only apps needing authoritative gov't data                              |
+| [AccuWeather](https://developer.accuweather.com/pricing)                                                 | 500 calls/day for 14 days, then 50/day                          | From $2/mo (15k calls/mo)           | Enterprise-grade accuracy & branding                                       |

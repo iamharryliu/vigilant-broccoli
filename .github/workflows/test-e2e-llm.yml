@@ -39,14 +39,14 @@ jobs:
           - provider: gemini
             model: gemini-2.5-flash-lite
           - provider: deepseek
-            model: deepseek-chat
+            model: deepseek-v4-flash
           - provider: grok
             model: grok-3-mini
     name: ${{ matrix.environment }} ${{ matrix.provider }}
     env:
-      LLM_SERVICE_URL: https://${{ matrix.environment }}-vb-llm-service.fly.dev
+      LLM_SERVICE_URL: http://127.0.0.1:3000
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
@@ -55,6 +55,11 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: ${{ matrix.environment }}-llm-service
 
       - name: Run e2e tests (${{ matrix.provider }})
         env:

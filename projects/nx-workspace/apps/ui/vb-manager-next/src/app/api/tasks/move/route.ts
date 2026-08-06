@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { getGoogleAccessToken } from '../../../../../libs/server-auth';
+import { getGoogleAccessTokenForRequest } from '../../../../../libs/google-token';
 import { moveTask, isExpiredError } from '@vigilant-broccoli/google-workspace';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   try {
-    const accessToken = getGoogleAccessToken(req);
+    const accessToken = await getGoogleAccessTokenForRequest(req);
     const body = await req.json();
     const { taskListId = '@default', taskId, previous } = body;
 

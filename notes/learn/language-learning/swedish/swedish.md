@@ -16,9 +16,15 @@
 - Tenses
   - [Past Tense](./grammar/tenses/swedish-past-tense.md)
   - [Future Tense](./grammar/tenses/swedish-future-tense.md)
-
+- [Nuances](./swedish-nuances.md)
+- Vocab
+  - [Swedish Vocab](./swedish-vocab.md)
+  - [Housing Vocab](./vocab/swedish-housing-vocab.md)
+- Phrases
+  - [Time Phrases](./phrases/swedish-time-phrases.md)
 
 # Common Phrases
+
 My name is NAME
 I am from PLACE
 I am NUMBER years old
@@ -358,39 +364,38 @@ gömmer = to hide(physical)
 jag hinner inte = I don't have time / I don't make it
 precis/klart/självklat
 
-
-| English Expression         | Expression       | Example (English)                                                                                             | Example (Swedish)                                                                                                 |
-| -------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| ... ago                    | För ... sedan    | Maritha came to Sweden 5 years ago.                                                                           | Maritha kom till Sverige för 5 år sedan.                                                                          |
-| Starting from / As of      | Från och med     | The rental contract is valid from September 15, 2017 to January 31, 2018.                                     | Hyreskontraktet gäller från och med 15 september 2017 till och med 31 januari 2018.                               |
-| In comparison with         | I jämförelse med | In comparison to, for example, the USA, Sweden has a very small population.                                   | I jämförelse med exempelvis USA har Sverige en väldigt liten befolkning.                                          |
-| Instead of                 | Istället för     | I prefer soft ice cream instead of popsicles.                                                                 | Jag föredrar mjukglass istället för isglass.                                                                      |
-| Because of / Due to        | På grund av      | The company is forced to lay off several employees due to a sharply declining sales.                          | Företaget är tvunget att sparka flera av dess anställda på grund av en kraftigt sjunkande försäljning.            |
-| Alongside / In addition to | Vid sidan av     | Leo works as a bartender alongside his job as a carpenter because he's trying to save money for an apartment. | Leo jobbar som bartender vid sidan av sitt jobb som snickare eftersom han försöker spara pengar till en lägenhet. |
-| Thanks to                  | Tack vare        | The fishermen managed to save the stranded seal thanks to the help of the coast guard.                        | Fiskarna lyckades rädda den strandade sälen tack vare hjälp av kustbevakningen.                                   |
-| Considering                | Med tanke på     | She's incredibly good at basketball considering her height.                                                   | Hon är oerhört duktig på basket med tanke på hennes längd.                                                        |
-| In contrast to             | I motsats till   | I'm freezing, in contrast to Fredrik who walks around in a T-shirt.                                           | Jag fryser jättemycket, i motsats till Fredrik som går runt i T-shirt.                                            |
-GRAMMAR MISTAKES
-Hon har **alltid** varit snäll mot mig.
-På julen träffar jag alltid släkten
-varje
-varannan/vartannat
-var/vart
-flytta -> frivilligt
-fly -> måste -> krig/hunger/problem
-upp
-in
-ut - out. If you’re emphasizing movement to the outside, use ut.
-ur - out. If you’re emphasizing where it comes from, use ur.
+| English Expression                                               | Expression       | Example (English)                                                                                             | Example (Swedish)                                                                                                 |
+| ---------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| ... ago                                                          | För ... sedan    | Maritha came to Sweden 5 years ago.                                                                           | Maritha kom till Sverige för 5 år sedan.                                                                          |
+| Starting from / As of                                            | Från och med     | The rental contract is valid from September 15, 2017 to January 31, 2018.                                     | Hyreskontraktet gäller från och med 15 september 2017 till och med 31 januari 2018.                               |
+| In comparison with                                               | I jämförelse med | In comparison to, for example, the USA, Sweden has a very small population.                                   | I jämförelse med exempelvis USA har Sverige en väldigt liten befolkning.                                          |
+| Instead of                                                       | Istället för     | I prefer soft ice cream instead of popsicles.                                                                 | Jag föredrar mjukglass istället för isglass.                                                                      |
+| Because of / Due to                                              | På grund av      | The company is forced to lay off several employees due to a sharply declining sales.                          | Företaget är tvunget att sparka flera av dess anställda på grund av en kraftigt sjunkande försäljning.            |
+| Alongside / In addition to                                       | Vid sidan av     | Leo works as a bartender alongside his job as a carpenter because he's trying to save money for an apartment. | Leo jobbar som bartender vid sidan av sitt jobb som snickare eftersom han försöker spara pengar till en lägenhet. |
+| Thanks to                                                        | Tack vare        | The fishermen managed to save the stranded seal thanks to the help of the coast guard.                        | Fiskarna lyckades rädda den strandade sälen tack vare hjälp av kustbevakningen.                                   |
+| Considering                                                      | Med tanke på     | She's incredibly good at basketball considering her height.                                                   | Hon är oerhört duktig på basket med tanke på hennes längd.                                                        |
+| In contrast to                                                   | I motsats till   | I'm freezing, in contrast to Fredrik who walks around in a T-shirt.                                           | Jag fryser jättemycket, i motsats till Fredrik som går runt i T-shirt.                                            |
+| GRAMMAR MISTAKES                                                 |
+| Hon har **alltid** varit snäll mot mig.                          |
+| På julen träffar jag alltid släkten                              |
+| varje                                                            |
+| varannan/vartannat                                               |
+| var/vart                                                         |
+| flytta -> frivilligt                                             |
+| fly -> måste -> krig/hunger/problem                              |
+| upp                                                              |
+| in                                                               |
+| ut - out. If you’re emphasizing movement to the outside, use ut. |
+| ur - out. If you’re emphasizing where it comes from, use ur.     |
 
 hellre
 ihop - together
 ungefär halften befolkning paverkas av arstiderna
 
-Adverb type	Typical position
-Frequency (ofta, aldrig)	After main verb / after auxiliary
-Uncertainty (kanske)	Start of sentence OR after verb
-Modal verbs (vill, kan)	Before main verb
+Adverb type Typical position
+Frequency (ofta, aldrig) After main verb / after auxiliary
+Uncertainty (kanske) Start of sentence OR after verb
+Modal verbs (vill, kan) Before main verb
 
 fabrik som tillverkar möbler.
 

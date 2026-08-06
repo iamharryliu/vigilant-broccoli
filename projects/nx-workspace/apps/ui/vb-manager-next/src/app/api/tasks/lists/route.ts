@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { getGoogleAccessToken } from '../../../../../libs/server-auth';
+import { getGoogleAccessTokenForRequest } from '../../../../../libs/google-token';
 import {
   listTaskLists,
   isExpiredError,
@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
 
 export async function GET(req: NextRequest) {
   try {
-    const accessToken = getGoogleAccessToken(req);
+    const accessToken = await getGoogleAccessTokenForRequest(req);
     const taskLists = await listTaskLists(accessToken);
     return NextResponse.json({ taskLists });
   } catch (error) {
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 export async function POST(request: NextRequest) {
   let accessToken: string;
   try {
-    accessToken = getGoogleAccessToken(request);
+    accessToken = await getGoogleAccessTokenForRequest(request);
   } catch {
     return NextResponse.json(
       { error: 'Unauthorized' },
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   let accessToken: string;
   try {
-    accessToken = getGoogleAccessToken(request);
+    accessToken = await getGoogleAccessTokenForRequest(request);
   } catch {
     return NextResponse.json(
       { error: 'Unauthorized' },
@@ -94,7 +94,7 @@ export async function DELETE(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   let accessToken: string;
   try {
-    accessToken = getGoogleAccessToken(request);
+    accessToken = await getGoogleAccessTokenForRequest(request);
   } catch {
     return NextResponse.json(
       { error: 'Unauthorized' },

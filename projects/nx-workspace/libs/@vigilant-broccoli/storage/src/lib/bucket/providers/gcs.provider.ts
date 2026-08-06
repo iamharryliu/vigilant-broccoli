@@ -1,4 +1,6 @@
 import { Storage, Bucket } from '@google-cloud/storage';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
 import { IBucketProvider, GcsBucketConfig, BucketFile } from '../bucket.models';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
@@ -39,6 +41,11 @@ export class GcsBucketProvider implements IBucketProvider {
   async upload(destinationName: string, buffer: Buffer): Promise<void> {
     const file = this.bucket.file(destinationName);
     await file.save(buffer);
+  }
+
+  async uploadStream(destinationName: string, stream: Readable): Promise<void> {
+    const file = this.bucket.file(destinationName);
+    await pipeline(stream, file.createWriteStream());
   }
 
   async download(fileName: string, destinationPath: string): Promise<void> {

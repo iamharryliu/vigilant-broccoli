@@ -27,8 +27,9 @@ cleanup_docker() {
     log_message "Starting Docker cleanup"
 
     docker image prune -af --filter "until=${IMAGE_AGE_HOURS}h" &> /dev/null
+    docker builder prune -af --filter "until=${IMAGE_AGE_HOURS}h" &> /dev/null
     docker container prune -f &> /dev/null
-    docker volume prune -f &> /dev/null
+    docker volume prune -af &> /dev/null
     docker network prune -f &> /dev/null
 
     log_message "Docker cleanup completed"

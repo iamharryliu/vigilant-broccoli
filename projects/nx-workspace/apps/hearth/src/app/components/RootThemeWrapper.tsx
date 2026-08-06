@@ -2,10 +2,15 @@
 
 import { ReactNode } from 'react';
 import { Theme } from '@radix-ui/themes';
-import { ThemeProvider, useTheme } from '@vigilant-broccoli/react-lib';
+import {
+  ThemeProvider,
+  useTheme,
+  useThemeKeybind,
+} from '@vigilant-broccoli/react-lib';
 
 function ThemedRadixWrapper({ children }: { children: ReactNode }) {
   const { appearance } = useTheme();
+  useThemeKeybind();
   return <Theme appearance={appearance}>{children}</Theme>;
 }
 

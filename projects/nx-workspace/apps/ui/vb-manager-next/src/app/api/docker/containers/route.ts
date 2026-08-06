@@ -81,10 +81,7 @@ function extractLocalPorts(portsString: string): string {
 
 export async function GET() {
   try {
-    // Check if Docker is running first - this will throw if Docker is down
-    await execAsync('docker info');
-
-    // Get list of all Docker containers with compose labels and ports
+    // A failing `docker ps` means the daemon is down - no separate `docker info` precheck needed
     const { stdout: containersOutput } = await execAsync(
       'docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Label \\"com.docker.compose.project\\"}}\t{{.Label \\"com.docker.compose.service\\"}}\t{{.Ports}}"',
     );
