@@ -1,0 +1,11 @@
+{
+  "name": "facebook-event-scraper",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scrape": "node scrape-facebook-events.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
+}
