@@ -3,6 +3,7 @@
 /coverage
 /.nx/cache
 .angular
+pnpm-lock.yaml
 
 /.nx/workspace-data
 

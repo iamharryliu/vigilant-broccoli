@@ -22,7 +22,7 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 $DESCRIPTION
 
 Rules:
-- Read TODO.md to learn its structure: section headings (## Features to Add, ## P1-P3) and entry format: ### <6-hex-id>. [category] Title, a short context paragraph, then a numbered Steps: list.
+- Read TODO.md to learn its structure: section headings (## Features to Add, ## P1-P3) and entry format: <6-hex-id>. [category] Title, a short context paragraph, then a numbered Steps: list. The entry heading's depth matches the section it lives in: a direct child of a ## section is ###, but a section with an intermediate subsection (e.g. ## Feature > ### Enhancements) pushes its entries one level deeper (####) — match whatever depth the section you're adding to already uses, one level past its immediate parent heading.
 - Research before writing: grep the repo for every file, workflow, config, and doc the task touches. The entry must cite concrete paths (with line numbers where useful) and name an existing pattern to follow when one exists.
 - Check CLAUDE.md and the docs it points to for conventions that constrain the task, and bake them into the steps.
 - Generate a unique 6-hex id (python3 -c "import random; print(format(random.randint(0, 0xffffff), '06x'))") and verify it doesn't already appear in TODO.md.

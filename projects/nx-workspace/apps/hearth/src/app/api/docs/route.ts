@@ -1,17 +1,39 @@
 import { NextRequest } from 'next/server';
 import { createServerClient } from '../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { uploadFile, deleteFile, getFileUrl } from './r2';
+import { uploadFile, deleteFile, readFile, getFileUrl } from './r2';
 import {
   processFile,
   validateFileCount,
   FileValidationError,
-  RawFile,
 } from './file-processor';
+import { MAX_FILE_SIZE_BYTES } from './limits';
 
 export const runtime = 'nodejs';
 
-const MAX_REQUEST_BYTES = 100 * 1024 * 1024; // 100MB — 20 files × ~5MB each
+const MAX_REQUEST_BYTES = 1 * 1024 * 1024;
+
+interface StagedFileRef {
+  key: string;
+  mimeType: string;
+  name: string;
+}
+
+const readAndProcessStagedFiles = async (files: StagedFileRef[]) =>
+  Promise.all(
+    files.map(async file => {
+      try {
+        const buffer = await readFile(file.key, MAX_FILE_SIZE_BYTES);
+        return await processFile({
+          buffer,
+          mimeType: file.mimeType,
+          name: file.name,
+        });
+      } finally {
+        await deleteFile(file.key).catch(() => undefined);
+      }
+    }),
+  );
 
 const getSupabase = (req: NextRequest) => {
   const accessToken =
@@ -19,7 +41,7 @@ const getSupabase = (req: NextRequest) => {
   return createServerClient(accessToken);
 };
 
-const toDoc = (
+const toDoc = async (
   row: Record<string, unknown> & { home_doc_files?: Record<string, unknown>[] },
 ) => ({
   id: row.id,
@@ -27,14 +49,16 @@ const toDoc = (
   description: row.description ?? null,
   category: row.category,
   homeId: row.home_id,
-  files: (row.home_doc_files ?? []).map((f: Record<string, unknown>) => ({
-    id: f.id,
-    name: f.name,
-    mimeType: f.mime_type,
-    url: getFileUrl(f.r2_key as string),
-    sizeBytes: f.size_bytes,
-    createdAt: f.created_at,
-  })),
+  files: await Promise.all(
+    (row.home_doc_files ?? []).map(async (f: Record<string, unknown>) => ({
+      id: f.id,
+      name: f.name,
+      mimeType: f.mime_type,
+      url: await getFileUrl(f.r2_key as string),
+      sizeBytes: f.size_bytes,
+      createdAt: f.created_at,
+    })),
+  ),
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -60,7 +84,7 @@ export async function GET(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  const mapped = (data ?? []).map(toDoc);
+  const mapped = await Promise.all((data ?? []).map(toDoc));
   return Response.json(id ? (mapped[0] ?? null) : mapped);
 }
 
@@ -78,7 +102,7 @@ export async function POST(req: NextRequest) {
     description: string;
     category: string;
     homeId: number;
-    files: RawFile[];
+    files: StagedFileRef[];
   };
 
   try {
@@ -92,7 +116,7 @@ export async function POST(req: NextRequest) {
 
   let processedFiles: Awaited<ReturnType<typeof processFile>>[];
   try {
-    processedFiles = await Promise.all(files.map(processFile));
+    processedFiles = await readAndProcessStagedFiles(files);
   } catch (e) {
     if (e instanceof FileValidationError)
       return Response.json(

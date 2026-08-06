@@ -6,7 +6,7 @@
 </a>
 </div>
 
-## Contents
+## Table of Contents
 
 - [Development](#development)
 - [Commands](#commands)
@@ -16,14 +16,13 @@
 
 ## Development
 
-- [machine setup](./docs/machine-setups/machine-setup.md) - OS-specific setup instructions.
-- [cheatsheet](./docs/cheatsheet.md) - useful infra-level CLI commands
+### Commands
 
-## Commands
+View [cheatsheet](./docs/cheatsheet.md) for useful infra-level CLI commands.
 
 ```
-pnpm local:install:machine-setup
 pnpm cheatsheet
+pnpm local:install:machine-setup
 ```
 
 ## CI Status
@@ -36,21 +35,24 @@ pnpm cheatsheet
 [![cron-deploy-journal](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml)\
 [![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)\
 [![cron-upptime-response-time](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml)\
-[![cron-utility-update-resume](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml)\
 [![deploy](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml)\
 [![deploy-github-profile](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml)\
 [![manual-deploy-app](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml)\
 [![manual-kill-services](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml)\
+[![manual-replace-code-server](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-replace-code-server.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-replace-code-server.yml)\
+[![manual-run-tests](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-run-tests.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-run-tests.yml)\
 [![notify-complete](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml)\
 [![test-e2e-email-subscription-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml)\
 [![test-e2e-llm](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml)\
 [![test-e2e-rabbitmq](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-rabbitmq.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-rabbitmq.yml)\
 [![test-e2e-socket-server-socketio](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-socket-server-socketio.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-socket-server-socketio.yml)\
 [![test-e2e-storage-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-storage-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-storage-service.yml)\
+[![test-e2e-twilio](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-twilio.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-twilio.yml)\
 [![test-security-api](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-api.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-api.yml)\
 [![test-security-cloudflare-access](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-cloudflare-access.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-cloudflare-access.yml)\
 [![test-security-llm](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-llm.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-llm.yml)\
 [![test-security-socket-server](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-socket-server.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-socket-server.yml)\
+[![test-security-storage-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-storage-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-storage-service.yml)\
 [![test-smoke-email-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml)\
 [![test-smoke-gcp-secret-manager](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml)\
 [![test-smoke-vault-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml)
@@ -63,6 +65,8 @@ pnpm cheatsheet
   - Cloudflare
   - Vercel
   - Fly.io
+  - AWS
+  - GitHub
 - Infrastructure as Code
   - Terraform
   - Packer
@@ -73,9 +77,12 @@ pnpm cheatsheet
   - Caddy
   - Nginx
   - Tailscale
+  - WireGuard
+  - cloudflared
 - Secrets Management
   - HashiCorp Vault
   - Google Secret Manager
+  - Bitwarden
 - Process Management
   - PM2
 - Monitoring / Observability
@@ -87,8 +94,9 @@ pnpm cheatsheet
   - Gitea
   - code-server
   - Immich
-  - Resilio Sync
   - Adminer
+  - Watchtower
+  - Claude Code
 - CI/CD
   - GitHub Actions
 - Databases
@@ -108,16 +116,25 @@ pnpm cheatsheet
   - Cloudflare R2
 - Auth
   - Better Auth
-  - NextAuth
 - AI / LLM
   - Anthropic
   - OpenAI
+  - DeepSeek
+  - xAI (Grok)
+  - Google Gemini
 - Payments
   - Stripe
 - Communications
   - Slack
   - Twilio
   - Resend
+- Third-Party APIs
+  - Google OAuth
+  - Google Workspace APIs (Tasks, Calendar)
+  - Google Analytics
+  - Google reCAPTCHA
+  - OpenWeatherMap
+  - ElevenLabs
 - Container Registry
   - Docker Hub
 - Package Registries
@@ -132,22 +149,44 @@ pnpm cheatsheet
   - Bash / Shell
   - Python
   - HCL (Terraform)
+  - YAML
 - Build Tools
   - Vite
   - Webpack
   - esbuild
   - SWC
   - Rollup
+  - Next.js
+  - Angular CLI
+  - Sanity CLI
 - Backend Frameworks
   - Fastify
   - Express
   - Socket.IO
+  - Slack Bolt
 - Frontend Frameworks
   - React
   - Next.js
   - Angular
 - Styling
   - Tailwind CSS
+  - Font Awesome
+- UI Libraries
+  - Radix Themes
+  - lucide-react
+  - Leaflet / react-leaflet
+  - recharts
+  - FullCalendar
+  - React Router
+  - dnd-kit
+  - react-markdown
+  - fuse.js
+  - styled-components
+  - marked
+- Utility Libraries
+  - Zod
+  - Nodemailer
+  - isomorphic-dompurify
 - Testing
   - Vitest
   - Jest

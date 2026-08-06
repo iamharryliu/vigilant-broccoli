@@ -1,5 +1,7 @@
 # Chess
 
+- [Pawns](./pawns.md)
+
 ## Terminology
 
 | Term                | Description                                                                    |

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@aws-sdk/client-s3": "*",
+    "@aws-sdk/client-s3": "^3.1082.0",
+    "@aws-sdk/s3-request-presigner": "*",
     "@fullcalendar/core": "*",
     "@fullcalendar/daygrid": "*",
     "@fullcalendar/interaction": "*",

@@ -52,7 +52,10 @@ if [ -z "${GH_TOKEN:-}" ]; then
 fi
 
 if [ -n "$PROMPT" ]; then
+  LOG_DIR=$(mktemp -d /tmp/vb-solve.XXXXXX)
+  LOG_FILE="$LOG_DIR/solve-prompt.log"
   echo "Solving free-text task (model: $MODEL): $PROMPT"
+  echo "Log: $LOG_FILE"
   docker run --rm --init --name "vb-solve-prompt-$(date +%s)" \
     --cap-add NET_ADMIN --cap-add NET_RAW \
     -e CLAUDE_CODE_OAUTH_TOKEN \
@@ -62,8 +65,9 @@ if [ -n "$PROMPT" ]; then
     -e SANDBOX_ALLOWED_DOMAINS \
     -e SOLVE_MODEL="$MODEL" \
     "$IMAGE" \
-    bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" --prompt "$1"' _ "$PROMPT"
-  exit $?
+    bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" --prompt "$1"' _ "$PROMPT" \
+    2>&1 | tee "$LOG_FILE"
+  exit "${PIPESTATUS[0]}"
 fi
 
 LOG_DIR=$(mktemp -d /tmp/vb-solve.XXXXXX)
@@ -71,7 +75,7 @@ echo "Logs: $LOG_DIR"
 
 PIDS=()
 for id in "${IDS[@]}"; do
-  grep -q "^### ${id}\." "$REPO_ROOT/TODO.md" || echo "WARNING: no '### ${id}.' item in local TODO.md (sandbox clones fresh main)" >&2
+  grep -qE "^#+ ${id}\." "$REPO_ROOT/TODO.md" || echo "WARNING: no '### ${id}.' item in local TODO.md (sandbox clones fresh main)" >&2
   docker run --rm --init --name "vb-solve-${id}" \
     --cap-add NET_ADMIN --cap-add NET_RAW \
     -e CLAUDE_CODE_OAUTH_TOKEN \

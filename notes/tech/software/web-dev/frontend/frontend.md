@@ -13,6 +13,7 @@
   - [React](./frameworks/react/react.md)
   - [Next.js](./frameworks/next.md)
   - [Vue](./frameworks/vue.md)
+- [Mobile Development](./mobile-development/mobile-development.md)
 
 ### 🎨 UI Technologies & Libraries Explained
 

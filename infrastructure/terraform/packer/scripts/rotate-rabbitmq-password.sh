@@ -4,6 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
 source "${SCRIPT_DIR}/lib/vault-ops-token.sh"
+source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 RABBITMQ_USER="admin"
 RABBITMQ_HOST="socket.harryliu.dev"
@@ -39,10 +40,10 @@ RABBITMQ_SSH="ubuntu@${RABBITMQ_SSH_TARGET}"
 NEW_PASSWORD=$(openssl rand -hex 24)
 
 echo "Setting new password on RabbitMQ VM (${RABBITMQ_SSH_TARGET})..."
-ssh $SSH_OPTS "$RABBITMQ_SSH" "
-sudo sed -i \"s/RABBITMQ_DEFAULT_PASS: .*/RABBITMQ_DEFAULT_PASS: ${NEW_PASSWORD}/\" /opt/rabbitmq/docker-compose.yml
+ssh_secrets "$SSH_OPTS" "$RABBITMQ_SSH" '
+sudo sed -i "s/RABBITMQ_DEFAULT_PASS: .*/RABBITMQ_DEFAULT_PASS: $NEW_PASSWORD/" /opt/rabbitmq/docker-compose.yml
 sudo docker compose -f /opt/rabbitmq/docker-compose.yml up -d
-"
+' NEW_PASSWORD "$NEW_PASSWORD"
 
 # Connection string always uses the DNS name (RABBITMQ_SSH_TARGET is the SSH
 # target, which is the raw IP in local mode) so it matches the broker cert's
@@ -66,28 +67,23 @@ if [ "$READY" != true ]; then
 fi
 
 echo "Verifying new credentials..."
-if ! ssh $SSH_OPTS "$RABBITMQ_SSH" \
-  "sudo docker exec rabbitmq rabbitmqctl authenticate_user ${RABBITMQ_USER} '${NEW_PASSWORD}'" >/dev/null; then
+if ! ssh_secrets "$SSH_OPTS" "$RABBITMQ_SSH" \
+  'sudo docker exec rabbitmq rabbitmqctl authenticate_user '"${RABBITMQ_USER}"' "$NEW_PASSWORD"' \
+  NEW_PASSWORD "$NEW_PASSWORD" >/dev/null; then
   echo "ERROR: New password failed verification; old password left in Vault"
   exit 1
 fi
 
 echo "Updating Vault with new connection string..."
 if [ -z "$VAULT_ADDR" ]; then
-  printf '%s\n%s\n' "$VAULT_OPS_ROLE_ID" "$VAULT_OPS_SECRET_ID" | gcloud compute ssh "${VM_NAME}" \
-    --zone="${GCP_ZONE}" \
-    --tunnel-through-iap \
-    --command="
+  gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-
-read -r ROLE_ID
-read -r SECRET_ID
-VAULT_TOKEN=\$(vault write -field=token auth/approle/login role_id=\"\$ROLE_ID\" secret_id=\"\$SECRET_ID\")
+VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
 export VAULT_TOKEN
 
-vault kv patch ${VAULT_KV_PATH}/secrets RABBITMQ_CONNECTION_STRING='${NEW_CONNECTION_STRING}'
-"
+vault kv patch '"${VAULT_KV_PATH}"'/secrets RABBITMQ_CONNECTION_STRING="$NEW_CONNECTION_STRING"
+' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" NEW_CONNECTION_STRING "$NEW_CONNECTION_STRING"
 else
   curl -sf -o /dev/null \
     -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
@@ -100,7 +96,7 @@ fi
 
 for FLY_APP in "${FLY_APPS[@]}"; do
   echo "Pushing new connection string to ${FLY_APP} (rolling restart)..."
-  flyctl secrets set --app "${FLY_APP}" RABBITMQ_CONNECTION_STRING="${NEW_CONNECTION_STRING}"
+  printf 'RABBITMQ_CONNECTION_STRING=%s\n' "${NEW_CONNECTION_STRING}" | flyctl secrets import --app "${FLY_APP}"
 done
 
 echo "✓ RabbitMQ password rotated successfully"

@@ -47,6 +47,13 @@ const STAGING = 'staging';
 const PRODUCTION = 'production';
 const ENVIRONMENTS = [STAGING, PRODUCTION];
 
+const PRIVATE_V6_TYPE = 'private_v6';
+
+interface FlyIp {
+  Address: string;
+  Type: string;
+}
+
 function flyAppExists(appName: string): boolean {
   try {
     execSync(`flyctl status --app ${appName}`, { stdio: 'pipe' });
@@ -68,6 +75,43 @@ function ensureFlyApp(appName: string, dryRun = false): void {
   console.log(`Fly app ${appName} not found. Creating...`);
   runFlyctl(createCommand);
   console.log(`Created fly app ${appName}`);
+}
+
+function listFlyIps(appName: string): FlyIp[] {
+  try {
+    const output = execSync(`flyctl ips list --app ${appName} --json`, {
+      stdio: 'pipe',
+    }).toString();
+    return JSON.parse(output) as FlyIp[];
+  } catch {
+    return [];
+  }
+}
+
+function ensurePrivateNetworking(appName: string, dryRun = false): void {
+  const ips = dryRun && !flyAppExists(appName) ? [] : listFlyIps(appName);
+
+  if (!ips.some(ip => ip.Type === PRIVATE_V6_TYPE)) {
+    const allocateCommand = `flyctl ips allocate-v6 --private --app ${appName}`;
+    if (dryRun) {
+      console.log(`[DRY RUN] Would execute: ${allocateCommand}`);
+    } else {
+      console.log(`Allocating private IPv6 for ${appName}...`);
+      runFlyctl(allocateCommand);
+    }
+  }
+
+  for (const ip of ips.filter(i => i.Type !== PRIVATE_V6_TYPE)) {
+    const releaseCommand = `flyctl ips release ${ip.Address} --app ${appName}`;
+    if (dryRun) {
+      console.log(`[DRY RUN] Would execute: ${releaseCommand}`);
+    } else {
+      console.log(
+        `Releasing public ${ip.Type} ${ip.Address} from private-only app ${appName}...`,
+      );
+      runFlyctl(releaseCommand);
+    }
+  }
 }
 
 function getExistingSecretKeys(appName: string): string[] {
@@ -159,6 +203,10 @@ async function main() {
   );
 
   ensureFlyApp(flyAppName, dryRun);
+
+  if (config.privateOnly) {
+    ensurePrivateNetworking(flyAppName, dryRun);
+  }
 
   const envExamplePath = join(config.appPath, '.env.example');
   console.log(`Reading required secrets from ${envExamplePath}...`);

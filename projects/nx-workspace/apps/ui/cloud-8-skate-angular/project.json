@@ -21,10 +21,7 @@
           "apps/ui/cloud-8-skate-angular/src/assets",
           "apps/ui/cloud-8-skate-angular/src/robots.txt"
         ],
-        "styles": [
-          "apps/ui/cloud-8-skate-angular/src/styles.scss",
-          "node_modules/@fortawesome/fontawesome-free/css/all.css"
-        ],
+        "styles": ["apps/ui/cloud-8-skate-angular/src/styles.scss"],
         "scripts": []
       },
       "configurations": {

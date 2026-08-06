@@ -44,6 +44,12 @@ EOF
 claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
   --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
 
+# Stage first: if the instruction involved resolving a merge conflict, the working
+# tree may hold a fix for it that was never `git add`-ed (the model is disallowed
+# from `git commit`, so it has no reason to stage). An unmerged index blocks the
+# checkout below even onto the branch we're already on, so clear that first.
+git add -A
+
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
 

@@ -22,6 +22,13 @@ const TABLE_MAP: Record<string, string> = {
 };
 
 export async function POST(request: NextRequest) {
+  if (process.env.NODE_ENV === 'production') {
+    return Response.json(
+      { error: 'Not found' },
+      { status: HTTP_STATUS_CODES.INVALID_PATH },
+    );
+  }
+
   const accessToken =
     request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
   const supabase = createServerClient(accessToken);

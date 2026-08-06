@@ -5,19 +5,14 @@
 
 ## Basics
 
-Pasta
+- Boil pasta
+- Sauce
+  - Heat oil on pan.
+  - Add garlic to infuse flavour to oil
+  - Add aromatics or components to make sauce.
+- When pasta is near al dente remove pasta and add to sauce.
 
-- Boil pasta to al dente.
-- Remove and cool pasta in cold water.
-
-Sauce
-
-- Heat fat source such as butter or a cooking oil on pan.
-- Add diced onions and garlic.
-- Add crushed chili peppers.
-- Add cream.
-
-Mix.
+- SpMix.
 
 ## Recipes
 

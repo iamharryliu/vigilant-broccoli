@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { createHeadingRenderer, marked } from './markdown-config';
+import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
 
 const CLS = {
   ROOT: 'w-full h-full overflow-auto',
@@ -30,6 +31,7 @@ interface MarkdownViewerProps {
   filePath?: string;
   saveContent?: (path: string, content: string) => Promise<void>;
   editTrigger?: number;
+  onNavigate?: (path: string) => void;
 }
 
 export function MarkdownViewer({
@@ -37,6 +39,7 @@ export function MarkdownViewer({
   filePath,
   saveContent,
   editTrigger,
+  onNavigate,
 }: MarkdownViewerProps) {
   const [html, setHtml] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -45,11 +48,17 @@ export function MarkdownViewer({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    marked.parse(content, { async: true }).then(raw => {
-      if (typeof window === 'undefined') return;
-      setHtml(DOMPurify.sanitize(raw));
-    });
+    marked
+      .parse(content, { renderer: createHeadingRenderer(), async: true })
+      .then(raw => {
+        if (typeof window === 'undefined') return;
+        setHtml(DOMPurify.sanitize(raw));
+      });
   }, [content]);
+
+  useEffect(() => {
+    if (html) scrollToUrlHash();
+  }, [html]);
 
   const canEdit = Boolean(saveContent && filePath);
 
@@ -123,7 +132,11 @@ export function MarkdownViewer({
 
   return (
     <div className={CLS.ROOT}>
-      <div className={CLS.PROSE} dangerouslySetInnerHTML={{ __html: html }} />
+      <div
+        className={CLS.PROSE}
+        dangerouslySetInnerHTML={{ __html: html }}
+        onClick={createNoteLinkClickHandler(filePath ?? '', onNavigate)}
+      />
     </div>
   );
 }

@@ -34,10 +34,29 @@ export async function createVaultClient() {
   console.error(`Connecting to Vault at ${vaultAddr}...`);
 
   const nodeVault = await import('node-vault');
-  return nodeVault.default({
+  const client = nodeVault.default({
     apiVersion: 'v1',
     endpoint: vaultAddr,
     token: getVaultToken(),
     requestOptions,
   });
+
+  // node-vault's built-in update() (KV v2 patch) overwrites the request
+  // headers outright instead of merging, which drops the CF-Access-* headers
+  // above and gets the request blocked at the Cloudflare Access tunnel
+  // before it reaches Vault. Route through request() directly so the
+  // CF-Access headers survive alongside the merge-patch content type.
+  const baseHeaders = (requestOptions.headers as Record<string, string>) ?? {};
+  client.update = (path: string, data: unknown) =>
+    client.request({
+      path: `/${path}`,
+      method: 'PATCH',
+      json: data,
+      headers: {
+        ...baseHeaders,
+        'Content-Type': 'application/merge-patch+json',
+      },
+    });
+
+  return client;
 }

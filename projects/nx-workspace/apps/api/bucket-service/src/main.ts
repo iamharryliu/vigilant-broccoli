@@ -29,10 +29,6 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000',
   'http://127.0.0.1:4200',
   'http://127.0.0.1:5173',
-  'https://harryliu.dev',
-  'https://www.harryliu.dev',
-  'https://cloud8skate.com',
-  'https://www.cloud8skate.com',
 ];
 
 const buildApp = async () => {

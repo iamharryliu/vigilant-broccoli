@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../config.sh"
+source "${SCRIPT_DIR}/../../lib/ssh-secrets.sh"
 
 TERRAFORM_DIR="$SCRIPT_DIR/../"
 WG_CONF="/opt/homebrew/etc/wireguard/vb.conf"
@@ -37,6 +38,8 @@ sync_secrets_to_vault() {
   local code_server_ip
   local journal_cf_access_client_id
   local journal_cf_access_client_secret
+  local nx_cache_write_token
+  local nx_cache_read_token
 
   ca_cert=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_self_signed_cert" and .name == "rabbitmq_ca") | .instances[0].attributes.cert_pem' 2>/dev/null || echo "")
   rabbitmq_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "rabbitmq") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
@@ -55,6 +58,8 @@ sync_secrets_to_vault() {
   code_server_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "code_server") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
   journal_cf_access_client_id=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "journal_ci") | .instances[0].attributes.client_id' 2>/dev/null || echo "")
   journal_cf_access_client_secret=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "journal_ci") | .instances[0].attributes.client_secret' 2>/dev/null || echo "")
+  nx_cache_write_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_write_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
+  nx_cache_read_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_read_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
 
   if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ] || [ -z "$journal_cf_access_client_id" ] || [ -z "$journal_cf_access_client_secret" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
@@ -99,15 +104,43 @@ sync_secrets_to_vault() {
     sleep 2
   done
 
-  local rmq_sync_conn=false
+  local rmq_conn_patch_needed=false
   if [ "$rmq_ready" != true ]; then
     echo "Warning: RabbitMQ broker not reachable — leaving RABBITMQ_CONNECTION_STRING untouched (rerun pnpm tf:post-apply once the broker is up)."
-  elif ssh $rmq_ssh_opts "ubuntu@${rabbitmq_ip}" \
-    "sudo docker exec rabbitmq rabbitmqctl authenticate_user ${rabbitmq_user} '${rabbitmq_password}'" >/dev/null 2>&1; then
+  elif ssh_secrets "$rmq_ssh_opts" "ubuntu@${rabbitmq_ip}" \
+    'sudo docker exec rabbitmq rabbitmqctl authenticate_user '"${rabbitmq_user}"' "$RABBITMQ_PASSWORD"' \
+    RABBITMQ_PASSWORD "$rabbitmq_password" >/dev/null 2>&1; then
     echo "Broker accepts the Terraform password — will sync RABBITMQ_CONNECTION_STRING to Vault."
-    rmq_sync_conn=true
+    rmq_conn_patch_needed=true
   else
     echo "Broker rejects the Terraform password (rotation owns it) — leaving RABBITMQ_CONNECTION_STRING in Vault untouched."
+  fi
+
+  local rmq_conn_patch_arg=""
+  if [ "$rmq_conn_patch_needed" = true ]; then
+    rmq_conn_patch_arg='RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR"'
+  fi
+
+  # nx-cache tokens aren't in the required-secrets guard above (they're
+  # unrelated to VM bootstrap) so they can legitimately be absent — e.g.
+  # before cloudflare-nx-cache.tf has ever been applied. ssh-secrets.sh
+  # aborts the whole remote script on any empty secret value, so each arg
+  # (and its matching NAME/VALUE pair below) must be omitted entirely rather
+  # than passed as an empty string.
+  #
+  # The read token deliberately does NOT go into kv/secrets (-> kv/data/secrets)
+  # alongside the write token: ci-pr-check.yml (pull_request-triggered, so
+  # reachable by anyone who gets a PR check to run) reads it from the
+  # isolated kv/ci-pr-check path instead, via github-actions-pr-check-role,
+  # whose policy can only read that one path — not the whole secret store.
+  local nx_cache_write_patch_arg=""
+  if [ -n "$nx_cache_write_token" ]; then
+    nx_cache_write_patch_arg='NX_CACHE_WRITE_TOKEN="$NX_CACHE_WRITE_TOKEN"'
+  fi
+
+  local nx_cache_read_put_cmd=""
+  if [ -n "$nx_cache_read_token" ]; then
+    nx_cache_read_put_cmd='vault kv put kv/ci-pr-check NX_CACHE_READ_TOKEN="$NX_CACHE_READ_TOKEN"'
   fi
 
   local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
@@ -115,74 +148,100 @@ sync_secrets_to_vault() {
   local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
   local socket_server_url="https://socket.harryliu.dev"
 
-  # Every value below is a live secret, so it's built into a JSON blob and
-  # piped over stdin (along with the AppRole login credentials) instead of
-  # being interpolated into --command — that string would otherwise sit in
-  # `ps` on the VM, readable by anyone else on the box, for the life of this
-  # ssh session.
-  local secrets_json
-  secrets_json=$(jq -n \
-    --arg rabbitmq_ca_cert "$ca_cert_b64" \
-    --arg email_api_key "$email_api_key" \
-    --arg gcs_sa_credentials "$gcs_sa_credentials" \
-    --arg code_server_password "$code_server_password" \
-    --arg socket_server_url "$socket_server_url" \
-    --arg ci_ssh_key_b64 "$ci_ssh_key_b64" \
-    --arg gitea_cf_access_client_id "$gitea_cf_access_client_id" \
-    --arg gitea_cf_access_client_secret "$gitea_cf_access_client_secret" \
-    --arg gitea_ip "$gitea_ip" \
-    --arg code_server_cf_access_client_id "$code_server_cf_access_client_id" \
-    --arg code_server_cf_access_client_secret "$code_server_cf_access_client_secret" \
-    --arg code_server_ip "$code_server_ip" \
-    --arg journal_cf_access_client_id "$journal_cf_access_client_id" \
-    --arg journal_cf_access_client_secret "$journal_cf_access_client_secret" \
-    '{
-      RABBITMQ_CA_CERT: $rabbitmq_ca_cert,
-      EMAIL_SERVICE_API_KEY: $email_api_key,
-      GOOGLE_GCS_SA_CREDENTIALS: $gcs_sa_credentials,
-      CODE_SERVER_PASSWORD: $code_server_password,
-      SOCKET_SERVER_URL: $socket_server_url,
-      OCI_VM_SSH_KEY: $ci_ssh_key_b64,
-      GITEA_CF_ACCESS_CLIENT_ID: $gitea_cf_access_client_id,
-      GITEA_CF_ACCESS_CLIENT_SECRET: $gitea_cf_access_client_secret,
-      GITEA_VM_IP: $gitea_ip,
-      CODE_SERVER_CF_ACCESS_CLIENT_ID: $code_server_cf_access_client_id,
-      CODE_SERVER_CF_ACCESS_CLIENT_SECRET: $code_server_cf_access_client_secret,
-      CODE_SERVER_VM_IP: $code_server_ip,
-      JOURNAL_CF_ACCESS_CLIENT_ID: $journal_cf_access_client_id,
-      JOURNAL_CF_ACCESS_CLIENT_SECRET: $journal_cf_access_client_secret
-    }')
-
-  { printf '%s\n%s\n%s\n%s\n' "$vault_ops_role_id" "$vault_ops_secret_id" "$rmq_sync_conn" "$conn_str"; echo "$secrets_json"; } \
-    | gcloud compute ssh "${vm_name}" \
-    --zone="${vm_zone}" \
-    --tunnel-through-iap \
-    --command="
+  # Everything below is sent to the remote shell as literal (single-quoted)
+  # text — no local variable ever gets embedded into the command string.
+  # Actual values are decoded from stdin by gcloud_ssh_secrets before this
+  # script body runs, so they never appear in `ps`/`/proc/*/cmdline`.
+  local vault_script='
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-
-read -r ROLE_ID
-read -r SECRET_ID
-read -r RMQ_SYNC_CONN
-read -r CONN_STR
-BASE_JSON=\$(cat)
-
-VAULT_TOKEN=\$(vault write -field=token auth/approle/login role_id=\"\$ROLE_ID\" secret_id=\"\$SECRET_ID\")
+VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
 export VAULT_TOKEN
 
 if vault kv get kv/secrets >/dev/null 2>&1; then
-  if [ \"\$RMQ_SYNC_CONN\" = true ]; then
-    echo \"\$BASE_JSON\" | jq --arg c \"\$CONN_STR\" '. + {RABBITMQ_CONNECTION_STRING: \$c}' | vault kv patch kv/secrets @-
-  else
-    echo \"\$BASE_JSON\" | vault kv patch kv/secrets @-
-  fi
+  vault kv patch kv/secrets \
+    RABBITMQ_CA_CERT="$CA_CERT_B64" \
+    '"${rmq_conn_patch_arg}"' \
+    EMAIL_SERVICE_API_KEY="$EMAIL_API_KEY" \
+    GOOGLE_GCS_SA_CREDENTIALS="$GCS_SA_CREDENTIALS" \
+    CODE_SERVER_PASSWORD="$CODE_SERVER_PASSWORD" \
+    SOCKET_SERVER_URL="$SOCKET_SERVER_URL" \
+    OCI_VM_SSH_KEY="$CI_SSH_KEY_B64" \
+    GITEA_CF_ACCESS_CLIENT_ID="$GITEA_CF_ACCESS_CLIENT_ID" \
+    GITEA_CF_ACCESS_CLIENT_SECRET="$GITEA_CF_ACCESS_CLIENT_SECRET" \
+    GITEA_VM_IP="$GITEA_IP" \
+    CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
+    CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
+    CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
+    JOURNAL_CF_ACCESS_CLIENT_ID="$JOURNAL_CF_ACCESS_CLIENT_ID" \
+    JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET" \
+    '"${nx_cache_write_patch_arg}"'
 else
-  echo \"\$BASE_JSON\" | jq --arg c \"\$CONN_STR\" '. + {RABBITMQ_CONNECTION_STRING: \$c}' | vault kv put kv/secrets @-
+  vault kv put kv/secrets \
+    RABBITMQ_CA_CERT="$CA_CERT_B64" \
+    RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR" \
+    EMAIL_SERVICE_API_KEY="$EMAIL_API_KEY" \
+    GOOGLE_GCS_SA_CREDENTIALS="$GCS_SA_CREDENTIALS" \
+    CODE_SERVER_PASSWORD="$CODE_SERVER_PASSWORD" \
+    SOCKET_SERVER_URL="$SOCKET_SERVER_URL" \
+    OCI_VM_SSH_KEY="$CI_SSH_KEY_B64" \
+    GITEA_CF_ACCESS_CLIENT_ID="$GITEA_CF_ACCESS_CLIENT_ID" \
+    GITEA_CF_ACCESS_CLIENT_SECRET="$GITEA_CF_ACCESS_CLIENT_SECRET" \
+    GITEA_VM_IP="$GITEA_IP" \
+    CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
+    CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
+    CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
+    JOURNAL_CF_ACCESS_CLIENT_ID="$JOURNAL_CF_ACCESS_CLIENT_ID" \
+    JOURNAL_CF_ACCESS_CLIENT_SECRET="$JOURNAL_CF_ACCESS_CLIENT_SECRET" \
+    '"${nx_cache_write_patch_arg}"'
 fi
 
-echo 'Secrets synced to Vault'
-"
+'"${nx_cache_read_put_cmd}"'
+
+echo "Secrets synced to Vault"
+'
+
+  # _secrets_prelude aborts the whole remote script on any empty value, so
+  # each pair is only appended when that token actually exists — independent
+  # of each other, since they now go to two different Vault paths.
+  local nx_cache_secret_args=()
+  if [ -n "$nx_cache_write_token" ]; then
+    nx_cache_secret_args+=(NX_CACHE_WRITE_TOKEN "$nx_cache_write_token")
+  fi
+  if [ -n "$nx_cache_read_token" ]; then
+    nx_cache_secret_args+=(NX_CACHE_READ_TOKEN "$nx_cache_read_token")
+  fi
+
+  gcloud_ssh_secrets "${vm_name}" "${vm_zone}" "$vault_script" \
+    VAULT_OPS_ROLE_ID "$vault_ops_role_id" \
+    VAULT_OPS_SECRET_ID "$vault_ops_secret_id" \
+    CA_CERT_B64 "$ca_cert_b64" \
+    RMQ_CONN_STR "$conn_str" \
+    EMAIL_API_KEY "$email_api_key" \
+    GCS_SA_CREDENTIALS "$gcs_sa_credentials" \
+    CODE_SERVER_PASSWORD "$code_server_password" \
+    SOCKET_SERVER_URL "$socket_server_url" \
+    CI_SSH_KEY_B64 "$ci_ssh_key_b64" \
+    GITEA_CF_ACCESS_CLIENT_ID "$gitea_cf_access_client_id" \
+    GITEA_CF_ACCESS_CLIENT_SECRET "$gitea_cf_access_client_secret" \
+    GITEA_IP "$gitea_ip" \
+    CODE_SERVER_CF_ACCESS_CLIENT_ID "$code_server_cf_access_client_id" \
+    CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
+    CODE_SERVER_IP "$code_server_ip" \
+    JOURNAL_CF_ACCESS_CLIENT_ID "$journal_cf_access_client_id" \
+    JOURNAL_CF_ACCESS_CLIENT_SECRET "$journal_cf_access_client_secret" \
+    "${nx_cache_secret_args[@]}"
   echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
+  if [ -n "$nx_cache_write_token" ]; then
+    echo "✓ Synced NX_CACHE_WRITE_TOKEN to kv/data/secrets"
+  else
+    echo "Warning: NX_CACHE_WRITE_TOKEN not found in Terraform state — apply cloudflare-nx-cache.tf, then rerun pnpm tf:post-apply."
+  fi
+  if [ -n "$nx_cache_read_token" ]; then
+    echo "✓ Synced NX_CACHE_READ_TOKEN to kv/data/ci-pr-check (isolated path for github-actions-pr-check-role)"
+  else
+    echo "Warning: NX_CACHE_READ_TOKEN not found in Terraform state — apply cloudflare-nx-cache.tf, then rerun pnpm tf:post-apply."
+  fi
 
   echo "Ensuring CI SSH key on socket-server VM (${rabbitmq_ip})..."
   ssh-keygen -R "$rabbitmq_ip" >/dev/null 2>&1 || true
@@ -215,6 +274,15 @@ sync_socket_server() {
 }
 
 if [ "$NEW_IP" = "$CURRENT_IP" ]; then
+  # Run post-init even when the VM IP is unchanged (the common case). It
+  # (re)writes Vault's JWT policies/roles, and it's idempotent — every
+  # `vault policy write` / `vault write auth/jwt/role/...` in
+  # run-vault-post-init.sh is an upsert. Without this, a Terraform/config
+  # change that adds or edits a Vault role (e.g. github-actions-pr-check-role)
+  # would be silently skipped on a normal `tf:apply`, since post-init only ran
+  # on the IP-changed branch below — leaving CI to fail with "role could not
+  # be found" until someone ran `pnpm gcp:vm:post-init` by hand.
+  npm run gcp:vm:post-init
   sync_secrets_to_vault
   sync_socket_server
   exit 0

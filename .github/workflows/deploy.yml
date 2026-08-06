@@ -16,6 +16,14 @@ on:
           - staging
           - production
   workflow_call:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        type: string
+      skip_pages:
+        description: 'Skip the GitHub Pages deploy — set by callers that invoke this workflow more than once per run, since the pages artifact name is unique per run, not per call'
+        type: boolean
+        default: false
 
 permissions:
   actions: read
@@ -37,7 +45,7 @@ jobs:
     continue-on-error: true
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
@@ -60,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -74,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -89,6 +97,7 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets NPM_TOKEN | NODE_AUTH_TOKEN ;
+            kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
       - name: Check if npm publish needed
         id: check
@@ -106,6 +115,9 @@ jobs:
       - name: Build packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
+        env:
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
         run: pnpm exec nx run-many -t build --projects="${{ steps.check.outputs.projects }}"
 
       - name: Publish npm packages
@@ -118,7 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -155,7 +167,7 @@ jobs:
 
       - name: Set up Docker Buildx
         if: steps.check.outputs.has_deployments == 'true'
-        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
 
       - name: Import Secrets from Vault
         if: steps.check.outputs.has_deployments == 'true'
@@ -171,6 +183,7 @@ jobs:
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
             kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN ;
             kv/data/secrets SANITY_AUTH_TOKEN | SANITY_AUTH_TOKEN ;
+            kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
       - name: Fetch Cloudflare Access service token from Secret Manager
         id: cf-access
@@ -183,7 +196,7 @@ jobs:
 
       - name: Log in to Docker Hub
         if: steps.check.outputs.has_deployments == 'true'
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
@@ -200,11 +213,13 @@ jobs:
           VAULT_ADDR: https://vault.harryliu.dev
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
         run: ${{ steps.check.outputs.deploy_cmd }}
 
   deploy-github-pages:
     needs: gitleaks
-    if: ${{ github.ref_name == 'main' }}
+    if: ${{ github.ref_name == 'main' && !inputs.skip_pages }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
@@ -214,7 +229,7 @@ jobs:
       group: pages
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -238,19 +253,32 @@ jobs:
             fi
           fi
 
+      - name: Import Secrets from Vault
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
+
       - name: Stage component-library pages artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/react-component-library/
-        run: pnpm exec nx run component-library:deploy-github-pages --skip-nx-cache
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+        run: pnpm exec nx run component-library:deploy-github-pages
 
       - name: Stage pages-index landing artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/
-        run: pnpm exec nx run pages-index:deploy-github-pages --skip-nx-cache
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+        run: pnpm exec nx run pages-index:deploy-github-pages
 
       - name: Setup Pages
         if: steps.check.outputs.has_deployments == 'true'

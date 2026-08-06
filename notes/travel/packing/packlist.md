@@ -19,14 +19,14 @@
   - Light Jacket/Sweater
   - [Utility Packlist](#utility)
 - Overnight
-  - [Toiletry](./toiletry-packlist)
+  - [Toiletry](./toiletry-packlist.md)
   - Slides
   - Ipren/ibuprofen
 - [Dog Packlist](./dog-packlist.md)
 - [Car Packlist](./car-packlist.md)
 - [Outdoor Packlist](./outdoor-packlist.md)
 - [Air Travel Packlist](./flight-packlist.md)
-- [Food Packlist](./food-packlist.md)
+- [Summer Vacation 2026 Packlist](./summer-vacation-2026-packlist.md)
 
 ## Utility
 

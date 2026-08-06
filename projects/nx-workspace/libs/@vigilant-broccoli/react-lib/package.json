@@ -1,6 +1,6 @@
 {
   "name": "@vigilant-broccoli/react-lib",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "dependencies": {
     "@radix-ui/react-accordion": "*",
     "@radix-ui/react-avatar": "*",
@@ -16,14 +16,17 @@
     "boring-avatars": "*",
     "class-variance-authority": "*",
     "clsx": "*",
+    "framer-motion": "*",
     "lucide-react": "*",
     "react": "*",
     "react-easy-crop": "*",
     "sonner": "*",
-    "tailwind-merge": "*"
+    "tailwind-merge": "*",
+    "yjs": "^13.6.31"
   },
   "main": "./index.js",
   "types": "./index.d.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./index.mjs",

@@ -24,7 +24,7 @@ jobs:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
@@ -111,9 +111,6 @@ jobs:
 
           echo "[Fly.io Apps]"
           http_check "staging-vb-express" "https://staging-vb-express.fly.dev"
-          http_check "staging-vb-email-service" "https://staging-vb-email-service.fly.dev"
-          http_check "staging-vb-storage-service" "https://staging-vb-storage-service.fly.dev"
-          http_check "staging-email-subscription-service" "https://staging-email-subscription-service.fly.dev"
 
           echo ""
           echo "[Websites]"
@@ -217,17 +214,20 @@ jobs:
           RMQ_HOST="${HOST_PORT%%:*}"
           echo "::add-mask::$RMQ_PASS"
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
+          RMQ_NETRC=$(mktemp)
+          printf 'machine rabbitmq login %s password %s\n' "$RMQ_USER" "$RMQ_PASS" > "$RMQ_NETRC"
           # SAN is 'rabbitmq'; --connect-to keeps SNI 'rabbitmq' while dialing
           # the real host (DNS name or IP). Retry to tolerate transient blips.
           for attempt in 1 2 3; do
             RMQ_CODE=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 15 \
               --cacert /tmp/rabbitmq-ca.crt \
               --connect-to "rabbitmq:15671:${RMQ_HOST}:15671" \
-              -u "${RMQ_USER}:${RMQ_PASS}" \
+              --netrc-file "$RMQ_NETRC" \
               "https://rabbitmq:15671/api/overview" 2>/dev/null) || RMQ_CODE="timeout"
             [ "$RMQ_CODE" = "200" ] && break
             [ "$attempt" -lt 3 ] && sleep 5
           done
+          rm -f "$RMQ_NETRC"
           if [ "$RMQ_CODE" = "200" ]; then
             VERSION=$(grep -o '"rabbitmq_version":"[^"]*"' /tmp/mgmt.json | cut -d'"' -f4)
             check "rabbitmq broker (version: $VERSION)" "ok"

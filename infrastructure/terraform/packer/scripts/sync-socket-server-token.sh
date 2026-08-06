@@ -4,6 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
 source "${SCRIPT_DIR}/lib/vault-ops-token.sh"
+source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 SOCKET_SERVER_HOST="socket.harryliu.dev"
 
@@ -15,20 +16,14 @@ if [ -z "$VAULT_ADDR" ]; then
   fetch_vault_ops_credentials
 
   echo "Fetching SHARED_APP_TOKEN from Vault..."
-  SHARED_APP_TOKEN=$(printf '%s\n%s\n' "$VAULT_OPS_ROLE_ID" "$VAULT_OPS_SECRET_ID" | gcloud compute ssh "${VM_NAME}" \
-    --zone="${GCP_ZONE}" \
-    --tunnel-through-iap \
-    --command="
+  SHARED_APP_TOKEN=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-
-read -r ROLE_ID
-read -r SECRET_ID
-VAULT_TOKEN=\$(vault write -field=token auth/approle/login role_id=\"\$ROLE_ID\" secret_id=\"\$SECRET_ID\")
+VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
 export VAULT_TOKEN
 
-vault kv get -field=SHARED_APP_TOKEN ${VAULT_KV_PATH}/secrets
-" | tr -d '[:space:]')
+vault kv get -field=SHARED_APP_TOKEN '"${VAULT_KV_PATH}"'/secrets
+' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" | tr -d '[:space:]')
 
   OCI_VM_HOST=$(cd "${SCRIPT_DIR}/../.." && terraform output -raw oci_vm_public_ip)
   SSH_KEY_FILE="$HOME/.ssh/id_ed25519"

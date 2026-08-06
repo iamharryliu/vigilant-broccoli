@@ -34,6 +34,33 @@ const NODE_TYPE_DIRECTORY = 'directory';
 const MATCH_TYPE_FILENAME = 'filename';
 const INDENT_PX = 16;
 const INDENT_BASE_PX = 8;
+const LEADING_HEADING_RE = /^#\s[^\n]*\n+/;
+const ALL_HEADINGS_RE = /^#{1,6}\s[^\n]*\n+/gm;
+const AGGREGATE_SEPARATOR = '\n\n---\n\n';
+const HASH_SEP = '#';
+
+const stripLeadingHeading = (content: string) =>
+  content.replace(LEADING_HEADING_RE, '');
+
+const stripAllHeadings = (content: string) =>
+  content.replace(ALL_HEADINGS_RE, '');
+
+const AGGREGATE_MODE = {
+  NONE: 'none',
+  COLLAPSED: 'collapsed',
+  FLAT: 'flat',
+} as const;
+type AggregateMode = (typeof AGGREGATE_MODE)[keyof typeof AGGREGATE_MODE];
+
+const AGGREGATE_TRANSFORM: Record<AggregateMode, (content: string) => string> =
+  {
+    [AGGREGATE_MODE.NONE]: content => content,
+    [AGGREGATE_MODE.COLLAPSED]: stripLeadingHeading,
+    [AGGREGATE_MODE.FLAT]: stripAllHeadings,
+  };
+
+const buildAggregateContent = (contents: string[], mode: AggregateMode) =>
+  contents.map(AGGREGATE_TRANSFORM[mode]).join(AGGREGATE_SEPARATOR);
 
 export interface DocsNode {
   name: string;
@@ -50,6 +77,22 @@ export interface DocsSearchResult {
   excerpt?: string;
 }
 
+export interface NoteGraphNode {
+  id: string;
+  name: string;
+  group: string;
+}
+
+export interface NoteGraphLink {
+  source: string;
+  target: string;
+}
+
+export interface NoteGraph {
+  nodes: NoteGraphNode[];
+  links: NoteGraphLink[];
+}
+
 export interface DocsExplorerUrlSync {
   get: () => string | null;
   set: (path: string) => void;
@@ -63,7 +106,11 @@ export interface ViewModeOption {
 interface DocsExplorerProps {
   nodes: DocsNode[];
   getContent: (path: string) => Promise<string>;
-  renderContent?: (content: string) => ReactNode;
+  renderContent?: (
+    content: string,
+    navigate: (path: string) => void,
+    sourcePaths: string[],
+  ) => ReactNode;
   search?: (query: string) => Promise<DocsSearchResult[]>;
   urlSync?: DocsExplorerUrlSync;
   sidebarTitle?: string;
@@ -73,6 +120,7 @@ interface DocsExplorerProps {
   viewModes?: ViewModeOption[];
   onViewModeChange?: (mode: string | undefined) => void;
   currentViewMode?: string;
+  renderGraph?: (navigate: (path: string) => void) => ReactNode;
 }
 
 const COPY = {
@@ -87,7 +135,22 @@ const COPY = {
   EDIT: 'Edit',
   DOCUMENT_ACTIONS: 'Document actions',
   BACK_TO_FILES: 'Back to files',
+  SELECTED_SUFFIX: 'selected',
+  CLEAR_SELECTION: 'Clear',
+  LOADING_AGGREGATE: 'Loading selected files...',
+  SIDEBAR_ACTIONS: 'Sidebar actions',
+  SELECT_MULTIPLE: 'Select multiple',
+  TURN_OFF_MULTI_SELECT: 'Turn off multi-select',
+  SHOW_GRAPH: 'Graph view',
+  HIDE_GRAPH: 'Close graph view',
+  GRAPH_TITLE: 'Graph',
 } as const;
+
+const AGGREGATE_MODE_LABEL: Record<AggregateMode, string> = {
+  [AGGREGATE_MODE.NONE]: 'Normal',
+  [AGGREGATE_MODE.COLLAPSED]: 'View as collapsed note',
+  [AGGREGATE_MODE.FLAT]: 'Collapse to list',
+};
 
 export const DocsExplorer = ({
   nodes,
@@ -102,11 +165,30 @@ export const DocsExplorer = ({
   viewModes,
   onViewModeChange,
   currentViewMode,
+  renderGraph,
 }: DocsExplorerProps) => {
+  const [showGraph, setShowGraph] = useState(false);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [content, setContent] = useState('');
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [contentError, setContentError] = useState<string | null>(null);
+
+  const [multiSelectMode, setMultiSelectMode] = useState(false);
+  const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
+  const [aggregateSourceContents, setAggregateSourceContents] = useState<
+    string[]
+  >([]);
+  const [isLoadingAggregate, setIsLoadingAggregate] = useState(false);
+  const [aggregateError, setAggregateError] = useState<string | null>(null);
+  const [aggregateMode, setAggregateMode] = useState<AggregateMode>(
+    AGGREGATE_MODE.NONE,
+  );
+  const hasSelection = selectedPaths.length > 0;
+  const isAggregate = selectedPaths.length > 1;
+  const aggregateContent = buildAggregateContent(
+    aggregateSourceContents,
+    aggregateMode,
+  );
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<DocsSearchResult[]>([]);
@@ -119,8 +201,53 @@ export const DocsExplorer = ({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultsContainerRef = useRef<HTMLDivElement>(null);
 
+  const toggleSelectPath = useCallback((path: string) => {
+    setSelectedPaths(prev =>
+      prev.includes(path) ? prev.filter(p => p !== path) : [...prev, path],
+    );
+  }, []);
+
+  const clearSelection = () => setSelectedPaths([]);
+
+  const toggleMultiSelectMode = () => {
+    if (multiSelectMode) clearSelection();
+    setMultiSelectMode(prev => !prev);
+  };
+
+  useEffect(() => {
+    if (!hasSelection) return;
+    let cancelled = false;
+    setIsLoadingAggregate(true);
+    setAggregateError(null);
+    Promise.all(selectedPaths.map(getContent))
+      .then(contents => {
+        if (cancelled) return;
+        setAggregateSourceContents(contents);
+      })
+      .catch(err => {
+        if (cancelled) return;
+        setAggregateError(
+          err instanceof Error ? err.message : COPY.LOAD_CONTENT_ERROR,
+        );
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingAggregate(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedPaths, hasSelection, getContent]);
+
   const selectFile = useCallback(
-    async (path: string) => {
+    async (pathWithHash: string) => {
+      setShowGraph(false);
+      const [path, hash] = pathWithHash.split(HASH_SEP);
+      // Only touch the hash when the caller supplied one (a resolved cross-file
+      // link) — plain path selections (tree, search, initial URL sync) leave
+      // whatever's already in the URL alone, so a direct load of `?file=...#foo`
+      // isn't clobbered by the initial mount echoing the file back into the URL.
+      if (hash !== undefined) window.location.hash = hash;
+      setSelectedPaths([]);
       setSelectedPath(path);
       setMobilePanel('content');
       urlSync?.set(path);
@@ -240,7 +367,38 @@ export const DocsExplorer = ({
         className={`${MOBILE_NO_CARD_CLS} ${sidebarVisibilityCls} w-full md:w-80 md:flex-shrink-0 overflow-hidden flex-col`}
       >
         <div className="px-3 pt-3 pb-2">
-          <h2 className="text-sm font-semibold mb-1.5">{sidebarTitle}</h2>
+          <div className="flex items-center justify-between mb-1.5">
+            <h2 className="text-sm font-semibold">{sidebarTitle}</h2>
+            <div className="flex items-center gap-1">
+              {renderGraph && (
+                <IconButton
+                  variant={showGraph ? 'default' : 'ghost'}
+                  icon="graph"
+                  aria-label={showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH}
+                  onClick={() => {
+                    setShowGraph(prev => !prev);
+                    setMobilePanel('content');
+                  }}
+                />
+              )}
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <IconButton
+                    variant="ghost"
+                    icon="ellipsis-horizontal"
+                    aria-label={COPY.SIDEBAR_ACTIONS}
+                  />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <DropdownMenu.Item onSelect={toggleMultiSelectMode}>
+                    {multiSelectMode
+                      ? COPY.TURN_OFF_MULTI_SELECT
+                      : COPY.SELECT_MULTIPLE}
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </div>
+          </div>
           {search && (
             <>
               <TextField.Root
@@ -264,6 +422,20 @@ export const DocsExplorer = ({
                 </div>
               )}
             </>
+          )}
+          {hasSelection && (
+            <div className="flex items-center justify-between text-xs text-gray-500 mt-1.5">
+              <span>
+                {selectedPaths.length} {COPY.SELECTED_SUFFIX}
+              </span>
+              <button
+                type="button"
+                onClick={clearSelection}
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                {COPY.CLEAR_SELECTION}
+              </button>
+            </div>
           )}
         </div>
         <div className="flex-1 overflow-auto">
@@ -292,6 +464,9 @@ export const DocsExplorer = ({
                 nodes={nodes}
                 onFileSelect={selectFile}
                 selectedPath={selectedPath || undefined}
+                selectedPaths={selectedPaths}
+                onToggleSelect={toggleSelectPath}
+                multiSelectMode={multiSelectMode}
               />
             </div>
           )}
@@ -301,12 +476,36 @@ export const DocsExplorer = ({
       <Card
         className={`${MOBILE_NO_CARD_CLS} ${contentVisibilityCls} flex-1 overflow-hidden flex-col`}
       >
-        {!selectedPath ? (
+        {showGraph && renderGraph ? (
+          <div className="relative w-full h-full">
+            <div className="absolute top-2 left-2 z-10 md:hidden">
+              <IconButton
+                variant="ghost"
+                icon="arrow-left"
+                onClick={showSidebarOnMobile}
+                aria-label={COPY.BACK_TO_FILES}
+              />
+            </div>
+            <div className="absolute top-2 right-2 z-10">
+              <IconButton
+                variant="ghost"
+                icon="x"
+                onClick={() => setShowGraph(false)}
+                aria-label={COPY.HIDE_GRAPH}
+              />
+            </div>
+            {renderGraph(selectFile)}
+          </div>
+        ) : !selectedPath && !hasSelection ? (
           <CenteredMessage>{emptyMessage}</CenteredMessage>
-        ) : isLoadingContent ? (
-          <CenteredMessage>{COPY.LOADING_CONTENT}</CenteredMessage>
-        ) : contentError ? (
-          <CenteredMessage tone="error">{contentError}</CenteredMessage>
+        ) : (hasSelection ? isLoadingAggregate : isLoadingContent) ? (
+          <CenteredMessage>
+            {hasSelection ? COPY.LOADING_AGGREGATE : COPY.LOADING_CONTENT}
+          </CenteredMessage>
+        ) : (hasSelection ? aggregateError : contentError) ? (
+          <CenteredMessage tone="error">
+            {hasSelection ? aggregateError : contentError}
+          </CenteredMessage>
         ) : (
           <div className="relative w-full h-full overflow-auto">
             <div className="absolute top-2 left-2 z-10 md:hidden">
@@ -333,7 +532,11 @@ export const DocsExplorer = ({
                         <DropdownMenu.Item
                           key={mode.value}
                           onSelect={() => onViewModeChange?.(mode.value)}
-                          className={currentViewMode === mode.value ? 'font-semibold' : ''}
+                          className={
+                            currentViewMode === mode.value
+                              ? 'font-semibold'
+                              : ''
+                          }
                         >
                           {mode.label}
                         </DropdownMenu.Item>
@@ -341,13 +544,36 @@ export const DocsExplorer = ({
                       <DropdownMenu.Separator />
                     </>
                   )}
-                  {onEdit && (
+                  {onEdit && !isAggregate && (
                     <DropdownMenu.Item onSelect={onEdit}>
                       {COPY.EDIT}
                     </DropdownMenu.Item>
                   )}
+                  {isAggregate && (
+                    <>
+                      <DropdownMenu.RadioGroup
+                        value={aggregateMode}
+                        onValueChange={value =>
+                          setAggregateMode(value as AggregateMode)
+                        }
+                      >
+                        {(Object.values(AGGREGATE_MODE) as AggregateMode[]).map(
+                          mode => (
+                            <DropdownMenu.RadioItem key={mode} value={mode}>
+                              {AGGREGATE_MODE_LABEL[mode]}
+                            </DropdownMenu.RadioItem>
+                          ),
+                        )}
+                      </DropdownMenu.RadioGroup>
+                      <DropdownMenu.Separator />
+                    </>
+                  )}
                   <DropdownMenu.Item
-                    onSelect={() => navigator.clipboard.writeText(content)}
+                    onSelect={() =>
+                      navigator.clipboard.writeText(
+                        hasSelection ? aggregateContent : content,
+                      )
+                    }
                   >
                     {COPY.COPY_MARKDOWN}
                   </DropdownMenu.Item>
@@ -362,10 +588,18 @@ export const DocsExplorer = ({
               </DropdownMenu.Root>
             </div>
             {renderContent ? (
-              renderContent(content)
+              renderContent(
+                hasSelection ? aggregateContent : content,
+                selectFile,
+                hasSelection
+                  ? selectedPaths
+                  : selectedPath
+                    ? [selectedPath]
+                    : [],
+              )
             ) : (
               <pre className="whitespace-pre-wrap px-4 sm:px-6 py-4 text-sm">
-                {content}
+                {hasSelection ? aggregateContent : content}
               </pre>
             )}
           </div>
@@ -395,10 +629,16 @@ const FileTree = ({
   nodes,
   onFileSelect,
   selectedPath,
+  selectedPaths,
+  onToggleSelect,
+  multiSelectMode,
 }: {
   nodes: DocsNode[];
   onFileSelect: (path: string) => void;
   selectedPath?: string;
+  selectedPaths: string[];
+  onToggleSelect: (path: string) => void;
+  multiSelectMode: boolean;
 }) => (
   <div className="w-full">
     {nodes.map(node => (
@@ -407,6 +647,9 @@ const FileTree = ({
         node={node}
         onFileSelect={onFileSelect}
         selectedPath={selectedPath}
+        selectedPaths={selectedPaths}
+        onToggleSelect={onToggleSelect}
+        multiSelectMode={multiSelectMode}
       />
     ))}
   </div>
@@ -416,11 +659,17 @@ const FileTreeNode = ({
   node,
   onFileSelect,
   selectedPath,
+  selectedPaths,
+  onToggleSelect,
+  multiSelectMode,
   depth = 0,
 }: {
   node: DocsNode;
   onFileSelect: (path: string) => void;
   selectedPath?: string;
+  selectedPaths: string[];
+  onToggleSelect: (path: string) => void;
+  multiSelectMode: boolean;
   depth?: number;
 }) => {
   const shouldBeExpanded = selectedPath
@@ -436,6 +685,8 @@ const FileTreeNode = ({
   const handleClick = () => {
     if (node.type === NODE_TYPE_DIRECTORY) {
       setIsExpanded(prev => !prev);
+    } else if (multiSelectMode) {
+      onToggleSelect(node.path);
     } else {
       onFileSelect(node.path);
     }
@@ -461,7 +712,15 @@ const FileTreeNode = ({
           </>
         ) : (
           <>
-            <span className="w-4 h-4 flex-shrink-0" />
+            {multiSelectMode && (
+              <input
+                type="checkbox"
+                className="w-3.5 h-3.5 flex-shrink-0"
+                checked={selectedPaths.includes(node.path)}
+                onClick={e => e.stopPropagation()}
+                onChange={() => onToggleSelect(node.path)}
+              />
+            )}
             <File className="w-4 h-4 flex-shrink-0" />
           </>
         )}
@@ -476,6 +735,9 @@ const FileTreeNode = ({
               node={child}
               onFileSelect={onFileSelect}
               selectedPath={selectedPath}
+              selectedPaths={selectedPaths}
+              onToggleSelect={onToggleSelect}
+              multiSelectMode={multiSelectMode}
               depth={depth + 1}
             />
           ))}

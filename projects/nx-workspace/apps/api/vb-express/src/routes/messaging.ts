@@ -64,8 +64,17 @@ const buildEmails = (
 
 const ERROR_TEXT_MESSAGE_FIELDS_REQUIRED = 'body, from, and to are required';
 const ERROR_SEND_MESSAGE_FAILED = 'Failed to send message';
+const ERROR_EMAIL_FIELDS_REQUIRED = 'to and subject are required';
+const ERROR_SEND_EMAIL_FAILED = 'Failed to send email';
 
 type SendTextMessageBody = { body?: string; from?: string; to?: string };
+type SendEmailBody = {
+  from?: string;
+  to?: string;
+  subject?: string;
+  text?: string;
+  html?: string;
+};
 
 export const messagingRoutes: FastifyPluginAsync = async app => {
   app.post('/send-text-message', async (req, reply) => {
@@ -87,6 +96,39 @@ export const messagingRoutes: FastifyPluginAsync = async app => {
       success: true,
       sid: result.sid,
     };
+  });
+
+  app.post('/send-email', async (req, reply) => {
+    const email = req.body as SendEmailBody;
+
+    if (!email.to || !email.subject) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_EMAIL_FIELDS_REQUIRED });
+    }
+
+    try {
+      const response = await fetch(
+        `${EMAIL_SERVICE_URL}/${EMAIL_SERVICE_ENDPOINT.SEND_EMAIL}`,
+        {
+          method: HTTP_METHOD.POST,
+          headers: {
+            [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE,
+            [API_KEY_HEADER]: SHARED_APP_TOKEN ?? '',
+          },
+          body: JSON.stringify(email),
+        },
+      );
+      if (!response.ok) {
+        throw new Error(`Email service responded with ${response.status}`);
+      }
+      return reply.send({ success: true });
+    } catch (err) {
+      console.error('Failed to send email:', (err as Error).message);
+      return reply
+        .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .send({ error: ERROR_SEND_EMAIL_FAILED });
+    }
   });
 };
 

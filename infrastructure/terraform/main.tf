@@ -27,6 +27,10 @@ terraform {
       source  = "oracle/oci"
       version = "~> 6.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.0"
@@ -57,6 +61,11 @@ provider "cloudflare" {}
 provider "oci" {
   config_file_profile = "DEFAULT"
   region              = "ca-toronto-1"
+}
+
+provider "aws" {
+  region  = var.aws_region
+  profile = "AdministratorAccess-841376026547"
 }
 
 # Reads SUPABASE_ACCESS_TOKEN from env (personal access token from
@@ -243,7 +252,18 @@ resource "google_iam_workload_identity_pool_provider" "github" {
     "attribute.aud"        = "assertion.aud"
   }
 
-  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}'"
+  # This SA is broadly privileged (roles/editor, project-wide secretAccessor,
+  # serviceAccountAdmin). pull_request runs execute their workflow YAML from
+  # the PR branch, so a PR that could mint a token through this provider could
+  # edit its own workflow to impersonate this SA and read the whole store —
+  # so pull_request tokens are refused here and must use the github-pr-check
+  # provider (narrow SA, github-actions-pr-check.tf) instead. Verified safe:
+  # ci-pr-check.yml is the only pull_request-triggered workflow, and no
+  # push/dispatch/workflow_call/workflow_run flow that legitimately uses this
+  # provider ever carries event_name == "pull_request" (workflow_call tokens
+  # keep the originating event's name, and deploy.yml's only caller is the
+  # dispatch-triggered ci-rotate-secrets.yml).
+  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}' && assertion.event_name != 'pull_request'"
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
@@ -594,4 +614,26 @@ resource "cloudflare_r2_bucket" "vibecheck" {
   account_id = var.cloudflare_account_id
   name       = "vibecheck-bucket"
   location   = "ENAM"
+}
+
+# hearth's bucket, created before Terraform adoption — not itself a cloudflare_r2_bucket resource here,
+# but bucket_name is just a string so CORS can still be managed without importing the bucket.
+resource "cloudflare_r2_bucket_cors" "home_management" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = "home-management"
+
+  rules = [
+    {
+      allowed = {
+        methods = ["PUT"]
+        origins = [
+          "http://localhost:3000",
+          "http://localhost:4200",
+          "https://staging-hearth.vercel.app",
+          "https://production-hearth.vercel.app",
+        ]
+        headers = ["Content-Type"]
+      }
+    }
+  ]
 }

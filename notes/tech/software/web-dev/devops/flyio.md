@@ -1,5 +1,17 @@
 # FlyIO
 
+## Free Tier
+
+- Organizations created on Pay As You Go after 2024-10-07 get **no free allowance** — everything below is billed. Legacy Hobby/Launch/Scale orgs keep up to 3 `shared-cpu-1x` 256MB VMs and 3GB total volume storage.
+- IPs — relevant when locking an app to the private 6PN network:
+  - Shared IPv4: free (one per app).
+  - Anycast IPv6: free, unlimited.
+  - Flycast (private IPv6, `fly ips allocate-v6 --private`): free — private-only apps cost nothing in IP terms.
+  - Dedicated IPv4: $2/mo — the only IP that costs money, so release it when an app goes private.
+- Machines: `shared-cpu-1x` 256MB ≈ $0.0028/hr (~$2.02/mo if always on). `auto_stop_machines = 'stop'` with `min_machines_running = 0` is what keeps idle services near $0.
+- Volumes: $0.15/GB/mo provisioned (billed hourly). Snapshots $0.08/GB/mo, first 10GB/mo free.
+- Bandwidth: inbound and same-region transfer free; North America/Europe egress $0.02/GB. Service-to-service calls over flycast stay on the private network and skip egress billing.
+
 ## Commands
 
 ```

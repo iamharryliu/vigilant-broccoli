@@ -8,6 +8,7 @@ import {
   CreateBucketCommand,
   HeadBucketCommand,
 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import {
   IBucketProvider,
   CloudflareBucketConfig,
@@ -88,6 +89,19 @@ export class CloudflareBucketProvider implements IBucketProvider {
         Body: buffer,
       }),
     );
+  }
+
+  async uploadStream(destinationName: string, stream: Readable): Promise<void> {
+    await this.ensureBucketExists();
+    const upload = new Upload({
+      client: this.client,
+      params: {
+        Bucket: this.bucketName,
+        Key: destinationName,
+        Body: stream,
+      },
+    });
+    await upload.done();
   }
 
   async download(fileName: string, destinationPath: string): Promise<void> {

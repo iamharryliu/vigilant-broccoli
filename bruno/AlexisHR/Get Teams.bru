@@ -1,0 +1,23 @@
+meta {
+  name: Get Teams
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://api.alexishr.com/v1/team
+  body: none
+  auth: none
+}
+
+params:query {
+  ~select: SOME_ARRAY_VALUE
+  ~filters: SOME_OBJECT_VALUE
+  ~limit: SOME_INTEGER_VALUE
+  ~offset: SOME_INTEGER_VALUE
+  ~sort: SOME_OBJECT_VALUE
+}
+
+headers {
+  Authorization: Bearer {{process.env.ALEXISHR_API_KEY}}
+}

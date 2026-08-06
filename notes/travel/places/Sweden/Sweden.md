@@ -4,6 +4,7 @@
   - [Malmö](./Malmö.md)
 - [Immigration to Sweden](./immigration-to-sweden.md)
 - [Sweden Utility](./sweden-utility.md)
+- [Driving in Sweden](./driving-in-sweden.md)
 - [Swedish](../../../learn/language-learning/swedish/swedish.md)
 
 ## Utility

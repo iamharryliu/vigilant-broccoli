@@ -11,12 +11,16 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: test-e2e-rabbitmq
+  cancel-in-progress: true
+
 jobs:
   test-rabbitmq:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -45,11 +49,12 @@ jobs:
           RMQ_USER="${USER_PASS%%:*}"
           RMQ_PASS="${USER_PASS#*:}"
           RMQ_HOST="${HOST_PORT%%:*}"
+          echo "::add-mask::$RMQ_HOST"
+          echo "::add-mask::$RMQ_USER"
           echo "::add-mask::$RMQ_PASS"
           echo "RMQ_HOST=$RMQ_HOST" >> $GITHUB_ENV
           echo "RMQ_USER=$RMQ_USER" >> $GITHUB_ENV
           echo "RMQ_PASS=$RMQ_PASS" >> $GITHUB_ENV
-          echo "Parsed broker host: $RMQ_HOST (user: $RMQ_USER)"
 
       - name: Verify broker TLS certificate chain
         env:
@@ -83,6 +88,8 @@ jobs:
           RMQ_PASS: ${{ env.RMQ_PASS }}
         run: |
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
+          RMQ_NETRC=$(mktemp)
+          printf 'machine rabbitmq login %s password %s\n' "$RMQ_USER" "$RMQ_PASS" > "$RMQ_NETRC"
           # The broker cert's SAN is 'rabbitmq' (not the public host), so we
           # connect to the real host but present/verify SNI 'rabbitmq' against
           # the CA. --connect-to resolves the host itself, so it works whether
@@ -91,11 +98,12 @@ jobs:
             STATUS=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 10 \
               --cacert /tmp/rabbitmq-ca.crt \
               --connect-to "rabbitmq:15671:${RMQ_HOST}:15671" \
-              -u "${RMQ_USER}:${RMQ_PASS}" \
+              --netrc-file "$RMQ_NETRC" \
               "https://rabbitmq:15671/api/overview") || STATUS="000"
             [ "$STATUS" = "200" ] && break
             [ "$attempt" -lt 3 ] && sleep 5
           done
+          rm -f "$RMQ_NETRC"
           echo "Management /api/overview status: $STATUS"
           if [ "$STATUS" != "200" ]; then
             echo "✗ Management UI check failed"

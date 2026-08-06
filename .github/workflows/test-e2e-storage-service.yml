@@ -33,9 +33,9 @@ jobs:
         provider: [gcs, cloudflare-r2]
     name: ${{ matrix.environment }} ${{ matrix.provider }}
     env:
-      SERVICE_URL: https://${{ matrix.environment }}-vb-storage-service.fly.dev
+      SERVICE_URL: http://127.0.0.1:3000
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
@@ -44,6 +44,11 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: ${{ matrix.environment }}-storage-service
 
       - name: Prepare test fixture
         id: fixture
@@ -58,6 +63,18 @@ jobs:
           echo "Fixture: ${FILE_PATH}"
           cat "${FILE_PATH}"
           echo ""
+
+      - name: Prepare streaming test fixture
+        id: stream_fixture
+        run: |
+          FILE_NAME="ci-test-stream-${{ matrix.environment }}-${{ matrix.provider }}-${{ github.run_id }}-${{ github.run_attempt }}.bin"
+          FILE_PATH="/tmp/${FILE_NAME}"
+          head -c $((20 * 1024 * 1024)) /dev/urandom > "${FILE_PATH}"
+          FILE_CHECKSUM=$(sha256sum "${FILE_PATH}" | awk '{print $1}')
+          echo "file_name=${FILE_NAME}" >> $GITHUB_OUTPUT
+          echo "file_path=${FILE_PATH}" >> $GITHUB_OUTPUT
+          echo "file_checksum=${FILE_CHECKSUM}" >> $GITHUB_OUTPUT
+          echo "Fixture: ${FILE_PATH} (${FILE_CHECKSUM})"
 
       - name: Upload (POST /api/bucket)
         env:
@@ -155,6 +172,102 @@ jobs:
           fi
           echo "✓ Post-delete verification passed"
 
+      - name: Upload (POST /api/bucket/stream)
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/stream-response.json -w '%{http_code}' \
+            -X POST "${{ env.SERVICE_URL }}/api/bucket/stream?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}" \
+            -F "files=@${{ steps.stream_fixture.outputs.file_path }}")
+          echo "Response status: $STATUS"
+          cat /tmp/stream-response.json; echo
+          if [ "$STATUS" != "200" ]; then
+            echo "✗ Streaming upload failed"
+            exit 1
+          fi
+          if ! grep -q "${{ steps.stream_fixture.outputs.file_name }}" /tmp/stream-response.json; then
+            echo "✗ Streaming upload response missing uploaded file name"
+            exit 1
+          fi
+          echo "✓ Streaming upload passed"
+
+      - name: List (GET /api/bucket) — streamed fixture must be present
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/stream-list.json -w '%{http_code}' \
+            -X GET "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}")
+          echo "Response status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            cat /tmp/stream-list.json; echo
+            echo "✗ List failed"
+            exit 1
+          fi
+          if ! jq -e --arg name "${{ steps.stream_fixture.outputs.file_name }}" 'any(.[]; .name == $name)' /tmp/stream-list.json > /dev/null; then
+            echo "✗ Streamed file not found in list"
+            jq '.[].name' /tmp/stream-list.json | head -20
+            exit 1
+          fi
+          echo "✓ List passed"
+
+      - name: Read (GET /api/bucket/:fileName) — streamed content checksum must match
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/stream-download.bin -w '%{http_code}' \
+            -X GET "${{ env.SERVICE_URL }}/api/bucket/${{ steps.stream_fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}")
+          echo "Response status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            cat /tmp/stream-download.bin; echo
+            echo "✗ Read failed"
+            exit 1
+          fi
+          DOWNLOADED_CHECKSUM=$(sha256sum /tmp/stream-download.bin | awk '{print $1}')
+          EXPECTED_CHECKSUM="${{ steps.stream_fixture.outputs.file_checksum }}"
+          if [ "$DOWNLOADED_CHECKSUM" != "$EXPECTED_CHECKSUM" ]; then
+            echo "✗ Read content checksum mismatch"
+            echo "expected: $EXPECTED_CHECKSUM"
+            echo "got:      $DOWNLOADED_CHECKSUM"
+            exit 1
+          fi
+          echo "✓ Read passed"
+
+      - name: Delete (DELETE /api/bucket/:fileName) — streamed fixture
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/stream-response.json -w '%{http_code}' \
+            -X DELETE "${{ env.SERVICE_URL }}/api/bucket/${{ steps.stream_fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}")
+          echo "Response status: $STATUS"
+          cat /tmp/stream-response.json; echo
+          if [ "$STATUS" != "200" ]; then
+            echo "✗ Delete failed"
+            exit 1
+          fi
+          echo "✓ Delete passed"
+
+      - name: Verify deletion — streamed fixture must be absent from list
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+        run: |
+          STATUS=$(curl -s -o /tmp/stream-list.json -w '%{http_code}' \
+            -X GET "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}")
+          if [ "$STATUS" != "200" ]; then
+            cat /tmp/stream-list.json; echo
+            echo "✗ Post-delete list failed"
+            exit 1
+          fi
+          if jq -e --arg name "${{ steps.stream_fixture.outputs.file_name }}" 'any(.[]; .name == $name)' /tmp/stream-list.json > /dev/null; then
+            echo "✗ Deleted streamed file still present in list"
+            exit 1
+          fi
+          echo "✓ Post-delete verification passed"
+
       - name: Cleanup on failure
         if: failure()
         env:
@@ -162,4 +275,7 @@ jobs:
         run: |
           curl -s -o /dev/null -w 'cleanup status: %{http_code}\n' \
             -X DELETE "${{ env.SERVICE_URL }}/api/bucket/${{ steps.fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
+            -H "x-api-key: ${API_KEY}" || true
+          curl -s -o /dev/null -w 'stream cleanup status: %{http_code}\n' \
+            -X DELETE "${{ env.SERVICE_URL }}/api/bucket/${{ steps.stream_fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}" || true

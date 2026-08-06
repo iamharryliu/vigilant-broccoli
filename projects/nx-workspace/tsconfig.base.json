@@ -48,6 +48,9 @@
       "@vigilant-broccoli/react-lib/live-location-map": [
         "./libs/@vigilant-broccoli/react-lib/src/live-location/LiveUserMap.tsx"
       ],
+      "@vigilant-broccoli/react-lib/toaster": [
+        "./libs/@vigilant-broccoli/react-lib/src/components/Toaster.tsx"
+      ],
       "general-components": ["./libs/angular/general-components/src/index.ts"],
       "@vigilant-broccoli/personal-common-js": [
         "./libs/@vigilant-broccoli/personal-common-js/src/index.ts"
@@ -100,6 +103,12 @@
       ],
       "@vigilant-broccoli/deployment": [
         "./libs/@vigilant-broccoli/deployment/src/index.ts"
+      ],
+      "@vigilant-broccoli/resume": [
+        "./libs/@vigilant-broccoli/resume/src/index.ts"
+      ],
+      "@vigilant-broccoli/resume/server": [
+        "./libs/@vigilant-broccoli/resume/src/server.ts"
       ]
     }
   },

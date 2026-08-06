@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 INIT_OUTPUT=$(gcloud compute ssh "${VM_NAME}" \
   --zone="${GCP_ZONE}" \
@@ -45,15 +46,10 @@ fi
 # and in revoke-vault-root-token.sh. It's piped over stdin rather than
 # interpolated into --command so it never appears in `ps` on the VM.
 echo "Configuring Vault..."
-printf '%s' "$VAULT_TOKEN" | gcloud compute ssh "${VM_NAME}" \
-  --zone="${GCP_ZONE}" \
-  --tunnel-through-iap \
-  --command="
+gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" "
 set -e
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=\$(cat)
-export VAULT_TOKEN
 
 echo 'Enabling KV v2 at ${VAULT_KV_PATH}/...'
 vault secrets enable -path=${VAULT_KV_PATH} kv-v2 2>/dev/null || echo '  already enabled'
@@ -143,27 +139,47 @@ vault write auth/approle/role/${VAULT_OPS_ROLE_NAME} \
   token_max_ttl=30m \
   secret_id_ttl=90d
 
+# ci-pr-check.yml is pull_request-triggered — it runs the workflow YAML from
+# the PR branch itself, so (unlike every other consumer of this script's
+# roles) its identity is reachable by anyone who gets a PR check to run.
+# Scoped to one path holding exactly one low-privilege, easily-rotated key —
+# not kv/data/secrets, which every other role here can read in full.
+echo 'Writing policy ${VAULT_PR_CHECK_POLICY_NAME}...'
+vault policy write ${VAULT_PR_CHECK_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/ci-pr-check\" {
+  capabilities = [\"read\"]
+}
+POLICY
+
+echo 'Creating role ${VAULT_PR_CHECK_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_PR_CHECK_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims_type\": \"glob\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/ci-pr-check.yml@*\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_PR_CHECK_POLICY_NAME}\"],
+  \"ttl\": \"30m\"
+}
+ROLE
+
 echo 'Creating kv/test placeholder...'
 vault kv put ${VAULT_KV_PATH}/test test=test
 
 echo 'Done.'
-"
+" VAULT_TOKEN "$VAULT_TOKEN"
 
-# role_id is not sensitive (Vault's AppRole design treats it like a username),
-# but it's still piped over stdin alongside VAULT_TOKEN for consistency and to
-# keep this call identical in shape to the rest of the ops-token plumbing.
 echo "Fetching AppRole role_id for ${VAULT_OPS_ROLE_NAME}..."
-OPS_ROLE_ID=$(printf '%s' "$VAULT_TOKEN" | gcloud compute ssh "${VM_NAME}" \
-  --zone="${GCP_ZONE}" \
-  --tunnel-through-iap \
-  --command="
+OPS_ROLE_ID=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=\$(cat)
-export VAULT_TOKEN
 
-vault read -field=role_id auth/approle/role/${VAULT_OPS_ROLE_NAME}/role-id
-" 2>/dev/null | tr -d '[:space:]')
+vault read -field=role_id auth/approle/role/'"${VAULT_OPS_ROLE_NAME}"'/role-id
+' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null | tr -d '[:space:]')
 
 echo -n "$OPS_ROLE_ID" | gcloud secrets versions add VB_VM_VAULT_OPS_ROLE_ID \
   --data-file=- --project="${GCP_PROJECT}"
@@ -173,17 +189,12 @@ if gcloud secrets versions list VB_VM_VAULT_OPS_SECRET_ID --project="${GCP_PROJE
   echo "AppRole secret_id already present in Secret Manager — leaving it in place."
 else
   echo "Generating AppRole secret_id for ${VAULT_OPS_ROLE_NAME}..."
-  OPS_SECRET_ID=$(printf '%s' "$VAULT_TOKEN" | gcloud compute ssh "${VM_NAME}" \
-    --zone="${GCP_ZONE}" \
-    --tunnel-through-iap \
-    --command="
+  OPS_SECRET_ID=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=\$(cat)
-export VAULT_TOKEN
 
-vault write -f -field=secret_id auth/approle/role/${VAULT_OPS_ROLE_NAME}/secret-id
-" 2>/dev/null | tr -d '[:space:]')
+vault write -f -field=secret_id auth/approle/role/'"${VAULT_OPS_ROLE_NAME}"'/secret-id
+' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null | tr -d '[:space:]')
 
   echo -n "$OPS_SECRET_ID" | gcloud secrets versions add VB_VM_VAULT_OPS_SECRET_ID \
     --data-file=- --project="${GCP_PROJECT}"

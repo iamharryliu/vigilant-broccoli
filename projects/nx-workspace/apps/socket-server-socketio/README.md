@@ -1,5 +1,11 @@
 # Socket Server (Socket.IO)
 
+WebSocket server for real-time bidirectional communication.
+
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript

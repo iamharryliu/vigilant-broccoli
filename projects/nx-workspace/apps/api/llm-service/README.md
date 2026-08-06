@@ -5,8 +5,6 @@
 - Language - TypeScript
 - Framework - Fastify
 - Build Tool - webpack
-- External libs
-  - Anthropic SDK, OpenAI SDK
 - Internal libs
   - `common-js`
   - `common-node`
@@ -15,4 +13,7 @@
 - Cloud services
   - Anthropic API
   - OpenAI API
+  - DeepSeek API
+  - xAI (Grok) API
+  - Google Gemini API
   - Fly.io

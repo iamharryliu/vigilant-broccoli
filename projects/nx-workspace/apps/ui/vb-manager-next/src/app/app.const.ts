@@ -56,6 +56,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'React Sandbox',
     path: '/react-sandbox',
   },
+  CAREER: {
+    title: 'Career',
+    path: '/career',
+  },
 };
 
 const APP_ROUTE_SUBGROUP = 'vb-manager-next';

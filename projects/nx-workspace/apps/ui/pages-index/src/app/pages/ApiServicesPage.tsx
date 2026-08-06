@@ -1,28 +1,44 @@
 import { useTranslation } from '../i18n';
-import { PageHeader } from '../components/PageHeader';
-import { CardLink } from '../components/CardLink';
-import { CardGrid } from '../components/CardGrid';
+import { CardListPage, CardListItem } from '../components/CardListPage';
+import { toApiServiceDocsHref } from '../consts/apiServices';
 
 export function ApiServicesPage() {
   const { t } = useTranslation();
 
-  return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <PageHeader
-        title={t('API_SERVICES_PAGE.TITLE')}
-        description={t('API_SERVICES_PAGE.DESCRIPTION')}
-      />
+  const items: CardListItem[] = [
+    {
+      key: 'email-service',
+      href: toApiServiceDocsHref('email-service'),
+      title: t('API_SERVICES_PAGE.EMAIL_SERVICE.TITLE'),
+      description: t('API_SERVICES_PAGE.EMAIL_SERVICE.DESCRIPTION'),
+    },
+    {
+      key: 'email-subscription-service',
+      href: toApiServiceDocsHref('email-subscription-service'),
+      title: t('API_SERVICES_PAGE.EMAIL_SUBSCRIPTION_SERVICE.TITLE'),
+      description: t(
+        'API_SERVICES_PAGE.EMAIL_SUBSCRIPTION_SERVICE.DESCRIPTION',
+      ),
+    },
+    {
+      key: 'llm-service',
+      href: toApiServiceDocsHref('llm-service'),
+      title: t('API_SERVICES_PAGE.LLM_SERVICE.TITLE'),
+      description: t('API_SERVICES_PAGE.LLM_SERVICE.DESCRIPTION'),
+    },
+    {
+      key: 'bucket-service',
+      href: toApiServiceDocsHref('bucket-service'),
+      title: t('API_SERVICES_PAGE.STORAGE_SERVICE.TITLE'),
+      description: t('API_SERVICES_PAGE.STORAGE_SERVICE.DESCRIPTION'),
+    },
+  ];
 
-      <CardGrid>
-        <li>
-          <CardLink
-            route
-            href="/api-docs"
-            title={t('API_SERVICES_PAGE.API_DOCS.TITLE')}
-            description={t('API_SERVICES_PAGE.API_DOCS.DESCRIPTION')}
-          />
-        </li>
-      </CardGrid>
-    </main>
+  return (
+    <CardListPage
+      title={t('API_SERVICES_PAGE.TITLE')}
+      description={t('API_SERVICES_PAGE.DESCRIPTION')}
+      items={items}
+    />
   );
 }

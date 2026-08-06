@@ -2,6 +2,13 @@
 
 Shared life for homes, communes, and communities.
 
+## Table of Contents
+
+- [Deployment URLs](#deployment-urls)
+- [Stack](#stack)
+
+## Deployment URLs
+
 - [Supabase](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx)
   - [Users](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/auth/users)
   - [SQL Editor](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/sql)
@@ -19,11 +26,12 @@ Shared life for homes, communes, and communities.
   - Radix Themes, lucide-react, recharts
   - Leaflet / react-leaflet, FullCalendar
   - Zod
+  - AWS SDK (S3 client, for Cloudflare R2)
 - Internal libs
   - `common-js`
   - `common-node`
   - `react-lib`
 - Cloud services
   - Supabase (auth + data)
-  - AWS S3 (`home-management` bucket)
+  - Cloudflare R2 (`home-management` bucket)
   - Vercel

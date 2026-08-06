@@ -15,6 +15,8 @@ export VAULT_POLICY_NAME="github-actions-policy"
 export VAULT_ROLE_NAME="github-actions-role"
 export VAULT_ROTATE_POLICY_NAME="github-actions-rotate-policy"
 export VAULT_ROTATE_ROLE_NAME="github-actions-rotate-role"
+export VAULT_PR_CHECK_POLICY_NAME="github-actions-pr-check-policy"
+export VAULT_PR_CHECK_ROLE_NAME="github-actions-pr-check-role"
 export VAULT_JWT_ISSUER="https://token.actions.githubusercontent.com"
 
 # AppRole used by operator scripts (run-vault-*.sh, rotate-*.sh, post-apply.sh)

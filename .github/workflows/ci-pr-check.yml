@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: ci-pr-check-${{ github.ref }}
@@ -16,26 +17,97 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
+      - name: Check for nx-workspace changes
+        id: check
+        run: |
+          NX_WORKSPACE_PATHS='^(projects/nx-workspace/|\.github/(workflows/ci-pr-check\.yml|actions/setup-nx-workspace/))'
+          if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | grep -qE "$NX_WORKSPACE_PATHS"; then
+            echo "nx-workspace-changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "nx-workspace-changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: ./.github/actions/setup-nx-workspace
+        if: steps.check.outputs.nx-workspace-changed == 'true'
+
+      # pull_request runs execute this workflow's YAML from the PR branch
+      # itself, so (unlike every other workflow in this repo) anyone who gets
+      # a PR check to run could edit this file to request a different secret.
+      # That's why this does NOT use secrets.GCP_WORKLOAD_IDENTITY_PROVIDER /
+      # GCP_SERVICE_ACCOUNT (the broad SA — roles/editor, project-wide Secret
+      # Manager access, serviceAccountAdmin) or the default Vault role (reads
+      # all of kv/data/secrets). Both are hardcoded literals, not secrets —
+      # see outputs.tf's github_actions_pr_check_* outputs for why that's
+      # safe — and both are narrowly scoped: the WIF provider only trusts
+      # job_workflow_ref=ci-pr-check.yml, the SA can only read the two
+      # Cloudflare Access secrets, and the Vault role's policy can only read
+      # kv/data/ci-pr-check (one path, one low-privilege token), not the
+      # shared secret store. continue-on-error because none of this is
+      # load-bearing — worst case a PR just runs without a warm cache.
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        continue-on-error: true
+        with:
+          gcp_workload_identity_provider: projects/88091895337/locations/global/workloadIdentityPools/github-actions/providers/github-pr-check
+          gcp_service_account: github-actions-pr-check@vigilant-broccoli.iam.gserviceaccount.com
+          role: github-actions-pr-check-role
+          secrets: |
+            kv/data/ci-pr-check NX_CACHE_READ_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
       - name: Lint, test, build affected
+        if: steps.check.outputs.nx-workspace-changed == 'true'
         working-directory: ./projects/nx-workspace
-        run: pnpm exec nx affected -t lint test build --base=$NX_BASE --head=$NX_HEAD
+        env:
+          # Enable the remote cache only when the token was actually fetched.
+          # Nx treats a configured-but-unreachable/unauthenticated cache as a
+          # fatal "Misconfigured remote cache endpoint" (the 401 fails the whole
+          # run), so setting the server URL with an empty token — e.g. when the
+          # Vault step above failed (continue-on-error), or before the role/token
+          # is provisioned — would break every PR. Leaving the server var UNSET
+          # makes Nx fall back to the local cache silently instead.
+          NX_CACHE_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+        run: |
+          if [ -n "$NX_CACHE_TOKEN" ]; then
+            export NX_SELF_HOSTED_REMOTE_CACHE_SERVER=https://nx-cache.harryliu.dev
+            export NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN="$NX_CACHE_TOKEN"
+          else
+            echo "nx remote cache token unavailable — building with local cache only."
+          fi
+          pnpm exec nx affected -t lint test build --base=$NX_BASE --head=$NX_HEAD
 
   pre-commit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
 
-      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+      # pre-commit/action@v3.0.1 (its latest release) pins actions/cache@v4 by
+      # a mutable tag, which resolves to a Node 20 action and triggers the
+      # deprecation warning — so its steps are inlined here with a pinned,
+      # Node 24-compatible actions/cache instead.
+      - name: Install pre-commit
+        run: python -m pip install pre-commit
+
+      - name: Cache pre-commit envs
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
+      # nvim-tmux-config-smoketest (see .pre-commit-config.yaml) needs a real nvim binary;
+      # tmux is already preinstalled on this image.
+      - name: Install neovim
+        run: sudo apt-get update && sudo apt-get install -y neovim
+
+      - name: Run pre-commit
         env:
           SKIP: grind-75-tests,lint-staged
+        run: pre-commit run --show-diff-on-failure --color=always --all-files

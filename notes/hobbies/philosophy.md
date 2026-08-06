@@ -16,3 +16,4 @@
 ## Philosophy Lingo
 
 - Hedonism - Pleasure is the goal of human life.
+- Accept not wanting to chasing highs or escaping pain.

@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
 import { Badge, Dialog, Text } from '@radix-ui/themes';
-import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  EllipsisCTA,
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+} from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, Meal } from '../../../lib/types';
 import { MealForm, MealFormData } from './MealForm';
 
@@ -164,7 +168,10 @@ export function MealList({
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 440 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 440 }}
+        >
           <Dialog.Title>
             {modal?.type === 'edit' ? 'Edit Meal' : 'Add Meal'}
           </Dialog.Title>

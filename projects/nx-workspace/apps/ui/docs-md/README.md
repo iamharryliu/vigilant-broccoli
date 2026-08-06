@@ -1,6 +1,6 @@
 # Docs MD
 
-Renders repo markdown docs via the GitHub API.
+Renders repo markdown docs fetched at build/runtime.
 
 ## Stack
 
@@ -15,5 +15,4 @@ Renders repo markdown docs via the GitHub API.
   - `react-lib`
   - `react-utility`
 - Cloud services
-  - GitHub API
   - Cloudflare Pages (docs.harryliu.dev)
