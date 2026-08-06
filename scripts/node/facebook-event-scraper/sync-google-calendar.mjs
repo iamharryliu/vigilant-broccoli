@@ -1,0 +1,184 @@
+// Usage:
+//   node sync-google-calendar.mjs [inputFile]   (default: events.out.json)
+//
+// Upserts scraped events into a dedicated "Malmö Latin Dance Events" Google
+// Calendar — never an existing calendar. The calendar is owned by a Google
+// service account (GOOGLE_CALENDAR_SA_CREDENTIALS, Terraform-managed — see
+// infrastructure/terraform/main.tf's google_calendar_manager resources) and
+// shared back to a personal account, since personal Gmail accounts have no
+// Workspace domain to grant domain-wide delegation over. Looked up by name
+// each run rather than cached locally, so there's no local state to desync.
+//
+// Calendar events use a deterministic ID derived from the Facebook event ID,
+// so reruns update in place instead of duplicating, and events no longer
+// present in the input are removed from the calendar.
+
+import { google } from 'googleapis';
+import { execSync } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+
+const GCP_PROJECT = 'vigilant-broccoli';
+const CALENDAR_SA_SECRET_NAME = 'GOOGLE_CALENDAR_SA_CREDENTIALS';
+const CALENDAR_SCOPES = ['https://www.googleapis.com/auth/calendar'];
+
+const CALENDAR_NAME = 'Malmö Latin Dance Events';
+const CALENDAR_TIME_ZONE = 'Europe/Stockholm';
+const SHARE_WITH_EMAIL = 'harryliu1995@gmail.com';
+const CALENDAR_SHARE_ROLE = 'owner';
+
+const DEFAULT_INPUT_PATH = 'events.out.json';
+const FACEBOOK_EVENT_ID_PREFIX = 'fbevent';
+const HTTP_CONFLICT = 409;
+const EVENTS_LIST_MAX_RESULTS = 2500;
+
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+const DATE_TIME_RANGE_PATTERN =
+  /^\w+, (?<month>\w+) (?<day>\d{1,2}), (?<year>\d{4}) at (?<startHour>\d{1,2}):(?<startMinute>\d{2}) (?<startPeriod>AM|PM)\s*[–-]\s*(?<endHour>\d{1,2}):(?<endMinute>\d{2}) (?<endPeriod>AM|PM)/;
+
+const pad = n => String(n).padStart(2, '0');
+const to24Hour = (hour, period) => {
+  const hour12 = Number(hour) % 12;
+  return period.toUpperCase() === 'PM' ? hour12 + 12 : hour12;
+};
+const buildLocalDateTime = (year, month, day, hour, minute) =>
+  `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${minute}:00`;
+
+const parseEventDateTimeRange = dateTimeText => {
+  const match = dateTimeText.match(DATE_TIME_RANGE_PATTERN);
+  if (!match) return null;
+
+  const { month, day, year, startHour, startMinute, startPeriod, endHour, endMinute, endPeriod } = match.groups;
+  const monthNumber = MONTH_NAMES.indexOf(month) + 1;
+  if (!monthNumber) return null;
+
+  const startHour24 = to24Hour(startHour, startPeriod);
+  const endHour24 = to24Hour(endHour, endPeriod);
+
+  let endYear = Number(year);
+  let endMonth = monthNumber;
+  let endDay = Number(day);
+  if (endHour24 * 60 + Number(endMinute) <= startHour24 * 60 + Number(startMinute)) {
+    const nextDay = new Date(Date.UTC(endYear, endMonth - 1, endDay + 1));
+    endYear = nextDay.getUTCFullYear();
+    endMonth = nextDay.getUTCMonth() + 1;
+    endDay = nextDay.getUTCDate();
+  }
+
+  return {
+    start: buildLocalDateTime(year, monthNumber, day, startHour24, startMinute),
+    end: buildLocalDateTime(endYear, endMonth, endDay, endHour24, endMinute),
+  };
+};
+
+const fetchServiceAccountCredentials = () => {
+  const json = execSync(
+    `gcloud secrets versions access latest --secret=${CALENDAR_SA_SECRET_NAME} --project=${GCP_PROJECT}`,
+    { encoding: 'utf8' },
+  );
+  return JSON.parse(json);
+};
+
+const createCalendarClient = () => {
+  const auth = new google.auth.GoogleAuth({
+    credentials: fetchServiceAccountCredentials(),
+    scopes: CALENDAR_SCOPES,
+  });
+  return google.calendar({ version: 'v3', auth });
+};
+
+const findOrCreateCalendar = async calendar => {
+  const { data } = await calendar.calendarList.list();
+  const existing = data.items?.find(item => item.summary === CALENDAR_NAME);
+  if (existing) return existing.id;
+
+  const { data: created } = await calendar.calendars.insert({
+    requestBody: { summary: CALENDAR_NAME, timeZone: CALENDAR_TIME_ZONE },
+  });
+
+  await calendar.acl.insert({
+    calendarId: created.id,
+    requestBody: { role: CALENDAR_SHARE_ROLE, scope: { type: 'user', value: SHARE_WITH_EMAIL } },
+  });
+
+  console.error(`Created calendar "${CALENDAR_NAME}" (${created.id}) and shared it with ${SHARE_WITH_EMAIL}`);
+  return created.id;
+};
+
+const buildCalendarEventId = facebookEventId => `${FACEBOOK_EVENT_ID_PREFIX}${facebookEventId}`;
+
+const buildEventRequestBody = (event, range) => ({
+  id: buildCalendarEventId(event.id),
+  summary: event.title,
+  description: [event.description, event.url].filter(Boolean).join('\n\n'),
+  location: event.location,
+  start: { dateTime: range.start, timeZone: CALENDAR_TIME_ZONE },
+  end: { dateTime: range.end, timeZone: CALENDAR_TIME_ZONE },
+});
+
+const upsertEvent = async (calendar, calendarId, event, range) => {
+  const requestBody = buildEventRequestBody(event, range);
+  try {
+    await calendar.events.insert({ calendarId, requestBody });
+  } catch (error) {
+    if (error.code !== HTTP_CONFLICT) throw error;
+    await calendar.events.update({ calendarId, eventId: requestBody.id, requestBody });
+  }
+};
+
+const deleteStaleEvents = async (calendar, calendarId, currentEventIds) => {
+  const { data } = await calendar.events.list({
+    calendarId,
+    showDeleted: false,
+    maxResults: EVENTS_LIST_MAX_RESULTS,
+  });
+
+  const staleEvents = (data.items || []).filter(
+    item => item.id?.startsWith(FACEBOOK_EVENT_ID_PREFIX) && !currentEventIds.has(item.id),
+  );
+
+  for (const staleEvent of staleEvents) {
+    await calendar.events.delete({ calendarId, eventId: staleEvent.id });
+    console.error(`Removed stale event: ${staleEvent.summary}`);
+  }
+};
+
+const runSync = async inputPath => {
+  const events = JSON.parse(await readFile(inputPath, 'utf8'));
+  const calendar = createCalendarClient();
+  const calendarId = await findOrCreateCalendar(calendar);
+
+  const syncedEventIds = new Set();
+  let skipped = 0;
+
+  for (const event of events) {
+    const range = event.dateTime ? parseEventDateTimeRange(event.dateTime) : null;
+    if (!range) {
+      console.error(`Skipping "${event.title}" — could not parse date/time: ${event.dateTime ?? '(none)'}`);
+      skipped++;
+      continue;
+    }
+
+    await upsertEvent(calendar, calendarId, event, range);
+    syncedEventIds.add(buildCalendarEventId(event.id));
+  }
+
+  await deleteStaleEvents(calendar, calendarId, syncedEventIds);
+
+  console.log(`Synced ${syncedEventIds.size} events to "${CALENDAR_NAME}"${skipped ? ` (${skipped} skipped)` : ''}`);
+};
+
+runSync(process.argv[2] ?? DEFAULT_INPUT_PATH);

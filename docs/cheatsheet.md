@@ -97,7 +97,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   health-check                Run health check script
 
 🎉 FACEBOOK EVENTS
-  facebook-events:scrape:open  Scrape Malmö Latin dance FB group events and open the JSON results
+  facebook-events:scrape:open     Scrape Malmö Latin dance FB group events and open the JSON results
+  facebook-events:sync-calendar   Scrape events and sync them to the dedicated "Malmö Latin Dance Events" Google Calendar
 
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
   agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained Claude sandbox
