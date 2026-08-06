@@ -10,10 +10,10 @@ UNSEAL_KEYS=$(gcloud secrets versions access latest \
   --secret=VB_VM_VAULT_UNSEAL_KEYS \
   --project="${GCP_PROJECT}")
 
-KEY1=$(echo "$UNSEAL_KEYS" | sed -n '1p')
-KEY2=$(echo "$UNSEAL_KEYS" | sed -n '2p')
-KEY3=$(echo "$UNSEAL_KEYS" | sed -n '3p')
-
+# `vault operator unseal` with no positional key argument reads one line from
+# stdin per invocation — piping the keys in (recovery-threshold=3, so only the
+# first 3 of the 5 stored keys get consumed) keeps them out of the remote
+# process's argv, unlike passing them as CLI arguments.
 echo "Unsealing Vault..."
 gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200

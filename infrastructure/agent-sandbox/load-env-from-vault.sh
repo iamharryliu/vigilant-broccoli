@@ -6,6 +6,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../config.sh"
+source "${SCRIPT_DIR}/../terraform/packer/scripts/lib/vault-ops-token.sh"
 source "${SCRIPT_DIR}/../lib/ssh-secrets.sh"
 
 SOURCED=0
@@ -22,18 +23,17 @@ emit() {
   fi
 }
 
-echo "Fetching root token from Secret Manager..." >&2
-VAULT_TOKEN=$(gcloud secrets versions access latest \
-  --secret=VB_VM_VAULT_ROOT_TOKEN \
-  --project="${GCP_PROJECT}")
+fetch_vault_ops_credentials
 
 echo "Fetching agent sandbox tokens from Vault..." >&2
 SECRETS=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
+VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
+export VAULT_TOKEN
 
 vault kv get -format=json '"${VAULT_KV_PATH}"'/secrets | jq ".data.data"
-' VAULT_TOKEN "$VAULT_TOKEN")
+' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID")
 
 CLAUDE_CODE_OAUTH_TOKEN=$(echo "$SECRETS" | jq -r '.CLAUDE_CODE_OAUTH_TOKEN // empty')
 AGENT_GH_APP_ID=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_ID // empty')

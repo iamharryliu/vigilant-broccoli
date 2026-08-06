@@ -108,9 +108,17 @@ sudo wg-quick up vb
 npm run gcp:vm:post-init
 ```
 
-Initializes Vault, saves unseal keys + root token to GCP Secret Manager, unseals, and configures KV engine, JWT auth, and github-actions role.
+Initializes Vault, saves unseal keys + root token to GCP Secret Manager, unseals, and configures KV engine, JWT auth, github-actions role, and the `vb-ops` AppRole (role_id/secret_id saved to GCP Secret Manager) that the operator scripts (`run-vault-*.sh`, `rotate-*.sh`, `post-apply.sh`) use for routine reads/writes instead of the root token.
 
 After every VM restart, you'll need to re-unseal Vault — see step 10 below.
+
+### 6a. Revoke the root token (after verifying the ops AppRole)
+
+```bash
+npm run gcp:vm:vault:revoke-root-token
+```
+
+Verifies `vb-ops` can mint a working token, then revokes the root token. Recovery keys in `VB_VM_VAULT_UNSEAL_KEYS` remain valid — regenerate a root token with `vault operator generate-root` if one is ever needed again (e.g. to re-run this post-init step after rebuilding the VM).
 
 ### 9.Regenerate Vault TLS cert + update WireGuard endpoint (optional)
 

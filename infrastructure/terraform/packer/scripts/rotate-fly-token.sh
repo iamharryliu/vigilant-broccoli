@@ -3,12 +3,10 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/lib/vault-ops-token.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
-echo "Fetching root token from Secret Manager..."
-VAULT_TOKEN=$(gcloud secrets versions access latest \
-  --secret=VB_VM_VAULT_ROOT_TOKEN \
-  --project="${GCP_PROJECT}")
+fetch_vault_ops_credentials
 
 echo "Capturing currently active token IDs..."
 OLD_TOKEN_IDS=$(fly tokens list --scope org --org personal | awk -F'│' '
@@ -37,9 +35,11 @@ echo "Updating Vault with new token..."
 gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
+VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
+export VAULT_TOKEN
 
 vault kv patch '"${VAULT_KV_PATH}"'/secrets FLY_API_TOKEN="$NEW_TOKEN"
-' VAULT_TOKEN "$VAULT_TOKEN" NEW_TOKEN "$NEW_TOKEN"
+' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" NEW_TOKEN "$NEW_TOKEN"
 
 echo "Revoking previous tokens..."
 for TOKEN_ID in $OLD_TOKEN_IDS; do

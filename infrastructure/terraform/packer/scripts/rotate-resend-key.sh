@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/lib/vault-ops-token.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 RESEND_API="https://api.resend.com"
@@ -19,19 +20,18 @@ HEADER
 
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): current key and
 # VAULT_TOKEN come from the vault-secrets action, Vault is reached through the
-# Cloudflare Access tunnel. Local mode: both go through gcloud + IAP SSH.
+# Cloudflare Access tunnel. Local mode: the vb-ops AppRole via gcloud + IAP SSH.
 if [ -z "$VAULT_ADDR" ]; then
-  echo "Fetching root token from Secret Manager..."
-  VAULT_TOKEN=$(gcloud secrets versions access latest \
-    --secret=VB_VM_VAULT_ROOT_TOKEN \
-    --project="${GCP_PROJECT}")
+  fetch_vault_ops_credentials
 
   echo "Reading current Resend key from Vault..."
   CURRENT_KEY=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
+VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
+export VAULT_TOKEN
 vault kv get -field=RESEND_API_KEY '"${VAULT_KV_PATH}"'/secrets
-' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null | tr -d '[:space:]')
+' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" 2>/dev/null | tr -d '[:space:]')
 else
   CURRENT_KEY="$RESEND_API_KEY"
 fi
@@ -64,9 +64,11 @@ if [ -z "$VAULT_ADDR" ]; then
   gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
+VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
+export VAULT_TOKEN
 
 vault kv patch '"${VAULT_KV_PATH}"'/secrets RESEND_API_KEY="$NEW_KEY"
-' VAULT_TOKEN "$VAULT_TOKEN" NEW_KEY "$NEW_KEY"
+' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" NEW_KEY "$NEW_KEY"
 else
   curl -sf -o /dev/null \
     -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \

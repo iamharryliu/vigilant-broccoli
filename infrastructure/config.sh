@@ -18,3 +18,9 @@ export VAULT_ROTATE_ROLE_NAME="github-actions-rotate-role"
 export VAULT_PR_CHECK_POLICY_NAME="github-actions-pr-check-policy"
 export VAULT_PR_CHECK_ROLE_NAME="github-actions-pr-check-role"
 export VAULT_JWT_ISSUER="https://token.actions.githubusercontent.com"
+
+# AppRole used by operator scripts (run-vault-*.sh, rotate-*.sh, post-apply.sh)
+# so routine operations mint short-TTL tokens instead of using the
+# never-expiring root token.
+export VAULT_OPS_POLICY_NAME="vb-ops-policy"
+export VAULT_OPS_ROLE_NAME="vb-ops-role"

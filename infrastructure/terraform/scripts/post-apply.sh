@@ -66,11 +66,13 @@ sync_secrets_to_vault() {
     return
   fi
 
-  local vault_token
-  vault_token=$(gcloud secrets versions access latest --secret="VB_VM_VAULT_ROOT_TOKEN" 2>/dev/null || echo "")
+  local vault_ops_role_id
+  local vault_ops_secret_id
+  vault_ops_role_id=$(gcloud secrets versions access latest --secret="VB_VM_VAULT_OPS_ROLE_ID" 2>/dev/null || echo "")
+  vault_ops_secret_id=$(gcloud secrets versions access latest --secret="VB_VM_VAULT_OPS_SECRET_ID" 2>/dev/null || echo "")
 
-  if [ -z "$vault_token" ]; then
-    echo "Warning: Vault root token not found in GCP Secret Manager. Skipping Vault sync."
+  if [ -z "$vault_ops_role_id" ] || [ -z "$vault_ops_secret_id" ]; then
+    echo "Warning: Vault ops AppRole credentials not found in GCP Secret Manager. Skipping Vault sync."
     return
   fi
 
@@ -153,6 +155,8 @@ sync_secrets_to_vault() {
   local vault_script='
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
+VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
+export VAULT_TOKEN
 
 if vault kv get kv/secrets >/dev/null 2>&1; then
   vault kv patch kv/secrets \
@@ -209,7 +213,8 @@ echo "Secrets synced to Vault"
   fi
 
   gcloud_ssh_secrets "${vm_name}" "${vm_zone}" "$vault_script" \
-    VAULT_TOKEN "$vault_token" \
+    VAULT_OPS_ROLE_ID "$vault_ops_role_id" \
+    VAULT_OPS_SECRET_ID "$vault_ops_secret_id" \
     CA_CERT_B64 "$ca_cert_b64" \
     RMQ_CONN_STR "$conn_str" \
     EMAIL_API_KEY "$email_api_key" \
