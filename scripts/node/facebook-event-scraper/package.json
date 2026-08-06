@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "scrape": "node scrape-facebook-events.mjs"
+    "scrape": "node scrape-facebook-events.mjs",
+    "scrape:open": "node scrape-facebook-events.mjs --out events.out.json && open events.out.json"
   },
   "dependencies": {
     "playwright": "^1.61.1"
