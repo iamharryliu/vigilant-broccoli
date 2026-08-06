@@ -18,11 +18,6 @@ if ! command -v jq &> /dev/null; then
   exit 1
 fi
 
-if ! jq empty "$SECRETS_FILE" 2>/dev/null; then
-  echo "ERROR: Failed to parse JSON from $SECRETS_FILE"
-  exit 1
-fi
-
 KV_ARGS=$(jq -r 'to_entries | map("\(.key)=\"\(.value)\"") | join(" ")' "$SECRETS_FILE" 2>/dev/null)
 
 if [ $? -ne 0 ] || [ -z "$KV_ARGS" ]; then
