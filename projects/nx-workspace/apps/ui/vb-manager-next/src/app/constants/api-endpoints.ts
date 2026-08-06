@@ -72,6 +72,7 @@ export const API_ENDPOINTS = {
 
   // Calendar
   CALENDAR_EVENTS: '/api/calendar/events',
+  EVENT_CALENDARS: '/api/event-calendars',
 
   // Weather
   WEATHER: '/api/weather',

@@ -32,6 +32,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Network Monitor',
     path: '/network-monitor',
   },
+  EVENT_CALENDARS: {
+    title: 'Event Calendars',
+    path: '/event-calendars',
+  },
   TEXT_TOOLS: {
     title: 'Text Tools',
     path: '/text-tools',
