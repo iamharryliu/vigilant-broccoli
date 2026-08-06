@@ -9,6 +9,7 @@ source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 echo "Verifying ${VAULT_OPS_ROLE_NAME} can mint a working token before revoking root..."
 fetch_vault_ops_credentials
 gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
+set -e
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
@@ -25,6 +26,7 @@ VAULT_TOKEN=$(gcloud secrets versions access latest \
 
 echo "Revoking Vault root token..."
 gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
+set -e
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 
