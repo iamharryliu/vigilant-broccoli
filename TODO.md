@@ -12,46 +12,6 @@ Two mitigations have since landed and narrow the blast radius without closing th
 
 **Fix:** Terraform applies run locally, so CI does not need editor/SA-admin/pool-admin — remove all three. Replace the project-level `secretAccessor` with per-secret `google_secret_manager_secret_iam_member` grants for only the secrets workflows actually read (per `cloudflare-vault.tf`, the CF Access token pair + tunnel token).
 
-### 020247. [security] Bitwarden master password stored in GCP Secret Manager
-
-**`infrastructure/terraform/main.tf:348-356`** · consumers: `projects/nx-workspace/scripts/shell/backup-secrets.sh`, `infrastructure/terraform/scripts/load-vault-tf-env.sh:26-31`
-
-Bitwarden is the encrypted backup-of-last-resort for all Vault secrets, yet its master password sits in plaintext in Secret Manager, readable by the CI SA (009c6e) and any process on any VM using the default compute SA (1a2b1b). `backup-secrets.sh` also passes it as a CLI arg (`bw export --password …`), argv-visible.
-
-**Fix:** exclude it from project-level accessor grants (per-secret IAM, no CI/VM access). Better, don't store the master password server-side at all — the backup scripts run manually, so unlock interactively / via OS keychain, or use a dedicated automation account with an API key + session unlock.
-
-### 032af1. [performance] bucket-service buffers entire uploads/downloads in memory, no multipart limits, on a 256MB VM
-
-**`projects/nx-workspace/apps/api/bucket-service/src/routes/bucket.ts`** (upload collects `await part.toBuffer()` for every part before uploading; GET reads the whole object then `reply.send(buffer)`) · `src/main.ts:42` registers `@fastify/multipart` with no `limits` · providers in `libs/@vigilant-broccoli/storage/src/lib/bucket/providers/*` all materialize whole objects.
-
-Peak memory ≈ sum of all file sizes, on a `memory = '256mb'` fly machine — a single ~150MB file in either direction OOMs it.
-
-**Fix:** register multipart with `limits: { fileSize, files }`; stream each part to the provider as it arrives (`Upload` from `@aws-sdk/lib-storage`, `file.createWriteStream()` for GCS, `pipeline(part.file, ...)` for local); for GET return the provider stream via `reply.send(stream)`.
-
-### 0d1d8a. [performance] hearth renders a blank screen until a client-side session round-trip; entire app is CSR
-
-**`projects/nx-workspace/apps/hearth/src/app/providers/auth-provider.tsx:34`** — `if (session === undefined) return null;`
-
-AuthProvider wraps the whole app in `layout.tsx`, so every page (including `/login`) paints blank until `supabase.auth.getSession()` resolves in the browser; all 31 `page.tsx` files are `'use client'`. First load is a 4-hop waterfall: bundle → `getSession()` → HomeProvider queries (themselves sequential, see 769a1e) → per-page fetch gated on `selectedHomeId`.
-
-**Fix:** render the shell immediately (skeletons instead of `return null`); let public routes render unconditionally. Longer term, adopt `@supabase/ssr` cookie sessions so server components can fetch data, or at least start the homes fetch in parallel with session resolution.
-
-### 0d64c9. [performance] vb-manager-next dev-dashboard is a shell-exec polling storm
-
-**`projects/nx-workspace/apps/ui/vb-manager-next/src/app/(pages)/dev-dashboard/page.tsx`** and its API routes
-
-Every card polls its own API route and nearly every route shells out per request: `api/gcloud/reauth-needed` runs a real GCP round trip (`gcloud projects list`) every 30s and `api/gcloud/auth-status` runs two sequential `gcloud` invocations; wireguard polls every 10s; `api/docker/containers` runs `docker info` + `docker ps -a` sequentially every 30s; `libs/@vigilant-broccoli/github-workspace/src/lib/github.service.ts:119` execs one `gh api` per repo (N+1) per 60s poll. Thousands of process spawns and cloud API calls per day on the VM that also serves code-server.
-
-**Fix:** parallelize sequential execs; drop `docker info` (infer daemon-down from `docker ps` failing); lengthen intervals for slow-changing state (gcloud reauth 5–15 min, wireguard 30–60s); add a small per-route in-memory TTL cache (pattern exists in `api/speed-test/route.ts`); pause polling when `document.hidden`; replace per-repo `gh` execs with one GraphQL call or a 5–10 min server-side cache.
-
-### 151a48. [performance] No Nx computation cache survives between CI runs — every run builds from cold
-
-**`projects/nx-workspace/nx.json:84`** (`"neverConnectToCloud": true`) · no `actions/cache` usage anywhere in `.github/`
-
-`cache: true` is set on all build/lint/test targets, but the cache dies with each ephemeral runner — only the pnpm store is cached. Every push to main rebuilds/relints/re-prunes/re-smokes every affected service from scratch; `ci-pr-check` gets no reuse between PR pushes. Several minutes of redundant compute per run.
-
-**Fix:** add an `actions/cache` step for `projects/nx-workspace/.nx/cache` in `.github/actions/setup-nx-workspace/action.yml`, keyed on lockfile + SHA with a `restore-keys` prefix fallback. Reconcile the `--skip-nx-cache` flags (d2904c) or they'll silently negate this for the most-frequent builds.
-
 ### 16dbe5. [performance] code-server VM re-provisions its entire toolchain (~1GB+) on every container (re)start
 
 **`infrastructure/terraform/cloud-init-code-server.yaml:27-66`** (init script), `:72` (`:latest`)
