@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 const SPEECH_LANG = 'en-US';
 const ERROR_NO_SPEECH = 'no-speech';
 const ERROR_ABORTED = 'aborted';
+const ERROR_NETWORK = 'network';
+const ERROR_SERVICE_NOT_ALLOWED = 'service-not-allowed';
 const ERROR_START = 'Failed to start speech recognition';
 const ERROR_RECOGNITION_PREFIX = 'Speech recognition error: ';
 
@@ -19,6 +21,7 @@ export const useStreamingSpeech = (onTranscript: (text: string) => void) => {
   const [recordingState, setRecordingState] = useState<RecordingState>('idle');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [voiceError, setVoiceError] = useState<string | null>(null);
+  const [unavailable, setUnavailable] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const onTranscriptRef = useRef(onTranscript);
@@ -52,6 +55,14 @@ export const useStreamingSpeech = (onTranscript: (text: string) => void) => {
     recognition.onerror = event => {
       if (event.error === ERROR_NO_SPEECH || event.error === ERROR_ABORTED)
         return;
+      if (
+        event.error === ERROR_NETWORK ||
+        event.error === ERROR_SERVICE_NOT_ALLOWED
+      ) {
+        setUnavailable(true);
+        setRecordingState('idle');
+        return;
+      }
       setVoiceError(`${ERROR_RECOGNITION_PREFIX}${event.error}`);
       setRecordingState('idle');
     };
@@ -91,5 +102,6 @@ export const useStreamingSpeech = (onTranscript: (text: string) => void) => {
     voiceError,
     toggleRecording,
     supported,
+    unavailable,
   };
 };
