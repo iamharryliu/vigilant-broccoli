@@ -108,10 +108,6 @@ Both email services start their AMQP consumer in the web process but run with `a
 
 **`apps/api/vb-express/src/routes/tasks.ts:2`** — `import { google } from 'googleapis'` indexes every Google API at require time on a shared-1-cpu machine that cold-boots constantly (496949), and drags a huge tree into the pruned image. **Fix:** `@googleapis/tasks` only, or plain `fetch` against the REST API (the code already does this for task lists).
 
-### 5b720a. [performance] llm-service streaming doesn't abort upstream on client disconnect
-
-**`apps/api/llm-service/src/routes/chat.ts`** — after `reply.hijack()`, the `for await` loop has no `close` listener on the raw socket; when the user closes the tab mid-generation, the OpenAI stream is consumed (and billed) to completion. **Fix:** pass an `AbortController.signal` to the SDK call and abort from `reply.raw.on('close', ...)`.
-
 ### 69d76a. [performance] Whiteboard broadcasts the full document on every keystroke
 
 **`libs/@vigilant-broccoli/react-lib/src/whiteboard/useWhiteboardRoom.ts:161-172`** — `setContent` sends the entire content string per `onChange`, no debounce; typing at 60 WPM in a large doc ≈ 5 full-payload Supabase realtime messages/sec per participant, every peer re-rendering per message. **Fix:** throttle/debounce sends (~200ms trailing) while updating local state immediately; optionally send diffs.
