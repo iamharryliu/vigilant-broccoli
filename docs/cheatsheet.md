@@ -104,9 +104,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic:dev-sandbox:logs    Follow sandbox provisioning logs
   agentic:dev-sandbox:down    Stop the sandbox
   agentic:dev-sandbox:reset   Destroy sandbox volume and rebuild fresh
-  agentic:dev-sandbox:refresh-claude-token [token]  Patch a new CLAUDE_CODE_OAUTH_TOKEN into Vault (arg, or securely prompted), then
-                               recreate the running sandbox container reloading all Vault secrets (so GH_TOKEN/AGENT_GH_APP_ID aren't
-                               dropped); run 'claude setup-token' yourself first to mint the token
   agentic:dev-sandbox:refresh-github-token  Mint a fresh 1-hour GitHub App installation token (GH_TOKEN, from AGENT_GH_APP_ID/
                                AGENT_GH_APP_PRIVATE_KEY — never stored in Vault, re-minted every call) and recreate the running sandbox
                                container with it; no input needed. Use this when git push/gh calls in the sandbox start failing with auth
