@@ -27,6 +27,7 @@ sync_secrets_to_vault() {
   local rabbitmq_password
   local email_api_key
   local gcs_sa_credentials
+  local google_calendar_sa_credentials
   local code_server_password
   local ci_ssh_private_key
   local ci_ssh_public_key
@@ -47,6 +48,7 @@ sync_secrets_to_vault() {
   rabbitmq_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "rabbitmq_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
   email_api_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "email_service_api_key") | .instances[0].attributes.result' 2>/dev/null || echo "")
   gcs_sa_credentials=$(echo "$state_json" | jq -r '.resources[] | select(.type == "google_service_account_key" and .name == "gcs_manager") | .instances[0].attributes.private_key' 2>/dev/null || echo "")
+  google_calendar_sa_credentials=$(echo "$state_json" | jq -r '.resources[] | select(.type == "google_service_account_key" and .name == "google_calendar_manager") | .instances[0].attributes.private_key' 2>/dev/null || echo "")
   code_server_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "code_server_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
   ci_ssh_private_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_private_key" and .name == "oci_vm_ci_ssh") | .instances[0].attributes.private_key_openssh' 2>/dev/null || echo "")
   ci_ssh_public_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_private_key" and .name == "oci_vm_ci_ssh") | .instances[0].attributes.public_key_openssh' 2>/dev/null || echo "")
@@ -61,7 +63,7 @@ sync_secrets_to_vault() {
   nx_cache_write_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_write_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
   nx_cache_read_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_read_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
 
-  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ] || [ -z "$journal_cf_access_client_id" ] || [ -z "$journal_cf_access_client_secret" ]; then
+  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$google_calendar_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ] || [ -z "$journal_cf_access_client_id" ] || [ -z "$journal_cf_access_client_secret" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
     return
   fi
@@ -160,6 +162,7 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     '"${rmq_conn_patch_arg}"' \
     EMAIL_SERVICE_API_KEY="$EMAIL_API_KEY" \
     GOOGLE_GCS_SA_CREDENTIALS="$GCS_SA_CREDENTIALS" \
+    GOOGLE_CALENDAR_SA_CREDENTIALS="$GOOGLE_CALENDAR_SA_CREDENTIALS" \
     CODE_SERVER_PASSWORD="$CODE_SERVER_PASSWORD" \
     SOCKET_SERVER_URL="$SOCKET_SERVER_URL" \
     OCI_VM_SSH_KEY="$CI_SSH_KEY_B64" \
@@ -178,6 +181,7 @@ else
     RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR" \
     EMAIL_SERVICE_API_KEY="$EMAIL_API_KEY" \
     GOOGLE_GCS_SA_CREDENTIALS="$GCS_SA_CREDENTIALS" \
+    GOOGLE_CALENDAR_SA_CREDENTIALS="$GOOGLE_CALENDAR_SA_CREDENTIALS" \
     CODE_SERVER_PASSWORD="$CODE_SERVER_PASSWORD" \
     SOCKET_SERVER_URL="$SOCKET_SERVER_URL" \
     OCI_VM_SSH_KEY="$CI_SSH_KEY_B64" \
@@ -214,6 +218,7 @@ echo "Secrets synced to Vault"
     RMQ_CONN_STR "$conn_str" \
     EMAIL_API_KEY "$email_api_key" \
     GCS_SA_CREDENTIALS "$gcs_sa_credentials" \
+    GOOGLE_CALENDAR_SA_CREDENTIALS "$google_calendar_sa_credentials" \
     CODE_SERVER_PASSWORD "$code_server_password" \
     SOCKET_SERVER_URL "$socket_server_url" \
     CI_SSH_KEY_B64 "$ci_ssh_key_b64" \
@@ -226,7 +231,7 @@ echo "Secrets synced to Vault"
     JOURNAL_CF_ACCESS_CLIENT_ID "$journal_cf_access_client_id" \
     JOURNAL_CF_ACCESS_CLIENT_SECRET "$journal_cf_access_client_secret" \
     "${nx_cache_secret_args[@]}"
-  echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
+  echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, GOOGLE_CALENDAR_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
   if [ -n "$nx_cache_write_token" ]; then
     echo "✓ Synced NX_CACHE_WRITE_TOKEN to kv/data/secrets"
   else

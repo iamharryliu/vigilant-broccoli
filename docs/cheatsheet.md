@@ -83,6 +83,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:resend      Rotate Resend API key (single-key swap, pushes to fly app)
   secret-rotation:rabbitmq    Rotate RabbitMQ password, push connection string to fly consumers
   secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
+  secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
 
 🐳 LOCAL
   local:docker:up             Start local Docker Compose services

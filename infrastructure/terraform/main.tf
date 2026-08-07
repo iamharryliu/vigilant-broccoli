@@ -575,6 +575,47 @@ resource "google_secret_manager_secret_version" "google_gcs_sa_credentials" {
   secret_data = google_service_account_key.gcs_manager.private_key
 }
 
+resource "google_project_service" "calendar" {
+  service            = "calendar-json.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Owns its own calendars (created via the Calendar API, then shared back to a
+# personal account) rather than impersonating a user — personal Gmail accounts
+# have no Workspace domain to grant domain-wide delegation over.
+resource "google_service_account" "google_calendar_manager" {
+  account_id   = "google-calendar-manager"
+  display_name = "Google Calendar Manager"
+  description  = "Service account for managing Google Calendar events and calendars"
+}
+
+resource "time_rotating" "google_calendar_manager_key" {
+  rotation_days = 30
+}
+
+resource "google_service_account_key" "google_calendar_manager" {
+  service_account_id = google_service_account.google_calendar_manager.name
+
+  keepers = {
+    rotation_time = time_rotating.google_calendar_manager_key.rotation_rfc3339
+  }
+}
+
+resource "google_secret_manager_secret" "google_calendar_sa_credentials" {
+  secret_id = "GOOGLE_CALENDAR_SA_CREDENTIALS"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "google_calendar_sa_credentials" {
+  secret      = google_secret_manager_secret.google_calendar_sa_credentials.id
+  secret_data = google_service_account_key.google_calendar_manager.private_key
+}
+
 resource "cloudflare_r2_bucket" "vigilant_broccoli" {
   account_id = var.cloudflare_account_id
   name       = "vigilant-broccoli"

@@ -63,6 +63,7 @@
     "secret-rotation:resend": "./infrastructure/terraform/packer/scripts/rotate-resend-key.sh",
     "secret-rotation:rabbitmq": "./infrastructure/terraform/packer/scripts/rotate-rabbitmq-password.sh",
     "secret-rotation:twilio": "./infrastructure/terraform/packer/scripts/rotate-twilio-token.sh",
+    "secret-rotation:calendar-sa": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply -replace=google_service_account_key.google_calendar_manager && cd ../.. && ./infrastructure/terraform/scripts/post-apply.sh && pnpm vb-manager-next:reload",
     "local:install:machine-setup": "if [ \"$(uname)\" = Darwin ]; then zsh -c 'source setup/mac/install.sh'; else bash setup/linux/install.sh; fi",
     "local:docker:up": "docker compose -f infrastructure/local/docker-compose.yml up -d",
     "local:docker:down": "docker compose -f infrastructure/local/docker-compose.yml down",

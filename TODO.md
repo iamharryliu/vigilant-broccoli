@@ -411,3 +411,19 @@ Storage areas are a flat, freeform-titled list with tags but no structured locat
 1. Cheapest option: treat it as a convention over the existing `tags` array (e.g. a `room:kitchen` tag set by the user or suggested by the analyze prompt) rather than a new column — avoids a migration, and the `WhereIsFormComponent` tag UI already supports free entry.
 2. If that feels too implicit, add a dedicated nullable `room` text column to `where_is_items` plus a small fixed suggestion list (recent/most-used rooms) in the form, rather than a fully open free-text field that fragments into near-duplicates ("Kitchen" vs "kitchen" vs "Kitchen cabinet").
 3. On `where-is/page.tsx`, derive the distinct set of rooms from the loaded items and render them as filter chips above the search input, combinable with the existing text search (AND, not OR).
+
+## Not so serious
+
+Event Calendars (`projects/nx-workspace/apps/ui/vb-manager-next`) nice-to-haves, low stakes.
+
+### e5a1c0. Scheduled auto-sync for event calendars
+
+**`src/lib/event-scraper/sync-runner.ts`, `src/app/api/event-calendars/[id]/sync/route.ts`, `src/app/components/event-calendars.component.tsx`**
+
+Syncs only fire on calendar creation or a manual "Sync now", so a calendar silently goes stale between clicks. Add a recurring sync — either a per-calendar interval stored alongside the row, or one nightly job that syncs every tracked calendar. Each run drives real Chrome for minutes, so it needs a concurrency guard (the runner already tracks in-flight runs in `runningSyncs`, so reuse that to skip a calendar already syncing) and should stagger rather than launch every calendar's browser at once. If it's a single app-internal scheduler (node-cron), note it only runs while the PM2 process is up; an external `pnpm` cron entry would survive restarts but needs its own Vault/session access.
+
+### 3b7f92. Adopt an untracked calendar into the table
+
+**`src/app/components/event-calendars.component.tsx`, `src/app/api/event-calendars/untracked/route.ts`, `src/lib/event-calendars.db.ts`**
+
+The untracked section only offers Delete. Add an "Import" action that inserts an existing service-account-owned calendar into `event_calendars` (it already holds the right events) so the page starts managing it, instead of forcing a delete + re-scrape. Needs a name and, ideally, a prompt for the source URL(s) to attach — without sources the imported row can't be re-synced. Mostly worth doing only if orphans actually recur; deleting a tracked row already deletes its Google calendar, so the orphan path is narrow now.
