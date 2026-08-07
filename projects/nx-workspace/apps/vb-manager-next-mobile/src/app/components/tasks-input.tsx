@@ -7,7 +7,7 @@ import {
   signOutDueToExpiredToken,
 } from '../providers/auth-provider';
 import { GOOGLE_TOKEN_EXPIRED } from '../../../libs/api-errors';
-import { useVoiceInput } from '../hooks/use-voice-input';
+import { useVoiceRecorder } from '../hooks/use-voice-recorder';
 import { resizeImage } from '../utils/image.utils';
 
 type Phase = 'input' | 'analyzing' | 'preview' | 'creating' | 'done';
@@ -37,10 +37,10 @@ export const TasksInput = () => {
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const [googleToken, setGoogleToken] = useState<string | null>(null);
-  const { recordingState, voiceError, interimTranscript, toggleRecording } =
-    useVoiceInput(transcript =>
+  const { recordingState, voiceError, toggleRecording } = useVoiceRecorder(
+    transcript =>
       setTextInput(prev => (prev ? `${prev}\n${transcript}` : transcript)),
-    );
+  );
 
   useEffect(() => {
     const token = getGoogleToken();
@@ -290,13 +290,6 @@ export const TasksInput = () => {
                   : 'Voice'}
             </button>
           </div>
-
-          {recordingState === 'recording' && interimTranscript && (
-            <p className="text-sm text-gray-400 italic px-1">
-              {interimTranscript}
-            </p>
-          )}
-
           <button
             onClick={handleParse}
             disabled={!textInput.trim() && !images.length}
