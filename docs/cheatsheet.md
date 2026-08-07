@@ -105,6 +105,10 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic:dev-sandbox:logs    Follow sandbox provisioning logs
   agentic:dev-sandbox:down    Stop the sandbox
   agentic:dev-sandbox:reset   Destroy sandbox volume and rebuild fresh
+  agentic:dev-sandbox:refresh-github-token  Mint a fresh 1-hour GitHub App installation token (GH_TOKEN, from AGENT_GH_APP_ID/
+                               AGENT_GH_APP_PRIVATE_KEY — never stored in Vault, re-minted every call) and recreate the running sandbox
+                               container with it; no input needed. Use this when git push/gh calls in the sandbox start failing with auth
+                               errors after ~1h
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
   agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override)
