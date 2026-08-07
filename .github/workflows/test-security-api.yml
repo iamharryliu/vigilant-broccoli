@@ -13,22 +13,17 @@ on:
           - all
           - staging
           - production
-  workflow_run:
-    workflows: ["deploy", "ci-rotate-secrets"]
-    types: [completed]
-    branches: [main, production]
 
 permissions:
   contents: read
 
 jobs:
   security-check:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+        environment: ${{ fromJSON(inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
         service:
           # llm-service, storage-service, vb-email-service, and
           # email-subscription-service are private-only (no public fly.dev edge);

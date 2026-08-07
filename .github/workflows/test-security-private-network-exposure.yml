@@ -13,22 +13,17 @@ on:
           - all
           - staging
           - production
-  workflow_run:
-    workflows: ["deploy", "ci-rotate-secrets"]
-    types: [completed]
-    branches: [main, production]
 
 permissions:
   contents: read
 
 jobs:
   verify-no-public-ip:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+        environment: ${{ fromJSON(inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
         # Every service flagged privateOnly:true in scripts/secrets-mapping.config.ts
         # (flyAppBaseName values, not nx project names — e.g. bucket-service -> storage-service)
         service:

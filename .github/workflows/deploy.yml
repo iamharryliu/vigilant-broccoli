@@ -81,6 +81,8 @@ jobs:
     if: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'production' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      has_packages: ${{ steps.check.outputs.has_packages }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -129,6 +131,8 @@ jobs:
     needs: gitleaks
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      has_deployments: ${{ steps.check.outputs.has_deployments }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -228,6 +232,8 @@ jobs:
     concurrency:
       group: pages
       cancel-in-progress: false
+    outputs:
+      has_deployments: ${{ steps.check.outputs.has_deployments }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -297,3 +303,50 @@ jobs:
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
         with:
           artifact_name: github-pages-${{ github.run_attempt }}
+
+  notify-followers:
+    needs: [gitleaks, deploy-npm-packages, deploy-apps, deploy-github-pages]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      - name: Dispatch deploy-fanout
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITLEAKS_RESULT: ${{ needs.gitleaks.result }}
+          NPM_RESULT: ${{ needs.deploy-npm-packages.result }}
+          APPS_RESULT: ${{ needs.deploy-apps.result }}
+          PAGES_RESULT: ${{ needs.deploy-github-pages.result }}
+          HAS_PACKAGES: ${{ needs.deploy-npm-packages.outputs.has_packages }}
+          HAS_APPS: ${{ needs.deploy-apps.outputs.has_deployments }}
+          HAS_PAGES: ${{ needs.deploy-github-pages.outputs.has_deployments }}
+          DEPLOY_ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          CONCLUSION=success
+          for RESULT in "$GITLEAKS_RESULT" "$NPM_RESULT" "$APPS_RESULT" "$PAGES_RESULT"; do
+            if [[ "$RESULT" == "failure" || "$RESULT" == "cancelled" ]]; then
+              CONCLUSION=failure
+            fi
+          done
+
+          DEPLOYED=false
+          if [[ "$HAS_PACKAGES" == "true" || "$HAS_APPS" == "true" || "$HAS_PAGES" == "true" ]]; then
+            DEPLOYED=true
+          fi
+
+          RUN_STARTED_AT=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }} --jq .run_started_at)
+          jq -n \
+            --arg conclusion "$CONCLUSION" \
+            --arg deployed "$DEPLOYED" \
+            --arg environment "$DEPLOY_ENVIRONMENT" \
+            --arg run_id "${{ github.run_id }}" \
+            --arg run_url "$RUN_URL" \
+            --arg started_at "$RUN_STARTED_AT" \
+            --arg commit_message "$COMMIT_MESSAGE" \
+            '{event_type: "deploy-fanout", client_payload: {conclusion: $conclusion, deployed: $deployed, environment: $environment, run_id: $run_id, run_url: $run_url, started_at: $started_at, commit_message: $commit_message}}' \
+            | gh api repos/${{ github.repository }}/dispatches --input -

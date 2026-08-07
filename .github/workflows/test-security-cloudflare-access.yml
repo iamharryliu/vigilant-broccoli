@@ -4,10 +4,6 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
-  workflow_run:
-    workflows: ["deploy", "ci-rotate-secrets"]
-    types: [completed]
-    branches: [main]
   push:
     branches: [main]
     paths:
@@ -19,7 +15,6 @@ permissions:
 
 jobs:
   security-check:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
