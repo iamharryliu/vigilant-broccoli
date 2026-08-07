@@ -124,10 +124,6 @@ Zero `lazy(` hits across `apps/ui`, `apps/findme`, `apps/whiteboard`; `cloud-8-s
 
 No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`api/where-is/image-processor.ts`) render via plain `<img>` at `h-24 w-24` in lists. A storage area with 10 photos downloads several MB to show thumbnails. **Fix:** write a second ~256px `-thumb.jpg` variant at upload (sharp is already in the pipeline) and use it in lists; or route R2 URLs through `next/image` `remotePatterns`.
 
-### 7f6d01. [performance] vb-manager docs search re-reads the whole notes tree and builds two Fuse indexes per keystroke
-
-**`apps/ui/vb-manager-next/src/app/api/docs/search/route.ts:103`** — `getAllMarkdownFiles()` recursively reads every `.md` under `~/vigilant-broccoli/notes` and constructs Fuse instances on each request; the 300ms client debounce still yields several full-tree reads per typed query. **Fix:** cache the corpus + indexes in module scope with an mtime/TTL check.
-
 ### 8290e3. [performance] speed-test route: no in-flight dedupe — concurrent polls stack `speedtest` processes
 
 **`apps/ui/vb-manager-next/src/app/api/speed-test/route.ts:19-32`** — the 5-min cache timestamp is written only after the run completes; the client polls every 30s and a run takes 20–40s, so once the cache expires every poll/tab arriving during the run launches another `speedtest`, each saturating the uplink the others are measuring. **Fix:** store the in-flight promise in module scope and await it for concurrent callers; decouple the client interval from the server cache TTL.
