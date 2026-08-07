@@ -92,10 +92,6 @@ Role `github-actions-role` is usable by any job with `id-token: write` — inclu
 
 `StrictHostKeyChecking=accept-new` plus `ssh-keygen -R` before connecting = trust-on-first-use every run, then the rotated `SHARED_APP_TOKEN` is piped over that connection. DNS hijack / MITM of `socket.harryliu.dev` presents its own host key, is accepted, and receives the new token. Same TOFU pattern in `cron-backup.yml:79,85` (lower impact). **Fix:** store the VMs' host public keys (not secret) in repo/Vault, write to `known_hosts` with `StrictHostKeyChecking=yes`, drop the `ssh-keygen -R`.
 
-### 427e54. [performance] Follower jobs fire after every deploy — even no-op deploys
-
-Fourteen of the 28 workflows trigger on `workflow_run` (health-check, notify-complete, cleanup-workflow-runs, e2e suites incl. the 5-provider paid-token `test-e2e-llm` matrix, security suites, smoke) — roughly 25 jobs, most doing their own checkout + OIDC + Secret Manager + Vault round trip. `deploy` succeeds even when `has_deployments=false` (`deploy.yml:140-153`), so a push touching nothing deployable still triggers the full fan-out against production; it also double-fires via `ci-rotate-secrets` calling deploy. **Fix:** expose what was actually deployed (job output → `repository_dispatch` per service or an artifact followers check) and exit early otherwise; drop the cron+per-deploy duplication on the `test-security-*` suites.
-
 ### 47b3fb. [performance] Queue consumers live inside auto-stopped fly machines — email delivery stalls while stopped
 
 Both email services start their AMQP consumer in the web process but run with `auto_stop_machines = 'stop'`, `min_machines_running = 0` (`deployment-configs/fly-configs/{production,staging}-email-service.toml` and email-subscription tomls). Outbound AMQP doesn't keep fly machines alive: when stopped, queued emails sit until an HTTP request (in practice the Upptime ping) wakes the machine — minutes of delivery delay plus RabbitMQ reconnect churn per cycle. **Fix:** `min_machines_running = 1` for email-service, or move consumers to the always-on VM, or accept and document the delay.

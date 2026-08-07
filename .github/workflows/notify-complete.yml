@@ -1,10 +1,8 @@
 name: notify-complete
 
 on:
-  workflow_run:
-    workflows: ['deploy', 'ci-rotate-secrets']
-    types: [completed]
-    branches: [main, production]
+  repository_dispatch:
+    types: [deploy-fanout]
 
 permissions:
   contents: read
@@ -28,9 +26,9 @@ jobs:
       - name: Notify deploy complete
         uses: ./.github/actions/deploy-notify
         with:
-          status: ${{ (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && 'success' || 'failure' }}
+          status: ${{ github.event.client_payload.conclusion == 'success' && 'success' || 'failure' }}
           job: deploy
           socket_server_url: ${{ env.SOCKET_SERVER_URL }}
           shared_app_token: ${{ env.SHARED_APP_TOKEN }}
-          started_at: ${{ github.event.workflow_run.run_started_at }}
-          run_url: ${{ github.event.workflow_run.html_url }}
+          started_at: ${{ github.event.client_payload.started_at }}
+          run_url: ${{ github.event.client_payload.run_url }}
