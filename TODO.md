@@ -398,6 +398,20 @@ Storage areas are a flat, freeform-titled list with tags but no structured locat
 2. If that feels too implicit, add a dedicated nullable `room` text column to `where_is_items` plus a small fixed suggestion list (recent/most-used rooms) in the form, rather than a fully open free-text field that fragments into near-duplicates ("Kitchen" vs "kitchen" vs "Kitchen cabinet").
 3. On `where-is/page.tsx`, derive the distinct set of rooms from the loaded items and render them as filter chips above the search input, combinable with the existing text search (AND, not OR).
 
+#### a3f9c2. hearth where-is: search only matches the AI's literal wording, no semantic fallback
+
+**`apps/hearth/src/app/where-is/page.tsx:38-45`** (`fuzzyMatch`) · **`apps/hearth/src/app/api/where-is/analyze/route.ts`** (existing LLM vision-analysis pipeline)
+
+`fuzzyMatch` requires every word of the search query to appear as a literal substring somewhere in the concatenated title/description/tags — all AI-generated text from `analyze`/`reanalyze`. If the model tagged a drawer "cutting tools" and a user searches "scissors," the query returns nothing: there's no fallback once the literal match misses, which undercuts the feature's actual value (ask in your own words, find the spot) exactly when the AI's wording differs from the user's.
+
+**Desired end state:** when the literal fuzzy match comes up empty (or as the primary path, cost permitting), send the query plus the candidate items' title/description/tags to the same LLM already used for image analysis and have it rank/return the best-matching item(s) — a semantic match instead of a strict substring one.
+
+**Steps:**
+
+1. Add `apps/hearth/src/app/api/where-is/search/route.ts`: accept `{ query, homeId }`, fetch that home's `where_is_items` (title/description/tags only, no images), and prompt the LLM to return the best-matching item id(s) with a short "why" justification, falling back to "no match" rather than guessing.
+2. In `where-is/page.tsx`, call this route when `fuzzyMatch` returns zero results for a non-empty query, and surface the LLM's matched item(s) with the "why" text so the result doesn't feel like a black box.
+3. Keep the existing literal `fuzzyMatch` as the fast first pass (free, instant) — only pay for the LLM call on a miss.
+
 ## Not so serious
 
 Event Calendars (`projects/nx-workspace/apps/ui/vb-manager-next`) nice-to-haves, low stakes.
@@ -413,16 +427,3 @@ Syncs only fire on calendar creation or a manual "Sync now", so a calendar silen
 **`src/app/components/event-calendars.component.tsx`, `src/app/api/event-calendars/untracked/route.ts`, `src/lib/event-calendars.db.ts`**
 
 The untracked section only offers Delete. Add an "Import" action that inserts an existing service-account-owned calendar into `event_calendars` (it already holds the right events) so the page starts managing it, instead of forcing a delete + re-scrape. Needs a name and, ideally, a prompt for the source URL(s) to attach — without sources the imported row can't be re-synced. Mostly worth doing only if orphans actually recur; deleting a tracked row already deletes its Google calendar, so the orphan path is narrow now.
-#### a3f9c2. hearth where-is: search only matches the AI's literal wording, no semantic fallback
-
-**`apps/hearth/src/app/where-is/page.tsx:38-45`** (`fuzzyMatch`) · **`apps/hearth/src/app/api/where-is/analyze/route.ts`** (existing LLM vision-analysis pipeline)
-
-`fuzzyMatch` requires every word of the search query to appear as a literal substring somewhere in the concatenated title/description/tags — all AI-generated text from `analyze`/`reanalyze`. If the model tagged a drawer "cutting tools" and a user searches "scissors," the query returns nothing: there's no fallback once the literal match misses, which undercuts the feature's actual value (ask in your own words, find the spot) exactly when the AI's wording differs from the user's.
-
-**Desired end state:** when the literal fuzzy match comes up empty (or as the primary path, cost permitting), send the query plus the candidate items' title/description/tags to the same LLM already used for image analysis and have it rank/return the best-matching item(s) — a semantic match instead of a strict substring one.
-
-**Steps:**
-
-1. Add `apps/hearth/src/app/api/where-is/search/route.ts`: accept `{ query, homeId }`, fetch that home's `where_is_items` (title/description/tags only, no images), and prompt the LLM to return the best-matching item id(s) with a short "why" justification, falling back to "no match" rather than guessing.
-2. In `where-is/page.tsx`, call this route when `fuzzyMatch` returns zero results for a non-empty query, and surface the LLM's matched item(s) with the "why" text so the result doesn't feel like a black box.
-3. Keep the existing literal `fuzzyMatch` as the fast first pass (free, instant) — only pay for the LLM call on a miss.
