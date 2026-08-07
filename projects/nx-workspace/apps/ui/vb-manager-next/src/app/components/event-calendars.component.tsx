@@ -1,5 +1,5 @@
 'use client';
-import { Badge, Callout, Card, Code, Flex, Text } from '@radix-ui/themes';
+import { Badge, Callout, Card, Code, Flex, Link, Text } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
@@ -18,6 +18,7 @@ import {
   EVENT_SOURCE_TYPE_LABEL,
   EventCalendar,
   UntrackedCalendar,
+  buildGoogleCalendarUrl,
 } from '../constants/event-calendars';
 
 const FETCH_ERROR = 'Failed to fetch calendars';
@@ -30,6 +31,7 @@ const UNKNOWN_SOURCE_LABEL = 'Unrecognized URL';
 const SYNC_ERROR = 'Failed to start sync';
 const UNTRACKED_FETCH_ERROR = 'Failed to load untracked calendars';
 const UNTRACKED_DELETE_ERROR = 'Failed to delete calendar';
+const OPEN_IN_GOOGLE_CALENDAR = 'Open in Google Calendar';
 const UNTRACKED_TITLE = 'Untracked calendars';
 const UNTRACKED_DESCRIPTION =
   'Owned by the calendar service account but not managed here — typically left behind by a deleted row. Deleting one removes it and all of its events for good.';
@@ -277,6 +279,14 @@ export const EventCalendarsComponent = () => {
           </Badge>
         </Flex>
         <Code size="1">{item.googleCalendarId}</Code>
+        <Link
+          size="1"
+          href={buildGoogleCalendarUrl(item.googleCalendarId)}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {OPEN_IN_GOOGLE_CALENDAR}
+        </Link>
         <Flex direction="column" gap="1">
           {item.sources.length ? (
             item.sources.map(source => (
@@ -366,6 +376,14 @@ export const EventCalendarsComponent = () => {
                 <Flex direction="column" gap="1">
                   <Text weight="medium">{calendar.name}</Text>
                   <Code size="1">{calendar.googleCalendarId}</Code>
+                  <Link
+                    size="1"
+                    href={buildGoogleCalendarUrl(calendar.googleCalendarId)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {OPEN_IN_GOOGLE_CALENDAR}
+                  </Link>
                   <Text size="1" color={calendar.eventCount ? 'red' : 'gray'}>
                     {calendar.eventCount} event
                     {calendar.eventCount === 1 ? '' : 's'} would be destroyed

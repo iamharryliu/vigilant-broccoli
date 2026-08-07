@@ -47,3 +47,11 @@ export interface UntrackedCalendar {
   name: string;
   eventCount: number;
 }
+
+// Renders the calendar itself in Google Calendar. Works for private calendars
+// too, since every calendar created here is shared to the signed-in user as
+// owner — and for public ones the same link is shareable as-is.
+const GOOGLE_CALENDAR_EMBED_URL = 'https://calendar.google.com/calendar/embed';
+
+export const buildGoogleCalendarUrl = (googleCalendarId: string) =>
+  `${GOOGLE_CALENDAR_EMBED_URL}?src=${encodeURIComponent(googleCalendarId)}`;
