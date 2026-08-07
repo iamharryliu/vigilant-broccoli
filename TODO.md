@@ -124,10 +124,6 @@ Zero `lazy(` hits across `apps/ui`, `apps/findme`, `apps/whiteboard`; `cloud-8-s
 
 **`apps/ui/vb-manager-next/src/app/layout.tsx:1`** + `(pages)/layout.tsx` mounting `FloatingIslandComponent` inside `display: none` on every page — including the chatbot dialog which statically imports `react-markdown`, plus email/calendar/weather/pomodoro dialogs, all in the shared layout bundle executing on first paint. **Fix:** `next/dynamic` for each dialog (needed only after a shortcut/click); move `'use client'` down from the root layout so pages can opt into server rendering later.
 
-### 7ce463. [performance] hearth calendar fetches the entire event history on every view
-
-**`apps/hearth/src/app/api/calendar/events/route.ts:42-44`** — `select('*')` on `calendar_events` with no date-range filter; grows unboundedly. **Fix:** accept `start`/`end` params (FullCalendar provides the visible range) and filter with `.gte/.lte`.
-
 ### 7e1071. [performance] hearth ships zero optimized images; 1920px originals rendered as 96px thumbnails
 
 No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`api/where-is/image-processor.ts`) render via plain `<img>` at `h-24 w-24` in lists. A storage area with 10 photos downloads several MB to show thumbnails. **Fix:** write a second ~256px `-thumb.jpg` variant at upload (sharp is already in the pipeline) and use it in lists; or route R2 URLs through `next/image` `remotePatterns`.
