@@ -32,6 +32,10 @@ const SYNC_ERROR = 'Failed to start sync';
 const UNTRACKED_FETCH_ERROR = 'Failed to load untracked calendars';
 const UNTRACKED_DELETE_ERROR = 'Failed to delete calendar';
 const OPEN_IN_GOOGLE_CALENDAR = 'Open in Google Calendar';
+const MAKE_PUBLIC_TITLE = 'Make this calendar public?';
+const MAKE_PUBLIC_DESCRIPTION =
+  'Anyone with the link will be able to see this calendar and all of its events, without signing in.';
+const MAKE_PUBLIC_CONFIRM = 'Make public';
 const UNTRACKED_TITLE = 'Untracked calendars';
 const UNTRACKED_DESCRIPTION =
   'Owned by the calendar service account but not managed here — typically left behind by a deleted row. Deleting one removes it and all of its events for good.';
@@ -80,6 +84,18 @@ const errorFromResponse = async (response: Response, fallback: string) => {
   return response.status === HTTP_STATUS_CODES.UNAUTHORIZED
     ? `${message} (not signed in — sign in and retry)`
     : message;
+};
+
+const MINUTE_MS = 60_000;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
+
+const formatRelativeTime = (iso: string) => {
+  const elapsed = Date.now() - new Date(iso).getTime();
+  if (elapsed < MINUTE_MS) return 'just now';
+  if (elapsed < HOUR_MS) return `${Math.floor(elapsed / MINUTE_MS)}m ago`;
+  if (elapsed < DAY_MS) return `${Math.floor(elapsed / HOUR_MS)}h ago`;
+  return `${Math.floor(elapsed / DAY_MS)}d ago`;
 };
 
 const sourcesToText = (calendar: EventCalendar) =>
@@ -182,7 +198,7 @@ export const EventCalendarsComponent = () => {
   };
 
   const [syncStatuses, setSyncStatuses] = useState<
-    Record<string, { state: string; message: string }>
+    Record<string, { state: string; message: string; lastSyncedAt?: string }>
   >({});
 
   const refreshSyncStatus = async (id: string) => {
@@ -191,12 +207,16 @@ export const EventCalendarsComponent = () => {
     );
     if (!response.ok) return;
     const data = await response.json();
-    const status =
+    const base =
       data.status ??
       (data.lastSyncMessage
         ? { state: 'idle', message: data.lastSyncMessage }
         : null);
-    if (status) setSyncStatuses(current => ({ ...current, [id]: status }));
+    if (base)
+      setSyncStatuses(current => ({
+        ...current,
+        [id]: { ...base, lastSyncedAt: data.lastSyncedAt },
+      }));
   };
 
   useEffect(() => {
@@ -226,7 +246,10 @@ export const EventCalendarsComponent = () => {
       return;
     }
     const data = await response.json();
-    setSyncStatuses(current => ({ ...current, [id]: data.status }));
+    setSyncStatuses(current => ({
+      ...current,
+      [id]: { ...data.status, lastSyncedAt: current[id]?.lastSyncedAt },
+    }));
   };
 
   const [untracked, setUntracked] = useState<UntrackedCalendar[]>([]);
@@ -234,6 +257,18 @@ export const EventCalendarsComponent = () => {
   const [pendingDelete, setPendingDelete] = useState<UntrackedCalendar | null>(
     null,
   );
+  const [pendingPublic, setPendingPublic] = useState<EventCalendar | null>(null);
+
+  // Making a calendar public exposes every event to anyone with the link, so
+  // it goes through a confirmation. Making one private again is safe and
+  // applies immediately.
+  const requestTogglePublic = (item: EventCalendar, isPublic: boolean) => {
+    if (isPublic && !item.isPublic) {
+      setPendingPublic(item);
+      return;
+    }
+    togglePublic(item.id, isPublic);
+  };
 
   const fetchUntracked = async () => {
     const response = await authFetch(
@@ -314,7 +349,7 @@ export const EventCalendarsComponent = () => {
           </Text>
           <Switch
             checked={item.isPublic}
-            onCheckedChange={checked => togglePublic(item.id, checked)}
+            onCheckedChange={checked => requestTogglePublic(item, checked)}
           />
         </Flex>
         <Button
@@ -326,9 +361,17 @@ export const EventCalendarsComponent = () => {
           Sync now
         </Button>
         {syncStatuses[item.id] && (
-          <Text size="1" color="gray">
-            {syncStatuses[item.id].message}
-          </Text>
+          <Flex direction="column" gap="1" align="end">
+            <Text size="1" color="gray">
+              {syncStatuses[item.id].message}
+            </Text>
+            {syncStatuses[item.id].lastSyncedAt && (
+              <Text size="1" color="gray">
+                Last synced{' '}
+                {formatRelativeTime(syncStatuses[item.id].lastSyncedAt as string)}
+              </Text>
+            )}
+          </Flex>
         )}
       </Flex>
     </Flex>
@@ -409,6 +452,19 @@ export const EventCalendarsComponent = () => {
           deleteItem={async () => {
             await deleteUntracked(pendingDelete);
             setPendingDelete(null);
+          }}
+        />
+      )}
+      {pendingPublic && (
+        <DeleteItemConfirmationDialog
+          open
+          onOpenChange={open => !open && setPendingPublic(null)}
+          title={MAKE_PUBLIC_TITLE}
+          description={MAKE_PUBLIC_DESCRIPTION}
+          confirmLabel={MAKE_PUBLIC_CONFIRM}
+          deleteItem={async () => {
+            await togglePublic(pendingPublic.id, true);
+            setPendingPublic(null);
           }}
         />
       )}

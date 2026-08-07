@@ -391,3 +391,19 @@ Vault's JWT auth config — the `github-actions-role` / `-rotate-role` / `-pr-ch
 5. Retire the `staging-journal` Cloudflare Pages project once cut over.
 6. Update [network-management.md](./docs/infrastructure/network-management.md)'s `journal.harryliu.dev` line (currently "Cloudflare Pages `staging-journal`...") to describe the gitea-vm-hosted setup, and revisit [repo-patterns.md](./docs/repo-patterns.md)'s note that "`journal` is deliberately single-environment" if the deploy mechanism change affects that framing.
 7. Close `45c377` as resolved by this change instead of by its own fix, since deleting the cron removes the recurring cost entirely.
+
+## Not so serious
+
+Event Calendars (`projects/nx-workspace/apps/ui/vb-manager-next`) nice-to-haves, low stakes.
+
+### e5a1c0. Scheduled auto-sync for event calendars
+
+**`src/lib/event-scraper/sync-runner.ts`, `src/app/api/event-calendars/[id]/sync/route.ts`, `src/app/components/event-calendars.component.tsx`**
+
+Syncs only fire on calendar creation or a manual "Sync now", so a calendar silently goes stale between clicks. Add a recurring sync — either a per-calendar interval stored alongside the row, or one nightly job that syncs every tracked calendar. Each run drives real Chrome for minutes, so it needs a concurrency guard (the runner already tracks in-flight runs in `runningSyncs`, so reuse that to skip a calendar already syncing) and should stagger rather than launch every calendar's browser at once. If it's a single app-internal scheduler (node-cron), note it only runs while the PM2 process is up; an external `pnpm` cron entry would survive restarts but needs its own Vault/session access.
+
+### 3b7f92. Adopt an untracked calendar into the table
+
+**`src/app/components/event-calendars.component.tsx`, `src/app/api/event-calendars/untracked/route.ts`, `src/lib/event-calendars.db.ts`**
+
+The untracked section only offers Delete. Add an "Import" action that inserts an existing service-account-owned calendar into `event_calendars` (it already holds the right events) so the page starts managing it, instead of forcing a delete + re-scrape. Needs a name and, ideally, a prompt for the source URL(s) to attach — without sources the imported row can't be re-synced. Mostly worth doing only if orphans actually recur; deleting a tracked row already deletes its Google calendar, so the orphan path is narrow now.
