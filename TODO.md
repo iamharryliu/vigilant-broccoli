@@ -383,7 +383,7 @@ Vault's JWT auth config — the `github-actions-role` / `-rotate-role` / `-pr-ch
 5. Retire the `staging-journal` Cloudflare Pages project once cut over.
 6. Update [network-management.md](./docs/infrastructure/network-management.md)'s `journal.harryliu.dev` line (currently "Cloudflare Pages `staging-journal`...") to describe the gitea-vm-hosted setup, and revisit [repo-patterns.md](./docs/repo-patterns.md)'s note that "`journal` is deliberately single-environment" if the deploy mechanism change affects that framing.
 7. Close `45c377` as resolved by this change instead of by its own fix, since deleting the cron removes the recurring cost entirely.
-8. 
+
 #### a3f9c2. hearth where-is: search only matches the AI's literal wording, no semantic fallback
 
 **`apps/hearth/src/app/where-is/page.tsx:38-45`** (`fuzzyMatch`) · **`apps/hearth/src/app/api/where-is/analyze/route.ts`** (existing LLM vision-analysis pipeline)
