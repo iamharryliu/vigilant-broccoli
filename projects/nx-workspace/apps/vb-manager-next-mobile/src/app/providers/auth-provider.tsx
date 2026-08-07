@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../libs/supabase';
+import { isAllowedEmail } from '../../../libs/auth-policy';
 import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
@@ -54,7 +55,17 @@ export default function AuthProvider({
   const [session, setSession] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const applySession = (next: Session | null) => {
+      if (next && !isAllowedEmail(next.user.email)) {
+        localStorage.removeItem(GOOGLE_TOKEN_KEY);
+        supabase.auth.signOut();
+        setSession(null);
+        return;
+      }
+      setSession(next);
+    };
+
+    supabase.auth.getSession().then(({ data }) => applySession(data.session));
 
     const {
       data: { subscription },
@@ -62,7 +73,7 @@ export default function AuthProvider({
       if (session?.provider_token) {
         localStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
       }
-      setSession(session);
+      applySession(session);
     });
 
     return () => subscription.unsubscribe();
