@@ -16,10 +16,13 @@ import { WireguardStatusComponent } from '../../components/wireguard-status.comp
 import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
 import { VercelAppsComponent } from '../../components/vercel-apps.component';
 import { LocalServicesComponent } from '../../components/local-services.component';
+import { LanDevicesComponent } from '../../components/lan-devices.component';
+import { OutboundConnectionsComponent } from '../../components/outbound-connections.component';
 
 const TAB = {
   LOCAL: 'local',
   CLOUD: 'cloud',
+  NETWORK: 'network',
 } as const;
 
 type Tab = (typeof TAB)[keyof typeof TAB];
@@ -52,8 +55,9 @@ export default function Page() {
       className="h-full flex flex-col"
     >
       <Tabs.List>
-        <Tabs.Trigger value={TAB.LOCAL}>Local</Tabs.Trigger>
-        <Tabs.Trigger value={TAB.CLOUD}>Cloud</Tabs.Trigger>
+        <Tabs.Trigger value={TAB.LOCAL}>Local Service</Tabs.Trigger>
+        <Tabs.Trigger value={TAB.CLOUD}>Cloud Services</Tabs.Trigger>
+        <Tabs.Trigger value={TAB.NETWORK}>Network Tools</Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-4 gap-4">
@@ -90,6 +94,19 @@ export default function Page() {
           <div className="flex flex-col gap-4">
             <GithubTeamManager />
             <GithubRepoActionStatusBadges repoUrl={REPO_URL} />
+          </div>
+        </div>
+      </Tabs.Content>
+      <Tabs.Content value={TAB.NETWORK} className="pt-4 flex-1 min-h-0">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-4">
+            <LanDevicesComponent />
+          </div>
+          <div className="flex flex-col gap-4">
+            <OutboundConnectionsComponent />
+          </div>
+          <div className="flex flex-col gap-4">
+            <LocalServicesComponent />
           </div>
         </div>
       </Tabs.Content>
