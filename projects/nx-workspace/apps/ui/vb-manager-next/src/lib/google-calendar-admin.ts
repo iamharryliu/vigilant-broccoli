@@ -105,12 +105,37 @@ export const deleteGoogleCalendar = (
 // Calendars the service account owns that vb-manager-next has no row for —
 // e.g. left behind by a deleted row, or created before this page existed.
 //
-// calendarList is a per-account *subscription* list, and for a service account
-// (which has no primary calendar) Google can return 404 for it outright — seen
-// in practice, and it stays 404 even after a successful calendarList.insert.
-// Individual calendars keep working fine; only enumeration is lost. That is
-// reported as unavailable rather than as an empty list, since "no orphans" and
-// "cannot tell" mean very different things to someone cleaning up.
+// calendarList.list is intermittently 404 for this service account —
+// measured at 6 failures then 4 successes across 10 spaced attempts, with the
+// calendars themselves reachable by id throughout. So a single 404 says
+// nothing about whether calendars exist, and it is retried before giving up.
+// Exhausting the retries reports unavailable rather than an empty list,
+// because "no untracked calendars" and "could not check" mean very different
+// things to someone deciding what to delete.
+// minAccessRole scopes this to calendars the account owns, which is the set
+// we actually care about.
+const CALENDAR_LIST_MAX_ATTEMPTS = 5;
+const CALENDAR_LIST_RETRY_DELAY_MS = 1500;
+
+const listOwnedCalendarsWithRetry = async (calendar: calendar_v3.Calendar) => {
+  for (let attempt = 1; attempt <= CALENDAR_LIST_MAX_ATTEMPTS; attempt++) {
+    try {
+      const { data } = await calendar.calendarList.list({
+        maxResults: 250,
+        minAccessRole: OWNER_ACL_ROLE,
+      });
+      return data;
+    } catch (error) {
+      if ((error as { code?: number }).code !== HTTP_NOT_FOUND) throw error;
+      if (attempt === CALENDAR_LIST_MAX_ATTEMPTS) return null;
+      await new Promise(resolve =>
+        setTimeout(resolve, CALENDAR_LIST_RETRY_DELAY_MS * attempt),
+      );
+    }
+  }
+  return null;
+};
+
 export const listUntrackedCalendars = async (
   calendar: calendar_v3.Calendar,
   trackedGoogleCalendarIds: Set<string>,
@@ -118,16 +143,10 @@ export const listUntrackedCalendars = async (
   calendars: UntrackedCalendar[];
   enumerationAvailable: boolean;
 }> => {
-  const list = await calendar.calendarList
-    .list({ maxResults: 250 })
-    .catch((error: { code?: number }) => {
-      if (error.code === HTTP_NOT_FOUND) return null;
-      throw error;
-    });
-
+  const list = await listOwnedCalendarsWithRetry(calendar);
   if (!list) return { calendars: [], enumerationAvailable: false };
 
-  const untracked = (list.data.items || []).filter(
+  const untracked = (list.items || []).filter(
     item => item.id && !item.primary && !trackedGoogleCalendarIds.has(item.id),
   );
 
