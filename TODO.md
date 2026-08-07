@@ -96,10 +96,6 @@ Role `github-actions-role` is usable by any job with `id-token: write` — inclu
 
 Fourteen of the 28 workflows trigger on `workflow_run` (health-check, notify-complete, cleanup-workflow-runs, e2e suites incl. the 5-provider paid-token `test-e2e-llm` matrix, security suites, smoke) — roughly 25 jobs, most doing their own checkout + OIDC + Secret Manager + Vault round trip. `deploy` succeeds even when `has_deployments=false` (`deploy.yml:140-153`), so a push touching nothing deployable still triggers the full fan-out against production; it also double-fires via `ci-rotate-secrets` calling deploy. **Fix:** expose what was actually deployed (job output → `repository_dispatch` per service or an artifact followers check) and exit early otherwise; drop the cron+per-deploy duplication on the `test-security-*` suites.
 
-### 45c377. [performance] `cron-deploy-journal` rebuilds and redeploys hourly, unconditionally
-
-**`.github/workflows/cron-deploy-journal.yml`** — 24×/day: full checkout, pnpm install of the workspace, Vault round trip, Gitea archive download, build (`--skip-nx-cache`!), Cloudflare Pages deploy — even when the journal hasn't changed. The largest recurring CI consumer in the repo (~24 × 3–5 min/day). **Fix:** query the Gitea API for the journal repo's HEAD sha first and compare with the last-deployed sha (stored in GCS/a Pages deployment message/a repo variable); exit early when unchanged.
-
 ### 47b3fb. [performance] Queue consumers live inside auto-stopped fly machines — email delivery stalls while stopped
 
 Both email services start their AMQP consumer in the web process but run with `auto_stop_machines = 'stop'`, `min_machines_running = 0` (`deployment-configs/fly-configs/{production,staging}-email-service.toml` and email-subscription tomls). Outbound AMQP doesn't keep fly machines alive: when stopped, queued emails sit until an HTTP request (in practice the Upptime ping) wakes the machine — minutes of delivery delay plus RabbitMQ reconnect churn per cycle. **Fix:** `min_machines_running = 1` for email-service, or move consumers to the always-on VM, or accept and document the delay.
