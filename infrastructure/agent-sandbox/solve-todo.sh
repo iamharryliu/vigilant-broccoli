@@ -61,6 +61,12 @@ if [ -z "${GH_TOKEN:-}" ]; then
   exit 1
 fi
 
+# The token is minted at runtime, so GitHub Actions' log masker doesn't know it.
+# Register it so it can't leak into job logs (e.g. the per-id logs tee'd by CI).
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  echo "::add-mask::$GH_TOKEN"
+fi
+
 if [ -n "$PROMPT" ]; then
   LOG_DIR=$(mktemp -d /tmp/vb-solve.XXXXXX)
   LOG_FILE="$LOG_DIR/solve-prompt.log"
