@@ -42,10 +42,12 @@ export const buildAuthHeaders = async (options?: {
   return headers;
 };
 
-export const signOutDueToExpiredToken = async () => {
+export const signOut = async () => {
   localStorage.removeItem(GOOGLE_TOKEN_KEY);
   await supabase.auth.signOut();
 };
+
+export const signOutDueToExpiredToken = signOut;
 
 export default function AuthProvider({
   children,
