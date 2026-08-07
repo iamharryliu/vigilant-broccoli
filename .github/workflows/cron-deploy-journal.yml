@@ -20,6 +20,8 @@ concurrency:
 
 env:
   GITEA_JOURNAL_ARCHIVE_URL: https://git.harryliu.dev/api/v1/repos/iamharryliu/journal/archive/main.zip
+  GITEA_JOURNAL_BRANCH_URL: https://git.harryliu.dev/api/v1/repos/iamharryliu/journal/branches/main
+  JOURNAL_DEPLOY_STATE_URI: gs://vigilant-broccoli-backup/journal-deploy-state/last-deployed-sha.txt
 
 jobs:
   deploy-journal:
@@ -28,8 +30,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - uses: ./.github/actions/setup-nx-workspace
 
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
@@ -43,7 +43,42 @@ jobs:
             kv/data/secrets GITEA_CF_ACCESS_CLIENT_ID | GITEA_CF_ACCESS_CLIENT_ID ;
             kv/data/secrets GITEA_CF_ACCESS_CLIENT_SECRET | GITEA_CF_ACCESS_CLIENT_SECRET ;
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Check for journal changes
+        id: check
+        env:
+          GITEA_TOKEN: ${{ env.GITEA_TOKEN }}
+          CF_ACCESS_CLIENT_ID: ${{ env.GITEA_CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ env.GITEA_CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          HEAD_SHA=$(curl -sfL -K - "$GITEA_JOURNAL_BRANCH_URL" <<CURL_CFG | jq -r '.commit.id'
+          header = "Authorization: token ${GITEA_TOKEN}"
+          header = "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}"
+          header = "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}"
+          CURL_CFG
+          )
+          LAST_DEPLOYED_SHA=$(gsutil cat "$JOURNAL_DEPLOY_STATE_URI" 2>/dev/null || true)
+          echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          if [ "$HEAD_SHA" = "$LAST_DEPLOYED_SHA" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: ./.github/actions/setup-nx-workspace
+        if: steps.check.outputs.changed == 'true' || github.event_name != 'schedule'
+
       - name: Fetch journal notes from Gitea
+        if: steps.check.outputs.changed == 'true' || github.event_name != 'schedule'
         env:
           GITEA_TOKEN: ${{ env.GITEA_TOKEN }}
           CF_ACCESS_CLIENT_ID: ${{ env.GITEA_CF_ACCESS_CLIENT_ID }}
@@ -60,6 +95,7 @@ jobs:
           echo "NOTES_DIR=$NOTES_DIR" >> "$GITHUB_ENV"
 
       - name: Build notes snapshot
+        if: steps.check.outputs.changed == 'true' || github.event_name != 'schedule'
         working-directory: ./projects/nx-workspace
         run: |
           node apps/ui/journal/scripts/build-snapshot.mjs \
@@ -67,8 +103,13 @@ jobs:
             apps/ui/journal/public
 
       - name: Deploy to Cloudflare Pages
+        if: steps.check.outputs.changed == 'true' || github.event_name != 'schedule'
         working-directory: ./projects/nx-workspace
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
         run: pnpm exec nx run journal:deploy --skip-nx-cache
+
+      - name: Record deployed journal sha
+        if: steps.check.outputs.changed == 'true' || github.event_name != 'schedule'
+        run: echo -n "${{ steps.check.outputs.head_sha }}" | gsutil cp - "$JOURNAL_DEPLOY_STATE_URI"
