@@ -71,8 +71,12 @@ jobs:
           if [ -n "$PROMPT" ]; then
             bash "$SOLVE" --model "$MODEL" --prompt "$PROMPT" || STATUS=$?
           else
-            # shellcheck disable=SC2086
-            bash "$SOLVE" --model "$MODEL" $IDS || STATUS=$?
+            if ! printf '%s' "$IDS" | grep -qE '^[0-9a-fA-F ]*$'; then
+              echo "ERROR: 'ids' must be space-separated hex TODO ids." >&2
+              exit 1
+            fi
+            read -ra ID_ARR <<<"$IDS"
+            bash "$SOLVE" --model "$MODEL" "${ID_ARR[@]}" || STATUS=$?
           fi
           echo "===== per-id solve logs ====="
           for f in /tmp/vb-solve.*/*.log; do

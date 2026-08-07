@@ -49,12 +49,22 @@ elif [ -n "${AGENT_GH_APP_ID:-}" ] && [ -n "${AGENT_GH_APP_PRIVATE_KEY:-}" ]; th
     *) PEM_CONTENT=$(printf '%s' "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d) ;;
   esac
   GH_TOKEN=$("$SCRIPT_DIR/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$PEM_CONTENT"))
+  # export so `docker run -e GH_TOKEN` forwards it into the container (the
+  # load-env-from-vault.sh path above exports it too); without this the sandbox
+  # gets no token and `git push` fails with "could not read Username".
+  export GH_TOKEN
 fi
 
 if [ -z "${GH_TOKEN:-}" ]; then
   echo "ERROR: no GitHub token available — solves cannot push or open PRs." >&2
   echo "Add GitHub App credentials or a fine-grained PAT to Vault (see docs/infrastructure/secret-management.md), then run: pnpm agentic:dev-sandbox:up" >&2
   exit 1
+fi
+
+# The token is minted at runtime, so GitHub Actions' log masker doesn't know it.
+# Register it so it can't leak into job logs (e.g. the per-id logs tee'd by CI).
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  echo "::add-mask::$GH_TOKEN"
 fi
 
 if [ -n "$PROMPT" ]; then
