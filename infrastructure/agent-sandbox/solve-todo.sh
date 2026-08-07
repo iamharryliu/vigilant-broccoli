@@ -49,6 +49,10 @@ elif [ -n "${AGENT_GH_APP_ID:-}" ] && [ -n "${AGENT_GH_APP_PRIVATE_KEY:-}" ]; th
     *) PEM_CONTENT=$(printf '%s' "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d) ;;
   esac
   GH_TOKEN=$("$SCRIPT_DIR/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$PEM_CONTENT"))
+  # export so `docker run -e GH_TOKEN` forwards it into the container (the
+  # load-env-from-vault.sh path above exports it too); without this the sandbox
+  # gets no token and `git push` fails with "could not read Username".
+  export GH_TOKEN
 fi
 
 if [ -z "${GH_TOKEN:-}" ]; then
