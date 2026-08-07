@@ -92,10 +92,6 @@ Role `github-actions-role` is usable by any job with `id-token: write` — inclu
 
 `StrictHostKeyChecking=accept-new` plus `ssh-keygen -R` before connecting = trust-on-first-use every run, then the rotated `SHARED_APP_TOKEN` is piped over that connection. DNS hijack / MITM of `socket.harryliu.dev` presents its own host key, is accepted, and receives the new token. Same TOFU pattern in `cron-backup.yml:79,85` (lower impact). **Fix:** store the VMs' host public keys (not secret) in repo/Vault, write to `known_hosts` with `StrictHostKeyChecking=yes`, drop the `ssh-keygen -R`.
 
-### 45c377. [performance] `cron-deploy-journal` rebuilds and redeploys hourly, unconditionally
-
-**`.github/workflows/cron-deploy-journal.yml`** — 24×/day: full checkout, pnpm install of the workspace, Vault round trip, Gitea archive download, build (`--skip-nx-cache`!), Cloudflare Pages deploy — even when the journal hasn't changed. The largest recurring CI consumer in the repo (~24 × 3–5 min/day). **Fix:** query the Gitea API for the journal repo's HEAD sha first and compare with the last-deployed sha (stored in GCS/a Pages deployment message/a repo variable); exit early when unchanged.
-
 ### 47b3fb. [performance] Queue consumers live inside auto-stopped fly machines — email delivery stalls while stopped
 
 Both email services start their AMQP consumer in the web process but run with `auto_stop_machines = 'stop'`, `min_machines_running = 0` (`deployment-configs/fly-configs/{production,staging}-email-service.toml` and email-subscription tomls). Outbound AMQP doesn't keep fly machines alive: when stopped, queued emails sit until an HTTP request (in practice the Upptime ping) wakes the machine — minutes of delivery delay plus RabbitMQ reconnect churn per cycle. **Fix:** `min_machines_running = 1` for email-service, or move consumers to the always-on VM, or accept and document the delay.
@@ -107,10 +103,6 @@ Both email services start their AMQP consumer in the web process but run with `a
 ### 5b34e7. [performance] `googleapis` meta-package import — heavy cold-start cost in vb-express
 
 **`apps/api/vb-express/src/routes/tasks.ts:2`** — `import { google } from 'googleapis'` indexes every Google API at require time on a shared-1-cpu machine that cold-boots constantly (496949), and drags a huge tree into the pruned image. **Fix:** `@googleapis/tasks` only, or plain `fetch` against the REST API (the code already does this for task lists).
-
-### 5b720a. [performance] llm-service streaming doesn't abort upstream on client disconnect
-
-**`apps/api/llm-service/src/routes/chat.ts`** — after `reply.hijack()`, the `for await` loop has no `close` listener on the raw socket; when the user closes the tab mid-generation, the OpenAI stream is consumed (and billed) to completion. **Fix:** pass an `AbortController.signal` to the SDK call and abort from `reply.raw.on('close', ...)`.
 
 ### 69d76a. [performance] Whiteboard broadcasts the full document on every keystroke
 
@@ -124,17 +116,9 @@ Zero `lazy(` hits across `apps/ui`, `apps/findme`, `apps/whiteboard`; `cloud-8-s
 
 **`apps/ui/vb-manager-next/src/app/layout.tsx:1`** + `(pages)/layout.tsx` mounting `FloatingIslandComponent` inside `display: none` on every page — including the chatbot dialog which statically imports `react-markdown`, plus email/calendar/weather/pomodoro dialogs, all in the shared layout bundle executing on first paint. **Fix:** `next/dynamic` for each dialog (needed only after a shortcut/click); move `'use client'` down from the root layout so pages can opt into server rendering later.
 
-### 7ce463. [performance] hearth calendar fetches the entire event history on every view
-
-**`apps/hearth/src/app/api/calendar/events/route.ts:42-44`** — `select('*')` on `calendar_events` with no date-range filter; grows unboundedly. **Fix:** accept `start`/`end` params (FullCalendar provides the visible range) and filter with `.gte/.lte`.
-
 ### 7e1071. [performance] hearth ships zero optimized images; 1920px originals rendered as 96px thumbnails
 
 No `next/image` anywhere in hearth; R2 originals stored at up to 1920px/q85 (`api/where-is/image-processor.ts`) render via plain `<img>` at `h-24 w-24` in lists. A storage area with 10 photos downloads several MB to show thumbnails. **Fix:** write a second ~256px `-thumb.jpg` variant at upload (sharp is already in the pipeline) and use it in lists; or route R2 URLs through `next/image` `remotePatterns`.
-
-### 7f6d01. [performance] vb-manager docs search re-reads the whole notes tree and builds two Fuse indexes per keystroke
-
-**`apps/ui/vb-manager-next/src/app/api/docs/search/route.ts:103`** — `getAllMarkdownFiles()` recursively reads every `.md` under `~/vigilant-broccoli/notes` and constructs Fuse instances on each request; the 300ms client debounce still yields several full-tree reads per typed query. **Fix:** cache the corpus + indexes in module scope with an mtime/TTL check.
 
 ### 8290e3. [performance] speed-test route: no in-flight dedupe — concurrent polls stack `speedtest` processes
 

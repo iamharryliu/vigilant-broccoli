@@ -137,12 +137,15 @@ async function promptOpenAI<T>(
 
 async function promptOpenAIStream(
   request: LLMPromptRequest,
+  signal?: AbortSignal,
 ): Promise<AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>> {
   const { modelConfig } = request;
   const client = LLMUtils.getLLMClient(modelConfig) as OpenAI;
   const chatParams = LLMUtils.formatPromptParams(request, true);
 
-  const streamResponse = await client.chat.completions.create(chatParams);
+  const streamResponse = await client.chat.completions.create(chatParams, {
+    signal,
+  });
   return streamResponse as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;
 }
 
@@ -161,6 +164,7 @@ async function prompt<T>(
 
 async function promptStream(
   request: LLMPromptRequest,
+  signal?: AbortSignal,
 ): Promise<AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>> {
   const { modelConfig } = request;
   const client = LLMUtils.getLLMClient(modelConfig);
@@ -169,7 +173,7 @@ async function promptStream(
     throw new Error('Streaming is not yet supported for Anthropic models');
   }
 
-  return promptOpenAIStream(request);
+  return promptOpenAIStream(request, signal);
 }
 
 async function generateImages(prompt: string, n = 1) {

@@ -21,6 +21,9 @@ export default function OverallCalendarPage() {
   const session = useAuth();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [modal, setModal] = useState<ModalState>(null);
+  const [range, setRange] = useState<{ start: string; end: string } | null>(
+    null,
+  );
 
   const token = session?.access_token ?? '';
   const authHeader = (extra?: Record<string, string>) => ({
@@ -29,13 +32,17 @@ export default function OverallCalendarPage() {
   });
 
   const fetchEvents = useCallback(async () => {
-    if (!token) return;
-    const res = await fetch('/api/calendar/events', {
+    if (!token || !range) return;
+    const params = new URLSearchParams({
+      start: range.start,
+      end: range.end,
+    });
+    const res = await fetch(`/api/calendar/events?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     setEvents(Array.isArray(data) ? data : []);
-  }, [token]);
+  }, [token, range]);
 
   useEffect(() => {
     fetchEvents();
@@ -100,6 +107,7 @@ export default function OverallCalendarPage() {
         }
         onEventClick={event => setModal({ type: 'edit', event })}
         onEventDrop={handleEventDrop}
+        onRangeChange={(start, end) => setRange({ start, end })}
       />
 
       <Dialog.Root

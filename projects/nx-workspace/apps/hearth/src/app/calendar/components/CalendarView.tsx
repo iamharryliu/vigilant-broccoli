@@ -6,6 +6,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import type {
   DateSelectArg,
+  DatesSetArg,
   EventClickArg,
   EventDropArg,
   EventInput,
@@ -25,6 +26,7 @@ interface Props {
     allDay: boolean,
   ) => void;
   onEventReceive?: (arg: EventReceiveArg) => void;
+  onRangeChange?: (start: string, end: string) => void;
   droppable?: boolean;
   showViewSwitcher?: boolean;
   height?: string;
@@ -46,12 +48,17 @@ export function CalendarView({
   onEventClick,
   onEventDrop,
   onEventReceive,
+  onRangeChange,
   droppable = false,
   showViewSwitcher = true,
   height = '75vh',
 }: Props) {
   const handleSelect = (arg: DateSelectArg) => {
     onSelectSlot(arg.startStr, arg.endStr, arg.allDay);
+  };
+
+  const handleDatesSet = (arg: DatesSetArg) => {
+    onRangeChange?.(arg.startStr, arg.endStr);
   };
 
   const handleEventClick = (arg: EventClickArg) => {
@@ -90,6 +97,7 @@ export function CalendarView({
       eventClick={handleEventClick}
       eventDrop={handleEventDrop}
       eventReceive={onEventReceive}
+      datesSet={handleDatesSet}
     />
   );
 }

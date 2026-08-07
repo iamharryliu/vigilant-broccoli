@@ -61,6 +61,55 @@ async function getAllMarkdownFiles(
   return files;
 }
 
+const SEARCH_INDEX_CACHE_TTL_MS = 30_000;
+
+let cachedFiles: SearchableFile[] | null = null;
+let cachedFilenameFuse: Fuse<SearchableFile> | null = null;
+let cachedContentFuse: Fuse<SearchableFile> | null = null;
+let cachedAt = 0;
+
+async function getSearchIndexes(notesPath: string): Promise<{
+  files: SearchableFile[];
+  filenameFuse: Fuse<SearchableFile>;
+  contentFuse: Fuse<SearchableFile>;
+}> {
+  const now = Date.now();
+
+  if (
+    cachedFiles &&
+    cachedFilenameFuse &&
+    cachedContentFuse &&
+    now - cachedAt < SEARCH_INDEX_CACHE_TTL_MS
+  ) {
+    return {
+      files: cachedFiles,
+      filenameFuse: cachedFilenameFuse,
+      contentFuse: cachedContentFuse,
+    };
+  }
+
+  const files = await getAllMarkdownFiles(notesPath);
+
+  const filenameFuse = new Fuse(files, {
+    keys: ['name', 'path'],
+    threshold: 0.4,
+    includeScore: true,
+  });
+
+  const contentFuse = new Fuse(files, {
+    keys: ['content'],
+    threshold: 0.6,
+    includeScore: true,
+  });
+
+  cachedFiles = files;
+  cachedFilenameFuse = filenameFuse;
+  cachedContentFuse = contentFuse;
+  cachedAt = now;
+
+  return { files, filenameFuse, contentFuse };
+}
+
 function getExcerpt(
   content: string,
   searchTerm: string,
@@ -100,21 +149,7 @@ export async function GET(req: NextRequest) {
     }
 
     const notesPath = join(homedir(), 'vigilant-broccoli', 'notes');
-    const allFiles = await getAllMarkdownFiles(notesPath);
-
-    // Search in filenames with higher weight
-    const filenameFuse = new Fuse(allFiles, {
-      keys: ['name', 'path'],
-      threshold: 0.4,
-      includeScore: true,
-    });
-
-    // Search in content with lower threshold (more lenient)
-    const contentFuse = new Fuse(allFiles, {
-      keys: ['content'],
-      threshold: 0.6,
-      includeScore: true,
-    });
+    const { filenameFuse, contentFuse } = await getSearchIndexes(notesPath);
 
     const filenameResults = filenameFuse.search(query);
     const contentResults = contentFuse.search(query);

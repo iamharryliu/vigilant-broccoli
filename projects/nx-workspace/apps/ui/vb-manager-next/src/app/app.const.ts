@@ -28,10 +28,6 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'API Keys',
     path: '/api-keys',
   },
-  NETWORK_MONITOR: {
-    title: 'Network Monitor',
-    path: '/network-monitor',
-  },
   EVENT_CALENDARS: {
     title: 'Event Calendars',
     path: '/event-calendars',

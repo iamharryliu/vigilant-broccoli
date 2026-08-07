@@ -36,6 +36,8 @@ const toCalendarEvent = (
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const homeId = searchParams.get('homeId');
+  const start = searchParams.get('start');
+  const end = searchParams.get('end');
   const supabase = getSupabase(req);
 
   let query = supabase
@@ -44,6 +46,8 @@ export async function GET(req: NextRequest) {
     .order('start', { ascending: true });
 
   if (homeId) query = query.eq('home_id', homeId);
+  if (start) query = query.gte('end', start);
+  if (end) query = query.lte('start', end);
 
   const { data, error } = await query;
   if (error)
