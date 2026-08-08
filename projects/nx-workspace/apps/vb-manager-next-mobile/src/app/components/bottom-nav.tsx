@@ -99,6 +99,25 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    href: '/notepad',
+    label: 'Notepad',
+    icon: (
+      <svg
+        className="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.75}
+          d="M11 4h9m-9 4h9m-9 4h5m-5 8v-4l9-9 4 4-9 9H7z"
+        />
+      </svg>
+    ),
+  },
 ];
 
 export const BottomNav = () => {
