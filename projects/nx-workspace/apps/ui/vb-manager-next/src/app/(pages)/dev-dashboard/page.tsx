@@ -19,12 +19,14 @@ import { LocalServicesComponent } from '../../components/local-services.componen
 import { LanDevicesComponent } from '../../components/lan-devices.component';
 import { OutboundConnectionsComponent } from '../../components/outbound-connections.component';
 import { TextToolsPage } from '../../components/pages/TextToolsPage';
+import { ApiKeysComponent } from '../../components/api-keys.component';
 
 const TAB = {
   LOCAL: 'local',
   CLOUD: 'cloud',
   NETWORK: 'network',
   TEXT_TOOLS: 'text-tools',
+  API_KEYS: 'api-keys',
 } as const;
 
 type Tab = (typeof TAB)[keyof typeof TAB];
@@ -61,6 +63,7 @@ export default function Page() {
         <Tabs.Trigger value={TAB.CLOUD}>Cloud Services</Tabs.Trigger>
         <Tabs.Trigger value={TAB.NETWORK}>Network Tools</Tabs.Trigger>
         <Tabs.Trigger value={TAB.TEXT_TOOLS}>Text Tools</Tabs.Trigger>
+        <Tabs.Trigger value={TAB.API_KEYS}>API Keys</Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-4 gap-4">
@@ -115,6 +118,9 @@ export default function Page() {
       </Tabs.Content>
       <Tabs.Content value={TAB.TEXT_TOOLS} className="pt-4 flex-1 min-h-0">
         <TextToolsPage />
+      </Tabs.Content>
+      <Tabs.Content value={TAB.API_KEYS} className="pt-4 flex-1 min-h-0">
+        <ApiKeysComponent />
       </Tabs.Content>
     </Tabs.Root>
   );
