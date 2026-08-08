@@ -18,6 +18,7 @@
 - [secret-management.md](./docs/infrastructure/secret-management.md) — read first before adding a secret or a local `.env`/`.tfvars` file; secrets live in Vault/GCP Secret Manager (avoid local secret files), non-secret IDs are hardcoded in Terraform
 - [nuance.md](./docs/nuance.md) — non-obvious bugs and quirks discovered in this repo; check before debugging something that looks like it shouldn't happen
 - [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist for `/refactor-code-cleanup`; unattended `agentic:task:solve` runs must apply it before finishing
+- [TODO.md](./TODO.md) — repo audit backlog as per-section (`## Security`/`## Performance`/`## Maintenance`/`## Feature Enhancements`/`## Not so serious`) markdown tables (`ID | Priority | Description | Recommended Fix`, ordered P1→P3 then NA); read the `/create-todo-task` command before adding a row — its format is parsed by `infrastructure/agent-sandbox/solve-todo*.sh`, keep them in sync
 - Coding Conventions — this file
 - Folder Structure — this file
 
