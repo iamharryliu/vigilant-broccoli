@@ -32,10 +32,6 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Event Calendars',
     path: '/event-calendars',
   },
-  TEXT_TOOLS: {
-    title: 'Text Tools',
-    path: '/text-tools',
-  },
   NOTEPAD: {
     title: 'Notepad',
     path: '/notepad',

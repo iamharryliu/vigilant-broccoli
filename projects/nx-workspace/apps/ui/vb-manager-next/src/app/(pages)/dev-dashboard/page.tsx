@@ -18,11 +18,13 @@ import { VercelAppsComponent } from '../../components/vercel-apps.component';
 import { LocalServicesComponent } from '../../components/local-services.component';
 import { LanDevicesComponent } from '../../components/lan-devices.component';
 import { OutboundConnectionsComponent } from '../../components/outbound-connections.component';
+import { TextToolsPage } from '../../components/pages/TextToolsPage';
 
 const TAB = {
   LOCAL: 'local',
   CLOUD: 'cloud',
   NETWORK: 'network',
+  TEXT_TOOLS: 'text-tools',
 } as const;
 
 type Tab = (typeof TAB)[keyof typeof TAB];
@@ -58,6 +60,7 @@ export default function Page() {
         <Tabs.Trigger value={TAB.LOCAL}>Local Service</Tabs.Trigger>
         <Tabs.Trigger value={TAB.CLOUD}>Cloud Services</Tabs.Trigger>
         <Tabs.Trigger value={TAB.NETWORK}>Network Tools</Tabs.Trigger>
+        <Tabs.Trigger value={TAB.TEXT_TOOLS}>Text Tools</Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-4 gap-4">
@@ -109,6 +112,9 @@ export default function Page() {
             <LocalServicesComponent />
           </div>
         </div>
+      </Tabs.Content>
+      <Tabs.Content value={TAB.TEXT_TOOLS} className="pt-4 flex-1 min-h-0">
+        <TextToolsPage />
       </Tabs.Content>
     </Tabs.Root>
   );
