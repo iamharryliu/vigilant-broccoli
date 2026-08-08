@@ -95,6 +95,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   vb-manager-next:delete      Delete vb-manager-next PM2 process
   vb-manager-next:logs        Tail vb-manager-next PM2 logs
   vb-manager-next:status      Show PM2 process status
+  deploy:local-services       Bring up local Docker services + reload vb-manager-next
   health-check                Run health check script
 
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
