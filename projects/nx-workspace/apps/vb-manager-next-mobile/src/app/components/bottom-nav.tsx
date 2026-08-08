@@ -80,6 +80,25 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    href: '/ocr',
+    label: 'Scan',
+    icon: (
+      <svg
+        className="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.75}
+          d="M4 7V5a1 1 0 011-1h2M4 17v2a1 1 0 001 1h2m10-14h2a1 1 0 011 1v2m-3 12h2a1 1 0 001-1v-2M4 12h16"
+        />
+      </svg>
+    ),
+  },
 ];
 
 export const BottomNav = () => {
