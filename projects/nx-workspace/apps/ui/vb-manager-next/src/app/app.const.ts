@@ -40,10 +40,6 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Notepad',
     path: '/notepad',
   },
-  DOCS_MD: {
-    title: 'DocsMD',
-    path: '/docs-md',
-  },
   LANGUAGE_LEARNING: {
     title: 'Language Learning',
     path: '/language-learning',
