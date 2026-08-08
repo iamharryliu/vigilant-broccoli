@@ -141,6 +141,33 @@ vault write auth/jwt/role/${VAULT_PR_CHECK_ROLE_NAME} - <<ROLE
 }
 ROLE
 
+# manual-replace-code-server.yml re-syncs CODE_SERVER_VM_IP after replacing the
+# code-server VM (which gets a fresh ephemeral IP). Patch-only — it can merge a
+# single key into kv/data/secrets but cannot read any secret, so it grants no
+# read access the workflow doesn't already hold via ${VAULT_ROLE_NAME}.
+echo 'Writing policy ${VAULT_CODE_SERVER_POLICY_NAME}...'
+vault policy write ${VAULT_CODE_SERVER_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/secrets\" {
+  capabilities = [\"patch\"]
+}
+POLICY
+
+echo 'Creating role ${VAULT_CODE_SERVER_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_CODE_SERVER_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims_type\": \"glob\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-replace-code-server.yml@*\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_CODE_SERVER_POLICY_NAME}\"],
+  \"ttl\": \"30m\"
+}
+ROLE
+
 echo 'Creating kv/test placeholder...'
 vault kv put ${VAULT_KV_PATH}/test test=test
 

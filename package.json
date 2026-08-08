@@ -32,7 +32,7 @@
     "code-server:password": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform state pull | jq -r '.resources[] | select(.type == \"random_password\" and .name == \"code_server_password\") | .instances[0].attributes.result' | pbcopy && echo 'Code server password copied to clipboard.'",
     "code-server:logs": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip 'sudo docker logs -f code-server'",
     "code-server:logs:cloud-init": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip 'tail -f /var/log/cloud-init-output.log'",
-    "code-server:replace": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply -replace=oci_core_instance.code_server && ssh-keygen -R $(terraform output -raw oci_code_server_public_ip)",
+    "code-server:replace": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply -replace=oci_core_instance.code_server && ssh-keygen -R $(terraform output -raw oci_code_server_public_ip) && ./scripts/sync-code-server-ip.sh",
     "code-server:reset": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip 'cd /opt/code-server && sudo docker compose down -v && sudo docker compose up -d'",
     "seafile:ssh": "./scripts/shell/oci-ssh.sh aws_seafile_public_ip",
     "seafile:open": "open https://drive.harryliu.dev",
