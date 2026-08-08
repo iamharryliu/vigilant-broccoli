@@ -91,7 +91,7 @@ echo "Logs: $LOG_DIR"
 
 PIDS=()
 for id in "${IDS[@]}"; do
-  grep -qE "^#+ ${id}\." "$REPO_ROOT/TODO.md" || echo "WARNING: no '### ${id}.' item in local TODO.md (sandbox clones fresh main)" >&2
+  grep -qE "^\|[[:space:]]*${id}[[:space:]]*\|" "$REPO_ROOT/TODO.md" || echo "WARNING: no '${id}' row in local TODO.md (sandbox clones fresh main)" >&2
   docker run --rm --init --name "vb-solve-${id}" \
     --cap-add NET_ADMIN --cap-add NET_RAW \
     -e CLAUDE_CODE_OAUTH_TOKEN \

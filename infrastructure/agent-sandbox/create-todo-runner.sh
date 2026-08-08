@@ -22,11 +22,11 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 $DESCRIPTION
 
 Rules:
-- Read TODO.md to learn its structure: section headings (## Features to Add, ## P1-P3) and entry format: <6-hex-id>. [category] Title, a short context paragraph, then a numbered Steps: list. The entry heading's depth matches the section it lives in: a direct child of a ## section is ###, but a section with an intermediate subsection (e.g. ## Feature > ### Enhancements) pushes its entries one level deeper (####) — match whatever depth the section you're adding to already uses, one level past its immediate parent heading.
-- Research before writing: grep the repo for every file, workflow, config, and doc the task touches. The entry must cite concrete paths (with line numbers where useful) and name an existing pattern to follow when one exists.
-- Check CLAUDE.md and the docs it points to for conventions that constrain the task, and bake them into the steps.
+- Read TODO.md to learn its structure: a Table of Contents, then one section per category (## Security, ## Performance, ## Maintenance, ## Feature Enhancements, ## Not so serious). Each section is a markdown table with the columns "ID | Priority | Description | Recommended Fix", and rows are ordered by priority (P1 highest -> P2 -> P3, then NA).
+- Research before writing: grep the repo for every file, workflow, config, and doc the task touches. The Description and Recommended Fix cells must cite concrete paths (with line numbers where useful) and name an existing pattern to follow when one exists.
+- Check CLAUDE.md and the docs it points to for conventions that constrain the task, and bake them into the Recommended Fix.
 - Generate a unique 6-hex id (python3 -c "import random; print(format(random.randint(0, 0xffffff), '06x'))") and verify it doesn't already appear in TODO.md.
-- Add the entry under the most fitting existing section; only create a new section if none fits.
+- Add ONE table row under the most fitting existing section, inserted in priority order among that section's rows; only create a new section (and its TOC entry) if none fits. Put the bare 6-hex id in the leading ID cell. Priority is P1/P2/P3 for Security/Performance/Maintenance, NA for Feature Enhancements and Not-so-serious items. Write a multi-step fix as "1. ...<br>2. ..." (a table cell can't hold a real newline), and escape any literal | inside a cell as \| so it doesn't break the columns. Keep the whole row on one physical line.
 - Do not implement the task. Do not touch any file besides TODO.md.
 - Do not run any git or gh commands and do not commit — branching, committing, pushing, and opening the PR are handled by the calling script.
 - When finished, write $META_FILE containing only a JSON object with these string fields:

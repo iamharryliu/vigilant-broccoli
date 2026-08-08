@@ -32,9 +32,17 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 cd "$REPO_DIR"
 
 if [ "$MODE" = id ]; then
-  TASK=$(awk -v id="$ID" '/^#+ /{p=($0 ~ "^#+ " id "\\.")} p' TODO.md)
+  # TODO items live as rows in per-section markdown tables (ID | Priority |
+  # Description | Recommended Fix). Extract the nearest table header plus the
+  # matching row, expanding <br> step separators and unescaping \| pipes so the
+  # solver reads clean prose.
+  TASK=$(awk -v id="$ID" '
+    /^\|[[:space:]]*ID[[:space:]]*\|[[:space:]]*Priority[[:space:]]*\|/ { header=$0 }
+    $0 ~ ("^\\|[[:space:]]*" id "[[:space:]]*\\|") { print header; print; found=1; exit }
+    END { if (!found) exit 1 }
+  ' TODO.md | sed 's/<br>/\n/g; s/\\|/|/g')
   if [ -z "$TASK" ]; then
-    echo "ERROR: no '### ${ID}.' item in TODO.md" >&2
+    echo "ERROR: no '${ID}' row in TODO.md" >&2
     exit 1
   fi
   BRANCH="agent/todo-${ID}"
@@ -140,41 +148,11 @@ if [ "$MODE" = id ]; then
     exit 1
   fi
   TMP=$(mktemp)
-  awk -v id="$ID" '/^#+ /{skip=($0 ~ "^#+ " id "\\.")} !skip' TODO.md > "$TMP"
-  # Drop now-empty structural headings at any depth (e.g. a "### Enhancements"
-  # subsection, or its parent "## Feature", left with no leaf entry beneath it
-  # once the id above was removed) — not just direct ### children of ##.
-  # A "leaf" entry is a heading carrying a 6-hex-id (any depth); a heading is
-  # dropped, along with its whole span, only if no leaf appears before the next
-  # heading at an equal-or-shallower depth.
-  awk '
-    function depth(line,    d) { d = 0; while (substr(line, d + 1, 1) == "#") d++; return d }
-    { line[NR] = $0 }
-    END {
-      n = NR
-      for (i = 1; i <= n; i++) {
-        hd[i] = (line[i] ~ /^#+ /) ? depth(line[i]) : -1
-        isleaf[i] = (line[i] ~ /^#+ [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]\./)
-      }
-      for (i = 1; i <= n; i++) {
-        if (hd[i] < 0 || isleaf[i]) continue
-        d = hd[i]; has = 0
-        for (j = i + 1; j <= n; j++) {
-          if (hd[j] < 0) continue
-          if (hd[j] <= d) break
-          if (isleaf[j]) { has = 1; break }
-        }
-        if (!has) {
-          for (j = i; j <= n; j++) {
-            if (j > i && hd[j] >= 0 && hd[j] <= d) break
-            suppressed[j] = 1
-          }
-        }
-      }
-      for (i = 1; i <= n; i++) if (!suppressed[i]) print line[i]
-    }
-  ' "$TMP" > TODO.md
-  rm -f "$TMP"
+  # Each TODO item is a single table row whose first column is its id; drop that
+  # row. The anchored regex only matches the id in the leading cell, so passing
+  # mentions of the id inside another row's prose (cross-references) are kept.
+  grep -vE "^\|[[:space:]]*${ID}[[:space:]]*\|" TODO.md > "$TMP"
+  mv "$TMP" TODO.md
 else
   if [ -z "$(git status --porcelain)" ]; then
     echo "ERROR: no changes produced — task was not completed." >&2
