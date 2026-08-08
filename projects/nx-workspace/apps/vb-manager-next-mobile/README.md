@@ -13,6 +13,7 @@ Mobile-friendly dashboard for managing personal tasks and calendars.
 - Build Tool - Next.js
 - External libs
   - Zod
+  - Tesseract.js
 - Internal libs
   - `common-browser`
   - `common-js`
