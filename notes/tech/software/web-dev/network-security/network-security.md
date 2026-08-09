@@ -9,7 +9,7 @@
 - [Types of Authentication](#types-of-authentication)
 - [Types of Vulnerabilities](#types-of-vulnerabilities)
 - [Types of Attacks](#types-of-attacks)
-- [Network Tools](./network-security-tools/network-tools.md)
+- [Network Tools](./network-tools.md)
 - [Security Hardening](./security-hardening.md)
 - [References](#references)
 

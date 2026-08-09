@@ -5,6 +5,7 @@
 - [Bird Watching](./bird-watching.md)
 - [Board Games](./board-games.md)
 - [Chess](./chess/chess.md)
+- [Content Creation Workflow](./content-creation-workflow.md)
 - [Cooking](./cooking/cooking.md)
 - Dance
   - [Social Dancing](./dance/social-dancing.md)

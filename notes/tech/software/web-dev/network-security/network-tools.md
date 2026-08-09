@@ -19,9 +19,9 @@
 
 ## Network Scanning
 
-| Tool | Description                                                        | More               |
-| ---- | ------------------------------------------------------------------ | ------------------ |
-| nmap | Port and host scanner for network discovery and security auditing. | [nmap](../nmap.md) |
+| Tool | Description                                                        | More              |
+| ---- | ------------------------------------------------------------------ | ----------------- |
+| nmap | Port and host scanner for network discovery and security auditing. | [nmap](./nmap.md) |
 
 ## OSINT
 

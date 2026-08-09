@@ -3,7 +3,7 @@
 - [PM2](./pm2.md)
 - [Docker](../docker.md)
 - [Docker Compose](../docker.md#docker-compose)
-- [Terraform](../provision/terraform/terraform.md)
+- [Terraform](../terraform/terraform.md)
 
 ## Cloud Deployment Platforms
 
