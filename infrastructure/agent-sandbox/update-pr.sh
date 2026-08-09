@@ -39,13 +39,29 @@ if [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
   . "$SCRIPT_DIR/load-env-from-vault.sh"
 elif [ -n "${AGENT_GH_APP_ID:-}" ] && [ -n "${AGENT_GH_APP_PRIVATE_KEY:-}" ]; then
   echo "Minting fresh GitHub App installation token..." >&2
-  GH_TOKEN=$("$SCRIPT_DIR/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY"))
+  # Accept the key either as raw PEM or base64-encoded (mirrors load-env-from-vault.sh)
+  # so the CI path works regardless of how AGENT_GH_APP_PRIVATE_KEY is stored in Vault.
+  case "$AGENT_GH_APP_PRIVATE_KEY" in
+    -----BEGIN*) PEM_CONTENT="$AGENT_GH_APP_PRIVATE_KEY" ;;
+    *) PEM_CONTENT=$(printf '%s' "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d) ;;
+  esac
+  GH_TOKEN=$("$SCRIPT_DIR/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$PEM_CONTENT"))
+  # export so `docker run -e GH_TOKEN` forwards it into the container (the
+  # load-env-from-vault.sh path above exports it too); without this the sandbox
+  # gets no token and `git push` fails with "could not read Username".
+  export GH_TOKEN
 fi
 
 if [ -z "${GH_TOKEN:-}" ]; then
   echo "ERROR: no GitHub token available — this cannot check out, push, or comment on the PR." >&2
   echo "Add GitHub App credentials or a fine-grained PAT to Vault (see docs/infrastructure/secret-management.md), then run: pnpm agentic:dev-sandbox:up" >&2
   exit 1
+fi
+
+# The token is minted at runtime, so GitHub Actions' log masker doesn't know it.
+# Register it so it can't leak into job logs.
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  echo "::add-mask::$GH_TOKEN"
 fi
 
 echo "Updating PR (model: $MODEL): #$PR — $INSTRUCTION"
