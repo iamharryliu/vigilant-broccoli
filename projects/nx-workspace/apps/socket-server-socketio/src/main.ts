@@ -9,6 +9,7 @@ import {
   PublishAck,
   SOCKET_EVENTS,
 } from '@vigilant-broccoli/common-js';
+import { isTimingSafeEqual } from '@vigilant-broccoli/common-node';
 
 const DEFAULT_PORT = '3000';
 const DEFAULT_HOST = '0.0.0.0';
@@ -75,7 +76,11 @@ const io = new Server(httpServer, { cors: { origin: '*' } });
 io.use((socket, next) => {
   const token = socket.handshake.auth?.token;
   socket.data.role =
-    SENDER_TOKEN && token === SENDER_TOKEN ? ROLE_SENDER : ROLE_RECEIVER;
+    SENDER_TOKEN &&
+    typeof token === 'string' &&
+    isTimingSafeEqual(token, SENDER_TOKEN)
+      ? ROLE_SENDER
+      : ROLE_RECEIVER;
   next();
 });
 

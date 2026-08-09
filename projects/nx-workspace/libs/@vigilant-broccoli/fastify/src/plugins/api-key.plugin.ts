@@ -4,6 +4,7 @@ import {
   API_KEY_HEADER,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
+import { isTimingSafeEqual } from '@vigilant-broccoli/common-node';
 
 const ERROR_UNAUTHORIZED = 'Unauthorized';
 
@@ -29,7 +30,10 @@ export const createApiKeyPlugin = (
         ) {
           return;
         }
-      } else if (providedKey === apiKey) {
+      } else if (
+        typeof providedKey === 'string' &&
+        isTimingSafeEqual(providedKey, apiKey)
+      ) {
         return;
       }
       reply
