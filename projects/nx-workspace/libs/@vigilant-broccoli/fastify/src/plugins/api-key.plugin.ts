@@ -1,20 +1,14 @@
-import { timingSafeEqual } from 'crypto';
 import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import {
   API_KEY_HEADER,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
+import { isTimingSafeEqual } from '@vigilant-broccoli/common-node';
 
 const ERROR_UNAUTHORIZED = 'Unauthorized';
 
 type ApiKeyVerifier = (key: string) => Promise<boolean>;
-
-const isTimingSafeEqual = (a: string, b: string) => {
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
-};
 
 export const createApiKeyPlugin = (
   apiKey?: string,

@@ -1,7 +1,6 @@
 import { createServer as createHttpServer } from 'http';
 import { createServer as createHttpsServer } from 'https';
 import { readFileSync } from 'fs';
-import { timingSafeEqual } from 'crypto';
 import express from 'express';
 import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
@@ -10,6 +9,7 @@ import {
   PublishAck,
   SOCKET_EVENTS,
 } from '@vigilant-broccoli/common-js';
+import { isTimingSafeEqual } from '@vigilant-broccoli/common-node';
 
 const DEFAULT_PORT = '3000';
 const DEFAULT_HOST = '0.0.0.0';
@@ -49,12 +49,6 @@ const publishSchema = z.object({
 });
 
 const roomFor = (app: string, receiverId: string) => `${app}:${receiverId}`;
-
-const isTimingSafeEqual = (a: string, b: string) => {
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
-};
 
 const log = (event: string, data: Record<string, unknown> = {}) => {
   console.log(JSON.stringify({ ts: new Date().toISOString(), event, ...data }));

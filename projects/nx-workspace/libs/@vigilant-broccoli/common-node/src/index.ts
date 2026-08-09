@@ -19,6 +19,7 @@ export * from './lib/logger/logger.transports';
 export * from './lib/logging/logger.service';
 // Encryption
 export * from './lib/encryption/encryption.service';
+export * from './lib/encryption/encryption.utils';
 // Google Recaptcha
 export * from './lib/recaptcha/recaptcha.service';
 // Weather
