@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { SegmentedControl } from '@radix-ui/themes';
+import { Button, SegmentedControl, Slider } from '@radix-ui/themes';
 import {
   DocsExplorer,
   type DocsExplorerUrlSync,
@@ -9,7 +9,13 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { MarkdownViewer } from './markdown-viewer';
 import { ChecklistViewer } from './checklist-viewer';
-import { GraphView, localSubgraph } from './graph-view';
+import {
+  GraphView,
+  localSubgraph,
+  DEFAULT_FORCES,
+  FORCE_LIMITS,
+  type GraphForces,
+} from './graph-view';
 
 const FILE_PARAM = 'file';
 const VIEW_MODE_STORAGE_KEY = 'docs-md:view-mode';
@@ -41,6 +47,22 @@ const GRAPH_SCOPE_LABEL: Record<GraphScope, string> = {
 const DEFAULT_GRAPH_DEPTH = 1;
 const GRAPH_DEPTH_OPTIONS = [1, 2] as const;
 
+const GRAPH_FORCE_STORAGE_PREFIX = 'docs-md:graph-force-';
+const FORCE_ORDER: (keyof GraphForces)[] = [
+  'center',
+  'repel',
+  'link',
+  'linkDistance',
+];
+const FORCE_LABEL: Record<keyof GraphForces, string> = {
+  center: 'Center force',
+  repel: 'Repel force',
+  link: 'Link force',
+  linkDistance: 'Link distance',
+};
+const forceStorageKey = (key: keyof GraphForces) =>
+  `${GRAPH_FORCE_STORAGE_PREFIX}${key}`;
+
 const CLS = {
   CENTERED_MSG: 'flex items-center justify-center h-full text-gray-500',
   CENTERED_ERR: 'flex items-center justify-center h-full text-red-500',
@@ -52,6 +74,8 @@ const COPY = {
   LOADING_GRAPH: 'Loading graph...',
   GRAPH_ERROR: 'Failed to load graph',
   ORPHAN_NOTE: 'This note has no links',
+  FORCES: 'Forces',
+  RESET: 'Reset',
 } as const;
 
 const depthLabel = (value: number) => `${value} hop${value > 1 ? 's' : ''}`;
@@ -80,6 +104,8 @@ function GraphPanel({
   const [error, setError] = useState<string | null>(null);
   const [scope, setScope] = useState<GraphScope>(GRAPH_SCOPE.LOCAL);
   const [depth, setDepth] = useState<number>(DEFAULT_GRAPH_DEPTH);
+  const [forces, setForces] = useState<GraphForces>(DEFAULT_FORCES);
+  const [showForces, setShowForces] = useState(false);
 
   useEffect(() => {
     const storedScope = window.localStorage.getItem(GRAPH_SCOPE_STORAGE_KEY);
@@ -95,6 +121,19 @@ function GraphPanel({
     if ((GRAPH_DEPTH_OPTIONS as readonly number[]).includes(storedDepth)) {
       setDepth(storedDepth);
     }
+    setForces(prev => {
+      const next = { ...prev };
+      for (const key of FORCE_ORDER) {
+        const raw = window.localStorage.getItem(forceStorageKey(key));
+        if (raw === null) continue;
+        const value = Number(raw);
+        const lim = FORCE_LIMITS[key];
+        if (Number.isFinite(value) && value >= lim.min && value <= lim.max) {
+          next[key] = value;
+        }
+      }
+      return next;
+    });
   }, []);
 
   useEffect(() => {
@@ -115,6 +154,17 @@ function GraphPanel({
   const updateDepth = (next: number) => {
     setDepth(next);
     window.localStorage.setItem(GRAPH_DEPTH_STORAGE_KEY, String(next));
+  };
+
+  const updateForce = (key: keyof GraphForces, value: number) => {
+    setForces(prev => ({ ...prev, [key]: value }));
+    window.localStorage.setItem(forceStorageKey(key), String(value));
+  };
+
+  const resetForces = () => {
+    setForces(DEFAULT_FORCES);
+    for (const key of FORCE_ORDER)
+      window.localStorage.removeItem(forceStorageKey(key));
   };
 
   const isLocal = scope === GRAPH_SCOPE.LOCAL && Boolean(activePath);
@@ -158,13 +208,55 @@ function GraphPanel({
             ))}
           </SegmentedControl.Root>
         )}
+        <Button
+          size="1"
+          variant={showForces ? 'solid' : 'soft'}
+          onClick={() => setShowForces(prev => !prev)}
+        >
+          {COPY.FORCES}
+        </Button>
       </div>
       <div className="relative flex-1 min-h-0">
+        {showForces && (
+          <div className="absolute top-2 right-2 z-10 flex w-56 flex-col gap-3 rounded-lg border border-gray-200 bg-white/95 p-3 shadow-lg backdrop-blur dark:border-gray-700 dark:bg-gray-900/95">
+            {FORCE_ORDER.map(key => {
+              const lim = FORCE_LIMITS[key];
+              return (
+                <label key={key} className="flex flex-col gap-1">
+                  <span className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
+                    <span>{FORCE_LABEL[key]}</span>
+                    <span className="tabular-nums text-gray-400">
+                      {forces[key]}
+                    </span>
+                  </span>
+                  <Slider
+                    size="1"
+                    min={lim.min}
+                    max={lim.max}
+                    step={lim.step}
+                    value={[forces[key]]}
+                    onValueChange={value =>
+                      updateForce(key, value[0] ?? forces[key])
+                    }
+                  />
+                </label>
+              );
+            })}
+            <button
+              type="button"
+              onClick={resetForces}
+              className="self-end text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            >
+              {COPY.RESET}
+            </button>
+          </div>
+        )}
         {displayGraph && (
           <GraphView
             graph={displayGraph}
             activePath={activePath}
             onSelect={onSelect}
+            forces={forces}
           />
         )}
         {isOrphan && (
