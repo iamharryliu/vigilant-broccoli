@@ -1,7 +1,6 @@
 # Hobbies
 
 - [Aquarium](./aquarium/aquarium.md)
-- [Drawing](./art/drawing.md)
 - [Bird Watching](./bird-watching.md)
 - [Board Games](./board-games.md)
 - [Chess](./chess/chess.md)
