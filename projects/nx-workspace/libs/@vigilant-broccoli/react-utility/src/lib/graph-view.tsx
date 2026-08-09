@@ -9,6 +9,10 @@ import {
   forceSimulation,
   forceX,
   forceY,
+  type ForceLink,
+  type ForceManyBody,
+  type ForceX,
+  type ForceY,
   type Simulation,
   type SimulationLinkDatum,
   type SimulationNodeDatum,
@@ -25,14 +29,11 @@ interface SimNode extends SimulationNodeDatum {
 type SimLink = SimulationLinkDatum<SimNode>;
 
 const CFG = {
-  CHARGE: -160,
-  LINK_DISTANCE: 40,
   COLLIDE_PAD: 4,
-  GRAVITY: 0.05,
   NODE_MIN_R: 3,
   NODE_R_STEP: 1.4,
   HIT_PAD: 4,
-  LINK_WIDTH: 1,
+  LINK_WIDTH: 1.2,
   LABEL_FONT_PX: 11,
   LABEL_ZOOM: 1.4,
   MIN_ZOOM: 0.1,
@@ -41,13 +42,38 @@ const CFG = {
   FIT_PADDING: 40,
   DRAG_THRESHOLD_PX: 4,
   ALPHA_DRAG: 0.3,
+  ALPHA_FORCE_UPDATE: 0.6,
 } as const;
+
+export interface GraphForces {
+  center: number;
+  repel: number;
+  link: number;
+  linkDistance: number;
+}
+
+export const DEFAULT_FORCES: GraphForces = {
+  center: 0.08,
+  repel: 280,
+  link: 0.5,
+  linkDistance: 75,
+};
+
+export const FORCE_LIMITS: Record<
+  keyof GraphForces,
+  { min: number; max: number; step: number }
+> = {
+  center: { min: 0, max: 0.4, step: 0.01 },
+  repel: { min: 0, max: 800, step: 10 },
+  link: { min: 0, max: 1, step: 0.05 },
+  linkDistance: { min: 10, max: 250, step: 5 },
+};
 
 const COLOR = {
   ROOT_LIGHT: '#6b7280',
   ROOT_DARK: '#9ca3af',
-  LINK_LIGHT: 'rgba(0,0,0,0.12)',
-  LINK_DARK: 'rgba(255,255,255,0.14)',
+  LINK_LIGHT: 'rgba(0,0,0,0.13)',
+  LINK_DARK: 'rgba(255,255,255,0.15)',
   LINK_HL: 'rgba(59,130,246,0.75)',
   ACCENT: '#3b82f6',
   LABEL_LIGHT: '#374151',
@@ -55,10 +81,9 @@ const COLOR = {
   DIM_ALPHA: 0.15,
 } as const;
 
-const DARK_CLASS = 'dark';
-const LIGHT_CLASS = 'light';
 const CLASS_ATTR = 'class';
 const PREFERS_DARK_QUERY = '(prefers-color-scheme: dark)';
+const RGB_LUMINANCE = { R: 0.2126, G: 0.7152, B: 0.0722, MID: 128 } as const;
 
 const EVENT = {
   POINTER_DOWN: 'pointerdown',
@@ -69,10 +94,31 @@ const EVENT = {
   CHANGE: 'change',
 } as const;
 
-const isDarkTheme = (): boolean => {
+const parseRgb = (
+  value: string,
+): { r: number; g: number; b: number; a: number } | null => {
+  const match = value.match(/rgba?\(([^)]+)\)/);
+  if (!match) return null;
+  const [r, g, b, a = 1] = match[1].split(',').map(part => parseFloat(part));
+  if ([r, g, b].some(Number.isNaN)) return null;
+  return { r, g, b, a };
+};
+
+// Detect the actual background painted behind the canvas rather than guessing
+// the theme: the app may render light even while the OS prefers dark, so a
+// prefers-color-scheme guess can pick line colors that vanish into the page.
+const isDarkTheme = (el: HTMLElement | null): boolean => {
   if (typeof document === 'undefined') return false;
-  if (document.documentElement.classList.contains(DARK_CLASS)) return true;
-  if (document.documentElement.classList.contains(LIGHT_CLASS)) return false;
+  for (let node = el; node; node = node.parentElement) {
+    const rgb = parseRgb(getComputedStyle(node).backgroundColor);
+    if (rgb && rgb.a > 0) {
+      const luminance =
+        RGB_LUMINANCE.R * rgb.r +
+        RGB_LUMINANCE.G * rgb.g +
+        RGB_LUMINANCE.B * rgb.b;
+      return luminance < RGB_LUMINANCE.MID;
+    }
+  }
   return window.matchMedia?.(PREFERS_DARK_QUERY).matches ?? false;
 };
 
@@ -139,13 +185,26 @@ export interface GraphViewProps {
   graph: NoteGraph;
   activePath?: string;
   onSelect: (path: string) => void;
+  forces?: GraphForces;
 }
 
-export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
+export function GraphView({
+  graph,
+  activePath,
+  onSelect,
+  forces = DEFAULT_FORCES,
+}: GraphViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const activePathRef = useRef(activePath);
   activePathRef.current = activePath;
+  const forcesRef = useRef(forces);
+  forcesRef.current = forces;
+  const simRef = useRef<Simulation<SimNode, SimLink> | null>(null);
+  const linkForceRef = useRef<ForceLink<SimNode, SimLink> | null>(null);
+  const chargeForceRef = useRef<ForceManyBody<SimNode> | null>(null);
+  const xForceRef = useRef<ForceX<SimNode> | null>(null);
+  const yForceRef = useRef<ForceY<SimNode> | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -207,17 +266,18 @@ export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
     };
 
     const draw = () => {
-      const dark = isDarkTheme();
+      const dark = isDarkTheme(container);
       const dpr = window.devicePixelRatio || 1;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
 
       const active = activePathRef.current;
-      const focusId =
-        hoveredId ?? (active && nodeById.has(active) ? active : null);
+      const activeId = active && nodeById.has(active) ? active : null;
+      const focusId = hoveredId ?? activeId;
+      const dimming = hoveredId != null;
       const focusSet = focusId ? neighbors.get(focusId) : null;
       const isLit = (id: string) =>
-        !focusId || id === focusId || (focusSet?.has(id) ?? false);
+        !dimming || id === focusId || (focusSet?.has(id) ?? false);
 
       ctx.lineWidth = CFG.LINK_WIDTH;
       for (const link of links) {
@@ -226,7 +286,7 @@ export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
         if (!s || !t) continue;
         const touchesFocus =
           focusId != null && (s.id === focusId || t.id === focusId);
-        if (focusId && !touchesFocus) {
+        if (dimming && !touchesFocus) {
           ctx.globalAlpha = COLOR.DIM_ALPHA;
           ctx.strokeStyle = dark ? COLOR.LINK_DARK : COLOR.LINK_LIGHT;
         } else {
@@ -266,8 +326,13 @@ export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
           ctx.stroke();
           ctx.lineWidth = CFG.LINK_WIDTH;
         }
+        const isFocusNeighbor =
+          hoveredId != null && (focusSet?.has(n.id) ?? false);
         const labelled =
-          n.id === focusId || n.id === active || (showAllLabels && lit);
+          n.id === focusId ||
+          n.id === active ||
+          isFocusNeighbor ||
+          (showAllLabels && lit);
         if (labelled) {
           ctx.globalAlpha = lit ? 1 : COLOR.DIM_ALPHA;
           ctx.fillStyle = dark ? COLOR.LABEL_DARK : COLOR.LABEL_LIGHT;
@@ -277,17 +342,25 @@ export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
       ctx.globalAlpha = 1;
     };
 
+    const f0 = forcesRef.current;
+    const linkForce = forceLink<SimNode, SimLink>(links)
+      .id(d => d.id)
+      .distance(f0.linkDistance)
+      .strength(f0.link);
+    const chargeForce = forceManyBody<SimNode>().strength(-f0.repel);
+    const xForce = forceX<SimNode>(0).strength(f0.center);
+    const yForce = forceY<SimNode>(0).strength(f0.center);
+    linkForceRef.current = linkForce;
+    chargeForceRef.current = chargeForce;
+    xForceRef.current = xForce;
+    yForceRef.current = yForce;
+
     const sim: Simulation<SimNode, SimLink> = forceSimulation(nodes)
-      .force(
-        'link',
-        forceLink<SimNode, SimLink>(links)
-          .id(d => d.id)
-          .distance(CFG.LINK_DISTANCE),
-      )
-      .force('charge', forceManyBody().strength(CFG.CHARGE))
+      .force('link', linkForce)
+      .force('charge', chargeForce)
       .force('center', forceCenter(0, 0))
-      .force('x', forceX(0).strength(CFG.GRAVITY))
-      .force('y', forceY(0).strength(CFG.GRAVITY))
+      .force('x', xForce)
+      .force('y', yForce)
       .force(
         'collide',
         forceCollide<SimNode>().radius(
@@ -298,6 +371,7 @@ export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
         if (!userInteracted) fitToView();
         draw();
       });
+    simRef.current = sim;
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -434,6 +508,7 @@ export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
 
     return () => {
       sim.stop();
+      simRef.current = null;
       resizeObserver.disconnect();
       themeObserver.disconnect();
       media?.removeEventListener(EVENT.CHANGE, draw);
@@ -444,6 +519,16 @@ export function GraphView({ graph, activePath, onSelect }: GraphViewProps) {
       canvas.removeEventListener(EVENT.WHEEL, onWheel);
     };
   }, [graph, onSelect]);
+
+  useEffect(() => {
+    const sim = simRef.current;
+    if (!sim) return;
+    linkForceRef.current?.distance(forces.linkDistance).strength(forces.link);
+    chargeForceRef.current?.strength(-forces.repel);
+    xForceRef.current?.strength(forces.center);
+    yForceRef.current?.strength(forces.center);
+    sim.alpha(CFG.ALPHA_FORCE_UPDATE).restart();
+  }, [forces.center, forces.repel, forces.link, forces.linkDistance]);
 
   return (
     <div ref={containerRef} className="w-full h-full overflow-hidden">
