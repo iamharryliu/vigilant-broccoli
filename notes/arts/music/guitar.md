@@ -1,14 +1,7 @@
-# Music
+# Guitar
 
-- [Guitar](./guitar.md)
-
-## Music Notes
-
-```
-A | A# | B | C | C# | D | D# | E | F | F# | G | G# | A
-```
-
-## Guitar
+- [Guitar Parts](https://ca.pinterest.com/search/pins/?q=guitar%20parts)
+- [Types of Guitars](https://ca.pinterest.com/search/pins/?q=types%20of%20guitars)
 
 - Same notes are 5 frets apart when move to higher string, except when moving from the G string to the B string than they are 4 frets apart.
 - Low E and high E are 2 octaves apart.s
@@ -45,21 +38,6 @@ E|     E   F   F#  G   G#  A   A#  B   C   C#  D   D#  E
 | Palm muting       | Rest the edge of your palm on the strings near the bridge while picking                                  |
 | Tapping           | Use pick hand fingers to hammer-on notes on the fretboard                                                |
 | Pinch harmonic    | Strike the string with the pick and immediately touch it with your thumb to create a high-pitched squeal |
-
-## Music Terminology
-
-| Term                 | Description                                                                 |
-| :------------------- | :-------------------------------------------------------------------------- |
-| Flat (♭)             | Lowers a note by one semitone (D → D♭)                                      |
-| Major scale          | W, W, H, W, W, W, H — bright, happy sound                                   |
-| Minor scale          | W, H, W, W, H, W, W — dark, sad sound                                       |
-| Natural notes        | Notes without sharps or flats: A, B, C, D, E, F, G                          |
-| Octave               | Interval of 12 semitones, same note at a higher/lower pitch (C → C)         |
-| Pentatonic           | Five-note scale                                                             |
-| Semitone / Half step | One fret on guitar, adjacent keys on piano (C → C♯)                         |
-| Sharp (♯)            | Raises a note by one semitone (C → C♯)                                      |
-| Tone / Whole step    | Two frets on guitar, one key skipped on piano (C → D), 1 tone = 2 semitones |
-| Triad                | Three-note chord built from root, third, and fifth                          |
 
 ## Guitar Songs
 
