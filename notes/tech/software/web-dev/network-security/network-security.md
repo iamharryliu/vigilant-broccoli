@@ -1,22 +1,28 @@
 # Network Security
 
-- [Security Hardening](./security-hardening.md)
+## Table of Contents
+
 - [Lingo](./network-security-lingo.md)
-- [jwt](./jwt.md)
-- [ssh](./ssh.md)
-- [nmap](./nmap.md)
-- [WireGuard](./wireguard.md)
-- [Have I Been Pwned?](https://haveibeenpwned.com/)
-- [Password Generator](https://passwordsgenerator.net/)
-- [How to Choose a Password - Computerphile](https://www.youtube.com/watch?v=3NjQ9b3pgIg)
+- [Access Methods](#access-methods)
+- [Security Classification Mapping](#security-classification-mapping)
+- [General Guidelines](#general-guidelines)
+- [Types of Authentication](#types-of-authentication)
+- [Types of Vulnerabilities](#types-of-vulnerabilities)
+- [Types of Attacks](#types-of-attacks)
+- [Network Tools](./network-security-tools/network-tools.md)
+- [Security Hardening](./security-hardening.md)
+- [References](#references)
 
-## Accessing Resources
+## Access Methods
 
-- SSH Tunneling
-- Dynamic Whitelisting IP/Port Access
-- VPN Access
+| Access Method                       | Description                                                                 | More                        |
+| ----------------------------------- | --------------------------------------------------------------------------- | --------------------------- |
+| SSH Tunneling                       | Secure remote access and port forwarding over an encrypted SSH connection.  | [ssh](./ssh.md)             |
+| VPN Access                          | Encrypted tunnel into a private network.                                    | [WireGuard](./wireguard.md) |
+| Dynamic Whitelisting IP/Port Access | Grant time-boxed IP/port access on demand instead of static firewall rules. | —                           |
+| Token Authentication (JWT)          | Bearer-token format for authn/authz.                                        | [jwt](./jwt.md)             |
 
-# Security Classification Mapping
+## Security Classification Mapping
 
 | Sensitivity Level | Business Term                        | Example Use Case                         |
 | ----------------- | ------------------------------------ | ---------------------------------------- |
@@ -33,47 +39,39 @@
 
 ## Types of Authentication
 
-- API Key - Generated key used to pass through requests to access API.
-- OAuth - Clientside application will redirect to a third party authorization (Google, Facebook, Apple, etc) and grant an OAuth Token.
-- SSO -When the user signs in successfully they are granted an authentication token that is used to remember the user is verified.
-- OTP - One time password that is passed to the user usually via email or password.
+| Type    | Description                                                                                                                     |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| API Key | Generated key used to pass through requests to access an API.                                                                   |
+| OAuth   | Client-side application redirects to a third-party authorization (Google, Facebook, Apple, etc.) and is granted an OAuth token. |
+| SSO     | On successful sign-in the user is granted an authentication token used to remember they are verified.                           |
+| OTP     | One-time password passed to the user, usually via email or SMS.                                                                 |
 
 ## Types of Vulnerabilities
 
-- permissions
-- logs
-- request endpoints
-- people
+| Vulnerability     | Description                                                                                     |
+| ----------------- | ----------------------------------------------------------------------------------------------- |
+| Permissions       | Over-broad or misconfigured access rights that let users or services do more than they should.  |
+| Logs              | Sensitive data leaked into logs, or missing/tampered logs that hide malicious activity.         |
+| Request Endpoints | Unauthenticated, unvalidated, or over-exposed API/HTTP endpoints that widen the attack surface. |
+| People            | Human factors — weak passwords, social engineering, insider mistakes — the hardest to patch.    |
 
 ## Types of Attacks
 
-### Password Cracking
+| Type of Attack                    | Description                                                                                    | Methods to Prevent                                                                                    |
+| --------------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Timing Attack                     | Infers secrets by measuring how long an operation takes (e.g. char-by-char string comparison). | Constant-time comparison functions, avoid early-exit on secret comparisons, add uniform response time |
+| Brute Force / Password Cracking   | Systematically guesses credentials; effective on short or low-entropy passwords.               | Strong password policy, rate limiting, account lockout, MFA, slow hashing (bcrypt/argon2)             |
+| Distributed Denial of Service     | Floods a service with traffic from many sources to exhaust resources and cause downtime.       | Firewall, rate limiting, CDN, traffic monitoring, blacklist/whitelist, autoscaling                    |
+| SQL Injection                     | Injects malicious SQL through unsanitized input to read or modify the database.                | Parameterized queries / prepared statements, ORM, input validation, least-privilege DB accounts       |
+| Cross-Site Scripting (XSS)        | Injects malicious scripts into pages viewed by other users to steal data or hijack sessions.   | Output encoding/escaping, Content Security Policy (CSP), sanitize input, `HttpOnly` cookies           |
+| Cross-Site Request Forgery (CSRF) | Tricks an authenticated user's browser into submitting unwanted actions to a trusted site.     | Anti-CSRF tokens, `SameSite` cookies, verify `Origin`/`Referer` headers                               |
+| Man-in-the-Middle (MITM)          | Intercepts or alters traffic between two parties who believe they are communicating directly.  | TLS/HTTPS everywhere, certificate pinning, HSTS, avoid untrusted networks                             |
+| Phishing / Social Engineering     | Manipulates people into revealing credentials or secrets via deceptive messages or sites.      | Security awareness training, MFA, email filtering, domain verification (SPF/DKIM/DMARC)               |
+| Replay Attack                     | Captures and re-sends valid requests/tokens to gain unauthorized access.                       | Nonces, timestamps, short-lived tokens, idempotency keys                                              |
+| Privilege Escalation              | Exploits flaws to gain higher access than granted.                                             | Least privilege, patch management, input validation, audit logging                                    |
 
-- Brute force
-  - Works on short passwords or passwords that use limited amount of characters.
+## References
 
-### Distributed Denial of Service (DDoS)
-
-Ways to protect against DDoS:
-
-- Firewall
-- Rate Limiting
-- Content Delivery Network (CDN)
-- Traffic Monitoring
-- Blacklist/Whitelist
-
-### Timing Attacks
-
-- Attack based on how long something takes
-- Steal secrets via timing differences
-- Brute-forcing a password char by char
-- Prevent using constant-time operations
-
-## Tools
-
-- [Network Tools](./network-secrurity-tools/network-tools.md)
-- [GitLeaks](./network-secrurity-tools/gitleaks.md)
-- [OSINT Tools](./network-secrurity-tools/osint-tools.md)
-- [Password Cracking Tools](./network-secrurity-tools/password-cracking-tools.md)
-- [Penetration Testing Tools](./network-secrurity-tools/penetration-testing-tools.md)
-- [Wireless Security Tools](./network-secrurity-tools/wireless-security-tools.md)
+- [Have I Been Pwned?](https://haveibeenpwned.com/)
+- [Password Generator](https://passwordsgenerator.net/)
+- [How to Choose a Password - Computerphile](https://www.youtube.com/watch?v=3NjQ9b3pgIg)
