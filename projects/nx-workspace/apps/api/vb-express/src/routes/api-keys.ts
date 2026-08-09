@@ -36,12 +36,10 @@ const parseServices = (permissions: string | null): string[] =>
 const apiKeysRoutes: FastifyPluginAsync = async app => {
   app.get('/', async () => {
     const context = await auth.$context;
-    const keys = (await context.adapter.findMany({
-      model: API_KEY_MODEL,
-    })) as ApiKeyRow[];
-    const users = (await context.adapter.findMany({
-      model: USER_MODEL,
-    })) as UserRow[];
+    const [keys, users] = (await Promise.all([
+      context.adapter.findMany({ model: API_KEY_MODEL }),
+      context.adapter.findMany({ model: USER_MODEL }),
+    ])) as [ApiKeyRow[], UserRow[]];
     const emailById = new Map(users.map(user => [user.id, user.email]));
     const result = keys
       .sort(

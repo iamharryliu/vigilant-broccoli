@@ -277,23 +277,25 @@ const buildApp = async () => {
           return reply.send({ success: true, queued: 0 });
         }
 
-        let queued = 0;
-        for (const { email } of subscribers) {
-          try {
-            await queueEmail({
+        const results = await Promise.all(
+          subscribers.map(({ email }) =>
+            queueEmail({
               from: EMAIL_FROM,
               to: email,
               subject: `New update from ${subscriptionName}`,
               html: `<p>${message}</p>`,
-            });
-            queued++;
-          } catch (err) {
-            console.error(
-              `Failed to queue email for ${email}:`,
-              (err as Error).message,
-            );
-          }
-        }
+            })
+              .then(() => true)
+              .catch(err => {
+                console.error(
+                  `Failed to queue email for ${email}:`,
+                  (err as Error).message,
+                );
+                return false;
+              }),
+          ),
+        );
+        const queued = results.filter(Boolean).length;
 
         console.log(
           `📤 Queued ${queued}/${subscribers.length} emails for ${subscriptionName}`,
