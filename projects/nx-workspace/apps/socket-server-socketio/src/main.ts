@@ -1,6 +1,7 @@
 import { createServer as createHttpServer } from 'http';
 import { createServer as createHttpsServer } from 'https';
 import { readFileSync } from 'fs';
+import { timingSafeEqual } from 'crypto';
 import express from 'express';
 import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
@@ -49,6 +50,12 @@ const publishSchema = z.object({
 
 const roomFor = (app: string, receiverId: string) => `${app}:${receiverId}`;
 
+const isTimingSafeEqual = (a: string, b: string) => {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
+};
+
 const log = (event: string, data: Record<string, unknown> = {}) => {
   console.log(JSON.stringify({ ts: new Date().toISOString(), event, ...data }));
 };
@@ -75,7 +82,11 @@ const io = new Server(httpServer, { cors: { origin: '*' } });
 io.use((socket, next) => {
   const token = socket.handshake.auth?.token;
   socket.data.role =
-    SENDER_TOKEN && token === SENDER_TOKEN ? ROLE_SENDER : ROLE_RECEIVER;
+    SENDER_TOKEN &&
+    typeof token === 'string' &&
+    isTimingSafeEqual(token, SENDER_TOKEN)
+      ? ROLE_SENDER
+      : ROLE_RECEIVER;
   next();
 });
 

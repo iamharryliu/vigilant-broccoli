@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'crypto';
 import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import {
@@ -8,6 +9,12 @@ import {
 const ERROR_UNAUTHORIZED = 'Unauthorized';
 
 type ApiKeyVerifier = (key: string) => Promise<boolean>;
+
+const isTimingSafeEqual = (a: string, b: string) => {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
+};
 
 export const createApiKeyPlugin = (
   apiKey?: string,
@@ -29,7 +36,10 @@ export const createApiKeyPlugin = (
         ) {
           return;
         }
-      } else if (providedKey === apiKey) {
+      } else if (
+        typeof providedKey === 'string' &&
+        isTimingSafeEqual(providedKey, apiKey)
+      ) {
         return;
       }
       reply
