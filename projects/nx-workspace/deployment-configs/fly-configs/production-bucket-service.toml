@@ -10,6 +10,11 @@ primary_region = 'yyz'
   CLOUDFLARE_BUCKET_NAME = 'storage-buckets'
   GOOGLE_GCS_PROJECT_ID = 'vigilant-broccoli'
   GOOGLE_GCS_BUCKET_NAME = 'vb-storage-bucket'
+  BUCKET_PATH = '/data'
+
+[mounts]
+  source = 'storage_buckets_data'
+  destination = '/data'
 
 [http_service]
   internal_port = 3000
