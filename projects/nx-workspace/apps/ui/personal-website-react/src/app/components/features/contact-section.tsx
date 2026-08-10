@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from 'react';
+import { HONEYPOT_FIELD_NAME } from '@vigilant-broccoli/common-js';
+import { HoneypotField } from '@vigilant-broccoli/react-lib';
 import { LINKS } from '../../core/consts/routes.const';
 import {
   sendMessage,
@@ -54,6 +56,7 @@ export function ContactSection() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [emailDirty, setEmailDirty] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -77,11 +80,13 @@ export function ContactSection() {
         message,
         appName: APP_NAME_HARRYLIU_DESIGN,
         recaptchaToken,
+        [HONEYPOT_FIELD_NAME]: honeypot,
       };
       await sendMessage(request);
       setName('');
       setEmail('');
       setMessage('');
+      setHoneypot('');
       setEmailDirty(false);
       setSubmitted(true);
     } catch (error) {
@@ -108,6 +113,7 @@ export function ContactSection() {
           <p className="text-green-600">{SUBMITTED_TEXT}</p>
         ) : (
           <form onSubmit={submitForm}>
+            <HoneypotField value={honeypot} onChange={setHoneypot} />
             <div className="mb-4">
               <label htmlFor={FIELDS.NAME.ID} className="block">
                 {FIELDS.NAME.LABEL}
