@@ -7,18 +7,17 @@ const execAsync = promisify(exec);
 
 const GCP_PROJECT = 'vigilant-broccoli';
 const VAULT_TOKEN_SECRET = 'VB_VM_VAULT_ROOT_TOKEN';
+const COPY_VAULT_TOKEN_COMMAND = `gcloud secrets versions access latest --secret=${VAULT_TOKEN_SECRET} --project=${GCP_PROJECT} | pbcopy`;
 
-export async function GET() {
+export async function POST() {
   try {
-    const { stdout } = await execAsync(
-      `gcloud secrets versions access latest --secret=${VAULT_TOKEN_SECRET} --project=${GCP_PROJECT}`,
-    );
+    await execAsync(COPY_VAULT_TOKEN_COMMAND);
 
-    return NextResponse.json({ success: true, token: stdout.trim() });
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error fetching vault root token:', error);
+    console.error('Error copying vault root token:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch vault root token' },
+      { success: false, error: 'Failed to copy vault root token' },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }

@@ -276,9 +276,7 @@ export const GcloudAuthStatusComponent = () => {
 
       const authData = await authResponse.json();
       setAuthStatus(authData);
-      const reauthJson = reauthResponse.ok
-        ? await reauthResponse.json()
-        : null;
+      const reauthJson = reauthResponse.ok ? await reauthResponse.json() : null;
       const reauthData = parseReauthData(
         reauthResponse,
         reauthJson,
@@ -328,10 +326,12 @@ export const GcloudAuthStatusComponent = () => {
           Vault Root Token
         </Text>
         <CopyButton
+          skipBrowserCopy
           text={async () => {
-            const response = await authFetch(API_ENDPOINTS.GCLOUD_VAULT_TOKEN);
-            const data = await response.json();
-            return data.success ? data.token : '';
+            await authFetch(API_ENDPOINTS.GCLOUD_VAULT_TOKEN, {
+              method: HTTP_METHOD.POST,
+            });
+            return '';
           }}
         />
       </div>
