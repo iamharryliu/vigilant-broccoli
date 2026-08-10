@@ -5,8 +5,8 @@ Niche gotchas for `projects/nx-workspace/apps/api/*` fly.io services. For boiler
 Reference apps (each demonstrates a different combination):
 
 - `apps/api/llm-service/` — pruned + `flyctl deploy --dockerfile` (fly builds image)
-- `apps/api/bucket-service/` — pruned + Docker Hub roundtrip (`deploy-container` pushes to `iamharryliu/bucket-service`, then `flyctl deploy --image`). Note: outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
-- `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
+- `apps/api/bucket-service/` — pruned + Docker Hub roundtrip on `deploy:production` only (`deploy-container` pushes to `iamharryliu/bucket-service`, then `flyctl deploy --image`); staging's `deploy` builds direct via `flyctl deploy --dockerfile`, same as `llm-service`. Note: outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
+- `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip on `deploy:production` only; staging builds direct via `flyctl deploy --dockerfile`.
 - `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
 
 ## Environments
@@ -25,7 +25,7 @@ Each service defines a target pair: `deploy` (staging) and `deploy:production`, 
 **Image delivery:**
 
 - **Direct**: `deploy` runs `flyctl deploy --dockerfile ...`, fly builds the image.
-- **Docker Hub roundtrip**: `deploy-container` runs `docker buildx ... --push iamharryliu/<svc>` (tags `latest` and `${COMMIT_SHA}`), then `deploy` runs `flyctl deploy --image iamharryliu/<svc>:${COMMIT_SHA}`.
+- **Docker Hub roundtrip**: `deploy-container` runs `docker buildx ... --push iamharryliu/<svc>` (tags `latest` and `${COMMIT_SHA}`), then `deploy` runs `flyctl deploy --image iamharryliu/<svc>:${COMMIT_SHA}`. Reserved for `deploy:production` — pushing to the public registry on every staging deploy is unnecessary exposure, so staging always builds direct instead, even on services whose production leg does the roundtrip.
 
 ## Transitive-dep gotcha (pruned only)
 

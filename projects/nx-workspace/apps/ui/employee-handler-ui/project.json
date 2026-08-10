@@ -58,7 +58,6 @@
     },
     "deploy": {
       "executor": "nx:run-commands",
-      "dependsOn": ["deploy-container"],
       "options": {
         "command": "VERCEL_PROJECT_ID=staging-employee-handler-ui VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts employee-handler-ui staging"
       }

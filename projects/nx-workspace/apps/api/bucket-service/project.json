@@ -104,8 +104,8 @@
       }
     },
     "deploy": {
-      "dependsOn": ["deploy-container", "deploy:secrets"],
-      "command": "flyctl deploy --config ./deployment-configs/fly-configs/staging-bucket-service.toml --image iamharryliu/bucket-service:${COMMIT_SHA:-latest}"
+      "dependsOn": ["build", "prune", "smoke", "deploy:secrets"],
+      "command": "flyctl deploy dist/bucket-service --dockerfile apps/api/bucket-service/Dockerfile --config ./deployment-configs/fly-configs/staging-bucket-service.toml"
     },
     "deploy:secrets:production": {
       "executor": "nx:run-commands",

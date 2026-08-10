@@ -76,8 +76,8 @@
       }
     },
     "deploy": {
-      "dependsOn": ["deploy-container", "deploy:secrets"],
-      "command": "flyctl deploy --config ./deployment-configs/fly-configs/staging-email-service.toml --image iamharryliu/email-service:${COMMIT_SHA:-latest}"
+      "dependsOn": ["build", "smoke", "deploy:secrets"],
+      "command": "flyctl deploy dist/apps/api/email-service --dockerfile apps/api/email-service/Dockerfile --config ./deployment-configs/fly-configs/staging-email-service.toml"
     },
     "deploy:secrets:production": {
       "executor": "nx:run-commands",
