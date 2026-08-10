@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         environment: ${{ fromJSON(github.event_name == 'repository_dispatch' && format('["{0}"]', github.event.client_payload.environment) || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
-        provider: [gcs, cloudflare-r2]
+        provider: [gcs, cloudflare-r2, local]
     name: ${{ matrix.environment }} ${{ matrix.provider }}
     env:
       SERVICE_URL: http://127.0.0.1:3000
