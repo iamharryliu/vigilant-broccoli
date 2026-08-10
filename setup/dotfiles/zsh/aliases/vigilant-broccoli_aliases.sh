@@ -68,7 +68,7 @@ alias vb-down='sudo wg-quick down vb'
 alias wg-status='sudo wg show'
 
 # Vault
-alias vbvault="open 'https://10.0.1.1:8200'"
+alias vbvault="open 'https://vault.harryliu.dev:8200'"
 alias cpvaulttoken="gcloud secrets versions access latest --secret=VB_VM_VAULT_ROOT_TOKEN --project=vigilant-broccoli | pbcopy && echo 'Vault root token copied to clipboard.'"
 alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh && rsync -av --delete --exclude=".*" ~/resilio-sync/backup/ ~/My\ Drive/resilio-backup/'
 

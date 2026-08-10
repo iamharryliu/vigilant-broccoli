@@ -102,6 +102,8 @@ PersistentKeepalive = 25
 sudo wg-quick up vb
 ```
 
+Add `10.0.1.1 vault.harryliu.dev` to `/etc/hosts` so the tunnel's public hostname resolves to the VM's private WireGuard IP over `vb` instead of going through the CI-only Cloudflare Access tunnel — lets `vbvault` (and any local script) reach Vault at `https://vault.harryliu.dev:8200` without a service token, at the cost of a self-signed-cert warning (the cert's SAN doesn't cover this hostname; same as browsing to `10.0.1.1` directly).
+
 ### 6. Initialize Vault + configure (first boot only)
 
 ```bash
