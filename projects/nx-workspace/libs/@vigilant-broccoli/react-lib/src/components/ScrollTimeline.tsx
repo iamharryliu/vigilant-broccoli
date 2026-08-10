@@ -25,7 +25,7 @@ export interface ScrollTimelineProps {
 
 const DEFAULT_HEIGHT = 360;
 const DEFAULT_ANIMATION_DURATION_MS = 500;
-const DEFAULT_ACTIVE_LINE_POSITION = 0.5;
+const DEFAULT_ACTIVE_LINE_POSITION = 0.1;
 
 const defaultFormatValue = (value: number) =>
   value.toLocaleString(undefined, { maximumFractionDigits: 2 });
@@ -205,6 +205,10 @@ export function ScrollTimeline({
             itemRef={registerItemRef(entry.id)}
           />
         ))}
+        <div
+          aria-hidden
+          style={{ height: height * (1 - activeLinePosition) }}
+        />
       </div>
     </div>
   );
