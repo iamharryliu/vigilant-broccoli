@@ -252,11 +252,12 @@ resource "google_iam_workload_identity_pool_provider" "github" {
     "attribute.aud"        = "assertion.aud"
   }
 
-  # This SA is broadly privileged (roles/editor, project-wide secretAccessor,
-  # serviceAccountAdmin). pull_request runs execute their workflow YAML from
-  # the PR branch, so a PR that could mint a token through this provider could
-  # edit its own workflow to impersonate this SA and read the whole store —
-  # so pull_request tokens are refused here and must use the github-pr-check
+  # This SA still holds real privilege (compute.instanceAdmin.v1,
+  # storage.objectAdmin on the backup bucket, secretAccessor on a handful of
+  # secrets). pull_request runs execute their workflow YAML from the PR
+  # branch, so a PR that could mint a token through this provider could edit
+  # its own workflow to impersonate this SA and reach that access — so
+  # pull_request tokens are refused here and must use the github-pr-check
   # provider (narrow SA, github-actions-pr-check.tf) instead. Verified safe:
   # ci-pr-check.yml is the only pull_request-triggered workflow, and no
   # push/dispatch/workflow_call/workflow_run flow that legitimately uses this
@@ -306,34 +307,30 @@ resource "google_project_iam_member" "github_actions_oslogin" {
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-resource "google_project_iam_member" "github_actions_secret_accessor" {
-  project = data.google_project.project.project_id
-  role    = "roles/secretmanager.secretAccessor"
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
+# No roles/editor, roles/iam.serviceAccountAdmin, or
+# roles/iam.workloadIdentityPoolAdmin here: Terraform applies run locally
+# (pnpm tf:apply), so CI never creates/modifies GCP resources or IAM
+# bindings. No project-wide secretAccessor either — grant it per secret,
+# scoped to what workflows actually read directly from Secret Manager
+# (everything else CI needs comes from Vault instead).
 
-  condition {
-    title       = "exclude_bitwarden_password"
-    description = "Bitwarden is the offline backup-of-last-resort for every other secret here; CI must never be able to read it."
-    expression  = "!resource.name.startsWith(\"projects/${data.google_project.project.number}/secrets/${google_secret_manager_secret.bitwarden_password.secret_id}\")"
-  }
+resource "google_secret_manager_secret_iam_member" "github_actions_secret_accessor_vault_cf_access_client_id" {
+  secret_id = google_secret_manager_secret.vault_cf_access_client_id.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-resource "google_project_iam_member" "github_actions_editor" {
-  project = data.google_project.project.project_id
-  role    = "roles/editor"
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
+resource "google_secret_manager_secret_iam_member" "github_actions_secret_accessor_vault_cf_access_client_secret" {
+  secret_id = google_secret_manager_secret.vault_cf_access_client_secret.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-resource "google_project_iam_member" "github_actions_workload_identity_pool_admin" {
-  project = data.google_project.project.project_id
-  role    = "roles/iam.workloadIdentityPoolAdmin"
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
-}
-
-resource "google_project_iam_member" "github_actions_service_account_admin" {
-  project = data.google_project.project.project_id
-  role    = "roles/iam.serviceAccountAdmin"
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
+# test-smoke-gcp-secret-manager.yml's daily canary for Secret Manager access.
+resource "google_secret_manager_secret_iam_member" "github_actions_secret_accessor_test_secret" {
+  secret_id = "TEST_SECRET"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
 resource "google_project_iam_member" "vm_default_sa_secret_accessor" {
