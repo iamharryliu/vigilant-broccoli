@@ -21,7 +21,7 @@ Every rotator follows **mint → verify → store → revoke**: mint the new cre
 Rotate at source, then `vault kv patch` (or `gh secret set`):
 
 - `VERCEL_TOKEN` — no public API to mint tokens
-- `GH_PAT` / `GITHUB_TOKEN` — PATs can't mint PATs (a GitHub App would automate this, but is a bigger project)
+- `GH_PAT` / `TF_GITHUB_TOKEN` — PATs can't mint PATs (a GitHub App would automate this, but is a bigger project)
 - `SANITY_AUTH_TOKEN`
 - `DOCKERHUB_TOKEN` — mint API requires password auth; storing the password is worse than manual
 - `GOOGLE_AUTH_PROVIDER_CLIENT_SECRET`, `RECAPTCHA_V3_SECRET_KEY`

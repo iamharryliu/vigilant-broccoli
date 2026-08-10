@@ -179,8 +179,9 @@ export async function PATCH(request: NextRequest) {
       .select('id, r2_key')
       .eq('item_id', id);
 
+    const removed = new Set(removedImageUrls);
     const toRemove = (allImages ?? []).filter(img =>
-      removedImageUrls.some(url => url.endsWith(img.r2_key)),
+      removed.has(getImageUrl(img.r2_key)),
     );
 
     if (toRemove.length) {
