@@ -34,6 +34,7 @@ import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
 import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
+import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 
 const STORAGE_KEY = 'component-sandbox';
 const STORAGE_KEY_UTILITIES = `${STORAGE_KEY}-utilities`;
@@ -164,6 +165,11 @@ const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'empty-leaderboard',
     title: 'Empty Leaderboard',
     content: <EmptyLeaderboardDemo />,
+  },
+  {
+    id: 'scroll-timeline',
+    title: 'Scroll Timeline',
+    content: <ScrollTimelineDemo />,
   },
 ];
 

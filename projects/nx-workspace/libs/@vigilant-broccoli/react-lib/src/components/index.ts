@@ -38,6 +38,7 @@ export * from './StatusCardList';
 export * from './Tabs';
 export * from './Progress';
 export * from './ScrollArea';
+export * from './ScrollTimeline';
 export * from './Switch';
 export * from './SpeechToTextButton';
 export * from './ChatSendButton';
