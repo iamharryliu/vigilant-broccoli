@@ -28,7 +28,7 @@ jobs:
           secrets: |
             kv/data/secrets TF_CLOUD_TOKEN | TF_TOKEN_app_terraform_io ;
             kv/data/secrets CLOUDFLARE_API_TOKEN | CLOUDFLARE_API_TOKEN ;
-            kv/data/secrets GITHUB_TOKEN | GITHUB_TOKEN ;
+            kv/data/secrets TF_GITHUB_TOKEN | GITHUB_TOKEN ;
             kv/data/secrets SUPABASE_ACCESS_TOKEN | SUPABASE_ACCESS_TOKEN ;
             kv/data/secrets OCI_CONFIG | OCI_CONFIG ;
             kv/data/secrets OCI_PRIVATE_KEY | OCI_PRIVATE_KEY ;
