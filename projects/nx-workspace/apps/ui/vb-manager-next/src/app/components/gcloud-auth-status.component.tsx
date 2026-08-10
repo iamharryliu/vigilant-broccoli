@@ -7,6 +7,7 @@ import {
   ButtonList,
   ButtonConfig,
   CardContainer,
+  CopyButton,
   MonospaceText,
   StatusCardList,
   StatusCardListItem,
@@ -322,6 +323,18 @@ export const GcloudAuthStatusComponent = () => {
 
   return (
     <CardContainer title="GCP Management" headerLink={GCP_CONSOLE_LINK}>
+      <div className="flex items-center justify-between gap-2">
+        <Text size="2" weight="bold">
+          Vault Root Token
+        </Text>
+        <CopyButton
+          text={async () => {
+            const response = await authFetch(API_ENDPOINTS.GCLOUD_VAULT_TOKEN);
+            const data = await response.json();
+            return data.success ? data.token : '';
+          }}
+        />
+      </div>
       {authStatus?.activeAccount ? (
         <div className="flex flex-col gap-3">
           {sortedAccounts.length > 0 && (
