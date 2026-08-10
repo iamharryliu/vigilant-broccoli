@@ -23,6 +23,7 @@ const nextConfig = {
     'better-sqlite3',
     'playwright',
     'playwright-core',
+    'chromium-bidi',
   ],
 };
 const plugins = [
