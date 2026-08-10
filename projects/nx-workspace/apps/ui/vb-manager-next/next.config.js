@@ -14,7 +14,11 @@ const options = {
 // serverExternalPackages alone did not stop the webpack build from tracing
 // into playwright-core and failing on its optional `chromium-bidi` require, so
 // force these to be required at runtime instead of bundled.
-const SERVER_ONLY_EXTERNALS = ['playwright', 'playwright-core', 'chromium-bidi'];
+const SERVER_ONLY_EXTERNALS = [
+  'playwright',
+  'playwright-core',
+  'chromium-bidi',
+];
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
