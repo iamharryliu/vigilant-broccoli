@@ -124,10 +124,16 @@ jobs:
       - name: Setup Cloud SDK
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
+      - name: Cache mongodb-database-tools
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: mongodb-tools.deb
+          key: mongodb-database-tools-100.10.0-ubuntu2204-x86_64
+
       - name: Install mongodb-database-tools
         run: |
           set -euo pipefail
-          curl -sL -o mongodb-tools.deb https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
+          [ -f mongodb-tools.deb ] || curl -sL -o mongodb-tools.deb https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
           sudo dpkg -i mongodb-tools.deb
 
       - name: Dump and upload backup to GCS
@@ -173,6 +179,15 @@ jobs:
 
       - name: Setup Cloud SDK
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Prepare apt archive cache directory
+        run: sudo mkdir -p /var/cache/apt/archives/partial && sudo chmod -R 777 /var/cache/apt/archives
+
+      - name: Cache PostgreSQL apt packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /var/cache/apt/archives
+          key: apt-postgresql-client-17
 
       - name: Install PostgreSQL client
         run: |
