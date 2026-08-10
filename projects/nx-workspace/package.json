@@ -206,6 +206,7 @@
     "nodemailer": "^9.0.1",
     "openai": "^4.104.0",
     "pg": "^8.22.0",
+    "playwright": "^1.61.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-easy-crop": "^5.5.7",
