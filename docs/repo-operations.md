@@ -24,7 +24,7 @@ Where state lives, per app:
 
 | Store                      | Used by                                                                 | Notes                                                                                 |
 | -------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Supabase Postgres          | `hearth`                                                                | Migrations via `scripts/migrate.ts --migrations-dir=...` (`SUPABASE_DB_URL`)          |
+| Supabase Postgres          | `hearth`                                                                | Migrations via `scripts/migrate.ts --migrations-dir=...` (`SUPABASE_DB_PASSWORD`)     |
 | MongoDB (`vb-manager` db)  | `vb-manager-next`                                                       | `MONGODB_URI`                                                                         |
 | SQLite on a fly volume     | `vb-express`                                                            | `[mounts]` in its fly config, `DATABASE_PATH`                                         |
 | Cloudflare R2 buckets      | `hearth` (`home-management` bucket), `bucket-service`                   | Bucket names may predate app renames                                                  |

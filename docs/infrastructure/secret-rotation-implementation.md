@@ -28,5 +28,5 @@ Rotate at source, then `vault kv patch` (or `gh secret set`):
 - LLM keys — `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`, `GROK_API_KEY`, `ELEVENLABS_API_KEY`
 - Resilio secrets
 
-Deliberately excluded from automation: `MONGODB_URI`, `SUPABASE_DB_URL` / `SUPABASE_SECRET_KEY` — rotating via their management APIs means storing a credential more powerful than the one being rotated.
+Deliberately excluded from automation: `MONGODB_URI`, `SUPABASE_DB_PASSWORD` / `SUPABASE_SECRET_KEY` — rotating via their management APIs means storing a credential more powerful than the one being rotated.
 Suggestion: have `secret-rotation:all` print this checklist (with dashboard URLs) as its final output, so the command's output is the complete semi-annual procedure.
