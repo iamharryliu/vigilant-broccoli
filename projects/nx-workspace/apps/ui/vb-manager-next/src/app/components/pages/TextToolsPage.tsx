@@ -16,6 +16,7 @@ export const TextToolsPage = () => {
       <TextToBase64Form />
       <Base64ToTextForm />
       <TextToPercentEncodedForm />
+      <PercentEncodedToTextForm />
       <CharacterCounter />
     </div>
   );
@@ -167,6 +168,24 @@ const TextToPercentEncodedForm = () => {
       initialText={''}
       sampleText={SAMPLE_TEXT_FOR_PERCENT_ENCODING}
       conversionFn={EnvUtils.encodePercent}
+    />
+  );
+};
+
+const SAMPLE_PERCENT_ENCODED = EnvUtils.encodePercent(
+  SAMPLE_TEXT_FOR_PERCENT_ENCODING,
+);
+
+const PercentEncodedToTextForm = () => {
+  return (
+    <ConversionForm
+      copy={{
+        header: 'Percent Encoded to Text (URL Decoding)',
+        placeholder: SAMPLE_PERCENT_ENCODED,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_PERCENT_ENCODED}
+      conversionFn={EnvUtils.decodePercent}
     />
   );
 };
