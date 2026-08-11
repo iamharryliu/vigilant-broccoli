@@ -44,35 +44,35 @@ const buildResumeHtml = (resume: ResumeData): string => {
   body {
     font-family: 'Roboto', Arial, sans-serif;
     font-size: 13px;
-    line-height: 1.27;
+    line-height: 1.375;
     color: #000;
     margin: 0;
   }
   a { color: ${LINK_COLOR}; text-decoration: underline; }
   .bold { font-weight: 700; }
   .italic { font-style: italic; }
-  .header { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: start; margin-bottom: 6px; }
+  .header { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: start; margin-bottom: 8px; }
   .header .links { display: flex; flex-direction: column; gap: 2px; }
   .header .contact { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
   .header .identity { text-align: center; }
   .header .identity h1 { font-size: 24px; margin: 0; }
-  .header .identity p { font-size: 13px; font-weight: 700; margin: 2px 0 0; }
-  .summary { margin-bottom: 6px; }
-  section { margin-bottom: 4px; }
+  .header .identity p { font-size: 13px; font-weight: 700; margin: 0; }
+  .summary { margin: 0 0 8px; }
+  section { margin-bottom: 8px; }
   h2 {
     font-size: 16px;
     font-weight: 700;
     color: ${HEADING_COLOR};
     border-bottom: 1px solid #000;
     padding-bottom: 2px;
-    margin: 0 0 3px;
+    margin: 0 0 6px;
   }
-  .entry { margin-bottom: 5px; }
+  .entry { margin-bottom: 10px; }
   .entry:last-child { margin-bottom: 0; }
   .entry-header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
   .dates { white-space: nowrap; }
   ul { margin: 2px 0 0; padding-left: 20px; }
-  li { margin-bottom: 1px; }
+  li { margin-bottom: 2px; }
 </style>
 </head>
 <body>
@@ -105,8 +105,10 @@ const buildResumeHtml = (resume: ResumeData): string => {
 </html>`;
 };
 
-export async function generateResumePdfBuffer(): Promise<Buffer> {
-  const html = buildResumeHtml(resumeData);
+export async function generateResumePdfBuffer(
+  resume: ResumeData = resumeData,
+): Promise<Buffer> {
+  const html = buildResumeHtml(resume);
 
   const browser = await chromium.launch();
   try {

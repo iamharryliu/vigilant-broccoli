@@ -19,11 +19,14 @@ type EditorTab = (typeof EDITOR_TAB)[keyof typeof EDITOR_TAB];
 const INITIAL_JSON_TEXT = JSON.stringify(resumeData, null, 2);
 
 const RESUME_API_PATH = '/api/resume';
+const RESUME_PDF_API_PATH = '/api/resume/pdf';
+const RESUME_PDF_FILENAME = 'resume.pdf';
 const SAVE_DEBOUNCE_MS = 500;
 
 const TOAST_MESSAGE = {
   FAILED: 'Failed to save resume.json',
   LOAD_FAILED: 'Failed to load resume.json',
+  DOWNLOAD_FAILED: 'Failed to download resume PDF',
 } as const;
 
 const DEFAULT_JSON_ERROR = 'Invalid JSON';
@@ -76,6 +79,25 @@ export const CareerPage = () => {
     return () => clearTimeout(timeoutId);
   }, [jsonText, jsonError]);
 
+  const handleDownloadPdf = () => {
+    authFetch(RESUME_PDF_API_PATH, {
+      method: 'POST',
+      body: JSON.stringify({ resume }),
+    })
+      .then(response =>
+        response.ok ? response.blob() : Promise.reject(response),
+      )
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = RESUME_PDF_FILENAME;
+        anchor.click();
+        URL.revokeObjectURL(url);
+      })
+      .catch(() => toast.error(TOAST_MESSAGE.DOWNLOAD_FAILED));
+  };
+
   return (
     <div className="flex flex-col h-full print:block">
       <div className="flex flex-1 min-h-0 print:block">
@@ -90,7 +112,7 @@ export const CareerPage = () => {
                 <Tabs.Trigger value={EDITOR_TAB.JSON}>Edit JSON</Tabs.Trigger>
                 <Tabs.Trigger value={EDITOR_TAB.AI}>AI Chat</Tabs.Trigger>
               </Tabs.List>
-              <Button onClick={() => window.print()}>
+              <Button onClick={handleDownloadPdf} disabled={!!jsonError}>
                 <DownloadIcon /> Download PDF
               </Button>
             </div>
