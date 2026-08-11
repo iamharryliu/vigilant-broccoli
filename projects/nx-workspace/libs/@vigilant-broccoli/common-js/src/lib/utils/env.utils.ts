@@ -103,6 +103,14 @@ function encodePercent(text: string): string {
   }
 }
 
+function decodePercent(text: string): string {
+  try {
+    return decodeURIComponent(text.trim());
+  } catch {
+    return '';
+  }
+}
+
 export const EnvUtils = {
   getPrettierJSON,
   getEnvironmentVariablesFromJSON,
@@ -113,4 +121,5 @@ export const EnvUtils = {
   encodeBase64,
   decodeBase64,
   encodePercent,
+  decodePercent,
 };
