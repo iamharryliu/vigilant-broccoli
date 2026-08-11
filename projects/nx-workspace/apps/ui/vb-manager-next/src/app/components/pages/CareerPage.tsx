@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Textarea } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { Tabs } from '@radix-ui/themes';
@@ -23,6 +23,7 @@ const SAVE_DEBOUNCE_MS = 500;
 
 const TOAST_MESSAGE = {
   FAILED: 'Failed to save resume.json',
+  LOAD_FAILED: 'Failed to load resume.json',
 } as const;
 
 const DEFAULT_JSON_ERROR = 'Invalid JSON';
@@ -32,8 +33,10 @@ export const CareerPage = () => {
   const [jsonText, setJsonText] = useState(INITIAL_JSON_TEXT);
   const [resume, setResume] = useState<ResumeData>(resumeData);
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const hasEditedRef = useRef(false);
 
   const handleJsonChange = (value: string) => {
+    hasEditedRef.current = true;
     setJsonText(value);
     try {
       setResume(JSON.parse(value) as ResumeData);
@@ -44,7 +47,19 @@ export const CareerPage = () => {
   };
 
   useEffect(() => {
-    if (jsonError) return;
+    authFetch(RESUME_API_PATH)
+      .then(response => (response.ok ? response.json() : Promise.reject()))
+      .then(
+        ({ content }) => {
+          setJsonText(content);
+          setResume(JSON.parse(content) as ResumeData);
+        },
+        () => toast.error(TOAST_MESSAGE.LOAD_FAILED),
+      );
+  }, []);
+
+  useEffect(() => {
+    if (!hasEditedRef.current || jsonError) return;
 
     const timeoutId = setTimeout(() => {
       authFetch(RESUME_API_PATH, {

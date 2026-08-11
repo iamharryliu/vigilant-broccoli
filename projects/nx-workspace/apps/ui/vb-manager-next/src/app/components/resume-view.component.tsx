@@ -12,6 +12,7 @@ const LINK_COLOR_CLASS = 'text-[#1155cc]';
 const HEADING_COLOR_CLASS = 'text-[#3d85c6]';
 
 const BOLD_PATTERN = /\*\*(.+?)\*\*/g;
+const SKILL_SEPARATOR = ' · ';
 
 const renderInlineBold = (text: string): ReactNode => {
   const parts = text.split(BOLD_PATTERN);
@@ -51,7 +52,7 @@ const WorkExperienceEntry = ({ entry }: { entry: ResumeWorkExperience }) => (
 );
 
 export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
-  const { basics, summary, workExperience, projectExperience, skills } = resume;
+  const { basics, workExperience, projectExperience, skills } = resume;
 
   return (
     <div
@@ -84,7 +85,7 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
         </div>
       </div>
 
-      <p className="mb-2">{summary}</p>
+      <p className="mb-2">{skills.technical.join(SKILL_SEPARATOR)}</p>
 
       <section className="mb-2">
         <SectionHeading>Work Experience</SectionHeading>
@@ -94,24 +95,10 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
       </section>
 
       <section className="mb-2">
-        <SectionHeading>Project Experience</SectionHeading>
+        <SectionHeading>Open Source</SectionHeading>
         {projectExperience.map((entry, index) => (
           <WorkExperienceEntry key={index} entry={entry} />
         ))}
-      </section>
-
-      <section className="mb-2">
-        <SectionHeading>Skills</SectionHeading>
-        <p>
-          <span className="font-bold">Technical: </span>
-          {skills.technical.join(', ')}.
-        </p>
-        <p className="font-bold">Soft:</p>
-        <ul className="list-disc pl-5 space-y-0.5">
-          {skills.soft.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
       </section>
     </div>
   );
