@@ -15,7 +15,7 @@ USER[User]
 
 subgraph DOCKER[Docker]
   GRAFANA[Grafana]
-  ADMINER[Adminer]
+  IMMICH[Immich]
 end
 
 subgraph PM2
@@ -40,7 +40,7 @@ VB_MANAGER_NEXT-->GRAFANA
 
 USER-->WIREGUARD
 USER-->VB_MANAGER_NEXT
-USER-->ADMINER
+USER-->IMMICH
 ```
 
 ## Cloud Infrastructure

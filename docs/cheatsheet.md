@@ -90,6 +90,11 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   local:docker:down           Stop local Docker Compose services
   local:docker:restart        Restart local Docker Compose services
   local:docker:reload         Reload local Docker Compose services
+  immich:docker:up            Start the standalone Immich Docker Compose stack
+  immich:docker:down          Stop the standalone Immich Docker Compose stack
+  immich:docker:restart       Restart the standalone Immich Docker Compose stack
+  immich:docker:reload        Reload the standalone Immich Docker Compose stack
+  immich:docker:logs          Tail the standalone Immich Docker Compose logs
   vb-manager-next:start       Start vb-manager-next via PM2
   vb-manager-next:reload      Reload vb-manager-next via PM2
   vb-manager-next:delete      Delete vb-manager-next PM2 process
