@@ -4,6 +4,7 @@ import type { ResumeData, ResumeWorkExperience } from './resume.types';
 
 const LINK_COLOR = '#1155cc';
 const HEADING_COLOR = '#3d85c6';
+const SKILL_SEPARATOR = ' · ';
 const GOOGLE_FONTS_URL =
   'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap';
 
@@ -30,7 +31,7 @@ const renderWorkExperience = (entry: ResumeWorkExperience): string => `
   </div>`;
 
 const buildResumeHtml = (resume: ResumeData): string => {
-  const { basics, summary, workExperience, projectExperience, skills } = resume;
+  const { basics, workExperience, projectExperience, skills } = resume;
 
   return `<!doctype html>
 <html>
@@ -70,7 +71,6 @@ const buildResumeHtml = (resume: ResumeData): string => {
   .entry:last-child { margin-bottom: 0; }
   .entry-header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
   .dates { white-space: nowrap; }
-  .skills-technical { margin-bottom: 5px; }
   ul { margin: 2px 0 0; padding-left: 20px; }
   li { margin-bottom: 1px; }
 </style>
@@ -90,7 +90,7 @@ const buildResumeHtml = (resume: ResumeData): string => {
     </div>
   </div>
 
-  <p class="summary">${escapeHtml(summary)}</p>
+  <p class="summary">${escapeHtml(skills.technical.join(SKILL_SEPARATOR))}</p>
 
   <section>
     <h2>Work Experience</h2>
@@ -98,15 +98,8 @@ const buildResumeHtml = (resume: ResumeData): string => {
   </section>
 
   <section>
-    <h2>Project Experience</h2>
+    <h2>Open Source</h2>
     ${projectExperience.map(renderWorkExperience).join('')}
-  </section>
-
-  <section>
-    <h2>Skills</h2>
-    <div class="skills-technical"><span class="bold">Technical: </span>${escapeHtml(skills.technical.join(', '))}.</div>
-    <div class="bold">Soft:</div>
-    ${renderBulletList(skills.soft)}
   </section>
 </body>
 </html>`;

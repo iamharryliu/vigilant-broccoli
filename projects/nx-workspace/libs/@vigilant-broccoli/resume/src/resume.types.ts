@@ -21,12 +21,10 @@ export interface ResumeWorkExperience {
 
 export interface ResumeSkills {
   technical: string[];
-  soft: string[];
 }
 
 export interface ResumeData {
   basics: ResumeBasics;
-  summary: string;
   workExperience: ResumeWorkExperience[];
   projectExperience: ResumeWorkExperience[];
   skills: ResumeSkills;

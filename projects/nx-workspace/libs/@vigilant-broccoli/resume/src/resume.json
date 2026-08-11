@@ -19,15 +19,28 @@
       }
     ]
   },
-  "summary": "Over 5 years of software developer experience, working with both enterprise-level application building and smaller projects.",
   "workExperience": [
+    {
+      "company": "ELVA11",
+      "role": "Platform Engineer",
+      "startDate": "March 2025",
+      "endDate": "August 2026",
+      "bullets": [
+        "Designed and implemented internal services and self-hosted solutions supporting engineering and operational workflows.",
+        "Built internal developer tools and reusable services to standardize workflows, automate tasks, and improve productivity.",
+        "Developed internal AI tools and products, integrating LLMs and automated workflows into business and engineering use cases.",
+        "Contributed to proprietary AI IP, exploring and productizing AI capabilities into reusable solutions and internal platforms.",
+        "Worked across application and infrastructure layers to deploy and operate on-premise and self-hosted services, handling configuration, networking, monitoring, and maintenance.",
+        "Collaborated with engineering teams to turn infrastructure, tooling, and AI opportunities into maintainable solutions."
+      ]
+    },
     {
       "company": "Tillmobil",
       "role": "Software Developer",
       "startDate": "March 2025",
-      "endDate": "present",
+      "endDate": "March 2026",
       "bullets": [
-        "Led and contributed to two production systems—a call analysis SaaS platform and a trading card marketplace API—across both codebases and infrastructure.",
+        "Led two production systems—a call analysis SaaS platform and a trading card marketplace API—across code and infrastructure.",
         "Built AI-driven transcription and insight pipelines for call centers.",
         "Adopted **AI-driven development** workflows with tools like **Claude Code** to accelerate feature delivery and code review.",
         "Delivered gamification features (leaderboards, achievements) to drive user engagement.",
@@ -43,7 +56,7 @@
       "endDate": "March 2025",
       "bullets": [
         "Collaborated with company leadership to design and automate the company's HR system infrastructure, optimizing data flows and eliminating tens of hours of overhead reporting each week.",
-        "Developed reusable **internal tools** and libraries, streamlining internal development by providing standardized service interfaces and reducing the need for boilerplate code."
+        "Developed reusable **internal tools** and libraries with standardized interfaces, streamlining development and reducing boilerplate."
       ]
     },
     {
@@ -52,14 +65,14 @@
       "startDate": "September 2019",
       "endDate": "July 2024",
       "bullets": [
-        "Developed secure login infrastructure for a cross-platform mobile banking application, including challenge authentication, one-time password login, and **session management**.",
+        "Built secure login for a cross-platform mobile banking app—challenge authentication, OTP login, and **session management**.",
         "Rebuilt legacy banking **REST API** services spanning over 200 endpoints, and modernized legacy browser and mobile banking applications using **Angular/Ionic** and **Express** frameworks to meet evolving system requirements.",
-        "Implemented **state management** patterns using **Redux** to maintain consistency and performance across the banking frontend application.",
-        "Established test environments and conducted thorough **unit** and **end-to-end testing** to meet the banking client's requirement of **90% test coverage** across feature capabilities.",
+        "Implemented **state management** using **Redux** to maintain consistency and performance across the banking frontend.",
+        "Established test environments and wrote **unit** and **end-to-end** tests to meet the banking client's **90% test coverage** requirement.",
         "Provided **technical leadership** to team members through training and ongoing developer support on the banking application team.",
-        "Collaborated with UI designers to build a **reusable global component library** in **Storybook**, improving consistency and efficiency across banking client applications.",
-        "**Saved QA teams hundred of hours per week** by building automated **Python** scripts to parse and sort application logs for a phone interactive voice response banking application, replacing manual log searches.",
-        "Developed and presented a proof-of-concept **React** app for a real estate application that lets users search for properties and view property details, designing the UI architecture and leading the team's design pattern implementation.",
+        "Built a **reusable global component library** in **Storybook** with UI designers, improving consistency across banking applications.",
+        "**Saved QA teams hundreds of hours per week** with automated **Python** scripts that parse and sort logs for a phone IVR banking application, replacing manual searches.",
+        "Built and presented a proof-of-concept **React** real estate app for property search and details, designing the UI architecture and leading the team's design patterns.",
         "Worked in **Agile** teams to define and implement user stories and tasks across client engagements."
       ]
     }
@@ -71,26 +84,21 @@
       "startDate": "July 2023",
       "endDate": "present",
       "bullets": [
-        "Architect and maintain an **open-source Nx monorepo** containing full-stack web apps, API services, shared reusable **npm** libraries, developer notes, and infrastructure code.",
+        "Architect and maintain an **open-source Nx monorepo** of web apps, API services, shared **npm** libraries, and infrastructure code.",
         "Design and run **agentic coding workflows** with **Claude Code**, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring.",
         "Provision and operate **cloud infrastructure** with **Terraform**, managing secrets through dedicated secret managers.",
-        "Build and maintain **CI/CD pipelines** covering PR checks, health checks, cron jobs, and smoke, end-to-end, and security test suites across a growing set of apps and services."
+        "Build and maintain **CI/CD pipelines** for PR checks, health checks, cron jobs, and smoke, end-to-end, and security tests."
       ]
     }
   ],
   "skills": {
     "technical": [
-      "AI Agentic Software Development",
+      "Agentic AI Development",
       "Solution Architecture",
       "Web Development",
-      "DevOps/Platform Engineering",
-      "Infrastructure as Code (IaC)",
-      "Application Testing"
-    ],
-    "soft": [
-      "Excellent communication and active listening skills, able to explain technical ideas in a clear and simple manner.",
-      "Strong team player who is always open for discussions and collective collaboration.",
-      "Cultivates a collaborative knowledge-sharing environment to deliver quality results."
+      "DevOps/Platform",
+      "IaC",
+      "Testing"
     ]
   }
 }
