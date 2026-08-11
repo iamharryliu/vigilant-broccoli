@@ -9,7 +9,6 @@ Rule of thumb: check `docs/cheatsheet.md` before hand-rolling SSH or cloud comma
 - **IaC** — `infrastructure/terraform/`: OCI VMs (Gitea, code-server, RabbitMQ — provisioned via cloud-init yamls), the GCP VM (Vault + WireGuard), Cloudflare DNS, GitHub repo config. Driven by `pnpm tf:plan` / `tf:apply` / `tf:post-apply` / `tf:output`. VM images built with Packer (`infrastructure/terraform/packer/`, `pnpm gcp:vm:image:build`).
 - **OCI VMs** — `pnpm oci:vm:ssh`, `gitea:ssh`, `code-server:*` (ssh, logs, password, open). code-server is cattle: `code-server:replace` / `reset`, or the `manual-replace-code-server` workflow (`pnpm gh:actions:replace-code-server`); it bootstraps by cloning this repo and running `setup/linux/install.sh -y`.
 - **GCP VM (Vault + WireGuard)** — `pnpm gcp:vm:*`: status/start/stop, `vault:unseal` / `vault:seal` (Vault seals on restart — unseal before debugging "Vault unreachable"), `regen-cert`, `update-wg`.
-- **Homelab** — `infrastructure/homelab/` compose stack (Caddy); `pnpm homelab:up|down|restart|logs|ps|pull`.
 - **Workflow triggers from CLI** — `pnpm gh:actions:deploy | health-check | kill-services | run-tests | replace-code-server`.
 
 Architecture diagrams: [infrastructure.md](./infrastructure/infrastructure.md).
