@@ -63,18 +63,6 @@ export const CareerPage = () => {
 
   return (
     <div className="flex flex-col h-full print:block">
-      <div className="print:hidden flex justify-end mb-3">
-        <div className="text-right">
-          <Button onClick={() => window.print()}>
-            <DownloadIcon /> Download PDF
-          </Button>
-          <p className="text-xs text-muted-foreground mt-1">
-            Opens your browser&apos;s print dialog — choose &quot;Save as
-            PDF&quot;.
-          </p>
-        </div>
-      </div>
-
       <div className="flex flex-1 min-h-0 print:block">
         <div className="flex-1 min-w-0 print:hidden">
           <Tabs.Root
@@ -82,10 +70,15 @@ export const CareerPage = () => {
             onValueChange={value => setActiveTab(value as EditorTab)}
             className="h-full flex flex-col"
           >
-            <Tabs.List>
-              <Tabs.Trigger value={EDITOR_TAB.JSON}>Edit JSON</Tabs.Trigger>
-              <Tabs.Trigger value={EDITOR_TAB.AI}>AI Chat</Tabs.Trigger>
-            </Tabs.List>
+            <div className="flex items-center justify-between">
+              <Tabs.List>
+                <Tabs.Trigger value={EDITOR_TAB.JSON}>Edit JSON</Tabs.Trigger>
+                <Tabs.Trigger value={EDITOR_TAB.AI}>AI Chat</Tabs.Trigger>
+              </Tabs.List>
+              <Button onClick={() => window.print()}>
+                <DownloadIcon /> Download PDF
+              </Button>
+            </div>
 
             <Tabs.Content
               value={EDITOR_TAB.JSON}
