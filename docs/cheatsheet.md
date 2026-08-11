@@ -125,14 +125,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)
   agentic:pr:update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
 
-🏠 HOMELAB
-  homelab:up                  Start homelab services and Tailscale
-  homelab:down                Stop homelab services and Tailscale
-  homelab:restart             Restart homelab services
-  homelab:logs                Tail homelab service logs
-  homelab:ps                  List homelab service status
-  homelab:pull                Pull latest homelab images
-
 🐙 GITHUB
   gh:actions:deploy           Trigger deploy workflow
   gh:actions:health-check     Trigger ci-health-check workflow

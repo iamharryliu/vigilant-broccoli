@@ -29,11 +29,11 @@ Comparison of self-hosted/local solutions by category — software you run and o
 
 ## Containers / Orchestration
 
-| Name           | Usage                                                         | Free Tier                       | When to Use                                                                                         |
-| -------------- | ------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Docker         | Container runtime                                             | Free (self-hosted, open source) | Default packaging/runtime for any self-hosted or deployed service                                   |
-| Docker Compose | Multi-container orchestration on a single host                | Free (self-hosted, open source) | Homelab/VM stacks with multiple related containers (e.g. `infrastructure/local/docker-compose.yml`) |
-| Watchtower     | Auto-updates running containers by polling for new image tags | Free (self-hosted, open source) | Keeping self-hosted containers (Gitea, code-server, RabbitMQ) current without manual redeploys      |
+| Name           | Usage                                                         | Free Tier                       | When to Use                                                                                    |
+| -------------- | ------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Docker         | Container runtime                                             | Free (self-hosted, open source) | Default packaging/runtime for any self-hosted or deployed service                              |
+| Docker Compose | Multi-container orchestration on a single host                | Free (self-hosted, open source) | VM stacks with multiple related containers (e.g. `infrastructure/local/docker-compose.yml`)    |
+| Watchtower     | Auto-updates running containers by polling for new image tags | Free (self-hosted, open source) | Keeping self-hosted containers (Gitea, code-server, RabbitMQ) current without manual redeploys |
 
 ## Process Management
 
@@ -51,7 +51,7 @@ Comparison of self-hosted/local solutions by category — software you run and o
 
 | Name     | Usage                                                                       | Free Tier                                              | When to Use                                                                                              |
 | -------- | --------------------------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| Grafana  | Dashboards/visualization over metrics and logs                              | Free (self-hosted, open source)                        | Visualizing Loki logs and any metrics sources on the homelab                                             |
+| Grafana  | Dashboards/visualization over metrics and logs                              | Free (self-hosted, open source)                        | Visualizing Loki logs and any metrics sources across self-hosted services                                |
 | Loki     | Log aggregation, Grafana-native                                             | Free (self-hosted, open source)                        | Centralizing logs from self-hosted services without a heavier ELK-style stack                            |
 | Promtail | Log shipping agent for Loki                                                 | Free (self-hosted, open source)                        | Pairs with Loki — ships container/VM logs to it                                                          |
 | Upptime  | Static status-page + uptime monitor, config-as-code, runs on GitHub Actions | Free (open source, runs on own GitHub Actions minutes) | Public status checks/history for deployed services (`.upptimerc.yml`) without a hosted monitoring vendor |
