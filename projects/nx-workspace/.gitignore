@@ -7,6 +7,7 @@ better-auth.secret
 
 # compiled output
 dist
+_site
 tmp
 /out-tsc
 
