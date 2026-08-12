@@ -1,8 +1,9 @@
-// Where a calendar's events get scraped from. Facebook group event pages are
-// the only implemented scraper today (src/lib/event-scraper);
-// new source types get added here and taught to the scraper.
+// Where a calendar's events get scraped from. Facebook group and page event
+// listings share one scraper today (src/lib/event-scraper), which just drives a
+// Facebook events URL; new source types get added here and taught to the scraper.
 export const EVENT_SOURCE_TYPE = {
   FACEBOOK_GROUP: 'facebook_group',
+  FACEBOOK_PAGE: 'facebook_page',
 } as const;
 
 export type EventSourceType =
@@ -10,15 +11,21 @@ export type EventSourceType =
 
 export const EVENT_SOURCE_TYPE_LABEL: Record<EventSourceType, string> = {
   [EVENT_SOURCE_TYPE.FACEBOOK_GROUP]: 'Facebook group',
+  [EVENT_SOURCE_TYPE.FACEBOOK_PAGE]: 'Facebook page',
 };
 
 export const EVENT_SOURCE_TYPES = Object.values(EVENT_SOURCE_TYPE);
 
 const FACEBOOK_GROUP_URL_PATTERN =
   /^https?:\/\/(www\.)?facebook\.com\/groups\//;
+// A page's events listing, e.g. facebook.com/FNSCPH/events — any slug that
+// isn't /groups/ followed by an /events segment.
+const FACEBOOK_PAGE_URL_PATTERN =
+  /^https?:\/\/(www\.)?facebook\.com\/(?!groups\/)[^/?#]+\/events\b/;
 
 const SOURCE_TYPE_URL_PATTERN: Record<EventSourceType, RegExp> = {
   [EVENT_SOURCE_TYPE.FACEBOOK_GROUP]: FACEBOOK_GROUP_URL_PATTERN,
+  [EVENT_SOURCE_TYPE.FACEBOOK_PAGE]: FACEBOOK_PAGE_URL_PATTERN,
 };
 
 export const detectEventSourceType = (url: string): EventSourceType | null =>
