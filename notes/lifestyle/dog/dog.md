@@ -1,5 +1,6 @@
 # Dog
 
+- [Breeds](./dog-breeds.md)
 - [Food](./dog-food.md)
 - [Commands](../dog-commands.md)
 
