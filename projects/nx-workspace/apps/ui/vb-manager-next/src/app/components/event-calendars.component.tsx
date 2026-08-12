@@ -54,7 +54,7 @@ const SOURCES_TABLE = 'event_calendar_sources';
 const ADD_SOURCE_LABEL = 'Add URL';
 const REMOVE_SOURCE_LABEL = 'Remove';
 const SOURCE_URL_PLACEHOLDER =
-  'https://www.facebook.com/groups/klubbkalenderlatin/events';
+  'facebook.com/groups/<id>/events or facebook.com/<page>/events';
 
 const LIST_COPY = {
   LIST: {
@@ -529,7 +529,9 @@ const EventCalendarForm = ({
   const addSourceUrl = () => setSourceUrls(current => [...current, '']);
 
   const removeSourceUrl = (index: number) =>
-    setSourceUrls(current => current.filter((_, position) => position !== index));
+    setSourceUrls(current =>
+      current.filter((_, position) => position !== index),
+    );
 
   const handleSubmit = async () => {
     setSubmitting(true);

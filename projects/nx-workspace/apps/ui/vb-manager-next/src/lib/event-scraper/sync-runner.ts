@@ -1,9 +1,6 @@
 import { getCalendarAdminClient } from '../google-calendar-admin';
 import { getEventCalendar, recordSyncResult } from '../event-calendars.db';
-import {
-  scrapeFacebookGroupEvents,
-  ScrapedEvent,
-} from './facebook-events.scraper';
+import { scrapeFacebookEvents, ScrapedEvent } from './facebook-events.scraper';
 import { syncEventsToCalendar } from './google-calendar.sync';
 import { EVENT_SOURCE_TYPE } from '../../app/constants/event-calendars';
 
@@ -31,16 +28,21 @@ const runningSyncs = new Map<string, SyncStatus>();
 export const getSyncStatus = (calendarId: string) =>
   runningSyncs.get(calendarId) ?? null;
 
+const FACEBOOK_SOURCE_TYPES: string[] = [
+  EVENT_SOURCE_TYPE.FACEBOOK_GROUP,
+  EVENT_SOURCE_TYPE.FACEBOOK_PAGE,
+];
+
 const scrapeSource = (
   url: string,
   sourceType: string,
   onProgress: (message: string) => void,
 ) => {
-  if (sourceType !== EVENT_SOURCE_TYPE.FACEBOOK_GROUP) {
+  if (!FACEBOOK_SOURCE_TYPES.includes(sourceType)) {
     throw new Error(`No scraper implemented for source type "${sourceType}"`);
   }
-  return scrapeFacebookGroupEvents({
-    groupUrl: url,
+  return scrapeFacebookEvents({
+    eventsUrl: url,
     onProgress: (done, total) =>
       onProgress(`Scraping ${url} — ${done}/${total} events`),
   });
