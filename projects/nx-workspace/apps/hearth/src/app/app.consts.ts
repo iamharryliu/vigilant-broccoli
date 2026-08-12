@@ -10,6 +10,7 @@ import {
   ChefHat,
   PackageSearch,
   FlaskConical,
+  ShoppingCart,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -63,8 +64,9 @@ const DEV_FEATURES_LINK: NavLink = {
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'Where Is', href: ROUTES.WHERE_IS, icon: PackageSearch },
-  ...(IS_DEV ? [DEV_FEATURES_LINK] : []),
+  { label: 'Grocery List', href: ROUTES.GROCERY, icon: ShoppingCart },
   { label: 'Find Members', href: ROUTES.LOCATOR, icon: MapPin },
   { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
+  ...(IS_DEV ? [DEV_FEATURES_LINK] : []),
   { label: 'Settings', href: ROUTES.SETTINGS, icon: Settings },
 ];
