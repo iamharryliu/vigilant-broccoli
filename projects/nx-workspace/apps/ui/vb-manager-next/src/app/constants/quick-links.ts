@@ -105,6 +105,20 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: 'VB - GCP API Credentials',
+    target:
+      'https://console.cloud.google.com/apis/credentials?project=vigilant-broccoli',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
+    label: 'VB - GCP Auth Audience',
+    target:
+      'https://console.cloud.google.com/auth/audience?project=vigilant-broccoli',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: 'Cron Guru',
     target: 'https://crontab.guru/',
     type: OPEN_TYPE.BROWSER,
