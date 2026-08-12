@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
   if (!userEmail) return unauthorized();
 
   try {
-    return NextResponse.json({ calendars: listEventCalendars() });
+    return NextResponse.json({ calendars: await listEventCalendars() });
   } catch (error) {
     return serverError(error);
   }
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       await setGoogleCalendarPublic(calendar, googleCalendarId, true);
     }
 
-    const created = insertEventCalendar({
+    const created = await insertEventCalendar({
       name: name.trim(),
       googleCalendarId,
       isPublic,

@@ -10,9 +10,10 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { supabase } from '../../lib/supabase';
 import {
   detectEventSourceType,
   EVENT_SOURCE_TYPE,
@@ -46,6 +47,11 @@ const SYNC_POLL_INTERVAL_MS = 3000;
 const SYNC_RUNNING = 'running';
 const SOURCES_PLACEHOLDER =
   'One URL per line, e.g. https://www.facebook.com/groups/klubbkalenderlatin/events';
+const CALENDARS_CHANNEL = 'event-calendars-changes';
+const POSTGRES_CHANGES_EVENT = 'postgres_changes';
+const PUBLIC_SCHEMA = 'public';
+const CALENDARS_TABLE = 'event_calendars';
+const SOURCES_TABLE = 'event_calendar_sources';
 
 const LIST_COPY = {
   LIST: {
@@ -118,23 +124,49 @@ export const EventCalendarsComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCalendars = async () => {
-      try {
-        const response = await authFetch(API_ENDPOINTS.EVENT_CALENDARS);
-        if (!response.ok)
-          throw new Error(await errorFromResponse(response, FETCH_ERROR));
-        const data = await response.json();
-        setItems(data.calendars);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : FETCH_ERROR);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCalendars();
+  const fetchCalendars = useCallback(async () => {
+    try {
+      const response = await authFetch(API_ENDPOINTS.EVENT_CALENDARS);
+      if (!response.ok)
+        throw new Error(await errorFromResponse(response, FETCH_ERROR));
+      const data = await response.json();
+      setItems(data.calendars);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : FETCH_ERROR);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchCalendars();
+  }, [fetchCalendars]);
+
+  // Another machine editing the shared Supabase tables shows up here without a
+  // reload — mirrors the notepad's live sync. Any change refetches the list,
+  // which cascades to the sync-status and untracked effects keyed on items.
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return;
+
+    const channel = supabase
+      .channel(CALENDARS_CHANNEL)
+      .on(
+        POSTGRES_CHANGES_EVENT,
+        { event: '*', schema: PUBLIC_SCHEMA, table: CALENDARS_TABLE },
+        () => fetchCalendars(),
+      )
+      .on(
+        POSTGRES_CHANGES_EVENT,
+        { event: '*', schema: PUBLIC_SCHEMA, table: SOURCES_TABLE },
+        () => fetchCalendars(),
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchCalendars]);
 
   const createItem = async (item: EventCalendar) => {
     const response = await authFetch(API_ENDPOINTS.EVENT_CALENDARS, {

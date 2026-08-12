@@ -53,7 +53,7 @@ const runSync = async (calendarId: string) => {
   };
 
   try {
-    const eventCalendar = getEventCalendar(calendarId);
+    const eventCalendar = await getEventCalendar(calendarId);
     if (!eventCalendar) throw new Error('Calendar not found');
     if (!eventCalendar.sources.length) {
       throw new Error('No source URLs configured for this calendar');
@@ -93,7 +93,7 @@ const runSync = async (calendarId: string) => {
         runningSyncs.get(calendarId)?.startedAt ?? new Date().toISOString(),
       finishedAt: new Date().toISOString(),
     });
-    recordSyncResult(calendarId, message);
+    await recordSyncResult(calendarId, message);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Sync failed';
     console.error('[event-calendars] sync failed', error);
@@ -104,7 +104,7 @@ const runSync = async (calendarId: string) => {
         runningSyncs.get(calendarId)?.startedAt ?? new Date().toISOString(),
       finishedAt: new Date().toISOString(),
     });
-    recordSyncResult(calendarId, `Failed: ${message}`);
+    await recordSyncResult(calendarId, `Failed: ${message}`);
   }
 };
 

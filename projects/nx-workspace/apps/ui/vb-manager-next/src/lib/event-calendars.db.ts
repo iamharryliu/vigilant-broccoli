@@ -1,28 +1,21 @@
-import Database from 'better-sqlite3';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
 import { randomUUID } from 'crypto';
+import { supabaseAdmin } from './supabase-admin';
 import {
   EventCalendar,
   EventCalendarSource,
   EventSourceType,
 } from '../app/constants/event-calendars';
 
-// Deliberately outside the repo: cwd under PM2 is the build output directory,
-// so a db file there is data living inside a rebuildable artifact. This path is
-// where the sync runner reads which calendars to sync and which URLs to
-// scrape for each.
-const DB_FILENAME = 'vb-manager.db';
-const DB_DIRECTORY =
-  process.env.VB_MANAGER_DATA_DIR ?? path.join(os.homedir(), '.vb-manager');
-const DB_PATH = path.join(DB_DIRECTORY, DB_FILENAME);
+// Tracking lives in shared Supabase (not per-machine SQLite) so every machine
+// reads the same list; see the create_event_calendars migration.
+const CALENDARS_TABLE = 'event_calendars';
+const SOURCES_TABLE = 'event_calendar_sources';
 
 interface EventCalendarRow {
   id: string;
   name: string;
   google_calendar_id: string;
-  is_public: number;
+  is_public: boolean;
   created_at: string;
   updated_at: string;
   last_synced_at: string | null;
@@ -35,61 +28,15 @@ interface EventCalendarSourceRow {
   source_type: string;
 }
 
-const SCHEMA_STATEMENTS = [
-  `
-  CREATE TABLE IF NOT EXISTS event_calendars (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    google_calendar_id TEXT NOT NULL,
-    is_public INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    last_synced_at TEXT,
-    last_sync_message TEXT
-  )
-`,
-  `
-  CREATE TABLE IF NOT EXISTS event_calendar_sources (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    calendar_id TEXT NOT NULL REFERENCES event_calendars(id) ON DELETE CASCADE,
-    url TEXT NOT NULL,
-    source_type TEXT NOT NULL
-  )
-`,
-  `CREATE INDEX IF NOT EXISTS idx_event_calendar_sources_calendar_id
-   ON event_calendar_sources(calendar_id)`,
-];
-
-// Opened on first query rather than at import. Next.js evaluates route modules
-// while collecting page data at build time, and better-sqlite3 is a native
-// addon — connecting eagerly makes every production build depend on the
-// addon's ABI matching the building Node, which fails the build outright.
-let database: Database.Database | null = null;
-
-const getDb = (): Database.Database => {
-  if (database) return database;
-  fs.mkdirSync(DB_DIRECTORY, { recursive: true });
-  database = new Database(DB_PATH);
-  for (const statement of SCHEMA_STATEMENTS) {
-    database.prepare(statement).run();
+const unwrap = <T>({ data, error }: { data: T; error: unknown }): T => {
+  if (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : ((error as { message?: string })?.message ?? 'Supabase error'),
+    );
   }
-  // Tables created before sync tracking existed lack these columns.
-  const columns = (
-    database.prepare('PRAGMA table_info(event_calendars)').all() as {
-      name: string;
-    }[]
-  ).map(column => column.name);
-  for (const [column, type] of [
-    ['last_synced_at', 'TEXT'],
-    ['last_sync_message', 'TEXT'],
-  ]) {
-    if (!columns.includes(column)) {
-      database
-        .prepare(`ALTER TABLE event_calendars ADD COLUMN ${column} ${type}`)
-        .run();
-    }
-  }
-  return database;
+  return data;
 };
 
 const toEventCalendar = (
@@ -99,7 +46,7 @@ const toEventCalendar = (
   id: row.id,
   name: row.name,
   googleCalendarId: row.google_calendar_id,
-  isPublic: !!row.is_public,
+  isPublic: row.is_public,
   sources,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
@@ -107,12 +54,10 @@ const toEventCalendar = (
   lastSyncMessage: row.last_sync_message ?? undefined,
 });
 
-const loadSourcesByCalendarId = (): Map<string, EventCalendarSource[]> => {
-  const rows = getDb()
-    .prepare('SELECT calendar_id, url, source_type FROM event_calendar_sources')
-    .all() as EventCalendarSourceRow[];
-
-  return rows.reduce((grouped, row) => {
+const groupSources = (
+  rows: EventCalendarSourceRow[],
+): Map<string, EventCalendarSource[]> =>
+  rows.reduce((grouped, row) => {
     const sources = grouped.get(row.calendar_id) ?? [];
     sources.push({
       url: row.url,
@@ -121,61 +66,73 @@ const loadSourcesByCalendarId = (): Map<string, EventCalendarSource[]> => {
     grouped.set(row.calendar_id, sources);
     return grouped;
   }, new Map<string, EventCalendarSource[]>());
-};
 
-const replaceSources = (calendarId: string, sources: EventCalendarSource[]) => {
-  const db = getDb();
-  db.transaction(() => {
-    db.prepare('DELETE FROM event_calendar_sources WHERE calendar_id = ?').run(
-      calendarId,
-    );
-    const insert = db.prepare(
-      `INSERT INTO event_calendar_sources (calendar_id, url, source_type)
-       VALUES (@calendar_id, @url, @source_type)`,
-    );
-    for (const source of sources) {
-      insert.run({
+const replaceSources = async (
+  calendarId: string,
+  sources: EventCalendarSource[],
+) => {
+  unwrap(
+    await supabaseAdmin
+      .from(SOURCES_TABLE)
+      .delete()
+      .eq('calendar_id', calendarId),
+  );
+  if (!sources.length) return;
+  unwrap(
+    await supabaseAdmin.from(SOURCES_TABLE).insert(
+      sources.map(source => ({
         calendar_id: calendarId,
         url: source.url,
         source_type: source.sourceType,
-      });
-    }
-  })();
+      })),
+    ),
+  );
 };
 
-export const listEventCalendars = (): EventCalendar[] => {
-  const rows = getDb()
-    .prepare('SELECT * FROM event_calendars ORDER BY created_at')
-    .all() as EventCalendarRow[];
-  const sourcesByCalendarId = loadSourcesByCalendarId();
+export const listEventCalendars = async (): Promise<EventCalendar[]> => {
+  const rows = unwrap(
+    await supabaseAdmin.from(CALENDARS_TABLE).select('*').order('created_at'),
+  ) as EventCalendarRow[];
+  const sourceRows = unwrap(
+    await supabaseAdmin
+      .from(SOURCES_TABLE)
+      .select('calendar_id, url, source_type'),
+  ) as EventCalendarSourceRow[];
+  const sourcesByCalendarId = groupSources(sourceRows);
   return rows.map(row =>
     toEventCalendar(row, sourcesByCalendarId.get(row.id) ?? []),
   );
 };
 
-export const getEventCalendar = (id: string): EventCalendar | null => {
-  const db = getDb();
-  const row = db
-    .prepare('SELECT * FROM event_calendars WHERE id = ?')
-    .get(id) as EventCalendarRow | undefined;
+export const getEventCalendar = async (
+  id: string,
+): Promise<EventCalendar | null> => {
+  const row = unwrap(
+    await supabaseAdmin
+      .from(CALENDARS_TABLE)
+      .select('*')
+      .eq('id', id)
+      .maybeSingle(),
+  ) as EventCalendarRow | null;
   if (!row) return null;
 
-  const sources = db
-    .prepare(
-      'SELECT calendar_id, url, source_type FROM event_calendar_sources WHERE calendar_id = ?',
-    )
-    .all(id) as EventCalendarSourceRow[];
+  const sourceRows = unwrap(
+    await supabaseAdmin
+      .from(SOURCES_TABLE)
+      .select('calendar_id, url, source_type')
+      .eq('calendar_id', id),
+  ) as EventCalendarSourceRow[];
 
   return toEventCalendar(
     row,
-    sources.map(source => ({
+    sourceRows.map(source => ({
       url: source.url,
       sourceType: source.source_type as EventSourceType,
     })),
   );
 };
 
-export const insertEventCalendar = ({
+export const insertEventCalendar = async ({
   name,
   googleCalendarId,
   isPublic,
@@ -185,26 +142,22 @@ export const insertEventCalendar = ({
   googleCalendarId: string;
   isPublic: boolean;
   sources: EventCalendarSource[];
-}): EventCalendar => {
+}): Promise<EventCalendar> => {
   const id = randomUUID();
   const now = new Date().toISOString();
 
-  getDb()
-    .prepare(
-      `INSERT INTO event_calendars
-     (id, name, google_calendar_id, is_public, created_at, updated_at)
-     VALUES (@id, @name, @google_calendar_id, @is_public, @created_at, @updated_at)`,
-    )
-    .run({
+  unwrap(
+    await supabaseAdmin.from(CALENDARS_TABLE).insert({
       id,
       name,
       google_calendar_id: googleCalendarId,
-      is_public: isPublic ? 1 : 0,
+      is_public: isPublic,
       created_at: now,
       updated_at: now,
-    });
+    }),
+  );
 
-  replaceSources(id, sources);
+  await replaceSources(id, sources);
 
   return {
     id,
@@ -217,56 +170,46 @@ export const insertEventCalendar = ({
   };
 };
 
-export const updateEventCalendar = (
+export const updateEventCalendar = async (
   id: string,
   updates: {
     name?: string;
     isPublic?: boolean;
     sources?: EventCalendarSource[];
   },
-): EventCalendar | null => {
-  const existing = getEventCalendar(id);
+): Promise<EventCalendar | null> => {
+  const existing = await getEventCalendar(id);
   if (!existing) return null;
 
-  const updatedAt = new Date().toISOString();
-  getDb()
-    .prepare(
-      `UPDATE event_calendars
-     SET name = @name, is_public = @is_public, updated_at = @updated_at
-     WHERE id = @id`,
-    )
-    .run({
-      id,
-      name: updates.name ?? existing.name,
-      is_public: (updates.isPublic ?? existing.isPublic) ? 1 : 0,
-      updated_at: updatedAt,
-    });
+  unwrap(
+    await supabaseAdmin
+      .from(CALENDARS_TABLE)
+      .update({
+        name: updates.name ?? existing.name,
+        is_public: updates.isPublic ?? existing.isPublic,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id),
+  );
 
-  if (updates.sources) replaceSources(id, updates.sources);
+  if (updates.sources) await replaceSources(id, updates.sources);
 
   return getEventCalendar(id);
 };
 
-export const deleteEventCalendar = (id: string) => {
-  const db = getDb();
-  db.transaction(() => {
-    db.prepare('DELETE FROM event_calendar_sources WHERE calendar_id = ?').run(
-      id,
-    );
-    db.prepare('DELETE FROM event_calendars WHERE id = ?').run(id);
-  })();
+export const deleteEventCalendar = async (id: string) => {
+  // event_calendar_sources cascades via its foreign key.
+  unwrap(await supabaseAdmin.from(CALENDARS_TABLE).delete().eq('id', id));
 };
 
-export const recordSyncResult = (id: string, message: string) => {
-  getDb()
-    .prepare(
-      `UPDATE event_calendars
-       SET last_synced_at = @last_synced_at, last_sync_message = @last_sync_message
-       WHERE id = @id`,
-    )
-    .run({
-      id,
-      last_synced_at: new Date().toISOString(),
-      last_sync_message: message,
-    });
+export const recordSyncResult = async (id: string, message: string) => {
+  unwrap(
+    await supabaseAdmin
+      .from(CALENDARS_TABLE)
+      .update({
+        last_synced_at: new Date().toISOString(),
+        last_sync_message: message,
+      })
+      .eq('id', id),
+  );
 };
