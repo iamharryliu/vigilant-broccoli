@@ -52,15 +52,6 @@
       "DESCRIPTION": "Employee management app deployed on Vercel."
     }
   },
-  "UI_PAGE": {
-    "TITLE": "UI",
-    "DESCRIPTION": "React component library.",
-    "SECTION_COMPONENT_LIBRARY": "React Component Library",
-    "COMPONENT_LIBRARY": {
-      "TITLE": "React Component Library",
-      "DESCRIPTION": "Showcase of reusable React components."
-    }
-  },
   "STATUS_PAGE": {
     "TITLE": "Status",
     "DESCRIPTION_PREFIX": "Service health via",
