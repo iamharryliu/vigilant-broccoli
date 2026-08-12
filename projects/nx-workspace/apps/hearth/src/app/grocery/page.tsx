@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, KeyboardEvent } from 'react';
-import { Card, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
@@ -127,10 +127,10 @@ export default function GroceryPage() {
   const renderRow = (item: GroceryItem) => (
     <div
       key={item.id}
-      className="flex items-center gap-3 py-2 border-b border-[var(--gray-a4)] last:border-b-0"
+      className="flex items-center gap-3 py-3 border-b border-[var(--gray-a4)] last:border-b-0"
     >
       <Checkbox
-        className="h-5 w-5"
+        className="h-5 w-5 shrink-0"
         checked={item.completed}
         onCheckedChange={checked => handleToggle(item.id, checked === true)}
       />
@@ -159,10 +159,10 @@ export default function GroceryPage() {
   );
 
   return (
-    <div className="max-w-2xl mx-auto p-2 sm:p-6 space-y-6">
-      <Card>
+    <div className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6 md:max-w-none md:px-8 md:py-8">
+      <div>
         <div className="flex flex-col gap-4">
-          <Text size="5" weight="bold">
+          <Text size="6" weight="bold">
             Grocery List
           </Text>
 
@@ -189,10 +189,10 @@ export default function GroceryPage() {
             <div className="flex flex-col">{active.map(renderRow)}</div>
           )}
         </div>
-      </Card>
+      </div>
 
       {completed.length > 0 && (
-        <Card>
+        <div>
           <CollapsibleList
             storageKeyPrefix="grocery"
             items={[
@@ -207,7 +207,7 @@ export default function GroceryPage() {
               },
             ]}
           />
-        </Card>
+        </div>
       )}
     </div>
   );
