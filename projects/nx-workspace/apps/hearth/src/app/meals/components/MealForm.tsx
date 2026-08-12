@@ -1,8 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
+
+import {
+  Button,
+  Input,
+  Select,
+  Textarea,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { MEAL_CATEGORIES, MealCategory } from '../../../lib/types';
 
 export interface MealFormData {

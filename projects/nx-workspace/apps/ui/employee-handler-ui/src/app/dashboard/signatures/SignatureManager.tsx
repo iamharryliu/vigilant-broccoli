@@ -1,7 +1,7 @@
 'use client';
 
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Text, TextField } from '@radix-ui/themes';
+import { TextField } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
@@ -11,6 +11,7 @@ import {
   TabsList,
   TabsTrigger,
   Textarea,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import {

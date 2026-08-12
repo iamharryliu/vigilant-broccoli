@@ -1,7 +1,6 @@
 'use client';
 
-import { Text } from '@radix-ui/themes';
-import { Textarea } from '@vigilant-broccoli/react-lib';
+import { Textarea, Text } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { useSpeechToText } from '../../hooks/useSpeechToText';
 import { SpeechToTextButton } from './SpeechToTextButton';

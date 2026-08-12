@@ -1,6 +1,6 @@
 'use client';
-import { Text } from '@radix-ui/themes';
-import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
+
+import { Button, Input, Textarea, Text } from '@vigilant-broccoli/react-lib';
 import { useRecipeScraperInputs } from '../../hooks/useRecipeScraperInputs';
 
 type RecipeScraperInputsProps = {

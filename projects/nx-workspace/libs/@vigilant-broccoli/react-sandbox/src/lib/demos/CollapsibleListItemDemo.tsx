@@ -1,11 +1,10 @@
-import { Heading, Text } from '@radix-ui/themes';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '../ui/accordion';
-import { CollapsibleList } from '@vigilant-broccoli/react-lib';
+import { CollapsibleList, Heading, Text } from '@vigilant-broccoli/react-lib';
 
 export const CollapsibleListItemDemo = () => (
   <div className="flex flex-col gap-6">

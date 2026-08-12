@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Callout, Flex, Heading, Table, Text } from '@radix-ui/themes';
+import { Callout, Flex, Table } from '@radix-ui/themes';
 import {
   Button,
   DeleteIconButton,
@@ -9,6 +9,8 @@ import {
   Input,
   Select,
   Textarea,
+  Heading,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import {
   CONTENT_TYPE_HEADER,
@@ -31,7 +33,11 @@ interface TodoSection {
 }
 
 const PRIORITY_OPTIONS = ['P1', 'P2', 'P3', 'NA'];
-const NEW_ROW_DEFAULTS = { priority: 'NA', description: '', recommendedFix: '' };
+const NEW_ROW_DEFAULTS = {
+  priority: 'NA',
+  description: '',
+  recommendedFix: '',
+};
 const FETCH_ERROR = 'Failed to load TODO.md';
 const SAVE_ERROR = 'Failed to save TODO.md';
 const SAVE_SUCCESS = 'Saved to TODO.md';
@@ -77,7 +83,11 @@ export const TodoListComponent = () => {
     );
   };
 
-  const updateRow = (heading: string, rowIdx: number, patch: Partial<TodoRow>) =>
+  const updateRow = (
+    heading: string,
+    rowIdx: number,
+    patch: Partial<TodoRow>,
+  ) =>
     updateSection(heading, rows =>
       rows.map((row, idx) => (idx === rowIdx ? { ...row, ...patch } : row)),
     );

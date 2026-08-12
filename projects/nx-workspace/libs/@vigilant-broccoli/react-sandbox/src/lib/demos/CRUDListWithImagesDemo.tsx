@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
-import { Badge, Text, TextField } from '@radix-ui/themes';
+import { Badge, TextField } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
   CRUDItemList,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 

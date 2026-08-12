@@ -1,6 +1,6 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Text, Badge } from '@radix-ui/themes';
+import { Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
   CardContainer,
@@ -8,6 +8,7 @@ import {
   IconButton,
   StatusCardList,
   StatusCardListItem,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';

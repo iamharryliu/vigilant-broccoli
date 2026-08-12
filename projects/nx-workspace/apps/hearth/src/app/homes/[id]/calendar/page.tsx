@@ -2,8 +2,11 @@
 
 import { use, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dialog, Text } from '@radix-ui/themes';
-import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from '@vigilant-broccoli/react-lib';
+import { Dialog } from '@radix-ui/themes';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../../providers/auth-provider';
 import { ROUTES } from '../../../../lib/routes';
 import { CalendarEvent } from '../../../../lib/types';

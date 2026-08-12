@@ -1,7 +1,7 @@
 'use client';
 
-import { Text, ScrollArea } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { ScrollArea } from '@radix-ui/themes';
+import { Button, Text } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
 interface Lap {
@@ -88,7 +88,10 @@ export const StopwatchUtilityContent = () => {
           <ScrollArea style={{ maxHeight: '200px' }}>
             <div className="flex flex-col gap-1">
               {laps.map(lap => (
-                <div className="flex justify-between items-center px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md" key={lap.lapNumber}>
+                <div
+                  className="flex justify-between items-center px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md"
+                  key={lap.lapNumber}
+                >
                   <Text size="2" weight="medium">
                     Lap {lap.lapNumber}
                   </Text>

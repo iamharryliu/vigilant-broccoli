@@ -1,5 +1,8 @@
-import { Text } from '@radix-ui/themes';
-import { ScrollTimeline, ScrollTimelineEntry } from '@vigilant-broccoli/react-lib';
+import {
+  ScrollTimeline,
+  ScrollTimelineEntry,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 
 const CURRENCY_FORMATTER = new Intl.NumberFormat(undefined, {
   style: 'currency',

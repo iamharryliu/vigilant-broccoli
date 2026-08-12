@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Badge, Dialog, Text } from '@radix-ui/themes';
+import { Badge, Dialog } from '@radix-ui/themes';
 import {
   Button,
   EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, HomeProject } from '../../../lib/types';
 import { HomeProjectForm, HomeProjectFormData } from './HomeProjectForm';

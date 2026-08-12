@@ -1,4 +1,5 @@
-import { Card, Text } from '@radix-ui/themes';
+import { Card } from '@radix-ui/themes';
+import { Text } from './Text';
 import { ReactNode } from 'react';
 
 const HEADER_LINK_CLASS =

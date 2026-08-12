@@ -8,7 +8,7 @@ import {
   GithubOrgRepository,
   GITHUB_ORG_URLS,
 } from '@vigilant-broccoli/github-workspace-js';
-import { Heading, Link, Text, Callout, Badge, Dialog } from '@radix-ui/themes';
+import { Link, Callout, Badge, Dialog } from '@radix-ui/themes';
 import { AlertCircle, Plus } from 'lucide-react';
 import { authFetch } from '../../../../../../libs/auth';
 
@@ -28,6 +28,8 @@ import {
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
+  Heading,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 
 const ORG_MEMBER_API = '/api/github/organization-members';

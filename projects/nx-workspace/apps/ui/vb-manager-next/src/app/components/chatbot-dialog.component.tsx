@@ -1,6 +1,6 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Dialog, Text, Spinner } from '@radix-ui/themes';
+import { Dialog, Spinner } from '@radix-ui/themes';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Trash2 } from 'lucide-react';
@@ -13,6 +13,7 @@ import {
   Select,
   Textarea,
   UserAvatar,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { SpeechToTextButton } from './llm/SpeechToTextButton';
 import {

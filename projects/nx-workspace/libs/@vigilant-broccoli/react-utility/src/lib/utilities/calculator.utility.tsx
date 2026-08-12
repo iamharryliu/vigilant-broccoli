@@ -1,6 +1,7 @@
 'use client';
 
-import { Text, TextField, Button, ScrollArea } from '@radix-ui/themes';
+import { TextField, ScrollArea } from '@radix-ui/themes';
+import { Button, Text } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
 const HISTORY_STORAGE_KEY = 'calculator-history';
@@ -185,7 +186,11 @@ export const CalculatorUtilityContent = () => {
             <Text size="1" weight="bold" color="gray">
               History
             </Text>
-            <Button size="1" variant="ghost" color="red" onClick={clearHistory}>
+            <Button
+              size="sm"
+              variant="destructive-ghost"
+              onClick={clearHistory}
+            >
               Clear
             </Button>
           </div>

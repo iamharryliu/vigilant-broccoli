@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { Badge, Text } from '@radix-ui/themes';
+import { Badge } from '@radix-ui/themes';
 import {
   CRUDItemFormDialog,
   EllipsisCTA,
   ImageCarouselDialog,
   ImageFilmstrip,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../../providers/auth-provider';

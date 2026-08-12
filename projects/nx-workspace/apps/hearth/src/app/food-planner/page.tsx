@@ -1,6 +1,7 @@
 'use client';
 
-import { Tabs, Text } from '@radix-ui/themes';
+import { Tabs } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
 
 function FoodPlannerContent() {
@@ -14,7 +15,9 @@ function FoodPlannerContent() {
 
       <Tabs.Root defaultValue="notes">
         <Tabs.List>
-          <Tabs.Trigger value="notes">{t('FOOD_PLANNER.TABS.NOTES')}</Tabs.Trigger>
+          <Tabs.Trigger value="notes">
+            {t('FOOD_PLANNER.TABS.NOTES')}
+          </Tabs.Trigger>
           <Tabs.Trigger value="recipes">
             {t('FOOD_PLANNER.TABS.RECIPES')}
           </Tabs.Trigger>

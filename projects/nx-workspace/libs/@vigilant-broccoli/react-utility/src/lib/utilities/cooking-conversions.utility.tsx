@@ -1,6 +1,7 @@
 'use client';
 
-import { Text, TextField } from '@radix-ui/themes';
+import { TextField } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 
 export const CookingConversionsUtilityContent = () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { Text } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { ReactNode } from 'react';
 import * as Collapsible from '@radix-ui/react-collapsible';
 
@@ -27,7 +27,9 @@ export const CollapsibleListItem = ({
     <Collapsible.Root
       open={isOpen}
       onOpenChange={setIsOpen}
-      className={showBorder ? 'border-t border-gray-300 dark:border-gray-700 pt-3' : ''}
+      className={
+        showBorder ? 'border-t border-gray-300 dark:border-gray-700 pt-3' : ''
+      }
     >
       <Collapsible.Trigger asChild>
         <button
@@ -55,12 +57,8 @@ export const CollapsibleListItem = ({
         </button>
       </Collapsible.Trigger>
 
-      <Collapsible.Content
-        className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp"
-      >
-        <div className="flex flex-col gap-3">
-          {children}
-        </div>
+      <Collapsible.Content className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
+        <div className="flex flex-col gap-3">{children}</div>
       </Collapsible.Content>
     </Collapsible.Root>
   );

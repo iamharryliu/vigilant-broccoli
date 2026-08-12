@@ -1,8 +1,13 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { Heading, Text, Theme } from '@radix-ui/themes';
+import { Theme } from '@radix-ui/themes';
 import Fuse from 'fuse.js';
 import { Search } from 'lucide-react';
-import { DarkModeIconButton, Switch } from '@vigilant-broccoli/react-lib';
+import {
+  DarkModeIconButton,
+  Switch,
+  Heading,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import {
   AlarmUtilityContent,
   CalculatorUtilityContent,

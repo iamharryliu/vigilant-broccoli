@@ -33,6 +33,8 @@ export * from './GithubActionsBadges';
 export * from './StackedImages';
 export * from './CollapsibleList';
 export * from './MonospaceText';
+export * from './Text';
+export * from './Heading';
 export * from './SyncedTextEditor';
 export * from './StatusCardList';
 export * from './Tabs';

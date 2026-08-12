@@ -1,5 +1,5 @@
 import { CSSProperties, ReactNode, Ref } from 'react';
-import { Text } from '@radix-ui/themes';
+import { Text } from './Text';
 
 const LOADING_LABEL = 'Loading...';
 const SAVING_LABEL = 'Saving...';

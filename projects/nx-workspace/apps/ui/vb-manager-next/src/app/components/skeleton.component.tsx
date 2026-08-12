@@ -1,16 +1,29 @@
-import { Card, Text } from '@radix-ui/themes';
+import { Card } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 
 export const Skeleton = ({ className = '' }: { className?: string }) => (
-  <div className={`animate-pulse bg-gray-300 dark:bg-gray-700 rounded ${className}`} />
+  <div
+    className={`animate-pulse bg-gray-300 dark:bg-gray-700 rounded ${className}`}
+  />
 );
 
-export const CardSkeleton = ({ title, rows = 3, showTitleSkeleton = false }: { title?: string; rows?: number; showTitleSkeleton?: boolean }) => (
+export const CardSkeleton = ({
+  title,
+  rows = 3,
+  showTitleSkeleton = false,
+}: {
+  title?: string;
+  rows?: number;
+  showTitleSkeleton?: boolean;
+}) => (
   <Card className="w-full">
     <div className="flex flex-col gap-4 p-4">
       {showTitleSkeleton ? (
         <Skeleton className="h-8 w-32" />
       ) : title ? (
-        <Text size="5" weight="bold">{title}</Text>
+        <Text size="5" weight="bold">
+          {title}
+        </Text>
       ) : (
         <Skeleton className="h-8 w-32" />
       )}

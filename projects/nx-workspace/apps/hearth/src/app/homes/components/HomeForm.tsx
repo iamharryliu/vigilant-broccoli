@@ -1,7 +1,6 @@
 'use client';
 
-import { Text } from '@radix-ui/themes';
-import { Button, Input } from '@vigilant-broccoli/react-lib';
+import { Button, Input, Text } from '@vigilant-broccoli/react-lib';
 
 type Props = {
   name: string;

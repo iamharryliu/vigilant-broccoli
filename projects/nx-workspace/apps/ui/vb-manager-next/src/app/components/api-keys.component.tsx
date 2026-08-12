@@ -1,5 +1,5 @@
 'use client';
-import { Badge, Callout, Code, Flex, Text } from '@radix-ui/themes';
+import { Badge, Callout, Code, Flex } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
@@ -8,6 +8,7 @@ import {
   Input,
   MonospaceText,
   Switch,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE, VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';

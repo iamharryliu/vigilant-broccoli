@@ -6,15 +6,10 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import {
-  AlertDialog,
-  Card,
-  Dialog,
-  DropdownMenu,
-  Heading,
-} from '@radix-ui/themes';
+import { AlertDialog, Card, Dialog, DropdownMenu } from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import { Button } from './Button';
+import { Heading } from './Heading';
 import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from './Dialog';
 import { IconButton, type IconButtonIcon } from './IconButton';
 import { StackedImages } from './StackedImages';

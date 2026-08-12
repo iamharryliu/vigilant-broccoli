@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, SegmentedControl, Slider } from '@radix-ui/themes';
+import { SegmentedControl, Slider } from '@radix-ui/themes';
 import {
+  Button,
   DocsExplorer,
   type DocsExplorerUrlSync,
   type DocsNode,
@@ -209,8 +210,8 @@ function GraphPanel({
           </SegmentedControl.Root>
         )}
         <Button
-          size="1"
-          variant={showForces ? 'solid' : 'soft'}
+          size="sm"
+          variant={showForces ? 'default' : 'secondary'}
           onClick={() => setShowForces(prev => !prev)}
         >
           {COPY.FORCES}

@@ -1,6 +1,6 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Text } from '@radix-ui/themes';
+
 import {
   Button,
   ButtonList,
@@ -10,6 +10,7 @@ import {
   moveQuickLinkFocusByDirection,
   WINDOW_OPEN_FEATURES,
   type Direction,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { useRef, useState } from 'react';
 import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';

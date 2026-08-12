@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, Text, Table, Badge, Dialog } from '@radix-ui/themes';
+import { Card, Table, Badge, Dialog } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
@@ -9,6 +9,7 @@ import {
   Input,
   Select,
   Textarea,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 
 interface Chore {
