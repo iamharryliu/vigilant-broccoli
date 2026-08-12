@@ -109,6 +109,17 @@ export interface HouseholdRule {
   updatedAt: string;
 }
 
+export interface GroceryItem {
+  id: string;
+  name: string;
+  completed: boolean;
+  completedAt: string | null;
+  position: number;
+  homeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface WhereIsItem {
   id: string;
   title: string;
