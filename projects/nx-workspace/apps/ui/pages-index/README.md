@@ -30,5 +30,8 @@
     - Demo → Employee Handler
   - `/api-services` — API Services
     - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). Covers private-only Fly services (llm-service, bucket-service) whose own `/docs` is unreachable from the internet, as well as the public ones. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
-  - `/ui` — UI
-    - React Component Library → `./react-component-library/`
+  - UI → `./react-component-library/` (external)
+
+## Agent Context
+
+- When adding, removing, or changing a route, card link, or external destination, update the `## Page Navigation` section above so it stays in sync with `src/app/app.tsx`, `src/app/consts/breadcrumbs.ts`, and the home-page cards.
