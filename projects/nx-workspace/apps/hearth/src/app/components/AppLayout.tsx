@@ -60,7 +60,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
       />
-      <div className="pt-[49px] pl-0 md:pl-14">{children}</div>
+      <div className="pt-[49px] pl-0 md:pl-14 md:peer-hover:pl-48 transition-[padding] duration-200">
+        {children}
+      </div>
     </>
   );
 }
