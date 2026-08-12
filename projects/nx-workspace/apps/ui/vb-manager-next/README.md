@@ -28,7 +28,6 @@ Management dashboard app.
   - `personal-common-js`
   - `react-lib`
   - `react-music-lib`
-  - `react-sandbox`
   - `react-utility`
   - `resume`
   - `vibecheck-lite`

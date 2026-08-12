@@ -1,15 +1,8 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { Heading, Text, Theme } from '@radix-ui/themes';
-import {
-  CollapsibleList,
-  CollapsibleListItemConfig,
-  DarkModeIconButton,
-  Switch,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@vigilant-broccoli/react-lib';
+import Fuse from 'fuse.js';
+import { Search } from 'lucide-react';
+import { DarkModeIconButton, Switch } from '@vigilant-broccoli/react-lib';
 import {
   AlarmUtilityContent,
   CalculatorUtilityContent,
@@ -36,12 +29,10 @@ import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 
-const STORAGE_KEY = 'component-sandbox';
-const STORAGE_KEY_UTILITIES = `${STORAGE_KEY}-utilities`;
 const CRUD_STORAGE_KEYS = {
-  IS_CARDS: `${STORAGE_KEY}-crud-is-cards`,
-  SHOW_ELLIPSIS: `${STORAGE_KEY}-crud-show-ellipsis`,
-  FULL_WIDTH_IMAGE: `${STORAGE_KEY}-crud-full-width-image`,
+  IS_CARDS: 'component-sandbox-crud-is-cards',
+  SHOW_ELLIPSIS: 'component-sandbox-crud-show-ellipsis',
+  FULL_WIDTH_IMAGE: 'component-sandbox-crud-full-width-image',
 };
 
 const CRUD_SWITCH_LABEL = {
@@ -49,11 +40,23 @@ const CRUD_SWITCH_LABEL = {
   ELLIPSIS: 'Ellipsis',
   FULL_WIDTH_IMAGE: 'Full-width image',
 } as const;
-const TAB = { COMPONENTS: 'components', UTILITIES: 'utilities' } as const;
 
 const DEFAULT_TITLE = 'Component Sandbox';
 const DEFAULT_SUBTITLE =
   'Interactive component showcase and testing playground';
+
+const CATEGORY = {
+  COMPONENTS: 'Components',
+  UTILITIES: 'Utilities',
+} as const;
+type Category = (typeof CATEGORY)[keyof typeof CATEGORY];
+
+interface SandboxEntry {
+  id: string;
+  label: string;
+  category: Category;
+  content: ReactNode;
+}
 
 const CRUDListSection = () => {
   const [isCards, setIsCards] = useState(false);
@@ -117,88 +120,224 @@ const CRUDListSection = () => {
   );
 };
 
-const COMPONENT_SECTIONS: CollapsibleListItemConfig[] = [
+const COMPONENT_ENTRIES: SandboxEntry[] = [
   {
     id: 'buttons',
-    title: 'Buttons',
+    label: 'Buttons',
+    category: CATEGORY.COMPONENTS,
     content: <ButtonDemo />,
-    defaultOpen: true,
   },
-  { id: 'avatar', title: 'Avatar', content: <AvatarDemo /> },
-  { id: 'user-avatar', title: 'User Avatar', content: <UserAvatarDemo /> },
+  {
+    id: 'avatar',
+    label: 'Avatar',
+    category: CATEGORY.COMPONENTS,
+    content: <AvatarDemo />,
+  },
+  {
+    id: 'user-avatar',
+    label: 'User Avatar',
+    category: CATEGORY.COMPONENTS,
+    content: <UserAvatarDemo />,
+  },
   {
     id: 'status-card-list',
-    title: 'Status Card List',
+    label: 'Status Card List',
+    category: CATEGORY.COMPONENTS,
     content: <StatusCardListDemo />,
   },
   {
     id: 'collapsible-list-item',
-    title: 'Collapsible List Item',
+    label: 'Collapsible List Item',
+    category: CATEGORY.COMPONENTS,
     content: <CollapsibleListItemDemo />,
   },
   {
     id: 'crud-list',
-    title: 'CRUD List Management',
+    label: 'CRUD List Management',
+    category: CATEGORY.COMPONENTS,
     content: <CRUDListSection />,
   },
-  { id: 'select', title: 'Select', content: <SelectDemo /> },
-  { id: 'error', title: 'Error Handling', content: <ErrorDemo /> },
-  { id: 'tabs', title: 'Tabs', content: <TabsDemo /> },
-  { id: 'switch', title: 'Switch', content: <SwitchDemo /> },
-  { id: 'toaster', title: 'Toaster', content: <ToasterDemo /> },
+  {
+    id: 'select',
+    label: 'Select',
+    category: CATEGORY.COMPONENTS,
+    content: <SelectDemo />,
+  },
+  {
+    id: 'error',
+    label: 'Error Handling',
+    category: CATEGORY.COMPONENTS,
+    content: <ErrorDemo />,
+  },
+  {
+    id: 'tabs',
+    label: 'Tabs',
+    category: CATEGORY.COMPONENTS,
+    content: <TabsDemo />,
+  },
+  {
+    id: 'switch',
+    label: 'Switch',
+    category: CATEGORY.COMPONENTS,
+    content: <SwitchDemo />,
+  },
+  {
+    id: 'toaster',
+    label: 'Toaster',
+    category: CATEGORY.COMPONENTS,
+    content: <ToasterDemo />,
+  },
   {
     id: 'github-actions-badges',
-    title: 'GitHub Actions Badges',
+    label: 'GitHub Actions Badges',
+    category: CATEGORY.COMPONENTS,
     content: <GithubActionsBadgesDemo />,
   },
   {
     id: 'user-leaderboard',
-    title: 'User Leaderboard',
+    label: 'User Leaderboard',
+    category: CATEGORY.COMPONENTS,
     content: <UserLeaderboardDemo />,
   },
   {
     id: 'group-leaderboard',
-    title: 'Group Leaderboard',
+    label: 'Group Leaderboard',
+    category: CATEGORY.COMPONENTS,
     content: <GroupLeaderboardDemo />,
   },
   {
     id: 'empty-leaderboard',
-    title: 'Empty Leaderboard',
+    label: 'Empty Leaderboard',
+    category: CATEGORY.COMPONENTS,
     content: <EmptyLeaderboardDemo />,
   },
   {
     id: 'scroll-timeline',
-    title: 'Scroll Timeline',
+    label: 'Scroll Timeline',
+    category: CATEGORY.COMPONENTS,
     content: <ScrollTimelineDemo />,
   },
 ];
 
-const UTILITY_SECTIONS: CollapsibleListItemConfig[] = [
+const UTILITY_ENTRIES: SandboxEntry[] = [
   {
     id: 'calculator',
-    title: 'Calculator',
+    label: 'Calculator',
+    category: CATEGORY.UTILITIES,
     content: <CalculatorUtilityContent />,
   },
   {
     id: 'currency-converter',
-    title: 'Currency Converter',
+    label: 'Currency Converter',
+    category: CATEGORY.UTILITIES,
     content: <CurrencyConverterUtilityContent />,
   },
   {
     id: 'cooking-conversions',
-    title: 'Cooking Conversions',
+    label: 'Cooking Conversions',
+    category: CATEGORY.UTILITIES,
     content: <CookingConversionsUtilityContent />,
   },
-  { id: 'stopwatch', title: 'Stopwatch', content: <StopwatchUtilityContent /> },
-  { id: 'timer', title: 'Timer', content: <TimerUtilityContent /> },
-  { id: 'alarm', title: 'Alarm', content: <AlarmUtilityContent /> },
+  {
+    id: 'stopwatch',
+    label: 'Stopwatch',
+    category: CATEGORY.UTILITIES,
+    content: <StopwatchUtilityContent />,
+  },
+  {
+    id: 'timer',
+    label: 'Timer',
+    category: CATEGORY.UTILITIES,
+    content: <TimerUtilityContent />,
+  },
+  {
+    id: 'alarm',
+    label: 'Alarm',
+    category: CATEGORY.UTILITIES,
+    content: <AlarmUtilityContent />,
+  },
 ];
+
+const ALL_ENTRIES: SandboxEntry[] = [...COMPONENT_ENTRIES, ...UTILITY_ENTRIES];
+const FUSE_OPTIONS = { keys: ['label'], threshold: 0.3 };
 
 export interface ComponentSandboxProps {
   title?: string;
   subtitle?: string;
   wrapInTheme?: boolean;
 }
+
+interface SandboxSidebarProps {
+  query: string;
+  onQueryChange: (v: string) => void;
+  entries: SandboxEntry[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+}
+
+const SandboxSidebar = ({
+  query,
+  onQueryChange,
+  entries,
+  selectedId,
+  onSelect,
+}: SandboxSidebarProps) => {
+  const groups = useMemo(
+    () =>
+      Object.values(CATEGORY)
+        .map(category => ({
+          category,
+          items: entries.filter(entry => entry.category === category),
+        }))
+        .filter(group => group.items.length > 0),
+    [entries],
+  );
+
+  return (
+    <nav className="w-64 shrink-0 h-full border-r border-gray-300 dark:border-gray-700 flex flex-col">
+      <div className="p-3 border-b border-gray-300 dark:border-gray-700">
+        <div className="flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-700 px-2 py-1.5">
+          <Search className="h-4 w-4 text-gray-400 shrink-0" />
+          <input
+            type="text"
+            value={query}
+            onChange={e => onQueryChange(e.target.value)}
+            placeholder="Search components..."
+            className="w-full bg-transparent outline-none text-sm placeholder-gray-400 dark:text-white"
+          />
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto p-2">
+        {groups.length === 0 && (
+          <Text color="gray" size="2" className="block px-2 py-4">
+            No components found
+          </Text>
+        )}
+        {groups.map(group => (
+          <div key={group.category} className="mb-4">
+            <div className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+              {group.category}
+            </div>
+            {group.items.map(entry => (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => onSelect(entry.id)}
+                className={`w-full text-left text-sm rounded-md px-2 py-1.5 transition-colors ${
+                  entry.id === selectedId
+                    ? 'font-medium text-black bg-gray-100 dark:text-white dark:bg-gray-800'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-black hover:bg-gray-50 dark:hover:text-white dark:hover:bg-gray-800'
+                }`}
+              >
+                {entry.label}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+    </nav>
+  );
+};
 
 interface SandboxBodyProps {
   title: string;
@@ -214,35 +353,49 @@ const SandboxBody = ({
   dark,
   setDark,
   showThemeToggle,
-}: SandboxBodyProps) => (
-  <div className="p-6 max-w-4xl mx-auto">
-    <div className="flex justify-between items-center mb-2">
-      <Heading size="8">{title}</Heading>
-      {showThemeToggle && <DarkModeIconButton dark={dark} onToggle={setDark} />}
+}: SandboxBodyProps) => {
+  const [query, setQuery] = useState('');
+  const [selectedId, setSelectedId] = useState(ALL_ENTRIES[0].id);
+  const fuse = useMemo(() => new Fuse(ALL_ENTRIES, FUSE_OPTIONS), []);
+
+  const filteredEntries = query.trim()
+    ? fuse.search(query.trim()).map(result => result.item)
+    : ALL_ENTRIES;
+  const selectedEntry =
+    ALL_ENTRIES.find(entry => entry.id === selectedId) ?? ALL_ENTRIES[0];
+
+  return (
+    <div className="flex h-full">
+      <SandboxSidebar
+        query={query}
+        onQueryChange={setQuery}
+        entries={filteredEntries}
+        selectedId={selectedId}
+        onSelect={id => {
+          setSelectedId(id);
+          setQuery('');
+        }}
+      />
+      <div className="flex-1 h-full overflow-y-auto">
+        <div className="p-6 max-w-4xl">
+          <div className="flex justify-between items-center mb-2">
+            <Heading size="8">{title}</Heading>
+            {showThemeToggle && (
+              <DarkModeIconButton dark={dark} onToggle={setDark} />
+            )}
+          </div>
+          <Text color="gray" size="4" mb="6">
+            {subtitle}
+          </Text>
+          <Heading size="5" mb="4" className="block">
+            {selectedEntry.label}
+          </Heading>
+          <div className="flex flex-col gap-3">{selectedEntry.content}</div>
+        </div>
+      </div>
     </div>
-    <Text color="gray" size="4" mb="6">
-      {subtitle}
-    </Text>
-    <Tabs defaultValue={TAB.COMPONENTS}>
-      <TabsList className="mb-4">
-        <TabsTrigger value={TAB.COMPONENTS}>Components</TabsTrigger>
-        <TabsTrigger value={TAB.UTILITIES}>Utilities</TabsTrigger>
-      </TabsList>
-      <TabsContent value={TAB.COMPONENTS}>
-        <CollapsibleList
-          items={COMPONENT_SECTIONS}
-          storageKeyPrefix={STORAGE_KEY}
-        />
-      </TabsContent>
-      <TabsContent value={TAB.UTILITIES}>
-        <CollapsibleList
-          items={UTILITY_SECTIONS}
-          storageKeyPrefix={STORAGE_KEY_UTILITIES}
-        />
-      </TabsContent>
-    </Tabs>
-  </div>
-);
+  );
+};
 
 export function ComponentSandbox({
   title = DEFAULT_TITLE,
@@ -266,7 +419,7 @@ export function ComponentSandbox({
   const appearance = dark ? 'dark' : 'light';
   return (
     <Theme appearance={appearance}>
-      <div className={`${appearance} w-full min-h-screen`}>
+      <div className={`${appearance} w-full h-screen overflow-hidden`}>
         <SandboxBody
           title={title}
           subtitle={subtitle}
