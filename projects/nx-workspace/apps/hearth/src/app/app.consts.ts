@@ -21,7 +21,7 @@ export type NavLink = {
   children?: NavLink[];
 };
 
-const IS_DEV = process.env.NODE_ENV !== 'production';
+export const IS_DEV = process.env.NODE_ENV !== 'production';
 
 const DEV_FEATURES_LINK: NavLink = {
   label: 'Dev Features',
