@@ -6,6 +6,7 @@ import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { Tabs } from '@radix-ui/themes';
 import { DownloadIcon } from '@radix-ui/react-icons';
 import { ResumeViewComponent } from '../resume-view.component';
+import { ResumeChatPanel } from '../resume-chat-panel.component';
 import { resumeData, ResumeData } from '@vigilant-broccoli/resume';
 import { authFetch } from '../../../../libs/auth';
 
@@ -79,6 +80,13 @@ export const CareerPage = () => {
     return () => clearTimeout(timeoutId);
   }, [jsonText, jsonError]);
 
+  const handleApplyResume = (nextResume: ResumeData) => {
+    hasEditedRef.current = true;
+    setResume(nextResume);
+    setJsonText(JSON.stringify(nextResume, null, 2));
+    setJsonError(null);
+  };
+
   const handleDownloadPdf = () => {
     authFetch(RESUME_PDF_API_PATH, {
       method: 'POST',
@@ -119,23 +127,26 @@ export const CareerPage = () => {
 
             <Tabs.Content
               value={EDITOR_TAB.JSON}
-              className="pt-3 flex-1 min-h-0 flex flex-col"
+              className="pt-3 flex-1 min-h-0"
             >
-              <Textarea
-                value={jsonText}
-                onChange={event => handleJsonChange(event.target.value)}
-                spellCheck={false}
-                className="flex-1 min-h-0 font-mono text-xs resize-none"
-              />
-              {jsonError && (
-                <p className="text-xs text-red-600 mt-1">{jsonError}</p>
-              )}
+              <div className="h-full flex flex-col">
+                <Textarea
+                  value={jsonText}
+                  onChange={event => handleJsonChange(event.target.value)}
+                  spellCheck={false}
+                  className="flex-1 min-h-0 font-mono text-xs resize-none"
+                />
+                {jsonError && (
+                  <p className="text-xs text-red-600 mt-1">{jsonError}</p>
+                )}
+              </div>
             </Tabs.Content>
 
             <Tabs.Content value={EDITOR_TAB.AI} className="pt-3 flex-1 min-h-0">
-              <p className="text-sm text-muted-foreground">
-                AI chat editing is coming soon.
-              </p>
+              <ResumeChatPanel
+                resume={resume}
+                onApplyResume={handleApplyResume}
+              />
             </Tabs.Content>
           </Tabs.Root>
         </div>
