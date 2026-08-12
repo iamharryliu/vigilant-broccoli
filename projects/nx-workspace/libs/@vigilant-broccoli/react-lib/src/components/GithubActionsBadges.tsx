@@ -1,6 +1,6 @@
 'use client';
 
-import { Text } from '@radix-ui/themes';
+import { Text } from './Text';
 import { useEffect, useState } from 'react';
 
 type Badge = {

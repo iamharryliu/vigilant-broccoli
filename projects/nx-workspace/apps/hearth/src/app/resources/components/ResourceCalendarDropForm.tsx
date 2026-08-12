@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
+
+import { Button, Input, Textarea, Text } from '@vigilant-broccoli/react-lib';
 import { ResourceBookingFormData } from './ResourceBookingForm';
 
 const inputStyle: React.CSSProperties = {

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
+
+import { Button, Input, Textarea, Text } from '@vigilant-broccoli/react-lib';
 import { CalendarEventFormData } from '../../calendar/components/CalendarEventForm';
 import { toDatetimeLocal, toDateLocal } from '../../../lib/date-utils';
 

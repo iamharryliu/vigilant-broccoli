@@ -1,6 +1,7 @@
 'use client';
 
-import { Text, Spinner } from '@radix-ui/themes';
+import { Spinner } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { DATE_CONST } from '@vigilant-broccoli/common-js';
 import { authFetch } from '../../../libs/auth';

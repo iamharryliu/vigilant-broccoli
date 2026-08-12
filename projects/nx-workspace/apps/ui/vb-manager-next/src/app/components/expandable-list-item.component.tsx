@@ -1,4 +1,4 @@
-import { Text } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { ReactNode } from 'react';
 
 interface ExpandableListItemProps {
@@ -22,7 +22,9 @@ export const ExpandableListItem = ({
   actions,
   children,
 }: ExpandableListItemProps) => (
-  <div className={`flex flex-col gap-2 ${`p-2 rounded border ${borderClassName}`}`}>
+  <div
+    className={`flex flex-col gap-2 ${`p-2 rounded border ${borderClassName}`}`}
+  >
     <div className="flex items-center gap-2 flex-wrap">
       <Text size="2" className="cursor-pointer" onClick={onToggle}>
         {isExpanded ? '▼' : '▶'}

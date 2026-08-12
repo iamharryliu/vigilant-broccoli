@@ -1,7 +1,7 @@
 'use client';
 
-import { Text, TextField, ScrollArea, Select } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { TextField, ScrollArea, Select } from '@radix-ui/themes';
+import { Button, Text } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
 const HISTORY_STORAGE_KEY = 'currency-converter-history';
@@ -179,7 +179,11 @@ export const CurrencyConverterUtilityContent = () => {
           <ScrollArea style={{ maxHeight: '200px' }}>
             <div className="flex flex-col gap-1">
               {history.map(entry => (
-                <div className="flex justify-between items-center py-1" key={entry.timestamp} style={{ borderBottom: '1px solid var(--gray-a5)' }}>
+                <div
+                  className="flex justify-between items-center py-1"
+                  key={entry.timestamp}
+                  style={{ borderBottom: '1px solid var(--gray-a5)' }}
+                >
                   <Text size="1" color="gray">
                     {entry.amount} {entry.fromCurrency} → {entry.toCurrency}
                   </Text>

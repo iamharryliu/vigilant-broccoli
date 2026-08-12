@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Text, Badge } from '@radix-ui/themes';
+import { Badge } from '@radix-ui/themes';
 import {
   Button,
   CRUDItemList,
   CRUDFormProps,
   Input,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';

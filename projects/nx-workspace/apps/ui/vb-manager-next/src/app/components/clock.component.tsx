@@ -1,6 +1,6 @@
 'use client';
 
-import { Text } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { DATE_CONST, getISOWeekNumber } from '@vigilant-broccoli/common-js';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';

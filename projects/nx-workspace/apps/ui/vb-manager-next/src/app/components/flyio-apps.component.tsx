@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Text } from '@radix-ui/themes';
+import { Badge } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
@@ -9,6 +9,7 @@ import {
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FLYIO_LINK } from '@vigilant-broccoli/links';
 import { useState } from 'react';

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
+
 import {
   AvatarUploadConfig,
   UserAvatar,
   USER_AVATAR_VARIANT,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 
 const SAMPLE_IMAGE = 'https://i.pravatar.cc/200?img=12';

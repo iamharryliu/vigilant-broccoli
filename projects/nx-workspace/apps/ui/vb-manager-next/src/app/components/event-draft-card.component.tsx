@@ -1,7 +1,7 @@
 'use client';
 
-import { Text, Switch } from '@radix-ui/themes';
-import { Button, Input } from '@vigilant-broccoli/react-lib';
+import { Switch } from '@radix-ui/themes';
+import { Button, Input, Text } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 
 export interface EventDraft {

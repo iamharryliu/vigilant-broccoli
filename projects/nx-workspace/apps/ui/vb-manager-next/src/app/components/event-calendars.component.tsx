@@ -1,5 +1,5 @@
 'use client';
-import { Badge, Callout, Card, Code, Flex, Link, Text } from '@radix-ui/themes';
+import { Badge, Callout, Card, Code, Flex, Link } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
@@ -7,6 +7,7 @@ import {
   DeleteItemConfirmationDialog,
   Input,
   Switch,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';
@@ -257,7 +258,9 @@ export const EventCalendarsComponent = () => {
   const [pendingDelete, setPendingDelete] = useState<UntrackedCalendar | null>(
     null,
   );
-  const [pendingPublic, setPendingPublic] = useState<EventCalendar | null>(null);
+  const [pendingPublic, setPendingPublic] = useState<EventCalendar | null>(
+    null,
+  );
 
   // Making a calendar public exposes every event to anyone with the link, so
   // it goes through a confirmation. Making one private again is safe and
@@ -368,7 +371,9 @@ export const EventCalendarsComponent = () => {
             {syncStatuses[item.id].lastSyncedAt && (
               <Text size="1" color="gray">
                 Last synced{' '}
-                {formatRelativeTime(syncStatuses[item.id].lastSyncedAt as string)}
+                {formatRelativeTime(
+                  syncStatuses[item.id].lastSyncedAt as string,
+                )}
               </Text>
             )}
           </Flex>

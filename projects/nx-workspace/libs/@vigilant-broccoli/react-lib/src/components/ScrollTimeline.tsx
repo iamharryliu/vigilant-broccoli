@@ -1,7 +1,8 @@
 'use client';
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
-import { Card, Text } from '@radix-ui/themes';
+import { Card } from '@radix-ui/themes';
+import { Text } from './Text';
 import { useAnimatedNumber } from '../leaderboard/useAnimatedNumber';
 import { cn } from '../utils/cn';
 
@@ -74,10 +75,11 @@ function useActiveTimelineEntry(
     return () => container.removeEventListener('scroll', updateActiveEntry);
   }, [entries, activeLinePosition]);
 
-  const registerItemRef = (id: string | number) => (el: HTMLDivElement | null) => {
-    if (el) itemRefs.current.set(id, el);
-    else itemRefs.current.delete(id);
-  };
+  const registerItemRef =
+    (id: string | number) => (el: HTMLDivElement | null) => {
+      if (el) itemRefs.current.set(id, el);
+      else itemRefs.current.delete(id);
+    };
 
   return { containerRef, registerItemRef, activeId };
 }

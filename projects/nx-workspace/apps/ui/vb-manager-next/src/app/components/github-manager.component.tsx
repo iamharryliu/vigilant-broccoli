@@ -1,6 +1,6 @@
 'use client';
 
-import { Callout, Text } from '@radix-ui/themes';
+import { Callout } from '@radix-ui/themes';
 import {
   Button,
   ButtonConfig,
@@ -9,6 +9,7 @@ import {
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { CardSkeleton } from './skeleton.component';
 import { useEffect, useState } from 'react';

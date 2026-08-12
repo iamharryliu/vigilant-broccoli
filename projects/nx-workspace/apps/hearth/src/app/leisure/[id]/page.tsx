@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Text } from '@radix-ui/themes';
+import { Badge } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
 import { LeisureActivity } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';

@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState, KeyboardEvent } from 'react';
-import { Text } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
   CollapsibleList,
   DeleteIconButton,
   Input,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';

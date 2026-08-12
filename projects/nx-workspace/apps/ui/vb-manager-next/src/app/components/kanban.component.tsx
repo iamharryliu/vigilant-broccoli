@@ -1,12 +1,13 @@
 'use client';
 
-import { Text, Dialog } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import {
   Button,
   CloseButton,
   EllipsisCTA,
   Input,
   Select,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';

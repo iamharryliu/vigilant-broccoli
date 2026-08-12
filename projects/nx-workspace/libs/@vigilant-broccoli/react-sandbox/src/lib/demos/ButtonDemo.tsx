@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heading } from '@radix-ui/themes';
+
 import { ExternalLink, ArrowRight } from 'lucide-react';
 import {
   Button,
@@ -15,6 +15,7 @@ import {
   GoogleSigninButton,
   MicrosoftSigninButton,
   SpeechToTextButton,
+  Heading,
 } from '@vigilant-broccoli/react-lib';
 import { AudioButtonDemo } from './AudioButtonDemo';
 

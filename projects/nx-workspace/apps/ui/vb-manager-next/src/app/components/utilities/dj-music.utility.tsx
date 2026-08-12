@@ -1,7 +1,7 @@
 'use client';
 
-import { Text, Badge } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Badge } from '@radix-ui/themes';
+import { Button, Text } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';

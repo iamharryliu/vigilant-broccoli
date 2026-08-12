@@ -1,7 +1,7 @@
 'use client';
 
-import { Text, Select } from '@radix-ui/themes';
-import { Button, Input } from '@vigilant-broccoli/react-lib';
+import { Select } from '@radix-ui/themes';
+import { Button, Input, Text } from '@vigilant-broccoli/react-lib';
 import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { authFetch } from '../../../libs/auth';
