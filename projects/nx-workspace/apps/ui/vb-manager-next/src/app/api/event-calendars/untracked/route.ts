@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const tracked = new Set(
-      listEventCalendars().map(calendar => calendar.googleCalendarId),
+      (await listEventCalendars()).map(calendar => calendar.googleCalendarId),
     );
     return NextResponse.json(
       await listUntrackedCalendars(getCalendarAdminClient(), tracked),

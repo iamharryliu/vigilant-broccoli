@@ -29,7 +29,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   if (!userEmail) return unauthorized();
 
   const { id } = await params;
-  if (!getEventCalendar(id)) return notFound();
+  if (!(await getEventCalendar(id))) return notFound();
 
   return NextResponse.json({ status: startSync(id) });
 }
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   if (!userEmail) return unauthorized();
 
   const { id } = await params;
-  const calendar = getEventCalendar(id);
+  const calendar = await getEventCalendar(id);
   if (!calendar) return notFound();
 
   return NextResponse.json({
