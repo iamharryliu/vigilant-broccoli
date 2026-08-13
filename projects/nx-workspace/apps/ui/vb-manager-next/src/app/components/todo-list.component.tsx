@@ -6,7 +6,6 @@ import {
   Button,
   DeleteIconButton,
   IconButton,
-  Input,
   Select,
   Textarea,
   Heading,
@@ -46,12 +45,21 @@ const CELL_TEXT_CLASS = 'text-xs';
 
 const generateRowId = () => crypto.randomUUID().replace(/-/g, '').slice(0, 6);
 
+type EditableField = 'description' | 'recommendedFix';
+
+const editingCellKey = (
+  heading: string,
+  rowIdx: number,
+  field: EditableField,
+) => `${heading}-${rowIdx}-${field}`;
+
 export const TodoListComponent = () => {
   const [sections, setSections] = useState<TodoSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [editingCell, setEditingCell] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTodo = async () => {
@@ -167,15 +175,9 @@ export const TodoListComponent = () => {
                 {section.rows.map((row, rowIdx) => (
                   <Table.Row key={rowIdx}>
                     <Table.Cell>
-                      <Input
-                        className={`h-8 font-mono ${CELL_TEXT_CLASS}`}
-                        value={row.id}
-                        onChange={event =>
-                          updateRow(section.heading, rowIdx, {
-                            id: event.target.value,
-                          })
-                        }
-                      />
+                      <Text className={`font-mono ${CELL_TEXT_CLASS}`}>
+                        {row.id}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
                       <Select
@@ -188,26 +190,70 @@ export const TodoListComponent = () => {
                       />
                     </Table.Cell>
                     <Table.Cell>
-                      <Textarea
-                        className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
-                        value={row.description}
-                        onChange={event =>
-                          updateRow(section.heading, rowIdx, {
-                            description: event.target.value,
-                          })
-                        }
-                      />
+                      {editingCell ===
+                      editingCellKey(section.heading, rowIdx, 'description') ? (
+                        <Textarea
+                          className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
+                          value={row.description}
+                          onChange={event =>
+                            updateRow(section.heading, rowIdx, {
+                              description: event.target.value,
+                            })
+                          }
+                          onBlur={() => setEditingCell(null)}
+                          autoFocus
+                        />
+                      ) : (
+                        <Text
+                          className={`block min-h-[64px] w-full min-w-[16rem] whitespace-pre-wrap cursor-text ${CELL_TEXT_CLASS}`}
+                          onClick={() =>
+                            setEditingCell(
+                              editingCellKey(
+                                section.heading,
+                                rowIdx,
+                                'description',
+                              ),
+                            )
+                          }
+                        >
+                          {row.description}
+                        </Text>
+                      )}
                     </Table.Cell>
                     <Table.Cell>
-                      <Textarea
-                        className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
-                        value={row.recommendedFix}
-                        onChange={event =>
-                          updateRow(section.heading, rowIdx, {
-                            recommendedFix: event.target.value,
-                          })
-                        }
-                      />
+                      {editingCell ===
+                      editingCellKey(
+                        section.heading,
+                        rowIdx,
+                        'recommendedFix',
+                      ) ? (
+                        <Textarea
+                          className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
+                          value={row.recommendedFix}
+                          onChange={event =>
+                            updateRow(section.heading, rowIdx, {
+                              recommendedFix: event.target.value,
+                            })
+                          }
+                          onBlur={() => setEditingCell(null)}
+                          autoFocus
+                        />
+                      ) : (
+                        <Text
+                          className={`block min-h-[64px] w-full min-w-[16rem] whitespace-pre-wrap cursor-text ${CELL_TEXT_CLASS}`}
+                          onClick={() =>
+                            setEditingCell(
+                              editingCellKey(
+                                section.heading,
+                                rowIdx,
+                                'recommendedFix',
+                              ),
+                            )
+                          }
+                        >
+                          {row.recommendedFix}
+                        </Text>
+                      )}
                     </Table.Cell>
                     <Table.Cell>
                       <DeleteIconButton
