@@ -1,5 +1,5 @@
 'use client';
-import { Badge, Callout, Card, Link } from '@radix-ui/themes';
+import { Badge, Callout, Card } from '@radix-ui/themes';
 import {
   Button,
   CopyButton,
@@ -348,14 +348,14 @@ export const EventCalendarsComponent = () => {
           </Badge>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            size="1"
+          <a
             href={buildGoogleCalendarUrl(item.googleCalendarId)}
             target="_blank"
             rel="noreferrer"
+            className="text-xs text-blue-600 hover:underline dark:text-blue-400"
           >
             {OPEN_IN_GOOGLE_CALENDAR}
-          </Link>
+          </a>
           <CopyButton text={buildGoogleCalendarUrl(item.googleCalendarId)} />
         </div>
         <div className="flex flex-col gap-1">
@@ -459,14 +459,14 @@ export const EventCalendarsComponent = () => {
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-col gap-1">
                   <Text weight="medium">{calendar.name}</Text>
-                  <Link
-                    size="1"
+                  <a
                     href={buildGoogleCalendarUrl(calendar.googleCalendarId)}
                     target="_blank"
                     rel="noreferrer"
+                    className="text-xs text-blue-600 hover:underline dark:text-blue-400"
                   >
                     {OPEN_IN_GOOGLE_CALENDAR}
-                  </Link>
+                  </a>
                   <Text size="1" color={calendar.eventCount ? 'red' : 'gray'}>
                     {calendar.eventCount} event
                     {calendar.eventCount === 1 ? '' : 's'} would be destroyed
