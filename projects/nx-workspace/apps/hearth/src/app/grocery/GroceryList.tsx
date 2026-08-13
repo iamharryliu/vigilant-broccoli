@@ -4,9 +4,10 @@ import { Checklist } from '../components/Checklist';
 
 type Props = {
   refreshSignal?: number;
+  onCalendarEventAdded?: () => void;
 };
 
-export function GroceryList({ refreshSignal }: Props) {
+export function GroceryList({ refreshSignal, onCalendarEventAdded }: Props) {
   return (
     <Checklist
       endpoint="/api/grocery"
@@ -14,6 +15,7 @@ export function GroceryList({ refreshSignal }: Props) {
       addPlaceholder="Add an item"
       emptyText="Nothing on the list yet"
       refreshSignal={refreshSignal}
+      onCalendarEventAdded={onCalendarEventAdded}
     />
   );
 }

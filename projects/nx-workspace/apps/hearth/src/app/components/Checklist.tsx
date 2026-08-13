@@ -1,17 +1,30 @@
 'use client';
 
 import { useCallback, useEffect, useState, KeyboardEvent } from 'react';
+import { Dialog, DropdownMenu } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
   CollapsibleList,
-  DeleteIconButton,
+  DeleteItemConfirmationDialog,
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  IconButton,
   Input,
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { ChecklistItem } from '../../lib/types';
+import {
+  CalendarEventForm,
+  CalendarEventFormData,
+} from '../calendar/components/CalendarEventForm';
+
+const DELETE_LABEL = 'Delete';
+const ADD_TO_CALENDAR_LABEL = 'Add to calendar';
+const EVENT_DIALOG_TITLE = 'Add to calendar';
+const CALENDAR_EVENTS_ENDPOINT = '/api/calendar/events';
+const EVENT_DEFAULT_DURATION_MS = 60 * 60 * 1000;
 
 type ChecklistProps = {
   endpoint: string;
@@ -19,6 +32,7 @@ type ChecklistProps = {
   addPlaceholder: string;
   emptyText: string;
   refreshSignal?: number;
+  onCalendarEventAdded?: () => void;
 };
 
 export function Checklist({
@@ -27,6 +41,7 @@ export function Checklist({
   addPlaceholder,
   emptyText,
   refreshSignal,
+  onCalendarEventAdded,
 }: ChecklistProps) {
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
@@ -34,6 +49,8 @@ export function Checklist({
   const [newItem, setNewItem] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [calendarItem, setCalendarItem] = useState<ChecklistItem | null>(null);
 
   const token = session?.access_token ?? '';
   const authHeader = () => ({ Authorization: `Bearer ${token}` });
@@ -94,6 +111,17 @@ export function Checklist({
       headers: jsonHeaders(),
       body: JSON.stringify({ id }),
     });
+  };
+
+  const handleCreateEvent = async (data: CalendarEventFormData) => {
+    setCalendarItem(null);
+    if (!homeId) return;
+    await fetch(CALENDAR_EVENTS_ENDPOINT, {
+      method: 'POST',
+      headers: jsonHeaders(),
+      body: JSON.stringify({ ...data, homeId, kitchenEvent: true }),
+    });
+    onCalendarEventAdded?.();
   };
 
   const startEdit = (item: ChecklistItem) => {
@@ -166,7 +194,24 @@ export function Checklist({
           {item.name}
         </Text>
       )}
-      <DeleteIconButton onClick={() => handleDelete(item.id)} />
+      <div onClick={e => e.stopPropagation()}>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <IconButton icon="ellipsis-vertical" variant="ghost" />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item onSelect={() => setCalendarItem(item)}>
+              {ADD_TO_CALENDAR_LABEL}
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              color="red"
+              onSelect={() => setPendingDeleteId(item.id)}
+            >
+              {DELETE_LABEL}
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </div>
     </div>
   );
 
@@ -209,6 +254,48 @@ export function Checklist({
           ]}
         />
       )}
+
+      <DeleteItemConfirmationDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={open => {
+          if (!open) setPendingDeleteId(null);
+        }}
+        confirmLabel={DELETE_LABEL}
+        deleteItem={async () => {
+          if (pendingDeleteId) await handleDelete(pendingDeleteId);
+          setPendingDeleteId(null);
+        }}
+      />
+
+      <Dialog.Root
+        open={calendarItem !== null}
+        onOpenChange={open => {
+          if (!open) setCalendarItem(null);
+        }}
+      >
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 460 }}
+        >
+          <Dialog.Title>{EVENT_DIALOG_TITLE}</Dialog.Title>
+          {calendarItem && (
+            <CalendarEventForm
+              initialData={{
+                title: calendarItem.name,
+                description: '',
+                start: new Date().toISOString(),
+                end: new Date(
+                  Date.now() + EVENT_DEFAULT_DURATION_MS,
+                ).toISOString(),
+                allDay: false,
+                color: '',
+              }}
+              onSubmit={handleCreateEvent}
+              onCancel={() => setCalendarItem(null)}
+            />
+          )}
+        </Dialog.Content>
+      </Dialog.Root>
     </div>
   );
 }

@@ -10,6 +10,11 @@ import { useHome } from '../providers/home-provider';
 import { CalendarEvent } from '../../lib/types';
 
 const LIST_VIEW = 'listMonth';
+const EMPTY_TEXT = 'No kitchen events yet';
+
+type Props = {
+  refreshSignal?: number;
+};
 
 const toFullCalendarEvent = (e: CalendarEvent): EventInput => ({
   id: e.id,
@@ -21,7 +26,7 @@ const toFullCalendarEvent = (e: CalendarEvent): EventInput => ({
   borderColor: e.color ?? undefined,
 });
 
-export function FoodCalendar() {
+export function KitchenEvents({ refreshSignal }: Props) {
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -35,12 +40,12 @@ export function FoodCalendar() {
     });
     const data = await res.json();
     const rows: CalendarEvent[] = Array.isArray(data) ? data : [];
-    setEvents(rows.filter(e => e.mealId));
+    setEvents(rows.filter(e => e.kitchenEvent));
   }, [homeId, token]);
 
   useEffect(() => {
     fetchEvents();
-  }, [fetchEvents]);
+  }, [fetchEvents, refreshSignal]);
 
   return (
     <FullCalendar
@@ -51,7 +56,7 @@ export function FoodCalendar() {
       events={events.map(toFullCalendarEvent)}
       noEventsContent={() => (
         <Text size="2" color="gray">
-          No meals planned yet
+          {EMPTY_TEXT}
         </Text>
       )}
     />

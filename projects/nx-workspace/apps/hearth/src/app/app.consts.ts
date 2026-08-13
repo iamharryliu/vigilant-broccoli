@@ -13,6 +13,7 @@ import {
   ShoppingCart,
   Sparkles,
   StickyNote,
+  MessageCircle,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -54,11 +55,9 @@ const DEV_FEATURES_LINK: NavLink = {
       href: ROUTES.CALENDAR,
       icon: Calendar,
       children: [
-        { label: 'Overall Calendar', href: ROUTES.OVERALL_CALENDAR },
         { label: 'Resources', href: ROUTES.RESOURCES },
         { label: 'Leisure', href: ROUTES.LEISURE },
         { label: 'Projects', href: ROUTES.PROJECTS },
-        { label: 'Meals', href: ROUTES.MEALS },
       ],
     },
   ],
@@ -75,8 +74,10 @@ export const NAV_LINKS: NavLink[] = [
       { label: 'Grocery List', href: ROUTES.GROCERY, icon: ShoppingCart },
       { label: 'Kitchen Chores', href: ROUTES.KITCHEN_CHORES, icon: Sparkles },
       { label: 'Kitchen Notes', href: ROUTES.KITCHEN_NOTES, icon: StickyNote },
+      { label: 'Food Assistant', href: ROUTES.FOOD_CHAT, icon: MessageCircle },
     ],
   },
+  { label: 'Calendar', href: ROUTES.OVERALL_CALENDAR, icon: Calendar },
   { label: 'Find Members', href: ROUTES.LOCATOR, icon: MapPin },
   { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
   ...(IS_DEV ? [DEV_FEATURES_LINK] : []),
