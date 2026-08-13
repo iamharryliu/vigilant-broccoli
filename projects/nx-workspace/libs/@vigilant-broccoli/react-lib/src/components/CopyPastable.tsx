@@ -1,5 +1,6 @@
-import { Card, ScrollArea } from '@radix-ui/themes';
+import { Card } from '@radix-ui/themes';
 import { CopyButton } from './CopyButton';
+import { ScrollArea } from './ScrollArea';
 
 export const CopyPastable = ({
   text,
@@ -25,7 +26,7 @@ export const CopyPastable = ({
       </div>
 
       {isScrollable ? (
-        <ScrollArea type="always" scrollbars="vertical" style={{ height: 180 }}>
+        <ScrollArea type="always" style={{ height: 180 }}>
           <pre className="whitespace-pre-wrap break-all">{displayText}</pre>
         </ScrollArea>
       ) : (
