@@ -2,13 +2,22 @@
 
 import { Button, Input, Text } from '@vigilant-broccoli/react-lib';
 
+export type SaveStatus = 'idle' | 'saving' | 'saved';
+
+const STATUS_LABEL: Record<SaveStatus, string> = {
+  idle: '',
+  saving: 'Saving…',
+  saved: 'Saved',
+};
+
 type Props = {
   name: string;
   description: string;
   onNameChange: (v: string) => void;
   onDescriptionChange: (v: string) => void;
-  onSave: () => void;
-  saving: boolean;
+  status?: SaveStatus;
+  onSave?: () => void;
+  saving?: boolean;
   disabled?: boolean;
 };
 
@@ -17,15 +26,29 @@ export const HomeForm = ({
   description,
   onNameChange,
   onDescriptionChange,
+  status,
   onSave,
-  saving,
+  saving = false,
   disabled = false,
 }: Props) => (
   <div className="flex flex-col gap-3">
     <div>
-      <Text size="1" weight="medium" as="p" mb="1">
-        Name
-      </Text>
+      <div className="flex items-center justify-between mb-1">
+        <Text size="1" weight="medium" as="p">
+          Name
+        </Text>
+        {!disabled && status && (
+          <Text
+            size="1"
+            color="gray"
+            className={`transition-opacity duration-300 ${
+              status === 'idle' ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
+            {STATUS_LABEL[status]}
+          </Text>
+        )}
+      </div>
       <Input
         value={name}
         onChange={e => onNameChange(e.target.value)}
@@ -44,7 +67,7 @@ export const HomeForm = ({
         disabled={disabled}
       />
     </div>
-    {!disabled && (
+    {onSave && (
       <Button
         onClick={onSave}
         disabled={saving || !name.trim()}

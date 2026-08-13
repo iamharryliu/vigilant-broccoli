@@ -18,6 +18,7 @@ type ChecklistProps = {
   storageKeyPrefix: string;
   addPlaceholder: string;
   emptyText: string;
+  refreshSignal?: number;
 };
 
 export function Checklist({
@@ -25,6 +26,7 @@ export function Checklist({
   storageKeyPrefix,
   addPlaceholder,
   emptyText,
+  refreshSignal,
 }: ChecklistProps) {
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
@@ -51,7 +53,7 @@ export function Checklist({
 
   useEffect(() => {
     fetchItems();
-  }, [fetchItems]);
+  }, [fetchItems, refreshSignal]);
 
   const handleAdd = async () => {
     const name = newItem.trim();
