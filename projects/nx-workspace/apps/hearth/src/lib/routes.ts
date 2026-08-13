@@ -23,6 +23,7 @@ export const ROUTES = {
   CHORES: '/chores',
   GROCERY: '/grocery',
   KITCHEN_CHORES: '/kitchen-chores',
+  KITCHEN_NOTES: '/kitchen-notes',
   PROJECTS: '/projects',
   PROJECTS_DETAIL: (id: string) => `/projects/${id}`,
   MEALS: '/meals',
