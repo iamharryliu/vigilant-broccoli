@@ -1,7 +1,7 @@
 'use client';
 
-import { TextField, ScrollArea, Select } from '@radix-ui/themes';
-import { Button, Text } from '@vigilant-broccoli/react-lib';
+import { TextField, Select } from '@radix-ui/themes';
+import { Button, ScrollArea, Text } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
 const HISTORY_STORAGE_KEY = 'currency-converter-history';

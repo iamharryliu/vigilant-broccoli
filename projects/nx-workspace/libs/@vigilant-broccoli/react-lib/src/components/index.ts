@@ -35,6 +35,7 @@ export * from './CollapsibleList';
 export * from './MonospaceText';
 export * from './Text';
 export * from './Heading';
+export * from './Code';
 export * from './SyncedTextEditor';
 export * from './StatusCardList';
 export * from './Tabs';
