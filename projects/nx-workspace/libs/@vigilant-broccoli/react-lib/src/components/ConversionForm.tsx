@@ -1,7 +1,8 @@
-import { Card, TextArea } from '@radix-ui/themes';
+import { Card } from '@radix-ui/themes';
 import { Heading } from './Heading';
 import { useCallback, useState } from 'react';
 import { CopyPastable } from './CopyPastable';
+import { Textarea } from './Textarea';
 
 export const ConversionForm = ({
   copy,
@@ -69,13 +70,11 @@ export const ConversionForm = ({
             isDragging ? 'border-blue-500 bg-blue-50' : 'border-transparent'
           }`}
         >
-          <TextArea
+          <Textarea
             value={text}
             onChange={e => setText(e.target.value)}
             placeholder={copy.placeholder}
-            size="3"
-            className="h-full"
-            resize="vertical"
+            className="h-full resize-y"
           />
         </div>
         <div className="w-1/2">
