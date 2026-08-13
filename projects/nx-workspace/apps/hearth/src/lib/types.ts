@@ -32,6 +32,7 @@ export interface CalendarEvent {
   leisureActivityId: string | null;
   projectId?: string | null;
   mealId?: string | null;
+  kitchenEvent?: boolean;
   homeId: number;
   createdByEmail?: string | null;
   createdAt: string;

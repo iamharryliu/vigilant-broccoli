@@ -1,9 +1,14 @@
 {
   "FOOD_PLANNER": {
+    "TABS": {
+      "PLANNER": "Planner",
+      "CALENDAR": "Kitchen Events"
+    },
     "COLUMNS": {
       "GROCERY": "Grocery List",
       "KITCHEN_CHORES": "Kitchen Chores",
-      "FOOD_CALENDAR": "Food Calendar"
+      "KITCHEN_EVENTS": "Kitchen Events",
+      "FOOD_CHAT": "Food Assistant"
     }
   },
   "LOCATOR": {

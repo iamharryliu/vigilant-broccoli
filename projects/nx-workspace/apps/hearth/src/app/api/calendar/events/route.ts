@@ -26,6 +26,7 @@ const toCalendarEvent = (
   leisureActivityId: row.leisure_activity_id ?? null,
   projectId: row.project_id ?? null,
   mealId: row.meal_id ?? null,
+  kitchenEvent: row.kitchen_event ?? false,
   homeId: row.home_id,
   createdByEmail:
     (row.user_id ? emailMap[row.user_id as string] : null) ?? null,
@@ -90,6 +91,7 @@ export async function POST(req: NextRequest) {
       leisure_activity_id: body.leisureActivityId ?? null,
       project_id: body.projectId ?? null,
       meal_id: body.mealId ?? null,
+      kitchen_event: body.kitchenEvent ?? false,
       home_id: body.homeId,
       user_id: user?.id ?? null,
     })
@@ -129,6 +131,8 @@ export async function PATCH(req: NextRequest) {
     updates.leisure_activity_id = body.leisureActivityId;
   if (body.projectId !== undefined) updates.project_id = body.projectId;
   if (body.mealId !== undefined) updates.meal_id = body.mealId;
+  if (body.kitchenEvent !== undefined)
+    updates.kitchen_event = body.kitchenEvent;
 
   const { data, error } = await supabase
     .from('calendar_events')
