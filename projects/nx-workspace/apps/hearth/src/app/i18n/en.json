@@ -2,7 +2,8 @@
   "FOOD_PLANNER": {
     "COLUMNS": {
       "GROCERY": "Grocery List",
-      "KITCHEN_CHORES": "Kitchen Chores"
+      "KITCHEN_CHORES": "Kitchen Chores",
+      "FOOD_CALENDAR": "Food Calendar"
     }
   },
   "LOCATOR": {

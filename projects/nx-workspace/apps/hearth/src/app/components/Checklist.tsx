@@ -137,7 +137,7 @@ export function Checklist({
   const renderRow = (item: ChecklistItem) => (
     <div
       key={item.id}
-      className="flex items-center gap-3 py-3 border-b border-[var(--gray-a4)] last:border-b-0"
+      className="flex items-center gap-3 py-1.5 border-b border-[var(--gray-a4)] last:border-b-0"
     >
       <Checkbox
         className="h-5 w-5 shrink-0"
@@ -169,7 +169,7 @@ export function Checklist({
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <div className="flex gap-2">
         <Input
           className="grow"
@@ -184,7 +184,7 @@ export function Checklist({
       </div>
 
       {active.length === 0 ? (
-        <div className="py-8">
+        <div className="py-4">
           <Text align="center" color="gray" size="3">
             {emptyText}
           </Text>
