@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       timeZone: CALENDAR_TIME_ZONE,
       shareWithEmail: userEmail,
+      isPublic,
     });
 
     if (isPublic) {

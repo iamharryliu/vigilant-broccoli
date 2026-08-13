@@ -40,10 +40,12 @@ export const createGoogleCalendar = async (
     name,
     timeZone,
     shareWithEmail,
+    isPublic,
   }: {
     name: string;
     timeZone: string;
     shareWithEmail: string;
+    isPublic: boolean;
   },
 ): Promise<string> => {
   const { data } = await calendar.calendars.insert({
@@ -52,8 +54,12 @@ export const createGoogleCalendar = async (
 
   const calendarId = data.id as string;
 
+  // A public calendar is already world-readable, so the owner-share ACL
+  // below is just for edit access — skip the invite email that Google
+  // sends by default, since the calendar isn't private in that case.
   await calendar.acl.insert({
     calendarId,
+    sendNotifications: !isPublic,
     requestBody: {
       role: OWNER_ACL_ROLE,
       scope: { type: USER_ACL_SCOPE_TYPE, value: shareWithEmail },
