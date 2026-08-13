@@ -7,10 +7,11 @@ import {
   LayoutList,
   PenLine,
   MapPin,
-  ChefHat,
+  UtensilsCrossed,
   PackageSearch,
   FlaskConical,
   ShoppingCart,
+  Sparkles,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -19,6 +20,7 @@ export type NavLink = {
   href?: string;
   icon?: ComponentType<{ size?: number | string }>;
   children?: NavLink[];
+  mobileOnlyChildren?: boolean;
 };
 
 export const IS_DEV = process.env.NODE_ENV !== 'production';
@@ -28,7 +30,6 @@ const DEV_FEATURES_LINK: NavLink = {
   icon: FlaskConical,
   children: [
     { label: 'Chores', href: ROUTES.CHORES, icon: ListTodo },
-    { label: 'Food Planner', href: ROUTES.FOOD_PLANNER, icon: ChefHat },
     {
       label: 'Lists',
       href: ROUTES.MASTER_LIST,
@@ -64,7 +65,16 @@ const DEV_FEATURES_LINK: NavLink = {
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'Where Is', href: ROUTES.WHERE_IS, icon: PackageSearch },
-  { label: 'Grocery List', href: ROUTES.GROCERY, icon: ShoppingCart },
+  {
+    label: 'Food Planner',
+    href: ROUTES.FOOD_PLANNER,
+    icon: UtensilsCrossed,
+    mobileOnlyChildren: true,
+    children: [
+      { label: 'Grocery List', href: ROUTES.GROCERY, icon: ShoppingCart },
+      { label: 'Kitchen Chores', href: ROUTES.KITCHEN_CHORES, icon: Sparkles },
+    ],
+  },
   { label: 'Find Members', href: ROUTES.LOCATOR, icon: MapPin },
   { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
   ...(IS_DEV ? [DEV_FEATURES_LINK] : []),

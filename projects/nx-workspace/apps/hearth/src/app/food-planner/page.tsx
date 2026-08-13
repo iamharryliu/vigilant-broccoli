@@ -1,49 +1,35 @@
 'use client';
 
-import { Tabs } from '@radix-ui/themes';
-import { Text } from '@vigilant-broccoli/react-lib';
+import { CardContainer, Text } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
+import { GroceryList } from '../grocery/GroceryList';
+import { KitchenChoresList } from '../kitchen-chores/KitchenChoresList';
+import { KitchenNotes } from '../kitchen-notes/KitchenNotes';
 
 function FoodPlannerContent() {
   const { t } = useTranslation();
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
+    <div className="w-full space-y-6 p-4 sm:p-6 md:px-8 md:py-8">
       <Text size="6" weight="bold">
         {t('FOOD_PLANNER.TITLE')}
       </Text>
 
-      <Tabs.Root defaultValue="notes">
-        <Tabs.List>
-          <Tabs.Trigger value="notes">
-            {t('FOOD_PLANNER.TABS.NOTES')}
-          </Tabs.Trigger>
-          <Tabs.Trigger value="recipes">
-            {t('FOOD_PLANNER.TABS.RECIPES')}
-          </Tabs.Trigger>
-          <Tabs.Trigger value="inventory">
-            {t('FOOD_PLANNER.TABS.INVENTORY')}
-          </Tabs.Trigger>
-        </Tabs.List>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <CardContainer title={t('FOOD_PLANNER.COLUMNS.GROCERY')}>
+          <GroceryList />
+        </CardContainer>
 
-        <div className="pt-4">
-          <Tabs.Content value="notes">
-            <Text size="2" color="gray">
-              {t('FOOD_PLANNER.PLACEHOLDER.NOTES')}
-            </Text>
-          </Tabs.Content>
-          <Tabs.Content value="recipes">
-            <Text size="2" color="gray">
-              {t('FOOD_PLANNER.PLACEHOLDER.RECIPES')}
-            </Text>
-          </Tabs.Content>
-          <Tabs.Content value="inventory">
-            <Text size="2" color="gray">
-              {t('FOOD_PLANNER.PLACEHOLDER.INVENTORY')}
-            </Text>
-          </Tabs.Content>
-        </div>
-      </Tabs.Root>
+        <CardContainer title={t('FOOD_PLANNER.COLUMNS.KITCHEN_CHORES')}>
+          <KitchenChoresList />
+        </CardContainer>
+
+        <CardContainer title={t('FOOD_PLANNER.COLUMNS.KITCHEN_NOTES')}>
+          <div className="h-96">
+            <KitchenNotes />
+          </div>
+        </CardContainer>
+      </div>
     </div>
   );
 }

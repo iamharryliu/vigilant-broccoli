@@ -16,12 +16,16 @@ interface WhiteboardEditorProps {
   token: string;
   userId: string;
   username: string;
+  boardKey?: string;
+  title?: string;
+  placeholder?: string;
+  cursorChannelPrefix?: string;
   style?: CSSProperties;
 }
 
-const TITLE = 'Family Whiteboard';
-const PLACEHOLDER = 'Shared family notes...';
-const CURSOR_CHANNEL_PREFIX = 'home-whiteboard-cursors-';
+const DEFAULT_TITLE = 'Family Whiteboard';
+const DEFAULT_PLACEHOLDER = 'Shared family notes...';
+const DEFAULT_CURSOR_CHANNEL_PREFIX = 'home-whiteboard-cursors-';
 const CURSOR_SEND_INTERVAL_MS = 60;
 
 export function WhiteboardEditor({
@@ -29,16 +33,21 @@ export function WhiteboardEditor({
   token,
   userId,
   username,
+  boardKey,
+  title = DEFAULT_TITLE,
+  placeholder = DEFAULT_PLACEHOLDER,
+  cursorChannelPrefix = DEFAULT_CURSOR_CHANNEL_PREFIX,
   style,
 }: WhiteboardEditorProps) {
   const { content, setContent, isSaving, isLoading, lastSaved } = useWhiteboard(
     homeId,
     token,
+    boardKey,
   );
 
   const { cursors, setCursorPosition, setTextCursorIndex } = useCursorPresence(
     supabase as unknown as SupabaseBroadcastLike,
-    `${CURSOR_CHANNEL_PREFIX}${homeId}`,
+    `${cursorChannelPrefix}${homeId}`,
     userId,
     username,
   );
@@ -75,13 +84,13 @@ export function WhiteboardEditor({
 
   return (
     <SyncedTextEditor
-      title={TITLE}
+      title={title}
       content={content}
       onChange={setContent}
       isSaving={isSaving}
       isLoading={isLoading}
       lastSaved={lastSaved}
-      placeholder={PLACEHOLDER}
+      placeholder={placeholder}
       style={style}
       textareaRef={textareaRef}
       onTextareaSelect={sendTextCursorIndex}
