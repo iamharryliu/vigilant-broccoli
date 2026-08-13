@@ -1,8 +1,9 @@
 'use client';
-import { Badge, Callout, Code } from '@radix-ui/themes';
+import { Badge, Callout } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
+  Code,
   CRUDFormProps,
   CRUDItemList,
   Input,
