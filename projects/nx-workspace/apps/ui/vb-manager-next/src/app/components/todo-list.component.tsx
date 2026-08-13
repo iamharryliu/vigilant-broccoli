@@ -1,12 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Callout, Flex, Table } from '@radix-ui/themes';
+import { Callout, Table } from '@radix-ui/themes';
 import {
-  Button,
   DeleteIconButton,
   IconButton,
-  Input,
   Select,
   Textarea,
   Heading,
@@ -40,18 +38,24 @@ const NEW_ROW_DEFAULTS = {
 };
 const FETCH_ERROR = 'Failed to load TODO.md';
 const SAVE_ERROR = 'Failed to save TODO.md';
-const SAVE_SUCCESS = 'Saved to TODO.md';
 const LOADING_MESSAGE = 'Loading TODO.md…';
 const CELL_TEXT_CLASS = 'text-xs';
 
 const generateRowId = () => crypto.randomUUID().replace(/-/g, '').slice(0, 6);
 
+type EditableField = 'description' | 'recommendedFix';
+
+const editingCellKey = (
+  heading: string,
+  rowIdx: number,
+  field: EditableField,
+) => `${heading}-${rowIdx}-${field}`;
+
 export const TodoListComponent = () => {
   const [sections, setSections] = useState<TodoSection[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const [editingCell, setEditingCell] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTodo = async () => {
@@ -73,7 +77,6 @@ export const TodoListComponent = () => {
     heading: string,
     updateRows: (rows: TodoRow[]) => TodoRow[],
   ) => {
-    setSaved(false);
     setSections(current =>
       current.map(section =>
         section.heading === heading
@@ -102,7 +105,6 @@ export const TodoListComponent = () => {
     updateSection(heading, rows => rows.filter((_, idx) => idx !== rowIdx));
 
   const save = async () => {
-    setSaving(true);
     setError(null);
     try {
       const response = await authFetch(API_ENDPOINTS.TODO, {
@@ -113,38 +115,22 @@ export const TodoListComponent = () => {
       if (!response.ok) throw new Error(SAVE_ERROR);
       const data = await response.json();
       setSections(data.sections);
-      setSaved(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : SAVE_ERROR);
-    } finally {
-      setSaving(false);
     }
   };
 
   if (loading) return <Text size="2">{LOADING_MESSAGE}</Text>;
 
   return (
-    <Flex direction="column" gap="5">
-      <Flex justify="between" align="center">
-        <Heading size="4">TODO.md</Heading>
-        <Flex align="center" gap="3">
-          {saved && !error && (
-            <Text size="1" color="gray">
-              {SAVE_SUCCESS}
-            </Text>
-          )}
-          <Button onClick={save} loading={saving}>
-            Save
-          </Button>
-        </Flex>
-      </Flex>
+    <div className="flex flex-col gap-5">
       {error && (
         <Callout.Root color="red">
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
       {sections.map(section => (
-        <Flex key={section.heading} direction="column" gap="2">
+        <div key={section.heading} className="flex flex-col gap-2">
           <Heading size="3">{section.heading}</Heading>
           <div className="overflow-x-auto">
             <Table.Root variant="surface">
@@ -167,15 +153,9 @@ export const TodoListComponent = () => {
                 {section.rows.map((row, rowIdx) => (
                   <Table.Row key={rowIdx}>
                     <Table.Cell>
-                      <Input
-                        className={`h-8 font-mono ${CELL_TEXT_CLASS}`}
-                        value={row.id}
-                        onChange={event =>
-                          updateRow(section.heading, rowIdx, {
-                            id: event.target.value,
-                          })
-                        }
-                      />
+                      <Text className={`font-mono ${CELL_TEXT_CLASS}`}>
+                        {row.id}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
                       <Select
@@ -188,26 +168,76 @@ export const TodoListComponent = () => {
                       />
                     </Table.Cell>
                     <Table.Cell>
-                      <Textarea
-                        className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
-                        value={row.description}
-                        onChange={event =>
-                          updateRow(section.heading, rowIdx, {
-                            description: event.target.value,
-                          })
-                        }
-                      />
+                      {editingCell ===
+                      editingCellKey(section.heading, rowIdx, 'description') ? (
+                        <Textarea
+                          className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
+                          value={row.description}
+                          onChange={event =>
+                            updateRow(section.heading, rowIdx, {
+                              description: event.target.value,
+                            })
+                          }
+                          onBlur={() => {
+                            setEditingCell(null);
+                            save();
+                          }}
+                          autoFocus
+                        />
+                      ) : (
+                        <Text
+                          className={`block min-h-[64px] w-full min-w-[16rem] whitespace-pre-wrap cursor-text ${CELL_TEXT_CLASS}`}
+                          onClick={() =>
+                            setEditingCell(
+                              editingCellKey(
+                                section.heading,
+                                rowIdx,
+                                'description',
+                              ),
+                            )
+                          }
+                        >
+                          {row.description}
+                        </Text>
+                      )}
                     </Table.Cell>
                     <Table.Cell>
-                      <Textarea
-                        className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
-                        value={row.recommendedFix}
-                        onChange={event =>
-                          updateRow(section.heading, rowIdx, {
-                            recommendedFix: event.target.value,
-                          })
-                        }
-                      />
+                      {editingCell ===
+                      editingCellKey(
+                        section.heading,
+                        rowIdx,
+                        'recommendedFix',
+                      ) ? (
+                        <Textarea
+                          className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
+                          value={row.recommendedFix}
+                          onChange={event =>
+                            updateRow(section.heading, rowIdx, {
+                              recommendedFix: event.target.value,
+                            })
+                          }
+                          onBlur={() => {
+                            setEditingCell(null);
+                            save();
+                          }}
+                          autoFocus
+                        />
+                      ) : (
+                        <Text
+                          className={`block min-h-[64px] w-full min-w-[16rem] whitespace-pre-wrap cursor-text ${CELL_TEXT_CLASS}`}
+                          onClick={() =>
+                            setEditingCell(
+                              editingCellKey(
+                                section.heading,
+                                rowIdx,
+                                'recommendedFix',
+                              ),
+                            )
+                          }
+                        >
+                          {row.recommendedFix}
+                        </Text>
+                      )}
                     </Table.Cell>
                     <Table.Cell>
                       <DeleteIconButton
@@ -225,8 +255,8 @@ export const TodoListComponent = () => {
             className="w-min"
             onClick={() => addRow(section.heading)}
           />
-        </Flex>
+        </div>
       ))}
-    </Flex>
+    </div>
   );
 };

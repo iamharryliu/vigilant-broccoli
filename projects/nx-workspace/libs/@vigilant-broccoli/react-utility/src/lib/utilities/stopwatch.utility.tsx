@@ -1,7 +1,6 @@
 'use client';
 
-import { ScrollArea } from '@radix-ui/themes';
-import { Button, Text } from '@vigilant-broccoli/react-lib';
+import { Button, ScrollArea, Text } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
 interface Lap {

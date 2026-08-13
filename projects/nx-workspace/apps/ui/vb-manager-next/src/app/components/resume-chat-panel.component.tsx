@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Spinner } from '@radix-ui/themes';
+import { Loader2 } from 'lucide-react';
 import {
   Button,
   ChatSendButton,
@@ -84,7 +84,7 @@ const MessageBody = ({ message }: { message: ChatMessage }) => {
   if (message.isPending) {
     return (
       <div className="flex gap-2 items-center" style={{ padding: '0.25rem 0' }}>
-        <Spinner size="1" />
+        <Loader2 className="h-4 w-4 animate-spin" />
         <Text size="2" color="gray">
           {THINKING_LABEL}
         </Text>
