@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Callout, Flex, Table } from '@radix-ui/themes';
+import { Callout, Table } from '@radix-ui/themes';
 import {
   DeleteIconButton,
   IconButton,
@@ -123,14 +123,14 @@ export const TodoListComponent = () => {
   if (loading) return <Text size="2">{LOADING_MESSAGE}</Text>;
 
   return (
-    <Flex direction="column" gap="5">
+    <div className="flex flex-col gap-5">
       {error && (
         <Callout.Root color="red">
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
       {sections.map(section => (
-        <Flex key={section.heading} direction="column" gap="2">
+        <div key={section.heading} className="flex flex-col gap-2">
           <Heading size="3">{section.heading}</Heading>
           <div className="overflow-x-auto">
             <Table.Root variant="surface">
@@ -255,8 +255,8 @@ export const TodoListComponent = () => {
             className="w-min"
             onClick={() => addRow(section.heading)}
           />
-        </Flex>
+        </div>
       ))}
-    </Flex>
+    </div>
   );
 };
