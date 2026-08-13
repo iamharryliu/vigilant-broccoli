@@ -1,5 +1,5 @@
 'use client';
-import { Badge, Callout, Card, Flex, Link } from '@radix-ui/themes';
+import { Badge, Callout, Card, Link } from '@radix-ui/themes';
 import {
   Button,
   CopyButton,
@@ -339,15 +339,15 @@ export const EventCalendarsComponent = () => {
   };
 
   const EventCalendarListItem = ({ item }: { item: EventCalendar }) => (
-    <Flex justify="between" align="center" gap="3" wrap="wrap">
-      <Flex direction="column" gap="1">
-        <Flex gap="2" align="center" wrap="wrap">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-2">
           <Text weight="medium">{item.name}</Text>
           <Badge color={item.isPublic ? 'green' : 'gray'} size="1">
             {item.isPublic ? 'public' : 'private'}
           </Badge>
-        </Flex>
-        <Flex gap="2" align="center">
+        </div>
+        <div className="flex items-center gap-2">
           <Link
             size="1"
             href={buildGoogleCalendarUrl(item.googleCalendarId)}
@@ -357,11 +357,14 @@ export const EventCalendarsComponent = () => {
             {OPEN_IN_GOOGLE_CALENDAR}
           </Link>
           <CopyButton text={buildGoogleCalendarUrl(item.googleCalendarId)} />
-        </Flex>
-        <Flex direction="column" gap="1">
+        </div>
+        <div className="flex flex-col gap-1">
           {item.sources.length ? (
             item.sources.map(source => (
-              <Flex key={source.url} gap="2" align="center" wrap="wrap">
+              <div
+                key={source.url}
+                className="flex flex-wrap items-center gap-2"
+              >
                 <Badge size="1">
                   {EVENT_SOURCE_TYPE_LABEL[source.sourceType] ??
                     UNKNOWN_SOURCE_LABEL}
@@ -369,17 +372,17 @@ export const EventCalendarsComponent = () => {
                 <Text size="1" color="gray">
                   {source.url}
                 </Text>
-              </Flex>
+              </div>
             ))
           ) : (
             <Text size="1" color="gray">
               No source URLs configured.
             </Text>
           )}
-        </Flex>
-      </Flex>
-      <Flex direction="column" gap="2" align="end">
-        <Flex direction="column" gap="1" align="center">
+        </div>
+      </div>
+      <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-center gap-1">
           <Text size="1" color="gray">
             Public
           </Text>
@@ -387,7 +390,7 @@ export const EventCalendarsComponent = () => {
             checked={item.isPublic}
             onCheckedChange={checked => requestTogglePublic(item, checked)}
           />
-        </Flex>
+        </div>
         <Button
           variant="secondary"
           onClick={() => startSync(item.id)}
@@ -397,7 +400,7 @@ export const EventCalendarsComponent = () => {
           Sync now
         </Button>
         {syncStatuses[item.id] && (
-          <Flex direction="column" gap="1" align="end">
+          <div className="flex flex-col items-end gap-1">
             <Text size="1" color="gray">
               {syncStatuses[item.id].message}
             </Text>
@@ -409,14 +412,14 @@ export const EventCalendarsComponent = () => {
                 )}
               </Text>
             )}
-          </Flex>
+          </div>
         )}
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 
   return (
-    <Flex direction="column" gap="4">
+    <div className="flex flex-col gap-4">
       {error && (
         <Callout.Root color="red">
           <Callout.Text>{error}</Callout.Text>
@@ -446,15 +449,15 @@ export const EventCalendarsComponent = () => {
         </Text>
       )}
       {untracked.length > 0 && (
-        <Flex direction="column" gap="2">
+        <div className="flex flex-col gap-2">
           <Text weight="medium">{UNTRACKED_TITLE}</Text>
           <Text size="1" color="gray">
             {UNTRACKED_DESCRIPTION}
           </Text>
           {untracked.map(calendar => (
             <Card key={calendar.googleCalendarId}>
-              <Flex justify="between" align="center" gap="3" wrap="wrap">
-                <Flex direction="column" gap="1">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-col gap-1">
                   <Text weight="medium">{calendar.name}</Text>
                   <Link
                     size="1"
@@ -468,17 +471,17 @@ export const EventCalendarsComponent = () => {
                     {calendar.eventCount} event
                     {calendar.eventCount === 1 ? '' : 's'} would be destroyed
                   </Text>
-                </Flex>
+                </div>
                 <Button
                   variant="secondary"
                   onClick={() => setPendingDelete(calendar)}
                 >
                   Delete
                 </Button>
-              </Flex>
+              </div>
             </Card>
           ))}
-        </Flex>
+        </div>
       )}
       {pendingDelete && (
         <DeleteItemConfirmationDialog
@@ -505,7 +508,7 @@ export const EventCalendarsComponent = () => {
           }}
         />
       )}
-    </Flex>
+    </div>
   );
 };
 
@@ -549,7 +552,7 @@ const EventCalendarForm = ({
   };
 
   return (
-    <Flex direction="column" gap="3" className="mt-3">
+    <div className="mt-3 flex flex-col gap-3">
       {formError && (
         <Callout.Root color="red">
           <Callout.Text>{formError}</Callout.Text>
@@ -563,9 +566,9 @@ const EventCalendarForm = ({
       <Text size="1" color="gray">
         Source URLs
       </Text>
-      <Flex direction="column" gap="2">
+      <div className="flex flex-col gap-2">
         {sourceUrls.map((url, index) => (
-          <Flex key={index} gap="2" align="center">
+          <div key={index} className="flex items-center gap-2">
             <Input
               className="flex-1"
               placeholder={SOURCE_URL_PLACEHOLDER}
@@ -579,15 +582,15 @@ const EventCalendarForm = ({
             >
               {REMOVE_SOURCE_LABEL}
             </Button>
-          </Flex>
+          </div>
         ))}
         <Button variant="secondary" type="button" onClick={addSourceUrl}>
           {ADD_SOURCE_LABEL}
         </Button>
-      </Flex>
+      </div>
       {formType === FORM_TYPE.CREATE && (
         <Text size="1" as="label">
-          <Flex gap="2" align="center">
+          <div className="flex items-center gap-2">
             <Switch
               checked={item.isPublic}
               onCheckedChange={checked =>
@@ -595,7 +598,7 @@ const EventCalendarForm = ({
               }
             />
             Public calendar
-          </Flex>
+          </div>
         </Text>
       )}
       <Button
@@ -606,6 +609,6 @@ const EventCalendarForm = ({
       >
         Submit
       </Button>
-    </Flex>
+    </div>
   );
 };
