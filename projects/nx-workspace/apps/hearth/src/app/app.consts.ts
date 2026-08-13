@@ -12,6 +12,7 @@ import {
   FlaskConical,
   ShoppingCart,
   Sparkles,
+  StickyNote,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -73,6 +74,7 @@ export const NAV_LINKS: NavLink[] = [
     children: [
       { label: 'Grocery List', href: ROUTES.GROCERY, icon: ShoppingCart },
       { label: 'Kitchen Chores', href: ROUTES.KITCHEN_CHORES, icon: Sparkles },
+      { label: 'Kitchen Notes', href: ROUTES.KITCHEN_NOTES, icon: StickyNote },
     ],
   },
   { label: 'Find Members', href: ROUTES.LOCATOR, icon: MapPin },
