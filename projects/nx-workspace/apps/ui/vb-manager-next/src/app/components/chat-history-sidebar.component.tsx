@@ -136,7 +136,7 @@ export const ChatHistorySidebar = ({
         {NEW_CHAT_LABEL}
       </Button>
     </div>
-    <ScrollArea className="flex-1 min-h-0">
+    <ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:!block">
       <div
         className="flex flex-col gap-1"
         style={{ padding: '0.25rem 0.5rem 0.75rem 0.5rem' }}
