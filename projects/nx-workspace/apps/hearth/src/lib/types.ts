@@ -109,7 +109,7 @@ export interface HouseholdRule {
   updatedAt: string;
 }
 
-export interface GroceryItem {
+export interface ChecklistItem {
   id: string;
   name: string;
   completed: boolean;
