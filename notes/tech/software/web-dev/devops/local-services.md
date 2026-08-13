@@ -72,6 +72,7 @@ Comparison of self-hosted/local solutions by category — software you run and o
 | code-server | VS Code in the browser, self-hosted              | Free (self-hosted, open source) | Remote dev environment on a VM, gated behind Cloudflare Access                                               |
 | Immich      | Self-hosted photo/video backup                   | Free (self-hosted, open source) | Private media backup without a third-party cloud photo service                                               |
 | Adminer     | Lightweight web DB admin UI                      | Free (self-hosted, open source) | Ad hoc inspection of self-hosted Postgres/MySQL without installing a desktop client                          |
+| Seafile     | Self-hosted file sync and share                  | Free (self-hosted, open source) | Private Dropbox-style file sync/share with desktop/mobile clients, without a third-party cloud storage       |
 
 ## Databases (Self-Hosted)
 

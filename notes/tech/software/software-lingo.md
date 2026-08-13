@@ -17,18 +17,19 @@
 
 ## Architecture
 
-| Term                      | Definition                                                                                                                                          |
-| :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Backend                   | The server-side part of an application responsible for data processing, storage, and business logic.                                                |
-| daemon                    | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers. |
-| Dependency Inversion      | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres)                       |
-| ephemeral                 | Short lived or temporary.                                                                                                                           |
-| Event Driven Architecture |                                                                                                                                                     |
-| Frontend                  | The client-side part of an application responsible for user interface and interaction.                                                              |
-| LTS                       | Long term support.                                                                                                                                  |
-| microservices             | Breaking applications into tiny remote services that run independently of each other.                                                               |
-| Monorepo                  | A single repository that contains multiple projects, often related, to simplify development and collaboration.                                      |
-| Pub/Sub Model             | Publisher -> Message Broker (routes topics) -> Subscriber                                                                                           |
+| Term                      | Definition                                                                                                                                                                                                                              |
+| :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend                   | The server-side part of an application responsible for data processing, storage, and business logic.                                                                                                                                    |
+| daemon                    | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers.                                                                                     |
+| Dependency Inversion      | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres)                                                                                                           |
+| ephemeral                 | Short lived or temporary.                                                                                                                                                                                                               |
+| Event Driven Architecture |                                                                                                                                                                                                                                         |
+| Frontend                  | The client-side part of an application responsible for user interface and interaction.                                                                                                                                                  |
+| Jamstack                  | A web architecture built on pre-rendered static Markup served from a CDN, with dynamic behavior added via client-side JavaScript calling reusable APIs (the "JAM" = JavaScript, APIs, Markup); decouples the frontend from the backend. |
+| LTS                       | Long term support.                                                                                                                                                                                                                      |
+| microservices             | Breaking applications into tiny remote services that run independently of each other.                                                                                                                                                   |
+| Monorepo                  | A single repository that contains multiple projects, often related, to simplify development and collaboration.                                                                                                                          |
+| Pub/Sub Model             | Publisher -> Message Broker (routes topics) -> Subscriber                                                                                                                                                                               |
 
 ## Tooling
 

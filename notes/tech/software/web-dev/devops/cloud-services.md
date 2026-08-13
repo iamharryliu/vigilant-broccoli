@@ -7,6 +7,7 @@ Comparison of managed/cloud hosting solutions by category, to guide picking a de
 - [Backend / API Hosting](#backend--api-hosting)
 - [Frontend / Static Hosting](#frontend--static-hosting)
 - [Database Hosting](#database-hosting)
+- [Authentication](#authentication)
 - [CDN / Edge / DNS](#cdn--edge--dns)
 - [Object Storage](#object-storage)
 - [CI/CD](#cicd)
@@ -19,12 +20,21 @@ Comparison of managed/cloud hosting solutions by category, to guide picking a de
 
 ## Backend / API Hosting
 
-| Name               | Usage                                                       | Free Tier                                      | When to Use                                                                                                 |
-| ------------------ | ----------------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Fly.io             | Deploys Docker containers as Firecracker VMs close to users | Limited free allowance, no perpetual free tier | Default for `apps/api/*` Fastify services — long-running processes, WebSockets, need a persistent container |
-| Render             | Docker/native runtime PaaS, managed Postgres/Redis add-ons  | Free web services (spin down on idle)          | Simple API + managed DB in one place without touching Terraform                                             |
-| Cloudflare Workers | V8 isolate serverless functions, runs on Cloudflare's edge  | Generous free tier (100k req/day)              | Latency-sensitive, stateless, short-lived request handlers; not for long-lived connections                  |
-| Google Cloud Run   | Serverless containers, scale to zero                        | Free tier (2M req/month)                       | Need GCP-native integration (Secret Manager, IAM) alongside container flexibility                           |
+### Containers
+
+| Name                 | Usage                                                       | Free Tier                                         | When to Use                                                                    |
+| -------------------- | ----------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Fly.io               | Deploys Docker containers as Firecracker VMs close to users | Limited free allowance, no perpetual free tier    | Long-running processes, WebSockets, persistent containers close to users       |
+| Render               | Docker/native runtime PaaS, managed Postgres/Redis add-ons  | Free web services (spin down on idle)             | Simple API + managed DB in one place without touching Terraform                |
+| Google Cloud Run     | Serverless containers, scale to zero                        | Free tier (2M req/month)                          | GCP-native integration (Secret Manager, IAM) with request-driven scale-to-zero |
+| AWS Fargate          | Serverless compute for containers via ECS/EKS               | No always-free tier (pay per vCPU/GB-second)      | Serverless containers inside an AWS-native stack (ECS/EKS, IAM, VPC)           |
+| Azure Container Apps | Serverless containers on AKS/KEDA, scale to zero            | Free tier (2M req/month + monthly vCPU/mem grant) | Serverless containers inside an Azure-native stack, event-driven autoscaling   |
+
+### Cloud Functions
+
+| Name               | Usage                                                      | Free Tier                         | When to Use                                                                                |
+| ------------------ | ---------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------ |
+| Cloudflare Workers | V8 isolate serverless functions, runs on Cloudflare's edge | Generous free tier (100k req/day) | Latency-sensitive, stateless, short-lived request handlers; not for long-lived connections |
 
 ## Frontend / Static Hosting
 
@@ -42,6 +52,14 @@ Comparison of managed/cloud hosting solutions by category, to guide picking a de
 | Supabase           | Managed Postgres + auth/storage/realtime on top | Free tier (500MB DB, pauses after inactivity) | Used by `hearth` — needed managed auth/realtime without standing up own infra on Vercel's serverless model |
 | Neon / PlanetScale | Serverless/branchable managed Postgres/MySQL    | Free tier (usage-capped)                      | Would consider for a new serverless-first app needing DB branching per PR; not currently used              |
 | MongoDB Atlas      | Managed MongoDB                                 | Free tier (M0, 512MB)                         | Would consider for a new app needing managed MongoDB without running it on own infra; not currently used   |
+| Cloud Firestore    | Serverless NoSQL document DB (Firebase/GCP)     | Free tier (1GB storage, 50k reads/day)        | Realtime document store with client-side SDKs, especially when already using Firebase Auth/GCP             |
+
+## Authentication
+
+| Name     | Usage                                                                   | Free Tier                                           | When to Use                                                                                   |
+| -------- | ----------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Supabase | Postgres-backed auth (email/password, magic links, OAuth, RLS-friendly) | Free tier (50k monthly active users)                | Auth alongside the same managed Postgres/realtime, no separate identity provider to stand up  |
+| Firebase | Google-hosted auth (email/password, phone, OAuth) with client-side SDKs | Free tier (Spark plan, unlimited email/social auth) | Drop-in client-side auth without a Postgres backend, or already in the Firebase/GCP ecosystem |
 
 ## CDN / Edge / DNS
 
