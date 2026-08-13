@@ -1,7 +1,7 @@
 'use client';
 
-import { Badge, ScrollArea, TextField } from '@radix-ui/themes';
-import { Button, Progress, Text } from '@vigilant-broccoli/react-lib';
+import { Badge, TextField } from '@radix-ui/themes';
+import { Button, Progress, ScrollArea, Text } from '@vigilant-broccoli/react-lib';
 import { useEffect, useRef, useState } from 'react';
 import { createSoundAlert } from '../audio';
 
