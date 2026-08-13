@@ -1,6 +1,6 @@
 'use client';
 
-import { CardContainer, Text } from '@vigilant-broccoli/react-lib';
+import { CardContainer } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
 import { GroceryList } from '../grocery/GroceryList';
 import { KitchenChoresList } from '../kitchen-chores/KitchenChoresList';
@@ -10,25 +10,21 @@ function FoodPlannerContent() {
   const { t } = useTranslation();
 
   return (
-    <div className="w-full space-y-6 p-4 sm:p-6 md:px-8 md:py-8">
-      <Text size="6" weight="bold">
-        {t('FOOD_PLANNER.TITLE')}
-      </Text>
+    <div className="flex w-full flex-col p-4 sm:p-6 md:px-8 md:py-8 lg:h-[calc(100vh-49px)]">
+      <div className="grid flex-1 grid-cols-1 items-stretch gap-6 lg:min-h-0 lg:grid-cols-4">
+        <div className="flex min-h-0 flex-col gap-6 lg:col-span-1 lg:overflow-y-auto">
+          <CardContainer title={t('FOOD_PLANNER.COLUMNS.GROCERY')}>
+            <GroceryList />
+          </CardContainer>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        <CardContainer title={t('FOOD_PLANNER.COLUMNS.GROCERY')}>
-          <GroceryList />
-        </CardContainer>
+          <CardContainer title={t('FOOD_PLANNER.COLUMNS.KITCHEN_CHORES')}>
+            <KitchenChoresList />
+          </CardContainer>
+        </div>
 
-        <CardContainer title={t('FOOD_PLANNER.COLUMNS.KITCHEN_CHORES')}>
-          <KitchenChoresList />
-        </CardContainer>
-
-        <CardContainer title={t('FOOD_PLANNER.COLUMNS.KITCHEN_NOTES')}>
-          <div className="h-96">
-            <KitchenNotes />
-          </div>
-        </CardContainer>
+        <div className="h-96 min-h-0 lg:col-span-3 lg:h-auto">
+          <KitchenNotes />
+        </div>
       </div>
     </div>
   );
