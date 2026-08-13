@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { Callout, Flex, Table } from '@radix-ui/themes';
 import {
-  Button,
   DeleteIconButton,
   IconButton,
   Select,
@@ -39,7 +38,6 @@ const NEW_ROW_DEFAULTS = {
 };
 const FETCH_ERROR = 'Failed to load TODO.md';
 const SAVE_ERROR = 'Failed to save TODO.md';
-const SAVE_SUCCESS = 'Saved to TODO.md';
 const LOADING_MESSAGE = 'Loading TODO.md…';
 const CELL_TEXT_CLASS = 'text-xs';
 
@@ -56,9 +54,7 @@ const editingCellKey = (
 export const TodoListComponent = () => {
   const [sections, setSections] = useState<TodoSection[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const [editingCell, setEditingCell] = useState<string | null>(null);
 
   useEffect(() => {
@@ -81,7 +77,6 @@ export const TodoListComponent = () => {
     heading: string,
     updateRows: (rows: TodoRow[]) => TodoRow[],
   ) => {
-    setSaved(false);
     setSections(current =>
       current.map(section =>
         section.heading === heading
@@ -110,7 +105,6 @@ export const TodoListComponent = () => {
     updateSection(heading, rows => rows.filter((_, idx) => idx !== rowIdx));
 
   const save = async () => {
-    setSaving(true);
     setError(null);
     try {
       const response = await authFetch(API_ENDPOINTS.TODO, {
@@ -121,11 +115,8 @@ export const TodoListComponent = () => {
       if (!response.ok) throw new Error(SAVE_ERROR);
       const data = await response.json();
       setSections(data.sections);
-      setSaved(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : SAVE_ERROR);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -133,19 +124,6 @@ export const TodoListComponent = () => {
 
   return (
     <Flex direction="column" gap="5">
-      <Flex justify="between" align="center">
-        <Heading size="4">TODO.md</Heading>
-        <Flex align="center" gap="3">
-          {saved && !error && (
-            <Text size="1" color="gray">
-              {SAVE_SUCCESS}
-            </Text>
-          )}
-          <Button onClick={save} loading={saving}>
-            Save
-          </Button>
-        </Flex>
-      </Flex>
       {error && (
         <Callout.Root color="red">
           <Callout.Text>{error}</Callout.Text>
@@ -200,7 +178,10 @@ export const TodoListComponent = () => {
                               description: event.target.value,
                             })
                           }
-                          onBlur={() => setEditingCell(null)}
+                          onBlur={() => {
+                            setEditingCell(null);
+                            save();
+                          }}
                           autoFocus
                         />
                       ) : (
@@ -235,7 +216,10 @@ export const TodoListComponent = () => {
                               recommendedFix: event.target.value,
                             })
                           }
-                          onBlur={() => setEditingCell(null)}
+                          onBlur={() => {
+                            setEditingCell(null);
+                            save();
+                          }}
                           autoFocus
                         />
                       ) : (
