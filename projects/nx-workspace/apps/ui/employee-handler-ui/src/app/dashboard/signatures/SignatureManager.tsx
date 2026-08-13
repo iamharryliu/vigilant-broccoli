@@ -1,11 +1,11 @@
 'use client';
 
 import { Dispatch, SetStateAction, useState } from 'react';
-import { TextField } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
   CRUDItemList,
+  Input,
   Tabs,
   TabsContent,
   TabsList,
@@ -70,7 +70,7 @@ const SignatureForm = ({
         <Text size="1" weight="medium" as="p" mb="1">
           {t('SIGNATURES.FORM.LABEL_FIELD')}
         </Text>
-        <TextField.Root
+        <Input
           placeholder={t('SIGNATURES.FORM.LABEL_FIELD')}
           value={label}
           onChange={e => setLabel(e.target.value)}

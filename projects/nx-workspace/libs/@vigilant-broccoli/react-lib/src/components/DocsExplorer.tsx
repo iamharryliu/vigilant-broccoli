@@ -1,7 +1,8 @@
 'use client';
 
-import { Badge, Card, DropdownMenu, TextField } from '@radix-ui/themes';
+import { Badge, Card, DropdownMenu } from '@radix-ui/themes';
 import { IconButton } from './IconButton';
+import { InputGroup, InputGroupAddon, InputGroupInput } from './Input';
 import {
   ChevronDown,
   ChevronRight,
@@ -401,17 +402,19 @@ export const DocsExplorer = ({
           </div>
           {search && (
             <>
-              <TextField.Root
-                ref={searchInputRef}
-                placeholder={searchPlaceholder}
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearchInputKeyDown}
-              >
-                <TextField.Slot>
+              <InputGroup>
+                <InputGroupAddon align="inline-start">
                   <SearchIcon className="w-4 h-4" />
-                </TextField.Slot>
-              </TextField.Root>
+                </InputGroupAddon>
+                <InputGroupInput
+                  ref={searchInputRef}
+                  hasStartAddon
+                  placeholder={searchPlaceholder}
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={handleSearchInputKeyDown}
+                />
+              </InputGroup>
               {isSearchMode && !isSearching && (
                 <div className="text-xs text-gray-500 mt-1.5">
                   {searchResults.length === 0

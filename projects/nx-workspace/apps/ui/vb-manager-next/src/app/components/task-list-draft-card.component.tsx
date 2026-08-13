@@ -1,7 +1,6 @@
 'use client';
 
-import { Select } from '@radix-ui/themes';
-import { Button, Input, Text } from '@vigilant-broccoli/react-lib';
+import { Button, Input, Select, Text } from '@vigilant-broccoli/react-lib';
 import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { authFetch } from '../../../libs/auth';
@@ -113,6 +112,11 @@ export const TaskListDraftCard = ({
     items.some(i => i.title.trim().length > 0) &&
     (selectedListId !== NEW_LIST_VALUE || newListTitle.trim().length > 0);
 
+  const listOptions: TaskListOption[] = [
+    ...taskLists,
+    { id: NEW_LIST_VALUE, title: 'Create new list...' },
+  ];
+
   return (
     <div className="flex flex-col gap-2" style={{ marginTop: '0.5rem' }}>
       <Text size="2" weight="medium">
@@ -150,23 +154,15 @@ export const TaskListDraftCard = ({
         <Text size="1" color="gray">
           Task list
         </Text>
-        <Select.Root
-          value={selectedListId}
-          onValueChange={setSelectedListId}
+        <Select
+          options={listOptions}
+          selectedOption={listOptions.find(list => list.id === selectedListId)}
+          setValue={list => setSelectedListId(list.id)}
+          optionIdenfifier="id"
+          optionDisplayKey="title"
           disabled={isReadOnly || listsLoading}
-        >
-          <Select.Trigger
-            placeholder={listsLoading ? 'Loading lists...' : 'Select a list'}
-          />
-          <Select.Content>
-            {taskLists.map(list => (
-              <Select.Item key={list.id} value={list.id}>
-                {list.title}
-              </Select.Item>
-            ))}
-            <Select.Item value={NEW_LIST_VALUE}>Create new list...</Select.Item>
-          </Select.Content>
-        </Select.Root>
+          placeholder={listsLoading ? 'Loading lists...' : 'Select a list'}
+        />
         {selectedListId === NEW_LIST_VALUE && (
           <Input
             placeholder="New list name"
