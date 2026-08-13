@@ -10,7 +10,10 @@ import { HomeCreateForm } from '../homes/components/HomeCreateForm';
 import { supabase } from '../../../libs/supabase';
 import { IS_DEV } from '../app.consts';
 
-const EXPORT_OPTIONS = [{ key: 'where-is', label: 'Where Is' }] as const;
+const EXPORT_OPTIONS = [
+  { key: 'where-is', label: 'Where Is' },
+  { key: 'food-planner', label: 'Food Planner' },
+] as const;
 
 type ExportKey = (typeof EXPORT_OPTIONS)[number]['key'];
 
@@ -74,19 +77,16 @@ export default function SettingsPage() {
   const handleExport = async () => {
     if (!selectedHomeId || !session?.access_token) return;
     for (const key of selected) {
-      if (key === 'where-is') {
-        const res = await fetch(
-          `/api/where-is/export?homeId=${selectedHomeId}`,
-          { headers: { Authorization: `Bearer ${session.access_token}` } },
-        );
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `where-is-export-${selectedHomeId}-${Date.now()}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
+      const res = await fetch(`/api/${key}/export?homeId=${selectedHomeId}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${key}-export-${selectedHomeId}-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
     }
   };
 
@@ -95,8 +95,8 @@ export default function SettingsPage() {
     if (!file || !selectedHomeId || !session) return;
     const text = await file.text();
     const importData = JSON.parse(text);
-    if (selected.has('where-is')) {
-      await fetch('/api/where-is/import', {
+    for (const key of selected) {
+      await fetch(`/api/${key}/import`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
