@@ -1,7 +1,7 @@
 'use client';
 
-import { Spinner } from '@radix-ui/themes';
 import { Text } from '@vigilant-broccoli/react-lib';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DATE_CONST } from '@vigilant-broccoli/common-js';
 import { authFetch } from '../../../libs/auth';
@@ -138,7 +138,7 @@ export const WeatherComponent = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center p-4">
-        <Spinner size="3" />
+        <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
   }
