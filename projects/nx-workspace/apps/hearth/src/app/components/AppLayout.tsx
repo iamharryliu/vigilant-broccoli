@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Skeleton } from '@radix-ui/themes';
 import { useAuth } from '../providers/auth-provider';
 import { ROUTES } from '../../lib/routes';
 import Topbar from './Topbar';
@@ -39,10 +38,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (isLoading) {
     return (
       <div className="pt-[49px] px-6">
-        <Skeleton className="h-8 w-48 mt-4" />
-        <Skeleton className="h-4 w-full mt-3" />
-        <Skeleton className="h-4 w-full mt-2" />
-        <Skeleton className="h-4 w-3/4 mt-2" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-8 w-48 mt-4" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-full mt-3" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-full mt-2" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-3/4 mt-2" />
       </div>
     );
   }
