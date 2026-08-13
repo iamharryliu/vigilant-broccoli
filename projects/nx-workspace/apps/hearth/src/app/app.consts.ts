@@ -75,6 +75,7 @@ export const NAV_LINKS: NavLink[] = [
       { label: 'Grocery List', href: ROUTES.GROCERY, icon: ShoppingCart },
       { label: 'Kitchen Chores', href: ROUTES.KITCHEN_CHORES, icon: Sparkles },
       { label: 'Kitchen Notes', href: ROUTES.KITCHEN_NOTES, icon: StickyNote },
+      { label: 'Food Calendar', href: ROUTES.FOOD_CALENDAR, icon: Calendar },
     ],
   },
   { label: 'Find Members', href: ROUTES.LOCATOR, icon: MapPin },
