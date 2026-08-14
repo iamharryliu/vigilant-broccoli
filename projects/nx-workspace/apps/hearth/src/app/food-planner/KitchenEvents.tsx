@@ -16,17 +16,20 @@ export function KitchenEvents({ refreshSignal }: Props) {
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const token = session?.access_token ?? '';
 
   const fetchEvents = useCallback(async () => {
     if (!homeId || !token) return;
+    setIsLoading(true);
     const res = await fetch(`/api/calendar/events?homeId=${homeId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     const rows: CalendarEvent[] = Array.isArray(data) ? data : [];
     setEvents(rows.filter(e => e.kitchenEvent));
+    setIsLoading(false);
   }, [homeId, token]);
 
   useEffect(() => {
@@ -36,6 +39,7 @@ export function KitchenEvents({ refreshSignal }: Props) {
   return (
     <CalendarListView
       events={events}
+      loading={isLoading}
       emptyContent={
         <Text size="2" color="gray">
           {EMPTY_TEXT}

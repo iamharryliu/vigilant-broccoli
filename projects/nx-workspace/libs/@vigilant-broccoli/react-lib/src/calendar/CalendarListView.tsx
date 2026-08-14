@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { Button } from '../components/Button';
 import { Text } from '../components/Text';
+import { CalendarListSkeleton } from './CalendarListSkeleton';
 import { CalendarEventInput } from './calendar.types';
 import {
   addMonths,
@@ -28,6 +29,7 @@ type Props = {
   onEventClick?: (id: string) => void;
   emptyContent?: ReactNode;
   className?: string;
+  loading?: boolean;
 };
 
 function EventRow({
@@ -72,6 +74,7 @@ export function CalendarListView({
   onEventClick,
   emptyContent,
   className,
+  loading = false,
 }: Props) {
   const [viewDate, setViewDate] = useState(() =>
     startOfMonth(initialDate ?? new Date()),
@@ -115,7 +118,9 @@ export function CalendarListView({
         </div>
       </div>
 
-      {groups.length === 0 ? (
+      {loading ? (
+        <CalendarListSkeleton />
+      ) : groups.length === 0 ? (
         <div className="py-8 text-center">
           {emptyContent ?? (
             <Text size="2" color="gray">
