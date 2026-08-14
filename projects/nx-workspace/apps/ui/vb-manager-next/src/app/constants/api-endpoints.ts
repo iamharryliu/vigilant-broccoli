@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
   GCLOUD_PROJECTS: '/api/gcloud/projects',
   GCLOUD_SET_PROJECT: '/api/gcloud/set-project',
   GCLOUD_SET_ACCOUNT: '/api/gcloud/set-account',
+  GCLOUD_VAULT_TOKEN: '/api/gcloud/vault-token',
 
   // Vercel
   VERCEL_PROJECTS: '/api/vercel/projects',
@@ -113,4 +114,5 @@ export const API_ENDPOINTS = {
 
   // TODO list
   TODO: '/api/todo',
+  TODO_SOLVE: '/api/todo/solve',
 } as const;

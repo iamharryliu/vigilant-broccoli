@@ -1,9 +1,9 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Dialog, Text, Spinner } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Trash2 } from 'lucide-react';
+import { Loader2, Trash2 } from 'lucide-react';
 import {
   Button,
   ChatSendButton,
@@ -13,6 +13,7 @@ import {
   Select,
   Textarea,
   UserAvatar,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { SpeechToTextButton } from './llm/SpeechToTextButton';
 import {
@@ -156,7 +157,7 @@ const TYPING_LABEL = 'Thinking';
 
 const TypingIndicator = () => (
   <div className="flex gap-2 items-center" style={{ padding: '0.25rem 0' }}>
-    <Spinner size="1" />
+    <Loader2 className="h-4 w-4 animate-spin" />
     <Text size="2" color="gray">
       {TYPING_LABEL}
     </Text>

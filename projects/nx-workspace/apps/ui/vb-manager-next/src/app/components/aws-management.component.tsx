@@ -1,12 +1,13 @@
 'use client';
 
-import { Text, Badge } from '@radix-ui/themes';
 import {
-  ButtonList,
+  Badge,
   ButtonConfig,
+  ButtonList,
   CardContainer,
   StatusCardList,
   StatusCardListItem,
+  Text,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 import { AWS_LINK } from '@vigilant-broccoli/links';

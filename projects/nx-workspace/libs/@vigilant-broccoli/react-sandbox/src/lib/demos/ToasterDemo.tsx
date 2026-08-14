@@ -1,5 +1,4 @@
-import { Heading } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Button, Heading } from '@vigilant-broccoli/react-lib';
 import { toast, Toaster } from '@vigilant-broccoli/react-lib/toaster';
 
 const DEMO_DURATION_MS = 3000;

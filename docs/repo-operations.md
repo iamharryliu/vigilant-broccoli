@@ -9,7 +9,6 @@ Rule of thumb: check `docs/cheatsheet.md` before hand-rolling SSH or cloud comma
 - **IaC** — `infrastructure/terraform/`: OCI VMs (Gitea, code-server, RabbitMQ — provisioned via cloud-init yamls), the GCP VM (Vault + WireGuard), Cloudflare DNS, GitHub repo config. Driven by `pnpm tf:plan` / `tf:apply` / `tf:post-apply` / `tf:output`. VM images built with Packer (`infrastructure/terraform/packer/`, `pnpm gcp:vm:image:build`).
 - **OCI VMs** — `pnpm oci:vm:ssh`, `gitea:ssh`, `code-server:*` (ssh, logs, password, open). code-server is cattle: `code-server:replace` / `reset`, or the `manual-replace-code-server` workflow (`pnpm gh:actions:replace-code-server`); it bootstraps by cloning this repo and running `setup/linux/install.sh -y`.
 - **GCP VM (Vault + WireGuard)** — `pnpm gcp:vm:*`: status/start/stop, `vault:unseal` / `vault:seal` (Vault seals on restart — unseal before debugging "Vault unreachable"), `regen-cert`, `update-wg`.
-- **Homelab** — `infrastructure/homelab/` compose stack (Caddy); `pnpm homelab:up|down|restart|logs|ps|pull`.
 - **Workflow triggers from CLI** — `pnpm gh:actions:deploy | health-check | kill-services | run-tests | replace-code-server`.
 
 Architecture diagrams: [infrastructure.md](./infrastructure/infrastructure.md).
@@ -24,7 +23,7 @@ Where state lives, per app:
 
 | Store                      | Used by                                                                 | Notes                                                                                 |
 | -------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Supabase Postgres          | `hearth`                                                                | Migrations via `scripts/migrate.ts --migrations-dir=...` (`SUPABASE_DB_URL`)          |
+| Supabase Postgres          | `hearth`                                                                | Migrations via `scripts/migrate.ts --migrations-dir=...` (`SUPABASE_DB_PASSWORD`)     |
 | MongoDB (`vb-manager` db)  | `vb-manager-next`                                                       | `MONGODB_URI`                                                                         |
 | SQLite on a fly volume     | `vb-express`                                                            | `[mounts]` in its fly config, `DATABASE_PATH`                                         |
 | Cloudflare R2 buckets      | `hearth` (`home-management` bucket), `bucket-service`                   | Bucket names may predate app renames                                                  |
@@ -35,7 +34,8 @@ Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repo
 
 ## Local Dev Environment
 
-- `infrastructure/local/docker-compose.yml` — local service stack (Grafana, Prometheus, Loki/Promtail, Immich, Resilio, nginx with local certs via `setup-certs.sh`). Managed with `pnpm local:docker:up|down|restart|reload`.
+- `infrastructure/local/docker-compose.yml` — local service stack (Grafana, Prometheus, Loki/Promtail, Resilio, nginx with local certs via `setup-certs.sh`). Managed with `pnpm local:docker:up|down|restart|reload`.
+- `infrastructure/immich/docker-compose.yml` — standalone Immich stack (server, machine-learning, Redis, Postgres) exposed on `:2283`; local nginx proxies `images.vigilant-broccoli.app` to it via `host.docker.internal:2283`. Managed with `pnpm immich:docker:up|down|restart|reload|logs`.
 - Mock backends for UI development live under `apps/api/mock/` (e.g. `mock-employee-handler-service`) — prefer extending a mock over pointing local UIs at live services.
 - Running a service with real secrets locally: use its `serve` target (Vault-wrapped; see repo-patterns.md).
 

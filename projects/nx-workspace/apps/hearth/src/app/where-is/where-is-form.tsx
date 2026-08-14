@@ -1,11 +1,12 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Text, Badge } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   CRUDFormProps,
   Input,
+  Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';

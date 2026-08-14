@@ -3,6 +3,16 @@
 - [Salsa](./salsa.md)
 - [Bachata](./bachata.md)
 
+## Contents
+
+- [Exercises](#exercises)
+- [Types of Moves](#types-of-moves)
+- [Types of Turns](#types-of-turns)
+- [Positions](#positions)
+- [Variations](#variations)
+- [Good Dancing](#good-dancing)
+- [For Later](#for-later)
+
 ## Exercises
 
 - 1 hand only (left and right)
@@ -18,19 +28,30 @@
 - Spin patterns
 - Waves
 - Combs
+- Flicks
+- Mambo jazz
+
+## Types of Turns
+
+- Hook turns
 
 ## Positions
 
-- Hook turns
-- Shadow positions
-  - Lead shadow follower
-  - Follower shadow lead
-- Arm patterns
+| Name                   | Image                                                                                        |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
+| Closed                 | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20closed%20position) |
+| Crossbody              | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20crossbody)         |
+| Hammerlock             | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20hammerlock)        |
+| Open                   | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20open%20position)   |
+| Shadow                 | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20shadow%20position) |
+| Titanic/Presentation   | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20titanic)           |
+| Wrap/Cuddle/Sweetheart | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20wrap)              |
+
+## Variations
+
 - [Hammerlock](https://www.youtube.com/watch?v=ayP9HYRqhoE)
 - [Yoyo](https://www.youtube.com/watch?v=1h4e7bN6jB4&t=55s)
 - [Titanic/Presentation](https://www.youtube.com/watch?v=W0J03PmRms4)
-- Wrap
-- Mambo jazz
 
 ## Good Dancing
 

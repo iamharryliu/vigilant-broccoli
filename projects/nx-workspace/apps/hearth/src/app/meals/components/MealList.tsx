@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Badge, Dialog, Text } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, Meal } from '../../../lib/types';
 import { MealForm, MealFormData } from './MealForm';

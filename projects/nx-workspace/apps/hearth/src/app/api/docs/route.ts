@@ -12,6 +12,7 @@ import { MAX_FILE_SIZE_BYTES } from './limits';
 export const runtime = 'nodejs';
 
 const MAX_REQUEST_BYTES = 1 * 1024 * 1024;
+const STAGING_KEY_PREFIX = 'staging/docs/';
 
 interface StagedFileRef {
   key: string;
@@ -19,8 +20,14 @@ interface StagedFileRef {
   name: string;
 }
 
-const readAndProcessStagedFiles = async (files: StagedFileRef[]) =>
-  Promise.all(
+const assertStagedKey = (key: string) => {
+  if (!key.startsWith(STAGING_KEY_PREFIX))
+    throw new FileValidationError('Invalid staged file reference.');
+};
+
+const readAndProcessStagedFiles = async (files: StagedFileRef[]) => {
+  files.forEach(file => assertStagedKey(file.key));
+  return Promise.all(
     files.map(async file => {
       try {
         const buffer = await readFile(file.key, MAX_FILE_SIZE_BYTES);
@@ -34,6 +41,7 @@ const readAndProcessStagedFiles = async (files: StagedFileRef[]) =>
       }
     }),
   );
+};
 
 const getSupabase = (req: NextRequest) => {
   const accessToken =

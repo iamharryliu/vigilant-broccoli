@@ -1,7 +1,7 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { useState, useEffect, useRef } from 'react';
-import { Dialog, Text } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import {
   Button,
   ButtonList,
@@ -9,6 +9,7 @@ import {
   Input,
   moveQuickLinkFocusByDirection,
   WINDOW_OPEN_FEATURES,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import {
   MagnifyingGlassIcon,

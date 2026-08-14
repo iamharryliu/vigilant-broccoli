@@ -1,9 +1,9 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
-import { Badge, Text } from '@radix-ui/themes';
 import {
   AudioButton,
+  Badge,
   Button,
   Checkbox,
   Dialog,
@@ -14,6 +14,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import {
   GraduationCap,

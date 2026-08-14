@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { homedir } from 'os';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
@@ -21,7 +21,21 @@ const ERROR = {
   CONTENT_REQUIRED: 'Resume JSON content is required',
   INVALID_JSON: 'Resume content is not valid JSON',
   SAVE_FAILED: 'Failed to save resume.json',
+  READ_FAILED: 'Failed to read resume.json',
 } as const;
+
+export async function GET() {
+  try {
+    const content = await readFile(RESUME_JSON_PATH, ENCODING);
+    return NextResponse.json({ content });
+  } catch (error) {
+    console.error(ERROR.READ_FAILED, error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : ERROR.READ_FAILED },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+}
 
 export async function PUT(req: NextRequest) {
   try {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { HomeForm } from './HomeForm';
 
 type Props = {

@@ -1,10 +1,11 @@
 'use client';
 
-import { Card, Text, Tooltip } from '@radix-ui/themes';
+import { Card, Tooltip } from '@radix-ui/themes';
 import {
   CopyButton,
   MonospaceText,
   Select,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { InfoCircledIcon } from '@radix-ui/react-icons';

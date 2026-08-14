@@ -16,6 +16,7 @@ export const runtime = 'nodejs';
 
 const MAX_REQUEST_BYTES = 1 * 1024 * 1024;
 const ERROR_REQUEST_TOO_LARGE = 'Request too large.';
+const STAGING_KEY_PREFIX = 'staging/where-is/';
 
 interface StagedImageRef {
   key: string;
@@ -25,8 +26,14 @@ interface StagedImageRef {
 const makeR2Key = (itemId: string) =>
   `where-is/${itemId}/${crypto.randomUUID()}.jpg`;
 
-const readAndProcessStagedImages = async (images: StagedImageRef[]) =>
-  Promise.all(
+const assertStagedKey = (key: string) => {
+  if (!key.startsWith(STAGING_KEY_PREFIX))
+    throw new ImageValidationError('Invalid staged image reference.');
+};
+
+const readAndProcessStagedImages = async (images: StagedImageRef[]) => {
+  images.forEach(img => assertStagedKey(img.key));
+  return Promise.all(
     images.map(async img => {
       try {
         const buffer = await readImage(img.key, MAX_IMAGE_SIZE_BYTES);
@@ -36,6 +43,7 @@ const readAndProcessStagedImages = async (images: StagedImageRef[]) =>
       }
     }),
   );
+};
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -179,8 +187,9 @@ export async function PATCH(request: NextRequest) {
       .select('id, r2_key')
       .eq('item_id', id);
 
+    const removed = new Set(removedImageUrls);
     const toRemove = (allImages ?? []).filter(img =>
-      removedImageUrls.some(url => url.endsWith(img.r2_key)),
+      removed.has(getImageUrl(img.r2_key)),
     );
 
     if (toRemove.length) {

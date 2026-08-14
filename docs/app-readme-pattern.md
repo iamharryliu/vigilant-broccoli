@@ -59,7 +59,7 @@ Example:
 
 ## Infrastructure
 
-Each component under `infrastructure/*` (e.g. `terraform`, `local`, `homelab`, `agent-sandbox`) has a `README.md` with:
+Each component under `infrastructure/*` (e.g. `terraform`, `local`, `agent-sandbox`) has a `README.md` with:
 
 - `# <Component Title>` — human-readable name
 - One line on what it provisions or runs (skip if the title already says it)

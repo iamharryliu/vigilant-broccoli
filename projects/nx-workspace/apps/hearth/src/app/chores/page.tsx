@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, Text, Table, Badge, Dialog } from '@radix-ui/themes';
+import { Card, Table, Dialog } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   Checkbox,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
   Select,
+  Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
 

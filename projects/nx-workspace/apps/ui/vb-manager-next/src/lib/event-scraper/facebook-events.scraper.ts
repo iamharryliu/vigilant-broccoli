@@ -50,6 +50,11 @@ const EXPAND_CLICK_DELAY_MS = 800;
 const EVENT_ID_PATTERN = /\/events\/(\d+)\/?/;
 const SHARED_BY_PREFIX = 'Shared by ';
 const PAST_EVENTS_HEADING = 'Past events';
+// An event card isn't at a fixed depth above its link: group listings nest it
+// ~2 levels up, a page's /events tab ~6. So walk up from the link to the widest
+// ancestor that still wraps a single event (stopping before it pulls in a
+// second event's link) — that block holds the date/title/location lines.
+const MAX_CARD_WALK = 12;
 
 const EVENT_LIST_TIMEOUT_MS = 15000;
 const EVENT_DETAIL_NAV_DELAY_MS = 2000;
@@ -151,13 +156,14 @@ const extractEvents = (page: Page): Promise<ListedEvent[]> =>
       facebookBaseUrl,
       sectionUpcoming,
       sectionPast,
+      maxCardWalk,
     }) => {
       const eventIdPattern = new RegExp(eventIdPatternSource);
+      const idFromHref = (href: string) =>
+        new URL(href, location.href).pathname.match(eventIdPattern)?.[1];
       const anchors = [
         ...document.querySelectorAll<HTMLAnchorElement>(eventLinkSelector),
-      ].filter(a =>
-        eventIdPattern.test(new URL(a.href, location.href).pathname),
-      );
+      ].filter(a => idFromHref(a.href));
 
       const pastHeading = [...document.querySelectorAll('span, div, h2')].find(
         el =>
@@ -165,17 +171,44 @@ const extractEvents = (page: Page): Promise<ListedEvent[]> =>
           el.textContent?.trim() === pastEventsHeading,
       );
 
+      // The event's link may appear more than once per card (image + title);
+      // climb to the widest ancestor still scoped to this one event, keeping the
+      // richest text seen so we get the full date/title/location block.
+      const findCard = (anchor: HTMLElement) => {
+        let el: HTMLElement | null = anchor;
+        let card: HTMLElement | null = null;
+        let bestLineCount = 0;
+        for (let level = 0; level < maxCardWalk && el; level++) {
+          const idsWithin = new Set(
+            [...el.querySelectorAll<HTMLAnchorElement>(eventLinkSelector)]
+              .map(a => idFromHref(a.href))
+              .filter(Boolean),
+          );
+          if (idsWithin.size > 1) break;
+          const lineCount = (el.innerText || '')
+            .split('\n')
+            .filter(line => line.trim()).length;
+          if (lineCount >= bestLineCount) {
+            card = el;
+            bestLineCount = lineCount;
+          }
+          el = el.parentElement;
+        }
+        return card;
+      };
+
       const seen = new Set<string>();
       const events = [];
       for (const anchor of anchors) {
-        const id = new URL(anchor.href, location.href).pathname.match(
-          eventIdPattern,
-        )?.[1];
+        const id = idFromHref(anchor.href);
         if (!id || seen.has(id)) continue;
         seen.add(id);
 
-        const card = anchor.parentElement?.parentElement;
-        const lines = (card?.innerText || '').split('\n').filter(Boolean);
+        const card = findCard(anchor);
+        const lines = (card?.innerText || '')
+          .split('\n')
+          .map(line => line.trim())
+          .filter(Boolean);
         const [when, title, maybeSharedBy] = lines;
         if (!title) continue;
 
@@ -210,6 +243,7 @@ const extractEvents = (page: Page): Promise<ListedEvent[]> =>
       facebookBaseUrl: FACEBOOK_BASE_URL,
       sectionUpcoming: SECTION_UPCOMING,
       sectionPast: SECTION_PAST,
+      maxCardWalk: MAX_CARD_WALK,
     },
   );
 
@@ -323,13 +357,16 @@ const enrichEventsConcurrently = async (
   return enriched;
 };
 
-export const scrapeFacebookGroupEvents = async ({
-  groupUrl,
+// Works for any Facebook events listing — a group's /events tab or a page's,
+// e.g. facebook.com/groups/<id>/events or facebook.com/<slug>/events — since
+// both render the same event-link cards this walks.
+export const scrapeFacebookEvents = async ({
+  eventsUrl,
   includePast = false,
   concurrency = DEFAULT_CONCURRENCY,
   onProgress,
 }: {
-  groupUrl: string;
+  eventsUrl: string;
   includePast?: boolean;
   concurrency?: number;
   onProgress?: (done: number, total: number) => void;
@@ -345,7 +382,7 @@ export const scrapeFacebookGroupEvents = async ({
 
   try {
     const page = context.pages()[0] ?? (await context.newPage());
-    await page.goto(groupUrl, { waitUntil: NAV_WAIT_UNTIL });
+    await page.goto(eventsUrl, { waitUntil: NAV_WAIT_UNTIL });
 
     if (page.url().includes(LOGIN_REDIRECT_PATH)) {
       throw new Error(FACEBOOK_LOGIN_REQUIRED_ERROR);

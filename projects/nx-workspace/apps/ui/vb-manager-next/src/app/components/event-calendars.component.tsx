@@ -1,17 +1,23 @@
 'use client';
-import { Badge, Callout, Card, Code, Flex, Link, Text } from '@radix-ui/themes';
+import { Card } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
+  Callout,
+  CalloutText,
+  CopyButton,
   CRUDFormProps,
   CRUDItemList,
   DeleteItemConfirmationDialog,
   Input,
   Switch,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
+import { supabase } from '../../lib/supabase';
 import {
   detectEventSourceType,
   EVENT_SOURCE_TYPE,
@@ -43,8 +49,15 @@ const UNTRACKED_UNAVAILABLE =
   'Google returns no calendar list for this service account, so calendars it owns outside this page cannot be listed. Calendars managed here are unaffected.';
 const SYNC_POLL_INTERVAL_MS = 3000;
 const SYNC_RUNNING = 'running';
-const SOURCES_PLACEHOLDER =
-  'One URL per line, e.g. https://www.facebook.com/groups/klubbkalenderlatin/events';
+const CALENDARS_CHANNEL = 'event-calendars-changes';
+const POSTGRES_CHANGES_EVENT = 'postgres_changes';
+const PUBLIC_SCHEMA = 'public';
+const CALENDARS_TABLE = 'event_calendars';
+const SOURCES_TABLE = 'event_calendar_sources';
+const ADD_SOURCE_LABEL = 'Add URL';
+const REMOVE_SOURCE_LABEL = 'Remove';
+const SOURCE_URL_PLACEHOLDER =
+  'facebook.com/groups/<id>/events or facebook.com/<page>/events';
 
 const LIST_COPY = {
   LIST: {
@@ -98,13 +111,9 @@ const formatRelativeTime = (iso: string) => {
   return `${Math.floor(elapsed / DAY_MS)}d ago`;
 };
 
-const sourcesToText = (calendar: EventCalendar) =>
-  calendar.sources.map(source => source.url).join('\n');
-
-const textToSources = (text: string) =>
-  text
-    .split('\n')
-    .map(line => line.trim())
+const urlsToSources = (urls: string[]) =>
+  urls
+    .map(url => url.trim())
     .filter(Boolean)
     .map(url => ({
       url,
@@ -117,23 +126,49 @@ export const EventCalendarsComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCalendars = async () => {
-      try {
-        const response = await authFetch(API_ENDPOINTS.EVENT_CALENDARS);
-        if (!response.ok)
-          throw new Error(await errorFromResponse(response, FETCH_ERROR));
-        const data = await response.json();
-        setItems(data.calendars);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : FETCH_ERROR);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCalendars();
+  const fetchCalendars = useCallback(async () => {
+    try {
+      const response = await authFetch(API_ENDPOINTS.EVENT_CALENDARS);
+      if (!response.ok)
+        throw new Error(await errorFromResponse(response, FETCH_ERROR));
+      const data = await response.json();
+      setItems(data.calendars);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : FETCH_ERROR);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchCalendars();
+  }, [fetchCalendars]);
+
+  // Another machine editing the shared Supabase tables shows up here without a
+  // reload — mirrors the notepad's live sync. Any change refetches the list,
+  // which cascades to the sync-status and untracked effects keyed on items.
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return;
+
+    const channel = supabase
+      .channel(CALENDARS_CHANNEL)
+      .on(
+        POSTGRES_CHANGES_EVENT,
+        { event: '*', schema: PUBLIC_SCHEMA, table: CALENDARS_TABLE },
+        () => fetchCalendars(),
+      )
+      .on(
+        POSTGRES_CHANGES_EVENT,
+        { event: '*', schema: PUBLIC_SCHEMA, table: SOURCES_TABLE },
+        () => fetchCalendars(),
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchCalendars]);
 
   const createItem = async (item: EventCalendar) => {
     const response = await authFetch(API_ENDPOINTS.EVENT_CALENDARS, {
@@ -257,7 +292,9 @@ export const EventCalendarsComponent = () => {
   const [pendingDelete, setPendingDelete] = useState<UntrackedCalendar | null>(
     null,
   );
-  const [pendingPublic, setPendingPublic] = useState<EventCalendar | null>(null);
+  const [pendingPublic, setPendingPublic] = useState<EventCalendar | null>(
+    null,
+  );
 
   // Making a calendar public exposes every event to anyone with the link, so
   // it goes through a confirmation. Making one private again is safe and
@@ -305,27 +342,32 @@ export const EventCalendarsComponent = () => {
   };
 
   const EventCalendarListItem = ({ item }: { item: EventCalendar }) => (
-    <Flex justify="between" align="center" gap="3" wrap="wrap">
-      <Flex direction="column" gap="1">
-        <Flex gap="2" align="center" wrap="wrap">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-2">
           <Text weight="medium">{item.name}</Text>
           <Badge color={item.isPublic ? 'green' : 'gray'} size="1">
             {item.isPublic ? 'public' : 'private'}
           </Badge>
-        </Flex>
-        <Code size="1">{item.googleCalendarId}</Code>
-        <Link
-          size="1"
-          href={buildGoogleCalendarUrl(item.googleCalendarId)}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {OPEN_IN_GOOGLE_CALENDAR}
-        </Link>
-        <Flex direction="column" gap="1">
+        </div>
+        <div className="flex items-center gap-2">
+          <a
+            href={buildGoogleCalendarUrl(item.googleCalendarId)}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+          >
+            {OPEN_IN_GOOGLE_CALENDAR}
+          </a>
+          <CopyButton text={buildGoogleCalendarUrl(item.googleCalendarId)} />
+        </div>
+        <div className="flex flex-col gap-1">
           {item.sources.length ? (
             item.sources.map(source => (
-              <Flex key={source.url} gap="2" align="center" wrap="wrap">
+              <div
+                key={source.url}
+                className="flex flex-wrap items-center gap-2"
+              >
                 <Badge size="1">
                   {EVENT_SOURCE_TYPE_LABEL[source.sourceType] ??
                     UNKNOWN_SOURCE_LABEL}
@@ -333,17 +375,17 @@ export const EventCalendarsComponent = () => {
                 <Text size="1" color="gray">
                   {source.url}
                 </Text>
-              </Flex>
+              </div>
             ))
           ) : (
             <Text size="1" color="gray">
               No source URLs configured.
             </Text>
           )}
-        </Flex>
-      </Flex>
-      <Flex direction="column" gap="2" align="end">
-        <Flex direction="column" gap="1" align="center">
+        </div>
+      </div>
+      <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-center gap-1">
           <Text size="1" color="gray">
             Public
           </Text>
@@ -351,7 +393,7 @@ export const EventCalendarsComponent = () => {
             checked={item.isPublic}
             onCheckedChange={checked => requestTogglePublic(item, checked)}
           />
-        </Flex>
+        </div>
         <Button
           variant="secondary"
           onClick={() => startSync(item.id)}
@@ -361,28 +403,30 @@ export const EventCalendarsComponent = () => {
           Sync now
         </Button>
         {syncStatuses[item.id] && (
-          <Flex direction="column" gap="1" align="end">
+          <div className="flex flex-col items-end gap-1">
             <Text size="1" color="gray">
               {syncStatuses[item.id].message}
             </Text>
             {syncStatuses[item.id].lastSyncedAt && (
               <Text size="1" color="gray">
                 Last synced{' '}
-                {formatRelativeTime(syncStatuses[item.id].lastSyncedAt as string)}
+                {formatRelativeTime(
+                  syncStatuses[item.id].lastSyncedAt as string,
+                )}
               </Text>
             )}
-          </Flex>
+          </div>
         )}
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 
   return (
-    <Flex direction="column" gap="4">
+    <div className="flex flex-col gap-4">
       {error && (
-        <Callout.Root color="red">
-          <Callout.Text>{error}</Callout.Text>
-        </Callout.Root>
+        <Callout color="red">
+          <CalloutText>{error}</CalloutText>
+        </Callout>
       )}
       <CRUDItemList
         items={items}
@@ -408,40 +452,39 @@ export const EventCalendarsComponent = () => {
         </Text>
       )}
       {untracked.length > 0 && (
-        <Flex direction="column" gap="2">
+        <div className="flex flex-col gap-2">
           <Text weight="medium">{UNTRACKED_TITLE}</Text>
           <Text size="1" color="gray">
             {UNTRACKED_DESCRIPTION}
           </Text>
           {untracked.map(calendar => (
             <Card key={calendar.googleCalendarId}>
-              <Flex justify="between" align="center" gap="3" wrap="wrap">
-                <Flex direction="column" gap="1">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-col gap-1">
                   <Text weight="medium">{calendar.name}</Text>
-                  <Code size="1">{calendar.googleCalendarId}</Code>
-                  <Link
-                    size="1"
+                  <a
                     href={buildGoogleCalendarUrl(calendar.googleCalendarId)}
                     target="_blank"
                     rel="noreferrer"
+                    className="text-xs text-blue-600 hover:underline dark:text-blue-400"
                   >
                     {OPEN_IN_GOOGLE_CALENDAR}
-                  </Link>
+                  </a>
                   <Text size="1" color={calendar.eventCount ? 'red' : 'gray'}>
                     {calendar.eventCount} event
                     {calendar.eventCount === 1 ? '' : 's'} would be destroyed
                   </Text>
-                </Flex>
+                </div>
                 <Button
                   variant="secondary"
                   onClick={() => setPendingDelete(calendar)}
                 >
                   Delete
                 </Button>
-              </Flex>
+              </div>
             </Card>
           ))}
-        </Flex>
+        </div>
       )}
       {pendingDelete && (
         <DeleteItemConfirmationDialog
@@ -468,7 +511,7 @@ export const EventCalendarsComponent = () => {
           }}
         />
       )}
-    </Flex>
+    </div>
   );
 };
 
@@ -478,18 +521,30 @@ const EventCalendarForm = ({
   submitHandler,
 }: CRUDFormProps<EventCalendar>) => {
   const [item, setItem] = useState(initialFormValues);
-  const [sourcesText, setSourcesText] = useState(
-    sourcesToText(initialFormValues),
+  const [sourceUrls, setSourceUrls] = useState<string[]>(
+    initialFormValues.sources.map(source => source.url),
   );
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+
+  const updateSourceUrl = (index: number, url: string) =>
+    setSourceUrls(current =>
+      current.map((entry, position) => (position === index ? url : entry)),
+    );
+
+  const addSourceUrl = () => setSourceUrls(current => [...current, '']);
+
+  const removeSourceUrl = (index: number) =>
+    setSourceUrls(current =>
+      current.filter((_, position) => position !== index),
+    );
 
   const handleSubmit = async () => {
     setSubmitting(true);
     setFormError(null);
     try {
       await submitHandler(
-        { ...item, sources: textToSources(sourcesText) },
+        { ...item, sources: urlsToSources(sourceUrls) },
         formType,
       );
     } catch (err) {
@@ -500,11 +555,11 @@ const EventCalendarForm = ({
   };
 
   return (
-    <Flex direction="column" gap="3" className="mt-3">
+    <div className="mt-3 flex flex-col gap-3">
       {formError && (
-        <Callout.Root color="red">
-          <Callout.Text>{formError}</Callout.Text>
-        </Callout.Root>
+        <Callout color="red">
+          <CalloutText>{formError}</CalloutText>
+        </Callout>
       )}
       <Input
         placeholder="Calendar name (e.g. Malmö Latin Dance Events)"
@@ -514,15 +569,31 @@ const EventCalendarForm = ({
       <Text size="1" color="gray">
         Source URLs
       </Text>
-      <textarea
-        className="min-h-32 w-full rounded border border-gray-6 bg-transparent p-2 text-sm"
-        placeholder={SOURCES_PLACEHOLDER}
-        value={sourcesText}
-        onChange={event => setSourcesText(event.target.value)}
-      />
+      <div className="flex flex-col gap-2">
+        {sourceUrls.map((url, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <Input
+              className="flex-1"
+              placeholder={SOURCE_URL_PLACEHOLDER}
+              value={url}
+              onChange={event => updateSourceUrl(index, event.target.value)}
+            />
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() => removeSourceUrl(index)}
+            >
+              {REMOVE_SOURCE_LABEL}
+            </Button>
+          </div>
+        ))}
+        <Button variant="secondary" type="button" onClick={addSourceUrl}>
+          {ADD_SOURCE_LABEL}
+        </Button>
+      </div>
       {formType === FORM_TYPE.CREATE && (
         <Text size="1" as="label">
-          <Flex gap="2" align="center">
+          <div className="flex items-center gap-2">
             <Switch
               checked={item.isPublic}
               onCheckedChange={checked =>
@@ -530,7 +601,7 @@ const EventCalendarForm = ({
               }
             />
             Public calendar
-          </Flex>
+          </div>
         </Text>
       )}
       <Button
@@ -541,6 +612,6 @@ const EventCalendarForm = ({
       >
         Submit
       </Button>
-    </Flex>
+    </div>
   );
 };

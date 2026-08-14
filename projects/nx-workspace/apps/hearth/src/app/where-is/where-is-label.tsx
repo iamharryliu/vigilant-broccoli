@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+
+import { Button, Text } from '@vigilant-broccoli/react-lib';
 import { ROUTES } from '../../lib/routes';
 
 const QR_CODE_ENDPOINT = '/api/qr-code';

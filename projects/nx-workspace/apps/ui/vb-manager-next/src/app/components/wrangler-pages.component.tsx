@@ -1,13 +1,14 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Badge, Text } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   ButtonList,
   CardContainer,
   EllipsisCTA,
   StatusCardList,
   StatusCardListItem,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { CLOUDFLARE_LINK } from '@vigilant-broccoli/links';
 import { useState } from 'react';

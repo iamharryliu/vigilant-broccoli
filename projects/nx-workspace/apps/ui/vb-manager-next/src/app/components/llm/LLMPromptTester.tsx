@@ -1,5 +1,4 @@
-import { Badge, Text } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Button, Text, Badge } from '@vigilant-broccoli/react-lib';
 import { useState, useRef } from 'react';
 import { CopyPastable, Select, Textarea } from '@vigilant-broccoli/react-lib';
 import {

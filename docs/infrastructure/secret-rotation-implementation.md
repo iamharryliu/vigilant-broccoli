@@ -21,12 +21,12 @@ Every rotator follows **mint → verify → store → revoke**: mint the new cre
 Rotate at source, then `vault kv patch` (or `gh secret set`):
 
 - `VERCEL_TOKEN` — no public API to mint tokens
-- `GH_PAT` / `GITHUB_TOKEN` — PATs can't mint PATs (a GitHub App would automate this, but is a bigger project)
+- `GH_PAT` / `TF_GITHUB_TOKEN` — PATs can't mint PATs (a GitHub App would automate this, but is a bigger project)
 - `SANITY_AUTH_TOKEN`
 - `DOCKERHUB_TOKEN` — mint API requires password auth; storing the password is worse than manual
 - `GOOGLE_AUTH_PROVIDER_CLIENT_SECRET`, `RECAPTCHA_V3_SECRET_KEY`
 - LLM keys — `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`, `GROK_API_KEY`, `ELEVENLABS_API_KEY`
 - Resilio secrets
 
-Deliberately excluded from automation: `MONGODB_URI`, `SUPABASE_DB_URL` / `SUPABASE_SECRET_KEY` — rotating via their management APIs means storing a credential more powerful than the one being rotated.
+Deliberately excluded from automation: `MONGODB_URI`, `SUPABASE_DB_PASSWORD` / `SUPABASE_SECRET_KEY` — rotating via their management APIs means storing a credential more powerful than the one being rotated.
 Suggestion: have `secret-rotation:all` print this checklist (with dashboard URLs) as its final output, so the command's output is the complete semi-annual procedure.

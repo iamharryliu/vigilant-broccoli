@@ -1,6 +1,5 @@
 'use client';
 
-import { Heading, Text } from '@radix-ui/themes';
 import { ChatDemo } from '../demos/ChatDemo';
 import { NotificationsDemo } from '../demos/NotificationsDemo';
 import { StorageDemo } from '../demos/StorageDemo';
@@ -16,6 +15,8 @@ import { LiveLocationsDemo } from '../demos/LiveLocationsDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
+  Heading,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 
 const STORAGE_KEY = 'feature-sandbox';

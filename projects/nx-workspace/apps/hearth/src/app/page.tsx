@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Badge, Text } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Button, Text, Badge } from '@vigilant-broccoli/react-lib';
 import { useAuth } from './providers/auth-provider';
 
 type PendingInvite = {

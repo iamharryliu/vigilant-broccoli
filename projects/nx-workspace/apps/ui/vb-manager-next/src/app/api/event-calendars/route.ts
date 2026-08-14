@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
   if (!userEmail) return unauthorized();
 
   try {
-    return NextResponse.json({ calendars: listEventCalendars() });
+    return NextResponse.json({ calendars: await listEventCalendars() });
   } catch (error) {
     return serverError(error);
   }
@@ -62,13 +62,14 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       timeZone: CALENDAR_TIME_ZONE,
       shareWithEmail: userEmail,
+      isPublic,
     });
 
     if (isPublic) {
       await setGoogleCalendarPublic(calendar, googleCalendarId, true);
     }
 
-    const created = insertEventCalendar({
+    const created = await insertEventCalendar({
       name: name.trim(),
       googleCalendarId,
       isPublic,

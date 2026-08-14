@@ -8,19 +8,14 @@ interface NotepadEditorProps {
   style?: CSSProperties;
 }
 
-const TITLE = 'Notepad';
-
 export const NotepadEditor = ({ style }: NotepadEditorProps) => {
-  const { content, setContent, isSaving, isLoading, lastSaved } = useNotepad();
+  const { content, setContent, isLoading } = useNotepad();
 
   return (
     <SyncedTextEditor
-      title={TITLE}
       content={content}
       onChange={setContent}
-      isSaving={isSaving}
       isLoading={isLoading}
-      lastSaved={lastSaved}
       style={style}
     />
   );

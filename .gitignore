@@ -39,7 +39,6 @@ Thumbs.db
 
 # Environments
 .env
-.github-app-key.pem
 .venv
 env/
 venv/

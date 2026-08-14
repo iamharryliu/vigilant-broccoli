@@ -1,9 +1,6 @@
 import { getCalendarAdminClient } from '../google-calendar-admin';
 import { getEventCalendar, recordSyncResult } from '../event-calendars.db';
-import {
-  scrapeFacebookGroupEvents,
-  ScrapedEvent,
-} from './facebook-events.scraper';
+import { scrapeFacebookEvents, ScrapedEvent } from './facebook-events.scraper';
 import { syncEventsToCalendar } from './google-calendar.sync';
 import { EVENT_SOURCE_TYPE } from '../../app/constants/event-calendars';
 
@@ -31,16 +28,21 @@ const runningSyncs = new Map<string, SyncStatus>();
 export const getSyncStatus = (calendarId: string) =>
   runningSyncs.get(calendarId) ?? null;
 
+const FACEBOOK_SOURCE_TYPES: string[] = [
+  EVENT_SOURCE_TYPE.FACEBOOK_GROUP,
+  EVENT_SOURCE_TYPE.FACEBOOK_PAGE,
+];
+
 const scrapeSource = (
   url: string,
   sourceType: string,
   onProgress: (message: string) => void,
 ) => {
-  if (sourceType !== EVENT_SOURCE_TYPE.FACEBOOK_GROUP) {
+  if (!FACEBOOK_SOURCE_TYPES.includes(sourceType)) {
     throw new Error(`No scraper implemented for source type "${sourceType}"`);
   }
-  return scrapeFacebookGroupEvents({
-    groupUrl: url,
+  return scrapeFacebookEvents({
+    eventsUrl: url,
     onProgress: (done, total) =>
       onProgress(`Scraping ${url} — ${done}/${total} events`),
   });
@@ -53,7 +55,7 @@ const runSync = async (calendarId: string) => {
   };
 
   try {
-    const eventCalendar = getEventCalendar(calendarId);
+    const eventCalendar = await getEventCalendar(calendarId);
     if (!eventCalendar) throw new Error('Calendar not found');
     if (!eventCalendar.sources.length) {
       throw new Error('No source URLs configured for this calendar');
@@ -93,7 +95,7 @@ const runSync = async (calendarId: string) => {
         runningSyncs.get(calendarId)?.startedAt ?? new Date().toISOString(),
       finishedAt: new Date().toISOString(),
     });
-    recordSyncResult(calendarId, message);
+    await recordSyncResult(calendarId, message);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Sync failed';
     console.error('[event-calendars] sync failed', error);
@@ -104,7 +106,7 @@ const runSync = async (calendarId: string) => {
         runningSyncs.get(calendarId)?.startedAt ?? new Date().toISOString(),
       finishedAt: new Date().toISOString(),
     });
-    recordSyncResult(calendarId, `Failed: ${message}`);
+    await recordSyncResult(calendarId, `Failed: ${message}`);
   }
 };
 

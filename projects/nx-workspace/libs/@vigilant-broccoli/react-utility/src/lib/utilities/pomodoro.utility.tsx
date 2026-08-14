@@ -1,7 +1,6 @@
 'use client';
 
-import { Badge, Switch } from '@radix-ui/themes';
-import { Button, Select } from '@vigilant-broccoli/react-lib';
+import { Button, Select, Switch, Badge } from '@vigilant-broccoli/react-lib';
 import { BellOff, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { playBeep } from '../audio';

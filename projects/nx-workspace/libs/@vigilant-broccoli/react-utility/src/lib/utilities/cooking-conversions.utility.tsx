@@ -1,6 +1,6 @@
 'use client';
 
-import { Text, TextField } from '@radix-ui/themes';
+import { Input, Text } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 
 export const CookingConversionsUtilityContent = () => {
@@ -207,24 +207,22 @@ export const CookingConversionsUtilityContent = () => {
           <Text size="1" color="gray">
             kg
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={kg}
             onChange={e => handleKgChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
         <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             lb
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={lb}
             onChange={e => handleLbChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
       </div>
@@ -235,24 +233,22 @@ export const CookingConversionsUtilityContent = () => {
           <Text size="1" color="gray">
             g
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={g}
             onChange={e => handleGChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
         <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             oz
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={oz}
             onChange={e => handleOzChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
       </div>
@@ -263,48 +259,44 @@ export const CookingConversionsUtilityContent = () => {
           <Text size="1" color="gray">
             ml
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={ml}
             onChange={e => handleMlChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
         <div className="flex flex-col gap-1">
           <Text size="1" color="gray">
             tsp
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={tsp}
             onChange={e => handleTspChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
         <div className="flex flex-col gap-1">
           <Text size="1" color="gray">
             tbsp
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={tbsp}
             onChange={e => handleTbspChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
         <div className="flex flex-col gap-1">
           <Text size="1" color="gray">
             cup
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={cup}
             onChange={e => handleCupChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
       </div>
@@ -315,36 +307,33 @@ export const CookingConversionsUtilityContent = () => {
           <Text size="1" color="gray">
             mm
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={mm}
             onChange={e => handleMmChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
         <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             cm
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={cm}
             onChange={e => handleCmChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
         <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             inch
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={inch}
             onChange={e => handleInchChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
       </div>
@@ -355,24 +344,22 @@ export const CookingConversionsUtilityContent = () => {
           <Text size="1" color="gray">
             °F
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={fahrenheit}
             onChange={e => handleFahrenheitChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
         <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
             °C
           </Text>
-          <TextField.Root
+          <Input
             type="number"
             value={celsius}
             onChange={e => handleCelsiusChange(e.target.value)}
             placeholder="0"
-            size="1"
           />
         </div>
       </div>

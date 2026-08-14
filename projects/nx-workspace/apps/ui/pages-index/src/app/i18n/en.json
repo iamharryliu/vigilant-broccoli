@@ -52,15 +52,6 @@
       "DESCRIPTION": "Employee management app deployed on Vercel."
     }
   },
-  "UI_PAGE": {
-    "TITLE": "UI",
-    "DESCRIPTION": "React component library.",
-    "SECTION_COMPONENT_LIBRARY": "React Component Library",
-    "COMPONENT_LIBRARY": {
-      "TITLE": "React Component Library",
-      "DESCRIPTION": "Showcase of reusable React components."
-    }
-  },
   "STATUS_PAGE": {
     "TITLE": "Status",
     "DESCRIPTION_PREFIX": "Service health via",
@@ -115,6 +106,18 @@
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "email-subscription-service",
       "DESCRIPTION": "Email subscription management and broadcast."
+    },
+    "EMPLOYEE_HANDLER_NEXT": {
+      "TITLE": "employee-handler-next",
+      "DESCRIPTION": "Employee lifecycle automation UI built on Next.js."
+    },
+    "OFFICE_PRESENCE_SOCKET_SERVER_DEMO": {
+      "TITLE": "office-presence-socket-server-demo",
+      "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode."
+    },
+    "SOCKET_SERVER_SOCKETIO": {
+      "TITLE": "socket-server-socketio",
+      "DESCRIPTION": "WebSocket server for real-time bidirectional communication."
     }
   },
   "NPM_PACKAGES_PAGE": {

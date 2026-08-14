@@ -1,10 +1,10 @@
-import { Text } from '@radix-ui/themes';
 import {
   Avatar,
   AvatarSize,
   BoringAvatarVariant,
   FALLBACK_TYPE,
   USER_AVATAR_COLORS,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { Pencil } from 'lucide-react';
 

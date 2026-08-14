@@ -124,10 +124,16 @@ jobs:
       - name: Setup Cloud SDK
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
+      - name: Cache mongodb-database-tools
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: mongodb-tools.deb
+          key: mongodb-database-tools-100.10.0-ubuntu2204-x86_64
+
       - name: Install mongodb-database-tools
         run: |
           set -euo pipefail
-          curl -sL -o mongodb-tools.deb https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
+          [ -f mongodb-tools.deb ] || curl -sL -o mongodb-tools.deb https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
           sudo dpkg -i mongodb-tools.deb
 
       - name: Dump and upload backup to GCS
@@ -163,7 +169,7 @@ jobs:
           gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
-            kv/data/secrets SUPABASE_DB_URL | SUPABASE_DB_URL ;
+            kv/data/secrets SUPABASE_DB_PASSWORD | SUPABASE_DB_PASSWORD ;
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
@@ -173,6 +179,12 @@ jobs:
 
       - name: Setup Cloud SDK
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Cache PostgreSQL apt packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /var/cache/apt/archives/*.deb
+          key: apt-postgresql-client-17
 
       - name: Install PostgreSQL client
         run: |
@@ -185,12 +197,16 @@ jobs:
 
       - name: Dump and upload backup to GCS
         env:
-          SUPABASE_DB_URL: ${{ env.SUPABASE_DB_URL }}
+          PGPASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
+          PGHOST: aws-1-eu-west-1.pooler.supabase.com
+          PGPORT: '5432'
+          PGUSER: postgres.jrdosjjgmsoodpjmjqxx
+          PGDATABASE: postgres
         run: |
           set -euo pipefail
           TIMESTAMP=$(date -u +%Y-%m-%d)
           # The runner image ships an older postgresql-client on PATH; call the v17 binary directly.
-          /usr/lib/postgresql/17/bin/pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges | gzip > "supabase.sql.gz"
+          /usr/lib/postgresql/17/bin/pg_dump --no-owner --no-privileges | gzip > "supabase.sql.gz"
           gsutil cp "supabase.sql.gz" "gs://vigilant-broccoli-backup/supabase-backup-$TIMESTAMP.sql.gz"
 
       - name: Cleanup old backups

@@ -17,7 +17,7 @@ Shared React component library.
 - Framework - React
 - Build Tool - Vite
 - External libs
-  - Radix UI (`@radix-ui/themes`, accordion, avatar, checkbox, dialog, progress, scroll-area, select, tabs)
+  - Radix UI (`@radix-ui/themes`, accordion, avatar, checkbox, dialog, progress, scroll-area, select, tabs, tooltip)
   - `@supabase/supabase-js`
   - `boring-avatars`
   - `class-variance-authority`

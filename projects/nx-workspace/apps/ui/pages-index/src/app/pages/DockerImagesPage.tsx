@@ -32,6 +32,32 @@ export function DockerImagesPage() {
       ),
       icon: <DockerIcon />,
     },
+    {
+      key: 'employee-handler-next',
+      route: true,
+      href: '/open-source/docker/employee-handler-next',
+      title: t('DOCKER_IMAGES_PAGE.EMPLOYEE_HANDLER_NEXT.TITLE'),
+      description: t('DOCKER_IMAGES_PAGE.EMPLOYEE_HANDLER_NEXT.DESCRIPTION'),
+      icon: <DockerIcon />,
+    },
+    {
+      key: 'office-presence-socket-server-demo',
+      route: true,
+      href: '/open-source/docker/office-presence-socket-server-demo',
+      title: t('DOCKER_IMAGES_PAGE.OFFICE_PRESENCE_SOCKET_SERVER_DEMO.TITLE'),
+      description: t(
+        'DOCKER_IMAGES_PAGE.OFFICE_PRESENCE_SOCKET_SERVER_DEMO.DESCRIPTION',
+      ),
+      icon: <DockerIcon />,
+    },
+    {
+      key: 'socket-server-socketio',
+      route: true,
+      href: '/open-source/docker/socket-server-socketio',
+      title: t('DOCKER_IMAGES_PAGE.SOCKET_SERVER_SOCKETIO.TITLE'),
+      description: t('DOCKER_IMAGES_PAGE.SOCKET_SERVER_SOCKETIO.DESCRIPTION'),
+      icon: <DockerIcon />,
+    },
   ];
 
   return (

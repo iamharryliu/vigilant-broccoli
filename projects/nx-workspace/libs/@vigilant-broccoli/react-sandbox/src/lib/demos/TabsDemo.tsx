@@ -1,9 +1,9 @@
-import { Text } from '@radix-ui/themes';
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 
 const TAB = {

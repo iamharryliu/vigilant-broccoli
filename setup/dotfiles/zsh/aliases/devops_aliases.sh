@@ -160,6 +160,7 @@ wgupn() {
 
 # Docker
 alias dockeropen="open -a 'Docker Desktop'"
+alias killdockerdesktop="osascript -e 'quit app \"Docker Desktop\"' 2>/dev/null; pkill -f 'Docker Desktop' 2>/dev/null; pkill -x com.docker.backend 2>/dev/null; true"
 
 # AWS
 alias awsprofiles="code ~/.aws/credentials"

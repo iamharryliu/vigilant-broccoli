@@ -90,6 +90,11 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   local:docker:down           Stop local Docker Compose services
   local:docker:restart        Restart local Docker Compose services
   local:docker:reload         Reload local Docker Compose services
+  immich:docker:up            Start the standalone Immich Docker Compose stack
+  immich:docker:down          Stop the standalone Immich Docker Compose stack
+  immich:docker:restart       Restart the standalone Immich Docker Compose stack
+  immich:docker:reload        Reload the standalone Immich Docker Compose stack
+  immich:docker:logs          Tail the standalone Immich Docker Compose logs
   vb-manager-next:start       Start vb-manager-next via PM2
   vb-manager-next:reload      Reload vb-manager-next via PM2
   vb-manager-next:delete      Delete vb-manager-next PM2 process
@@ -119,14 +124,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic:audit "<scope>"    Headlessly audit the codebase for <scope> and write a concise findings note (severity + location + remediation table) under docs/audit/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)
   agentic:pr:update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
-
-🏠 HOMELAB
-  homelab:up                  Start homelab services and Tailscale
-  homelab:down                Stop homelab services and Tailscale
-  homelab:restart             Restart homelab services
-  homelab:logs                Tail homelab service logs
-  homelab:ps                  List homelab service status
-  homelab:pull                Pull latest homelab images
 
 🐙 GITHUB
   gh:actions:deploy           Trigger deploy workflow

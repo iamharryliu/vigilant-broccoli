@@ -1,3 +1,0 @@
-:80 {
-	respond "homelab" 200
-}

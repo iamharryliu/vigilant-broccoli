@@ -1,13 +1,17 @@
 'use client';
-import { Badge, Callout, Code, Flex, Text } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
-  Checkbox,
+  Callout,
+  CalloutText,
   CRUDFormProps,
   CRUDItemList,
+  Checkbox,
+  Code,
   Input,
   MonospaceText,
   Switch,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE, VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';
@@ -154,16 +158,16 @@ export const ApiKeysComponent = () => {
   };
 
   const ApiKeyListItem = ({ item }: { item: ApiKeyItem }) => (
-    <Flex justify="between" align="center" gap="3" wrap="wrap">
-      <Flex direction="column" gap="1">
-        <Flex gap="2" align="center" wrap="wrap">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-2">
           <Text weight="medium">{item.name}</Text>
           <Code size="1">{item.start}…</Code>
           <Text size="1" color="gray">
             {item.email}
           </Text>
-        </Flex>
-        <Flex gap="1" wrap="wrap">
+        </div>
+        <div className="flex flex-wrap gap-1">
           {item.services.length === ALL_SERVICES.length ? (
             <Badge color="blue" size="1">
               all services
@@ -175,35 +179,35 @@ export const ApiKeysComponent = () => {
               </Badge>
             ))
           )}
-        </Flex>
+        </div>
         <Text size="1" color="gray">
           Last used: {formatDate(item.lastRequest)} · Created:{' '}
           {formatDate(item.createdAt)}
         </Text>
-      </Flex>
+      </div>
       <Switch
         checked={item.enabled}
         onCheckedChange={checked => toggleEnabled(item.id, checked)}
       />
-    </Flex>
+    </div>
   );
 
   return (
-    <Flex direction="column" gap="4">
+    <div className="flex flex-col gap-4">
       {error && (
-        <Callout.Root color="red">
-          <Callout.Text>{error}</Callout.Text>
-        </Callout.Root>
+        <Callout color="red">
+          <CalloutText>{error}</CalloutText>
+        </Callout>
       )}
       {mintedKey && (
-        <Callout.Root color="green">
-          <Callout.Text>
-            <Flex direction="column" gap="1">
+        <Callout color="green">
+          <CalloutText>
+            <div className="flex flex-col gap-1">
               <Text size="1">{SHOW_ONCE_NOTICE}</Text>
               <MonospaceText text={mintedKey} />
-            </Flex>
-          </Callout.Text>
-        </Callout.Root>
+            </div>
+          </CalloutText>
+        </Callout>
       )}
       <CRUDItemList
         items={items}
@@ -224,7 +228,7 @@ export const ApiKeysComponent = () => {
         }}
         isCards
       />
-    </Flex>
+    </div>
   );
 };
 
@@ -259,11 +263,11 @@ const ApiKeyForm = ({
   };
 
   return (
-    <Flex direction="column" gap="3" className="mt-3">
+    <div className="mt-3 flex flex-col gap-3">
       {formError && (
-        <Callout.Root color="red">
-          <Callout.Text>{formError}</Callout.Text>
-        </Callout.Root>
+        <Callout color="red">
+          <CalloutText>{formError}</CalloutText>
+        </Callout>
       )}
       <Input
         placeholder="Key name (e.g. hearth)"
@@ -277,19 +281,19 @@ const ApiKeyForm = ({
           onChange={event => setItem({ ...item, email: event.target.value })}
         />
       )}
-      <Flex gap="3" wrap="wrap">
+      <div className="flex flex-wrap gap-3">
         {ALL_SERVICES.map(service => (
           <Text key={service} size="1" as="label">
-            <Flex gap="1" align="center">
+            <div className="flex items-center gap-1">
               <Checkbox
                 checked={item.services.includes(service)}
                 onCheckedChange={() => toggleService(service)}
               />
               {service}
-            </Flex>
+            </div>
           </Text>
         ))}
-      </Flex>
+      </div>
       <Button
         variant="secondary"
         onClick={() =>
@@ -310,6 +314,6 @@ const ApiKeyForm = ({
       >
         Submit
       </Button>
-    </Flex>
+    </div>
   );
 };

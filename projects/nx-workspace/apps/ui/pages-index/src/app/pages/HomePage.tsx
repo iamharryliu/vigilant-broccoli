@@ -53,8 +53,7 @@ export function HomePage() {
         </li>
         <li>
           <CardLink
-            route
-            href="/ui"
+            href="./react-component-library/"
             title={t('HOME.UI.TITLE')}
             description={t('HOME.UI.DESCRIPTION')}
             icon={<LayoutGrid className={ICON_CLASS} />}

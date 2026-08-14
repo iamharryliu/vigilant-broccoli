@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, SegmentedControl, Slider } from '@radix-ui/themes';
+import { SegmentedControl } from '@radix-ui/themes';
 import {
+  Button,
   DocsExplorer,
   type DocsExplorerUrlSync,
   type DocsNode,
@@ -209,8 +210,8 @@ function GraphPanel({
           </SegmentedControl.Root>
         )}
         <Button
-          size="1"
-          variant={showForces ? 'solid' : 'soft'}
+          size="sm"
+          variant={showForces ? 'default' : 'secondary'}
           onClick={() => setShowForces(prev => !prev)}
         >
           {COPY.FORCES}
@@ -229,15 +230,14 @@ function GraphPanel({
                       {forces[key]}
                     </span>
                   </span>
-                  <Slider
-                    size="1"
+                  <input
+                    type="range"
+                    className="h-1.5 w-full cursor-pointer accent-blue-500"
                     min={lim.min}
                     max={lim.max}
                     step={lim.step}
-                    value={[forces[key]]}
-                    onValueChange={value =>
-                      updateForce(key, value[0] ?? forces[key])
-                    }
+                    value={forces[key]}
+                    onChange={e => updateForce(key, e.target.valueAsNumber)}
                   />
                 </label>
               );

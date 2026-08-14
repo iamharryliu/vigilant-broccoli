@@ -8,7 +8,7 @@ import {
   GithubOrgRepository,
   GITHUB_ORG_URLS,
 } from '@vigilant-broccoli/github-workspace-js';
-import { Heading, Link, Text, Callout, Badge, Dialog } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import { AlertCircle, Plus } from 'lucide-react';
 import { authFetch } from '../../../../../../libs/auth';
 
@@ -18,9 +18,13 @@ import {
 } from '../../../../components/skeleton.component';
 import {
   Avatar,
+  Badge,
   Button,
   ButtonConfig,
   ButtonList,
+  Callout,
+  CalloutIcon,
+  CalloutText,
   CardContainer,
   EllipsisCTA,
   Input,
@@ -28,6 +32,8 @@ import {
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
+  Heading,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 
 const ORG_MEMBER_API = '/api/github/organization-members';
@@ -90,12 +96,12 @@ export default function Page({
 
   if (error) {
     return (
-      <Callout.Root color="red">
-        <Callout.Icon>
+      <Callout color="red">
+        <CalloutIcon>
           <AlertCircle size={16} />
-        </Callout.Icon>
-        <Callout.Text>{error}</Callout.Text>
-      </Callout.Root>
+        </CalloutIcon>
+        <CalloutText>{error}</CalloutText>
+      </Callout>
     );
   }
 
@@ -181,15 +187,25 @@ const GithubTeamLink = ({
   organization: string;
   team: string;
 }) => (
-  <Link href={GITHUB_ORG_URLS.team(organization, team)} target="_blank">
+  <a
+    href={GITHUB_ORG_URLS.team(organization, team)}
+    target="_blank"
+    rel="noreferrer"
+    className="text-blue-600 hover:underline dark:text-blue-400"
+  >
     {team}
-  </Link>
+  </a>
 );
 
 const GithubUserLink = ({ member }: { member: GithubTeamMember }) => (
-  <Link href={GITHUB_ORG_URLS.member(member.username)} target="_blank">
+  <a
+    href={GITHUB_ORG_URLS.member(member.username)}
+    target="_blank"
+    rel="noreferrer"
+    className="text-blue-600 hover:underline dark:text-blue-400"
+  >
     {member.username}
-  </Link>
+  </a>
 );
 
 const getRepoUrls = (repoUrl: string) => ({

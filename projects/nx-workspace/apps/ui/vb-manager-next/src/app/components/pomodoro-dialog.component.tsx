@@ -1,7 +1,8 @@
 'use client';
 
-import { Dialog, VisuallyHidden } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import { PomodoroUtilityContent } from '@vigilant-broccoli/react-utility';
+import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
 
 interface PomodoroDialogProps {
   open: boolean;

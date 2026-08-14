@@ -29,7 +29,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
   // Re-check against the table rather than trusting the client: this endpoint
   // destroys a calendar and every event on it, and the only thing making that
   // acceptable is that the target is genuinely unmanaged.
-  const isTracked = listEventCalendars().some(
+  const isTracked = (await listEventCalendars()).some(
     calendar => calendar.googleCalendarId === calendarId,
   );
   if (isTracked) {

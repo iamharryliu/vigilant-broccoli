@@ -1,14 +1,15 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
+  Badge,
   Button,
   CardContainer,
   DeleteIconButton,
   IconButton,
   StatusCardList,
   StatusCardListItem,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';

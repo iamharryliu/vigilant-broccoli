@@ -11,10 +11,9 @@ Docker Compose stack for self-hosted local services (photos, logs, dashboards) b
 ## Networking
 
 - [manager.vigilant-broccoli.app](https://manager.vigilant-broccoli.app) - Main application
-- [adminer.vigilant-broccoli.app](https://adminer.vigilant-broccoli.app) - Database management
 - [grafana.vigilant-broccoli.app](https://grafana.vigilant-broccoli.app) - Log dashboards
 - [loki.vigilant-broccoli.app](https://loki.vigilant-broccoli.app) - Log aggregation
-- [images.vigilant-broccoli.app](https://images.vigilant-broccoli.app) - Immich photo management
+- [images.vigilant-broccoli.app](https://images.vigilant-broccoli.app) - Immich photo management (proxied to the standalone [immich stack](../immich/) via `host.docker.internal:2283`)
 
 ## Observability
 
@@ -53,10 +52,6 @@ Preferences → Docker Engine → paste contents of `docker-daemon-config.json` 
   - Docker Compose
 - Services
   - nginx
-  - Immich
-  - PostgreSQL
-  - Redis
-  - Adminer
   - Loki
   - Promtail
   - Grafana

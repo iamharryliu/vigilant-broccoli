@@ -44,7 +44,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   if (!userEmail) return unauthorized();
 
   const { id } = await params;
-  const existing = getEventCalendar(id);
+  const existing = await getEventCalendar(id);
   if (!existing) return notFound();
 
   const { name, isPublic, sources } = await request.json();
@@ -69,7 +69,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     }
 
     return NextResponse.json({
-      calendar: updateEventCalendar(id, {
+      calendar: await updateEventCalendar(id, {
         name: name?.trim(),
         isPublic,
         sources: sources ? normalizeSources(sources) : undefined,
@@ -85,7 +85,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
   if (!userEmail) return unauthorized();
 
   const { id } = await params;
-  const existing = getEventCalendar(id);
+  const existing = await getEventCalendar(id);
   if (!existing) return notFound();
 
   try {
@@ -93,7 +93,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
       getCalendarAdminClient(),
       existing.googleCalendarId,
     );
-    deleteEventCalendar(id);
+    await deleteEventCalendar(id);
     return new NextResponse(null, { status: HTTP_STATUS_CODES.NO_CONTENT });
   } catch (error) {
     return serverError(error);

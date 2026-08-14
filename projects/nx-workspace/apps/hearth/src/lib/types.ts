@@ -32,6 +32,7 @@ export interface CalendarEvent {
   leisureActivityId: string | null;
   projectId?: string | null;
   mealId?: string | null;
+  kitchenEvent?: boolean;
   homeId: number;
   createdByEmail?: string | null;
   createdAt: string;
@@ -103,6 +104,17 @@ export interface HouseholdRule {
   id: string;
   name: string;
   description: string | null;
+  position: number;
+  homeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ChecklistItem {
+  id: string;
+  name: string;
+  completed: boolean;
+  completedAt: string | null;
   position: number;
   homeId: number;
   createdAt: string;

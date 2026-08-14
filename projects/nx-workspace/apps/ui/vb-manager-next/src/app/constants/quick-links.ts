@@ -1298,6 +1298,13 @@ const UI_APP_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },
+  {
+    label: 'React Component Library',
+    target:
+      'https://iamharryliu.github.io/vigilant-broccoli/react-component-library/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
+  },
 ];
 
 export type QuickLink = {
