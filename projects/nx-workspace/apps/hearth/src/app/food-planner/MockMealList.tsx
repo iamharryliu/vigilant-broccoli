@@ -2,8 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Badge } from '@radix-ui/themes';
-import { Text } from '@vigilant-broccoli/react-lib';
+import { Text, Badge } from '@vigilant-broccoli/react-lib';
 
 const CATEGORY_COLORS: Record<string, string> = {
   Breakfast: 'yellow',

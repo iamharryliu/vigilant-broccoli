@@ -1,7 +1,8 @@
 'use client';
 
-import { Badge, Dialog } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   CardContainer,
   StatusCardList,

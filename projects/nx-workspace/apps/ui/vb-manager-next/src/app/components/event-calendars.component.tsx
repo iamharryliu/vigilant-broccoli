@@ -1,6 +1,7 @@
 'use client';
-import { Badge, Card } from '@radix-ui/themes';
+import { Card } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   Callout,
   CalloutText,

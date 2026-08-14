@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Dialog } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,

@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { Dialog } from '@radix-ui/themes';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
-import { Button, Callout, CalloutIcon, CalloutText } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Callout,
+  CalloutIcon,
+  CalloutText,
+} from '@vigilant-broccoli/react-lib';
 
 export const ErrorDemo = () => {
   const [showAlert, setShowAlert] = useState(false);

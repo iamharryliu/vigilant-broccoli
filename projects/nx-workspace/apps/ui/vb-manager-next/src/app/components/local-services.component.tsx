@@ -1,6 +1,6 @@
 'use client';
-import { Badge } from '@radix-ui/themes';
 import {
+  Badge,
   CardContainer,
   StatusCardList,
   StatusCardListItem,

@@ -8,7 +8,7 @@ import {
   GithubOrgRepository,
   GITHUB_ORG_URLS,
 } from '@vigilant-broccoli/github-workspace-js';
-import { Badge, Dialog } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import { AlertCircle, Plus } from 'lucide-react';
 import { authFetch } from '../../../../../../libs/auth';
 
@@ -18,6 +18,7 @@ import {
 } from '../../../../components/skeleton.component';
 import {
   Avatar,
+  Badge,
   Button,
   ButtonConfig,
   ButtonList,

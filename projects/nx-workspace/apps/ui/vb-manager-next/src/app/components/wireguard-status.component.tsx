@@ -1,8 +1,8 @@
 'use client';
 
-import { Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
+  Badge,
   CardContainer,
   MonospaceText,
   StatusCardList,

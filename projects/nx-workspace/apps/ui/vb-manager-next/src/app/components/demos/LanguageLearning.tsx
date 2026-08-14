@@ -1,9 +1,9 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
-import { Badge } from '@radix-ui/themes';
 import {
   AudioButton,
+  Badge,
   Button,
   Checkbox,
   Dialog,

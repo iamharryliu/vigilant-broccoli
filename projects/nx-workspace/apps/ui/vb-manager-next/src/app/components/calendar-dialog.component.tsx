@@ -1,11 +1,12 @@
 'use client';
 
-import { Dialog, VisuallyHidden } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import {
   buildCalendarUrl,
   CalendarConfig,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
+import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
 
 const BIRTHDAYS_CALENDAR =
   'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';

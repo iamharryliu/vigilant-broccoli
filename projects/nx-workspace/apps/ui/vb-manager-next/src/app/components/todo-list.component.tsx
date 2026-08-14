@@ -5,7 +5,7 @@ import { Table } from '@radix-ui/themes';
 import {
   Callout,
   CalloutText,
-  DeleteIconButton,
+  EllipsisCTA,
   IconButton,
   Select,
   Textarea,
@@ -40,6 +40,8 @@ const NEW_ROW_DEFAULTS = {
 };
 const FETCH_ERROR = 'Failed to load TODO.md';
 const SAVE_ERROR = 'Failed to save TODO.md';
+const RUN_ERROR = 'Failed to trigger agentic solve workflow';
+const RUN_TITLE = 'Run agentic solve';
 const LOADING_MESSAGE = 'Loading TODO.md…';
 const CELL_TEXT_CLASS = 'text-xs';
 
@@ -119,6 +121,20 @@ export const TodoListComponent = () => {
       setSections(data.sections);
     } catch (err) {
       setError(err instanceof Error ? err.message : SAVE_ERROR);
+    }
+  };
+
+  const runTodo = async (id: string) => {
+    setError(null);
+    try {
+      const response = await authFetch(API_ENDPOINTS.TODO_SOLVE, {
+        method: HTTP_METHOD.POST,
+        headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
+        body: JSON.stringify({ id }),
+      });
+      if (!response.ok) throw new Error(RUN_ERROR);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : RUN_ERROR);
     }
   };
 
@@ -242,8 +258,15 @@ export const TodoListComponent = () => {
                       )}
                     </Table.Cell>
                     <Table.Cell>
-                      <DeleteIconButton
-                        onClick={() => deleteRow(section.heading, rowIdx)}
+                      <EllipsisCTA
+                        actions={[
+                          { label: RUN_TITLE, onSelect: () => runTodo(row.id) },
+                          {
+                            label: 'Delete',
+                            color: 'red',
+                            onSelect: () => deleteRow(section.heading, rowIdx),
+                          },
+                        ]}
                       />
                     </Table.Cell>
                   </Table.Row>
