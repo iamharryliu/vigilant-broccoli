@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
-import { Badge } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   CRUDFormProps,
   CRUDItemList,

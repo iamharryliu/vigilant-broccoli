@@ -1,9 +1,9 @@
-import { Badge } from '@radix-ui/themes';
 import {
+  BORDER_ACTIVE,
+  Badge,
   Button,
   MonospaceText,
   StatusCardList,
-  BORDER_ACTIVE,
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { TrashIcon, ExternalLinkIcon } from '@radix-ui/react-icons';
