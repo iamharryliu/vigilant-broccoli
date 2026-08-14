@@ -907,9 +907,6 @@ importers:
       '@fullcalendar/interaction':
         specifier: '*'
         version: 6.1.21(@fullcalendar/core@6.1.21)
-      '@fullcalendar/list':
-        specifier: '*'
-        version: 6.1.21(@fullcalendar/core@6.1.21)
       '@fullcalendar/react':
         specifier: '*'
         version: 6.1.21(@fullcalendar/core@6.1.21)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -946,6 +943,9 @@ importers:
       react-leaflet:
         specifier: '*'
         version: 5.0.0(leaflet@1.9.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      react-markdown:
+        specifier: '*'
+        version: 10.1.0(@types/react@19.2.17)(react@19.2.7)
       recharts:
         specifier: '*'
         version: 3.9.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@19.2.7)(react@19.2.7)(redux@5.0.1)
