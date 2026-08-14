@@ -1,7 +1,6 @@
 'use client';
 
-import { TextField } from '@radix-ui/themes';
-import { Button, ScrollArea, Text } from '@vigilant-broccoli/react-lib';
+import { Button, Input, ScrollArea, Text } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
 const HISTORY_STORAGE_KEY = 'calculator-history';
@@ -168,11 +167,10 @@ export const CalculatorUtilityContent = () => {
   return (
     <div className="flex flex-col gap-2">
       <form onSubmit={handleSubmit}>
-        <TextField.Root
+        <Input
           value={input}
           onChange={handleInputChange}
           placeholder="Enter calculation (press Enter to save)"
-          size="2"
         />
       </form>
       {result && (

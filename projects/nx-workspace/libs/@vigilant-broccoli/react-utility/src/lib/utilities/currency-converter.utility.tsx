@@ -1,7 +1,12 @@
 'use client';
 
-import { TextField, Select } from '@radix-ui/themes';
-import { Button, ScrollArea, Text } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Input,
+  ScrollArea,
+  Select,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 
 const HISTORY_STORAGE_KEY = 'currency-converter-history';
@@ -119,41 +124,32 @@ export const CurrencyConverterUtilityContent = () => {
     <div className="flex flex-col gap-2">
       <form onSubmit={handleSubmit}>
         <div className="flex gap-2 items-center">
-          <Select.Root
-            value={fromCurrency}
-            onValueChange={handleFromCurrencyChange}
-          >
-            <Select.Trigger />
-            <Select.Content>
-              {POPULAR_CURRENCIES.map(currency => (
-                <Select.Item key={currency.code} value={currency.code}>
-                  {currency.code}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
-          <TextField.Root
+          <Select
+            options={POPULAR_CURRENCIES}
+            selectedOption={POPULAR_CURRENCIES.find(
+              currency => currency.code === fromCurrency,
+            )}
+            setValue={currency => handleFromCurrencyChange(currency.code)}
+            optionIdenfifier="code"
+            optionDisplayKey="code"
+          />
+          <Input
             value={amount}
             onChange={handleAmountChange}
             placeholder="Amount"
-            size="2"
             type="number"
             step="0.01"
-            style={{ flex: 1 }}
+            className="flex-1"
           />
-          <Select.Root
-            value={toCurrency}
-            onValueChange={handleToCurrencyChange}
-          >
-            <Select.Trigger />
-            <Select.Content>
-              {POPULAR_CURRENCIES.map(currency => (
-                <Select.Item key={currency.code} value={currency.code}>
-                  {currency.code}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
+          <Select
+            options={POPULAR_CURRENCIES}
+            selectedOption={POPULAR_CURRENCIES.find(
+              currency => currency.code === toCurrency,
+            )}
+            setValue={currency => handleToCurrencyChange(currency.code)}
+            optionIdenfifier="code"
+            optionDisplayKey="code"
+          />
         </div>
       </form>
       {result && !loading && (

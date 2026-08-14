@@ -1,9 +1,10 @@
 import { useRef, useState, ReactNode } from 'react';
-import { Badge, TextField } from '@radix-ui/themes';
+import { Badge } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
   CRUDItemList,
+  Input,
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
@@ -99,7 +100,7 @@ const TextItemForm = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Title
         </Text>
-        <TextField.Root
+        <Input
           placeholder="Title"
           value={title}
           onChange={e => setTitle(e.target.value)}
@@ -109,7 +110,7 @@ const TextItemForm = ({
         <Text size="1" weight="medium" as="p" mb="1">
           Description
         </Text>
-        <TextField.Root
+        <Input
           placeholder="Description"
           value={description}
           onChange={e => setDescription(e.target.value)}
@@ -120,7 +121,7 @@ const TextItemForm = ({
           Tags
         </Text>
         <div className="flex gap-2">
-          <TextField.Root
+          <Input
             placeholder="Add tag..."
             value={tagInput}
             onChange={e => setTagInput(e.target.value)}
