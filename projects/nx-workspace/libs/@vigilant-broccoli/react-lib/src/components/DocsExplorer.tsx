@@ -104,6 +104,11 @@ export interface ViewModeOption {
   value: string;
 }
 
+export interface DocsExplorerAction {
+  label: string;
+  onSelect: () => void;
+}
+
 interface DocsExplorerProps {
   nodes: DocsNode[];
   getContent: (path: string) => Promise<string>;
@@ -118,6 +123,8 @@ interface DocsExplorerProps {
   searchPlaceholder?: string;
   emptyMessage?: string;
   onEdit?: () => void;
+  onCreate?: () => void;
+  extraActions?: (path: string) => DocsExplorerAction[];
   viewModes?: ViewModeOption[];
   onViewModeChange?: (mode: string | undefined) => void;
   currentViewMode?: string;
@@ -140,6 +147,7 @@ const COPY = {
   CLEAR_SELECTION: 'Clear',
   LOADING_AGGREGATE: 'Loading selected files...',
   SIDEBAR_ACTIONS: 'Sidebar actions',
+  CREATE_FILE: 'Create file',
   SELECT_MULTIPLE: 'Select multiple',
   TURN_OFF_MULTI_SELECT: 'Turn off multi-select',
   SHOW_GRAPH: 'Graph view',
@@ -163,6 +171,8 @@ export const DocsExplorer = ({
   searchPlaceholder = COPY.SEARCH_PLACEHOLDER,
   emptyMessage = COPY.EMPTY_MESSAGE,
   onEdit,
+  onCreate,
+  extraActions,
   viewModes,
   onViewModeChange,
   currentViewMode,
@@ -382,6 +392,14 @@ export const DocsExplorer = ({
                   }}
                 />
               )}
+              {onCreate && (
+                <IconButton
+                  variant="ghost"
+                  icon="plus"
+                  aria-label={COPY.CREATE_FILE}
+                  onClick={onCreate}
+                />
+              )}
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
                   <IconButton
@@ -552,6 +570,17 @@ export const DocsExplorer = ({
                       {COPY.EDIT}
                     </DropdownMenu.Item>
                   )}
+                  {extraActions &&
+                    !isAggregate &&
+                    selectedPath &&
+                    extraActions(selectedPath).map(action => (
+                      <DropdownMenu.Item
+                        key={action.label}
+                        onSelect={action.onSelect}
+                      >
+                        {action.label}
+                      </DropdownMenu.Item>
+                    ))}
                   {isAggregate && (
                     <>
                       <DropdownMenu.RadioGroup
