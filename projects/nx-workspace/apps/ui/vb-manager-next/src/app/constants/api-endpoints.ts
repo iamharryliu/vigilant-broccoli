@@ -114,4 +114,5 @@ export const API_ENDPOINTS = {
 
   // TODO list
   TODO: '/api/todo',
+  TODO_SOLVE: '/api/todo/solve',
 } as const;

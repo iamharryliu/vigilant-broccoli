@@ -297,6 +297,16 @@ async function createOrgRepo(organizationName: string, repoName: string) {
   );
 }
 
+async function dispatchWorkflow(
+  repo: string,
+  workflowFile: string,
+  inputs: Record<string, string>,
+) {
+  await ShellUtils.runShellCommand(
+    GithubCLICommand.dispatchWorkflow(repo, workflowFile, inputs),
+  );
+}
+
 async function deleteOrgRepo(organizationName: string, repoName: string) {
   await ShellUtils.runShellCommand(
     GithubCLICommand.deleteOrgRepo(organizationName, repoName),
@@ -353,6 +363,7 @@ export const GithubService = {
   createOrgRepo,
   deleteOrgRepo,
   addOrgMember,
+  dispatchWorkflow,
   // DELETE
   removeMembersNotInConfig,
   removeOrgMember,
