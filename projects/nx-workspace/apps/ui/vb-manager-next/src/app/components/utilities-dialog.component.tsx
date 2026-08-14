@@ -1,6 +1,7 @@
 'use client';
 
-import { Dialog, VisuallyHidden } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
+import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
 import { UtilitiesComponent } from './utilities.component';
 
 interface UtilitiesDialogProps {
