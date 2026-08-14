@@ -27,6 +27,7 @@ import { ErrorDemo } from './demos/ErrorDemo';
 import { GithubActionsBadgesDemo } from './demos/GithubActionsBadgesDemo';
 import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
+import { TooltipDemo } from './demos/TooltipDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
 import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
@@ -185,6 +186,12 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Switch',
     category: CATEGORY.COMPONENTS,
     content: <SwitchDemo />,
+  },
+  {
+    id: 'tooltip',
+    label: 'Tooltip',
+    category: CATEGORY.COMPONENTS,
+    content: <TooltipDemo />,
   },
   {
     id: 'toaster',
