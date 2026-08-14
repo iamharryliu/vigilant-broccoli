@@ -1,7 +1,9 @@
 'use client';
-import { Badge, Callout, Card } from '@radix-ui/themes';
+import { Badge, Card } from '@radix-ui/themes';
 import {
   Button,
+  Callout,
+  CalloutText,
   CopyButton,
   CRUDFormProps,
   CRUDItemList,
@@ -421,9 +423,9 @@ export const EventCalendarsComponent = () => {
   return (
     <div className="flex flex-col gap-4">
       {error && (
-        <Callout.Root color="red">
-          <Callout.Text>{error}</Callout.Text>
-        </Callout.Root>
+        <Callout color="red">
+          <CalloutText>{error}</CalloutText>
+        </Callout>
       )}
       <CRUDItemList
         items={items}
@@ -554,9 +556,9 @@ const EventCalendarForm = ({
   return (
     <div className="mt-3 flex flex-col gap-3">
       {formError && (
-        <Callout.Root color="red">
-          <Callout.Text>{formError}</Callout.Text>
-        </Callout.Root>
+        <Callout color="red">
+          <CalloutText>{formError}</CalloutText>
+        </Callout>
       )}
       <Input
         placeholder="Calendar name (e.g. Malmö Latin Dance Events)"

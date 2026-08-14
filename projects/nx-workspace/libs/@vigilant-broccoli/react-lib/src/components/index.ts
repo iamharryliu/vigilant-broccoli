@@ -21,6 +21,7 @@ export * from './CRUDListManagement';
 export * from './ConversionForm';
 export * from './Button';
 export * from './ButtonList';
+export * from './Callout';
 export * from './IconButton';
 export * from './CardContainer';
 export * from './Checkbox';

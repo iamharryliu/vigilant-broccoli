@@ -8,7 +8,7 @@ import {
   GithubOrgRepository,
   GITHUB_ORG_URLS,
 } from '@vigilant-broccoli/github-workspace-js';
-import { Callout, Badge, Dialog } from '@radix-ui/themes';
+import { Badge, Dialog } from '@radix-ui/themes';
 import { AlertCircle, Plus } from 'lucide-react';
 import { authFetch } from '../../../../../../libs/auth';
 
@@ -21,6 +21,9 @@ import {
   Button,
   ButtonConfig,
   ButtonList,
+  Callout,
+  CalloutIcon,
+  CalloutText,
   CardContainer,
   EllipsisCTA,
   Input,
@@ -92,12 +95,12 @@ export default function Page({
 
   if (error) {
     return (
-      <Callout.Root color="red">
-        <Callout.Icon>
+      <Callout color="red">
+        <CalloutIcon>
           <AlertCircle size={16} />
-        </Callout.Icon>
-        <Callout.Text>{error}</Callout.Text>
-      </Callout.Root>
+        </CalloutIcon>
+        <CalloutText>{error}</CalloutText>
+      </Callout>
     );
   }
 

@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Callout, Table } from '@radix-ui/themes';
+import { Table } from '@radix-ui/themes';
 import {
+  Callout,
+  CalloutText,
   DeleteIconButton,
   IconButton,
   Select,
@@ -125,9 +127,9 @@ export const TodoListComponent = () => {
   return (
     <div className="flex flex-col gap-5">
       {error && (
-        <Callout.Root color="red">
-          <Callout.Text>{error}</Callout.Text>
-        </Callout.Root>
+        <Callout color="red">
+          <CalloutText>{error}</CalloutText>
+        </Callout>
       )}
       {sections.map(section => (
         <div key={section.heading} className="flex flex-col gap-2">

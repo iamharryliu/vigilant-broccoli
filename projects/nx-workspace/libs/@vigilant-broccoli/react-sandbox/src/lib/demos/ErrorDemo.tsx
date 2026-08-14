@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Callout, Dialog } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Button, Callout, CalloutIcon, CalloutText } from '@vigilant-broccoli/react-lib';
 
 export const ErrorDemo = () => {
   const [showAlert, setShowAlert] = useState(false);
@@ -19,12 +19,12 @@ export const ErrorDemo = () => {
   return (
     <div className="flex flex-col gap-4">
       {showAlert && (
-        <Callout.Root color="red">
-          <Callout.Icon>
+        <Callout color="red">
+          <CalloutIcon>
             <InfoCircledIcon />
-          </Callout.Icon>
-          <Callout.Text>Error demo notification!</Callout.Text>
-        </Callout.Root>
+          </CalloutIcon>
+          <CalloutText>Error demo notification!</CalloutText>
+        </Callout>
       )}
 
       <div className="flex gap-2">
