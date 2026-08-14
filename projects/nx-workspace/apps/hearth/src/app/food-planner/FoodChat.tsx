@@ -1,16 +1,7 @@
 'use client';
 
-import {
-  KeyboardEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import {
-  ChatSendButton,
-  Text,
-  Textarea,
-} from '@vigilant-broccoli/react-lib';
+import { KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { ChatSendButton, Text, Textarea } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 

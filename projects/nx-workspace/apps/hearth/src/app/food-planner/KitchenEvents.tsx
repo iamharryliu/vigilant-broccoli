@@ -1,30 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import listPlugin from '@fullcalendar/list';
-import type { EventInput } from '@fullcalendar/core';
-import { Text } from '@vigilant-broccoli/react-lib';
+import { CalendarListView, Text } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { CalendarEvent } from '../../lib/types';
 
-const LIST_VIEW = 'listMonth';
 const EMPTY_TEXT = 'No kitchen events yet';
 
 type Props = {
   refreshSignal?: number;
 };
-
-const toFullCalendarEvent = (e: CalendarEvent): EventInput => ({
-  id: e.id,
-  title: e.title,
-  start: e.start,
-  end: e.end,
-  allDay: e.allDay,
-  backgroundColor: e.color ?? undefined,
-  borderColor: e.color ?? undefined,
-});
 
 export function KitchenEvents({ refreshSignal }: Props) {
   const session = useAuth();
@@ -48,17 +34,13 @@ export function KitchenEvents({ refreshSignal }: Props) {
   }, [fetchEvents, refreshSignal]);
 
   return (
-    <FullCalendar
-      plugins={[listPlugin]}
-      initialView={LIST_VIEW}
-      headerToolbar={{ left: 'prev,next today', center: 'title', right: '' }}
-      height="auto"
-      events={events.map(toFullCalendarEvent)}
-      noEventsContent={() => (
+    <CalendarListView
+      events={events}
+      emptyContent={
         <Text size="2" color="gray">
           {EMPTY_TEXT}
         </Text>
-      )}
+      }
     />
   );
 }
