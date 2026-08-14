@@ -39,6 +39,7 @@ export * from './Code';
 export * from './SyncedTextEditor';
 export * from './StatusCardList';
 export * from './Tabs';
+export * from './Tooltip';
 export * from './Progress';
 export * from './ScrollArea';
 export * from './ScrollTimeline';
