@@ -49,3 +49,4 @@ export * from './ChatSendButton';
 export * from './Sidebar';
 export * from './ThemeProvider';
 export * from './DarkModeIconButton';
+export * from './VisuallyHidden';
