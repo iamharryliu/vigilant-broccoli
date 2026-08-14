@@ -1,10 +1,11 @@
 'use client';
-import { Badge, Callout, Card } from '@radix-ui/themes';
+import { Callout, Card } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
-  CopyButton,
   CRUDFormProps,
   CRUDItemList,
+  CopyButton,
   DeleteItemConfirmationDialog,
   Input,
   Switch,

@@ -2,6 +2,7 @@ export * from './AudioPlayer';
 export * from './AudioButton';
 export * from './Avatar';
 export * from './AvatarBadge';
+export * from './Badge';
 export * from './AvatarPrimitive';
 export * from './AvatarUploadHandler';
 export * from './Dialog';

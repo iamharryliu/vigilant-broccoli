@@ -1,7 +1,7 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Badge } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   ButtonList,
   CardContainer,
