@@ -1,3 +1,4 @@
+import { HONEYPOT_FIELD_NAME } from '@vigilant-broccoli/common-js';
 import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@vigilant-broccoli/personal-common-js';
 import { ENVIRONMENT } from '../../../environments/environment';
 
@@ -12,7 +13,7 @@ export type MessageRequest = {
   message: string;
   appName?: string;
   recaptchaToken?: string;
-};
+} & Partial<Record<typeof HONEYPOT_FIELD_NAME, string>>;
 
 export async function sendMessage(request: MessageRequest): Promise<void> {
   const response = await fetch(

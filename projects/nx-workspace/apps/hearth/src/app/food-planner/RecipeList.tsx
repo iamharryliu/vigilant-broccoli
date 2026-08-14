@@ -100,12 +100,8 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
   const [query, setQuery] = useState('');
   const [detail, setDetail] = useState<MockRecipe | null>(null);
   const [groceryTarget, setGroceryTarget] = useState<MockRecipe | null>(null);
-  const [calendarTarget, setCalendarTarget] = useState<MockRecipe | null>(
-    null,
-  );
-  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(
-    null,
-  );
+  const [calendarTarget, setCalendarTarget] = useState<MockRecipe | null>(null);
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
   const [editTarget, setEditTarget] = useState<MockRecipe | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const urlSync = useMemo(
