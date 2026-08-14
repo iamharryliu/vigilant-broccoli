@@ -128,28 +128,16 @@ const CRUDListSection = () => {
 
 const COMPONENT_ENTRIES: SandboxEntry[] = [
   {
-    id: 'buttons',
-    label: 'Buttons',
-    category: CATEGORY.COMPONENTS,
-    content: <ButtonDemo />,
-  },
-  {
     id: 'avatar',
     label: 'Avatar',
     category: CATEGORY.COMPONENTS,
     content: <AvatarDemo />,
   },
   {
-    id: 'user-avatar',
-    label: 'User Avatar',
+    id: 'buttons',
+    label: 'Buttons',
     category: CATEGORY.COMPONENTS,
-    content: <UserAvatarDemo />,
-  },
-  {
-    id: 'status-card-list',
-    label: 'Status Card List',
-    category: CATEGORY.COMPONENTS,
-    content: <StatusCardListDemo />,
+    content: <ButtonDemo />,
   },
   {
     id: 'collapsible-list-item',
@@ -164,10 +152,10 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     content: <CRUDListSection />,
   },
   {
-    id: 'select',
-    label: 'Select',
+    id: 'empty-leaderboard',
+    label: 'Empty Leaderboard',
     category: CATEGORY.COMPONENTS,
-    content: <SelectDemo />,
+    content: <EmptyLeaderboardDemo />,
   },
   {
     id: 'error',
@@ -176,40 +164,10 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     content: <ErrorDemo />,
   },
   {
-    id: 'tabs',
-    label: 'Tabs',
-    category: CATEGORY.COMPONENTS,
-    content: <TabsDemo />,
-  },
-  {
-    id: 'switch',
-    label: 'Switch',
-    category: CATEGORY.COMPONENTS,
-    content: <SwitchDemo />,
-  },
-  {
-    id: 'tooltip',
-    label: 'Tooltip',
-    category: CATEGORY.COMPONENTS,
-    content: <TooltipDemo />,
-  },
-  {
-    id: 'toaster',
-    label: 'Toaster',
-    category: CATEGORY.COMPONENTS,
-    content: <ToasterDemo />,
-  },
-  {
     id: 'github-actions-badges',
     label: 'GitHub Actions Badges',
     category: CATEGORY.COMPONENTS,
     content: <GithubActionsBadgesDemo />,
-  },
-  {
-    id: 'user-leaderboard',
-    label: 'User Leaderboard',
-    category: CATEGORY.COMPONENTS,
-    content: <UserLeaderboardDemo />,
   },
   {
     id: 'group-leaderboard',
@@ -218,20 +176,68 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     content: <GroupLeaderboardDemo />,
   },
   {
-    id: 'empty-leaderboard',
-    label: 'Empty Leaderboard',
-    category: CATEGORY.COMPONENTS,
-    content: <EmptyLeaderboardDemo />,
-  },
-  {
     id: 'scroll-timeline',
     label: 'Scroll Timeline',
     category: CATEGORY.COMPONENTS,
     content: <ScrollTimelineDemo />,
   },
+  {
+    id: 'select',
+    label: 'Select',
+    category: CATEGORY.COMPONENTS,
+    content: <SelectDemo />,
+  },
+  {
+    id: 'status-card-list',
+    label: 'Status Card List',
+    category: CATEGORY.COMPONENTS,
+    content: <StatusCardListDemo />,
+  },
+  {
+    id: 'switch',
+    label: 'Switch',
+    category: CATEGORY.COMPONENTS,
+    content: <SwitchDemo />,
+  },
+  {
+    id: 'tabs',
+    label: 'Tabs',
+    category: CATEGORY.COMPONENTS,
+    content: <TabsDemo />,
+  },
+  {
+    id: 'toaster',
+    label: 'Toaster',
+    category: CATEGORY.COMPONENTS,
+    content: <ToasterDemo />,
+  },
+  {
+    id: 'tooltip',
+    label: 'Tooltip',
+    category: CATEGORY.COMPONENTS,
+    content: <TooltipDemo />,
+  },
+  {
+    id: 'user-avatar',
+    label: 'User Avatar',
+    category: CATEGORY.COMPONENTS,
+    content: <UserAvatarDemo />,
+  },
+  {
+    id: 'user-leaderboard',
+    label: 'User Leaderboard',
+    category: CATEGORY.COMPONENTS,
+    content: <UserLeaderboardDemo />,
+  },
 ];
 
 const UTILITY_ENTRIES: SandboxEntry[] = [
+  {
+    id: 'alarm',
+    label: 'Alarm',
+    category: CATEGORY.UTILITIES,
+    content: <AlarmUtilityContent />,
+  },
   {
     id: 'calculator',
     label: 'Calculator',
@@ -239,16 +245,16 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     content: <CalculatorUtilityContent />,
   },
   {
-    id: 'currency-converter',
-    label: 'Currency Converter',
-    category: CATEGORY.UTILITIES,
-    content: <CurrencyConverterUtilityContent />,
-  },
-  {
     id: 'cooking-conversions',
     label: 'Cooking Conversions',
     category: CATEGORY.UTILITIES,
     content: <CookingConversionsUtilityContent />,
+  },
+  {
+    id: 'currency-converter',
+    label: 'Currency Converter',
+    category: CATEGORY.UTILITIES,
+    content: <CurrencyConverterUtilityContent />,
   },
   {
     id: 'stopwatch',
@@ -261,12 +267,6 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     label: 'Timer',
     category: CATEGORY.UTILITIES,
     content: <TimerUtilityContent />,
-  },
-  {
-    id: 'alarm',
-    label: 'Alarm',
-    category: CATEGORY.UTILITIES,
-    content: <AlarmUtilityContent />,
   },
 ];
 
