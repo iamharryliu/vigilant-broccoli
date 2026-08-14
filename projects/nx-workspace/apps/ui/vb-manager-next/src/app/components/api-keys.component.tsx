@@ -1,8 +1,9 @@
 'use client';
-import { Callout } from '@radix-ui/themes';
 import {
   Badge,
   Button,
+  Callout,
+  CalloutText,
   CRUDFormProps,
   CRUDItemList,
   Checkbox,
@@ -194,19 +195,19 @@ export const ApiKeysComponent = () => {
   return (
     <div className="flex flex-col gap-4">
       {error && (
-        <Callout.Root color="red">
-          <Callout.Text>{error}</Callout.Text>
-        </Callout.Root>
+        <Callout color="red">
+          <CalloutText>{error}</CalloutText>
+        </Callout>
       )}
       {mintedKey && (
-        <Callout.Root color="green">
-          <Callout.Text>
+        <Callout color="green">
+          <CalloutText>
             <div className="flex flex-col gap-1">
               <Text size="1">{SHOW_ONCE_NOTICE}</Text>
               <MonospaceText text={mintedKey} />
             </div>
-          </Callout.Text>
-        </Callout.Root>
+          </CalloutText>
+        </Callout>
       )}
       <CRUDItemList
         items={items}
@@ -264,9 +265,9 @@ const ApiKeyForm = ({
   return (
     <div className="mt-3 flex flex-col gap-3">
       {formError && (
-        <Callout.Root color="red">
-          <Callout.Text>{formError}</Callout.Text>
-        </Callout.Root>
+        <Callout color="red">
+          <CalloutText>{formError}</CalloutText>
+        </Callout>
       )}
       <Input
         placeholder="Key name (e.g. hearth)"

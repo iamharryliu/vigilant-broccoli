@@ -1,10 +1,12 @@
 'use client';
 
-import { Callout } from '@radix-ui/themes';
 import {
   Button,
   ButtonConfig,
   ButtonList,
+  Callout,
+  CalloutIcon,
+  CalloutText,
   CardContainer,
   StatusCardList,
   StatusCardListItem,
@@ -44,12 +46,12 @@ const getOrgUrls = (orgName: string) => ({
 });
 
 const ErrorState = ({ error }: { error: string }) => (
-  <Callout.Root color="red" mb="3">
-    <Callout.Icon>
+  <Callout color="red" className="mb-3">
+    <CalloutIcon>
       <AlertCircle size={16} />
-    </Callout.Icon>
-    <Callout.Text>{error}</Callout.Text>
-  </Callout.Root>
+    </CalloutIcon>
+    <CalloutText>{error}</CalloutText>
+  </Callout>
 );
 
 const EmptyState = () => (
