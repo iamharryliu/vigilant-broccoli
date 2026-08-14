@@ -115,7 +115,12 @@ const runChatTurn = async (
 ): Promise<ChatTurn> => {
   const vbExpressUrl = getEnvironmentVariable('VB_EXPRESS_URL');
   if (!vbExpressUrl) {
-    return { reply: FALLBACK_REPLY, groceryItems: [], kitchenChores: [], events: [] };
+    return {
+      reply: FALLBACK_REPLY,
+      groceryItems: [],
+      kitchenChores: [],
+      events: [],
+    };
   }
 
   const res = await fetch(`${vbExpressUrl}/${VB_EXPRESS_ENDPOINT.LLM}`, {
@@ -134,7 +139,12 @@ const runChatTurn = async (
 
   if (!res.ok) {
     console.warn(`food-planner chat LLM ${res.status}`);
-    return { reply: FALLBACK_REPLY, groceryItems: [], kitchenChores: [], events: [] };
+    return {
+      reply: FALLBACK_REPLY,
+      groceryItems: [],
+      kitchenChores: [],
+      events: [],
+    };
   }
 
   const { outputs } = await res.json();

@@ -8,7 +8,6 @@
     "@fullcalendar/core": "*",
     "@fullcalendar/daygrid": "*",
     "@fullcalendar/interaction": "*",
-    "@fullcalendar/list": "*",
     "@fullcalendar/react": "*",
     "@fullcalendar/timegrid": "*",
     "@radix-ui/themes": "*",
@@ -21,6 +20,7 @@
     "next": "16.2.6",
     "react": "*",
     "react-leaflet": "*",
+    "react-markdown": "*",
     "recharts": "*",
     "zod": "*"
   }

@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  Button,
   CardContainer,
   Tabs,
   TabsContent,
@@ -16,26 +15,46 @@ import { KitchenNotes } from '../kitchen-notes/KitchenNotes';
 import { KitchenEvents } from './KitchenEvents';
 import { KitchenEventCalendar } from './KitchenEventCalendar';
 import { FoodChat } from './FoodChat';
-import { RecipeImportModal } from './RecipeImportModal';
+import { RecipeList } from './RecipeList';
 
 const PLANNER_TAB = 'planner';
+const RECIPES_TAB = 'recipes';
 const CALENDAR_TAB = 'calendar';
+const TABS = [PLANNER_TAB, RECIPES_TAB, CALENDAR_TAB];
+const TAB_STORAGE_KEY = 'food-planner:active-tab';
 
 function FoodPlannerContent() {
   const { t } = useTranslation();
-  const [importOpen, setImportOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(PLANNER_TAB);
   const [groceryRefresh, setGroceryRefresh] = useState(0);
   const [calendarRefresh, setCalendarRefresh] = useState(0);
 
   const bumpGrocery = () => setGroceryRefresh(n => n + 1);
   const bumpCalendar = () => setCalendarRefresh(n => n + 1);
 
+  useEffect(() => {
+    const stored = localStorage.getItem(TAB_STORAGE_KEY);
+    if (stored && TABS.includes(stored)) setActiveTab(stored);
+  }, []);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    localStorage.setItem(TAB_STORAGE_KEY, value);
+  };
+
   return (
     <div className="flex w-full flex-col p-4 sm:p-6 md:px-8 md:py-8">
-      <Tabs defaultValue={PLANNER_TAB} className="flex w-full flex-col">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="flex w-full flex-col"
+      >
         <TabsList className="self-start">
           <TabsTrigger value={PLANNER_TAB}>
             {t('FOOD_PLANNER.TABS.PLANNER')}
+          </TabsTrigger>
+          <TabsTrigger value={RECIPES_TAB}>
+            {t('FOOD_PLANNER.TABS.RECIPES')}
           </TabsTrigger>
           <TabsTrigger value={CALENDAR_TAB}>
             {t('FOOD_PLANNER.TABS.CALENDAR')}
@@ -62,12 +81,7 @@ function FoodPlannerContent() {
             </div>
 
             <div className="flex min-h-0 flex-col gap-3 lg:col-span-2 lg:overflow-y-auto">
-              <Button className="w-full" onClick={() => setImportOpen(true)}>
-                Import from Recipes
-              </Button>
-              <CardContainer title={t('FOOD_PLANNER.COLUMNS.KITCHEN_EVENTS')}>
-                <KitchenEvents refreshSignal={calendarRefresh} />
-              </CardContainer>
+              <KitchenEvents refreshSignal={calendarRefresh} />
 
               <CardContainer title={t('FOOD_PLANNER.COLUMNS.FOOD_CHAT')}>
                 <FoodChat
@@ -81,6 +95,10 @@ function FoodPlannerContent() {
           </div>
         </TabsContent>
 
+        <TabsContent value={RECIPES_TAB}>
+          <RecipeList onGroceryAdded={bumpGrocery} />
+        </TabsContent>
+
         <TabsContent value={CALENDAR_TAB}>
           <KitchenEventCalendar
             refreshSignal={calendarRefresh}
@@ -88,12 +106,6 @@ function FoodPlannerContent() {
           />
         </TabsContent>
       </Tabs>
-
-      <RecipeImportModal
-        open={importOpen}
-        onOpenChange={setImportOpen}
-        onAdded={bumpGrocery}
-      />
     </div>
   );
 }
