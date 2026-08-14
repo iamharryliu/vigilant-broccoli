@@ -18,7 +18,7 @@ const AuthContext = createContext<Session | null>(null);
 
 export const useAuth = () => useContext(AuthContext);
 
-export const getGoogleToken = () => localStorage.getItem(GOOGLE_TOKEN_KEY);
+export const getGoogleToken = () => sessionStorage.getItem(GOOGLE_TOKEN_KEY);
 
 export const getSupabaseAccessToken = async () => {
   const { data } = await supabase.auth.getSession();
@@ -43,7 +43,7 @@ export const buildAuthHeaders = async (options?: {
 };
 
 export const signOut = async () => {
-  localStorage.removeItem(GOOGLE_TOKEN_KEY);
+  sessionStorage.removeItem(GOOGLE_TOKEN_KEY);
   await supabase.auth.signOut();
 };
 
@@ -59,7 +59,7 @@ export default function AuthProvider({
   useEffect(() => {
     const applySession = (next: Session | null) => {
       if (next && !isAllowedEmail(next.user.email)) {
-        localStorage.removeItem(GOOGLE_TOKEN_KEY);
+        sessionStorage.removeItem(GOOGLE_TOKEN_KEY);
         supabase.auth.signOut();
         setSession(null);
         return;
@@ -73,7 +73,7 @@ export default function AuthProvider({
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.provider_token) {
-        localStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
+        sessionStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
       }
       applySession(session);
     });
