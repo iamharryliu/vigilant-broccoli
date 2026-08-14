@@ -64,4 +64,12 @@ export const GithubCLICommand = {
   listPagesRepos: () =>
     `gh api user/repos --paginate --jq '.[] | select(.has_pages == true) | {full_name, html_url}'`,
   getRepoPages: (fullName: string) => `gh api repos/${fullName}/pages`,
+  dispatchWorkflow: (
+    repo: string,
+    workflowFile: string,
+    inputs: Record<string, string>,
+  ) =>
+    `gh workflow run ${workflowFile} -R ${repo} ${Object.entries(inputs)
+      .map(([key, value]) => `-f ${key}="${value}"`)
+      .join(' ')}`,
 };
