@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   CardContainer,
   Tabs,
@@ -22,10 +23,15 @@ const RECIPES_TAB = 'recipes';
 const CALENDAR_TAB = 'calendar';
 const TABS = [PLANNER_TAB, RECIPES_TAB, CALENDAR_TAB];
 const TAB_STORAGE_KEY = 'food-planner:active-tab';
+const TAB_PARAM = 'tab';
 
 function FoodPlannerContent() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState(PLANNER_TAB);
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get(TAB_PARAM);
+  const [activeTab, setActiveTab] = useState(() =>
+    tabParam && TABS.includes(tabParam) ? tabParam : PLANNER_TAB,
+  );
   const [groceryRefresh, setGroceryRefresh] = useState(0);
   const [calendarRefresh, setCalendarRefresh] = useState(0);
 
@@ -33,9 +39,10 @@ function FoodPlannerContent() {
   const bumpCalendar = () => setCalendarRefresh(n => n + 1);
 
   useEffect(() => {
+    if (tabParam) return;
     const stored = localStorage.getItem(TAB_STORAGE_KEY);
     if (stored && TABS.includes(stored)) setActiveTab(stored);
-  }, []);
+  }, [tabParam]);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -96,7 +103,10 @@ function FoodPlannerContent() {
         </TabsContent>
 
         <TabsContent value={RECIPES_TAB}>
-          <RecipeList onGroceryAdded={bumpGrocery} />
+          <RecipeList
+            onGroceryAdded={bumpGrocery}
+            onCalendarEventAdded={bumpCalendar}
+          />
         </TabsContent>
 
         <TabsContent value={CALENDAR_TAB}>
@@ -113,7 +123,9 @@ function FoodPlannerContent() {
 export default function FoodPlannerPage() {
   return (
     <I18nProvider>
-      <FoodPlannerContent />
+      <Suspense fallback={null}>
+        <FoodPlannerContent />
+      </Suspense>
     </I18nProvider>
   );
 }
