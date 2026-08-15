@@ -1,7 +1,7 @@
 url: https://staging-vb-express.fly.dev/
-status: down
-code: 0
-responseTime: 0
-lastUpdated: 2026-08-15T18:35:50.163Z
+status: up
+code: 200
+responseTime: 62
+lastUpdated: 2026-08-15T19:24:22.043Z
 startTime: 2026-07-13T08:19:17.821Z
 generator: Upptime <https://github.com/upptime/upptime>
