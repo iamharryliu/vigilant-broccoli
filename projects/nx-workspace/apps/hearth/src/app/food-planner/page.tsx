@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, X } from 'lucide-react';
 import {
   Button,
   CardContainer,
@@ -63,6 +63,8 @@ function FoodPlannerContent() {
     });
   };
 
+  const toggleChat = () => (chatOpen ? closeChat() : openChat());
+
   useEffect(() => {
     if (tabParam) return;
     const stored = localStorage.getItem(TAB_STORAGE_KEY);
@@ -99,8 +101,8 @@ function FoodPlannerContent() {
         </TabsList>
 
         <TabsContent value={PLANNER_TAB} className="lg:h-[calc(100vh-169px)]">
-          <div className="grid h-full grid-cols-1 items-stretch gap-6 lg:min-h-0 lg:grid-cols-5">
-            <div className="flex min-h-0 flex-col gap-6 lg:col-span-1 lg:overflow-y-auto">
+          <div className="grid h-full grid-cols-1 items-stretch gap-6 lg:min-h-0 lg:grid-cols-3">
+            <div className="flex min-h-0 flex-col gap-6 lg:overflow-y-auto">
               <CardContainer title={t('FOOD_PLANNER.COLUMNS.GROCERY')}>
                 <GroceryList
                   refreshSignal={groceryRefresh}
@@ -113,11 +115,11 @@ function FoodPlannerContent() {
               </CardContainer>
             </div>
 
-            <div className="h-96 min-h-0 lg:col-span-2 lg:h-full">
+            <div className="h-96 min-h-0 lg:h-full">
               <KitchenNotes />
             </div>
 
-            <div className="flex min-h-0 flex-col gap-3 lg:col-span-2">
+            <div className="flex min-h-0 flex-col gap-3">
               <div className="flex shrink-0 items-center justify-between">
                 <Text size="5" weight="bold">
                   {t('FOOD_PLANNER.TABS.CALENDAR')}
@@ -126,9 +128,9 @@ function FoodPlannerContent() {
                   variant="outline"
                   size="icon"
                   aria-label={t('FOOD_PLANNER.COLUMNS.FOOD_CHAT')}
-                  onClick={openChat}
+                  onClick={toggleChat}
                 >
-                  <MessageCircle size={18} />
+                  {chatOpen ? <X size={18} /> : <MessageCircle size={18} />}
                 </Button>
               </div>
 
