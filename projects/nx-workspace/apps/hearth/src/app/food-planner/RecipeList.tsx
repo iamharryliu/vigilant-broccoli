@@ -415,7 +415,7 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
         </Dialog.Root>
       </div>
 
-      <div className="hidden md:flex md:h-[75vh] md:flex-col">
+      <div className="hidden md:flex md:h-full md:flex-col">
         {recipesLoaded ? (
           <DocsExplorer
             nodes={nodes}
