@@ -119,13 +119,14 @@ export default function WhereIsPage() {
       tags: newItem?.tags ?? tags,
       images: [],
       imageUrls: newItem?.imageUrls ?? [],
-    } as WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'>;
+      imageKeys: newItem?.imageKeys ?? [],
+    } as WhereIsFormValues & Pick<WhereIsItem, 'imageUrls' | 'imageKeys'>;
   };
 
   const updateItem = async (form: WhereIsFormValues): Promise<void> => {
     const original = items.find(i => i.id === form.id);
-    const removedImageUrls = (original?.imageUrls ?? []).filter(
-      url => !(form.imageUrls ?? []).includes(url),
+    const removedImageKeys = (original?.imageKeys ?? []).filter(
+      key => !(form.imageKeys ?? []).includes(key),
     );
     const accessToken = session?.access_token ?? '';
     const newImages = await uploadPreviewImages(form.images, accessToken);
@@ -141,7 +142,7 @@ export default function WhereIsPage() {
         title: form.title,
         description: form.description,
         tags: form.tags,
-        removedImageUrls,
+        removedImageKeys,
         newImages,
       }),
     });
@@ -169,6 +170,7 @@ export default function WhereIsPage() {
     tags: item.tags,
     images: [] as PreviewImage[],
     imageUrls: item.imageUrls,
+    imageKeys: item.imageKeys,
     createdAt: item.createdAt,
   }));
 

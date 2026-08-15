@@ -17,7 +17,9 @@ const getClient = () =>
     },
   });
 
-const BUCKET_NAME = 'home-management';
+// Dedicated private bucket (never given a public r2.dev hostname), so these
+// presigned URLs are the only way to reach a doc's file.
+const BUCKET_NAME = 'home-docs';
 const PRESIGNED_UPLOAD_EXPIRY_SECONDS = 300;
 const PRESIGNED_DOWNLOAD_EXPIRY_SECONDS = 300;
 

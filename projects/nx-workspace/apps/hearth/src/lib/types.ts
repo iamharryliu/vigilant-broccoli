@@ -127,6 +127,7 @@ export interface WhereIsItem {
   description: string;
   tags: string[];
   imageUrls: string[];
+  imageKeys: string[];
   createdAt: string;
 }
 

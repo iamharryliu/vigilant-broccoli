@@ -47,8 +47,8 @@ export default function WhereIsDetailPage() {
   }, [id, session?.access_token]);
 
   const handleUpdate = async (form: WhereIsFormValues) => {
-    const removedImageUrls = (item?.imageUrls ?? []).filter(
-      url => !(form.imageUrls ?? []).includes(url),
+    const removedImageKeys = (item?.imageKeys ?? []).filter(
+      key => !(form.imageKeys ?? []).includes(key),
     );
     const accessToken = session?.access_token ?? '';
     const newImages = await uploadPreviewImages(form.images, accessToken);
@@ -64,7 +64,7 @@ export default function WhereIsDetailPage() {
         title: form.title,
         description: form.description,
         tags: form.tags,
-        removedImageUrls,
+        removedImageKeys,
         newImages,
       }),
     });
@@ -97,6 +97,7 @@ export default function WhereIsDetailPage() {
     tags: item.tags,
     images: [],
     imageUrls: item.imageUrls,
+    imageKeys: item.imageKeys,
   };
 
   return (
