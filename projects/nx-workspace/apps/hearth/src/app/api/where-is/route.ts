@@ -61,19 +61,26 @@ export async function GET(request: NextRequest) {
 
   const { data: items } = await query;
 
-  const result = (items ?? []).map(item => ({
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    tags: item.tags,
-    homeId: item.home_id,
-    imageUrls: (
-      item.where_is_images as { r2_key: string; sort_order: number }[]
-    )
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .map(img => getImageUrl(img.r2_key)),
-    createdAt: item.created_at,
-  }));
+  const result = await Promise.all(
+    (items ?? []).map(async item => {
+      const sortedImages = (
+        item.where_is_images as { r2_key: string; sort_order: number }[]
+      ).sort((a, b) => a.sort_order - b.sort_order);
+
+      return {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        tags: item.tags,
+        homeId: item.home_id,
+        imageUrls: await Promise.all(
+          sortedImages.map(img => getImageUrl(img.r2_key)),
+        ),
+        imageKeys: sortedImages.map(img => img.r2_key),
+        createdAt: item.created_at,
+      };
+    }),
+  );
 
   return Response.json(id ? (result[0] ?? null) : result);
 }
@@ -158,13 +165,13 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const { id, title, description, tags, removedImageUrls, newImages } =
+  const { id, title, description, tags, removedImageKeys, newImages } =
     (await request.json()) as {
       id: string;
       title: string;
       description: string;
       tags: string[];
-      removedImageUrls: string[];
+      removedImageKeys: string[];
       newImages: StagedImageRef[];
     };
   const supabase = createServerClient(getBearerToken(request));
@@ -181,16 +188,14 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  if (removedImageUrls?.length) {
+  if (removedImageKeys?.length) {
     const { data: allImages } = await supabase
       .from('where_is_images')
       .select('id, r2_key')
       .eq('item_id', id);
 
-    const removed = new Set(removedImageUrls);
-    const toRemove = (allImages ?? []).filter(img =>
-      removed.has(getImageUrl(img.r2_key)),
-    );
+    const removed = new Set(removedImageKeys);
+    const toRemove = (allImages ?? []).filter(img => removed.has(img.r2_key));
 
     if (toRemove.length) {
       await supabase

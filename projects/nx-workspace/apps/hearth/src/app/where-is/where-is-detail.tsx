@@ -61,8 +61,8 @@ export const WhereIsDetail = ({
   }, [id, session?.access_token]);
 
   const handleUpdate = async (form: WhereIsFormValues) => {
-    const removedImageUrls = (item?.imageUrls ?? []).filter(
-      url => !(form.imageUrls ?? []).includes(url),
+    const removedImageKeys = (item?.imageKeys ?? []).filter(
+      key => !(form.imageKeys ?? []).includes(key),
     );
     const accessToken = session?.access_token ?? '';
     const newImages = await uploadPreviewImages(form.images, accessToken);
@@ -78,7 +78,7 @@ export const WhereIsDetail = ({
         title: form.title,
         description: form.description,
         tags: form.tags,
-        removedImageUrls,
+        removedImageKeys,
         newImages,
       }),
     });
@@ -113,6 +113,7 @@ export const WhereIsDetail = ({
     tags: item.tags,
     images: [],
     imageUrls: item.imageUrls,
+    imageKeys: item.imageKeys,
   };
 
   return (
