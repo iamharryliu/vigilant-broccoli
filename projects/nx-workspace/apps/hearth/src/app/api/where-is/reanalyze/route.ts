@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
   const storedImages = await Promise.all(
     imageRows.map(async row => {
-      const res = await fetch(getImageUrl(row.r2_key));
+      const res = await fetch(await getImageUrl(row.r2_key));
       const buffer = Buffer.from(await res.arrayBuffer());
       const compressed = await compressForLlm(buffer);
       return { name: row.r2_key, ...compressed };

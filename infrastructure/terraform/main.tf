@@ -41,7 +41,7 @@ terraform {
     }
     supabase = {
       source  = "supabase/supabase"
-      version = "~> 1.9"
+      version = "~> 1.10"
     }
   }
 }
@@ -75,6 +75,13 @@ provider "supabase" {}
 locals {
   oci_config       = file("~/.oci/config")
   oci_tenancy_ocid = regex("tenancy=(ocid1\\.tenancy\\.[^\n]+)", local.oci_config)[0]
+
+  hearth_r2_cors_origins = [
+    "http://localhost:3000",
+    "http://localhost:4200",
+    "https://staging-hearth.vercel.app",
+    "https://production-hearth.vercel.app",
+  ]
 }
 
 data "google_compute_image" "vb_vm" {
@@ -631,22 +638,49 @@ resource "cloudflare_r2_bucket" "vibecheck" {
   location   = "ENAM"
 }
 
-# hearth's bucket, created before Terraform adoption — not itself a cloudflare_r2_bucket resource here,
-# but bucket_name is just a string so CORS can still be managed without importing the bucket.
-resource "cloudflare_r2_bucket_cors" "home_management" {
+# Private buckets for hearth's home-docs and where-is features. Both used to
+# share a single "home-management" bucket that had a public r2.dev "Public
+# Development URL" enabled, which made every object in it fetchable by anyone
+# with the key, regardless of the app's presigned/expiring download URLs. That
+# bucket has since been emptied and deleted; neither replacement below is ever
+# given a public r2.dev hostname, so these files are only reachable through the
+# app's short-lived presigned URLs.
+resource "cloudflare_r2_bucket" "home_docs" {
+  account_id = var.cloudflare_account_id
+  name       = "home-docs"
+  location   = "ENAM"
+}
+
+resource "cloudflare_r2_bucket_cors" "home_docs" {
   account_id  = var.cloudflare_account_id
-  bucket_name = "home-management"
+  bucket_name = cloudflare_r2_bucket.home_docs.name
 
   rules = [
     {
       allowed = {
         methods = ["PUT"]
-        origins = [
-          "http://localhost:3000",
-          "http://localhost:4200",
-          "https://staging-hearth.vercel.app",
-          "https://production-hearth.vercel.app",
-        ]
+        origins = local.hearth_r2_cors_origins
+        headers = ["Content-Type"]
+      }
+    }
+  ]
+}
+
+resource "cloudflare_r2_bucket" "where_is" {
+  account_id = var.cloudflare_account_id
+  name       = "where-is"
+  location   = "ENAM"
+}
+
+resource "cloudflare_r2_bucket_cors" "where_is" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.where_is.name
+
+  rules = [
+    {
+      allowed = {
+        methods = ["PUT"]
+        origins = local.hearth_r2_cors_origins
         headers = ["Content-Type"]
       }
     }

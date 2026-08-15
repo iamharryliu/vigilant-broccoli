@@ -5,7 +5,6 @@ import {
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { R2_PUBLIC_URL } from '../../config';
 import { ImageValidationError } from './image-processor';
 
 const getClient = () =>
@@ -18,8 +17,13 @@ const getClient = () =>
     },
   });
 
-const BUCKET_NAME = 'home-management';
+// Dedicated private bucket (never given a public r2.dev hostname), so these
+// presigned URLs are the only way to reach an item's photos.
+const BUCKET_NAME = 'where-is';
 const PRESIGNED_UPLOAD_EXPIRY_SECONDS = 300;
+// Longer than docs' download expiry since these render inline as <img> across
+// list/detail views that can stay open a while, not just a single download click.
+const PRESIGNED_DOWNLOAD_EXPIRY_SECONDS = 3600;
 
 export const uploadImage = async (
   key: string,
@@ -68,4 +72,9 @@ export const readImage = async (
 export const deleteImage = async (key: string) =>
   getClient().send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: key }));
 
-export const getImageUrl = (key: string) => `${R2_PUBLIC_URL}/${key}`;
+export const getImageUrl = (key: string) =>
+  getSignedUrl(
+    getClient(),
+    new GetObjectCommand({ Bucket: BUCKET_NAME, Key: key }),
+    { expiresIn: PRESIGNED_DOWNLOAD_EXPIRY_SECONDS },
+  );
