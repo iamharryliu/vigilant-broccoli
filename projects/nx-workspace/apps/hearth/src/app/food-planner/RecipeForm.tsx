@@ -8,7 +8,7 @@ import {
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
-import { MockRecipe } from './recipes.consts';
+import { Recipe } from './recipes.types';
 
 const SAVE_LABEL = 'Save';
 const SAVING_LABEL = 'Saving…';
@@ -17,7 +17,7 @@ export function RecipeForm({
   formType,
   initialFormValues,
   submitHandler,
-}: CRUDFormProps<MockRecipe>) {
+}: CRUDFormProps<Recipe>) {
   const [title, setTitle] = useState(initialFormValues.title);
   const [description, setDescription] = useState(initialFormValues.description);
   const [markdown, setMarkdown] = useState(initialFormValues.markdown);
