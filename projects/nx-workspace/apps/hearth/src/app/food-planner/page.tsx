@@ -102,7 +102,10 @@ function FoodPlannerContent() {
           </div>
         </TabsContent>
 
-        <TabsContent value={RECIPES_TAB}>
+        <TabsContent
+          value={RECIPES_TAB}
+          className="md:h-[calc(100vh-169px)]"
+        >
           <RecipeList
             onGroceryAdded={bumpGrocery}
             onCalendarEventAdded={bumpCalendar}
