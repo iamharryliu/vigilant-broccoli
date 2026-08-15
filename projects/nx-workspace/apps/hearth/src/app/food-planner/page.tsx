@@ -14,6 +14,8 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
+import { useIsMobile } from '../../lib/use-is-mobile';
+import { TopbarSlot } from '../providers/topbar-slot-provider';
 import { GroceryList } from '../grocery/GroceryList';
 import { KitchenChoresList } from '../kitchen-chores/KitchenChoresList';
 import { KitchenNotes } from '../kitchen-notes/KitchenNotes';
@@ -33,6 +35,7 @@ const FOOD_CHAT_OPEN_VALUE = '1';
 
 function FoodPlannerContent() {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -76,6 +79,20 @@ function FoodPlannerContent() {
     localStorage.setItem(TAB_STORAGE_KEY, value);
   };
 
+  const tabTriggers = (
+    <>
+      <TabsTrigger value={PLANNER_TAB}>
+        {t('FOOD_PLANNER.TABS.PLANNER')}
+      </TabsTrigger>
+      <TabsTrigger value={RECIPES_TAB}>
+        {t('FOOD_PLANNER.TABS.RECIPES')}
+      </TabsTrigger>
+      <TabsTrigger value={CALENDAR_TAB}>
+        {t('FOOD_PLANNER.TABS.CALENDAR')}
+      </TabsTrigger>
+    </>
+  );
+
   return (
     <div
       className={cn(
@@ -88,19 +105,18 @@ function FoodPlannerContent() {
         onValueChange={handleTabChange}
         className="flex w-full flex-col"
       >
-        <TabsList className="self-start">
-          <TabsTrigger value={PLANNER_TAB}>
-            {t('FOOD_PLANNER.TABS.PLANNER')}
-          </TabsTrigger>
-          <TabsTrigger value={RECIPES_TAB}>
-            {t('FOOD_PLANNER.TABS.RECIPES')}
-          </TabsTrigger>
-          <TabsTrigger value={CALENDAR_TAB}>
-            {t('FOOD_PLANNER.TABS.CALENDAR')}
-          </TabsTrigger>
-        </TabsList>
+        {isMobile ? (
+          <TabsList className="self-start">{tabTriggers}</TabsList>
+        ) : (
+          <TopbarSlot>
+            <TabsList>{tabTriggers}</TabsList>
+          </TopbarSlot>
+        )}
 
-        <TabsContent value={PLANNER_TAB} className="lg:h-[calc(100vh-169px)]">
+        <TabsContent
+          value={PLANNER_TAB}
+          className="md:mt-0 lg:h-[calc(100dvh_-_var(--topbar-h)_-_4rem)]"
+        >
           <div className="grid h-full grid-cols-1 items-stretch gap-6 lg:min-h-0 lg:grid-cols-3">
             <div className="flex min-h-0 flex-col gap-6 lg:overflow-y-auto">
               <CardContainer title={t('FOOD_PLANNER.COLUMNS.GROCERY')}>
@@ -144,7 +160,7 @@ function FoodPlannerContent() {
 
         <TabsContent
           value={RECIPES_TAB}
-          className="md:h-[calc(100vh-169px)]"
+          className="md:mt-0 md:h-[calc(100dvh_-_var(--topbar-h)_-_4rem)]"
         >
           <RecipeList
             onGroceryAdded={bumpGrocery}
@@ -152,7 +168,7 @@ function FoodPlannerContent() {
           />
         </TabsContent>
 
-        <TabsContent value={CALENDAR_TAB}>
+        <TabsContent value={CALENDAR_TAB} className="md:mt-0">
           <KitchenEventCalendar
             refreshSignal={calendarRefresh}
             onChanged={bumpCalendar}

@@ -12,7 +12,7 @@ export default function WhiteboardPage() {
   if (!homeId || !session?.user.id) return null;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 h-[calc(100vh-8rem)]">
+    <div className="max-w-3xl mx-auto p-6 h-[calc(100dvh_-_var(--topbar-h)_-_5rem)]">
       <WhiteboardEditor
         homeId={homeId}
         token={token}
