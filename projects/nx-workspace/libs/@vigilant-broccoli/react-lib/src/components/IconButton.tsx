@@ -1,5 +1,6 @@
 import {
   ArrowLeft,
+  Bell,
   Check,
   Copy,
   Download,
@@ -17,6 +18,7 @@ import {
   Play,
   Plus,
   Printer,
+  QrCode,
   RotateCcw,
   Search,
   Send,
@@ -61,6 +63,8 @@ export const ICON_BUTTON_ICONS = {
   graph: Waypoints,
   printer: Printer,
   share: Share2,
+  'qr-code': QrCode,
+  bell: Bell,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconButtonIcon = keyof typeof ICON_BUTTON_ICONS;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { IconButton } from '@vigilant-broccoli/react-lib';
+import { IconButton, Text } from '@vigilant-broccoli/react-lib';
 import { ROUTES } from '../../lib/routes';
 
 const QR_CODE_ENDPOINT = '/api/qr-code';
@@ -75,6 +75,9 @@ export const WhereIsLabel = ({ itemId, title }: Props) => {
 
   return (
     <div className="flex flex-col items-center gap-2 border border-gray-200 rounded-lg p-4 print:border-none print:justify-center print:h-screen">
+      <Text size="4" weight="bold" className="text-center">
+        {title}
+      </Text>
       <img
         src={qrDataUrl}
         alt={`QR code linking to ${title}`}

@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ChevronRight, X } from 'lucide-react';
+import { Dialog } from '@radix-ui/themes';
+import { ChevronRight } from 'lucide-react';
 import {
   Badge,
+  cn,
   CRUDItemFormDialog,
   EllipsisCTA,
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  IconButton,
   ImageCarouselDialog,
   ImageFilmstrip,
   Text,
@@ -33,7 +37,6 @@ const WHERE_IS_COPY = {
 type Props = {
   id: string;
   variant: 'page' | 'panel';
-  onClose?: () => void;
   onUpdated?: (item: WhereIsItem) => void;
   onDeleted?: () => void;
 };
@@ -41,13 +44,13 @@ type Props = {
 export const WhereIsDetail = ({
   id,
   variant,
-  onClose,
   onUpdated,
   onDeleted,
 }: Props) => {
   const session = useAuth();
   const [item, setItem] = useState<WhereIsItem | null>(null);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -136,20 +139,16 @@ export const WhereIsDetail = ({
             {item.title}
           </Text>
           <div className="flex items-center gap-1 shrink-0">
+            <IconButton
+              variant="ghost"
+              icon="qr-code"
+              aria-label="Show QR code"
+              onClick={() => setQrOpen(true)}
+            />
             <EllipsisCTA
               onUpdate={() => setUpdateOpen(true)}
               onDelete={handleDelete}
             />
-            {variant === 'panel' && onClose && (
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close"
-                className="rounded-sm p-1.5 opacity-70 hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <X size={18} />
-              </button>
-            )}
           </div>
         </div>
 
@@ -204,7 +203,29 @@ export const WhereIsDetail = ({
         )}
       </div>
 
-      <WhereIsLabel itemId={item.id} title={item.title} />
+      <Dialog.Root open={qrOpen} onOpenChange={setQrOpen}>
+        <Dialog.Content
+          className={cn(
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+            'max-sm:flex max-sm:flex-col',
+          )}
+          style={{ maxWidth: 320 }}
+        >
+          <div className="relative flex shrink-0 items-center justify-center">
+            <IconButton
+              variant="ghost"
+              icon="arrow-left"
+              aria-label="Back"
+              onClick={() => setQrOpen(false)}
+              className="absolute left-0 sm:hidden"
+            />
+            <Dialog.Title className="text-center">QR Code</Dialog.Title>
+          </div>
+          <div className="max-sm:flex max-sm:flex-1 max-sm:items-center max-sm:justify-center">
+            <WhereIsLabel itemId={item.id} title={item.title} />
+          </div>
+        </Dialog.Content>
+      </Dialog.Root>
     </div>
   );
 };

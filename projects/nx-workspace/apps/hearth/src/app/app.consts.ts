@@ -14,6 +14,7 @@ import {
   Sparkles,
   StickyNote,
   MessageCircle,
+  Home,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -64,6 +65,16 @@ const DEV_FEATURES_LINK: NavLink = {
 };
 
 export const NAV_LINKS: NavLink[] = [
+  {
+    label: 'Home',
+    href: ROUTES.HOME,
+    icon: Home,
+    mobileOnlyChildren: true,
+    children: [
+      { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
+      { label: 'Calendar', href: ROUTES.OVERALL_CALENDAR, icon: Calendar },
+    ],
+  },
   { label: 'Where Is', href: ROUTES.WHERE_IS, icon: PackageSearch },
   {
     label: 'Food Planner',
@@ -78,9 +89,7 @@ export const NAV_LINKS: NavLink[] = [
       { label: 'Food Assistant', href: ROUTES.FOOD_CHAT, icon: MessageCircle },
     ],
   },
-  { label: 'Calendar', href: ROUTES.OVERALL_CALENDAR, icon: Calendar },
   { label: 'Find Members', href: ROUTES.LOCATOR, icon: MapPin },
-  { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
   ...(IS_DEV ? [DEV_FEATURES_LINK] : []),
   { label: 'Settings', href: ROUTES.SETTINGS, icon: Settings },
 ];
