@@ -10,7 +10,7 @@ export function HomePage() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-6 pb-16">
-      <header className="mb-12">
+      <header className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
       </header>
 
