@@ -1,9 +1,10 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { Theme } from '@radix-ui/themes';
-import Fuse from 'fuse.js';
-import { Search } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import {
   DarkModeIconButton,
+  Sidebar,
+  SidebarCTA,
   Switch,
   Heading,
   Text,
@@ -271,7 +272,15 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
 ];
 
 const ALL_ENTRIES: SandboxEntry[] = [...COMPONENT_ENTRIES, ...UTILITY_ENTRIES];
-const FUSE_OPTIONS = { keys: ['label'], threshold: 0.3 };
+
+const SIDEBAR_POSITION_CLASS = 'fixed top-0 left-0 bottom-0 z-30 peer';
+const CONTENT_WRAPPER_CLASS =
+  'h-full overflow-y-auto pt-12 md:pt-0 pl-0 md:pl-14 md:peer-hover:pl-48 transition-[padding] duration-200';
+const TOPBAR_CLASS =
+  'md:hidden fixed top-0 left-0 right-0 z-10 flex h-12 items-center gap-3 border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-950';
+const MENU_BUTTON_CLASS =
+  'cursor-pointer rounded-md p-1 text-gray-500 hover:bg-gray-50 hover:text-black dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white';
+const OPEN_MENU_LABEL = 'Open menu';
 
 export interface ComponentSandboxProps {
   title?: string;
@@ -279,77 +288,53 @@ export interface ComponentSandboxProps {
   wrapInTheme?: boolean;
 }
 
-interface SandboxSidebarProps {
-  query: string;
-  onQueryChange: (v: string) => void;
+type BuildSidebarItemsArgs = {
   entries: SandboxEntry[];
   selectedId: string;
   onSelect: (id: string) => void;
-}
+};
 
-const SandboxSidebar = ({
-  query,
-  onQueryChange,
+const buildSidebarItems = ({
   entries,
   selectedId,
   onSelect,
-}: SandboxSidebarProps) => {
-  const groups = useMemo(
-    () =>
-      Object.values(CATEGORY)
-        .map(category => ({
-          category,
-          items: entries.filter(entry => entry.category === category),
-        }))
-        .filter(group => group.items.length > 0),
-    [entries],
-  );
+}: BuildSidebarItemsArgs): SidebarCTA[] =>
+  Object.values(CATEGORY)
+    .map(category => ({
+      category,
+      items: entries.filter(entry => entry.category === category),
+    }))
+    .filter(group => group.items.length > 0)
+    .map(group => ({
+      label: group.category,
+      isActive: group.items.some(entry => entry.id === selectedId),
+      children: group.items.map(entry => ({
+        label: entry.label,
+        isActive: entry.id === selectedId,
+        onClick: () => onSelect(entry.id),
+      })),
+    }));
 
-  return (
-    <nav className="w-64 shrink-0 h-full border-r border-gray-300 dark:border-gray-700 flex flex-col">
-      <div className="p-3 border-b border-gray-300 dark:border-gray-700">
-        <div className="flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-700 px-2 py-1.5">
-          <Search className="h-4 w-4 text-gray-400 shrink-0" />
-          <input
-            type="text"
-            value={query}
-            onChange={e => onQueryChange(e.target.value)}
-            placeholder="Search components..."
-            className="w-full bg-transparent outline-none text-sm placeholder-gray-400 dark:text-white"
-          />
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto p-2">
-        {groups.length === 0 && (
-          <Text color="gray" size="2" className="block px-2 py-4">
-            No components found
-          </Text>
-        )}
-        {groups.map(group => (
-          <div key={group.category} className="mb-4">
-            <div className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
-              {group.category}
-            </div>
-            {group.items.map(entry => (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => onSelect(entry.id)}
-                className={`w-full text-left text-sm rounded-md px-2 py-1.5 transition-colors ${
-                  entry.id === selectedId
-                    ? 'font-medium text-black bg-gray-100 dark:text-white dark:bg-gray-800'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-black hover:bg-gray-50 dark:hover:text-white dark:hover:bg-gray-800'
-                }`}
-              >
-                {entry.label}
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
-    </nav>
-  );
-};
+interface SandboxTopbarProps {
+  title: string;
+  onMenuClick: () => void;
+}
+
+const SandboxTopbar = ({ title, onMenuClick }: SandboxTopbarProps) => (
+  <header className={TOPBAR_CLASS}>
+    <button
+      type="button"
+      aria-label={OPEN_MENU_LABEL}
+      onClick={onMenuClick}
+      className={MENU_BUTTON_CLASS}
+    >
+      <Menu size={20} />
+    </button>
+    <Text weight="medium" size="3">
+      {title}
+    </Text>
+  </header>
+);
 
 interface SandboxBodyProps {
   title: string;
@@ -366,29 +351,39 @@ const SandboxBody = ({
   setDark,
   showThemeToggle,
 }: SandboxBodyProps) => {
-  const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(ALL_ENTRIES[0].id);
-  const fuse = useMemo(() => new Fuse(ALL_ENTRIES, FUSE_OPTIONS), []);
-
-  const filteredEntries = query.trim()
-    ? fuse.search(query.trim()).map(result => result.item)
-    : ALL_ENTRIES;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const selectedEntry =
     ALL_ENTRIES.find(entry => entry.id === selectedId) ?? ALL_ENTRIES[0];
 
-  return (
-    <div className="flex h-full">
-      <SandboxSidebar
-        query={query}
-        onQueryChange={setQuery}
-        entries={filteredEntries}
-        selectedId={selectedId}
-        onSelect={id => {
+  const items = useMemo(
+    () =>
+      buildSidebarItems({
+        entries: ALL_ENTRIES,
+        selectedId,
+        onSelect: id => {
           setSelectedId(id);
-          setQuery('');
-        }}
+          setSidebarOpen(false);
+        },
+      }),
+    [selectedId],
+  );
+
+  return (
+    <div className="h-full">
+      <Sidebar
+        items={items}
+        branding={{ label: title }}
+        searchable
+        className={SIDEBAR_POSITION_CLASS}
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
       />
-      <div className="flex-1 h-full overflow-y-auto">
+      <SandboxTopbar
+        title={title}
+        onMenuClick={() => setSidebarOpen(open => !open)}
+      />
+      <div className={CONTENT_WRAPPER_CLASS}>
         <div className="p-6 max-w-4xl">
           <div className="flex justify-between items-center mb-2">
             <Heading size="8">{title}</Heading>
