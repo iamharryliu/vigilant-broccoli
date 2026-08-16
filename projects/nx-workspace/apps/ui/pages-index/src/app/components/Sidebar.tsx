@@ -10,11 +10,11 @@ import { NAV_LINKS, NavLink } from '../consts/navLinks';
 const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 
 type RouterLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
-  href?: string;
+  href: string;
 };
 
 const RouterLink = ({ href, ...props }: RouterLinkProps) => (
-  <Link to={href ?? '/'} {...props} />
+  <Link to={href} {...props} />
 );
 
 const matchesHref = (href: string, pathname: string): boolean =>
