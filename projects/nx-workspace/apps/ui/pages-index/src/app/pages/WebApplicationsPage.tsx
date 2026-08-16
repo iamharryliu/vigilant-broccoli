@@ -8,7 +8,7 @@ export function WebApplicationsPage() {
   const { t } = useTranslation();
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <main className="mx-auto max-w-3xl px-4 sm:px-6 py-16">
       <PageHeader title={t('WEB_APPLICATIONS_PAGE.TITLE')} />
 
       <section className="mb-12">

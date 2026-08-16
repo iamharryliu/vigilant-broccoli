@@ -73,7 +73,7 @@ export function ReadmePage({
   }, [source?.url, source?.parseKind]);
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <main className="mx-auto max-w-3xl px-4 sm:px-6 py-16">
       <PageHeader title={title} />
 
       {!source && notFoundMessage && (

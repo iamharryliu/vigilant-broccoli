@@ -10,7 +10,7 @@ export function ApiServiceDocsPage() {
 
   if (!service) {
     return (
-      <main className="px-6 py-16">
+      <main className="px-4 sm:px-6 py-16">
         <p className="text-sm text-red-500">{t('README_PAGE.NOT_FOUND')}</p>
       </main>
     );

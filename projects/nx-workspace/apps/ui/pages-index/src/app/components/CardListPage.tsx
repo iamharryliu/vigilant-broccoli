@@ -19,7 +19,7 @@ interface CardListPageProps {
 
 export function CardListPage({ title, items }: CardListPageProps) {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <main className="mx-auto max-w-3xl px-4 sm:px-6 py-16">
       <PageHeader title={title} />
       <CardGrid>
         {items.map(item => (
