@@ -3,6 +3,7 @@ import { I18nProvider } from './i18n';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
 import { OpenSourcePage } from './pages/OpenSourcePage';
+import { GithubReposPage } from './pages/GithubReposPage';
 import { GithubReadmePage } from './pages/GithubReadmePage';
 import { DockerImagesPage } from './pages/DockerImagesPage';
 import { DockerImageReadmePage } from './pages/DockerImageReadmePage';
@@ -21,7 +22,11 @@ export function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/open-source" element={<OpenSourcePage />} />
-            <Route path="/open-source/github" element={<GithubReadmePage />} />
+            <Route path="/open-source/github" element={<GithubReposPage />} />
+            <Route
+              path="/open-source/github/:repo"
+              element={<GithubReadmePage />}
+            />
             <Route path="/open-source/docker" element={<DockerImagesPage />} />
             <Route
               path="/open-source/docker/:image"

@@ -69,7 +69,7 @@
     "TITLE": "Open Source",
     "GITHUB": {
       "TITLE": "GitHub",
-      "DESCRIPTION": "vigilant-broccoli repository."
+      "DESCRIPTION": "iamharryliu GitHub repositories."
     },
     "DOCKER_HUB": {
       "TITLE": "Docker Hub",
@@ -88,6 +88,13 @@
     "LOADING": "Loading README…",
     "ERROR": "Failed to load README: {message}",
     "NOT_FOUND": "Unknown item."
+  },
+  "GITHUB_REPOS_PAGE": {
+    "TITLE": "GitHub",
+    "VIGILANT_BROCCOLI": {
+      "TITLE": "vigilant-broccoli",
+      "DESCRIPTION": "Monorepo of apps, libraries, notes, and infrastructure."
+    }
   },
   "DOCKER_IMAGES_PAGE": {
     "TITLE": "Docker Hub",
