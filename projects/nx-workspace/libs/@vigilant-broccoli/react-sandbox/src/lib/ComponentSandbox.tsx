@@ -51,6 +51,7 @@ const CRUD_SWITCH_LABEL = {
 const DEFAULT_TITLE = 'Component Sandbox';
 const DEFAULT_SUBTITLE =
   'Interactive component showcase and testing playground';
+const SELECTED_ID_STORAGE_KEY = 'component-sandbox-selected-id';
 
 const CATEGORY = {
   COMPONENTS: 'Components',
@@ -306,6 +307,7 @@ const buildSidebarItems = ({
     }))
     .filter(group => group.items.length > 0)
     .map(group => ({
+      id: group.category,
       label: group.category,
       isActive: group.items.some(entry => entry.id === selectedId),
       children: group.items.map(entry => ({
@@ -344,6 +346,13 @@ interface SandboxBodyProps {
   showThemeToggle: boolean;
 }
 
+const readStoredSelectedId = () => {
+  const saved = localStorage.getItem(SELECTED_ID_STORAGE_KEY);
+  return ALL_ENTRIES.some(entry => entry.id === saved)
+    ? (saved as string)
+    : ALL_ENTRIES[0].id;
+};
+
 const SandboxBody = ({
   title,
   subtitle,
@@ -351,7 +360,7 @@ const SandboxBody = ({
   setDark,
   showThemeToggle,
 }: SandboxBodyProps) => {
-  const [selectedId, setSelectedId] = useState(ALL_ENTRIES[0].id);
+  const [selectedId, setSelectedId] = useState(readStoredSelectedId);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const selectedEntry =
     ALL_ENTRIES.find(entry => entry.id === selectedId) ?? ALL_ENTRIES[0];
@@ -363,6 +372,7 @@ const SandboxBody = ({
         selectedId,
         onSelect: id => {
           setSelectedId(id);
+          localStorage.setItem(SELECTED_ID_STORAGE_KEY, id);
           setSidebarOpen(false);
         },
       }),
@@ -377,6 +387,7 @@ const SandboxBody = ({
         className={SIDEBAR_POSITION_CLASS}
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
+        defaultOpenId={selectedEntry.category}
       />
       <SandboxTopbar
         title={title}

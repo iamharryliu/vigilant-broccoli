@@ -5,6 +5,7 @@ import { ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export type SidebarCTA = {
+  id?: string;
   label: string;
   icon?: ComponentType<{ size?: number | string }>;
   href?: string;
@@ -37,6 +38,7 @@ export type SidebarProps = {
   className?: string;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
+  defaultOpenId?: string | null;
 };
 
 const ICON_SIZE = 18;
@@ -174,8 +176,9 @@ export const Sidebar = ({
   className,
   mobileOpen,
   onMobileClose,
+  defaultOpenId = null,
 }: SidebarProps) => {
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(defaultOpenId);
   const [query, setQuery] = useState('');
 
   const flat = searchable ? flattenItems(items) : [];
@@ -281,7 +284,7 @@ export const Sidebar = ({
             )
           ) : (
             items.map((item, idx) => {
-              const itemKey = item.href ?? `${item.label}-${idx}`;
+              const itemKey = item.id ?? item.href ?? `${item.label}-${idx}`;
               if (item.children && item.children.length > 0) {
                 const isOpen = openId === itemKey;
                 return (
@@ -446,7 +449,7 @@ const NestedItem = ({
         <div className="overflow-hidden">
           <div className="flex flex-col gap-1 mt-1 ml-3 pb-1">
             {item.children?.map((child, idx) => {
-              const childKey = child.href ?? `${child.label}-${idx}`;
+              const childKey = child.id ?? child.href ?? `${child.label}-${idx}`;
               if (child.children && child.children.length > 0) {
                 return (
                   <NestedItem
