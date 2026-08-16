@@ -222,6 +222,7 @@ export const Sidebar = ({
           className,
         )}
         onMouseLeave={() => {
+          if (forceExpanded) return;
           setOpenId(null);
           setQuery('');
         }}
