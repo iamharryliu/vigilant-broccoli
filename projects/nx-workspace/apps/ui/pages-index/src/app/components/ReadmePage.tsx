@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
+import { MarkdownViewer } from '@vigilant-broccoli/react-utility';
 import { useTranslation } from '../i18n';
 import { PageHeader } from './PageHeader';
-import { Markdown } from './Markdown';
 
 export const PARSE_KIND = {
   TEXT: 'text',
@@ -22,6 +22,12 @@ interface ReadmePageProps {
   externalLabel?: string;
   notFoundMessage?: string;
 }
+
+const CARD_CLASS =
+  'rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden';
+const TOOLBAR_CLASS =
+  'flex items-center justify-between gap-4 px-4 sm:px-6 py-2 border-b border-gray-200 dark:border-gray-700 text-sm';
+const STATUS_CLASS = 'px-4 sm:px-6 py-4 text-sm';
 
 const parseResponse = (
   res: Response,
@@ -68,35 +74,44 @@ export function ReadmePage({
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
-      <PageHeader
-        title={title}
-        action={
-          externalHref && (
-            <a
-              href={externalHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:underline"
-            >
-              {externalLabel}
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
-          )
-        }
-      />
+      <PageHeader title={title} />
 
       {!source && notFoundMessage && (
         <p className="text-sm text-red-500">{notFoundMessage}</p>
       )}
-      {source && error && (
-        <p className="text-sm text-red-500">
-          {t('README_PAGE.ERROR', { message: error })}
-        </p>
+
+      {source && (
+        <div className={CARD_CLASS}>
+          <div className={TOOLBAR_CLASS}>
+            <span className="font-semibold text-gray-500 dark:text-gray-400 underline underline-offset-4">
+              {t('README_PAGE.README_LABEL')}
+            </span>
+            {externalHref && (
+              <a
+                href={externalHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:underline"
+              >
+                {externalLabel}
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            )}
+          </div>
+
+          {error && (
+            <p className={`${STATUS_CLASS} text-red-500`}>
+              {t('README_PAGE.ERROR', { message: error })}
+            </p>
+          )}
+          {!error && content === null && (
+            <p className={`${STATUS_CLASS} text-gray-400`}>
+              {t('README_PAGE.LOADING')}
+            </p>
+          )}
+          {!error && content && <MarkdownViewer content={content} />}
+        </div>
       )}
-      {source && !error && content === null && (
-        <p className="text-sm text-gray-400">{t('README_PAGE.LOADING')}</p>
-      )}
-      {source && content && <Markdown content={content} />}
     </main>
   );
 }

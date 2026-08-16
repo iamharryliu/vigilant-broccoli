@@ -9,10 +9,7 @@ export function WebApplicationsPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
-      <PageHeader
-        title={t('WEB_APPLICATIONS_PAGE.TITLE')}
-        description={t('WEB_APPLICATIONS_PAGE.DESCRIPTION')}
-      />
+      <PageHeader title={t('WEB_APPLICATIONS_PAGE.TITLE')} />
 
       <section className="mb-12">
         <SectionHeading>
