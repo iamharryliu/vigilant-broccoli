@@ -19,7 +19,7 @@
     },
     "API_SERVICES": {
       "TITLE": "API Services",
-      "DESCRIPTION": "API docs and service health."
+      "DESCRIPTION": "Swagger docs for internal services."
     }
   },
   "WEB_APPLICATIONS_PAGE": {
