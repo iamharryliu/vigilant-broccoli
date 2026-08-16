@@ -54,8 +54,11 @@ jobs:
             kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
             kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
             kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
 
       - name: Solve
+        id: solve
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
@@ -85,3 +88,26 @@ jobs:
             cat "$f"
           done
           exit "$STATUS"
+
+      - name: Tunnel to email service
+        if: always()
+        uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: staging-vb-email-service
+
+      - name: Notify by email
+        if: always()
+        env:
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          RESULT: ${{ steps.solve.outcome == 'success' && 'succeeded' || 'failed' }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -s -o /dev/null -X POST http://127.0.0.1:3000/api/send-email \
+            -H 'Content-Type: application/json' \
+            -H "x-api-key: ${SHARED_APP_TOKEN}" \
+            -d "$(jq -n \
+              --arg to 'harryliu1995@gmail.com' \
+              --arg from 'Harry Liu <ci-agentic-solve@harryliu.dev>' \
+              --arg subject "Agentic solve $RESULT" \
+              --arg html "<p>The agentic solve workflow $RESULT.</p><p><a href=\"$RUN_URL\">View run</a></p>" \
+              '{to: $to, from: $from, subject: $subject, html: $html}')"
