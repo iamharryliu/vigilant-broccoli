@@ -80,6 +80,7 @@ if [ -n "$PROMPT" ]; then
     -e SANDBOX_FIREWALL \
     -e SANDBOX_ALLOWED_DOMAINS \
     -e SOLVE_MODEL="$MODEL" \
+    -e GITHUB_ACTIONS \
     "$IMAGE" \
     bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" --prompt "$1"' _ "$PROMPT" \
     2>&1 | tee "$LOG_FILE"
@@ -100,6 +101,7 @@ for id in "${IDS[@]}"; do
     -e SANDBOX_FIREWALL \
     -e SANDBOX_ALLOWED_DOMAINS \
     -e SOLVE_MODEL="$MODEL" \
+    -e GITHUB_ACTIONS \
     "$IMAGE" \
     bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" --id "$1"' _ "$id" \
     > "$LOG_DIR/solve-${id}.log" 2>&1 &

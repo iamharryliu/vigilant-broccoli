@@ -58,6 +58,24 @@ else
   exit 1
 fi
 
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  REQUEST_SOURCE="GitHub Actions (manual-agentic-solve workflow)"
+else
+  REQUEST_SOURCE="Local CLI (pnpm agentic:task:solve)"
+fi
+if [ "$MODE" = id ]; then
+  REQUEST_TRIGGER="TODO id \`${ID}\`"
+else
+  REQUEST_TRIGGER='--prompt'
+fi
+REQUEST_BODY=$(cat <<REQ
+- **Source:** ${REQUEST_SOURCE}
+- **Trigger:** ${REQUEST_TRIGGER}
+
+${TASK}
+REQ
+)
+
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
@@ -97,9 +115,9 @@ salvage_on_failure() {
 
 This agent run did not finish (exited with status ${exit_code}). This draft PR captures its partial, uncommitted work so it isn't lost.
 
-Original task:
+## Request
 
-${TASK}
+$REQUEST_BODY
 
 To continue, run: \`pnpm agentic:pr:update <PR#> "finish the task"\`
 
@@ -212,6 +230,10 @@ $PR_SUMMARY
 ## Test plan
 
 $PR_TEST_PLAN
+
+## Request
+
+$REQUEST_BODY
 
 $PR_FOOTER
 EOF
