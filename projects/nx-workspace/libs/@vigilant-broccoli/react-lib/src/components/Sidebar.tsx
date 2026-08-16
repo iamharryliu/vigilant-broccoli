@@ -157,7 +157,9 @@ const ItemRow = ({
           <Icon size={ICON_SIZE} />
         </span>
       )}
-      <span className={cn(LABEL_BASE, labelClassName)}>{item.label}</span>
+      <span className={cn(LABEL_BASE, Icon ? labelClassName : LABEL_VISIBLE)}>
+        {item.label}
+      </span>
     </PolymorphicRow>
   );
 };
@@ -404,11 +406,11 @@ const NestedItem = ({
   const Icon = item.icon;
   const labelClass = cn(
     'whitespace-nowrap overflow-hidden text-left transition-all duration-150',
-    forceExpanded ? LABEL_VISIBLE : labelClassFor(expandable),
+    !Icon || forceExpanded ? LABEL_VISIBLE : labelClassFor(expandable),
   );
   const chevronClass = cn(
     'shrink-0 transition-opacity duration-150',
-    forceExpanded
+    !Icon || forceExpanded
       ? 'opacity-100'
       : expandable
         ? 'opacity-0 group-hover/sidebar:opacity-100'
