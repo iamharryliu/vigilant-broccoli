@@ -153,23 +153,10 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-6">
       <header className="mb-4">
-        <PageHeader
-          title={t('STATUS_PAGE.TITLE')}
-          description={
-            <>
-              {t('STATUS_PAGE.DESCRIPTION_PREFIX')}{' '}
-              <a
-                href="https://upptime.js.org"
-                className="underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t('STATUS_PAGE.UPPTIME')}
-              </a>
-              . {updated && <span>{updated}</span>}
-            </>
-          }
-        />
+        <PageHeader title={t('STATUS_PAGE.TITLE')} />
+        {updated && (
+          <p className="mt-2 text-gray-600 dark:text-gray-400">{updated}</p>
+        )}
       </header>
 
       {servicesError && (

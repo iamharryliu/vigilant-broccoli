@@ -40,11 +40,5 @@ export function NpmPackagesPage() {
     },
   ];
 
-  return (
-    <CardListPage
-      title={t('NPM_PACKAGES_PAGE.TITLE')}
-      description={t('NPM_PACKAGES_PAGE.DESCRIPTION')}
-      items={items}
-    />
-  );
+  return <CardListPage title={t('NPM_PACKAGES_PAGE.TITLE')} items={items} />;
 }

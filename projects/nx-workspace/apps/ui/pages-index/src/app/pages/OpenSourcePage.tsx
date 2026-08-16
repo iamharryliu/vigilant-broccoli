@@ -32,11 +32,5 @@ export function OpenSourcePage() {
     },
   ];
 
-  return (
-    <CardListPage
-      title={t('OPEN_SOURCE_PAGE.TITLE')}
-      description={t('OPEN_SOURCE_PAGE.DESCRIPTION')}
-      items={items}
-    />
-  );
+  return <CardListPage title={t('OPEN_SOURCE_PAGE.TITLE')} items={items} />;
 }
