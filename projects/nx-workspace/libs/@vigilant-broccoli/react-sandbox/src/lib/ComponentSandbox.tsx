@@ -373,7 +373,6 @@ const SandboxBody = ({
     <div className="h-full">
       <Sidebar
         items={items}
-        branding={{ label: title }}
         searchable
         className={SIDEBAR_POSITION_CLASS}
         mobileOpen={sidebarOpen}
