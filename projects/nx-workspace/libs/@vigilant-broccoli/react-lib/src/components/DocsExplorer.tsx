@@ -593,14 +593,6 @@ export const DocsExplorer = ({
             </CenteredMessage>
           ) : (
             <div className="relative w-full h-full overflow-auto">
-              <div className="absolute top-2 left-2 z-10 md:hidden">
-                <IconButton
-                  variant="ghost"
-                  icon="arrow-left"
-                  onClick={showSidebarOnMobile}
-                  aria-label={COPY.BACK_TO_FILES}
-                />
-              </div>
               <div className="absolute top-2 right-2 z-10">
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger>
