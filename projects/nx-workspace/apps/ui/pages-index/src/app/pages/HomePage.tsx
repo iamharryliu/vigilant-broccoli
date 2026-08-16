@@ -9,7 +9,7 @@ export function HomePage() {
   const { t } = useTranslation();
 
   return (
-    <main className="mx-auto max-w-3xl px-4 sm:px-6 py-16">
+    <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-6 pb-16">
       <header className="mb-12">
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
       </header>
