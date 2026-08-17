@@ -91,7 +91,13 @@ jobs:
         if: steps.check.outputs.nx-workspace-changed == 'true'
         working-directory: ./projects/nx-workspace
         run: |
-          AFFECTED_E2E=$(pnpm exec nx show projects --affected -p component-library --withTarget=e2e --base=$NX_BASE --head=$NX_HEAD | jq -r 'join(",")')
+          # Fail open: this only gates a best-effort quality check (below),
+          # not the required lint/test/build step above, so a flaky/failing
+          # `nx show projects` here should skip e2e for this run rather than
+          # fail the whole job - jq erroring on non-JSON/empty nx output
+          # otherwise takes the job down over an unrelated nx hiccup.
+          AFFECTED_JSON=$(pnpm exec nx show projects --affected -p component-library --withTarget=e2e --base=$NX_BASE --head=$NX_HEAD 2>&1) || AFFECTED_JSON='[]'
+          AFFECTED_E2E=$(echo "$AFFECTED_JSON" | jq -r 'join(",")' 2>/dev/null) || AFFECTED_E2E=''
           echo "projects=$AFFECTED_E2E" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright browsers
