@@ -79,6 +79,22 @@ test.describe('component-library Sidebar (icon-less nav)', () => {
   });
 });
 
+test.describe('component-library Sidebar (icon-less nav, desktop)', () => {
+  test.use({ viewport: DESKTOP_VIEWPORT });
+
+  test('content padding stays fixed regardless of hover, since there is no rail to collapse to', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    const content = page.locator('div.h-full.overflow-y-auto');
+    await expect(content).toHaveCSS('padding-left', '192px');
+
+    await page.getByRole('button', { name: COMPONENTS_GROUP_LABEL }).hover();
+    await expect(content).toHaveCSS('padding-left', '192px');
+  });
+});
+
 test.describe('component-library Sidebar (icon-bearing nav, via Settings > Icons toggle)', () => {
   test.use({ viewport: MOBILE_VIEWPORT });
 
@@ -185,6 +201,24 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
     await componentsToggle.hover();
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'true');
     await expect(utilitiesToggle).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('content padding shifts to match the collapsed/hovered rail width', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await enableIconMode(page);
+    await page.mouse.move(900, 400);
+
+    // The content wrapper is a `peer-hover` sibling of the sidebar (which
+    // carries the `peer` class) - it should track the rail's own width
+    // (md:w-14 collapsed, md:hover:w-48 expanded) rather than staying
+    // statically padded for the expanded width.
+    const content = page.locator('div.h-full.overflow-y-auto');
+    await expect(content).toHaveCSS('padding-left', '56px');
+
+    await page.getByRole('button', { name: COMPONENTS_GROUP_LABEL }).hover();
+    await expect(content).toHaveCSS('padding-left', '192px');
   });
 
   test('does not expand any group on reload until one is hovered', async ({
