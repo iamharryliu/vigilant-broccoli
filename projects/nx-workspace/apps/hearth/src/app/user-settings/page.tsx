@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button, Input } from '@vigilant-broccoli/react-lib';
+
+import { Button, Input, Text } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { supabase } from '../../../libs/supabase';
 

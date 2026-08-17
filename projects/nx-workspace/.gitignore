@@ -7,6 +7,7 @@ better-auth.secret
 
 # compiled output
 dist
+_site
 tmp
 /out-tsc
 
@@ -40,13 +41,6 @@ Thumbs.db
 .nx/workspace-data
 
 .angular
-
-# Custom
-apps/ui/personal-website-frontend/src/assets/md-library/notes/
-apps/ui/personal-website-frontend/src/assets/md-library/md-library.json
-apps/ui/personal-website-frontend/src/assets/grind-75/
-!apps/ui/personal-website-frontend/src/assets/grind-75/.gitkeep
-apps/ui/personal-website-frontend/src/assets/resume.pdf
 
 .env
 .env.local

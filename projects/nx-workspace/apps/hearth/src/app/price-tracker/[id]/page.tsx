@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Text } from '@radix-ui/themes';
+import { Text, Badge } from '@vigilant-broccoli/react-lib';
 import {
   LineChart,
   Line,

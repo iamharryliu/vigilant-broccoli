@@ -8,3 +8,4 @@ export * from './lib/utilities/currency-converter.utility';
 export * from './lib/utilities/pomodoro.utility';
 export * from './lib/docs-viewer';
 export * from './lib/graph-view';
+export * from './lib/markdown-viewer';

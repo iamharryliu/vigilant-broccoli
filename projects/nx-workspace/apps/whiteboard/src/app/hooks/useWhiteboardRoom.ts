@@ -12,6 +12,7 @@ const CHANNEL_PREFIX = 'whiteboard-room:';
 export { CONNECTION_STATUS } from '@vigilant-broccoli/react-lib';
 export type {
   ConnectionStatus,
+  WhiteboardCursor,
   WhiteboardMember,
   WhiteboardRoomState,
 } from '@vigilant-broccoli/react-lib';

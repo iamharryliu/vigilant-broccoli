@@ -1,10 +1,12 @@
 <div class="sm:columns-3 ps-4 pe-4">
   @for (image of images; track image) {
-  <img
-    class="mb-4 w-full"
-    [src]="image.url"
-    [alt]="image.alt || 'Cloud8Skate event photo'"
-    loading="lazy"
-  />
+    <img
+      class="mb-4 w-full"
+      [src]="image.url"
+      [srcset]="image.url + ' 800w, ' + image.url2x + ' 1600w'"
+      sizes="(min-width: 640px) 33vw, 100vw"
+      [alt]="image.alt || 'Cloud8Skate event photo'"
+      loading="lazy"
+    />
   }
 </div>

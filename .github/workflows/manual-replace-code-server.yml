@@ -28,9 +28,11 @@ jobs:
           secrets: |
             kv/data/secrets TF_CLOUD_TOKEN | TF_TOKEN_app_terraform_io ;
             kv/data/secrets CLOUDFLARE_API_TOKEN | CLOUDFLARE_API_TOKEN ;
-            kv/data/secrets GITHUB_TOKEN | GITHUB_TOKEN ;
+            kv/data/secrets TF_GITHUB_TOKEN | GITHUB_TOKEN ;
+            kv/data/secrets SUPABASE_ACCESS_TOKEN | SUPABASE_ACCESS_TOKEN ;
             kv/data/secrets OCI_CONFIG | OCI_CONFIG ;
             kv/data/secrets OCI_PRIVATE_KEY | OCI_PRIVATE_KEY ;
+            kv/data/secrets GOOGLE_AUTH_PROVIDER_CLIENT_SECRET | TF_VAR_supabase_google_client_secret ;
 
       - name: Write OCI credentials
         run: |
@@ -54,3 +56,41 @@ jobs:
             REPLACE_FLAGS="$REPLACE_FLAGS -replace=random_password.code_server_password"
           fi
           terraform apply -input=false -auto-approve $REPLACE_FLAGS
+          echo "CODE_SERVER_IP=$(terraform output -raw oci_code_server_public_ip)" >> "$GITHUB_ENV"
+
+      # The replaced VM gets a fresh ephemeral IP; Terraform updates its DNS
+      # record in the apply above, but Vault's CODE_SERVER_VM_IP (used by
+      # test-security-cloudflare-access.yml as the origin IP) is not in state,
+      # so patch it here. post-apply.sh does the full sync locally but is
+      # Mac-only (Homebrew WireGuard, gcloud IAP), so it can't run in CI.
+      - name: Fetch Cloudflare Access service token from Secret Manager
+        id: cf-access
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3
+        with:
+          secrets: |-
+            CF_ACCESS_CLIENT_ID:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_ID
+            CF_ACCESS_CLIENT_SECRET:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_SECRET
+
+      - name: Sync CODE_SERVER_VM_IP to Vault
+        env:
+          VAULT_ADDR: https://vault.harryliu.dev
+          CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          OIDC_JWT=$(curl -sf \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https://github.com/iamharryliu/vigilant-broccoli" \
+            | jq -r '.value')
+          VAULT_TOKEN=$(curl -sf \
+            -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+            -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
+            --data "{\"jwt\":\"$OIDC_JWT\",\"role\":\"github-actions-code-server-role\"}" \
+            "$VAULT_ADDR/v1/auth/jwt/login" | jq -r '.auth.client_token')
+          curl -sf --request PATCH \
+            -H "Content-Type: application/merge-patch+json" \
+            -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+            -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
+            -H "X-Vault-Token: $VAULT_TOKEN" \
+            --data "{\"data\":{\"CODE_SERVER_VM_IP\":\"$CODE_SERVER_IP\"}}" \
+            "$VAULT_ADDR/v1/kv/data/secrets" > /dev/null
+          echo "Synced CODE_SERVER_VM_IP=$CODE_SERVER_IP to Vault"

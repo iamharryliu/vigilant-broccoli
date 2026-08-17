@@ -32,6 +32,8 @@ const SHARED_APP_TOKEN = process.env.SHARED_APP_TOKEN;
 const EMAIL_FROM = 'Vigilant Broccoli <contact@harryliu.dev>';
 const RECONNECT_DELAY_MS = 5000;
 const SEND_EMAIL_TIMEOUT_MS = 30000;
+const MAX_DELIVERY_ATTEMPTS = 5;
+const RETRY_COUNT_HEADER = 'x-retry-count';
 const TABLE = 'email_subscriptions';
 const API_PREFIX = '/api';
 
@@ -120,6 +122,7 @@ async function startConsumer() {
   const channel = await connection.createChannel();
   await channel.prefetch(1);
   await channel.assertQueue(QUEUE.EMAIL_SUBSCRIPTION, { durable: true });
+  await channel.assertQueue(QUEUE.EMAIL_SUBSCRIPTION_DLQ, { durable: true });
   console.log(`Waiting for messages in ${QUEUE.EMAIL_SUBSCRIPTION}...`);
 
   channel.consume(
@@ -132,11 +135,32 @@ async function startConsumer() {
           channel.ack(msg);
           console.log('Subscription email sent and acknowledged.');
         } catch (err) {
-          console.error(
-            'Failed to send subscription email, requeuing:',
-            (err as Error).message,
-          );
-          channel.nack(msg, false, true);
+          const retryCount =
+            (msg.properties.headers?.[RETRY_COUNT_HEADER] as number) ?? 0;
+          if (retryCount + 1 >= MAX_DELIVERY_ATTEMPTS) {
+            console.error(
+              'Failed to send subscription email, max retries exceeded, dead-lettering:',
+              (err as Error).message,
+            );
+            channel.sendToQueue(QUEUE.EMAIL_SUBSCRIPTION_DLQ, msg.content, {
+              persistent: true,
+              headers: msg.properties.headers,
+            });
+            channel.ack(msg);
+          } else {
+            console.error(
+              'Failed to send subscription email, retrying:',
+              (err as Error).message,
+            );
+            channel.sendToQueue(QUEUE.EMAIL_SUBSCRIPTION, msg.content, {
+              persistent: true,
+              headers: {
+                ...msg.properties.headers,
+                [RETRY_COUNT_HEADER]: retryCount + 1,
+              },
+            });
+            channel.ack(msg);
+          }
         }
       }
     },
@@ -253,23 +277,25 @@ const buildApp = async () => {
           return reply.send({ success: true, queued: 0 });
         }
 
-        let queued = 0;
-        for (const { email } of subscribers) {
-          try {
-            await queueEmail({
+        const results = await Promise.all(
+          subscribers.map(({ email }) =>
+            queueEmail({
               from: EMAIL_FROM,
               to: email,
               subject: `New update from ${subscriptionName}`,
               html: `<p>${message}</p>`,
-            });
-            queued++;
-          } catch (err) {
-            console.error(
-              `Failed to queue email for ${email}:`,
-              (err as Error).message,
-            );
-          }
-        }
+            })
+              .then(() => true)
+              .catch(err => {
+                console.error(
+                  `Failed to queue email for ${email}:`,
+                  (err as Error).message,
+                );
+                return false;
+              }),
+          ),
+        );
+        const queued = results.filter(Boolean).length;
 
         console.log(
           `📤 Queued ${queued}/${subscribers.length} emails for ${subscriptionName}`,

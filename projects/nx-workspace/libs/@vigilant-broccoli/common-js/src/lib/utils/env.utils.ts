@@ -95,6 +95,22 @@ function decodeBase64(base64: string): string {
   }
 }
 
+function encodePercent(text: string): string {
+  try {
+    return encodeURIComponent(text);
+  } catch {
+    return '';
+  }
+}
+
+function decodePercent(text: string): string {
+  try {
+    return decodeURIComponent(text.trim());
+  } catch {
+    return '';
+  }
+}
+
 export const EnvUtils = {
   getPrettierJSON,
   getEnvironmentVariablesFromJSON,
@@ -104,4 +120,6 @@ export const EnvUtils = {
   formatBlockStringToSingleLineString,
   encodeBase64,
   decodeBase64,
+  encodePercent,
+  decodePercent,
 };

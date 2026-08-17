@@ -1,11 +1,12 @@
 'use client';
 
-import { Badge, Text } from '@radix-ui/themes';
 import {
+  Badge,
   ButtonList,
   CardContainer,
   StatusCardList,
   StatusCardListItem,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { CardSkeleton } from './skeleton.component';

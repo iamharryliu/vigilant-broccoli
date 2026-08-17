@@ -1,0 +1,19 @@
+meta {
+  name: Get Offices
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://api.alexishr.com/v1/office?select=id,name
+  body: none
+  auth: none
+}
+
+params:query {
+  select: id,name
+}
+
+headers {
+  Authorization: Bearer {{process.env.ALEXISHR_API_KEY}}
+}

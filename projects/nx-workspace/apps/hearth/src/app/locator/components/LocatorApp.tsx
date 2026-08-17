@@ -138,7 +138,7 @@ export function LocatorApp({ homeId, userId, email }: LocatorAppProps) {
   );
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-49px)]">
+    <div className="flex flex-col h-[calc(100dvh_-_var(--topbar-h))]">
       {sharingUsers.length > 0 && (
         <div className="flex-1">
           <LiveUserMap users={sharingUsers} currentUserId={userId} />

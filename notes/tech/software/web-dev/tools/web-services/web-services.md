@@ -1,12 +1,13 @@
 # Web Services
 
 - Google
-  - [Gmail](./google/gmail.md)
-  - [Google Workspace](./google/google-workspace.md)
-  - [Google Maps](./google/google-maps.md)
+  - [Gmail](./gmail.md)
+  - [Google Workspace](./google-workspace.md)
+  - [Google Maps](./google-maps.md)
+  - [Google Calendar API](./google-calendar-api.md)
 - [OpenAI](./openai.md)
-- [OpenWeather](./openweather-api.md)
 - [Spotify API](./spotify-api.md)
 - [Stripe](./stripe.md)
+- [Weather Services](./weather-services.md)
 
 - [Services Statuses](./services-statuses.md)

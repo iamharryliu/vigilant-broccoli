@@ -87,6 +87,21 @@ variable "code_server_allowed_emails" {
   default = ["harryliu1995@gmail.com"]
 }
 
+variable "seafile_domain" {
+  type    = string
+  default = "drive.harryliu.dev"
+}
+
+variable "seafile_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
+
+variable "seafile_admin_email" {
+  type    = string
+  default = "harryliu1995@gmail.com"
+}
+
 variable "vault_domain" {
   type    = string
   default = "vault.harryliu.dev"
@@ -100,6 +115,18 @@ variable "socket_server_domain" {
 variable "journal_domain" {
   type    = string
   default = "journal.harryliu.dev"
+}
+
+variable "nx_cache_domain" {
+  type    = string
+  default = "nx-cache.harryliu.dev"
+}
+
+# 7 days: a cache miss just rebuilds, so a short TTL trades a little compute
+# for bounded R2 storage (keeps usage inside the 10 GB free tier).
+variable "nx_cache_r2_ttl_seconds" {
+  type    = number
+  default = 604800
 }
 
 variable "journal_pages_project" {

@@ -6,26 +6,29 @@
 - [Types of Cuts](#types-of-cuts)
 - [Food Science & Components](#food-science--components)
 - [Ingredients & Food Products](#ingredients--food-products)
+- [Kitchen](#kitchen)
 - [Asian Food Lingo](#asian-food-lingo)
+- [French Food Lingo](#french-food-lingo)
 - [Italian Food Lingo](#italian-food-lingo)
 
 ---
 
 ## Cooking Techniques
 
-| Term         | Description                                                                                                                                                                                                                                    |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Bake**     | Cook food using steady, indirect dry heat in an oven, typically for doughs or batters.                                                                                                                                                         |
-| **Blanch**   | A cooking technique in which food is briefly boiled and then immediately transferred to ice water to stop the cooking process. Commonly used to preserve color, texture, and nutrients in vegetables, or to loosen skins from fruits and nuts. |
-| **Braise**   | To cook food slowly in a small amount of liquid after browning it first.                                                                                                                                                                       |
-| **Brine**    | The process of soaking food, typically meat or poultry, in a saltwater solution (often with sugar, herbs, or spices) before cooking to improve moisture retention, seasoning, and tenderness.                                                  |
-| **Deglaze**  | The process of pouring liquid (wine, broth, or water) into a hot pan to loosen and dissolve the browned, caramelized bits of food stuck to the bottom. Creates a flavorful sauce or gravy.                                                     |
-| **Grill**    | Cook food over direct heat, usually from below, often on a rack or grate for char marks.                                                                                                                                                       |
-| **Marinate** | To soak food in a seasoned liquid (marinade) to add flavor and tenderize.                                                                                                                                                                      |
-| **Pickle**   | A food preservation method that uses an acidic solution (typically vinegar) or fermentation in a salt brine to preserve food while developing a tangy flavor. Commonly used for vegetables, fruits, eggs, and fish.                            |
-| **Poach**    | Cook food gently in liquid kept just below boiling, producing a tender, delicate result.                                                                                                                                                       |
-| **Roast**    | Cook food in dry heat, usually in an oven, with hot air circulating around it.                                                                                                                                                                 |
-| **Sear**     | Cook the surface of food quickly over high heat to develop a browned crust.                                                                                                                                                                    |
+| Term              | Description                                                                                                                                                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bake**          | Cook food using steady, indirect dry heat in an oven, typically for doughs or batters.                                                                                                                                                         |
+| **Blanch**        | A cooking technique in which food is briefly boiled and then immediately transferred to ice water to stop the cooking process. Commonly used to preserve color, texture, and nutrients in vegetables, or to loosen skins from fruits and nuts. |
+| **Braise**        | To cook food slowly in a small amount of liquid after browning it first.                                                                                                                                                                       |
+| **Brine**         | The process of soaking food, typically meat or poultry, in a saltwater solution (often with sugar, herbs, or spices) before cooking to improve moisture retention, seasoning, and tenderness.                                                  |
+| **Deglaze**       | The process of pouring liquid (wine, broth, or water) into a hot pan to loosen and dissolve the browned, caramelized bits of food stuck to the bottom. Creates a flavorful sauce or gravy.                                                     |
+| **Grill**         | Cook food over direct heat, usually from below, often on a rack or grate for char marks.                                                                                                                                                       |
+| **Marinate**      | To soak food in a seasoned liquid (marinade) to add flavor and tenderize.                                                                                                                                                                      |
+| **Mise en Place** | French for "everything in its place." The practice of measuring, prepping, and organizing all ingredients and equipment before cooking begins.                                                                                                 |
+| **Pickle**        | A food preservation method that uses an acidic solution (typically vinegar) or fermentation in a salt brine to preserve food while developing a tangy flavor. Commonly used for vegetables, fruits, eggs, and fish.                            |
+| **Poach**         | Cook food gently in liquid kept just below boiling, producing a tender, delicate result.                                                                                                                                                       |
+| **Roast**         | Cook food in dry heat, usually in an oven, with hot air circulating around it.                                                                                                                                                                 |
+| **Sear**          | Cook the surface of food quickly over high heat to develop a browned crust.                                                                                                                                                                    |
 
 ---
 
@@ -75,6 +78,16 @@
 
 ---
 
+## Kitchen
+
+| Term           | Description                                                                                                                                                                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **French Top** | A thick, flat steel plate set over a burner (or ring of burners) on a range, heated most in the center and cooler toward the edges. Lets cooks slide pots between heat zones instead of adjusting a dial, useful for simmering multiple sauces at once. |
+| **Pantry**     | A room, closet, or cupboard used to store food, dry goods, and cooking supplies. A well-stocked pantry (oils, vinegars, grains, canned goods, spices) provides shelf-stable staples for cooking without a dedicated grocery trip.                       |
+| **Stage**      | An unpaid or low-paid trial period (pronounced "stahzh," from French for "internship") where a cook works a shift or series of shifts in a professional kitchen to learn techniques, prove their skills, or be evaluated for a job.                     |
+
+---
+
 ## Asian Food Lingo
 
 | Term                              | Description                                                                                                                                                                                                                                                                                                     |
@@ -93,9 +106,19 @@
 
 ---
 
+## French Food Lingo
+
+| Term         | Description                                                                                                                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Béchamel** | One of the French mother sauces, made by whisking milk into a butter-and-flour roux and simmering until thickened. Used as the base for dishes like lasagna, gratins, and mac and cheese.               |
+| **Mirepoix** | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews. |
+
+---
+
 ## Italian Food Lingo
 
-| Term                 | Description                                                                                                                                                                                                                                                                                   |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Bronze Die Pasta** | Pasta extruded through bronze dies, creating a rough, textured surface. More porous than Teflon-extruded pasta, the rougher surface helps sauce adhere better. Generally preferred for its superior sauce retention and mouthfeel, though it typically costs slightly more than smooth pasta. |
-| **Mantecare**        | The Italian technique of tossing and combining pasta with sauce in a pan, using heat, movement, and often starchy pasta water to create a smooth emulsion. This helps the sauce coat the pasta evenly and bind together.                                                                      |
+| Term                 | Description                                                                                                                                                                                                                                                                                         |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bronze Die Pasta** | Pasta extruded through bronze dies, creating a rough, textured surface. More porous than Teflon-extruded pasta, the rougher surface helps sauce adhere better. Generally preferred for its superior sauce retention and mouthfeel, though it typically costs slightly more than smooth pasta.       |
+| **Mantecare**        | The Italian technique of tossing and combining pasta with sauce in a pan, using heat, movement, and often starchy pasta water to create a smooth emulsion. This helps the sauce coat the pasta evenly and bind together.                                                                            |
+| **Soffritto**        | A base of finely chopped onion, celery, and carrot slowly cooked in oil or fat until softened, forming the aromatic foundation for many Italian sauces, soups, and stews. Similar in role to the French [Mirepoix](#french-food-lingo), but cooked down further before other ingredients are added. |

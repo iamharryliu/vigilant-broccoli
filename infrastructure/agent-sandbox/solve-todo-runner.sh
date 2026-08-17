@@ -32,9 +32,17 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 cd "$REPO_DIR"
 
 if [ "$MODE" = id ]; then
-  TASK=$(awk -v id="$ID" '/^### /||/^## /{p=($0 ~ "^### " id "\\.")} p' TODO.md)
+  # TODO items live as rows in per-section markdown tables (ID | Priority |
+  # Description | Recommended Fix). Extract the nearest table header plus the
+  # matching row, expanding <br> step separators and unescaping \| pipes so the
+  # solver reads clean prose.
+  TASK=$(awk -v id="$ID" '
+    /^\|[[:space:]]*ID[[:space:]]*\|[[:space:]]*Priority[[:space:]]*\|/ { header=$0 }
+    $0 ~ ("^\\|[[:space:]]*" id "[[:space:]]*\\|") { print header; print; found=1; exit }
+    END { if (!found) exit 1 }
+  ' TODO.md | sed 's/<br>/\n/g; s/\\|/|/g')
   if [ -z "$TASK" ]; then
-    echo "ERROR: no '### ${ID}.' item in TODO.md" >&2
+    echo "ERROR: no '${ID}' row in TODO.md" >&2
     exit 1
   fi
   BRANCH="agent/todo-${ID}"
@@ -50,9 +58,87 @@ else
   exit 1
 fi
 
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  REQUEST_SOURCE="GitHub Actions (manual-agentic-solve workflow)"
+else
+  REQUEST_SOURCE="Local CLI (pnpm agentic:task:solve)"
+fi
+if [ "$MODE" = id ]; then
+  REQUEST_TRIGGER="TODO id \`${ID}\`"
+else
+  REQUEST_TRIGGER='--prompt'
+fi
+REQUEST_BODY=$(cat <<REQ
+- **Source:** ${REQUEST_SOURCE}
+- **Trigger:** ${REQUEST_TRIGGER}
+
+${TASK}
+REQ
+)
+
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
+
+salvage_on_failure() {
+  local exit_code=$?
+  trap - EXIT
+  set +e
+  [ "$exit_code" -eq 0 ] && exit 0
+
+  echo "Runner exited with status $exit_code — checking for salvageable work on $BRANCH" >&2
+  git checkout "$BRANCH" >/dev/null 2>&1
+
+  if [ -z "$(git status --porcelain)" ]; then
+    echo "No uncommitted changes to salvage." >&2
+    exit "$exit_code"
+  fi
+
+  if [ "$MODE" = id ]; then
+    SALVAGE_TITLE="[WIP] Resolve TODO ${ID} (agent run incomplete)"
+  else
+    SALVAGE_TITLE="[WIP] $(printf '%s' "$TASK" | tr '\n' ' ' | cut -c1-80) (agent run incomplete)"
+  fi
+
+  git add -A
+  # --no-verify: a WIP salvage commit must not be blocked by lint/format hooks —
+  # the goal is to preserve an unfinished diff, not to ship clean code.
+  git commit --no-verify -m "wip: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"
+
+  if ! git push -u origin "$BRANCH"; then
+    echo "Failed to push salvage branch $BRANCH — partial work could not be recovered." >&2
+    exit "$exit_code"
+  fi
+
+  SALVAGE_BODY=$(cat <<BODY
+## Summary
+
+This agent run did not finish (exited with status ${exit_code}). This draft PR captures its partial, uncommitted work so it isn't lost.
+
+## Request
+
+$REQUEST_BODY
+
+To continue, run: \`pnpm agentic:pr:update <PR#> "finish the task"\`
+
+$PR_FOOTER
+BODY
+)
+
+  if PR_URL=$(gh pr create --draft --title "$SALVAGE_TITLE" --body "$SALVAGE_BODY" 2>&1); then
+    echo "Salvaged partial work: $PR_URL" >&2
+    echo "$PR_URL"
+    printf 'PR_TITLE::%s\n' "$SALVAGE_TITLE"
+    echo 'PR_SUMMARY_BEGIN'
+    echo "This agent run did not finish (exited with status ${exit_code}); partial work was pushed as a draft PR."
+    echo 'PR_SUMMARY_END'
+  else
+    echo "Pushed salvage branch $BRANCH but failed to open a PR — open one manually." >&2
+  fi
+
+  exit "$exit_code"
+}
+trap salvage_on_failure EXIT
 
 PROMPT=$(cat <<EOF
 You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. $INTRO
@@ -85,14 +171,11 @@ if [ "$MODE" = id ]; then
     exit 1
   fi
   TMP=$(mktemp)
-  awk -v id="$ID" '/^### /||/^## /{skip=($0 ~ "^### " id "\\.")} !skip' TODO.md > "$TMP"
-  awk '
-    function flush() { if (heading == "" || has_item) { if (heading != "") print heading; printf "%s", buf } }
-    /^## / { flush(); heading = $0; buf = ""; has_item = 0; next }
-    { buf = buf $0 "\n"; if (/^### /) has_item = 1 }
-    END { flush() }
-  ' "$TMP" > TODO.md
-  rm -f "$TMP"
+  # Each TODO item is a single table row whose first column is its id; drop that
+  # row. The anchored regex only matches the id in the leading cell, so passing
+  # mentions of the id inside another row's prose (cross-references) are kept.
+  grep -vE "^\|[[:space:]]*${ID}[[:space:]]*\|" TODO.md > "$TMP"
+  mv "$TMP" TODO.md
 else
   if [ -z "$(git status --porcelain)" ]; then
     echo "ERROR: no changes produced — task was not completed." >&2
@@ -153,8 +236,17 @@ $PR_SUMMARY
 
 $PR_TEST_PLAN
 
+## Request
+
+$REQUEST_BODY
+
 $PR_FOOTER
 EOF
 )
 
-gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_TITLE::%s\n' "$PR_TITLE"
+echo 'PR_SUMMARY_BEGIN'
+printf '%s\n' "$PR_SUMMARY"
+echo 'PR_SUMMARY_END'

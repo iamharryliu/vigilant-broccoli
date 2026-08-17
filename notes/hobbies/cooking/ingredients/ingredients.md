@@ -1,6 +1,7 @@
 # Ingredients
 
 - [Crutons](./crutons.md)
+- [Kidney Beans](./kidney-beans.md)
 - [Vegetarian Alternatives](./vegetarian-ingredient-alternatives.md)
 
 ## Spices and Herbs
@@ -12,3 +13,7 @@
 - [Garlic Confit](./sauce-recipes/garlic-confit.md)
 - [Mayo](./sauce-recipes/mayo.md)
 - [Roux](./sauce-recipes/roux.md)
+
+## Stocks
+
+- [Vegetable Stock](./stock-recipes/vegetable-stock.md)

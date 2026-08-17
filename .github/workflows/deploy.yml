@@ -16,6 +16,14 @@ on:
           - staging
           - production
   workflow_call:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        type: string
+      skip_pages:
+        description: 'Skip the GitHub Pages deploy — set by callers that invoke this workflow more than once per run, since the pages artifact name is unique per run, not per call'
+        type: boolean
+        default: false
 
 permissions:
   actions: read
@@ -73,6 +81,8 @@ jobs:
     if: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'production' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      has_packages: ${{ steps.check.outputs.has_packages }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -89,6 +99,7 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets NPM_TOKEN | NODE_AUTH_TOKEN ;
+            kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
       - name: Check if npm publish needed
         id: check
@@ -106,6 +117,9 @@ jobs:
       - name: Build packages
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
+        env:
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
         run: pnpm exec nx run-many -t build --projects="${{ steps.check.outputs.projects }}"
 
       - name: Publish npm packages
@@ -117,6 +131,8 @@ jobs:
     needs: gitleaks
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      has_deployments: ${{ steps.check.outputs.has_deployments }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -171,6 +187,7 @@ jobs:
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
             kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN ;
             kv/data/secrets SANITY_AUTH_TOKEN | SANITY_AUTH_TOKEN ;
+            kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
       - name: Fetch Cloudflare Access service token from Secret Manager
         id: cf-access
@@ -183,7 +200,7 @@ jobs:
 
       - name: Log in to Docker Hub
         if: steps.check.outputs.has_deployments == 'true'
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
@@ -200,11 +217,13 @@ jobs:
           VAULT_ADDR: https://vault.harryliu.dev
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
         run: ${{ steps.check.outputs.deploy_cmd }}
 
   deploy-github-pages:
     needs: gitleaks
-    if: ${{ github.ref_name == 'main' }}
+    if: ${{ github.ref_name == 'main' && !inputs.skip_pages }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
@@ -213,6 +232,8 @@ jobs:
     concurrency:
       group: pages
       cancel-in-progress: false
+    outputs:
+      has_deployments: ${{ steps.check.outputs.has_deployments }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -238,19 +259,32 @@ jobs:
             fi
           fi
 
+      - name: Import Secrets from Vault
+        if: steps.check.outputs.has_deployments == 'true'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
+
       - name: Stage component-library pages artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/react-component-library/
-        run: pnpm exec nx run component-library:deploy-github-pages --skip-nx-cache
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+        run: pnpm exec nx run component-library:deploy-github-pages
 
       - name: Stage pages-index landing artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /vigilant-broccoli/
-        run: pnpm exec nx run pages-index:deploy-github-pages --skip-nx-cache
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+        run: pnpm exec nx run pages-index:deploy-github-pages
 
       - name: Setup Pages
         if: steps.check.outputs.has_deployments == 'true'
@@ -269,3 +303,50 @@ jobs:
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
         with:
           artifact_name: github-pages-${{ github.run_attempt }}
+
+  notify-followers:
+    needs: [gitleaks, deploy-npm-packages, deploy-apps, deploy-github-pages]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      - name: Dispatch deploy-fanout
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITLEAKS_RESULT: ${{ needs.gitleaks.result }}
+          NPM_RESULT: ${{ needs.deploy-npm-packages.result }}
+          APPS_RESULT: ${{ needs.deploy-apps.result }}
+          PAGES_RESULT: ${{ needs.deploy-github-pages.result }}
+          HAS_PACKAGES: ${{ needs.deploy-npm-packages.outputs.has_packages }}
+          HAS_APPS: ${{ needs.deploy-apps.outputs.has_deployments }}
+          HAS_PAGES: ${{ needs.deploy-github-pages.outputs.has_deployments }}
+          DEPLOY_ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          CONCLUSION=success
+          for RESULT in "$GITLEAKS_RESULT" "$NPM_RESULT" "$APPS_RESULT" "$PAGES_RESULT"; do
+            if [[ "$RESULT" == "failure" || "$RESULT" == "cancelled" ]]; then
+              CONCLUSION=failure
+            fi
+          done
+
+          DEPLOYED=false
+          if [[ "$HAS_PACKAGES" == "true" || "$HAS_APPS" == "true" || "$HAS_PAGES" == "true" ]]; then
+            DEPLOYED=true
+          fi
+
+          RUN_STARTED_AT=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }} --jq .run_started_at)
+          jq -n \
+            --arg conclusion "$CONCLUSION" \
+            --arg deployed "$DEPLOYED" \
+            --arg environment "$DEPLOY_ENVIRONMENT" \
+            --arg run_id "${{ github.run_id }}" \
+            --arg run_url "$RUN_URL" \
+            --arg started_at "$RUN_STARTED_AT" \
+            --arg commit_message "$COMMIT_MESSAGE" \
+            '{event_type: "deploy-fanout", client_payload: {conclusion: $conclusion, deployed: $deployed, environment: $environment, run_id: $run_id, run_url: $run_url, started_at: $started_at, commit_message: $commit_message}}' \
+            | gh api repos/${{ github.repository }}/dispatches --input -

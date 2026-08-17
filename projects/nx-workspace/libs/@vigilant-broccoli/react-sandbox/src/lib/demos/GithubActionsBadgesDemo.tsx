@@ -1,5 +1,8 @@
-import { Text } from '@radix-ui/themes';
-import { CardContainer, GithubActionsBadges } from '@vigilant-broccoli/react-lib';
+import {
+  CardContainer,
+  GithubActionsBadges,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 
 const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 

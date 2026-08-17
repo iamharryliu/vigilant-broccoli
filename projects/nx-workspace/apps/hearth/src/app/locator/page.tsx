@@ -1,6 +1,6 @@
 'use client';
 
-import { Text } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { I18nProvider, useTranslation } from '../i18n';

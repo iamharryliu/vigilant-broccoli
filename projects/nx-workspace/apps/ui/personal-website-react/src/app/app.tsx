@@ -13,7 +13,6 @@ import {
   ABOUT_ROUTE,
   CALENDAR_ROUTE,
   CAREER_ROUTE,
-  COMPONENT_LIBRARY_ROUTE,
   CONTACT_ROUTE,
   DEFAULT_DESCRIPTION,
   INDEX_ROUTE,
@@ -28,7 +27,6 @@ import { CareerPage } from './components/pages/career.page';
 import { ContactPage } from './components/pages/contact.page';
 import { CalendarPage } from './components/pages/calendar.page';
 import { LinkTreePage } from './components/pages/link-tree.page';
-import { ComponentLibraryPage } from './components/pages/component-library.page';
 
 initAnalytics();
 
@@ -112,24 +110,23 @@ function PageviewTracker() {
 export function App() {
   // Touch matches to silence unused warning; not strictly needed.
   useMatch('/');
+  const location = useLocation();
   return (
     <ThemeProvider>
       <AppProvider>
         <SeoUpdater />
         <PageviewTracker />
-        <Routes>
-          <Route path={INDEX_ROUTE.path} element={<HomePage />} />
-          <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
-          <Route path={CAREER_ROUTE.path} element={<CareerPage />} />
-          <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
-          <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
-          <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
-          <Route
-            path={COMPONENT_LIBRARY_ROUTE.path}
-            element={<ComponentLibraryPage />}
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <div key={location.pathname} className="animate-fade-in">
+          <Routes>
+            <Route path={INDEX_ROUTE.path} element={<HomePage />} />
+            <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
+            <Route path={CAREER_ROUTE.path} element={<CareerPage />} />
+            <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
+            <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
+            <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
       </AppProvider>
     </ThemeProvider>
   );

@@ -19,3 +19,4 @@
 ## References
 
 - [🥬 Dad's IRRESISTABLE Stir Fried Bok Choy (蒜蓉炒白菜)!](https://www.youtube.com/watch?v=6tGVqr0QXh0)
+- [Stir-Fried Bok Choy](https://www.madewithlau.com/recipes/stir-fried-bok-choy)

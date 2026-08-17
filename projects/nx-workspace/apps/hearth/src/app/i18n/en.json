@@ -1,15 +1,14 @@
 {
   "FOOD_PLANNER": {
-    "TITLE": "Food Planner",
     "TABS": {
-      "NOTES": "Notes",
+      "PLANNER": "Planner",
       "RECIPES": "Recipes",
-      "INVENTORY": "Inventory"
+      "CALENDAR": "Kitchen Events"
     },
-    "PLACEHOLDER": {
-      "NOTES": "Notes coming soon.",
-      "RECIPES": "Recipes coming soon.",
-      "INVENTORY": "Inventory coming soon."
+    "COLUMNS": {
+      "GROCERY": "Grocery List",
+      "KITCHEN_CHORES": "Kitchen Chores",
+      "FOOD_CHAT": "Food Assistant"
     }
   },
   "LOCATOR": {

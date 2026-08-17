@@ -6,7 +6,7 @@
 </a>
 </div>
 
-## Contents
+## Table of Contents
 
 - [Development](#development)
 - [Commands](#commands)
@@ -16,14 +16,13 @@
 
 ## Development
 
-- [machine setup](./docs/machine-setups/machine-setup.md) - OS-specific setup instructions.
-- [cheatsheet](./docs/cheatsheet.md) - useful infra-level CLI commands
+### Commands
 
-## Commands
+View [cheatsheet](./docs/cheatsheet.md) for useful infra-level CLI commands.
 
 ```
-pnpm local:install:machine-setup
 pnpm cheatsheet
+pnpm local:install:machine-setup
 ```
 
 ## CI Status
@@ -36,11 +35,14 @@ pnpm cheatsheet
 [![cron-deploy-journal](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml)\
 [![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)\
 [![cron-upptime-response-time](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml)\
-[![cron-utility-update-resume](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-utility-update-resume.yml)\
 [![deploy](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml)\
+[![deploy-docs-md](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-docs-md.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-docs-md.yml)\
 [![deploy-github-profile](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml)\
+[![manual-agentic-solve](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-solve.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-solve.yml)\
 [![manual-deploy-app](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml)\
 [![manual-kill-services](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml)\
+[![manual-replace-code-server](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-replace-code-server.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-replace-code-server.yml)\
+[![manual-run-tests](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-run-tests.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-run-tests.yml)\
 [![notify-complete](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml)\
 [![test-e2e-email-subscription-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml)\
 [![test-e2e-llm](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml)\
@@ -52,107 +54,39 @@ pnpm cheatsheet
 [![test-security-cloudflare-access](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-cloudflare-access.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-cloudflare-access.yml)\
 [![test-security-llm](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-llm.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-llm.yml)\
 [![test-security-socket-server](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-socket-server.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-socket-server.yml)\
+[![test-security-storage-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-storage-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-storage-service.yml)\
 [![test-smoke-email-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml)\
 [![test-smoke-gcp-secret-manager](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml)\
 [![test-smoke-vault-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml)
 
 ## Stack
 
-- Cloud Providers
-  - Google Cloud Platform
-  - Oracle Cloud Infrastructure
-  - Cloudflare
-  - Vercel
-  - Fly.io
-- Infrastructure as Code
-  - Terraform
-  - Packer
-- Containers / Orchestration
-  - Docker
-  - Docker Compose
-- Networking
-  - Caddy
-  - Nginx
-  - Tailscale
-- Secrets Management
-  - HashiCorp Vault
-  - Google Secret Manager
-- Process Management
-  - PM2
-- Monitoring / Observability
-  - Grafana
-  - Loki
-  - Promtail
-  - Upptime
-- Self-Hosted Services
-  - Gitea
-  - code-server
-  - Immich
-  - Resilio Sync
-  - Adminer
-- CI/CD
-  - GitHub Actions
-- Databases
-  - PostgreSQL
-  - SQLite
-  - MongoDB
-- Caching / Messaging
-  - Redis
-  - RabbitMQ
-- CMS
-  - Sanity
-- Backend as a Service
-  - Supabase
-- Object Storage
-  - AWS S3
-  - Google Cloud Storage
-  - Cloudflare R2
-- Auth
-  - Better Auth
-  - NextAuth
-- AI / LLM
-  - Anthropic
-  - OpenAI
-- Payments
-  - Stripe
-- Communications
-  - Slack
-  - Twilio
-  - Resend
-- Container Registry
-  - Docker Hub
-- Package Registries
-  - npm
-- Package Managers
-  - pnpm
-- Monorepo Tooling
-  - Nx
-- Languages
-  - TypeScript
-  - JavaScript
-  - Bash / Shell
-  - Python
-  - HCL (Terraform)
-- Build Tools
-  - Vite
-  - Webpack
-  - esbuild
-  - SWC
-  - Rollup
-- Backend Frameworks
-  - Fastify
-  - Express
-  - Socket.IO
-- Frontend Frameworks
-  - React
-  - Next.js
-  - Angular
-- Styling
-  - Tailwind CSS
-- Testing
-  - Vitest
-  - Jest
-  - Playwright
-- Linting / Formatting
-  - ESLint
-  - Prettier
+| Category                       | Tools                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Agentic Coding Tools**       | [Claude Code](https://claude.com/claude-code), [Codex](https://openai.com/codex/), [Gemini CLI](https://github.com/google-gemini/gemini-cli)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **AI / LLM**                   | [Anthropic](https://www.anthropic.com), [DeepSeek](https://www.deepseek.com), [ElevenLabs](https://elevenlabs.io), [Google Gemini](https://gemini.google.com), [Ollama](https://ollama.com), [OpenAI](https://openai.com), [xAI](https://x.ai) (Grok)                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Auth**                       | [Better Auth](https://www.better-auth.com), [Google OAuth](https://developers.google.com/identity/protocols/oauth2), [Supabase Auth](https://supabase.com/auth)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Build Tools**                | [Angular CLI](https://angular.dev/tools/cli), [esbuild](https://esbuild.github.io), [Next.js](https://nextjs.org), [Rollup](https://rollupjs.org), [Sanity CLI](https://www.sanity.io/docs/cli), [SWC](https://swc.rs), [Vite](https://vitejs.dev), [Webpack](https://webpack.js.org)                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Caching / Messaging**        | [RabbitMQ](https://www.rabbitmq.com), [Redis](https://redis.io)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **CI/CD**                      | [Docker](https://www.docker.com), [Docker Compose](https://docs.docker.com/compose/), [Docker Hub](https://hub.docker.com), [Git](https://git-scm.com), [Gitea](https://about.gitea.com), [GitHub](https://github.com), [GitHub Actions](https://github.com/features/actions), [npm](https://www.npmjs.com), [PM2](https://pm2.keymetrics.io), [Watchtower](https://containrrr.dev/watchtower/)                                                                                                                                                                                                                                                                             |
+| **Cloud Providers**            | [AWS](https://aws.amazon.com), [Cloudflare](https://www.cloudflare.com), [Cloudflare Workers](https://workers.cloudflare.com), [Fly.io](https://fly.io), [Google Cloud Platform](https://cloud.google.com), [Oracle Cloud Infrastructure](https://www.oracle.com/cloud/), [Supabase](https://supabase.com), [Vercel](https://vercel.com)                                                                                                                                                                                                                                                                                                                                    |
+| **CMS**                        | [Sanity](https://www.sanity.io)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Communications**             | [Nodemailer](https://nodemailer.com), [Resend](https://resend.com), [Slack](https://slack.com), [Twilio](https://www.twilio.com)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Databases**                  | [Adminer](https://www.adminer.org), [MongoDB](https://www.mongodb.com), [PostgreSQL](https://www.postgresql.org), [SQLite](https://www.sqlite.org), [Supabase DB](https://supabase.com/database)                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Development**                | [code-server](https://github.com/coder/code-server), [Neovide](https://neovide.dev), [Neovim](https://neovim.io), [Vim](https://www.vim.org), [VS Code](https://code.visualstudio.com)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **File Management**            | [Immich](https://immich.app), [Seafile](https://www.seafile.com)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Frameworks**                 | [Angular](https://angular.dev), [Express](https://expressjs.com), [Fastify](https://fastify.dev), [Next.js](https://nextjs.org), [React](https://react.dev), [Slack Bolt](https://slack.dev/bolt-js/), [Socket.IO](https://socket.io), [Yjs](https://yjs.dev)                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **Infrastructure as Code**     | [Packer](https://www.packer.io), [Terraform](https://www.terraform.io)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **Languages**                  | [Bash](https://www.gnu.org/software/bash/) / Shell, [HCL](https://github.com/hashicorp/hcl) (Terraform), [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Python](https://www.python.org), [TypeScript](https://www.typescriptlang.org), [YAML](https://yaml.org)                                                                                                                                                                                                                                                                                                                                                                                    |
+| **Monitoring / Observability** | [Google Analytics](https://marketingplatform.google.com/about/analytics/), [Grafana](https://grafana.com), [Loki](https://grafana.com/oss/loki/), [Promtail](https://grafana.com/docs/loki/latest/send-data/promtail/), [Upptime](https://upptime.js.org)                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Networking**                 | [Caddy](https://caddyserver.com), [cloudflared](https://github.com/cloudflare/cloudflared), [Nginx](https://nginx.org), [Tailscale](https://tailscale.com), [WireGuard](https://www.wireguard.com)                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Object Storage**             | [AWS S3](https://aws.amazon.com/s3/), [Cloudflare R2](https://www.cloudflare.com/developer-platform/products/r2/), [Google Cloud Storage](https://cloud.google.com/storage)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Payments**                   | [Stripe](https://stripe.com)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Productivity Management**    | [Google Workspace APIs](https://developers.google.com/workspace) (Tasks, Calendar)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Repo Tooling**               | [ESLint](https://eslint.org), [Nx](https://nx.dev), [pnpm](https://pnpm.io), [Prettier](https://prettier.io)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Secrets Management**         | [Bitwarden](https://bitwarden.com), [Google Secret Manager](https://cloud.google.com/secret-manager), [HashiCorp Vault](https://www.vaultproject.io)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Security**                   | [Google reCAPTCHA](https://www.google.com/recaptcha/about/)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Testing**                    | [Jest](https://jestjs.io), [Playwright](https://playwright.dev), [Vitest](https://vitest.dev)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **UI**                         | [d3-force](https://d3js.org/d3-force), [dnd-kit](https://dndkit.com), [Font Awesome](https://fontawesome.com), [framer-motion](https://motion.dev), [FullCalendar](https://fullcalendar.io), [fuse.js](https://www.fusejs.io), [Leaflet](https://leafletjs.com) / [react-leaflet](https://react-leaflet.js.org), [lucide-react](https://lucide.dev), [marked](https://marked.js.org), [Radix Themes](https://www.radix-ui.com/themes), [react-markdown](https://github.com/remarkjs/react-markdown), [React Router](https://reactrouter.com), [recharts](https://recharts.org), [styled-components](https://styled-components.com), [Tailwind CSS](https://tailwindcss.com) |
+| **Utility Libraries**          | [github-slugger](https://github.com/Flet/github-slugger), [isomorphic-dompurify](https://github.com/kkomelin/isomorphic-dompurify), [tesseract.js](https://tesseract.projectnaptha.com), [Zod](https://zod.dev)                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Weather**                    | [OpenWeatherMap](https://openweathermap.org)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |

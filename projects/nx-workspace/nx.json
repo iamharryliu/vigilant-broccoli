@@ -250,6 +250,16 @@
         "serveStaticTargetName": "serve-static"
       },
       "include": ["apps/ui/vb-manager-next/**/*"]
+    },
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "serveTargetName": "serve"
+      },
+      "include": ["apps/api/vb-express/**/*", "apps/api/llm-service/**/*"]
     }
   ]
 }

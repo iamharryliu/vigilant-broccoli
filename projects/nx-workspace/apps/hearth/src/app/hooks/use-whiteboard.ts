@@ -12,6 +12,7 @@ const UPDATE_EVENT = '*';
 const WHITEBOARDS_TABLE = 'whiteboards';
 const PUBLIC_SCHEMA = 'public';
 const ONLINE_EVENT = 'online';
+const DEFAULT_BOARD_KEY = 'family';
 
 interface CachedWhiteboard {
   content: string;
@@ -27,22 +28,34 @@ interface WhiteboardState {
   lastSaved: Date | null;
 }
 
-const storageKey = (homeId: number) => `${STORAGE_KEY_PREFIX}${homeId}`;
+const storageKey = (homeId: number, boardKey: string) =>
+  `${STORAGE_KEY_PREFIX}${homeId}:${boardKey}`;
 
-const readCache = (homeId: number): CachedWhiteboard | null => {
+const readCache = (
+  homeId: number,
+  boardKey: string,
+): CachedWhiteboard | null => {
   if (typeof window === 'undefined') return null;
-  const raw = window.localStorage.getItem(storageKey(homeId));
+  const raw = window.localStorage.getItem(storageKey(homeId, boardKey));
   if (!raw) return null;
   return JSON.parse(raw) as CachedWhiteboard;
 };
 
-const writeCache = (homeId: number, cache: CachedWhiteboard): void => {
-  window.localStorage.setItem(storageKey(homeId), JSON.stringify(cache));
+const writeCache = (
+  homeId: number,
+  boardKey: string,
+  cache: CachedWhiteboard,
+): void => {
+  window.localStorage.setItem(
+    storageKey(homeId, boardKey),
+    JSON.stringify(cache),
+  );
 };
 
 export const useWhiteboard = (
   homeId: number | null,
   token: string,
+  boardKey: string = DEFAULT_BOARD_KEY,
 ): WhiteboardState => {
   const [content, setContentState] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -66,20 +79,20 @@ export const useWhiteboard = (
       if (updatedAt.current && remoteUpdatedAt <= updatedAt.current) return;
       updatedAt.current = remoteUpdatedAt;
       setContentState(text);
-      writeCache(homeId, {
+      writeCache(homeId, boardKey, {
         content: text,
         updatedAt: remoteUpdatedAt,
         pendingSave: false,
       });
     },
-    [homeId],
+    [homeId, boardKey],
   );
 
   const saveContent = useCallback(
     (text: string) => {
       if (!homeId) return;
       setIsSaving(true);
-      writeCache(homeId, {
+      writeCache(homeId, boardKey, {
         content: text,
         updatedAt: updatedAt.current,
         pendingSave: true,
@@ -88,13 +101,13 @@ export const useWhiteboard = (
       fetch(WHITEBOARD_API, {
         method: 'PUT',
         headers: { ...authHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ homeId, content: text }),
+        body: JSON.stringify({ homeId, content: text, boardKey }),
       })
         .then(res => (res.ok ? res.json() : Promise.reject(res)))
         .then(data => {
           updatedAt.current = data.updatedAt;
           isDirty.current = false;
-          writeCache(homeId, {
+          writeCache(homeId, boardKey, {
             content: text,
             updatedAt: data.updatedAt,
             pendingSave: false,
@@ -104,7 +117,7 @@ export const useWhiteboard = (
         .catch(() => undefined)
         .finally(() => setIsSaving(false));
     },
-    [homeId, authHeader],
+    [homeId, boardKey, authHeader],
   );
 
   useEffect(() => {
@@ -115,7 +128,7 @@ export const useWhiteboard = (
     updatedAt.current = null;
     setIsLoading(true);
 
-    const cache = readCache(homeId);
+    const cache = readCache(homeId, boardKey);
     if (cache) {
       setContentState(cache.content);
       updatedAt.current = cache.updatedAt;
@@ -124,7 +137,9 @@ export const useWhiteboard = (
       setContentState('');
     }
 
-    fetch(`${WHITEBOARD_API}?homeId=${homeId}`, { headers: authHeader() })
+    fetch(`${WHITEBOARD_API}?homeId=${homeId}&boardKey=${boardKey}`, {
+      headers: authHeader(),
+    })
       .then(res => res.json())
       .then(data => {
         if (data?.updatedAt) applyRemote(data.content ?? '', data.updatedAt);
@@ -136,14 +151,14 @@ export const useWhiteboard = (
         isInitialized.current = true;
         setIsLoading(false);
       });
-  }, [homeId, token, authHeader, applyRemote, saveContent]);
+  }, [homeId, boardKey, token, authHeader, applyRemote, saveContent]);
 
   useEffect(() => {
     if (!homeId) return;
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return;
 
     const channel = supabase
-      .channel(`${CHANNEL_NAME_PREFIX}${homeId}`)
+      .channel(`${CHANNEL_NAME_PREFIX}${homeId}-${boardKey}`)
       .on(
         POSTGRES_CHANGES_EVENT,
         {
@@ -153,8 +168,13 @@ export const useWhiteboard = (
           filter: `home_id=eq.${homeId}`,
         },
         payload => {
-          const row = payload.new as { content: string; updated_at: string };
-          if (row) applyRemote(row.content ?? '', row.updated_at);
+          const row = payload.new as {
+            content: string;
+            updated_at: string;
+            board_key: string;
+          };
+          if (row && row.board_key === boardKey)
+            applyRemote(row.content ?? '', row.updated_at);
         },
       )
       .subscribe();
@@ -162,17 +182,17 @@ export const useWhiteboard = (
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [homeId, applyRemote]);
+  }, [homeId, boardKey, applyRemote]);
 
   useEffect(() => {
     if (!homeId) return;
     const onReconnect = () => {
-      const cache = readCache(homeId);
+      const cache = readCache(homeId, boardKey);
       if (cache?.pendingSave) saveContent(cache.content);
     };
     window.addEventListener(ONLINE_EVENT, onReconnect);
     return () => window.removeEventListener(ONLINE_EVENT, onReconnect);
-  }, [homeId, saveContent]);
+  }, [homeId, boardKey, saveContent]);
 
   const setContent = useCallback(
     (text: string) => {

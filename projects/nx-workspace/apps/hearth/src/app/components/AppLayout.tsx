@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../providers/auth-provider';
+import { TopbarSlotProvider } from '../providers/topbar-slot-provider';
 import { ROUTES } from '../../lib/routes';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
@@ -13,10 +14,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const session = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r));
+  const isLoading = session === undefined;
 
   useEffect(() => {
+    if (isLoading) return;
+
     if (!session && !isPublic) {
       router.replace(ROUTES.LOGIN);
       return;
@@ -25,7 +30,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (session && isPublic) {
       router.replace(ROUTES.HOME);
     }
-  }, [session, isPublic, router]);
+  }, [session, isPublic, isLoading, router]);
+
+  if (isPublic) {
+    return <>{children}</>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="pt-[var(--topbar-h)] px-6">
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-8 w-48 mt-4" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-full mt-3" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-full mt-2" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-3/4 mt-2" />
+      </div>
+    );
+  }
 
   const authenticated = session && !isPublic;
 
@@ -34,10 +54,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <>
-      <Topbar />
-      <Sidebar />
-      <div className="pt-[49px] pl-14">{children}</div>
-    </>
+    <TopbarSlotProvider>
+      <Sidebar
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
+      />
+      <Topbar onMenuClick={() => setSidebarOpen(open => !open)} />
+      <div className="pt-[var(--topbar-h)] pl-0 md:pl-14 md:peer-hover:pl-48 transition-[padding] duration-200">
+        {children}
+      </div>
+    </TopbarSlotProvider>
   );
 }

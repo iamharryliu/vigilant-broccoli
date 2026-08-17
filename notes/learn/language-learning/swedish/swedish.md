@@ -14,8 +14,8 @@
 - [Comparison](./adjectives/swedish-adjective-comparison.md)
 - [Irregular Verbs](./swedish-verbs/swedish-irregular-verbs.md)
 - Tenses
-  - [Past Tense](./grammar/tenses/swedish-past-tense.md)
-  - [Future Tense](./grammar/tenses/swedish-future-tense.md)
+  - [Past Tense](./grammar/swedish-past-tense.md)
+  - [Future Tense](./grammar/swedish-future-tense.md)
 - [Nuances](./swedish-nuances.md)
 - Vocab
   - [Swedish Vocab](./swedish-vocab.md)

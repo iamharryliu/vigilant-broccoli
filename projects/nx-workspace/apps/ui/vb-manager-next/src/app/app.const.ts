@@ -24,25 +24,13 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Dev Dashboard',
     path: '/dev-dashboard',
   },
-  API_KEYS: {
-    title: 'API Keys',
-    path: '/api-keys',
-  },
-  NETWORK_MONITOR: {
-    title: 'Network Monitor',
-    path: '/network-monitor',
-  },
-  TEXT_TOOLS: {
-    title: 'Text Tools',
-    path: '/text-tools',
+  EVENT_CALENDARS: {
+    title: 'Event Calendars',
+    path: '/event-calendars',
   },
   NOTEPAD: {
     title: 'Notepad',
     path: '/notepad',
-  },
-  DOCS_MD: {
-    title: 'DocsMD',
-    path: '/docs-md',
   },
   LANGUAGE_LEARNING: {
     title: 'Language Learning',
@@ -52,9 +40,9 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Feature Sandbox',
     path: '/feature-sandbox',
   },
-  REACT_SANDBOX: {
-    title: 'React Sandbox',
-    path: '/react-sandbox',
+  CAREER: {
+    title: 'Career',
+    path: '/career',
   },
 };
 

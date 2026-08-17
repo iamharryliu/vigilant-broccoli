@@ -1,19 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Text, Badge } from '@radix-ui/themes';
-import { CRUDItemList, Input } from '@vigilant-broccoli/react-lib';
+import { Suspense, useState, useEffect } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import {
+  CRUDItemList,
+  Input,
+  Text,
+  Badge,
+  cn,
+} from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { WhereIsItem } from '../../lib/types';
-import { ROUTES } from '../../lib/routes';
+import { ROUTES, WHERE_IS_ITEM_PARAM } from '../../lib/routes';
 import {
   WhereIsFormComponent,
   WhereIsFormValues,
   PreviewImage,
 } from './where-is-form';
+import { uploadPreviewImages } from './upload-images';
+import { WhereIsDetailPanel } from './where-is-detail-panel';
+
+const WHERE_IS_ENDPOINT = '/api/where-is';
 
 const DEFAULT_FORM: WhereIsFormValues = {
   id: '',
@@ -62,18 +71,22 @@ const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => (
   </div>
 );
 
-export default function WhereIsPage() {
+function WhereIsPageContent() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const session = useAuth();
   const { selectedHomeId } = useHome();
   const [items, setItems] = useState<WhereIsItem[]>([]);
   const [query, setQuery] = useState('');
   const [loaded, setLoaded] = useState(false);
 
+  const selectedItemId = searchParams.get(WHERE_IS_ITEM_PARAM);
+
   useEffect(() => {
     if (selectedHomeId === null) return;
     setLoaded(false);
-    fetch(`/api/where-is?homeId=${selectedHomeId}`, {
+    fetch(`${WHERE_IS_ENDPOINT}?homeId=${selectedHomeId}`, {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     })
       .then(r => r.json())
@@ -87,12 +100,14 @@ export default function WhereIsPage() {
     form: WhereIsFormValues,
   ): Promise<WhereIsFormValues> => {
     const { description, tags } = form;
+    const accessToken = session?.access_token ?? '';
+    const images = await uploadPreviewImages(form.images, accessToken);
 
-    await fetch('/api/where-is', {
+    await fetch(WHERE_IS_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token ?? ''}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         title: form.title,
@@ -100,14 +115,11 @@ export default function WhereIsPage() {
         tags,
         homeId: selectedHomeId,
         userId: session?.user.id,
-        images: form.images.map(p => ({
-          base64: p.base64,
-          mimeType: p.mimeType,
-        })),
+        images,
       }),
     });
 
-    const res = await fetch(`/api/where-is?homeId=${selectedHomeId}`, {
+    const res = await fetch(`${WHERE_IS_ENDPOINT}?homeId=${selectedHomeId}`, {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     });
     const updated: WhereIsItem[] = await res.json();
@@ -120,42 +132,58 @@ export default function WhereIsPage() {
       tags: newItem?.tags ?? tags,
       images: [],
       imageUrls: newItem?.imageUrls ?? [],
-    } as WhereIsFormValues & Pick<WhereIsItem, 'imageUrls'>;
+      imageKeys: newItem?.imageKeys ?? [],
+    } as WhereIsFormValues & Pick<WhereIsItem, 'imageUrls' | 'imageKeys'>;
   };
 
   const updateItem = async (form: WhereIsFormValues): Promise<void> => {
     const original = items.find(i => i.id === form.id);
-    const removedImageUrls = (original?.imageUrls ?? []).filter(
-      url => !(form.imageUrls ?? []).includes(url),
+    const removedImageKeys = (original?.imageKeys ?? []).filter(
+      key => !(form.imageKeys ?? []).includes(key),
     );
-    await fetch('/api/where-is', {
+    const accessToken = session?.access_token ?? '';
+    const newImages = await uploadPreviewImages(form.images, accessToken);
+
+    await fetch(WHERE_IS_ENDPOINT, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token ?? ''}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         id: form.id,
         title: form.title,
         description: form.description,
         tags: form.tags,
-        removedImageUrls,
-        newImages: form.images.map(p => ({
-          base64: p.base64,
-          mimeType: p.mimeType,
-        })),
+        removedImageKeys,
+        newImages,
       }),
     });
   };
 
   const deleteItem = async (id: string | number) => {
-    await fetch('/api/where-is', {
+    await fetch(WHERE_IS_ENDPOINT, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${session?.access_token ?? ''}`,
       },
       body: JSON.stringify({ id }),
+    });
+  };
+
+  const openItemInPanel = (id: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set(WHERE_IS_ITEM_PARAM, id);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const closeItemPanel = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete(WHERE_IS_ITEM_PARAM);
+    const queryString = params.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+      scroll: false,
     });
   };
 
@@ -170,36 +198,73 @@ export default function WhereIsPage() {
     tags: item.tags,
     images: [] as PreviewImage[],
     imageUrls: item.imageUrls,
+    imageKeys: item.imageKeys,
     createdAt: item.createdAt,
   }));
 
+  const renderList = (onItemClick: (item: { id: string }) => void) =>
+    loaded && (
+      <>
+        <Input
+          placeholder="Search items (e.g. scissors, batteries)..."
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+        />
+        <CRUDItemList
+          items={formItems as never}
+          setItems={setItems as never}
+          createItem={createItem as never}
+          createItemFormDefaultValues={DEFAULT_FORM}
+          updateItem={updateItem as never}
+          deleteItem={deleteItem}
+          FormComponent={WhereIsFormComponent as never}
+          ListItemComponent={WhereIsListItem as never}
+          copy={COPY}
+          getItemImages={(item: { imageUrls?: string[] }) => item.imageUrls}
+          getItemTitle={(item: { title: string }) => item.title}
+          onItemClick={onItemClick}
+        />
+      </>
+    );
+
   return (
-    <div className="max-w-5xl mx-auto p-2 sm:p-6 space-y-6">
-      {loaded && (
-        <>
-          <Input
-            placeholder="Search items (e.g. scissors, batteries)..."
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-          />
-          <CRUDItemList
-            items={formItems as never}
-            setItems={setItems as never}
-            createItem={createItem as never}
-            createItemFormDefaultValues={DEFAULT_FORM}
-            updateItem={updateItem as never}
-            deleteItem={deleteItem}
-            FormComponent={WhereIsFormComponent as never}
-            ListItemComponent={WhereIsListItem as never}
-            copy={COPY}
-            getItemImages={(item: { imageUrls?: string[] }) => item.imageUrls}
-            getItemTitle={(item: { title: string }) => item.title}
-            onItemClick={(item: { id: string }) =>
-              router.push(ROUTES.WHERE_IS_DETAIL(item.id))
-            }
-          />
-        </>
-      )}
-    </div>
+    <>
+      {/* Mobile: unchanged page-to-page navigation */}
+      <div className="md:hidden max-w-5xl mx-auto p-2 sm:p-6 space-y-6">
+        {renderList(item => router.push(ROUTES.WHERE_IS_DETAIL(item.id)))}
+      </div>
+
+      {/* Desktop: dashboard with Finder-style slide-over preview */}
+      <div className="hidden md:block">
+        <div
+          className={cn(
+            'p-6 space-y-6 transition-[padding] duration-300',
+            selectedItemId && 'md:pr-[29rem]',
+          )}
+        >
+          {renderList(item => openItemInPanel(item.id))}
+        </div>
+
+        <WhereIsDetailPanel
+          itemId={selectedItemId}
+          onClose={closeItemPanel}
+          onUpdated={updated =>
+            setItems(prev => prev.map(i => (i.id === updated.id ? updated : i)))
+          }
+          onDeleted={id => {
+            closeItemPanel();
+            setItems(prev => prev.filter(i => i.id !== id));
+          }}
+        />
+      </div>
+    </>
+  );
+}
+
+export default function WhereIsPage() {
+  return (
+    <Suspense fallback={null}>
+      <WhereIsPageContent />
+    </Suspense>
   );
 }

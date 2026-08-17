@@ -1,7 +1,13 @@
 'use client';
 
-import { Badge, ScrollArea, Text, TextField } from '@radix-ui/themes';
-import { Button, Progress } from '@vigilant-broccoli/react-lib';
+import {
+  Badge,
+  Button,
+  Input,
+  Progress,
+  ScrollArea,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { useEffect, useRef, useState } from 'react';
 import { createSoundAlert } from '../audio';
 
@@ -214,8 +220,7 @@ export const AlarmUtilityContent = () => {
             <Text size="1" color="gray">
               Time
             </Text>
-            <TextField.Root
-              size="3"
+            <Input
               type="time"
               value={newTime}
               onChange={e => setNewTime(e.target.value)}
@@ -228,8 +233,7 @@ export const AlarmUtilityContent = () => {
             <Text size="1" color="gray">
               Label
             </Text>
-            <TextField.Root
-              size="3"
+            <Input
               placeholder="Alarm label"
               value={newLabel}
               onChange={e => setNewLabel(e.target.value)}
@@ -250,10 +254,14 @@ export const AlarmUtilityContent = () => {
             {alarms.map(alarm => {
               const progress = calculateProgress(alarm);
               return (
-                <div className="flex flex-col gap-2 p-2" key={alarm.id} style={{
+                <div
+                  className="flex flex-col gap-2 p-2"
+                  key={alarm.id}
+                  style={{
                     border: '1px solid var(--gray-6)',
                     borderRadius: '4px',
-                  }}>
+                  }}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">

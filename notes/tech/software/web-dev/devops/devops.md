@@ -11,7 +11,6 @@
 - [Google Cloud](./google-cloud.md)
 - [AWS](./aws/aws.md)
 - [Cloudflare](./cloudflare.md)
-- [Wrangler](./wrangler.md)
 
 ## Devops Tools
 
@@ -27,8 +26,8 @@
 
 - [DNS](./dns.md)
 - [Monorepo](./monorepo.md)
-- [Cloud Services](../../../../software/cloud-services.md)
-- [Local Services](../../../../software/local-services.md)
+- [Cloud Services](./cloud-services.md)
+- [Local Services](./local-services.md)
 
 ## Cloud Services Name Mapping
 

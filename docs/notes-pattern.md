@@ -16,3 +16,4 @@ These apply repo-wide, regardless of topic:
 Beyond the universal rules, individual top-level topics under `notes/` layer on their own stricter conventions (index-file naming, how subdirectories get linked, entry ordering, etc.) — these vary by topic and should not be assumed to carry over from one to another. Check for a doc under `docs/notes/` before restructuring a subtree.
 
 - [Cooking](./notes/cooking-pattern.md) — `notes/hobbies/cooking/`
+- [Lingo Files](./notes/lingo-pattern.md) — glossary files anywhere under `notes/` (e.g. `tech-lingo.md`, `software-lingo.md`)

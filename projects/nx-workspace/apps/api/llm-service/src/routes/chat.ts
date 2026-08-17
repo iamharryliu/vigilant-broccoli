@@ -56,11 +56,17 @@ const chatRoutes: FastifyPluginAsync = async app => {
       ? `Previous conversation:\n${conversationHistory}\n\nCurrent question:\n${latestUserMessage.content}`
       : latestUserMessage.content;
 
+    const abortController = new AbortController();
+    reply.raw.on('close', () => abortController.abort());
+
     try {
-      const streamResponse = await LLMService.promptStream({
-        prompt: { userPrompt: fullPrompt, systemPrompt },
-        modelConfig: { model: selectedModel, temperature: CHAT_TEMPERATURE },
-      });
+      const streamResponse = await LLMService.promptStream(
+        {
+          prompt: { userPrompt: fullPrompt, systemPrompt },
+          modelConfig: { model: selectedModel, temperature: CHAT_TEMPERATURE },
+        },
+        abortController.signal,
+      );
 
       reply.hijack();
       for (const [k, v] of Object.entries(STREAM_HEADERS)) {
@@ -74,6 +80,7 @@ const chatRoutes: FastifyPluginAsync = async app => {
 
       reply.raw.end();
     } catch (err) {
+      if (abortController.signal.aborted) return;
       console.error(ERROR_STREAM_FAILED, err);
       if (reply.sent) {
         reply.raw.end();

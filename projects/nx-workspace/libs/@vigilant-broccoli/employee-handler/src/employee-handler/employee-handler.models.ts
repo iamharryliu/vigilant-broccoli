@@ -32,11 +32,28 @@ interface PostRetentionUtilities {
   postRetentionCleanup: () => Promise<void>;
 }
 
+export interface EmployeeAbsence {
+  id: string;
+  employeeEmail: string;
+  employeeName: string;
+  /** Human-readable leave type, e.g. "Vacation", "Sick Leave". */
+  type: string;
+  /** ISO date (YYYY-MM-DD), inclusive. */
+  startDate: string;
+  /** ISO date (YYYY-MM-DD), inclusive. */
+  endDate: string;
+}
+
+interface AbsenceUtilities {
+  fetchAbsences: () => Promise<EmployeeAbsence[]>;
+}
+
 export interface EmployeeHandlerConfig {
   onboardUtilities: OnboardUtilities;
   activeMaintenanceUtilities: ActiveMaintenanceUtilities;
   offboardUtilities: OffboardUtilities;
   postRetentionUtilities: PostRetentionUtilities;
+  absenceUtilities: AbsenceUtilities;
   leaveSyncUtilities?: LeaveSyncUtilities;
   customFunctions?: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

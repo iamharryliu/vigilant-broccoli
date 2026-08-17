@@ -1,3 +1,4 @@
+import { ComponentType } from 'react';
 import {
   Calendar,
   Wrench,
@@ -6,45 +7,89 @@ import {
   LayoutList,
   PenLine,
   MapPin,
-  ChefHat,
+  UtensilsCrossed,
+  PackageSearch,
+  FlaskConical,
+  ShoppingCart,
+  Sparkles,
+  StickyNote,
+  MessageCircle,
+  Home,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
-export const NAV_LINKS = [
+export type NavLink = {
+  label: string;
+  href?: string;
+  icon?: ComponentType<{ size?: number | string }>;
+  children?: NavLink[];
+  mobileOnlyChildren?: boolean;
+};
+
+export const IS_DEV = process.env.NODE_ENV !== 'production';
+
+const DEV_FEATURES_LINK: NavLink = {
+  label: 'Dev Features',
+  icon: FlaskConical,
+  children: [
+    { label: 'Chores', href: ROUTES.CHORES, icon: ListTodo },
+    {
+      label: 'Lists',
+      href: ROUTES.MASTER_LIST,
+      icon: LayoutList,
+      children: [
+        { label: 'Master List', href: ROUTES.MASTER_LIST },
+        { label: 'Household Rules', href: ROUTES.HOUSEHOLD_RULES },
+      ],
+    },
+    {
+      label: 'Utility',
+      href: ROUTES.DOCS,
+      icon: Wrench,
+      children: [
+        { label: 'Docs', href: ROUTES.DOCS },
+        { label: 'Price Tracker', href: ROUTES.PRICE_TRACKER },
+      ],
+    },
+    {
+      label: 'Calendar',
+      href: ROUTES.CALENDAR,
+      icon: Calendar,
+      children: [
+        { label: 'Resources', href: ROUTES.RESOURCES },
+        { label: 'Leisure', href: ROUTES.LEISURE },
+        { label: 'Projects', href: ROUTES.PROJECTS },
+      ],
+    },
+  ],
+};
+
+export const NAV_LINKS: NavLink[] = [
   {
-    label: 'Calendar',
-    href: ROUTES.CALENDAR,
-    icon: Calendar,
+    label: 'Home',
+    href: ROUTES.HOME,
+    icon: Home,
+    mobileOnlyChildren: true,
     children: [
-      { label: 'Overall Calendar', href: ROUTES.OVERALL_CALENDAR },
-      { label: 'Resources', href: ROUTES.RESOURCES },
-      { label: 'Leisure', href: ROUTES.LEISURE },
-      { label: 'Projects', href: ROUTES.PROJECTS },
-      { label: 'Meals', href: ROUTES.MEALS },
+      { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
+      { label: 'Calendar', href: ROUTES.OVERALL_CALENDAR, icon: Calendar },
     ],
   },
+  { label: 'Where Is', href: ROUTES.WHERE_IS, icon: PackageSearch },
   {
-    label: 'Utility',
-    href: ROUTES.WHERE_IS,
-    icon: Wrench,
+    label: 'Food Planner',
+    href: ROUTES.FOOD_PLANNER,
+    icon: UtensilsCrossed,
+    mobileOnlyChildren: true,
     children: [
-      { label: 'Where Is', href: ROUTES.WHERE_IS },
-      { label: 'Docs', href: ROUTES.DOCS },
-      { label: 'Price Tracker', href: ROUTES.PRICE_TRACKER },
+      { label: 'Grocery List', href: ROUTES.GROCERY, icon: ShoppingCart },
+      { label: 'Kitchen Chores', href: ROUTES.KITCHEN_CHORES, icon: Sparkles },
+      { label: 'Kitchen Notes', href: ROUTES.KITCHEN_NOTES, icon: StickyNote },
+      { label: 'Kitchen Events', href: ROUTES.FOOD_CALENDAR, icon: Calendar },
+      { label: 'Food Assistant', href: ROUTES.FOOD_CHAT, icon: MessageCircle },
     ],
   },
-  {
-    label: 'Lists',
-    href: ROUTES.MASTER_LIST,
-    icon: LayoutList,
-    children: [
-      { label: 'Master List', href: ROUTES.MASTER_LIST },
-      { label: 'Household Rules', href: ROUTES.HOUSEHOLD_RULES },
-    ],
-  },
-  { label: 'Food Planner', href: ROUTES.FOOD_PLANNER, icon: ChefHat },
   { label: 'Find Members', href: ROUTES.LOCATOR, icon: MapPin },
-  { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
-  { label: 'Chores', href: ROUTES.CHORES, icon: ListTodo },
+  ...(IS_DEV ? [DEV_FEATURES_LINK] : []),
   { label: 'Settings', href: ROUTES.SETTINGS, icon: Settings },
 ];

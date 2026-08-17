@@ -1,10 +1,13 @@
 'use client';
 
-import { Text, Badge, Button, Dialog } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import {
+  Badge,
+  Button,
   CardContainer,
   StatusCardList,
   StatusCardListItem,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { useCallback, useEffect, useState } from 'react';
 import { CardSkeleton } from './skeleton.component';
@@ -87,7 +90,7 @@ const ScanDialog = ({ device }: { device: LanDevice }) => {
   return (
     <Dialog.Root onOpenChange={open => open && !state.ports && runScan()}>
       <Dialog.Trigger>
-        <Button size="1" variant="soft">
+        <Button size="sm" variant="secondary">
           {SCAN_BUTTON_LABEL}
         </Button>
       </Dialog.Trigger>
@@ -149,15 +152,15 @@ const ScanDialog = ({ device }: { device: LanDevice }) => {
         </div>
         <div className="flex justify-end gap-2 mt-4">
           <Button
-            size="1"
-            variant="soft"
+            size="sm"
+            variant="secondary"
             onClick={runScan}
             disabled={state.loading}
           >
             {RESCAN_BUTTON_LABEL}
           </Button>
           <Dialog.Close>
-            <Button size="1" variant="soft" color="gray">
+            <Button size="sm" variant="secondary">
               {CLOSE_BUTTON_LABEL}
             </Button>
           </Dialog.Close>

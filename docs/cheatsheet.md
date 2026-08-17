@@ -8,16 +8,18 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   open:repo:actions           Open GitHub Actions
   npm:packages                Open npm packages page
   cheatsheet                  Print this cheatsheet
+  cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
 
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
   format                      Format all files with Prettier
   format:commit               Format given files with Prettier (pass paths)
-  cloud:login                 Login to GCP and GitHub CLI
+  cloud:login                 Check GCP/AWS/GitHub/npm/Fly login status, login where needed
   gcp:login                   Login to GCP and set project
   gh:login                    Login to GitHub CLI
   npm:login                   Login to npm
   aws:login                   Login to AWS SSO (AdministratorAccess-841376026547)
+  fly:login                   Login to Fly.io CLI
   oracle:config               Edit OCI config
 
 🏗️  TERRAFORM
@@ -26,6 +28,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   tf:apply                    Load vault env, apply terraform, and run post-apply
   tf:post-apply               Run post-apply script
   tf:output                   Show terraform outputs
+  tf:unlock                   Load vault env and run terraform force-unlock <lock-id>
 
 ☁️  OCI
   oci:vm:ssh                  SSH into OCI VM (RabbitMQ)
@@ -44,6 +47,15 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   code-server:logs:cloud-init  Follow VM provisioning log
   code-server:reset           Rebuild containers + volumes (fresh environment)
   code-server:replace         Replace the VM via terraform (fresh host)
+
+📁 SEAFILE
+  seafile:open                Open drive.harryliu.dev
+  seafile:password            Copy Seafile admin password to clipboard
+  seafile:ssh                 SSH into Seafile VM
+  seafile:logs                Follow Seafile container logs
+  seafile:logs:cloud-init     Follow VM provisioning log
+  seafile:reset               Rebuild containers + volumes (fresh environment)
+  seafile:replace             Replace the VM via terraform (fresh host)
 
 🖥️  GCP VM
   gcp:vm:image:build          Build GCP VM Packer image (init + build)
@@ -67,19 +79,28 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:flyio       Rotate Fly.io token
   secret-rotation:gitea       Rotate Gitea CI token (scoped read:repository)
   secret-rotation:profile-deploy-key  Rotate profile repo deploy key, store in Vault
+  secret-rotation:tf-cloud    Rotate HCP Terraform token (self-succession)
   secret-rotation:resend      Rotate Resend API key (single-key swap, pushes to fly app)
   secret-rotation:rabbitmq    Rotate RabbitMQ password, push connection string to fly consumers
+  secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
+  secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
 
 🐳 LOCAL
   local:docker:up             Start local Docker Compose services
   local:docker:down           Stop local Docker Compose services
   local:docker:restart        Restart local Docker Compose services
   local:docker:reload         Reload local Docker Compose services
+  immich:docker:up            Start the standalone Immich Docker Compose stack
+  immich:docker:down          Stop the standalone Immich Docker Compose stack
+  immich:docker:restart       Restart the standalone Immich Docker Compose stack
+  immich:docker:reload        Reload the standalone Immich Docker Compose stack
+  immich:docker:logs          Tail the standalone Immich Docker Compose logs
   vb-manager-next:start       Start vb-manager-next via PM2
   vb-manager-next:reload      Reload vb-manager-next via PM2
   vb-manager-next:delete      Delete vb-manager-next PM2 process
   vb-manager-next:logs        Tail vb-manager-next PM2 logs
   vb-manager-next:status      Show PM2 process status
+  deploy:local-services       Bring up local Docker services + reload vb-manager-next
   health-check                Run health check script
 
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
@@ -90,6 +111,10 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic:dev-sandbox:logs    Follow sandbox provisioning logs
   agentic:dev-sandbox:down    Stop the sandbox
   agentic:dev-sandbox:reset   Destroy sandbox volume and rebuild fresh
+  agentic:dev-sandbox:refresh-github-token  Mint a fresh 1-hour GitHub App installation token (GH_TOKEN, from AGENT_GH_APP_ID/
+                               AGENT_GH_APP_PRIVATE_KEY — never stored in Vault, re-minted every call) and recreate the running sandbox
+                               container with it; no input needed. Use this when git push/gh calls in the sandbox start failing with auth
+                               errors after ~1h
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
   agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override)
@@ -99,14 +124,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic:audit "<scope>"    Headlessly audit the codebase for <scope> and write a concise findings note (severity + location + remediation table) under docs/audit/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)
   agentic:pr:update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
-
-🏠 HOMELAB
-  homelab:up                  Start homelab services and Tailscale
-  homelab:down                Stop homelab services and Tailscale
-  homelab:restart             Restart homelab services
-  homelab:logs                Tail homelab service logs
-  homelab:ps                  List homelab service status
-  homelab:pull                Pull latest homelab images
 
 🐙 GITHUB
   gh:actions:deploy           Trigger deploy workflow

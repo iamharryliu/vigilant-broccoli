@@ -1,7 +1,7 @@
 'use client';
 
-import { GoogleSigninButton } from '@vigilant-broccoli/react-lib';
-import { Text } from '@radix-ui/themes';
+import { GoogleSigninButton, Text } from '@vigilant-broccoli/react-lib';
+
 import { supabase } from '../../../libs/supabase';
 import { ROUTES } from '../../lib/routes';
 import { useTranslation } from '../i18n';

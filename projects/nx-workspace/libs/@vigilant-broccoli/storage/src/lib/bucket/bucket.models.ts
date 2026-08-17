@@ -1,3 +1,5 @@
+import { Readable } from 'stream';
+
 export enum BucketProvider {
   LOCAL = 'local',
   CLOUDFLARE_R2 = 'cloudflare-r2',
@@ -43,6 +45,7 @@ export interface BucketFile {
 
 export interface IBucketProvider {
   upload(destinationName: string, buffer: Buffer): Promise<void>;
+  uploadStream(destinationName: string, stream: Readable): Promise<void>;
   download(fileName: string, destinationPath: string): Promise<void>;
   delete(fileName: string): Promise<void>;
   list(): Promise<BucketFile[]>;

@@ -832,6 +832,12 @@ const VB_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
+  {
+    label: 'Docs',
+    target: 'https://docs.harryliu.dev/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
 ];
 
 const UTILITY_LINKS = [
@@ -1125,12 +1131,6 @@ const UTILITY_LINKS = [
 
 const CAREER_LINKS = [
   {
-    label: PERSONAL_URL.RESUME.NAME,
-    target: PERSONAL_URL.RESUME.URL,
-    type: OPEN_TYPE.BROWSER,
-    subgroup: LINK_GROUP_SUBGROUP.CAREER,
-  },
-  {
     label: 'LinkedIn',
     target: 'https://www.linkedin.com',
     type: OPEN_TYPE.BROWSER,
@@ -1295,6 +1295,13 @@ const UI_APP_LINKS = [
   {
     label: 'FindMe',
     target: 'https://staging-findme.vercel.app/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
+  },
+  {
+    label: 'React Component Library',
+    target:
+      'https://iamharryliu.github.io/vigilant-broccoli/react-component-library/',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },

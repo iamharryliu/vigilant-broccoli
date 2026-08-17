@@ -1,0 +1,38 @@
+name: Fly Private Tunnel
+description: Install flyctl and open a WireGuard tunnel to a private-only Fly app's flycast address, so a runner can reach it at http://127.0.0.1:<local_port>.
+
+inputs:
+  app:
+    description: Fly app name to tunnel to (e.g. staging-llm-service)
+    required: true
+  local_port:
+    description: Local port to bind the tunnel to
+    required: false
+    default: '3000'
+  remote_port:
+    description: Port on the flycast address — 80, since private apps set force_https = false and fly-proxy serves the internal port over plain HTTP
+    required: false
+    default: '80'
+  wait_seconds:
+    description: How long to poll GET / before giving up and letting the caller's first request surface the error
+    required: false
+    default: '30'
+
+runs:
+  using: composite
+  steps:
+    - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # 1.6
+
+    - name: Tunnel to ${{ inputs.app }} private network
+      shell: bash
+      env:
+        APP: ${{ inputs.app }}
+        LOCAL_PORT: ${{ inputs.local_port }}
+        REMOTE_PORT: ${{ inputs.remote_port }}
+        WAIT_SECONDS: ${{ inputs.wait_seconds }}
+      run: |
+        flyctl proxy "${LOCAL_PORT}:${REMOTE_PORT}" "${APP}.flycast" -a "${APP}" &
+        for i in $(seq 1 "${WAIT_SECONDS}"); do
+          curl -sf "http://127.0.0.1:${LOCAL_PORT}/" >/dev/null 2>&1 && break
+          sleep 1
+        done

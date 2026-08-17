@@ -1,15 +1,17 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Text, Badge } from '@radix-ui/themes';
 import {
   BORDER_ACTIVE,
+  Badge,
   Button,
-  ButtonList,
   ButtonConfig,
+  ButtonList,
   CardContainer,
+  CopyButton,
   MonospaceText,
   StatusCardList,
   StatusCardListItem,
+  Text,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 import { GCP_LINK } from '@vigilant-broccoli/links';
@@ -275,9 +277,7 @@ export const GcloudAuthStatusComponent = () => {
 
       const authData = await authResponse.json();
       setAuthStatus(authData);
-      const reauthJson = reauthResponse.ok
-        ? await reauthResponse.json()
-        : null;
+      const reauthJson = reauthResponse.ok ? await reauthResponse.json() : null;
       const reauthData = parseReauthData(
         reauthResponse,
         reauthJson,
@@ -322,6 +322,20 @@ export const GcloudAuthStatusComponent = () => {
 
   return (
     <CardContainer title="GCP Management" headerLink={GCP_CONSOLE_LINK}>
+      <div className="flex items-center justify-between gap-2">
+        <Text size="2" weight="bold">
+          Vault Root Token
+        </Text>
+        <CopyButton
+          skipBrowserCopy
+          text={async () => {
+            await authFetch(API_ENDPOINTS.GCLOUD_VAULT_TOKEN, {
+              method: HTTP_METHOD.POST,
+            });
+            return '';
+          }}
+        />
+      </div>
       {authStatus?.activeAccount ? (
         <div className="flex flex-col gap-3">
           {sortedAccounts.length > 0 && (

@@ -1,7 +1,8 @@
 'use client';
 
 import type { ReactElement } from 'react';
-import { Table, Text } from '@radix-ui/themes';
+import { Table } from '@radix-ui/themes';
+import { Text } from './Text';
 
 const FIELD_ICONS: Record<
   string,

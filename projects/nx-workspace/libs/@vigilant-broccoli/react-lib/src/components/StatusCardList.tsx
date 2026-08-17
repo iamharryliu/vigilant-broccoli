@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Text } from '@radix-ui/themes';
+import { Text } from './Text';
 import { CollapsibleList, CollapsibleListItemConfig } from './CollapsibleList';
 
 export interface StatusCardListItem {
@@ -45,7 +45,9 @@ const toCollapsibleItem = (
 });
 
 const FlatItem = ({ item }: { item: StatusCardListItem }) => (
-  <div className={`flex items-center gap-2 ${`${itemClassName(item)} min-h-[36px]`}`}>
+  <div
+    className={`flex items-center gap-2 ${`${itemClassName(item)} min-h-[36px]`}`}
+  >
     {itemTitleContent(item)}
     {item.actions}
   </div>

@@ -23,6 +23,8 @@ jobs:
             test-smoke-email-service
             test-e2e-email-subscription-service
             test-security-api
+            test-security-llm
+            test-security-storage-service
           )
           for wf in "${TEST_WORKFLOWS[@]}"; do
             gh workflow run "$wf" --repo ${{ github.repository }}

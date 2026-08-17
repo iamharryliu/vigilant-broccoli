@@ -1,9 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Text } from '@radix-ui/themes';
+
 import { Dialog } from '@radix-ui/themes';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
+import { useHome } from '../../providers/home-provider';
 import { CalendarEvent } from '../../../lib/types';
 import { CalendarView } from '../components/CalendarView';
 import {
@@ -16,10 +21,17 @@ type ModalState =
   | { type: 'edit'; event: CalendarEvent }
   | null;
 
+const EVENTS_ENDPOINT = '/api/calendar/events';
+const JSON_CONTENT_TYPE_HEADER = { 'Content-Type': 'application/json' };
+
 export default function OverallCalendarPage() {
   const session = useAuth();
+  const { selectedHomeId } = useHome();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [modal, setModal] = useState<ModalState>(null);
+  const [range, setRange] = useState<{ start: string; end: string } | null>(
+    null,
+  );
 
   const token = session?.access_token ?? '';
   const authHeader = (extra?: Record<string, string>) => ({
@@ -28,23 +40,28 @@ export default function OverallCalendarPage() {
   });
 
   const fetchEvents = useCallback(async () => {
-    if (!token) return;
-    const res = await fetch('/api/calendar/events', {
+    if (!token || !range) return;
+    const params = new URLSearchParams({
+      start: range.start,
+      end: range.end,
+    });
+    const res = await fetch(`${EVENTS_ENDPOINT}?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     setEvents(Array.isArray(data) ? data : []);
-  }, [token]);
+  }, [token, range]);
 
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
 
   const handleCreate = async (data: CalendarEventFormData) => {
-    await fetch('/api/calendar/events', {
+    if (!selectedHomeId) return;
+    await fetch(EVENTS_ENDPOINT, {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify(data),
+      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
+      body: JSON.stringify({ ...data, homeId: selectedHomeId }),
     });
     setModal(null);
     fetchEvents();
@@ -52,9 +69,9 @@ export default function OverallCalendarPage() {
 
   const handleEdit = async (data: CalendarEventFormData) => {
     if (modal?.type !== 'edit') return;
-    await fetch('/api/calendar/events', {
+    await fetch(EVENTS_ENDPOINT, {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
       body: JSON.stringify({ id: modal.event.id, ...data }),
     });
     setModal(null);
@@ -63,9 +80,9 @@ export default function OverallCalendarPage() {
 
   const handleDelete = async () => {
     if (modal?.type !== 'edit') return;
-    await fetch('/api/calendar/events', {
+    await fetch(EVENTS_ENDPOINT, {
       method: 'DELETE',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
       body: JSON.stringify({ id: modal.event.id }),
     });
     setModal(null);
@@ -78,9 +95,9 @@ export default function OverallCalendarPage() {
     end: string,
     allDay: boolean,
   ) => {
-    await fetch('/api/calendar/events', {
+    await fetch(EVENTS_ENDPOINT, {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
       body: JSON.stringify({ id: evId, start, end, allDay }),
     });
     fetchEvents();
@@ -88,10 +105,6 @@ export default function OverallCalendarPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-4">
-      <Text size="6" weight="bold">
-        Overall Calendar
-      </Text>
-
       <CalendarView
         events={events}
         onSelectSlot={(start, end, allDay) =>
@@ -99,6 +112,7 @@ export default function OverallCalendarPage() {
         }
         onEventClick={event => setModal({ type: 'edit', event })}
         onEventDrop={handleEventDrop}
+        onRangeChange={(start, end) => setRange({ start, end })}
       />
 
       <Dialog.Root
@@ -107,7 +121,10 @@ export default function OverallCalendarPage() {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 480 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 480 }}
+        >
           <Dialog.Title>
             {modal?.type === 'edit' ? 'Edit Event' : 'New Event'}
           </Dialog.Title>

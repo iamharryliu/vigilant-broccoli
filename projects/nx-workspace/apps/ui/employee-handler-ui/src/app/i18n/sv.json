@@ -5,6 +5,7 @@
   },
   "NAV": {
     "EMPLOYEES": "Medarbetare",
+    "ABSENCES": "Frånvaro",
     "SIGNATURES": "Signaturer",
     "SETTINGS": "Inställningar"
   },
@@ -72,6 +73,24 @@
     "ERROR": {
       "NO_EMAILS": "Ange giltiga e-postadresser",
       "LOAD_FAILED": "Det gick inte att hämta medarbetare"
+    }
+  },
+  "ABSENCES": {
+    "SUBTITLE": "Alla aktiva medarbetares senaste och kommande frånvaro.",
+    "SUMMARY": "{employees} medarbetare · {absences} frånvarotillfällen",
+    "EMPTY": "Ingen frånvaro",
+    "TODAY": "Idag",
+    "ROW_META": "{count} frånvarotillfällen",
+    "TABLE_VIEW": "Tabellvy (all frånvaro)",
+    "COL": {
+      "EMPLOYEE": "Medarbetare",
+      "TYPE": "Typ",
+      "START": "Start",
+      "END": "Slut",
+      "DAYS": "Dagar"
+    },
+    "ERROR": {
+      "LOAD_FAILED": "Det gick inte att hämta frånvaro"
     }
   },
   "SIGNATURES": {

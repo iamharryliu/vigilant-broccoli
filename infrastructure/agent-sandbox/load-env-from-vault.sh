@@ -46,8 +46,6 @@ if [ -n "$AGENT_GH_APP_ID" ] && [ -n "$AGENT_GH_APP_PRIVATE_KEY" ]; then
   esac
   echo "Minting GitHub App installation token..." >&2
   GH_TOKEN=$("${SCRIPT_DIR}/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$PEM_CONTENT"))
-else
-  GH_TOKEN=$(echo "$SECRETS" | jq -r '.AGENT_GITHUB_TOKEN // empty')
 fi
 
 if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
@@ -59,7 +57,7 @@ if [ "${#CLAUDE_CODE_OAUTH_TOKEN}" -lt 100 ]; then
   exit 1
 fi
 if [ -z "$GH_TOKEN" ]; then
-  echo "WARNING: no GitHub App credentials (AGENT_GH_APP_ID + AGENT_GH_APP_PRIVATE_KEY) or AGENT_GITHUB_TOKEN found in Vault; sandbox will have read-only git access." >&2
+  echo "WARNING: no GitHub App credentials (AGENT_GH_APP_ID + AGENT_GH_APP_PRIVATE_KEY) found in Vault; sandbox will have read-only git access." >&2
 fi
 
 emit CLAUDE_CODE_OAUTH_TOKEN "$CLAUDE_CODE_OAUTH_TOKEN"

@@ -2,7 +2,11 @@
 
 import { use, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dialog, Text } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../../providers/auth-provider';
 import { ROUTES } from '../../../../lib/routes';
 import { CalendarEvent } from '../../../../lib/types';
@@ -28,6 +32,9 @@ export default function HomeCalendarPage({
   const session = useAuth();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [modal, setModal] = useState<ModalState>(null);
+  const [range, setRange] = useState<{ start: string; end: string } | null>(
+    null,
+  );
 
   const token = session?.access_token ?? '';
   const authHeader = (extra?: Record<string, string>) => ({
@@ -36,13 +43,18 @@ export default function HomeCalendarPage({
   });
 
   const fetchEvents = useCallback(async () => {
-    if (!token) return;
-    const res = await fetch(`/api/calendar/events?homeId=${homeId}`, {
+    if (!token || !range) return;
+    const params = new URLSearchParams({
+      homeId: String(homeId),
+      start: range.start,
+      end: range.end,
+    });
+    const res = await fetch(`/api/calendar/events?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     setEvents(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, range]);
 
   useEffect(() => {
     fetchEvents();
@@ -115,6 +127,7 @@ export default function HomeCalendarPage({
         }
         onEventClick={event => setModal({ type: 'edit', event })}
         onEventDrop={handleEventDrop}
+        onRangeChange={(start, end) => setRange({ start, end })}
       />
 
       <Dialog.Root
@@ -123,7 +136,10 @@ export default function HomeCalendarPage({
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 480 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 480 }}
+        >
           <Dialog.Title>
             {modal?.type === 'edit' ? 'Edit Event' : 'New Event'}
           </Dialog.Title>

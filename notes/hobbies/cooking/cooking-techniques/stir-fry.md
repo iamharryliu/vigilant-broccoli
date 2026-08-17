@@ -2,6 +2,15 @@
 
 - [How to Stir Fry Any Vegetable - Three Basic Flavors and Recipes (蒜蓉炒西兰花/姜汁炒芥兰/虾酱炒通心菜)](https://www.youtube.com/watch?v=a-Yu8qOAEYQ)
 
+## Technique
+
+- Use high heat.
+- Cook stems first, then leaves.
+- Add salt once vegetables have cooked down, then add garlic.
+- Sauce: oyster sauce, soy sauce.
+- Deglaze with Shaoxing wine.
+- Add a cornstarch slurry for a glossy finish.
+
 ## Vegetable Choices
 
 - Firm / longer-cooking vegetables

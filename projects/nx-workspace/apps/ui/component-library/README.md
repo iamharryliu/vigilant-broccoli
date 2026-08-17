@@ -7,6 +7,7 @@
 - Build Tool - Vite
 - External libs
   - Tailwind CSS
+  - Radix Themes
 - Internal libs
   - `react-sandbox`
 - Cloud services

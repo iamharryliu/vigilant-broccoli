@@ -1,13 +1,13 @@
 # Software
 
 - [Software Lingo](./software-lingo.md)
-- [Software Language](./software-languages.md)
 - [Software Breakdown](./general/software-breakdown.md)
 - [Software Roadmap](./software-roadmap.md)
 - [Dev Glossary](./dev-glossary.md)
 - [Software Languages](./languages/software-languages.md)
 - [Web Dev](./web-dev/web-dev.md)
 - [Software Practices](./general/software-practices.md)
+- [Software Maintenance](./general/software-maintenance.md)
 - [Software Architecture](./general/software-architecture.md)
   - [Software Design Patterns](./general/software-design-patterns.md)
   - [Software Architecture Patterns](./software-architecture-patterns.md)
@@ -21,6 +21,7 @@
   - [Sanity](./sanity.md)
   - [Claude](./claude.md)
   - [Immich](./self-host/immich.md)
+- [LLM Chat Services](./llm-chat-services.md)
 - [OS](./os/os.md)
 - [Open Source](./open-source.md)
 - [Data Science](./data-science/data-science.md)

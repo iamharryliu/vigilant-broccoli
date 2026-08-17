@@ -41,7 +41,7 @@ terraform {
     }
     supabase = {
       source  = "supabase/supabase"
-      version = "~> 1.9"
+      version = "~> 1.10"
     }
   }
 }
@@ -75,6 +75,13 @@ provider "supabase" {}
 locals {
   oci_config       = file("~/.oci/config")
   oci_tenancy_ocid = regex("tenancy=(ocid1\\.tenancy\\.[^\n]+)", local.oci_config)[0]
+
+  hearth_r2_cors_origins = [
+    "http://localhost:3000",
+    "http://localhost:4200",
+    "https://staging-hearth.vercel.app",
+    "https://production-hearth.vercel.app",
+  ]
 }
 
 data "google_compute_image" "vb_vm" {
@@ -252,7 +259,19 @@ resource "google_iam_workload_identity_pool_provider" "github" {
     "attribute.aud"        = "assertion.aud"
   }
 
-  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}'"
+  # This SA still holds real privilege (compute.instanceAdmin.v1,
+  # storage.objectAdmin on the backup bucket, secretAccessor on a handful of
+  # secrets). pull_request runs execute their workflow YAML from the PR
+  # branch, so a PR that could mint a token through this provider could edit
+  # its own workflow to impersonate this SA and reach that access — so
+  # pull_request tokens are refused here and must use the github-pr-check
+  # provider (narrow SA, github-actions-pr-check.tf) instead. Verified safe:
+  # ci-pr-check.yml is the only pull_request-triggered workflow, and no
+  # push/dispatch/workflow_call/workflow_run flow that legitimately uses this
+  # provider ever carries event_name == "pull_request" (workflow_call tokens
+  # keep the originating event's name, and deploy.yml's only caller is the
+  # dispatch-triggered ci-rotate-secrets.yml).
+  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}' && assertion.event_name != 'pull_request'"
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
@@ -295,34 +314,30 @@ resource "google_project_iam_member" "github_actions_oslogin" {
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-resource "google_project_iam_member" "github_actions_secret_accessor" {
-  project = data.google_project.project.project_id
-  role    = "roles/secretmanager.secretAccessor"
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
+# No roles/editor, roles/iam.serviceAccountAdmin, or
+# roles/iam.workloadIdentityPoolAdmin here: Terraform applies run locally
+# (pnpm tf:apply), so CI never creates/modifies GCP resources or IAM
+# bindings. No project-wide secretAccessor either — grant it per secret,
+# scoped to what workflows actually read directly from Secret Manager
+# (everything else CI needs comes from Vault instead).
 
-  condition {
-    title       = "exclude_bitwarden_password"
-    description = "Bitwarden is the offline backup-of-last-resort for every other secret here; CI must never be able to read it."
-    expression  = "!resource.name.startsWith(\"projects/${data.google_project.project.number}/secrets/${google_secret_manager_secret.bitwarden_password.secret_id}\")"
-  }
+resource "google_secret_manager_secret_iam_member" "github_actions_secret_accessor_vault_cf_access_client_id" {
+  secret_id = google_secret_manager_secret.vault_cf_access_client_id.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-resource "google_project_iam_member" "github_actions_editor" {
-  project = data.google_project.project.project_id
-  role    = "roles/editor"
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
+resource "google_secret_manager_secret_iam_member" "github_actions_secret_accessor_vault_cf_access_client_secret" {
+  secret_id = google_secret_manager_secret.vault_cf_access_client_secret.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-resource "google_project_iam_member" "github_actions_workload_identity_pool_admin" {
-  project = data.google_project.project.project_id
-  role    = "roles/iam.workloadIdentityPoolAdmin"
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
-}
-
-resource "google_project_iam_member" "github_actions_service_account_admin" {
-  project = data.google_project.project.project_id
-  role    = "roles/iam.serviceAccountAdmin"
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
+# test-smoke-gcp-secret-manager.yml's daily canary for Secret Manager access.
+resource "google_secret_manager_secret_iam_member" "github_actions_secret_accessor_test_secret" {
+  secret_id = "TEST_SECRET"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
 resource "google_project_iam_member" "vm_default_sa_secret_accessor" {
@@ -564,6 +579,47 @@ resource "google_secret_manager_secret_version" "google_gcs_sa_credentials" {
   secret_data = google_service_account_key.gcs_manager.private_key
 }
 
+resource "google_project_service" "calendar" {
+  service            = "calendar-json.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Owns its own calendars (created via the Calendar API, then shared back to a
+# personal account) rather than impersonating a user — personal Gmail accounts
+# have no Workspace domain to grant domain-wide delegation over.
+resource "google_service_account" "google_calendar_manager" {
+  account_id   = "google-calendar-manager"
+  display_name = "Google Calendar Manager"
+  description  = "Service account for managing Google Calendar events and calendars"
+}
+
+resource "time_rotating" "google_calendar_manager_key" {
+  rotation_days = 30
+}
+
+resource "google_service_account_key" "google_calendar_manager" {
+  service_account_id = google_service_account.google_calendar_manager.name
+
+  keepers = {
+    rotation_time = time_rotating.google_calendar_manager_key.rotation_rfc3339
+  }
+}
+
+resource "google_secret_manager_secret" "google_calendar_sa_credentials" {
+  secret_id = "GOOGLE_CALENDAR_SA_CREDENTIALS"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.secretmanager]
+}
+
+resource "google_secret_manager_secret_version" "google_calendar_sa_credentials" {
+  secret      = google_secret_manager_secret.google_calendar_sa_credentials.id
+  secret_data = google_service_account_key.google_calendar_manager.private_key
+}
+
 resource "cloudflare_r2_bucket" "vigilant_broccoli" {
   account_id = var.cloudflare_account_id
   name       = "vigilant-broccoli"
@@ -580,4 +636,53 @@ resource "cloudflare_r2_bucket" "vibecheck" {
   account_id = var.cloudflare_account_id
   name       = "vibecheck-bucket"
   location   = "ENAM"
+}
+
+# Private buckets for hearth's home-docs and where-is features. Both used to
+# share a single "home-management" bucket that had a public r2.dev "Public
+# Development URL" enabled, which made every object in it fetchable by anyone
+# with the key, regardless of the app's presigned/expiring download URLs. That
+# bucket has since been emptied and deleted; neither replacement below is ever
+# given a public r2.dev hostname, so these files are only reachable through the
+# app's short-lived presigned URLs.
+resource "cloudflare_r2_bucket" "home_docs" {
+  account_id = var.cloudflare_account_id
+  name       = "home-docs"
+  location   = "ENAM"
+}
+
+resource "cloudflare_r2_bucket_cors" "home_docs" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.home_docs.name
+
+  rules = [
+    {
+      allowed = {
+        methods = ["PUT"]
+        origins = local.hearth_r2_cors_origins
+        headers = ["Content-Type"]
+      }
+    }
+  ]
+}
+
+resource "cloudflare_r2_bucket" "where_is" {
+  account_id = var.cloudflare_account_id
+  name       = "where-is"
+  location   = "ENAM"
+}
+
+resource "cloudflare_r2_bucket_cors" "where_is" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.where_is.name
+
+  rules = [
+    {
+      allowed = {
+        methods = ["PUT"]
+        origins = local.hearth_r2_cors_origins
+        headers = ["Content-Type"]
+      }
+    }
+  ]
 }

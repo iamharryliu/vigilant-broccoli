@@ -1,7 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Dialog, Text } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { CalendarEvent, Resource, ResourceBooking } from '../../lib/types';
@@ -229,7 +233,10 @@ export default function ResourcesPage() {
           if (!open) setPendingDrop(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 460 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 460 }}
+        >
           <Dialog.Title>Book Resource</Dialog.Title>
           <Text size="2" color="gray" as="p" mb="3">
             Confirm the booking details before adding to the calendar.
@@ -250,7 +257,10 @@ export default function ResourcesPage() {
           if (!open) setBookingModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 480 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 480 }}
+        >
           <Dialog.Title>
             {bookingModal?.type === 'edit' ? 'Edit Booking' : 'New Booking'}
           </Dialog.Title>

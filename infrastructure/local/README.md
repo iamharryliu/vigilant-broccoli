@@ -2,30 +2,20 @@
 
 Docker Compose stack for self-hosted local services (photos, logs, dashboards) behind an nginx proxy.
 
-## Stack
+## Table of Contents
 
-- Language - YAML
-- Tooling
-  - Docker Compose
-- Services
-  - nginx
-  - Immich
-  - PostgreSQL
-  - Redis
-  - Adminer
-  - Loki
-  - Promtail
-  - Grafana
-  - Resilio Sync
+- [Networking](#networking)
+- [Observability](#observability)
+- [Stack](#stack)
 
-## Services
+## Networking
 
-- **manager.vigilant-broccoli.app** - Main application
-- **adminer.vigilant-broccoli.app** - Database management
-- **grafana.vigilant-broccoli.app** - Log dashboards
-- **loki.vigilant-broccoli.app** - Log aggregation
-- **sync.vigilant-broccoli.app** - Resilio Sync web interface
-- **images.vigilant-broccoli.app** - Immich photo management
+- [manager.vigilant-broccoli.app](https://manager.vigilant-broccoli.app) - Main application
+- [grafana.vigilant-broccoli.app](https://grafana.vigilant-broccoli.app) - Log dashboards
+- [loki.vigilant-broccoli.app](https://loki.vigilant-broccoli.app) - Log aggregation
+- [images.vigilant-broccoli.app](https://images.vigilant-broccoli.app) - Immich photo management (proxied to the standalone [immich stack](../immich/) via `host.docker.internal:2283`)
+
+## Observability
 
 ### Log Flow
 
@@ -52,3 +42,16 @@ Preferences → Docker Engine → paste contents of `docker-daemon-config.json` 
 - `max-size: 10m` — rotate logs at 10MB
 - `max-file: 3` — keep 3 log files (~30MB per container)
   **Why:** Prevents old logs from exceeding Loki's 3-day retention, causing timestamp rejection errors.
+
+## Stack
+
+- Language
+  - YAML
+  - Bash
+- Tooling
+  - Docker Compose
+- Services
+  - nginx
+  - Loki
+  - Promtail
+  - Grafana

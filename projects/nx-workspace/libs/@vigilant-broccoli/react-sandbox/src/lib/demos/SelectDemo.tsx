@@ -1,6 +1,5 @@
-import { Select } from '@vigilant-broccoli/react-lib';
+import { Select, Heading } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
-import { Heading } from '@radix-ui/themes';
 
 interface Person {
   id: number;

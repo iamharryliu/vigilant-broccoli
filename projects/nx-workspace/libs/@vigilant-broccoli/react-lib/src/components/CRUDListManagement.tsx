@@ -6,15 +6,11 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import {
-  AlertDialog,
-  Card,
-  Dialog,
-  DropdownMenu,
-  Heading,
-} from '@radix-ui/themes';
+import { AlertDialog, Card, Dialog, DropdownMenu } from '@radix-ui/themes';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import { Button } from './Button';
+import { Heading } from './Heading';
+import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from './Dialog';
 import { IconButton, type IconButtonIcon } from './IconButton';
 import { StackedImages } from './StackedImages';
 
@@ -87,6 +83,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   isCards,
   showEllipsis = true,
   canShowEllipsis,
+  itemActions,
   getItemImages,
   getItemTitle,
   fullWidthImage = false,
@@ -106,6 +103,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   isCards?: boolean;
   showEllipsis?: boolean;
   canShowEllipsis?: (item: T) => boolean;
+  itemActions?: (item: T) => EllipsisAction[];
   getItemImages?: (item: T) => string[] | undefined;
   getItemTitle?: (item: T) => string;
   fullWidthImage?: boolean;
@@ -138,6 +136,7 @@ export const CRUDItemList = <T extends CRUDItem>({
             deleteItem={handleDelete}
             copy={copy}
             submitHandler={submitHandler}
+            extraActions={itemActions?.(item)}
           />
         </div>
       ) : null;
@@ -232,20 +231,37 @@ const EllipsisOptions = <T extends CRUDItem>({
   submitHandler: formSubmitHandler,
   deleteItem,
   copy,
+  extraActions,
 }: {
   item: T;
   FormComponent: CRUDFormComponent<T>;
   submitHandler: CRUDFormSubmitHandler<T>;
   deleteItem: (id: string | number) => Promise<void>;
   copy: ListManagementCopy;
+  extraActions?: EllipsisAction[];
 }) => {
   const [updateOpen, setUpdateOpen] = useState(false);
+  const hasExtraActions = Boolean(extraActions?.length);
+  const ctaProps = hasExtraActions
+    ? {
+        actions: [
+          { label: DEFAULT_UPDATE_LABEL, onSelect: () => setUpdateOpen(true) },
+          ...(extraActions ?? []),
+          {
+            label: DEFAULT_DELETE_LABEL,
+            color: 'red' as const,
+            onSelect: () => deleteItem(item.id),
+            confirm: { confirmLabel: DEFAULT_DELETE_LABEL },
+          },
+        ],
+      }
+    : {
+        onUpdate: () => setUpdateOpen(true),
+        onDelete: () => deleteItem(item.id),
+      };
   return (
     <>
-      <EllipsisCTA
-        onUpdate={() => setUpdateOpen(true)}
-        onDelete={() => deleteItem(item.id)}
-      />
+      <EllipsisCTA {...ctaProps} />
       <CRUDItemFormDialog
         open={updateOpen}
         onOpenChange={setUpdateOpen}
@@ -443,7 +459,10 @@ export const CRUDItemFormDialog = <T,>({
           </Button>
         </Dialog.Trigger>
       )}
-      <Dialog.Content onCloseAutoFocus={e => e.preventDefault()}>
+      <Dialog.Content
+        className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        onCloseAutoFocus={e => e.preventDefault()}
+      >
         <Dialog.Title>{copy[formType].TITLE}</Dialog.Title>
         <Dialog.Description>{copy[formType].DESCRIPTION}</Dialog.Description>
         <FormComponent

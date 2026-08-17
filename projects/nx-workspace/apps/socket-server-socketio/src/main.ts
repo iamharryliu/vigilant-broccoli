@@ -9,6 +9,7 @@ import {
   PublishAck,
   SOCKET_EVENTS,
 } from '@vigilant-broccoli/common-js';
+import { isTimingSafeEqual } from '@vigilant-broccoli/common-node';
 
 const DEFAULT_PORT = '3000';
 const DEFAULT_HOST = '0.0.0.0';
@@ -75,7 +76,11 @@ const io = new Server(httpServer, { cors: { origin: '*' } });
 io.use((socket, next) => {
   const token = socket.handshake.auth?.token;
   socket.data.role =
-    SENDER_TOKEN && token === SENDER_TOKEN ? ROLE_SENDER : ROLE_RECEIVER;
+    SENDER_TOKEN &&
+    typeof token === 'string' &&
+    isTimingSafeEqual(token, SENDER_TOKEN)
+      ? ROLE_SENDER
+      : ROLE_RECEIVER;
   next();
 });
 
@@ -108,7 +113,7 @@ io.on(SOCKET_EVENTS.CONNECTION, socket => {
     handleSubscribe(socket, data, false),
   );
 
-  socket.on(SOCKET_EVENTS.PUBLISH, async (raw, ack) => {
+  socket.on(SOCKET_EVENTS.PUBLISH, (raw, ack) => {
     const reply = (result: PublishAck) => {
       if (typeof ack === 'function') ack(result);
     };
@@ -132,13 +137,13 @@ io.on(SOCKET_EVENTS.CONNECTION, socket => {
       return;
     }
     const room = roomFor(parsed.data.app, parsed.data.receiverId);
-    const sockets = await io.in(room).fetchSockets();
+    const receivers = io.sockets.adapter.rooms.get(room)?.size ?? 0;
     io.to(room).emit(SOCKET_EVENTS.MESSAGE, {
       app: parsed.data.app,
       receiverId: parsed.data.receiverId,
       payload: parsed.data.payload,
     });
-    log(LOG.PUBLISH, { room, receivers: sockets.length });
+    log(LOG.PUBLISH, { room, receivers });
     reply({ ok: true });
   });
 

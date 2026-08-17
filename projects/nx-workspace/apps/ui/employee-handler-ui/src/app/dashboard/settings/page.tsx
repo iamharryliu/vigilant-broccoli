@@ -1,7 +1,7 @@
 'use client';
 
-import { Card, Heading, Text } from '@radix-ui/themes';
-import { Select } from '@vigilant-broccoli/react-lib';
+import { Card } from '@radix-ui/themes';
+import { Select, Heading, Text } from '@vigilant-broccoli/react-lib';
 import { LOCALES, useI18n, useTranslation } from '../../i18n';
 
 const PAGE_CONTAINER = 'max-w-5xl mx-auto p-8 space-y-6';

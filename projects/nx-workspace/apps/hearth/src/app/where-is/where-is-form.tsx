@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { Text, Badge } from '@radix-ui/themes';
+import { useRef, useState } from 'react';
 import {
+  Badge,
   Button,
   CRUDFormProps,
   Input,
+  Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
@@ -19,13 +20,17 @@ const API = {
 const LABEL = {
   ANALYZING: 'Analyzing...',
   SAVE: 'Save',
+  SAVING: 'Saving...',
   REANALYZE: 'Re-analyze',
+  TAKE_PHOTO: 'Take Photo',
+  CHOOSE_PHOTOS: 'Choose Photos',
 } as const;
 
 export interface PreviewImage {
   base64: string;
   mimeType: string;
   dataUrl: string;
+  blob: Blob;
 }
 
 export type WhereIsFormValues = {
@@ -35,6 +40,7 @@ export type WhereIsFormValues = {
   tags: string[];
   images: PreviewImage[];
   imageUrls?: string[];
+  imageKeys?: string[];
 };
 
 const REMOVE_BTN_CLASS =
@@ -43,6 +49,16 @@ const REMOVE_BTN_CLASS =
 const UPLOAD_MAX_DIMENSION = 1920;
 const UPLOAD_JPEG_QUALITY = 0.85;
 const UPLOAD_MIME_TYPE = 'image/jpeg';
+
+const canvasToBlob = (canvas: HTMLCanvasElement): Promise<Blob> =>
+  new Promise((resolve, reject) => {
+    canvas.toBlob(
+      blob =>
+        blob ? resolve(blob) : reject(new Error('Failed to create blob')),
+      UPLOAD_MIME_TYPE,
+      UPLOAD_JPEG_QUALITY,
+    );
+  });
 
 const resizeImageFile = async (file: File): Promise<PreviewImage> => {
   const bitmap = await createImageBitmap(file);
@@ -57,18 +73,24 @@ const resizeImageFile = async (file: File): Promise<PreviewImage> => {
   bitmap.close();
 
   const dataUrl = canvas.toDataURL(UPLOAD_MIME_TYPE, UPLOAD_JPEG_QUALITY);
-  return { base64: dataUrl.split(',')[1], mimeType: UPLOAD_MIME_TYPE, dataUrl };
+  const blob = await canvasToBlob(canvas);
+  return {
+    base64: dataUrl.split(',')[1],
+    mimeType: UPLOAD_MIME_TYPE,
+    dataUrl,
+    blob,
+  };
 };
 
 const ImageGrid = ({
   imageUrls,
   previews,
-  onRemoveUrl,
+  onRemoveExisting,
   onRemovePreview,
 }: {
   imageUrls: string[];
   previews: PreviewImage[];
-  onRemoveUrl: (url: string) => void;
+  onRemoveExisting: (index: number) => void;
   onRemovePreview: (index: number) => void;
 }) => (
   <div className="flex gap-2 flex-wrap">
@@ -79,7 +101,10 @@ const ImageGrid = ({
           alt={`image ${i + 1}`}
           className="h-24 w-24 object-cover rounded"
         />
-        <button onClick={() => onRemoveUrl(url)} className={REMOVE_BTN_CLASS}>
+        <button
+          onClick={() => onRemoveExisting(i)}
+          className={REMOVE_BTN_CLASS}
+        >
           ✕
         </button>
       </div>
@@ -105,6 +130,8 @@ export const WhereIsFormComponent = ({
   submitHandler,
 }: CRUDFormProps<WhereIsFormValues>) => {
   const session = useAuth();
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const libraryInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(initialFormValues.title);
   const [description, setDescription] = useState(initialFormValues.description);
   const [tags, setTags] = useState<string[]>(initialFormValues.tags);
@@ -115,13 +142,18 @@ export const WhereIsFormComponent = ({
   const [imageUrls, setImageUrls] = useState<string[]>(
     initialFormValues.imageUrls ?? [],
   );
+  const [imageKeys, setImageKeys] = useState<string[]>(
+    initialFormValues.imageKeys ?? [],
+  );
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const isUpdate = formType === FORM_TYPE.UPDATE;
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
+    e.target.value = '';
     if (!files.length) return;
     Promise.all(files.map(resizeImageFile)).then(newPreviews =>
       setPreviews(prev => [...prev, ...newPreviews]),
@@ -206,24 +238,32 @@ export const WhereIsFormComponent = ({
       await handleAnalyze();
       return;
     }
-    await submitHandler(
-      {
-        ...initialFormValues,
-        title,
-        description,
-        tags,
-        images: previews,
-        imageUrls,
-      },
-      formType,
-    );
+    setSubmitting(true);
+    try {
+      await submitHandler(
+        {
+          ...initialFormValues,
+          title,
+          description,
+          tags,
+          images: previews,
+          imageUrls,
+          imageKeys,
+        },
+        formType,
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const submitLabel = analyzing
     ? LABEL.ANALYZING
-    : isUpdate || analyzed
-      ? LABEL.SAVE
-      : `Analyze${previews.length > 1 ? ` (${previews.length} images)` : ''}`;
+    : submitting
+      ? LABEL.SAVING
+      : isUpdate || analyzed
+        ? LABEL.SAVE
+        : `Analyze${previews.length > 1 ? ` (${previews.length} images)` : ''}`;
 
   return (
     <div className="flex flex-col gap-3 mt-3">
@@ -280,17 +320,43 @@ export const WhereIsFormComponent = ({
       <ImageGrid
         imageUrls={imageUrls}
         previews={previews}
-        onRemoveUrl={url => setImageUrls(prev => prev.filter(u => u !== url))}
+        onRemoveExisting={i => {
+          setImageUrls(prev => prev.filter((_, j) => j !== i));
+          setImageKeys(prev => prev.filter((_, j) => j !== i));
+        }}
         onRemovePreview={i =>
           setPreviews(prev => prev.filter((_, j) => j !== i))
         }
       />
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          onClick={() => cameraInputRef.current?.click()}
+        >
+          {LABEL.TAKE_PHOTO}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => libraryInputRef.current?.click()}
+        >
+          {LABEL.CHOOSE_PHOTOS}
+        </Button>
+      </div>
       <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+      <input
+        ref={libraryInputRef}
         type="file"
         accept="image/*"
         multiple
         onChange={handleFileSelect}
-        className="text-sm"
+        className="hidden"
       />
 
       {isUpdate && (
@@ -303,7 +369,7 @@ export const WhereIsFormComponent = ({
         </Button>
       )}
 
-      <Button onClick={handleSubmit} disabled={analyzing}>
+      <Button onClick={handleSubmit} disabled={analyzing || submitting}>
         {submitLabel}
       </Button>
     </div>

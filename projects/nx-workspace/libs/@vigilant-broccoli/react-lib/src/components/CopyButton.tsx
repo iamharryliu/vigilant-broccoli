@@ -6,15 +6,19 @@ const COPY_RESET_MS = 1000;
 export const CopyButton = ({
   text,
   disabled,
+  skipBrowserCopy,
 }: {
   text: string | (() => Promise<string>);
   disabled?: boolean;
+  skipBrowserCopy?: boolean;
 }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     const value = typeof text === 'function' ? await text() : text;
-    await navigator.clipboard.writeText(value);
+    if (!skipBrowserCopy) {
+      await navigator.clipboard.writeText(value);
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), COPY_RESET_MS);
   };

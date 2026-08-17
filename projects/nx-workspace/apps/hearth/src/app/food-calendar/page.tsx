@@ -1,0 +1,17 @@
+'use client';
+
+import { Text } from '@vigilant-broccoli/react-lib';
+import { KitchenEvents } from '../food-planner/KitchenEvents';
+
+export default function FoodCalendarPage() {
+  return (
+    <div className="mx-auto flex h-[calc(100dvh_-_var(--topbar-h)_-_5rem)] max-w-3xl flex-col gap-4 p-4 sm:p-6 md:max-w-none md:px-8 md:py-8">
+      <Text size="6" weight="bold">
+        Kitchen Events
+      </Text>
+      <div className="min-h-0 flex-1">
+        <KitchenEvents />
+      </div>
+    </div>
+  );
+}

@@ -11,7 +11,7 @@ Reference apps (each demonstrates a different combination):
 
 ## Environments
 
-Deployed instances follow the repo-wide `staging-` / `production-` prefix convention. Fly specifics: the app name (`staging-vb-llm-service`) and config filename (`deployment-configs/fly-configs/<env>-llm-service.toml`) are prefixed; nx project names stay unprefixed (`llm-service`).
+Deployed instances follow the repo-wide `staging-` / `production-` prefix convention. Fly specifics: the app name (`staging-llm-service`) and config filename (`deployment-configs/fly-configs/<env>-llm-service.toml`) are prefixed; nx project names stay unprefixed (`llm-service`).
 
 Each service defines a target pair: `deploy` (staging) and `deploy:production`, with mirrored `deploy:secrets` / `deploy:secrets:production` chains. `scripts/secrets-mapping.config.ts` stores the env-less `flyAppBaseName`; `deploy-flyio-secrets.ts <project> <env>` composes `<env>-<base>`. Cross-service URLs (`EMAIL_SERVICE_URL`, `LLM_SERVICE_URL`, `BETTER_AUTH_URL`, build args) live in the per-env fly config / deploy command so each environment talks only to its own siblings. Post-deploy checks run in the environment-matrix `test-*` workflows (e.g. `test-e2e-llm.yml`).
 
@@ -56,5 +56,13 @@ Wiring: pruned `smoke` depends on `prune`; bundled `smoke` depends on `build`. `
 ## Secrets
 
 Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. The service's `.env.example` is the key list: `deploy-flyio-secrets.ts` parses it, pulls those keys from the service's Vault path, and pushes them with `flyctl secrets set`. `nx deploy:secrets <svc>` creates the fly app first if it doesn't exist yet (`flyctl apps create`); `deploy` depends on `deploy:secrets`, so a first deploy to a brand-new app works end-to-end (volumes declared in `[mounts]` are auto-created on first deploy).
+
+## Private-only services
+
+Set `privateOnly: true` in `secrets-mapping.config.ts` (llm-service, bucket-service). `deploy:secrets` then reconciles the app's IPs before every deploy: allocates a private ingress IPv6 if missing, and releases any public `v4`/`v6`/`shared_v4` it finds. Because `deploy` depends on `deploy:secrets`, a brand-new private service never has a public edge, and a public IP that reappears (some flyctl versions auto-allocate on first deploy when the config declares an `http_service`) is cleaned up on the next deploy rather than needing a human to notice.
+
+Pair it with `[http_service].force_https = false` — see [network-management.md](../../infrastructure/network-management.md) for why, and for how CI reaches these services.
+
+Going private also takes the service's own `/docs` Swagger UI off the internet. Docs stay readable because the OpenAPI specs are static objects (`createSwaggerSpec`), so `pages-index`'s `generate-openapi` target imports them and publishes `public/openapi/<service>.json` at build time; `/api-services/<service>` renders Swagger UI against that. Register a new service in `scripts/generate-openapi-specs.ts` and `pages-index`'s `consts/apiServices.ts` — give public services a `publicUrl` so "Try it out" works, and leave it off for private ones.
 
 Both environments read the same Vault path — per-env secret values would need per-env vault paths.

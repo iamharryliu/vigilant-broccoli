@@ -1,25 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../../../libs/supabase';
 import { useAuth } from '../../providers/auth-provider';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
-import { HomeForm } from './HomeForm';
+import { HomeForm, SaveStatus } from './HomeForm';
 import { MemberList } from './MemberList';
 
 type Props = {
   homeId: string;
 };
 
+const SAVE_DEBOUNCE_MS = 700;
+const SAVED_VISIBLE_MS = 1500;
+
 export const HomeDetailView = ({ homeId }: Props) => {
   const session = useAuth();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<SaveStatus>('idle');
   const [members, setMembers] = useState<HomeMember[]>([]);
   const [isOwner, setIsOwner] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const dirtyRef = useRef(false);
 
   useEffect(() => {
     supabase
@@ -35,6 +39,25 @@ export const HomeDetailView = ({ homeId }: Props) => {
         setLoaded(true);
       });
   }, [homeId, session?.user.id]);
+
+  useEffect(() => {
+    if (!loaded || !dirtyRef.current || !name.trim()) return;
+    setStatus('saving');
+    const timer = setTimeout(async () => {
+      await fetch(`/api/homes/${homeId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          description,
+          accessToken: session?.access_token,
+        }),
+      });
+      setStatus('saved');
+      setTimeout(() => setStatus('idle'), SAVED_VISIBLE_MS);
+    }, SAVE_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [name, description, loaded, homeId, session?.access_token]);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -60,18 +83,14 @@ export const HomeDetailView = ({ homeId }: Props) => {
       });
   }, [homeId, session?.access_token]);
 
-  const handleSave = async () => {
-    setSaving(true);
-    await fetch(`/api/homes/${homeId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        description,
-        accessToken: session?.access_token,
-      }),
-    });
-    setSaving(false);
+  const handleNameChange = (v: string) => {
+    dirtyRef.current = true;
+    setName(v);
+  };
+
+  const handleDescriptionChange = (v: string) => {
+    dirtyRef.current = true;
+    setDescription(v);
   };
 
   const inviteMember = async (member: HomeMember): Promise<HomeMember> => {
@@ -116,15 +135,14 @@ export const HomeDetailView = ({ homeId }: Props) => {
   if (!loaded) return null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <div className="space-y-4">
         <HomeForm
           name={name}
           description={description}
-          onNameChange={setName}
-          onDescriptionChange={setDescription}
-          onSave={handleSave}
-          saving={saving}
+          onNameChange={handleNameChange}
+          onDescriptionChange={handleDescriptionChange}
+          status={status}
           disabled={!isOwner && !isAdmin}
         />
       </div>

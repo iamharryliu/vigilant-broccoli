@@ -2,12 +2,20 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Dialog, Text } from '@radix-ui/themes';
-import { Button, EllipsisCTA, Input } from '@vigilant-broccoli/react-lib';
+import { Dialog } from '@radix-ui/themes';
+import {
+  Badge,
+  Button,
+  EllipsisCTA,
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Input,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';
 import { HomeDocForm, HomeDocFormData } from './components/HomeDocForm';
+import { uploadFormFiles } from './upload-files';
 import { ROUTES } from '../../lib/routes';
 
 const CATEGORY_COLORS: Record<DocCategory, string> = {
@@ -68,10 +76,11 @@ export default function DocsPage() {
   }, [fetchDocs]);
 
   const handleCreate = async (data: HomeDocFormData) => {
+    const files = await uploadFormFiles(data.files, token);
     await fetch('/api/docs', {
       method: 'POST',
       headers: authHeader({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ ...data, homeId }),
+      body: JSON.stringify({ ...data, files, homeId }),
     });
     setModal(null);
     fetchDocs();
@@ -236,7 +245,10 @@ export default function DocsPage() {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 500 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 500 }}
+        >
           <Dialog.Title>Add Document</Dialog.Title>
           <HomeDocForm
             onSubmit={handleCreate}
@@ -252,7 +264,10 @@ export default function DocsPage() {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 500 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 500 }}
+        >
           <Dialog.Title>Edit Document</Dialog.Title>
           {modal?.type === 'edit' && (
             <HomeDocForm

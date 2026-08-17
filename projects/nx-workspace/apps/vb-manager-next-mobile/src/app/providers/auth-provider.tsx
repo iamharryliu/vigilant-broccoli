@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../libs/supabase';
+import { isAllowedEmail } from '../../../libs/auth-policy';
 import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
@@ -17,7 +18,7 @@ const AuthContext = createContext<Session | null>(null);
 
 export const useAuth = () => useContext(AuthContext);
 
-export const getGoogleToken = () => localStorage.getItem(GOOGLE_TOKEN_KEY);
+export const getGoogleToken = () => sessionStorage.getItem(GOOGLE_TOKEN_KEY);
 
 export const getSupabaseAccessToken = async () => {
   const { data } = await supabase.auth.getSession();
@@ -41,10 +42,12 @@ export const buildAuthHeaders = async (options?: {
   return headers;
 };
 
-export const signOutDueToExpiredToken = async () => {
-  localStorage.removeItem(GOOGLE_TOKEN_KEY);
+export const signOut = async () => {
+  sessionStorage.removeItem(GOOGLE_TOKEN_KEY);
   await supabase.auth.signOut();
 };
+
+export const signOutDueToExpiredToken = signOut;
 
 export default function AuthProvider({
   children,
@@ -54,15 +57,25 @@ export default function AuthProvider({
   const [session, setSession] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const applySession = (next: Session | null) => {
+      if (next && !isAllowedEmail(next.user.email)) {
+        sessionStorage.removeItem(GOOGLE_TOKEN_KEY);
+        supabase.auth.signOut();
+        setSession(null);
+        return;
+      }
+      setSession(next);
+    };
+
+    supabase.auth.getSession().then(({ data }) => applySession(data.session));
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.provider_token) {
-        localStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
+        sessionStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
       }
-      setSession(session);
+      applySession(session);
     });
 
     return () => subscription.unsubscribe();

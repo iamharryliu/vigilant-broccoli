@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Text } from '@radix-ui/themes';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { AUDIO_MIME_TYPE, AUDIO_FILENAME } from '../../constants/audio';
 import { SpeechToTextButton } from './SpeechToTextButton';

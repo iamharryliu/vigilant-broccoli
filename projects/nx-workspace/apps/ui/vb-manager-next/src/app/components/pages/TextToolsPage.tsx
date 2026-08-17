@@ -1,6 +1,11 @@
-import { Card, Heading, Text } from '@radix-ui/themes';
+import { Card } from '@radix-ui/themes';
 import { EnvUtils } from '@vigilant-broccoli/common-js';
-import { ConversionForm, Textarea } from '@vigilant-broccoli/react-lib';
+import {
+  ConversionForm,
+  Textarea,
+  Heading,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { countWords } from '@vigilant-broccoli/common-js';
 
@@ -15,6 +20,8 @@ export const TextToolsPage = () => {
       <FormatBlockStringToSingleStringForm />
       <TextToBase64Form />
       <Base64ToTextForm />
+      <TextToPercentEncodedForm />
+      <PercentEncodedToTextForm />
       <CharacterCounter />
     </div>
   );
@@ -150,6 +157,40 @@ const Base64ToTextForm = () => {
       initialText={''}
       sampleText={SAMPLE_BASE64}
       conversionFn={EnvUtils.decodeBase64}
+    />
+  );
+};
+
+const SAMPLE_TEXT_FOR_PERCENT_ENCODING = 'p@ss w0rd/#1';
+
+const TextToPercentEncodedForm = () => {
+  return (
+    <ConversionForm
+      copy={{
+        header: 'Text to Percent Encoded (URL Encoding)',
+        placeholder: SAMPLE_TEXT_FOR_PERCENT_ENCODING,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_TEXT_FOR_PERCENT_ENCODING}
+      conversionFn={EnvUtils.encodePercent}
+    />
+  );
+};
+
+const SAMPLE_PERCENT_ENCODED = EnvUtils.encodePercent(
+  SAMPLE_TEXT_FOR_PERCENT_ENCODING,
+);
+
+const PercentEncodedToTextForm = () => {
+  return (
+    <ConversionForm
+      copy={{
+        header: 'Percent Encoded to Text (URL Decoding)',
+        placeholder: SAMPLE_PERCENT_ENCODED,
+      }}
+      initialText={''}
+      sampleText={SAMPLE_PERCENT_ENCODED}
+      conversionFn={EnvUtils.decodePercent}
     />
   );
 };

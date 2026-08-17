@@ -1,0 +1,16 @@
+meta {
+  name: Get Absences
+  type: http
+  seq: 11
+}
+
+get {
+  url: https://api.cinode.com/v0.1/companies/{{process.env.COMPANY_ID}}/users/{{process.env.USER_ID}}/absences
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{process.env.CINODE_ACCESS_TOKEN}}
+  Content-Type: application/json
+}

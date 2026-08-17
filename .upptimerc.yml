@@ -10,38 +10,30 @@ sites:
     url: https://docs.harryliu.dev/
   - name: code.harryliu.dev
     url: https://code.harryliu.dev/login
+  - name: drive.harryliu.dev
+    url: https://drive.harryliu.dev/
+  - name: nx-cache.harryliu.dev
+    url: https://nx-cache.harryliu.dev/health
   - name: staging-cloud8skate.com
     url: https://cloud8skate.com/
   - name: production-cloud8skate
     url: https://production-cloud-8-skate-angular.pages.dev/
   - name: socket-server
     url: https://socket.harryliu.dev/health
-  - name: staging-email-service
-    url: https://staging-vb-email-service.fly.dev/
-  - name: staging-email-subscription-service
-    url: https://staging-email-subscription-service.fly.dev/
   - name: staging-findme
     url: https://staging-findme.vercel.app/
   - name: staging-hearth
     url: https://staging-hearth.vercel.app/login
   - name: staging-service-manager
     url: https://staging-vb-express.fly.dev/
-  - name: staging-storage-service
-    url: https://staging-vb-storage-service.fly.dev/
   - name: staging-whiteboard
     url: https://staging-whiteboard.vercel.app/
-  - name: production-email-service
-    url: https://production-vb-email-service.fly.dev/
-  - name: production-email-subscription-service
-    url: https://production-email-subscription-service.fly.dev/
   - name: production-findme
     url: https://production-findme.vercel.app/
   - name: production-hearth
     url: https://production-hearth.vercel.app/login
   - name: production-service-manager
     url: https://production-vb-express.fly.dev/
-  - name: production-storage-service
-    url: https://production-vb-storage-service.fly.dev/
   - name: production-whiteboard
     url: https://production-whiteboard.vercel.app/
 

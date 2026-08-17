@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
   GCLOUD_PROJECTS: '/api/gcloud/projects',
   GCLOUD_SET_PROJECT: '/api/gcloud/set-project',
   GCLOUD_SET_ACCOUNT: '/api/gcloud/set-account',
+  GCLOUD_VAULT_TOKEN: '/api/gcloud/vault-token',
 
   // Vercel
   VERCEL_PROJECTS: '/api/vercel/projects',
@@ -72,6 +73,7 @@ export const API_ENDPOINTS = {
 
   // Calendar
   CALENDAR_EVENTS: '/api/calendar/events',
+  EVENT_CALENDARS: '/api/event-calendars',
 
   // Weather
   WEATHER: '/api/weather',
@@ -109,4 +111,8 @@ export const API_ENDPOINTS = {
   LANGUAGE_LEARNING_MASTERED: '/api/language-learning/mastered',
   LANGUAGE_LEARNING_DEFINE: '/api/language-learning/define',
   LANGUAGE_LEARNING_RESET: '/api/language-learning/reset',
+
+  // TODO list
+  TODO: '/api/todo',
+  TODO_SOLVE: '/api/todo/solve',
 } as const;

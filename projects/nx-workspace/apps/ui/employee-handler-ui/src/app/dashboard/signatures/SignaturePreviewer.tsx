@@ -6,9 +6,10 @@ import {
   DownloadButton,
   Select,
   type DownloadAction,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
-import { Text } from '@radix-ui/themes';
+
 import {
   DEMO_SIGNATURE,
   renderTemplate,

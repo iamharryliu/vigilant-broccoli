@@ -26,6 +26,7 @@
 - [Car Packlist](./car-packlist.md)
 - [Outdoor Packlist](./outdoor-packlist.md)
 - [Air Travel Packlist](./flight-packlist.md)
+- [Summer Vacation 2026 Packlist](./summer-vacation-2026-packlist.md)
 
 ## Utility
 

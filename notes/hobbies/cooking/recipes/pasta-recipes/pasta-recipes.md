@@ -1,5 +1,6 @@
 # Pasta Recipes
 
+- [Aglio e Olio](./aglio-e-olio.md)
 - [Cacio e Pepe](./cacio-e-pepe.md)
 - [Miso Mush Pasta](./miso-mush-pasta.md)
 - [Nerano](./nerano.md)

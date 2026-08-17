@@ -4,10 +4,8 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
-  workflow_run:
-    workflows: ['deploy', 'ci-rotate-secrets']
-    types: [completed]
-    branches: [main]
+  repository_dispatch:
+    types: [deploy-fanout]
 
 permissions:
   actions: read
@@ -21,7 +19,7 @@ env:
 
 jobs:
   health-check:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -111,9 +109,6 @@ jobs:
 
           echo "[Fly.io Apps]"
           http_check "staging-vb-express" "https://staging-vb-express.fly.dev"
-          http_check "staging-vb-email-service" "https://staging-vb-email-service.fly.dev"
-          http_check "staging-vb-storage-service" "https://staging-vb-storage-service.fly.dev"
-          http_check "staging-email-subscription-service" "https://staging-email-subscription-service.fly.dev"
 
           echo ""
           echo "[Websites]"
@@ -217,17 +212,20 @@ jobs:
           RMQ_HOST="${HOST_PORT%%:*}"
           echo "::add-mask::$RMQ_PASS"
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
+          RMQ_NETRC=$(mktemp)
+          printf 'machine rabbitmq login %s password %s\n' "$RMQ_USER" "$RMQ_PASS" > "$RMQ_NETRC"
           # SAN is 'rabbitmq'; --connect-to keeps SNI 'rabbitmq' while dialing
           # the real host (DNS name or IP). Retry to tolerate transient blips.
           for attempt in 1 2 3; do
             RMQ_CODE=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 15 \
               --cacert /tmp/rabbitmq-ca.crt \
               --connect-to "rabbitmq:15671:${RMQ_HOST}:15671" \
-              -u "${RMQ_USER}:${RMQ_PASS}" \
+              --netrc-file "$RMQ_NETRC" \
               "https://rabbitmq:15671/api/overview" 2>/dev/null) || RMQ_CODE="timeout"
             [ "$RMQ_CODE" = "200" ] && break
             [ "$attempt" -lt 3 ] && sleep 5
           done
+          rm -f "$RMQ_NETRC"
           if [ "$RMQ_CODE" = "200" ]; then
             VERSION=$(grep -o '"rabbitmq_version":"[^"]*"' /tmp/mgmt.json | cut -d'"' -f4)
             check "rabbitmq broker (version: $VERSION)" "ok"

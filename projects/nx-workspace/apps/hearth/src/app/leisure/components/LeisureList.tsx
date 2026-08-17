@@ -2,8 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Badge, Dialog, Text } from '@radix-ui/themes';
-import { Button, EllipsisCTA } from '@vigilant-broccoli/react-lib';
+import { Dialog } from '@radix-ui/themes';
+import {
+  Badge,
+  Button,
+  EllipsisCTA,
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, LeisureActivity } from '../../../lib/types';
 import {
   LeisureActivityForm,
@@ -171,7 +177,10 @@ export function LeisureList({
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 440 }}>
+        <Dialog.Content
+          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          style={{ maxWidth: 440 }}
+        >
           <Dialog.Title>
             {modal?.type === 'edit' ? 'Edit Activity' : 'Add Activity'}
           </Dialog.Title>

@@ -1,0 +1,16 @@
+meta {
+  name: Get Company Users (Access Token)
+  type: http
+  seq: 5
+}
+
+get {
+  url: https://api.cinode.com/v0.1/companies/{{process.env.COMPANY_ID}}/users
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{process.env.CINODE_ACCESS_TOKEN}}
+  Content-Type: application/json
+}

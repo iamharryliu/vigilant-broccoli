@@ -13,11 +13,12 @@
   - UI — [docs/ui/](./docs/ui/) (`ui-app-pattern.md`, `auth/*`, `deployment/*`)
   - API — [docs/api/](./docs/api/) (`deployment/fly-service-pattern.md`)
 - [Git](./docs/GIT.md) — read first before committing or pushing
-- [notes-pattern.md](./docs/notes-pattern.md) — read first before adding/editing files under `notes/`: universal link hygiene, plus per-topic conventions (e.g. cooking) under `docs/notes/`
+- [notes-pattern.md](./docs/notes-pattern.md) — read first before adding/editing files under `notes/`: universal link hygiene, plus per-topic conventions (e.g. cooking, lingo files) under `docs/notes/`
 - [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS records, domains/subdomains, proxying, tunnels, or VPN
 - [secret-management.md](./docs/infrastructure/secret-management.md) — read first before adding a secret or a local `.env`/`.tfvars` file; secrets live in Vault/GCP Secret Manager (avoid local secret files), non-secret IDs are hardcoded in Terraform
 - [nuance.md](./docs/nuance.md) — non-obvious bugs and quirks discovered in this repo; check before debugging something that looks like it shouldn't happen
 - [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist for `/refactor-code-cleanup`; unattended `agentic:task:solve` runs must apply it before finishing
+- [TODO.md](./TODO.md) — repo audit backlog as per-section (`## Security`/`## Performance`/`## Maintenance`/`## Feature Enhancements`/`## Not so serious`) markdown tables (`ID | Priority | Description | Recommended Fix`, ordered P1→P3 then NA); read the `/create-todo-task` command before adding a row — its format is parsed by `infrastructure/agent-sandbox/solve-todo*.sh`, keep them in sync
 - Coding Conventions — this file
 - Folder Structure — this file
 
@@ -29,6 +30,9 @@
 - Avoid string literals, prefer having consts.
 - Do not write tests unless explicitly asked.
 - Do not write markdown reports, summaries, or documentation unless explicitly asked.
+- Keep responses brief and concise — one sentence per update, no unnecessary narration.
+- If a PR touches files for a cloud service, or introduces/changes usage of one, add or update a `## Free Tier` section in that service's notes/docs file documenting its free tier limits (e.g. [github-actions.md](./notes/tech/software/web-dev/devops/automation/github-actions.md)).
+- Before working on an app or directory, check its `README.md` for an `## Agent Context` section and follow any upkeep instructions it lists (e.g. keeping a Page Navigation section in sync with the routes).
 
 ## Folder Structure
 
@@ -40,3 +44,4 @@
   - [linux](./setup/linux/) - Linux setup.
 - [Projects](./projects/) - Software projects.
   - [nx-workspace](./projects/nx-workspace) - Nx workspace for Typescript projects.
+  - [grind-75](./projects/grind-75) - Standalone Grind 75 algorithm practice in Go/Python/TypeScript; the Python tests run as a `.pre-commit-config.yaml` hook.

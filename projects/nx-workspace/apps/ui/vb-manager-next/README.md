@@ -10,7 +10,6 @@ Management dashboard app.
 - External libs
   - Radix Themes + Tailwind CSS, lucide-react icons
   - dnd-kit (drag-and-drop)
-  - NextAuth
   - Leaflet / react-leaflet, react-markdown, fuse.js
   - Socket.IO client (chat demo)
 - Internal libs
@@ -29,8 +28,8 @@ Management dashboard app.
   - `personal-common-js`
   - `react-lib`
   - `react-music-lib`
-  - `react-sandbox`
   - `react-utility`
+  - `resume`
   - `vibecheck-lite`
 - Cloud services
   - Google OAuth
@@ -40,4 +39,5 @@ Management dashboard app.
   - Stripe
   - Tailscale
   - OpenAI API
+  - OpenWeatherMap
   - Self-hosted (PM2)

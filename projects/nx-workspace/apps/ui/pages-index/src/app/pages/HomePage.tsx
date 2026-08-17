@@ -1,4 +1,4 @@
-import { Activity, GitBranch, LayoutGrid, Server } from 'lucide-react';
+import { Activity, GitBranch, Globe, LayoutGrid, Server } from 'lucide-react';
 import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
@@ -9,8 +9,8 @@ export function HomePage() {
   const { t } = useTranslation();
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <header className="mb-12">
+    <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-6 pb-16">
+      <header className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
       </header>
 
@@ -36,10 +36,10 @@ export function HomePage() {
         <li>
           <CardLink
             route
-            href="/ui"
-            title={t('HOME.UI.TITLE')}
-            description={t('HOME.UI.DESCRIPTION')}
-            icon={<LayoutGrid className={ICON_CLASS} />}
+            href="/web-applications"
+            title={t('HOME.WEB_APPLICATIONS.TITLE')}
+            description={t('HOME.WEB_APPLICATIONS.DESCRIPTION')}
+            icon={<Globe className={ICON_CLASS} />}
           />
         </li>
         <li>
@@ -49,6 +49,14 @@ export function HomePage() {
             title={t('HOME.API_SERVICES.TITLE')}
             description={t('HOME.API_SERVICES.DESCRIPTION')}
             icon={<Server className={ICON_CLASS} />}
+          />
+        </li>
+        <li>
+          <CardLink
+            href="./react-component-library/"
+            title={t('HOME.UI.TITLE')}
+            description={t('HOME.UI.DESCRIPTION')}
+            icon={<LayoutGrid className={ICON_CLASS} />}
           />
         </li>
       </CardGrid>

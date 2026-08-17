@@ -4,6 +4,10 @@ const WORKSPACE_ROOT = path.resolve(__dirname, '../../..');
 const NODE_INTERPRETER =
   process.env.NODE_INTERPRETER || '/opt/homebrew/bin/node';
 
+const GH_AUTH_ENV_VAR = 'GITHUB_TOKEN';
+const scrubbedEnv = { ...process.env };
+delete scrubbedEnv[GH_AUTH_ENV_VAR];
+
 module.exports = {
   apps: [
     {
@@ -23,7 +27,7 @@ module.exports = {
         NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
           'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
-        ...process.env,
+        ...scrubbedEnv,
       },
       instances: 1,
       autorestart: true,

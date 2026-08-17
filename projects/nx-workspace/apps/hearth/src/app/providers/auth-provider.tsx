@@ -5,7 +5,7 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../libs/supabase';
 import { GOOGLE_TOKEN_STORAGE_KEY } from '../hooks/use-google-token';
 
-const AuthContext = createContext<Session | null>(null);
+const AuthContext = createContext<Session | null | undefined>(undefined);
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -30,8 +30,6 @@ export default function AuthProvider({
 
     return () => subscription.unsubscribe();
   }, []);
-
-  if (session === undefined) return null;
 
   return (
     <AuthContext.Provider value={session}>{children}</AuthContext.Provider>

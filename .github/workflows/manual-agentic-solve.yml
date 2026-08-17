@@ -1,0 +1,123 @@
+name: manual-agentic-solve
+
+# Runs the same agent solve as the local `pnpm agentic:task:solve`, but on the
+# ephemeral GitHub-hosted runner: it builds and runs the vb-agent-sandbox
+# container (fresh clone of main, headless Claude Code, commit, push, open PR).
+# Secrets come from Vault; the branch push + PR use a minted GitHub App token,
+# so the workflow's own GITHUB_TOKEN needs no write scope.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: 'Space-separated TODO ids to solve (e.g. "a1b2c3 d4e5f6"). Leave blank if using prompt.'
+        type: string
+        default: ''
+      prompt:
+        description: 'Free-text task to solve instead of TODO ids (mutually exclusive with ids).'
+        type: string
+        default: ''
+      model:
+        description: 'Claude model to run the agent with.'
+        type: choice
+        default: sonnet
+        options:
+          - sonnet
+          - opus
+          - haiku
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+concurrency:
+  group: manual-agentic-solve-${{ inputs.ids || inputs.prompt }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  solve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - name: Solve
+        id: solve
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ inputs.firewall }}
+          MODEL: ${{ inputs.model }}
+          IDS: ${{ inputs.ids }}
+          PROMPT: ${{ inputs.prompt }}
+        run: |
+          set -euo pipefail
+          SOLVE=infrastructure/agent-sandbox/solve-todo.sh
+          STATUS=0
+          if [ -n "$PROMPT" ]; then
+            bash "$SOLVE" --model "$MODEL" --prompt "$PROMPT" || STATUS=$?
+          else
+            if ! printf '%s' "$IDS" | grep -qE '^[0-9a-fA-F ]*$'; then
+              echo "ERROR: 'ids' must be space-separated hex TODO ids." >&2
+              exit 1
+            fi
+            read -ra ID_ARR <<<"$IDS"
+            bash "$SOLVE" --model "$MODEL" "${ID_ARR[@]}" || STATUS=$?
+          fi
+          echo "===== per-id solve logs ====="
+          for f in /tmp/vb-solve.*/*.log; do
+            [ -e "$f" ] || continue
+            echo "--- $f ---"
+            cat "$f"
+          done
+          exit "$STATUS"
+
+      - name: Tunnel to email service
+        if: always()
+        uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: staging-vb-email-service
+
+      - name: Notify by email
+        if: always()
+        env:
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          RESULT: ${{ steps.solve.outcome == 'success' && 'succeeded' || 'failed' }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PR_DETAILS_FILE: ${{ steps.solve.outputs.pr_details_file }}
+        run: |
+          PR_DETAILS=""
+          if [ -n "$PR_DETAILS_FILE" ] && [ -f "$PR_DETAILS_FILE" ]; then
+            PR_DETAILS=$(sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' "$PR_DETAILS_FILE")
+          fi
+          curl -s -o /dev/null -X POST http://127.0.0.1:3000/api/send-email \
+            -H 'Content-Type: application/json' \
+            -H "x-api-key: ${SHARED_APP_TOKEN}" \
+            -d "$(jq -n \
+              --arg to 'harryliu1995@gmail.com' \
+              --arg from 'Harry Liu <ci-agentic-solve@harryliu.dev>' \
+              --arg subject "Agentic solve $RESULT" \
+              --arg run_url "$RUN_URL" \
+              --arg pr_details "$PR_DETAILS" \
+              '{to: $to, from: $from, subject: $subject, html: ("<p>The agentic solve workflow " + $RESULT + ".</p>" + (if ($pr_details | length) > 0 then "<pre>" + $pr_details + "</pre>" else "" end) + "<p><a href=\"" + $run_url + "\">View run</a></p>")}')"

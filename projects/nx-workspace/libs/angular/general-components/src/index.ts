@@ -6,7 +6,6 @@ export { RecaptchaInterceptor } from './lib/interceptors/recaptcha-interceptor/r
 export { CredentialsInterceptorService } from './lib/interceptors/credentials-interceptor/credentials.interceptor';
 
 // Services
-export { FileService, FILE_STRUCTURE_PATHS } from './lib/services/file.service';
 export { MarkdownService } from './lib/services/markdown.service';
 export { ThemeService } from './lib/services/theme.service';
 export { HttpService } from './lib/services/http.service';

@@ -13,29 +13,27 @@ on:
           - all
           - staging
           - production
-  workflow_run:
-    workflows: ["deploy", "ci-rotate-secrets"]
-    types: [completed]
-    branches: [main, production]
+  repository_dispatch:
+    types: [deploy-fanout]
 
 permissions:
   contents: read
 
 jobs:
   security-check:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJSON(github.event_name == 'workflow_run' && format('["{0}"]', github.event.workflow_run.head_branch == 'production' && 'production' || 'staging') || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+        environment: ${{ fromJSON(github.event_name == 'repository_dispatch' && format('["{0}"]', github.event.client_payload.environment) || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
         service:
-          # vb-llm-service is private-only (no public fly.dev edge); its no-key/wrong-key
-          # auth checks run over the flycast tunnel in test-security-llm.yml
+          # llm-service, storage-service, vb-email-service, and
+          # email-subscription-service are private-only (no public fly.dev edge);
+          # their no-key/wrong-key auth checks run over the flycast tunnel in
+          # test-security-llm.yml, test-security-storage-service.yml,
+          # test-security-email.yml, and test-security-email-subscription-service.yml
           - vb-express
-          - vb-storage-service
-          - vb-email-service
-          - email-subscription-service
     name: ${{ matrix.environment }}-${{ matrix.service }}
     steps:
       - name: Checkout code
