@@ -127,6 +127,11 @@ BODY
 
   if PR_URL=$(gh pr create --draft --title "$SALVAGE_TITLE" --body "$SALVAGE_BODY" 2>&1); then
     echo "Salvaged partial work: $PR_URL" >&2
+    echo "$PR_URL"
+    printf 'PR_TITLE::%s\n' "$SALVAGE_TITLE"
+    echo 'PR_SUMMARY_BEGIN'
+    echo "This agent run did not finish (exited with status ${exit_code}); partial work was pushed as a draft PR."
+    echo 'PR_SUMMARY_END'
   else
     echo "Pushed salvage branch $BRANCH but failed to open a PR — open one manually." >&2
   fi
@@ -239,4 +244,9 @@ $PR_FOOTER
 EOF
 )
 
-gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_TITLE::%s\n' "$PR_TITLE"
+echo 'PR_SUMMARY_BEGIN'
+printf '%s\n' "$PR_SUMMARY"
+echo 'PR_SUMMARY_END'

@@ -105,7 +105,12 @@ jobs:
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
           RESULT: ${{ steps.solve.outcome == 'success' && 'succeeded' || 'failed' }}
           RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PR_DETAILS_FILE: ${{ steps.solve.outputs.pr_details_file }}
         run: |
+          PR_DETAILS=""
+          if [ -n "$PR_DETAILS_FILE" ] && [ -f "$PR_DETAILS_FILE" ]; then
+            PR_DETAILS=$(sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' "$PR_DETAILS_FILE")
+          fi
           curl -s -o /dev/null -X POST http://127.0.0.1:3000/api/send-email \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${SHARED_APP_TOKEN}" \
@@ -113,5 +118,6 @@ jobs:
               --arg to 'harryliu1995@gmail.com' \
               --arg from 'Harry Liu <ci-agentic-solve@harryliu.dev>' \
               --arg subject "Agentic solve $RESULT" \
-              --arg html "<p>The agentic solve workflow $RESULT.</p><p><a href=\"$RUN_URL\">View run</a></p>" \
-              '{to: $to, from: $from, subject: $subject, html: $html}')"
+              --arg run_url "$RUN_URL" \
+              --arg pr_details "$PR_DETAILS" \
+              '{to: $to, from: $from, subject: $subject, html: ("<p>The agentic solve workflow " + $RESULT + ".</p>" + (if ($pr_details | length) > 0 then "<pre>" + $pr_details + "</pre>" else "" end) + "<p><a href=\"" + $run_url + "\">View run</a></p>")}')"
