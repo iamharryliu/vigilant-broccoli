@@ -79,6 +79,14 @@ export const createEmployeeHandlerApp = (
   );
 
   api.get(
+    '/absences',
+    asyncRoute(async (_req, res) => {
+      const absences = await config.absenceUtilities.fetchAbsences();
+      res.json({ absences });
+    }),
+  );
+
+  api.get(
     '/onboard',
     asyncRoute(async (_req, res) => {
       await EmployeeHandlerService.onboardIncomingEmployees(config);
