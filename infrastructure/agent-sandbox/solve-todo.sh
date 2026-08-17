@@ -34,6 +34,25 @@ if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
   exit 1
 fi
 
+# Pulls the PR_TITLE::/PR_SUMMARY_BEGIN.../PR_SUMMARY_END markers a runner log
+# printed after `gh pr create` and appends them to $2 for the CI email step.
+write_pr_details() {
+  local log_file=$1 out_file=$2 label=${3:-}
+  local title url summary
+  title=$(grep -m1 '^PR_TITLE::' "$log_file" 2>/dev/null | sed 's/^PR_TITLE:://' || true)
+  [ -n "$title" ] || return 0
+  url=$(grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+' "$log_file" | tail -1 || true)
+  summary=$(awk '/^PR_SUMMARY_BEGIN$/{f=1;next} /^PR_SUMMARY_END$/{f=0} f' "$log_file")
+  {
+    if [ -n "$label" ]; then echo "### ${label}: ${title}"; else echo "### ${title}"; fi
+    echo
+    echo "$summary"
+    echo
+    [ -n "$url" ] && echo "$url"
+    echo
+  } >> "$out_file"
+}
+
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
   docker compose -f "$SCRIPT_DIR/docker-compose.yml" build
 fi
@@ -84,7 +103,12 @@ if [ -n "$PROMPT" ]; then
     "$IMAGE" \
     bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" --prompt "$1"' _ "$PROMPT" \
     2>&1 | tee "$LOG_FILE"
-  exit "${PIPESTATUS[0]}"
+  STATUS="${PIPESTATUS[0]}"
+  write_pr_details "$LOG_FILE" "$LOG_DIR/pr-details.md"
+  if [ -n "${GITHUB_OUTPUT:-}" ] && [ -f "$LOG_DIR/pr-details.md" ]; then
+    echo "pr_details_file=$LOG_DIR/pr-details.md" >> "$GITHUB_OUTPUT"
+  fi
+  exit "$STATUS"
 fi
 
 LOG_DIR=$(mktemp -d /tmp/vb-solve.XXXXXX)
@@ -116,6 +140,7 @@ for i in "${!PIDS[@]}"; do
     PR_URL=$(grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+' "$LOG_DIR/solve-${id}.log" | tail -1 || true)
     if [ -n "$PR_URL" ]; then
       echo "✓ TODO ${id}: $PR_URL"
+      write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.md" "$id"
     else
       FAILED=1
       echo "✗ TODO ${id}: completed without opening a PR (see $LOG_DIR/solve-${id}.log)" >&2
@@ -123,7 +148,12 @@ for i in "${!PIDS[@]}"; do
   else
     FAILED=1
     echo "✗ TODO ${id} failed (see $LOG_DIR/solve-${id}.log)" >&2
+    write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.md" "$id (salvage)"
   fi
 done
+
+if [ -n "${GITHUB_OUTPUT:-}" ] && [ -f "$LOG_DIR/pr-details.md" ]; then
+  echo "pr_details_file=$LOG_DIR/pr-details.md" >> "$GITHUB_OUTPUT"
+fi
 
 exit $FAILED
