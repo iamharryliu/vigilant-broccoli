@@ -4,6 +4,7 @@ import {
 } from '@vigilant-broccoli/google-workspace';
 import { Attachment } from 'nodemailer/lib/mailer';
 import { BirthdaySyncUtilities } from './birthday-sync/birthday-sync.models';
+import { LeaveSyncUtilities } from './leave-sync/leave-sync.models';
 
 interface OnboardUtilities {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -55,6 +56,7 @@ export interface EmployeeHandlerConfig {
   postRetentionUtilities: PostRetentionUtilities;
   absenceUtilities: AbsenceUtilities;
   birthdaySyncUtilities?: BirthdaySyncUtilities;
+  leaveSyncUtilities?: LeaveSyncUtilities;
   customFunctions?: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: (...args: any[]) => Promise<void>;

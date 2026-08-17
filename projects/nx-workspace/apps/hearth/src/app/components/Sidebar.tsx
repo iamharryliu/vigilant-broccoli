@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sidebar as SharedSidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
+import {
+  Sidebar as SharedSidebar,
+  SidebarCTA,
+} from '@vigilant-broccoli/react-lib';
 import { NAV_LINKS, NavLink } from '../app.consts';
 import { useIsMobile } from '../../lib/use-is-mobile';
 import { ROUTES } from '../../lib/routes';

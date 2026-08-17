@@ -24,7 +24,11 @@ function SkeletonRow({ widthClassName }: { widthClassName: string }) {
 
 export function CalendarListSkeleton() {
   return (
-    <div className="flex w-full flex-col gap-4" aria-busy="true" aria-label="Loading events">
+    <div
+      className="flex w-full flex-col gap-4"
+      aria-busy="true"
+      aria-label="Loading events"
+    >
       {Array.from({ length: SKELETON_GROUP_COUNT }).map((_, groupIndex) => (
         <div key={groupIndex} className="flex flex-col gap-1">
           <SkeletonBlock className="h-4 w-28" />

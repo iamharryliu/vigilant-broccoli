@@ -41,12 +41,7 @@ type Props = {
   onDeleted?: () => void;
 };
 
-export const WhereIsDetail = ({
-  id,
-  variant,
-  onUpdated,
-  onDeleted,
-}: Props) => {
+export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
   const session = useAuth();
   const [item, setItem] = useState<WhereIsItem | null>(null);
   const [updateOpen, setUpdateOpen] = useState(false);
