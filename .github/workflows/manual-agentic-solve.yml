@@ -34,7 +34,7 @@ on:
           - 'off'
 
 concurrency:
-  group: manual-agentic-solve
+  group: manual-agentic-solve-${{ inputs.ids || inputs.prompt }}
   cancel-in-progress: true
 
 permissions:
