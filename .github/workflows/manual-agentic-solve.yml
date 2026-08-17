@@ -118,6 +118,7 @@ jobs:
               --arg to 'harryliu1995@gmail.com' \
               --arg from 'Harry Liu <ci-agentic-solve@harryliu.dev>' \
               --arg subject "Agentic solve $RESULT" \
+              --arg result "$RESULT" \
               --arg run_url "$RUN_URL" \
               --arg pr_details "$PR_DETAILS" \
-              '{to: $to, from: $from, subject: $subject, html: ("<p>The agentic solve workflow " + $RESULT + ".</p>" + (if ($pr_details | length) > 0 then "<pre>" + $pr_details + "</pre>" else "" end) + "<p><a href=\"" + $run_url + "\">View run</a></p>")}')"
+              '{to: $to, from: $from, subject: $subject, html: ("<p>The agentic solve workflow " + $result + ".</p>" + (if ($pr_details | length) > 0 then "<pre>" + $pr_details + "</pre>" else "" end) + "<p><a href=\"" + $run_url + "\">View run</a></p>")}')"
