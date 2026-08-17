@@ -276,7 +276,7 @@ const ALL_ENTRIES: SandboxEntry[] = [...COMPONENT_ENTRIES, ...UTILITY_ENTRIES];
 
 const SIDEBAR_POSITION_CLASS = 'fixed top-0 left-0 bottom-0 z-30 peer';
 const CONTENT_WRAPPER_CLASS =
-  'h-full overflow-y-auto pt-12 md:pt-0 pl-0 md:pl-14 md:peer-hover:pl-48 transition-[padding] duration-200';
+  'h-full overflow-y-auto pt-12 md:pt-0 pl-0 md:pl-48 transition-[padding] duration-200';
 const TOPBAR_CLASS =
   'md:hidden fixed top-0 left-0 right-0 z-10 flex h-12 items-center gap-3 border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-950';
 const MENU_BUTTON_CLASS =

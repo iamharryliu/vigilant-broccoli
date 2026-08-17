@@ -8,7 +8,12 @@ import { ROUTES } from '../../lib/routes';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
 
-const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.SIGNUP, ROUTES.AUTH_CALLBACK];
+const PUBLIC_ROUTES = [
+  ROUTES.LOGIN,
+  ROUTES.SIGNUP,
+  ROUTES.AUTH_CALLBACK,
+  ROUTES.SIDEBAR_SANDBOX,
+];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const session = useAuth();

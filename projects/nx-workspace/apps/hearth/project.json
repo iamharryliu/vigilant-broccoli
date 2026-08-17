@@ -50,6 +50,12 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --config=apps/hearth/e2e/playwright.config.ts"
+      }
+    },
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
