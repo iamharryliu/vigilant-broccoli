@@ -135,48 +135,73 @@ test.describe('component-library Sidebar (icon-bearing nav, via Settings > Icons
 test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)', () => {
   test.use({ viewport: DESKTOP_VIEWPORT });
 
-  test('hovering the collapsed rail re-expands the active group', async ({
-    page,
-  }) => {
-    await page.goto('/');
-
-    const componentsToggle = page.getByRole('button', {
-      name: COMPONENTS_GROUP_LABEL,
-    });
-
+  const enableIconMode = async (page: import('@playwright/test').Page) => {
     // Sidebar starts fully expanded (icon-less); flip to icon-bearing so the
     // desktop rail actually collapses to icon-width when not hovered.
-    // "Components" is the default active group (selectedId defaults to
-    // ALL_ENTRIES[0]).
     await page.getByRole('button', { name: SETTINGS_GROUP_LABEL }).click();
     await page.getByRole('button', { name: ICON_MODE_OFF_LABEL }).click();
+  };
 
-    // Real pointer movement (not a synthetic dispatch) - moving off the rail
-    // collapses it and its open group; moving back onto it should re-expand
-    // straight to the active group via the onMouseEnter + defaultOpenId
-    // handling in Sidebar.tsx, not require a fresh click.
-    await page.mouse.move(900, 400);
-    await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
-
-    await page.mouse.move(30, 200);
-    await expect(componentsToggle).toHaveAttribute('aria-expanded', 'true');
-  });
-
-  test('does not expand the active group on reload until the rail is hovered', async ({
+  test("hovering a group opens that group, not the active selection's group", async ({
     page,
   }) => {
     await page.goto('/');
+    await enableIconMode(page);
+    await page.mouse.move(900, 400);
 
     const componentsToggle = page.getByRole('button', {
       name: COMPONENTS_GROUP_LABEL,
     });
+    const utilitiesToggle = page.getByRole('button', {
+      name: UTILITIES_GROUP_LABEL,
+    });
 
-    // Icon mode persists via localStorage, so it survives the reload below.
-    await page.getByRole('button', { name: SETTINGS_GROUP_LABEL }).click();
-    await page.getByRole('button', { name: ICON_MODE_OFF_LABEL }).click();
+    // "Components" is the active group (selectedId defaults to
+    // ALL_ENTRIES[0], an Avatar/Components entry) - hovering "Utilities"
+    // directly, e.g. while looking at Avatar and wanting to browse
+    // Utilities next, should open Utilities, not the active Components.
+    await utilitiesToggle.hover();
+    await expect(utilitiesToggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('moving the pointer between group icons switches which group is open', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await enableIconMode(page);
+    await page.mouse.move(900, 400);
+
+    const componentsToggle = page.getByRole('button', {
+      name: COMPONENTS_GROUP_LABEL,
+    });
+    const utilitiesToggle = page.getByRole('button', {
+      name: UTILITIES_GROUP_LABEL,
+    });
+
+    await utilitiesToggle.hover();
+    await expect(utilitiesToggle).toHaveAttribute('aria-expanded', 'true');
+
+    await componentsToggle.hover();
+    await expect(componentsToggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(utilitiesToggle).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('does not expand any group on reload until one is hovered', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await enableIconMode(page);
     await page.mouse.move(900, 400);
 
     await page.reload();
+
+    const componentsToggle = page.getByRole('button', {
+      name: COMPONENTS_GROUP_LABEL,
+    });
+    const utilitiesToggle = page.getByRole('button', {
+      name: UTILITIES_GROUP_LABEL,
+    });
 
     // Before any hover: openId must NOT be pre-seeded from defaultOpenId
     // here, or the active group (icons, active styling, and all) would
@@ -184,8 +209,10 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
     // the forceExpanded-gated useState initializer in Sidebar.tsx.
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
 
-    // Hovering in still opens it on demand, same as the non-reload case.
-    await page.mouse.move(30, 200);
-    await expect(componentsToggle).toHaveAttribute('aria-expanded', 'true');
+    // Hovering opens whichever group is under the pointer, same as the
+    // non-reload case - not necessarily the active one.
+    await utilitiesToggle.hover();
+    await expect(utilitiesToggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
   });
 });
