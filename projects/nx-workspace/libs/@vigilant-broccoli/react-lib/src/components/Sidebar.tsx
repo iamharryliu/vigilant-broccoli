@@ -1,6 +1,12 @@
 'use client';
 
-import { ComponentType, ReactNode, useState, MouseEvent } from 'react';
+import {
+  ComponentType,
+  ReactNode,
+  useEffect,
+  useState,
+  MouseEvent,
+} from 'react';
 import { ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { cn } from '../utils/cn';
 
@@ -46,6 +52,7 @@ const CHEVRON_SIZE = 14;
 const BRANDING_HEIGHT = 'h-[49px]';
 const COLLAPSED_WIDTH = 'w-14';
 const EXPANDED_WIDTH = 'hover:w-48';
+const EXPANDED_FIXED_WIDTH = 'w-48';
 
 const MOBILE_WIDTH = 'max-md:w-64';
 const MOBILE_OPEN_TRANSFORM = 'max-md:translate-x-0';
@@ -53,20 +60,24 @@ const MOBILE_CLOSED_TRANSFORM = 'max-md:-translate-x-full';
 const MD_VISIBLE_TRANSFORM = 'md:translate-x-0';
 const MD_COLLAPSED_WIDTH = 'md:w-14';
 const MD_EXPANDED_WIDTH = 'md:hover:w-48';
-const MOBILE_BACKDROP =
-  'fixed inset-0 z-20 bg-black/50 md:hidden';
+const MD_EXPANDED_FIXED_WIDTH = 'md:w-48';
+const MOBILE_BACKDROP = 'fixed inset-0 z-20 bg-black/50 md:hidden';
+const NARROW_VIEWPORT_QUERY = '(max-width: 767px)';
 
 const BORDER_COLOR = 'border-gray-200 dark:border-gray-800';
 const SURFACE_BG = 'bg-white dark:bg-gray-950';
 const TEXT_MUTED = 'text-gray-500 dark:text-gray-400';
-const TEXT_MUTED_HOVER = 'hover:text-black hover:bg-gray-50 dark:hover:text-white dark:hover:bg-gray-800';
+const TEXT_MUTED_HOVER =
+  'hover:text-black hover:bg-gray-50 dark:hover:text-white dark:hover:bg-gray-800';
 
 const ROW_BASE =
   'text-sm rounded-md transition-colors flex items-center gap-3 px-2 py-2 w-full text-left';
-const ROW_ACTIVE = 'font-medium text-black bg-gray-100 dark:text-white dark:bg-gray-800';
+const ROW_ACTIVE =
+  'font-medium text-black bg-gray-100 dark:text-white dark:bg-gray-800';
 const ROW_INACTIVE = `${TEXT_MUTED} ${TEXT_MUTED_HOVER}`;
 
-const LABEL_BASE = 'whitespace-nowrap overflow-hidden transition-all duration-150';
+const LABEL_BASE =
+  'whitespace-nowrap overflow-hidden transition-all duration-150';
 const LABEL_COLLAPSIBLE =
   'w-0 opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:flex-1 group-hover/sidebar:opacity-100';
 const LABEL_VISIBLE = 'flex-1 opacity-100';
@@ -75,12 +86,29 @@ const LABEL_HIDDEN = 'hidden';
 const labelClassFor = (expandable: boolean) =>
   expandable ? LABEL_COLLAPSIBLE : LABEL_HIDDEN;
 
+const useIsNarrowViewport = () => {
+  const [isNarrow, setIsNarrow] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia(NARROW_VIEWPORT_QUERY);
+    const update = () => setIsNarrow(mql.matches);
+    update();
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+
+  return isNarrow;
+};
+
 const flattenItems = (items: SidebarCTA[]): SidebarCTA[] =>
   items.flatMap(item =>
     item.children && item.children.length > 0
       ? [item, ...flattenItems(item.children)]
       : [item],
   );
+
+const hasIcon = (item: SidebarCTA): boolean =>
+  Boolean(item.icon) || (item.children?.some(hasIcon) ?? false);
 
 type PolymorphicRowProps = {
   href?: string;
@@ -150,7 +178,11 @@ const ItemRow = ({
     <PolymorphicRow
       href={item.href}
       title={item.title}
-      className={cn(ROW_BASE, item.isActive ? ROW_ACTIVE : ROW_INACTIVE, className)}
+      className={cn(
+        ROW_BASE,
+        item.isActive ? ROW_ACTIVE : ROW_INACTIVE,
+        className,
+      )}
       onClick={handleClick}
       LinkComponent={LinkComponent}
     >
@@ -183,23 +215,31 @@ export const Sidebar = ({
   const [openId, setOpenId] = useState<string | null>(defaultOpenId);
   const [query, setQuery] = useState('');
 
+  useEffect(() => {
+    if (defaultOpenId !== null) setOpenId(defaultOpenId);
+  }, [defaultOpenId]);
+
   const flat = searchable ? flattenItems(items) : [];
   const results =
     searchable && query.trim()
       ? flat.filter(p => p.label.toLowerCase().includes(query.toLowerCase()))
       : null;
 
+  const isNarrowViewport = useIsNarrowViewport();
   const isMobileAware = mobileOpen !== undefined;
-  const forceExpanded = isMobileAware && mobileOpen;
+  const canCollapse = items.some(hasIcon);
+  const forceExpanded = (isMobileAware && mobileOpen) || !canCollapse;
   const widthClass = isMobileAware
     ? cn(
         MOBILE_WIDTH,
         mobileOpen ? MOBILE_OPEN_TRANSFORM : MOBILE_CLOSED_TRANSFORM,
         MD_VISIBLE_TRANSFORM,
-        MD_COLLAPSED_WIDTH,
-        expandable && MD_EXPANDED_WIDTH,
+        canCollapse ? MD_COLLAPSED_WIDTH : MD_EXPANDED_FIXED_WIDTH,
+        canCollapse && expandable && MD_EXPANDED_WIDTH,
       )
-    : cn(COLLAPSED_WIDTH, expandable && EXPANDED_WIDTH);
+    : canCollapse
+      ? cn(COLLAPSED_WIDTH, expandable && EXPANDED_WIDTH)
+      : EXPANDED_FIXED_WIDTH;
   const collapsibleLabelClass = forceExpanded
     ? LABEL_VISIBLE
     : labelClassFor(expandable);
@@ -227,7 +267,7 @@ export const Sidebar = ({
           className,
         )}
         onMouseLeave={() => {
-          if (forceExpanded) return;
+          if (forceExpanded || (isMobileAware && isNarrowViewport)) return;
           setOpenId(null);
           setQuery('');
         }}
@@ -248,7 +288,12 @@ export const Sidebar = ({
           )}
         >
           {searchable && (
-            <div className={cn('flex items-center gap-3 px-2 py-2 rounded-md', ROW_INACTIVE)}>
+            <div
+              className={cn(
+                'flex items-center gap-3 px-2 py-2 rounded-md',
+                ROW_INACTIVE,
+              )}
+            >
               <span className="shrink-0">
                 <Search size={ICON_SIZE} />
               </span>
@@ -426,6 +471,7 @@ const NestedItem = ({
         type="button"
         onClick={onToggle}
         title={item.title}
+        aria-expanded={isOpen}
         className={cn(ROW_BASE, item.isActive ? ROW_ACTIVE : ROW_INACTIVE)}
       >
         {Icon && (
@@ -451,7 +497,8 @@ const NestedItem = ({
         <div className="overflow-hidden">
           <div className="flex flex-col gap-1 mt-1 ml-3 pb-1">
             {item.children?.map((child, idx) => {
-              const childKey = child.id ?? child.href ?? `${child.label}-${idx}`;
+              const childKey =
+                child.id ?? child.href ?? `${child.label}-${idx}`;
               if (child.children && child.children.length > 0) {
                 return (
                   <NestedItem

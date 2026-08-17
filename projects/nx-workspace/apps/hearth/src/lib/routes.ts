@@ -7,7 +7,8 @@ export const ROUTES = {
   HOMES: '/homes',
   WHERE_IS: '/where-is',
   WHERE_IS_DETAIL: (id: string) => `/where-is/${id}`,
-  WHERE_IS_DASHBOARD_ITEM: (id: string) => `/where-is?${WHERE_IS_ITEM_PARAM}=${id}`,
+  WHERE_IS_DASHBOARD_ITEM: (id: string) =>
+    `/where-is?${WHERE_IS_ITEM_PARAM}=${id}`,
   LOCATOR: '/locator',
   AUTH_CALLBACK: '/auth/callback',
   CALENDAR: '/calendar',
@@ -37,4 +38,5 @@ export const ROUTES = {
   DOCS_DETAIL: (id: string) => `/docs/${id}`,
   SETTINGS: '/settings',
   USER_SETTINGS: '/user-settings',
+  SIDEBAR_SANDBOX: '/dev/sidebar-sandbox',
 } as const;

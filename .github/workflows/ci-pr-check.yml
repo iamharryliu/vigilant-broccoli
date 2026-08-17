@@ -79,6 +79,38 @@ jobs:
           fi
           pnpm exec nx affected -t lint test build --base=$NX_BASE --head=$NX_HEAD
 
+      # Scoped to hearth/component-library specifically (not the shared `nx
+      # affected -t ... build` command above) so this doesn't also try to run
+      # vb-manager-next's separate, not-yet-CI-wired e2e target. Both configs
+      # boot their own server via Playwright's webServer (hearth's dev-only
+      # /dev/sidebar-sandbox route needs `next dev`, since IS_DEV is always
+      # false in a `next build` - see apps/hearth/e2e/playwright.config.ts),
+      # so no live deploy or extra server-management step is needed here.
+      - name: Check for Sidebar e2e coverage
+        id: e2e-check
+        if: steps.check.outputs.nx-workspace-changed == 'true'
+        working-directory: ./projects/nx-workspace
+        run: |
+          AFFECTED_E2E=$(pnpm exec nx show projects --affected -p hearth,component-library --withTarget=e2e --base=$NX_BASE --head=$NX_HEAD | jq -r 'join(",")')
+          echo "projects=$AFFECTED_E2E" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        if: steps.e2e-check.outputs.projects != ''
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('projects/nx-workspace/pnpm-lock.yaml') }}
+
+      - name: Install Playwright Chromium
+        if: steps.e2e-check.outputs.projects != ''
+        working-directory: ./projects/nx-workspace
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Sidebar e2e (hearth, component-library)
+        if: steps.e2e-check.outputs.projects != ''
+        working-directory: ./projects/nx-workspace
+        run: pnpm exec nx run-many -t e2e -p ${{ steps.e2e-check.outputs.projects }}
+
   pre-commit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
