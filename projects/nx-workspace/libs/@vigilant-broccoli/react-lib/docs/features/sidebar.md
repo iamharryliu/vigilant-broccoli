@@ -27,8 +27,14 @@
 - Guarded off when: the drawer is currently open (`forceExpanded`), sidebar has no icons (`forceExpanded` again), **or the viewport is narrow** (`isNarrowViewport`, `max-width: 767px` matching Tailwind `md`)
 - The narrow-viewport guard exists because closing the drawer (nav click, backdrop tap) can trigger a native `mouseout` on the aside as page content shifts under a stationary pointer — without the guard this silently collapsed the just-opened group before the user reopened the drawer
 - Search input clears and collapses all groups on the same hover-out logic
+- Hovering **into** a collapsed desktop rail re-expands straight to the active group (`onMouseEnter` → `setOpenId(defaultOpenId)`), rather than requiring a fresh click every time — same guards as above (skipped when already `forceExpanded`, on a narrow viewport, or when the consumer passes no `defaultOpenId`)
 
 ## Search
 
 - `searchable` shows a filter input; results are a flattened list (all nesting removed) of items whose label matches
 - Selecting a result or a normal item calls `onMobileClose` (if provided) — closes the drawer, no-op on desktop
+
+## Testing
+
+- `apps/ui/component-library` (react-sandbox's `ComponentSandbox`) is the canonical test surface for both icon-bearing and icon-less nav — its sidebar's `Settings` group has an `Icons: On/Off` toggle that switches every item's `icon` on/off at runtime, so both `canCollapse` branches are reachable from one app without needing a second demo/auth-bypass route
+- `apps/ui/component-library/e2e/sidebar.spec.ts` covers: icon-less always-expanded behavior, `defaultOpenId` reactivity, (with Icons toggled on) the narrow-viewport mouseleave guard, and the desktop hover-into-active-group behavior

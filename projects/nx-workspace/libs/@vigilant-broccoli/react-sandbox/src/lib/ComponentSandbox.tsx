@@ -1,8 +1,16 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { Theme } from '@radix-ui/themes';
-import { Menu } from 'lucide-react';
 import {
-  DarkModeIconButton,
+  Blocks,
+  Circle,
+  Eye,
+  Menu,
+  Moon,
+  Settings as SettingsIcon,
+  Sun,
+  Wrench,
+} from 'lucide-react';
+import {
   Sidebar,
   SidebarCTA,
   Switch,
@@ -52,12 +60,25 @@ const DEFAULT_TITLE = 'Component Sandbox';
 const DEFAULT_SUBTITLE =
   'Interactive component showcase and testing playground';
 const SELECTED_ID_STORAGE_KEY = 'component-sandbox-selected-id';
+const ICON_MODE_STORAGE_KEY = 'component-sandbox-icon-mode';
+
+const SETTINGS_LABEL = {
+  GROUP: 'Settings',
+  DARK_MODE_ON: 'Light Mode',
+  DARK_MODE_OFF: 'Dark Mode',
+  ICON_MODE_ON: 'Icons: On',
+  ICON_MODE_OFF: 'Icons: Off',
+} as const;
 
 const CATEGORY = {
   COMPONENTS: 'Components',
   UTILITIES: 'Utilities',
 } as const;
 type Category = (typeof CATEGORY)[keyof typeof CATEGORY];
+const CATEGORY_ICON = {
+  [CATEGORY.COMPONENTS]: Blocks,
+  [CATEGORY.UTILITIES]: Wrench,
+} as const;
 
 interface SandboxEntry {
   id: string;
@@ -293,12 +314,14 @@ type BuildSidebarItemsArgs = {
   entries: SandboxEntry[];
   selectedId: string;
   onSelect: (id: string) => void;
+  iconMode: boolean;
 };
 
 const buildSidebarItems = ({
   entries,
   selectedId,
   onSelect,
+  iconMode,
 }: BuildSidebarItemsArgs): SidebarCTA[] =>
   Object.values(CATEGORY)
     .map(category => ({
@@ -309,13 +332,57 @@ const buildSidebarItems = ({
     .map(group => ({
       id: group.category,
       label: group.category,
+      icon: iconMode ? CATEGORY_ICON[group.category] : undefined,
       isActive: group.items.some(entry => entry.id === selectedId),
       children: group.items.map(entry => ({
         label: entry.label,
+        icon: iconMode ? Circle : undefined,
         isActive: entry.id === selectedId,
         onClick: () => onSelect(entry.id),
       })),
     }));
+
+type BuildSettingsGroupArgs = {
+  dark: boolean;
+  onToggleDark?: () => void;
+  iconMode: boolean;
+  onToggleIconMode: () => void;
+};
+
+// Kept separate from buildSidebarItems - these are app-chrome toggles, not
+// browsable demo content. Icons here are still gated by iconMode (not always
+// on) so toggling it off leaves every item in the sidebar icon-less, which
+// is what canCollapse/forceExpanded in Sidebar.tsx keys off of.
+const buildSettingsGroup = ({
+  dark,
+  onToggleDark,
+  iconMode,
+  onToggleIconMode,
+}: BuildSettingsGroupArgs): SidebarCTA => ({
+  id: 'settings',
+  label: SETTINGS_LABEL.GROUP,
+  icon: iconMode ? SettingsIcon : undefined,
+  children: [
+    ...(onToggleDark
+      ? [
+          {
+            label: dark
+              ? SETTINGS_LABEL.DARK_MODE_ON
+              : SETTINGS_LABEL.DARK_MODE_OFF,
+            icon: iconMode ? (dark ? Sun : Moon) : undefined,
+            onClick: onToggleDark,
+          },
+        ]
+      : []),
+    {
+      label: iconMode
+        ? SETTINGS_LABEL.ICON_MODE_ON
+        : SETTINGS_LABEL.ICON_MODE_OFF,
+      icon: iconMode ? Eye : undefined,
+      onClick: onToggleIconMode,
+    },
+  ],
+});
 
 interface SandboxTopbarProps {
   title: string;
@@ -353,6 +420,9 @@ const readStoredSelectedId = () => {
     : ALL_ENTRIES[0].id;
 };
 
+const readStoredIconMode = () =>
+  localStorage.getItem(ICON_MODE_STORAGE_KEY) === 'true';
+
 const SandboxBody = ({
   title,
   subtitle,
@@ -361,13 +431,14 @@ const SandboxBody = ({
   showThemeToggle,
 }: SandboxBodyProps) => {
   const [selectedId, setSelectedId] = useState(readStoredSelectedId);
+  const [iconMode, setIconMode] = useState(readStoredIconMode);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const selectedEntry =
     ALL_ENTRIES.find(entry => entry.id === selectedId) ?? ALL_ENTRIES[0];
 
   const items = useMemo(
-    () =>
-      buildSidebarItems({
+    () => [
+      ...buildSidebarItems({
         entries: ALL_ENTRIES,
         selectedId,
         onSelect: id => {
@@ -375,8 +446,20 @@ const SandboxBody = ({
           localStorage.setItem(SELECTED_ID_STORAGE_KEY, id);
           setSidebarOpen(false);
         },
+        iconMode,
       }),
-    [selectedId],
+      buildSettingsGroup({
+        dark,
+        onToggleDark: showThemeToggle ? () => setDark(!dark) : undefined,
+        iconMode,
+        onToggleIconMode: () => {
+          const next = !iconMode;
+          setIconMode(next);
+          localStorage.setItem(ICON_MODE_STORAGE_KEY, String(next));
+        },
+      }),
+    ],
+    [selectedId, iconMode, dark, showThemeToggle, setDark],
   );
 
   return (
@@ -395,12 +478,9 @@ const SandboxBody = ({
       />
       <div className={CONTENT_WRAPPER_CLASS}>
         <div className="p-6 max-w-4xl">
-          <div className="flex justify-between items-center mb-2">
-            <Heading size="8">{title}</Heading>
-            {showThemeToggle && (
-              <DarkModeIconButton dark={dark} onToggle={setDark} />
-            )}
-          </div>
+          <Heading size="8" mb="2">
+            {title}
+          </Heading>
           <Text color="gray" size="4" mb="6">
             {subtitle}
           </Text>

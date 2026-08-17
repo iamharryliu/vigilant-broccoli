@@ -266,6 +266,12 @@ export const Sidebar = ({
           borderClass,
           className,
         )}
+        onMouseEnter={() => {
+          if (forceExpanded || isNarrowViewport || defaultOpenId === null) {
+            return;
+          }
+          setOpenId(defaultOpenId);
+        }}
         onMouseLeave={() => {
           if (forceExpanded || (isMobileAware && isNarrowViewport)) return;
           setOpenId(null);

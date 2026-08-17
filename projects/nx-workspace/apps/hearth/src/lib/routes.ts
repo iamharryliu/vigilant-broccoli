@@ -38,5 +38,4 @@ export const ROUTES = {
   DOCS_DETAIL: (id: string) => `/docs/${id}`,
   SETTINGS: '/settings',
   USER_SETTINGS: '/user-settings',
-  SIDEBAR_SANDBOX: '/dev/sidebar-sandbox',
 } as const;
