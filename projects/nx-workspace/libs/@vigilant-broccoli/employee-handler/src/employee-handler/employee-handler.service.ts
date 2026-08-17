@@ -1,4 +1,5 @@
 import { ActiveMaintenanceHandler } from './active-maintenance/active-maintenance.service';
+import { BirthdaySyncHandler } from './birthday-sync/birthday-sync.service';
 import { EmployeeHandlerConfig } from './employee-handler.models';
 import { LeaveSyncHandler } from './leave-sync/leave-sync.service';
 import { OffboardHandler } from './offboard/offboard.service';
@@ -10,6 +11,7 @@ const serviceHandlers = {
   ...ActiveMaintenanceHandler,
   ...OffboardHandler,
   ...PostRetentionHandler,
+  ...BirthdaySyncHandler,
   ...LeaveSyncHandler,
 };
 
