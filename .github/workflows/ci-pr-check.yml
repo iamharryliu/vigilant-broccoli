@@ -79,19 +79,25 @@ jobs:
           fi
           pnpm exec nx affected -t lint test build --base=$NX_BASE --head=$NX_HEAD
 
-      # Scoped to hearth/component-library specifically (not the shared `nx
-      # affected -t ... build` command above) so this doesn't also try to run
-      # vb-manager-next's separate, not-yet-CI-wired e2e target. Both configs
-      # boot their own server via Playwright's webServer (hearth's dev-only
-      # /dev/sidebar-sandbox route needs `next dev`, since IS_DEV is always
-      # false in a `next build` - see apps/hearth/e2e/playwright.config.ts),
-      # so no live deploy or extra server-management step is needed here.
+      # Scoped to component-library specifically (not the shared `nx affected
+      # -t ... build` command above) so this doesn't also try to run
+      # vb-manager-next's separate, not-yet-CI-wired e2e target. Its config
+      # boots its own server via Playwright's webServer, so no live deploy or
+      # extra server-management step is needed here. Covers both icon-bearing
+      # and icon-less Sidebar nav (toggled via Settings > Icons in the demo
+      # itself) - see apps/ui/component-library/e2e/sidebar.spec.ts.
       - name: Check for Sidebar e2e coverage
         id: e2e-check
         if: steps.check.outputs.nx-workspace-changed == 'true'
         working-directory: ./projects/nx-workspace
         run: |
-          AFFECTED_E2E=$(pnpm exec nx show projects --affected -p hearth,component-library --withTarget=e2e --base=$NX_BASE --head=$NX_HEAD | jq -r 'join(",")')
+          # Fail open: this only gates a best-effort quality check (below),
+          # not the required lint/test/build step above, so a flaky/failing
+          # `nx show projects` here should skip e2e for this run rather than
+          # fail the whole job - jq erroring on non-JSON/empty nx output
+          # otherwise takes the job down over an unrelated nx hiccup.
+          AFFECTED_JSON=$(pnpm exec nx show projects --affected -p component-library --withTarget=e2e --base=$NX_BASE --head=$NX_HEAD 2>&1) || AFFECTED_JSON='[]'
+          AFFECTED_E2E=$(echo "$AFFECTED_JSON" | jq -r 'join(",")' 2>/dev/null) || AFFECTED_E2E=''
           echo "projects=$AFFECTED_E2E" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright browsers
@@ -106,7 +112,7 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: npx playwright install --with-deps chromium
 
-      - name: Run Sidebar e2e (hearth, component-library)
+      - name: Run Sidebar e2e (component-library)
         if: steps.e2e-check.outputs.projects != ''
         working-directory: ./projects/nx-workspace
         run: pnpm exec nx run-many -t e2e -p ${{ steps.e2e-check.outputs.projects }}

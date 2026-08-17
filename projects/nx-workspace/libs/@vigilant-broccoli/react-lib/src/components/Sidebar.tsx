@@ -115,6 +115,7 @@ type PolymorphicRowProps = {
   title?: string;
   className: string;
   onClick?: (e: MouseEvent<HTMLElement>) => void;
+  onMouseEnter?: () => void;
   LinkComponent?: LinkComponent;
   children: ReactNode;
 };
@@ -124,6 +125,7 @@ const PolymorphicRow = ({
   title,
   className,
   onClick,
+  onMouseEnter,
   LinkComponent,
   children,
 }: PolymorphicRowProps) => {
@@ -134,6 +136,7 @@ const PolymorphicRow = ({
         title={title}
         className={className}
         onClick={onClick}
+        onMouseEnter={onMouseEnter}
       >
         {children}
       </LinkComponent>
@@ -141,13 +144,25 @@ const PolymorphicRow = ({
   }
   if (href) {
     return (
-      <a href={href} title={title} className={className} onClick={onClick}>
+      <a
+        href={href}
+        title={title}
+        className={className}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+      >
         {children}
       </a>
     );
   }
   return (
-    <button type="button" title={title} className={className} onClick={onClick}>
+    <button
+      type="button"
+      title={title}
+      className={className}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+    >
       {children}
     </button>
   );
@@ -158,6 +173,7 @@ type ItemRowProps = {
   labelClassName: string;
   LinkComponent?: LinkComponent;
   onClickExtra?: () => void;
+  onMouseEnter?: () => void;
   className?: string;
 };
 
@@ -166,6 +182,7 @@ const ItemRow = ({
   labelClassName,
   LinkComponent,
   onClickExtra,
+  onMouseEnter,
   className,
 }: ItemRowProps) => {
   const Icon = item.icon;
@@ -184,6 +201,7 @@ const ItemRow = ({
         className,
       )}
       onClick={handleClick}
+      onMouseEnter={onMouseEnter}
       LinkComponent={LinkComponent}
     >
       {Icon && (
@@ -212,11 +230,31 @@ export const Sidebar = ({
   onMobileClose,
   defaultOpenId = null,
 }: SidebarProps) => {
-  const [openId, setOpenId] = useState<string | null>(defaultOpenId);
+  const isMobileAware = mobileOpen !== undefined;
+  const canCollapse = items.some(hasIcon);
+  const forceExpanded = (isMobileAware && mobileOpen) || !canCollapse;
+
+  // Only seed the initial open group when the sidebar starts already fully
+  // expanded (mobile drawer open, or icon-less always-expanded). Otherwise a
+  // collapsed desktop rail would render internally "open" to the active
+  // group - active styling and all - before the user ever hovers it.
+  // onMouseEnter below is what opens it on demand instead.
+  const [openId, setOpenId] = useState<string | null>(
+    forceExpanded ? defaultOpenId : null,
+  );
   const [query, setQuery] = useState('');
 
+  // Re-syncs openId whenever defaultOpenId changes (e.g. a new search
+  // selection), but only while the sidebar is already fully expanded -
+  // forceExpanded is read here rather than listed as a dependency, so a
+  // collapsed desktop rail toggling in and out of hover (or a mobile drawer
+  // opening/closing) doesn't itself re-trigger this and stomp a manually
+  // expanded *different* group. This mirrors the useState initializer above,
+  // and matters on every mount too since effects always run at least once
+  // after the first render regardless of their dependency array.
   useEffect(() => {
-    if (defaultOpenId !== null) setOpenId(defaultOpenId);
+    if (defaultOpenId !== null && forceExpanded) setOpenId(defaultOpenId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultOpenId]);
 
   const flat = searchable ? flattenItems(items) : [];
@@ -226,9 +264,6 @@ export const Sidebar = ({
       : null;
 
   const isNarrowViewport = useIsNarrowViewport();
-  const isMobileAware = mobileOpen !== undefined;
-  const canCollapse = items.some(hasIcon);
-  const forceExpanded = (isMobileAware && mobileOpen) || !canCollapse;
   const widthClass = isMobileAware
     ? cn(
         MOBILE_WIDTH,
@@ -332,6 +367,14 @@ export const Sidebar = ({
           ) : (
             items.map((item, idx) => {
               const itemKey = item.id ?? item.href ?? `${item.label}-${idx}`;
+              // On a collapsed desktop rail, hovering a group should open
+              // *that* group - not whatever the active selection's group is
+              // - and hovering a plain (non-group) row should close
+              // whichever group was previously open, since attention has
+              // moved elsewhere. Mobile drawers and always-expanded
+              // (icon-less) sidebars have no hover-collapse concept, so this
+              // is a no-op there.
+              const canHoverSwitch = !forceExpanded && !isNarrowViewport;
               if (item.children && item.children.length > 0) {
                 const isOpen = openId === itemKey;
                 return (
@@ -342,6 +385,9 @@ export const Sidebar = ({
                     expandable={expandable}
                     LinkComponent={LinkComponent}
                     onToggle={() => setOpenId(isOpen ? null : itemKey)}
+                    onMouseEnter={
+                      canHoverSwitch ? () => setOpenId(itemKey) : undefined
+                    }
                     onNavigate={onMobileClose}
                     forceExpanded={forceExpanded}
                   />
@@ -354,6 +400,9 @@ export const Sidebar = ({
                   labelClassName={itemLabelClass}
                   LinkComponent={LinkComponent}
                   onClickExtra={onMobileClose}
+                  onMouseEnter={
+                    canHoverSwitch ? () => setOpenId(null) : undefined
+                  }
                 />
               );
             })
@@ -437,6 +486,7 @@ type NestedItemProps = {
   expandable: boolean;
   LinkComponent?: LinkComponent;
   onToggle: () => void;
+  onMouseEnter?: () => void;
   onNavigate?: () => void;
   forceExpanded?: boolean;
 };
@@ -447,6 +497,7 @@ const NestedItem = ({
   expandable,
   LinkComponent,
   onToggle,
+  onMouseEnter,
   onNavigate,
   forceExpanded = false,
 }: NestedItemProps) => {
@@ -470,6 +521,7 @@ const NestedItem = ({
       <button
         type="button"
         onClick={onToggle}
+        onMouseEnter={onMouseEnter}
         title={item.title}
         aria-expanded={isOpen}
         className={cn(ROW_BASE, item.isActive ? ROW_ACTIVE : ROW_INACTIVE)}
