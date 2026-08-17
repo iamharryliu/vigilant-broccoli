@@ -8,6 +8,7 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
+import { useHome } from '../../providers/home-provider';
 import { CalendarEvent } from '../../../lib/types';
 import { CalendarView } from '../components/CalendarView';
 import {
@@ -25,6 +26,7 @@ const JSON_CONTENT_TYPE_HEADER = { 'Content-Type': 'application/json' };
 
 export default function OverallCalendarPage() {
   const session = useAuth();
+  const { selectedHomeId } = useHome();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [modal, setModal] = useState<ModalState>(null);
   const [range, setRange] = useState<{ start: string; end: string } | null>(
@@ -55,10 +57,11 @@ export default function OverallCalendarPage() {
   }, [fetchEvents]);
 
   const handleCreate = async (data: CalendarEventFormData) => {
+    if (!selectedHomeId) return;
     await fetch(EVENTS_ENDPOINT, {
       method: 'POST',
       headers: authHeader(JSON_CONTENT_TYPE_HEADER),
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, homeId: selectedHomeId }),
     });
     setModal(null);
     fetchEvents();
