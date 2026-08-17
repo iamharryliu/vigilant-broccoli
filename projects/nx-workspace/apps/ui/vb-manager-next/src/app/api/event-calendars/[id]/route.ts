@@ -49,6 +49,14 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 
   const { name, isPublic, sources } = await request.json();
 
+  const normalizedSources = sources ? normalizeSources(sources) : undefined;
+  if (normalizedSources && !normalizedSources.ok) {
+    return NextResponse.json(
+      { error: normalizedSources.error },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+
   try {
     const calendar = getCalendarAdminClient();
 
@@ -72,7 +80,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       calendar: await updateEventCalendar(id, {
         name: name?.trim(),
         isPublic,
-        sources: sources ? normalizeSources(sources) : undefined,
+        sources: normalizedSources?.ok ? normalizedSources.sources : undefined,
       }),
     });
   } catch (error) {
