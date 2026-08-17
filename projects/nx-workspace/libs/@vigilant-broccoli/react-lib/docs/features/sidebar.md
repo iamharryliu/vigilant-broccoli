@@ -10,9 +10,10 @@
 
 ## Modes
 
-- **Desktop rail** (`mobileOpen` prop omitted): fixed `w-14` icon rail, `hover:w-48` full width on hover (CSS-only, `group-hover/sidebar`)
+- **Desktop rail** (`mobileOpen` prop omitted): fixed `w-14` icon rail, `hover:w-48` full width on hover (CSS-only, plain `hover:` on the aside itself; `group-hover/sidebar` is what reveals labels/chevrons inside it, not the aside's own width)
 - **Mobile drawer** (`mobileOpen`/`onMobileClose` passed): off-canvas `w-64` panel, slides via `translate-x` on `mobileOpen`, dims background with a backdrop that closes on click
 - Whichever mode, if **no item (recursively) has an `icon`**, the sidebar is always fixed-width `w-48`/expanded — a rail with no icons would be blank, so hover-collapse and mobile-icon-rail are both skipped (`canCollapse`/`hasIcon`)
+- The `<aside>` itself doesn't reserve layout space (it's `fixed`) — a consumer's main-content wrapper has to pad around it manually, and to track the rail's collapse/expand it needs `peer` on the `Sidebar`'s `className` plus a `md:pl-14 md:peer-hover:pl-48` pair on the content (a peer-facing echo of the rail's own `md:w-14 md:hover:w-48`, since the content is a _sibling_ reacting to the rail's hover, not hovering itself), e.g. hearth's `AppLayout`/component-library's `ComponentSandbox` (conditionally — a static `md:pl-48` when `canCollapse` is false, since there's no rail to collapse to then)
 
 ## Nested groups
 
@@ -25,10 +26,10 @@
 ## Mobile drawer + hover interaction
 
 - Hovering out of the aside collapses any open nested group (`onMouseLeave` → `setOpenId(null)`) — this is desktop rail behavior only
-- Guarded off when: the drawer is currently open (`forceExpanded`), sidebar has no icons (`forceExpanded` again), **or the viewport is narrow** (`isNarrowViewport`, `max-width: 767px` matching Tailwind `md`)
+- Guarded off when: the drawer is currently open (`forceExpanded`), sidebar has no icons (`forceExpanded` again), **or it's a mobile-aware sidebar on a narrow viewport** (`isMobileAware && isNarrowViewport`, `max-width: 767px` matching Tailwind `md`) — note this needs _both_; a non-mobile-aware desktop rail (no `mobileOpen` prop) still collapses on hover-out even if the browser window itself happens to be narrow
 - The narrow-viewport guard exists because closing the drawer (nav click, backdrop tap) can trigger a native `mouseout` on the aside as page content shifts under a stationary pointer — without the guard this silently collapsed the just-opened group before the user reopened the drawer
 - Search input clears and collapses all groups on the same hover-out logic
-- On a collapsed desktop rail, hovering a **group's own row** opens that group (`onMouseEnter` on the `NestedItem` toggle → `setOpenId(itemKey)`) — not necessarily the active selection's group. Moving the pointer to a different group's row switches straight to it; hovering a **plain (non-group) row** closes whichever group was open, since attention has moved elsewhere. No fresh click needed either way. Both are no-ops when already `forceExpanded` or on a narrow viewport (mobile drawers and icon-less sidebars have no hover-collapse concept)
+- On a collapsed desktop rail, hovering a **group's own row** opens that group (`onMouseEnter` on the `NestedItem` toggle → `setOpenId(itemKey)`) — not necessarily the active selection's group. Moving the pointer to a different group's row switches straight to it; hovering a **plain (non-group) row** closes whichever group was open, since attention has moved elsewhere. No fresh click needed either way. Both are no-ops when already `forceExpanded` or `isNarrowViewport` alone (no `isMobileAware` check here, unlike the `onMouseLeave` guard above — a latent inconsistency between the two guards, harmless for every current consumer since they're all either mobile-aware or never rendered on a narrow viewport, but worth knowing if that ever changes)
 
 ## Search
 
@@ -38,4 +39,4 @@
 ## Testing
 
 - `apps/ui/component-library` (react-sandbox's `ComponentSandbox`) is the canonical test surface for both icon-bearing and icon-less nav — its sidebar's `Settings` group has an `Icons: On/Off` toggle that switches every item's `icon` on/off at runtime, so both `canCollapse` branches are reachable from one app without needing a second demo/auth-bypass route
-- `apps/ui/component-library/e2e/sidebar.spec.ts` covers: icon-less always-expanded behavior, `defaultOpenId` reactivity, (with Icons toggled on) the narrow-viewport mouseleave guard, that hovering a group opens _that_ group regardless of the active selection, that moving between group icons switches which one is open, and that a reload doesn't pre-expand any group before the collapsed rail is hovered
+- `apps/ui/component-library/e2e/sidebar.spec.ts` covers: icon-less always-expanded behavior, `defaultOpenId` reactivity, (with Icons toggled on) the narrow-viewport mouseleave guard, that hovering a group opens _that_ group regardless of the active selection, that moving between group icons switches which one is open, that a reload doesn't pre-expand any group before the collapsed rail is hovered, and (both with and without Icons on) that the demo's own content padding tracks the rail width per the `peer-hover` pattern above
